@@ -66,6 +66,7 @@ export class UsersRaw extends BaseRaw {
 			{ key: { openBusinessHours: 1 }, sparse: true },
 			{ key: { statusLivechat: 1 }, sparse: true },
 			{ key: { extension: 1 }, sparse: true, unique: true },
+			{ key: { freeSwitchExtension: 1 }, sparse: true, unique: true },
 			{ key: { language: 1 }, sparse: true },
 			{ key: { 'active': 1, 'services.email2fa.enabled': 1 }, sparse: true }, // used by statistics
 			{ key: { 'active': 1, 'services.totp.enabled': 1 }, sparse: true }, // used by statistics
@@ -713,8 +714,10 @@ export class UsersRaw extends BaseRaw {
 						$nin: exceptions,
 					},
 				},
+				{
+					...conditions,
+				},
 			],
-			...conditions,
 		};
 
 		return this.find(query, options);
@@ -2432,6 +2435,34 @@ export class UsersRaw extends BaseRaw {
 		});
 	}
 
+	findOneByFreeSwitchExtension(freeSwitchExtension, options = {}) {
+		return this.findOne(
+			{
+				freeSwitchExtension,
+			},
+			options,
+		);
+	}
+
+	findAssignedFreeSwitchExtensions() {
+		return this.findUsersWithAssignedFreeSwitchExtensions({
+			projection: {
+				freeSwitchExtension: 1,
+			},
+		}).map(({ freeSwitchExtension }) => freeSwitchExtension);
+	}
+
+	findUsersWithAssignedFreeSwitchExtensions(options = {}) {
+		return this.find(
+			{
+				freeSwitchExtension: {
+					$exists: 1,
+				},
+			},
+			options,
+		);
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
@@ -2901,6 +2932,17 @@ export class UsersRaw extends BaseRaw {
 				$set: {
 					'services.saml.inResponseTo': inResponseTo,
 				},
+			},
+		);
+	}
+
+	async setFreeSwitchExtension(_id, extension) {
+		return this.updateOne(
+			{
+				_id,
+			},
+			{
+				...(extension ? { $set: { freeSwitchExtension: extension } } : { $unset: { freeSwitchExtension: 1 } }),
 			},
 		);
 	}

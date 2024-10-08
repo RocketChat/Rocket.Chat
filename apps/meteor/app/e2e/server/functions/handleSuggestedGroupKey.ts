@@ -1,7 +1,7 @@
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { notifyOnSubscriptionChangedById } from '../../../lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedById, notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
 
 export async function handleSuggestedGroupKey(
 	handle: 'accept' | 'reject',
@@ -25,11 +25,17 @@ export async function handleSuggestedGroupKey(
 
 	if (handle === 'accept') {
 		await Subscriptions.setGroupE2EKey(sub._id, suggestedKey);
-		await Rooms.removeUsersFromE2EEQueueByRoomId(sub.rid, [userId]);
+		const { modifiedCount } = await Rooms.removeUsersFromE2EEQueueByRoomId(sub.rid, [userId]);
+		if (modifiedCount) {
+			void notifyOnRoomChangedById(sub.rid);
+		}
 	}
 
 	if (handle === 'reject') {
-		await Rooms.addUserIdToE2EEQueueByRoomIds([sub.rid], userId);
+		const { modifiedCount } = await Rooms.addUserIdToE2EEQueueByRoomIds([sub.rid], userId);
+		if (modifiedCount) {
+			void notifyOnRoomChangedById(sub.rid);
+		}
 	}
 
 	const { modifiedCount } = await Subscriptions.unsetGroupE2ESuggestedKey(sub._id);

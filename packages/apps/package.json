@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/apps",
-	"version": "0.1.6",
+	"version": "0.1.8-rc.1",
 	"private": true,
 	"devDependencies": {
 		"eslint": "~8.45.0",
@@ -18,7 +18,7 @@
 		"/dist"
 	],
 	"dependencies": {
-		"@rocket.chat/apps-engine": "1.45.0-alpha.868",
+		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^"
 	}

@@ -2,6 +2,8 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { findRoomByIdOrName } from '../../../api/server/v1/rooms';
+import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { cleanRoomHistory } from '../functions/cleanRoomHistory';
 
@@ -53,6 +55,12 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (!(await hasPermissionAsync(userId, 'clean-channel-history', roomId))) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
+		}
+
+		const room = await findRoomByIdOrName({ params: { roomId } });
+
+		if (!room || !(await canAccessRoomAsync(room, { _id: userId }))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
 		}
 

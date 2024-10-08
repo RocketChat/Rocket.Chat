@@ -1,0 +1,1605 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders ErrorCall without crashing 1`] = `
+<body>
+  <div>
+    <span
+      data-focus-scope-start="true"
+      hidden=""
+    />
+    <article
+      aria-labelledby="voipPopupTitle"
+      class="rcx-css-1u0qz2a"
+      data-testid="vc-popup-dialer"
+    >
+      <header
+        class="rcx-box rcx-box--full rcx-css-1bact0x"
+      >
+        <h3
+          class="rcx-box rcx-box--full rcx-css-6rm93"
+          id="voipPopupTitle"
+        >
+          New_Call
+        </h3>
+        <button
+          aria-label="Close"
+          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button rcx-css-ws1yyr"
+          type="button"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
+          >
+            
+          </i>
+        </button>
+      </header>
+      <section
+        class="rcx-box rcx-box--full"
+        data-testid="vc-popup-content"
+      >
+        <span
+          data-focus-scope-start="true"
+          hidden=""
+        />
+        <div
+          class="rcx-box rcx-box--full rcx-css-13wyzsd"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1gr9o58"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-label  rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-1nolsce"
+            >
+              <input
+                aria-label="Phone_number"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box rcx-css-1nolsce rcx-css-1uqi900"
+                size="1"
+                type="text"
+                value=""
+              />
+              <span
+                class="rcx-box rcx-box--full rcx-input-box__addon"
+              >
+                <button
+                  aria-label="Remove_last_character"
+                  class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-1yuobxc"
+                  data-testid="dial-paid-input-backspace"
+                  disabled=""
+                  type="button"
+                >
+                  <i
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-icon--name-backspace rcx-icon rcx-css-4pvxx3"
+                  >
+                    [
+                  </i>
+                </button>
+              </span>
+            </label>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-dqa7fo rcx-css-keglju"
+          >
+            <button
+              aria-describedby="react-aria-description-1"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-1"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  1
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                />
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-1"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-2"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  2
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  ABC
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-1"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-3"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  3
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  DEF
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-1"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-4"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  4
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  GHI
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-1"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-5"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  5
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  JKL
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-1"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-6"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  6
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  MNO
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-1"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-7"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  7
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  PQRS
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-1"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-8"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  8
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  TUV
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-1"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-9"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  9
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  WXYZ
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-1"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-*"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  *
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                />
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-1"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-0"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  0
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  +
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-1"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-#"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  #
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                />
+              </span>
+            </button>
+          </div>
+        </div>
+        <span
+          data-focus-scope-end="true"
+          hidden=""
+        />
+      </section>
+      <footer
+        class="rcx-box rcx-box--full rcx-css-29fkf"
+        data-testid="vc-popup-footer"
+      >
+        <div
+          class="rcx-button-group rcx-button-group--align-start rcx-button-group--large"
+          role="group"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            disabled=""
+            title="Device_settings_not_supported_by_browser"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button  rcx-button-group__item rcx-css-t3n91h"
+            disabled=""
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-1hdf9ok"
+              >
+                
+              </i>
+              Call
+            </span>
+          </button>
+        </div>
+      </footer>
+    </article>
+    <span
+      data-focus-scope-end="true"
+      hidden=""
+    />
+  </div>
+  <div
+    id="react-aria-description-1"
+    style="display: none;"
+  >
+    Long_press_to_do_x
+  </div>
+</body>
+`;
+
+exports[`renders IncomingCall without crashing 1`] = `
+<body>
+  <div>
+    <span
+      data-focus-scope-start="true"
+      hidden=""
+    />
+    <article
+      aria-labelledby="voipPopupTitle"
+      class="rcx-css-1u0qz2a"
+      data-testid="vc-popup-dialer"
+    >
+      <header
+        class="rcx-box rcx-box--full rcx-css-1bact0x"
+      >
+        <h3
+          class="rcx-box rcx-box--full rcx-css-6rm93"
+          id="voipPopupTitle"
+        >
+          New_Call
+        </h3>
+        <button
+          aria-label="Close"
+          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button rcx-css-ws1yyr"
+          type="button"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
+          >
+            
+          </i>
+        </button>
+      </header>
+      <section
+        class="rcx-box rcx-box--full"
+        data-testid="vc-popup-content"
+      >
+        <span
+          data-focus-scope-start="true"
+          hidden=""
+        />
+        <div
+          class="rcx-box rcx-box--full rcx-css-13wyzsd"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1gr9o58"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-label  rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-1nolsce"
+            >
+              <input
+                aria-label="Phone_number"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box rcx-css-1nolsce rcx-css-1uqi900"
+                size="1"
+                type="text"
+                value=""
+              />
+              <span
+                class="rcx-box rcx-box--full rcx-input-box__addon"
+              >
+                <button
+                  aria-label="Remove_last_character"
+                  class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-1yuobxc"
+                  data-testid="dial-paid-input-backspace"
+                  disabled=""
+                  type="button"
+                >
+                  <i
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-icon--name-backspace rcx-icon rcx-css-4pvxx3"
+                  >
+                    [
+                  </i>
+                </button>
+              </span>
+            </label>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-dqa7fo rcx-css-keglju"
+          >
+            <button
+              aria-describedby="react-aria-description-2"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-1"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  1
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                />
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-2"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-2"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  2
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  ABC
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-2"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-3"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  3
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  DEF
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-2"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-4"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  4
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  GHI
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-2"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-5"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  5
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  JKL
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-2"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-6"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  6
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  MNO
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-2"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-7"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  7
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  PQRS
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-2"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-8"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  8
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  TUV
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-2"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-9"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  9
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  WXYZ
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-2"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-*"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  *
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                />
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-2"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-0"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  0
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  +
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-2"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-#"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  #
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                />
+              </span>
+            </button>
+          </div>
+        </div>
+        <span
+          data-focus-scope-end="true"
+          hidden=""
+        />
+      </section>
+      <footer
+        class="rcx-box rcx-box--full rcx-css-29fkf"
+        data-testid="vc-popup-footer"
+      >
+        <div
+          class="rcx-button-group rcx-button-group--align-start rcx-button-group--large"
+          role="group"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            disabled=""
+            title="Device_settings_not_supported_by_browser"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button  rcx-button-group__item rcx-css-t3n91h"
+            disabled=""
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-1hdf9ok"
+              >
+                
+              </i>
+              Call
+            </span>
+          </button>
+        </div>
+      </footer>
+    </article>
+    <span
+      data-focus-scope-end="true"
+      hidden=""
+    />
+  </div>
+  <div
+    id="react-aria-description-2"
+    style="display: none;"
+  >
+    Long_press_to_do_x
+  </div>
+</body>
+`;
+
+exports[`renders OngoingCall without crashing 1`] = `
+<body>
+  <div>
+    <span
+      data-focus-scope-start="true"
+      hidden=""
+    />
+    <article
+      aria-labelledby="voipPopupTitle"
+      class="rcx-css-1u0qz2a"
+      data-testid="vc-popup-dialer"
+    >
+      <header
+        class="rcx-box rcx-box--full rcx-css-1bact0x"
+      >
+        <h3
+          class="rcx-box rcx-box--full rcx-css-6rm93"
+          id="voipPopupTitle"
+        >
+          New_Call
+        </h3>
+        <button
+          aria-label="Close"
+          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button rcx-css-ws1yyr"
+          type="button"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
+          >
+            
+          </i>
+        </button>
+      </header>
+      <section
+        class="rcx-box rcx-box--full"
+        data-testid="vc-popup-content"
+      >
+        <span
+          data-focus-scope-start="true"
+          hidden=""
+        />
+        <div
+          class="rcx-box rcx-box--full rcx-css-13wyzsd"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1gr9o58"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-label  rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-1nolsce"
+            >
+              <input
+                aria-label="Phone_number"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box rcx-css-1nolsce rcx-css-1uqi900"
+                size="1"
+                type="text"
+                value=""
+              />
+              <span
+                class="rcx-box rcx-box--full rcx-input-box__addon"
+              >
+                <button
+                  aria-label="Remove_last_character"
+                  class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-1yuobxc"
+                  data-testid="dial-paid-input-backspace"
+                  disabled=""
+                  type="button"
+                >
+                  <i
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-icon--name-backspace rcx-icon rcx-css-4pvxx3"
+                  >
+                    [
+                  </i>
+                </button>
+              </span>
+            </label>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-dqa7fo rcx-css-keglju"
+          >
+            <button
+              aria-describedby="react-aria-description-3"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-1"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  1
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                />
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-3"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-2"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  2
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  ABC
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-3"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-3"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  3
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  DEF
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-3"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-4"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  4
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  GHI
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-3"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-5"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  5
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  JKL
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-3"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-6"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  6
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  MNO
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-3"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-7"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  7
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  PQRS
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-3"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-8"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  8
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  TUV
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-3"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-9"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  9
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  WXYZ
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-3"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-*"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  *
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                />
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-3"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-0"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  0
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  +
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-3"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-#"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  #
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                />
+              </span>
+            </button>
+          </div>
+        </div>
+        <span
+          data-focus-scope-end="true"
+          hidden=""
+        />
+      </section>
+      <footer
+        class="rcx-box rcx-box--full rcx-css-29fkf"
+        data-testid="vc-popup-footer"
+      >
+        <div
+          class="rcx-button-group rcx-button-group--align-start rcx-button-group--large"
+          role="group"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            disabled=""
+            title="Device_settings_not_supported_by_browser"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button  rcx-button-group__item rcx-css-t3n91h"
+            disabled=""
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-1hdf9ok"
+              >
+                
+              </i>
+              Call
+            </span>
+          </button>
+        </div>
+      </footer>
+    </article>
+    <span
+      data-focus-scope-end="true"
+      hidden=""
+    />
+  </div>
+  <div
+    id="react-aria-description-3"
+    style="display: none;"
+  >
+    Long_press_to_do_x
+  </div>
+</body>
+`;
+
+exports[`renders OutgoingCall without crashing 1`] = `
+<body>
+  <div>
+    <span
+      data-focus-scope-start="true"
+      hidden=""
+    />
+    <article
+      aria-labelledby="voipPopupTitle"
+      class="rcx-css-1u0qz2a"
+      data-testid="vc-popup-dialer"
+    >
+      <header
+        class="rcx-box rcx-box--full rcx-css-1bact0x"
+      >
+        <h3
+          class="rcx-box rcx-box--full rcx-css-6rm93"
+          id="voipPopupTitle"
+        >
+          New_Call
+        </h3>
+        <button
+          aria-label="Close"
+          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button rcx-css-ws1yyr"
+          type="button"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
+          >
+            
+          </i>
+        </button>
+      </header>
+      <section
+        class="rcx-box rcx-box--full"
+        data-testid="vc-popup-content"
+      >
+        <span
+          data-focus-scope-start="true"
+          hidden=""
+        />
+        <div
+          class="rcx-box rcx-box--full rcx-css-13wyzsd"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1gr9o58"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-label  rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-1nolsce"
+            >
+              <input
+                aria-label="Phone_number"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box rcx-css-1nolsce rcx-css-1uqi900"
+                size="1"
+                type="text"
+                value=""
+              />
+              <span
+                class="rcx-box rcx-box--full rcx-input-box__addon"
+              >
+                <button
+                  aria-label="Remove_last_character"
+                  class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-1yuobxc"
+                  data-testid="dial-paid-input-backspace"
+                  disabled=""
+                  type="button"
+                >
+                  <i
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-icon--name-backspace rcx-icon rcx-css-4pvxx3"
+                  >
+                    [
+                  </i>
+                </button>
+              </span>
+            </label>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-dqa7fo rcx-css-keglju"
+          >
+            <button
+              aria-describedby="react-aria-description-4"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-1"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  1
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                />
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-4"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-2"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  2
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  ABC
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-4"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-3"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  3
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  DEF
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-4"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-4"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  4
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  GHI
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-4"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-5"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  5
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  JKL
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-4"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-6"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  6
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  MNO
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-4"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-7"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  7
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  PQRS
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-4"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-8"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  8
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  TUV
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-4"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-9"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  9
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  WXYZ
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-4"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-*"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  *
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                />
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-4"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-0"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  0
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                >
+                  +
+                </span>
+              </span>
+            </button>
+            <button
+              aria-describedby="react-aria-description-4"
+              class="rcx-box rcx-box--full rcx-button rcx-css-w0xx3d"
+              data-testid="dial-pad-button-#"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1q15p4p"
+                >
+                  #
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-1v117po"
+                />
+              </span>
+            </button>
+          </div>
+        </div>
+        <span
+          data-focus-scope-end="true"
+          hidden=""
+        />
+      </section>
+      <footer
+        class="rcx-box rcx-box--full rcx-css-29fkf"
+        data-testid="vc-popup-footer"
+      >
+        <div
+          class="rcx-button-group rcx-button-group--align-start rcx-button-group--large"
+          role="group"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            disabled=""
+            title="Device_settings_not_supported_by_browser"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button  rcx-button-group__item rcx-css-t3n91h"
+            disabled=""
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-1hdf9ok"
+              >
+                
+              </i>
+              Call
+            </span>
+          </button>
+        </div>
+      </footer>
+    </article>
+    <span
+      data-focus-scope-end="true"
+      hidden=""
+    />
+  </div>
+  <div
+    id="react-aria-description-4"
+    style="display: none;"
+  >
+    Long_press_to_do_x
+  </div>
+</body>
+`;

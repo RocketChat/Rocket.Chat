@@ -632,4 +632,98 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.errorType).to.be.equal('invalid-params');
 		});
 	});
+
+	describe('[GET] omnichannel/contacts.search', () => {
+		let contactId: string;
+		const contact = {
+			name: faker.person.fullName(),
+			emails: [faker.internet.email().toLowerCase()],
+			phones: [faker.phone.number()],
+			contactManager: agentUser?._id,
+		};
+
+		before(async () => {
+			await updatePermission('view-livechat-contact', ['admin']);
+			const { body } = await request.post(api('omnichannel/contacts')).set(credentials).send(contact);
+			contactId = body.contactId;
+		});
+
+		after(async () => {
+			await restorePermissionToRoles('view-livechat-contact');
+		});
+
+		it('should be able to list all contacts', async () => {
+			const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials);
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contacts).to.be.an('array');
+			expect(res.body.contacts.length).to.be.greaterThan(0);
+			expect(res.body.count).to.be.an('number');
+			expect(res.body.total).to.be.an('number');
+			expect(res.body.offset).to.be.an('number');
+		});
+
+		it('should return only contacts that match the searchText using email', async () => {
+			const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials).query({ searchText: contact.emails[0] });
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contacts).to.be.an('array');
+			expect(res.body.contacts.length).to.be.equal(1);
+			expect(res.body.total).to.be.equal(1);
+			expect(res.body.contacts[0]._id).to.be.equal(contactId);
+			expect(res.body.contacts[0].name).to.be.equal(contact.name);
+			expect(res.body.contacts[0].emails[0]).to.be.equal(contact.emails[0]);
+		});
+
+		it('should return only contacts that match the searchText using phone number', async () => {
+			const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials).query({ searchText: contact.phones[0] });
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contacts).to.be.an('array');
+			expect(res.body.contacts.length).to.be.equal(1);
+			expect(res.body.total).to.be.equal(1);
+			expect(res.body.contacts[0]._id).to.be.equal(contactId);
+			expect(res.body.contacts[0].name).to.be.equal(contact.name);
+			expect(res.body.contacts[0].emails[0]).to.be.equal(contact.emails[0]);
+		});
+
+		it('should return only contacts that match the searchText using name', async () => {
+			const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials).query({ searchText: contact.name });
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contacts).to.be.an('array');
+			expect(res.body.contacts.length).to.be.equal(1);
+			expect(res.body.total).to.be.equal(1);
+			expect(res.body.contacts[0]._id).to.be.equal(contactId);
+			expect(res.body.contacts[0].name).to.be.equal(contact.name);
+			expect(res.body.contacts[0].emails[0]).to.be.equal(contact.emails[0]);
+		});
+
+		it('should return an empty list if no contacts exist', async () => {
+			const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials).query({ searchText: 'invalid' });
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contacts).to.be.an('array');
+			expect(res.body.contacts.length).to.be.equal(0);
+			expect(res.body.total).to.be.equal(0);
+		});
+
+		describe('Permissions', () => {
+			before(async () => {
+				await removePermissionFromAllRoles('view-livechat-contact');
+			});
+
+			after(async () => {
+				await restorePermissionToRoles('view-livechat-contact');
+			});
+
+			it("should return an error if user doesn't have 'view-livechat-contact' permission", async () => {
+				const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			});
+		});
+	});
 });

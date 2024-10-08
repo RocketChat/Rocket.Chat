@@ -1,5 +1,44 @@
 # @rocket.chat/gazzodown
 
+## 11.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [2f9eea03d2]:</summary>
+
+  - @rocket.chat/ui-client@11.0.0-rc.1
+  - @rocket.chat/ui-contexts@11.0.0-rc.1
+  - @rocket.chat/core-typings@6.13.0-rc.1
+  </details>
+
+## 11.0.0-rc.0
+
+### Minor Changes
+
+- ([#32821](https://github.com/RocketChat/Rocket.Chat/pull/32821)) Replaced new `SidebarV2` components under feature preview
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [bb94c9c67a, 274f4f5881, cd0d50016e, 79c16d315a, 927710d778, 12d6307998]:</summary>
+
+  - @rocket.chat/ui-client@11.0.0-rc.0
+  - @rocket.chat/core-typings@6.13.0-rc.0
+  - @rocket.chat/message-parser@0.31.30-rc.0
+  - @rocket.chat/ui-contexts@11.0.0-rc.0
+  </details>
+
+## 10.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [3cbb9f6252]:</summary>
+
+  - @rocket.chat/message-parser@0.31.30
+  - @rocket.chat/core-typings@6.12.1
+  - @rocket.chat/ui-contexts@10.0.1
+  - @rocket.chat/ui-client@10.0.1
+  </details>
+
 ## 10.0.0
 
 ### Patch Changes

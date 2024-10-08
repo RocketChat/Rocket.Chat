@@ -32,6 +32,13 @@ export const userAvatar = async function (req, res) {
 		return;
 	}
 
+	if (settings.get('Accounts_AvatarExternalProviderUrl')) {
+		const response = await fetch(settings.get('Accounts_AvatarExternalProviderUrl').replace('{username}', requestUsername));
+		response.headers.forEach((value, key) => res.setHeader(key, value));
+		response.body.pipe(res);
+		return;
+	}
+
 	const reqModifiedHeader = req.headers['if-modified-since'];
 
 	const file = await Avatars.findOneByName(requestUsername);
@@ -50,13 +57,6 @@ export const userAvatar = async function (req, res) {
 		res.setHeader('Content-Length', file.size);
 
 		return FileUpload.get(file, req, res);
-	}
-
-	if (settings.get('Accounts_AvatarExternalProviderUrl')) {
-		const response = await fetch(settings.get('Accounts_AvatarExternalProviderUrl').replace('{username}', requestUsername));
-		response.headers.forEach((value, key) => res.setHeader(key, value));
-		response.body.pipe(res);
-		return;
 	}
 
 	// if still using "letters fallback"

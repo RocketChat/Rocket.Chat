@@ -2,6 +2,8 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
+
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
@@ -36,5 +38,7 @@ Meteor.methods<ServerMethods>({
 
 		const subscribedRoomIds = await Rooms.getSubscribedRoomIdsWithoutE2EKeys(userId);
 		await Rooms.addUserIdToE2EEQueueByRoomIds(subscribedRoomIds, userId);
+
+		void notifyOnRoomChangedById(subscribedRoomIds);
 	},
 });

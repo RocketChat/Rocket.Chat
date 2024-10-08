@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, describe, it, after } from 'mocha';
 import moment from 'moment';
 import { type Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { getCredentials, api, request, credentials, methodCallAnon } from '../../../data/api-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 import {
 	makeAgentAvailable,
@@ -216,6 +216,30 @@ describe('LIVECHAT - visitors', () => {
 			expect(body.visitor).to.have.property('token', token);
 			expect(body.visitor).to.have.property('livechatData');
 			expect(body.visitor.livechatData).to.have.property(customFieldName, 'Not a real address :)');
+		});
+
+		describe('special cases', () => {
+			before(async () => {
+				await updateSetting('Livechat_Allow_collect_and_store_HTTP_header_informations', true);
+			});
+			after(async () => {
+				await updateSetting('Livechat_Allow_collect_and_store_HTTP_header_informations', false);
+			});
+
+			// Note: this had to use the meteor method because the endpoint used `req.headers` which we cannot send as empty
+			// method doesn't pass them to the func allowing us to create a test for it
+			it('should allow to create a visitor without passing connectionData when GDPR setting is enabled', async () => {
+				const token = `${new Date().getTime()}-test`;
+				const response = await request
+					.post(methodCallAnon('livechat:registerGuest'))
+					.send({ message: `{"msg":"method","id":"23","method":"livechat:registerGuest","params":[{ "token": "${token}"}]}` });
+
+				expect(response.body).to.have.property('success', true);
+				const r = JSON.parse(response.body.message);
+
+				expect(r.result).to.have.property('visitor');
+				expect(r.result.visitor).to.have.property('token', token);
+			});
 		});
 	});
 

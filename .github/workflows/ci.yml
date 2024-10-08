@@ -31,6 +31,7 @@ jobs:
       rc-dockerfile-alpine: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine'
       rc-docker-tag-alpine: '${{ steps.docker.outputs.gh-docker-tag }}.alpine'
       node-version: ${{ steps.var.outputs.node-version }}
+      deno-version: ${{ steps.var.outputs.deno-version }}
       # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
       # to avoid this, we are using a dummy license, expiring at 2025-06-31
       enterprise-license: X/XumwIkgwQuld0alWKt37lVA90XjKOrfiMvMZ0/RtqsMtrdL9GoAk+4jXnaY1b2ePoG7XSzGhuxEDxFKIWJK3hIKGNTvrd980LgH5sM5+1T4P42ivSpd8UZi0bwjJkCFLIu9RozzYwslGG0IehMxe0S6VjcO0UYlUJtbMCBHuR2WmTAmO6YVU3ln+pZCbrPFaTPSS1RovhKaNCNkZwIx/CLWW8UTXUuFV/ML4PbKKVoa5nvvJwPeatgL7UCnlSD90lfCiiuikpzj/Y/JLkIL6velFbwNxsrxg9iRJ2k0sKheMMSmlTiGzSvZUm+na5WQq91aKGncih+DmaEZA7QGrjp4eoA0dqTk6OmItsy0fHmQhvZIOKNMeO7vNQiLbaSV6rqibrzu7WPpeIvsvL57T1h37USoCSB6+jDqkzdfoqIpz8BxTiJDj1d8xGPJFVrgxoqQqkj9qIP/gCaEz5DF39QFv5sovk4yK2O8fEQYod2d14V9yECYl4szZPMk1IBfCAC2w7czWGHHFonhL+CQGT403y5wmDmnsnjlCqMKF72odqfTPTI8XnCvJDriPMWohnQEAGtTTyciAhNokx/mjAVJ4NeZPcsbm4BjhvJvnjxx/BhYhBBTNWPaCSZzocfrGUj9Z+ZA7BEz+xAFQyGDx3xRzqIXfT0G7w8fvgYJMU=
@@ -39,6 +40,7 @@ jobs:
         with:
           sparse-checkout: |
             package.json
+            .tool-versions
           sparse-checkout-cone-mode: false
           ref: ${{ github.ref }}
 
@@ -52,6 +54,10 @@ jobs:
           NODE_VERSION=$(node -p "require('./package.json').engines.node")
           echo "NODE_VERSION: ${NODE_VERSION}"
           echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
+
+          DENO_VERSION=$(awk '$1=="deno"{ print $2 }' .tool-versions)
+          echo "DENO_VERSION: ${DENO_VERSION}"
+          echo "deno-version=${DENO_VERSION}" >> $GITHUB_OUTPUT
 
       - id: by-tag
         run: |
@@ -150,6 +156,7 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
           cache-modules: true
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -194,6 +201,7 @@ jobs:
       - uses: ./.github/actions/meteor-build
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
           coverage: ${{ github.event_name != 'release' }}
 
   build-prod:
@@ -224,6 +232,7 @@ jobs:
       - uses: ./.github/actions/meteor-build
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
           coverage: ${{ github.event_name != 'release' }}
 
   build-gh-docker-coverage:
@@ -252,6 +261,7 @@ jobs:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ needs.release-versions.outputs.node-version }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
           platform: ${{ matrix.platform }}
           build-containers: ${{ matrix.platform == 'alpine' && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -280,6 +290,7 @@ jobs:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ needs.release-versions.outputs.node-version }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
           platform: ${{ matrix.platform }}
           build-containers: ${{ matrix.platform == 'alpine' && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -300,6 +311,7 @@ jobs:
     uses: ./.github/workflows/ci-code-check.yml
     with:
       node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
 
   test-unit:
     name: 🔨 Test Unit
@@ -308,6 +320,7 @@ jobs:
     uses: ./.github/workflows/ci-test-unit.yml
     with:
       node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -321,6 +334,7 @@ jobs:
       type: api
       release: ce
       node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
@@ -344,6 +358,7 @@ jobs:
       shard: '[1, 2, 3, 4]'
       total-shard: 4
       node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
@@ -371,6 +386,7 @@ jobs:
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       mongodb-version: "['4.4']"
       node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
@@ -395,6 +411,7 @@ jobs:
       total-shard: 5
       mongodb-version: "['4.4']"
       node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
@@ -425,6 +442,7 @@ jobs:
       total-shard: 5
       mongodb-version: "['6.0']"
       node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
@@ -564,6 +582,7 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
 
   docker-image-publish:
     name: 🚀 Publish Docker Image (main)

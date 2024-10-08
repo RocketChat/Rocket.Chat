@@ -99,6 +99,9 @@ export const isSidepanelItem = (item: any): item is SidepanelItem => {
 };
 
 export const isValidSidepanel = (sidepanel: IRoom['sidepanel']) => {
+	if (sidepanel === null) {
+		return true;
+	}
 	if (!sidepanel?.items) {
 		return false;
 	}

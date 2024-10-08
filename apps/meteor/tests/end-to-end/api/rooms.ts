@@ -1133,6 +1133,34 @@ describe('[Rooms]', () => {
 				})
 				.end(done);
 		});
+		describe('test user is not part of room', async () => {
+			beforeEach(async () => {
+				await updatePermission('clean-channel-history', ['admin', 'user']);
+			});
+
+			afterEach(async () => {
+				await updatePermission('clean-channel-history', ['admin']);
+			});
+
+			it('should return an error when the user with right privileges is not part of the room', async () => {
+				await request
+					.post(api('rooms.cleanHistory'))
+					.set(userCredentials)
+					.send({
+						roomId: privateChannel._id,
+						latest: '9999-12-31T23:59:59.000Z',
+						oldest: '0001-01-01T00:00:00.000Z',
+						limit: 2000,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-not-allowed');
+						expect(res.body).to.have.property('error', 'User does not have access to the room [error-not-allowed]');
+					});
+			});
+		});
 	});
 	describe('[/rooms.info]', () => {
 		let testChannel: IRoom;

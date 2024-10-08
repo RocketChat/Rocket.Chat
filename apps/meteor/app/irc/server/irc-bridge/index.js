@@ -209,7 +209,7 @@ class Bridge {
 		// Chatting
 		callbacks.add(
 			'afterSaveMessage',
-			this.onMessageReceived.bind(this, 'local', 'onSaveMessage'),
+			(message, { room }) => this.onMessageReceived('local', 'onSaveMessage', message, room),
 			callbacks.priority.LOW,
 			'irc-on-save-message',
 		);

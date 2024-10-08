@@ -318,33 +318,33 @@ export abstract class BaseRaw<
 
 	async findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<ModifyResult<T>> {
 		if (!this.trash) {
-			if (options) {
-				return this.col.findOneAndDelete(filter, options);
-			}
-			return this.col.findOneAndDelete(filter);
+			return this.col.findOneAndDelete(filter, options || {});
 		}
 
-		const result = await this.col.findOneAndDelete(filter);
-
-		const { value: doc } = result;
+		const doc = await this.col.findOne(filter);
 		if (!doc) {
-			return result;
+			return { ok: 1, value: null };
 		}
 
 		const { _id, ...record } = doc;
-
 		const trash: TDeleted = {
 			...record,
 			_deletedAt: new Date(),
 			__collection__: this.name,
 		} as unknown as TDeleted;
 
-		// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
 		await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
 			upsert: true,
 		});
 
-		return result;
+		try {
+			await this.col.deleteOne({ _id } as Filter<T>);
+		} catch (e) {
+			await this.trash?.deleteOne({ _id } as Filter<TDeleted>);
+			throw e;
+		}
+
+		return { ok: 1, value: doc };
 	}
 
 	async deleteMany(filter: Filter<T>, options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void }): Promise<DeleteResult> {

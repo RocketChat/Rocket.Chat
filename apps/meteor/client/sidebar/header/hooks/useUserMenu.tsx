@@ -7,12 +7,14 @@ import React from 'react';
 import UserMenuHeader from '../UserMenuHeader';
 import { useAccountItems } from './useAccountItems';
 import { useStatusItems } from './useStatusItems';
+import useVoipItems from './useVoipItems';
 
 export const useUserMenu = (user: IUser) => {
 	const t = useTranslation();
 
 	const statusItems = useStatusItems();
 	const accountItems = useAccountItems();
+	const voipItems = useVoipItems();
 
 	const logout = useLogout();
 	const handleLogout = useMutableCallback(() => {
@@ -34,6 +36,9 @@ export const useUserMenu = (user: IUser) => {
 		{
 			title: t('Status'),
 			items: statusItems,
+		},
+		{
+			items: voipItems,
 		},
 		{
 			title: t('Account'),

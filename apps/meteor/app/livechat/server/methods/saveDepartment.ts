@@ -30,12 +30,13 @@ declare module '@rocket.chat/ddp-client' {
 						order?: number | undefined;
 				  }[]
 				| undefined,
+			departmentUnit?: { _id?: string },
 		) => ILivechatDepartment;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	async 'livechat:saveDepartment'(_id, departmentData, departmentAgents) {
+	async 'livechat:saveDepartment'(_id, departmentData, departmentAgents, departmentUnit) {
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-departments'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -43,6 +44,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return Livechat.saveDepartment(_id, departmentData, { upsert: departmentAgents });
+		return Livechat.saveDepartment(uid, _id, departmentData, { upsert: departmentAgents }, departmentUnit);
 	},
 });

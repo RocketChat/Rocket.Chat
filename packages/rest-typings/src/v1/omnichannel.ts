@@ -576,7 +576,8 @@ type POSTLivechatDepartmentProps = {
 		chatClosingTags?: string[];
 		fallbackForwardDepartment?: string;
 	};
-	agents: { agentId: string; count?: number; order?: number }[];
+	agents?: { agentId: string; count?: number; order?: number }[];
+	departmentUnit?: { _id?: string };
 };
 
 const POSTLivechatDepartmentSchema = {
@@ -644,6 +645,15 @@ const POSTLivechatDepartmentSchema = {
 				additionalProperties: false,
 			},
 			nullable: true,
+		},
+		departmentUnit: {
+			type: 'object',
+			properties: {
+				_id: {
+					type: 'string',
+				},
+			},
+			additionalProperties: false,
 		},
 	},
 	required: ['department'],
@@ -1318,6 +1328,32 @@ const GETOmnichannelContactsSchema = {
 };
 
 export const isGETOmnichannelContactsProps = ajv.compile<GETOmnichannelContactsProps>(GETOmnichannelContactsSchema);
+
+type GETOmnichannelContactsSearchProps = PaginatedRequest<{
+	searchText: string;
+}>;
+
+const GETOmnichannelContactsSearchSchema = {
+	type: 'object',
+	properties: {
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
+		},
+		searchText: {
+			type: 'string',
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isGETOmnichannelContactsSearchProps = ajv.compile<GETOmnichannelContactsSearchProps>(GETOmnichannelContactsSearchSchema);
 
 type GETOmnichannelContactProps = { contactId: string };
 
@@ -3765,6 +3801,9 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/omnichannel/contacts.get': {
 		GET: (params: GETOmnichannelContactsProps) => { contact: ILivechatContact | null };
+	};
+	'/v1/omnichannel/contacts.search': {
+		GET: (params: GETOmnichannelContactsSearchProps) => PaginatedResult<{ contacts: ILivechatContact[] }>;
 	};
 
 	'/v1/omnichannel/contact.search': {

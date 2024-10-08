@@ -1,4 +1,4 @@
-import type { ISetting, Serialized, SettingValue } from '@rocket.chat/core-typings';
+import type { ISetting, IUser, Serialized, SettingValue } from '@rocket.chat/core-typings';
 import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
@@ -253,6 +253,13 @@ export class MockedAppRootBuilder {
 	withAnonymous(): this {
 		this.user.userId = null;
 		this.user.user = null;
+
+		return this;
+	}
+
+	withUser(user: IUser): this {
+		this.user.userId = user._id;
+		this.user.user = user;
 
 		return this;
 	}

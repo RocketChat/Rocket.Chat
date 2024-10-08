@@ -68,8 +68,18 @@ export class HomeSidenav {
 		return this.page.locator('role=menuitemcheckbox[name="Profile"]');
 	}
 
-	getSidebarItemByName(name: string): Locator {
-		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
+	// TODO: refactor getSidebarItemByName to not use data-qa
+	getSidebarItemByName(name: string, isRead?: boolean): Locator {
+		return this.page.locator(
+			['[data-qa="sidebar-item"]', `[aria-label="${name}"]`, isRead && '[data-unread="false"]'].filter(Boolean).join(''),
+		);
+	}
+
+	async selectMarkAsUnread(name: string) {
+		const sidebarItem = this.getSidebarItemByName(name);
+		await sidebarItem.focus();
+		await sidebarItem.locator('.rcx-sidebar-item__menu').click();
+		await this.page.getByRole('option', { name: 'Mark Unread' }).click();
 	}
 
 	async selectPriority(name: string, priority: string) {
@@ -169,5 +179,13 @@ export class HomeSidenav {
 		await this.advancedSettingsAccordion.click();
 		await this.checkboxEncryption.click();
 		await this.btnCreate.click();
+	}
+
+	getRoomBadge(roomName: string): Locator {
+		return this.getSidebarItemByName(roomName).getByRole('status', { exact: true });
+	}
+
+	getSearchChannelBadge(name: string): Locator {
+		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`).first().getByRole('status', { exact: true });
 	}
 }

@@ -913,8 +913,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		});
 	}
 
-	async getOneByRoomId(roomId: string): Promise<ITeam | null> {
-		const room = await Rooms.findOneById(roomId);
+	async getOneByRoomId(roomId: string, options?: FindOptions<ITeam>): Promise<ITeam | null> {
+		const room = await Rooms.findOneById(roomId, { projection: { teamId: 1 } });
 
 		if (!room) {
 			throw new Error('invalid-room');
@@ -924,7 +924,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('room-not-on-team');
 		}
 
-		return Team.findOneById(room.teamId);
+		return Team.findOneById(room.teamId, options);
 	}
 
 	async addRolesToMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean> {
@@ -1055,8 +1055,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		return rooms;
 	}
 
-	private getParentRoom(team: AtLeast<ITeam, 'roomId'>): Promise<Pick<IRoom, 'name' | 'fname' | 't' | '_id'> | null> {
-		return Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | '_id'>>(team.roomId, { projection: { name: 1, fname: 1, t: 1 } });
+	private getParentRoom(team: AtLeast<ITeam, 'roomId'>): Promise<Pick<IRoom, 'name' | 'fname' | 't' | '_id' | 'sidepanel'> | null> {
+		return Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | '_id' | 'sidepanel'>>(team.roomId, {
+			projection: { name: 1, fname: 1, t: 1, sidepanel: 1 },
+		});
 	}
 
 	async getRoomInfo(
@@ -1077,5 +1079,38 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const parentRoom = await this.getParentRoom(team);
 		return { team, ...(parentRoom && { parentRoom }) };
+	}
+
+	// Returns the list of rooms and discussions a user has access to inside a team
+	// Rooms returned are a composition of the rooms the user is in + public rooms + discussions from the main room (if any)
+	async listChildren(
+		userId: string,
+		team: AtLeast<ITeam, '_id' | 'roomId' | 'type'>,
+		filter?: string,
+		type?: 'channels' | 'discussions',
+		sort?: Record<string, 1 | -1>,
+		skip = 0,
+		limit = 10,
+	): Promise<{ total: number; data: IRoom[] }> {
+		const mainRoom = await Rooms.findOneById(team.roomId, { projection: { _id: 1 } });
+		if (!mainRoom) {
+			throw new Error('error-invalid-team-no-main-room');
+		}
+
+		const isMember = await TeamMember.findOneByUserIdAndTeamId(userId, team._id, {
+			projection: { _id: 1 },
+		});
+
+		if (!isMember) {
+			throw new Error('error-invalid-team-not-a-member');
+		}
+
+		const [{ totalCount: [{ count: total }] = [], paginatedResults: data = [] }] =
+			(await Rooms.findChildrenOfTeam(team._id, mainRoom._id, userId, filter, type, { skip, limit, sort }).toArray()) || [];
+
+		return {
+			total,
+			data,
+		};
 	}
 }

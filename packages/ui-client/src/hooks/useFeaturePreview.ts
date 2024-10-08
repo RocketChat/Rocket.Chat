@@ -1,7 +1,8 @@
-import { type FeaturesAvailable, useFeaturePreviewList } from './useFeaturePreviewList';
+import { type FeaturesAvailable } from './useFeaturePreviewList';
+import { usePreferenceFeaturePreviewList } from './usePreferenceFeaturePreviewList';
 
 export const useFeaturePreview = (featureName: FeaturesAvailable) => {
-	const { features } = useFeaturePreviewList();
+	const { features } = usePreferenceFeaturePreviewList();
 
 	const currentFeature = features?.find((feature) => feature.name === featureName);
 

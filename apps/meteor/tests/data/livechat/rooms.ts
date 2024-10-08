@@ -98,11 +98,13 @@ export const createDepartment = (
 	name?: string,
 	enabled = true,
 	opts: Record<string, any> = {},
+	departmentUnit?: { _id?: string },
+	userCredentials: Credentials = credentials,
 ): Promise<ILivechatDepartment> => {
 	return new Promise((resolve, reject) => {
 		void request
 			.post(api('livechat/department'))
-			.set(credentials)
+			.set(userCredentials)
 			.send({
 				department: {
 					name: name || `Department ${Date.now()}`,
@@ -113,6 +115,49 @@ export const createDepartment = (
 					...opts,
 				},
 				agents,
+				departmentUnit,
+			})
+			.end((err: Error, res: DummyResponse<ILivechatDepartment>) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body.department);
+			});
+	});
+};
+
+export const updateDepartment = ({
+	departmentId,
+	userCredentials,
+	agents,
+	name,
+	enabled = true,
+	opts = {},
+	departmentUnit,
+}: {
+	departmentId: string;
+	userCredentials: Credentials;
+	agents?: { agentId: string }[];
+	name?: string;
+	enabled?: boolean;
+	opts?: Record<string, any>;
+	departmentUnit?: { _id?: string };
+}): Promise<ILivechatDepartment> => {
+	return new Promise((resolve, reject) => {
+		void request
+			.put(api(`livechat/department/${departmentId}`))
+			.set(userCredentials)
+			.send({
+				department: {
+					name: name || `Department ${Date.now()}`,
+					enabled,
+					showOnOfflineForm: true,
+					showOnRegistration: true,
+					email: 'a@b.com',
+					...opts,
+				},
+				agents,
+				departmentUnit,
 			})
 			.end((err: Error, res: DummyResponse<ILivechatDepartment>) => {
 				if (err) {

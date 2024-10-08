@@ -6,6 +6,7 @@ import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import EJSON from 'ejson';
 import _ from 'lodash';
+import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -308,8 +309,8 @@ class E2E extends Emitter {
 
 	getKeysFromLocalStorage(): KeyPair {
 		return {
-			public_key: Meteor._localStorage.getItem('public_key'),
-			private_key: Meteor._localStorage.getItem('private_key'),
+			public_key: Accounts.storageLocation.getItem('public_key'),
+			private_key: Accounts.storageLocation.getItem('private_key'),
 		};
 	}
 
@@ -332,7 +333,7 @@ class E2E extends Emitter {
 					imperativeModal.close();
 				},
 				onConfirm: () => {
-					Meteor._localStorage.removeItem('e2e.randomPassword');
+					Accounts.storageLocation.removeItem('e2e.randomPassword');
 					this.setState(E2EEState.READY);
 					dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Enabled') });
 					this.closeAlert();
@@ -394,7 +395,7 @@ class E2E extends Emitter {
 			await this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword());
 		}
 
-		const randomPassword = Meteor._localStorage.getItem('e2e.randomPassword');
+		const randomPassword = Accounts.storageLocation.getItem('e2e.randomPassword');
 		if (randomPassword) {
 			this.setState(E2EEState.SAVE_PASSWORD);
 			this.openAlert({
@@ -412,8 +413,8 @@ class E2E extends Emitter {
 		this.log('-> Stop Client');
 		this.closeAlert();
 
-		Meteor._localStorage.removeItem('public_key');
-		Meteor._localStorage.removeItem('private_key');
+		Accounts.storageLocation.removeItem('public_key');
+		Accounts.storageLocation.removeItem('private_key');
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
 		this.started = false;
@@ -425,8 +426,8 @@ class E2E extends Emitter {
 	async changePassword(newPassword: string): Promise<void> {
 		await this.persistKeys(this.getKeysFromLocalStorage(), newPassword, { force: true });
 
-		if (Meteor._localStorage.getItem('e2e.randomPassword')) {
-			Meteor._localStorage.setItem('e2e.randomPassword', newPassword);
+		if (Accounts.storageLocation.getItem('e2e.randomPassword')) {
+			Accounts.storageLocation.setItem('e2e.randomPassword', newPassword);
 		}
 	}
 
@@ -447,12 +448,12 @@ class E2E extends Emitter {
 	}
 
 	async loadKeys({ public_key, private_key }: { public_key: string; private_key: string }): Promise<void> {
-		Meteor._localStorage.setItem('public_key', public_key);
+		Accounts.storageLocation.setItem('public_key', public_key);
 
 		try {
 			this.privateKey = await importRSAKey(EJSON.parse(private_key), ['decrypt']);
 
-			Meteor._localStorage.setItem('private_key', private_key);
+			Accounts.storageLocation.setItem('private_key', private_key);
 		} catch (error) {
 			this.setState(E2EEState.ERROR);
 			return this.error('Error importing private key: ', error);
@@ -474,7 +475,7 @@ class E2E extends Emitter {
 		try {
 			const publicKey = await exportJWKKey(key.publicKey);
 
-			Meteor._localStorage.setItem('public_key', JSON.stringify(publicKey));
+			Accounts.storageLocation.setItem('public_key', JSON.stringify(publicKey));
 		} catch (error) {
 			this.setState(E2EEState.ERROR);
 			return this.error('Error exporting public key: ', error);
@@ -483,7 +484,7 @@ class E2E extends Emitter {
 		try {
 			const privateKey = await exportJWKKey(key.privateKey);
 
-			Meteor._localStorage.setItem('private_key', JSON.stringify(privateKey));
+			Accounts.storageLocation.setItem('private_key', JSON.stringify(privateKey));
 		} catch (error) {
 			this.setState(E2EEState.ERROR);
 			return this.error('Error exporting private key: ', error);
@@ -498,7 +499,7 @@ class E2E extends Emitter {
 
 	async createRandomPassword(): Promise<string> {
 		const randomPassword = await generateMnemonicPhrase(5);
-		Meteor._localStorage.setItem('e2e.randomPassword', randomPassword);
+		Accounts.storageLocation.setItem('e2e.randomPassword', randomPassword);
 		return randomPassword;
 	}
 

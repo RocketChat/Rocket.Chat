@@ -23,6 +23,7 @@ jobs:
         if: github.event.action != 'closed'
         with:
           node-version: 14.21.3
+          deno-version: 1.37.1
           cache-modules: true
           install: true
 
