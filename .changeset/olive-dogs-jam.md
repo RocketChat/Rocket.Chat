@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': major
 ---
 
-Removed deprecated endpoint `channels.images`. Moving forward, use `rooms.images` endpoint.
+Removes deprecated endpoint `channels.images`. Moving forward, use `rooms.images` endpoint.
