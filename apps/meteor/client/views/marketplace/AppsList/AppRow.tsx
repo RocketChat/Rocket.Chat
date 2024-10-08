@@ -13,7 +13,8 @@ import AddonChip from './AddonChip';
 
 // TODO: org props
 const AppRow = ({ className, ...props }: App & { className?: string }): ReactElement => {
-	const { name, id, shortDescription, iconFileData, marketplaceVersion, iconFileContent, installed, bundledIn, version } = props;
+	const { name, id, shortDescription, iconFileData, marketplaceVersion, iconFileContent, installed, bundledIn, version } =
+		props;
 
 	const router = useRouter();
 	const context = useRouteParameter('context');
@@ -69,7 +70,7 @@ const AppRow = ({ className, ...props }: App & { className?: string }): ReactEle
 								{name}
 							</CardTitle>
 							{Boolean(bundledIn?.length) && <BundleChips bundledIn={bundledIn} />}
-							<AddonChip />
+							<AddonChip app={props} />
 						</CardHeader>
 						{shortDescription && <CardBody id={`${id}-description`}>{shortDescription}</CardBody>}
 					</CardCol>

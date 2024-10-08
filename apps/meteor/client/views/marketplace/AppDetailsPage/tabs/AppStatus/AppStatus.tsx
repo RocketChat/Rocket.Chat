@@ -15,6 +15,7 @@ import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstalla
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
 import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
+import { doesAppRequireAddon } from '../../../helpers/doesAppRequireAddon';
 
 type AppStatusProps = {
 	app: App;
@@ -82,15 +83,13 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const handleAcquireApp = useCallback(() => {
 		setLoading(true);
-		// TODO: Check for add-on necessity by the app
-		const addon = true;
 
-		if (addon) {
+		if (doesAppRequireAddon(app)) {
 			return setModal(<AddonRequiredModal actionType='install' onDismiss={cancelAction} onInstallAnyway={appInstallationHandler} />);
 		}
 
 		appInstallationHandler();
-	}, [appInstallationHandler, cancelAction, setLoading, setModal]);
+	}, [appInstallationHandler, cancelAction, setLoading, setModal, app]);
 
 	// @TODO we should refactor this to not use the label to determine the variant
 	const getStatusVariant = (status: appStatusSpanResponseProps) => {
