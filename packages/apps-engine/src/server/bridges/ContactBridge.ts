@@ -16,19 +16,19 @@ type VerifyContactChannelParams = {
 export abstract class ContactBridge extends BaseBridge {
     public async doGetById(id: ILivechatContact['_id'], appId: string): Promise<ILivechatContact> {
         if (this.hasReadPermission(appId)) {
-            return this.getById(id);
+            return this.getById(id, appId);
         }
     }
 
     public async doVerifyContact(verifyContactChannelParams: VerifyContactChannelParams, appId: string): Promise<void> {
         if (this.hasWritePermission(appId)) {
-            return this.verifyContact(verifyContactChannelParams);
+            return this.verifyContact(verifyContactChannelParams, appId);
         }
     }
 
-    protected abstract getById(id: ILivechatContact['_id']): Promise<ILivechatContact>;
+    protected abstract getById(id: ILivechatContact['_id'], appId: string): Promise<ILivechatContact>;
 
-    protected abstract verifyContact(verifyContactChannelParams: VerifyContactChannelParams): Promise<void>;
+    protected abstract verifyContact(verifyContactChannelParams: VerifyContactChannelParams, appId: string): Promise<void>;
 
     private hasReadPermission(appId: string): boolean {
         if (AppPermissionManager.hasPermission(appId, AppPermissions.contact.read)) {
