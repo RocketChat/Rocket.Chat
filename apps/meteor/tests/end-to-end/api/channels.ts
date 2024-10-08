@@ -2462,11 +2462,7 @@ describe('[Channels]', () => {
 	});
 
 	describe('[/channels.messages]', () => {
-<<<<<<< HEAD:apps/meteor/tests/end-to-end/api/channels.ts
 		let testChannel: IRoom;
-=======
-		let testChannel;
->>>>>>> 782aa4a2c0 (chore!: Improve permissions check on channels endpoints (#32330)):apps/meteor/tests/end-to-end/api/02-channels.js
 		before(async () => {
 			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']);
 			testChannel = (await createRoom({ type: 'c', name: `channels.messages.test.${Date.now()}` })).body.channel;
