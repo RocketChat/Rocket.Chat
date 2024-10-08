@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
+import type { IRoomWithRetentionPolicy, SidepanelItem } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
@@ -21,10 +21,13 @@ import {
 	Box,
 	TextAreaInput,
 	AccordionItem,
+	Divider,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -72,11 +75,12 @@ const getRetentionSetting = (roomType: IRoomWithRetentionPolicy['t']): string =>
 };
 
 const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) => {
+	const query = useQueryClient();
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isFederated = useMemo(() => isRoomFederated(room), [room]);
 	// eslint-disable-next-line no-nested-ternary
-	const roomType = 'prid' in room ? 'discussion' : room.teamId ? 'team' : 'channel';
+	const roomType = 'prid' in room ? 'discussion' : room.teamMain ? 'team' : 'channel';
 
 	const retentionPolicy = useRetentionPolicy(room);
 	const retentionMaxAgeDefault = msToTimeUnit(TIMEUNIT.days, Number(useSetting<number>(getRetentionSetting(room.t)))) ?? 30;
@@ -118,6 +122,8 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		retentionOverrideGlobal,
 		roomType: roomTypeP,
 		reactWhenReadOnly,
+		showChannels,
+		showDiscussions,
 	} = watch();
 
 	const {
@@ -158,13 +164,23 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 			retentionIgnoreThreads,
 			...formData
 		}) => {
-			const data = getDirtyFields(formData, dirtyFields);
+			const data = getDirtyFields<Partial<typeof defaultValues>>(formData, dirtyFields);
 			delete data.archived;
+			delete data.showChannels;
+			delete data.showDiscussions;
+
+			const sidepanelItems = [showChannels && 'channels', showDiscussions && 'discussions'].filter(Boolean) as [
+				SidepanelItem,
+				SidepanelItem?,
+			];
+
+			const sidepanel = sidepanelItems.length > 0 ? { items: sidepanelItems } : null;
 
 			try {
 				await saveAction({
 					rid: room._id,
 					...data,
+					...(roomType === 'team' ? { sidepanel } : null),
 					...((data.joinCode || 'joinCodeRequired' in data) && { joinCode: joinCodeRequired ? data.joinCode : '' }),
 					...((data.systemMessages || !hideSysMes) && {
 						systemMessages: hideSysMes && data.systemMessages,
@@ -180,6 +196,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						}),
 				});
 
+				await query.invalidateQueries(['/v1/rooms.info', room._id]);
 				dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
 				onClickClose();
 			} catch (error) {
@@ -224,6 +241,8 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const retentionExcludePinnedField = useUniqueId();
 	const retentionFilesOnlyField = useUniqueId();
 	const retentionIgnoreThreads = useUniqueId();
+	const showDiscussionsField = useUniqueId();
+	const showChannelsField = useUniqueId();
 
 	const showAdvancedSettings = canViewEncrypted || canViewReadOnly || readOnly || canViewArchived || canViewJoinCode || canViewHideSysMes;
 	const showRetentionPolicy = canEditRoomRetentionPolicy && retentionPolicy?.enabled;
@@ -256,7 +275,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 									name='roomName'
 									control={control}
 									rules={{
-										required: t('error-the-field-is-required', { field: t('Name') }),
+										required: t('Required_field', { field: t('Name') }),
 										validate: (value) => validateName(value),
 									}}
 									render={({ field }) => (
@@ -355,6 +374,49 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						<Accordion>
 							{showAdvancedSettings && (
 								<AccordionItem title={t('Advanced_settings')}>
+									{roomType === 'team' && (
+										<FeaturePreview feature='sidepanelNavigation'>
+											<FeaturePreviewOff>{null}</FeaturePreviewOff>
+											<FeaturePreviewOn>
+												<FieldGroup>
+													<Box is='h5' fontScale='h5' color='titles-labels'>
+														{t('Navigation')}
+													</Box>
+													<Field>
+														<FieldRow>
+															<FieldLabel htmlFor={showChannelsField}>{t('Channels')}</FieldLabel>
+															<Controller
+																control={control}
+																name='showChannels'
+																render={({ field: { value, ...field } }) => (
+																	<ToggleSwitch id={showChannelsField} checked={value} {...field} />
+																)}
+															/>
+														</FieldRow>
+														<FieldRow>
+															<FieldHint id={`${showChannelsField}-hint`}>{t('Show_channels_description')}</FieldHint>
+														</FieldRow>
+													</Field>
+													<Field>
+														<FieldRow>
+															<FieldLabel htmlFor={showDiscussionsField}>{t('Discussions')}</FieldLabel>
+															<Controller
+																control={control}
+																name='showDiscussions'
+																render={({ field: { value, ...field } }) => (
+																	<ToggleSwitch id={showDiscussionsField} checked={value} {...field} />
+																)}
+															/>
+														</FieldRow>
+														<FieldRow>
+															<FieldHint id={`${showDiscussionsField}-hint`}>{t('Show_discussions_description')}</FieldHint>
+														</FieldRow>
+													</Field>
+												</FieldGroup>
+												<Divider mb={24} />
+											</FeaturePreviewOn>
+										</FeaturePreview>
+									)}
 									<FieldGroup>
 										<Box is='h5' fontScale='h5' color='titles-labels'>
 											{t('Security_and_permissions')}

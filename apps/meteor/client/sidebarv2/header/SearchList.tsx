@@ -34,7 +34,7 @@ const SearchList = ({ filterText, onEscSearch }: SearchListProps) => {
 		() => ({
 			items,
 			t,
-			SideBarItemTemplate: sideBarItemTemplate,
+			SidebarItemTemplate: sideBarItemTemplate,
 			avatarTemplate,
 			useRealName,
 			extended,

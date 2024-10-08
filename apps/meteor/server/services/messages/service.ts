@@ -1,6 +1,6 @@
 import type { IMessageService } from '@rocket.chat/core-services';
 import { Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
-import { type IMessage, type MessageTypesValues, type IUser, type IRoom, isEditedMessage } from '@rocket.chat/core-typings';
+import { type IMessage, type MessageTypesValues, type IUser, type IRoom, isEditedMessage, type AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
@@ -244,7 +244,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	// 	await Room.join({ room, user });
 	// }
 
-	async beforeReacted(message: IMessage, room: IRoom) {
+	async beforeReacted(message: IMessage, room: AtLeast<IRoom, 'federated'>) {
 		if (!FederationActions.shouldPerformAction(message, room)) {
 			throw new FederationMatrixInvalidConfigurationError('Unable to react to message');
 		}

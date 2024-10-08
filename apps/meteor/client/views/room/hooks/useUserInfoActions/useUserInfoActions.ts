@@ -1,14 +1,13 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 
-import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useAddUserAction } from './actions/useAddUserAction';
 import { useBlockUserAction } from './actions/useBlockUserAction';
-import { useCallAction } from './actions/useCallAction';
 import { useChangeLeaderAction } from './actions/useChangeLeaderAction';
 import { useChangeModeratorAction } from './actions/useChangeModeratorAction';
 import { useChangeOwnerAction } from './actions/useChangeOwnerAction';
@@ -18,16 +17,30 @@ import { useMuteUserAction } from './actions/useMuteUserAction';
 import { useRedirectModerationConsole } from './actions/useRedirectModerationConsole';
 import { useRemoveUserAction } from './actions/useRemoveUserAction';
 import { useReportUser } from './actions/useReportUser';
+import { useVideoCallAction } from './actions/useVideoCallAction';
+import { useVoipCallAction } from './actions/useVoipCallAction';
 
 export type UserInfoActionType = 'communication' | 'privileges' | 'management' | 'moderation';
 
-export type UserInfoAction = {
+type UserInfoActionWithOnlyIcon = {
+	type?: UserInfoActionType;
+	content?: string;
+	icon: ComponentProps<typeof Icon>['name'];
+	title: string;
+	variant?: 'danger';
+	onClick: () => void;
+};
+
+type UserInfoActionWithContent = {
+	type?: UserInfoActionType;
 	content: string;
 	icon?: ComponentProps<typeof Icon>['name'];
-	onClick: () => void;
-	type?: UserInfoActionType;
+	title?: string;
 	variant?: 'danger';
+	onClick: () => void;
 };
+
+export type UserInfoAction = UserInfoActionWithContent | UserInfoActionWithOnlyIcon;
 
 type UserMenuAction = {
 	id: string;
@@ -35,13 +48,21 @@ type UserMenuAction = {
 	items: GenericMenuItemProps[];
 }[];
 
-export const useUserInfoActions = (
-	user: Pick<IUser, '_id' | 'username' | 'name'>,
-	rid: IRoom['_id'],
-	reload?: () => void,
+type UserInfoActionsParams = {
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>;
+	rid: IRoom['_id'];
+	reload?: () => void;
+	size?: number;
+	isMember?: boolean;
+};
+
+export const useUserInfoActions = ({
+	user,
+	rid,
+	reload,
 	size = 2,
-	isMember?: boolean,
-): { actions: [string, UserInfoAction][]; menuActions: any | undefined } => {
+	isMember,
+}: UserInfoActionsParams): { actions: [string, UserInfoAction][]; menuActions: any | undefined } => {
 	const addUser = useAddUserAction(user, rid, reload);
 	const blockUser = useBlockUserAction(user, rid);
 	const changeLeader = useChangeLeaderAction(user, rid);
@@ -52,7 +73,8 @@ export const useUserInfoActions = (
 	const ignoreUser = useIgnoreUserAction(user, rid);
 	const muteUser = useMuteUserAction(user, rid);
 	const removeUser = useRemoveUserAction(user, rid, reload);
-	const call = useCallAction(user);
+	const videoCall = useVideoCallAction(user);
+	const voipCall = useVoipCallAction(user);
 	const reportUserOption = useReportUser(user);
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const { userToolbox: hiddenActions } = useLayoutHiddenActions();
@@ -60,7 +82,8 @@ export const useUserInfoActions = (
 	const userinfoActions = useMemo(
 		() => ({
 			...(openDirectMessage && !isLayoutEmbedded && { openDirectMessage }),
-			...(call && { call }),
+			...(videoCall && { videoCall }),
+			...(voipCall && { voipCall }),
 			...(!isMember && addUser && { addUser }),
 			...(isMember && changeOwner && { changeOwner }),
 			...(isMember && changeLeader && { changeLeader }),
@@ -75,7 +98,8 @@ export const useUserInfoActions = (
 		[
 			openDirectMessage,
 			isLayoutEmbedded,
-			call,
+			videoCall,
+			voipCall,
 			changeOwner,
 			changeLeader,
 			changeModerator,
@@ -100,7 +124,12 @@ export const useUserInfoActions = (
 			const group = item.type ? item.type : '';
 			const section = acc.find((section: { id: string }) => section.id === group);
 
-			const newItem = { ...item, id: item.content };
+			const newItem = {
+				...item,
+				id: item.content || item.title || '',
+				content: item.content || item.title,
+			};
+
 			if (section) {
 				section.items.push(newItem);
 				return acc;

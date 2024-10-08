@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Callout, IconButton } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -12,7 +13,6 @@ import {
 	ContextualbarClose,
 	ContextualbarTitle,
 } from '../../../../../components/Contextualbar';
-import GenericMenu from '../../../../../components/GenericMenu/GenericMenu';
 import {
 	InfoPanel,
 	InfoPanelActionGroup,

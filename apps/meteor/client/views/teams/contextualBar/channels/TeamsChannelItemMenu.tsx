@@ -1,10 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { CheckBox } from '@rocket.chat/fuselage';
+import { GenericMenu } from '@rocket.chat/ui-client';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
-import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import { useDeleteRoom } from '../../../hooks/roomActions/useDeleteRoom';
 import { useRemoveRoomFromTeam } from './hooks/useRemoveRoomFromTeam';
 import { useToggleAutoJoin } from './hooks/useToggleAutoJoin';
