@@ -1,9 +1,10 @@
 import type { Box } from '@rocket.chat/fuselage';
 import type { OperationParams } from '@rocket.chat/rest-typings';
-import { useTranslation } from 'react-i18next';
 import type { Chart as ChartType } from 'chart.js';
+import type { TFunction } from 'i18next';
 import type { ComponentProps, MutableRefObject } from 'react';
 import React, { useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
@@ -13,7 +14,6 @@ import Chart from './Chart';
 import { getMomentChartLabelsAndData } from './getMomentChartLabelsAndData';
 import { getMomentCurrentLabel } from './getMomentCurrentLabel';
 import { useUpdateChartData } from './useUpdateChartData';
-import { TFunction } from 'i18next';
 
 const [labels, initialData] = getMomentChartLabelsAndData();
 const tooltipCallbacks = {
