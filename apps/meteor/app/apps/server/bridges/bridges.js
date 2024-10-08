@@ -55,6 +55,7 @@ export class RealAppBridges extends AppBridges {
 		this._threadBridge = new AppThreadBridge(orch);
 		this._roleBridge = new AppRoleBridge(orch);
 		this._emailBridge = new AppEmailBridge(orch);
+		this._contactBridge = new ContactBridge(orch);
 	}
 
 	getCommandBridge() {
@@ -156,4 +157,8 @@ export class RealAppBridges extends AppBridges {
 	getEmailBridge() {
 		return this._emailBridge;
 	}
+
+    getContactBridge() {
+        return this._contactBridge;
+    }
 }
