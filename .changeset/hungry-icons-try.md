@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': major
 ---
 
-Removed deprecated method `addOAuthApp`. Moving forward, use the endpoint `oauth-apps.create` instead.
+Removes deprecated method `addOAuthApp`. Moving forward, use the endpoint `oauth-apps.create` instead.
