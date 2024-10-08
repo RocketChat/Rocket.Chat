@@ -13,8 +13,7 @@ import AddonChip from './AddonChip';
 
 // TODO: org props
 const AppRow = ({ className, ...props }: App & { className?: string }): ReactElement => {
-	const { name, id, shortDescription, iconFileData, marketplaceVersion, iconFileContent, installed, bundledIn, version } =
-		props;
+	const { name, id, shortDescription, iconFileData, marketplaceVersion, iconFileContent, installed, bundledIn, version } = props;
 
 	const router = useRouter();
 	const context = useRouteParameter('context');
