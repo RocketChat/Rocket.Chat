@@ -40,7 +40,7 @@ export const useE2EEResetRoomKeyRoomAction = () => {
 			return;
 		}
 
-		const { e2eKey, e2eKeyId } = await e2eRoom.resetRoomKey();
+		const { e2eKey, e2eKeyId } = await e2eRoom.resetRoomKey() ?? {};
 
 		if (!e2eKey) {
 			throw new Error('cannot reset room key');
