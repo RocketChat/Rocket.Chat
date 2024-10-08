@@ -1,6 +1,7 @@
 import type {
     AppActivationBridge,
     AppDetailChangesBridge,
+    ContactBridge,
     EnvironmentalVariableBridge,
     HttpBridge,
     IInternalBridge,
@@ -30,6 +31,7 @@ import { TestsApiBridge } from './apiBridge';
 import { TestsAppDetailChangesBridge } from './appDetailChanges';
 import { TestAppCloudWorkspaceBridge } from './cloudBridge';
 import { TestsCommandBridge } from './commandBridge';
+import { TestContactBridge } from './contactBridge';
 import { TestsEmailBridge } from './emailBridge';
 import { TestsEnvironmentalVariableBridge } from './environmentalVariableBridge';
 import { TestsHttpBridge } from './httpBridge';
@@ -84,6 +86,8 @@ export class TestsAppBridges extends AppBridges {
 
     private readonly emailBridge: EmailBridge;
 
+    private readonly contactBridge: ContactBridge;
+
     private readonly uiIntegrationBridge: TestsUiIntegrationBridge;
 
     private readonly schedulerBridge: TestSchedulerBridge;
@@ -124,6 +128,7 @@ export class TestsAppBridges extends AppBridges {
         this.internalFederationBridge = new TestsInternalFederationBridge();
         this.threadBridge = new TestsThreadBridge();
         this.emailBridge = new TestsEmailBridge();
+        this.contactBridge = new TestContactBridge();
     }
 
     public getCommandBridge(): TestsCommandBridge {
@@ -224,5 +229,9 @@ export class TestsAppBridges extends AppBridges {
 
     public getInternalFederationBridge(): IInternalFederationBridge {
         return this.internalFederationBridge;
+    }
+
+    public getContactBridge(): ContactBridge {
+        return this.contactBridge;
     }
 }

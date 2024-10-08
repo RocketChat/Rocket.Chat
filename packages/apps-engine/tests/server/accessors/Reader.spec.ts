@@ -13,6 +13,7 @@ import type {
     IUserRead,
     IVideoConferenceRead,
 } from '../../../src/definition/accessors';
+import type { IContactRead } from '../../../src/definition/accessors/IContactRead';
 import type { IOAuthAppsReader } from '../../../src/definition/accessors/IOAuthAppsReader';
 import type { IThreadRead } from '../../../src/definition/accessors/IThreadRead';
 import { Reader } from '../../../src/server/accessors';
@@ -44,6 +45,8 @@ export class ReaderAccessorTestFixture {
 
     private role: IRoleRead;
 
+    private contact: IContactRead;
+
     @SetupFixture
     public setupFixture() {
         this.env = {} as IEnvironmentRead;
@@ -59,6 +62,7 @@ export class ReaderAccessorTestFixture {
         this.oauthApps = {} as IOAuthAppsReader;
         this.thread = {} as IThreadRead;
         this.role = {} as IRoleRead;
+        this.contact = {} as IContactRead;
     }
 
     @Test()
@@ -76,6 +80,7 @@ export class ReaderAccessorTestFixture {
                     this.upload,
                     this.cloud,
                     this.videoConf,
+                    this.contact,
                     this.oauthApps,
                     this.thread,
                     this.role,
@@ -93,6 +98,7 @@ export class ReaderAccessorTestFixture {
             this.upload,
             this.cloud,
             this.videoConf,
+            this.contact,
             this.oauthApps,
             this.thread,
             this.role,

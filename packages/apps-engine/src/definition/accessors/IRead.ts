@@ -1,4 +1,5 @@
 import type { ICloudWorkspaceRead } from './ICloudWorkspaceRead';
+import type { IContactRead } from './IContactRead';
 import type { IEnvironmentRead } from './IEnvironmentRead';
 import type { ILivechatRead } from './ILivechatRead';
 import type { IMessageRead } from './IMessageRead';
@@ -49,4 +50,5 @@ export interface IRead {
     getOAuthAppsReader(): IOAuthAppsReader;
 
     getRoleReader(): IRoleRead;
+    getContactReader(): IContactRead;
 }
