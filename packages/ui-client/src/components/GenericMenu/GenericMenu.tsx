@@ -64,6 +64,8 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 					icon={icon}
 					title={i18n.exists(title) ? t(title) : title}
 					onAction={onAction || handleAction}
+					className={className}
+					button={button}
 					{...(disabledKeys && { disabledKeys })}
 					{...props}
 				>
