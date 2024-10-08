@@ -7,6 +7,7 @@ type LineChartConfigOptions = Partial<{
 	anim: boolean;
 	displayColors: boolean;
 	tooltipCallbacks: any;
+	smallTicks: boolean;
 }>;
 
 const lineChartConfiguration = ({
@@ -108,7 +109,7 @@ const doughnutChartConfiguration = (
 
 type ChartDataSet = {
 	label: string;
-	data: number;
+	data: number[];
 	backgroundColor: string;
 	borderColor: string;
 	borderWidth: number;
@@ -128,12 +129,11 @@ export const drawLineChart = async (
 	chartContext: { destroy: () => void } | undefined,
 	chartLabels: string[],
 	dataLabels: string[],
-	dataSets: number[],
+	dataSets: number[][],
 	options: LineChartConfigOptions = {},
-): Promise<ChartType<'line', number, string> | void> => {
+): Promise<ChartType> => {
 	if (!chart) {
-		console.error('No chart element');
-		return;
+		throw new Error('No chart element');
 	}
 	if (chartContext) {
 		chartContext.destroy();

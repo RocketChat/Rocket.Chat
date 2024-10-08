@@ -17,5 +17,5 @@ Default.args = {
 		{ title: 'Total_messages', value: 10 },
 		{ title: 'Total_visitors', value: 0 },
 	],
-	data: { totalizers: [] },
+	counterData: { totalizers: [] },
 };

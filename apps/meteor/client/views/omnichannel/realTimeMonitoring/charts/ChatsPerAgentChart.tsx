@@ -1,3 +1,8 @@
+import type { Box } from '@rocket.chat/fuselage';
+import type { OperationParams } from '@rocket.chat/rest-typings';
+import type { Chart as ChartType } from 'chart.js';
+import type { TFunction } from 'i18next';
+import type { ComponentProps, MutableRefObject } from 'react';
 import React, { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -12,18 +17,23 @@ const initialData = {
 	success: true,
 };
 
-const init = (canvas, context, t) =>
+const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: TFunction) =>
 	drawLineChart(canvas, context, [t('Open'), t('Closed'), t('On_Hold_Chats')], [], [[], []], {
 		legends: true,
 		anim: true,
 		smallTicks: true,
 	});
 
-const ChatsPerAgentChart = ({ params, reloadRef, ...props }) => {
+type ChatsPerAgentChartProps = {
+	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/charts/chats-per-agent'>;
+	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
+} & ComponentProps<typeof Box>;
+
+const ChatsPerAgentChart = ({ params, reloadRef, ...props }: ChatsPerAgentChartProps) => {
 	const { t } = useTranslation();
 
-	const canvas = useRef();
-	const context = useRef();
+	const canvas: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
+	const context: MutableRefObject<ChartType | undefined> = useRef();
 
 	const updateChartData = useUpdateChartData({
 		context,
@@ -40,17 +50,25 @@ const ChatsPerAgentChart = ({ params, reloadRef, ...props }) => {
 
 	useEffect(() => {
 		const initChart = async () => {
-			context.current = await init(canvas.current, context.current, t);
+			if (canvas?.current) {
+				context.current = await init(canvas.current, context.current, t);
+			}
 		};
 		initChart();
 	}, [t]);
 
 	useEffect(() => {
 		if (state === AsyncStatePhase.RESOLVED) {
-			if (chartData && chartData.success) {
-				delete chartData.success;
-				Object.entries(chartData).forEach(([name, value]) => {
-					updateChartData(name, [value.open, value.closed, value.onhold]);
+			if (chartData?.success) {
+				const { success, ...filteredChartData } = chartData;
+				Object.entries(filteredChartData).forEach(([name, value]) => {
+					const { open, closed, onhold } = value as {
+						open: number;
+						closed: number;
+						onhold: number;
+					};
+
+					updateChartData(name, [open, closed, onhold]);
 				});
 			}
 		}

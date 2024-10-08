@@ -50,7 +50,7 @@ const InterchangeableChart = ({
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canvas = useRef<HTMLCanvasElement | null>(null);
-	const context = useRef<ChartType<'line', number, string> | void>();
+	const context = useRef<ChartType>();
 
 	const { start, end } = dateRange;
 
@@ -73,7 +73,7 @@ const InterchangeableChart = ({
 					context.current,
 					[result.chartLabel],
 					result.dataLabels,
-					[result.dataPoints as unknown as number], // TODO fix this
+					[result.dataPoints],
 					{
 						tooltipCallbacks,
 					},

@@ -21,7 +21,7 @@ const ChatsOverview = ({ params, reloadRef, ...props }: ChatsOverviewProps) => {
 
 	reloadRef.current.chatsOverview = reload;
 
-	return <CounterContainer state={state} data={data} initialData={initialData} {...props} />;
+	return <CounterContainer state={state} counterData={data} initialData={initialData} flexGrow={1} flexShrink={1} width='50%' {...props} />;
 };
 
 export default ChatsOverview;

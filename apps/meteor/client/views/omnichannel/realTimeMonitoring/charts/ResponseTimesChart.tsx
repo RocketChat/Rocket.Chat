@@ -1,3 +1,8 @@
+import type { Box } from '@rocket.chat/fuselage';
+import type { OperationParams } from '@rocket.chat/rest-typings';
+import type { Chart as ChartType } from 'chart.js';
+import type { TFunction } from 'i18next';
+import type { ComponentProps, MutableRefObject } from 'react';
 import React, { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,17 +18,17 @@ import { useUpdateChartData } from './useUpdateChartData';
 const [labels, initialData] = getMomentChartLabelsAndData();
 const tooltipCallbacks = {
 	callbacks: {
-		title([ctx]) {
+		title([ctx]: { dataset: { label: string } }[]) {
 			const { dataset } = ctx;
 			return dataset.label;
 		},
-		label(ctx) {
+		label(ctx: { dataset: { label: string; data: string[] }; dataIndex: number }) {
 			const { dataset, dataIndex } = ctx;
 			return `${dataset.label}: ${secondsToHHMMSS(dataset.data[dataIndex])}`;
 		},
 	},
 };
-const init = (canvas, context, t) =>
+const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: TFunction) =>
 	drawLineChart(
 		canvas,
 		context,
@@ -33,11 +38,16 @@ const init = (canvas, context, t) =>
 		{ legends: true, anim: true, smallTicks: true, displayColors: false, tooltipCallbacks },
 	);
 
-const ResponseTimesChart = ({ params, reloadRef, ...props }) => {
+type ResponseTimesChartProps = {
+	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/charts/timings'>;
+	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
+} & ComponentProps<typeof Box>;
+
+const ResponseTimesChart = ({ params, reloadRef, ...props }: ResponseTimesChartProps) => {
 	const { t } = useTranslation();
 
-	const canvas = useRef();
-	const context = useRef();
+	const canvas: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
+	const context: MutableRefObject<ChartType | undefined> = useRef();
 
 	const updateChartData = useUpdateChartData({
 		context,
@@ -66,7 +76,9 @@ const ResponseTimesChart = ({ params, reloadRef, ...props }) => {
 
 	useEffect(() => {
 		const initChart = async () => {
-			context.current = await init(canvas.current, context.current, t);
+			if (canvas?.current) {
+				context.current = await init(canvas.current, context.current, t);
+			}
 		};
 		initChart();
 	}, [t]);
@@ -78,7 +90,7 @@ const ResponseTimesChart = ({ params, reloadRef, ...props }) => {
 		}
 	}, [reactionAvg, reactionLongest, responseAvg, responseLongest, state, t, updateChartData]);
 
-	return <Chart canvasRef={canvas} {...props} />;
+	return <Chart canvasRef={canvas} flexGrow={1} flexShrink={1} w='100%' {...props} />;
 };
 
 export default ResponseTimesChart;

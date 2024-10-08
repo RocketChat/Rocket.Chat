@@ -1,5 +1,7 @@
+import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Select, Margins, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { MutableRefObject } from 'react';
 import React, { useRef, useState, useMemo, useEffect, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +20,7 @@ import ChatsOverview from './overviews/ChatsOverview';
 import ConversationOverview from './overviews/ConversationOverview';
 import ProductivityOverview from './overviews/ProductivityOverview';
 
-const randomizeKeys = (keys) => {
+const randomizeKeys = (keys: MutableRefObject<string[]>) => {
 	keys.current = keys.current.map((_key, i) => {
 		return `${i}_${new Date().getTime()}`;
 	});
@@ -29,12 +31,12 @@ const dateRange = getDateRange();
 const RealTimeMonitoringPage = () => {
 	const { t } = useTranslation();
 
-	const keys = useRef([...Array(10).keys()]);
+	const keys = useRef<string[]>([...Array(10).map((_, i) => `${i}_${new Date().getTime()}`)]);
 
-	const [reloadFrequency, setReloadFrequency] = useState(5);
+	const [reloadFrequency, setReloadFrequency] = useState<string>('5');
 	const [departmentId, setDepartment] = useState('');
 
-	const reloadRef = useRef({});
+	const reloadRef = useRef<{ [x: string]: () => void }>({});
 
 	const departmentParams = useMemo(
 		() => ({
@@ -62,20 +64,22 @@ const RealTimeMonitoringPage = () => {
 	});
 
 	useEffect(() => {
-		const interval = setInterval(reloadCharts, reloadFrequency * 1000);
+		const interval = setInterval(reloadCharts, Number(reloadFrequency) * 1000);
 		return () => {
 			clearInterval(interval);
 			randomizeKeys(keys);
 		};
 	}, [reloadCharts, reloadFrequency]);
 
+	// TODO Check if Select Options does indeed accepts Elements as labels
 	const reloadOptions = useMemo(
-		() => [
-			[5, <Fragment key='5 seconds'>5 {t('seconds')}</Fragment>],
-			[10, <Fragment key='10 seconds'>10 {t('seconds')}</Fragment>],
-			[30, <Fragment key='30 seconds'>30 {t('seconds')}</Fragment>],
-			[60, <Fragment key='1 minute'>1 {t('minute')}</Fragment>],
-		],
+		() =>
+			[
+				['5', <Fragment key='5 seconds'>5 {t('seconds')}</Fragment>],
+				['10', <Fragment key='10 seconds'>10 {t('seconds')}</Fragment>],
+				['30', <Fragment key='30 seconds'>30 {t('seconds')}</Fragment>],
+				['60', <Fragment key='1 minute'>1 {t('minute')}</Fragment>],
+			] as unknown as SelectOption[],
 		[t],
 	);
 
@@ -99,11 +103,15 @@ const RealTimeMonitoringPage = () => {
 						</Box>
 						<Box maxWidth='50%' display='flex' mi={4} flexGrow={1} flexDirection='column'>
 							<Label mb={4}>{t('Update_every')}</Label>
-							<Select options={reloadOptions} onChange={useMutableCallback((val) => setReloadFrequency(val))} value={reloadFrequency} />
+							<Select
+								options={reloadOptions}
+								onChange={useMutableCallback((val) => setReloadFrequency(val as string))}
+								value={reloadFrequency}
+							/>
 						</Box>
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ConversationOverview key={keys?.current[0]} flexGrow={1} flexShrink={1} width='50%' reloadRef={reloadRef} params={allParams} />
+						<ConversationOverview key={keys?.current[0]} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
 						<ChatsChart key={keys?.current[1]} flexGrow={1} flexShrink={1} width='50%' mie={2} reloadRef={reloadRef} params={allParams} />
@@ -118,7 +126,7 @@ const RealTimeMonitoringPage = () => {
 						/>
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ChatsOverview key={keys?.current[3]} flexGrow={1} flexShrink={1} width='50%' reloadRef={reloadRef} params={allParams} />
+						<ChatsOverview key={keys?.current[3]} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
 						<AgentStatusChart
@@ -141,16 +149,16 @@ const RealTimeMonitoringPage = () => {
 						/>
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<AgentsOverview key={keys?.current[6]} flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams} />
+						<AgentsOverview key={keys?.current[6]} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' w='full' flexShrink={1}>
-						<ChatDurationChart key={keys?.current[7]} flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams} />
+						<ChatDurationChart key={keys?.current[7]} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ProductivityOverview key={keys?.current[8]} flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams} />
+						<ProductivityOverview key={keys?.current[8]} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' w='full' flexShrink={1}>
-						<ResponseTimesChart key={keys?.current[9]} flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams} />
+						<ResponseTimesChart key={keys?.current[9]} reloadRef={reloadRef} params={allParams} />
 					</Box>
 				</Margins>
 			</PageScrollableContentWithShadow>
