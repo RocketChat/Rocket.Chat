@@ -1,4 +1,4 @@
-import type { ILivechatContact, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { ILivechatContact, ILivechatContactChannel, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatContactsModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Collection, Db, RootFilterOperators, Filter, FindOptions, FindCursor, IndexDescription } from 'mongodb';
@@ -59,5 +59,21 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 				...options,
 			},
 		);
+	}
+
+	async findSimilarVerifiedContacts(
+		{ field, value }: Pick<ILivechatContactChannel, 'field' | 'value'>,
+		originalContactId: string,
+		options?: FindOptions<ILivechatContact>,
+	): Promise<ILivechatContact[]> {
+		return this.find(
+			{
+				'channels.field': field,
+				'channels.value': value,
+				'channels.verified': true,
+				'_id': { $ne: originalContactId },
+			},
+			options,
+		).toArray();
 	}
 }
