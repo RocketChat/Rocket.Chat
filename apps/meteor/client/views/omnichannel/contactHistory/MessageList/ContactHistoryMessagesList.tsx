@@ -12,7 +12,8 @@ import {
 	TextInput,
 	Throbber,
 } from '@rocket.chat/fuselage';
-import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useSetting, useTranslation, useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
@@ -43,9 +44,15 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 	const t = useTranslation();
 	const [text, setText] = useState('');
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
+	const userId = useUserId();
+
+	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
+		debounceDelay: 200,
+	});
 
 	const { itemsList: messageList, loadMoreItems } = useHistoryMessageList(
 		useMemo(() => ({ roomId: chatId, filter: text }), [chatId, text]),
+		userId,
 	);
 
 	const handleSearchChange = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -97,14 +104,22 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 					</States>
 				)}
 				{phase !== AsyncStatePhase.LOADING && totalItemCount === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
+				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
 					{!error && totalItemCount > 0 && history.length > 0 && (
 						<Virtuoso
 							totalCount={totalItemCount}
+							initialTopMostItemIndex={{ index: 'LAST' }}
+							followOutput
+							style={{
+								height: blockSize,
+								width: inlineSize,
+							}}
 							endReached={
 								phase === AsyncStatePhase.LOADING
 									? (): void => undefined
-									: (start): unknown => loadMoreItems(start, Math.min(50, totalItemCount - start))
+									: (start): void => {
+											loadMoreItems(start, Math.min(50, totalItemCount - start));
+									  }
 							}
 							overscan={25}
 							data={messages}
