@@ -8,7 +8,7 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-type CustomSoundsList = PaginatedRequest<{ query: string }>;
+type CustomSoundsList = PaginatedRequest<{ name?: string }>;
 
 const CustomSoundsListSchema = {
 	type: 'object',
@@ -25,11 +25,12 @@ const CustomSoundsListSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		query: {
+		name: {
 			type: 'string',
+			nullable: true,
 		},
 	},
-	required: ['query'],
+	required: [],
 	additionalProperties: false,
 };
 
