@@ -79,8 +79,8 @@ export class E2ERoom extends Emitter {
 		this.roomKeyId = room.e2eKeyId;
 
 		this.once(E2ERoomState.READY, async () => {
-			await this.decryptOldRoomKeys()
-			return this.decryptPendingMessages()
+			await this.decryptOldRoomKeys();
+			return this.decryptPendingMessages();
 		});
 		this.once(E2ERoomState.READY, () => this.decryptSubscription());
 		this.on('STATE_CHANGED', (prev) => {
