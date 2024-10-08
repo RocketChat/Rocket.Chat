@@ -106,7 +106,7 @@
 		"date-fns": "^2.15.0",
 		"emoji-mart": "^3.0.1",
 		"history": "~5.3.0",
-		"i18next": "~23.14.0",
+		"i18next": "~23.4.9",
 		"markdown-it": "^11.0.1",
 		"mem": "^6.1.1",
 		"mitt": "^2.1.0",
@@ -115,7 +115,7 @@
 		"preact-router": "^3.2.1",
 		"query-string": "^7.1.3",
 		"react-hook-form": "~7.45.4",
-		"react-i18next": "~15.0.1",
+		"react-i18next": "~13.2.2",
 		"storybook-dark-mode": "~3.0.3",
 		"whatwg-fetch": "^3.6.20"
 	},
