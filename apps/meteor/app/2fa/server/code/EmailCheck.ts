@@ -38,7 +38,7 @@ export class EmailCheck implements ICodeCheck {
 	private async send2FAEmail(address: string, random: string, user: IUser): Promise<void> {
 		const language = user.language || settings.get('Language') || 'en';
 
-		const t = i18n.getFixedT(language);
+		const t = (s: string): string => i18n.t(s, { lng: language });
 
 		await Mailer.send({
 			to: address,

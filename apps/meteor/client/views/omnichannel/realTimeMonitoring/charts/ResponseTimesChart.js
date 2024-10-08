@@ -1,5 +1,5 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
@@ -34,7 +34,7 @@ const init = (canvas, context, t) =>
 	);
 
 const ResponseTimesChart = ({ params, reloadRef, ...props }) => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 
 	const canvas = useRef();
 	const context = useRef();
