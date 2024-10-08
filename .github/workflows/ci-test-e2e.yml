@@ -6,6 +6,9 @@ on:
       node-version:
         required: true
         type: string
+      deno-version:
+        required: true
+        type: string
       lowercase-repo:
         required: true
         type: string
@@ -128,6 +131,7 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ inputs.node-version }}
+          deno-version: ${{ inputs.deno-version }}
           cache-modules: true
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -291,8 +295,9 @@ jobs:
         if: inputs.type == 'ui' && always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-test-trace-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          name: playwright-test-trace-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/tests/e2e/.playwright*
+          include-hidden-files: true
 
       - name: Show server logs if E2E test failed
         if: failure()
@@ -326,6 +331,7 @@ jobs:
         with:
           name: e2e-api-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: /tmp/coverage
+          include-hidden-files: true
 
       - name: Store e2e-ee-coverage
         if: inputs.type == 'ui' && inputs.release == 'ee'
@@ -333,3 +339,4 @@ jobs:
         with:
           name: e2e-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/coverage*
+          include-hidden-files: true

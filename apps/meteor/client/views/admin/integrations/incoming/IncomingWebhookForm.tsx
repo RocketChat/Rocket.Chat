@@ -167,7 +167,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 								<Controller
 									name='channel'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Post_to_Channel')) }}
+									rules={{ required: t('Required_field', { field: t('Post_to_Channel') }) }}
 									render={({ field }) => (
 										<TextInput
 											id={channelField}
@@ -201,7 +201,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 								<Controller
 									name='username'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Post_to_Channel')) }}
+									rules={{ required: t('Required_field', { field: t('Post_to_Channel') }) }}
 									render={({ field }) => (
 										<TextInput
 											id={usernameField}

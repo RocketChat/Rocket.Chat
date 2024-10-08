@@ -1,4 +1,4 @@
-import { Media } from '@rocket.chat/core-services';
+import { Media, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
@@ -40,7 +40,7 @@ import {
 	findRoomsAvailableForTeams,
 } from '../lib/rooms';
 
-async function findRoomByIdOrName({
+export async function findRoomByIdOrName({
 	params,
 	checkedArchived = true,
 }: {
@@ -365,7 +365,12 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isRoomsCleanHistoryProps },
 	{
 		async post() {
-			const { _id } = await findRoomByIdOrName({ params: this.bodyParams });
+			const room = await findRoomByIdOrName({ params: this.bodyParams });
+			const { _id } = room;
+
+			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+				return API.v1.failure('User does not have access to the room [error-not-allowed]', 'error-not-allowed');
+			}
 
 			const {
 				latest,
@@ -417,7 +422,19 @@ API.v1.addRoute(
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
-			return API.v1.success({ room: (await Rooms.findOneByIdOrName(room._id, { projection: fields })) ?? undefined });
+			const discussionParent =
+				room.prid &&
+				(await Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | 'prid' | 'u'>>(room.prid, {
+					projection: { name: 1, fname: 1, t: 1, prid: 1, u: 1, sidepanel: 1 },
+				}));
+			const { team, parentRoom } = await Team.getRoomInfo(room);
+			const parent = discussionParent || parentRoom;
+
+			return API.v1.success({
+				room: (await Rooms.findOneByIdOrName(room._id, { projection: fields })) ?? undefined,
+				...(team && { team }),
+				...(parent && { parent }),
+			});
 		},
 	},
 );
