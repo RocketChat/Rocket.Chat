@@ -11,11 +11,11 @@ import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
 import AddonRequiredModal from '../../../AppsList/AddonRequiredModal';
 import type { appStatusSpanResponseProps } from '../../../helpers';
 import { appButtonProps, appMultiStatusProps } from '../../../helpers';
+import { doesAppRequireAddon } from '../../../helpers/doesAppRequireAddon';
 import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstallationHandler';
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
 import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
-import { doesAppRequireAddon } from '../../../helpers/doesAppRequireAddon';
 
 type AppStatusProps = {
 	app: App;
