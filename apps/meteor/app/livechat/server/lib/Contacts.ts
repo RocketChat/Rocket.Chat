@@ -17,9 +17,10 @@ import {
 	Subscriptions,
 	LivechatContacts,
 } from '@rocket.chat/models';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
+import type { MatchKeysAndValues, OnlyFieldsOfType, Sort } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
@@ -61,6 +62,13 @@ type UpdateContactParams = {
 	customFields?: Record<string, unknown>;
 	contactManager?: string;
 	channels?: ILivechatContactChannel[];
+};
+
+type GetContactsParams = {
+	searchText?: string;
+	count: number;
+	offset: number;
+	sort: Sort;
 };
 
 export const Contacts = {
@@ -223,6 +231,25 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 	});
 
 	return updatedContact;
+}
+
+export async function getContacts(params: GetContactsParams): Promise<PaginatedResult<{ contacts: ILivechatContact[] }>> {
+	const { searchText, count, offset, sort } = params;
+
+	const { cursor, totalCount } = LivechatContacts.findPaginatedContacts(searchText, {
+		limit: count,
+		skip: offset,
+		sort: sort ?? { name: 1 },
+	});
+
+	const [contacts, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+	return {
+		contacts,
+		count,
+		offset,
+		total,
+	};
 }
 
 async function getAllowedCustomFields(): Promise<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>[]> {

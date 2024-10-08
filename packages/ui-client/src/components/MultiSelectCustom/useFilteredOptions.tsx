@@ -1,10 +1,10 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 
 import type { OptionProp } from './MultiSelectCustom';
 
 export const useFilteredOptions = (optionSearch: string | undefined, options: OptionProp[]) => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 
 	if (!optionSearch) return options;
 

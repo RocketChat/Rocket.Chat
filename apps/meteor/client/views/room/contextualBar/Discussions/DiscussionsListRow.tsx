@@ -1,6 +1,6 @@
 import type { IDiscussionMessage, IUser } from '@rocket.chat/core-typings';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { normalizeThreadMessage } from '../../../../lib/normalizeThreadMessage';
@@ -14,7 +14,7 @@ type DiscussionListRowProps = {
 };
 
 function DiscussionListRow({ discussion, showRealNames, userId, onClick }: DiscussionListRowProps) {
-	const { t } = useTranslation();
+	const t = useTranslation();
 	const formatDate = useTimeAgo();
 
 	const msg = normalizeThreadMessage(discussion);
