@@ -78,8 +78,10 @@ export class E2ERoom extends Emitter {
 		this.typeOfRoom = room.t;
 		this.roomKeyId = room.e2eKeyId;
 
-		this.once(E2ERoomState.READY, () => this.decryptOldRoomKeys());
-		this.once(E2ERoomState.READY, () => this.decryptPendingMessages());
+		this.once(E2ERoomState.READY, async () => {
+			await this.decryptOldRoomKeys()
+			return this.decryptPendingMessages()
+		});
 		this.once(E2ERoomState.READY, () => this.decryptSubscription());
 		this.on('STATE_CHANGED', (prev) => {
 			if (this.roomId === RoomManager.opened) {
@@ -416,7 +418,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	onRoomKeyReset(keyID) {
-		this.log(`Room keyID was reset. New keyID: ${keyID}`);
+		this.log(`Room keyID was reset. New keyID: ${keyID} Previous keyID: ${this.keyID}`);
 		this.setState(E2ERoomState.WAITING_KEYS);
 		this.keyID = keyID;
 		this.groupSessionKey = undefined;
