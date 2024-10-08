@@ -20,7 +20,7 @@ describe('AirGappedRestriction', () => {
 			expect(handler).toHaveBeenCalledWith({
 				days: 0,
 			});
-			expect(AirGappedRestriction.isRestricted).toBe(true);
+			expect(AirGappedRestriction.restricted).toBe(true);
 		});
 		it('should notify remaining days = 0 (apply restriction) when it was not possible to decrypt the stats token', async () => {
 			const handler = jest.fn();
@@ -32,7 +32,7 @@ describe('AirGappedRestriction', () => {
 			expect(handler).toHaveBeenCalledWith({
 				days: 0,
 			});
-			expect(AirGappedRestriction.isRestricted).toBe(true);
+			expect(AirGappedRestriction.restricted).toBe(true);
 		});
 		it('should notify remaining days (8) within the accepted range (1 - 10) when the last reported stats happened 2 days ago', async () => {
 			const now = new Date();
@@ -47,7 +47,7 @@ describe('AirGappedRestriction', () => {
 			expect(handler).toHaveBeenCalledWith({
 				days: 8,
 			});
-			expect(AirGappedRestriction.isRestricted).toBe(false);
+			expect(AirGappedRestriction.restricted).toBe(false);
 		});
 		it('should notify remaining days = 0 (apply restrictions) when the last reported stats happened more than 10 days ago', async () => {
 			const now = new Date();
@@ -62,7 +62,7 @@ describe('AirGappedRestriction', () => {
 			expect(handler).toHaveBeenCalledWith({
 				days: 0,
 			});
-			expect(AirGappedRestriction.isRestricted).toBe(true);
+			expect(AirGappedRestriction.restricted).toBe(true);
 		});
 		it('should notify remaining days = 0 (apply restrictions) when the last reported stats happened 10 days ago', async () => {
 			const now = new Date();
@@ -77,7 +77,7 @@ describe('AirGappedRestriction', () => {
 			expect(handler).toHaveBeenCalledWith({
 				days: 0,
 			});
-			expect(AirGappedRestriction.isRestricted).toBe(true);
+			expect(AirGappedRestriction.restricted).toBe(true);
 		});
 		it('should notify remaining days = -1 when unlimited-presence module is available', () => {
 			const handler = jest.fn();
@@ -90,7 +90,7 @@ describe('AirGappedRestriction', () => {
 			expect(handler).toHaveBeenCalledWith({
 				days: -1,
 			});
-			expect(AirGappedRestriction.isRestricted).toBe(false);
+			expect(AirGappedRestriction.restricted).toBe(false);
 		});
 	});
 	describe('#isWarningPeriod', () => {
