@@ -3,10 +3,10 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, FieldError, Select, TextInput } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 import type { Control, FieldValues, FieldError as RHFFieldError } from 'react-hook-form';
 import { Controller, useFormState, get } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
 
 type CustomFieldFormProps<T extends FieldValues> = {
 	metadata: CustomFieldMetadata[];
@@ -34,7 +34,7 @@ const CustomField = <T extends FieldValues>({
 	options = [],
 	...props
 }: CustomFieldProps<T>) => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 	const { errors } = useFormState({ control });
 	const fieldId = useUniqueId();
 

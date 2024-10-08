@@ -44,10 +44,13 @@ export class MentionModule implements IUiKitCoreApp {
 
 		if (actionId === 'dismiss') {
 			void api.broadcast('notify.ephemeralMessage', payload.user._id, payload.room, {
-				msg: i18n.t('You_mentioned___mentions__but_theyre_not_in_this_room', {
-					mentions: joinedUsernames,
-					lng: payload.user.language,
-				}),
+				msg: i18n.t(
+					'You_mentioned___mentions__but_theyre_not_in_this_room',
+					{
+						mentions: joinedUsernames,
+					},
+					payload.user.language,
+				),
 				_id: payload.message,
 				tmid: message.tmid,
 				mentions,
@@ -58,10 +61,13 @@ export class MentionModule implements IUiKitCoreApp {
 		if (actionId === 'add-users') {
 			void addUsersToRoomMethod(payload.user._id, { rid: payload.room, users: usernames as string[] }, payload.user);
 			void api.broadcast('notify.ephemeralMessage', payload.user._id, payload.room, {
-				msg: i18n.t('You_mentioned___mentions__but_theyre_not_in_this_room', {
-					mentions: joinedUsernames,
-					lng: payload.user.language,
-				}),
+				msg: i18n.t(
+					'You_mentioned___mentions__but_theyre_not_in_this_room',
+					{
+						mentions: joinedUsernames,
+					},
+					payload.user.language,
+				),
 				tmid: message.tmid,
 				_id: payload.message,
 				mentions,
@@ -81,10 +87,13 @@ export class MentionModule implements IUiKitCoreApp {
 				throw new Error('Mention bot - Failed to retrieve path to room');
 			}
 
-			const messageText = i18n.t('Youre_not_a_part_of__channel__and_I_mentioned_you_there', {
-				channel: `#${sub.name}`,
-				lng: payload.user.language,
-			});
+			const messageText = i18n.t(
+				'Youre_not_a_part_of__channel__and_I_mentioned_you_there',
+				{
+					channel: `#${sub.name}`,
+				},
+				payload.user.language,
+			);
 
 			const link = new URL(Meteor.absoluteUrl(roomPath));
 			link.searchParams.set('msg', message._id);
@@ -100,10 +109,13 @@ export class MentionModule implements IUiKitCoreApp {
 			);
 
 			void api.broadcast('notify.ephemeralMessage', payload.user._id, payload.room, {
-				msg: i18n.t('You_mentioned___mentions__but_theyre_not_in_this_room_You_let_them_know_via_dm', {
-					mentions: joinedUsernames,
-					lng: payload.user.language,
-				}),
+				msg: i18n.t(
+					'You_mentioned___mentions__but_theyre_not_in_this_room_You_let_them_know_via_dm',
+					{
+						mentions: joinedUsernames,
+					},
+					payload.user.language,
+				),
 				tmid: message.tmid,
 				_id: payload.message,
 				mentions,

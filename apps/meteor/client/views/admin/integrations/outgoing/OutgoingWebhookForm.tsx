@@ -18,9 +18,9 @@ import {
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
 
 import { outgoingEvents } from '../../../../../app/integrations/lib/outgoingEvents';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
@@ -52,7 +52,7 @@ type EditOutgoingWebhookPayload = Pick<
 >;
 
 const OutgoingWebhookForm = () => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 
 	const {
 		control,
@@ -185,10 +185,7 @@ const OutgoingWebhookForm = () => {
 								<FieldHint
 									id={`${channelField}-hint-2`}
 									dangerouslySetInnerHTML={{
-										__html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', {
-											postProcess: 'sprintf',
-											sprintf: ['@', '#', '@john', '#general'],
-										}),
+										__html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', '@', '#', '@john', '#general'),
 									}}
 								/>
 								<FieldHint id={`${channelField}-hint-3`} dangerouslySetInnerHTML={{ __html: t('Integrations_for_all_channels') }} />
@@ -232,10 +229,7 @@ const OutgoingWebhookForm = () => {
 								<FieldHint
 									id={`${targetRoomField}-hint-2`}
 									dangerouslySetInnerHTML={{
-										__html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', {
-											postProcess: 'sprintf',
-											sprintf: ['@', '#', '@john', '#general'],
-										}),
+										__html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', '@', '#', '@john', '#general'),
 									}}
 								/>
 							</Field>

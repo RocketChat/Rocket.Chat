@@ -1,11 +1,11 @@
 import { SidebarBanner } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { useStatusDisabledModal } from '../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 
 const StatusDisabledSection = ({ onDismiss }: { onDismiss: () => void }) => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 	const handleStatusDisabledModal = useStatusDisabledModal();
 
 	return (

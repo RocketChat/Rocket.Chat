@@ -2,8 +2,8 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import AppsList from '../AppsList';
 import FeaturedAppsSections from './FeaturedAppsSections';
@@ -34,7 +34,7 @@ const AppsPageContentBody = ({
 	paginationProps,
 	noErrorsOcurred,
 }: AppsPageContentBodyProps) => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 	const scrollableRef = useRef<HTMLDivElement>(null);
 	const appsListId = useUniqueId();
 

@@ -1,5 +1,5 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { e2e } from '../../../../app/e2e/client';
 import { E2EEState } from '../../../../app/e2e/client/E2EEState';
@@ -16,7 +16,7 @@ const RoomE2EESetup = () => {
 	const e2eeState = useE2EEState();
 	const e2eRoomState = useE2EERoomState(room._id);
 
-	const { t } = useTranslation();
+	const t = useTranslation();
 	const randomPassword = window.localStorage.getItem('e2e.randomPassword');
 
 	const onSavePassword = useCallback(() => {

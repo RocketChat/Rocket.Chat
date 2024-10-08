@@ -1,7 +1,7 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, RefCallback } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
 
 import { useDialModal } from '../../../../hooks/useDialModal';
 import { useOutboundDialer } from '../../../../hooks/useOutboundDialer';
@@ -25,7 +25,7 @@ type DialPadProps = {
 };
 
 export const useDialPad = ({ initialValue, initialErrorMessage }: DialPadProps): DialPadStateHandlers => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 	const outboundClient = useOutboundDialer();
 	const { closeDialModal } = useDialModal();
 
