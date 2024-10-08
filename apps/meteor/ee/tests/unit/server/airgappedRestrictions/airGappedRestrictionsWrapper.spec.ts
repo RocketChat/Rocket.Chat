@@ -7,7 +7,7 @@ import { applyAirGappedRestrictionsValidation } from '../../../../../app/license
 let restrictionFlag = true;
 
 const airgappedModule = {
-	get isRestricted() {
+	get restricted() {
 		return restrictionFlag;
 	},
 };
