@@ -709,7 +709,6 @@
   "cache_cleared": "تم محو التخزين المؤقت",
   "Call": "مكالمة",
   "Calling": "يتم الآن الاتصال",
-  "Call_Center": "مركز الاتصال",
   "Calls_in_queue_zero": "قائمة الانتظار فارغة",
   "Calls_in_queue_one": "{{count}} من المكالمات الانتظار",
   "Calls_in_queue_other": "{{count}} من المكالمات الانتظار",

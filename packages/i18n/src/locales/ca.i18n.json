@@ -705,7 +705,6 @@
   "cache_cleared": "Memòria cau esborrada",
   "Call": "Trucada",
   "Calling": "Trucant",
-  "Call_Center": "Centre de trucades",
   "Calls_in_queue_zero": "La cua és buida",
   "Calls_in_queue_one": "{{count}} Trucada a la cua",
   "Calls_in_queue_other": "{{count}} Trucades a la cua",
