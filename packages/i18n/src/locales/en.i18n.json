@@ -6010,6 +6010,7 @@
   "VoIP_TeamCollab_FreeSwitch_Password": "FreeSwitch Password",
   "VoIP_TeamCollab_FreeSwitch_Timeout": "FreeSwitch Request Timeout",
   "VoIP_TeamCollab_FreeSwitch_WebSocket_Path": "WebSocket Path",
+  "VoIP_TeamCollab_Beta_Alert": "This feature is currently in Beta, please report any issues to Rocket.Chat support",
   "VoIP_Toggle": "Enable/Disable VoIP",
   "Chat_opened_by_visitor": "Chat opened by the visitor",
   "Wait_activation_warning": "Before you can login, your account must be manually activated by an administrator.",
