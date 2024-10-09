@@ -23,7 +23,7 @@ function DropTargetOverlay({
 	visible = true,
 	onDismiss,
 }: DropTargetOverlayProps): ReactElement | null {
-	const { t } = useTranslation();
+	const t = useTranslation();
 
 	const handleDragLeave = useMutableCallback((event: DragEvent) => {
 		event.stopPropagation();
