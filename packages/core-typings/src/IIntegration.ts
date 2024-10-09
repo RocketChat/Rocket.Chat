@@ -1,7 +1,7 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
 
-export type IntegrationScriptEngine = 'vm2' | 'isolated-vm';
+export type IntegrationScriptEngine = 'isolated-vm';
 
 export interface IIncomingIntegration extends IRocketChatRecord {
 	type: 'webhook-incoming';
