@@ -3,7 +3,6 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useExternalLink } from '../../../hooks/useExternalLink';
-import { CONTACT_SALES_LINK } from '../../admin/subscription/utils/links';
 
 export type AddonActionType = 'install' | 'enable';
 
@@ -12,6 +11,8 @@ type AddonRequiredModalProps = {
 	onDismiss: () => void;
 	onInstallAnyway: () => void;
 };
+
+const GET_ADONS_URL = 'https://go.rocket.chat/i/get-addons';
 
 const AddonRequiredModal = ({ actionType, onDismiss, onInstallAnyway }: AddonRequiredModalProps) => {
 	const { t } = useTranslation();
@@ -30,7 +31,7 @@ const AddonRequiredModal = ({ actionType, onDismiss, onInstallAnyway }: AddonReq
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					{actionType === 'install' && <Button onClick={onInstallAnyway}>{t('Install_anyway')}</Button>}
-					<Button primary onClick={() => handleOpenLink(CONTACT_SALES_LINK)}>
+					<Button primary onClick={() => handleOpenLink(GET_ADONS_URL)}>
 						{t('Contact_sales')}
 					</Button>
 				</Modal.FooterControllers>
