@@ -464,7 +464,7 @@ class LivechatClass {
 
 		if (isSingleContactEnabled()) {
 			let { contactId } = visitor;
-			if (contactId) {
+			if (!contactId) {
 				const visitorContact = await LivechatVisitors.findOne<Pick<ILivechatVisitor, 'contactId'>>(visitor._id, {
 					projection: { contactId: 1 },
 				});
