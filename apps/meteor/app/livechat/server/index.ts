@@ -26,7 +26,6 @@ import './methods/getAnalyticsChartData';
 import './methods/getAnalyticsOverviewData';
 import './methods/getNextAgent';
 import './methods/getRoutingConfig';
-import './methods/pageVisited';
 import './methods/registerGuest';
 import './methods/removeAgent';
 import './methods/removeAllClosedRooms';
