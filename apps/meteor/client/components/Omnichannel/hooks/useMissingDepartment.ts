@@ -2,11 +2,11 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
 import { dispatchToastMessage } from '../../../lib/toast';
-import type { DepartmentListItem } from './useDepartmentsList';
+import type { DepartmentListItem } from '../Definitions/DepartmentsDefinitions';
 
 export const useMissingDepartment = (
 	selectedDepartment: string,
-	setDepartment: (value: string) => void | undefined,
+	setDepartment: (value: string) => void,
 ): DepartmentListItem | undefined => {
 	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: selectedDepartment });
 
@@ -19,7 +19,9 @@ export const useMissingDepartment = (
 				throw new Error('Department not found!');
 			}
 
-			return { _id: result.department._id, label: result.department.name, value: result.department._id };
+			const { _id, name } = result.department;
+
+			return { _id, label: name, value: _id };
 		},
 		{
 			enabled: !!selectedDepartment && selectedDepartment !== 'all',
