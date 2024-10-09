@@ -2,9 +2,9 @@ import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 
 import CreateDiscussion from '../../../../components/CreateDiscussion';
-import CreateChannelWithData from '../../CreateChannel';
+import CreateChannelModal from '../../CreateChannelModal';
 import CreateDirectMessage from '../../CreateDirectMessage';
-import CreateTeam from '../../CreateTeam';
+import CreateTeamModal from '../../CreateTeamModal';
 import { useCreateRoomModal } from '../../hooks/useCreateRoomModal';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
@@ -21,8 +21,8 @@ export const useCreateRoomItems = (): GenericMenuItemProps[] => {
 	const canCreateDirectMessages = useAtLeastOnePermission(CREATE_DIRECT_PERMISSIONS);
 	const canCreateDiscussion = useAtLeastOnePermission(CREATE_DISCUSSION_PERMISSIONS);
 
-	const createChannel = useCreateRoomModal(CreateChannelWithData);
-	const createTeam = useCreateRoomModal(CreateTeam);
+	const createChannel = useCreateRoomModal(CreateChannelModal);
+	const createTeam = useCreateRoomModal(CreateTeamModal);
 	const createDiscussion = useCreateRoomModal(CreateDiscussion);
 	const createDirectMessage = useCreateRoomModal(CreateDirectMessage);
 

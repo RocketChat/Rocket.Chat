@@ -2,7 +2,7 @@ import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import SideBarItemTemplateWithData from '../RoomList/SideBarItemTemplateWithData';
+import SidebarItemTemplateWithData from '../RoomList/SidebarItemTemplateWithData';
 import UserItem from './UserItem';
 
 type RowProps = {
@@ -11,7 +11,7 @@ type RowProps = {
 };
 
 const Row = ({ item, data }: RowProps): ReactElement => {
-	const { t, SideBarItemTemplate, avatarTemplate: AvatarTemplate, useRealName, extended } = data;
+	const { t, SidebarItemTemplate, avatarTemplate: AvatarTemplate, useRealName, extended } = data;
 
 	if (item.t === 'd' && !item.u) {
 		return (
@@ -20,18 +20,18 @@ const Row = ({ item, data }: RowProps): ReactElement => {
 				useRealName={useRealName}
 				t={t}
 				item={item}
-				SideBarItemTemplate={SideBarItemTemplate}
+				SidebarItemTemplate={SidebarItemTemplate}
 				AvatarTemplate={AvatarTemplate}
 			/>
 		);
 	}
 	return (
-		<SideBarItemTemplateWithData
+		<SidebarItemTemplateWithData
 			id={`search-${item._id}`}
 			extended={extended}
 			t={t}
 			room={item}
-			SideBarItemTemplate={SideBarItemTemplate}
+			SidebarItemTemplate={SidebarItemTemplate}
 			AvatarTemplate={AvatarTemplate}
 		/>
 	);
