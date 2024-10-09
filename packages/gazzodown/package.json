@@ -10,6 +10,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"build-storybook": "build-storybook",
+		"build-preview": "build-storybook --quiet",
+		".:build-preview-move": "mkdir -p ../../.preview && cp -r ./storybook-static ../../.preview/gazzodown",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
@@ -64,7 +66,6 @@
 		"outdent": "^0.8.0",
 		"react-docgen-typescript-plugin": "~1.0.8",
 		"react-dom": "~17.0.2",
-		"react-i18next": "~15.0.1",
 		"typescript": "~5.5.4"
 	},
 	"peerDependencies": {

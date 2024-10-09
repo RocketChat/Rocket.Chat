@@ -7,6 +7,10 @@ WORKDIR /app
 COPY ./packages/core-services/package.json packages/core-services/package.json
 COPY ./packages/core-services/dist packages/core-services/dist
 
+COPY ./packages/apps-engine/package.json packages/apps-engine/package.json
+COPY ./packages/apps-engine/client packages/apps-engine/client
+COPY ./packages/apps-engine/definition packages/apps-engine/definition
+
 COPY ./packages/agenda/package.json packages/agenda/package.json
 COPY ./packages/agenda/dist packages/agenda/dist
 

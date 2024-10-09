@@ -1,7 +1,7 @@
 import { Box, Select, Margins, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useState, useMemo, useEffect, Fragment } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
@@ -27,7 +27,7 @@ const randomizeKeys = (keys) => {
 const dateRange = getDateRange();
 
 const RealTimeMonitoringPage = () => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 
 	const keys = useRef([...Array(10).keys()]);
 
