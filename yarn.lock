@@ -9837,6 +9837,7 @@ __metadata:
     cookie-parser: ^1.4.7
     cors: ^2.8.5
     cron: ~1.8.2
+    cron-validator: ^1.3.1
     cross-env: ^7.0.3
     css-vars-ponyfill: ^2.4.9
     csv-parse: ^5.2.0
@@ -20684,6 +20685,13 @@ __metadata:
   version: 1.0.6
   resolution: "crelt@npm:1.0.6"
   checksum: dad842093371ad702afbc0531bfca2b0a8dd920b23a42f26e66dabbed9aad9acd5b9030496359545ef3937c3aced0fd4ac39f7a2d280a23ddf9eb7fdcb94a69f
+  languageName: node
+  linkType: hard
+
+"cron-validator@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "cron-validator@npm:1.3.1"
+  checksum: 82895b417bc35a96c8ad8501d2f236492403ba6e35c1112762e9573939eb15cd80bd0693d5ae95e3a15e15fc6442b1a6e6cc3dd0f740f0a3320b202082aeabec
   languageName: node
   linkType: hard
 
