@@ -2,21 +2,6 @@
 	"name": "@rocket.chat/ui-client",
 	"version": "11.0.0-rc.1",
 	"private": true,
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
-	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.build.json",
-		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"storybook": "start-storybook -p 6006",
-		"test": "jest",
-		"testunit": "jest",
-		"typecheck": "tsc --noEmit"
-	},
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
 		"@react-aria/toolbar": "^3.0.0-beta.1",
@@ -52,17 +37,31 @@
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
 		"react-hook-form": "~7.45.4",
-		"react-i18next": "~15.0.1",
 		"typescript": "~5.5.4"
 	},
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "jest",
+		"testunit": "jest",
+		"storybook": "start-storybook -p 6006"
+	},
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
 	"peerDependencies": {
 		"@react-aria/toolbar": "*",
 		"@rocket.chat/css-in-js": "*",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
-		"@rocket.chat/ui-avatar": "7.0.0-rc.1",
-		"@rocket.chat/ui-contexts": "11.0.0-rc.1",
+		"@rocket.chat/ui-avatar": "*",
+		"@rocket.chat/ui-contexts": "*",
 		"react": "*",
 		"react-i18next": "*"
 	},

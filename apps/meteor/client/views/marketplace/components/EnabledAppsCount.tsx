@@ -1,6 +1,6 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { GenericResourceUsage } from '../../../components/GenericResourceUsage';
 
@@ -17,7 +17,7 @@ const EnabledAppsCount = ({
 	enabled: number;
 	context: 'private' | 'explore' | 'installed' | 'premium' | 'requested';
 }): ReactElement | null => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 
 	return (
 		<GenericResourceUsage
