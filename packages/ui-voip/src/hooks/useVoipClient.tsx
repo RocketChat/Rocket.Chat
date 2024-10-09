@@ -75,7 +75,7 @@ export const useVoipClient = ({ autoRegister = true }: VoipClientParams): VoipCl
 		},
 		{
 			initialData: null,
-			enabled: !!userId,
+			enabled: isVoipEnabled,
 		},
 	);
 
