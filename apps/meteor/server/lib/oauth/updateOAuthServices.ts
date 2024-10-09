@@ -11,9 +11,14 @@ import { CustomOAuth } from '../../../app/custom-oauth/server/custom_oauth_serve
 import { settings } from '../../../app/settings/server/cached';
 import { logger } from './logger';
 
-export async function updateOAuthServices(): Promise<void> {
+type updateOAuthServicesResponse = { _id: string; service: string; updated: boolean; deleted: boolean }[];
+
+export async function updateOAuthServices(): Promise<updateOAuthServicesResponse> {
 	const services = settings.getByRegexp(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);
 	const filteredServices = services.filter(([, value]) => typeof value === 'boolean');
+
+	const response: updateOAuthServicesResponse = [];
+
 	for await (const [key, value] of filteredServices) {
 		logger.debug({ oauth_updated: key });
 		let serviceName = key.replace('Accounts_OAuth_', '');
@@ -112,12 +117,16 @@ export async function updateOAuthServices(): Promise<void> {
 				data.buttonColor = settings.get('Accounts_OAuth_Nextcloud_button_color');
 			}
 
-			await LoginServiceConfiguration.createOrUpdateService(serviceKey, data);
+			const loginServiceId = await LoginServiceConfiguration.createOrUpdateService(serviceKey, data);
+			response.push({ _id: loginServiceId, service: serviceName, updated: true, deleted: false });
 		} else {
 			const service = await LoginServiceConfiguration.findOneByService(serviceName, { projection: { _id: 1 } });
 			if (service?._id) {
 				await LoginServiceConfiguration.removeService(service._id);
+				response.push({ _id: service._id, service: serviceName, updated: false, deleted: true });
 			}
 		}
 	}
+
+	return response;
 }
