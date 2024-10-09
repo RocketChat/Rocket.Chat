@@ -1,4 +1,4 @@
-import type { IUser } from './IUser';
+import type { IUser } from '../IUser';
 
 export interface IOmnichannelAgent extends IUser {
 	statusLivechat: OmnichannelAgentStatus;

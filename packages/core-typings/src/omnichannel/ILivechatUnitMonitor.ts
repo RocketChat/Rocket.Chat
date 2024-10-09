@@ -1,4 +1,4 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IRocketChatRecord } from '../IRocketChatRecord';
 
 export interface ILivechatUnitMonitor extends IRocketChatRecord {
 	monitorId: string;
