@@ -30,6 +30,7 @@ import type {
 	AggregationCursor,
 	CountDocumentsOptions,
 	DeleteOptions,
+	ModifyResult,
 } from 'mongodb';
 
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
@@ -585,10 +586,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
-	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<UpdateResult> {
+	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<ModifyResult<ISubscription>> {
 		const query = { rid, 'u._id': uid };
 		const update = { $set: { E2ESuggestedKey: key } };
-		return this.updateOne(query, update);
+		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
 	}
 
 	unsetGroupE2ESuggestedKey(_id: string): Promise<UpdateResult | Document> {
@@ -750,6 +751,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 					'E2EKey': {
 						$exists: false,
 					},
+					'E2ESuggestedKey': { $exists: false },
 					'u._id': {
 						$ne: excludeUserId,
 					},

@@ -2,6 +2,7 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { notifyOnSubscriptionChanged, notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
 
 export const provideUsersSuggestedGroupKeys = async (
 	userId: IUser['_id'],
@@ -21,13 +22,15 @@ export const provideUsersSuggestedGroupKeys = async (
 
 		const usersWithSuggestedKeys = [];
 		for await (const user of usersSuggestedGroupKeys[roomId]) {
-			const { modifiedCount } = await Subscriptions.setGroupE2ESuggestedKey(user._id, roomId, user.key);
-			if (!modifiedCount) {
+			const { value } = await Subscriptions.setGroupE2ESuggestedKey(user._id, roomId, user.key);
+			if (!value) {
 				continue;
 			}
+			void notifyOnSubscriptionChanged(value);
 			usersWithSuggestedKeys.push(user._id);
 		}
 
 		await Rooms.removeUsersFromE2EEQueueByRoomId(roomId, usersWithSuggestedKeys);
+		void notifyOnRoomChangedById(roomId);
 	}
 };
