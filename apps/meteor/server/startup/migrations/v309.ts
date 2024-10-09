@@ -1,3 +1,4 @@
+import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
