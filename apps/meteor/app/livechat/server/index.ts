@@ -22,7 +22,6 @@ import './methods/closeRoom';
 import './methods/discardTranscript';
 import './methods/getAnalyticsChartData';
 import './methods/getAnalyticsOverviewData';
-import './methods/getNextAgent';
 import './methods/getRoutingConfig';
 import './methods/registerGuest';
 import './methods/removeAllClosedRooms';
