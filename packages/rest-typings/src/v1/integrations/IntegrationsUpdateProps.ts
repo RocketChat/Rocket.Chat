@@ -9,7 +9,7 @@ export type IntegrationsUpdateProps =
 			integrationId: string;
 			channel: string;
 			scriptEnabled: boolean;
-			scriptEngine: 'isolated-vm' | 'vm2';
+			scriptEngine: 'isolated-vm';
 			overrideDestinationChannelEnabled?: boolean;
 			script?: string;
 			name: string;
@@ -33,7 +33,7 @@ export type IntegrationsUpdateProps =
 			token?: string;
 
 			scriptEnabled: boolean;
-			scriptEngine: 'isolated-vm' | 'vm2';
+			scriptEngine: 'isolated-vm';
 			script?: string;
 			runOnEdits?: boolean;
 

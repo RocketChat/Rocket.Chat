@@ -12,14 +12,12 @@ import { outgoingEvents } from '../../lib/outgoingEvents';
 import { outgoingLogger } from '../logger';
 import { IsolatedVMScriptEngine } from './isolated-vm/isolated-vm';
 import { updateHistory } from './updateHistory';
-import { VM2ScriptEngine } from './vm2/vm2';
 
 class RocketChatIntegrationHandler {
 	constructor() {
 		this.successResults = [200, 201, 202];
 		this.compiledScripts = {};
 		this.triggers = {};
-		this.vm2Engine = new VM2ScriptEngine(false);
 		this.ivmEngine = new IsolatedVMScriptEngine(false);
 	}
 
@@ -47,8 +45,9 @@ class RocketChatIntegrationHandler {
 		}
 	}
 
-	getEngine(integration) {
-		return integration.scriptEngine === 'isolated-vm' ? this.ivmEngine : this.vm2Engine;
+	// eslint-disable-next-line no-unused-vars
+	getEngine(_integration) {
+		return this.ivmEngine;
 	}
 
 	removeIntegration(record) {
