@@ -22,6 +22,8 @@ import type {
 	LivechatDepartmentDTO,
 	OmnichannelSourceType,
 	ILivechatInquiryRecord,
+	ILivechatContact,
+	ILivechatContactChannel,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -469,10 +471,14 @@ class LivechatClass {
 				contactId = visitorContact?.contactId;
 			}
 
-			const contact = await LivechatContacts.findOne({ _id: contactId });
+			const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'channels'>>(contactId as string, {
+				projection: { _id: 1, channels: 1 },
+			});
 
 			if (contact) {
-				const channel = contact.channels?.find((channel) => channel.name === roomInfo.source?.type && channel.visitorId === visitor._id);
+				const channel = contact.channels?.find(
+					(channel: ILivechatContactChannel) => channel.name === roomInfo.source?.type && channel.visitorId === visitor._id,
+				);
 
 				if (!channel) {
 					Livechat.logger.debug(`Adding channel for contact ${contact._id}`);
@@ -483,7 +489,6 @@ class LivechatClass {
 						blocked: false,
 						verified: false,
 						details: roomInfo.source,
-						channelIdentifier: roomInfo.source?.destination,
 					});
 				}
 			}
