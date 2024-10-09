@@ -35,6 +35,12 @@ const UninstallGrandfatheredAppModal = ({ context, limit, appName, handleUninsta
 				<MarkdownText content={modalContent} />
 			</Modal.Content>
 			<Modal.Footer>
+				<Modal.FooterAnnotation>
+					{/* TODO: Move the link to a go link when available */}
+					<a target='_blank' rel='noopener noreferrer' href='https://docs.rocket.chat/docs/rocketchat-marketplace'>
+						{t('Learn_more')}
+					</a>
+				</Modal.FooterAnnotation>
 				<Modal.FooterControllers>
 					<Button onClick={handleClose}>{t('Cancel')}</Button>
 					<Button danger onClick={handleUninstall}>
