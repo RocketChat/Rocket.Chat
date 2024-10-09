@@ -9,7 +9,7 @@ import { RoomRoles } from '../../../../app/models/client';
 import MarkdownText from '../../../components/MarkdownText';
 import { usePresence } from '../../../hooks/usePresence';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
-import RoomLeader from '../HeaderV2/RoomLeader';
+import RoomLeader from '../Header/RoomLeader';
 import { useCanEditRoom } from '../contextualBar/Info/hooks/useCanEditRoom';
 
 type RoomTopicProps = {
