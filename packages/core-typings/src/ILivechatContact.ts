@@ -9,7 +9,6 @@ export interface ILivechatContactChannel {
 	field?: string;
 	value?: string;
 	verifiedAt?: Date;
-	channelIdentifier?: string;
 	details?: IOmnichannelSource;
 }
 
