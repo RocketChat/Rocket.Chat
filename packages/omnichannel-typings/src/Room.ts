@@ -1,6 +1,5 @@
-import type { IMessage } from '../IMessage';
-import type { IRoom } from '../IRoom';
-import type { IUser } from '../IUser';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+
 import type { ILivechatPriority } from './ILivechatPriority';
 import type { ILivechatVisitor } from './ILivechatVisitor';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';

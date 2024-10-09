@@ -1,3 +1,5 @@
+export * from '@rocket.chat/core-typings';
+
 export * from './sms';
 export * from './routing';
 export * from './queue';

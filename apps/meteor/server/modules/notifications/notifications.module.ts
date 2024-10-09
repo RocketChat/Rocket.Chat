@@ -1,7 +1,8 @@
 import { Authorization, VideoConf } from '@rocket.chat/core-services';
-import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { ISubscription, IUser } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
 import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
+import type { IOmnichannelRoom } from '@rocket.chat/omnichannel-typings';
 import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
 
 import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';

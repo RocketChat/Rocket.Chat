@@ -10043,7 +10043,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/omnichannel-typings@workspace:packages/omnichannel-typings":
+"@rocket.chat/omnichannel-typings@workspace:^, @rocket.chat/omnichannel-typings@workspace:packages/omnichannel-typings":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/omnichannel-typings@workspace:packages/omnichannel-typings"
   dependencies:
@@ -10107,9 +10107,9 @@ __metadata:
   resolution: "@rocket.chat/pdf-worker@workspace:ee/packages/pdf-worker"
   dependencies:
     "@react-pdf/renderer": ^3.1.14
-    "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/fuselage-tokens": ^0.33.1
     "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/omnichannel-typings": "workspace:^"
     "@storybook/addon-essentials": ~6.5.16
     "@storybook/react": ~6.5.16
     "@testing-library/react": ~16.0.1

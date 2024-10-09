@@ -1,4 +1,4 @@
-import type { IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import type { IOmnichannelServiceLevelAgreements } from '@rocket.chat/omnichannel-typings';
 
 import type { IBaseModel } from './IBaseModel';
 

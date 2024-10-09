@@ -11,20 +11,22 @@ import type {
 	INotificationDesktop,
 	VoipEventDataSignature,
 	IUser,
-	IOmnichannelRoom,
 	VideoConference,
-	IOmnichannelCannedResponse,
 	IIntegrationHistory,
 	IUserDataEvent,
 	ICalendarNotification,
-	ILivechatInquiryRecord,
-	ILivechatAgent,
 	IImportProgress,
 	IBanner,
 	LicenseLimitKind,
 	ICustomUserStatus,
 	IWebdavAccount,
 } from '@rocket.chat/core-typings';
+import type {
+	ILivechatAgent,
+	ILivechatInquiryRecord,
+	IOmnichannelCannedResponse,
+	IOmnichannelRoom,
+} from '@rocket.chat/omnichannel-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';

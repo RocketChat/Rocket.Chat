@@ -1,4 +1,4 @@
-import type { ILivechatVisitor } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor } from '@rocket.chat/omnichannel-typings';
 
 import type { IAppsVisitor } from '../AppsEngine';
 

@@ -1,6 +1,7 @@
-import type { ILivechatDepartmentAgents, RocketChatRecordDeleted, IUser } from '@rocket.chat/core-typings';
+import type { RocketChatRecordDeleted, IUser } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
 import { Users } from '@rocket.chat/models';
+import type { ILivechatDepartmentAgents } from '@rocket.chat/omnichannel-typings';
 import type {
 	Collection,
 	FindCursor,

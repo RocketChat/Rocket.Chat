@@ -1,4 +1,4 @@
-import type { ISMSProviderConstructor, ISMSProvider } from '@rocket.chat/core-typings';
+import type { ISMSProviderConstructor, ISMSProvider } from '@rocket.chat/omnichannel-typings';
 
 export type IOmnichannelIntegrationService = {
 	getSmsService(name: string): Promise<ISMSProvider>;

@@ -1,11 +1,6 @@
-import type {
-	ILivechatDepartmentAgents,
-	ILivechatInquiryRecord,
-	ISetting,
-	ISubscription,
-	RocketChatRecordDeleted,
-} from '@rocket.chat/core-typings';
+import type { ISetting, ISubscription, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { registerModel } from '@rocket.chat/models';
+import type { ILivechatDepartmentAgents, ILivechatInquiryRecord } from '@rocket.chat/omnichannel-typings';
 import type { Collection, Db } from 'mongodb';
 
 import { EmailInboxRaw } from '../../../server/models/raw/EmailInbox';

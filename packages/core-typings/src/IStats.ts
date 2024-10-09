@@ -4,7 +4,6 @@ import type { IMatrixFederationStatistics } from './IMatrixFederationStatistics'
 import type { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';
 import type { ISettingStatisticsObject } from './ISetting';
 import type { ITeamStats } from './ITeam';
-import type { MACStats } from './omnichannel';
 
 export interface IStats {
 	_id: string;
@@ -100,10 +99,6 @@ export interface IStats {
 	mongoStorageEngine: string;
 	pushQueue: number;
 	omnichannelSources: { [key: string]: number | string }[];
-	omnichannelContactsBySource: MACStats;
-	uniqueContactsOfLastMonth: MACStats;
-	uniqueContactsOfLastWeek: MACStats;
-	uniqueContactsOfYesterday: MACStats;
 	departments: number;
 	archivedDepartments: number;
 	routingAlgorithm: string;

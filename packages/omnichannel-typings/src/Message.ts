@@ -1,6 +1,5 @@
-import type { IMessage } from '../IMessage';
-import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { IUser } from '../IUser';
+import type { IMessage, IRocketChatRecord, IUser } from '@rocket.chat/core-typings';
+
 import type { ILivechatPriority } from './ILivechatPriority';
 import type { ILivechatVisitor } from './ILivechatVisitor';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
@@ -46,7 +45,7 @@ export interface IMessageFromVisitor extends IMessage {
 
 export const isMessageFromVisitor = (message: IMessage): message is IMessageFromVisitor => 'token' in message;
 
-declare module '../IMessage' {
+declare module '@rocket.chat/core-typings' {
 	interface IMessage extends IRocketChatRecord {
 		/* used when message type is "omnichannel_sla_change_history" */
 		slaData?: {

@@ -1,4 +1,5 @@
-import type { AtLeast, IOmnichannelQueue, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { AtLeast } from '@rocket.chat/core-typings';
+import type { IOmnichannelQueue, IOmnichannelRoom } from '@rocket.chat/omnichannel-typings';
 
 import type { IServiceClass } from './ServiceClass';
 

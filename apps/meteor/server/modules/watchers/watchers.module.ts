@@ -5,7 +5,6 @@ import type {
 	IUser,
 	ILoginServiceConfiguration,
 	IIntegrationHistory,
-	ILivechatDepartmentAgents,
 	IMessage,
 	IPermission,
 	ISetting,
@@ -14,9 +13,7 @@ import type {
 	IIntegration,
 	IEmailInbox,
 	IPbxEvent,
-	ILivechatInquiryRecord,
 	IRole,
-	ILivechatPriority,
 } from '@rocket.chat/core-typings';
 import {
 	Subscriptions,
@@ -36,6 +33,7 @@ import {
 	Permissions,
 	LivechatPriority,
 } from '@rocket.chat/models';
+import type { ILivechatDepartmentAgents, ILivechatInquiryRecord, ILivechatPriority } from '@rocket.chat/omnichannel-typings';
 
 import { getMessageToBroadcast } from '../../../app/lib/server/lib/notifyListener';
 import { subscriptionFields, roomFields } from '../../../lib/publishFields';

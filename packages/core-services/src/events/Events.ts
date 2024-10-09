@@ -3,11 +3,9 @@ import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definitio
 import type {
 	IEmailInbox,
 	IEmoji,
-	IInquiry,
 	IInstanceStatus,
 	IIntegration,
 	IIntegrationHistory,
-	ILivechatDepartmentAgents,
 	ILoginServiceConfiguration,
 	IMessage,
 	INotificationDesktop,
@@ -22,19 +20,23 @@ import type {
 	ICustomSound,
 	VoipEventDataSignature,
 	UserStatus,
-	ILivechatPriority,
 	VideoConference,
 	ICalendarNotification,
 	AtLeast,
-	ILivechatInquiryRecord,
-	ILivechatAgent,
 	IBanner,
-	ILivechatVisitor,
 	LicenseLimitKind,
 	ICustomUserStatus,
 	IWebdavAccount,
 	IOTRMessage,
 } from '@rocket.chat/core-typings';
+import type {
+	IInquiry,
+	ILivechatAgent,
+	ILivechatDepartmentAgents,
+	ILivechatInquiryRecord,
+	ILivechatPriority,
+	ILivechatVisitor,
+} from '@rocket.chat/omnichannel-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
 import type { AutoUpdateRecord } from '../types/IMeteor';

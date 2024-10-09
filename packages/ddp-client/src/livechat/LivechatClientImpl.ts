@@ -1,6 +1,7 @@
 import { RestClient } from '@rocket.chat/api-client';
-import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
+import type { Serialized } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import type { IOmnichannelRoom } from '@rocket.chat/omnichannel-typings';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 
 import { ClientStreamImpl } from '../ClientStream';

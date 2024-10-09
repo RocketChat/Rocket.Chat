@@ -1,4 +1,5 @@
-import type { IMessage, IRoom, IUser, ILivechatDepartment, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/omnichannel-typings';
 
 import type { AppEvents } from '../AppsEngine';
 

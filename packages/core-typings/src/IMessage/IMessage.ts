@@ -4,8 +4,6 @@ import type Icons from '@rocket.chat/icons';
 import type { Root } from '@rocket.chat/message-parser';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 
-import type { ILivechatPriority } from '../ILivechatPriority';
-import type { IOmnichannelServiceLevelAgreements } from '../IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 import type { IRoom, RoomID } from '../IRoom';
 import type { IUser } from '../IUser';
@@ -214,18 +212,6 @@ export interface IMessage extends IRocketChatRecord {
 	token?: string;
 	federation?: {
 		eventId: string;
-	};
-
-	/* used when message type is "omnichannel_sla_change_history" */
-	slaData?: {
-		definedBy: Pick<IUser, '_id' | 'username'>;
-		sla?: Pick<IOmnichannelServiceLevelAgreements, 'name'>;
-	};
-
-	/* used when message type is "omnichannel_priority_change_history" */
-	priorityData?: {
-		definedBy: Pick<IUser, '_id' | 'username'>;
-		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>;
 	};
 
 	customFields?: IMessageCustomFields;

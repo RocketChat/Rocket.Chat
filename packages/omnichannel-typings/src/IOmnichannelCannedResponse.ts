@@ -1,6 +1,6 @@
-import type { ILivechatDepartment } from '../ILivechatDepartment';
-import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { IUser } from '../IUser';
+import type { IRocketChatRecord, IUser } from '@rocket.chat/core-typings';
+
+import type { ILivechatDepartment } from './ILivechatDepartment';
 
 export interface IOmnichannelCannedResponse extends IRocketChatRecord {
 	shortcut: string;

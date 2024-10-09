@@ -1,4 +1,4 @@
-import type { ILivechatUnitMonitor } from '@rocket.chat/core-typings';
+import type { ILivechatUnitMonitor } from '@rocket.chat/omnichannel-typings';
 import type { FindCursor, UpdateResult, DeleteResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';

@@ -1,7 +1,7 @@
 import type { IAuthorizationLivechat, RoomAccessValidator } from '@rocket.chat/core-services';
 import { proxifyWithWait } from '@rocket.chat/core-services';
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
+import type { IOmnichannelRoom } from '@rocket.chat/omnichannel-typings';
 
 const AuthorizationLivechat = proxifyWithWait<IAuthorizationLivechat>('authorization-livechat');
 
