@@ -45,7 +45,6 @@ import './methods/sendFileLivechatMessage';
 import './methods/setCustomField';
 import './methods/setDepartmentForVisitor';
 import './methods/transfer';
-import './methods/webhookTest';
 import './methods/setUpConnection';
 import './methods/takeInquiry';
 import './methods/requestTranscript';
