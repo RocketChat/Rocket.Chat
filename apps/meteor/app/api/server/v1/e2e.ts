@@ -13,6 +13,7 @@ import ExpiryMap from 'expiry-map';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { handleSuggestedGroupKey } from '../../../e2e/server/functions/handleSuggestedGroupKey';
 import { provideUsersSuggestedGroupKeys } from '../../../e2e/server/functions/provideUsersSuggestedGroupKeys';
 import { resetRoomKey } from '../../../e2e/server/functions/resetRoomKey';
@@ -299,24 +300,28 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isE2EResetRoomKeyProps },
 	{
 		async post() {
-			if (LockMap.has(this.bodyParams.rid)) {
+			const { rid, e2eKey, e2eKeyId } = this.bodyParams;
+			if (!(await hasPermissionAsync(this.userId, 'toggle-room-e2e-encryption', rid))) {
+				return API.v1.unauthorized();
+			}
+			if (LockMap.has(rid)) {
 				throw new Error('error-e2e-key-reset-in-progress');
 			}
 
-			LockMap.set(this.bodyParams.rid, true);
+			LockMap.set(rid, true);
 
-			if (!(await canAccessRoomIdAsync(this.bodyParams.rid, this.userId))) {
+			if (!(await canAccessRoomIdAsync(rid, this.userId))) {
 				throw new Error('error-not-allowed');
 			}
 
 			try {
-				await resetRoomKey(this.bodyParams.rid, this.userId, this.bodyParams.e2eKey, this.bodyParams.e2eKeyId);
+				await resetRoomKey(rid, this.userId, e2eKey, e2eKeyId);
 				return API.v1.success();
 			} catch (e) {
 				console.error(e);
 				return API.v1.failure(e);
 			} finally {
-				LockMap.delete(this.bodyParams.rid);
+				LockMap.delete(rid);
 			}
 		},
 	},
