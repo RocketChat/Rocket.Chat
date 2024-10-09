@@ -1,9 +1,9 @@
 import { Box, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
 import type { AppInfo } from '../../../definitions/AppInfo';
@@ -19,7 +19,7 @@ type AppDetailsProps = {
 };
 
 const AppDetails = ({ app }: AppDetailsProps) => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 	const {
 		author: { homepage, support } = {},
 		detailedDescription,
