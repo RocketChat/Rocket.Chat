@@ -271,7 +271,11 @@ class E2E extends Emitter {
 		}
 
 		// When the key was already set and is changed via an update, we update the room instance
-		if (this.instancesByRoomId[rid].keyID !== undefined && this.instancesByRoomId[rid].keyID !== room.e2eKeyId) {
+		if (
+			this.instancesByRoomId[rid].keyID !== undefined &&
+			room.e2eKeyId !== undefined &&
+			this.instancesByRoomId[rid].keyID !== room.e2eKeyId
+		) {
 			// KeyID was changed, update instance with new keyID and put room in waiting keys status
 			this.instancesByRoomId[rid].onRoomKeyReset(room.e2eKeyId);
 		}
