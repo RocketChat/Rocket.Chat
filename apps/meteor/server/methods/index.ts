@@ -13,7 +13,6 @@ import './createDirectMessage';
 import './deleteFileMessage';
 import './deleteUser';
 import './getAvatarSuggestion';
-import './getPasswordPolicy';
 import './getRoomById';
 import './getRoomIdByNameOrId';
 import './getRoomNameById';
