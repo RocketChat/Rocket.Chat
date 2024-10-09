@@ -714,8 +714,6 @@ class LivechatClass {
 			returnDocument: 'after',
 		});
 
-		console.log({ upsertedLivechatVisitor });
-
 		if (!upsertedLivechatVisitor.value) {
 			Livechat.logger.debug(`No visitor found after upsert`);
 			return null;
