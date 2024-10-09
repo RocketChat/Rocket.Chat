@@ -14,7 +14,7 @@ type VoipClientResult = {
 	error: Error | null;
 };
 
-export const useVoipClient = ({ autoRegister = true }: VoipClientParams = {}): VoipClientResult => {
+export const useVoipClient = ({ autoRegister = true }: VoipClientParams): VoipClientResult => {
 	const { _id: userId } = useUser() || {};
 	const isVoipEnabled = useSetting<boolean>('VoIP_TeamCollab_Enabled');
 	const voipClientRef = useRef<VoipClient | null>(null);
