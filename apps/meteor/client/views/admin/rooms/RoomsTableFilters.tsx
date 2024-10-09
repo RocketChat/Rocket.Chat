@@ -9,6 +9,7 @@ const initialRoomTypeFilterStructure = [
 	{
 		id: 'filter_by_room',
 		text: 'Filter_by_room',
+		isGroupTitle: true,
 	},
 	{
 		id: 'd',
