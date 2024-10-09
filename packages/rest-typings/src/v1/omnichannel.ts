@@ -2977,33 +2977,6 @@ const POSTLivechatInquiriesTakeParamsSchema = {
 
 export const isPOSTLivechatInquiriesTakeParams = ajv.compile<POSTLivechatInquiriesTakeParams>(POSTLivechatInquiriesTakeParamsSchema);
 
-type GETLivechatInquiriesQueuedParams = PaginatedRequest<{ department?: string }>;
-
-const GETLivechatInquiriesQueuedParamsSchema = {
-	type: 'object',
-	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		department: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	additionalProperties: false,
-};
-
-export const isGETLivechatInquiriesQueuedParams = ajv.compile<GETLivechatInquiriesQueuedParams>(GETLivechatInquiriesQueuedParamsSchema);
-
 type GETLivechatInquiriesQueuedForUserParams = PaginatedRequest<{ department?: string }>;
 
 const GETLivechatInquiriesQueuedForUserParamsSchema = {
@@ -3968,9 +3941,6 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/inquiries.take': {
 		POST: (params: POSTLivechatInquiriesTakeParams) => { inquiry: ILivechatInquiryRecord };
-	};
-	'/v1/livechat/inquiries.queued': {
-		GET: (params: GETLivechatInquiriesQueuedParams) => PaginatedResult<{ inquiries: ILivechatInquiryRecord[] }>;
 	};
 	'/v1/livechat/inquiries.queuedForUser': {
 		GET: (params: GETLivechatInquiriesQueuedForUserParams) => PaginatedResult<{ inquiries: ILivechatInquiryRecord[] }>;
