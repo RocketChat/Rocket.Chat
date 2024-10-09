@@ -233,7 +233,7 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	withJohnDoe(): this {
+	withJohnDoe(overrides: Partial<IUser> = {}): this {
 		this.user.userId = 'john.doe';
 
 		this.user.user = {
@@ -245,6 +245,7 @@ export class MockedAppRootBuilder {
 			_updatedAt: new Date(),
 			roles: ['admin'],
 			type: 'user',
+			...overrides,
 		};
 
 		return this;
