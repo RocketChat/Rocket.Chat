@@ -37,7 +37,6 @@ import './methods/saveIntegration';
 import './methods/saveTrigger';
 import './methods/sendMessageLivechat';
 import './methods/sendFileLivechatMessage';
-import './methods/setCustomField';
 import './methods/setDepartmentForVisitor';
 import './methods/transfer';
 import './methods/setUpConnection';
