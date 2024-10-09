@@ -36,7 +36,7 @@ it('should not fetch and add selected department if it is already in the departm
 				onlyMyDepartments: true,
 				haveAll: true,
 				showArchived: true,
-				selectedDepartment: '5',
+				selectedDepartment: selectedDepartmentMappedToOption,
 			}),
 		{
 			legacyRoot: true,
@@ -87,7 +87,7 @@ it('should fetch and add selected department if it is not part of departments li
 				onlyMyDepartments: true,
 				haveAll: true,
 				showArchived: true,
-				selectedDepartment: '56f5be8bcf8cd67f9e9bcfdc',
+				selectedDepartment: missingDepartmentMappedToOption,
 			}),
 		{
 			legacyRoot: true,
