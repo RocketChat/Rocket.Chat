@@ -6,7 +6,7 @@ import { HeaderToolbar } from '../../../../components/Header';
 import SidebarToggler from '../../../../components/SidebarToggler';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 import RoomHeader from '../RoomHeader';
-import { BackButton } from './BackButton';
+import BackButton from './BackButton';
 import QuickActions from './QuickActions';
 
 type OmnichannelRoomHeaderProps = {
