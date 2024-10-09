@@ -10,7 +10,6 @@ import {
 	isMethodCallAnonProps,
 	isFingerprintProps,
 	isMeteorCall,
-	validateParamsPwGetPolicyRest,
 } from '@rocket.chat/rest-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import EJSON from 'ejson';
@@ -403,36 +402,6 @@ API.v1.addRoute(
 	},
 	{
 		get() {
-			return API.v1.success(passwordPolicy.getPasswordPolicy());
-		},
-	},
-);
-
-API.v1.addRoute(
-	'pw.getPolicyReset',
-	{
-		authRequired: false,
-		validateParams: validateParamsPwGetPolicyRest,
-		deprecation: {
-			version: '7.0.0',
-			alternatives: ['pw.getPolicy'],
-		},
-	},
-	{
-		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					token: String,
-				}),
-			);
-			const { token } = this.queryParams;
-
-			const user = await Users.findOneByResetToken(token, { projection: { _id: 1 } });
-			if (!user) {
-				return API.v1.unauthorized();
-			}
-
 			return API.v1.success(passwordPolicy.getPasswordPolicy());
 		},
 	},
