@@ -6,16 +6,15 @@ import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { settings } from '../../../settings/server';
 import { IsolatedVMScriptEngine } from '../lib/isolated-vm/isolated-vm';
-import { VM2ScriptEngine } from '../lib/vm2/vm2';
 import { incomingLogger } from '../logger';
 import { addOutgoingIntegration } from '../methods/outgoing/addOutgoingIntegration';
 import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
 
-const vm2Engine = new VM2ScriptEngine(true);
 const ivmEngine = new IsolatedVMScriptEngine(true);
 
-function getEngine(integration) {
-	return integration.scriptEngine === 'isolated-vm' ? ivmEngine : vm2Engine;
+// eslint-disable-next-line no-unused-vars
+function getEngine(_integration) {
+	return ivmEngine;
 }
 
 async function createIntegration(options, user) {

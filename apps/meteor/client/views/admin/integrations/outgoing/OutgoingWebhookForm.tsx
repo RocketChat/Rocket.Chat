@@ -75,13 +75,7 @@ const OutgoingWebhookForm = () => {
 		[t],
 	);
 
-	const scriptEngineOptions: SelectOption[] = useMemo(
-		() => [
-			['vm2', t('Script_Engine_vm2')],
-			['isolated-vm', t('Script_Engine_isolated_vm')],
-		],
-		[t],
-	);
+	const scriptEngineOptions: SelectOption[] = useMemo(() => [['isolated-vm', t('Script_Engine_isolated_vm')]], [t]);
 
 	const showChannel = useMemo(() => outgoingEvents[event].use.channel, [event]);
 	const showTriggerWords = useMemo(() => outgoingEvents[event].use.triggerWords, [event]);
