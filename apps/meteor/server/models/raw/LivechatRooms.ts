@@ -1227,7 +1227,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}: {
 		visitorsIds: string[];
 		source?: string;
-		options: FindOptions;
+		options?: FindOptions;
 	}): FindPaginated<FindCursor<IOmnichannelRoom>> {
 		return this.findPaginated<IOmnichannelRoom>(
 			{
