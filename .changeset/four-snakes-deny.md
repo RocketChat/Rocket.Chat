@@ -1,6 +1,5 @@
 ---
 "@rocket.chat/meteor": major
-"@rocket.chat/core-typings": major
 "@rocket.chat/rest-typings": major
 ---
 
