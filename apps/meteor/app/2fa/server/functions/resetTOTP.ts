@@ -22,7 +22,7 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 		return;
 	}
 
-	const t = i18n.getFixedT(language);
+	const t = (s: string): string => i18n.t(s, { lng: language });
 	const text = `
 	${t('Your_TOTP_has_been_reset')}
 

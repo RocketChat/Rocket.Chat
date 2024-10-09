@@ -1,8 +1,8 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box, CheckBox } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { GenericTable, GenericTableHeaderCell, GenericTableHeader, GenericTableBody } from '../../../components/GenericTable';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
@@ -29,7 +29,7 @@ const ChannelDesertionTable = ({
 }: ChannelDesertionTableProps) => {
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'ts'>('name');
 
-	const { t } = useTranslation();
+	const t = useTranslation();
 
 	const selectedRoomsLength = Object.values(selectedRooms).filter(Boolean).length;
 
