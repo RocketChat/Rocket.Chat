@@ -1,10 +1,11 @@
-import { Box, Callout, Chip, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useExternalLink } from '../../../../../hooks/useExternalLink';
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
 import type { AppInfo } from '../../../definitions/AppInfo';
 import { purifyOptions } from '../../../lib/purifyOptions';
@@ -17,6 +18,8 @@ type AppDetailsProps = {
 		documentationUrl?: AppInfo['documentationUrl'];
 	};
 };
+
+const GET_ADDONS_LINK = 'https://go.rocket.chat/i/get-addons';
 
 const AppDetails = ({ app }: AppDetailsProps) => {
 	const { t } = useTranslation();
@@ -37,8 +40,27 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 	const normalizedSupportUrl = support ? normalizeUrl(support) : undefined;
 	const normalizedDocumentationUrl = documentation ? normalizeUrl(documentation) : undefined;
 
+	const openExternalLink = useExternalLink();
+
 	return (
 		<Box maxWidth='x640' w='full' marginInline='auto' color='default'>
+			{
+				// if(appNeedAddon && userHasAddon){
+				<Callout
+					title={t('Subscription_add-on_required')}
+					type='info'
+					actions={
+						// <ButtonGroup>
+						<Button small onClick={() => openExternalLink(GET_ADDONS_LINK)}>
+							{t('Contact_sales')}
+						</Button>
+						// </ButtonGroup>
+					}
+				>
+					{t('App_cannot_be_enabled_without_add-on')}
+				</Callout>
+				// }
+			}
 			{app.licenseValidation && (
 				<>
 					{Object.entries(app.licenseValidation.warnings).map(([key]) => (

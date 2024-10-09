@@ -6356,6 +6356,8 @@
   "onboarding.form.standaloneServerForm.servicesUnavailable": "Some of the services will be unavailable or will require manual setup",
   "onboarding.form.standaloneServerForm.publishOwnApp": "In order to send push notitications you need to compile and publish your own app to Google Play and App Store",
   "onboarding.form.standaloneServerForm.manuallyIntegrate": "Need to manually integrate with external services",
+  "Subscription_add-on_required": "Subscription add-on required",
+  "App_cannot_be_enabled_without_add-on": "App cannot be enabled without add-on.",
   "subscription.callout.servicesDisruptionsMayOccur": "Services disruptions may occur",
   "subscription.callout.servicesDisruptionsOccurring": "Services disruptions occurring",
   "subscription.callout.capabilitiesDisabled": "Capabilities disabled",
