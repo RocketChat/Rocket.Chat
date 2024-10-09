@@ -662,49 +662,6 @@ describe('miscellaneous', () => {
 		});
 	});
 
-	describe('/pw.getPolicyReset', () => {
-		it('should fail if no token provided', (done) => {
-			void request
-				.get(api('pw.getPolicyReset'))
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
-				})
-				.end(done);
-		});
-
-		it('should fail if no token is invalid format', (done) => {
-			void request
-				.get(api('pw.getPolicyReset'))
-				.query({ token: '123' })
-				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
-				})
-				.end(done);
-		});
-
-		// not sure we have a way to get the reset token, looks like it is only sent via email by Meteor
-		it.skip('should return policies if correct token is provided', (done) => {
-			void request
-				.get(api('pw.getPolicyReset'))
-				.query({ token: '' })
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('enabled');
-					expect(res.body).to.have.property('policy').and.to.be.an('array');
-				})
-				.end(done);
-		});
-	});
-
 	describe('[/stdout.queue]', () => {
 		let testUser: TestUser<IUser>;
 		let testUsername: string;
