@@ -592,6 +592,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
+	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<ModifyResult<ISubscription>> {
+		const query = { rid, 'u._id': uid };
+		const update = { $set: { E2ESuggestedKey: key } };
+		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
+	}
+
 	setE2EKeyByUserIdAndRoomId(userId: string, rid: string, key: string): Promise<ModifyResult<ISubscription>> {
 		const query = { rid, 'u._id': userId };
 		const update = { $set: { E2EKey: key } };
