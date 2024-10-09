@@ -72,10 +72,10 @@ const MailExportForm = ({ formId, rid, onCancel, exportOptions }: MailExportForm
 		setValue('messagesCount', messages.length);
 	}, [setValue, messages.length]);
 
-	const handleExport = async ({ type, toUsers, subject, additionalEmails }: MailExportFormValues) => {
+	const handleExport = async ({ toUsers, subject, additionalEmails }: MailExportFormValues) => {
 		roomExportMutation.mutateAsync({
 			rid,
-			type,
+			type: 'email',
 			toUsers,
 			toEmails: additionalEmails?.split(','),
 			subject,

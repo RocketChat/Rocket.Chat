@@ -1,20 +1,9 @@
-import InfoPanel from './InfoPanel';
-import InfoPanelAction from './InfoPanelAction';
-import InfoPanelActionGroup from './InfoPanelActionGroup';
-import InfoPanelAvatar from './InfoPanelAvatar';
-import InfoPanelField from './InfoPanelField';
-import InfoPanelLabel from './InfoPanelLabel';
-import InfoPanelSection from './InfoPanelSection';
-import InfoPanelText from './InfoPanelText';
-import InfoPanelTitle from './InfoPanelTitle';
-
-export default Object.assign(InfoPanel, {
-	Title: InfoPanelTitle,
-	Label: InfoPanelLabel,
-	Text: InfoPanelText,
-	Avatar: InfoPanelAvatar,
-	Field: InfoPanelField,
-	Action: InfoPanelAction,
-	Section: InfoPanelSection,
-	ActionGroup: InfoPanelActionGroup,
-});
+export { default as InfoPanel } from './InfoPanel';
+export { default as InfoPanelAction } from './InfoPanelAction';
+export { default as InfoPanelActionGroup } from './InfoPanelActionGroup';
+export { default as InfoPanelAvatar } from './InfoPanelAvatar';
+export { default as InfoPanelField } from './InfoPanelField';
+export { default as InfoPanelLabel } from './InfoPanelLabel';
+export { default as InfoPanelSection } from './InfoPanelSection';
+export { default as InfoPanelText } from './InfoPanelText';
+export { default as InfoPanelTitle } from './InfoPanelTitle';

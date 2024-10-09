@@ -1,39 +1,27 @@
-import { Box, Icon, TextInput, Button, Margins } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Margins } from '@rocket.chat/fuselage';
+import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactNode, ChangeEvent, FormEvent, ReactElement } from 'react';
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import type { ChangeEvent, FormEvent, HTMLAttributes } from 'react';
+import React, { forwardRef, memo, useCallback, useState } from 'react';
 
-type FilterByTextCommonProps = {
-	children?: ReactNode | undefined;
-	placeholder?: string;
-	inputRef?: () => void;
-	onChange: (filter: { text: string }) => void;
-	autoFocus?: boolean;
-};
+type FilterByTextProps = {
+	onChange: (filter: string) => void;
+	shouldAutoFocus?: boolean;
+} & Omit<HTMLAttributes<HTMLInputElement>, 'is' | 'onChange'>;
 
-type FilterByTextPropsWithButton = FilterByTextCommonProps & {
-	displayButton: true;
-	textButton: string;
-	onButtonClick: () => void;
-};
-
-type FilterByTextProps = FilterByTextCommonProps | FilterByTextPropsWithButton;
-
-const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWithButton =>
-	'displayButton' in props && props.displayButton === true;
-
-const FilterByText = ({ placeholder, onChange: setFilter, inputRef, children, autoFocus, ...props }: FilterByTextProps): ReactElement => {
+const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function FilterByText(
+	{ placeholder, onChange: setFilter, shouldAutoFocus = false, children, ...props },
+	ref,
+) {
 	const t = useTranslation();
-
 	const [text, setText] = useState('');
+	const autoFocusRef = useAutoFocus(shouldAutoFocus);
+	const mergedRefs = useMergedRefs(ref, autoFocusRef);
 
-	const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setText(event.currentTarget.value);
-	}, []);
-
-	useEffect(() => {
-		setFilter({ text });
-	}, [setFilter, text]);
+		setFilter(event.currentTarget.value);
+	};
 
 	const handleFormSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -43,25 +31,20 @@ const FilterByText = ({ placeholder, onChange: setFilter, inputRef, children, au
 		<Box mb={16} mi='neg-x4' is='form' onSubmit={handleFormSubmit} display='flex' flexWrap='wrap' alignItems='center'>
 			<Box mi={4} display='flex' flexGrow={1}>
 				<TextInput
+					{...props}
 					placeholder={placeholder ?? t('Search')}
-					ref={inputRef}
+					ref={mergedRefs}
 					addon={<Icon name='magnifier' size='x20' />}
 					onChange={handleInputChange}
 					value={text}
-					autoFocus={autoFocus}
 					flexGrow={2}
 					minWidth='x220'
+					aria-label={placeholder ?? t('Search')}
 				/>
 			</Box>
-			{isFilterByTextPropsWithButton(props) ? (
-				<Button onClick={props.onButtonClick} mis={8} primary>
-					{props.textButton}
-				</Button>
-			) : (
-				children && <Margins all='x4'>{children}</Margins>
-			)}
+			{children && <Margins inline={4}>{children}</Margins>}
 		</Box>
 	);
-};
+});
 
-export default memo<FilterByTextProps>(FilterByText);
+export default memo(FilterByText);

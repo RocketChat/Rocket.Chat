@@ -12,11 +12,11 @@ import type { ParsedMail, Attachment } from 'mailparser';
 import stripHtml from 'string-strip-html';
 
 import { FileUpload } from '../../../app/file-upload/server';
+import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../app/settings/server';
 import { i18n } from '../../lib/i18n';
-import { broadcastMessageFromData } from '../../modules/watchers/lib/messages';
 import { logger } from './logger';
 
 type FileAttachment = VideoAttachmentProps & ImageAttachmentProps & AudioAttachmentProps;
@@ -40,21 +40,18 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 		return guest;
 	}
 
-	const userId = await LivechatTyped.registerGuest({
+	const livechatVisitor = await LivechatTyped.registerGuest({
 		token: Random.id(),
 		name: name || email,
 		email,
 		department,
 	});
 
-	const newGuest = await LivechatVisitors.findOneEnabledById(userId);
-	logger.debug(`Guest ${userId} for visitor ${email} created`);
-
-	if (newGuest) {
-		return newGuest;
+	if (!livechatVisitor) {
+		throw new Error('Error getting guest');
 	}
 
-	throw new Error('Error getting guest');
+	return livechatVisitor;
 }
 
 async function uploadAttachment(attachmentParam: Attachment, rid: string, visitorToken: string): Promise<Partial<FileAttachment>> {
@@ -237,7 +234,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 				},
 			);
 			room && (await LivechatRooms.updateEmailThreadByRoomId(room._id, thread));
-			void broadcastMessageFromData({
+			void notifyOnMessageChange({
 				id: msgId,
 			});
 		})

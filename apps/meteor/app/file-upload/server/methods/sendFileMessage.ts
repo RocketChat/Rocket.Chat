@@ -1,6 +1,14 @@
-import type { MessageAttachment, FileAttachmentProps, IUser, IUpload, AtLeast, FilesAndAttachments } from '@rocket.chat/core-typings';
+import type {
+	MessageAttachment,
+	FileAttachmentProps,
+	IUser,
+	IUpload,
+	AtLeast,
+	FilesAndAttachments,
+	IMessage,
+} from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -133,7 +141,7 @@ export const parseFileIntoMessageAttachments = async (
 	return { files, attachments };
 };
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		sendFileMessage: (roomId: string, _store: string, file: Partial<IUpload>, msgData?: Record<string, any>) => boolean;
@@ -150,6 +158,13 @@ export const sendFileMessage = async (
 		roomId: string;
 		file: Partial<IUpload>;
 		msgData?: Record<string, any>;
+	},
+	{
+		parseAttachmentsForE2EE,
+	}: {
+		parseAttachmentsForE2EE: boolean;
+	} = {
+		parseAttachmentsForE2EE: true,
 	},
 ): Promise<boolean> => {
 	const user = await Users.findOneById(userId);
@@ -177,21 +192,34 @@ export const sendFileMessage = async (
 			groupable: Match.Optional(Boolean),
 			msg: Match.Optional(String),
 			tmid: Match.Optional(String),
+			customFields: Match.Optional(String),
+			t: Match.Optional(String),
+			content: Match.Optional(
+				Match.ObjectIncluding({
+					algorithm: String,
+					ciphertext: String,
+				}),
+			),
 		}),
 	);
 
-	const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
-
-	const msg = await executeSendMessage(userId, {
+	const data = {
 		rid: roomId,
 		ts: new Date(),
-		file: files[0],
-		files,
-		attachments,
-		...msgData,
+		...(msgData as Partial<IMessage>),
+		...(msgData?.customFields && { customFields: JSON.parse(msgData.customFields) }),
 		msg: msgData?.msg ?? '',
 		groupable: msgData?.groupable ?? false,
-	});
+	};
+
+	if (parseAttachmentsForE2EE || msgData?.t !== 'e2e') {
+		const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
+		data.file = files[0];
+		data.files = files;
+		data.attachments = attachments;
+	}
+
+	const msg = await executeSendMessage(userId, data);
 
 	callbacks.runAsync('afterFileUpload', { user, room, message: msg });
 

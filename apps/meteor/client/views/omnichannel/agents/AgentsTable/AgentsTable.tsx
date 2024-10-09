@@ -73,7 +73,7 @@ const AgentsTable = () => {
 	return (
 		<>
 			<AddAgent reload={refetch} />
-			{((isSuccess && data?.users.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }) => setFilter(text)} />}
+			{((isSuccess && data?.users.length > 0) || queryHasChanged) && <FilterByText onChange={setFilter} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

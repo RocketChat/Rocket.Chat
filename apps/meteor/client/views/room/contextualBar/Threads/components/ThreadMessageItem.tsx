@@ -39,6 +39,7 @@ export const ThreadMessageItem = ({
 		<>
 			{showDivider && (
 				<Box
+					role='listitem'
 					ref={ref}
 					data-id={message.ts}
 					{...(newDay && {
@@ -57,13 +58,11 @@ export const ThreadMessageItem = ({
 					</MessageDivider>
 				</Box>
 			)}
-			<li>
-				{system ? (
-					<SystemMessage message={message} showUserAvatar={showUserAvatar} />
-				) : (
-					<ThreadMessage message={message} sequential={shouldShowAsSequential} unread={firstUnread} showUserAvatar={showUserAvatar} />
-				)}
-			</li>
+			{system ? (
+				<SystemMessage message={message} showUserAvatar={showUserAvatar} />
+			) : (
+				<ThreadMessage message={message} sequential={shouldShowAsSequential} unread={firstUnread} showUserAvatar={showUserAvatar} />
+			)}
 		</>
 	);
 };

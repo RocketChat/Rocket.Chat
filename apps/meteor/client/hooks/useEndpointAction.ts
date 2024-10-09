@@ -15,7 +15,7 @@ type UseEndpointActionOptions<TPathPattern extends PathPattern> = (undefined ext
 export function useEndpointAction<TMethod extends Method, TPathPattern extends PathPattern>(
 	method: TMethod,
 	pathPattern: TPathPattern,
-	options: UseEndpointActionOptions<TPathPattern> = { keys: {} as UrlParams<TPathPattern> },
+	options: NoInfer<UseEndpointActionOptions<TPathPattern>> = { keys: {} as UrlParams<TPathPattern> },
 ) {
 	const sendData = useEndpoint(method, pathPattern, options.keys as UrlParams<TPathPattern>);
 

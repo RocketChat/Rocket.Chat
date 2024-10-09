@@ -1,4 +1,5 @@
-import type { FC } from 'react';
+import { VoipProvider } from '@rocket.chat/ui-voip';
+import type { ReactNode } from 'react';
 import React from 'react';
 
 import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
@@ -6,7 +7,7 @@ import ActionManagerProvider from './ActionManagerProvider';
 import AuthenticationProvider from './AuthenticationProvider/AuthenticationProvider';
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
-import { CallProvider } from './CallProvider';
+import { CallProvider as OmnichannelCallProvider } from './CallProvider';
 import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
 import { DeviceProvider } from './DeviceProvider/DeviceProvider';
@@ -25,7 +26,11 @@ import UserPresenceProvider from './UserPresenceProvider';
 import UserProvider from './UserProvider';
 import VideoConfProvider from './VideoConfProvider';
 
-const MeteorProvider: FC = ({ children }) => (
+type MeteorProviderProps = {
+	children?: ReactNode;
+};
+
+const MeteorProvider = ({ children }: MeteorProviderProps) => (
 	<ConnectionStatusProvider>
 		<ServerProvider>
 			<RouterProvider>
@@ -47,9 +52,11 @@ const MeteorProvider: FC = ({ children }) => (
 																			<UserPresenceProvider>
 																				<ActionManagerProvider>
 																					<VideoConfProvider>
-																						<CallProvider>
-																							<OmnichannelProvider>{children}</OmnichannelProvider>
-																						</CallProvider>
+																						<VoipProvider>
+																							<OmnichannelCallProvider>
+																								<OmnichannelProvider>{children}</OmnichannelProvider>
+																							</OmnichannelCallProvider>
+																						</VoipProvider>
 																					</VideoConfProvider>
 																				</ActionManagerProvider>
 																			</UserPresenceProvider>

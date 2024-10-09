@@ -6,6 +6,7 @@ import { Settings } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { Importer, ProgressStep } from '../../importer/server';
+import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';
 
 /** @deprecated HipChat was discontinued at 2019-02-15 */
 export class HipChatEnterpriseImporter extends Importer {
@@ -54,7 +55,11 @@ export class HipChatEnterpriseImporter extends Importer {
 			this.converter.addUser(newUser);
 		}
 
-		await Settings.incrementValueById('Hipchat_Enterprise_Importer_Count', count);
+		const { value } = await Settings.incrementValueById('Hipchat_Enterprise_Importer_Count', count, { returnDocument: 'after' });
+		if (value) {
+			void notifyOnSettingChanged(value);
+		}
+
 		await super.updateRecord({ 'count.users': count });
 		await super.addCountToTotal(count);
 	}

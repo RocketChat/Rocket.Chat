@@ -11,6 +11,7 @@ import _ from 'underscore';
 import { validateEmail } from '../../../lib/emailValidator';
 import { strLeft, strRightBack } from '../../../lib/utils/stringUtils';
 import { i18n } from '../../../server/lib/i18n';
+import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
 import { replaceVariables } from './replaceVariables';
 
@@ -166,7 +167,10 @@ export const sendNoWrap = async ({
 		html = undefined;
 	}
 
-	await Settings.incrementValueById('Triggered_Emails_Count');
+	const { value } = await Settings.incrementValueById('Triggered_Emails_Count', 1, { returnDocument: 'after' });
+	if (value) {
+		void notifyOnSettingChanged(value);
+	}
 
 	const email = { to, from, replyTo, subject, html, text, headers };
 

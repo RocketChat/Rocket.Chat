@@ -1,11 +1,11 @@
 import type { IMessage, ReadReceipt } from '@rocket.chat/core-typings';
-import { Skeleton } from '@rocket.chat/fuselage';
 import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
+import GenericModalSkeleton from '../../../../components/GenericModal/GenericModalSkeleton';
 import ReadReceiptRow from './ReadReceiptRow';
 
 type ReadReceiptsModalProps = {
@@ -29,11 +29,7 @@ const ReadReceiptsModal = ({ messageId, onClose }: ReadReceiptsModalProps): Reac
 	}, [dispatchToastMessage, t, onClose, readReceiptsResult.isError, readReceiptsResult.error]);
 
 	if (readReceiptsResult.isLoading || readReceiptsResult.isError) {
-		return (
-			<GenericModal title={t('Read_by')} onConfirm={onClose} onClose={onClose}>
-				<Skeleton type='rect' w='full' h='x120' />
-			</GenericModal>
-		);
+		return <GenericModalSkeleton />;
 	}
 
 	const readReceipts = readReceiptsResult.data;
@@ -41,9 +37,13 @@ const ReadReceiptsModal = ({ messageId, onClose }: ReadReceiptsModalProps): Reac
 	return (
 		<GenericModal title={t('Read_by')} onConfirm={onClose} onClose={onClose}>
 			{readReceipts.length < 1 && t('No_results_found')}
-			{readReceipts.map((receipt) => (
-				<ReadReceiptRow {...receipt} key={receipt._id} />
-			))}
+			{readReceipts.length > 0 && (
+				<div role='list'>
+					{readReceipts.map((receipt) => (
+						<ReadReceiptRow {...receipt} key={receipt._id} />
+					))}
+				</div>
+			)}
 		</GenericModal>
 	);
 };

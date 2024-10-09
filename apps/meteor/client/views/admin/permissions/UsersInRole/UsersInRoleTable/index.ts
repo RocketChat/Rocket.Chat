@@ -1,1 +1,1 @@
-export { default } from './UsersInRoleTableWithData';
+export { default } from './UsersInRoleTable';

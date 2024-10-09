@@ -18,7 +18,7 @@ export const findExistingCASUser = async (username: string): Promise<IUser | und
 	// It'll also allow non-CAS users to switch to CAS based login
 	// #TODO: Remove regex based search
 	const regex = new RegExp(`^${username}$`, 'i');
-	const user = await Users.findOne({ regex });
+	const user = await Users.findOne({ username: regex });
 	if (user) {
 		// Update the user's external_id to reflect this new username.
 		await Users.updateOne({ _id: user._id }, { $set: { 'services.cas.external_id': username } });

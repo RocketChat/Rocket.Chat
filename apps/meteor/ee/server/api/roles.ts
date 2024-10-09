@@ -130,9 +130,7 @@ API.v1.addRoute(
 
 			const role = await insertRoleAsync(roleData, options);
 
-			return API.v1.success({
-				role,
-			});
+			return API.v1.success({ role });
 		},
 	},
 );
@@ -172,9 +170,7 @@ API.v1.addRoute(
 
 			const updatedRole = await updateRole(roleId, roleData, options);
 
-			return API.v1.success({
-				role: updatedRole,
-			});
+			return API.v1.success({ role: updatedRole });
 		},
 	},
 );

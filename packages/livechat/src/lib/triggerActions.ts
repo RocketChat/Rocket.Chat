@@ -24,6 +24,13 @@ export const sendMessageAction = async (_: string, action: ILivechatSendMessageA
 
 	await upsertMessage(message);
 
+	// Save the triggers for subsequent renders
+	if (condition.name === 'after-guest-registration') {
+		store.setState({
+			renderedTriggers: [...store.state.renderedTriggers, message],
+		});
+	}
+
 	if (agent && '_id' in agent) {
 		await store.setState({ agent });
 		parentCall('callback', 'assign-agent', normalizeAgent(agent));
@@ -78,7 +85,17 @@ export const sendMessageExternalServiceAction = async (
 				trigger: true,
 			}));
 
-		await Promise.all(messages.map((message) => upsertMessage(message)));
+		await Promise.all(
+			messages.map((message) => {
+				if (condition.name === 'after-guest-registration') {
+					store.setState({
+						renderedTriggers: [...store.state.renderedTriggers, message],
+					});
+				}
+
+				return upsertMessage(message);
+			}),
+		);
 
 		if (agent && '_id' in agent) {
 			await store.setState({ agent });

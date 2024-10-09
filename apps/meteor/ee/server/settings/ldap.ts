@@ -27,6 +27,7 @@ export function addSettings(): Promise<void> {
 					});
 
 					const backgroundSyncQuery = [enableQuery, { _id: 'LDAP_Background_Sync', value: true }];
+					const backgroundUpdateQuery = [...backgroundSyncQuery, { _id: 'LDAP_Background_Sync_Keep_Existant_Users_Updated', value: true }];
 
 					await this.add('LDAP_Background_Sync_Interval', 'every_24_hours', {
 						type: 'select',
@@ -70,11 +71,13 @@ export function addSettings(): Promise<void> {
 
 					await this.add('LDAP_Background_Sync_Merge_Existent_Users', false, {
 						type: 'boolean',
-						enableQuery: [
-							...backgroundSyncQuery,
-							{ _id: 'LDAP_Background_Sync_Keep_Existant_Users_Updated', value: true },
-							{ _id: 'LDAP_Merge_Existing_Users', value: true },
-						],
+						enableQuery: [...backgroundUpdateQuery, { _id: 'LDAP_Merge_Existing_Users', value: true }],
+						invalidValue: false,
+					});
+
+					await this.add('LDAP_Background_Sync_Disable_Missing_Users', false, {
+						type: 'boolean',
+						enableQuery: backgroundUpdateQuery,
 						invalidValue: false,
 					});
 
@@ -97,6 +100,7 @@ export function addSettings(): Promise<void> {
 						values: [
 							{ key: 'none', i18nLabel: 'LDAP_Sync_User_Active_State_Nothing' },
 							{ key: 'disable', i18nLabel: 'LDAP_Sync_User_Active_State_Disable' },
+							{ key: 'enable', i18nLabel: 'LDAP_Sync_User_Active_State_Enable' },
 							{ key: 'both', i18nLabel: 'LDAP_Sync_User_Active_State_Both' },
 						],
 						i18nDescription: 'LDAP_Sync_User_Active_State_Description',
@@ -153,13 +157,23 @@ export function addSettings(): Promise<void> {
 						invalidValue: false,
 					});
 
-					await this.add('LDAP_Sync_User_Data_Roles_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', {
+					await this.add('LDAP_Sync_User_Data_Roles_BaseDN', '', {
 						type: 'string',
 						enableQuery: syncRolesQuery,
 						invalidValue: '',
 					});
 
-					await this.add('LDAP_Sync_User_Data_Roles_BaseDN', '', {
+					await this.add('LDAP_Sync_User_Data_Roles_GroupMembershipValidationStrategy', 'each_group', {
+						type: 'select',
+						values: [
+							{ key: 'each_group', i18nLabel: 'LDAP_Sync_User_Data_GroupMembershipValidationStrategy_EachGroup' },
+							{ key: 'once', i18nLabel: 'LDAP_Sync_User_Data_GroupMembershipValidationStrategy_Once' },
+						],
+						enableQuery: syncRolesQuery,
+						invalidValue: 'each_group',
+					});
+
+					await this.add('LDAP_Sync_User_Data_Roles_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', {
 						type: 'string',
 						enableQuery: syncRolesQuery,
 						invalidValue: '',
@@ -190,13 +204,23 @@ export function addSettings(): Promise<void> {
 						invalidValue: 'rocket.cat',
 					});
 
-					await this.add('LDAP_Sync_User_Data_Channels_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', {
+					await this.add('LDAP_Sync_User_Data_Channels_BaseDN', '', {
 						type: 'string',
 						enableQuery: syncChannelsQuery,
 						invalidValue: '',
 					});
 
-					await this.add('LDAP_Sync_User_Data_Channels_BaseDN', '', {
+					await this.add('LDAP_Sync_User_Data_Channels_GroupMembershipValidationStrategy', 'each_group', {
+						type: 'select',
+						values: [
+							{ key: 'each_group', i18nLabel: 'LDAP_Sync_User_Data_GroupMembershipValidationStrategy_EachGroup' },
+							{ key: 'once', i18nLabel: 'LDAP_Sync_User_Data_GroupMembershipValidationStrategy_Once' },
+						],
+						enableQuery: syncChannelsQuery,
+						invalidValue: 'each_group',
+					});
+
+					await this.add('LDAP_Sync_User_Data_Channels_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', {
 						type: 'string',
 						enableQuery: syncChannelsQuery,
 						invalidValue: '',

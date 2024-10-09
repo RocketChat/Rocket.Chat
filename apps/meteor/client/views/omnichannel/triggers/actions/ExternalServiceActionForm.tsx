@@ -6,7 +6,7 @@ import React from 'react';
 import type { Control, UseFormTrigger } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
-import { useHasLicenseModule } from '../../../../../ee/client/hooks/useHasLicenseModule';
+import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import type { TriggersPayload } from '../EditTrigger';
 import { useFieldError } from '../hooks';
 import { ActionExternalServiceUrl } from './ActionExternalServiceUrl';
@@ -46,7 +46,7 @@ export const ExternalServiceActionForm = ({ control, trigger, index, ...props }:
 						name={timeoutFieldName}
 						defaultValue={10000}
 						rules={{
-							required: t('The_field_is_required', t('Timeout_in_miliseconds')),
+							required: t('Required_field', { field: t('Timeout_in_miliseconds') }),
 							min: { value: 0, message: t('Timeout_in_miliseconds_cant_be_negative_number') },
 						}}
 						render={({ field }) => {

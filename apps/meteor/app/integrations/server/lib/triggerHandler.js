@@ -6,6 +6,7 @@ import _ from 'underscore';
 
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
+import { notifyOnIntegrationChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { outgoingEvents } from '../../lib/outgoingEvents';
 import { outgoingLogger } from '../logger';
@@ -579,6 +580,7 @@ class RocketChatIntegrationHandler {
 							await updateHistory({ historyId, step: 'after-process-http-status-410', error: true });
 							outgoingLogger.error(`Disabling the Integration "${trigger.name}" because the status code was 401 (Gone).`);
 							await Integrations.updateOne({ _id: trigger._id }, { $set: { enabled: false } });
+							void notifyOnIntegrationChangedById(trigger._id);
 							return;
 						}
 

@@ -3,7 +3,6 @@ import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState } from 'react';
 
-import { useVoipFooterMenu } from '../../../../ee/client/hooks/useVoipFooterMenu';
 import {
 	useCallActions,
 	useCallCreateRoom,
@@ -14,6 +13,7 @@ import {
 	useQueueCounter,
 	useQueueName,
 } from '../../../contexts/CallContext';
+import { useVoipFooterMenu } from '../../../hooks/useVoipFooterMenu';
 import SidebarFooterDefault from '../SidebarFooterDefault';
 import { VoipFooter as VoipFooterComponent } from './VoipFooter';
 

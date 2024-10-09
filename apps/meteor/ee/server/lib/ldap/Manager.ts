@@ -10,6 +10,7 @@ import type {
 import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../../app/lib/server/functions/createRoom';
 import { removeUserFromRoom } from '../../../../app/lib/server/functions/removeUserFromRoom';
+import { setUserActiveStatus } from '../../../../app/lib/server/functions/setUserActiveStatus';
 import { settings } from '../../../../app/settings/server';
 import { getValidRoomName } from '../../../../app/utils/server/lib/getValidRoomName';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
@@ -28,6 +29,7 @@ export class LDAPEEManager extends LDAPManager {
 
 		const createNewUsers = settings.get<boolean>('LDAP_Background_Sync_Import_New_Users') ?? true;
 		const updateExistingUsers = settings.get<boolean>('LDAP_Background_Sync_Keep_Existant_Users_Updated') ?? true;
+		let disableMissingUsers = updateExistingUsers && (settings.get<boolean>('LDAP_Background_Sync_Disable_Missing_Users') ?? false);
 		const mergeExistingUsers = settings.get<boolean>('LDAP_Background_Sync_Merge_Existent_Users') ?? false;
 
 		const options = this.getConverterOptions();
@@ -36,6 +38,7 @@ export class LDAPEEManager extends LDAPManager {
 
 		const ldap = new LDAPConnection();
 		const converter = new LDAPDataConverter(true, options);
+		const touchedUsers = new Set<IUser['_id']>();
 
 		try {
 			await ldap.connect();
@@ -43,7 +46,9 @@ export class LDAPEEManager extends LDAPManager {
 			if (createNewUsers || mergeExistingUsers) {
 				await this.importNewUsers(ldap, converter);
 			} else if (updateExistingUsers) {
-				await this.updateExistingUsers(ldap, converter);
+				await this.updateExistingUsers(ldap, converter, disableMissingUsers);
+				// Missing users will have been disabled automatically by the update operation, so no need to do a separate query for them
+				disableMissingUsers = false;
 			}
 
 			const membersOfGroupFilter = await ldap.searchMembersOfGroupFilter();
@@ -60,9 +65,17 @@ export class LDAPEEManager extends LDAPManager {
 
 					return membersOfGroupFilter.includes(memberFormat);
 				}) as ImporterBeforeImportCallback,
-				afterImportFn: (async ({ data }, isNewRecord: boolean): Promise<void> =>
-					this.advancedSync(ldap, data as IImportUser, converter, isNewRecord)) as ImporterAfterImportCallback,
+				afterImportFn: (async ({ data }, isNewRecord: boolean): Promise<void> => {
+					if (data._id) {
+						touchedUsers.add(data._id);
+					}
+					await this.advancedSync(ldap, data as IImportUser, converter, isNewRecord);
+				}) as ImporterAfterImportCallback,
 			});
+
+			if (disableMissingUsers) {
+				await this.disableMissingUsers([...touchedUsers]);
+			}
 		} catch (error) {
 			logger.error(error);
 		}
@@ -206,6 +219,7 @@ export class LDAPEEManager extends LDAPManager {
 		const syncUserRolesFieldMap = (settings.get<string>('LDAP_Sync_User_Data_RolesMap') ?? '').trim();
 		const syncUserRolesFilter = (settings.get<string>('LDAP_Sync_User_Data_Roles_Filter') ?? '').trim();
 		const syncUserRolesBaseDN = (settings.get<string>('LDAP_Sync_User_Data_Roles_BaseDN') ?? '').trim();
+		const searchStrategy = settings.get<'once' | 'each_group'>('LDAP_Sync_User_Data_Roles_GroupMembershipValidationStrategy');
 
 		if (!shouldSyncUserRoles || !syncUserRolesFieldMap) {
 			logger.debug('not syncing user roles');
@@ -226,42 +240,46 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const fieldMap = this.parseJson(syncUserRolesFieldMap);
-		if (!fieldMap) {
+		const groupsToRolesMap = this.parseJson(syncUserRolesFieldMap);
+		if (!groupsToRolesMap) {
 			logger.debug('missing group role mapping');
 			return;
 		}
 
-		const ldapFields = Object.keys(fieldMap);
+		const ldapGroups = Object.keys(groupsToRolesMap);
 		const roleList: Array<IRole['_id']> = [];
-		const allowedRoles: Array<IRole['_id']> = [];
-
-		for await (const ldapField of ldapFields) {
-			if (!fieldMap[ldapField]) {
-				continue;
-			}
-
-			const userFields = ensureArray<string>(fieldMap[ldapField]);
-
-			for await (const userField of userFields) {
-				const [roleIdOrName] = userField.split(/\.(.+)/);
-
+		const roleIdsList: Array<IRole['_id']> = [];
+		const allowedRoles: Array<IRole['_id']> = this.getDataMappedByLdapGroups(groupsToRolesMap, ldapGroups)
+			.map((role) => role.split(/\.(.+)/)[0])
+			.reduce((allowedRolesIds: string[], roleIdOrName: string) => {
 				const role = roles.find((role) => role._id === roleIdOrName) ?? roles.find((role) => role.name === roleIdOrName);
-
 				if (role) {
-					allowedRoles.push(role._id);
+					allowedRolesIds.push(role._id);
 				}
+				return allowedRolesIds;
+			}, []);
 
-				if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapField)) {
-					if (role) {
-						roleList.push(role._id);
-					}
-					continue;
+		if (searchStrategy === 'once') {
+			const ldapUserGroups = await this.getLdapGroupsByUsername(ldap, username, dn, syncUserRolesBaseDN, syncUserRolesFilter);
+			roleList.push(...this.getDataMappedByLdapGroups(groupsToRolesMap, ldapUserGroups));
+		} else if (searchStrategy === 'each_group') {
+			for await (const ldapGroup of ldapGroups) {
+				if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapGroup)) {
+					roleList.push(...ensureArray<string>(groupsToRolesMap[ldapGroup]));
 				}
 			}
 		}
 
-		await syncUserRoles(user._id, roleList, {
+		for await (const nonValidatedRole of roleList) {
+			const [roleIdOrName] = nonValidatedRole.split(/\.(.+)/);
+
+			const role = roles.find((role) => role._id === roleIdOrName) ?? roles.find((role) => role.name === roleIdOrName);
+			if (role) {
+				roleIdsList.push(role._id);
+			}
+		}
+
+		await syncUserRoles(user._id, roleIdsList, {
 			allowedRoles,
 			skipRemovingRoles: !syncUserRolesAutoRemove,
 		});
@@ -292,14 +310,15 @@ export class LDAPEEManager extends LDAPManager {
 		const syncUserChannelsFieldMap = (settings.get<string>('LDAP_Sync_User_Data_ChannelsMap') ?? '').trim();
 		const syncUserChannelsFilter = (settings.get<string>('LDAP_Sync_User_Data_Channels_Filter') ?? '').trim();
 		const syncUserChannelsBaseDN = (settings.get<string>('LDAP_Sync_User_Data_Channels_BaseDN') ?? '').trim();
+		const searchStrategy = settings.get<'once' | 'each_group'>('LDAP_Sync_User_Data_Channels_GroupMembershipValidationStrategy');
 
 		if (!syncUserChannels || !syncUserChannelsFieldMap) {
 			logger.debug('not syncing groups to channels');
 			return;
 		}
 
-		const fieldMap = this.parseJson(syncUserChannelsFieldMap);
-		if (!fieldMap) {
+		const groupsToRoomsMap = this.parseJson(syncUserChannelsFieldMap);
+		if (!groupsToRoomsMap) {
 			logger.debug('missing group channel mapping');
 			return;
 		}
@@ -310,56 +329,61 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		logger.debug('syncing user channels');
-		const ldapFields = Object.keys(fieldMap);
+		const ldapGroups = Object.keys(groupsToRoomsMap);
+		const ldapUserGroups: string[] = [];
 		const channelsToAdd = new Set<string>();
-		const channelsToRemove = new Set<string>();
+		const userChannelsNames: string[] = [];
 
-		for await (const ldapField of ldapFields) {
-			if (!fieldMap[ldapField]) {
-				continue;
-			}
-
-			const isUserInGroup = await this.isUserInGroup(ldap, syncUserChannelsBaseDN, syncUserChannelsFilter, { dn, username }, ldapField);
-
-			const channels: Array<string> = [].concat(fieldMap[ldapField]);
-			for await (const channel of channels) {
-				try {
-					const name = await getValidRoomName(channel.trim(), undefined, { allowDuplicates: true });
-					const room = (await Rooms.findOneByNonValidatedName(name)) || (await this.createRoomForSync(channel));
-					if (!room) {
-						return;
-					}
-
-					if (isUserInGroup) {
-						if (room.teamMain) {
-							logger.error(`Can't add user to channel ${channel} because it is a team.`);
-						} else {
-							channelsToAdd.add(room._id);
-						}
-					} else if (syncUserChannelsRemove && !room.teamMain) {
-						channelsToRemove.add(room._id);
-					}
-				} catch (e) {
-					logger.debug(`Failed to sync user room, user = ${username}, channel = ${channel}`);
-					logger.error(e);
+		if (searchStrategy === 'once') {
+			ldapUserGroups.push(...(await this.getLdapGroupsByUsername(ldap, username, dn, syncUserChannelsBaseDN, syncUserChannelsFilter)));
+			userChannelsNames.push(...this.getDataMappedByLdapGroups(groupsToRoomsMap, ldapUserGroups));
+		} else if (searchStrategy === 'each_group') {
+			for await (const ldapGroup of ldapGroups) {
+				if (await this.isUserInGroup(ldap, syncUserChannelsBaseDN, syncUserChannelsFilter, { dn, username }, ldapGroup)) {
+					userChannelsNames.push(...ensureArray<string>(groupsToRoomsMap[ldapGroup]));
+					ldapUserGroups.push(ldapGroup);
 				}
 			}
 		}
 
-		for await (const rid of channelsToAdd) {
-			await addUserToRoom(rid, user);
-			logger.debug(`Synced user channel ${rid} from LDAP for ${username}`);
+		for await (const userChannelName of userChannelsNames) {
+			try {
+				const name = await getValidRoomName(userChannelName.trim(), undefined, { allowDuplicates: true });
+				const room = (await Rooms.findOneByNonValidatedName(name)) || (await this.createRoomForSync(userChannelName));
+				if (!room) {
+					return;
+				}
+
+				if (room.teamMain) {
+					logger.error(`Can't add user to channel ${userChannelName} because it is a team.`);
+				} else {
+					channelsToAdd.add(room._id);
+					await addUserToRoom(room._id, user);
+					logger.debug(`Synced user channel ${room._id} from LDAP for ${username}`);
+				}
+			} catch (e) {
+				logger.debug(`Failed to sync user room, user = ${username}, channel = ${userChannelName}`);
+				logger.error(e);
+			}
 		}
 
-		for await (const rid of channelsToRemove) {
-			if (channelsToAdd.has(rid)) {
-				return;
-			}
+		if (syncUserChannelsRemove) {
+			const notInUserGroups = ldapGroups.filter((ldapGroup) => !ldapUserGroups.includes(ldapGroup));
+			const notMappedRooms = this.getDataMappedByLdapGroups(groupsToRoomsMap, notInUserGroups);
 
-			const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(rid, user._id);
-			if (subscription) {
-				await removeUserFromRoom(rid, user);
-				logger.debug(`Removed user ${username} from channel ${rid}`);
+			const roomsToRemove = new Set<string>(notMappedRooms);
+			for await (const roomName of roomsToRemove) {
+				const name = await getValidRoomName(roomName.trim(), undefined, { allowDuplicates: true });
+				const room = await Rooms.findOneByNonValidatedName(name);
+				if (!room || room.teamMain || channelsToAdd.has(room._id)) {
+					return;
+				}
+
+				const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
+				if (subscription) {
+					await removeUserFromRoom(room._id, user);
+					logger.debug(`Removed user ${username} from channel ${room._id}`);
+				}
 			}
 		}
 	}
@@ -376,7 +400,10 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const ldapUserTeams = await this.getLdapTeamsByUsername(ldap, user.username, dn);
+		const baseDN = (settings.get<string>('LDAP_Teams_BaseDN') ?? '').trim() || ldap.options.baseDN;
+		const filter = settings.get<string>('LDAP_Query_To_Get_User_Teams');
+		const groupAttributeName = settings.get<string>('LDAP_Teams_Name_Field');
+		const ldapUserTeams = await this.getLdapGroupsByUsername(ldap, user.username, dn, baseDN, filter, groupAttributeName);
 		const mapJson = settings.get<string>('LDAP_Groups_To_Rocket_Chat_Teams');
 		if (!mapJson) {
 			return;
@@ -386,7 +413,7 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const teamNames = this.getRocketChatTeamsByLdapTeams(map, ldapUserTeams);
+		const teamNames = this.getDataMappedByLdapGroups(map, ldapUserTeams);
 
 		const allTeamNames = [...new Set(Object.values(map).flat())];
 		const allTeams = await Team.listByNames(allTeamNames, { projection: { _id: 1, name: 1 } });
@@ -407,39 +434,41 @@ export class LDAPEEManager extends LDAPManager {
 		}
 	}
 
-	private static getRocketChatTeamsByLdapTeams(mappedTeams: Record<string, string>, ldapUserTeams: Array<string>): Array<string> {
-		const mappedLdapTeams = Object.keys(mappedTeams);
-		const filteredTeams = ldapUserTeams.filter((ldapTeam) => mappedLdapTeams.includes(ldapTeam));
+	private static getDataMappedByLdapGroups(map: Record<string, string>, ldapGroups: Array<string>): Array<string> {
+		const mappedLdapGroups = Object.keys(map);
+		const filteredMappedLdapGroups = ldapGroups.filter((ldapGroup) => mappedLdapGroups.includes(ldapGroup));
 
-		if (filteredTeams.length < ldapUserTeams.length) {
-			const unmappedLdapTeams = ldapUserTeams.filter((ldapTeam) => !mappedLdapTeams.includes(ldapTeam));
-			logger.error(`The following LDAP teams are not mapped in Rocket.Chat: "${unmappedLdapTeams.join(', ')}".`);
+		if (filteredMappedLdapGroups.length < ldapGroups.length) {
+			const unmappedLdapGroups = ldapGroups.filter((ldapGroup) => !mappedLdapGroups.includes(ldapGroup));
+			logger.error(`The following LDAP groups are not mapped in Rocket.Chat: "${unmappedLdapGroups.join(', ')}".`);
 		}
 
-		if (!filteredTeams.length) {
+		if (!filteredMappedLdapGroups.length) {
 			return [];
 		}
 
-		return [...new Set(filteredTeams.map((ldapTeam) => mappedTeams[ldapTeam]).flat())];
+		return [...new Set(filteredMappedLdapGroups.map((ldapGroup) => map[ldapGroup]).flat())];
 	}
 
-	private static async getLdapTeamsByUsername(ldap: LDAPConnection, username: string, dn: string): Promise<Array<string>> {
-		const baseDN = (settings.get<string>('LDAP_Teams_BaseDN') ?? '').trim() || ldap.options.baseDN;
-		const query = settings.get<string>('LDAP_Query_To_Get_User_Teams');
-		if (!query) {
+	private static async getLdapGroupsByUsername(
+		ldap: LDAPConnection,
+		username: string,
+		userDN: string,
+		baseDN: string,
+		filter: string,
+		groupAttributeName?: string,
+	): Promise<Array<string>> {
+		if (!filter) {
 			return [];
 		}
 
 		const searchOptions = {
-			filter: query.replace(/#{username}/g, username).replace(/#{userdn}/g, dn.replace(/\\/g, '\\5c')),
+			filter: filter.replace(/#{username}/g, username).replace(/#{userdn}/g, userDN.replace(/\\/g, '\\5c')),
 			scope: ldap.options.userSearchScope || 'sub',
 			sizeLimit: ldap.options.searchSizeLimit,
 		};
 
-		const attributeNames = (settings.get<string>('LDAP_Teams_Name_Field') ?? '').split(',').map((attributeName) => attributeName.trim());
-		if (!attributeNames.length) {
-			attributeNames.push('ou');
-		}
+		const attributeNames = groupAttributeName ? groupAttributeName.split(',').map((attributeName) => attributeName.trim()) : ['ou', 'cn'];
 
 		const ldapUserGroups = await ldap.searchRaw(baseDN, searchOptions);
 		if (!Array.isArray(ldapUserGroups)) {
@@ -531,6 +560,10 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
+		if (syncUserState === 'enable' && deleted) {
+			return;
+		}
+
 		userData.deleted = deleted;
 		logger.info(`${deleted ? 'Deactivating' : 'Activating'} user ${userData.name} (${userData.username})`);
 	}
@@ -575,7 +608,7 @@ export class LDAPEEManager extends LDAPManager {
 		});
 	}
 
-	private static async updateExistingUsers(ldap: LDAPConnection, converter: LDAPDataConverter): Promise<void> {
+	private static async updateExistingUsers(ldap: LDAPConnection, converter: LDAPDataConverter, disableMissingUsers = false): Promise<void> {
 		const users = await Users.findLDAPUsers().toArray();
 		for await (const user of users) {
 			const ldapUser = await this.findLDAPUser(ldap, user);
@@ -583,8 +616,16 @@ export class LDAPEEManager extends LDAPManager {
 			if (ldapUser) {
 				const userData = this.mapUserData(ldapUser, user.username);
 				converter.addUserSync(userData, { dn: ldapUser.dn, username: this.getLdapUsername(ldapUser) });
+			} else if (disableMissingUsers) {
+				await setUserActiveStatus(user._id, false, true);
 			}
 		}
+	}
+
+	private static async disableMissingUsers(foundUsers: IUser['_id'][]): Promise<void> {
+		const userIds = (await Users.findLDAPUsersExceptIds(foundUsers, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
+
+		await Promise.allSettled(userIds.map((id) => setUserActiveStatus(id, false, true)));
 	}
 
 	private static async updateUserAvatars(ldap: LDAPConnection): Promise<void> {

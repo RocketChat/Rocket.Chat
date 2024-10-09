@@ -1,6 +1,6 @@
-import type { IGroupVideoConference } from '@rocket.chat/core-typings';
+import type { VideoConference } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Button, Message, Box, Avatar, Palette } from '@rocket.chat/fuselage';
+import { Button, Message, Box, Avatar, Palette, IconButton, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
@@ -10,6 +10,7 @@ import React from 'react';
 import { useVideoConfJoinCall } from '../../../../../contexts/VideoConfContext';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
+import { useGoToRoom } from '../../../hooks/useGoToRoom';
 
 const VideoConfListItem = ({
 	videoConfData,
@@ -17,7 +18,7 @@ const VideoConfListItem = ({
 	reload,
 	...props
 }: {
-	videoConfData: IGroupVideoConference;
+	videoConfData: VideoConference;
 	className?: string[];
 	reload: () => void;
 }): ReactElement => {
@@ -32,6 +33,7 @@ const VideoConfListItem = ({
 		users,
 		createdAt,
 		endedAt,
+		discussionRid,
 	} = videoConfData;
 
 	const joinedUsers = users.filter((user) => user._id !== _id);
@@ -50,6 +52,8 @@ const VideoConfListItem = ({
 		joinCall(callId);
 		return reload();
 	});
+
+	const goToRoom = useGoToRoom();
 
 	return (
 		<Box
@@ -70,9 +74,20 @@ const VideoConfListItem = ({
 					<Message.Body clamp={2} />
 					<Box display='flex'></Box>
 					<Message.Block flexDirection='row' alignItems='center'>
-						<Button disabled={Boolean(endedAt)} small alignItems='center' display='flex' onClick={handleJoinConference}>
-							{endedAt ? t('Call_ended') : t('Join_call')}
-						</Button>
+						<ButtonGroup>
+							<Button disabled={Boolean(endedAt)} small alignItems='center' display='flex' onClick={handleJoinConference}>
+								{endedAt ? t('Call_ended') : t('Join_call')}
+							</Button>
+							{discussionRid && (
+								<IconButton
+									small
+									icon='discussion'
+									data-drid={discussionRid}
+									title={t('Join_discussion')}
+									onClick={() => goToRoom(discussionRid)}
+								/>
+							)}
+						</ButtonGroup>
 						{joinedUsers.length > 0 && (
 							<Box mis={8} fontScale='c1' display='flex' alignItems='center'>
 								<Avatar.Stack>

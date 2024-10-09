@@ -1,11 +1,11 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import { HeaderTag, HeaderTagIcon, HeaderTagSkeleton } from '@rocket.chat/ui-client';
 import { useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import { HeaderTag, HeaderTagIcon, HeaderTagSkeleton } from '../../../components/Header';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 type APIErrorResult = { success: boolean; error: string };

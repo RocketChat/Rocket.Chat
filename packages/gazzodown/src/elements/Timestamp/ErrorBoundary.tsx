@@ -1,16 +1,21 @@
-import { Component } from 'react';
+import { Component, ReactNode } from 'react';
 
-export class ErrorBoundary extends Component<{ fallback: React.ReactNode }, { hasError: boolean }> {
-	constructor(props: { fallback: React.ReactNode }) {
+interface ErrorBoundaryProps {
+	fallback: ReactNode;
+	children: ReactNode;
+}
+
+export class ErrorBoundary extends Component<ErrorBoundaryProps, { hasError: boolean }> {
+	constructor(props: ErrorBoundaryProps) {
 		super(props);
 		this.state = { hasError: false };
 	}
 
-	static getDerivedStateFromError() {
+	static getDerivedStateFromError(): { hasError: boolean } {
 		return { hasError: true };
 	}
 
-	render() {
+	render(): ReactNode {
 		if (this.state.hasError) {
 			// You can render any custom fallback UI
 			return this.props.fallback;

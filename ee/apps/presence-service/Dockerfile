@@ -13,6 +13,10 @@ COPY ./packages/agenda/dist packages/agenda/dist
 COPY ./packages/core-services/package.json packages/core-services/package.json
 COPY ./packages/core-services/dist packages/core-services/dist
 
+COPY ./packages/apps-engine/package.json packages/apps-engine/package.json
+COPY ./packages/apps-engine/client packages/apps-engine/client
+COPY ./packages/apps-engine/definition packages/apps-engine/definition
+
 COPY ./packages/core-typings/package.json packages/core-typings/package.json
 COPY ./packages/core-typings/dist packages/core-typings/dist
 
@@ -40,11 +44,11 @@ COPY ./packages/logger/dist packages/logger/dist
 
 COPY ./packages/server-cloud-communication/ packages/server-cloud-communication/
 
+COPY ./ee/packages/network-broker/package.json ee/packages/network-broker/package.json
+COPY ./ee/packages/network-broker/dist ee/packages/network-broker/dist
+
 COPY ./ee/packages/license/package.json packages/license/package.json
 COPY ./ee/packages/license/dist packages/license/dist
-
-COPY ./packages/ui-contexts/package.json packages/ui-contexts/package.json
-COPY ./packages/ui-contexts/dist packages/ui-contexts/dist
 
 COPY ./packages/ui-kit/package.json packages/ui-kit/package.json
 COPY ./packages/ui-kit/dist packages/ui-kit/dist

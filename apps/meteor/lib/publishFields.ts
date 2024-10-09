@@ -74,6 +74,7 @@ export const roomFields = {
 	avatarETag: 1,
 	usersCount: 1,
 	msgs: 1,
+	sidepanel: 1,
 
 	// @TODO create an API to register this fields based on room type
 	tags: 1,
@@ -86,7 +87,6 @@ export const roomFields = {
 	reactWhenReadOnly: 1,
 	sysMes: 1,
 	sentiment: 1,
-	streamingOptions: 1,
 	broadcast: 1,
 	encrypted: 1,
 	e2eKeyId: 1,
@@ -120,4 +120,5 @@ export const roomFields = {
 	callDuration: 1,
 	callTotalHoldTime: 1,
 	callWaitingTime: 1,
+	usersWaitingForE2EKeys: 1,
 } as const;

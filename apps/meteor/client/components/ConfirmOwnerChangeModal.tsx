@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, ComponentProps } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import React from 'react';
 
 import GenericModal from './GenericModal';
@@ -10,16 +10,16 @@ type ConfirmOwnerChangeModalProps = {
 	shouldChangeOwner: string[];
 	shouldBeRemoved: string[];
 	contentTitle?: string;
-} & Pick<ComponentProps<typeof GenericModal>, 'onConfirm' | 'onCancel' | 'confirmText'>;
+} & Pick<ComponentPropsWithoutRef<typeof GenericModal>, 'onConfirm' | 'onCancel' | 'confirmText'>;
 
-const ConfirmOwnerChangeModal: FC<ConfirmOwnerChangeModalProps> = ({
+const ConfirmOwnerChangeModal = ({
 	shouldChangeOwner,
 	shouldBeRemoved,
 	contentTitle,
 	confirmText,
 	onConfirm,
 	onCancel,
-}) => {
+}: ConfirmOwnerChangeModalProps) => {
 	const t = useTranslation();
 
 	let changeOwnerRooms = '';

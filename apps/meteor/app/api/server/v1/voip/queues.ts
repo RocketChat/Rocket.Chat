@@ -1,4 +1,4 @@
-import { Voip } from '@rocket.chat/core-services';
+import { VoipAsterisk } from '@rocket.chat/core-services';
 import type { IVoipConnectorResult, IQueueSummary, IQueueMembershipDetails, IQueueMembershipSubscription } from '@rocket.chat/core-typings';
 import { Match, check } from 'meteor/check';
 
@@ -9,7 +9,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['inbound-voip-calls'] },
 	{
 		async get() {
-			const queueSummary = await Voip.getQueueSummary();
+			const queueSummary = await VoipAsterisk.getQueueSummary();
 			return API.v1.success({ summary: queueSummary.result as IQueueSummary[] });
 		},
 	},
@@ -26,7 +26,7 @@ API.v1.addRoute(
 					extension: String,
 				}),
 			);
-			const membershipDetails: IVoipConnectorResult = await Voip.getQueuedCallsForThisExtension(this.queryParams);
+			const membershipDetails: IVoipConnectorResult = await VoipAsterisk.getQueuedCallsForThisExtension(this.queryParams);
 			return API.v1.success(membershipDetails.result as IQueueMembershipDetails);
 		},
 	},
@@ -43,7 +43,7 @@ API.v1.addRoute(
 					extension: String,
 				}),
 			);
-			const membershipDetails: IVoipConnectorResult = await Voip.getQueueMembership(this.queryParams);
+			const membershipDetails: IVoipConnectorResult = await VoipAsterisk.getQueueMembership(this.queryParams);
 			return API.v1.success(membershipDetails.result as IQueueMembershipSubscription);
 		},
 	},

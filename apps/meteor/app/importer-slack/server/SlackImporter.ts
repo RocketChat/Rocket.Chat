@@ -4,6 +4,7 @@ import type { IZipEntry } from 'adm-zip';
 
 import { Importer, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
+import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
 import { settings } from '../../settings/server';
 import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
@@ -337,7 +338,10 @@ export class SlackImporter extends Importer {
 			}
 
 			if (userCount) {
-				await Settings.incrementValueById('Slack_Importer_Count', userCount);
+				const { value } = await Settings.incrementValueById('Slack_Importer_Count', userCount, { returnDocument: 'after' });
+				if (value) {
+					void notifyOnSettingChanged(value);
+				}
 			}
 
 			const missedTypes: Record<string, SlackMessage> = {};

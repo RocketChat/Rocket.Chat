@@ -2,7 +2,7 @@ import type { ISetting } from '@rocket.chat/core-typings';
 import type { SettingsContextValue } from '@rocket.chat/ui-contexts';
 import { SettingsContext, useAtLeastOnePermission, useMethod } from '@rocket.chat/ui-contexts';
 import { Tracker } from 'meteor/tracker';
-import type { FunctionComponent } from 'react';
+import type { ReactNode } from 'react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
@@ -11,10 +11,11 @@ import { PrivateSettingsCachedCollection } from '../lib/settings/PrivateSettings
 import { PublicSettingsCachedCollection } from '../lib/settings/PublicSettingsCachedCollection';
 
 type SettingsProviderProps = {
-	readonly privileged?: boolean;
+	children?: ReactNode;
+	privileged?: boolean;
 };
 
-const SettingsProvider: FunctionComponent<SettingsProviderProps> = ({ children, privileged = false }) => {
+const SettingsProvider = ({ children, privileged = false }: SettingsProviderProps) => {
 	const hasPrivilegedPermission = useAtLeastOnePermission(
 		useMemo(() => ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'], []),
 	);

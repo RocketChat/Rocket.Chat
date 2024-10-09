@@ -1,7 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps, FC } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import React from 'react';
 
-const InfoPanelSection: FC<ComponentProps<typeof Box>> = (props) => <Box mb={24} {...props} />;
+type InfoPanelSectionProps = ComponentPropsWithoutRef<typeof Box>;
+
+const InfoPanelSection = (props: InfoPanelSectionProps) => <Box mb={24} {...props} />;
 
 export default InfoPanelSection;

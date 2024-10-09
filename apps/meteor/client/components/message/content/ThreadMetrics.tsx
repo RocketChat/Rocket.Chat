@@ -61,13 +61,12 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 					<MessageMetricsItem.Icon name='clock' />
 					<MessageMetricsItem.Label>{format(lm)}</MessageMetricsItem.Label>
 				</MessageMetricsItem>
-				<MessageMetricsItem
-					className={!following ? anchor : undefined}
-					title={t(following ? 'Following' : 'Not_following')}
-					data-rid={rid}
-					onClick={handleFollow}
-				>
-					<MessageMetricsFollowing name={following ? 'bell' : 'bell-off'} />
+				<MessageMetricsItem className={!following ? anchor : undefined} data-rid={rid}>
+					<MessageMetricsFollowing
+						title={t(following ? 'Following' : 'Not_following')}
+						name={following ? 'bell' : 'bell-off'}
+						onClick={handleFollow}
+					/>
 				</MessageMetricsItem>
 				{(mention || all || unread) && (
 					<MessageMetricsItem>

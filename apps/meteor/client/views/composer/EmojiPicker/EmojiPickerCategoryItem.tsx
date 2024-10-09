@@ -30,10 +30,10 @@ const mapCategoryIcon = (category: string) => {
 			return 'airplane';
 
 		case 'objects':
-			return 'percentage';
+			return 'lamp-bulb';
 
 		case 'symbols':
-			return 'lamp-bulb';
+			return 'percentage';
 
 		case 'flags':
 			return 'flag';

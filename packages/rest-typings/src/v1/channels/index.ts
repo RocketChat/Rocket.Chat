@@ -7,7 +7,6 @@ export * from './ChannelsCreateProps';
 export * from './ChannelsDeleteProps';
 export * from './ChannelsGetAllUserMentionsByChannelProps';
 export * from './ChannelsHistoryProps';
-export * from './ChannelsImagesProps';
 export * from './ChannelsJoinProps';
 export * from './ChannelsKickProps';
 export * from './ChannelsLeaveProps';

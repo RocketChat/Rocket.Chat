@@ -35,6 +35,7 @@ class AutoTransferChatSchedulerClass {
 			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
 			db: { collection: SCHEDULER_NAME },
 			defaultConcurrency: 1,
+			processEvery: process.env.TEST_MODE === 'true' ? '3 seconds' : '1 minute',
 		});
 
 		await this.scheduler.start();
@@ -115,7 +116,7 @@ class AutoTransferChatSchedulerClass {
 
 		await forwardRoomToAgent(room, {
 			userId: agent.agentId,
-			transferredBy,
+			transferredBy: { ...transferredBy, userType: 'user' },
 			transferredTo: agent,
 			scope: 'autoTransferUnansweredChatsToAgent',
 			comment: timeoutDuration,

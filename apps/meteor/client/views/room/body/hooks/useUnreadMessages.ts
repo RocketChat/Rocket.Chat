@@ -93,9 +93,11 @@ export const useHandleUnread = (
 	const debouncedReadMessageRead = useMemo(
 		() =>
 			withDebouncing({ wait: 500 })(() => {
-				chat.readStateManager.attemptMarkAsRead();
+				if (subscribed) {
+					chat.readStateManager.attemptMarkAsRead();
+				}
 			}),
-		[chat.readStateManager],
+		[chat.readStateManager, subscribed],
 	);
 
 	useEffect(

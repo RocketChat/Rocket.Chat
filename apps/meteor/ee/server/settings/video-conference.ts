@@ -31,6 +31,25 @@ export function addSettings(): Promise<void> {
 					public: true,
 					invalidValue: true,
 				});
+
+				const discussionsEnabled = { _id: 'Discussion_enabled', value: true };
+
+				await this.add('VideoConf_Enable_Persistent_Chat', false, {
+					type: 'boolean',
+					public: true,
+					invalidValue: false,
+					alert: 'VideoConf_Enable_Persistent_Chat_Alert',
+					enableQuery: [discussionsEnabled],
+				});
+
+				const persistentChatEnabled = { _id: 'VideoConf_Enable_Persistent_Chat', value: true };
+
+				await this.add('VideoConf_Persistent_Chat_Discussion_Name', 'Conference Call Chat History', {
+					type: 'string',
+					public: true,
+					invalidValue: 'Conference Call Chat History',
+					enableQuery: [discussionsEnabled, persistentChatEnabled],
+				});
 			},
 		);
 	});

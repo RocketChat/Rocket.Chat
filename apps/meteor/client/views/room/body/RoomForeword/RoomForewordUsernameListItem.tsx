@@ -1,6 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Icon, Tag, Skeleton } from '@rocket.chat/fuselage';
-import type { VFC } from 'react';
 import React from 'react';
 
 import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';
@@ -12,7 +11,7 @@ type RoomForewordUsernameListItemProps = {
 	useRealName: boolean;
 };
 
-const RoomForewordUsernameListItem: VFC<RoomForewordUsernameListItemProps> = ({ username, href, useRealName }) => {
+const RoomForewordUsernameListItem = ({ username, href, useRealName }: RoomForewordUsernameListItemProps) => {
 	const { data, isLoading, isError } = useUserInfoQuery({ username });
 
 	return (

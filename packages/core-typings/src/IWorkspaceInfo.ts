@@ -5,4 +5,5 @@ export type IWorkspaceInfo = {
 	supportedVersions?: { signed: string };
 	minimumClientVersions: { desktop: string; mobile: string };
 	version: string;
+	cloudWorkspaceId?: string;
 };

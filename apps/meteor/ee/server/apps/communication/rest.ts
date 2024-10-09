@@ -209,8 +209,9 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async get() {
-					const apps = manager.get().map(formatAppInstanceForRest);
-					return API.v1.success({ apps });
+					const apps = await manager.get();
+					const formatted = await Promise.all(apps.map(formatAppInstanceForRest));
+					return API.v1.success({ apps: formatted });
 				},
 			},
 		);
@@ -302,7 +303,8 @@ export class AppsRestApi {
 					}
 					apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/installed to get the installed apps list.');
 
-					const apps = manager.get().map(formatAppInstanceForRest);
+					const proxiedApps = await manager.get();
+					const apps = await Promise.all(proxiedApps.map(formatAppInstanceForRest));
 
 					return API.v1.success({ apps });
 				},
@@ -412,7 +414,7 @@ export class AppsRestApi {
 						});
 					}
 
-					info.status = aff.getApp().getStatus();
+					info.status = await aff.getApp().getStatus();
 
 					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'install', info);
 
@@ -508,8 +510,8 @@ export class AppsRestApi {
 			'languages',
 			{ authRequired: false },
 			{
-				get() {
-					const apps = manager.get().map((prl) => ({
+				async get() {
+					const apps = (await manager.get()).map((prl) => ({
 						id: prl.getID(),
 						languages: prl.getStorageItem().languageContent,
 					}));
@@ -745,7 +747,12 @@ export class AppsRestApi {
 						return API.v1.internalError('private_app_install_disabled');
 					}
 
-					const aff = await manager.update(buff, permissionsGranted);
+					const user = orchestrator
+						?.getConverters()
+						?.get('users')
+						?.convertToApp(await Meteor.userAsync());
+
+					const aff = await manager.update(buff, permissionsGranted, { user, loadApp: true });
 					const info: IAppInfo & { status?: AppStatus } = aff.getAppInfo();
 
 					if (aff.hasStorageError()) {
@@ -760,7 +767,7 @@ export class AppsRestApi {
 						});
 					}
 
-					info.status = aff.getApp().getStatus();
+					info.status = await aff.getApp().getStatus();
 
 					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'update', info);
 
@@ -784,10 +791,14 @@ export class AppsRestApi {
 						?.get('users')
 						.convertToApp(await Meteor.userAsync());
 
-					await manager.remove(prl.getID(), { user });
-
 					const info: IAppInfo & { status?: AppStatus } = prl.getInfo();
-					info.status = prl.getStatus();
+					try {
+						await manager.remove(prl.getID(), { user });
+						info.status = AppStatus.DISABLED;
+					} catch (e) {
+						info.status = await prl.getStatus();
+						return API.v1.failure({ app: info });
+					}
 
 					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'uninstall', info);
 

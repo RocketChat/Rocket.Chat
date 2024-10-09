@@ -2,6 +2,7 @@ import type { IUpload, IUploadWithUser, IMessage, IRoom, ITeam, IGetRoomRoles, I
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
+import type { RoomsImagesProps } from '../rooms';
 import type { ChannelsAddAllProps } from './ChannelsAddAllProps';
 import type { ChannelsArchiveProps } from './ChannelsArchiveProps';
 import type { ChannelsConvertToTeamProps } from './ChannelsConvertToTeamProps';
@@ -10,7 +11,6 @@ import type { ChannelsDeleteProps } from './ChannelsDeleteProps';
 import type { ChannelsGetAllUserMentionsByChannelProps } from './ChannelsGetAllUserMentionsByChannelProps';
 import type { ChannelsGetIntegrationsProps } from './ChannelsGetIntegrationsProps';
 import type { ChannelsHistoryProps } from './ChannelsHistoryProps';
-import type { ChannelsImagesProps } from './ChannelsImagesProps';
 import type { ChannelsInviteProps } from './ChannelsInviteProps';
 import type { ChannelsJoinProps } from './ChannelsJoinProps';
 import type { ChannelsKickProps } from './ChannelsKickProps';
@@ -40,7 +40,7 @@ export type ChannelsEndpoints = {
 		}>;
 	};
 	'/v1/channels.images': {
-		GET: (params: ChannelsImagesProps) => PaginatedResult<{
+		GET: (params: RoomsImagesProps) => PaginatedResult<{
 			files: IUpload[];
 		}>;
 	};

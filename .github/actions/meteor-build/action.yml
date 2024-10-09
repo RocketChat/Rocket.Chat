@@ -13,6 +13,13 @@ inputs:
     required: true
     description: 'Node version'
     type: string
+  NPM_TOKEN:
+    required: false
+    description: 'NPM token'
+  deno-version:
+    required: true
+    description: 'Deno version'
+    type: string
 
 runs:
   using: composite
@@ -27,8 +34,10 @@ runs:
       uses: ./.github/actions/setup-node
       with:
         node-version: ${{ inputs.node-version }}
+        deno-version: ${{ inputs.deno-version }}
         cache-modules: true
         install: true
+        NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
 
     # - name: Free disk space
     #   run: |
@@ -91,7 +100,7 @@ runs:
         meteor node -v
         git version
 
-    - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+    - uses: rharkor/caching-for-turbo@v1.5
 
     - name: Translation check
       shell: bash
@@ -124,7 +133,9 @@ runs:
         tar czf /tmp/Rocket.Chat.tar.gz bundle
 
     - name: Store build
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: build
         path: /tmp/Rocket.Chat.tar.gz
+        overwrite: true
+        include-hidden-files: true

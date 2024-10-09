@@ -3,6 +3,7 @@ import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
+import { onClientMessageReceived } from '../../../lib/onClientMessageReceived';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 import { useRoom } from '../contexts/RoomContext';
 import MessageListTab from './MessageListTab';
@@ -24,7 +25,7 @@ const StarredMessagesTab = () => {
 			messages.push(...result.messages.map(mapMessageFromApi));
 		}
 
-		return messages;
+		return Promise.all(messages.map(onClientMessageReceived));
 	});
 
 	const t = useTranslation();

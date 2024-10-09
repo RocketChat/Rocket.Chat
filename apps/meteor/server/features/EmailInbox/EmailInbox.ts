@@ -18,9 +18,7 @@ export type Inbox = {
 export const inboxes = new Map<string, Inbox>();
 
 export async function configureEmailInboxes(): Promise<void> {
-	const emailInboxesCursor = EmailInbox.find({
-		active: true,
-	});
+	const emailInboxesCursor = EmailInbox.findActive();
 
 	logger.info('Clearing old email inbox registrations');
 	for (const { imap } of inboxes.values()) {

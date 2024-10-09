@@ -13,5 +13,6 @@ import './configuration/index';
 import './local-services/ldap/service';
 import './methods/getReadReceipts';
 import './apps/startup';
+import './patches';
 
 export { registerEEBroker } from './startup';

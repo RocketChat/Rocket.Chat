@@ -1,2 +1,2 @@
 page = require('page');
-qs   = require('qs');
+qs = require('qs');

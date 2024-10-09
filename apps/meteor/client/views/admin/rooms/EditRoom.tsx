@@ -27,7 +27,7 @@ import { useDeleteRoom } from '../../hooks/roomActions/useDeleteRoom';
 import { useEditAdminRoomPermissions } from './useEditAdminRoomPermissions';
 
 type EditRoomProps = {
-	room: Pick<IRoom, RoomAdminFieldsType>;
+	room: IRoom;
 	onChange: () => void;
 	onDelete: () => void;
 };
@@ -156,7 +156,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 					<FieldRow>
 						<Controller
 							name='roomName'
-							rules={{ required: t('The_field_is_required', t('Name')) }}
+							rules={{ required: t('Required_field', { field: t('Name') }) }}
 							control={control}
 							render={({ field }) => (
 								<TextInput

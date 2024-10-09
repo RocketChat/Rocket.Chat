@@ -1,6 +1,5 @@
 import { Box, PasswordInput, TextInput, FieldGroup, Field, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React, { useState, useCallback } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
@@ -11,7 +10,7 @@ type ActionConfirmModalProps = {
 	onCancel: () => void;
 };
 
-const ActionConfirmModal: FC<ActionConfirmModalProps> = ({ isPassword, onConfirm, onCancel }) => {
+const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmModalProps) => {
 	const t = useTranslation();
 	const [inputText, setInputText] = useState('');
 	const [inputError, setInputError] = useState<string | undefined>();

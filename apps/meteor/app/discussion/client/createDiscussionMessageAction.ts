@@ -44,7 +44,7 @@ Meteor.startup(() => {
 				subscription,
 				user,
 			}) {
-				if (drid || !Number.isNaN(dcount)) {
+				if (drid || !Number.isNaN(Number(dcount))) {
 					return false;
 				}
 				if (!subscription) {

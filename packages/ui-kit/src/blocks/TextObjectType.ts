@@ -1,5 +1,3 @@
-import type { TextObject } from './TextObject';
-
 export enum TextObjectType {
 	/** @deprecated */
 	PLAINTEXT = 'plain_text',
@@ -8,8 +6,3 @@ export enum TextObjectType {
 	MARKDOWN = 'mrkdwn',
 	MRKDWN = 'mrkdwn',
 }
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type AssertEnumKeysFromBlockUnionTypes = {
-	[B in TextObject as Uppercase<B['type']>]: (typeof TextObjectType)[Uppercase<B['type']>];
-};

@@ -1,7 +1,6 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
@@ -16,7 +15,7 @@ type SecondStepsProps = {
 	rooms?: (Serialized<IRoom> & { isLastOwner?: boolean })[];
 };
 
-const SecondStep: FC<SecondStepsProps> = ({ onClose, onCancel, onConfirm, deletedRooms = {}, rooms = [], ...props }) => {
+const SecondStep = ({ onClose, onCancel, onConfirm, deletedRooms = {}, rooms = [], ...props }: SecondStepsProps) => {
 	const t = useTranslation();
 
 	return (

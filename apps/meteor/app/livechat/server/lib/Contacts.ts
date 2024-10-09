@@ -1,11 +1,34 @@
-import type { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatVisitors, Users, LivechatRooms, LivechatCustomField, LivechatInquiry, Rooms, Subscriptions } from '@rocket.chat/models';
+import type {
+	AtLeast,
+	ILivechatContact,
+	ILivechatContactChannel,
+	ILivechatCustomField,
+	ILivechatVisitor,
+	IOmnichannelRoom,
+	IUser,
+} from '@rocket.chat/core-typings';
+import {
+	LivechatVisitors,
+	Users,
+	LivechatRooms,
+	LivechatCustomField,
+	LivechatInquiry,
+	Rooms,
+	Subscriptions,
+	LivechatContacts,
+} from '@rocket.chat/models';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
+import type { MatchKeysAndValues, OnlyFieldsOfType, Sort } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
+import {
+	notifyOnRoomChangedById,
+	notifyOnSubscriptionChangedByRoomId,
+	notifyOnLivechatInquiryChangedByRoom,
+} from '../../../lib/server/lib/notifyListener';
 import { i18n } from '../../../utils/lib/i18n';
 
 type RegisterContactProps = {
@@ -19,6 +42,33 @@ type RegisterContactProps = {
 	contactManager?: {
 		username: string;
 	};
+};
+
+type CreateContactParams = {
+	name: string;
+	emails?: string[];
+	phones?: string[];
+	unknown: boolean;
+	customFields?: Record<string, string | unknown>;
+	contactManager?: string;
+	channels?: ILivechatContactChannel[];
+};
+
+type UpdateContactParams = {
+	contactId: string;
+	name?: string;
+	emails?: string[];
+	phones?: string[];
+	customFields?: Record<string, unknown>;
+	contactManager?: string;
+	channels?: ILivechatContactChannel[];
+};
+
+type GetContactsParams = {
+	searchText?: string;
+	count: number;
+	offset: number;
+	sort: Sort;
 };
 
 export const Contacts = {
@@ -72,41 +122,8 @@ export const Contacts = {
 			}
 		}
 
-		const allowedCF = LivechatCustomField.findByScope<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required' | 'visibility'>>(
-			'visitor',
-			{
-				projection: { _id: 1, label: 1, regexp: 1, required: 1 },
-			},
-			false,
-		);
-
-		const livechatData: Record<string, string> = {};
-
-		for await (const cf of allowedCF) {
-			if (!customFields.hasOwnProperty(cf._id)) {
-				if (cf.required) {
-					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
-				}
-				continue;
-			}
-			const cfValue: string = trim(customFields[cf._id]);
-
-			if (!cfValue || typeof cfValue !== 'string') {
-				if (cf.required) {
-					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
-				}
-				continue;
-			}
-
-			if (cf.regexp) {
-				const regex = new RegExp(cf.regexp);
-				if (!regex.test(cfValue)) {
-					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
-				}
-			}
-
-			livechatData[cf._id] = cfValue;
-		}
+		const allowedCF = await getAllowedCustomFields();
+		const livechatData: Record<string, string> = validateCustomFields(allowedCF, customFields, { ignoreAdditionalFields: true });
 
 		const fieldsToRemove = {
 			// if field is explicitely set to empty string, remove
@@ -136,12 +153,163 @@ export const Contacts = {
 		if (rooms?.length) {
 			for await (const room of rooms) {
 				const { _id: rid } = room;
-				(await Rooms.setFnameById(rid, name)) &&
-					(await LivechatInquiry.setNameByRoomId(rid, name)) &&
-					(await Subscriptions.updateDisplayNameByRoomId(rid, name));
+
+				const responses = await Promise.all([
+					Rooms.setFnameById(rid, name),
+					LivechatInquiry.setNameByRoomId(rid, name),
+					Subscriptions.updateDisplayNameByRoomId(rid, name),
+				]);
+
+				if (responses[0]?.modifiedCount) {
+					void notifyOnRoomChangedById(rid);
+				}
+
+				if (responses[1]?.modifiedCount) {
+					void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
+				}
+
+				if (responses[2]?.modifiedCount) {
+					void notifyOnSubscriptionChangedByRoomId(rid);
+				}
 			}
 		}
 
 		return contactId;
 	},
 };
+
+export function isSingleContactEnabled(): boolean {
+	// The Single Contact feature is not yet available in production, but can already be partially used in test environments.
+	return process.env.TEST_MODE?.toUpperCase() === 'TRUE';
+}
+
+export async function createContact(params: CreateContactParams): Promise<string> {
+	const { name, emails, phones, customFields: receivedCustomFields = {}, contactManager, channels, unknown } = params;
+
+	if (contactManager) {
+		await validateContactManager(contactManager);
+	}
+
+	const allowedCustomFields = await getAllowedCustomFields();
+	const customFields = validateCustomFields(allowedCustomFields, receivedCustomFields);
+
+	const { insertedId } = await LivechatContacts.insertOne({
+		name,
+		emails,
+		phones,
+		contactManager,
+		channels,
+		customFields,
+		unknown,
+	});
+
+	return insertedId;
+}
+
+export async function updateContact(params: UpdateContactParams): Promise<ILivechatContact> {
+	const { contactId, name, emails, phones, customFields: receivedCustomFields, contactManager, channels } = params;
+
+	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id'>>(contactId, { projection: { _id: 1 } });
+
+	if (!contact) {
+		throw new Error('error-contact-not-found');
+	}
+
+	if (contactManager) {
+		await validateContactManager(contactManager);
+	}
+
+	const customFields = receivedCustomFields && validateCustomFields(await getAllowedCustomFields(), receivedCustomFields);
+
+	const updatedContact = await LivechatContacts.updateContact(contactId, {
+		name,
+		emails,
+		phones,
+		contactManager,
+		channels,
+		customFields,
+	});
+
+	return updatedContact;
+}
+
+export async function getContacts(params: GetContactsParams): Promise<PaginatedResult<{ contacts: ILivechatContact[] }>> {
+	const { searchText, count, offset, sort } = params;
+
+	const { cursor, totalCount } = LivechatContacts.findPaginatedContacts(searchText, {
+		limit: count,
+		skip: offset,
+		sort: sort ?? { name: 1 },
+	});
+
+	const [contacts, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+	return {
+		contacts,
+		count,
+		offset,
+		total,
+	};
+}
+
+async function getAllowedCustomFields(): Promise<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>[]> {
+	return LivechatCustomField.findByScope(
+		'visitor',
+		{
+			projection: { _id: 1, label: 1, regexp: 1, required: 1 },
+		},
+		false,
+	).toArray();
+}
+
+export function validateCustomFields(
+	allowedCustomFields: AtLeast<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>[],
+	customFields: Record<string, string | unknown>,
+	options?: { ignoreAdditionalFields?: boolean },
+): Record<string, string> {
+	const validValues: Record<string, string> = {};
+
+	for (const cf of allowedCustomFields) {
+		if (!customFields.hasOwnProperty(cf._id)) {
+			if (cf.required) {
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+			}
+			continue;
+		}
+		const cfValue: string = trim(customFields[cf._id]);
+
+		if (!cfValue || typeof cfValue !== 'string') {
+			if (cf.required) {
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+			}
+			continue;
+		}
+
+		if (cf.regexp) {
+			const regex = new RegExp(cf.regexp);
+			if (!regex.test(cfValue)) {
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+			}
+		}
+
+		validValues[cf._id] = cfValue;
+	}
+
+	if (!options?.ignoreAdditionalFields) {
+		const allowedCustomFieldIds = new Set(allowedCustomFields.map((cf) => cf._id));
+		for (const key in customFields) {
+			if (!allowedCustomFieldIds.has(key)) {
+				throw new Error(i18n.t('error-custom-field-not-allowed', { key }));
+			}
+		}
+	}
+
+	return validValues;
+}
+
+export async function validateContactManager(contactManagerUserId: string) {
+	const contactManagerUser = await Users.findOneAgentById<Pick<IUser, '_id'>>(contactManagerUserId, { projection: { _id: 1 } });
+	if (!contactManagerUser) {
+		throw new Error('error-contact-manager-not-found');
+	}
+}

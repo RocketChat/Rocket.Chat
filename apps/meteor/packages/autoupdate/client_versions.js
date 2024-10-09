@@ -1,4 +1,4 @@
-import { Tracker } from "meteor/tracker";
+import { Tracker } from 'meteor/tracker';
 
 export class ClientVersions {
 	constructor() {
@@ -12,10 +12,10 @@ export class ClientVersions {
 	createStore() {
 		return {
 			update: ({ id, msg, fields }) => {
-				if (msg === "added" || msg === "changed") {
+				if (msg === 'added' || msg === 'changed') {
 					this.set(id, fields);
 				}
-			}
+			},
 		};
 	}
 
@@ -39,7 +39,7 @@ export class ClientVersions {
 		} else {
 			version = {
 				_id: id,
-				...fields
+				...fields,
 			};
 
 			isNew = true;
@@ -47,7 +47,7 @@ export class ClientVersions {
 		}
 
 		this._watchCallbacks.forEach(({ fn, filter }) => {
-			if (! filter || filter === version._id) {
+			if (!filter || filter === version._id) {
 				fn(version, isNew);
 			}
 		});
@@ -59,11 +59,11 @@ export class ClientVersions {
 	// documents. If `filter` is set, the callback is only invoked for documents
 	// with ID `filter`.
 	watch(fn, { skipInitial, filter } = {}) {
-		if (! skipInitial) {
+		if (!skipInitial) {
 			const resolved = Promise.resolve();
 
 			this._versions.forEach((version) => {
-				if (! filter || filter === version._id) {
+				if (!filter || filter === version._id) {
 					resolved.then(() => fn(version, true));
 				}
 			});
@@ -78,10 +78,7 @@ export class ClientVersions {
 	// A reactive data source for `Autoupdate.newClientAvailable`.
 	newClientAvailable(id, fields, currentVersion) {
 		function isNewVersion(version) {
-			return (
-				version._id === id &&
-				fields.some((field) => version[field] !== currentVersion[field])
-			);
+			return version._id === id && fields.some((field) => version[field] !== currentVersion[field]);
 		}
 
 		const dependency = new Tracker.Dependency();
@@ -96,9 +93,9 @@ export class ClientVersions {
 					stop();
 				}
 			},
-			{ skipInitial: true }
+			{ skipInitial: true },
 		);
 
-		return !! version && isNewVersion(version);
+		return !!version && isNewVersion(version);
 	}
 }

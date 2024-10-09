@@ -50,6 +50,7 @@ export const MessageListItem = ({
 				<Box
 					ref={ref}
 					data-id={message.ts}
+					role='listitem'
 					{...(newDay && {
 						'data-time': new Date(message.ts)
 							.toISOString()
@@ -78,15 +79,17 @@ export const MessageListItem = ({
 				/>
 			)}
 			{isThreadMessage(message) && (
-				<ThreadMessagePreview
-					data-mid={message._id}
-					data-tmid={message.tmid}
-					data-unread={showUnreadDivider}
-					data-sequential={sequential}
-					sequential={shouldShowAsSequential}
-					message={message}
-					showUserAvatar={showUserAvatar}
-				/>
+				<li>
+					<ThreadMessagePreview
+						data-mid={message._id}
+						data-tmid={message.tmid}
+						data-unread={showUnreadDivider}
+						data-sequential={sequential}
+						sequential={shouldShowAsSequential}
+						message={message}
+						showUserAvatar={showUserAvatar}
+					/>
+				</li>
 			)}
 			{system && <SystemMessage showUserAvatar={showUserAvatar} message={message} />}
 		</>

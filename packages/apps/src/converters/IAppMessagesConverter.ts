@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import type { IAppsMessage } from '../AppsEngine';
+import type { IAppsMessage, IAppsMesssageRaw } from '../AppsEngine';
 
 export interface IAppMessagesConverter {
 	convertById(messageId: IMessage['_id']): Promise<IAppsMessage | undefined>;
@@ -10,4 +10,6 @@ export interface IAppMessagesConverter {
 	convertAppMessage(message: undefined | null): Promise<undefined>;
 	convertAppMessage(message: IAppsMessage): Promise<IMessage | undefined>;
 	convertAppMessage(message: IAppsMessage | undefined | null): Promise<IMessage | undefined>;
+	convertMessageRaw(message: IMessage): Promise<IAppsMesssageRaw>;
+	convertMessageRaw(message: IMessage | undefined | null): Promise<IAppsMesssageRaw | undefined>;
 }

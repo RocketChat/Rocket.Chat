@@ -49,10 +49,6 @@ const UiKitBanner = ({ initialView }: UiKitBannerProps) => {
 			})
 			.catch((error) => {
 				dispatchToastMessage({ type: 'error', message: error });
-				return Promise.reject(error);
-			})
-			.finally(() => {
-				actionManager.disposeView(view.viewId);
 			});
 	});
 

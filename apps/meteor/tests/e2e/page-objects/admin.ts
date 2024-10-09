@@ -2,6 +2,28 @@ import type { Locator, Page } from '@playwright/test';
 
 import { AdminFlextab } from './fragments/admin-flextab';
 
+export enum AdminSectionsHref {
+	Workspace = '/admin/info',
+	Subscription = '/admin/subscription',
+	Engagement = '/admin/engagement/users',
+	Moderation = '/admin/moderation',
+	Federation = '/admin/federation',
+	Rooms = '/admin/rooms',
+	Users = '/admin/users',
+	Invites = '/admin/invites',
+	User_Status = '/admin/user-status',
+	Permissions = '/admin/permissions',
+	Device_Management = '/admin/device-management',
+	Email_Inboxes = '/admin/email-inboxes',
+	Mailer = '/admin/mailer',
+	Third_party_login = '/admin/third-party-login',
+	Integrations = '/admin/integrations',
+	Import = '/admin/import',
+	Reports = '/admin/reports',
+	Sounds = '/admin/sounds',
+	Emoji = '/admin/emoji',
+	Settings = '/admin/settings',
+}
 export class Admin {
 	public readonly page: Page;
 
@@ -20,8 +42,20 @@ export class Admin {
 		return this.page.locator('[role="link"]', { hasText: name });
 	}
 
+	getUserRow(username?: string): Locator {
+		return this.page.locator('[role="link"]', { hasText: username });
+	}
+
 	get btnSave(): Locator {
 		return this.page.locator('button >> text="Save"');
+	}
+
+	get btnSaveSettings(): Locator {
+		return this.page.getByRole('button', { name: 'Save changes' });
+	}
+
+	get btnEdit(): Locator {
+		return this.page.locator('button >> text="Edit"');
 	}
 
 	get privateLabel(): Locator {
@@ -177,11 +211,91 @@ export class Admin {
 		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> role=button[name="Delete"]');
 	}
 
+	get inputAssetsLogo(): Locator {
+		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> input[type="file"]');
+	}
+
 	get btnCreateRole(): Locator {
 		return this.page.locator('button[name="New role"]');
 	}
 
-	get inputAssetsLogo(): Locator {
-		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> input[type="file"]');
+	openRoleByName(name: string): Locator {
+		return this.page.getByRole('table').getByRole('button', { name });
+	}
+
+	get btnUsersInRole(): Locator {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Users in role', exact: true });
+	}
+
+	get inputRoom(): Locator {
+		return this.page.locator('input[placeholder="Room"]');
+	}
+
+	get inputUsers(): Locator {
+		return this.page.locator('input[placeholder="Users"]');
+	}
+
+	get btnAdd(): Locator {
+		return this.page.getByRole('button', { name: 'Add', exact: true });
+	}
+
+	getUserRowByUsername(username: string): Locator {
+		return this.page.locator('tr', { hasText: username });
+	}
+
+	get btnBack(): Locator {
+		return this.page.getByRole('button', { name: 'Back', exact: true });
+	}
+
+	get btnNew(): Locator {
+		return this.page.getByRole('button', { name: 'New', exact: true });
+	}
+
+	get btnDelete(): Locator {
+		return this.page.getByRole('button', { name: 'Delete', exact: true });
+	}
+
+	get btnInstructions(): Locator {
+		return this.page.getByRole('button', { name: 'Instructions', exact: true });
+	}
+
+	get inputName(): Locator {
+		return this.page.getByRole('textbox', { name: 'Name' });
+	}
+
+	get inputPostToChannel(): Locator {
+		return this.page.getByRole('textbox', { name: 'Post to Channel' });
+	}
+
+	get inputPostAs(): Locator {
+		return this.page.getByRole('textbox', { name: 'Post as' });
+	}
+
+	codeExamplePayload(text: string): Locator {
+		return this.page.locator('code', { hasText: text });
+	}
+
+	getIntegrationByName(name: string): Locator {
+		return this.page.getByRole('table', { name: 'Integrations table' }).locator('tr', { hasText: name });
+	}
+
+	get inputWebhookUrl(): Locator {
+		return this.page.getByRole('textbox', { name: 'Webhook URL' });
+	}
+
+	getAccordionBtnByName(name: string): Locator {
+		return this.page.getByRole('button', { name, exact: true });
+	}
+
+	get btnFullScreen(): Locator {
+		return this.page.getByRole('button', { name: 'Full Screen', exact: true });
+	}
+
+	async dropdownFilterRoomType(text = 'All rooms'): Promise<Locator> {
+		return this.page.locator(`div[role="button"]:has-text("${text}")`);
+	}
+
+	async adminSectionButton(href: AdminSectionsHref): Promise<Locator> {
+		return this.page.locator(`a[href="${href}"]`);
 	}
 }

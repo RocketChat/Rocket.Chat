@@ -9,6 +9,12 @@ type Dictionary = {
 class SettingsClass {
 	settings: ICachedSettings;
 
+	private delay = 0;
+
+	setDelay(delay: number): void {
+		this.delay = delay;
+	}
+
 	find(): any[] {
 		return [];
 	}
@@ -65,22 +71,41 @@ class SettingsClass {
 			throw new Error('Invalid upsert');
 		}
 
-		// console.log(query, data);
-		this.data.set(query._id, data);
+		if (this.delay) {
+			setTimeout(() => {
+				// console.log(query, data);
+				this.data.set(query._id, data);
 
-		// Can't import before the mock command on end of this file!
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		this.settings.set(data);
+				// Can't import before the mock command on end of this file!
+				// eslint-disable-next-line @typescript-eslint/no-var-requires
+				this.settings.set(data);
+			}, this.delay);
+		} else {
+			this.data.set(query._id, data);
+			// Can't import before the mock command on end of this file!
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			this.settings.set(data);
+		}
 
 		this.upsertCalls++;
 	}
 
+	findOneAndUpdate({ _id }: { _id: string }, value: any, options?: any) {
+		this.updateOne({ _id }, value, options);
+		return { value: this.findOne({ _id }) };
+	}
+
 	updateValueById(id: string, value: any): void {
 		this.data.set(id, { ...this.data.get(id), value });
-
 		// Can't import before the mock command on end of this file!
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		this.settings.set(this.data.get(id) as ISetting);
+		if (this.delay) {
+			setTimeout(() => {
+				this.settings.set(this.data.get(id) as ISetting);
+			}, this.delay);
+		} else {
+			this.settings.set(this.data.get(id) as ISetting);
+		}
 	}
 }
 

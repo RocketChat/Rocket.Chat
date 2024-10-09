@@ -7,7 +7,12 @@ import { Users } from './userStates';
 export default async function injectInitialData() {
 	const connection = await MongoClient.connect(constants.URL_MONGODB);
 
-	const usersFixtures = [createUserFixture(Users.user1), createUserFixture(Users.user2), createUserFixture(Users.user3)];
+	const usersFixtures = [
+		createUserFixture(Users.user1),
+		createUserFixture(Users.user2),
+		createUserFixture(Users.user3),
+		createUserFixture(Users.userE2EE),
+	];
 
 	await Promise.all(
 		usersFixtures.map((user) =>
@@ -56,22 +61,6 @@ export default async function injectInitialData() {
 			{
 				_id: 'API_Enable_Rate_Limiter_Dev',
 				value: false,
-			},
-			{
-				_id: 'SAML_Custom_Default_provider',
-				value: 'test-sp',
-			},
-			{
-				_id: 'SAML_Custom_Default_issuer',
-				value: 'http://localhost:3000/_saml/metadata/test-sp',
-			},
-			{
-				_id: 'SAML_Custom_Default_entry_point',
-				value: 'http://localhost:8080/simplesaml/saml2/idp/SSOService.php',
-			},
-			{
-				_id: 'SAML_Custom_Default_idp_slo_redirect_url',
-				value: 'http://localhost:8080/simplesaml/saml2/idp/SingleLogoutService.php',
 			},
 			{
 				_id: 'Accounts_OAuth_Google',

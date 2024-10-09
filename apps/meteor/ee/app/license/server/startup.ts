@@ -1,14 +1,14 @@
 import { api } from '@rocket.chat/core-services';
 import type { LicenseLimitKind } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
+import { applyLicense, applyLicenseOrRemove, License } from '@rocket.chat/license';
 import { Subscriptions, Users, Settings, LivechatVisitors } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
 import moment from 'moment';
 
 import { syncWorkspace } from '../../../../app/cloud/server/functions/syncWorkspace';
+import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { applyLicense, applyLicenseOrRemove } from './applyLicense';
 import { getAppCount } from './lib/getAppCount';
 
 export const startLicense = async () => {
@@ -19,17 +19,24 @@ export const startLicense = async () => {
 	});
 
 	License.onValidateLicense(async () => {
-		await Settings.updateValueById('Enterprise_License', License.encryptedLicense);
-		await Settings.updateValueById('Enterprise_License_Status', 'Valid');
+		(await Settings.updateValueById('Enterprise_License', License.encryptedLicense)).modifiedCount &&
+			void notifyOnSettingChangedById('Enterprise_License');
+
+		(await Settings.updateValueById('Enterprise_License_Status', 'Valid')).modifiedCount &&
+			void notifyOnSettingChangedById('Enterprise_License_Status');
 	});
 
 	License.onInvalidateLicense(async () => {
-		await Settings.updateValueById('Enterprise_License_Status', 'Invalid');
+		(await Settings.updateValueById('Enterprise_License_Status', 'Invalid')).modifiedCount &&
+			void notifyOnSettingChangedById('Enterprise_License_Status');
 	});
 
 	License.onRemoveLicense(async () => {
-		await Settings.updateValueById('Enterprise_License', '');
-		await Settings.updateValueById('Enterprise_License_Status', 'Invalid');
+		(await Settings.updateValueById('Enterprise_License', '')).modifiedCount &&
+			void notifyOnSettingChangedById('Enterprise_License_Status');
+
+		(await Settings.updateValueById('Enterprise_License_Status', 'Invalid')).modifiedCount &&
+			void notifyOnSettingChangedById('Enterprise_License_Status');
 	});
 
 	/**
@@ -79,15 +86,17 @@ export const startLicense = async () => {
 
 		const obj = Object.fromEntries(contexts.map((context) => [context, period]));
 
-		await Settings.updateValueById(
-			'Enterprise_License_Data',
-			JSON.stringify({
-				...(existingData.signed === signed && existingData),
-				...existingData,
-				...obj,
-				signed,
-			}),
-		);
+		(
+			await Settings.updateValueById(
+				'Enterprise_License_Data',
+				JSON.stringify({
+					...(existingData.signed === signed && existingData),
+					...existingData,
+					...obj,
+					signed,
+				}),
+			)
+		).modifiedCount && void notifyOnSettingChangedById('Enterprise_License_Data');
 
 		try {
 			await syncWorkspace();

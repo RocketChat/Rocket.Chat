@@ -33,7 +33,6 @@ export const useRoomHide = (room: IRoom) => {
 				text={t(warnText as TranslationKey, room.fname || room.name)}
 				confirmText={t('Yes_hide_it')}
 				close={() => setModal(null)}
-				cancel={() => setModal(null)}
 				cancelText={t('Cancel')}
 				confirm={hide}
 			/>,

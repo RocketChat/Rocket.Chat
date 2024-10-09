@@ -15,8 +15,10 @@ import ContactTab from './contacts/ContactTab';
 const DEFAULT_TAB = 'contacts';
 
 const OmnichannelDirectoryPage = (): ReactElement => {
+	const t = useTranslation();
 	const router = useRouter();
 	const page = useRouteParameter('page');
+	const bar = useRouteParameter('bar');
 	const canViewDirectory = usePermission('view-omnichannel-contact-center');
 
 	useEffect(
@@ -37,8 +39,6 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 	const handleTabClick = useCallback((tab) => () => router.navigate({ name: 'omnichannel-directory', params: { tab } }), [router]);
 
 	const chatReload = () => queryClient.invalidateQueries({ queryKey: ['current-chats'] });
-
-	const t = useTranslation();
 
 	if (!canViewDirectory) {
 		return <NotAuthorizedPage />;
@@ -63,9 +63,11 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 					{(page === 'contacts' && <ContactTab />) || (page === 'chats' && <ChatTab />) || (page === 'calls' && <CallTab />)}
 				</PageContent>
 			</Page>
-			<ContextualbarDialog>
-				<ContextualBar chatReload={chatReload} />
-			</ContextualbarDialog>
+			{bar && (
+				<ContextualbarDialog>
+					<ContextualBar chatReload={chatReload} />
+				</ContextualbarDialog>
+			)}
 		</Page>
 	);
 };

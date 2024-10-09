@@ -170,7 +170,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 	if (isLoading && !licenseData) {
 		return (
 			<Card style={{ ...cardBackground }}>
-				<VersionCardSkeleton />;
+				<VersionCardSkeleton />
 			</Card>
 		);
 	}

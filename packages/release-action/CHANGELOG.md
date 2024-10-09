@@ -1,5 +1,41 @@
 # @rocket.chat/release-action
 
+## 2.2.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b7f5035442]:</summary>
+
+  - @rocket.chat/eslint-config@0.7.0
+  </details>
+
+## 2.2.3-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b7f5035442]:</summary>
+
+  - @rocket.chat/eslint-config@0.7.0-rc.0
+  </details>
+
+## 2.2.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7ac473df7a]:</summary>
+
+  - @rocket.chat/eslint-config@0.6.2
+  </details>
+
+## 2.2.2-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7ac473df7a]:</summary>
+
+  - @rocket.chat/eslint-config@0.6.2-rc.0
+  </details>
+
 ## 2.2.1
 
 ### Patch Changes

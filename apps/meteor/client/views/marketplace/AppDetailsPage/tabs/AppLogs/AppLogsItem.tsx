@@ -1,7 +1,6 @@
 import type { ILogEntry } from '@rocket.chat/core-typings';
 import { Box, Accordion } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React from 'react';
 
 import AppLogsItemEntry from './AppLogsItemEntry';
@@ -12,7 +11,7 @@ type AppLogsItemProps = {
 	title: string;
 };
 
-const AppLogsItem: FC<AppLogsItemProps> = ({ entries, instanceId, title, ...props }) => {
+const AppLogsItem = ({ entries, instanceId, title, ...props }: AppLogsItemProps) => {
 	const t = useTranslation();
 
 	return (
