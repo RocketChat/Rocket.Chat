@@ -1,13 +1,10 @@
-import { cronJobs } from '@rocket.chat/cron';
 import { AirGappedRestriction } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../app/settings/server';
 import { i18n } from '../../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
-import { checkAirGappedRestrictions } from './airGappedRestrictionsCheck';
 
 const updateRestrictionSetting = async (remainingDays: number) => {
 	const value = settings.get('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days');
@@ -35,10 +32,4 @@ const sendRocketCatWarningToAdmins = async (remainingDays: number) => {
 AirGappedRestriction.on('remainingDays', async ({ days }: { days: number }) => {
 	await updateRestrictionSetting(days);
 	await sendRocketCatWarningToAdmins(days);
-});
-
-Meteor.startup(async () => {
-	await cronJobs.add('AirGapped Restrictions Cron', '0 */12 * * *', async () => {
-		await checkAirGappedRestrictions();
-	});
 });
