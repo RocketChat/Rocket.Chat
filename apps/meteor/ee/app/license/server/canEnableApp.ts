@@ -1,11 +1,16 @@
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { Apps } from '@rocket.chat/core-services';
 import type { LicenseModule } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
+import { License, type LicenseImp } from '@rocket.chat/license';
 
 import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
 
-export const canEnableApp = async (app: IAppStorageItem): Promise<void> => {
+type _canEnableAppDependencies = {
+	Apps: typeof Apps;
+	License: LicenseImp;
+};
+
+export const _canEnableApp = async ({ Apps, License }: _canEnableAppDependencies, app: IAppStorageItem): Promise<void> => {
 	if (!(await Apps.isInitialized())) {
 		throw new Error('apps-engine-not-initialized');
 	}
@@ -40,3 +45,5 @@ export const canEnableApp = async (app: IAppStorageItem): Promise<void> => {
 			break;
 	}
 };
+
+export const canEnableApp = async (app: IAppStorageItem): Promise<void> => _canEnableApp({ Apps, License }, app);
