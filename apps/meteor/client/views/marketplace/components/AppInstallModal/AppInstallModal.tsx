@@ -1,6 +1,6 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
 import type { MarketplaceRouteContext } from '../../hooks/useAppsCountQuery';
@@ -24,7 +24,7 @@ const AppInstallationModal = ({
 	handleConfirm,
 	handleEnableUnlimitedApps,
 }: AppsInstallationModalProps) => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 
 	const getTitle = () => {
 		if (enabled === limit) {
