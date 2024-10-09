@@ -178,7 +178,7 @@ API.v1.addRoute(
 
 			const history = await getContactHistory({ contactId, source, count, offset, sort });
 
-			return API.v1.success({ history });
+			return API.v1.success(history);
 		},
 	},
 );
