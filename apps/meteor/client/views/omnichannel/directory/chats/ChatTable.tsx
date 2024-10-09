@@ -32,7 +32,6 @@ const ChatTable = () => {
 	const query = useMemo(
 		() => ({
 			sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-			open: false,
 			roomName: text || '',
 			agents: userIdLoggedIn ? [userIdLoggedIn] : [],
 			...(itemsPerPage && { count: itemsPerPage }),
