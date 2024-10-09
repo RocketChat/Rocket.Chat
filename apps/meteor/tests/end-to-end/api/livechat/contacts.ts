@@ -656,6 +656,15 @@ describe('LIVECHAT - contacts', () => {
 				expect(res.body.contact.lastChat).to.have.property('ts');
 				expect(res.body.contact.lastChat._id).to.be.equal(room._id);
 			});
+
+			it('should not return the last chat if contact never chatted', async () => {
+				const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId });
+
+				expect(res.status).to.be.equal(200);
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.contact).to.have.property('_id', contactId);
+				expect(res.body.contact).to.not.have.property('lastChat');
+			});
 		});
 	});
 
