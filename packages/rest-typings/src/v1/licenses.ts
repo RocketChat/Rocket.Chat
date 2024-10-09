@@ -1,4 +1,4 @@
-import type { ILicenseV2, ILicenseV3, LicenseInfo } from '@rocket.chat/core-typings';
+import type { LicenseInfo } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
@@ -40,9 +40,6 @@ const licensesInfoPropsSchema = {
 export const isLicensesInfoProps = ajv.compile<licensesInfoProps>(licensesInfoPropsSchema);
 
 export type LicensesEndpoints = {
-	'/v1/licenses.get': {
-		GET: () => { licenses: Array<ILicenseV2 | (ILicenseV3 & { modules: string[] })> };
-	};
 	'/v1/licenses.info': {
 		GET: (params: licensesInfoProps) => {
 			license: LicenseInfo;
@@ -56,8 +53,5 @@ export type LicensesEndpoints = {
 	};
 	'/v1/licenses.requestSeatsLink': {
 		GET: () => { url: string };
-	};
-	'/v1/licenses.isEnterprise': {
-		GET: () => { isEnterprise: boolean };
 	};
 };
