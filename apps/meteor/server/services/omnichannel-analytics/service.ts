@@ -160,7 +160,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 			return;
 		}
 
-		const t = i18n.getFixedT(language);
+		const t = (s: string) => i18n.t(s, { lng: language });
 
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 		return this.overview.callAction(name, from, to, departmentId, timezone, t, extraQuery);

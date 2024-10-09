@@ -1,7 +1,7 @@
 import { Field, FieldLabel, FieldRow, InputBox, Select } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FormEventHandler, ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { TIMEUNIT, timeUnitToMs, msToTimeUnit } from '../../../../../lib/convertTimeUnit';
 import ResetSettingButton from '../ResetSettingButton';
@@ -49,7 +49,7 @@ function TimespanSettingInput({
 	onResetButtonClick,
 	packageValue,
 }: TimespanSettingInputProps): ReactElement {
-	const { t, i18n } = useTranslation();
+	const t = useTranslation();
 
 	const [timeUnit, setTimeUnit] = useState<TIMEUNIT>(getHighestTimeUnit(Number(value)));
 	const [internalValue, setInternalValue] = useState<number>(msToTimeUnit(timeUnit, Number(value)));
@@ -71,8 +71,8 @@ function TimespanSettingInput({
 	};
 
 	const timeUnitOptions = useMemo(() => {
-		return Object.entries(TIMEUNIT).map<readonly [TIMEUNIT, string]>(([label, value]) => [value, i18n.exists(label) ? t(label) : label]); // todo translate
-	}, [i18n, t]);
+		return Object.entries(TIMEUNIT).map<readonly [TIMEUNIT, string]>(([label, value]) => [value, t.has(label) ? t(label) : label]); // todo translate
+	}, [t]);
 
 	const handleResetButtonClick = () => {
 		onResetButtonClick?.();

@@ -1,6 +1,6 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { TranslationContextValue } from '@rocket.chat/ui-contexts';
 import { type Chart } from 'chart.js';
-import type { TFunction } from 'i18next';
 import { type MutableRefObject } from 'react';
 
 import { updateChart } from '../../../../../app/livechat/client/lib/chartHandler';
@@ -8,8 +8,8 @@ import { updateChart } from '../../../../../app/livechat/client/lib/chartHandler
 type UseUpdateChartDataOptions = {
 	context: MutableRefObject<Chart | undefined>;
 	canvas: MutableRefObject<HTMLCanvasElement | null>;
-	init: (canvas: HTMLCanvasElement, context: undefined, t: TFunction) => Promise<Chart>;
-	t: TFunction;
+	init: (canvas: HTMLCanvasElement, context: undefined, t: TranslationContextValue['translate']) => Promise<Chart>;
+	t: TranslationContextValue['translate'];
 };
 
 export const useUpdateChartData = ({ context: contextRef, canvas: canvasRef, init, t }: UseUpdateChartDataOptions) =>
