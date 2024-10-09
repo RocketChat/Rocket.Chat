@@ -4800,6 +4800,7 @@
   "VoIP_JWT_Secret_description": "Isso permite que você defina uma chave secreta para compartilhar detalhes da extensão do servidor para o cliente como JWT, em vez de texto simples. Se você não configurar isso, os detalhes do registro da extensão serão enviados como texto simples.",
   "Voip_is_disabled": "VoIP está desabilitado",
   "Voip_is_disabled_description": "Para ver a lista de extensões é necessário ativar o VoIP, faça isso na aba Configurações.",
+  "VoIP_TeamCollab_Beta_Alert": "Este recurso está atualmente em Beta, por favor, reporte quaisquer problemas ao suporte da Rocket.Chat.",
   "VoIP_Toggle": "Habilitar/Desabilitar VoIP",
   "Chat_opened_by_visitor": "Conversa aberta pelo visitante",
   "Wait_activation_warning": "Antes que você possa fazer o login, sua conta deve ser manualmente ativada por um administrador.",
