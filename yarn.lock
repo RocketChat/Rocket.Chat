@@ -10043,6 +10043,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/omnichannel-typings@workspace:packages/omnichannel-typings":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/omnichannel-typings@workspace:packages/omnichannel-typings"
+  dependencies:
+    "@rocket.chat/apps-engine": "workspace:^"
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/eslint-config": "workspace:^"
+    eslint: ~8.45.0
+    mongodb: ^4.17.2
+    prettier: ~2.8.8
+    typescript: ~5.5.4
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/onboarding-ui@npm:~0.33.3":
   version: 0.33.3
   resolution: "@rocket.chat/onboarding-ui@npm:0.33.3"
