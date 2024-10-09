@@ -2577,11 +2577,7 @@
   "GoogleTagManager_id": "Google Tag Manager Id",
   "Got_it": "Got it",
   "Government": "Government",
-<<<<<<< HEAD
   "Grandfathered_app": "App exempt from app limit policy",
-=======
-  "Grandfathered_app": "Grandfathered app – this app is exempt from the app limit policy",
->>>>>>> 9995639a46 (feat: New Private apps limitations (#33316))
   "Graphql_CORS": "GraphQL CORS",
   "Graphql_Enabled": "GraphQL Enabled",
   "Graphql_Subscription_Port": "GraphQL Subscription Port",
