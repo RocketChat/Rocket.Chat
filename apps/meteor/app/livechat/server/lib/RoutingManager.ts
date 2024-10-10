@@ -21,6 +21,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
+import { isSingleContactEnabled } from './Contacts';
 import {
 	createLivechatSubscription,
 	dispatchAgentDelegated,
@@ -226,7 +227,7 @@ export const RoutingManager: Routing = {
 			}),
 		);
 
-		if (inquiry.v.contactId) {
+		if (isSingleContactEnabled() && inquiry.v.contactId) {
 			const contact = await LivechatContacts.findOne({
 				_id: inquiry.v.contactId,
 			});

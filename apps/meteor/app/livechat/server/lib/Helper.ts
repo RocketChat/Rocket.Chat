@@ -158,7 +158,7 @@ export const createLivechatInquiry = async ({
 }: {
 	rid: string;
 	name?: string;
-	guest?: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'department' | 'name' | 'token' | 'activity'>;
+	guest?: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'department' | 'name' | 'token' | 'activity' | 'contactId'>;
 	message?: string;
 	initialStatus?: LivechatInquiryStatus;
 	extraData?: Pick<ILivechatInquiryRecord, 'source'>;
@@ -178,7 +178,7 @@ export const createLivechatInquiry = async ({
 
 	const extraInquiryInfo = await callbacks.run('livechat.beforeInquiry', extraData);
 
-	const { _id, username, token, department, status = UserStatus.ONLINE, activity } = guest;
+	const { _id, username, token, department, status = UserStatus.ONLINE, activity, contactId } = guest;
 
 	const ts = new Date();
 
@@ -201,6 +201,7 @@ export const createLivechatInquiry = async ({
 				token,
 				status,
 				...(activity?.length && { activity }),
+				contactId,
 			},
 			t: 'l',
 			priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
