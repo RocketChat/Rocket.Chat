@@ -49,15 +49,27 @@ export async function findUsersToAutocomplete({
 		return { items: contacts.concat(users) as UserAutoComplete[] };
 	}
 
-	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions<UserAutoComplete>(
+	// First query to find usernames that start with the term
+	const startingUsers = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions<UserAutoComplete>(
+		new RegExp("^" + escapeRegExp(selector.term), 'i'),
+		exceptions,
+		conditions,
+		options,
+	).toArray();
+
+	// Then we search other users that also have the term within their username
+	const generalUsers = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions<UserAutoComplete>(
 		new RegExp(escapeRegExp(selector.term), 'i'),
 		exceptions,
 		conditions,
 		options,
 	).toArray();
 
+	// Merge and remove duplicates
+	const uniqueUsers = Array.from(new Set([...startingUsers, ...generalUsers]));
+
 	return {
-		items: (contacts as UserAutoComplete[]).concat(users),
+		items: (contacts as UserAutoComplete[]).concat(uniqueUsers),
 	};
 }
 
