@@ -26,7 +26,6 @@
 // the document are the versions described above.
 
 import { ClientVersions } from './client_versions.js';
-var Future = Npm.require('fibers/future');
 
 export const Autoupdate = (__meteor_runtime_config__.autoupdate = {
 	// Map from client architectures (web.browser, web.browser.legacy,
@@ -53,12 +52,12 @@ Autoupdate.autoupdateVersionRefreshable = null;
 Autoupdate.autoupdateVersionCordova = null;
 Autoupdate.appId = __meteor_runtime_config__.appId = process.env.APP_ID;
 
-var syncQueue = new Meteor._SynchronousQueue();
+var syncQueue = new Meteor._AsynchronousQueue();
 
-function updateVersions(shouldReloadClientProgram) {
+async function updateVersions(shouldReloadClientProgram) {
 	// Step 1: load the current client program on the server
 	if (shouldReloadClientProgram) {
-		WebAppInternals.reloadClientPrograms();
+		await WebAppInternals.reloadClientPrograms();
 	}
 
 	const {
@@ -83,7 +82,7 @@ function updateVersions(shouldReloadClientProgram) {
 	// Step 3: form the new client boilerplate which contains the updated
 	// assets and __meteor_runtime_config__.
 	if (shouldReloadClientProgram) {
-		WebAppInternals.generateBoilerplate();
+		await WebAppInternals.generateBoilerplate();
 	}
 
 	// Step 4: update the ClientVersions collection.
@@ -129,8 +128,8 @@ Meteor.publish(
 	{ is_auto: true },
 );
 
-Meteor.startup(function () {
-	updateVersions(false);
+Meteor.startup(async function () {
+	await updateVersions(false);
 
 	// Force any connected clients that are still looking for these older
 	// document IDs to reload.
@@ -141,36 +140,26 @@ Meteor.startup(function () {
 	});
 });
 
-var fut = new Future();
-
-// We only want 'refresh' to trigger 'updateVersions' AFTER onListen,
-// so we add a queued task that waits for onListen before 'refresh' can queue
-// tasks. Note that the `onListening` callbacks do not fire until after
-// Meteor.startup, so there is no concern that the 'updateVersions' calls from
-// 'refresh' will overlap with the `updateVersions` call from Meteor.startup.
-
-syncQueue.queueTask(function () {
-	fut.wait();
-});
-
-WebApp.onListening(function () {
-	fut.return();
-});
-
 function enqueueVersionsRefresh() {
-	syncQueue.queueTask(function () {
-		updateVersions(true);
+	syncQueue.queueTask(async function () {
+		await updateVersions(true);
 	});
 }
 
-// Listen for messages pertaining to the client-refresh topic.
-import { onMessage } from 'meteor/inter-process-messaging';
-onMessage('client-refresh', enqueueVersionsRefresh);
+const setupListeners = () => {
+	// Listen for messages pertaining to the client-refresh topic.
+	import { onMessage } from 'meteor/inter-process-messaging';
+	onMessage('client-refresh', enqueueVersionsRefresh);
 
-// Another way to tell the process to refresh: send SIGHUP signal
-process.on(
-	'SIGHUP',
-	Meteor.bindEnvironment(function () {
-		enqueueVersionsRefresh();
-	}, 'handling SIGHUP signal for refresh'),
-);
+	// Another way to tell the process to refresh: send SIGHUP signal
+	process.on(
+		'SIGHUP',
+		Meteor.bindEnvironment(function () {
+			enqueueVersionsRefresh();
+		}, 'handling SIGHUP signal for refresh'),
+	);
+};
+
+WebApp.onListening(function () {
+	Promise.resolve(setupListeners());
+});
