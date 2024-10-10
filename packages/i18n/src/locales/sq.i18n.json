@@ -2365,7 +2365,7 @@
   "Thank_you_for_your_feedback": "Faleminderit për komentin tuaj",
   "The_application_name_is_required": "Emri i aplikimit është e nevojshme",
   "The_channel_name_is_required": "Emri kanal është e nevojshme",
-  "The_emails_are_being_sent": "Email janë duke u dërguar.",   
+  "The_emails_are_being_sent": "Email janë duke u dërguar.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Imazhi resize nuk do të funksionojë, sepse ne nuk mund të zbulojë ImageMagick ose GraphicsMagick instaluar në serverin tuaj.",
   "The_redirectUri_is_required": "RedirectUri është e nevojshme",
   "The_server_will_restart_in_s_seconds": "Serveri do të rifillojë në %s sekonda",
