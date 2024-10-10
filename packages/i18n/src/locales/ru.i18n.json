@@ -312,8 +312,6 @@
   "add-oauth-service_description": "Разрешение на добавление новых сервисов Oauth",
   "bypass-time-limit-edit-and-delete": "Обход ограничения по времени",
   "bypass-time-limit-edit-and-delete_description": "Разрешение на обход ограничения по времени для редактирования и удаления сообщений",
-  "add-team-channel": "Добавить Channel Команды",
-  "add-team-channel_description": "Разрешение на добавление канала в Команду",
   "add-team-member": "Добавить участника Команды",
   "add-team-member_description": "Разрешение на добавление участников в Команду",
   "add-user": "Добавить пользователя",
