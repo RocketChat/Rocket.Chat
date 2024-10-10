@@ -3643,8 +3643,6 @@
   "Type_your_password": "암호를 입력하세요.",
   "Type_your_username": "사용자명을 입력하세요.",
   "UI_Allow_room_names_with_special_chars": "대화방명에 특수문자 허용",
-  "UI_Click_Direct_Message": "클릭하여 1:1 대화방 열기",
-  "UI_Click_Direct_Message_Description": "프로필 탭을 건너뛰고 대화방으로 이동합니다.",
   "UI_DisplayRoles": "역할 표시하기",
   "UI_Group_Channels_By_Type": "유형별로 채널 그룹화",
   "UI_Merge_Channels_Groups": "Channel 과 비공개 그룹 병합",
