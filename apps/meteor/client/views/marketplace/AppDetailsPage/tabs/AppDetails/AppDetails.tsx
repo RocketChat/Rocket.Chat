@@ -1,3 +1,4 @@
+import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -8,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useExternalLink } from '../../../../../hooks/useExternalLink';
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
 import type { AppInfo } from '../../../definitions/AppInfo';
+import { doesAppRequireAddon } from '../../../helpers/doesAppRequireAddon';
 import { purifyOptions } from '../../../lib/purifyOptions';
 import AppDetailsAPIs from './AppDetailsAPIs';
 import { normalizeUrl } from './normalizeUrl';
@@ -40,28 +42,28 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 	const normalizedSupportUrl = support ? normalizeUrl(support) : undefined;
 	const normalizedDocumentationUrl = documentation ? normalizeUrl(documentation) : undefined;
 
+	const appNeedAddon = doesAppRequireAddon(app as App);
+	// TODO: get this information from license
+	const userHasAddon = false;
+
 	const openExternalLink = useExternalLink();
 
 	return (
 		<Box mbs='36px' maxWidth='x640' w='full' marginInline='auto' color='default'>
-			{
-				// TODO: if(appNeedAddon && userHasAddon){
-				<>
-					<Callout
-						mb='16px'
-						title={t('Subscription_add-on_required')}
-						type='info'
-						actions={
-							<Button small onClick={() => openExternalLink(GET_ADDONS_LINK)}>
-								{t('Contact_sales')}
-							</Button>
-						}
-					>
-						{t('App_cannot_be_enabled_without_add-on')}
-					</Callout>
-				</>
-				// }
-			}
+			{appNeedAddon && userHasAddon && (
+				<Callout
+					mb='16px'
+					title={t('Subscription_add-on_required')}
+					type='info'
+					actions={
+						<Button small onClick={() => openExternalLink(GET_ADDONS_LINK)}>
+							{t('Contact_sales')}
+						</Button>
+					}
+				>
+					{t('App_cannot_be_enabled_without_add-on')}
+				</Callout>
+			)}
 			{app.licenseValidation && (
 				<>
 					{Object.entries(app.licenseValidation.warnings).map(([key]) => (
