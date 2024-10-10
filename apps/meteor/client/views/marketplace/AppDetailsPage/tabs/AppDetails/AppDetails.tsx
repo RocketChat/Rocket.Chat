@@ -7,6 +7,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useExternalLink } from '../../../../../hooks/useExternalLink';
+import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
 import type { AppInfo } from '../../../definitions/AppInfo';
 import { doesAppRequireAddon } from '../../../helpers/doesAppRequireAddon';
@@ -43,8 +44,8 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 	const normalizedDocumentationUrl = documentation ? normalizeUrl(documentation) : undefined;
 
 	const appNeedAddon = doesAppRequireAddon(app as App);
-	// TODO: get this information from license
-	const userHasAddon = false;
+
+	const userHasAddon = useHasLicenseModule((app as any).addon); // The information of the addon will be added here by the other PR
 
 	const openExternalLink = useExternalLink();
 
