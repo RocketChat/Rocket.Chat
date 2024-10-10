@@ -123,7 +123,9 @@ const MailExportForm = ({ formId, rid, onCancel, exportOptions }: MailExportForm
 									validate: (messagesCount) => (messagesCount > 0 ? undefined : t('Mail_Message_No_messages_selected_select_all')),
 								})}
 							/>
-							{errors.messagesCount && <FieldError aria-live='assertive'>{errors.messagesCount.message}</FieldError>}
+							{errors.messagesCount && messages.length <= 0 && (
+								<FieldError aria-live='assertive'>{errors.messagesCount.message}</FieldError>
+							)}
 						</Field>
 						<Field>
 							<FieldLabel htmlFor={toUsersField}>{t('To_users')}</FieldLabel>
@@ -159,7 +161,7 @@ const MailExportForm = ({ formId, rid, onCancel, exportOptions }: MailExportForm
 													return undefined;
 												}
 
-												if (additionalEmails !== '' && validateEmail(additionalEmails)) {
+												if (additionalEmails !== '' && validateEmail(additionalEmails, { style: 'rfc' })) {
 													return undefined;
 												}
 
