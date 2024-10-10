@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import type { AppServiceOutput, Bridge } from 'matrix-appservice-bridge';
 
 import type { IExternalUserProfileInformation, IFederationBridge, IFederationBridgeRegistrationFile } from '../../domain/IFederationBridge';
 import type { RocketChatSettingsAdapter } from '../rocket-chat/adapters/Settings';
@@ -744,7 +744,7 @@ export class MatrixBridge implements IFederationBridge {
 		federationBridgeLogger.info('Performing Dynamic Import of matrix-appservice-bridge');
 
 		// Dynamic import to prevent Rocket.Chat from loading the module until needed and then handle if that fails
-		const { Bridge, AppServiceRegistration, MatrixUser } = await import('@rocket.chat/forked-matrix-appservice-bridge');
+		const { Bridge, AppServiceRegistration, MatrixUser } = await import('matrix-appservice-bridge');
 		MatrixUserInstance = MatrixUser;
 		const registrationFile = this.internalSettings.getAppServiceRegistrationObject();
 
