@@ -437,7 +437,8 @@ export class CustomOAuth {
 }
 
 const { updateOrCreateUserFromExternalService } = Accounts;
-const updateOrCreateUserFromExternalServiceAsync = async function (...args /* serviceName, serviceData, options*/) {
+
+Accounts.updateOrCreateUserFromExternalService = async function (...args /* serviceName, serviceData, options*/) {
 	for await (const hook of BeforeUpdateOrCreateUserFromExternalService) {
 		await hook.apply(this, args);
 	}
@@ -457,8 +458,4 @@ const updateOrCreateUserFromExternalServiceAsync = async function (...args /* se
 	});
 
 	return user;
-};
-
-Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceName, serviceData, options*/) {
-	return Promise.await(updateOrCreateUserFromExternalServiceAsync.call(this, ...args));
 };
