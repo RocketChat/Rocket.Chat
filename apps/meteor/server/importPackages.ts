@@ -27,6 +27,7 @@ import '../app/iframe-login/server';
 import '../app/importer/server';
 import '../app/importer-csv/server';
 import '../app/importer-hipchat-enterprise/server';
+import '../app/importer-omnichannel-contacts/server';
 import '../app/importer-pending-files/server';
 import '../app/importer-pending-avatars/server';
 import '../app/importer-slack/server';

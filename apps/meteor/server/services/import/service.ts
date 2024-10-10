@@ -56,6 +56,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 			case 'importer_preparing_users':
 			case 'importer_preparing_channels':
 			case 'importer_preparing_messages':
+			case 'importer_preparing_contacts':
 				return 'loading';
 			case 'importer_user_selection':
 				return 'ready';
@@ -63,6 +64,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 			case 'importer_importing_users':
 			case 'importer_importing_channels':
 			case 'importer_importing_messages':
+			case 'importer_importing_contacts':
 			case 'importer_importing_files':
 			case 'importer_finishing':
 				return 'importing';
@@ -175,7 +177,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 			skipExistingUsers: true,
 		});
 
-		const selection = new ImporterSelection(importer.name, [], [], 0);
+		const selection = new ImporterSelection<false>(importer.name, [], [], 0, []);
 		await instance.startImport(selection, userId);
 	}
 }

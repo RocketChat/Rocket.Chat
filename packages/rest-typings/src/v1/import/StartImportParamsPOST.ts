@@ -1,3 +1,4 @@
+import type { IImporterSelectionContactIdentifier } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
@@ -24,6 +25,7 @@ export type StartImportParamsPOST = {
 			is_private: boolean;
 			is_direct: boolean;
 		}[];
+		contacts?: IImporterSelectionContactIdentifier[];
 	};
 };
 
@@ -63,6 +65,17 @@ const StartImportParamsPostSchema = {
 							is_direct: { type: 'boolean' },
 						},
 						required: ['channel_id', 'name', 'is_archived', 'do_import', 'is_private', 'is_direct'],
+					},
+				},
+				contacts: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							id: { type: 'string' },
+							do_import: { type: 'boolean' },
+						},
+						required: ['id', 'do_import'],
 					},
 				},
 			},
