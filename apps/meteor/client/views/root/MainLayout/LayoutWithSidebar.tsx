@@ -4,7 +4,7 @@ import { useLayout, useSetting, useCurrentModal, useCurrentRoutePath, useRouter 
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useRef } from 'react';
 
-import NavBar from '../../../NavBarV2';
+import NavBar from '../../../navbar';
 import Sidebar from '../../../sidebar';
 import AccessibilityShortcut from './AccessibilityShortcut';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';

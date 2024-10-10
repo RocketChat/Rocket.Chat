@@ -3,13 +3,13 @@ import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes } from 'react';
 import React from 'react';
 
+import { useAdministrationMenu } from '../NavBarSettingsToolbar/hooks/useAdministrationMenu';
 import { NavbarAction } from '../../components/Navbar';
-import { useAdministrationItems } from '../../sidebar/header/actions/hooks/useAdministrationItems';
 
 const NavbarAdministrationAction = (props: AllHTMLAttributes<HTMLLIElement>) => {
 	const t = useTranslation();
 
-	const administrationItems = useAdministrationItems();
+	const administrationItems = useAdministrationMenu();
 
 	const handleAction = useHandleMenuAction(administrationItems);
 
@@ -23,7 +23,7 @@ const NavbarAdministrationAction = (props: AllHTMLAttributes<HTMLLIElement>) => 
 				title={t('Administration')}
 				icon='cog'
 				onAction={handleAction}
-				items={administrationItems}
+				sections={administrationItems}
 				placement='right-start'
 			/>
 		</NavbarAction>
