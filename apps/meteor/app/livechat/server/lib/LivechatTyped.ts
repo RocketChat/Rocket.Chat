@@ -20,12 +20,11 @@ import type {
 	IOmnichannelAgent,
 	ILivechatDepartmentAgents,
 	LivechatDepartmentDTO,
-	OmnichannelSourceType,
 	ILivechatInquiryRecord,
 	ILivechatContact,
 	ILivechatContactChannel,
 } from '@rocket.chat/core-typings';
-import { ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { OmnichannelSourceType, ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
 import {
 	LivechatDepartment,
@@ -484,7 +483,7 @@ class LivechatClass {
 					Livechat.logger.debug(`Adding channel for contact ${contact._id}`);
 
 					await LivechatContacts.addChannel(contact._id, {
-						name: roomInfo.source?.label || roomInfo.source?.type.toString() || 'other',
+						name: roomInfo.source?.label || roomInfo.source?.type.toString() || OmnichannelSourceType.OTHER,
 						visitorId: visitor._id,
 						blocked: false,
 						verified: false,
