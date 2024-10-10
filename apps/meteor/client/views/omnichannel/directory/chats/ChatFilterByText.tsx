@@ -1,11 +1,11 @@
 import { Box, Button, Chip } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import { useMethod, useRoute, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
-import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
 import GenericModal from '../../../../components/GenericModal';
 import { useChatsFilters } from './useChatsFilters';
 
