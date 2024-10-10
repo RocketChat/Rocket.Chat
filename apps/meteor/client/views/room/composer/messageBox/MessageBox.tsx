@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
@@ -12,10 +13,11 @@ import {
 	MessageComposerHint,
 	MessageComposerButton,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
+import fileSize from 'filesize';
 import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler, MouseEvent } from 'react';
-import React, { memo, useRef, useReducer, useCallback } from 'react';
+import React, { memo, useRef, useReducer, useCallback, useState, useEffect } from 'react';
 import { Trans } from 'react-i18next';
 import { useSubscription } from 'use-subscription';
 
@@ -40,6 +42,8 @@ import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
+import FilePreview from './FilePreview/FilePreview';
+import { handleSendFiles } from './HandleFileUploads';
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
@@ -78,6 +82,8 @@ const a: any[] = [];
 const getEmptyArray = () => a;
 
 type MessageBoxProps = {
+	filesToUpload: File[];
+	setFilesToUpload: any;
 	tmid?: IMessage['_id'];
 	readOnly: boolean;
 	onSend?: (params: { value: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean }) => Promise<void>;
@@ -95,7 +101,11 @@ type MessageBoxProps = {
 	isEmbedded?: boolean;
 };
 
+type HandleFilesToUpload = (filesList: File[], resetFileInput?: () => void) => void;
+
 const MessageBox = ({
+	filesToUpload,
+	setFilesToUpload,
 	tmid,
 	onSend,
 	onJoin,
@@ -117,6 +127,77 @@ const MessageBox = ({
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 
 	const [typing, setTyping] = useReducer(reducer, false);
+	const [isUploading, setIsUploading] = useState(false);
+
+	const dispatchToastMessage = useToastMessageDispatch();
+	const maxFileSize = useSetting('FileUpload_MaxFileSize') as number;
+
+	const handleFilesToUpload: HandleFilesToUpload = (filesList: File[], resetFileInput?: () => void) => {
+		setFilesToUpload((prevFiles: File[]) => {
+			let newFilesToUpload = [...prevFiles, ...filesList];
+			if (newFilesToUpload.length > 6) {
+				newFilesToUpload = newFilesToUpload.slice(0, 6);
+				dispatchToastMessage({
+					type: 'error',
+					message: "You can't upload more than 6 files at once. Only the first 6 files will be uploaded.",
+				});
+			}
+			let nameError = 0;
+			let sizeError = 0;
+
+			const validFiles = newFilesToUpload.filter((queuedFile) => {
+				const { name, size } = queuedFile;
+
+				if (!name) {
+					nameError = 1;
+					return false;
+				}
+
+				if (maxFileSize > -1 && (size || 0) > maxFileSize) {
+					sizeError = 1;
+					return false;
+				}
+
+				return true;
+			});
+
+			if (nameError) {
+				dispatchToastMessage({
+					type: 'error',
+					message: t('error-the-field-is-required', { field: t('Name') }),
+				});
+			}
+
+			if (sizeError) {
+				dispatchToastMessage({
+					type: 'error',
+					message: `${t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })}`,
+				});
+			}
+
+			setIsUploading(validFiles.length > 0);
+			return validFiles;
+		});
+
+		resetFileInput?.();
+	};
+	const handleRemoveFile = (indexToRemove: number) => {
+		const updatedFiles = [...filesToUpload];
+
+		const element = document.getElementById(`file-preview-${indexToRemove}`);
+		if (element) {
+			element.style.transition = 'opacity 0.3s ease-in-out';
+			element.style.opacity = '0';
+		}
+
+		setTimeout(() => {
+			updatedFiles.splice(indexToRemove, 1);
+			setFilesToUpload(updatedFiles);
+			if (element) {
+				element.style.opacity = '1';
+			}
+		}, 300);
+	};
 
 	const { isMobile } = useLayout();
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
@@ -159,6 +240,10 @@ const MessageBox = ({
 	});
 
 	const handleSendMessage = useMutableCallback(() => {
+		if (isUploading) {
+			setIsUploading(!isUploading);
+			return handleSendFiles(filesToUpload, chat, room, setFilesToUpload);
+		}
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
 		clearPopup();
@@ -255,6 +340,13 @@ const MessageBox = ({
 		getCurrentValue: chat.composer?.editing.get ?? getEmptyFalse,
 		subscribe: chat.composer?.editing.subscribe ?? emptySubscribe,
 	});
+
+	useEffect(() => {
+		setIsUploading(filesToUpload.length > 0);
+		if (isEditing) {
+			setFilesToUpload([]);
+		}
+	}, [filesToUpload, isEditing, setFilesToUpload]);
 
 	const isRecordingAudio = useSubscription({
 		getCurrentValue: chat.composer?.recording.get ?? getEmptyFalse,
@@ -415,6 +507,29 @@ const MessageBox = ({
 					aria-activedescendant={ariaActiveDescendant}
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
+				{isUploading && (
+					<>
+						<Box
+							display='flex'
+							flexDirection='row'
+							overflowX='auto'
+							style={{ width: '100%', whiteSpace: 'nowrap', padding: '10px', gap: '10px' }}
+						>
+							{filesToUpload.map((file, index) => (
+								<div
+									key={index}
+									id={`file-preview-${index}`}
+									style={{
+										transition: 'opacity 0.3s ease-in-out',
+										opacity: '1',
+									}}
+								>
+									<FilePreview key={index} file={file} index={index} onRemove={handleRemoveFile} />
+								</div>
+							))}
+						</Box>
+					</>
+				)}
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
@@ -440,6 +555,8 @@ const MessageBox = ({
 							tmid={tmid}
 							isRecording={isRecording}
 							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
+							isEditing={isEditing}
+							handleFiles={handleFilesToUpload}
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
@@ -454,10 +571,10 @@ const MessageBox = ({
 								<MessageComposerAction
 									aria-label={t('Send')}
 									icon='send'
-									disabled={!canSend || (!typing && !isEditing)}
+									disabled={!canSend || (!typing && !isEditing && !isUploading)}
 									onClick={handleSendMessage}
-									secondary={typing || isEditing}
-									info={typing || isEditing}
+									secondary={typing || isEditing || isUploading}
+									info={typing || isEditing || isUploading}
 								/>
 							</>
 						)}

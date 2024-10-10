@@ -11,6 +11,8 @@ import ComposerSkeleton from './ComposerSkeleton';
 import MessageBox from './messageBox/MessageBox';
 
 export type ComposerMessageProps = {
+	filesToUpload: File[];
+	setFilesToUpload: any;
 	tmid?: IMessage['_id'];
 	children?: ReactNode;
 	subscription?: ISubscription;
@@ -84,7 +86,6 @@ const ComposerMessage = ({ tmid, readOnly, onSend, ...props }: ComposerMessagePr
 	const publicationReady = useReactiveValue(
 		useCallback(() => LegacyRoomManager.getOpenedRoomByRid(room._id)?.streamActive ?? false, [room._id]),
 	);
-
 	if (!publicationReady) {
 		return <ComposerSkeleton />;
 	}

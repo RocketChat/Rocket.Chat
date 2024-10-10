@@ -6,6 +6,7 @@ import type {
 	AtLeast,
 	FilesAndAttachments,
 	IMessage,
+	FileProp,
 } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
@@ -28,6 +29,38 @@ function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtL
 		}
 	});
 }
+
+export const parseMultipleFilesIntoMessageAttachments = async (
+	filesToConfirm: Partial<IUpload>[],
+	roomId: string,
+	user: IUser,
+): Promise<{ files: FileProp[]; attachments: MessageAttachment[] }> => {
+	const messageFiles: FileProp[] = [];
+	const messageAttachments: MessageAttachment[] = [];
+
+	const filesAndAttachments = await Promise.all(
+		filesToConfirm
+			.filter((files: Partial<IUpload>) => !!files)
+			.map(async (file) => {
+				try {
+					const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
+					return { files, attachments };
+				} catch (error) {
+					console.error('Error processing file:', file, error);
+					return { files: [], attachments: [] };
+				}
+			}),
+	);
+
+	filesAndAttachments
+		.filter(({ files, attachments }) => files.length || attachments.length)
+		.forEach(({ files, attachments }) => {
+			messageFiles.push(...files);
+			messageAttachments.push(...attachments);
+		});
+
+	return { files: messageFiles, attachments: messageAttachments };
+};
 
 export const parseFileIntoMessageAttachments = async (
 	file: Partial<IUpload>,

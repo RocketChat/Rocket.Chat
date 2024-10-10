@@ -3,15 +3,16 @@ import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { useFileInput } from '../../../../../../hooks/useFileInput';
-import { useChat } from '../../../../contexts/ChatContext';
 
 const fileInputProps = { type: 'file', multiple: true };
 
-export const useFileUploadAction = (disabled: boolean): GenericMenuItemProps => {
+export const useFileUploadAction = (
+	disabled: boolean,
+	handleFiles: (filesList: File[], resetFileInput?: () => void) => void,
+): GenericMenuItemProps => {
 	const t = useTranslation();
 	const fileUploadEnabled = useSetting<boolean>('FileUpload_Enabled');
 	const fileInputRef = useFileInput(fileInputProps);
-	const chat = useChat();
 
 	useEffect(() => {
 		const resetFileInput = () => {
@@ -30,12 +31,12 @@ export const useFileUploadAction = (disabled: boolean): GenericMenuItemProps => 
 				});
 				return file;
 			});
-			chat?.flows.uploadFiles(filesToUpload, resetFileInput);
+			handleFiles(filesToUpload, resetFileInput);
 		};
 
 		fileInputRef.current?.addEventListener('change', handleUploadChange);
 		return () => fileInputRef?.current?.removeEventListener('change', handleUploadChange);
-	}, [chat, fileInputRef]);
+	}, [fileInputRef]);
 
 	const handleUpload = () => {
 		fileInputRef?.current?.click();
