@@ -313,3 +313,16 @@ export async function validateContactManager(contactManagerUserId: string) {
 		throw new Error('error-contact-manager-not-found');
 	}
 }
+
+export async function unverifyContactChannel(contact: ILivechatContact, channelName: string, visitorId: string): Promise<void> {
+	const channelToUnverify = contact.channels?.find((channel) => channel.name === channelName && channel.visitorId === visitorId);
+
+	if (!channelToUnverify) {
+		throw new Error('error-invalid-channel');
+	}
+
+	channelToUnverify.verified = false;
+	await LivechatContacts.updateContact(contact._id, {
+		channels: contact.channels,
+	});
+}

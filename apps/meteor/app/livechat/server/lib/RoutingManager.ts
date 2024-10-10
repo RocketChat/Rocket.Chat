@@ -14,13 +14,14 @@ import type {
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
-import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users, LivechatContacts } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
+import { isSingleContactEnabled, unverifyContactChannel } from './Contacts';
 import {
 	createLivechatSubscription,
 	dispatchAgentDelegated,
@@ -225,6 +226,40 @@ export const RoutingManager: Routing = {
 				status: String,
 			}),
 		);
+
+		if (isSingleContactEnabled() && inquiry.v.contactId) {
+			const contact = await LivechatContacts.findOne({
+				_id: inquiry.v.contactId,
+			});
+
+			if (!contact) {
+				logger.debug(`Could not find associated contact with visitor ${inquiry.v._id}`);
+				return room;
+			}
+
+			if (contact.unknown && settings.get<boolean>('Livechat_Block_Unknown_Contacts')) {
+				// TODO: we currently don't have the ability to block contacts, when it gets added we must add a call to it here :P
+				return room;
+			}
+
+			const contactVerificationApp = settings.get('Livechat_Contact_Verification_App');
+			// Note: Non-empty `Livechat_Contact_Verification_App` means the user has a Contact Verification App setup,
+			//       therefore, we must give the app control over the room
+			if (contactVerificationApp !== '') {
+				// Note: If it is not `Livechat_Request_Verification_On_First_Contact_Only` it means that even though the contact
+				//       was already verified, we must verify it again in order to handle the livechat conversation down to the queue
+				if (!settings.get<boolean>('Livechat_Request_Verification_On_First_Contact_Only')) {
+					await unverifyContactChannel(contact, room.source.type, inquiry.v._id);
+					return room;
+				}
+
+				const verifiedChannels = contact.channels?.filter((channel) => channel.verified && channel.name === room.source.type) || [];
+				if (verifiedChannels.length === 0 && settings.get<boolean>('Livechat_Block_Unverified_Contacts')) {
+					await unverifyContactChannel(contact, room.source.type, inquiry.v._id);
+					return room;
+				}
+			}
+		}
 
 		logger.debug(`Attempting to take Inquiry ${inquiry._id} [Agent ${agent.agentId}] `);
 
