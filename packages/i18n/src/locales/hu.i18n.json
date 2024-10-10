@@ -4540,7 +4540,7 @@
   "The_application_name_is_required": "Az alkalmazás neve kötelező",
   "The_channel_name_is_required": "A csatorna neve kötelező",
   "The_emails_are_being_sent": "Az e-mailek elküldésre kerültek.",
-  "The_empty_room__roomName__will_be_removed_automatically": "Az üres <span style=\"font-weight: bold;\">{{roomName}}</span> szoba automatikusan el lesz távolítva.",   
+  "The_empty_room__roomName__will_be_removed_automatically": "Az üres <span style=\"font-weight: bold;\">{{roomName}}</span> szoba automatikusan el lesz távolítva.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "A kép átméretezése nem fog működni, mert nem észlelhető a kiszolgálóra telepített ImageMagick vagy GraphicsMagick program.",
   "The_message_is_a_discussion_you_will_not_be_able_to_recover": "Az üzenet egy megbeszélés, nem lesz képes helyreállítani az üzeneteket!",
   "The_mobile_notifications_were_disabled_to_all_users_go_to_Admin_Push_to_enable_the_Push_Gateway_again": "A mobil értesítések le lettek tiltva az összes felhasználó számára. Menjen az „Adminisztráció → Leküldés” menüponthoz a leküldéses átjáró újbóli engedélyezéséhez.",
