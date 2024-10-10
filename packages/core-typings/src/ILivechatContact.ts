@@ -8,8 +8,8 @@ export interface ILivechatContactChannel {
 
 export interface ILivechatContactConflictingField {
 	field: string;
-	oldValue: string;
-	newValue: string;
+	oldValue: string | undefined;
+	newValue: string | undefined;
 }
 
 export interface ILivechatContact extends IRocketChatRecord {
