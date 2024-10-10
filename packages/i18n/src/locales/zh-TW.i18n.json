@@ -4078,8 +4078,6 @@
   "Type_your_password": "輸入您的密碼",
   "Type_your_username": "輸入您的使用者名稱",
   "UI_Allow_room_names_with_special_chars": "允許 Room 名稱中的特殊字元",
-  "UI_Click_Direct_Message": "點擊建立直接訊息",
-  "UI_Click_Direct_Message_Description": "略過打開配置選項分頁，而是直接進入會話",
   "UI_DisplayRoles": "顯示角色",
   "UI_Group_Channels_By_Type": "按類型分組頻道",
   "UI_Merge_Channels_Groups": "合併私人群組到 Channel",
