@@ -1,12 +1,16 @@
-import { Box, Callout, Chip, Margins } from '@rocket.chat/fuselage';
+import type { App } from '@rocket.chat/core-typings';
+import { Box, Button, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import React from 'react';
 
+import { useExternalLink } from '../../../../../hooks/useExternalLink';
+import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
 import type { AppInfo } from '../../../definitions/AppInfo';
+import { doesAppRequireAddon } from '../../../helpers/doesAppRequireAddon';
 import { purifyOptions } from '../../../lib/purifyOptions';
 import AppDetailsAPIs from './AppDetailsAPIs';
 import { normalizeUrl } from './normalizeUrl';
@@ -17,6 +21,8 @@ type AppDetailsProps = {
 		documentationUrl?: AppInfo['documentationUrl'];
 	};
 };
+
+const GET_ADDONS_LINK = 'https://go.rocket.chat/i/get-addons';
 
 const AppDetails = ({ app }: AppDetailsProps) => {
 	const t = useTranslation();
@@ -37,18 +43,38 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 	const normalizedSupportUrl = support ? normalizeUrl(support) : undefined;
 	const normalizedDocumentationUrl = documentation ? normalizeUrl(documentation) : undefined;
 
+	const appNeedAddon = doesAppRequireAddon(app as App);
+
+	const userHasAddon = useHasLicenseModule((app as any).addon); // The information of the addon will be added here by the other PR
+
+	const openExternalLink = useExternalLink();
+
 	return (
-		<Box maxWidth='x640' w='full' marginInline='auto' color='default'>
+		<Box mbs='36px' maxWidth='x640' w='full' marginInline='auto' color='default'>
+			{appNeedAddon && userHasAddon && (
+				<Callout
+					mb='16px'
+					title={t('Subscription_add-on_required')}
+					type='info'
+					actions={
+						<Button small onClick={() => openExternalLink(GET_ADDONS_LINK)}>
+							{t('Contact_sales')}
+						</Button>
+					}
+				>
+					{t('App_cannot_be_enabled_without_add-on')}
+				</Callout>
+			)}
 			{app.licenseValidation && (
 				<>
 					{Object.entries(app.licenseValidation.warnings).map(([key]) => (
-						<Callout key={key} type='warning'>
+						<Callout key={key} type='warning' mb='16px'>
 							{t(`Apps_License_Message_${key}` as TranslationKey)}
 						</Callout>
 					))}
 
 					{Object.entries(app.licenseValidation.errors).map(([key]) => (
-						<Callout key={key} type='danger'>
+						<Callout key={key} type='danger' mb='16px'>
 							{t(`Apps_License_Message_${key}` as TranslationKey)}
 						</Callout>
 					))}

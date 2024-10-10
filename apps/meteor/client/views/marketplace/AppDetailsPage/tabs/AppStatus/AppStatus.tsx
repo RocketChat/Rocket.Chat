@@ -8,8 +8,10 @@ import React, { useCallback, useState, memo } from 'react';
 import semver from 'semver';
 
 import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
+import AddonRequiredModal from '../../../AppsList/AddonRequiredModal';
 import type { appStatusSpanResponseProps } from '../../../helpers';
 import { appButtonProps, appMultiStatusProps } from '../../../helpers';
+import { doesAppRequireAddon } from '../../../helpers/doesAppRequireAddon';
 import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstallationHandler';
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
 import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
@@ -81,8 +83,13 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const handleAcquireApp = useCallback(() => {
 		setLoading(true);
+
+		if (doesAppRequireAddon(app)) {
+			return setModal(<AddonRequiredModal actionType='install' onDismiss={cancelAction} onInstallAnyway={appInstallationHandler} />);
+		}
+
 		appInstallationHandler();
-	}, [appInstallationHandler, setLoading]);
+	}, [appInstallationHandler, cancelAction, setLoading, setModal, app]);
 
 	// @TODO we should refactor this to not use the label to determine the variant
 	const getStatusVariant = (status: appStatusSpanResponseProps) => {
