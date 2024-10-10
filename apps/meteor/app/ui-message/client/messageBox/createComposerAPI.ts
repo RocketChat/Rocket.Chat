@@ -223,11 +223,11 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		focus();
 
 		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
-		const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.slice(selectionStart - index - 1, 1) === char);
+		const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.slice(selectionStart - index - 1, selectionStart - index) === char);
 
 		if (startPatternFound) {
 			const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
-			const endPatternFound = [...endPattern].every((char, index) => input.value.slice(selectionEnd + index, 1) === char);
+			const endPatternFound = [...endPattern].every((char, index) => input.value.slice(selectionEnd + index, selectionEnd + index + 1) === char);
 
 			if (endPatternFound) {
 				insertText(selectedText);
