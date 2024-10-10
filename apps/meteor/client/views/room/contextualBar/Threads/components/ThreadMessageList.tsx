@@ -66,9 +66,9 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 
 	const { messageListRef } = useMessageListNavigation();
-	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef, messageListRef);
+	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, messageListRef);
 
-	const scrollRef = useMergedRefs<HTMLElement | null>(innerRef, listWrapperScrollRef);
+	const scrollRef = useMergedRefs<HTMLElement | null>(innerRef, listWrapperScrollRef, listJumpRef);
 
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
