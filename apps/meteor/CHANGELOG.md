@@ -1,5 +1,51 @@
 # @rocket.chat/meteor
 
+## 6.12.2
+
+### Patch Changes
+
+- ([#33348](https://github.com/RocketChat/Rocket.Chat/pull/33348) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a problem that caused visitor creation to fail when GDPR setting was enabled and visitor was created via Apps Engine or the deprecated `livechat:registerGuest` method.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#33389](https://github.com/RocketChat/Rocket.Chat/pull/33389) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a race condition that causes livechat conversations to get stuck in the agent's sidebar panel after being forwarded.
+
+- ([#33304](https://github.com/RocketChat/Rocket.Chat/pull/33304) by [@dionisio-bot](https://github.com/dionisio-bot)) Resolves the issue where outgoing integrations failed to trigger after the version 6.12.0 upgrade by correcting the parameter order from the `afterSaveMessage` callback to listener functions. This ensures the correct room information is passed, restoring the functionality of outgoing webhooks, IRC bridge, Autotranslate, and Engagement Dashboard.
+
+- ([#33314](https://github.com/RocketChat/Rocket.Chat/pull/33314) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixed remaining direct references to external user avatar URLs
+
+  Fixed local avatars having priority over external provider
+
+  It mainly corrects the behavior of E2E encryption messages and desktop notifications.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.2
+  - @rocket.chat/rest-typings@6.12.2
+  - @rocket.chat/license@0.2.8
+  - @rocket.chat/omnichannel-services@0.3.5
+  - @rocket.chat/pdf-worker@0.2.5
+  - @rocket.chat/presence@0.2.8
+  - @rocket.chat/api-client@0.2.8
+  - @rocket.chat/apps@0.1.8
+  - @rocket.chat/core-services@0.6.2
+  - @rocket.chat/cron@0.1.8
+  - @rocket.chat/fuselage-ui-kit@10.0.2
+  - @rocket.chat/gazzodown@10.0.2
+  - @rocket.chat/model-typings@0.7.2
+  - @rocket.chat/ui-contexts@10.0.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@0.2.5
+  - @rocket.chat/ui-theming@0.2.1
+  - @rocket.chat/ui-avatar@6.0.2
+  - @rocket.chat/ui-client@10.0.2
+  - @rocket.chat/ui-video-conf@10.0.2
+  - @rocket.chat/web-ui-registration@10.0.2
+  - @rocket.chat/instance-status@0.1.8
+  </details>
+
 ## 6.12.1
 
 ### Patch Changes
