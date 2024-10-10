@@ -1,5 +1,6 @@
 import { Apps } from '@rocket.chat/apps';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
+import { AppInstallationSource } from '@rocket.chat/apps-engine/server/storage';
 import mem from 'mem';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -10,6 +11,8 @@ export type AppsStatistics = {
 	totalInstalled: number | false;
 	totalActive: number | false;
 	totalFailed: number | false;
+	totalPrivateApps: number | false;
+	totalPrivateAppsEnabled: number | false;
 };
 
 async function _getAppsStatistics(): Promise<AppsStatistics> {
@@ -19,6 +22,8 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 			totalInstalled: false,
 			totalActive: false,
 			totalFailed: false,
+			totalPrivateApps: false,
+			totalPrivateAppsEnabled: false,
 		};
 	}
 
@@ -28,12 +33,23 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 		let totalInstalled = 0;
 		let totalActive = 0;
 		let totalFailed = 0;
+		let totalPrivateApps = 0;
+		let totalPrivateAppsEnabled = 0;
 
 		await Promise.all(
 			apps.map(async (app) => {
 				totalInstalled++;
 
 				const status = await app.getStatus();
+				const storageItem = await app.getStorageItem();
+
+				if (storageItem.installationSource === AppInstallationSource.PRIVATE) {
+					totalPrivateApps++;
+
+					if (AppStatusUtils.isEnabled(status)) {
+						totalPrivateAppsEnabled++;
+					}
+				}
 
 				if (status === AppStatus.MANUALLY_DISABLED) {
 					totalFailed++;
@@ -50,6 +66,8 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 			totalInstalled,
 			totalActive,
 			totalFailed,
+			totalPrivateApps,
+			totalPrivateAppsEnabled,
 		};
 	} catch (err: unknown) {
 		SystemLogger.error({ msg: 'Exception while getting Apps statistics', err });
@@ -58,6 +76,8 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 			totalInstalled: false,
 			totalActive: false,
 			totalFailed: false,
+			totalPrivateApps: false,
+			totalPrivateAppsEnabled: false,
 		};
 	}
 }

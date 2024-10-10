@@ -14,4 +14,5 @@ export interface IMatrixFederationStatistics {
 	amountOfExternalUsers: number;
 	amountOfFederatedRooms: number;
 	externalConnectedServers: { quantity: number; servers: string[] };
+	amountOfMessagesInActiveFederatedRooms: number;
 }

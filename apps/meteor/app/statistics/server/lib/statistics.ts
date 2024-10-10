@@ -118,6 +118,7 @@ export const statistics = {
 		statistics.busyUsers = await Users.col.countDocuments({ status: UserStatus.BUSY });
 		statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
 		statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers - statistics.busyUsers;
+		statistics.activeUsersWithCustomRoles = await Users.countActiveUsersWithCustomRoles();
 		statsPms.push(
 			getUserLanguages(statistics.totalUsers).then((total) => {
 				statistics.userLanguages = total;
@@ -155,6 +156,13 @@ export const statistics = {
 						count,
 					}));
 				}),
+		);
+
+		// Number of livechat rooms with department
+		statsPms.push(
+			LivechatRooms.countLivechatRoomsWithDepartment().then((count) => {
+				statistics.totalLivechatRoomsWithDepartment = count;
+			}),
 		);
 
 		// Number of departments
