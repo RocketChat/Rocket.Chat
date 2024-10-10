@@ -167,7 +167,7 @@ const SidebarItemTemplateWithData = ({
 	const badges = (
 		<>
 			{showBadge && isUnread && (
-				<SidebarV2ItemBadge variant={variant} title={badgeTitle}>
+				<SidebarV2ItemBadge variant={variant} title={badgeTitle} role='status'>
 					{unread + tunread?.length}
 				</SidebarV2ItemBadge>
 			)}
