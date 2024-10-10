@@ -15,7 +15,7 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler, MouseEvent } from 'react';
-import React, { memo, useRef, useReducer, useCallback } from 'react';
+import React, { memo, useRef, useReducer, useCallback, useEffect, useState } from 'react';
 import { Trans } from 'react-i18next';
 import { useSubscription } from 'use-subscription';
 
@@ -361,6 +361,49 @@ const MessageBox = ({
 
 	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
 
+	const [hasNewline, setHasNewline] = useState(false);
+
+	const prevHasNewlineRef = useRef<boolean>(false);
+
+	useEffect(() => {
+	  prevHasNewlineRef.current = hasNewline;
+	}, [hasNewline]);
+
+	const checkForNewline = useCallback(() => {
+		const textarea = textareaRef.current;
+		if (textarea) {
+			const selectionStart = textarea.selectionStart ?? 0;
+			const selectionEnd = textarea.selectionEnd ?? 0;
+			const selectedText = textarea.value.substring(selectionStart, selectionEnd);			
+			setHasNewline(selectedText.includes('\n'));
+		} else {
+			setHasNewline(false);
+		}
+	}, []);
+
+	const handleMouseUp = useCallback(() => {
+		const prevHasNewLine= prevHasNewlineRef.current
+		if(prevHasNewLine){
+			setHasNewline(false);
+			return;
+		}
+		checkForNewline();
+	}, [checkForNewline]);
+
+	const handleKeyUp = useCallback(() => {
+			checkForNewline();
+	}, [checkForNewline]);
+
+	useEffect(() => {
+			document.addEventListener('mouseup', handleMouseUp);
+			document.addEventListener('keyup', handleKeyUp);
+
+			return () => {
+				document.removeEventListener('mouseup', handleMouseUp);
+				document.removeEventListener('keyup', handleKeyUp);
+			};
+	}, [handleMouseUp, handleKeyUp]);
+
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
@@ -429,7 +472,7 @@ const MessageBox = ({
 								composer={chat.composer}
 								variant={sizes.inlineSize < 480 ? 'small' : 'large'}
 								items={formatters}
-								disabled={isRecording || !canSend}
+								disabled={isRecording || !canSend || hasNewline}
 							/>
 						)}
 						<MessageBoxActionsToolbar
