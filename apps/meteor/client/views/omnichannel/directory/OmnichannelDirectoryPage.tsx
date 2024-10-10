@@ -9,7 +9,7 @@ import CallTab from './calls/CallTab';
 import ChatTab from './chats/ChatTab';
 import ContactTab from './contacts/ContactTab';
 
-const DEFAULT_TAB = 'contacts';
+const DEFAULT_TAB = 'chats';
 
 const OmnichannelDirectoryPage = () => {
 	const t = useTranslation();
@@ -39,19 +39,19 @@ const OmnichannelDirectoryPage = () => {
 			<Page>
 				<PageHeader title={t('Omnichannel_Contact_Center')} />
 				<Tabs flexShrink={0}>
-					<Tabs.Item selected={tab === 'contacts'} onClick={() => handleTabClick('contacts')}>
-						{t('Contacts')}
-					</Tabs.Item>
 					<Tabs.Item selected={tab === 'chats'} onClick={() => handleTabClick('chats')}>
 						{t('Chats')}
+					</Tabs.Item>
+					<Tabs.Item selected={tab === 'contacts'} onClick={() => handleTabClick('contacts')}>
+						{t('Contacts')}
 					</Tabs.Item>
 					<Tabs.Item selected={tab === 'calls'} onClick={() => handleTabClick('calls')}>
 						{t('Calls')}
 					</Tabs.Item>
 				</Tabs>
 				<PageContent>
-					{tab === 'contacts' && <ContactTab />}
 					{tab === 'chats' && <ChatTab />}
+					{tab === 'contacts' && <ContactTab />}
 					{tab === 'calls' && <CallTab />}
 				</PageContent>
 			</Page>
