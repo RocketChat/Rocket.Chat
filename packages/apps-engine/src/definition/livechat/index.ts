@@ -1,4 +1,5 @@
 import { IDepartment } from './IDepartment';
+import { ILivechatContact } from './ILivechatContact';
 import { ILivechatEventContext } from './ILivechatEventContext';
 import { ILivechatMessage } from './ILivechatMessage';
 import { ILivechatRoom } from './ILivechatRoom';
@@ -21,6 +22,7 @@ export {
     ILivechatMessage,
     ILivechatRoom,
     IPostLivechatAgentAssigned,
+    ILivechatContact,
     IPostLivechatAgentUnassigned,
     IPostLivechatGuestSaved,
     IPostLivechatRoomStarted,

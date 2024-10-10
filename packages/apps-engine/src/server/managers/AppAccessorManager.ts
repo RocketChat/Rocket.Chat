@@ -46,6 +46,7 @@ import {
     VideoConfProviderExtend,
 } from '../accessors';
 import { CloudWorkspaceRead } from '../accessors/CloudWorkspaceRead';
+import { ContactRead } from '../accessors/ContactRead';
 import { ThreadRead } from '../accessors/ThreadRead';
 import { UIExtend } from '../accessors/UIExtend';
 import type { AppBridges } from '../bridges/AppBridges';
@@ -183,12 +184,15 @@ export class AppAccessorManager {
             const cloud = new CloudWorkspaceRead(this.bridges.getCloudWorkspaceBridge(), appId);
             const videoConf = new VideoConferenceRead(this.bridges.getVideoConferenceBridge(), appId);
             const oauthApps = new OAuthAppsReader(this.bridges.getOAuthAppsBridge(), appId);
-
+            const contactReader = new ContactRead(this.bridges, appId);
             const thread = new ThreadRead(this.bridges.getThreadBridge(), appId);
 
             const role = new RoleRead(this.bridges.getRoleBridge(), appId);
 
-            this.readers.set(appId, new Reader(env, msg, persist, room, user, noti, livechat, upload, cloud, videoConf, oauthApps, thread, role));
+            this.readers.set(
+                appId,
+                new Reader(env, msg, persist, room, user, noti, livechat, upload, cloud, videoConf, contactReader, oauthApps, thread, role),
+            );
         }
 
         return this.readers.get(appId);
