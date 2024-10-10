@@ -14,11 +14,17 @@ const notifyAdminsAboutInvalidApps = async function _notifyAdminsAboutInvalidApp
 		return;
 	}
 
-	const hasInvalidApps = !!apps.find((app) => app.getLatestLicenseValidationResult().hasErrors);
+	const invalidApps = apps.filter((app) => app.getLatestLicenseValidationResult().hasErrors);
 
-	if (!hasInvalidApps) {
+	if (invalidApps.length === 0) {
 		return;
 	}
+
+	Apps.getRocketChatLogger().info(
+		`Updated marketplace info and found ${invalidApps.length} apps with invalid licenses`,
+		invalidApps.map((app) => ({ id: app.getID(), name: app.getInfo().name })),
+	);
+	Apps.getRocketChatLogger().debug(invalidApps.map((app) => app.getLatestLicenseValidationResult()));
 
 	const id = 'someAppInInvalidState';
 	const title = 'Warning';
@@ -56,13 +62,23 @@ const notifyAdminsAboutRenewedApps = async function _notifyAdminsAboutRenewedApp
 		return;
 	}
 
-	const renewedApps = apps.filter(
-		async (app) => (await app.getStatus()) === AppStatus.DISABLED && app.getPreviousStatus() === AppStatus.INVALID_LICENSE_DISABLED,
+	const renewedApps: { id: string; name: string }[] = [];
+
+	await Promise.all(
+		apps.map(async (app) => {
+			if (app.getPreviousStatus() !== AppStatus.INVALID_LICENSE_DISABLED || (await app.getStatus()) !== AppStatus.DISABLED) {
+				return;
+			}
+
+			renewedApps.push({ id: app.getID(), name: app.getInfo().name });
+		}),
 	);
 
 	if (renewedApps.length === 0) {
 		return;
 	}
+
+	Apps.getRocketChatLogger().info(`Updated marketplace info and found ${renewedApps.length} apps with renewed licenses`, renewedApps);
 
 	const rocketCatMessage = 'There is one or more disabled apps with valid licenses. Go to Administration > Apps to review.';
 
@@ -99,7 +115,7 @@ const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 			data = result;
 		}
 	} catch (err) {
-		Apps.debugLog(err);
+		Apps.getRocketChatLogger().error(err);
 	}
 
 	await Apps.updateAppsMarketplaceInfo(data).then(notifyAdminsAboutInvalidApps).then(notifyAdminsAboutRenewedApps);
