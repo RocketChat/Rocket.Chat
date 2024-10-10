@@ -39,7 +39,7 @@
     "docs": "cross-env NODE_ENV=production build-storybook -o ../../static/fuselage-ui-kit",
     "storybook": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' start-storybook -p 6006 --no-version-updates",
     "build-storybook": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' NODE_ENV=production build-storybook",
-    "build-preview": "yarn build-storybook",
+    "build-preview": "NODE_OPTIONS=--openssl-legacy-provider yarn build-storybook",
     ".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./storybook-static ../../.preview/fuselage-ui-kit"
   },
   "peerDependencies": {
