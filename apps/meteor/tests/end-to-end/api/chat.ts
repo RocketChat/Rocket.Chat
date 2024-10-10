@@ -2806,6 +2806,278 @@ describe('[Chat]', () => {
 			filterDiscussionsByText(text);
 		});
 	});
+
+	describe('[/chat.syncMessages]', () => {
+		let testChannel: IRoom;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.syncMessages.${Date.now()}` })).body.channel;
+		});
+
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
+
+		it('should return an error when the required "roomId" parameter is not sent', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-roomId-param-not-provided');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the neither "lastUpdate", "next" or "previous" parameter is sent', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: 'invalid-room' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-param-not-provided');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the "lastUpdate" parameter is invalid', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: 'invalid-room', lastUpdate: 'invalid-date' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-lastUpdate-param-invalid');
+				})
+				.end(done);
+		});
+
+		it('should return an error when user is not allowed to access the room', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: 'invalid-room', lastUpdate: new Date().toISOString() })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-not-allowed');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the "type" parameter is not supported', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, type: 'invalid-type', next: new Date().toISOString() })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-type-param-not-supported');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the "next" or "previous" parameter is sent without the "type" parameter', async () => {
+			const nextResponse = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, next: new Date().toISOString() });
+
+			const previousResponse = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, previous: new Date().toISOString() });
+
+			expect(nextResponse.statusCode).to.equal(400);
+			expect(nextResponse.body).to.have.property('success', false);
+			expect(nextResponse.body.errorType).to.be.equal('error-type-param-required');
+
+			expect(previousResponse.statusCode).to.equal(400);
+			expect(previousResponse.body).to.have.property('success', false);
+			expect(previousResponse.body.errorType).to.be.equal('error-type-param-required');
+		});
+
+		it('should return an error when both "next" and "previous" are sent', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, type: 'UPDATED', next: new Date().toISOString(), previous: new Date().toISOString() })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-cursor-conflict');
+				})
+				.end(done);
+		});
+
+		it('shoult return an error when both "next" or "previous" and "lastUpdate" are sent', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, type: 'UPDATED', next: new Date().toISOString(), lastUpdate: new Date().toISOString() })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-cursor-and-lastUpdate-conflict');
+				})
+				.end(done);
+		});
+
+		it('should return an empty response when there are no messages to sync', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, lastUpdate: new Date().toISOString() })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.result).to.have.property('updated').and.to.be.an('array');
+					expect(res.body.result).to.have.property('deleted').and.to.be.an('array');
+					expect(res.body.result.updated).to.have.lengthOf(0);
+					expect(res.body.result.deleted).to.have.lengthOf(0);
+				})
+				.end(done);
+		});
+
+		it('should return all updated and deleted messages since "lastUpdate" parameter date', async () => {
+			const lastUpdate = new Date().toISOString();
+
+			// Create two messages isolated to avoid ts conflict
+			const firstMessage = await sendSimpleMessage({ roomId: testChannel._id, text: 'First Message' });
+			const secondMessage = await sendSimpleMessage({ roomId: testChannel._id, text: 'Second Message' });
+
+			const response = await request.get(api('chat.syncMessages')).set(credentials).query({ roomId: testChannel._id, lastUpdate });
+
+			expect(response.body.result.updated).to.have.lengthOf(2);
+			expect(response.body.result.updated[0]._id).to.be.equal(secondMessage.body.message._id);
+			expect(response.body.result.updated[1]._id).to.be.equal(firstMessage.body.message._id);
+			expect(response.body.result.deleted).to.have.lengthOf(0);
+
+			await deleteMessage({ roomId: testChannel._id, msgId: firstMessage.body.message._id });
+
+			const responseAfterDelete = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, lastUpdate });
+
+			expect(responseAfterDelete.body.result.updated).to.have.lengthOf(1);
+			expect(responseAfterDelete.body.result.updated[0]._id).to.be.equal(secondMessage.body.message._id);
+			expect(responseAfterDelete.body.result.deleted).to.have.lengthOf(1);
+			expect(responseAfterDelete.body.result.deleted[0]._id).to.be.equal(firstMessage.body.message._id);
+
+			await deleteMessage({ roomId: testChannel._id, msgId: secondMessage.body.message._id });
+		});
+
+		it('should return all updated messages with a cursor when "type" parameter is "UPDATED"', async () => {
+			const lastUpdate = new Date();
+
+			// Create two messages isolated to avoid ts conflict
+			const firstMessage = await sendSimpleMessage({ roomId: testChannel._id, text: 'First Message' });
+			const secondMessage = await sendSimpleMessage({ roomId: testChannel._id, text: 'Second Message' });
+			const thirdMessage = await sendSimpleMessage({ roomId: testChannel._id, text: 'Third Message' });
+
+			const response = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, next: new Date(lastUpdate).getTime().toString(), type: 'UPDATED', count: 2 });
+
+			expect(response.body.result.updated).to.have.lengthOf(2);
+			expect(response.body.result.updated[0]._id).to.be.equal(thirdMessage.body.message._id);
+			expect(response.body.result.updated[1]._id).to.be.equal(secondMessage.body.message._id);
+			expect(response.body.result.cursor)
+				.to.have.property('next')
+				.and.to.equal(new Date(response.body.result.updated[0]._updatedAt).getTime().toString());
+			expect(response.body.result.cursor)
+				.to.have.property('previous')
+				.and.to.equal(new Date(response.body.result.updated[1]._updatedAt).getTime().toString());
+			expect(response.body.result.cursor)
+				.to.have.property('previous')
+				.and.to.equal(new Date(secondMessage.body.message._updatedAt).getTime().toString());
+
+			const responseWithPrevious = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id, previous: response.body.result.cursor.previous, type: 'UPDATED', count: 2 });
+
+			expect(responseWithPrevious.body.result.updated).to.have.lengthOf(1);
+			expect(responseWithPrevious.body.result.updated[0]._id).to.be.equal(firstMessage.body.message._id);
+			expect(responseWithPrevious.body.result.cursor)
+				.to.have.property('next')
+				.and.to.equal(new Date(firstMessage.body.message._updatedAt).getTime().toString());
+			expect(responseWithPrevious.body.result.cursor).to.have.property('previous').and.to.equal(null);
+
+			await Promise.all([
+				deleteMessage({ roomId: testChannel._id, msgId: firstMessage.body.message._id }),
+				deleteMessage({ roomId: testChannel._id, msgId: secondMessage.body.message._id }),
+				deleteMessage({ roomId: testChannel._id, msgId: thirdMessage.body.message._id }),
+			]);
+		});
+
+		it('should return all deleted messages with a cursor when "type" parameter is "DELETED"', async () => {
+			const newChannel = (await createRoom({ type: 'c', name: `channel.test.syncMessages.${Date.now()}` })).body.channel;
+			const lastUpdate = new Date();
+
+			// Create two messages isolated to avoid ts conflict
+			const firstMessage = (await sendSimpleMessage({ roomId: newChannel._id, text: 'First Message' })).body.message;
+			const secondMessage = (await sendSimpleMessage({ roomId: newChannel._id, text: 'Second Message' })).body.message;
+			const thirdMessage = (await sendSimpleMessage({ roomId: newChannel._id, text: 'Third Message' })).body.message;
+
+			const response = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: newChannel._id, next: new Date(lastUpdate).getTime().toString(), type: 'DELETED', count: 2 });
+
+			expect(response.body.result.deleted).to.have.lengthOf(0);
+			expect(response.body.result.cursor).to.have.property('next').and.to.equal(null);
+			expect(response.body.result.cursor)
+				.to.have.property('previous')
+				.and.to.equal(`${lastUpdate.getTime() + 1}`);
+
+			const firstDeletedMessage = (await deleteMessage({ roomId: newChannel._id, msgId: firstMessage._id })).body.message;
+			const secondDeletedMessage = (await deleteMessage({ roomId: newChannel._id, msgId: secondMessage._id })).body.message;
+			const thirdDeletedMessage = (await deleteMessage({ roomId: newChannel._id, msgId: thirdMessage._id })).body.message;
+
+			const responseAfterDelete = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: newChannel._id, next: new Date(lastUpdate).getTime().toString(), type: 'DELETED', count: 2 });
+
+			expect(responseAfterDelete.body.result.deleted).to.have.lengthOf(2);
+			expect(responseAfterDelete.body.result.deleted[0]._id).to.be.equal(thirdDeletedMessage._id);
+			expect(responseAfterDelete.body.result.deleted[1]._id).to.be.equal(secondDeletedMessage._id);
+			expect(responseAfterDelete.body.result.cursor)
+				.to.have.property('next')
+				.and.to.equal(new Date(responseAfterDelete.body.result.deleted[0]._deletedAt).getTime().toString());
+			expect(responseAfterDelete.body.result.cursor)
+				.to.have.property('previous')
+				.and.to.equal(new Date(responseAfterDelete.body.result.deleted[1]._deletedAt).getTime().toString());
+
+			const responseAfterDeleteWithPrevious = await request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: newChannel._id, previous: responseAfterDelete.body.result.cursor.previous, type: 'DELETED', count: 2 });
+
+			expect(responseAfterDeleteWithPrevious.body.result.deleted).to.have.lengthOf(1);
+			expect(responseAfterDeleteWithPrevious.body.result.deleted[0]._id).to.be.equal(firstDeletedMessage._id);
+			expect(responseAfterDeleteWithPrevious.body.result.cursor)
+				.to.have.property('next')
+				.and.to.equal(new Date(responseAfterDeleteWithPrevious.body.result.deleted[0]._deletedAt).getTime().toString());
+			expect(responseAfterDeleteWithPrevious.body.result.cursor).to.have.property('previous').and.to.equal(null);
+
+			await deleteRoom({ type: 'c', roomId: newChannel._id });
+		});
+	});
 });
 
 describe('Threads', () => {
