@@ -4944,6 +4944,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@matrix-org/matrix-sdk-crypto-nodejs@npm:0.1.0-beta.6":
+  version: 0.1.0-beta.6
+  resolution: "@matrix-org/matrix-sdk-crypto-nodejs@npm:0.1.0-beta.6"
+  dependencies:
+    https-proxy-agent: ^5.0.1
+    node-downloader-helper: ^2.1.5
+  checksum: 9e4266b122060626920dc5bd8ae5f7a3e4d427eba53c068e33cc7223a0e1e6495feb813ee1772c6d67c1dd06422135d1f308e88c8018dd5de18d25be389919b4
+  languageName: node
+  linkType: hard
+
+"@matrix-org/olm@https://gitlab.matrix.org/api/v4/projects/27/packages/npm/@matrix-org/olm/-/@matrix-org/olm-3.2.4.tgz":
+  version: 3.2.4
+  resolution: "@matrix-org/olm@https://gitlab.matrix.org/api/v4/projects/27/packages/npm/@matrix-org/olm/-/@matrix-org/olm-3.2.4.tgz"
+  checksum: 91b03a64d785fd729bb17e2ffa52e2b7e7edf7615ddf977f4b24668ac69295397bb5a4042215d54f24aa03820af48f32f0d2fc1ad69d41b5ce6b1a0a149c7a49
+  languageName: node
+  linkType: hard
+
 "@mdx-js/mdx@npm:^1.6.22":
   version: 1.6.22
   resolution: "@mdx-js/mdx@npm:1.6.22"
@@ -5030,15 +5047,6 @@ __metadata:
   version: 3.0.0-beta2
   resolution: "@msgpack/msgpack@npm:3.0.0-beta2"
   checksum: d86e5d48146051952d6bea35a6cf733a401cf65ad5614d79689aa48c7076021737ca2c782978dd1b6c0c9c45888b246e379e45ae906179e3a0e8ef4ee6f221c1
-  languageName: node
-  linkType: hard
-
-"@napi-rs/cli@npm:^2.2.0":
-  version: 2.6.2
-  resolution: "@napi-rs/cli@npm:2.6.2"
-  bin:
-    napi: scripts/index.js
-  checksum: 3cc260aabbdb19f6354f7b24e423ce75f981b9ab4db9d7f0c5110791c72872fc24e8a16b5ac33bf3e9511a9e992dce46becd813155164d07fbe53601d27d775d
   languageName: node
   linkType: hard
 
@@ -8854,66 +8862,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/forked-matrix-appservice-bridge@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "@rocket.chat/forked-matrix-appservice-bridge@npm:4.0.2"
-  dependencies:
-    "@alloc/quick-lru": ^5.2.0
-    "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.2
-    axios: ^0.23.0
-    chalk: ^4.1.0
-    express-rate-limit: ^6.2.0
-    extend: ^3.0.2
-    ip-cidr: ^3.0.4
-    is-my-json-valid: ^2.20.5
-    js-yaml: ^4.0.0
-    matrix-appservice: ^0.10.0
-    matrix-js-sdk: ^12.4.1
-    nedb: ^1.8.0
-    nopt: ^5.0.0
-    p-queue: ^6.6.2
-    prom-client: ^14.0.0
-    uuid: ^8.3.2
-    winston: ^3.3.3
-    winston-daily-rotate-file: ^4.5.1
-  checksum: 1fc078d972995282fa74537607a1fe1e0ae4012a066d7d40df4190d423eaf461cbaa9bfae02ce8c17169b0eca2209b43025008da1d0baf764711034f290427c6
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/forked-matrix-bot-sdk@npm:^0.6.0-beta.2, @rocket.chat/forked-matrix-bot-sdk@npm:^0.6.0-beta.3":
-  version: 0.6.0-beta.3
-  resolution: "@rocket.chat/forked-matrix-bot-sdk@npm:0.6.0-beta.3"
-  dependencies:
-    "@rocket.chat/forked-matrix-sdk-crypto-nodejs": ^0.1.0-beta.12
-    "@types/express": ^4.17.13
-    another-json: ^0.2.0
-    chalk: ^4
-    express: ^4.17.2
-    glob-to-regexp: ^0.4.1
-    hash.js: ^1.1.7
-    html-to-text: ^8.1.0
-    htmlencode: ^0.0.4
-    lowdb: ^1
-    lru-cache: ^6.0.0
-    mkdirp: ^1.0.4
-    morgan: ^1.10.0
-    request: ^2.88.2
-    request-promise: ^4.2.6
-    sanitize-html: ^2.6.1
-  checksum: 43f04e2416b4fc88a6c716002d17725bec7083efe7ae5efc15d5304d8dbe35ed6f570d849877de151f8020a98fb5ba339cb23f11c20d47adab3bbcb6c3443a3a
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/forked-matrix-sdk-crypto-nodejs@npm:0.1.0-beta.13":
-  version: 0.1.0-beta.13
-  resolution: "@rocket.chat/forked-matrix-sdk-crypto-nodejs@npm:0.1.0-beta.13"
-  dependencies:
-    "@napi-rs/cli": ^2.2.0
-    shelljs: ^0.8.4
-  checksum: 2f21ef393c498eb06040def813169e15c740505a74dc161b8e3703e37bc746de5aa8cbbf637b093cd2dc7f35fb36da1eec2e0e8ae3d5fd7cba6e95846f3c13e9
-  languageName: node
-  linkType: hard
-
 "@rocket.chat/freeswitch@workspace:^, @rocket.chat/freeswitch@workspace:packages/freeswitch":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/freeswitch@workspace:packages/freeswitch"
@@ -9447,8 +9395,6 @@ __metadata:
     "@rocket.chat/emitter": ~0.31.25
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"
-    "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.2
-    "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.3
     "@rocket.chat/freeswitch": "workspace:^"
     "@rocket.chat/fuselage": ^0.59.1
     "@rocket.chat/fuselage-hooks": ^0.33.1
@@ -9694,6 +9640,8 @@ __metadata:
     lodash.get: ^4.4.2
     mailparser: ^3.4.0
     marked: ^4.2.5
+    matrix-appservice-bridge: ^4.0.2
+    matrix-bot-sdk: ^0.6.0-beta.3
     mem: ^8.1.1
     meteor-node-stubs: ^1.2.10
     mime-db: ^1.52.0
@@ -16966,6 +16914,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"async-lock@npm:^1.3.2":
+  version: 1.4.1
+  resolution: "async-lock@npm:1.4.1"
+  checksum: 29e70cd892932b7c202437786cedc39ff62123cb6941014739bd3cabd6106326416e9e7c21285a5d1dc042cad239a0f7ec9c44658491ee4a615fd36a21c1d10a
+  languageName: node
+  linkType: hard
+
 "async-retry@npm:^1.3.3":
   version: 1.3.3
   resolution: "async-retry@npm:1.3.3"
@@ -17708,6 +17663,17 @@ __metadata:
   dependencies:
     is-windows: ^1.0.0
   checksum: 5392dbe04e7fe68b944eb37961d9dfa147aaac3ee9ee3f6e13d42e2c9fbe949e68d16e896c14ee9016fa5f8e6e53ec7fd8b5f01b50a32067a7d94ac9cfb9a050
+  languageName: node
+  linkType: hard
+
+"better-sqlite3@npm:^7.4.3":
+  version: 7.6.2
+  resolution: "better-sqlite3@npm:7.6.2"
+  dependencies:
+    bindings: ^1.5.0
+    node-gyp: latest
+    prebuild-install: ^7.1.0
+  checksum: 45159e535d2c4f81456f85adcfef82e8a49025ca3e70a79bb8c0a47c13e4d822633a51b457cc37b986c42f8912344152091c91cab485048a187900aab7e7d619
   languageName: node
   linkType: hard
 
@@ -20054,6 +20020,13 @@ __metadata:
   version: 0.5.0
   resolution: "cookie@npm:0.5.0"
   checksum: 1f4bd2ca5765f8c9689a7e8954183f5332139eb72b6ff783d8947032ec1fdf43109852c178e21a953a30c0dd42257828185be01b49d1eb1a67fd054ca588a180
+  languageName: node
+  linkType: hard
+
+"cookie@npm:0.7.1":
+  version: 0.7.1
+  resolution: "cookie@npm:0.7.1"
+  checksum: cec5e425549b3650eb5c3498a9ba3cde0b9cd419e3b36e4b92739d30b4d89e0b678b98c1ddc209ce7cf958cd3215671fd6ac47aec21f10c2a0cc68abd399d8a7
   languageName: node
   linkType: hard
 
@@ -22434,6 +22407,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"encodeurl@npm:~2.0.0":
+  version: 2.0.0
+  resolution: "encodeurl@npm:2.0.0"
+  checksum: abf5cd51b78082cf8af7be6785813c33b6df2068ce5191a40ca8b1afe6a86f9230af9a9ce694a5ce4665955e5c1120871826df9c128a642e09c58d592e2807fe
+  languageName: node
+  linkType: hard
+
 "encoding-japanese@npm:1.0.30":
   version: 1.0.30
   resolution: "encoding-japanese@npm:1.0.30"
@@ -23788,7 +23768,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^4.16.4, express@npm:^4.17.1, express@npm:^4.17.2, express@npm:^4.17.3":
+"express@npm:^4.16.4, express@npm:^4.17.1, express@npm:^4.17.3":
   version: 4.18.2
   resolution: "express@npm:4.18.2"
   dependencies:
@@ -23824,6 +23804,45 @@ __metadata:
     utils-merge: 1.0.1
     vary: ~1.1.2
   checksum: 3c4b9b076879442f6b968fe53d85d9f1eeacbb4f4c41e5f16cc36d77ce39a2b0d81b3f250514982110d815b2f7173f5561367f9110fcc541f9371948e8c8b037
+  languageName: node
+  linkType: hard
+
+"express@npm:^4.18.1":
+  version: 4.21.1
+  resolution: "express@npm:4.21.1"
+  dependencies:
+    accepts: ~1.3.8
+    array-flatten: 1.1.1
+    body-parser: 1.20.3
+    content-disposition: 0.5.4
+    content-type: ~1.0.4
+    cookie: 0.7.1
+    cookie-signature: 1.0.6
+    debug: 2.6.9
+    depd: 2.0.0
+    encodeurl: ~2.0.0
+    escape-html: ~1.0.3
+    etag: ~1.8.1
+    finalhandler: 1.3.1
+    fresh: 0.5.2
+    http-errors: 2.0.0
+    merge-descriptors: 1.0.3
+    methods: ~1.1.2
+    on-finished: 2.4.1
+    parseurl: ~1.3.3
+    path-to-regexp: 0.1.10
+    proxy-addr: ~2.0.7
+    qs: 6.13.0
+    range-parser: ~1.2.1
+    safe-buffer: 5.2.1
+    send: 0.19.0
+    serve-static: 1.16.2
+    setprototypeof: 1.2.0
+    statuses: 2.0.1
+    type-is: ~1.6.18
+    utils-merge: 1.0.1
+    vary: ~1.1.2
+  checksum: 5ac2b26d8aeddda5564fc0907227d29c100f90c0ead2ead9d474dc5108e8fb306c2de2083c4e3ba326e0906466f2b73417dbac16961f4075ff9f03785fd940fe
   languageName: node
   linkType: hard
 
@@ -24397,6 +24416,21 @@ __metadata:
     statuses: 2.0.1
     unpipe: ~1.0.0
   checksum: 92effbfd32e22a7dff2994acedbd9bcc3aa646a3e919ea6a53238090e87097f8ef07cced90aa2cc421abdf993aefbdd5b00104d55c7c5479a8d00ed105b45716
+  languageName: node
+  linkType: hard
+
+"finalhandler@npm:1.3.1":
+  version: 1.3.1
+  resolution: "finalhandler@npm:1.3.1"
+  dependencies:
+    debug: 2.6.9
+    encodeurl: ~2.0.0
+    escape-html: ~1.0.3
+    on-finished: 2.4.1
+    parseurl: ~1.3.3
+    statuses: 2.0.1
+    unpipe: ~1.0.0
+  checksum: a8c58cd97c9cd47679a870f6833a7b417043f5a288cd6af6d0f49b476c874a506100303a128b6d3b654c3d74fa4ff2ffed68a48a27e8630cda5c918f2977dcf4
   languageName: node
   linkType: hard
 
@@ -25433,7 +25467,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:7.2.0, glob@npm:^7.0.0, glob@npm:^7.0.3, glob@npm:^7.1.3, glob@npm:^7.1.4, glob@npm:^7.1.6, glob@npm:^7.2.0":
+"glob@npm:7.2.0, glob@npm:^7.0.3, glob@npm:^7.1.3, glob@npm:^7.1.4, glob@npm:^7.1.6, glob@npm:^7.2.0":
   version: 7.2.0
   resolution: "glob@npm:7.2.0"
   dependencies:
@@ -26406,9 +26440,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-to-text@npm:^8.1.0":
-  version: 8.2.0
-  resolution: "html-to-text@npm:8.2.0"
+"html-to-text@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "html-to-text@npm:6.0.0"
+  dependencies:
+    deepmerge: ^4.2.2
+    he: ^1.2.0
+    htmlparser2: ^4.1.0
+    lodash: ^4.17.20
+    minimist: ^1.2.5
+  bin:
+    html-to-text: bin/cli.js
+  checksum: 0f9764b784379a556179758bda1fc7493f1f7644c341e7deeeb6dac3c03256cd9f9f6ffc1c29c160a2679af1df10fbb511290763a92ec635acdffd040d1ab0a4
+  languageName: node
+  linkType: hard
+
+"html-to-text@npm:^8.2.0":
+  version: 8.2.1
+  resolution: "html-to-text@npm:8.2.1"
   dependencies:
     "@selderee/plugin-htmlparser2": ^0.6.0
     deepmerge: ^4.2.2
@@ -26418,7 +26467,7 @@ __metadata:
     selderee: ^0.6.0
   bin:
     html-to-text: bin/cli.js
-  checksum: 98df25eb6963cc5ac2de52a9b3e1c7f1ac156bfd5d0134e8b4356c980c6c0ecf671e1490f331d1af56b610d707904b45f88033a38577b7d25702f2188c462765
+  checksum: ff4cc1d355e71eed610f5e3eb89cbf1b1f394aa971ee915781feceb903f2f6690de007294d3edde23ff204b240a59d65145e2f732112d73fac6dbc560ba3d3d0
   languageName: node
   linkType: hard
 
@@ -26477,7 +26526,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"htmlparser2@npm:^4.0.0":
+"htmlparser2@npm:^4.0.0, htmlparser2@npm:^4.1.0":
   version: 4.1.0
   resolution: "htmlparser2@npm:4.1.0"
   dependencies:
@@ -27284,13 +27333,6 @@ __metadata:
   version: 1.0.1
   resolution: "internmap@npm:1.0.1"
   checksum: 9d00f8c0cf873a24a53a5a937120dab634c41f383105e066bb318a61864e6292d24eb9516e8e7dccfb4420ec42ca474a0f28ac9a6cc82536898fa09bbbe53813
-  languageName: node
-  linkType: hard
-
-"interpret@npm:^1.0.0":
-  version: 1.4.0
-  resolution: "interpret@npm:1.4.0"
-  checksum: 2e5f51268b5941e4a17e4ef0575bc91ed0ab5f8515e3cf77486f7c14d13f3010df9c0959f37063dcc96e78d12dc6b0bb1b9e111cdfe69771f4656d2993d36155
   languageName: node
   linkType: hard
 
@@ -30507,7 +30549,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lowdb@npm:^1":
+"lowdb@npm:^1, lowdb@npm:^1.0.0":
   version: 1.0.0
   resolution: "lowdb@npm:1.0.0"
   dependencies:
@@ -30575,6 +30617,13 @@ __metadata:
   dependencies:
     yallist: ^4.0.0
   checksum: f97f499f898f23e4585742138a22f22526254fdba6d75d41a1c2526b3b6cc5747ef59c5612ba7375f42aca4f8461950e925ba08c991ead0651b4918b7c978297
+  languageName: node
+  linkType: hard
+
+"lru-cache@npm:^7.10.1":
+  version: 7.18.3
+  resolution: "lru-cache@npm:7.18.3"
+  checksum: e550d772384709deea3f141af34b6d4fa392e2e418c1498c078de0ee63670f1f46f5eee746e8ef7e69e1c895af0d4224e62ee33e66a543a14763b0f2e74c1356
   languageName: node
   linkType: hard
 
@@ -30797,6 +30846,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"matrix-appservice-bridge@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "matrix-appservice-bridge@npm:4.0.2"
+  dependencies:
+    "@alloc/quick-lru": ^5.2.0
+    axios: ^0.23.0
+    chalk: ^4.1.0
+    express-rate-limit: ^6.2.0
+    extend: ^3.0.2
+    ip-cidr: ^3.0.4
+    is-my-json-valid: ^2.20.5
+    js-yaml: ^4.0.0
+    matrix-appservice: ^0.10.0
+    matrix-bot-sdk: 0.6.0-beta.2
+    matrix-js-sdk: ^12.4.1
+    nedb: ^1.8.0
+    nopt: ^5.0.0
+    p-queue: ^6.6.2
+    prom-client: ^14.0.0
+    uuid: ^8.3.2
+    winston: ^3.3.3
+    winston-daily-rotate-file: ^4.5.1
+  checksum: a06eb3d821499a69154b2a1d713a624661d425bb4925a6e77d95699acc7388a2e5795acc9b0e4693782327e22299f079b65f26926025710e21bada1de85638b4
+  languageName: node
+  linkType: hard
+
 "matrix-appservice@npm:^0.10.0":
   version: 0.10.0
   resolution: "matrix-appservice@npm:0.10.0"
@@ -30807,6 +30882,59 @@ __metadata:
     js-yaml: ^4.1.0
     morgan: ^1.10.0
   checksum: 09eac24253744dd257f5529666bd02aa2b8cd655410ed4a008eb709d229a65f2bc3e23078af229da3509e13d918bbb0919e02ccb1b8a0ca4281ed1e2956feb25
+  languageName: node
+  linkType: hard
+
+"matrix-bot-sdk@npm:0.6.0-beta.2":
+  version: 0.6.0-beta.2
+  resolution: "matrix-bot-sdk@npm:0.6.0-beta.2"
+  dependencies:
+    "@matrix-org/olm": "https://gitlab.matrix.org/api/v4/projects/27/packages/npm/@matrix-org/olm/-/@matrix-org/olm-3.2.4.tgz"
+    "@types/express": ^4.17.13
+    another-json: ^0.2.0
+    better-sqlite3: ^7.4.3
+    chalk: ^4.1.0
+    express: ^4.17.1
+    glob-to-regexp: ^0.4.1
+    hash.js: ^1.1.7
+    html-to-text: ^6.0.0
+    htmlencode: ^0.0.4
+    lowdb: ^1.0.0
+    lru-cache: ^6.0.0
+    mkdirp: ^1.0.4
+    morgan: ^1.10.0
+    request: ^2.88.2
+    request-promise: ^4.2.6
+    sanitize-html: ^2.3.2
+  dependenciesMeta:
+    better-sqlite3:
+      optional: true
+  checksum: f3598deaffab3406b256ebf39f4b7a6e78f6116b2724873c93c082ae211723454c0ae0c4ee52ca12187fe18bead1b885fa91db4ae730c473b7f81ef862f4275b
+  languageName: node
+  linkType: hard
+
+"matrix-bot-sdk@npm:^0.6.0-beta.3":
+  version: 0.6.6
+  resolution: "matrix-bot-sdk@npm:0.6.6"
+  dependencies:
+    "@matrix-org/matrix-sdk-crypto-nodejs": 0.1.0-beta.6
+    "@types/express": ^4.17.13
+    another-json: ^0.2.0
+    async-lock: ^1.3.2
+    chalk: ^4
+    express: ^4.18.1
+    glob-to-regexp: ^0.4.1
+    hash.js: ^1.1.7
+    html-to-text: ^8.2.0
+    htmlencode: ^0.0.4
+    lowdb: ^1
+    lru-cache: ^7.10.1
+    mkdirp: ^1.0.4
+    morgan: ^1.10.0
+    request: ^2.88.2
+    request-promise: ^4.2.6
+    sanitize-html: ^2.8.0
+  checksum: 190f05519815f850bd6b3cc51450aee8b83cbe482b51b5e9b78696cee7be293d4d155732d202cd81dca63746054b70d09f2939035e272bfc1b3916d229554320
   languageName: node
   linkType: hard
 
@@ -31138,6 +31266,13 @@ __metadata:
   version: 1.0.1
   resolution: "merge-descriptors@npm:1.0.1"
   checksum: 5abc259d2ae25bb06d19ce2b94a21632583c74e2a9109ee1ba7fd147aa7362b380d971e0251069f8b3eb7d48c21ac839e21fa177b335e82c76ec172e30c31a26
+  languageName: node
+  linkType: hard
+
+"merge-descriptors@npm:1.0.3":
+  version: 1.0.3
+  resolution: "merge-descriptors@npm:1.0.3"
+  checksum: 52117adbe0313d5defa771c9993fe081e2d2df9b840597e966aadafde04ae8d0e3da46bac7ca4efc37d4d2b839436582659cd49c6a43eacb3fe3050896a105d1
   languageName: node
   linkType: hard
 
@@ -32426,6 +32561,15 @@ __metadata:
   version: 0.0.7
   resolution: "node-dogstatsd@npm:0.0.7"
   checksum: db08589823b12c2cfe9e072b4996b6b91c5ba67e36c737186837c979be45cfe5029b558904127859a4e808ccaa328a5c493fd4a0bfe5436797118f3d8b6d5eaa
+  languageName: node
+  linkType: hard
+
+"node-downloader-helper@npm:^2.1.5":
+  version: 2.1.9
+  resolution: "node-downloader-helper@npm:2.1.9"
+  bin:
+    ndh: bin/ndh
+  checksum: 9e25e4eb7014798fdb52c50aaeacd5acaed8ad3be9785d37a177dbe520057f577d51b6fce662d1ace9934559a6dca93b04843d472b092072f24418684a416bf6
   languageName: node
   linkType: hard
 
@@ -34060,6 +34204,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"path-to-regexp@npm:0.1.10":
+  version: 0.1.10
+  resolution: "path-to-regexp@npm:0.1.10"
+  checksum: ab7a3b7a0b914476d44030340b0a65d69851af2a0f33427df1476100ccb87d409c39e2182837a96b98fb38c4ef2ba6b87bdad62bb70a2c153876b8061760583c
+  languageName: node
+  linkType: hard
+
 "path-to-regexp@npm:0.1.7":
   version: 0.1.7
   resolution: "path-to-regexp@npm:0.1.7"
@@ -35267,6 +35418,28 @@ __metadata:
   version: 10.15.1
   resolution: "preact@patch:preact@npm%3A10.15.1#.yarn/patches/preact-npm-10.15.1-bd458de913.patch::version=10.15.1&hash=cf52e4&locator=rocket.chat%40workspace%3A."
   checksum: 6258efa196625543b88cb02ca1fe4eb3e2867be82bc58209cd8f0dce5aefc3a7da0df4ca440c26731fed9085c780e8b6b265183dd2a16ad66216d8a6480868b7
+  languageName: node
+  linkType: hard
+
+"prebuild-install@npm:^7.1.0":
+  version: 7.1.2
+  resolution: "prebuild-install@npm:7.1.2"
+  dependencies:
+    detect-libc: ^2.0.0
+    expand-template: ^2.0.3
+    github-from-package: 0.0.0
+    minimist: ^1.2.3
+    mkdirp-classic: ^0.5.3
+    napi-build-utils: ^1.0.1
+    node-abi: ^3.3.0
+    pump: ^3.0.0
+    rc: ^1.2.7
+    simple-get: ^4.0.0
+    tar-fs: ^2.0.0
+    tunnel-agent: ^0.6.0
+  bin:
+    prebuild-install: bin.js
+  checksum: 543dadf8c60e004ae9529e6013ca0cbeac8ef38b5f5ba5518cb0b622fe7f8758b34e4b5cb1a791db3cdc9d2281766302df6088bd1a225f206925d6fee17d6c5c
   languageName: node
   linkType: hard
 
@@ -36919,15 +37092,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rechoir@npm:^0.6.2":
-  version: 0.6.2
-  resolution: "rechoir@npm:0.6.2"
-  dependencies:
-    resolve: ^1.1.6
-  checksum: fe76bf9c21875ac16e235defedd7cbd34f333c02a92546142b7911a0f7c7059d2e16f441fe6fb9ae203f459c05a31b2bcf26202896d89e390eda7514d5d2702b
-  languageName: node
-  linkType: hard
-
 "rechoir@npm:^0.8.0":
   version: 0.8.0
   resolution: "rechoir@npm:0.8.0"
@@ -37482,7 +37646,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^1.1.4, resolve@npm:^1.1.6, resolve@npm:^1.1.7, resolve@npm:^1.10.0, resolve@npm:^1.11.1, resolve@npm:^1.14.2, resolve@npm:^1.17.0, resolve@npm:^1.19.0, resolve@npm:^1.20.0, resolve@npm:^1.22.0, resolve@npm:^1.22.1, resolve@npm:^1.22.2, resolve@npm:^1.3.2, resolve@npm:^1.4.0":
+"resolve@npm:^1.1.4, resolve@npm:^1.1.7, resolve@npm:^1.10.0, resolve@npm:^1.11.1, resolve@npm:^1.14.2, resolve@npm:^1.17.0, resolve@npm:^1.19.0, resolve@npm:^1.20.0, resolve@npm:^1.22.0, resolve@npm:^1.22.1, resolve@npm:^1.22.2, resolve@npm:^1.3.2, resolve@npm:^1.4.0":
   version: 1.22.8
   resolution: "resolve@npm:1.22.8"
   dependencies:
@@ -37508,7 +37672,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^1.1.4#~builtin<compat/resolve>, resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.1.7#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.11.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.17.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.4.0#~builtin<compat/resolve>":
+"resolve@patch:resolve@^1.1.4#~builtin<compat/resolve>, resolve@patch:resolve@^1.1.7#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.11.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.17.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.4.0#~builtin<compat/resolve>":
   version: 1.22.8
   resolution: "resolve@patch:resolve@npm%3A1.22.8#~builtin<compat/resolve>::version=1.22.8&hash=c3c19d"
   dependencies:
@@ -37909,7 +38073,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sanitize-html@npm:^2.6.1, sanitize-html@npm:^2.7.2":
+"sanitize-html@npm:^2.3.2, sanitize-html@npm:^2.8.0":
+  version: 2.13.1
+  resolution: "sanitize-html@npm:2.13.1"
+  dependencies:
+    deepmerge: ^4.2.2
+    escape-string-regexp: ^4.0.0
+    htmlparser2: ^8.0.0
+    is-plain-object: ^5.0.0
+    parse-srcset: ^1.0.2
+    postcss: ^8.3.11
+  checksum: 645381375fcb9c70070644b02538f1d43d35db6c9761eba32ec5f0ea919fdc70aa19e186ae949e6e21de767cbf11ced3e6a31b322a6c705593dc9a902a257d7a
+  languageName: node
+  linkType: hard
+
+"sanitize-html@npm:^2.7.2":
   version: 2.7.2
   resolution: "sanitize-html@npm:2.7.2"
   dependencies:
@@ -38237,6 +38415,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"send@npm:0.19.0":
+  version: 0.19.0
+  resolution: "send@npm:0.19.0"
+  dependencies:
+    debug: 2.6.9
+    depd: 2.0.0
+    destroy: 1.2.0
+    encodeurl: ~1.0.2
+    escape-html: ~1.0.3
+    etag: ~1.8.1
+    fresh: 0.5.2
+    http-errors: 2.0.0
+    mime: 1.6.0
+    ms: 2.1.3
+    on-finished: 2.4.1
+    range-parser: ~1.2.1
+    statuses: 2.0.1
+  checksum: 5ae11bd900c1c2575525e2aa622e856804e2f96a09281ec1e39610d089f53aa69e13fd8db84b52f001d0318cf4bb0b3b904ad532fc4c0014eb90d32db0cff55f
+  languageName: node
+  linkType: hard
+
 "sentence-case@npm:^3.0.4":
   version: 3.0.4
   resolution: "sentence-case@npm:3.0.4"
@@ -38337,6 +38536,18 @@ __metadata:
     parseurl: ~1.3.3
     send: 0.18.0
   checksum: af57fc13be40d90a12562e98c0b7855cf6e8bd4c107fe9a45c212bf023058d54a1871b1c89511c3958f70626fff47faeb795f5d83f8cf88514dbaeb2b724464d
+  languageName: node
+  linkType: hard
+
+"serve-static@npm:1.16.2":
+  version: 1.16.2
+  resolution: "serve-static@npm:1.16.2"
+  dependencies:
+    encodeurl: ~2.0.0
+    escape-html: ~1.0.3
+    parseurl: ~1.3.3
+    send: 0.19.0
+  checksum: dffc52feb4cc5c68e66d0c7f3c1824d4e989f71050aefc9bd5f822a42c54c9b814f595fc5f2b717f4c7cc05396145f3e90422af31186a93f76cf15f707019759
   languageName: node
   linkType: hard
 
@@ -38534,19 +38745,6 @@ __metadata:
   bin:
     shjs: ./bin/shjs
   checksum: 6e57d6bff3bb101525f251fd80358b983fb9c8175dc31593496bfcdf66701b78dba33b9319e38026ac31b2c80875794fc71bd2fdd9cdb86fbeb81fcbfce28d7b
-  languageName: node
-  linkType: hard
-
-"shelljs@npm:^0.8.4":
-  version: 0.8.5
-  resolution: "shelljs@npm:0.8.5"
-  dependencies:
-    glob: ^7.0.0
-    interpret: ^1.0.0
-    rechoir: ^0.6.2
-  bin:
-    shjs: bin/shjs
-  checksum: 7babc46f732a98f4c054ec1f048b55b9149b98aa2da32f6cf9844c434b43c6251efebd6eec120937bd0999e13811ebd45efe17410edb3ca938f82f9381302748
   languageName: node
   linkType: hard
 
