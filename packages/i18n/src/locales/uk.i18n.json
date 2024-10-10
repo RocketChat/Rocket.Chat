@@ -3035,8 +3035,6 @@
   "Type_your_password": "Введіть свій пароль",
   "Type_your_username": "Введіть своє ім'я користувача",
   "UI_Allow_room_names_with_special_chars": "Дозволити спеціальні символи в іменах номерів",
-  "UI_Click_Direct_Message": "Натисніть, щоб створити пряме повідомлення",
-  "UI_Click_Direct_Message_Description": "Пропустити відкриття вкладки профілю, замість цього перейти прямо до бесіди",
   "UI_DisplayRoles": "Показати Ролі",
   "UI_Group_Channels_By_Type": "Групувати канали за типами",
   "UI_Merge_Channels_Groups": "Об'єднання приватних груп з каналами",

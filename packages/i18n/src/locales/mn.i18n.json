@@ -2467,8 +2467,6 @@
   "Type_your_password": "Нууц үгээ бичнэ үү",
   "Type_your_username": "Хэрэглэгчийн нэрээ оруулна уу",
   "UI_Allow_room_names_with_special_chars": "Өрөөний нэрээр тусгай тэмдэгтүүдийг зөвшөөрөх",
-  "UI_Click_Direct_Message": "Шууд зурвас үүсгэх бол товшино уу",
-  "UI_Click_Direct_Message_Description": "Нээлтийн профайлын цонх алга, харин оронд нь харилцан яриа руу яваарай",
   "UI_DisplayRoles": "Дэлгэцийн үүрэг",
   "UI_Group_Channels_By_Type": "Группийн сувгууд төрөл хэлбэрээр",
   "UI_Merge_Channels_Groups": "Сувгуудтай хувийн бүлэгнүүдийг нэгтгэх",

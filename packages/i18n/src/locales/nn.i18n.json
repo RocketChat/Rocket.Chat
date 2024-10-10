@@ -4120,8 +4120,6 @@
   "Type_your_password": "Skriv inn passordet ditt",
   "Type_your_username": "Skriv inn brukernavnet ditt",
   "UI_Allow_room_names_with_special_chars": "Tillat spesialtegn i romnavn",
-  "UI_Click_Direct_Message": "Klikk for å opprette direkte melding",
-  "UI_Click_Direct_Message_Description": "Hopp over åpningsprofil-fanen, i stedet gå direkte til samtale",
   "UI_DisplayRoles": "Vis roller",
   "UI_Group_Channels_By_Type": "Gruppekanaler etter type",
   "UI_Merge_Channels_Groups": "Slett private grupper med kanaler",
