@@ -20,14 +20,18 @@ jest.mock('../../hooks/useVoipDialer', () => ({
 const mockedUseVoipSession = jest.mocked(useVoipSession);
 
 it('should properly render incoming popup', async () => {
-	mockedUseVoipSession.mockImplementationOnce(() => createMockVoipSession({ type: 'INCOMING' }));
+	mockedUseVoipSession
+		.mockImplementationOnce(() => createMockVoipSession({ type: 'INCOMING' }))
+		.mockImplementationOnce(() => createMockVoipSession({ type: 'INCOMING' }));
 	render(<VoipPopup />, { wrapper: mockAppRoot().build() });
 
 	expect(screen.getByTestId('vc-popup-incoming')).toBeInTheDocument();
 });
 
 it('should properly render ongoing popup', async () => {
-	mockedUseVoipSession.mockImplementationOnce(() => createMockVoipSession({ type: 'ONGOING' }));
+	mockedUseVoipSession
+		.mockImplementationOnce(() => createMockVoipSession({ type: 'ONGOING' }))
+		.mockImplementationOnce(() => createMockVoipSession({ type: 'ONGOING' }));
 
 	render(<VoipPopup />, { wrapper: mockAppRoot().build() });
 
@@ -35,7 +39,9 @@ it('should properly render ongoing popup', async () => {
 });
 
 it('should properly render outgoing popup', async () => {
-	mockedUseVoipSession.mockImplementationOnce(() => createMockVoipSession({ type: 'OUTGOING' }));
+	mockedUseVoipSession
+		.mockImplementationOnce(() => createMockVoipSession({ type: 'OUTGOING' }))
+		.mockImplementationOnce(() => createMockVoipSession({ type: 'OUTGOING' }));
 
 	render(<VoipPopup />, { wrapper: mockAppRoot().build() });
 
@@ -43,7 +49,9 @@ it('should properly render outgoing popup', async () => {
 });
 
 it('should properly render error popup', async () => {
-	mockedUseVoipSession.mockImplementationOnce(() => createMockVoipSession({ type: 'ERROR' }));
+	mockedUseVoipSession
+		.mockImplementationOnce(() => createMockVoipSession({ type: 'ERROR' }))
+		.mockImplementationOnce(() => createMockVoipSession({ type: 'ERROR' }));
 
 	render(<VoipPopup />, { wrapper: mockAppRoot().build() });
 
@@ -57,7 +65,9 @@ it('should properly render dialer popup', async () => {
 });
 
 it('should prioritize session over dialer', async () => {
-	mockedUseVoipSession.mockImplementationOnce(() => createMockVoipSession({ type: 'INCOMING' }));
+	mockedUseVoipSession
+		.mockImplementationOnce(() => createMockVoipSession({ type: 'INCOMING' }))
+		.mockImplementationOnce(() => createMockVoipSession({ type: 'INCOMING' }));
 
 	render(<VoipPopup />, { wrapper: mockAppRoot().build() });
 

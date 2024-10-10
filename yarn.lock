@@ -8535,6 +8535,7 @@ __metadata:
     "@swc/core": ~1.7.26
     "@swc/jest": ~0.2.36
     "@testing-library/jest-dom": ~6.4.8
+    "@testing-library/react": ~16.0.1
     "@types/identity-obj-proxy": ^3.0.2
     "@types/jest": ~29.5.13
     "@types/jest-axe": ~3.5.9

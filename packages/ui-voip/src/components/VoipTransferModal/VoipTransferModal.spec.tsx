@@ -2,7 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import VoipTransferModal from '.';
+import VoipTransferModal from './VoipTransferModal';
 
 it('should be able to select transfer target', async () => {
 	const confirmFn = jest.fn();
