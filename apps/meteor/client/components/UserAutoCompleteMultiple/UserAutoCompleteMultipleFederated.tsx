@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, AllHTMLAttributes } from 'react';
 import React, { memo, useState, useCallback, useMemo } from 'react';
 
-import AutocompleteOptions, { OptionsContext } from './UserAutoCompleteMultipleOptions';
+import UserAutoCompleteMultipleOptions, { OptionsContext } from './UserAutoCompleteMultipleOptions';
 
 type UserAutoCompleteMultipleFederatedProps = {
 	onChange: (value: Array<string>) => void;
@@ -112,7 +112,7 @@ const UserAutoCompleteMultipleFederated = ({
 						</Chip>
 					);
 				}}
-				renderOptions={AutocompleteOptions}
+				renderOptions={UserAutoCompleteMultipleOptions}
 				options={options.concat(Object.entries(selectedCache)).map(([, item]) => [item.username, item.name || item.username])}
 				data-qa='create-channel-users-autocomplete'
 			/>

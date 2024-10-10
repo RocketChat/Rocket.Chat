@@ -33,7 +33,7 @@ export const useHistoryList = (
 	}, [options, reload]);
 
 	const fetchData = useCallback(
-		async (start, end) => {
+		async (start: number, end: number) => {
 			const { history, total } = await getHistory({
 				...(options.filter && { searchText: options.filter }),
 				closedChatsOnly: 'true',

@@ -17,8 +17,7 @@ type UserAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>
 	conditions?: { [key: string]: unknown };
 };
 
-const UserAutoComplete = ({ value, onChange, ...props }: UserAutoCompleteProps): ReactElement => {
-	const { conditions = {} } = props;
+const UserAutoComplete = ({ conditions = {}, value, onChange, ...props }: UserAutoCompleteProps): ReactElement => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 	const usersAutoCompleteEndpoint = useEndpoint('GET', '/v1/users.autocomplete');

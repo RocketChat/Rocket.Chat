@@ -26,7 +26,23 @@ import useClipboardWithToast from '../../../../hooks/useClipboardWithToast';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
 import { useExampleData } from '../hooks/useExampleIncomingData';
 
-const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomingIntegration> }) => {
+type IncomingWebhookFormData = {
+	enabled: boolean;
+	channel: string;
+	username: string;
+	name: string;
+	alias: string;
+	avatar: string;
+	emoji: string;
+	scriptEnabled: boolean;
+	scriptEngine: 'isolated-vm' | 'vm2';
+	script: string;
+	overrideDestinationChannelEnabled: boolean;
+};
+
+type IncomingWebhookFormProps = { webhookData?: Serialized<IIncomingIntegration> };
+
+const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 	const t = useTranslation();
 	const absoluteUrl = useAbsoluteUrl();
 
@@ -34,7 +50,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 		control,
 		watch,
 		formState: { errors },
-	} = useFormContext();
+	} = useFormContext<IncomingWebhookFormData>();
 	const { alias, emoji, avatar } = watch();
 
 	const url = absoluteUrl(`hooks/${webhookData?._id}/${webhookData?.token}`);

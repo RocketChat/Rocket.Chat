@@ -1,7 +1,10 @@
+import type { ICustomSound, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, IconButton } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import type { ReactElement, SyntheticEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
@@ -9,87 +12,78 @@ import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { validate, createSoundData } from './lib';
 
 type EditSoundProps = {
-	close?: () => void;
+	data: Serialized<ICustomSound>;
+	onClose?: () => void;
 	onChange: () => void;
-	data: {
-		_id: string;
-		name: string;
-		extension?: string;
-	};
 };
 
-function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactElement {
-	const t = useTranslation();
+function EditSound({ data, onChange, onClose }: EditSoundProps): ReactElement {
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
-	const { _id, name: previousName } = data || {};
+	const { _id } = data;
+	const previousName = data.name;
+	const previousExtension = data.extension;
 	const previousSound = useMemo(() => data || {}, [data]);
 
-	const [name, setName] = useState(() => data?.name ?? '');
-	const [sound, setSound] = useState(() => data);
+	const [name, setName] = useState(previousName);
+	const [sound, setSound] = useState<File>();
 
 	useEffect(() => {
-		setName(previousName || '');
-		setSound(previousSound || '');
+		setName(previousName);
+		setSound(undefined);
 	}, [previousName, previousSound, _id]);
 
 	const deleteCustomSound = useMethod('deleteCustomSound');
 	const uploadCustomSound = useMethod('uploadCustomSound');
 	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
 
-	const handleChangeFile = useCallback((soundFile) => {
+	const handleChangeFile = useEffectEvent((soundFile: File) => {
 		setSound(soundFile);
-	}, []);
+	});
 
-	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [name, previousName, previousSound, sound]);
+	const hasUnsavedChanges = name !== previousName || sound !== undefined;
 
-	const saveAction = useCallback(
-		async (sound) => {
-			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension: sound.extension });
-			const validation = validate(soundData, sound);
-			if (validation.length === 0) {
-				let soundId: string;
-				try {
-					soundId = await insertOrUpdateSound(soundData);
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-					return;
-				}
-
-				soundData._id = soundId;
-				soundData.random = Math.round(Math.random() * 1000);
-
-				if (sound && sound !== previousSound) {
-					dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
-
-					const reader = new FileReader();
-					reader.readAsBinaryString(sound);
-					reader.onloadend = (): void => {
-						try {
-							uploadCustomSound(reader.result as string, sound.type, { ...soundData, _id: soundId });
-							return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
-						} catch (error) {
-							dispatchToastMessage({ type: 'error', message: error });
-						}
-					};
-				}
+	const handleSave = useEffectEvent(async () => {
+		const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension: previousExtension });
+		const validation = validate(soundData, sound);
+		if (validation.length === 0) {
+			let soundId: string;
+			try {
+				soundId = await insertOrUpdateSound(soundData);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				return;
 			}
 
-			validation.forEach((invalidFieldName) =>
-				dispatchToastMessage({
-					type: 'error',
-					message: t('Required_field', { field: t(invalidFieldName) }),
-				}),
-			);
-		},
-		[_id, dispatchToastMessage, insertOrUpdateSound, name, previousName, previousSound, t, uploadCustomSound],
-	);
+			soundData._id = soundId;
+			soundData.random = Math.round(Math.random() * 1000);
 
-	const handleSave = useCallback(async () => {
-		saveAction(sound);
+			if (sound && !Object.is(sound, previousSound)) {
+				dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
+
+				const reader = new FileReader();
+				reader.readAsBinaryString(sound);
+				reader.onloadend = (): void => {
+					try {
+						uploadCustomSound(reader.result as string, sound.type, { ...soundData, _id: soundId });
+						return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
+					} catch (error) {
+						dispatchToastMessage({ type: 'error', message: error });
+					}
+				};
+			}
+		}
+
+		validation.forEach((invalidFieldName) =>
+			dispatchToastMessage({
+				type: 'error',
+				message: t('Required_field', { field: t(invalidFieldName) }),
+			}),
+		);
 		onChange();
-	}, [saveAction, sound, onChange]);
+	});
 
 	const handleDeleteButtonClick = useCallback(() => {
 		const handleDelete = async (): Promise<void> => {
@@ -100,31 +94,31 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				setModal(null);
-				close?.();
+				onClose?.();
 				onChange();
 			}
 		};
 
 		const handleCancel = (): void => setModal(null);
 
-		setModal(() => (
+		setModal(
 			<GenericModal variant='danger' onConfirm={handleDelete} onCancel={handleCancel} onClose={handleCancel} confirmText={t('Delete')}>
 				{t('Custom_Sound_Delete_Warning')}
-			</GenericModal>
-		));
-	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange, setModal, t]);
+			</GenericModal>,
+		);
+	}, [_id, onClose, deleteCustomSound, dispatchToastMessage, onChange, setModal, t]);
 
-	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
+	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3'); // FIXME: mixing `File` and `ICustomSoundFile` is a mistake
 
 	return (
 		<>
-			<ContextualbarScrollableContent {...props}>
+			<ContextualbarScrollableContent>
 				<Field>
 					<FieldLabel>{t('Name')}</FieldLabel>
 					<FieldRow>
 						<TextInput
 							value={name}
-							onChange={(e: SyntheticEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
+							onChange={(e: SyntheticEvent<HTMLInputElement>) => setName(e.currentTarget.value)}
 							placeholder={t('Name')}
 						/>
 					</FieldRow>
@@ -141,7 +135,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button onClick={close}>{t('Cancel')}</Button>
+					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
 						{t('Save')}
 					</Button>

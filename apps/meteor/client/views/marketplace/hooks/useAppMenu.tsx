@@ -1,5 +1,5 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { App } from '@rocket.chat/core-typings';
+import type { App, AppPermission } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import {
 	useSetModal,
@@ -89,7 +89,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const marketplaceActions = useMarketplaceActions();
 
 	const installationSuccess = useCallback(
-		async (action: Actions | '', permissionsGranted) => {
+		async (action: Actions | '', permissionsGranted: AppPermission[] | undefined) => {
 			if (action) {
 				if (action === 'request') {
 					setRequestedEndUser(true);
@@ -266,7 +266,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	]);
 
 	const incompatibleIconName = useCallback(
-		(app, action) => {
+		(app: App, action: string) => {
 			if (!app.versionIncompatible) {
 				if (action === 'update') {
 					return 'refresh';

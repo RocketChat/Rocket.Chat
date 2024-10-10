@@ -1,10 +1,9 @@
-import { DecoratorFn, Parameters } from '@storybook/react';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
+import type { DecoratorFn, Parameters } from '@storybook/react';
 
 import { rocketChatDecorator } from './decorators';
 
-export const decorators: DecoratorFn[] = [
-	rocketChatDecorator
-];
+export const decorators: DecoratorFn[] = [mockAppRoot().withRealTranslations().buildStoryDecorator(), rocketChatDecorator];
 
 export const parameters: Parameters = {
 	backgrounds: {

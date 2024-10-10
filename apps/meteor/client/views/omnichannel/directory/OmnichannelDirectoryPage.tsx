@@ -36,7 +36,10 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 		[router],
 	);
 
-	const handleTabClick = useCallback((tab) => () => router.navigate({ name: 'omnichannel-directory', params: { tab } }), [router]);
+	const handleTabClick = useCallback(
+		(tab: 'contacts' | 'chats' | 'calls') => () => router.navigate({ name: 'omnichannel-directory', params: { tab } }),
+		[router],
+	);
 
 	const chatReload = () => queryClient.invalidateQueries({ queryKey: ['current-chats'] });
 

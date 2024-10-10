@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react';
 import { useGroupingListItems } from './useGroupingListItems';
 
 it('should render groupingList items', async () => {
-	const { result } = renderHook(() => useGroupingListItems(), { legacyRoot: true });
+	const { result } = renderHook(() => useGroupingListItems());
 
 	expect(result.current[0]).toEqual(
 		expect.objectContaining({

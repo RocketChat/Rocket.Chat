@@ -1,4 +1,5 @@
 import { UserStatus as UserStatusType } from '@rocket.chat/core-typings';
+import type { OptionType } from '@rocket.chat/fuselage';
 import { Button, PositionAnimated, Options, useCursor, Box } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
@@ -65,8 +66,8 @@ const UserStatusMenu = ({
 	}, [show]);
 
 	const handleSelection = useCallback(
-		([selected]) => {
-			setStatus(selected);
+		([selected]: OptionType) => {
+			setStatus(selected as UserStatusType);
 			reset();
 			hide();
 		},

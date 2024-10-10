@@ -28,7 +28,6 @@ it('should not render "Voice call extension" column when voice call is disabled'
 			roleData={undefined}
 		/>,
 		{
-			legacyRoot: true,
 			wrapper: mockAppRoot().withUser(user).withSetting('VoIP_TeamCollab_Enabled', false).build(),
 		},
 	);
@@ -56,7 +55,6 @@ it('should render "Unassign_extension" button when user has a associated extensi
 			roleData={undefined}
 		/>,
 		{
-			legacyRoot: true,
 			wrapper: mockAppRoot().withUser(user).withSetting('VoIP_TeamCollab_Enabled', true).build(),
 		},
 	);
@@ -84,7 +82,6 @@ it('should render "Assign_extension" button when user has no associated extensio
 			roleData={undefined}
 		/>,
 		{
-			legacyRoot: true,
 			wrapper: mockAppRoot().withUser(user).withSetting('VoIP_TeamCollab_Enabled', true).build(),
 		},
 	);

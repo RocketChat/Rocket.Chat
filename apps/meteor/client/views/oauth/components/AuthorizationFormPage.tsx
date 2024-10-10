@@ -60,8 +60,12 @@ const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFor
 						<CurrentUserDisplay user={user} />
 
 						<p>
-							<Trans i18nKey='core.The_application_will_be_able_to' t={t}>
-								The application <strong>{{ appName: oauthApp.name }}</strong> will be able to:
+							<Trans i18nKey='core.The_application_will_be_able_to'>
+								The application{' '}
+								<strong>
+									<>{{ appName: oauthApp.name }}</>
+								</strong>{' '}
+								will be able to:
 							</Trans>
 						</p>
 

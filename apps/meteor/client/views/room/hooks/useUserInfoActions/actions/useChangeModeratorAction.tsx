@@ -68,55 +68,51 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 		closeModal();
 	}, [changeModerator, rid, uid, closeModal]);
 
-	const handleChangeModerator = useCallback(
-		({ userId }) => {
-			if (!isRoomFederated(room)) {
-				return changeModerator({ roomId: rid, userId: uid });
-			}
+	const changeModeratorAction = useMutableCallback(() => {
+		if (!isRoomFederated(room)) {
+			return changeModerator({ roomId: rid, userId: uid });
+		}
 
-			const changingOwnRole = userId === loggedUserId;
-			if (changingOwnRole && loggedUserIsModerator) {
-				return setModal(() =>
-					getWarningModalForFederatedRooms(
-						closeModal,
-						handleConfirm,
-						t('Federation_Matrix_losing_privileges'),
-						t('Yes_continue'),
-						t('Federation_Matrix_losing_privileges_warning'),
-					),
-				);
-			}
+		const changingOwnRole = uid === loggedUserId;
+		if (changingOwnRole && loggedUserIsModerator) {
+			return setModal(
+				getWarningModalForFederatedRooms(
+					closeModal,
+					handleConfirm,
+					t('Federation_Matrix_losing_privileges'),
+					t('Yes_continue'),
+					t('Federation_Matrix_losing_privileges_warning'),
+				),
+			);
+		}
 
-			if (changingOwnRole && loggedUserIsOwner) {
-				return setModal(() =>
-					getWarningModalForFederatedRooms(
-						closeModal,
-						handleConfirm,
-						t('Federation_Matrix_losing_privileges'),
-						t('Yes_continue'),
-						t('Federation_Matrix_losing_privileges_warning'),
-					),
-				);
-			}
+		if (changingOwnRole && loggedUserIsOwner) {
+			return setModal(
+				getWarningModalForFederatedRooms(
+					closeModal,
+					handleConfirm,
+					t('Federation_Matrix_losing_privileges'),
+					t('Yes_continue'),
+					t('Federation_Matrix_losing_privileges_warning'),
+				),
+			);
+		}
 
-			if (!changingOwnRole && loggedUserIsModerator) {
-				return setModal(() =>
-					getWarningModalForFederatedRooms(
-						closeModal,
-						handleConfirm,
-						t('Warning'),
-						t('Yes_continue'),
-						t('Federation_Matrix_giving_same_permission_warning'),
-					),
-				);
-			}
+		if (!changingOwnRole && loggedUserIsModerator) {
+			return setModal(
+				getWarningModalForFederatedRooms(
+					closeModal,
+					handleConfirm,
+					t('Warning'),
+					t('Yes_continue'),
+					t('Federation_Matrix_giving_same_permission_warning'),
+				),
+			);
+		}
 
-			changeModerator({ roomId: rid, userId: uid });
-		},
-		[setModal, loggedUserId, loggedUserIsModerator, loggedUserIsOwner, t, rid, uid, changeModerator, closeModal, handleConfirm, room],
-	);
+		changeModerator({ roomId: rid, userId: uid });
+	});
 
-	const changeModeratorAction = useMutableCallback(() => handleChangeModerator({ roomId: rid, userId: uid }));
 	const changeModeratorOption = useMemo(
 		() =>
 			(isRoomFederated(room) && roomCanSetModerator) || (!isRoomFederated(room) && roomCanSetModerator && userCanSetModerator)

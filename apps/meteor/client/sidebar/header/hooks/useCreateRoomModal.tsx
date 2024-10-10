@@ -11,6 +11,6 @@ export const useCreateRoomModal = (Component: ElementType<{ onClose: () => void 
 			setModal(null);
 		};
 
-		setModal(() => <Component onClose={handleClose} />);
+		setModal(<Component onClose={handleClose} />);
 	});
 };

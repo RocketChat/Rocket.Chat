@@ -80,7 +80,7 @@ const DeviceManagementAdminRow = ({
 			<GenericTableCell onClick={(e): void => e.stopPropagation()}>
 				<Menu
 					title={t('Options')}
-					options={menuOptions}
+					options={menuOptions as any} // FIXME: `renderItem` and `options` should be typed right
 					renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option label={label} icon={icon} {...props} />}
 				/>
 			</GenericTableCell>

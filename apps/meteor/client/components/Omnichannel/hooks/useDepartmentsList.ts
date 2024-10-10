@@ -39,7 +39,7 @@ export const useDepartmentsList = (
 	}, [options, reload]);
 
 	const fetchData = useCallback(
-		async (start, end) => {
+		async (start: number, end: number) => {
 			const { departments, total } = await getDepartments({
 				onlyMyDepartments: `${!!options.onlyMyDepartments}`,
 				text: options.filter,

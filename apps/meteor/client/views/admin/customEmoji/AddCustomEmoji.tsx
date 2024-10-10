@@ -16,12 +16,12 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 	const t = useTranslation();
 	const [name, setName] = useState('');
 	const [aliases, setAliases] = useState('');
-	const [emojiFile, setEmojiFile] = useState<Blob>();
+	const [emojiFile, setEmojiFile] = useState<File>();
 	const [newEmojiPreview, setNewEmojiPreview] = useState('');
 	const [errors, setErrors] = useState({ name: false, emoji: false, aliases: false });
 
 	const setEmojiPreview = useCallback(
-		async (file) => {
+		async (file: File) => {
 			setEmojiFile(file);
 			setNewEmojiPreview(URL.createObjectURL(file));
 			setErrors((prevState) => ({ ...prevState, emoji: false }));

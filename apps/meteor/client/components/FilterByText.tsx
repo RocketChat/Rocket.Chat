@@ -1,13 +1,14 @@
+import type { TextInputProps } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, FormEvent, HTMLAttributes } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
 import React, { forwardRef, memo, useCallback, useState } from 'react';
 
 type FilterByTextProps = {
 	onChange: (filter: string) => void;
 	shouldAutoFocus?: boolean;
-} & Omit<HTMLAttributes<HTMLInputElement>, 'is' | 'onChange'>;
+} & Omit<TextInputProps, 'is' | 'onChange'>;
 
 const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function FilterByText(
 	{ placeholder, onChange: setFilter, shouldAutoFocus = false, children, ...props },

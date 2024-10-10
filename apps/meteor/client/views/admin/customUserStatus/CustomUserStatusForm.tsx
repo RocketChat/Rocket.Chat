@@ -10,6 +10,11 @@ import { useForm, Controller } from 'react-hook-form';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
 
+type CustomUserStatusFormData = {
+	name: string;
+	statusType: string;
+};
+
 type CustomUserStatusFormProps = {
 	onClose: () => void;
 	onReload: () => void;
@@ -29,18 +34,23 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 		control,
 		handleSubmit,
 		formState: { errors },
-	} = useForm({
-		defaultValues: { name: status?.name ?? '', statusType: status?.statusType ?? '' },
+	} = useForm<CustomUserStatusFormData>({
+		defaultValues: { name: name ?? '', statusType: statusType ?? '' },
 		mode: 'all',
 	});
 
-	const saveStatus = useEndpoint('POST', _id ? '/v1/custom-user-status.update' : '/v1/custom-user-status.create');
+	const updateStatus = useEndpoint('POST', '/v1/custom-user-status.update');
+	const createStatus = useEndpoint('POST', '/v1/custom-user-status.create');
 	const deleteStatus = useEndpoint('POST', '/v1/custom-user-status.delete');
 
 	const handleSave = useCallback(
-		async (data) => {
+		async (data: CustomUserStatusFormData) => {
 			try {
-				await saveStatus({ _id, name, statusType, ...data });
+				if (_id) {
+					await updateStatus({ _id, ...data });
+				} else {
+					await createStatus(data);
+				}
 
 				dispatchToastMessage({
 					type: 'success',
@@ -48,12 +58,12 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 				});
 
 				onReload();
-				route.push({});
+				route.push();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[saveStatus, _id, name, statusType, route, dispatchToastMessage, t, onReload],
+		[_id, dispatchToastMessage, t, onReload, route, updateStatus, createStatus],
 	);
 
 	const handleDeleteStatus = useCallback(() => {
@@ -74,11 +84,11 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 			}
 		};
 
-		setModal(() => (
+		setModal(
 			<GenericModal variant='danger' onConfirm={handleDelete} onCancel={handleCancel} onClose={handleCancel} confirmText={t('Delete')}>
 				{t('Custom_User_Status_Delete_Warning')}
-			</GenericModal>
-		));
+			</GenericModal>,
+		);
 	}, [_id, route, deleteStatus, dispatchToastMessage, onReload, setModal, t]);
 
 	const presenceOptions: SelectOption[] = [

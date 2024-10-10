@@ -21,9 +21,10 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 	const [text, setText] = useState('');
 
 	const handleSearchTextChange = useCallback(
-		({ target: { value } }) => {
-			setText(value);
-			setUsersFilters({ text: value, roles: selectedRoles });
+		// FIXME: probably should be `currentTarget` instead of `target`
+		({ target }: FormEvent<HTMLInputElement>) => {
+			setText((target as HTMLInputElement).value);
+			setUsersFilters({ text: (target as HTMLInputElement).value, roles: selectedRoles });
 		},
 		[selectedRoles, setUsersFilters],
 	);

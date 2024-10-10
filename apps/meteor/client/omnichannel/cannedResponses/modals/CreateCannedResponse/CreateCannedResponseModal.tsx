@@ -7,9 +7,18 @@ import { FormProvider, useForm } from 'react-hook-form';
 import GenericModal from '../../../../components/GenericModal';
 import CannedResponseForm from '../../components/cannedResponseForm';
 
+type CreateCannedResponseFormData = {
+	_id: string;
+	shortcut: string;
+	text: string;
+	tags: Array<{ label: string; value: string }>;
+	scope: string;
+	departmentId: string;
+};
+
 const getInitialData = (
 	cannedResponseData: (IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] }) | undefined,
-) => ({
+): CreateCannedResponseFormData => ({
 	_id: cannedResponseData?._id || '',
 	shortcut: cannedResponseData?.shortcut || '',
 	text: cannedResponseData?.text || '',
@@ -33,7 +42,7 @@ const CreateCannedResponseModal = ({
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const methods = useForm({ defaultValues: getInitialData(cannedResponseData) });
+	const methods = useForm<CreateCannedResponseFormData>({ defaultValues: getInitialData(cannedResponseData) });
 	const {
 		handleSubmit,
 		formState: { isDirty },
@@ -42,10 +51,10 @@ const CreateCannedResponseModal = ({
 	const saveCannedResponse = useEndpoint('POST', '/v1/canned-responses');
 
 	const handleCreate = useCallback(
-		async ({ departmentId, ...data }) => {
+		async ({ _id, departmentId, ...data }: CreateCannedResponseFormData) => {
 			try {
 				await saveCannedResponse({
-					_id: cannedResponseData?._id,
+					_id: _id ?? cannedResponseData?._id,
 					...data,
 					...(departmentId && { departmentId }),
 				});

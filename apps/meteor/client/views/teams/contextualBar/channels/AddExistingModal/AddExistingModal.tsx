@@ -5,6 +5,10 @@ import { useForm, Controller } from 'react-hook-form';
 
 import RoomsAvailableForTeamsAutoComplete from './RoomsAvailableForTeamsAutoComplete';
 
+type AddExistingModalFormData = {
+	rooms: string[];
+};
+
 type AddExistingModalProps = {
 	teamId: string;
 	onClose: () => void;
@@ -21,10 +25,10 @@ const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) =>
 		control,
 		formState: { isDirty },
 		handleSubmit,
-	} = useForm({ defaultValues: { rooms: [] } });
+	} = useForm<AddExistingModalFormData>({ defaultValues: { rooms: [] } });
 
 	const handleAddChannels = useCallback(
-		async ({ rooms }) => {
+		async ({ rooms }: AddExistingModalFormData) => {
 			try {
 				await addRoomEndpoint({
 					rooms,

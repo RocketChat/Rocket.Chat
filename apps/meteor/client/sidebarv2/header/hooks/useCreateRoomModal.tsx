@@ -1,9 +1,9 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ElementType } from 'react';
 import React from 'react';
 
-export const useCreateRoomModal = (Component: FC<any>): (() => void) => {
+export const useCreateRoomModal = (Component: ElementType<{ onClose: () => void }>): (() => void) => {
 	const setModal = useSetModal();
 
 	return useEffectEvent(() => {
@@ -11,6 +11,6 @@ export const useCreateRoomModal = (Component: FC<any>): (() => void) => {
 			setModal(null);
 		};
 
-		setModal(() => <Component onClose={handleClose} />);
+		setModal(<Component onClose={handleClose} />);
 	});
 };

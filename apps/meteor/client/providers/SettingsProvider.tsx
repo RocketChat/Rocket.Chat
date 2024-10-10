@@ -104,7 +104,12 @@ const SettingsProvider = ({ children, privileged = false }: SettingsProviderProp
 
 	const saveSettings = useMethod('saveSettings');
 	const dispatch = useCallback(
-		async (changes) => {
+		async (
+			changes: {
+				_id: ISetting['_id'];
+				value: ISetting['value'];
+			}[],
+		) => {
 			settingsChangeCallback(changes);
 			await saveSettings(changes);
 		},
@@ -126,6 +131,3 @@ const SettingsProvider = ({ children, privileged = false }: SettingsProviderProp
 };
 
 export default SettingsProvider;
-
-// '[subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => {}]'
-// '[subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISetting | undefined]'

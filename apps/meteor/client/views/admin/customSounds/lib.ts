@@ -1,13 +1,7 @@
 import type { ICustomSoundData } from '../../../../app/custom-sounds/server/methods/insertOrUpdateSound';
 
-type ICustomSoundFile = {
-	name: string;
-	type: string;
-	extension?: string;
-};
-
 // Here previousData will define if it is an update or a new entry
-export function validate(soundData: ICustomSoundData, soundFile?: ICustomSoundFile): ('Name' | 'Sound File' | 'FileType')[] {
+export function validate(soundData: ICustomSoundData & { previousSound?: File }, soundFile?: File): ('Name' | 'Sound File' | 'FileType')[] {
 	const errors: ('Name' | 'Sound File' | 'FileType')[] = [];
 
 	if (!soundData.name) {
@@ -30,11 +24,11 @@ export function validate(soundData: ICustomSoundData, soundFile?: ICustomSoundFi
 }
 
 export const createSoundData = (
-	soundFile: ICustomSoundFile,
+	soundFile: File | undefined,
 	name: string,
 	previousData?: {
 		_id: string;
-		extension: string;
+		extension?: string;
 		previousName: string;
 		previousSound: {
 			extension?: string;
@@ -55,7 +49,6 @@ export const createSoundData = (
 		extension: soundFile?.name.split('.').pop() || '',
 		previousName: previousData.previousName,
 		previousExtension: previousData.previousSound?.extension,
-		previousSound: previousData.previousSound,
 		newFile: false,
 	};
 };

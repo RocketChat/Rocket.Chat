@@ -1,8 +1,13 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Badge } from '@rocket.chat/fuselage';
+import type { ReactNode } from 'react';
 import React from 'react';
 
-const SidebarTogglerBadge = ({ children }: { children?: unknown }) => (
+type SidebarTogglerBadgeProps = {
+	children?: ReactNode;
+};
+
+const SidebarTogglerBadge = ({ children }: SidebarTogglerBadgeProps) => (
 	<Box
 		className={css`
 			position: absolute;

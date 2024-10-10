@@ -1,4 +1,5 @@
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import type { FormEvent } from 'react';
 import React, { useState, useCallback, useMemo } from 'react';
 
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
@@ -15,7 +16,7 @@ const RoomFilesWithData = () => {
 	const [text, setText] = useState('');
 	const [type, setType] = useLocalStorage('file-list-type', 'all');
 
-	const handleTextChange = useCallback((event) => {
+	const handleTextChange = useCallback((event: FormEvent<HTMLInputElement>) => {
 		setText(event.currentTarget.value);
 	}, []);
 

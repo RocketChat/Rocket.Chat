@@ -1,3 +1,4 @@
+import type { ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Callout, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
@@ -170,9 +171,10 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 	});
 
 	const renderRow = useCallback(
-		(room) => {
+		// FIXME: there is no indication this argument have a `department` property
+		(room: IOmnichannelRoom & { department?: ILivechatDepartment }) => {
 			const { _id, fname, servedBy, ts, lm, department, open, onHold, priorityWeight } = room;
-			const getStatusText = (open: boolean, onHold: boolean, servedBy: boolean): string => {
+			const getStatusText = (open: boolean | undefined, onHold: boolean | undefined, servedBy: boolean): string => {
 				if (!open) return t('Closed');
 				if (open && !servedBy) return t('Queued');
 				return onHold ? t('On_Hold_Chats') : t('Room_Status_Open');
@@ -340,9 +342,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 						<>
 							<GenericTable>
 								<GenericTableHeader>{headers}</GenericTableHeader>
-								<GenericTableBody data-qa='GenericTableCurrentChatsBody'>
-									{data.rooms.map((room) => renderRow({ ...room }))}
-								</GenericTableBody>
+								<GenericTableBody data-qa='GenericTableCurrentChatsBody'>{data.rooms.map(renderRow)}</GenericTableBody>
 							</GenericTable>
 							<Pagination
 								divider

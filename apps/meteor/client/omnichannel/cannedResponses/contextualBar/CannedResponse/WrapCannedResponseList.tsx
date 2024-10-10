@@ -1,6 +1,6 @@
 import { useDebouncedValue, useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRouter } from '@rocket.chat/ui-contexts';
-import type { MouseEvent } from 'react';
+import type { FormEvent, MouseEvent } from 'react';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
@@ -27,7 +27,7 @@ export const WrapCannedResponseList = () => {
 
 	const isRoomOverMacLimit = useIsRoomOverMacLimit(room);
 
-	const handleTextChange = useCallback((event) => {
+	const handleTextChange = useCallback((event: FormEvent<HTMLInputElement>) => {
 		setText(event.currentTarget.value);
 	}, []);
 

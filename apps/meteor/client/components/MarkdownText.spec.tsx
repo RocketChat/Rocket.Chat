@@ -15,24 +15,24 @@ const markdownText = `
   **Paragraph text**: *Bold with one asterisk* **Bold with two asterisks** Lorem ipsum dolor sit amet, consectetur adipiscing elit.
   ## Heading 2
   _Italic Text_: _Italic with one underscore_ __Italic with two underscores__ Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  ### Heading 3 
+  ### Heading 3
   Lists, Links and elements
-  **Unordered List** 
-  - List Item 1 
-  - List Item 2 
-  - List Item 3 
+  **Unordered List**
+  - List Item 1
+  - List Item 2
+  - List Item 3
   - List Item 4
-  **Ordered List** 
+  **Ordered List**
   1. List Item 1
   2. List Item 2
   3. List Item 3
   4. List Item 4
-  **Links:** 
+  **Links:**
   [Rocket.Chat](rocket.chat)
-  gabriel.engel@rocket.chat 
-  +55991999999 
+  gabriel.engel@rocket.chat
+  +55991999999
   \`Inline code\`
-  \`\`\`typescript 
+  \`\`\`typescript
   const test = 'this is code'
   \`\`\`
 `;
@@ -40,7 +40,6 @@ const markdownText = `
 it('should render html elements as expected using default parser', async () => {
 	const { container } = render(<MarkdownText content={markdownText} variant='document' />, {
 		wrapper: mockAppRoot().build(),
-		legacyRoot: true,
 	});
 
 	const normalizedHtml = normalizeHtml(container.innerHTML);
@@ -54,7 +53,7 @@ it('should render html elements as expected using default parser', async () => {
 		'<em>Italic Text</em>: <em>Italic with one underscore</em> <em>Italic with two underscores</em> Lorem ipsum dolor sit amet',
 	);
 	expect(normalizedHtml).toContain('<h3>Heading 3</h3>');
-	expect(normalizedHtml).toContain('<ul> <li>List Item 1 </li><li>List Item 2 </li><li>List Item 3 </li><li>List Item 4');
+	expect(normalizedHtml).toContain('<ul> <li>List Item 1</li><li>List Item 2</li><li>List Item 3</li><li>List Item 4');
 	expect(normalizedHtml).toContain('<ol> <li>List Item 1</li><li>List Item 2</li><li>List Item 3</li><li>List Item 4');
 	expect(normalizedHtml).toContain('<a title="" rel="nofollow noopener noreferrer" target="_blank">Rocket.Chat</a>');
 	expect(normalizedHtml).toContain('gabriel.engel@rocket.chat');
@@ -66,7 +65,6 @@ it('should render html elements as expected using default parser', async () => {
 it('should render html elements as expected using inline parser', async () => {
 	const { container } = render(<MarkdownText content={markdownText} variant='inline' />, {
 		wrapper: mockAppRoot().build(),
-		legacyRoot: true,
 	});
 
 	const normalizedHtml = normalizeHtml(container.innerHTML);

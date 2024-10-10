@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import React, { forwardRef } from 'react';
+import React, { forwardRef, memo } from 'react';
 
 const SearchingResultWrapper = forwardRef(function SearchingResultWrapper(props, ref: React.Ref<HTMLDivElement>) {
 	const searchResultWrapperStyle = css`
@@ -16,4 +16,4 @@ const SearchingResultWrapper = forwardRef(function SearchingResultWrapper(props,
 	return <Box ref={ref} {...props} className={searchResultWrapperStyle} display='flex' flexWrap='wrap' />;
 });
 
-export default SearchingResultWrapper;
+export default memo(SearchingResultWrapper);

@@ -53,8 +53,7 @@ describe('UiKit UserSelect Element', () => {
           context={BlockContext.FORM}
           surfaceRenderer={contextualBarParser}
         />
-      </MockedServerContext>,
-      { legacyRoot: true }
+      </MockedServerContext>
     );
   });
 

@@ -1,5 +1,5 @@
-import { type StorybookConfig } from '@storybook/core-common';
-import { type RuleSetRule } from 'webpack';
+import type { StorybookConfig } from '@storybook/core-common';
+import type { RuleSetRule } from 'webpack';
 
 const config: StorybookConfig = {
 	stories: ['../src/**/{*.story,story,*.stories,stories}.{js,tsx}'],
@@ -12,6 +12,12 @@ const config: StorybookConfig = {
 		},
 		'@storybook/addon-postcss',
 		'storybook-dark-mode',
+		{
+			name: '@newhighsco/storybook-addon-transpile-modules',
+			options: {
+				transpileModules: ['date-fns', 'typia', 'react-i18next'],
+			},
+		},
 	],
 	core: {
 		builder: 'webpack4',

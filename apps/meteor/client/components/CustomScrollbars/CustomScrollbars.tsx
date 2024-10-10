@@ -26,7 +26,7 @@ const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function
 	const scrollbarsStyle = useMemo(() => ({ ...style, ...styleDefault }), [style]);
 
 	const refSetter = useCallback(
-		(scrollbarRef) => {
+		(scrollbarRef: Scrollbars) => {
 			if (ref && scrollbarRef) {
 				if (typeof ref === 'function') {
 					ref(scrollbarRef.view ?? null);

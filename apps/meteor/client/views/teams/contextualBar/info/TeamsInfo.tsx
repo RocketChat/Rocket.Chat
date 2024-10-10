@@ -112,7 +112,7 @@ const TeamsInfo = ({
 				title={t('More')}
 				secondary
 				renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option {...props} label={label} icon={icon} />}
-				options={menuOptions}
+				options={menuOptions as any} // FIXME: `renderItem` and `options` should be typed right
 			/>
 		);
 	}, [t, menuOptions]);

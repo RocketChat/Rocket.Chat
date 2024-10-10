@@ -1,11 +1,14 @@
 import { TextEncoder, TextDecoder } from 'node:util';
 
+import { configure } from '@testing-library/react';
 import { toHaveNoViolations } from 'jest-axe';
 import * as uuid from 'uuid';
 
 import '@testing-library/jest-dom';
 
 expect.extend(toHaveNoViolations);
+
+configure({ reactStrictMode: true });
 
 const urlByBlob = new WeakMap<Blob, string>();
 const blobByUrl = new Map<string, Blob>();

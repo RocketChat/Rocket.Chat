@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import React from 'react';
 
 import { usePresence } from '../../../hooks/usePresence';
@@ -9,15 +9,15 @@ import RoomHeader from './RoomHeader';
 type DirectRoomHeaderProps = {
 	room: IRoom;
 	slots: {
-		start?: unknown;
-		preContent?: unknown;
-		insideContent?: unknown;
-		posContent?: unknown;
-		end?: unknown;
+		start?: ReactNode;
+		preContent?: ReactNode;
+		insideContent?: ReactNode;
+		posContent?: ReactNode;
+		end?: ReactNode;
 		toolbox?: {
-			pre?: unknown;
-			content?: unknown;
-			pos?: unknown;
+			pre?: ReactNode;
+			content?: ReactNode;
+			pos?: ReactNode;
 		};
 	};
 };

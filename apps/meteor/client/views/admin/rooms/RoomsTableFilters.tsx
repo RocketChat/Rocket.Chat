@@ -3,7 +3,7 @@ import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useState } from 'react';
-import type { Dispatch, ReactElement, SetStateAction } from 'react';
+import type { Dispatch, FormEvent, ReactElement, SetStateAction } from 'react';
 
 const initialRoomTypeFilterStructure = [
 	{
@@ -56,7 +56,7 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 	}, [roomTypeSelectedOptions]);
 
 	const handleSearchTextChange = useCallback(
-		(event) => {
+		(event: FormEvent<HTMLInputElement>) => {
 			const text = event.currentTarget.value;
 			setFilters({ searchText: text, types: roomTypeSelectedOptions });
 			setText(text);
@@ -75,7 +75,7 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 	return (
 		<Box
 			is='form'
-			onSubmit={useCallback((e) => e.preventDefault(), [])}
+			onSubmit={useCallback((e: FormEvent<HTMLFormElement>) => e.preventDefault(), [])}
 			mb='x8'
 			display='flex'
 			flexWrap='wrap'

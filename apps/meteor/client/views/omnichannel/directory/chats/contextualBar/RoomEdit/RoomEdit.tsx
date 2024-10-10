@@ -15,6 +15,14 @@ import { FormSkeleton } from '../../../components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../../../hooks/useCustomFieldsMetadata';
 import { useSlaPolicies } from '../../../hooks/useSlaPolicies';
 
+type RoomEditFormData = {
+	topic: string;
+	tags: string[];
+	livechatData?: { [k: string]: string };
+	slaId: string;
+	priorityId: string;
+};
+
 type RoomEditProps = {
 	room: Serialized<IOmnichannelRoom>;
 	visitor: Serialized<ILivechatVisitor>;
@@ -62,7 +70,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 		control,
 		formState: { isDirty: isFormDirty, isValid: isFormValid, isSubmitting },
 		handleSubmit,
-	} = useForm({
+	} = useForm<RoomEditFormData>({
 		mode: 'onChange',
 		defaultValues: getInitialValuesRoom(room),
 	});
@@ -72,7 +80,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 	const { field: priorityIdField } = useController({ control, name: 'priorityId' });
 
 	const handleSave = useCallback(
-		async (data) => {
+		async (data: RoomEditFormData) => {
 			if (!isFormValid) {
 				return;
 			}

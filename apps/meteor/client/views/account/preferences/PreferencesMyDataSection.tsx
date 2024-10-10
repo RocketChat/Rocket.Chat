@@ -12,7 +12,7 @@ const PreferencesMyDataSection = () => {
 	const requestDataDownload = useMethod('requestDataDownload');
 
 	const downloadData = useCallback(
-		async (fullExport) => {
+		async (fullExport: boolean) => {
 			try {
 				const result = await requestDataDownload({ fullExport });
 				if (result.requested) {

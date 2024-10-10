@@ -22,24 +22,21 @@ export const useVideoConfList = (options: {
 		options && reload();
 	}, [options, reload]);
 
-	const fetchData = useCallback(
-		async (_start, _end) => {
-			const { data, total } = await getVideoConfs({
-				roomId: options.roomId,
-			});
+	const fetchData = useCallback(async () => {
+		const { data, total } = await getVideoConfs({
+			roomId: options.roomId,
+		});
 
-			return {
-				items: data.map((videoConf: any) => ({
-					...videoConf,
-					_updatedAt: new Date(videoConf._updatedAt),
-					createdAt: new Date(videoConf.createdAt),
-					endedAt: videoConf.endedAt ? new Date(videoConf.endedAt) : undefined,
-				})),
-				itemCount: total,
-			};
-		},
-		[getVideoConfs, options],
-	);
+		return {
+			items: data.map((videoConf: any) => ({
+				...videoConf,
+				_updatedAt: new Date(videoConf._updatedAt),
+				createdAt: new Date(videoConf.createdAt),
+				endedAt: videoConf.endedAt ? new Date(videoConf.endedAt) : undefined,
+			})),
+			itemCount: total,
+		};
+	}, [getVideoConfs, options]);
 
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(videoConfList, fetchData);
 

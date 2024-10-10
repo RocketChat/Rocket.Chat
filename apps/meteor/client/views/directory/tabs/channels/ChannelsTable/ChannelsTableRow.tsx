@@ -1,5 +1,6 @@
 import type { IRoom, ITeam } from '@rocket.chat/core-typings';
 import { Box, Avatar } from '@rocket.chat/fuselage';
+import type { ReactNode } from 'react';
 import React from 'react';
 
 import { GenericTableRow, GenericTableCell } from '../../../../../components/GenericTable';
@@ -52,7 +53,9 @@ const ChannelsTableRow = ({ onClick, room, mediaQuery }: ChannelsTableRowProps) 
 			)}
 			{mediaQuery && (
 				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-					{belongsTo}
+					{
+						belongsTo as ReactNode // FIXME: this is a hack to make the type checker happy
+					}
 				</GenericTableCell>
 			)}
 		</GenericTableRow>

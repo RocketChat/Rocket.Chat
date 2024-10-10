@@ -39,7 +39,6 @@ it('should not fetch and add selected department if it is already in the departm
 				selectedDepartment: '5',
 			}),
 		{
-			legacyRoot: true,
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/v1/livechat/department', () => ({
 					count: 25,
@@ -90,7 +89,6 @@ it('should fetch and add selected department if it is not part of departments li
 				selectedDepartment: '56f5be8bcf8cd67f9e9bcfdc',
 			}),
 		{
-			legacyRoot: true,
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/v1/livechat/department', () => ({
 					count: 25,

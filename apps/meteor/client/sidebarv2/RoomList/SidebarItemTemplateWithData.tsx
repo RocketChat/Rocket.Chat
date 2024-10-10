@@ -3,7 +3,7 @@ import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, is
 import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemBadge, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import type { useTranslation } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
-import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
+import type { AllHTMLAttributes, ComponentType, ReactNode } from 'react';
 import React, { memo, useMemo } from 'react';
 
 import { RoomIcon } from '../../components/RoomIcon';
@@ -199,8 +199,7 @@ const SidebarItemTemplateWithData = ({
 			menu={
 				!isIOsDevice &&
 				!isAnonymous &&
-				(!isQueued || (isQueued && isPriorityEnabled)) &&
-				((): ReactElement => (
+				(!isQueued || (isQueued && isPriorityEnabled)) && (
 					<RoomMenu
 						alert={alert}
 						threadUnread={threadUnread}
@@ -212,7 +211,7 @@ const SidebarItemTemplateWithData = ({
 						name={title}
 						hideDefaultOptions={isQueued}
 					/>
-				))
+				)
 			}
 		/>
 	);

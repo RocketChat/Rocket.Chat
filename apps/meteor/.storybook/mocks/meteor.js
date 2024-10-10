@@ -92,3 +92,9 @@ export const Session = {
 	get: () => {},
 	set: () => {},
 };
+
+export const DDPCommon = {};
+
+export const HTTP = {};
+
+export const Match = {};

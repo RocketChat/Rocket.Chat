@@ -9,7 +9,6 @@ const appRoot = mockAppRoot().withJohnDoe();
 
 it('should have user and extension informed', async () => {
 	render(<RemoveExtensionModal name='John Doe' username='john.doe' extension='1000' onClose={() => undefined} />, {
-		legacyRoot: true,
 		wrapper: appRoot.build(),
 	});
 
@@ -21,7 +20,6 @@ it('should call assign endpoint and onClose when extension is removed', async ()
 	const closeFn = jest.fn();
 	const assignFn = jest.fn(() => null);
 	render(<RemoveExtensionModal name='John Doe' username='john.doe' extension='1000' onClose={closeFn} />, {
-		legacyRoot: true,
 		wrapper: appRoot.withEndpoint('POST', '/v1/voip-freeswitch.extension.assign', assignFn).build(),
 	});
 
@@ -34,7 +32,6 @@ it('should call assign endpoint and onClose when extension is removed', async ()
 it('should call onClose when cancel button is clicked', () => {
 	const closeFn = jest.fn();
 	render(<RemoveExtensionModal name='John Doe' username='john.doe' extension='1000' onClose={closeFn} />, {
-		legacyRoot: true,
 		wrapper: appRoot.build(),
 	});
 
@@ -45,7 +42,6 @@ it('should call onClose when cancel button is clicked', () => {
 it('should call onClose when cancel button is clicked', () => {
 	const closeFn = jest.fn();
 	render(<RemoveExtensionModal name='John Doe' username='john.doe' extension='1000' onClose={closeFn} />, {
-		legacyRoot: true,
 		wrapper: appRoot.build(),
 	});
 
