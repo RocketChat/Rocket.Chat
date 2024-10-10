@@ -1,10 +1,9 @@
 import type { OperationParams } from '@rocket.chat/rest-typings';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { TranslationContextValue, TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Chart as ChartType } from 'chart.js';
-import type { TFunction } from 'i18next';
 import type { MutableRefObject } from 'react';
 import React, { useRef, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { drawDoughnutChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
@@ -21,7 +20,7 @@ const initialData = {
 	offline: 0,
 };
 
-const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: TFunction): Promise<ChartType> =>
+const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: TranslationContextValue['translate']): Promise<ChartType> =>
 	drawDoughnutChart(
 		canvas,
 		t('Agents'),
@@ -36,7 +35,7 @@ type AgentStatusChartsProps = {
 };
 
 const AgentStatusChart = ({ params, reloadRef, ...props }: AgentStatusChartsProps) => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 
 	const canvas: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
 	const context: MutableRefObject<ChartType | undefined> = useRef();

@@ -1,4 +1,4 @@
-import type { IUIActionButton, UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
+import { type IUIActionButton, type UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useEndpoint, useStream, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
@@ -13,6 +13,7 @@ import type { MessageBoxAction } from '../../app/ui-utils/client/lib/messageBox'
 import { Utilities } from '../../ee/lib/misc/Utilities';
 import { useUiKitActionManager } from '../uikit/hooks/useUiKitActionManager';
 import { useApplyButtonFilters, useApplyButtonAuthFilter } from './useApplyButtonFilters';
+import { useFilterActionsByContextAndCategory } from './useFilterActions';
 
 const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${appId}/${actionId}`;
 
@@ -160,20 +161,18 @@ export const useUserDropdownAppsActionButtons = () => {
 	} as UseQueryResult<GenericMenuItemProps[]>;
 };
 
-export const useMessageActionAppsActionButtons = (context?: MessageActionContext) => {
+export const useMessageActionAppsActionButtons = (context?: MessageActionContext, category?: string) => {
 	const result = useAppActionButtons('messageAction');
 	const actionManager = useUiKitActionManager();
 	const applyButtonFilters = useApplyButtonFilters();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
+	const filterActionsByContextAndCategory = useFilterActionsByContextAndCategory(context, category);
 	const data = useMemo(
 		() =>
 			result.data
 				?.filter((action) => {
-					if (
-						context &&
-						!(action.when?.messageActionContext || ['message', 'message-mobile', 'threads', 'starred']).includes(context as any)
-					) {
+					if (!filterActionsByContextAndCategory(action)) {
 						return false;
 					}
 					return applyButtonFilters(action);
@@ -212,7 +211,7 @@ export const useMessageActionAppsActionButtons = (context?: MessageActionContext
 
 					return item;
 				}),
-		[actionManager, applyButtonFilters, context, dispatchToastMessage, result.data, t],
+		[actionManager, applyButtonFilters, dispatchToastMessage, filterActionsByContextAndCategory, result.data, t],
 	);
 	return {
 		...result,

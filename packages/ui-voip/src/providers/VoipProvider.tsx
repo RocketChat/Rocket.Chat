@@ -103,7 +103,7 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 			voipClient.networkEmitter.off('disconnected', onNetworkDisconnected);
 			voipClient.networkEmitter.off('connectionerror', onNetworkDisconnected);
 			voipClient.networkEmitter.off('localnetworkoffline', onNetworkDisconnected);
-			window.addEventListener('beforeunload', onBeforeUnload);
+			window.removeEventListener('beforeunload', onBeforeUnload);
 		};
 	}, [dispatchToastMessage, setStorageRegistered, t, voipClient, voipSounds]);
 

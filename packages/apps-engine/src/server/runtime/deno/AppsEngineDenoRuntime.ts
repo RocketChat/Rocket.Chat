@@ -71,7 +71,7 @@ export type DenoRuntimeOptions = {
 };
 
 export class DenoRuntimeSubprocessController extends EventEmitter {
-    private deno: child_process.ChildProcess;
+    private deno: child_process.ChildProcess | undefined;
 
     private state: 'uninitialized' | 'ready' | 'invalid' | 'restarting' | 'unknown' | 'stopped';
 
@@ -166,6 +166,11 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     }
 
     public async killProcess(): Promise<void> {
+        if (!this.deno) {
+            this.debug('No child process reference');
+            return;
+        }
+
         // This field is not populated if the process is killed by the OS
         if (this.deno.killed) {
             this.debug('App process was already killed');
@@ -201,7 +206,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
     public async getStatus(): Promise<AppStatus> {
         // If the process has been terminated, we can't get the status
-        if (this.deno.exitCode !== null) {
+        if (!this.deno || this.deno.exitCode !== null) {
             return AppStatus.UNKNOWN;
         }
 
@@ -311,6 +316,10 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     }
 
     private setupListeners(): void {
+        if (!this.deno) {
+            return;
+        }
+
         this.deno.stderr.on('data', this.parseError.bind(this));
         this.deno.on('error', (err) => {
             this.state = 'invalid';

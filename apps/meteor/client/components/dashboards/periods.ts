@@ -1,6 +1,11 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 
+const label = (
+	translationKey: TranslationKey,
+	...replacements: unknown[]
+): readonly [translationKey: TranslationKey, ...replacements: unknown[]] => [translationKey, ...replacements];
+
 const lastNDays =
 	(
 		n: number,
@@ -24,47 +29,47 @@ const lastNDays =
 const periods = [
 	{
 		key: 'today',
-		label: 'Today' as TranslationKey,
+		label: label('Today'),
 		range: lastNDays(0),
 	},
 	{
 		key: 'this week',
-		label: 'This_week' as TranslationKey,
+		label: label('This_week'),
 		range: lastNDays(7),
 	},
 	{
 		key: 'last 7 days',
-		label: 'Last_7_days' as TranslationKey,
+		label: label('Last_7_days'),
 		range: lastNDays(7),
 	},
 	{
 		key: 'last 15 days',
-		label: 'Last_15_days' as TranslationKey,
+		label: label('Last_15_days'),
 		range: lastNDays(15),
 	},
 	{
 		key: 'this month',
-		label: 'This_month' as TranslationKey,
+		label: label('This_month'),
 		range: lastNDays(30),
 	},
 	{
 		key: 'last 30 days',
-		label: 'Last_30_days' as TranslationKey,
+		label: label('Last_30_days'),
 		range: lastNDays(30),
 	},
 	{
 		key: 'last 90 days',
-		label: 'Last_90_days' as TranslationKey,
+		label: label('Last_90_days'),
 		range: lastNDays(90),
 	},
 	{
 		key: 'last 6 months',
-		label: 'Last_6_months' as TranslationKey,
+		label: label('Last_6_months'),
 		range: lastNDays(180),
 	},
 	{
 		key: 'last year',
-		label: 'Last_year' as TranslationKey,
+		label: label('Last_year'),
 		range: lastNDays(365),
 	},
 ] as const;

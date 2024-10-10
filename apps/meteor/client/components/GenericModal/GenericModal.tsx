@@ -1,9 +1,9 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
 import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
 import React, { useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import type { RequiredModalProps } from './withDoNotAskAgain';
 import { withDoNotAskAgain } from './withDoNotAskAgain';
@@ -75,7 +75,7 @@ const GenericModal = ({
 	annotation,
 	...props
 }: GenericModalProps) => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 	const genericModalId = useUniqueId();
 
 	const dismissedRef = useRef(true);
