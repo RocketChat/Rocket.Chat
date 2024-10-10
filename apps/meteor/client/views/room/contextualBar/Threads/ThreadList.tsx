@@ -83,7 +83,6 @@ const ThreadList = () => {
 				return {
 					rid,
 					text,
-					type: 'all',
 				};
 			}
 			switch (type) {

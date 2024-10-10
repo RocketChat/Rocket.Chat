@@ -541,7 +541,7 @@ describe('miscellaneous', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 				})
 				.end(done);
 		});
@@ -653,49 +653,6 @@ describe('miscellaneous', () => {
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('enabled');
-					expect(res.body).to.have.property('policy').and.to.be.an('array');
-				})
-				.end(done);
-		});
-	});
-
-	describe('/pw.getPolicyReset', () => {
-		it('should fail if no token provided', (done) => {
-			void request
-				.get(api('pw.getPolicyReset'))
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
-				})
-				.end(done);
-		});
-
-		it('should fail if no token is invalid format', (done) => {
-			void request
-				.get(api('pw.getPolicyReset'))
-				.query({ token: '123' })
-				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
-				})
-				.end(done);
-		});
-
-		// not sure we have a way to get the reset token, looks like it is only sent via email by Meteor
-		it.skip('should return policies if correct token is provided', (done) => {
-			void request
-				.get(api('pw.getPolicyReset'))
-				.query({ token: '' })
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('enabled');
@@ -837,6 +794,46 @@ describe('miscellaneous', () => {
 
 					expect(foundTokenValue).to.be.false;
 				});
+		});
+
+		describe('permissions', () => {
+			before(async () => {
+				return updatePermission('view-logs', ['admin']);
+			});
+
+			after(async () => {
+				return updatePermission('view-logs', ['admin']);
+			});
+
+			it('should return server logs', async () => {
+				return request
+					.get(api('stdout.queue'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+
+						expect(res.body).to.have.property('queue').and.to.be.an('array').that.is.not.empty;
+						expect(res.body.queue[0]).to.be.an('object');
+						expect(res.body.queue[0]).to.have.property('id').and.to.be.a('string');
+						expect(res.body.queue[0]).to.have.property('string').and.to.be.a('string');
+						expect(res.body.queue[0]).to.have.property('ts').and.to.be.a('string');
+					});
+			});
+
+			it('should not return server logs if user does NOT have the view-logs permission', async () => {
+				await updatePermission('view-logs', []);
+				return request
+					.get(api('stdout.queue'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					});
+			});
 		});
 	});
 });

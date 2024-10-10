@@ -33,7 +33,6 @@
   - Incoming / Outgoing Webhooks
   - Data Importer
     - Import from Slack
-    - Import from Hipchat
   - Slack Bridge
 - Profiles
   - Custom avatars

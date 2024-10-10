@@ -6,7 +6,10 @@ import { Livechat } from '../../lib/LivechatTyped';
 
 API.v1.addRoute(
 	'livechat/offline.message',
-	{ validateParams: isPOSTLivechatOfflineMessageParams },
+	{
+		validateParams: isPOSTLivechatOfflineMessageParams,
+		rateLimiterOptions: { numRequestsAllowed: 1, intervalTimeInMS: 5000 },
+	},
 	{
 		async post() {
 			const { name, email, message, department, host } = this.bodyParams;
