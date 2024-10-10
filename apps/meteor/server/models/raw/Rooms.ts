@@ -25,6 +25,7 @@ import type {
 	UpdateFilter,
 	UpdateOptions,
 	UpdateResult,
+	ModifyResult,
 } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -1138,6 +1139,20 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update, options);
 	}
 
+	unsetE2eKeyId(_id: IRoom['_id'], options: UpdateOptions = {}): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id,
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$unset: {
+				e2eKeyId: 1,
+			},
+		};
+
+		return this.updateOne(query, update, options);
+	}
+
 	findOneByImportId(_id: IRoom['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		const query: Filter<IRoom> = { importIds: _id };
 
@@ -2143,5 +2158,17 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				},
 			},
 		]);
+	}
+
+	resetRoomKeyAndSetE2EEQueueByRoomId(
+		roomId: string,
+		e2eKeyId: string,
+		e2eQueue?: IRoom['usersWaitingForE2EKeys'],
+	): Promise<ModifyResult<IRoom>> {
+		return this.findOneAndUpdate(
+			{ _id: roomId },
+			{ $set: { e2eKeyId, ...(Array.isArray(e2eQueue) && { usersWaitingForE2EKeys: e2eQueue }) } },
+			{ returnDocument: 'after' },
+		);
 	}
 }

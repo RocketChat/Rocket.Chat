@@ -12,6 +12,7 @@ import { useContactChatHistoryRoomAction } from './hooks/roomActions/useContactC
 import { useContactProfileRoomAction } from './hooks/roomActions/useContactProfileRoomAction';
 import { useDiscussionsRoomAction } from './hooks/roomActions/useDiscussionsRoomAction';
 import { useE2EERoomAction } from './hooks/roomActions/useE2EERoomAction';
+import { useE2EEResetRoomKeyRoomAction } from './hooks/roomActions/useE2EERoomKeyResetAction';
 import { useExportMessagesRoomAction } from './hooks/roomActions/useExportMessagesRoomAction';
 import { useGameCenterRoomAction } from './hooks/roomActions/useGameCenterRoomAction';
 import { useKeyboardShortcutListRoomAction } from './hooks/roomActions/useKeyboardShortcutListRoomAction';
@@ -51,6 +52,7 @@ export const roomActionHooks = [
 	useContactProfileRoomAction,
 	useDiscussionsRoomAction,
 	useE2EERoomAction,
+	useE2EEResetRoomKeyRoomAction,
 	useExportMessagesRoomAction,
 	useGameCenterRoomAction,
 	useKeyboardShortcutListRoomAction,
@@ -79,4 +81,9 @@ export const quickActionHooks = [
 	useOnHoldChatQuickAction,
 ] satisfies (() => QuickActionsActionConfig | undefined)[];
 
-export const roomActionHooksForE2EESetup = [useChannelSettingsRoomAction, useMembersListRoomAction, useE2EERoomAction];
+export const roomActionHooksForE2EESetup = [
+	useChannelSettingsRoomAction,
+	useMembersListRoomAction,
+	useE2EERoomAction,
+	useE2EEResetRoomKeyRoomAction,
+];

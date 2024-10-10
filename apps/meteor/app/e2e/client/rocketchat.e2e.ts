@@ -67,6 +67,8 @@ class E2E extends Emitter {
 
 	public privateKey: CryptoKey | undefined;
 
+	public publicKey: string | undefined;
+
 	private keyDistributionInterval: ReturnType<typeof setInterval> | null;
 
 	private state: E2EEState;
@@ -268,6 +270,16 @@ class E2E extends Emitter {
 			this.instancesByRoomId[rid] = new E2ERoom(Meteor.userId(), room);
 		}
 
+		// When the key was already set and is changed via an update, we update the room instance
+		if (
+			this.instancesByRoomId[rid].keyID !== undefined &&
+			room.e2eKeyId !== undefined &&
+			this.instancesByRoomId[rid].keyID !== room.e2eKeyId
+		) {
+			// KeyID was changed, update instance with new keyID and put room in waiting keys status
+			this.instancesByRoomId[rid].onRoomKeyReset(room.e2eKeyId);
+		}
+
 		return this.instancesByRoomId[rid];
 	}
 
@@ -419,6 +431,7 @@ class E2E extends Emitter {
 		Accounts.storageLocation.removeItem('private_key');
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
+		this.publicKey = undefined;
 		this.started = false;
 		this.keyDistributionInterval && clearInterval(this.keyDistributionInterval);
 		this.keyDistributionInterval = null;
@@ -451,6 +464,7 @@ class E2E extends Emitter {
 
 	async loadKeys({ public_key, private_key }: { public_key: string; private_key: string }): Promise<void> {
 		Accounts.storageLocation.setItem('public_key', public_key);
+		this.publicKey = public_key;
 
 		try {
 			this.privateKey = await importRSAKey(EJSON.parse(private_key), ['decrypt']);
@@ -477,6 +491,7 @@ class E2E extends Emitter {
 		try {
 			const publicKey = await exportJWKKey(key.publicKey);
 
+			this.publicKey = JSON.stringify(publicKey);
 			Accounts.storageLocation.setItem('public_key', JSON.stringify(publicKey));
 		} catch (error) {
 			this.setState(E2EEState.ERROR);
