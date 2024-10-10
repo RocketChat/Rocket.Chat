@@ -118,4 +118,23 @@ export const CallEnded: ComponentStory<typeof VideoConfMessage> = () => (
 	</VideoConfMessage>
 );
 
+export const NoAvatars: ComponentStory<typeof VideoConfMessage> = () => (
+	<VideoConfMessage>
+		<VideoConfMessageRow>
+			<VideoConfMessageContent>
+				<VideoConfMessageIcon variant='outgoing' />
+				<VideoConfMessageText>Call ongoing</VideoConfMessageText>
+			</VideoConfMessageContent>
+			<VideoConfMessageActions>
+				<VideoConfMessageAction aria-label='info' icon='info' />
+			</VideoConfMessageActions>
+		</VideoConfMessageRow>
+		<VideoConfMessageFooter>
+			<VideoConfMessageButton primary>Join</VideoConfMessageButton>
+			<VideoConfMessageUserStack displayAvatars={false} users={Array(3).fill('')} />
+			<VideoConfMessageFooterText>3 joined</VideoConfMessageFooterText>
+		</VideoConfMessageFooter>
+	</VideoConfMessage>
+);
+
 export const Loading: ComponentStory<typeof VideoConfMessage> = () => <VideoConfMessageSkeleton />;
