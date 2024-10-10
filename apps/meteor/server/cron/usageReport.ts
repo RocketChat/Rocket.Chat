@@ -2,7 +2,7 @@ import { cronJobs } from '@rocket.chat/cron';
 import { AirGappedRestriction } from '@rocket.chat/license';
 import type { Logger } from '@rocket.chat/logger';
 
-import { sendUsageReport } from '../../app/statistics/server';
+import { sendUsageReport } from '../../app/statistics/server/functions/sendUsageReport';
 
 export async function usageReportCron(logger: Logger): Promise<void> {
 	const name = 'Generate and save statistics';
