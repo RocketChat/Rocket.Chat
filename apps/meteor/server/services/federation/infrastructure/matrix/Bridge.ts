@@ -50,7 +50,7 @@ export class MatrixBridge implements IFederationBridge {
 				this.bridgeInstance.addAppServicePath({
 					method: 'POST',
 					path: '/_matrix/app/v1/ping',
-					checkToken: true,
+					authenticate: true,
 					handler: (_req, res, _next) => {
 						/*
 						 * https://spec.matrix.org/v1.11/application-service-api/#post_matrixappv1ping
@@ -736,7 +736,7 @@ export class MatrixBridge implements IFederationBridge {
 		await this.bridgeInstance.getIntent(externalUserId).setRoomTopic(externalRoomId, roomTopic);
 	}
 
-	public convertMatrixUrlToHttp(externalUserId: string, matrixUrl: string): string {
+	public convertMatrixUrlToHttp(externalUserId: string, matrixUrl: string): Promise<string> {
 		return this.bridgeInstance.getIntent(externalUserId).matrixClient.mxcToHttp(matrixUrl);
 	}
 

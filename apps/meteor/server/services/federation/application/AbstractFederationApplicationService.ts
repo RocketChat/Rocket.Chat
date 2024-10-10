@@ -54,7 +54,10 @@ export abstract class AbstractFederationApplicationService {
 			return;
 		}
 		if (federatedUser.shouldUpdateFederationAvatar(avatarUrl)) {
-			await this.internalUserAdapter.setAvatar(federatedUser, this.bridge.convertMatrixUrlToHttp(federatedUser.getExternalId(), avatarUrl));
+			await this.internalUserAdapter.setAvatar(
+				federatedUser,
+				await this.bridge.convertMatrixUrlToHttp(federatedUser.getExternalId(), avatarUrl),
+			);
 			await this.internalUserAdapter.updateFederationAvatar(federatedUser.getInternalId(), avatarUrl);
 		}
 	}
