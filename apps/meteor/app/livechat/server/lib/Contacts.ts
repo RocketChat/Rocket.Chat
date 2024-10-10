@@ -320,7 +320,7 @@ export async function unverifyContactChannel(contact: ILivechatContact, channelN
 		verified: false,
 		visitorId,
 	};
-	const updatedChannels = contact.channels?.filter((channel) => channel.name !== channelName) || [];
+	const channelsThatWontBeAffected = contact.channels?.filter((channel) => channel.name !== channelName) || [];
 
 	await LivechatContacts.update(
 		{
@@ -329,7 +329,7 @@ export async function unverifyContactChannel(contact: ILivechatContact, channelN
 		{
 			$set: {
 				channels: [
-					...updatedChannels,
+					...channelsThatWontBeAffected,
 					{
 						...channelToUnverify,
 						verified: false,
