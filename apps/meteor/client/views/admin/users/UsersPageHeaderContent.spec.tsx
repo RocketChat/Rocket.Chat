@@ -3,10 +3,10 @@ import { render, screen } from '@testing-library/react';
 import React from 'react';
 import '@testing-library/jest-dom';
 
-import UserPageHeaderContent from './UserPageHeaderContentWithSeatsCap';
+import UsersPageHeaderContent from './UsersPageHeaderContent';
 
 it('should render "Associate Extension" button when VoIP_TeamCollab_Enabled setting is enabled', async () => {
-	render(<UserPageHeaderContent activeUsers={1} maxActiveUsers={1} isSeatsCapExceeded={false} />, {
+	render(<UsersPageHeaderContent isSeatsCapExceeded={false} seatsCap={{ activeUsers: 1, maxActiveUsers: 1 }} />, {
 		legacyRoot: true,
 		wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', true).build(),
 	});
@@ -15,7 +15,7 @@ it('should render "Associate Extension" button when VoIP_TeamCollab_Enabled sett
 });
 
 it('should not render "Associate Extension" button when VoIP_TeamCollab_Enabled setting is disabled', async () => {
-	render(<UserPageHeaderContent activeUsers={1} maxActiveUsers={1} isSeatsCapExceeded={false} />, {
+	render(<UsersPageHeaderContent isSeatsCapExceeded={false} seatsCap={{ activeUsers: 1, maxActiveUsers: 1 }} />, {
 		legacyRoot: true,
 		wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', false).build(),
 	});
