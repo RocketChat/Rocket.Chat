@@ -14,6 +14,7 @@ const MockVoipClient = class extends Emitter {
 
 	setSessionType(type: VoipSession['type']) {
 		this._sessionType = type;
+		setTimeout(() => this.emit('stateChanged'), 0);
 	}
 
 	getSession = () =>
@@ -50,7 +51,7 @@ const queryClient = new QueryClient({
 	logger: {
 		log: console.log,
 		warn: console.warn,
-		error: () => undefined,
+		error: console.error,
 	},
 });
 
