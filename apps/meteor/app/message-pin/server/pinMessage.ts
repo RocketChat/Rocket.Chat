@@ -79,7 +79,11 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (!(await hasPermissionAsync(userId, 'pin-message', originalMessage.rid))) {
-			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
+			const room=await Rooms.findOneById(originalMessage.rid);
+			if (!room || room.t !== 'd') {
+				throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
+			}
+			
 		}
 
 		const me = await Users.findOneById(userId);
@@ -182,7 +186,11 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (!(await hasPermissionAsync(userId, 'pin-message', originalMessage.rid))) {
-			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
+			const room=await Rooms.findOneById(originalMessage.rid);
+			if (!room || room.t !== 'd') {
+				throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
+			}
+	
 		}
 
 		const me = await Users.findOneById(userId);
