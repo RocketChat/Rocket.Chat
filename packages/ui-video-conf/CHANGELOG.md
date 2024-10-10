@@ -1,5 +1,19 @@
 # @rocket.chat/ui-video-conf
 
+## 11.0.0
+
+### Minor Changes
+
+- ([#32821](https://github.com/RocketChat/Rocket.Chat/pull/32821)) Replaced new `SidebarV2` components under feature preview
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [cd0d50016e]:</summary>
+
+  - @rocket.chat/ui-avatar@7.0.0
+  - @rocket.chat/ui-contexts@11.0.0
+  </details>
+
 ## 11.0.0-rc.6
 
 ### Patch Changes
