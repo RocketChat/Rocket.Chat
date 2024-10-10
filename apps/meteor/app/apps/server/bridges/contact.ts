@@ -10,10 +10,20 @@ export class AppContactBridge extends ContactBridge {
 
 	async getById(id: ILivechatContact['_id'], appId: string): Promise<ILivechatContact> {
 		this.orch.debugLog(`The app ${appId} is fetching a contact`);
-		return await LivechatContacts.findOne({ _id: id }) as ILivechatContact;
+		return (await LivechatContacts.findOne({ _id: id })) as ILivechatContact;
 	}
 
-	verifyContact(verifyContactChannelParams: VerifyContactChannelParams, appId: string): Promise<void> {
+	verifyContact(
+		_verifyContactChannelParams: {
+			contactId: string;
+			field: string;
+			value: string;
+			channelName: string;
+			visitorId: string;
+			roomId: string;
+		},
+		appId: string,
+	): Promise<void> {
 		this.orch.debugLog(`The app ${appId} is fetching a contact`);
 		throw new Error('TODO');
 	}

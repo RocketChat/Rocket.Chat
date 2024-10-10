@@ -4,7 +4,7 @@ import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
 import { BaseBridge } from './BaseBridge';
 
-type VerifyContactChannelParams = {
+export type VerifyContactChannelParams = {
     contactId: string;
     field: string;
     value: string;
