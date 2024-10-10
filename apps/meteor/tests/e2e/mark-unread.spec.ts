@@ -26,7 +26,7 @@ test.describe.serial('mark-unread', () => {
 		test('should not mark empty room as unread', async () => {
 			await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel);
 
-			await expect(poHomeChannel.sidenav.getRoomBadge(targetChannel)).not.toBeVisible();
+			await expect(poHomeChannel.sidenav.getSidebarItemBadge(targetChannel)).not.toBeVisible();
 		});
 
 		test('should mark a populated room as unread', async () => {
@@ -34,7 +34,7 @@ test.describe.serial('mark-unread', () => {
 			await poHomeChannel.content.sendMessage('this is a message for reply');
 			await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel);
 
-			await expect(poHomeChannel.sidenav.getRoomBadge(targetChannel)).toBeVisible();
+			await expect(poHomeChannel.sidenav.getSidebarItemBadge(targetChannel)).toBeVisible();
 		});
 
 		test('should mark a populated room as unread - search', async () => {
@@ -61,11 +61,11 @@ test.describe.serial('mark-unread', () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 
 			// wait for the sidebar item to be read
-			await poHomeChannel.sidenav.getSidebarItemByName(targetChannel, true).waitFor();
+			await poHomeChannel.sidenav.getSidebarItemRead(targetChannel).waitFor();
 			await poHomeChannel.content.openLastMessageMenu();
 			await poHomeChannel.markUnread.click();
 
-			await expect(poHomeChannel.sidenav.getRoomBadge(targetChannel)).toBeVisible();
+			await expect(poHomeChannel.sidenav.getSidebarItemBadge(targetChannel)).toBeVisible();
 		});
 	});
 });

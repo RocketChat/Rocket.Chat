@@ -61,6 +61,6 @@ export class HomeChannel {
 	}
 
 	get markUnread(): Locator {
-		return this.page.locator('role=menuitem[name="Mark Unread"]');
+		return this.page.getByRole('menuitem', { name: 'Mark Unread' });
 	}
 }
