@@ -2,7 +2,7 @@ import { Palette } from '@rocket.chat/fuselage';
 import type { ScrollValues } from 'rc-scrollbars';
 import { Scrollbars } from 'rc-scrollbars';
 import type { MutableRefObject, CSSProperties, ReactNode } from 'react';
-import React, { memo, forwardRef, useCallback, useMemo } from 'react';
+import React, { memo, forwardRef, useCallback, useMemo, useEffect } from 'react';
 
 export type CustomScrollbarsProps = {
 	overflowX?: boolean;
@@ -16,10 +16,22 @@ export type CustomScrollbarsProps = {
 
 const styleDefault: CSSProperties = {
 	flexGrow: 1,
-	overflowY: 'hidden',
+  willChange: 'transform',
+	overflowY: 'hidden'
 };
 
-const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function CustomScrollbars(
+// Styles to hide the default scrollbar
+const hideScrollbarStyle = `
+	[dir="rtl"] {
+		overflow: hidden;
+	}
+
+	[dir="rtl"] ::-webkit-scrollbar {
+		display: none;
+	}
+`;
+
+const CustomScrollbars = forwardRef<HTMLDivElement, CustomScrollbarsProps>(function CustomScrollbars(
 	{ children, style, onScroll, overflowX, renderView, ...props },
 	ref,
 ) {
@@ -32,12 +44,23 @@ const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function
 					ref(scrollbarRef.view ?? null);
 					return;
 				}
-
-				(ref as MutableRefObject<HTMLElement | undefined>).current = scrollbarRef.view;
+				(ref as MutableRefObject<HTMLDivElement | undefined>).current = scrollbarRef.view;
 			}
 		},
 		[ref],
 	);
+
+	// Dynamically using the hide scrollbar style to hide default scrollbar
+
+	useEffect(() => {
+		const styleElement = document.createElement('style');
+		styleElement.innerHTML = hideScrollbarStyle;
+		document.head.appendChild(styleElement);
+
+		return () => {
+			document.head.removeChild(styleElement);
+		};
+	}, []);
 
 	return (
 		<Scrollbars
@@ -48,7 +71,7 @@ const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function
 			style={scrollbarsStyle}
 			onScrollFrame={onScroll}
 			renderView={renderView}
-			renderTrackHorizontal={overflowX ? undefined : (props) => <div {...props} className='track-horizontal' style={{ display: 'none' }} />}
+			renderTrackHorizontal={overflowX ? undefined : (trackProps) => <div {...trackProps} className='track-horizontal' style={{ display: 'none' }} />}
 			renderThumbVertical={({ style, ...props }) => (
 				<div {...props} style={{ ...style, backgroundColor: Palette.stroke['stroke-dark'].toString(), borderRadius: '4px' }} />
 			)}
