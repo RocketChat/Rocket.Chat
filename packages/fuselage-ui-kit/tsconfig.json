@@ -1,8 +1,9 @@
 {
-	"extends": "../../tsconfig.base.client.json",
+  "extends": "../../tsconfig.base.client.json",
   "compilerOptions": {
     "noImplicitReturns": true,
     "noImplicitThis": true,
+    "module": "commonjs"
   },
-	"include": ["src", ".storybook/**/*", "jest.config.ts"]
+  "include": ["src", ".storybook/**/*", "jest.config.ts"]
 }
