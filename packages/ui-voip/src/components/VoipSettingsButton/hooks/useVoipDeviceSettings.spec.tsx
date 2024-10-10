@@ -1,23 +1,12 @@
-import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { DeviceContext, DeviceContextValue } from '@rocket.chat/ui-contexts';
+import { mockAppRoot, MockedDeviceContext } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
 import { useVoipDeviceSettings } from './useVoipDeviceSettings';
 
-let mockDeviceContextValue = {
-	enabled: true,
-	selectedAudioOutputDevice: undefined,
-	selectedAudioInputDevice: undefined,
-	availableAudioOutputDevices: [],
-	availableAudioInputDevices: [],
-	setAudioOutputDevice: () => undefined,
-	setAudioInputDevice: () => undefined,
-} as unknown as DeviceContextValue;
-
 it('should be disabled when there are no devices', () => {
 	const { result } = renderHook(() => useVoipDeviceSettings(), {
 		wrapper: mockAppRoot()
-			.wrap((children) => <DeviceContext.Provider value={mockDeviceContextValue}>{children}</DeviceContext.Provider>)
+			.wrap((children) => <MockedDeviceContext>{children}</MockedDeviceContext>)
 			.build(),
 		legacyRoot: true,
 	});
@@ -27,16 +16,16 @@ it('should be disabled when there are no devices', () => {
 });
 
 it('should be enabled when there are devices', () => {
-	mockDeviceContextValue = {
-		...mockDeviceContextValue,
-
-		availableAudioOutputDevices: [{ label: '' }],
-		availableAudioInputDevices: [{ label: '' }],
-	} as unknown as DeviceContextValue;
-
 	const { result } = renderHook(() => useVoipDeviceSettings(), {
 		wrapper: mockAppRoot()
-			.wrap((children) => <DeviceContext.Provider value={mockDeviceContextValue}>{children}</DeviceContext.Provider>)
+			.wrap((children) => (
+				<MockedDeviceContext
+					availableAudioInputDevices={[{ type: '', id: '', label: '' }]}
+					availableAudioOutputDevices={[{ type: '', id: '', label: '' }]}
+				>
+					{children}
+				</MockedDeviceContext>
+			))
 			.build(),
 		legacyRoot: true,
 	});

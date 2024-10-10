@@ -1,10 +1,12 @@
-import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { mockAppRoot, MockedDeviceContext } from '@rocket.chat/mock-providers';
 import { render, screen, within } from '@testing-library/react';
 
 import { createMockFreeSwitchExtensionDetails, createMockVoipOutgoingSession } from '../../../tests/mocks';
 import VoipOutgoingView from './VoipOutgoingView';
 
-const wrapper = mockAppRoot().withEndpoint('GET', '/v1/voip-freeswitch.extension.getDetails', () => createMockFreeSwitchExtensionDetails());
+const wrapper = mockAppRoot()
+	.wrap((children) => <MockedDeviceContext>{children}</MockedDeviceContext>)
+	.withEndpoint('GET', '/v1/voip-freeswitch.extension.getDetails', () => createMockFreeSwitchExtensionDetails());
 
 const outgoingSession = createMockVoipOutgoingSession();
 
