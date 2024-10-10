@@ -29,7 +29,7 @@ await import('./features/EmailInbox/index');
 await configureLogLevel();
 await registerServices();
 await import('../app/settings/server');
-await configureLoginServices();
 await registerEEBroker();
 await startup();
+await configureLoginServices();
 await startLicense();
