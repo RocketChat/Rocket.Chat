@@ -31,10 +31,11 @@ const defaultProps = {
 const renderOptions = {
 	wrapper: mockAppRoot()
 		.withTranslations('en', 'core', {
-			Hide: 'Hide',
-			Mark_unread: 'Mark Unread',
-			Favorite: 'Favorite',
-			Leave_room: 'Leave',
+			'Hide': 'Hide',
+			'Mark_unread': 'Mark Unread',
+			'Favorite': 'Favorite',
+			'Leave_room': 'Leave',
+			'Mute room': 'Mute room',
 		})
 		.withSetting('Favorite_Rooms', true)
 		.withPermission('leave-c')
@@ -53,15 +54,19 @@ it('should display all the menu options for regular rooms', async () => {
 	expect(await screen.findByRole('option', { name: 'Favorite' })).toBeInTheDocument();
 	expect(await screen.findByRole('option', { name: 'Mark Unread' })).toBeInTheDocument();
 	expect(await screen.findByRole('option', { name: 'Leave' })).toBeInTheDocument();
+	expect(await screen.findByRole('option', { name: 'Mute room' })).toBeInTheDocument();
 });
 
-it('should display only mark unread and favorite for omnichannel rooms', async () => {
+it('should display only mark unread, favorite, and mute for omnichannel rooms', async () => {
 	render(<RoomMenu {...defaultProps} type='l' />, renderOptions);
 
 	const menu = screen.queryByRole('button');
 	await userEvent.click(menu as HTMLElement);
 
-	expect(await screen.findAllByRole('option')).toHaveLength(2);
+	expect(await screen.findAllByRole('option')).toHaveLength(3);
+	expect(screen.getByRole('option', { name: 'Mark Unread' })).toBeInTheDocument();
+	expect(screen.getByRole('option', { name: 'Favorite' })).toBeInTheDocument();
+	expect(screen.getByRole('option', { name: 'Mute room' })).toBeInTheDocument();
 	expect(screen.queryByRole('option', { name: 'Hide' })).not.toBeInTheDocument();
 	expect(screen.queryByRole('option', { name: 'Leave' })).not.toBeInTheDocument();
 });
