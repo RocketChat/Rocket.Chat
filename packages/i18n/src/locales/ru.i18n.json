@@ -4494,8 +4494,6 @@
   "Type_your_password": "Введите пароль",
   "Type_your_username": "Введите имя пользователя",
   "UI_Allow_room_names_with_special_chars": "Разрешить специальные символы в названии комнаты",
-  "UI_Click_Direct_Message": "Нажмите, чтобы создать личное сообщение",
-  "UI_Click_Direct_Message_Description": "Не открывать вкладку профиля, сразу переходить к беседе",
   "UI_DisplayRoles": "Показывать роли пользователей",
   "UI_Group_Channels_By_Type": "Группировать каналы по типу",
   "UI_Merge_Channels_Groups": "Отображать публичные и закрытые каналы единым списком",

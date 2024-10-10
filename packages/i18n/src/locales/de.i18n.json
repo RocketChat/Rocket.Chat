@@ -4845,8 +4845,6 @@
   "Type_your_password": "Geben Sie Ihr Passwort ein",
   "Type_your_username": "Geben Sie Ihren Benutzernamen ein",
   "UI_Allow_room_names_with_special_chars": "Sonderzeichen im Room-Namen erlauben",
-  "UI_Click_Direct_Message": "Anklicken, um eine Direktnachricht zu erstellen",
-  "UI_Click_Direct_Message_Description": "Den Profil-Tab überspringen und direkt zur Konversation gehen",
   "UI_DisplayRoles": "Rollen anzeigen",
   "UI_Group_Channels_By_Type": "Kanäle nach Typ gruppieren",
   "UI_Merge_Channels_Groups": "Private und öffentliche Channels zusammenführen",

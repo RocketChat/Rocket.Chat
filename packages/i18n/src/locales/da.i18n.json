@@ -3694,8 +3694,6 @@
   "Type_your_password": "Indtast dit kodeord",
   "Type_your_username": "Indtast dit brugernavn",
   "UI_Allow_room_names_with_special_chars": "Tillad særlige tegn i rumnavne",
-  "UI_Click_Direct_Message": "Klik for at oprette direkte besked",
-  "UI_Click_Direct_Message_Description": "Spring over åbningsprofil fanen, i stedet gå direkte til samtale",
   "UI_DisplayRoles": "Vis roller",
   "UI_Group_Channels_By_Type": "Gruppekanaler efter type",
   "UI_Merge_Channels_Groups": "Flett private grupper med kanaler",

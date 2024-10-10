@@ -4323,8 +4323,6 @@
   "Type_your_password": "اكتب كلمة المرور الخاصة بك",
   "Type_your_username": "اكتب اسم المستخدم الخاص بك",
   "UI_Allow_room_names_with_special_chars": "السماح بالأحرف الخاصة في أسماء Room",
-  "UI_Click_Direct_Message": "انقر لإنشاء رسالة مباشرة",
-  "UI_Click_Direct_Message_Description": "تخطي فتح علامة تبويب الملف الشخصي، وبدلاً من ذلك الانتقال مباشرة إلى المحادثة",
   "UI_DisplayRoles": "عرض الأدوار",
   "UI_Group_Channels_By_Type": "تجميع القنوات حسب النوع",
   "UI_Merge_Channels_Groups": "دمج المجموعات الخاصة مع Channels",
