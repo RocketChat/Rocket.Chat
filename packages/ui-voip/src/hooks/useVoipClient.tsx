@@ -37,7 +37,7 @@ export const useVoipClient = ({ autoRegister = true }: VoipClientParams): VoipCl
 			const registrationInfo = await getRegistrationInfo({ userId })
 				.then((registration) => {
 					if (!registration) {
-						throw Error();
+						throw Error('error-registration-not-found');
 					}
 
 					return registration;
