@@ -9,4 +9,5 @@ export * from './IImportProgress';
 export * from './IImporterSelection';
 export * from './IImporterSelectionUser';
 export * from './IImporterSelectionChannel';
+export * from './IImporterSelectionMessage';
 export * from './ImportState';

@@ -1,9 +1,9 @@
-import type { IImport, IImporterSelection, Serialized } from '@rocket.chat/core-typings';
+import type { IImport, IImporterSelection, Serialized, IImporterSelectionMessage } from '@rocket.chat/core-typings';
 import { Badge, Box, Button, ButtonGroup, Margins, ProgressBar, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 
 import {
 	ProgressStep,
@@ -17,8 +17,10 @@ import { numberFormat } from '../../../../lib/utils/stringUtils';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import type { ChannelDescriptor } from './ChannelDescriptor';
 import PrepareChannels from './PrepareChannels';
+import PrepareImportFilters from './PrepareImportFilters';
 import PrepareUsers from './PrepareUsers';
 import type { UserDescriptor } from './UserDescriptor';
+import { countMessages } from './countMessages';
 import { useErrorHandler } from './useErrorHandler';
 
 const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U) =>
@@ -27,6 +29,7 @@ const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => ar
 			fn().then((result) => {
 				if (predicate(result)) {
 					resolve(result);
+
 					return;
 				}
 
@@ -45,14 +48,39 @@ function PrepareImportPage() {
 	const [isPreparing, setPreparing] = useSafely(useState(true));
 	const [progressRate, setProgressRate] = useSafely(useState<number | null>(null));
 	const [status, setStatus] = useSafely(useState<string | null>(null));
-	const [messageCount, setMessageCount] = useSafely(useState(0));
 	const [users, setUsers] = useState<UserDescriptor[]>([]);
 	const [channels, setChannels] = useState<ChannelDescriptor[]>([]);
+	const [messages, setMessages] = useState<IImporterSelectionMessage[]>([]);
 	const [isImporting, setImporting] = useSafely(useState(false));
 
-	const usersCount = useMemo(() => users.filter(({ do_import }) => do_import).length, [users]);
-	const channelsCount = useMemo(() => channels.filter(({ do_import }) => do_import).length, [channels]);
+	const [tab, setTab] = useState<'users' | 'channels'>('users');
+	const handleTabClick = useMemo(() => (tab: 'users' | 'channels') => () => setTab(tab), []);
 
+	const [searchFilters, setSearchFilters] = useState('');
+	const prevSearchFilterText = useRef(searchFilters);
+	const searchText = useDebouncedValue(searchFilters, 500);
+
+	useEffect(() => {
+		prevSearchFilterText.current = searchText;
+	}, [searchText]);
+
+	const selectedUsers = useMemo(() => {
+		return users.filter(({ do_import, username }) => {
+			if (tab === 'users' && searchText) return username.includes(searchText);
+			return do_import;
+		});
+	}, [searchText, tab, users]);
+
+	const selectedChannels = useMemo(() => {
+		return channels.filter(({ do_import, name }) => {
+			if (tab === 'channels' && searchText) return name.includes(searchText);
+			return do_import;
+		});
+	}, [channels, searchText, tab]);
+
+	const messagesCount = useMemo(() => {
+		return countMessages(selectedUsers, selectedChannels, messages);
+	}, [selectedUsers, selectedChannels, messages]);
 	const router = useRouter();
 
 	const getImportFileData = useEndpoint('GET', '/v1/getImportFileData');
@@ -86,9 +114,9 @@ function PrepareImportPage() {
 					return;
 				}
 
-				setMessageCount(data.message_count);
 				setUsers(data.users.map((user) => ({ ...user, username: user.username ?? '', do_import: true })));
 				setChannels(data.channels.map((channel) => ({ ...channel, name: channel.name ?? '', do_import: true })));
+				setMessages(data.messages);
 				setPreparing(false);
 				setProgressRate(null);
 			} catch (error) {
@@ -145,7 +173,7 @@ function PrepareImportPage() {
 		};
 
 		loadCurrentOperation();
-	}, [getCurrentImportOperation, getImportFileData, handleError, router, setMessageCount, setPreparing, setProgressRate, setStatus, t]);
+	}, [getCurrentImportOperation, getImportFileData, handleError, router, setPreparing, setProgressRate, setStatus, t]);
 
 	const handleStartButtonClick = async () => {
 		setImporting(true);
@@ -164,14 +192,11 @@ function PrepareImportPage() {
 		}
 	};
 
-	const [tab, setTab] = useState('users');
-	const handleTabClick = useMemo(() => (tab: string) => () => setTab(tab), []);
-
 	const statusDebounced = useDebouncedValue(status, 100);
 
 	const handleMinimumImportData = !!(
-		(!usersCount && !channelsCount && !messageCount) ||
-		(!usersCount && !channelsCount && messageCount !== 0)
+		(!selectedUsers.length && !selectedChannels.length && !messagesCount) ||
+		(!selectedUsers.length && !selectedChannels.length && messagesCount !== 0)
 	);
 
 	return (
@@ -183,6 +208,7 @@ function PrepareImportPage() {
 					</Button>
 				</ButtonGroup>
 			</PageHeader>
+			{!isPreparing && <PrepareImportFilters setFilters={setSearchFilters} />}
 			<PageScrollableContentWithShadow>
 				<Box marginInline='auto' marginBlock='x24' width='full' maxWidth='590px'>
 					<Box is='h2' fontScale='p2m'>
@@ -191,14 +217,14 @@ function PrepareImportPage() {
 					{!isPreparing && (
 						<Tabs flexShrink={0}>
 							<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>
-								{t('Users')} <Badge>{usersCount}</Badge>
+								{t('Users')} <Badge>{selectedUsers.length}</Badge>
 							</Tabs.Item>
 							<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
-								{t('Channels')} <Badge>{channelsCount}</Badge>
+								{t('Channels')} <Badge>{selectedChannels.length}</Badge>
 							</Tabs.Item>
 							<Tabs.Item disabled>
 								{t('Messages')}
-								<Badge>{messageCount}</Badge>
+								<Badge>{messagesCount}</Badge>
 							</Tabs.Item>
 						</Tabs>
 					)}
@@ -217,9 +243,21 @@ function PrepareImportPage() {
 								)}
 							</>
 						)}
-						{!isPreparing && tab === 'users' && <PrepareUsers usersCount={usersCount} users={users} setUsers={setUsers} />}
+						{!isPreparing && tab === 'users' && (
+							<PrepareUsers
+								users={searchText ? selectedUsers : users}
+								usersCount={selectedUsers.length}
+								setUsers={setUsers}
+								indeterminate={selectedUsers.length > 0 && selectedUsers.length !== users.length}
+							/>
+						)}
 						{!isPreparing && tab === 'channels' && (
-							<PrepareChannels channels={channels} channelsCount={channelsCount} setChannels={setChannels} />
+							<PrepareChannels
+								channels={searchText ? selectedChannels : channels}
+								channelsCount={selectedChannels.length}
+								setChannels={setChannels}
+								indeterminate={selectedChannels.length > 0 && selectedChannels.length !== channels.length}
+							/>
 						)}
 					</Margins>
 				</Box>
