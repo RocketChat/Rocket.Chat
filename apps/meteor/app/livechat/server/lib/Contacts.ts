@@ -315,27 +315,14 @@ export async function validateContactManager(contactManagerUserId: string) {
 }
 
 export async function unverifyContactChannel(contact: ILivechatContact, channelName: string, visitorId: string): Promise<void> {
-	const channelToUnverify = contact.channels?.find((channel) => channel.name === channelName) || {
-		name: channelName,
-		verified: false,
-		visitorId,
-	};
-	const channelsThatWontBeAffected = contact.channels?.filter((channel) => channel.name !== channelName) || [];
+	const channelToUnverify = contact.channels?.find((channel) => channel.name === channelName && channel.visitorId === visitorId);
 
-	await LivechatContacts.update(
-		{
-			_id: contact._id,
-		},
-		{
-			$set: {
-				channels: [
-					...channelsThatWontBeAffected,
-					{
-						...channelToUnverify,
-						verified: false,
-					},
-				],
-			},
-		},
-	);
+	if (!channelToUnverify) {
+		throw new Error('error-invalid-channel');
+	}
+
+	channelToUnverify.verified = false;
+	await LivechatContacts.updateContact(contact._id, {
+		channels: contact.channels,
+	});
 }
