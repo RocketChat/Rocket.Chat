@@ -10,7 +10,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isCustomSoundsListProps },
 	{
 		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
 			const { sort, query } = await this.parseJsonQuery();
 
 			const { name } = this.queryParams;
