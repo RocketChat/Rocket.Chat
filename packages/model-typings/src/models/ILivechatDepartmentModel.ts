@@ -1,4 +1,4 @@
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment } from '@rocket.chat/omnichannel-typings';
 import type { FindOptions, FindCursor, Filter, UpdateResult, Document } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';

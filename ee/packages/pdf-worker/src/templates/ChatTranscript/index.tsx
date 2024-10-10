@@ -1,9 +1,10 @@
 import * as path from 'path';
 
 import ReactPDF, { Font, Document, Page, StyleSheet } from '@react-pdf/renderer';
-import type { ILivechatAgent, ILivechatVisitor, IOmnichannelSystemMessage, Serialized } from '@rocket.chat/core-typings';
+import type { Serialized } from '@rocket.chat/core-typings';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import type { Root } from '@rocket.chat/message-parser';
+import type { ILivechatAgent, ILivechatVisitor, IOmnichannelSystemMessage } from '@rocket.chat/omnichannel-typings';
 
 import { Header } from './components/Header';
 import { MessageList } from './components/MessageList';

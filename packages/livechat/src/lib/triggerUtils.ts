@@ -1,4 +1,10 @@
-import type { ILivechatAgent, ILivechatTrigger, ILivechatTriggerAction, ILivechatTriggerType, Serialized } from '@rocket.chat/core-typings';
+import type {
+	ILivechatAgent,
+	ILivechatTrigger,
+	ILivechatTriggerAction,
+	ILivechatTriggerType,
+	Serialized,
+} from '@rocket.chat/omnichannel-typings';
 
 import { Livechat } from '../api';
 import type { Agent } from '../definitions/agents';

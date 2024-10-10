@@ -1,5 +1,3 @@
-import type { ILivechatAgent } from '../ILivechatAgent';
-import type { ILivechatVisitor } from '../ILivechatVisitor';
 import type { IMessage } from '../IMessage';
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 import type { IRoom } from '../IRoom';
@@ -17,8 +15,6 @@ export interface IAuditLog extends IRocketChatRecord {
 		rids?: IRoom['_id'][];
 		room: IRoom['name'];
 		users?: IUser['username'][];
-		visitor?: ILivechatVisitor['_id'];
-		agent?: ILivechatAgent['_id'];
 		filters?: string;
 	};
 }

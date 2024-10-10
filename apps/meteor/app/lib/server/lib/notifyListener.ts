@@ -9,9 +9,6 @@ import type {
 	IIntegration,
 	IPbxEvent,
 	LoginServiceConfiguration as LoginServiceConfigurationData,
-	ILivechatInquiryRecord,
-	ILivechatPriority,
-	ILivechatDepartmentAgents,
 	IEmailInbox,
 	IIntegrationHistory,
 	AtLeast,
@@ -37,6 +34,7 @@ import {
 	Users,
 	Messages,
 } from '@rocket.chat/models';
+import type { ILivechatInquiryRecord, ILivechatPriority, ILivechatDepartmentAgents } from '@rocket.chat/omnichannel-typings';
 import mem from 'mem';
 
 import { subscriptionFields } from '../../../../lib/publishFields';

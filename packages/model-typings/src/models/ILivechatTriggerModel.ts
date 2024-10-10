@@ -1,4 +1,4 @@
-import type { ILivechatTrigger } from '@rocket.chat/core-typings';
+import type { ILivechatTrigger } from '@rocket.chat/omnichannel-typings';
 import type { FindCursor, UpdateResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';

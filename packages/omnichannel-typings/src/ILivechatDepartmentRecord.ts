@@ -1,4 +1,4 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 
 /** @deprecated */
 export interface ILivechatDepartmentRecord extends IRocketChatRecord {

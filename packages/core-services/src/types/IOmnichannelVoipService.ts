@@ -1,14 +1,11 @@
+import type { IRoom, IUser, IVoipExtensionWithAgentInfo, VoipClientEvents } from '@rocket.chat/core-typings';
 import type {
 	IAgentExtensionMap,
-	IRoomCreationResponse,
-	ILivechatVisitor,
-	IRoom,
-	IUser,
-	IVoipExtensionWithAgentInfo,
 	ILivechatAgent,
-	VoipClientEvents,
+	ILivechatVisitor,
+	IRoomCreationResponse,
 	IVoipRoom,
-} from '@rocket.chat/core-typings';
+} from '@rocket.chat/omnichannel-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { FindOptions } from 'mongodb';
 

@@ -1,5 +1,6 @@
-import type { ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatVisitorsModel } from '@rocket.chat/model-typings';
+import type { ILivechatVisitor } from '@rocket.chat/omnichannel-typings';
 import { Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {

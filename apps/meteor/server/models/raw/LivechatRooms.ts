@@ -1,16 +1,14 @@
+import type { RocketChatRecordDeleted, DeepWritable, IMessage } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
+import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import type {
 	IOmnichannelRoom,
-	RocketChatRecordDeleted,
 	IOmnichannelRoomClosingInfo,
-	DeepWritable,
-	IMessage,
 	ILivechatPriority,
 	IOmnichannelServiceLevelAgreements,
 	ReportResult,
 	MACStats,
-} from '@rocket.chat/core-typings';
-import { UserStatus } from '@rocket.chat/core-typings';
-import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+} from '@rocket.chat/omnichannel-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';

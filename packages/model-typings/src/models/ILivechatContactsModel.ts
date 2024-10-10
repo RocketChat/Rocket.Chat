@@ -1,4 +1,4 @@
-import type { ILivechatContact } from '@rocket.chat/core-typings';
+import type { ILivechatContact } from '@rocket.chat/omnichannel-typings';
 import type { FindCursor, FindOptions } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';

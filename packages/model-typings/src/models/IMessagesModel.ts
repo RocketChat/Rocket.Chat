@@ -2,11 +2,11 @@ import type {
 	IMessage,
 	IRoom,
 	IUser,
-	ILivechatDepartment,
 	MessageTypesValues,
 	MessageAttachment,
 	IMessageWithPendingFileImport,
 } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment } from '@rocket.chat/omnichannel-typings';
 import type {
 	AggregationCursor,
 	CountDocumentsOptions,

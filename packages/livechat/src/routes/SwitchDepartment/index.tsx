@@ -1,4 +1,4 @@
-import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, Serialized } from '@rocket.chat/omnichannel-typings';
 import type { FunctionalComponent } from 'preact';
 import { route } from 'preact-router';
 import { useContext } from 'preact/hooks';

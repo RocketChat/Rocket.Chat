@@ -1,4 +1,4 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 
 export enum LivechatPriorityWeight {
 	LOWEST = 5,

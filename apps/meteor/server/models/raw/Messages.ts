@@ -1,5 +1,4 @@
 import type {
-	ILivechatDepartment,
 	IMessage,
 	IRoom,
 	IUser,
@@ -9,6 +8,7 @@ import type {
 	IMessageWithPendingFileImport,
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
+import type { ILivechatDepartment } from '@rocket.chat/omnichannel-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {

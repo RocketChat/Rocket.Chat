@@ -10,21 +10,13 @@ import {
 	Settings as settingsService,
 } from '@rocket.chat/core-services';
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
-import type {
-	IMessage,
-	IUser,
-	IRoom,
-	IUpload,
-	ILivechatVisitor,
-	ILivechatAgent,
-	IOmnichannelRoom,
-	IOmnichannelSystemMessage,
-} from '@rocket.chat/core-typings';
+import type { IMessage, IUser, IRoom, IUpload } from '@rocket.chat/core-typings';
 import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
 import type { Root } from '@rocket.chat/message-parser';
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
+import type { ILivechatVisitor, ILivechatAgent, IOmnichannelRoom, IOmnichannelSystemMessage } from '@rocket.chat/omnichannel-typings';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
 import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
 

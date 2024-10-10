@@ -1,14 +1,5 @@
-import type {
-	IUser,
-	IRole,
-	IRoom,
-	ILivechatAgent,
-	UserStatus,
-	ILoginToken,
-	IPersonalAccessToken,
-	AtLeast,
-	ILivechatAgentStatus,
-} from '@rocket.chat/core-typings';
+import type { IUser, IRole, IRoom, UserStatus, ILoginToken, IPersonalAccessToken, AtLeast } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatAgentStatus } from '@rocket.chat/omnichannel-typings';
 import type {
 	Document,
 	UpdateResult,

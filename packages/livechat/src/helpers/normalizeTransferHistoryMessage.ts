@@ -1,4 +1,4 @@
-import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
+import type { IOmnichannelSystemMessage } from '@rocket.chat/omnichannel-typings';
 import type { TFunction } from 'i18next';
 
 export const normalizeTransferHistoryMessage = (

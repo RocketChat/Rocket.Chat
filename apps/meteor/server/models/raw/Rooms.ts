@@ -1,15 +1,7 @@
-import type {
-	IDirectMessageRoom,
-	IMessage,
-	IOmnichannelGenericRoom,
-	IRoom,
-	IRoomFederated,
-	ITeam,
-	IUser,
-	RocketChatRecordDeleted,
-} from '@rocket.chat/core-typings';
+import type { IDirectMessageRoom, IMessage, IRoom, IRoomFederated, ITeam, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, IRoomsModel, IChannelsWithNumberOfMessagesBetweenDate } from '@rocket.chat/model-typings';
 import { Subscriptions } from '@rocket.chat/models';
+import type { IOmnichannelGenericRoom } from '@rocket.chat/omnichannel-typings';
 import type { Updater } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {

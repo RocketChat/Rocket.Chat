@@ -1,9 +1,9 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import type {
-	IMessage,
 	ILivechatInquiryRecord,
 	LivechatInquiryStatus,
 	OmnichannelSortingMechanismSettingType,
-} from '@rocket.chat/core-typings';
+} from '@rocket.chat/omnichannel-typings';
 import type { FindOptions, DistinctOptions, Document, UpdateResult, DeleteResult, FindCursor, DeleteOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';

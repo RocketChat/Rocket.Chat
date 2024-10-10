@@ -1,4 +1,4 @@
-import type { ILivechatPriority } from '@rocket.chat/core-typings';
+import type { ILivechatPriority } from '@rocket.chat/omnichannel-typings';
 import type { FindCursor, ModifyResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';

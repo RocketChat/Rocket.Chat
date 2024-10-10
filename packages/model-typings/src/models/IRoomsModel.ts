@@ -1,4 +1,5 @@
-import type { IDirectMessageRoom, IMessage, IOmnichannelGenericRoom, IRoom, IRoomFederated, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IDirectMessageRoom, IMessage, IRoom, IRoomFederated, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IOmnichannelGenericRoom } from '@rocket.chat/omnichannel-typings';
 import type { AggregationCursor, DeleteResult, Document, FindCursor, FindOptions, UpdateOptions, UpdateResult } from 'mongodb';
 
 import type { Updater } from '../updater';

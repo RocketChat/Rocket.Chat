@@ -84,39 +84,14 @@ export * from './IReport';
 export * from './ldap';
 // TODO: move to separated package
 
-export * from './IOmnichannelBusinessUnit';
-export * from './IOmnichannelCustomAgent';
-
-export * from './ILivechatTag';
-export * from './IPbxEvent';
-export * from './ILivechatMonitor';
-export * from './ILivechatTagRecord';
-export * from './ILivechatTrigger';
-export * from './ILivechatCustomField';
-export * from './IOmnichannel';
-export * from './ILivechatAgentActivity';
-export * from './ILivechatBusinessHour';
-export * from './ILivechatContact';
-export * from './ILivechatVisitor';
-export * from './ILivechatDepartmentAgents';
-export * from './ILivechatAgent';
-export * from './ILivechatDepartmentRecord';
-export * from './IOmnichannelCannedResponse';
-export * from './ILivechatMonitorRecord';
-export * from './ILivechatDepartment';
-export * from './IOmnichannelAgent';
-export * from './OmichannelRoutingConfig';
 export * from './IVoipExtension';
 export * from './voip';
 export * from './ACDQueues';
 export * from './IVoipConnectorResult';
 export * from './IVoipServerConfig';
 export * from './IVoipServerConnectivityStatus';
-export * from './IOmnichannelVoipServiceResult';
-export * from './IInquiry';
-export * from './ILivechatPriority';
+
 export * from './ILogs';
-export * from './IOmnichannelServiceLevelAgreements';
 
 export * from './IAutoTranslate';
 export * from './IVideoConference';
@@ -127,9 +102,8 @@ export * from './SpotlightUser';
 export * from './ICalendarEvent';
 
 export * from './search';
-export * from './omnichannel';
 export * from './AppsTokens';
-export * from './ILivechatUnitMonitor';
+
 export * from './ICronHistoryItem';
 
 export * from './migrations/IControl';
@@ -139,6 +113,6 @@ export * from './IModerationReport';
 export * from './CustomFieldMetadata';
 
 export * from './RoomRouteData';
-
+export * from './IPbxEvent';
 export * as Cloud from './cloud';
 export * from './themes';

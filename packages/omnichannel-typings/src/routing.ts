@@ -1,4 +1,4 @@
-import type { ILivechatDepartment } from '../ILivechatDepartment';
+import type { ILivechatDepartment } from './ILivechatDepartment';
 
 export interface IRoutingMethodConstructor {
 	new (): IRoutingMethod;

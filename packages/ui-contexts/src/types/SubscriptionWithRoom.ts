@@ -1,4 +1,5 @@
-import type { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom, IRoomWithRetentionPolicy, ISubscription } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom } from '@rocket.chat/omnichannel-typings';
 
 export type SubscriptionWithRoom = ISubscription &
 	Pick<

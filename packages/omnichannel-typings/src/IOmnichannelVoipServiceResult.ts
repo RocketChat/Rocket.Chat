@@ -1,4 +1,4 @@
-import type { IVoipRoom } from './IRoom';
+import type { IVoipRoom } from './Room';
 
 export interface IAgentExtensionMap {
 	_id: string;

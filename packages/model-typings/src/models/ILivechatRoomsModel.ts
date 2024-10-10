@@ -1,11 +1,5 @@
-import type {
-	IMessage,
-	IOmnichannelRoom,
-	IOmnichannelRoomClosingInfo,
-	ISetting,
-	ILivechatVisitor,
-	MACStats,
-} from '@rocket.chat/core-typings';
+import type { IMessage, ISetting } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IOmnichannelRoomClosingInfo, ILivechatVisitor, MACStats } from '@rocket.chat/omnichannel-typings';
 import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult, Filter, UpdateOptions } from 'mongodb';
 
 import type { FindPaginated } from '..';

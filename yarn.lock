@@ -9249,6 +9249,7 @@ __metadata:
     "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/logo": ^0.31.30
     "@rocket.chat/message-parser": "workspace:^"
+    "@rocket.chat/omnichannel-typings": "workspace:^"
     "@rocket.chat/random": "workspace:~"
     "@rocket.chat/sdk": ^1.0.0-alpha.42
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -9476,6 +9477,7 @@ __metadata:
     "@rocket.chat/mp3-encoder": 0.24.0
     "@rocket.chat/network-broker": "workspace:^"
     "@rocket.chat/omnichannel-services": "workspace:^"
+    "@rocket.chat/omnichannel-typings": "workspace:^"
     "@rocket.chat/onboarding-ui": ~0.33.3
     "@rocket.chat/password-policies": "workspace:^"
     "@rocket.chat/patch-injection": "workspace:^"
@@ -9823,6 +9825,7 @@ __metadata:
   resolution: "@rocket.chat/model-typings@workspace:packages/model-typings"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/omnichannel-typings": "workspace:^"
     "@types/node-rsa": ^1.1.4
     eslint: ~8.45.0
     mongodb: ^4.17.2
@@ -9946,6 +9949,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/omnichannel-typings@workspace:^, @rocket.chat/omnichannel-typings@workspace:packages/omnichannel-typings":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/omnichannel-typings@workspace:packages/omnichannel-typings"
+  dependencies:
+    "@rocket.chat/apps-engine": "workspace:^"
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/eslint-config": "workspace:^"
+    eslint: ~8.45.0
+    mongodb: ^4.17.2
+    prettier: ~2.8.8
+    typescript: ~5.5.4
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/onboarding-ui@npm:~0.33.3":
   version: 0.33.3
   resolution: "@rocket.chat/onboarding-ui@npm:0.33.3"
@@ -9996,9 +10013,9 @@ __metadata:
   resolution: "@rocket.chat/pdf-worker@workspace:ee/packages/pdf-worker"
   dependencies:
     "@react-pdf/renderer": ^3.1.14
-    "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/fuselage-tokens": ^0.33.1
     "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/omnichannel-typings": "workspace:^"
     "@storybook/addon-essentials": ~6.5.16
     "@storybook/react": ~6.5.16
     "@testing-library/react": ~16.0.1

@@ -1,4 +1,4 @@
-import type { IUser } from './IUser';
+import type { IUser } from '@rocket.chat/core-typings';
 
 export interface IOmnichannelAgent extends IUser {
 	statusLivechat: OmnichannelAgentStatus;

@@ -1,4 +1,5 @@
-import type { IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom } from '@rocket.chat/omnichannel-typings';
 
 import type { IServiceClass } from './ServiceClass';
 

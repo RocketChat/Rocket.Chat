@@ -99,6 +99,7 @@
 	"dependencies": {
 		"@rocket.chat/gazzodown": "workspace:^",
 		"@rocket.chat/message-parser": "workspace:^",
+		"@rocket.chat/omnichannel-typings": "workspace:^",
 		"@rocket.chat/random": "workspace:~",
 		"@rocket.chat/sdk": "^1.0.0-alpha.42",
 		"@rocket.chat/ui-kit": "workspace:~",

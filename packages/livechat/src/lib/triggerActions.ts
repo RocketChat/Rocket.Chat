@@ -1,4 +1,8 @@
-import type { ILivechatSendMessageAction, ILivechatTriggerCondition, ILivechatUseExternalServiceAction } from '@rocket.chat/core-typings';
+import type {
+	ILivechatSendMessageAction,
+	ILivechatTriggerCondition,
+	ILivechatUseExternalServiceAction,
+} from '@rocket.chat/omnichannel-typings';
 import { route } from 'preact-router';
 
 import store from '../store';

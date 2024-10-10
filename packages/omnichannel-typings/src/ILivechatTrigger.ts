@@ -1,4 +1,4 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 
 export type ILivechatTriggerType = 'time-on-site' | 'page-url' | 'chat-opened-by-visitor' | 'after-guest-registration';
 

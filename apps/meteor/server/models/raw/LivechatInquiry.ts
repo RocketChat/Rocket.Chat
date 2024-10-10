@@ -1,12 +1,12 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import type {
 	ILivechatInquiryRecord,
-	IMessage,
 	RocketChatRecordDeleted,
 	OmnichannelSortingMechanismSettingType,
 	ILivechatPriority,
-} from '@rocket.chat/core-typings';
-import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
+} from '@rocket.chat/omnichannel-typings';
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
+import { LivechatInquiryStatus } from '@rocket.chat/omnichannel-typings';
 import type {
 	Collection,
 	Db,

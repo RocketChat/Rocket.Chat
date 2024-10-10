@@ -1,4 +1,4 @@
-import type { ILivechatAgentActivity, IServiceHistory } from '@rocket.chat/core-typings';
+import type { ILivechatAgentActivity, IServiceHistory } from '@rocket.chat/omnichannel-typings';
 import type { AggregationCursor, FindCursor, Document, ModifyResult, UpdateResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';

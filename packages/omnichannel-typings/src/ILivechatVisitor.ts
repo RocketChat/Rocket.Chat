@@ -1,5 +1,4 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { UserStatus } from './UserStatus';
+import type { IRocketChatRecord, UserStatus } from '@rocket.chat/core-typings';
 
 export interface IVisitorPhone {
 	phoneNumber: string;

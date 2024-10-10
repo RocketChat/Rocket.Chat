@@ -1,7 +1,5 @@
 import type {
 	IQueueSummary,
-	ILivechatAgent,
-	IVoipRoom,
 	IUser,
 	IQueueMembershipDetails,
 	IQueueMembershipSubscription,
@@ -11,6 +9,7 @@ import type {
 	IVoipConnectorResult,
 } from '@rocket.chat/core-typings';
 import { VoipClientEvents } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IVoipRoom } from '@rocket.chat/omnichannel-typings';
 import type { JSONSchemaType } from 'ajv';
 import Ajv from 'ajv';
 

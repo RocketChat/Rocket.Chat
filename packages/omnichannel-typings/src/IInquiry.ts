@@ -1,10 +1,10 @@
+import type { IMessage, IRocketChatRecord } from '@rocket.chat/core-typings';
+
 import type { ILivechatPriority } from './ILivechatPriority';
 import type { ILivechatVisitor } from './ILivechatVisitor';
-import type { IMessage } from './IMessage';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IOmnichannelRoom, OmnichannelSourceType } from './IRoom';
-import type { SelectedAgent } from './omnichannel/routing';
+import type { IOmnichannelRoom, OmnichannelSourceType } from './Room';
+import type { SelectedAgent } from './routing';
 
 export interface IInquiry {
 	_id: string;

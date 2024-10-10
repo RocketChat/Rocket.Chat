@@ -1,4 +1,4 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 
 export interface ILivechatTagRecord extends IRocketChatRecord {
 	_id: string;

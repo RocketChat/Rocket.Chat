@@ -1,3 +1,4 @@
+import type { IMessage, IRoom, ISetting, Serialized } from '@rocket.chat/core-typings';
 import type {
 	IOmnichannelCannedResponse,
 	ILivechatAgent,
@@ -7,14 +8,10 @@ import type {
 	ILivechatTag,
 	ILivechatVisitor,
 	ILivechatVisitorDTO,
-	IMessage,
 	IOmnichannelRoom,
-	IRoom,
-	ISetting,
 	ILivechatAgentActivity,
 	ILivechatCustomField,
 	IOmnichannelSystemMessage,
-	Serialized,
 	ILivechatBusinessHour,
 	ILivechatTrigger,
 	ILivechatInquiryRecord,
@@ -28,8 +25,8 @@ import type {
 	SMSProviderResponse,
 	ILivechatTriggerActionResponse,
 	ILivechatContact,
-} from '@rocket.chat/core-typings';
-import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
+} from '@rocket.chat/omnichannel-typings';
+import { ILivechatAgentStatus } from '@rocket.chat/omnichannel-typings';
 import Ajv from 'ajv';
 import type { WithId } from 'mongodb';
 

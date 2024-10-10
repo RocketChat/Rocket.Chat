@@ -1,4 +1,5 @@
-import type { ILivechatDepartmentAgents, IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import type { ILivechatDepartmentAgents } from '@rocket.chat/omnichannel-typings';
 import type { DeleteResult, FindCursor, FindOptions, Document, UpdateResult, Filter, AggregationCursor } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
