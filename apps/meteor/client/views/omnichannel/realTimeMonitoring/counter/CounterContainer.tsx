@@ -1,7 +1,7 @@
 import { Skeleton } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import CounterItem from './CounterItem';
@@ -23,7 +23,7 @@ type CounterContainerProps = {
 };
 
 const CounterContainer = ({ data, state, initialData, ...props }: CounterContainerProps) => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 
 	const [displayData, setDisplayData] = useState<DataType>(initialData);
 
