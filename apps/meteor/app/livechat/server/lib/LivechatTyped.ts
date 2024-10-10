@@ -73,7 +73,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
-import { createContact, isSingleContactEnabled } from './Contacts';
+import { createContact, createContactFromVisitor, isSingleContactEnabled } from './Contacts';
 import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -463,14 +463,31 @@ class LivechatClass {
 
 		if (isSingleContactEnabled()) {
 			let { contactId } = visitor;
+
 			if (!contactId) {
-				const visitorContact = await LivechatVisitors.findOne<Pick<ILivechatVisitor, 'contactId'>>(visitor._id, {
-					projection: { contactId: 1 },
+				const visitorContact = await LivechatVisitors.findOne<
+					Pick<ILivechatVisitor, 'name' | 'contactManager' | 'livechatData' | 'phone' | 'visitorEmails' | 'username' | 'contactId'>
+				>(visitor._id, {
+					projection: {
+						name: 1,
+						contactManager: 1,
+						livechatData: 1,
+						phone: 1,
+						visitorEmails: 1,
+						username: 1,
+						contactId: 1,
+					},
 				});
+
 				contactId = visitorContact?.contactId;
 			}
 
-			const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'channels'>>(contactId as string, {
+			if (!contactId) {
+				// ensure that old visitors have a contact
+				contactId = await createContactFromVisitor(visitor);
+			}
+
+			const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'channels'>>(contactId, {
 				projection: { _id: 1, channels: 1 },
 			});
 
