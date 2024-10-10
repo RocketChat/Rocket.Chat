@@ -162,6 +162,19 @@ export const notifyOnLoginServiceConfigurationChanged = withDbWatcherCheck(
 	},
 );
 
+export const notifyOnLoginServiceConfigurationChangedById = withDbWatcherCheck(
+	async <T extends ILoginServiceConfiguration>(_id: T['_id'], clientAction: ClientAction = 'updated'): Promise<void> => {
+		const item = await LoginServiceConfiguration.findOneById<Omit<LoginServiceConfigurationData, 'secret'>>(_id, {
+			projection: { secret: 0 },
+		});
+		if (!item) {
+			return;
+		}
+
+		void notifyOnLoginServiceConfigurationChanged(item, clientAction);
+	},
+);
+
 export const notifyOnLoginServiceConfigurationChangedByService = withDbWatcherCheck(
 	async <T extends ILoginServiceConfiguration>(service: T['service'], clientAction: ClientAction = 'updated'): Promise<void> => {
 		const item = await LoginServiceConfiguration.findOneByService<Omit<LoginServiceConfigurationData, 'secret'>>(service, {
