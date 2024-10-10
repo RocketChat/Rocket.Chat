@@ -39,7 +39,8 @@
     "docs": "cross-env NODE_ENV=production storybook build -o ../../static/fuselage-ui-kit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "build-preview": "mkdir -p ../../.preview && cp -r ./dist ../../.preview/fuselage-ui-kit",
+		"build-preview": "NODE_OPTIONS=--openssl-legacy-provider build-storybook",
+		".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./storybook-static ../../.preview/fuselage-ui-kit",
     "bump-next": "bump-next"
   },
   "peerDependencies": {
