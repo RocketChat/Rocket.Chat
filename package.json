@@ -68,6 +68,9 @@
 		"moleculer@^0.14.34": "patch:moleculer@npm%3A0.14.34#./.yarn/patches/moleculer-npm-0.14.34-440e26767d.patch"
 	},
 	"dependencies": {
+		"@opentelemetry/auto-instrumentations-node": "^0.48.0",
+		"@opentelemetry/exporter-trace-otlp-grpc": "^0.52.1",
+		"@opentelemetry/sdk-node": "^0.52.1",
 		"node-gyp": "^9.4.1"
 	}
 }

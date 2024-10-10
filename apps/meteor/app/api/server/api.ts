@@ -3,6 +3,7 @@ import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
+import { trace, context, ROOT_CONTEXT } from '@rocket.chat/tracing';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
@@ -36,6 +37,8 @@ import type {
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
+
+const tracer = trace.getTracer('core');
 
 const logger = new Logger('API');
 
@@ -645,8 +648,23 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 							this.queryFields = options.queryFields;
 							this.parseJsonQuery = api.parseJsonQuery.bind(this as PartialThis);
 
-							result =
-								(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success();
+							const span = tracer.startSpan(`${this.request.method} ${this.request.url}`, {
+								attributes: {
+									url: this.request.url,
+									route: this.request.route,
+									method: this.request.method,
+									userId: this.userId,
+								},
+							});
+
+							result = await context.with(trace.setSpan(ROOT_CONTEXT, span), async () => {
+								return (
+									(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success()
+								);
+							});
+							console.log('api', this.request.route, { result }, span.spanContext().traceId);
+							this.response.setHeader('X-Trace-Id', span.spanContext().traceId);
+							span.end();
 
 							log.http({
 								status: result.statusCode,
