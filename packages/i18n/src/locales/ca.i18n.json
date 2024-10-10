@@ -4241,8 +4241,6 @@
   "Type_your_password": "Escriviu la vostra contrasenya",
   "Type_your_username": "Escriviu el vostre nom d'usuari",
   "UI_Allow_room_names_with_special_chars": "Permetre caràcters especials en noms de sales",
-  "UI_Click_Direct_Message": "Feu clic per crear un missatge directe",
-  "UI_Click_Direct_Message_Description": "Evita obrir la pestanya del perfil, vés directe a la conversa",
   "UI_DisplayRoles": "Mostra rols",
   "UI_Group_Channels_By_Type": "Agrupar canals per tipus",
   "UI_Merge_Channels_Groups": "Uneix grups privats amb Channels",
