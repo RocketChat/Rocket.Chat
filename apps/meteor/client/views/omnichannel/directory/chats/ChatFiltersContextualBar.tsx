@@ -1,6 +1,7 @@
 import { Button, ButtonGroup, Field, FieldLabel, FieldRow, InputBox, Select, TextInput } from '@rocket.chat/fuselage';
 import { useEndpoint, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -24,6 +25,7 @@ type ChatFiltersContextualBarProps = {
 
 const ChatFiltersContextualBar = ({ onClose }: ChatFiltersContextualBarProps) => {
 	const t = useTranslation();
+	const canViewLivechatRooms = usePermission('view-livechat-rooms');
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 
 	const allCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
@@ -33,7 +35,12 @@ const ChatFiltersContextualBar = ({ onClose }: ChatFiltersContextualBarProps) =>
 	const { filtersQuery, setFiltersQuery, resetFiltersQuery } = useChatsFilters();
 	const queryClient = useQueryClient();
 
-	const { handleSubmit, control, reset } = useForm<ChatsFiltersQuery>({
+	const {
+		formState: { isDirty },
+		handleSubmit,
+		control,
+		reset,
+	} = useForm<ChatsFiltersQuery>({
 		values: filtersQuery,
 	});
 
@@ -42,9 +49,10 @@ const ChatFiltersContextualBar = ({ onClose }: ChatFiltersContextualBarProps) =>
 		['closed', t('Closed')],
 		['opened', t('Room_Status_Open')],
 		['onhold', t('On_Hold_Chats')],
+		['queued', t('Queued')],
 	];
 
-	const submit = (data: ChatsFiltersQuery) => {
+	const handleSubmitFilters = (data: ChatsFiltersQuery) => {
 		setFiltersQuery(({ guest }) => ({ ...data, guest }));
 		queryClient.invalidateQueries(['current-chats']);
 	};
@@ -65,25 +73,35 @@ const ChatFiltersContextualBar = ({ onClose }: ChatFiltersContextualBarProps) =>
 				<Field>
 					<FieldLabel>{t('From')}</FieldLabel>
 					<FieldRow>
-						<Controller name='from' control={control} render={({ field }) => <InputBox type='date' placeholder={t('From')} {...field} />} />
+						<Controller
+							name='from'
+							control={control}
+							render={({ field }) => <InputBox type='date' placeholder={t('From')} max={format(new Date(), 'yyyy-MM-dd')} {...field} />}
+						/>
 					</FieldRow>
 				</Field>
 				<Field>
 					<FieldLabel>{t('To')}</FieldLabel>
 					<FieldRow>
-						<Controller name='to' control={control} render={({ field }) => <InputBox type='date' placeholder={t('To')} {...field} />} />
-					</FieldRow>
-				</Field>
-				<Field>
-					<FieldLabel>{t('Served_By')}</FieldLabel>
-					<FieldRow>
 						<Controller
-							name='servedBy'
+							name='to'
 							control={control}
-							render={({ field: { value, onChange } }) => <AutoCompleteAgent haveAll value={value} onChange={onChange} />}
+							render={({ field }) => <InputBox type='date' placeholder={t('To')} max={format(new Date(), 'yyyy-MM-dd')} {...field} />}
 						/>
 					</FieldRow>
 				</Field>
+				{canViewLivechatRooms && (
+					<Field>
+						<FieldLabel>{t('Served_By')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='servedBy'
+								control={control}
+								render={({ field: { value, onChange } }) => <AutoCompleteAgent haveAll value={value} onChange={onChange} />}
+							/>
+						</FieldRow>
+					</Field>
+				)}
 				<Field>
 					<FieldLabel>{t('Status')}</FieldLabel>
 					<Controller
@@ -125,7 +143,11 @@ const ChatFiltersContextualBar = ({ onClose }: ChatFiltersContextualBarProps) =>
 											name={customField._id}
 											control={control}
 											render={({ field }) => (
-												<Select {...field} options={(customField.options || '').split(',').map((item) => [item, item])} />
+												<Select
+													{...field}
+													value={field.value as string}
+													options={(customField.options || '').split(',').map((item) => [item, item])}
+												/>
 											)}
 										/>
 									</FieldRow>
@@ -137,7 +159,11 @@ const ChatFiltersContextualBar = ({ onClose }: ChatFiltersContextualBarProps) =>
 							<Field key={customField._id}>
 								<FieldLabel>{customField.label}</FieldLabel>
 								<FieldRow>
-									<Controller name={customField._id} control={control} render={({ field }) => <TextInput {...field} />} />
+									<Controller
+										name={customField._id}
+										control={control}
+										render={({ field }) => <TextInput {...field} value={field.value as string} />}
+									/>
 								</FieldRow>
 							</Field>
 						);
@@ -145,8 +171,10 @@ const ChatFiltersContextualBar = ({ onClose }: ChatFiltersContextualBarProps) =>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button onClick={handleResetFilters}>{t('Clear_filters')}</Button>
-					<Button onClick={handleSubmit(submit)} primary>
+					<Button disabled={!isDirty} onClick={handleResetFilters}>
+						{t('Clear_filters')}
+					</Button>
+					<Button onClick={handleSubmit(handleSubmitFilters)} primary>
 						{t('Apply')}
 					</Button>
 				</ButtonGroup>
