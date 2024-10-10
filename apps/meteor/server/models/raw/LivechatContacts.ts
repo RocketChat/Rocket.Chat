@@ -1,7 +1,7 @@
 import type { ILivechatContact, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatContactsModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Collection, Db, RootFilterOperators, Filter, FindOptions, FindCursor, IndexDescription } from 'mongodb';
+import type { Collection, Db, RootFilterOperators, Filter, FindOptions, FindCursor, IndexDescription, ModifyResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -31,6 +31,10 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 				unique: false,
 			},
 		];
+	}
+
+	async upsertContact(contactId: string, data: Partial<ILivechatContact>): Promise<ModifyResult<ILivechatContact>> {
+		return this.findOneAndUpdate({ _id: contactId }, { $set: data }, { upsert: true });
 	}
 
 	async updateContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact> {
