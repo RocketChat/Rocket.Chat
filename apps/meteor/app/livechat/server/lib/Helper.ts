@@ -85,7 +85,7 @@ export const createLivechatRoom = async <
 	);
 
 	const extraRoomInfo = await callbacks.run('livechat.beforeRoom', roomInfo, extraData);
-	const { _id, username, token, department: departmentId, status = 'online' } = guest;
+	const { _id, username, token, department: departmentId, status = 'online', contactId } = guest;
 	const newRoomAt = new Date();
 
 	const { activity } = guest;
@@ -109,6 +109,7 @@ export const createLivechatRoom = async <
 			username,
 			token,
 			status,
+			contactId,
 			...(activity?.length && { activity }),
 		},
 		cl: false,

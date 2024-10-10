@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
-import type { ILivechatAgent, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
-import { createAgent } from '../../../data/livechat/rooms';
+import { closeOmnichannelRoom, createAgent, createLivechatRoom, createVisitor, deleteVisitor } from '../../../data/livechat/rooms';
 import { removeAgent } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser, deleteUser } from '../../../data/users.helper';
@@ -597,6 +597,7 @@ describe('LIVECHAT - contacts', () => {
 
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
+			expect(res.body.contact).to.have.property('createdAt');
 			expect(res.body.contact._id).to.be.equal(contactId);
 			expect(res.body.contact.name).to.be.equal(contact.name);
 			expect(res.body.contact.emails).to.be.deep.equal(contact.emails);
@@ -630,6 +631,40 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body).to.have.property('error');
 			expect(res.body.error).to.be.equal("must have required property 'contactId' [invalid-params]");
 			expect(res.body.errorType).to.be.equal('invalid-params');
+		});
+
+		describe('Last Chat', () => {
+			let visitor: ILivechatVisitor;
+			let room: IOmnichannelRoom;
+
+			before(async () => {
+				visitor = await createVisitor();
+				room = await createLivechatRoom(visitor.token);
+			});
+
+			after(async () => {
+				await closeOmnichannelRoom(room._id);
+				await deleteVisitor(visitor._id);
+			});
+
+			it('should return the last chat', async () => {
+				const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: visitor.contactId });
+
+				expect(res.status).to.be.equal(200);
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.contact).to.have.property('lastChat');
+				expect(res.body.contact.lastChat).to.have.property('ts');
+				expect(res.body.contact.lastChat._id).to.be.equal(room._id);
+			});
+
+			it('should not return the last chat if contact never chatted', async () => {
+				const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId });
+
+				expect(res.status).to.be.equal(200);
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.contact).to.have.property('_id', contactId);
+				expect(res.body.contact).to.not.have.property('lastChat');
+			});
 		});
 	});
 
