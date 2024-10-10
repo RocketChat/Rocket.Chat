@@ -54,6 +54,9 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { servedBy: 1 }, sparse: true },
 			{ key: { 'v.token': 1, 'email.thread': 1 }, sparse: true },
 			{ key: { 'v._id': 1 }, sparse: true },
+			{ key: { 't': 1, 'fname': 1, 'servedBy._id': 1, 'onHold': 1 } }, // created with username
+			{ key: { 't': 1, 'ts': -1, 'servedBy._id': 1, 'onHold': 1 } },
+			{ key: { 't': 1, 'closedAt': -1, 'servedBy._id': 1, 'onHold': 1 } },
 			{ key: { t: 1, departmentId: 1, closedAt: 1 }, partialFilterExpression: { closedAt: { $exists: true } } },
 			{ key: { source: 1 }, sparse: true },
 			{ key: { departmentAncestors: 1 }, sparse: true },
@@ -755,7 +758,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const match: Document = {
 			$match: {
 				't': 'l',
-				'servedBy.username': { $exists: true },
+				'servedBy._id': { $exists: true },
 				'open': true,
 				'$or': [
 					{
@@ -789,7 +792,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const match: Document = {
 			$match: {
 				't': 'l',
-				'servedBy.username': { $exists: true },
+				'servedBy._id': { $exists: true },
 				'open': true,
 				'onHold': {
 					$exists: true,
@@ -815,7 +818,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			$match: {
 				't': 'l',
 				'open': { $exists: false },
-				'servedBy.username': { $exists: true },
+				'servedBy._id': { $exists: true },
 				'ts': { $gte: new Date(start) },
 				'closedAt': { $lte: new Date(end) },
 			},
@@ -1072,7 +1075,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				't': 'l',
 				'ts': { $gte: new Date(start), $lte: new Date(end) },
 				'responseBy.lastMessageTs': { $exists: true },
-				'servedBy.ts': { $exists: true },
+				'servedBy._id': { $exists: true },
 			},
 		};
 		const group = {
@@ -1256,9 +1259,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
 			...extraQuery,
-			...(agents && {
-				$or: [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }],
-			}),
+			...(agents && { 'servedBy._id': { $in: agents } }),
 			...(roomName && { fname: new RegExp(escapeRegExp(roomName), 'i') }),
 			...(departmentId && departmentId !== 'undefined' && { departmentId }),
 			...(open !== undefined && { open: { $exists: open }, onHold: { $ne: true } }),

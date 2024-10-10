@@ -137,7 +137,7 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 		const query: Filter<IVoipRoom> = {
 			t: 'v',
 			...(visitorId && visitorId !== 'undefined' && { 'v._id': visitorId }),
-			...(agents && { $or: [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }] }),
+			...(agents && { 'servedBy._id': { $in: agents } }),
 		};
 
 		if (open !== undefined) {
