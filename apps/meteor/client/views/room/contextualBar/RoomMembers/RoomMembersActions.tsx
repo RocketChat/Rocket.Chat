@@ -1,9 +1,9 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 type RoomMembersActionsProps = {

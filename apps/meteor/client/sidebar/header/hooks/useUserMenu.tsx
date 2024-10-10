@@ -1,9 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useLogout, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 import UserMenuHeader from '../UserMenuHeader';
 import { useAccountItems } from './useAccountItems';
 import { useStatusItems } from './useStatusItems';

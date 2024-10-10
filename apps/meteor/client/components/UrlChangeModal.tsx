@@ -23,7 +23,14 @@ const UrlChangeModal = ({ onConfirm, siteUrl, currentUrl, onClose }: UrlChangeMo
 					__html: t('The_setting_s_is_configured_to_s_and_you_are_accessing_from_s', t('Site_Url'), siteUrl, currentUrl),
 				}}
 			/>
-			<p dangerouslySetInnerHTML={{ __html: t('Do_you_want_to_change_to_s_question', currentUrl) }} />
+			<p
+				dangerouslySetInnerHTML={{
+					__html: t('Do_you_want_to_change_to_s_question', {
+						postProcess: 'sprintf',
+						sprintf: [currentUrl],
+					}),
+				}}
+			/>
 		</GenericModal>
 	);
 };

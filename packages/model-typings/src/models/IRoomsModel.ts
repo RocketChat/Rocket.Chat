@@ -112,8 +112,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findByBroadcast(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
-	findByActiveLivestream(options?: FindOptions<IRoom>): FindCursor<IRoom>;
-
 	setAsFederated(roomId: IRoom['_id']): Promise<UpdateResult>;
 
 	setRoomTypeById(roomId: IRoom['_id'], roomType: IRoom['t']): Promise<UpdateResult>;
@@ -176,7 +174,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	setLastMessagePinned(roomId: string, pinnedBy: unknown, pinned?: boolean, pinnedAt?: Date): Promise<UpdateResult>;
 	setLastMessageAsRead(roomId: string): Promise<UpdateResult>;
 	setDescriptionById(roomId: string, description: string): Promise<UpdateResult>;
-	setStreamingOptionsById(roomId: string, streamingOptions: IRoom['streamingOptions']): Promise<UpdateResult>;
 	setReadOnlyById(roomId: string, readOnly: NonNullable<IRoom['ro']>): Promise<UpdateResult>;
 	setDmReadOnlyByUserId(
 		roomId: string,
@@ -285,4 +282,12 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	getSubscribedRoomIdsWithoutE2EKeys(uid: IUser['_id']): Promise<IRoom['_id'][]>;
 	removeUsersFromE2EEQueueByRoomId(roomId: IRoom['_id'], uids: IUser['_id'][]): Promise<Document | UpdateResult>;
 	removeUserFromE2EEQueue(uid: IUser['_id']): Promise<Document | UpdateResult>;
+	findChildrenOfTeam(
+		teamId: string,
+		teamRoomId: string,
+		userId: string,
+		filter?: string,
+		type?: 'channels' | 'discussions',
+		options?: FindOptions<IRoom>,
+	): AggregationCursor<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }>;
 }

@@ -1,11 +1,11 @@
 /* eslint-disable react/display-name, react/no-multi-comp */
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { ButtonGroup, IconButton, Skeleton } from '@rocket.chat/fuselage';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
-import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
 import { UserInfoAction } from '../../../../components/UserInfo';
 import { useMemberExists } from '../../../hooks/useMemberExists';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';

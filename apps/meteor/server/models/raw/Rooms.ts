@@ -642,15 +642,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	findByActiveLivestream(options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		return this.find(
-			{
-				'streamingOptions.type': 'livestream',
-			},
-			options,
-		);
-	}
-
 	setAsFederated(roomId: IRoom['_id']): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { federated: true } });
 	}
@@ -1032,15 +1023,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 		return this.updateOne(query, update);
-	}
-
-	setStreamingOptionsById(_id: IRoom['_id'], streamingOptions: IRoom['streamingOptions']): Promise<UpdateResult> {
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				streamingOptions,
-			},
-		};
-		return this.updateOne({ _id }, update);
 	}
 
 	setReadOnlyById(_id: IRoom['_id'], readOnly: NonNullable<IRoom['ro']>): Promise<UpdateResult> {
@@ -2080,5 +2062,86 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		};
 
 		return this.updateMany(query, update);
+	}
+
+	findChildrenOfTeam(
+		teamId: string,
+		teamRoomId: string,
+		userId: string,
+		filter?: string,
+		type?: 'channels' | 'discussions',
+		options?: FindOptions<IRoom>,
+	): AggregationCursor<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }> {
+		const nameFilter = filter ? new RegExp(escapeRegExp(filter), 'i') : undefined;
+		return this.col.aggregate<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }>([
+			{
+				$match: {
+					$and: [
+						{
+							$or: [
+								...(!type || type === 'channels' ? [{ teamId }] : []),
+								...(!type || type === 'discussions' ? [{ prid: teamRoomId }] : []),
+							],
+						},
+						...(nameFilter ? [{ $or: [{ fname: nameFilter }, { name: nameFilter }] }] : []),
+					],
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_subscription',
+					let: {
+						roomId: '$_id',
+					},
+					pipeline: [
+						{
+							$match: {
+								$and: [
+									{
+										$expr: {
+											$eq: ['$rid', '$$roomId'],
+										},
+									},
+									{
+										$expr: {
+											$eq: ['$u._id', userId],
+										},
+									},
+									{
+										$expr: {
+											$ne: ['$t', 'c'],
+										},
+									},
+								],
+							},
+						},
+						{
+							$project: { _id: 1 },
+						},
+					],
+					as: 'subscription',
+				},
+			},
+			{
+				$match: {
+					$or: [
+						{ t: 'c' },
+						{
+							$expr: {
+								$ne: [{ $size: '$subscription' }, 0],
+							},
+						},
+					],
+				},
+			},
+			{ $project: { subscription: 0 } },
+			{ $sort: options?.sort || { ts: 1 } },
+			{
+				$facet: {
+					totalCount: [{ $count: 'count' }],
+					paginatedResults: [{ $skip: options?.skip || 0 }, { $limit: options?.limit || 50 }],
+				},
+			},
+		]);
 	}
 }

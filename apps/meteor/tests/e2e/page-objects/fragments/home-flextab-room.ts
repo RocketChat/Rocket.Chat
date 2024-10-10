@@ -91,6 +91,10 @@ export class HomeFlextabRoom {
 		return this.page.getByRole('dialog').getByRole('alert', { name: 'Retention policy warning callout' });
 	}
 
+	get advancedSettingsAccordion(): Locator {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Advanced settings' });
+	}
+
 	get pruneAccordion(): Locator {
 		return this.page.getByRole('dialog').getByRole('button', { name: 'Prune', exact: true });
 	}

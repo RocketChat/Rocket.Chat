@@ -1,11 +1,10 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { GenericMenu, useHandleMenuAction } from '@rocket.chat/ui-client';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { memo, useState } from 'react';
 
-import GenericMenu from '../../../components/GenericMenu/GenericMenu';
-import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
-import { useHandleMenuAction } from '../../../components/GenericMenu/hooks/useHandleMenuAction';
 import UserMenuButton from './UserMenuButton';
 import { useUserMenu } from './hooks/useUserMenu';
 
