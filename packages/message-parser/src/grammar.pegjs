@@ -33,6 +33,7 @@
     tasks,
     unorderedList,
     timestamp,
+    generateEmoji,
   } = require('./utils');
 
 let skipBold = false;
@@ -99,19 +100,33 @@ CodeChunk = text:$(!EndOfLine !"```" .)+ { return plain(text); }
 
 /**
  *
- * Heading: h1,  h2, h3, h4
+ * Heading: h1, h2, h3, h4
  * e.g:
  * # Heading 1
  * ## Heading 2
  * ### Heading 3
  * #### Heading 4
  *
-*/
-Heading = count:HeadingStart [ \t]+ text:HeadingChunk { return heading([text], count); }
+ */
+Heading = headingLevel:HeadingStart [ \t]+ text:HeadingChunk
+  {
+    // Evaluate emoji identifiers and replace them
+    const evaluatedText = text.replace(/:(\w+):/g, (match, emojiName) => {
+        const emoji = generateEmoji(emojiName);
+        return emoji.unicode || emoji.value?.value || match;
+    });
 
-HeadingStart = value:"#" |1..4| { return value.length; }
+    return plain(evaluatedText);
+  }
 
-HeadingChunk = text:$(!EndOfLine .)+ { return plain(text); }
+HeadingChunk
+  = $(EmojiIdentifier / (!EndOfLine .)+)
+
+EmojiIdentifier
+  = ":" [a-zA-Z0-9]+ ":"
+
+HeadingStart
+  = ("#" { return 1; } / "##" { return 2; } / "###" { return 3; } / "####" { return 4; })
 
 /**
  *
