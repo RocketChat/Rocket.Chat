@@ -1,8 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useLayout, useSetting, useCurrentModal, useRoute, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
+import type { IRouterPaths } from '@rocket.chat/ui-contexts';
+import { useLayout, useSetting, useCurrentModal, useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useRef } from 'react';
 
+import NavBar from '../../../navbar';
 import Sidebar from '../../../sidebar';
 import AccessibilityShortcut from './AccessibilityShortcut';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
@@ -12,7 +14,7 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 
 	const modal = useCurrentModal();
 	const currentRoutePath = useCurrentRoutePath();
-	const channelRoute = useRoute('channel');
+	const router = useRouter();
 	const removeSidenav = embeddedLayout && !currentRoutePath?.startsWith('/admin');
 	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Store_Users');
 
@@ -36,26 +38,29 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 		}
 		redirected.current = true;
 
-		channelRoute.push({ name: firstChannelAfterLogin });
-	}, [channelRoute, currentRoutePath, firstChannelAfterLogin]);
+		router.navigate({ name: `/channel/${firstChannelAfterLogin}` as keyof IRouterPaths });
+	}, [router, currentRoutePath, firstChannelAfterLogin]);
 
 	return (
-		<Box
-			bg='surface-light'
-			id='rocket-chat'
-			className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
-			aria-hidden={Boolean(modal)}
-		>
+		<>
 			<AccessibilityShortcut />
-			<MainLayoutStyleTags />
-			{!removeSidenav && <Sidebar />}
-			<main
-				id='main-content'
-				className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}
+			<NavBar />
+			<Box
+				bg='surface-light'
+				id='rocket-chat'
+				className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
+				aria-hidden={Boolean(modal)}
 			>
-				{children}
-			</main>
-		</Box>
+				<MainLayoutStyleTags />
+				{!removeSidenav && <Sidebar />}
+				<main
+					id='main-content'
+					className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}
+				>
+					{children}
+				</main>
+			</Box>
+		</>
 	);
 };
 

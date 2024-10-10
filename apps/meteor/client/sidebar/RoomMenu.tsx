@@ -1,6 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { Option, Menu } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey, Fields } from '@rocket.chat/ui-contexts';
 import {
 	useRouter,
@@ -76,7 +76,7 @@ const RoomMenu = ({
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
-	const closeModal = useMutableCallback(() => setModal());
+	const closeModal = useEffectEvent(() => setModal());
 
 	const router = useRouter();
 
@@ -113,7 +113,7 @@ const RoomMenu = ({
 		return !((cl != null && !cl) || ['d', 'l'].includes(type));
 	})();
 
-	const handleLeave = useMutableCallback(() => {
+	const handleLeave = useEffectEvent(() => {
 		const leave = async (): Promise<void> => {
 			try {
 				await leaveRoom({ roomId: rid });
@@ -140,7 +140,7 @@ const RoomMenu = ({
 		);
 	});
 
-	const handleHide = useMutableCallback(async () => {
+	const handleHide = useEffectEvent(async () => {
 		const hide = async (): Promise<void> => {
 			try {
 				await hideRoom({ roomId: rid });
@@ -174,7 +174,7 @@ const RoomMenu = ({
 		);
 	});
 
-	const handleToggleRead = useMutableCallback(async () => {
+	const handleToggleRead = useEffectEvent(async () => {
 		try {
 			queryClient.invalidateQueries(['sidebar/search/spotlight']);
 
@@ -197,7 +197,7 @@ const RoomMenu = ({
 		}
 	});
 
-	const handleToggleFavorite = useMutableCallback(async () => {
+	const handleToggleFavorite = useEffectEvent(async () => {
 		try {
 			await toggleFavorite({ roomId: rid, favorite: !isFavorite });
 		} catch (error) {
@@ -208,14 +208,10 @@ const RoomMenu = ({
 	const menuOptions = useMemo(
 		() => ({
 			...(!hideDefaultOptions && {
-				...(isOmnichannelRoom
-					? {}
-					: {
-							hideRoom: {
-								label: { label: t('Hide'), icon: 'eye-off' },
-								action: handleHide,
-							},
-					  }),
+				hideRoom: {
+					label: { label: t('Hide'), icon: 'eye-off' },
+					action: handleHide,
+				},
 				toggleRead: {
 					label: { label: isUnread ? t('Mark_read') : t('Mark_unread'), icon: 'flag' },
 					action: handleToggleRead,

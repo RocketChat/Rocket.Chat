@@ -5,7 +5,9 @@ import React from 'react';
 
 import { HeaderToolbarAction } from '../../../../components/Header';
 
-export const BackButton = ({ routeName }: { routeName?: string }): ReactElement => {
+type BackButtonProps = { routeName?: string };
+
+const BackButton = ({ routeName }: BackButtonProps): ReactElement => {
 	const router = useRouter();
 	const t = useTranslation();
 
@@ -29,3 +31,5 @@ export const BackButton = ({ routeName }: { routeName?: string }): ReactElement 
 
 	return <HeaderToolbarAction title={t('Back')} icon='back' onClick={back} />;
 };
+
+export default BackButton;

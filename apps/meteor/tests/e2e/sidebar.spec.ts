@@ -16,9 +16,16 @@ test.describe.serial('sidebar', () => {
 	test('should navigate on sidebar toolbar using arrow keys', async ({ page }) => {
 		await poHomeDiscussion.sidenav.userProfileMenu.focus();
 		await page.keyboard.press('Tab');
-		await page.keyboard.press('ArrowRight');
+		await page.keyboard.press('ArrowDown');
+		await expect(poHomeDiscussion.sidenav.sidebarSearchSection.getByRole('searchbox', { name: 'Search' })).toBeFocused();
+	});
 
-		await expect(poHomeDiscussion.sidenav.sidebarToolbar.getByRole('button', { name: 'Search' })).toBeFocused();
+	test('should navigate through search results using keyboard', async ({ page }) => {
+		await poHomeDiscussion.sidenav.typeSearch('a');
+		await page.keyboard.press('Tab');
+		await expect(poHomeDiscussion.sidenav.sidebarChannelsList.getByRole('link').first()).toBeFocused();
+		await page.keyboard.press('ArrowDown');
+		await expect(poHomeDiscussion.sidenav.sidebarChannelsList.getByRole('link').first()).not.toBeFocused();
 	});
 
 	test('should navigate on sidebar items using arrow keys and restore focus', async ({ page }) => {

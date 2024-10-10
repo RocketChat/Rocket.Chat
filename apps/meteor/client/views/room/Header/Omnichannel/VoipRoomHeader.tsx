@@ -8,7 +8,7 @@ import SidebarToggler from '../../../../components/SidebarToggler';
 import { parseOutboundPhoneNumber } from '../../../../lib/voip/parseOutboundPhoneNumber';
 import type { RoomHeaderProps } from '../RoomHeader';
 import RoomHeader from '../RoomHeader';
-import { BackButton } from './BackButton';
+import BackButton from './BackButton';
 
 type VoipRoomHeaderProps = {
 	room: IVoipRoom;

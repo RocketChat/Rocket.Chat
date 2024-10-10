@@ -6,7 +6,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import CreateChannelWithData from '../../../../sidebar/header/CreateChannel';
+import CreateChannelModal from '../../../../sidebar/header/CreateChannelModal';
 import { useRoom } from '../../../room/contexts/RoomContext';
 import { useRoomToolbox } from '../../../room/contexts/RoomToolboxContext';
 import AddExistingModal from './AddExistingModal';
@@ -44,7 +44,7 @@ const TeamsChannelsWithData = () => {
 	});
 
 	const handleCreateNew = useEffectEvent(() => {
-		setModal(<CreateChannelWithData teamId={teamId} onClose={() => setModal(null)} reload={reload} />);
+		setModal(<CreateChannelModal teamId={teamId} onClose={() => setModal(null)} reload={reload} />);
 	});
 
 	const goToRoom = useEffectEvent((room: IRoom) => {

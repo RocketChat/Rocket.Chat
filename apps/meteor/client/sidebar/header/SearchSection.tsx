@@ -106,6 +106,7 @@ const SearchSection = () => {
 					role='searchbox'
 					small
 					addon={<Icon name={isDirty ? 'cross' : 'magnifier'} size='x20' onClick={handleEscSearch} />}
+					aria-label={placeholder}
 				/>
 
 				{user && !isDirty && (

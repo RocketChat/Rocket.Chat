@@ -5,8 +5,8 @@ import React, { useMemo } from 'react';
 
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { getBadgeTitle, getMessage } from '../../../../sidebarv2/RoomList/SidebarItemTemplateWithData';
-import { useAvatarTemplate } from '../../../../sidebarv2/hooks/useAvatarTemplate';
+import { getBadgeTitle, getMessage } from '../../../../sidebar/RoomList/SidebarItemTemplateWithData';
+import { useAvatarTemplate } from '../../../../sidebar/hooks/useAvatarTemplate';
 
 export const useItemData = (
 	room: ISubscription & IRoom,
