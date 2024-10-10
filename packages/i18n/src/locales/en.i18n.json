@@ -5561,8 +5561,6 @@
   "Type_your_password": "Type your password",
   "Type_your_username": "Type your username",
   "UI_Allow_room_names_with_special_chars": "Allow Special Characters in Room Names",
-  "UI_Click_Direct_Message": "Click to Create Direct Message",
-  "UI_Click_Direct_Message_Description": "Skip opening profile tab, instead go straight to conversation",
   "UI_DisplayRoles": "Display Roles",
   "UI_Group_Channels_By_Type": "Group channels by type",
   "UI_Merge_Channels_Groups": "Merge Private Groups with Channels",
