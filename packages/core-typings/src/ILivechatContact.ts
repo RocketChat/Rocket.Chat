@@ -1,3 +1,4 @@
+import type { IVisitorEmail, IVisitorPhone } from './ILivechatVisitor';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 
 export interface ILivechatContactChannel {
@@ -14,8 +15,8 @@ export interface ILivechatContactConflictingField {
 
 export interface ILivechatContact extends IRocketChatRecord {
 	name: string;
-	phones?: string[];
-	emails?: string[];
+	phones?: IVisitorPhone[];
+	emails?: IVisitorEmail[];
 	contactManager?: string;
 	unknown?: boolean;
 	hasConflict?: boolean;
