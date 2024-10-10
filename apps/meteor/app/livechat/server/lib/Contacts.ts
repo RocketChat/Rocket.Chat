@@ -183,6 +183,34 @@ export function isSingleContactEnabled(): boolean {
 	return process.env.TEST_MODE?.toUpperCase() === 'TRUE';
 }
 
+export async function createContactFromVisitor(visitor: ILivechatVisitor): Promise<string> {
+	if (visitor.contactId) {
+		throw new Error('error-contact-already-exists');
+	}
+
+	const contactData: CreateContactParams = {
+		name: visitor.name || visitor.username,
+		emails: visitor.visitorEmails?.map(({ address }) => address),
+		phones: visitor.phone?.map(({ phoneNumber }) => phoneNumber),
+		unknown: true,
+		channels: [],
+		customFields: visitor.livechatData,
+	};
+
+	if (visitor.contactManager) {
+		const contactManagerId = await Users.findOneByUsername<Pick<IUser, '_id'>>(visitor.contactManager.username, { projection: { _id: 1 } });
+		if (contactManagerId) {
+			contactData.contactManager = contactManagerId._id;
+		}
+	}
+
+	const { insertedId: contactId } = await LivechatContacts.insertOne(contactData);
+
+	await LivechatVisitors.updateOne({ _id: visitor._id }, { $set: { contactId } });
+
+	return contactId;
+}
+
 export async function createContact(params: CreateContactParams): Promise<string> {
 	const { name, emails, phones, customFields: receivedCustomFields = {}, contactManager, channels, unknown } = params;
 

@@ -118,6 +118,7 @@ export class AppLivechatBridge extends LivechatBridge {
 							sidebarIcon: source.sidebarIcon,
 							defaultIcon: source.defaultIcon,
 							label: source.label,
+							destination: source.destination,
 						}),
 				},
 			},
