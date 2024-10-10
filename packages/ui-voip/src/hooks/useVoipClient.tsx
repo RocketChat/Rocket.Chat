@@ -1,4 +1,4 @@
-import { useUser, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useUser, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
@@ -31,29 +31,25 @@ export const useVoipClient = ({ autoRegister = true }: VoipClientParams): VoipCl
 			}
 
 			if (!userId) {
-				throw Error('User_not_found');
+				throw Error('error-user-not-found');
 			}
 
 			const registrationInfo = await getRegistrationInfo({ userId })
 				.then((registration) => {
 					if (!registration) {
-						throw Error();
+						throw Error('error-registration-not-found');
 					}
 
 					return registration;
 				})
-				.catch(() => {
-					throw Error('Registration_information_not_found');
+				.catch((e) => {
+					throw Error(e.error || 'error-registration-not-found');
 				});
 
 			const {
 				extension: { extension },
 				credentials: { websocketPath, password },
 			} = registrationInfo;
-
-			if (!extension) {
-				throw Error('User_extension_not_found');
-			}
 
 			const config = {
 				iceServers,
