@@ -35,7 +35,6 @@ import './methods/saveDepartmentAgents';
 import './methods/saveTrigger';
 import './methods/sendMessageLivechat';
 import './methods/sendFileLivechatMessage';
-import './methods/setDepartmentForVisitor';
 import './methods/transfer';
 import './methods/setUpConnection';
 import './methods/takeInquiry';
