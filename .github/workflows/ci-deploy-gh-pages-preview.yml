@@ -13,7 +13,7 @@ jobs:
   deploy-preview:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: rharkor/caching-for-turbo@v1.5
         if: github.event.action != 'closed'
