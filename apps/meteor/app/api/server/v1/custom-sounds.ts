@@ -11,9 +11,15 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await this.parseJsonQuery();
+			const { sort, query } = await this.parseJsonQuery();
+
 			const { name } = this.queryParams;
-			const filter = name ? { name: { $regex: escapeRegExp(name), $options: 'i' } } : {};
+
+			const filter = {
+				...query,
+				...(name ? { name: { $regex: escapeRegExp(name as string), $options: 'i' } } : {}),
+			};
+
 			const { cursor, totalCount } = CustomSounds.findPaginated(filter, {
 				sort: sort || { name: 1 },
 				skip: offset,
