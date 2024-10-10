@@ -6,7 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const useVoipItems = (): GenericMenuItemProps[] => {
+export const useVoipItemsSection = (): { items: GenericMenuItemProps[] } | undefined => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -45,23 +45,25 @@ const useVoipItems = (): GenericMenuItemProps[] => {
 
 	return useMemo(() => {
 		if (!isEnabled) {
-			return [];
+			return;
 		}
 
-		return [
-			{
-				id: 'toggle-voip',
-				icon: isRegistered ? 'phone-disabled' : 'phone',
-				disabled: !isReady || toggleVoip.isLoading,
-				onClick: () => toggleVoip.mutate(),
-				content: (
-					<Box is='span' title={tooltip}>
-						{isRegistered ? t('Disable_voice_calling') : t('Enable_voice_calling')}
-					</Box>
-				),
-			},
-		];
+		return {
+			items: [
+				{
+					id: 'toggle-voip',
+					icon: isRegistered ? 'phone-disabled' : 'phone',
+					disabled: !isReady || toggleVoip.isLoading,
+					onClick: () => toggleVoip.mutate(),
+					content: (
+						<Box is='span' title={tooltip}>
+							{isRegistered ? t('Disable_voice_calling') : t('Enable_voice_calling')}
+						</Box>
+					),
+				},
+			],
+		};
 	}, [isEnabled, isRegistered, isReady, tooltip, t, toggleVoip]);
 };
 
-export default useVoipItems;
+export default useVoipItemsSection;
