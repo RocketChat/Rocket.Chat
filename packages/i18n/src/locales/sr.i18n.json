@@ -2170,7 +2170,7 @@
   "Thank_you_for_your_feedback": "Хвала на повратним информацијама",
   "The_application_name_is_required": "Име апликације је потребно",
   "The_channel_name_is_required": "Име канала је потребно",
-  "The_emails_are_being_sent": "Е-поруке се шаљу.",   
+  "The_emails_are_being_sent": "Е-поруке се шаљу.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Ресизе слика неће радити, јер не можемо открити ИмагеМагицк или грапхицсмагицк инсталиран на вашем серверу.",
   "The_redirectUri_is_required": "РедирецтУри је потребна",
   "The_server_will_restart_in_s_seconds": "Сервер ће се поново покренути у %s секунди",

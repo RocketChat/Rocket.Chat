@@ -2360,7 +2360,7 @@
   "Thank_you_for_your_feedback": "Spas ji bo we Deng xwe",
   "The_application_name_is_required": "Navê sepanê pêwîst e",
   "The_channel_name_is_required": "The name kanala pêwîst e",
-  "The_emails_are_being_sent": "Mailan têne şandin.",   
+  "The_emails_are_being_sent": "Mailan têne şandin.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Mezinahiyê image xebata wê ne ji ber ku em nikarin bi durustî .Pêşîn an GraphicsMagick li ser server te sazkirin.",
   "The_redirectUri_is_required": "The redirectUri pêwîst e",
   "The_server_will_restart_in_s_seconds": "ڕاژەکارەکە هەڵ ئەبێتەوە لە %s چرکەدا",

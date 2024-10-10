@@ -4070,7 +4070,7 @@
   "The_application_name_is_required": "アプリケーション名は必須です",
   "The_channel_name_is_required": "チャネル名は必須です",
   "The_emails_are_being_sent": "メールを送信中です。",
-  "The_empty_room__roomName__will_be_removed_automatically": "空のルーム<span style=\"font-weight: bold;\">{{roomName}}</span>は自動的に削除されます。",   
+  "The_empty_room__roomName__will_be_removed_automatically": "空のルーム<span style=\"font-weight: bold;\">{{roomName}}</span>は自動的に削除されます。",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "サーバーにインストールされたImageMagickまたはGraphicsMagickを検出できないため、画像のサイズ変更が機能しません。",
   "The_message_is_a_discussion_you_will_not_be_able_to_recover": "このメッセージはメッセージを復元できないディスカッションです！",
   "The_mobile_notifications_were_disabled_to_all_users_go_to_Admin_Push_to_enable_the_Push_Gateway_again": "すべてのユーザーに対してモバイル通知が無効になりました。［管理］>［プッシュ］に移動して、プッシュゲートウェイを再度有効にしてください",

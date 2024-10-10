@@ -2361,7 +2361,7 @@
   "Thank_you_for_your_feedback": "Diolch i chi am eich adborth",
   "The_application_name_is_required": "Mae angen enw'r cais",
   "The_channel_name_is_required": "Mae angen enw'r sianel",
-  "The_emails_are_being_sent": "Mae'r negeseuon e-bost yn cael eu hanfon.",   
+  "The_emails_are_being_sent": "Mae'r negeseuon e-bost yn cael eu hanfon.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Ni fydd maint y delwedd yn gweithio oherwydd na allwn ganfod ImageMagick neu GraphicsMagick ar eich gweinydd.",
   "The_redirectUri_is_required": "Mae angen y redirectUri",
   "The_server_will_restart_in_s_seconds": "Bydd y gweinydd yn ailgychwyn yn %s eiliad",
