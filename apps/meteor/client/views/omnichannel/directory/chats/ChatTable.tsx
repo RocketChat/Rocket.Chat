@@ -32,7 +32,6 @@ const ChatTable = () => {
 	const query = useMemo(
 		() => ({
 			sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-			open: false,
 			roomName: text || '',
 			agents: userIdLoggedIn ? [userIdLoggedIn] : [],
 			...(itemsPerPage && { count: itemsPerPage }),
@@ -43,8 +42,8 @@ const ChatTable = () => {
 
 	const onRowClick = useMutableCallback((id) =>
 		directoryRoute.push({
-			page: 'chats',
-			bar: 'info',
+			tab: 'chats',
+			context: 'info',
 			id,
 		}),
 	);

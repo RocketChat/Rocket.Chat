@@ -2,7 +2,7 @@ import { lazy, useMemo } from 'react';
 
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
-const ChatsContextualBar = lazy(() => import('../../views/omnichannel/directory/chats/contextualBar/ChatsContextualBar'));
+const ChatsContextualBar = lazy(() => import('../../views/omnichannel/directory/chats/ChatInfo/ChatInfoRouter'));
 
 export const useRoomInfoRoomAction = () => {
 	return useMemo(
