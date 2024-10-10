@@ -31,6 +31,8 @@ import {
 } from '../lib/functions';
 
 export class OTRRoom implements IOTRRoom {
+	private static instances: Map<string, OTRRoom> = new Map();
+
 	private _userId: string;
 
 	private _roomId: string;
@@ -68,7 +70,13 @@ export class OTRRoom implements IOTRRoom {
 			return undefined;
 		}
 
-		return new OTRRoom(uid, rid, peerId);
+		const instanceKey = `${uid}-${rid}`;
+		if (!OTRRoom.instances.has(instanceKey)) {
+			const instance = new OTRRoom(uid, rid, peerId);
+			OTRRoom.instances.set(instanceKey, instance);
+		}
+
+		return OTRRoom.instances.get(instanceKey);
 	}
 
 	getPeerId(): string {
