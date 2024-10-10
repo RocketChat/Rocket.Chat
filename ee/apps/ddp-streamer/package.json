@@ -41,7 +41,7 @@
 		"sharp": "^0.32.6",
 		"underscore": "^1.13.7",
 		"uuid": "^7.0.3",
-		"ws": "^8.8.1"
+		"ws": "^8.18.0"
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
