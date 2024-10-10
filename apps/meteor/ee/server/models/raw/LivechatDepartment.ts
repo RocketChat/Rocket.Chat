@@ -28,10 +28,10 @@ declare module '@rocket.chat/model-typings' {
 		): Promise<UpdateResult>;
 		unfilteredRemove(query: Filter<ILivechatDepartment>): Promise<DeleteResult>;
 		removeParentAndAncestorById(id: string): Promise<UpdateResult | Document>;
-		findEnabledWithAgentsAndBusinessUnit(
+		findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
 			businessUnit: string,
-			projection: FindOptions<ILivechatDepartment>['projection'],
-		): Promise<FindCursor<ILivechatDepartment>>;
+			projection: FindOptions<T>['projection'],
+		): Promise<FindCursor<T>>;
 		findByParentId(parentId: string, options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
 		findAgentsByBusinessHourId(businessHourId: string): AggregationCursor<{ agentIds: string[] }>;
 	}
@@ -74,19 +74,19 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 		return this.updateMany({ parentId: id }, { $unset: { parentId: 1 }, $pull: { ancestors: id } });
 	}
 
-	async findEnabledWithAgentsAndBusinessUnit(
+	async findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
 		businessUnit: string,
-		projection: FindOptions<ILivechatDepartment>['projection'],
-	): Promise<FindCursor<ILivechatDepartment>> {
+		projection: FindOptions<T>['projection'],
+	): Promise<FindCursor<T>> {
 		if (!businessUnit) {
-			return super.findEnabledWithAgents(projection);
+			return super.findEnabledWithAgents<T>(projection);
 		}
 		const unit = await LivechatUnit.findOneById(businessUnit, { projection: { _id: 1 } });
 		if (!unit) {
 			throw new Meteor.Error('error-unit-not-found', `Error! No Active Business Unit found with id: ${businessUnit}`);
 		}
 
-		return super.findActiveByUnitIds([businessUnit], { projection });
+		return super.findActiveByUnitIds<T>([businessUnit], { projection });
 	}
 
 	findByParentId(parentId: string, options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {

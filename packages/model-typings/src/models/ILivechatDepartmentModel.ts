@@ -52,11 +52,13 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	updateById(_id: string, update: Partial<ILivechatDepartment>): Promise<Document | UpdateResult>;
 	updateNumAgentsById(_id: string, numAgents: number): Promise<Document | UpdateResult>;
 	decreaseNumberOfAgentsByIds(_ids: string[]): Promise<Document | UpdateResult>;
-	findEnabledWithAgents(projection?: FindOptions<ILivechatDepartment>['projection']): FindCursor<ILivechatDepartment>;
-	findEnabledWithAgentsAndBusinessUnit(
+	findEnabledWithAgents<T extends Document = ILivechatDepartment>(
+		projection?: FindOptions<ILivechatDepartment>['projection'],
+	): FindCursor<T>;
+	findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
 		_: any,
-		projection: FindOptions<ILivechatDepartment>['projection'],
-	): Promise<FindCursor<ILivechatDepartment>>;
+		projection: FindOptions<T>['projection'],
+	): Promise<FindCursor<T>>;
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<ILivechatDepartment>): Promise<ILivechatDepartment | null>;
 	findByUnitIds(unitIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
 	countDepartmentsInUnit(unitId: string): Promise<number>;
