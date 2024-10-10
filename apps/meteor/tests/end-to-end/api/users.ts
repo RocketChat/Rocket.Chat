@@ -605,6 +605,25 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
+
+		it('should return an error when trying register new user with an invalid username', (done) => {
+			void request
+				.post(api('users.register'))
+				.send({
+					email,
+					name: 'name',
+					username: 'test$username<>',
+					pass: 'test',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').and.to.be.equal('The username provided is not valid');
+				})
+				.end(done);
+		});
+
 		it('should return an error when trying register new user with an existing username', (done) => {
 			void request
 				.post(api('users.register'))
@@ -2624,18 +2643,37 @@ describe('[Users]', () => {
 	});
 
 	describe('[/users.forgotPassword]', () => {
+		it('should return an error when "Accounts_PasswordReset" is disabled', (done) => {
+			void updateSetting('Accounts_PasswordReset', false).then(() => {
+				void request
+					.post(api('users.forgotPassword'))
+					.send({
+						email: adminEmail,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Password reset is not enabled');
+					})
+					.end(done);
+			});
+		});
+
 		it('should send email to user (return success), when is a valid email', (done) => {
-			void request
-				.post(api('users.forgotPassword'))
-				.send({
-					email: adminEmail,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+			void updateSetting('Accounts_PasswordReset', true).then(() => {
+				void request
+					.post(api('users.forgotPassword'))
+					.send({
+						email: adminEmail,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
 		});
 
 		it('should not send email to user(return error), when is a invalid email', (done) => {
@@ -3700,9 +3738,9 @@ describe('[Users]', () => {
 
 		it('should invalidate all active sesions', (done) => {
 			/* We want to validate that the login with the "old" credentials fails
-      		However, the removal of the tokens is done asynchronously.
-      		Thus, we check that within the next seconds, at least one try to
-      		access an authentication requiring route fails */
+				However, the removal of the tokens is done asynchronously.
+				Thus, we check that within the next seconds, at least one try to
+				access an authentication requiring route fails */
 			let counter = 0;
 
 			async function checkAuthenticationFails() {
@@ -4060,9 +4098,9 @@ describe('[Users]', () => {
 
 		it('should invalidate all active sesions', (done) => {
 			/* We want to validate that the login with the "old" credentials fails
-      		However, the removal of the tokens is done asynchronously.
-      		Thus, we check that within the next seconds, at least one try to
-      		access an authentication requiring route fails */
+				However, the removal of the tokens is done asynchronously.
+				Thus, we check that within the next seconds, at least one try to
+				access an authentication requiring route fails */
 			let counter = 0;
 
 			async function checkAuthenticationFails() {

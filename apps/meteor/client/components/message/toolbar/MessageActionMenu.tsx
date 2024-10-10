@@ -1,11 +1,10 @@
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
 import React from 'react';
 
 import type { MessageActionConditionProps, MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
-import GenericMenu from '../../GenericMenu/GenericMenu';
-import type { GenericMenuItemProps } from '../../GenericMenu/GenericMenuItem';
 
 type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order' | 'action'> & {
 	action: (e?: MouseEvent<HTMLElement>) => void;

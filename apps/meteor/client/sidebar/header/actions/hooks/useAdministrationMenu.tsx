@@ -1,6 +1,6 @@
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 
-import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import { useAdministrationItems } from './useAdministrationItems';
 import { useAppsItems } from './useAppsItems';
 import { useAuditItems } from './useAuditItems';

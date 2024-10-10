@@ -9,7 +9,17 @@ import type {
 	AtLeast,
 	ILivechatAgentStatus,
 } from '@rocket.chat/core-typings';
-import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult, ModifyResult } from 'mongodb';
+import type {
+	Document,
+	UpdateResult,
+	FindCursor,
+	FindOptions,
+	Filter,
+	InsertOneResult,
+	DeleteResult,
+	ModifyResult,
+	UpdateOptions,
+} from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -190,7 +200,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	setAsFederated(userId: string): any;
 
-	removeRoomByRoomId(rid: any): any;
+	removeRoomByRoomId(rid: any, options?: UpdateOptions): any;
 
 	findOneByResetToken(token: string, options: FindOptions<IUser>): Promise<IUser | null>;
 
@@ -392,4 +402,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOnlineButNotAvailableAgents(userIds: string[] | null): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
 	findAgentsAvailableWithoutBusinessHours(userIds: string[] | null): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
 	updateLivechatStatusByAgentIds(userIds: string[], status: ILivechatAgentStatus): Promise<UpdateResult>;
+	findOneByFreeSwitchExtension<T = IUser>(extension: string, options?: FindOptions<IUser>): Promise<T | null>;
+	setFreeSwitchExtension(userId: string, extension: string | undefined): Promise<UpdateResult>;
+	findAssignedFreeSwitchExtensions(): FindCursor<string>;
+	findUsersWithAssignedFreeSwitchExtensions<T = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
 }

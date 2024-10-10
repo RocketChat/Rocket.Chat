@@ -53,4 +53,8 @@ export interface IRoomService {
 	): Promise<void>;
 	getRouteLink(room: AtLeast<IRoom, '_id' | 't' | 'name'>): Promise<string | boolean>;
 	join(param: { room: IRoom; user: Pick<IUser, '_id'>; joinCode?: string }): Promise<boolean | undefined>;
+	beforeLeave(room: IRoom): Promise<void>;
+	beforeUserRemoved(room: IRoom): Promise<void>;
+	beforeNameChange(room: IRoom): Promise<void>;
+	beforeTopicChange(room: IRoom): Promise<void>;
 }

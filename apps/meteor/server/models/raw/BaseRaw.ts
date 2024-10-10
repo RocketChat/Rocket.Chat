@@ -26,6 +26,7 @@ import type {
 	InsertOneResult,
 	DeleteResult,
 	DeleteOptions,
+	FindOneAndDeleteOptions,
 } from 'mongodb';
 
 import { setUpdatedAt } from './setUpdatedAt';
@@ -315,7 +316,38 @@ export abstract class BaseRaw<
 		return this.col.deleteOne(filter);
 	}
 
-	async deleteMany(filter: Filter<T>, options?: DeleteOptions): Promise<DeleteResult> {
+	async findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<ModifyResult<T>> {
+		if (!this.trash) {
+			return this.col.findOneAndDelete(filter, options || {});
+		}
+
+		const doc = await this.col.findOne(filter);
+		if (!doc) {
+			return { ok: 1, value: null };
+		}
+
+		const { _id, ...record } = doc;
+		const trash: TDeleted = {
+			...record,
+			_deletedAt: new Date(),
+			__collection__: this.name,
+		} as unknown as TDeleted;
+
+		await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
+			upsert: true,
+		});
+
+		try {
+			await this.col.deleteOne({ _id } as Filter<T>);
+		} catch (e) {
+			await this.trash?.deleteOne({ _id } as Filter<TDeleted>);
+			throw e;
+		}
+
+		return { ok: 1, value: doc };
+	}
+
+	async deleteMany(filter: Filter<T>, options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void }): Promise<DeleteResult> {
 		if (!this.trash) {
 			if (options) {
 				return this.col.deleteMany(filter, options);
@@ -323,7 +355,7 @@ export abstract class BaseRaw<
 			return this.col.deleteMany(filter);
 		}
 
-		const cursor = this.find(filter);
+		const cursor = this.find<ResultFields<T, C>>(filter, { session: options?.session });
 
 		const ids: T['_id'][] = [];
 		for await (const doc of cursor) {
@@ -340,7 +372,10 @@ export abstract class BaseRaw<
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
 			await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
 				upsert: true,
+				session: options?.session,
 			});
+
+			void options?.onTrash?.(doc);
 		}
 
 		if (options) {

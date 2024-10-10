@@ -9,6 +9,10 @@ inputs:
     required: true
     description: 'Node version'
     type: string
+  deno-version:
+    required: true
+    description: 'Deno version'
+    type: string
   platform:
     required: false
     description: 'Platform'
@@ -29,6 +33,9 @@ inputs:
     required: false
     description: 'Setup node.js'
     default: 'true'
+  NPM_TOKEN:
+    required: false
+    description: 'NPM token'
 
 runs:
   using: composite
@@ -63,8 +70,10 @@ runs:
       if: inputs.setup == 'true'
       with:
         node-version: ${{ inputs.node-version }}
+        deno-version: ${{ inputs.deno-version }}
         cache-modules: true
         install: true
+        NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
 
     - run: yarn build
       if: inputs.setup == 'true'
@@ -74,6 +83,8 @@ runs:
       shell: bash
       run: |
         args=(rocketchat ${{ inputs.build-containers }})
+
+        export DENO_VERSION="${{ inputs.deno-version }}"
 
         docker compose -f docker-compose-ci.yml build "${args[@]}"
 

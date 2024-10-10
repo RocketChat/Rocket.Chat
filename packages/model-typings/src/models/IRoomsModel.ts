@@ -100,7 +100,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findDefaultRoomsForTeam(teamId: any): FindCursor<IRoom>;
 
-	incUsersCountByIds(ids: Array<IRoom['_id']>, inc: number): Promise<Document | UpdateResult>;
+	incUsersCountByIds(ids: Array<IRoom['_id']>, inc: number, options?: UpdateOptions): Promise<Document | UpdateResult>;
 
 	findOneByNameOrFname(name: NonNullable<IRoom['name'] | IRoom['fname']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
@@ -111,8 +111,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }>;
 
 	findByBroadcast(options?: FindOptions<IRoom>): FindCursor<IRoom>;
-
-	findByActiveLivestream(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
 	setAsFederated(roomId: IRoom['_id']): Promise<UpdateResult>;
 
@@ -176,7 +174,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	setLastMessagePinned(roomId: string, pinnedBy: unknown, pinned?: boolean, pinnedAt?: Date): Promise<UpdateResult>;
 	setLastMessageAsRead(roomId: string): Promise<UpdateResult>;
 	setDescriptionById(roomId: string, description: string): Promise<UpdateResult>;
-	setStreamingOptionsById(roomId: string, streamingOptions: IRoom['streamingOptions']): Promise<UpdateResult>;
 	setReadOnlyById(roomId: string, readOnly: NonNullable<IRoom['ro']>): Promise<UpdateResult>;
 	setDmReadOnlyByUserId(
 		roomId: string,
@@ -195,6 +192,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	setE2eKeyId(roomId: string, e2eKeyId: string, options?: FindOptions<IRoom>): Promise<UpdateResult>;
 	findOneByImportId(importId: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findOneByNameAndNotId(name: string, rid: string): Promise<IRoom | null>;
+	findOneByIdAndType(roomId: IRoom['_id'], type: IRoom['t'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findOneByDisplayName(displayName: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findOneByNameAndType(
 		name: string,
@@ -284,4 +282,12 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	getSubscribedRoomIdsWithoutE2EKeys(uid: IUser['_id']): Promise<IRoom['_id'][]>;
 	removeUsersFromE2EEQueueByRoomId(roomId: IRoom['_id'], uids: IUser['_id'][]): Promise<Document | UpdateResult>;
 	removeUserFromE2EEQueue(uid: IUser['_id']): Promise<Document | UpdateResult>;
+	findChildrenOfTeam(
+		teamId: string,
+		teamRoomId: string,
+		userId: string,
+		filter?: string,
+		type?: 'channels' | 'discussions',
+		options?: FindOptions<IRoom>,
+	): AggregationCursor<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }>;
 }
