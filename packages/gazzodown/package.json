@@ -9,13 +9,13 @@
 	],
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
-		"build-storybook": "build-storybook",
-		"build-preview": "build-storybook --quiet",
+		"build-storybook": "NODE_OPTIONS=--openssl-legacy-provider build-storybook",
+		"build-preview": "NODE_OPTIONS=--openssl-legacy-provider build-storybook --quiet",
 		".:build-preview-move": "mkdir -p ../../.preview && cp -r ./storybook-static ../../.preview/gazzodown",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"storybook": "start-storybook -p 6006",
+		"storybook": "NODE_OPTIONS=--openssl-legacy-provider start-storybook -p 6006",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
