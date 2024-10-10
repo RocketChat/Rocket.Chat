@@ -253,14 +253,13 @@ export class AppRoomBridge extends RoomBridge {
 			throw new Error('Message converter not found');
 		}
 
-		const [room, subscription] = await Promise.all([
-			Rooms.findOneById(roomId, { projection: { _id: 1 } }),
-			Subscriptions.findOneByRoomIdAndUserId(roomId, userId, { projection: { ls: 1 } }),
-		]);
+		const room = await Rooms.findOneById(roomId, { projection: { _id: 1 } });
 
 		if (!room) {
 			throw new Error('Room not found');
 		}
+
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, userId, { projection: { ls: 1 } });
 
 		const lastSeen = subscription?.ls;
 		if (!lastSeen) {
@@ -280,20 +279,17 @@ export class AppRoomBridge extends RoomBridge {
 
 	protected async getUserUnreadMessageCount(roomId: string, uid: string, appId: string): Promise<number> {
 		this.orch.debugLog(`The App ${appId} is getting the unread messages count of the room: "${roomId}" for the user: "${uid}"`);
-
-		const [user, room, subscription] = await Promise.all([
-			Users.findOneById(uid, { projection: { _id: 1 } }),
-			Rooms.findOneById(roomId, { projection: { _id: 1 } }),
-			Subscriptions.findOneByRoomIdAndUserId(roomId, uid, { projection: { ls: 1 } }),
-		]);
-
+		const user = await Users.findOneById(uid, { projection: { _id: 1 } });
 		if (!user) {
 			throw new Error('User not found');
 		}
 
+		const room = await Rooms.findOneById(roomId, { projection: { _id: 1 } });
 		if (!room) {
 			throw new Error('Room not found');
 		}
+
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, uid, { projection: { ls: 1 } });
 
 		const lastSeen = subscription?.ls;
 		if (!lastSeen) {
