@@ -2465,8 +2465,6 @@
   "Type_your_password": "พิมพ์รหัสผ่านของคุณ",
   "Type_your_username": "พิมพ์ชื่อผู้ใช้ของคุณ",
   "UI_Allow_room_names_with_special_chars": "อนุญาตให้ใช้อักขระพิเศษในชื่อห้อง",
-  "UI_Click_Direct_Message": "คลิกเพื่อสร้างข้อความตรง",
-  "UI_Click_Direct_Message_Description": "ข้ามแท็บโปรไฟล์เปิดแทนที่จะไปตรงไปที่การสนทนา",
   "UI_DisplayRoles": "แสดงบทบาท",
   "UI_Group_Channels_By_Type": "จัดกลุ่มตามประเภท",
   "UI_Merge_Channels_Groups": "รวมกลุ่มส่วนตัวด้วยแชเนล",
