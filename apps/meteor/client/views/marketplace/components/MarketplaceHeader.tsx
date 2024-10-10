@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
 import { usePermission, useRoute, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { MutableRefObject, ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -12,8 +12,15 @@ import { useAppsCountQuery } from '../hooks/useAppsCountQuery';
 import { usePrivateAppsEnabled } from '../hooks/usePrivateAppsEnabled';
 import EnabledAppsCount from './EnabledAppsCount';
 import PrivateAppInstallModal from './PrivateAppInstallModal/PrivateAppInstallModal';
+import UpdateRocketChatBtn from './UpdateRocketChatBtn';
 
-const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null => {
+const MarketplaceHeader = ({
+	title,
+	unsupportedVersion,
+}: {
+	title: string;
+	unsupportedVersion: MutableRefObject<boolean>;
+}): ReactElement | null => {
 	const { t } = useTranslation();
 	const isAdmin = usePermission('manage-apps');
 	const context = (useRouteParameter('context') || 'explore') as 'private' | 'explore' | 'installed' | 'premium' | 'requested';
@@ -43,7 +50,7 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 
 	return (
 		<PageHeader title={title}>
-			{isLoading && <GenericResourceUsageSkeleton mi={16} />}
+			{isLoading && <GenericResourceUsageSkeleton />}
 
 			{isSuccess && !data.hasUnlimitedApps && (
 				<Margins inline={16}>
@@ -56,7 +63,13 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 			)}
 
 			<ButtonGroup wrap align='end'>
-				{isAdmin && isSuccess && !data.hasUnlimitedApps && context !== 'private' && (
+				{isLoading && <GenericResourceUsageSkeleton />}
+
+				{!unsupportedVersion && isSuccess && data.hasUnlimitedApps && context !== 'private' && (
+					<EnabledAppsCount {...data} context={context} />
+				)}
+
+				{!unsupportedVersion && isAdmin && isSuccess && !data.hasUnlimitedApps && (
 					<Button
 						onClick={() => {
 							setModal(<UnlimitedAppsUpsellModal onClose={() => setModal(null)} />);
@@ -73,6 +86,8 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 						{t('Upgrade')}
 					</UpgradeButton>
 				)}
+
+				{unsupportedVersion && context !== 'private' && <UpdateRocketChatBtn />}
 			</ButtonGroup>
 		</PageHeader>
 	);
