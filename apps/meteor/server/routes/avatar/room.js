@@ -3,7 +3,7 @@ import { Cookies } from 'meteor/ostrio:cookies';
 
 import { FileUpload } from '../../../app/file-upload/server';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
+import { renderSVGLetters, serveSvgAvatarInRequestedFormat, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
 
 const MAX_ROOM_SVG_AVATAR_SIZE = 1024;
 const MIN_ROOM_SVG_AVATAR_SIZE = 16;
@@ -74,5 +74,5 @@ export const roomAvatar = async function (req, res /* , next*/) {
 
 	const svg = renderSVGLetters(roomName, avatarSize);
 
-	return serveAvatar(svg, req.query.format, res);
+	return serveSvgAvatarInRequestedFormat(svg, req.query.format, res);
 };
