@@ -149,7 +149,13 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
 	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
+		/**
+		 * @deprecated To access "fields" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
+		 */
 		fields: Record<string, 0 | 1>;
+		/**
+		 * @deprecated To access "query" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
+		 */
 		query: Record<string, unknown>;
 	}>;
 } & (TOptions extends { authRequired: true }

@@ -8,7 +8,57 @@ import { before, describe, it, after } from 'mocha';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 
 describe('[CustomSounds]', () => {
+	const fileName = `test-file-${randomUUID()}`;
+	let fileId: string;
+	let uploadDate: unknown;
+
 	before((done) => getCredentials(done));
+
+	before(async () => {
+		const data = readFileSync(path.resolve(__dirname, '../../mocks/files/audio_mock.wav'));
+		const binary = data.toString('binary');
+		await request
+			.post(api('method.call/insertOrUpdateSound'))
+			.set(credentials)
+			.send({
+				message: JSON.stringify({
+					msg: 'method',
+					id: '1',
+					method: 'insertOrUpdateSound',
+					params: [{ name: fileName, extension: 'mp3', newFile: true }],
+				}),
+			})
+			.expect(200)
+			.expect((res) => {
+				fileId = JSON.parse(res.body.message).result;
+			});
+		await request
+			.post(api('method.call/uploadCustomSound'))
+			.set(credentials)
+			.send({
+				message: JSON.stringify({
+					msg: 'method',
+					id: '2',
+					method: 'uploadCustomSound',
+					params: [binary, 'audio/wav', { name: fileName, extension: 'wav', newFile: true, _id: fileId }],
+				}),
+			})
+			.expect(200);
+	});
+
+	after(() =>
+		request
+			.post(api('method.call/deleteCustomSound'))
+			.set(credentials)
+			.send({
+				message: JSON.stringify({
+					msg: 'method',
+					id: '33',
+					method: 'deleteCustomSound',
+					params: [fileId],
+				}),
+			}),
+	);
 
 	describe('[/custom-sounds.list]', () => {
 		it('should return custom sounds', (done) => {
@@ -41,59 +91,28 @@ describe('[CustomSounds]', () => {
 				})
 				.end(done);
 		});
+		it('should return custom sounds filtering it using the `name` parameter', (done) => {
+			void request
+				.get(api('custom-sounds.list'))
+				.set(credentials)
+				.expect(200)
+				.query({
+					name: fileName,
+					count: 5,
+					offset: 0,
+				})
+				.expect((res) => {
+					expect(res.body).to.have.property('sounds').and.to.be.an('array');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('count');
+					expect(res.body.sounds[0]._id).to.be.equal(fileId);
+				})
+				.end(done);
+		});
 	});
 
 	describe('Accessing custom sounds', () => {
-		let fileId: string;
-		const fileName = `test-file-${randomUUID()}`;
-		let uploadDate: unknown;
-
-		before(async () => {
-			const data = readFileSync(path.resolve(__dirname, '../../mocks/files/audio_mock.wav'));
-			const binary = data.toString('binary');
-			await request
-				.post(api('method.call/insertOrUpdateSound'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						msg: 'method',
-						id: '1',
-						method: 'insertOrUpdateSound',
-						params: [{ name: fileName, extension: 'mp3', newFile: true }],
-					}),
-				})
-				.expect(200)
-				.expect((res) => {
-					fileId = JSON.parse(res.body.message).result;
-				});
-			await request
-				.post(api('method.call/uploadCustomSound'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						msg: 'method',
-						id: '2',
-						method: 'uploadCustomSound',
-						params: [binary, 'audio/wav', { name: fileName, extension: 'wav', newFile: true, _id: fileId }],
-					}),
-				})
-				.expect(200);
-		});
-
-		after(() =>
-			request
-				.post(api('method.call/deleteCustomSound'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						msg: 'method',
-						id: '33',
-						method: 'deleteCustomSound',
-						params: [fileId],
-					}),
-				}),
-		);
-
 		it('should return forbidden if the there is no fileId on the url', (done) => {
 			void request
 				.get('/custom-sounds/')
