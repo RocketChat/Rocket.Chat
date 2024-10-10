@@ -2477,8 +2477,6 @@
   "Type_your_password": "Geben Sie Ihr Passwort ein",
   "Type_your_username": "Gib deinen Benutzernamen ein",
   "UI_Allow_room_names_with_special_chars": "Erlaube Sonderzeichen in Raumnamen",
-  "UI_Click_Direct_Message": "Klicken Sie auf Direktnachricht erstellen",
-  "UI_Click_Direct_Message_Description": "Überspringe die Registerkarte \"Öffnen\", gehe stattdessen direkt zur Konversation",
   "UI_DisplayRoles": "Rollen anzeigen",
   "UI_Group_Channels_By_Type": "Gruppieren Sie Kanäle nach Typ",
   "UI_Merge_Channels_Groups": "Private Gruppen mit öffentlichen Kanälen gemeinsam anzeigen",

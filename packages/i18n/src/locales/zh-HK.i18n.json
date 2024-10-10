@@ -2501,8 +2501,6 @@
   "Type_your_password": "输入您的密码",
   "Type_your_username": "输入您的用户名",
   "UI_Allow_room_names_with_special_chars": "允许房间名称中的特殊字符",
-  "UI_Click_Direct_Message": "点击创建直接消息",
-  "UI_Click_Direct_Message_Description": "跳过打开配置文件选项卡，而是直接进入会话",
   "UI_DisplayRoles": "显示角色",
   "UI_Group_Channels_By_Type": "按类型分组频道",
   "UI_Merge_Channels_Groups": "用渠道合并私人组",

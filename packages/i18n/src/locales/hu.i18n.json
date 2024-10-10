@@ -4754,8 +4754,6 @@
   "Type_your_password": "Írja be a jelszavát",
   "Type_your_username": "Írja be felhasználónevét",
   "UI_Allow_room_names_with_special_chars": "Különleges karakterek engedélyezése a szobanevekben",
-  "UI_Click_Direct_Message": "Kattintson a közvetlen üzenet létrehozásához",
-  "UI_Click_Direct_Message_Description": "A profillap megnyitásának kihagyása, ugrás inkább egyenesen a beszélgetéshez",
   "UI_DisplayRoles": "Szerepek megjelenítése",
   "UI_Group_Channels_By_Type": "Csatornák csoportosítása típus szerint",
   "UI_Merge_Channels_Groups": "Személyes csoportok egyesítése a csatornákkal",

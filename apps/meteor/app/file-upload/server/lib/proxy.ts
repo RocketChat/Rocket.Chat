@@ -99,8 +99,15 @@ async function handle(req: createServer.IncomingMessage, res: http.ServerRespons
 	});
 }
 
-WebApp.connectHandlers.stack.unshift({
-	route: '',
-	// eslint-disable-next-line @typescript-eslint/no-misused-promises
-	handle,
-});
+// @ts-expect-error - l
+const dummyRouter = WebApp.connectHandlers._router;
+
+// Create a dummy route
+dummyRouter.route('*');
+// fetch the newly created "layer"
+const stackedRoute = dummyRouter.stack.pop();
+stackedRoute.handle = handle;
+
+// Move the layer to the top :)
+// @ts-expect-error - l
+WebApp.connectHandlers._router.stack.unshift(stackedRoute);

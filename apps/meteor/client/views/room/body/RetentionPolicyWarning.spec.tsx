@@ -18,7 +18,7 @@ describe('RetentionPolicyWarning', () => {
 			legacyRoot: true,
 			wrapper: createMock({ appliesToChannels: true, TTLChannels: 60000 }),
 		});
-		expect(screen.getByRole('alert')).toHaveTextContent('a minute June 1, 2024, 12:30 AM');
+		expect(screen.getByRole('alert')).toHaveTextContent('a minute June 1, 2024 at 12:30 AM');
 	});
 
 	it('Should not render callout if settings are invalid', () => {

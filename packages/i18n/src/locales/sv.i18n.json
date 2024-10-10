@@ -4950,8 +4950,6 @@
   "Type_your_password": "Skriv ditt lösenord",
   "Type_your_username": "Skriv ditt användarnamn",
   "UI_Allow_room_names_with_special_chars": "Tillåt särskilda tecken i rumsnamn",
-  "UI_Click_Direct_Message": "Klicka för att skapa direktmeddelande",
-  "UI_Click_Direct_Message_Description": "Hoppa över öppningsprofilfliken, gå istället direkt till konversation",
   "UI_DisplayRoles": "Visa roller",
   "UI_Group_Channels_By_Type": "Gruppkanaler efter typ",
   "UI_Merge_Channels_Groups": "Slå ihop privata grupper med kanaler",

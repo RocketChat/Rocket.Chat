@@ -4319,8 +4319,6 @@
   "Type_your_password": "Entrez votre mot de passe",
   "Type_your_username": "Entrez votre nom d'utilisateur",
   "UI_Allow_room_names_with_special_chars": "Autoriser les caractères spéciaux dans les noms de salon",
-  "UI_Click_Direct_Message": "Cliquer pour créer un message direct",
-  "UI_Click_Direct_Message_Description": "Ne pas ouvrir l'onglet de profil, aller directement à la conversation",
   "UI_DisplayRoles": "Afficher les rôles",
   "UI_Group_Channels_By_Type": "Regrouper les canaux par type",
   "UI_Merge_Channels_Groups": "Fusionner des groupes privés avec des canaux",

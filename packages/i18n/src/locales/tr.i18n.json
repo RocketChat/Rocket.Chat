@@ -2942,8 +2942,6 @@
   "Type_your_password": "Şifrenizi giriniz",
   "Type_your_username": "Kullanıcı adınızı yazın",
   "UI_Allow_room_names_with_special_chars": "Oda Adlarında Özel Karakterlere İzin Ver",
-  "UI_Click_Direct_Message": "Doğrudan İleti Oluşturmak İçin Tıklayın",
-  "UI_Click_Direct_Message_Description": "Açılış profili sekmesini atla, bunun yerine konuşmaya devam et",
   "UI_DisplayRoles": "Rolleri Göster",
   "UI_Group_Channels_By_Type": "Kanalları türe göre grupla",
   "UI_Merge_Channels_Groups": "Özel grupları kanallar ile birleştir",

@@ -2511,8 +2511,6 @@
   "Type_your_password": "ພິມລະຫັດຜ່ານຂອງທ່ານ",
   "Type_your_username": "ພິມຊື່ຜູ້ໃຊ້ຂອງທ່ານ",
   "UI_Allow_room_names_with_special_chars": "ອະນຸຍາດໃຫ້ຕົວອັກສອນພິເສດໃນຊື່ຫ້ອງ",
-  "UI_Click_Direct_Message": "ກົດເພື່ອສ້າງຂໍ້ຄວາມໂດຍກົງ",
-  "UI_Click_Direct_Message_Description": "ຂ້າມແຖບໂປຣແກຣມເປີດ, ແທນທີ່ຈະໄປຫາການສົນທະນາ",
   "UI_DisplayRoles": "ພາລະບົດບາດການສະແດງ",
   "UI_Group_Channels_By_Type": "ກຸ່ມຂອງກຸ່ມໂດຍປະເພດ",
   "UI_Merge_Channels_Groups": "ລວມກຸ່ມເອກະຊົນມີຊ່ອງ",

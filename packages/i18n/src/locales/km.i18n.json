@@ -2815,8 +2815,6 @@
   "Type_your_password": "បញ្ចូលពាក្យសម្ងាត់របស់អ្នក",
   "Type_your_username": "បញ្ចូលឈ្មោះអ្នកប្រើរបស់អ្នក",
   "UI_Allow_room_names_with_special_chars": "អនុញ្ញាតតួអក្សរពិសេសក្នុងឈ្មោះបន្ទប់",
-  "UI_Click_Direct_Message": "ចុចដើម្បីបង្កើតសារដោយផ្ទាល់",
-  "UI_Click_Direct_Message_Description": "រំលងផ្ទាំងបើកប្រវត្តិរូបជំនួសវិញទៅត្រង់ការសន្ទនា",
   "UI_DisplayRoles": "បង្ហាញតួនាទី",
   "UI_Group_Channels_By_Type": "បណ្តាញក្រុមតាមប្រភេទ",
   "UI_Merge_Channels_Groups": "បញ្ចូលចូលគ្នាជាមួយបណ្តាញក្រុមឯកជន",

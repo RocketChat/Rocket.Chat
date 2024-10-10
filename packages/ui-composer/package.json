@@ -13,8 +13,8 @@
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"typecheck": "tsc --noEmit",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"storybook": "start-storybook -p 6006",
-		"build-preview": "build-storybook",
+		"storybook": "NODE_OPTIONS=--openssl-legacy-provider start-storybook -p 6006",
+		"build-preview": "NODE_OPTIONS=--openssl-legacy-provider build-storybook",
 		".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./storybook-static ../../.preview/ui-composer"
 	},
 	"devDependencies": {

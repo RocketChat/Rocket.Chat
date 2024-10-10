@@ -4267,8 +4267,6 @@
   "Type_your_password": "パスワードを入力",
   "Type_your_username": "ユーザー名を入力",
   "UI_Allow_room_names_with_special_chars": "Room名に特殊文字を許可",
-  "UI_Click_Direct_Message": "クリックしてダイレクトメッセージを作成",
-  "UI_Click_Direct_Message_Description": "プロフィールタブを開くのをスキップし、会話に直接移動",
   "UI_DisplayRoles": "ロールの表示",
   "UI_Group_Channels_By_Type": "種類別にチャネルをグループ化",
   "UI_Merge_Channels_Groups": "プライベートグループとChannelをマージ",

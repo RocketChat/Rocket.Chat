@@ -4306,8 +4306,6 @@
   "Type_your_password": "Escribe tu contraseña",
   "Type_your_username": "Escribe tu nombre de usuario",
   "UI_Allow_room_names_with_special_chars": "Permitir caracteres especiales en nombres de Room",
-  "UI_Click_Direct_Message": "Clic para crear un mensaje directo",
-  "UI_Click_Direct_Message_Description": "Omitir la apertura de la pestaña de perfil e ir directamente a la conversación en su lugar",
   "UI_DisplayRoles": "Mostrar roles",
   "UI_Group_Channels_By_Type": "Agrupar canales por tipo",
   "UI_Merge_Channels_Groups": "Fusionar grupos privados con Channels",

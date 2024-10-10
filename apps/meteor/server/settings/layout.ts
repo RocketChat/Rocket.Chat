@@ -173,10 +173,6 @@ export const createLayoutSettings = () =>
 				type: 'boolean',
 				public: true,
 			});
-			await this.add('UI_Click_Direct_Message', false, {
-				type: 'boolean',
-				public: true,
-			});
 
 			await this.add('Number_of_users_autocomplete_suggestions', 5, {
 				type: 'int',
