@@ -1,7 +1,7 @@
 import { expect, spy } from 'chai';
 
-import { makeDisableAppsWithAddonsCallback } from '../../../../../../ee/server/lib/apps/makeDisableAppsWithAddonsCallback';
 import type { AppServerOrchestrator } from '../../../../../../ee/server/apps/orchestrator';
+import { makeDisableAppsWithAddonsCallback } from '../../../../../../ee/server/lib/apps/makeDisableAppsWithAddonsCallback';
 
 describe('disableAppsWithAddonsCallback', () => {
 	it('should not execute anything if not external module', async () => {

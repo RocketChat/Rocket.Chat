@@ -421,7 +421,7 @@ export class AppsRestApi {
 						const success = await manager.enable(info.id);
 						info.status = success ? AppStatus.AUTO_ENABLED : info.status;
 					} catch (error) {
-						// should report the error?
+						orchestrator.getRocketChatLogger().warn(`App "${info.id}" was installed but could not be enabled: `, error);
 					}
 
 					void orchestrator.getNotifier().appAdded(info.id);
