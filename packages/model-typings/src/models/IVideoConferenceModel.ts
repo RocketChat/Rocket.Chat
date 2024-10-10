@@ -24,6 +24,8 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 		options: FindOptions<VideoConference>,
 	): Promise<number>;
 
+	countDiscussions(options?: FindOptions<VideoConference>): Promise<number>;
+
 	createDirect({ providerName, ...callDetails }: Pick<VideoConference, 'rid' | 'createdBy' | 'providerName'>): Promise<string>;
 
 	createGroup({
