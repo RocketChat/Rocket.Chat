@@ -2729,7 +2729,7 @@
   "Thank_you_for_your_feedback": "Obrigado pelo sua opinião",
   "The_application_name_is_required": "O nome da aplicação é obrigatório",
   "The_channel_name_is_required": "O nome do canal é obrigatório",
-  "The_emails_are_being_sent": "Os emails estão a ser enviados.",   
+  "The_emails_are_being_sent": "Os emails estão a ser enviados.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "O redimensionamento da imagem não vai funcionar porque não conseguimos detectar ImageMagick ou GraphicsMagick instalado no seu servidor.",
   "The_message_is_a_discussion_you_will_not_be_able_to_recover": "A mensagem é uma discussão, não poderá recuperar as mensagens!",
   "The_peer__peer__does_not_exist": "O par <em>{{peer}}</em> não existe.",
