@@ -2375,7 +2375,7 @@
   "Thank_you_for_your_feedback": "Paldies par jūsu atsauksmēm",
   "The_application_name_is_required": "Pieteikuma nosaukums ir nepieciešams",
   "The_channel_name_is_required": "Ir nepieciešams kanāla nosaukums",
-  "The_emails_are_being_sent": "E-pasta ziņojumi tiek nosūtīti.",   
+  "The_emails_are_being_sent": "E-pasta ziņojumi tiek nosūtīti.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Attēla izmēru maiņa nestrādās, jo mēs nevaram atrast jūsu serverī uzinstalētu ImageMagick vai GraphicsMagick.",
   "The_redirectUri_is_required": "Nepieciešams RedirectUri ",
   "The_server_will_restart_in_s_seconds": "Serveris restartēsies pēc %s sekundēm",
