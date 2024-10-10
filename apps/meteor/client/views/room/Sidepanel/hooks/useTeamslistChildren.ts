@@ -44,17 +44,19 @@ export const useTeamsListChildrenUpdate = (
 		keepPreviousData: true,
 	});
 
+	const { refetch } = result;
+
 	useEffect(() => {
 		const liveQueryHandle = ChatRoom.find(query).observe({
-			added: () => queueMicrotask(() => result.refetch({ exact: false })),
-			changed: () => queueMicrotask(() => result.refetch({ exact: false })),
-			removed: () => queueMicrotask(() => result.refetch({ exact: false })),
+			added: () => queueMicrotask(() => refetch({ exact: false })),
+			changed: () => queueMicrotask(() => refetch({ exact: false })),
+			removed: () => queueMicrotask(() => refetch({ exact: false })),
 		});
 
 		return () => {
 			liveQueryHandle.stop();
 		};
-	}, [query, result]);
+	}, [query, refetch]);
 
 	return result;
 };

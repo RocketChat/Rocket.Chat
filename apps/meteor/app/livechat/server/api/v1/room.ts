@@ -159,7 +159,7 @@ API.v1.addRoute(
 					const visitorEmail = visitor.visitorEmails?.[0]?.address;
 
 					const language = servingAgent.language || rcSettings.get<string>('Language') || 'en';
-					const t = i18n.getFixedT(language);
+					const t = (s: string): string => i18n.t(s, { lng: language });
 					const subject = t('Transcript_of_your_livechat_conversation');
 
 					options.emailTranscript = {

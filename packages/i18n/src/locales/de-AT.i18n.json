@@ -2368,7 +2368,7 @@
   "Thank_you_for_your_feedback": "Vielen Dank für Ihre Rückmeldung.",
   "The_application_name_is_required": "Es muss ein Name für diese Anwendung angegeben werden.",
   "The_channel_name_is_required": "Ein Name für den Raum muss angegeben werden.",
-  "The_emails_are_being_sent": "Die E-Mails werden gesendet.",   
+  "The_emails_are_being_sent": "Die E-Mails werden gesendet.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Die automatische Skalierung der Bilder funktioniert nicht, da ImageMagick oder GraphicsMagick nicht auf dem Server installiert sind.",
   "The_redirectUri_is_required": "Es muss eine Weiterleitung-URL angegeben werden.",
   "The_server_will_restart_in_s_seconds": "Der Server wird in %s Sekunden neu gestartet",
