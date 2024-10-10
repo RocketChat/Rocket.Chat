@@ -245,19 +245,21 @@ export class Twilio implements ISMSProvider {
 		};
 	}
 
-	isRequestFromTwilio(signature: string, requestBody: object): boolean {
+	isRequestFromTwilio(signature: string, request: Request): boolean {
 		const authToken = settings.get<string>('SMS_Twilio_authToken');
-		const siteUrl = settings.get<string>('Site_Url');
+		let siteUrl = settings.get<string>('Site_Url');
+		if (siteUrl.endsWith('/')) {
+			siteUrl = siteUrl.replace(/.$/, '');
+		}
 
 		if (!authToken || !siteUrl) {
 			SystemLogger.error(`(Twilio) -> URL or Twilio token not configured.`);
 			return false;
 		}
 
-		const twilioUrl = siteUrl.endsWith('/')
-			? `${siteUrl}api/v1/livechat/sms-incoming/twilio`
-			: `${siteUrl}/api/v1/livechat/sms-incoming/twilio`;
-		return twilio.validateRequest(authToken, signature, twilioUrl, requestBody);
+		const twilioUrl = request.originalUrl ? `${siteUrl}${request.originalUrl}` : `${siteUrl}/api/v1/livechat/sms-incoming/twilio`;
+
+		return twilio.validateRequest(authToken, signature, twilioUrl, request.body);
 	}
 
 	validateRequest(request: Request): boolean {
@@ -267,7 +269,7 @@ export class Twilio implements ISMSProvider {
 		}
 		const twilioHeader = request.headers['x-twilio-signature'] || '';
 		const twilioSignature = Array.isArray(twilioHeader) ? twilioHeader[0] : twilioHeader;
-		return this.isRequestFromTwilio(twilioSignature, request.body);
+		return this.isRequestFromTwilio(twilioSignature, request);
 	}
 
 	error(error: Error & { reason?: string }): SMSProviderResponse {
