@@ -387,6 +387,11 @@ export class E2ERoom extends Emitter {
 			await this.createNewGroupKey();
 
 			await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
+			await sdk.rest.post('/v1/e2e.updateGroupKey', {
+				rid: this.roomId,
+				uid: this.userId,
+				key: await this.encryptGroupKeyForParticipant(e2e.publicKey),
+			});
 			await this.encryptKeyForOtherParticipants();
 		} catch (error) {
 			this.error('Error exporting group key: ', error);
