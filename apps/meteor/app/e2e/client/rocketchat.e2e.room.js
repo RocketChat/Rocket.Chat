@@ -246,7 +246,9 @@ export class E2ERoom extends Emitter {
 	}
 
 	async exportOldRoomKeys(oldKeys) {
+		this.log('exportOldRoomKeys starting');
 		if (!oldKeys || oldKeys.length === 0) {
+			this.log('exportOldRoomKeys nothing to do');
 			return;
 		}
 
@@ -269,6 +271,7 @@ export class E2ERoom extends Emitter {
 			}
 		}
 
+		this.log(`exportOldRoomKeys Done: ${keys.length} keys exported`);
 		return keys;
 	}
 
@@ -424,6 +427,7 @@ export class E2ERoom extends Emitter {
 		this.groupSessionKey = undefined;
 		this.sessionKeyExportedString = undefined;
 		this.sessionKeyExported = undefined;
+		this.oldKeys = undefined;
 	}
 
 	async encryptKeyForOtherParticipants() {

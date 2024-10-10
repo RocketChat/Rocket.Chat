@@ -111,8 +111,8 @@ function replicateMongoSlice(keyId: string, sub: ISubscription) {
 		return [{ e2eKeyId: keyId, ts: new Date(), E2EKey: sub.E2EKey }];
 	}
 
-	const keys = sub.oldRoomKeys;
-	keys.sort((a, b) => b.ts.getTime() - a.ts.getTime());
-	keys.unshift({ e2eKeyId: keyId, ts: new Date(), E2EKey: sub.E2EKey });
-	return keys.slice(0, 10);
+	const sortedKeys = sub.oldRoomKeys.toSorted((a, b) => b.ts.getTime() - a.ts.getTime());
+	sortedKeys.unshift({ e2eKeyId: keyId, ts: new Date(), E2EKey: sub.E2EKey });
+
+	return sortedKeys.slice(0, 10);
 }
