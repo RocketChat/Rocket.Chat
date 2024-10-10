@@ -133,7 +133,7 @@ abstract class AbstractBaseFederationServiceEE extends AbstractFederationService
 		await super.cleanUpHandlers();
 	}
 
-	public async created(): Promise<void> {
+	public async started(): Promise<void> {
 		await super.setupFederation();
 		await this.startFederation();
 	}
@@ -213,8 +213,8 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 		return federationService;
 	}
 
-	async created(): Promise<void> {
-		return super.created();
+	async started(): Promise<void> {
+		return super.started();
 	}
 
 	async stopped(): Promise<void> {
