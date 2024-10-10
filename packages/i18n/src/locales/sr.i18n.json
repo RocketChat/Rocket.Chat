@@ -2279,8 +2279,6 @@
   "Type_your_password": "Унесите своју лозинку",
   "Type_your_username": "Унесите своје корисничко име",
   "UI_Allow_room_names_with_special_chars": "Дозволи посебне знакове у именима соба",
-  "UI_Click_Direct_Message": "Кликните да бисте креирали директну поруку",
-  "UI_Click_Direct_Message_Description": "Прескочите отворени табулатор профила, уместо да идете директно у разговор",
   "UI_DisplayRoles": "Дисплаи Улоге",
   "UI_Group_Channels_By_Type": "Групни канали по типу",
   "UI_Merge_Channels_Groups": "Мерге приватне групе са каналима",
