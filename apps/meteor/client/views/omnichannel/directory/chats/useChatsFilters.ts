@@ -1,4 +1,5 @@
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
@@ -13,6 +14,14 @@ export type ChatsFiltersQuery = {
 	to: string;
 	tags: { _id: string; label: string; value: string }[];
 	[key: string]: unknown;
+};
+
+const statusTextMap: { [key: string]: string } = {
+	all: 'All',
+	closed: 'Closed',
+	opened: 'Room_Status_Open',
+	onhold: 'On_Hold_Chats',
+	queued: 'Queued',
 };
 
 const initialValues: ChatsFiltersQuery = {
@@ -48,7 +57,7 @@ const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 		guest: guest !== '' ? `${t('Text')}: ${guest}` : undefined,
 		servedBy: servedBy !== 'all' ? `${t('Served_By')}: ${agentData?.user.name}` : undefined,
 		department: department !== 'all' ? `${t('Department')}: ${departmentData?.department.name}` : undefined,
-		status: status !== 'all' ? `${t('Status')}: ${status}` : undefined,
+		status: status !== 'all' ? `${t('Status')}: ${t(statusTextMap[status] as TranslationKey)}` : undefined,
 		tags: tags.length > 0 ? tags.map((tag) => `${t('Tag')}: ${tag.label}`) : undefined,
 		...displayCustomFields,
 	};

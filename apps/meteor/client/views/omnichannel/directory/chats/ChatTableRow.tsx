@@ -25,6 +25,10 @@ const ChatTableRow = (room: IOmnichannelRoomWithDepartment) => {
 			return t('Closed');
 		}
 
+		if (open && !servedBy) {
+			return t('Queued');
+		}
+
 		return onHold ? t('On_Hold_Chats') : t('Room_Status_Open');
 	};
 

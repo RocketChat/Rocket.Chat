@@ -1,5 +1,5 @@
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
-import { useUserId } from '@rocket.chat/ui-contexts';
+import { usePermission, useUserId } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 
 import type { ChatsFiltersQuery } from './useChatsFilters';
@@ -24,25 +24,14 @@ type CurrentChatQuery = {
 	customFields?: string;
 	sort: string;
 	count?: number;
+	queued?: boolean;
 };
-
-// const query = useMemo(
-// 	() => ({
-// 		sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-// 		open: false,
-// 		roomName: text || '',
-// 		agents: userIdLoggedIn ? [userIdLoggedIn] : [],
-// 		...(itemsPerPage && { count: itemsPerPage }),
-// 		...(current && { offset: current }),
-// 		...filtersQuery,
-// 	}),
-// 	[sortBy, current, sortDirection, itemsPerPage, userIdLoggedIn, text, filtersQuery],
-// );
 
 const sortDir = (sortDir: 'asc' | 'desc'): 1 | -1 => (sortDir === 'asc' ? 1 : -1);
 
 export const useChatsQuery = () => {
 	const userIdLoggedIn = useUserId();
+	const canViewLivechatRooms = usePermission('view-livechat-rooms');
 
 	const chatsQuery: useQueryType = (
 		{ guest, servedBy, department, status, from, to, tags, ...customFields },
@@ -72,12 +61,15 @@ export const useChatsQuery = () => {
 		}
 
 		if (status !== 'all') {
-			query.open = status === 'opened' || status === 'onhold';
+			query.open = status === 'opened' || status === 'onhold' || status === 'queued';
 			query.onhold = status === 'onhold';
+			query.queued = status === 'queued';
 		}
 
-		if (servedBy && servedBy !== 'all') {
+		if (canViewLivechatRooms && servedBy && servedBy !== 'all') {
 			query.agents = [servedBy];
+		} else {
+			query.agents = userIdLoggedIn ? [userIdLoggedIn] : [];
 		}
 
 		if (department && department !== 'all') {
