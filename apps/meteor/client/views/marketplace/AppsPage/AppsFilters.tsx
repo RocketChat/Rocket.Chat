@@ -59,7 +59,7 @@ const AppsFilters = ({
 	const fixFiltersSize = breakpoints.includes('lg') ? { maxWidth: 'x200', minWidth: 'x200' } : null;
 
 	return (
-		<Box pi={24} mbe={4}>
+		<Box pi={24}>
 			<FilterByText placeholder={appsSearchPlaceholders[context]} onChange={setText}>
 				{!isPrivateAppsPage && (
 					<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
