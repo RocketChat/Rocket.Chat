@@ -9346,6 +9346,7 @@ __metadata:
     "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/logo": ^0.31.30
     "@rocket.chat/message-parser": "workspace:^"
+    "@rocket.chat/omnichannel-typings": "workspace:^"
     "@rocket.chat/random": "workspace:~"
     "@rocket.chat/sdk": ^1.0.0-alpha.42
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -9920,6 +9921,7 @@ __metadata:
   resolution: "@rocket.chat/model-typings@workspace:packages/model-typings"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/omnichannel-typings": "workspace:^"
     "@types/node-rsa": ^1.1.4
     eslint: ~8.45.0
     mongodb: ^4.17.2

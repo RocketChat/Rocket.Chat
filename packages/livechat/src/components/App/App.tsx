@@ -1,4 +1,4 @@
-import type { ILivechatTrigger } from '@rocket.chat/core-typings';
+import type { ILivechatTrigger } from '@rocket.chat/omnichannel-typings';
 import i18next from 'i18next';
 import { Component } from 'preact';
 import Router, { route } from 'preact-router';

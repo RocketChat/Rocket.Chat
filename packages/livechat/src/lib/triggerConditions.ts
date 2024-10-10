@@ -1,4 +1,4 @@
-import type { ILivechatTriggerCondition } from '@rocket.chat/core-typings';
+import type { ILivechatTriggerCondition } from '@rocket.chat/omnichannel-typings';
 
 import store from '../store';
 import Triggers from './triggers';

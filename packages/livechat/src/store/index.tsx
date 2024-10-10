@@ -1,4 +1,4 @@
-import type { ILivechatVisitor, ILivechatVisitorDTO, Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, ILivechatVisitorDTO, Serialized } from '@rocket.chat/omnichannel-typings';
 import type { ComponentChildren } from 'preact';
 import { Component, createContext } from 'preact';
 import { useContext } from 'preact/hooks';
