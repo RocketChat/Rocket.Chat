@@ -5646,8 +5646,6 @@
   "Upload_anyway": "Ladda upp ändå",
   "App_limit_reached": "App-gränsen har nåtts",
   "App_limit_exceeded": "App-gränsen har överskridits",
-  "Private_apps_limit_reached": "Gränsen för privata appar har nåtts",
-  "Private_apps_limit_exceeded": "Gränsen för privata appar har överskridits",
   "Disable_at_least_more_apps": "Du måste inaktivera minst {{numberOfExceededApps}} andra appar eller uppgradera till Enterprise för att aktivera den här appen.",
   "Community_Private_apps_limit_exceeded": "Gränsen för appar i Community Edition har överskridits.",
   "Theme_match_system": "Matchningssystem",
