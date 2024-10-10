@@ -70,7 +70,6 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 		try {
 			apiDeprecationLogger.parameter(route, 'fields', '8.0.0', response, messageGenerator);
 			fields = JSON.parse(params.fields) as Record<string, 0 | 1>;
-
 			Object.entries(fields).forEach(([key, value]) => {
 				if (value !== 1 && value !== 0) {
 					throw new Meteor.Error('error-invalid-sort-parameter', `Invalid fields parameter: ${key}`, {
