@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/apps",
-	"version": "0.1.8-rc.1",
+	"version": "0.1.8",
 	"private": true,
 	"devDependencies": {
 		"eslint": "~8.45.0",
