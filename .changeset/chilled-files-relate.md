@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Added methods to the Apps-Engine that interact with unread messages
+Adds methods to the Apps-Engine to interact with unread messages to enhance message capabilities on Apps.
