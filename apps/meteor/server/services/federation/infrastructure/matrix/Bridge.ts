@@ -489,7 +489,7 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public async getReadStreamForFileFromUrl(externalUserId: string, fileUrl: string): Promise<ReadableStream> {
-		const response = await fetch(this.convertMatrixUrlToHttp(externalUserId, fileUrl));
+		const response = await fetch(await this.convertMatrixUrlToHttp(externalUserId, fileUrl));
 		if (!response.body) {
 			throw new Error('Not able to download the file');
 		}
