@@ -2403,7 +2403,7 @@
   "Thank_you_for_your_feedback": "ຂໍ​ຂອບ​ໃຈ​ທ່ານ​ສໍາ​ລັບ​ການ​ຕໍາ​ນິ​ຕິ​ຊົມ​ຂອງ​ທ່ານ​",
   "The_application_name_is_required": "ຊື່ຄໍາຮ້ອງສະຫມັກແມ່ນຈໍາເປັນຕ້ອງ",
   "The_channel_name_is_required": "ຊື່ຊ່ອງທາງການຈໍາເປັນຕ້ອງ",
-  "The_emails_are_being_sent": "ອີເມວໄດ້ຖືກສົ່ງໄປແລ້ວ.",   
+  "The_emails_are_being_sent": "ອີເມວໄດ້ຖືກສົ່ງໄປແລ້ວ.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "ການ resize ຮູບພາບຈະບໍ່ເຮັດວຽກເພາະວ່າພວກເຮົາບໍ່ສາມາດກວດພົບ ImageMagick ຫຼື GraphicsMagick ການຕິດຕັ້ງໃນເຄື່ອງແມ່ຂ່າຍຂອງທ່ານ.",
   "The_redirectUri_is_required": "The redirectUri ຈໍາເປັນຕ້ອງມີ",
   "The_server_will_restart_in_s_seconds": "ເຄື່ອງແມ່ຂ່າຍຂອງຈະເລີ່ມການເຮັດວຽກໃນ %s ວິນາທີ",
