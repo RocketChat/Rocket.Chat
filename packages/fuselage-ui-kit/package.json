@@ -38,7 +38,9 @@
     "typecheck": "tsc --noEmit",
     "docs": "cross-env NODE_ENV=production build-storybook -o ../../static/fuselage-ui-kit",
     "storybook": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' start-storybook -p 6006 --no-version-updates",
-    "build-storybook": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' NODE_ENV=production build-storybook"
+    "build-storybook": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' NODE_ENV=production build-storybook",
+    "build-preview": "yarn build-storybook",
+    ".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./storybook-static ../../.preview/fuselage-ui-kit"
   },
   "peerDependencies": {
     "@rocket.chat/apps-engine": "*",
@@ -62,7 +64,7 @@
     "@babel/preset-env": "~7.22.20",
     "@babel/preset-react": "~7.22.15",
     "@babel/preset-typescript": "~7.22.15",
-    "@newhighsco/storybook-addon-transpile-modules": "~1.0.0",
+    "@newhighsco/storybook-addon-transpile-modules": "^1.0.21",
     "@rocket.chat/apps-engine": "workspace:^",
     "@rocket.chat/core-typings": "workspace:^",
     "@rocket.chat/eslint-config": "workspace:^",
@@ -81,6 +83,7 @@
     "@storybook/addon-essentials": "~6.5.16",
     "@storybook/addons": "~6.5.16",
     "@storybook/react": "~6.5.16",
+    "@storybook/react-webpack5": "^8.3.5",
     "@storybook/theming": "~6.5.16",
     "@tanstack/react-query": "^4.16.1",
     "@testing-library/react": "~16.0.1",
@@ -99,6 +102,7 @@
     "react-dom": "^17.0.2",
     "react-i18next": "~13.2.2",
     "rimraf": "^3.0.2",
+    "storybook": "^8.3.5",
     "storybook-dark-mode": "~2.1.1",
     "typescript": "~5.5.4"
   },
