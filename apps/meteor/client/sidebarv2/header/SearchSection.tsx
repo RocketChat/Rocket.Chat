@@ -93,6 +93,11 @@ const SearchSection = () => {
 				setShowRecent(false);
 				setFocus('filterText');
 			},
+			'Shift+$mod+K': (event) => {
+				event.preventDefault();
+				setShowRecent(true);
+				setFocus('filterText');
+			},
 			'Escape': (event) => {
 				event.preventDefault();
 				setShowRecent(false);
