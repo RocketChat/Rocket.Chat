@@ -68,7 +68,7 @@ const GenericModal = ({
 	icon,
 	onCancel,
 	onClose = onCancel,
-	onDismiss = onCancel,
+	onDismiss = onClose,
 	onConfirm,
 	dontAskAgain,
 	confirmDisabled,
