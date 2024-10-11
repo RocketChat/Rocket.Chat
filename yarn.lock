@@ -9240,8 +9240,7 @@ __metadata:
     react-dom: ^17.0.2
     react-i18next: ~13.2.2
     rimraf: ^3.0.2
-    storybook-dark-mode: ~3.0.3
-    tslib: ^2.7.0
+    storybook-dark-mode: ~2.1.1
     typescript: ~5.5.4
   peerDependencies:
     "@rocket.chat/apps-engine": "*"
@@ -11604,7 +11603,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addons@npm:6.5.16, @storybook/addons@npm:~6.5.16":
+"@storybook/addons@npm:6.5.16, @storybook/addons@npm:^6.5.14, @storybook/addons@npm:~6.5.16":
   version: 6.5.16
   resolution: "@storybook/addons@npm:6.5.16"
   dependencies:
@@ -11640,7 +11639,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/api@npm:6.5.16":
+"@storybook/api@npm:6.5.16, @storybook/api@npm:^6.5.14":
   version: 6.5.16
   resolution: "@storybook/api@npm:6.5.16"
   dependencies:
@@ -11895,7 +11894,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/components@npm:6.5.16":
+"@storybook/components@npm:6.5.16, @storybook/components@npm:^6.5.14":
   version: 6.5.16
   resolution: "@storybook/components@npm:6.5.16"
   dependencies:
@@ -12044,7 +12043,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/core-events@npm:6.5.16":
+"@storybook/core-events@npm:6.5.16, @storybook/core-events@npm:^6.5.14":
   version: 6.5.16
   resolution: "@storybook/core-events@npm:6.5.16"
   dependencies:
@@ -12894,7 +12893,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/theming@npm:6.5.16, @storybook/theming@npm:~6.5.16":
+"@storybook/theming@npm:6.5.16, @storybook/theming@npm:^6.5.14, @storybook/theming@npm:~6.5.16":
   version: 6.5.16
   resolution: "@storybook/theming@npm:6.5.16"
   dependencies:
@@ -39994,6 +39993,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"storybook-dark-mode@npm:~2.1.1":
+  version: 2.1.1
+  resolution: "storybook-dark-mode@npm:2.1.1"
+  dependencies:
+    "@storybook/addons": ^6.5.14
+    "@storybook/api": ^6.5.14
+    "@storybook/components": ^6.5.14
+    "@storybook/core-events": ^6.5.14
+    "@storybook/global": ^5.0.0
+    "@storybook/theming": ^6.5.14
+    fast-deep-equal: ^3.1.3
+    memoizerific: ^1.11.3
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 44d6313013a1d63f47c95e2e8e0d11c24d467b3540259e152ceb3236636dbadf7a46c6f7f183946b105ee53173cb13815f1f88ca6da41fc74673c3c11f619863
+  languageName: node
+  linkType: hard
+
 "storybook-dark-mode@npm:~3.0.3":
   version: 3.0.3
   resolution: "storybook-dark-mode@npm:3.0.3"
@@ -42013,7 +42036,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.6.2, tslib@npm:^2.7.0":
+"tslib@npm:^2.6.2":
   version: 2.7.0
   resolution: "tslib@npm:2.7.0"
   checksum: 1606d5c89f88d466889def78653f3aab0f88692e80bb2066d090ca6112ae250ec1cfa9dbfaab0d17b60da15a4186e8ec4d893801c67896b277c17374e36e1d28
