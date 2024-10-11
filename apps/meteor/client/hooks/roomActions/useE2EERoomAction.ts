@@ -32,7 +32,8 @@ export const useE2EERoomAction = () => {
 
 	const enabledOnRoom = !!room.encrypted;
 
-	const roomType = getRoomTypeTranslation(room).toLowerCase();
+	const roomType = useMemo(() => getRoomTypeTranslation(room)?.toLowerCase(), [room]);
+
 	const roomId = room._id;
 
 	const toggleE2E = useEndpoint('POST', '/v1/rooms.saveRoomSettings');
