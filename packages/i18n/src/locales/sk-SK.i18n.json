@@ -2375,7 +2375,7 @@
   "Thank_you_for_your_feedback": "Ďakujeme vám za vašu spätnú väzbu",
   "The_application_name_is_required": "Názov aplikácie je povinný",
   "The_channel_name_is_required": "Názov kanála je povinný",
-  "The_emails_are_being_sent": "Posielajú sa e-maily.",   
+  "The_emails_are_being_sent": "Posielajú sa e-maily.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Zmena veľkosti obrázka nebude fungovať, pretože na vašom serveri nemôžeme nájsť aplikácie ImageMagick alebo GraphicsMagick.",
   "The_redirectUri_is_required": "Vyžaduje sa presmerovanie",
   "The_server_will_restart_in_s_seconds": "Server sa reštartuje v%s",

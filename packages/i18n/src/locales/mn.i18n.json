@@ -2361,7 +2361,7 @@
   "Thank_you_for_your_feedback": "Таны санал хүсэлтэнд баярлалаа",
   "The_application_name_is_required": "Програмын нэр шаардлагатай",
   "The_channel_name_is_required": "Сувгийн нэр шаардлагатай",
-  "The_emails_are_being_sent": "Э-мэйл илгээж байна.",   
+  "The_emails_are_being_sent": "Э-мэйл илгээж байна.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "ImageMagick эсвэл GraphicsMagick-г сервер дээрээ суулгаж чаддаггүй болохоор зургийн хэмжээг өөрчлөх боломжгүй.",
   "The_redirectUri_is_required": "RedirectUri шаардлагатай",
   "The_server_will_restart_in_s_seconds": "Сервер%s секундын дараа дахин эхлүүлэх болно",

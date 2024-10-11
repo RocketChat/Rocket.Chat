@@ -2366,7 +2366,7 @@
   "Thank_you_for_your_feedback": "Əlaqə üçün təşəkkür edirik",
   "The_application_name_is_required": "Ərizə adı tələb olunur",
   "The_channel_name_is_required": "Kanal adı tələb olunur",
-  "The_emails_are_being_sent": "E-poçt göndərilir.",   
+  "The_emails_are_being_sent": "E-poçt göndərilir.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "ImageMagick və ya GraphicsMagick-i serverinizdə yükləməyəcəyimiz üçün şəkil ölçüsünün işləməyəcəyi.",
   "The_redirectUri_is_required": "RedirectUri tələb olunur",
   "The_server_will_restart_in_s_seconds": "Server%s saniyə ərzində yenidən başlayacaq",
