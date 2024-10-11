@@ -7,9 +7,47 @@ import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 
+async function insertOrUpdateSound(fileName: string, fileId?: string): Promise<string> {
+	fileId = fileId ?? '';
+
+	await request
+		.post(api('method.call/insertOrUpdateSound'))
+		.set(credentials)
+		.send({
+			message: JSON.stringify({
+				msg: 'method',
+				id: '1',
+				method: 'insertOrUpdateSound',
+				params: [{ name: fileName, extension: 'mp3', newFile: true }],
+			}),
+		})
+		.expect(200)
+		.expect((res) => {
+			fileId = JSON.parse(res.body.message).result;
+		});
+
+	return fileId;
+}
+
+async function uploadCustomSound(binary: string, fileName: string, fileId: string) {
+	await request
+		.post(api('method.call/uploadCustomSound'))
+		.set(credentials)
+		.send({
+			message: JSON.stringify({
+				msg: 'method',
+				id: '2',
+				method: 'uploadCustomSound',
+				params: [binary, 'audio/wav', { name: fileName, extension: 'wav', newFile: true, _id: fileId }],
+			}),
+		})
+		.expect(200);
+}
+
 describe('[CustomSounds]', () => {
 	const fileName = `test-file-${randomUUID()}`;
 	let fileId: string;
+	let fileId2: string;
 	let uploadDate: unknown;
 
 	before((done) => getCredentials(done));
@@ -17,33 +55,12 @@ describe('[CustomSounds]', () => {
 	before(async () => {
 		const data = readFileSync(path.resolve(__dirname, '../../mocks/files/audio_mock.wav'));
 		const binary = data.toString('binary');
-		await request
-			.post(api('method.call/insertOrUpdateSound'))
-			.set(credentials)
-			.send({
-				message: JSON.stringify({
-					msg: 'method',
-					id: '1',
-					method: 'insertOrUpdateSound',
-					params: [{ name: fileName, extension: 'mp3', newFile: true }],
-				}),
-			})
-			.expect(200)
-			.expect((res) => {
-				fileId = JSON.parse(res.body.message).result;
-			});
-		await request
-			.post(api('method.call/uploadCustomSound'))
-			.set(credentials)
-			.send({
-				message: JSON.stringify({
-					msg: 'method',
-					id: '2',
-					method: 'uploadCustomSound',
-					params: [binary, 'audio/wav', { name: fileName, extension: 'wav', newFile: true, _id: fileId }],
-				}),
-			})
-			.expect(200);
+
+		fileId = await insertOrUpdateSound(fileName);
+		fileId2 = await insertOrUpdateSound(`${fileName}-2`);
+
+		await uploadCustomSound(binary, fileName, fileId);
+		await uploadCustomSound(binary, `${fileName}-2`, fileId2);
 	});
 
 	after(() =>
@@ -97,16 +114,16 @@ describe('[CustomSounds]', () => {
 				.set(credentials)
 				.expect(200)
 				.query({
-					name: fileName,
+					name: `${fileName}-2`,
 					count: 5,
 					offset: 0,
 				})
 				.expect((res) => {
 					expect(res.body).to.have.property('sounds').and.to.be.an('array');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('count');
-					expect(res.body.sounds[0]._id).to.be.equal(fileId);
+					expect(res.body).to.have.property('total').to.equal(1);
+					expect(res.body).to.have.property('offset').to.equal(0);
+					expect(res.body).to.have.property('count').to.equal(1);
+					expect(res.body.sounds[0]._id).to.be.equal(fileId2);
 				})
 				.end(done);
 		});
