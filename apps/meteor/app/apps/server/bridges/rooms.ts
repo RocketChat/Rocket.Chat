@@ -245,21 +245,21 @@ export class AppRoomBridge extends RoomBridge {
 		return users.map((user: ICoreUser) => userConverter.convertToApp(user));
 	}
 
-	protected async getUnreadByUser(roomId: string, userId: string, options: GetMessagesOptions, appId: string): Promise<Array<IMessageRaw>> {
-		this.orch.debugLog(`The App ${appId} is getting the unread messages for the user: "${userId}" in the room: "${roomId}"`);
+	protected async getUnreadByUser(roomId: string, uid: string, options: GetMessagesOptions, appId: string): Promise<Array<IMessageRaw>> {
+		this.orch.debugLog(`The App ${appId} is getting the unread messages for the user: "${uid}" in the room: "${roomId}"`);
 
 		const messageConverter = this.orch.getConverters()?.get('messages');
 		if (!messageConverter) {
 			throw new Error('Message converter not found');
 		}
 
-		const room = await Rooms.findOneById(roomId, { projection: { _id: 1 } });
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, uid, { projection: { ls: 1 } });
 
-		if (!room) {
-			throw new Error('Room not found');
+		if (!subscription) {
+			throw new Error(
+				`No subscription found for user with ID "${uid}" in room with ID "${roomId}". This means the user is not subscribed to the room.`,
+			);
 		}
-
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, userId, { projection: { ls: 1 } });
 
 		const lastSeen = subscription?.ls;
 		if (!lastSeen) {
@@ -279,17 +279,14 @@ export class AppRoomBridge extends RoomBridge {
 
 	protected async getUserUnreadMessageCount(roomId: string, uid: string, appId: string): Promise<number> {
 		this.orch.debugLog(`The App ${appId} is getting the unread messages count of the room: "${roomId}" for the user: "${uid}"`);
-		const user = await Users.findOneById(uid, { projection: { _id: 1 } });
-		if (!user) {
-			throw new Error('User not found');
-		}
-
-		const room = await Rooms.findOneById(roomId, { projection: { _id: 1 } });
-		if (!room) {
-			throw new Error('Room not found');
-		}
 
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, uid, { projection: { ls: 1 } });
+
+		if (!subscription) {
+			throw new Error(
+				`No subscription found for user with ID "${uid}" in room with ID "${roomId}". This means the user is not subscribed to the room.`,
+			);
+		}
 
 		const lastSeen = subscription?.ls;
 		if (!lastSeen) {
