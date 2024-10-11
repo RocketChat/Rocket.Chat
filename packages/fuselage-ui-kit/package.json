@@ -60,10 +60,10 @@
     "react-dom": "*"
   },
   "devDependencies": {
-    "@babel/core": "~7.22.20",
-    "@babel/preset-env": "~7.22.20",
-    "@babel/preset-react": "~7.22.15",
-    "@babel/preset-typescript": "~7.22.15",
+    "@babel/core": "~7.25.8",
+    "@babel/preset-env": "~7.25.8",
+    "@babel/preset-react": "~7.25.7",
+    "@babel/preset-typescript": "~7.25.7",
     "@newhighsco/storybook-addon-transpile-modules": "^1.0.21",
     "@rocket.chat/apps-engine": "workspace:^",
     "@rocket.chat/core-typings": "workspace:^",
