@@ -30,7 +30,6 @@ import './methods/saveCustomField';
 import './methods/saveDepartment';
 import './methods/sendMessageLivechat';
 import './methods/sendFileLivechatMessage';
-import './methods/setDepartmentForVisitor';
 import './methods/transfer';
 import './methods/setUpConnection';
 import './methods/takeInquiry';
