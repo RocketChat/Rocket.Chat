@@ -319,7 +319,7 @@ API.v1.addRoute(
 				return API.v1.success();
 			} catch (e) {
 				console.error(e);
-				return API.v1.failure(e);
+				return API.v1.failure('error-e2e-key-reset-failed');
 			} finally {
 				LockMap.delete(rid);
 			}

@@ -77,10 +77,12 @@ export async function resetRoomKey(roomId: string, userId: string, newRoomKey: s
 	// And set the new key to the user that called the func
 	const result = await Subscriptions.setE2EKeyByUserIdAndRoomId(userId, roomId, newRoomKey);
 
-	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	void notifyOnSubscriptionChanged(result.value!);
-	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	void notifyOnRoomChanged(roomResult.value!);
+	if (result.value) {
+		void notifyOnSubscriptionChanged(result.value);
+	}
+	if (roomResult.value) {
+		void notifyOnRoomChanged(roomResult.value);
+	}
 }
 
 function pushToLimit(
