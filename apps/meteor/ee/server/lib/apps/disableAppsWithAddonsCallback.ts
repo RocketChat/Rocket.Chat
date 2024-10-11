@@ -31,7 +31,7 @@ export async function _disableAppsWithAddonsCallback(
 
 	if (!affectedApps.length) return;
 
-	await sendMessagesToAdmins({
+	await deps.sendMessagesToAdmins({
 		msgs: async ({ adminUser }) => ({
 			msg: i18n.t('App_has_been_disabled_addon_message', {
 				lng: adminUser.language || 'en',

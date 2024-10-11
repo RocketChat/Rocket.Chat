@@ -183,4 +183,51 @@ describe('disableAppsWithAddonsCallback', () => {
 		expect(AppsMock.getManager()?.disable).to.not.have.been.called();
 		expect(sendMessagesToAdminsSpy).to.not.have.been.called();
 	});
+
+	it('should send messages to admins if some app has been disabled', async () => {
+		function installedApps() {
+			return [
+				{
+					getInfo: () => ({}),
+					getName: () => 'Test App Without Addon',
+					getID() {
+						return 'test-app-without-addon';
+					},
+				},
+				{
+					getInfo: () => ({ addon: 'chat.rocket.test-addon' }),
+					getName: () => 'Test App WITH Addon',
+					getID() {
+						return 'test-app-with-addon';
+					},
+				},
+			];
+		}
+
+		function getManagerDisable() {
+			return undefined;
+		}
+
+		const mockManager = {
+			disable: spy(getManagerDisable),
+		};
+
+		const AppsMock = {
+			installedApps: spy(installedApps),
+			getManager: () => mockManager,
+		} as unknown as AppServerOrchestrator;
+
+		const sendMessagesToAdminsSpy = spy(sendMessagesToAdmins);
+
+		await expect(
+			_disableAppsWithAddonsCallback(
+				{ Apps: AppsMock, sendMessagesToAdmins: sendMessagesToAdminsSpy },
+				{ module: 'chat.rocket.test-addon', external: true, valid: false },
+			),
+		).to.not.eventually.be.rejected;
+
+		expect(AppsMock.installedApps).to.have.been.called();
+		expect(AppsMock.getManager()?.disable).to.have.been.called.once;
+		expect(sendMessagesToAdminsSpy).to.have.been.called();
+	});
 });
