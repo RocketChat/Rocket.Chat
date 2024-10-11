@@ -10,6 +10,7 @@
     emoji,
     emojiUnicode,
     emoticon,
+    extractFirstResult,
     heading,
     image,
     inlineCode,
@@ -33,6 +34,11 @@
     unorderedList,
     timestamp,
   } = require('./utils');
+
+let skipBold = false;
+let skipItalic = false;
+let skipStrikethrough = false;
+let skipReferences = false;
 }}
 
 Start
@@ -212,7 +218,7 @@ Inline = value:(InlineItem / Any)+ EndOfLine? { return reducePlainTexts(value); 
 
 InlineItem = Whitespace
   / Timestamp
-  / References
+  / MaybeReferences
   / AutolinkedPhone
   / AutolinkedEmail
   / AutolinkedURL
@@ -240,7 +246,7 @@ References
   = "[" title:LinkTitle* "](" href:LinkRef ")" { return title.length ? link(href, reducePlainTexts(title)) : link(href); }
   / "<" href:LinkRef "|" title:LinkTitle2 ">" { return link(href, [plain(title)]); }
 
-LinkTitle = (Whitespace / EmphasisForReferences) / anyTitle:$(!("](" .) .) { return plain(anyTitle) }
+LinkTitle = (Whitespace / Emphasis) / anyTitle:$(!("](" .) .) { return plain(anyTitle) }
 
 LinkTitle2 = $([\x20-\x3B\x3D\x3F-\x60\x61-\x7B\x7D-\xFF] / NonASCII)+
 
@@ -349,14 +355,7 @@ AutoLinkURLBody =  !(Extra* (Whitespace / EndOfLine)) .
  * Emphasis
  *
 */
-Emphasis = Bold / Italic / Strikethrough
-
-/**
- *
- * Emphasis for References
- *
-*/
-EmphasisForReferences = BoldForReferences / ItalicForReferences / StrikethroughForReferences
+Emphasis = MaybeBold / MaybeItalic / MaybeStrikethrough
 
 /**
  *
@@ -364,6 +363,63 @@ EmphasisForReferences = BoldForReferences / ItalicForReferences / StrikethroughF
  * e.g: __italic__, _italic_, **bold**, __*bold italic*__, ~~strikethrough~~
  *
  */
+
+// This rule is used inside expressions that have a JS code ensuring they always fail,
+// Without any pattern to match, peggy will think the rule may end up succedding without consuming any input, which could cause infinite loops
+// So this unreachable rule is added to them to satisfy peggy's requirement.
+BlockedByJavascript = 'unreachable'
+
+MaybeBold
+  = result:(
+    & {
+      if (skipBold) { return false; }
+      skipBold = true;
+      return true;
+    }
+    (
+      (text:Bold { skipBold = false; return text; })
+      / (& { skipBold = false; return false; } BlockedByJavascript)
+    )
+  ) { return extractFirstResult(result); }
+
+MaybeStrikethrough
+  = result:(
+    & {
+      if (skipStrikethrough) { return false; }
+      skipStrikethrough = true;
+      return true;
+    }
+    (
+      (text:Strikethrough { skipStrikethrough = false; return text; })
+      / (& { skipStrikethrough = false; return false; } BlockedByJavascript)
+    )
+  ) { return extractFirstResult(result); }
+
+MaybeItalic
+  = result:(
+    & {
+      if (skipItalic) { return false; }
+      skipItalic = true;
+      return true;
+    }
+    (
+      (text:Italic { skipItalic = false; return text; })
+      / (& { skipItalic = false; return false; } BlockedByJavascript)
+    )
+  ) { return extractFirstResult(result); }
+
+MaybeReferences
+  = result:(
+    & {
+      if (skipReferences) { return false; }
+      skipReferences = true;
+      return true;
+    }
+    (
+      (text:References { skipReferences = false; return text; })
+      / (& { skipReferences = false; return false; } BlockedByJavascript)
+    )
+  ) { return extractFirstResult(result); }
 
 /* Italic */
 Italic
@@ -384,11 +440,11 @@ ItalicContentItems = text:ItalicContentItem+ { return reducePlainTexts(text); }
 ItalicContentItem
   = Whitespace
   / InlineCode
-  / References
+  / MaybeReferences
   / UserMention
   / ChannelMention
-  / Bold
-  / Strikethrough
+  / MaybeBold
+  / MaybeStrikethrough
   / Emoji
   / Emoticon
   / AnyItalic
@@ -399,52 +455,12 @@ Bold = [\x2A] [\x2A] @BoldContent [\x2A] [\x2A] / [\x2A] @BoldContent [\x2A]
 
 BoldContent = text:BoldContentItem+ { return bold(reducePlainTexts(text)); }
 
-BoldContentItem = Whitespace / InlineCode / References / UserMention / ChannelMention / Italic / Strikethrough / Emoji / Emoticon / AnyBold / Line
+BoldContentItem = Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeStrikethrough / Emoji / Emoticon / AnyBold / Line
 
 /* Strike */
 Strikethrough = [\x7E] [\x7E] @StrikethroughContent [\x7E] [\x7E] / [\x7E] @StrikethroughContent [\x7E]
 
-StrikethroughContent = text:(Timestamp / InlineCode / Whitespace / References / UserMention / ChannelMention / Italic / Bold / Emoji / Emoticon / AnyStrike / Line)+ {
-      return strike(reducePlainTexts(text));
-    }
-
-/* Italic for References */
-ItalicForReferences
-   = value:$([a-zA-Z0-9]+ [\x5F] [\x5F]?) { return plain(value); }
-  / [\x5F] [\x5F] i:ItalicContentItemsForReferences [\x5F] [\x5F] t:$[a-zA-Z0-9]+ {
-      return reducePlainTexts([plain('__'), ...i, plain('__'), plain(t)])[0];
-    }
-  / [\x5F] i:ItalicContentItemsForReferences [\x5F] t:$[a-zA-Z]+ {
-      return reducePlainTexts([plain('_'), ...i, plain('_'), plain(t)])[0];
-    }
-  / [\x5F] [\x5F] @ItalicContentForReferences [\x5F] [\x5F]
-  / [\x5F] @ItalicContentForReferences [\x5F]
-
-ItalicContentForReferences = text:ItalicContentItemsForReferences { return italic(text); }
-
-ItalicContentItemsForReferences = text:ItalicContentItemForReferences+ { return reducePlainTexts(text); }
-
-ItalicContentItemForReferences
-  = Whitespace
-  / UserMention
-  / ChannelMention
-  / BoldForReferences
-  / StrikethroughForReferences
-  / Emoji
-  / Emoticon
-  / AnyItalic
-  / Line
-  / InlineCode
-
-/* Bold for References */
-BoldForReferences = [\x2A] [\x2A] @BoldContentForReferences [\x2A] [\x2A] / [\x2A] @BoldContentForReferences [\x2A]
-
-BoldContentForReferences = text:(Whitespace / UserMention / ChannelMention / ItalicForReferences / StrikethroughForReferences / Emoji / Emoticon / AnyBold / Line / InlineCode)+ { return bold(reducePlainTexts(text)); }
-
-/* Strike for References */
-StrikethroughForReferences = [\x7E] [\x7E] @StrikethroughContentForReferences [\x7E] [\x7E] / [\x7E] @StrikethroughContentForReferences [\x7E]
-
-StrikethroughContentForReferences = text:(Whitespace / UserMention / ChannelMention / ItalicForReferences / BoldForReferences / Emoji / Emoticon / AnyStrike / Line / InlineCode)+ {
+StrikethroughContent = text:(Timestamp / Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeBold / Emoji / Emoticon / AnyStrike / Line)+ {
       return strike(reducePlainTexts(text));
     }
 

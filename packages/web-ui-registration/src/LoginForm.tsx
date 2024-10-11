@@ -162,7 +162,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 								<FieldRow>
 									<TextInput
 										{...register('usernameOrEmail', {
-											required: t('registration.component.form.requiredField'),
+											required: t('Required_field', { field: t('registration.component.form.emailOrUsername') }),
 										})}
 										placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
 										error={errors.usernameOrEmail?.message}
@@ -184,7 +184,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 								<FieldRow>
 									<PasswordInput
 										{...register('password', {
-											required: t('registration.component.form.requiredField'),
+											required: t('Required_field', { field: t('registration.component.form.password') }),
 										})}
 										placeholder={passwordPlaceholder}
 										error={errors.password?.message}

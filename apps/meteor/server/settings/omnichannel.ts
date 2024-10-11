@@ -157,6 +157,13 @@ export const createOmniSettings = () =>
 			i18nLabel: 'Show_agent_email',
 		});
 
+		await this.add('Omnichannel_allow_visitors_to_close_conversation', true, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			public: true,
+			enableQuery: omnichannelEnabledQuery,
+		});
+
 		await this.add('Livechat_request_comment_when_closing_conversation', true, {
 			type: 'boolean',
 			group: 'Omnichannel',

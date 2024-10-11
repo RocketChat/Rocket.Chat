@@ -1,5 +1,10 @@
 import type { ILivechatContact } from '@rocket.chat/core-typings';
+import type { FindCursor, FindOptions, UpdateResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { FindPaginated, IBaseModel } from './IBaseModel';
 
-export type ILivechatContactsModel = IBaseModel<ILivechatContact>;
+export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
+	updateContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact>;
+	findPaginatedContacts(searchText?: string, options?: FindOptions): FindPaginated<FindCursor<ILivechatContact>>;
+	updateLastChatById(contactId: string, lastChat: ILivechatContact['lastChat']): Promise<UpdateResult>;
+}

@@ -91,22 +91,31 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
 	}) {
 		const match: Document = { $match: { t: 'l', open: true, servedBy: { $exists: true } } };
-		const matchUsers: Document = { $match: {} };
+
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		if (agentId) {
-			matchUsers.$match['user._id'] = agentId;
-		}
-		if (!includeOfflineAgents) {
-			matchUsers.$match['user.status'] = { $ne: 'offline' };
-			matchUsers.$match['user.statusLivechat'] = { $eq: 'available' };
-		}
+
 		const departmentsLookup = {
 			$lookup: {
 				from: 'rocketchat_livechat_department',
-				localField: 'departmentId',
-				foreignField: '_id',
+				let: {
+					deptId: '$departmentId',
+				},
+				pipeline: [
+					{
+						$match: {
+							$expr: {
+								$eq: ['$_id', '$$deptId'],
+							},
+						},
+					},
+					{
+						$project: {
+							name: 1,
+						},
+					},
+				],
 				as: 'departments',
 			},
 		};
@@ -116,27 +125,40 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				preserveNullAndEmptyArrays: true,
 			},
 		};
-		const departmentsGroup = {
-			$group: {
-				_id: {
-					departmentId: '$departmentId',
-					name: '$departments.name',
-					room: '$$ROOT',
-				},
-			},
-		};
+
 		const usersLookup = {
 			$lookup: {
 				from: 'users',
-				localField: '_id.room.servedBy._id',
-				foreignField: '_id',
+				let: {
+					servedById: '$servedBy._id',
+				},
+				pipeline: [
+					{
+						$match: {
+							$expr: {
+								$eq: ['$_id', '$$servedById'],
+							},
+							...(!includeOfflineAgents && {
+								status: { $ne: 'offline' },
+								statusLivechat: 'available',
+							}),
+							...(agentId && { _id: agentId }),
+						},
+					},
+					{
+						$project: {
+							_id: 1,
+							username: 1,
+							status: 1,
+						},
+					},
+				],
 				as: 'user',
 			},
 		};
 		const usersUnwind = {
 			$unwind: {
 				path: '$user',
-				preserveNullAndEmptyArrays: true,
 			},
 		};
 		const usersGroup = {
@@ -145,8 +167,8 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					userId: '$user._id',
 					username: '$user.username',
 					status: '$user.status',
-					departmentId: '$_id.departmentId',
-					departmentName: '$_id.name',
+					departmentId: '$departmentId',
+					departmentName: '$departments.name',
 				},
 				chats: { $sum: 1 },
 			},
@@ -160,16 +182,13 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					status: '$_id.status',
 				},
 				department: {
-					_id: { $ifNull: ['$_id.departmentId', null] },
-					name: { $ifNull: ['$_id.departmentName', null] },
+					_id: '$_id.departmentId',
+					name: '$_id.departmentName',
 				},
 				chats: 1,
 			},
 		};
-		const firstParams = [match, departmentsLookup, departmentsUnwind, departmentsGroup, usersLookup, usersUnwind];
-		if (Object.keys(matchUsers.$match)) {
-			firstParams.push(matchUsers);
-		}
+		const firstParams = [match, departmentsLookup, departmentsUnwind, usersLookup, usersUnwind];
 		const sort: Document = { $sort: options.sort || { chats: -1 } };
 		const pagination = [sort];
 
@@ -188,6 +207,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		const params = [...firstParams, usersGroup, project, facet];
+
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred(), allowDiskUse: true }).toArray();
 	}
 

@@ -1,4 +1,5 @@
 import type { IRole, IUser } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 
 class UsersCollection extends Mongo.Collection<IUser> {
@@ -38,5 +39,5 @@ Object.assign(Meteor.users, {
 	remove: UsersCollection.prototype.remove,
 });
 
-/** @deprecated */
-export const Users = Meteor.users as UsersCollection;
+/** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
+export const Users = Meteor.users as unknown as UsersCollection;

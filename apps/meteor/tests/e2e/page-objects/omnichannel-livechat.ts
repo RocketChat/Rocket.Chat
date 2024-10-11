@@ -88,6 +88,19 @@ export class OmnichannelLiveChat {
 		await this.btnNewChat.click();
 	}
 
+	async openAnyLiveChatAndSendMessage(params: {
+		liveChatUser: { name: string; email: string };
+		message: string;
+		isOffline?: boolean;
+		department?: string;
+	}): Promise<void> {
+		const { liveChatUser, message, isOffline, department } = params;
+		await this.openAnyLiveChat();
+		await this.sendMessage(liveChatUser, isOffline, department);
+		await this.onlineAgentMessage.fill(message);
+		await this.btnSendMessageToOnlineAgent.click();
+	}
+
 	unreadMessagesBadge(count: number): Locator {
 		const name = count === 1 ? `${count} unread message` : `${count} unread messages`;
 
