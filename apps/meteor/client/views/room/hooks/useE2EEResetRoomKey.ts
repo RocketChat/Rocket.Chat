@@ -6,13 +6,13 @@ import { useMutation } from '@tanstack/react-query';
 import { e2e } from '../../../../app/e2e/client';
 import { dispatchToastMessage } from '../../../lib/toast';
 
-type UseE2EEResetRoomKeyRoomVariables = {
+type UseE2EEResetRoomKeyVariables = {
 	roomId: RoomID;
 };
 
-export const useE2EEResetRoomKeyRoom = (
-	options?: Omit<UseMutationOptions<void, Error, UseE2EEResetRoomKeyRoomVariables>, 'mutationFn'>,
-): UseMutationResult<void, Error, UseE2EEResetRoomKeyRoomVariables> => {
+export const useE2EEResetRoomKey = (
+	options?: Omit<UseMutationOptions<void, Error, UseE2EEResetRoomKeyVariables>, 'mutationFn'>,
+): UseMutationResult<void, Error, UseE2EEResetRoomKeyVariables> => {
 	const resetRoomKey = useEndpoint('POST', '/v1/e2e.resetRoomKey');
 
 	return useMutation(async ({ roomId }) => {

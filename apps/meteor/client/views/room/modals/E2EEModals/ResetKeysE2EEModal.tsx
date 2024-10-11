@@ -6,7 +6,7 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';
 import { dispatchToastMessage } from '../../../../lib/toast';
-import { useE2EEResetRoomKeyRoom } from '../../hooks/useE2EEResetRoomKey';
+import { useE2EEResetRoomKey } from '../../hooks/useE2EEResetRoomKey';
 
 const E2EE_RESET_KEY_LINK = 'https://go.rocket.chat/';
 
@@ -18,7 +18,7 @@ type ResetKeysE2EEModalProps = {
 
 const ResetKeysE2EEModal = ({ roomType, roomId, onCancel }: ResetKeysE2EEModalProps): ReactElement => {
 	const { t } = useTranslation();
-	const resetRoomKeyMutation = useE2EEResetRoomKeyRoom();
+	const resetRoomKeyMutation = useE2EEResetRoomKey();
 
 	const handleResetRoomKey = () => {
 		resetRoomKeyMutation.mutate(
