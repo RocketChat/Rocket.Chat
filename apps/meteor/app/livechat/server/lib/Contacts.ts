@@ -7,6 +7,7 @@ import type {
 	IOmnichannelRoom,
 	IUser,
 } from '@rocket.chat/core-typings';
+import type { InsertionModel } from '@rocket.chat/model-typings';
 import {
 	LivechatVisitors,
 	Users,
@@ -188,13 +189,14 @@ export async function createContactFromVisitor(visitor: ILivechatVisitor): Promi
 		throw new Error('error-contact-already-exists');
 	}
 
-	const contactData: CreateContactParams = {
+	const contactData: InsertionModel<ILivechatContact> = {
 		name: visitor.name || visitor.username,
 		emails: visitor.visitorEmails?.map(({ address }) => address),
 		phones: visitor.phone?.map(({ phoneNumber }) => phoneNumber),
 		unknown: true,
 		channels: [],
 		customFields: visitor.livechatData,
+		createdAt: new Date(),
 	};
 
 	if (visitor.contactManager) {
