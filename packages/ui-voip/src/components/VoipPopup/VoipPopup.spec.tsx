@@ -1,4 +1,4 @@
-import { mockAppRoot, MockedDeviceContext } from '@rocket.chat/mock-providers';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/testing-react';
 import { render, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
