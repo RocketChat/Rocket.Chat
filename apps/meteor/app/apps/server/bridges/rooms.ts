@@ -256,9 +256,7 @@ export class AppRoomBridge extends RoomBridge {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, uid, { projection: { ls: 1 } });
 
 		if (!subscription) {
-			throw new Error(
-				`No subscription found for user with ID "${uid}" in room with ID "${roomId}". This means the user is not subscribed to the room.`,
-			);
+			throw new Error('No subscription found. This means the user is not subscribed to the room.');
 		}
 
 		const lastSeen = subscription?.ls;
@@ -283,9 +281,7 @@ export class AppRoomBridge extends RoomBridge {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, uid, { projection: { ls: 1 } });
 
 		if (!subscription) {
-			throw new Error(
-				`No subscription found for user with ID "${uid}" in room with ID "${roomId}". This means the user is not subscribed to the room.`,
-			);
+			throw new Error('No subscription found. This means the user is not subscribed to the room.');
 		}
 
 		const lastSeen = subscription?.ls;
