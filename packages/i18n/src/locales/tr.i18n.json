@@ -2801,7 +2801,7 @@
   "Thank_you_for_your_feedback": "Görüşleriniz için teşekkür ederiz",
   "The_application_name_is_required": "Uygulama adı gerekli",
   "The_channel_name_is_required": "Kanal adı gerekli",
-  "The_emails_are_being_sent": "E-postalar gönderiliyor.",   
+  "The_emails_are_being_sent": "E-postalar gönderiliyor.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Biz ImageMagick veya GraphicsMagick sunucunuzda yüklü algılayamaz çünkü resim boyutlandırmak çalışmaz.",
   "The_message_is_a_discussion_you_will_not_be_able_to_recover": "Bu ileti bir tartışma olduğu için iletileri geri getiremeyeceksiniz!",
   "The_peer__peer__does_not_exist": "<em>{{peer}}</em> adında bir eş yok.",

@@ -23,6 +23,7 @@ export const SetupWizardRoute = (): ReactElement | null => {
 	}
 
 	return (
+		// FIXME: setting the defaultNS here is problematic for components/hooks expecting it to be 'core'
 		<I18nextProvider i18n={i18n} defaultNS='onboarding'>
 			<SetupWizardProvider>
 				<DarkModeProvider.default>
