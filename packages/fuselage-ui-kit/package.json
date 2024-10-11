@@ -102,8 +102,7 @@
     "react-dom": "^17.0.2",
     "react-i18next": "~13.2.2",
     "rimraf": "^3.0.2",
-    "storybook-dark-mode": "~3.0.3",
-    "tslib": "^2.7.0",
+    "storybook-dark-mode": "~2.1.1",
     "typescript": "~5.5.4"
   },
   "dependencies": {
