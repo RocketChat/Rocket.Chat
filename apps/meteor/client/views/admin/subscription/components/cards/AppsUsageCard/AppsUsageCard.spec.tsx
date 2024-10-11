@@ -8,8 +8,6 @@ import AppsUsageCard from './AppsUsageCard';
 const appRoot = mockAppRoot().withTranslations('en', 'core', {
 	Apps_InfoText_limited:
 		'Community workspaces can enable up to {{marketplaceAppsMaxCount}} marketplace apps. Private apps can only be enabled in <1>premium plans</1>.',
-	Apps_InfoText:
-		'Community allows up to {{privateAppsMaxCount}} private apps and {{marketplaceAppsMaxCount}} marketplace apps to be enabled',
 });
 
 it('should render a skeleton if no data', () => {
@@ -80,5 +78,7 @@ it('should render a full progress bar with private apps disabled', async () => {
 
 	await userEvent.click(screen.getByRole('button', { name: 'Click_here_for_more_info' }));
 
-	expect(screen.getByText('Community allows up to 0 private apps and 5 marketplace apps to be enabled')).toBeInTheDocument();
+	expect(
+		screen.getByText('Community workspaces can enable up to 5 marketplace apps. Private apps can only be enabled in premium plans.'),
+	).toBeInTheDocument();
 });
