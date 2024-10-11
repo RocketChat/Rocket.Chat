@@ -238,7 +238,6 @@ export const RoutingManager: Routing = {
 			}
 
 			if (contact.unknown && settings.get<boolean>('Livechat_Block_Unknown_Contacts')) {
-				// TODO: we currently don't have the ability to block contacts, when it gets added we must add a call to it here :P
 				return room;
 			}
 
@@ -248,13 +247,11 @@ export const RoutingManager: Routing = {
 			if (contactVerificationApp !== '') {
 				// Note: If it is not `Livechat_Request_Verification_On_First_Contact_Only` it means that even though the contact
 				//       was already verified, we must verify it again in order to handle the livechat conversation down to the queue
-				if (!settings.get<boolean>('Livechat_Request_Verification_On_First_Contact_Only')) {
-					await unverifyContactChannel(contact, room.source.type, inquiry.v._id);
-					return room;
-				}
-
 				const verifiedChannels = contact.channels?.filter((channel) => channel.verified && channel.name === room.source.type) || [];
-				if (verifiedChannels.length === 0 && settings.get<boolean>('Livechat_Block_Unverified_Contacts')) {
+				if (
+					!settings.get<boolean>('Livechat_Request_Verification_On_First_Contact_Only') ||
+					(verifiedChannels.length === 0 && settings.get<boolean>('Livechat_Block_Unverified_Contacts'))
+				) {
 					await unverifyContactChannel(contact, room.source.type, inquiry.v._id);
 					return room;
 				}
