@@ -8,7 +8,7 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-type CustomUserStatusListProps = PaginatedRequest<{ query: string }>;
+type CustomUserStatusListProps = PaginatedRequest<{ _id?: string; name?: string }>;
 
 const CustomUserStatusListSchema = {
 	type: 'object',
@@ -25,8 +25,17 @@ const CustomUserStatusListSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		_id: {
+			type: 'string',
+			nullable: true,
+		},
+		name: {
+			type: 'string',
+			nullable: true,
+		},
 		query: {
 			type: 'string',
+			nullable: true,
 		},
 	},
 	required: ['query'],
