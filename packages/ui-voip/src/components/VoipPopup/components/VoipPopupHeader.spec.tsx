@@ -1,9 +1,9 @@
-import { mockAppRoot, MockedDeviceContext } from '@rocket.chat/mock-providers';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
 import VoipPopupHeader from './VoipPopupHeader';
 
-const appRoot = mockAppRoot().wrap((children) => <MockedDeviceContext>{children}</MockedDeviceContext>);
+const appRoot = mockAppRoot();
 
 it('should render title', () => {
 	render(<VoipPopupHeader>voice call header title</VoipPopupHeader>, { wrapper: appRoot.build(), legacyRoot: true });

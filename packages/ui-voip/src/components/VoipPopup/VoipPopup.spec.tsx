@@ -18,7 +18,7 @@ jest.mock('../../hooks/useVoipDialer', () => ({
 }));
 
 const mockedUseVoipSession = jest.mocked(useVoipSession);
-const appRoot = mockAppRoot().wrap((children) => <MockedDeviceContext>{children}</MockedDeviceContext>);
+const appRoot = mockAppRoot();
 
 it('should properly render incoming popup', async () => {
 	mockedUseVoipSession.mockImplementationOnce(() => createMockVoipSession({ type: 'INCOMING' }));

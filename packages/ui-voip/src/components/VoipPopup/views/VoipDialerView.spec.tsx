@@ -1,4 +1,4 @@
-import { mockAppRoot, MockedDeviceContext } from '@rocket.chat/mock-providers';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -7,7 +7,7 @@ import VoipDialerView from './VoipDialerView';
 const makeCall = jest.fn();
 const closeDialer = jest.fn();
 
-const appRoot = mockAppRoot().wrap((children) => <MockedDeviceContext>{children}</MockedDeviceContext>);
+const appRoot = mockAppRoot();
 
 jest.mock('../../../hooks/useVoipAPI', () => ({
 	useVoipAPI: jest.fn(() => ({ makeCall, closeDialer })),

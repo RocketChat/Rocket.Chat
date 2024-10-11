@@ -1,12 +1,10 @@
-import { mockAppRoot, MockedDeviceContext } from '@rocket.chat/mock-providers';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, within } from '@testing-library/react';
 
 import { createMockFreeSwitchExtensionDetails, createMockVoipOngoingSession } from '../../../tests/mocks';
 import VoipOngoingView from './VoipOngoingView';
 
-const wrapper = mockAppRoot()
-	.wrap((children) => <MockedDeviceContext>{children}</MockedDeviceContext>)
-	.withEndpoint('GET', '/v1/voip-freeswitch.extension.getDetails', () => createMockFreeSwitchExtensionDetails());
+const wrapper = mockAppRoot().withEndpoint('GET', '/v1/voip-freeswitch.extension.getDetails', () => createMockFreeSwitchExtensionDetails());
 
 const ongoingSession = createMockVoipOngoingSession();
 

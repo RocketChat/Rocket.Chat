@@ -1,12 +1,10 @@
-import { mockAppRoot, MockedDeviceContext } from '@rocket.chat/mock-providers';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, within } from '@testing-library/react';
 
 import { createMockFreeSwitchExtensionDetails, createMockVoipErrorSession } from '../../../tests/mocks';
 import VoipErrorView from './VoipErrorView';
 
-const appRoot = mockAppRoot()
-	.wrap((children) => <MockedDeviceContext>{children}</MockedDeviceContext>)
-	.withEndpoint('GET', '/v1/voip-freeswitch.extension.getDetails', () => createMockFreeSwitchExtensionDetails());
+const appRoot = mockAppRoot().withEndpoint('GET', '/v1/voip-freeswitch.extension.getDetails', () => createMockFreeSwitchExtensionDetails());
 
 it('should properly render error view', async () => {
 	const errorSession = createMockVoipErrorSession({ error: { status: -1, reason: '' } });

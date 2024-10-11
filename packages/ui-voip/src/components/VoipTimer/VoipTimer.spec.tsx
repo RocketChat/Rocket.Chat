@@ -1,9 +1,9 @@
-import { mockAppRoot, MockedDeviceContext } from '@rocket.chat/mock-providers';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, render, screen } from '@testing-library/react';
 
 import VoipTimer from './VoipTimer';
 
-const appRoot = mockAppRoot().wrap((children) => <MockedDeviceContext>{children}</MockedDeviceContext>);
+const appRoot = mockAppRoot();
 
 describe('VoipTimer', () => {
 	beforeEach(() => {
