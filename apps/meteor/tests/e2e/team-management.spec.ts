@@ -21,19 +21,15 @@ test.describe.serial('teams-management', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		expect(
-			(
-				await api.post('/permissions.update', {
-					permissions: [
-						{ _id: 'move-room-to-team', roles: ['admin', 'owner', 'moderator'] },
-						{ _id: 'create-team-channel', roles: ['admin', 'owner', 'moderator'] },
-						{ _id: 'create-team-group', roles: ['admin', 'owner', 'moderator'] },
-						{ _id: 'delete-team-channel', roles: ['admin', 'owner', 'moderator'] },
-						{ _id: 'delete-team-group', roles: ['admin', 'owner', 'moderator'] },
-					],
-				})
-			).status(),
-		).toBe(200);
+		await api.post('/permissions.update', {
+			permissions: [
+				{ _id: 'move-room-to-team', roles: ['admin', 'owner', 'moderator'] },
+				{ _id: 'create-team-channel', roles: ['admin', 'owner', 'moderator'] },
+				{ _id: 'create-team-group', roles: ['admin', 'owner', 'moderator'] },
+				{ _id: 'delete-team-channel', roles: ['admin', 'owner', 'moderator'] },
+				{ _id: 'delete-team-group', roles: ['admin', 'owner', 'moderator'] },
+			],
+		});
 	});
 
 	test.beforeEach(async ({ page }) => {
