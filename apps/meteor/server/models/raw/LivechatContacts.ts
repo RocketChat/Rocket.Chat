@@ -1,7 +1,7 @@
 import type { ILivechatContact, ILivechatContactChannel, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatContactsModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Collection, Db, RootFilterOperators, Filter, FindOptions, FindCursor, IndexDescription } from 'mongodb';
+import type { Collection, Db, RootFilterOperators, Filter, FindOptions, FindCursor, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -63,5 +63,9 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 
 	async addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void> {
 		await this.updateOne({ _id: contactId }, { $push: { channels: channel } });
+	}
+
+	updateLastChatById(contactId: string, lastChat: ILivechatContact['lastChat']): Promise<UpdateResult> {
+		return this.updateOne({ _id: contactId }, { $set: { lastChat } });
 	}
 }

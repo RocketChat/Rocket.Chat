@@ -229,6 +229,7 @@ export async function createContact(params: CreateContactParams): Promise<string
 		channels,
 		customFields,
 		unknown,
+		createdAt: new Date(),
 	});
 
 	return insertedId;
