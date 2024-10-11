@@ -28,7 +28,10 @@ export async function resetRoomKey(roomId: string, userId: string, newRoomKey: s
 	const updateOps: AnyBulkWriteOperation<ISubscription>[] = [];
 	const e2eQueue: IRoom['usersWaitingForE2EKeys'] = [];
 
-	for await (const sub of Subscriptions.find({ rid: roomId })) {
+	for await (const sub of Subscriptions.find({
+		rid: roomId,
+		$or: [{ E2EKey: { $exists: true } }, { E2ESuggestedKey: { $exists: true } }],
+	})) {
 		// This replicates the oldRoomKeys array modifications allowing us to have the changes locally without finding them again
 		// which allows for quicker notifying
 		const keys = replicateMongoSlice(room.e2eKeyId, sub);
