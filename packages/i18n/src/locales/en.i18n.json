@@ -6536,7 +6536,6 @@
   "MAC_InfoText": "(MAC) the number of unique omnichannel contacts engaged with during the billing month.",
   "CountMAC_InfoText": "(MAC) the number of unique omnichannel contacts engaged with during the calendar month.",
   "ActiveSessions_InfoText": "Total concurrent connections. A single user can be connected multiple times. User presence service is disabled at 200 or more to prevent performance issues.",
-  "Apps_InfoText": "Community allows up to {{privateAppsMaxCount}} private apps and {{marketplaceAppsMaxCount}} marketplace apps to be enabled",
   "Apps_InfoText_limited": "Community workspaces can enable up to {{marketplaceAppsMaxCount}} marketplace apps. Private apps can only be enabled in <1>premium plans</1>.",
   "Remove_RocketChat_Watermark_InfoText": "Watermark is automatically removed when a paid license is active.",
   "Remove_RocketChat_Watermark": "Remove Rocket.Chat watermark",
