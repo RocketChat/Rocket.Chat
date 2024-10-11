@@ -40,18 +40,16 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 
 	const card: CardProps = {
 		title: t('Apps'),
-		infoText:
-			privateAppsCount > 0 ? (
-				<Trans i18nKey='Apps_InfoText_limited' tOptions={{ marketplaceAppsMaxCount }}>
-					Community workspaces can enable up to {{ marketplaceAppsMaxCount }} marketplace apps. Private apps can only be enabled in{' '}
-					<Box is='a' href='https://www.rocket.chat/pricing' target='_blank' color='info'>
-						premium plans
-					</Box>
-					.
-				</Trans>
-			) : (
-				t('Apps_InfoText', { privateAppsMaxCount, marketplaceAppsMaxCount })
-			),
+		infoText: (
+			<Trans i18nKey='Apps_InfoText_limited' tOptions={{ marketplaceAppsMaxCount }}>
+				Community workspaces can enable up to {{ marketplaceAppsMaxCount }} marketplace apps. Private apps can only be enabled in{' '}
+				<Box is='a' href='https://www.rocket.chat/pricing' target='_blank' color='info'>
+					premium plans
+				</Box>
+				.
+			</Trans>
+		),
+
 		...(marketplaceAppsAboveWarning && {
 			upgradeButton: (
 				<UpgradeButton target='app-usage-card' action='upgrade' small>
