@@ -1,5 +1,7 @@
 {
   "500": "Internal Server Error",
+  "App_has_been_disabled_addon_message_one": "The app {{appNames}} has been disabled because of an invalid add-on. [A valid add-on subscription is required to re-enable it]({{url}})",
+  "App_has_been_disabled_addon_message_other": "The apps {{appNames}} have been disabled because of invalid add-ons. [A valid add-on subscription is required to re-enable them]({{url}})",
   "__agents__agents_and__count__conversations__period__": "{{agents}} agents and {{count}} conversations, {{period}}",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} empty rooms will be removed automatically.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "{{count}} empty rooms will be removed automatically:<br/> {{rooms}}.",
