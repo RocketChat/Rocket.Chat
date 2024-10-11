@@ -18,12 +18,12 @@ export const useE2EEResetRoomKeyRoom = (
 	return useMutation(async ({ roomId }) => {
 		const e2eRoom = await e2e.getInstanceByRoomId(roomId);
 		if (!e2eRoom) {
-			return;
+			throw new Error('Cannot reset room key');
 		}
 
-		const { e2eKey, e2eKeyId } = await e2eRoom.resetRoomKey();
+		const { e2eKey, e2eKeyId } = (await e2eRoom.resetRoomKey()) ?? {};
 
-		if (!e2eKey) {
+		if (!e2eKey || !e2eKeyId) {
 			throw new Error('Cannot reset room key');
 		}
 
