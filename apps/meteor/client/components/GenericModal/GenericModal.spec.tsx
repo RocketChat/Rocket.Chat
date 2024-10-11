@@ -30,7 +30,7 @@ describe('callbacks', () => {
 	it('should call onClose callback when dismissed', async () => {
 		const handleClose = jest.fn();
 
-		renderModal(<GenericModal title='Modal' onClose={handleClose} />);
+		renderModal(<GenericModal title='Modal' onClose={handleClose} onCancel={handleClose} />);
 
 		expect(await screen.findByRole('heading', { name: 'Modal' })).toBeInTheDocument();
 
