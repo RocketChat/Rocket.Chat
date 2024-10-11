@@ -47,6 +47,7 @@ import type { TeamsEndpoints } from './v1/teams';
 import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
+import type { VoipFreeSwitchEndpoints } from './v1/voip-freeswitch';
 import type { WebdavEndpoints } from './v1/webdav';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -99,6 +100,7 @@ export interface Endpoints
 		CalendarEndpoints,
 		AuthEndpoints,
 		ImportEndpoints,
+		VoipFreeSwitchEndpoints,
 		DefaultEndpoints {}
 
 type OperationsByPathPatternAndMethod<
@@ -260,6 +262,7 @@ export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
 export * from './v1/e2e';
 export * from './v1/import';
 export * from './v1/voip';
+export * from './v1/voip-freeswitch';
 export * from './v1/email-inbox';
 export * from './v1/calendar';
 export * from './v1/federation';

@@ -2217,4 +2217,325 @@ describe('[Teams]', () => {
 			});
 		});
 	});
+
+	describe('[teams.listChildren]', () => {
+		const teamName = `team-${Date.now()}`;
+		let testTeam: ITeam;
+		let testPrivateTeam: ITeam;
+		let testUser: IUser;
+		let testUserCredentials: Credentials;
+
+		let privateRoom: IRoom;
+		let privateRoom2: IRoom;
+		let publicRoom: IRoom;
+		let publicRoom2: IRoom;
+
+		let discussionOnPrivateRoom: IRoom;
+		let discussionOnPublicRoom: IRoom;
+		let discussionOnMainRoom: IRoom;
+
+		before('Create test team', async () => {
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+
+			const members = testUser.username ? [testUser.username] : [];
+			testTeam = await createTeam(credentials, teamName, 0, members);
+			testPrivateTeam = await createTeam(testUserCredentials, `${teamName}private`, 1, []);
+		});
+
+		before('make user owner', async () => {
+			await request
+				.post(api('teams.updateMember'))
+				.set(credentials)
+				.send({
+					teamName: testTeam.name,
+					member: {
+						userId: testUser._id,
+						roles: ['member', 'owner'],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+		});
+
+		before('create rooms', async () => {
+			privateRoom = (await createRoom({ type: 'p', name: `test-p-${Date.now()}` })).body.group;
+			privateRoom2 = (await createRoom({ type: 'p', name: `test-p2-${Date.now()}`, credentials: testUserCredentials })).body.group;
+			publicRoom = (await createRoom({ type: 'c', name: `test-c-${Date.now()}` })).body.channel;
+			publicRoom2 = (await createRoom({ type: 'c', name: `test-c2-${Date.now()}` })).body.channel;
+
+			await Promise.all([
+				request
+					.post(api('teams.addRooms'))
+					.set(credentials)
+					.send({
+						rooms: [privateRoom._id, publicRoom._id, publicRoom2._id],
+						teamId: testTeam._id,
+					})
+					.expect(200),
+				request
+					.post(api('teams.addRooms'))
+					.set(testUserCredentials)
+					.send({
+						rooms: [privateRoom2._id],
+						teamId: testTeam._id,
+					})
+					.expect(200),
+			]);
+		});
+
+		before('Create discussions', async () => {
+			discussionOnPrivateRoom = (
+				await request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({
+						prid: privateRoom._id,
+						t_name: `test-d-${Date.now()}`,
+					})
+			).body.discussion;
+			discussionOnPublicRoom = (
+				await request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({
+						prid: publicRoom._id,
+						t_name: `test-d-${Date.now()}`,
+					})
+			).body.discussion;
+			discussionOnMainRoom = (
+				await request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({
+						prid: testTeam.roomId,
+						t_name: `test-d-${Date.now()}`,
+					})
+			).body.discussion;
+		});
+
+		after(async () => {
+			await Promise.all([
+				deleteRoom({ type: 'p', roomId: privateRoom._id }),
+				deleteRoom({ type: 'p', roomId: privateRoom2._id }),
+				deleteRoom({ type: 'c', roomId: publicRoom._id }),
+				deleteRoom({ type: 'c', roomId: publicRoom2._id }),
+				deleteRoom({ type: 'p', roomId: discussionOnPrivateRoom._id }),
+				deleteRoom({ type: 'c', roomId: discussionOnPublicRoom._id }),
+				deleteRoom({ type: 'c', roomId: discussionOnMainRoom._id }),
+				deleteTeam(credentials, teamName),
+				deleteTeam(credentials, testPrivateTeam.name),
+				deleteUser({ _id: testUser._id }),
+			]);
+		});
+
+		it('should fail if user is not logged in', async () => {
+			await request.get(api('teams.listChildren')).expect(401);
+		});
+
+		it('should fail if teamId is not passed as queryparam', async () => {
+			await request.get(api('teams.listChildren')).set(credentials).expect(400);
+		});
+
+		it('should fail if teamId is not valid', async () => {
+			await request.get(api('teams.listChildren')).set(credentials).query({ teamId: 'invalid' }).expect(404);
+		});
+
+		it('should fail if teamId is empty', async () => {
+			await request.get(api('teams.listChildren')).set(credentials).query({ teamId: '' }).expect(404);
+		});
+
+		it('should fail if both properties are passed', async () => {
+			await request.get(api('teams.listChildren')).set(credentials).query({ teamId: testTeam._id, teamName: testTeam.name }).expect(400);
+		});
+
+		it('should fail if teamName is empty', async () => {
+			await request.get(api('teams.listChildren')).set(credentials).query({ teamName: '' }).expect(404);
+		});
+
+		it('should fail if teamName is invalid', async () => {
+			await request.get(api('teams.listChildren')).set(credentials).query({ teamName: 'invalid' }).expect(404);
+		});
+
+		it('should fail if roomId is empty', async () => {
+			await request.get(api('teams.listChildren')).set(credentials).query({ roomId: '' }).expect(404);
+		});
+
+		it('should fail if roomId is invalid', async () => {
+			await request.get(api('teams.listChildren')).set(credentials).query({ teamName: 'invalid' }).expect(404);
+		});
+
+		it('should return a list of valid rooms for user', async () => {
+			const res = await request.get(api('teams.listChildren')).query({ teamId: testTeam._id }).set(credentials).expect(200);
+
+			expect(res.body).to.have.property('total').to.be.equal(5);
+			expect(res.body).to.have.property('data').to.be.an('array');
+			expect(res.body.data).to.have.lengthOf(5);
+
+			const mainRoom = res.body.data.find((room: IRoom) => room._id === testTeam.roomId);
+			expect(mainRoom).to.be.an('object');
+
+			const publicChannel1 = res.body.data.find((room: IRoom) => room._id === publicRoom._id);
+			expect(publicChannel1).to.be.an('object');
+
+			const publicChannel2 = res.body.data.find((room: IRoom) => room._id === publicRoom2._id);
+			expect(publicChannel2).to.be.an('object');
+
+			const privateChannel1 = res.body.data.find((room: IRoom) => room._id === privateRoom._id);
+			expect(privateChannel1).to.be.an('object');
+
+			const privateChannel2 = res.body.data.find((room: IRoom) => room._id === privateRoom2._id);
+			expect(privateChannel2).to.be.undefined;
+
+			const discussionOnP = res.body.data.find((room: IRoom) => room._id === discussionOnPrivateRoom._id);
+			expect(discussionOnP).to.be.undefined;
+
+			const discussionOnC = res.body.data.find((room: IRoom) => room._id === discussionOnPublicRoom._id);
+			expect(discussionOnC).to.be.undefined;
+
+			const mainDiscussion = res.body.data.find((room: IRoom) => room._id === discussionOnMainRoom._id);
+			expect(mainDiscussion).to.be.an('object');
+		});
+
+		it('should return a valid list of rooms for non admin member too', async () => {
+			const res = await request.get(api('teams.listChildren')).query({ teamName: testTeam.name }).set(testUserCredentials).expect(200);
+
+			expect(res.body).to.have.property('total').to.be.equal(5);
+			expect(res.body).to.have.property('data').to.be.an('array');
+			expect(res.body.data).to.have.lengthOf(5);
+
+			const mainRoom = res.body.data.find((room: IRoom) => room._id === testTeam.roomId);
+			expect(mainRoom).to.be.an('object');
+
+			const publicChannel1 = res.body.data.find((room: IRoom) => room._id === publicRoom._id);
+			expect(publicChannel1).to.be.an('object');
+
+			const publicChannel2 = res.body.data.find((room: IRoom) => room._id === publicRoom2._id);
+			expect(publicChannel2).to.be.an('object');
+
+			const privateChannel1 = res.body.data.find((room: IRoom) => room._id === privateRoom._id);
+			expect(privateChannel1).to.be.undefined;
+
+			const privateChannel2 = res.body.data.find((room: IRoom) => room._id === privateRoom2._id);
+			expect(privateChannel2).to.be.an('object');
+
+			const discussionOnP = res.body.data.find((room: IRoom) => room._id === discussionOnPrivateRoom._id);
+			expect(discussionOnP).to.be.undefined;
+
+			const discussionOnC = res.body.data.find((room: IRoom) => room._id === discussionOnPublicRoom._id);
+			expect(discussionOnC).to.be.undefined;
+
+			const mainDiscussion = res.body.data.find((room: IRoom) => room._id === discussionOnMainRoom._id);
+			expect(mainDiscussion).to.be.an('object');
+		});
+
+		it('should return a valid list of rooms for non admin member too when filtering by teams main room id', async () => {
+			const res = await request.get(api('teams.listChildren')).query({ roomId: testTeam.roomId }).set(testUserCredentials).expect(200);
+
+			expect(res.body).to.have.property('total').to.be.equal(5);
+			expect(res.body).to.have.property('data').to.be.an('array');
+			expect(res.body.data).to.have.lengthOf(5);
+
+			const mainRoom = res.body.data.find((room: IRoom) => room._id === testTeam.roomId);
+			expect(mainRoom).to.be.an('object');
+
+			const publicChannel1 = res.body.data.find((room: IRoom) => room._id === publicRoom._id);
+			expect(publicChannel1).to.be.an('object');
+
+			const publicChannel2 = res.body.data.find((room: IRoom) => room._id === publicRoom2._id);
+			expect(publicChannel2).to.be.an('object');
+
+			const privateChannel1 = res.body.data.find((room: IRoom) => room._id === privateRoom._id);
+			expect(privateChannel1).to.be.undefined;
+
+			const privateChannel2 = res.body.data.find((room: IRoom) => room._id === privateRoom2._id);
+			expect(privateChannel2).to.be.an('object');
+
+			const discussionOnP = res.body.data.find((room: IRoom) => room._id === discussionOnPrivateRoom._id);
+			expect(discussionOnP).to.be.undefined;
+
+			const discussionOnC = res.body.data.find((room: IRoom) => room._id === discussionOnPublicRoom._id);
+			expect(discussionOnC).to.be.undefined;
+
+			const mainDiscussion = res.body.data.find((room: IRoom) => room._id === discussionOnMainRoom._id);
+			expect(mainDiscussion).to.be.an('object');
+		});
+
+		it('should return a list of rooms filtered by name using the filter parameter', async () => {
+			const res = await request
+				.get(api('teams.listChildren'))
+				.query({ teamId: testTeam._id, filter: 'test-p' })
+				.set(credentials)
+				.expect(200);
+
+			expect(res.body).to.have.property('total').to.be.equal(1);
+			expect(res.body).to.have.property('data').to.be.an('array');
+			expect(res.body.data[0]._id).to.be.equal(privateRoom._id);
+			expect(res.body.data.find((room: IRoom) => room._id === privateRoom2._id)).to.be.undefined;
+		});
+
+		it('should paginate results', async () => {
+			const res = await request
+				.get(api('teams.listChildren'))
+				.query({ teamId: testTeam._id, offset: 1, count: 2 })
+				.set(credentials)
+				.expect(200);
+
+			expect(res.body).to.have.property('total').to.be.equal(5);
+			expect(res.body).to.have.property('data').to.be.an('array');
+			expect(res.body.data).to.have.lengthOf(2);
+		});
+
+		it('should return only items of type channel', async () => {
+			const res = await request
+				.get(api('teams.listChildren'))
+				.query({ teamId: testTeam._id, type: 'channels' })
+				.set(credentials)
+				.expect(200);
+
+			expect(res.body).to.have.property('total').to.be.equal(4);
+			expect(res.body).to.have.property('data').to.be.an('array');
+			expect(res.body.data).to.have.lengthOf(4);
+			expect(res.body.data.some((room: IRoom) => !!room.prid)).to.be.false;
+		});
+
+		it('should return only items of type discussion', async () => {
+			const res = await request
+				.get(api('teams.listChildren'))
+				.query({ teamId: testTeam._id, type: 'discussions' })
+				.set(credentials)
+				.expect(200);
+
+			expect(res.body).to.have.property('total').to.be.equal(1);
+			expect(res.body).to.have.property('data').to.be.an('array');
+			expect(res.body.data).to.have.lengthOf(1);
+			expect(res.body.data.every((room: IRoom) => !!room.prid)).to.be.true;
+		});
+
+		it('should return both when type is not passed', async () => {
+			const res = await request.get(api('teams.listChildren')).query({ teamId: testTeam._id }).set(credentials).expect(200);
+
+			expect(res.body).to.have.property('total').to.be.equal(5);
+			expect(res.body).to.have.property('data').to.be.an('array');
+			expect(res.body.data).to.have.lengthOf(5);
+			expect(res.body.data.some((room: IRoom) => !!room.prid)).to.be.true;
+			expect(res.body.data.some((room: IRoom) => !room.prid)).to.be.true;
+		});
+
+		it('should fail if type is other than channel or discussion', async () => {
+			await request.get(api('teams.listChildren')).query({ teamId: testTeam._id, type: 'other' }).set(credentials).expect(400);
+		});
+
+		it('should properly list children of a private team', async () => {
+			const res = await request.get(api('teams.listChildren')).query({ teamId: testPrivateTeam._id }).set(testUserCredentials).expect(200);
+
+			expect(res.body).to.have.property('total').to.be.equal(1);
+			expect(res.body).to.have.property('data').to.be.an('array');
+			expect(res.body.data).to.have.lengthOf(1);
+		});
+
+		it('should throw an error when a non member user tries to fetch info for team', async () => {
+			await request.get(api('teams.listChildren')).query({ teamId: testPrivateTeam._id }).set(credentials).expect(400);
+		});
+	});
 });
