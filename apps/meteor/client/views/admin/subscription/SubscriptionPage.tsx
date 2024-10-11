@@ -5,7 +5,9 @@ import { t } from 'i18next';
 import React, { memo, useCallback, useEffect } from 'react';
 import tinykeys from 'tinykeys';
 
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
+import { Page, PageScrollableContentWithShadow } from '../../../components/Page';
+import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
+import PageHeaderNoShadow from '../../../components/Page/PageHeaderNoShadow';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { useInvalidateLicense, useLicense } from '../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
@@ -25,6 +27,7 @@ import PlanCardCommunity from './components/cards/PlanCard/PlanCardCommunity';
 import SeatsCard from './components/cards/SeatsCard';
 import { useRemoveLicense } from './hooks/useRemoveLicense';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
+import UiKitSubscriptionLicense from './surface/UiKitSubscriptionLicense';
 
 function useShowLicense() {
 	const [showLicenseTab, setShowLicenseTab] = useSessionStorage('admin:showLicenseTab', false);
@@ -99,7 +102,7 @@ const SubscriptionPage = () => {
 
 	return (
 		<Page bg='tint'>
-			<PageHeader title={t('Subscription')}>
+			<PageHeaderNoShadow title={t('Subscription')}>
 				<ButtonGroup>
 					{isRegistered && (
 						<Button loading={syncLicenseUpdate.isLoading} icon='reload' onClick={() => handleSyncLicenseUpdate()}>
@@ -110,7 +113,39 @@ const SubscriptionPage = () => {
 						{t(isEnterprise ? 'Manage_subscription' : 'Upgrade')}
 					</UpgradeButton>
 				</ButtonGroup>
-			</PageHeader>
+			</PageHeaderNoShadow>
+			<PageBlockWithBorder>
+				<UiKitSubscriptionLicense
+					key='license'
+					initialView={{
+						viewId: 'license',
+						appId: 'cloud-announcements-core',
+						blocks: [
+							{
+								type: 'callout',
+								title: {
+									type: 'plain_text',
+									text: 'Callout Title',
+								},
+								text: {
+									type: 'plain_text',
+									text: 'Callout Text',
+								},
+								accessory: {
+									type: 'button',
+									text: {
+										type: 'plain_text',
+										text: 'Callout Action',
+									},
+									actionId: 'callout-action',
+									appId: 'cloud-announcements-core',
+									blockId: 'section-button',
+								},
+							},
+						],
+					}}
+				/>
+			</PageBlockWithBorder>
 			<PageScrollableContentWithShadow p={16}>
 				{(showSubscriptionCallout || syncLicenseUpdate.isLoading) && (
 					<Callout type='info' title={t('Sync_license_update_Callout_Title')} m={8}>
