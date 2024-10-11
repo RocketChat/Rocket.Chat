@@ -53,7 +53,7 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 		}
 	}
 
-	const hasSupportedRoutes = ['/api/v1/custom-sounds.list'].includes(route);
+	const hasSupportedRoutes = ['/api/v1/dummyRoute'].includes(route);
 	const isUnsafeQueryParamsAllowed = process.env.ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS?.toUpperCase() === 'TRUE';
 	const messageGenerator = ({ endpoint, version, parameter }: { endpoint: string; version: string; parameter: string }): string =>
 		`The usage of the "${parameter}" parameter in endpoint "${endpoint}" breaks the security of the API and can lead to data exposure. It has been deprecated and will be removed in the version ${version}.`;
