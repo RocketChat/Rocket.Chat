@@ -2359,7 +2359,7 @@
   "Thank_you_for_your_feedback": "ขอบคุณสำหรับความคิดเห็นของคุณ",
   "The_application_name_is_required": "ต้องระบุชื่อแอ็พพลิเคชัน",
   "The_channel_name_is_required": "ต้องระบุชื่อช่อง",
-  "The_emails_are_being_sent": "กำลังส่งอีเมล",   
+  "The_emails_are_being_sent": "กำลังส่งอีเมล",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "การปรับขนาดภาพจะไม่ทำงานเนื่องจากเราไม่สามารถตรวจพบ ImageMagick หรือ GraphicsMagick ที่ติดตั้งบนเซิร์ฟเวอร์ของคุณ",
   "The_redirectUri_is_required": "จำเป็นต้องมี redirectUri",
   "The_server_will_restart_in_s_seconds": "เซิร์ฟเวอร์จะรีสตาร์ทเป็น %s วินาที",

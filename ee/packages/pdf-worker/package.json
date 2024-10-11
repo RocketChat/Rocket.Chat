@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/pdf-worker",
-	"version": "0.2.5-rc.1",
+	"version": "0.2.5",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
@@ -38,7 +38,7 @@
 		"emoji-assets": "^7.0.1",
 		"emoji-toolkit": "^7.0.1",
 		"moment": "^2.29.4",
-		"moment-timezone": "^0.5.45",
+		"moment-timezone": "^0.5.46",
 		"react": "~18.3.1"
 	},
 	"volta": {

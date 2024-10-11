@@ -4109,7 +4109,7 @@
   "The_application_name_is_required": "De naam van de applicatie is vereist",
   "The_channel_name_is_required": "De naam van het kanaal is vereist",
   "The_emails_are_being_sent": "De e-mails worden verzonden.",
-  "The_empty_room__roomName__will_be_removed_automatically": "De lege kamer <span style=\"font-weight: bold;\">{{roomName}}</span> wordt automatisch verwijderd.",   
+  "The_empty_room__roomName__will_be_removed_automatically": "De lege kamer <span style=\"font-weight: bold;\">{{roomName}}</span> wordt automatisch verwijderd.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Het wijzigen van de grootte van de afbeelding zal niet werken omdat we ImageMagick of GraphicsMagick niet kunnen detecteren die op uw server zijn geïnstalleerd.",
   "The_message_is_a_discussion_you_will_not_be_able_to_recover": "Het bericht is een discussie, u kunt de berichten niet herstellen!",
   "The_mobile_notifications_were_disabled_to_all_users_go_to_Admin_Push_to_enable_the_Push_Gateway_again": "De mobiele meldingen werden voor alle gebruikers uitgeschakeld, ga naar \"Admin > Push\" om de Push Gateway weer in te schakelen",
