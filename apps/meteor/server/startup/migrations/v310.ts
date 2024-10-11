@@ -4,7 +4,7 @@ import { Settings } from '@rocket.chat/models';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
-	version: 309,
+	version: 310,
 	name: 'Update translation key on "Forgot password" e-mail body setting',
 	async up() {
 		const forgotPasswordEmail = await Settings.findOneById<Pick<ISetting, 'value'>>('Forgot_Password_Email', { projection: { value: 1 } });
