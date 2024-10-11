@@ -62,7 +62,7 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 	let fields: Record<string, 0 | 1> | undefined;
 	if (params.fields && (isUnsafeQueryParamsAllowed || !hasSupportedRoutes)) {
 		try {
-			apiDeprecationLogger.parameter(route, 'fields', '7.0.0', response);
+			apiDeprecationLogger.parameter(route, 'fields', '8.0.0', response, messageGenerator);
 			fields = JSON.parse(params.fields) as Record<string, 0 | 1>;
 
 			Object.entries(fields).forEach(([key, value]) => {
