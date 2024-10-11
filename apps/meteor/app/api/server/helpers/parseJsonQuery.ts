@@ -53,6 +53,7 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 		}
 	}
 
+	// TODO: Remove this once we have all routes migrated to the new API params
 	const hasSupportedRoutes = ([] as string[]).includes(route);
 	const isUnsafeQueryParamsAllowed = process.env.ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS?.toUpperCase() === 'TRUE';
 	const messageGenerator = ({ endpoint, version, parameter }: { endpoint: string; version: string; parameter: string }): string =>
