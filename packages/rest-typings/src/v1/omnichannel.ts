@@ -2412,31 +2412,6 @@ const POSTLivechatRoomSurveyParamsSchema = {
 
 export const isPOSTLivechatRoomSurveyParams = ajv.compile<POSTLivechatRoomSurveyParams>(POSTLivechatRoomSurveyParamsSchema);
 
-type PUTLivechatRoomVisitorParams = {
-	rid: string;
-	oldVisitorId: string;
-	newVisitorId: string;
-};
-
-const PUTLivechatRoomVisitorParamsSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
-		},
-		oldVisitorId: {
-			type: 'string',
-		},
-		newVisitorId: {
-			type: 'string',
-		},
-	},
-	required: ['rid', 'oldVisitorId', 'newVisitorId'],
-	additionalProperties: false,
-};
-
-export const isPUTLivechatRoomVisitorParams = ajv.compile<PUTLivechatRoomVisitorParams>(PUTLivechatRoomVisitorParamsSchema);
-
 type POSTCannedResponsesProps = {
 	_id?: string;
 	shortcut: string;
@@ -3875,9 +3850,6 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/room.survey': {
 		POST: (params: POSTLivechatRoomSurveyParams) => { rid: string; data: unknown };
-	};
-	'/v1/livechat/room.visitor': {
-		PUT: (params: PUTLivechatRoomVisitorParams) => Deprecated<{ room: IOmnichannelRoom }>;
 	};
 	'/v1/livechat/visitors.pagesVisited/:roomId': {
 		GET: (params: GETLivechatVisitorsPagesVisitedRoomIdParams) => PaginatedResult<{ pages: IMessage[] }>;
