@@ -1,7 +1,17 @@
 import { expect, spy } from 'chai';
+import proxyquire from 'proxyquire';
 
 import type { AppServerOrchestrator } from '../../../../../../ee/server/apps/orchestrator';
-import { _disableAppsWithAddonsCallback } from '../../../../../../ee/server/lib/apps/disableAppsWithAddonsCallback';
+
+const { _disableAppsWithAddonsCallback } = proxyquire
+	.noCallThru()
+	.load('../../../../../../ee/server/lib/apps/disableAppsWithAddonsCallback', {
+		'../../apps': {},
+		'../../../../server/lib/sendMessagesToAdmins': { sendMessagesToAdmins: () => undefined },
+		'../../../../server/lib/i18n': {
+			i18n: { t: () => undefined },
+		},
+	});
 
 /**
  * I've used named "empty" functions to spy on as it is easier to
@@ -94,12 +104,14 @@ describe('disableAppsWithAddonsCallback', () => {
 			return [
 				{
 					getInfo: () => ({}),
+					getName: () => 'Test App Without Addon',
 					getID() {
 						return 'test-app-without-addon';
 					},
 				},
 				{
 					getInfo: () => ({ addon: 'chat.rocket.test-addon' }),
+					getName: () => 'Test App WITH Addon',
 					getID() {
 						return 'test-app-with-addon';
 					},
@@ -137,6 +149,7 @@ describe('disableAppsWithAddonsCallback', () => {
 			return [
 				{
 					getInfo: () => ({}),
+					getName: () => 'Test App Without Addon',
 					getID() {
 						return 'test-app-without-addon';
 					},
@@ -168,6 +181,6 @@ describe('disableAppsWithAddonsCallback', () => {
 
 		expect(AppsMock.installedApps).to.have.been.called();
 		expect(AppsMock.getManager()?.disable).to.not.have.been.called();
-		expect(sendMessagesToAdmins).to.not.have.been.called();
+		expect(sendMessagesToAdminsSpy).to.not.have.been.called();
 	});
 });
