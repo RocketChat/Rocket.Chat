@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { Readable } from 'stream';
 
-import { Settings } from '@rocket.chat/models';
+import { ImportData, Settings } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { Importer, ProgressStep } from '../../importer/server';
@@ -89,6 +89,13 @@ export class HipChatEnterpriseImporter extends Importer {
 		await super.addCountToTotal(count);
 	}
 
+	async findDMForImportedUsers(...users) {
+		const record = await ImportData.findDMForImportedUsers(...users);
+		if (record) {
+			return record.data;
+		}
+	}
+
 	async prepareUserMessagesFile(file) {
 		this.logger.debug(`preparing room with ${file.length} messages `);
 		let count = 0;
@@ -110,7 +117,7 @@ export class HipChatEnterpriseImporter extends Importer {
 			const users = [senderId, receiverId].sort();
 
 			if (!dmRooms[receiverId]) {
-				dmRooms[receiverId] = await this.converter.findDMForImportedUsers(senderId, receiverId);
+				dmRooms[receiverId] = await this.findDMForImportedUsers(senderId, receiverId);
 
 				if (!dmRooms[receiverId]) {
 					const room = {
