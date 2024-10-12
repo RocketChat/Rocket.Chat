@@ -103,8 +103,8 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 						{
 							postProcess: 'sprintf',
 							sprintf: [newUser.username],
+							lng: user?.language || 'en',	
 						},
-						user?.language,
 					),
 				});
 			}
