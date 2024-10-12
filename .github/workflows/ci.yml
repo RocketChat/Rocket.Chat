@@ -160,6 +160,7 @@ jobs:
           cache-modules: true
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          HARDENED_MODE: '1'
 
       - name: Cache vite
         uses: actions/cache@v3
