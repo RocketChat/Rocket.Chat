@@ -1,11 +1,15 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, after, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 
 async function createCustomUserStatus(name: string): Promise<string> {
 	const res = await request.post(api('custom-user-status.create')).set(credentials).send({ name }).expect(200);
 	return res.body.customUserStatus._id;
+}
+
+async function deleteCustomUserStatus(id: string): Promise<void> {
+	await request.post(api('custom-user-status.delete')).set(credentials).send({ customUserStatusId: id }).expect(200);
 }
 
 describe('[CustomUserStatus]', () => {
@@ -20,6 +24,10 @@ describe('[CustomUserStatus]', () => {
 		before(async () => {
 			customUserStatusName = `test-${Date.now()}`;
 			customUserStatusId = await createCustomUserStatus(customUserStatusName);
+		});
+
+		after(async () => {
+			await deleteCustomUserStatus(customUserStatusId);
 		});
 
 		it('should return custom user status', (done) => {
