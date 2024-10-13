@@ -1,4 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
+import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat';
 import { Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatInquiryRecord,
@@ -227,9 +228,26 @@ export const RoutingManager: Routing = {
 			}),
 		);
 
+		logger.debug(`Attempting to take Inquiry ${inquiry._id} [Agent ${agent.agentId}] `);
+
+		const { _id, rid } = inquiry;
+		if (!room?.open) {
+			logger.debug(`Cannot take Inquiry ${inquiry._id}: Room is closed`);
+			return room;
+		}
+
+		if (room.servedBy && room.servedBy._id === agent.agentId) {
+			logger.debug(`Cannot take Inquiry ${inquiry._id}: Already taken by agent ${room.servedBy._id}`);
+			return room;
+		}
+
 		if (isSingleContactEnabled() && inquiry.v.contactId) {
-			const contact = await LivechatContacts.findOne({
-				_id: inquiry.v.contactId,
+			const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'unknown' | 'channels'>>(inquiry.v.contactId, {
+				projection: {
+					_id: 1,
+					unknown: 1,
+					channels: 1,
+				},
 			});
 
 			if (!contact) {
@@ -238,6 +256,7 @@ export const RoutingManager: Routing = {
 			}
 
 			if (contact.unknown && settings.get<boolean>('Livechat_Block_Unknown_Contacts')) {
+				logger.debug(`Contact ${inquiry.v._id} is unknown and Livechat_Block_Unknown_Contacts so we can't handle it over to the queue`);
 				return room;
 			}
 
@@ -256,19 +275,6 @@ export const RoutingManager: Routing = {
 					return room;
 				}
 			}
-		}
-
-		logger.debug(`Attempting to take Inquiry ${inquiry._id} [Agent ${agent.agentId}] `);
-
-		const { _id, rid } = inquiry;
-		if (!room?.open) {
-			logger.debug(`Cannot take Inquiry ${inquiry._id}: Room is closed`);
-			return room;
-		}
-
-		if (room.servedBy && room.servedBy._id === agent.agentId) {
-			logger.debug(`Cannot take Inquiry ${inquiry._id}: Already taken by agent ${room.servedBy._id}`);
-			return room;
 		}
 
 		try {
