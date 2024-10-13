@@ -260,16 +260,27 @@ export const RoutingManager: Routing = {
 				return room;
 			}
 
+			// Note: this should either be 1 or 0, if he is verified or not, but since we have an array of channels instead of a set there is no strong
+			//       guarantee that is the case :P
+			const isContactVerified =
+				(contact.channels?.filter((channel) => channel.verified && channel.name === room.source.type) || []).length > 0;
+
+			if (!isContactVerified && settings.get<boolean>('Livechat_Block_Unverified_Contacts')) {
+				logger.debug(
+					`Contact ${inquiry.v._id} is not verified and Livechat_Block_Unverified_Contacts is enabled so we can't handle him down to the queue`,
+				);
+				return room;
+			}
+
 			const contactVerificationApp = settings.get('Livechat_Contact_Verification_App');
 			// Note: Non-empty `Livechat_Contact_Verification_App` means the user has a Contact Verification App setup,
 			//       therefore, we must give the app control over the room
 			if (contactVerificationApp !== '') {
 				// Note: If it is not `Livechat_Request_Verification_On_First_Contact_Only` it means that even though the contact
 				//       was already verified, we must verify it again in order to handle the livechat conversation down to the queue
-				const verifiedChannels = contact.channels?.filter((channel) => channel.verified && channel.name === room.source.type) || [];
 				if (
 					!settings.get<boolean>('Livechat_Request_Verification_On_First_Contact_Only') ||
-					(verifiedChannels.length === 0 && settings.get<boolean>('Livechat_Block_Unverified_Contacts'))
+					(!isContactVerified && settings.get<boolean>('Livechat_Block_Unverified_Contacts'))
 				) {
 					await unverifyContactChannel(contact, room.source.type, inquiry.v._id);
 					return room;
