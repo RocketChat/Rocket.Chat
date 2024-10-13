@@ -5,3 +5,4 @@ export * from './IntegrationsHistoryProps';
 export * from './IntegrationsRemoveProps';
 export * from './IntegrationsGetProps';
 export * from './IntegrationsUpdateProps';
+export * from './IntegrationsListProps';
