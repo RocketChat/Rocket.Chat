@@ -8,7 +8,7 @@ const NO_ACTION_PERIOD_IN_DAYS = 3;
 const WARNING_PERIOD_IN_DAYS = 7;
 
 class AirGappedRestrictionClass extends EventEmitter {
-	#restricted = false;
+	#restricted = true;
 
 	public get restricted(): boolean {
 		return this.#restricted;
