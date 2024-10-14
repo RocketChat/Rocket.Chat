@@ -32,7 +32,7 @@ export const useAppsRoomStarActions = () => {
 		}
 
 		return {
-			id: 'ai-action',
+			id: 'ai-actions',
 			title: 'AI_Actions',
 			icon: 'stars',
 			groups: ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'],
@@ -49,7 +49,6 @@ export const useAppsRoomStarActions = () => {
 						title: Utilities.getI18nKeyForApp(action.labelI18n, action.appId),
 						content: <Box is='span'>{t(`${Utilities.getI18nKeyForApp(action.labelI18n, action.appId)}`)}</Box>,
 						variant: action.variant,
-						order: 300,
 						groups: ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'],
 						onClick: () => {
 							void actionManager
