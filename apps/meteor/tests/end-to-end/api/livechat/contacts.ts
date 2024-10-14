@@ -761,4 +761,52 @@ describe('LIVECHAT - contacts', () => {
 			});
 		});
 	});
+
+	describe('Contact Channels', () => {
+		let visitor: ILivechatVisitor;
+
+		beforeEach(async () => {
+			visitor = await createVisitor();
+		});
+
+		afterEach(async () => {
+			await deleteVisitor(visitor.token);
+		});
+
+		it('should add a channel to a contact when creating a new room', async () => {
+			await request.get(api('livechat/room')).query({ token: visitor.token });
+
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: visitor.contactId });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contact.channels).to.be.an('array');
+			expect(res.body.contact.channels.length).to.be.equal(1);
+			expect(res.body.contact.channels[0].name).to.be.equal('api');
+			expect(res.body.contact.channels[0].verified).to.be.false;
+			expect(res.body.contact.channels[0].blocked).to.be.false;
+			expect(res.body.contact.channels[0].visitorId).to.be.equal(visitor._id);
+		});
+
+		it('should not add a channel if visitor already has one with same type', async () => {
+			const roomResult = await request.get(api('livechat/room')).query({ token: visitor.token });
+
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: visitor.contactId });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contact.channels).to.be.an('array');
+			expect(res.body.contact.channels.length).to.be.equal(1);
+
+			await closeOmnichannelRoom(roomResult.body.room._id);
+			await request.get(api('livechat/room')).query({ token: visitor.token });
+
+			const secondResponse = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: visitor.contactId });
+
+			expect(secondResponse.status).to.be.equal(200);
+			expect(secondResponse.body).to.have.property('success', true);
+			expect(secondResponse.body.contact.channels).to.be.an('array');
+			expect(secondResponse.body.contact.channels.length).to.be.equal(1);
+		});
+	});
 });
