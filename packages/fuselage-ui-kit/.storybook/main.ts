@@ -1,4 +1,4 @@
-import type { StorybookConfig } from '@storybook/core-common';
+import type { StorybookConfig } from '@storybook/react/types';
 
 export default {
   stories: ['../src/**/*.stories.tsx', '../src/**/stories.tsx'],
@@ -16,4 +16,7 @@ export default {
     postcss: false,
   },
   framework: '@storybook/react',
+  typescript: {
+    reactDocgen: 'react-docgen',
+  },
 } satisfies StorybookConfig;
