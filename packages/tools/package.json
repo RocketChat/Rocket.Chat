@@ -24,6 +24,6 @@
 		"/dist"
 	],
 	"dependencies": {
-		"moment-timezone": "^0.5.45"
+		"moment-timezone": "^0.5.46"
 	}
 }
