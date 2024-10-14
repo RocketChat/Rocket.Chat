@@ -41,7 +41,7 @@ const DisableE2EEModal = ({ onConfirm, onCancel, roomType, canResetRoomKey, onRe
 								{t('E2E_reset_encryption_keys_description')}
 							</Box>
 							<Button secondary danger small onClick={onResetRoomKey}>
-								<Trans i18nKey='E2E_reset_encryption_keys_button' tOptions={{ roomType }} />
+								{t('E2E_reset_encryption_keys_button', { roomType })}
 							</Button>
 						</Accordion.Item>
 					</Accordion>
