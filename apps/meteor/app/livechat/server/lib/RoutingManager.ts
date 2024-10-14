@@ -1,5 +1,4 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat';
 import { Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatInquiryRecord,
@@ -12,7 +11,7 @@ import type {
 	InquiryWithAgentInfo,
 	TransferData,
 } from '@rocket.chat/core-typings';
-import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus, ILivechatContact } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users, LivechatContacts } from '@rocket.chat/models';
