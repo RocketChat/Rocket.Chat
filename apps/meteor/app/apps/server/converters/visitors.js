@@ -64,7 +64,7 @@ export class AppVisitorsConverter {
 			livechatData: visitor.livechatData,
 			status: visitor.status || 'online',
 			contactId: visitor.contactId,
-			channelName: visitor.channelName,
+			source: visitor.source,
 			...(visitor.visitorEmails && { visitorEmails: visitor.visitorEmails }),
 			...(visitor.department && { department: visitor.department }),
 		};
