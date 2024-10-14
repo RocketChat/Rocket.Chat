@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';
 
@@ -24,7 +24,7 @@ const EnableE2EEModal = ({ onConfirm, onClose, roomType }: EnableE2EEModalProps)
 			onCancel={onClose}
 		>
 			<Box mbe={16} is='p'>
-				<Trans i18nKey='E2E_enable_encryption_description' tOptions={{ roomType }} />
+				{t('E2E_enable_encryption_description', { roomType })}
 			</Box>
 		</GenericModal>
 	);
