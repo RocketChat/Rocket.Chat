@@ -202,12 +202,12 @@ export async function migrateVisitorIdToContact(visitorId: ILivechatVisitor['_id
 
 export async function migrateVisitorToContactId(visitor: ILivechatVisitor | null): Promise<ILivechatContact['_id'] | undefined> {
 	if (!visitor) {
-		return undefined;
+		return;
 	}
 
 	// If a visitor was found, but it is already associated with a contact, skip the migration
 	if (visitor.contactId) {
-		return undefined;
+		return;
 	}
 
 	const contactManager = await getContactManagerIdByUsername(visitor.contactManager?.username);
