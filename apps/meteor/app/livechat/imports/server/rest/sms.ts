@@ -56,9 +56,10 @@ const defineDepartment = async (idOrName?: string) => {
 };
 
 const defineVisitor = async (smsNumber: string, targetDepartment?: string) => {
-	const visitor = await LivechatVisitors.findOneVisitorByPhone(smsNumber);
-	let data: { token: string; department?: string } = {
+	const visitor = await LivechatVisitors.findOneVisitorByPhone(smsNumber, OmnichannelSourceType.SMS);
+	let data: { token: string; channelName: string; department?: string } = {
 		token: visitor?.token || Random.id(),
+		channelName: OmnichannelSourceType.SMS,
 	};
 
 	if (!visitor) {
