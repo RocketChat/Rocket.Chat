@@ -13,26 +13,28 @@ $form-input-select-arrow-color: $color-text-light;
 	&__select {
 		@include form__input-box;
 
-		flex: 1;
+		& {
+			flex: 1;
 
-		padding-right: (3 * $form-input-select-arrow-padding + $form-input-select-arrow-size);
-
-		color: $form-input-color;
-
-		-webkit-appearance: none;
-		-moz-appearance: none;
-		appearance: none;
-
-		&::-ms-expand {
-			display: none;
-		}
-
-		&--placeholder {
-			color: $form-input-placeholder-color;
-		}
-
-		&--small {
 			padding-right: (3 * $form-input-select-arrow-padding + $form-input-select-arrow-size);
+
+			color: $form-input-color;
+
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			appearance: none;
+
+			&::-ms-expand {
+				display: none;
+			}
+
+			&--placeholder {
+				color: $form-input-placeholder-color;
+			}
+
+			&--small {
+				padding-right: (3 * $form-input-select-arrow-padding + $form-input-select-arrow-size);
+			}
 		}
 	}
 

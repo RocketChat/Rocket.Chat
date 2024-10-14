@@ -3,5 +3,7 @@
 .textarea-input {
 	@include form__input-box;
 
-	resize: none;
+	& {
+		resize: none;
+	}
 }
