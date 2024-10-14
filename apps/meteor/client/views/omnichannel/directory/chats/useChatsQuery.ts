@@ -66,10 +66,12 @@ export const useChatsQuery = () => {
 			query.queued = status === 'queued';
 		}
 
+		if (!canViewLivechatRooms) {
+			query.agents = userIdLoggedIn ? [userIdLoggedIn] : [];
+		}
+
 		if (canViewLivechatRooms && servedBy && servedBy !== 'all') {
 			query.agents = [servedBy];
-		} else {
-			query.agents = userIdLoggedIn ? [userIdLoggedIn] : [];
 		}
 
 		if (department && department !== 'all') {
