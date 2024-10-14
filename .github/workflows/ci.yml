@@ -285,7 +285,7 @@ jobs:
     name: Builds matrix rust bindings against alpine
     runs-on: ubuntu-latest
     steps:
-      - run: sudo apt-get install -y musl-tools && find / -name stdarg.h 2>/dev/null || true
+      - run: sudo apt-get install -y musl-tools && find /usr/include -name stdarg.h 2>/dev/null || true
       - uses: actions/checkout@v4
         with:
           repository: matrix-org/matrix-rust-sdk-crypto-nodejs
