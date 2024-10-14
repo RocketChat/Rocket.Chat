@@ -180,6 +180,8 @@ export interface IOmnichannelSource {
 	sidebarIcon?: string;
 	// The default sidebar icon
 	defaultIcon?: string;
+	// The destination of the message (e.g widget host, email address, whatsapp number, etc)
+	destination?: string;
 }
 
 export interface IOmnichannelSourceFromApp extends IOmnichannelSource {
@@ -189,6 +191,7 @@ export interface IOmnichannelSourceFromApp extends IOmnichannelSource {
 	sidebarIcon?: string;
 	defaultIcon?: string;
 	alias?: string;
+	destination?: string;
 }
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast'> {
