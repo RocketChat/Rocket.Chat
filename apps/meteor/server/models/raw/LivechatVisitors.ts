@@ -30,7 +30,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	protected modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { token: 1 } },
-			{ key: { token: 1, channelName: 1 } },
+			{ key: { 'token': 1, 'source.type': 1 } },
 			{ key: { 'phone.phoneNumber': 1 }, sparse: true },
 			{ key: { 'visitorEmails.address': 1 }, sparse: true },
 			{ key: { name: 1 }, sparse: true },

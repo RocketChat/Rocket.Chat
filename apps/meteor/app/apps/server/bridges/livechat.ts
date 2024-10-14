@@ -298,7 +298,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		}
 
 		return Promise.all(
-			(await LivechatVisitors.findEnabledBySource(appId, query).toArray()).map(
+			(await LivechatVisitors.findEnabledBySource({ type: OmnichannelSourceType.APP, id: appId }, query).toArray()).map(
 				async (visitor) => visitor && this.orch.getConverters()?.get('visitors').convertVisitor(visitor),
 			),
 		);
