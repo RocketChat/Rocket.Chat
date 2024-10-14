@@ -37,6 +37,7 @@ import './v300';
 import './v301';
 import './v303';
 import './v304';
+import './v305';
 import './v306';
 import './v307';
 import './v308';
