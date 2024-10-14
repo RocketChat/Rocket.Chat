@@ -94,7 +94,6 @@ export class AppsRestApi {
 				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 					const workspaceId = settings.get('Cloud_Workspace_Id');
-
 					const { action, appId, appVersion } = this.queryParams;
 
 					return API.v1.success({
