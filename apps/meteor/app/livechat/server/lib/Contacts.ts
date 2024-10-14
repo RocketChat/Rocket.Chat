@@ -7,6 +7,7 @@ import type {
 	IOmnichannelRoom,
 	IUser,
 } from '@rocket.chat/core-typings';
+import type { InsertionModel } from '@rocket.chat/model-typings';
 import {
 	LivechatVisitors,
 	Users,
@@ -17,9 +18,10 @@ import {
 	Subscriptions,
 	LivechatContacts,
 } from '@rocket.chat/models';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
+import type { MatchKeysAndValues, OnlyFieldsOfType, Sort } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
@@ -61,6 +63,13 @@ type UpdateContactParams = {
 	customFields?: Record<string, unknown>;
 	contactManager?: string;
 	channels?: ILivechatContactChannel[];
+};
+
+type GetContactsParams = {
+	searchText?: string;
+	count: number;
+	offset: number;
+	sort: Sort;
 };
 
 export const Contacts = {
@@ -175,6 +184,35 @@ export function isSingleContactEnabled(): boolean {
 	return process.env.TEST_MODE?.toUpperCase() === 'TRUE';
 }
 
+export async function createContactFromVisitor(visitor: ILivechatVisitor): Promise<string> {
+	if (visitor.contactId) {
+		throw new Error('error-contact-already-exists');
+	}
+
+	const contactData: InsertionModel<ILivechatContact> = {
+		name: visitor.name || visitor.username,
+		emails: visitor.visitorEmails?.map(({ address }) => address),
+		phones: visitor.phone?.map(({ phoneNumber }) => phoneNumber),
+		unknown: true,
+		channels: [],
+		customFields: visitor.livechatData,
+		createdAt: new Date(),
+	};
+
+	if (visitor.contactManager) {
+		const contactManagerId = await Users.findOneByUsername<Pick<IUser, '_id'>>(visitor.contactManager.username, { projection: { _id: 1 } });
+		if (contactManagerId) {
+			contactData.contactManager = contactManagerId._id;
+		}
+	}
+
+	const { insertedId: contactId } = await LivechatContacts.insertOne(contactData);
+
+	await LivechatVisitors.updateOne({ _id: visitor._id }, { $set: { contactId } });
+
+	return contactId;
+}
+
 export async function createContact(params: CreateContactParams): Promise<string> {
 	const { name, emails, phones, customFields: receivedCustomFields = {}, contactManager, channels, unknown } = params;
 
@@ -193,6 +231,7 @@ export async function createContact(params: CreateContactParams): Promise<string
 		channels,
 		customFields,
 		unknown,
+		createdAt: new Date(),
 	});
 
 	return insertedId;
@@ -223,6 +262,25 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 	});
 
 	return updatedContact;
+}
+
+export async function getContacts(params: GetContactsParams): Promise<PaginatedResult<{ contacts: ILivechatContact[] }>> {
+	const { searchText, count, offset, sort } = params;
+
+	const { cursor, totalCount } = LivechatContacts.findPaginatedContacts(searchText, {
+		limit: count,
+		skip: offset,
+		sort: sort ?? { name: 1 },
+	});
+
+	const [contacts, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+	return {
+		contacts,
+		count,
+		offset,
+		total,
+	};
 }
 
 async function getAllowedCustomFields(): Promise<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>[]> {
