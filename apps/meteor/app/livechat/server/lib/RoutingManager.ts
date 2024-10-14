@@ -10,8 +10,9 @@ import type {
 	SelectedAgent,
 	InquiryWithAgentInfo,
 	TransferData,
+	ILivechatContact,
 } from '@rocket.chat/core-typings';
-import { LivechatInquiryStatus, ILivechatContact } from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users, LivechatContacts } from '@rocket.chat/models';
