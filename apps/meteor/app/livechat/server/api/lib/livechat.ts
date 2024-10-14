@@ -1,4 +1,11 @@
-import type { ILivechatAgent, ILivechatDepartment, ILivechatTrigger, ILivechatVisitor, IOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
+import type {
+	ILivechatAgent,
+	ILivechatDepartment,
+	ILivechatTrigger,
+	ILivechatVisitor,
+	IOmnichannelRoom,
+	OmnichannelSourceType,
+} from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
