@@ -10,6 +10,8 @@ type VoipAPI = {
 	unregister(): Promise<void>;
 	openDialer(): void;
 	closeDialer(): void;
+	onRegistered(cb: () => void): () => void;
+	onUnregistered(cb: () => void): () => void;
 	transferCall(calleeURL: string): Promise<void>;
 	changeAudioOutputDevice: VoipContextReady['changeAudioOutputDevice'];
 	changeAudioInputDevice: VoipContextReady['changeAudioInputDevice'];
@@ -32,6 +34,8 @@ export const useVoipAPI = (): VoipAPI => {
 				transferCall: NOOP,
 				changeAudioInputDevice: NOOP,
 				changeAudioOutputDevice: NOOP,
+				onRegistered: NOOP,
+				onUnregistered: NOOP,
 			} as VoipAPI;
 		}
 
@@ -47,6 +51,8 @@ export const useVoipAPI = (): VoipAPI => {
 			closeDialer: () => voipClient.notifyDialer({ open: false }),
 			changeAudioInputDevice,
 			changeAudioOutputDevice,
+			onRegistered: (cb: () => void) => voipClient.on('registered', cb),
+			onUnregistered: (cb: () => void) => voipClient.on('unregistered', cb),
 		};
 	}, [context]);
 };
