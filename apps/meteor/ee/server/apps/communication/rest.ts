@@ -93,7 +93,7 @@ export class AppsRestApi {
 			{
 				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
-                    const workspaceId = settings.get('Cloud_Workspace_Id');
+					const workspaceId = settings.get('Cloud_Workspace_Id');
 
 					const { action, appId, appVersion } = this.queryParams;
 
@@ -287,7 +287,6 @@ export class AppsRestApi {
 						this.queryParams.appId
 					) {
 						apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, 'Use /apps/buildExternalUrl to get the modal URLs.');
-
 						const workspaceId = settings.get('Cloud_Workspace_Id');
 
 						if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
@@ -446,7 +445,6 @@ export class AppsRestApi {
 					}
 
 					const baseUrl = orchestrator.getMarketplaceUrl();
-
 					const workspaceId = settings.get<string>('Cloud_Workspace_Id');
 
 					const requester = {
@@ -485,7 +483,7 @@ export class AppsRestApi {
 					}
 
 					const queryParams = new URLSearchParams();
-					queryParams.set('workspaceId', workspaceId as string);
+					queryParams.set('workspaceId', workspaceId);
 					queryParams.set('frameworkVersion', appsEngineVersionForMarketplace);
 					queryParams.set('requester', Buffer.from(JSON.stringify(requester)).toString('base64'));
 					queryParams.set('admins', Buffer.from(JSON.stringify(admins)).toString('base64'));
