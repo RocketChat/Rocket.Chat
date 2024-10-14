@@ -1,11 +1,13 @@
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
-import type { MutableRefObject, ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
+import { PageContent } from '../../../components/Page';
 import { useAppsResult } from '../../../contexts/hooks/useAppsResult';
 import { AsyncStatePhase } from '../../../lib/asyncState';
+import MarketplaceHeader from '../components/MarketplaceHeader';
 import type { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
 import { useCategories } from '../hooks/useCategories';
 import type { appsDataType } from '../hooks/useFilteredApps';
@@ -22,11 +24,9 @@ import NoMarketplaceOrInstalledAppMatchesEmptyState from './NoMarketplaceOrInsta
 import PrivateEmptyState from './PrivateEmptyState';
 import UnsupportedEmptyState from './UnsupportedEmptyState';
 
-type AppsPageContentProps = {
-	unsupportedVersion: MutableRefObject<boolean>;
-};
+type AppsContext = 'explore' | 'installed' | 'premium' | 'private' | 'requested';
 
-const AppsPageContent = ({ unsupportedVersion }: AppsPageContentProps): ReactElement => {
+const AppsPageContent = (): ReactElement => {
 	const t = useTranslation();
 	const { marketplaceApps, installedApps, privateApps, reload } = useAppsResult();
 	const [text, setText] = useDebouncedState('', 500);
@@ -34,7 +34,7 @@ const AppsPageContent = ({ unsupportedVersion }: AppsPageContentProps): ReactEle
 
 	const router = useRouter();
 
-	const context = useRouteParameter('context');
+	const context = useRouteParameter('context') as AppsContext;
 
 	const isMarketplace = context === 'explore';
 	const isPremium = context === 'premium';
@@ -139,7 +139,7 @@ const AppsPageContent = ({ unsupportedVersion }: AppsPageContentProps): ReactEle
 
 	const noInstalledApps = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value?.totalAppsLength === 0;
 
-	unsupportedVersion.current = appsResult.phase === AsyncStatePhase.REJECTED && appsResult.error.message === 'unsupported version';
+	const unsupportedVersion = appsResult.phase === AsyncStatePhase.REJECTED && appsResult.error.message === 'unsupported version';
 
 	const noMarketplaceOrInstalledAppMatches =
 		appsResult.phase === AsyncStatePhase.RESOLVED && (isMarketplace || isPremium) && appsResult.value?.count === 0;
@@ -196,7 +196,7 @@ const AppsPageContent = ({ unsupportedVersion }: AppsPageContentProps): ReactEle
 	}, [isMarketplace, isRequested, sortFilterOnSelected, t, toggleInitialSortOption]);
 
 	const getEmptyState = () => {
-		if (unsupportedVersion.current) {
+		if (unsupportedVersion) {
 			return <UnsupportedEmptyState />;
 		}
 
@@ -224,7 +224,9 @@ const AppsPageContent = ({ unsupportedVersion }: AppsPageContentProps): ReactEle
 	};
 
 	return (
-		<>
+		<PageContent>
+			<MarketplaceHeader unsupportedVersion={unsupportedVersion} title={t(`Apps_context_${context}`)} />
+
 			<AppsFilters
 				setText={setText}
 				freePaidFilterStructure={freePaidFilterStructure}
@@ -240,7 +242,7 @@ const AppsPageContent = ({ unsupportedVersion }: AppsPageContentProps): ReactEle
 				context={context || 'explore'}
 			/>
 			{appsResult.phase === AsyncStatePhase.LOADING && <AppsPageContentSkeleton />}
-			{appsResult.phase === AsyncStatePhase.RESOLVED && noErrorsOcurred && !unsupportedVersion.current && (
+			{appsResult.phase === AsyncStatePhase.RESOLVED && noErrorsOcurred && !unsupportedVersion && (
 				<AppsPageContentBody
 					isMarketplace={isMarketplace}
 					isFiltered={isFiltered}
@@ -254,8 +256,8 @@ const AppsPageContent = ({ unsupportedVersion }: AppsPageContentProps): ReactEle
 				/>
 			)}
 			{getEmptyState()}
-			{appsResult.phase === AsyncStatePhase.REJECTED && !unsupportedVersion.current && <AppsPageConnectionError onButtonClick={reload} />}
-		</>
+			{appsResult.phase === AsyncStatePhase.REJECTED && !unsupportedVersion && <AppsPageConnectionError onButtonClick={reload} />}
+		</PageContent>
 	);
 };
 
