@@ -8,7 +8,7 @@ import GenericModal from '../../../../components/GenericModal';
 import { dispatchToastMessage } from '../../../../lib/toast';
 import { useE2EEResetRoomKey } from '../../hooks/useE2EEResetRoomKey';
 
-const E2EE_RESET_KEY_LINK = 'https://go.rocket.chat/i/E2EE-reset-room-key';
+const E2EE_RESET_KEY_LINK = 'https://go.rocket.chat/i/e2ee-guide';
 
 type ResetKeysE2EEModalProps = {
 	roomType: string;
