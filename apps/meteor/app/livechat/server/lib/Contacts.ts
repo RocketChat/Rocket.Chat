@@ -191,8 +191,8 @@ export async function createContactFromVisitor(visitor: ILivechatVisitor): Promi
 
 	const contactData: InsertionModel<ILivechatContact> = {
 		name: visitor.name || visitor.username,
-		emails: visitor.visitorEmails?.map(({ address }) => address),
-		phones: visitor.phone?.map(({ phoneNumber }) => phoneNumber),
+		emails: visitor.visitorEmails,
+		phones: visitor.phone || undefined,
 		unknown: true,
 		channels: [],
 		customFields: visitor.livechatData,
