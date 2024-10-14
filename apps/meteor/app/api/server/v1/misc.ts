@@ -11,7 +11,7 @@ import {
 	isFingerprintProps,
 	isMeteorCall,
 } from '@rocket.chat/rest-typings';
-import { escapeHTML, escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 import EJSON from 'ejson';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
