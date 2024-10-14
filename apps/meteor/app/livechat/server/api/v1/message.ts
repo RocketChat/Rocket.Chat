@@ -26,8 +26,9 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { token, rid, agent, msg } = this.bodyParams;
+			const channelName = isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API;
 
-			const guest = await findGuest(token);
+			const guest = await findGuest(token, channelName);
 			if (!guest) {
 				throw new Error('invalid-token');
 			}
@@ -48,6 +49,10 @@ API.v1.addRoute(
 				throw new Error('message-length-exceeds-character-limit');
 			}
 
+			if (!guest.channelName) {
+				await LivechatVisitors.setChannelNameById(guest._id, channelName);
+			}
+
 			const _id = this.bodyParams._id || Random.id();
 
 			const sendMessage = {
@@ -61,7 +66,7 @@ API.v1.addRoute(
 				agent,
 				roomInfo: {
 					source: {
-						type: isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+						type: channelName,
 					},
 				},
 			};
@@ -250,8 +255,9 @@ API.v1.addRoute(
 	{
 		async post() {
 			const visitorToken = this.bodyParams.visitor.token;
+			const channelName = isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API;
 
-			const visitor = await LivechatVisitors.getVisitorByToken(visitorToken, {});
+			const visitor = await LivechatVisitors.getVisitorByTokenAndChannelName({ token: visitorToken, channelName }, {});
 			let rid: string;
 			if (visitor) {
 				const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
@@ -261,11 +267,16 @@ API.v1.addRoute(
 				} else {
 					rid = Random.id();
 				}
+
+				if (!visitor.channelName) {
+					await LivechatVisitors.setChannelNameById(visitor._id, channelName);
+				}
 			} else {
 				rid = Random.id();
 
-				const guest: typeof this.bodyParams.visitor & { connectionData?: unknown } = this.bodyParams.visitor;
+				const guest: typeof this.bodyParams.visitor & { connectionData?: unknown; channelName?: string } = this.bodyParams.visitor;
 				guest.connectionData = normalizeHttpHeaderData(this.request.headers);
+				guest.channelName = channelName;
 
 				const visitor = await LivechatTyped.registerGuest(guest);
 				if (!visitor) {
@@ -290,7 +301,7 @@ API.v1.addRoute(
 						},
 						roomInfo: {
 							source: {
-								type: isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+								type: channelName,
 							},
 						},
 					};
