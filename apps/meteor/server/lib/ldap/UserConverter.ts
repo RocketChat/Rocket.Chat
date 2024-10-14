@@ -1,20 +1,22 @@
 import type { IImportUser, IUser } from '@rocket.chat/core-typings';
-import { Logger } from '@rocket.chat/logger';
+import type { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
-import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
-import { VirtualDataConverter } from '../../../app/importer/server/classes/VirtualDataConverter';
+import type { ConverterCache } from '../../../app/importer/server/classes/converters/ConverterCache';
+import { type RecordConverterOptions } from '../../../app/importer/server/classes/converters/RecordConverter';
+import { UserConverter, type UserConverterOptions } from '../../../app/importer/server/classes/converters/UserConverter';
 import { settings } from '../../../app/settings/server';
 
-const logger = new Logger('LDAP Data Converter');
-
-export class LDAPDataConverter extends VirtualDataConverter {
+export class LDAPUserConverter extends UserConverter {
 	private mergeExistingUsers: boolean;
 
-	constructor(virtual = true, options?: IConverterOptions) {
-		super(virtual, options);
-		this.setLogger(logger);
+	constructor(options?: UserConverterOptions & RecordConverterOptions, logger?: Logger, cache?: ConverterCache) {
+		const ldapOptions = {
+			workInMemory: true,
+			...(options || {}),
+		};
 
+		super(ldapOptions, logger, cache);
 		this.mergeExistingUsers = settings.get<boolean>('LDAP_Merge_Existing_Users') ?? true;
 	}
 
@@ -43,9 +45,9 @@ export class LDAPDataConverter extends VirtualDataConverter {
 		}
 	}
 
-	static async convertSingleUser(userData: IImportUser, options?: IConverterOptions): Promise<void> {
-		const converter = new LDAPDataConverter(true, options);
-		await converter.addUser(userData);
-		await converter.convertUsers();
+	static async convertSingleUser(userData: IImportUser, options?: UserConverterOptions): Promise<void> {
+		const converter = new LDAPUserConverter(options);
+		await converter.addObject(userData);
+		await converter.convertData();
 	}
 }

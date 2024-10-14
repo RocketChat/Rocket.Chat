@@ -7,6 +7,7 @@ import type {
 	IOmnichannelRoom,
 	IUser,
 } from '@rocket.chat/core-typings';
+import type { InsertionModel } from '@rocket.chat/model-typings';
 import {
 	LivechatVisitors,
 	Users,
@@ -181,6 +182,35 @@ export const Contacts = {
 export function isSingleContactEnabled(): boolean {
 	// The Single Contact feature is not yet available in production, but can already be partially used in test environments.
 	return process.env.TEST_MODE?.toUpperCase() === 'TRUE';
+}
+
+export async function createContactFromVisitor(visitor: ILivechatVisitor): Promise<string> {
+	if (visitor.contactId) {
+		throw new Error('error-contact-already-exists');
+	}
+
+	const contactData: InsertionModel<ILivechatContact> = {
+		name: visitor.name || visitor.username,
+		emails: visitor.visitorEmails?.map(({ address }) => address),
+		phones: visitor.phone?.map(({ phoneNumber }) => phoneNumber),
+		unknown: true,
+		channels: [],
+		customFields: visitor.livechatData,
+		createdAt: new Date(),
+	};
+
+	if (visitor.contactManager) {
+		const contactManagerId = await Users.findOneByUsername<Pick<IUser, '_id'>>(visitor.contactManager.username, { projection: { _id: 1 } });
+		if (contactManagerId) {
+			contactData.contactManager = contactManagerId._id;
+		}
+	}
+
+	const { insertedId: contactId } = await LivechatContacts.insertOne(contactData);
+
+	await LivechatVisitors.updateOne({ _id: visitor._id }, { $set: { contactId } });
+
+	return contactId;
 }
 
 export async function createContact(params: CreateContactParams): Promise<string> {
