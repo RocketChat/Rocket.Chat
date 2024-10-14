@@ -36,6 +36,9 @@ RUN set -x \
     && npm cache clear --force \
     && apk del .fetch-deps
 
+# TODO: remove hack once upstream builds are fixed
+COPY matrix-sdk-crypto.linux-x64-musl.node /app/bundle/programs/server/npm/node_modules/@matrix-org/matrix-rust-crypto-nodejs/matrix-sdk-crypto.linux-x64-musl.node
+
 VOLUME /app/uploads
 
 WORKDIR /app/bundle

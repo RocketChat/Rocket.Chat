@@ -280,9 +280,47 @@ jobs:
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           coverage: ${{ github.event_name != 'release' }}
 
+  # TODO: this should go away once upstream builds are fixed
+  build-matrix-rust-bindings-for-alpine:
+    name: Builds matrix rust bindings against alpine
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: matrix-org/matrix-rust-sdk-crypto-nodejs
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          targets: x86_64-unknown-linux-musl
+
+      - name: Install ziglang
+        uses: goto-bus-stop/setup-zig@v1
+
+      - name: Install cargo toolchains
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-zigbuild
+
+      - name: Build
+        run: |
+          npm install --ignore-scripts
+          npx napi build --release --target x86_64-unknown-linux-musl --platform
+
+      - name: Upload bin
+        uses: actions/upload-artifact@v4
+        with:
+          path: matrix-sdk-crypto.linux-x64-musl.node
+          name: napi-binary
+          if-no-files-found: error
+
   build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing
-    needs: [build, release-versions]
+    needs: [build, release-versions, build-matrix-rust-bindings-for-alpine]
     runs-on: ubuntu-20.04
 
     env:
