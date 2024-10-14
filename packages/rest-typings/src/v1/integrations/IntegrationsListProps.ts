@@ -10,11 +10,11 @@ const integrationsListSchema = {
 	type: 'object',
 	properties: {
 		count: {
-			type: 'number',
+			type: ['number', 'string'],
 			nullable: true,
 		},
 		offset: {
-			type: 'number',
+			type: ['number', 'string'],
 			nullable: true,
 		},
 		sort: {
