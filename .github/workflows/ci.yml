@@ -310,6 +310,7 @@ jobs:
       - name: Build
         run: |
           npm install --ignore-scripts
+          export RUSTFLAGS="-I/usr/include/x86_64-linux-musl"
           npx napi build --release --target x86_64-unknown-linux-musl --platform
 
       - name: Upload bin
