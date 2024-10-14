@@ -1,7 +1,23 @@
-import type { ILivechatContact, ILivechatContactChannel, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type {
+	AtLeast,
+	ILivechatContact,
+	ILivechatContactChannel,
+	ILivechatVisitor,
+	RocketChatRecordDeleted,
+} from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatContactsModel, InsertionModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Collection, Db, RootFilterOperators, Filter, FindOptions, FindCursor, IndexDescription, UpdateResult } from 'mongodb';
+import type {
+	Document,
+	Collection,
+	Db,
+	RootFilterOperators,
+	Filter,
+	FindOptions,
+	FindCursor,
+	IndexDescription,
+	UpdateResult,
+} from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -79,6 +95,45 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 				...options,
 			},
 		);
+	}
+
+	async findContactMatchingVisitor(visitor: AtLeast<ILivechatVisitor, 'visitorEmails' | 'phone'>): Promise<ILivechatContact | null> {
+		const emails = visitor.visitorEmails?.map(({ address }) => address).filter((email) => Boolean(email)) || [];
+		const phoneNumbers = visitor.phone?.map(({ phoneNumber }) => phoneNumber).filter((phone) => Boolean(phone)) || [];
+
+		if (!emails?.length && !phoneNumbers?.length) {
+			return null;
+		}
+
+		const query = {
+			$and: [
+				{
+					$or: [...emails?.map((email) => ({ emails: email })), ...phoneNumbers?.map((phone) => ({ phones: phone }))],
+				},
+				{
+					$or: [
+						{
+							channels: { $exists: false },
+						},
+						{
+							channels: { $size: 0 },
+						},
+					],
+				},
+			],
+		};
+
+		return this.findOne(query);
+	}
+
+	async findOneByVisitorId<T extends Document = ILivechatContact>(
+		visitorId: ILivechatVisitor['_id'],
+		options: FindOptions<ILivechatContact> = {},
+	): Promise<T | null> {
+		const query = {
+			'channels.visitorId': visitorId,
+		};
+		return this.findOne<T>(query, options);
 	}
 
 	async addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void> {

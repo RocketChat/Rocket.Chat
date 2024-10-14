@@ -13,10 +13,16 @@ const modelsMock = {
 		insertOne: sinon.stub(),
 		upsertContact: sinon.stub(),
 		updateContact: sinon.stub(),
+		findContactMatchingVisitor: sinon.stub(),
+		findOneByVisitorId: sinon.stub(),
+	},
+	LivechatRooms: {
+		findNewestByVisitorIdOrToken: sinon.stub(),
 	},
 	LivechatVisitors: {
 		findOneById: sinon.stub(),
 		updateById: sinon.stub(),
+		updateOne: sinon.stub(),
 	},
 	LivechatCustomField: {
 		findByScope: sinon.stub(),
@@ -28,6 +34,13 @@ const { validateCustomFields, validateContactManager, updateContact, getContact 
 		'meteor/check': sinon.stub(),
 		'meteor/meteor': sinon.stub(),
 		'@rocket.chat/models': modelsMock,
+		'./LivechatTyped': {
+			Livechat: {
+				logger: {
+					debug: sinon.stub(),
+				},
+			},
+		},
 	});
 
 describe('[OC] Contacts', () => {
@@ -161,6 +174,13 @@ describe('[OC] Contacts', () => {
 						insertedId: 'random_id',
 					};
 				});
+				modelsMock.LivechatRooms.findNewestByVisitorIdOrToken.resolves({
+					_id: 'room_id',
+					visitorId: 'any_id',
+					source: {
+						type: 'widget',
+					},
+				});
 
 				expect(await getContact('any_id')).to.be.deep.equal({
 					_id: 'any_id',
@@ -169,7 +189,15 @@ describe('[OC] Contacts', () => {
 					phones: ['1', '2'],
 					contactManager: 'manager_id',
 					unknown: true,
-					channels: [],
+					channels: [
+						{
+							name: 'widget',
+							visitorId: 'any_id',
+							blocked: false,
+							verified: false,
+							details: { type: 'widget' },
+						},
+					],
 					customFields: {},
 				});
 
