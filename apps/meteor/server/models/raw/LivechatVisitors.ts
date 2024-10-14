@@ -30,6 +30,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	protected modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { token: 1 } },
+			{ key: { token: 1, channelName: 1 } },
 			{ key: { 'phone.phoneNumber': 1 }, sparse: true },
 			{ key: { 'visitorEmails.address': 1 }, sparse: true },
 			{ key: { name: 1 }, sparse: true },
@@ -41,17 +42,21 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		];
 	}
 
-	findOneVisitorByPhone(phone: string): Promise<ILivechatVisitor | null> {
+	findOneVisitorByPhone(phone: string, channelName?: string): Promise<ILivechatVisitor | null> {
+		const emptyChannelNameFilter = { channelName: { $exists: false } };
 		const query = {
 			'phone.phoneNumber': phone,
+			...(channelName ? { $or: [{ channelName }, emptyChannelNameFilter] } : emptyChannelNameFilter),
 		};
 
 		return this.findOne(query);
 	}
 
-	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null> {
+	findOneGuestByEmailAddress(emailAddress: string, channelName?: string): Promise<ILivechatVisitor | null> {
+		const emptyChannelNameFilter = { channelName: { $exists: false } };
 		const query = {
 			'visitorEmails.address': String(emailAddress).toLowerCase(),
+			...(channelName ? { $or: [{ channelName }, emptyChannelNameFilter] } : emptyChannelNameFilter),
 		};
 
 		return this.findOne(query);
@@ -69,10 +74,15 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.find(query, options);
 	}
 
-	findEnabled(query: Filter<ILivechatVisitor>, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor> {
+	findEnabledByChannelName(
+		channelName: string,
+		query: Filter<ILivechatVisitor>,
+		options?: FindOptions<ILivechatVisitor>,
+	): FindCursor<ILivechatVisitor> {
 		return this.find(
 			{
 				...query,
+				$or: [{ channelName }, { channelName: { $exists: false } }],
 				disabled: { $ne: true },
 			},
 			options,
@@ -83,6 +93,20 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		const query = {
 			_id,
 			disabled: { $ne: true },
+		};
+
+		return this.findOne<T>(query, options);
+	}
+
+	findOneEnabledByIdAndChannelName<T extends Document = ILivechatVisitor>(
+		{ _id, channelName }: { _id: string; channelName: string },
+		options?: FindOptions<ILivechatVisitor>,
+	): Promise<T | null> {
+		const emptyChannelNameFilter = { channelName: { $exists: false } };
+		const query = {
+			_id,
+			disabled: { $ne: true },
+			...(channelName ? { $or: [{ channelName }, emptyChannelNameFilter] } : emptyChannelNameFilter),
 		};
 
 		return this.findOne<T>(query, options);
@@ -100,6 +124,19 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	getVisitorByToken(token: string, options: FindOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
 		const query = {
 			token,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	getVisitorByTokenAndChannelName(
+		{ token, channelName }: { token: string; channelName?: string },
+		options: FindOptions<ILivechatVisitor>,
+	): Promise<ILivechatVisitor | null> {
+		const emptyChannelNameFilter = { channelName: { $exists: false } };
+		const query = {
+			token,
+			...(channelName ? { $or: [{ channelName }, emptyChannelNameFilter] } : emptyChannelNameFilter),
 		};
 
 		return this.findOne(query, options);
@@ -466,6 +503,17 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{
 				$set: {
 					lastChat,
+				},
+			},
+		);
+	}
+
+	setChannelNameById(_id: string, channelName: Required<ILivechatVisitor['channelName']>): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id },
+			{
+				$set: {
+					channelName,
 				},
 			},
 		);

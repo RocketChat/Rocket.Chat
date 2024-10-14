@@ -52,6 +52,13 @@ export class AppLivechatBridge extends LivechatBridge {
 		const appMessage = (await this.orch.getConverters().get('messages').convertAppMessage(message)) as IMessage | undefined;
 		const livechatMessage = appMessage as ILivechatMessage | undefined;
 
+		if (guest) {
+			const fullVisitor = await LivechatVisitors.findOneEnabledByIdAndChannelName({ _id: guest._id, channelName: appId });
+			if (!fullVisitor?.channelName) {
+				await LivechatVisitors.setChannelNameById(guest._id, appId);
+			}
+		}
+
 		const msg = await LivechatTyped.sendMessage({
 			guest: guest as ILivechatVisitor,
 			message: livechatMessage as ILivechatMessage,
@@ -286,7 +293,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		}
 
 		return Promise.all(
-			(await LivechatVisitors.findEnabled(query).toArray()).map(
+			(await LivechatVisitors.findEnabledByChannelName(appId, query).toArray()).map(
 				async (visitor) => visitor && this.orch.getConverters()?.get('visitors').convertVisitor(visitor),
 			),
 		);
@@ -295,7 +302,7 @@ export class AppLivechatBridge extends LivechatBridge {
 	protected async findVisitorById(id: string, appId: string): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${appId} is looking for livechat visitors.`);
 
-		return this.orch.getConverters()?.get('visitors').convertById(id);
+		return this.orch.getConverters()?.get('visitors').convertById(id, appId);
 	}
 
 	protected async findVisitorByEmail(email: string, appId: string): Promise<IVisitor | undefined> {
@@ -304,7 +311,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		return this.orch
 			.getConverters()
 			?.get('visitors')
-			.convertVisitor(await LivechatVisitors.findOneGuestByEmailAddress(email));
+			.convertVisitor(await LivechatVisitors.findOneGuestByEmailAddress(email, appId));
 	}
 
 	protected async findVisitorByToken(token: string, appId: string): Promise<IVisitor | undefined> {
@@ -313,7 +320,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		return this.orch
 			.getConverters()
 			?.get('visitors')
-			.convertVisitor(await LivechatVisitors.getVisitorByToken(token, {}));
+			.convertVisitor(await LivechatVisitors.getVisitorByTokenAndChannelName({ token, channelName: appId }));
 	}
 
 	protected async findVisitorByPhoneNumber(phoneNumber: string, appId: string): Promise<IVisitor | undefined> {
@@ -322,7 +329,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		return this.orch
 			.getConverters()
 			?.get('visitors')
-			.convertVisitor(await LivechatVisitors.findOneVisitorByPhone(phoneNumber));
+			.convertVisitor(await LivechatVisitors.findOneVisitorByPhone(phoneNumber, appId));
 	}
 
 	protected async findDepartmentByIdOrName(value: string, appId: string): Promise<IDepartment | undefined> {

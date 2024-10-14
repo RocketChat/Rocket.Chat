@@ -8,14 +8,20 @@ export class AppVisitorsConverter {
 		this.orch = orch;
 	}
 
-	async convertById(id) {
-		const visitor = await LivechatVisitors.findOneEnabledById(id);
+	async convertById(id, appId) {
+		const visitor = await LivechatVisitors.findOneEnabledByIdAndChannelName({ _id: id, channelName: appId });
 
 		return this.convertVisitor(visitor);
 	}
 
 	async convertByToken(token) {
 		const visitor = await LivechatVisitors.getVisitorByToken(token);
+
+		return this.convertVisitor(visitor);
+	}
+
+	async convertByTokenAndChannelName(token, appId) {
+		const visitor = await LivechatVisitors.getVisitorByTokenAndChannelName({ token, channelName: appId });
 
 		return this.convertVisitor(visitor);
 	}
@@ -37,6 +43,7 @@ export class AppVisitorsConverter {
 			livechatData: 'livechatData',
 			status: 'status',
 			contactId: 'contactId',
+			channelName: 'channelName',
 		};
 
 		return transformMappedData(visitor, map);
@@ -56,6 +63,7 @@ export class AppVisitorsConverter {
 			livechatData: visitor.livechatData,
 			status: visitor.status || 'online',
 			contactId: visitor.contactId,
+			channelName: visitor.channelName,
 			...(visitor.visitorEmails && { visitorEmails: visitor.visitorEmails }),
 			...(visitor.department && { department: visitor.department }),
 		};

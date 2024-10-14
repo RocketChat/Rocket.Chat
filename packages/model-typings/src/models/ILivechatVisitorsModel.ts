@@ -16,6 +16,10 @@ import type { FindPaginated, IBaseModel } from './IBaseModel';
 export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	findById(_id: string, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor>;
 	getVisitorByToken(token: string, options?: FindOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null>;
+	getVisitorByTokenAndChannelName(
+		{ token, channelName }: { token: string; channelName?: string },
+		options?: FindOptions<ILivechatVisitor>,
+	): Promise<ILivechatVisitor | null>;
 	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): FindCursor<ILivechatVisitor>;
 	findByNameRegexWithExceptionsAndConditions<P extends Document = ILivechatVisitor>(
 		searchTerm: string,
@@ -45,9 +49,9 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	updateLivechatDataByToken(token: string, key: string, value: unknown, overwrite: boolean): Promise<UpdateResult | Document | boolean>;
 
-	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null>;
+	findOneGuestByEmailAddress(emailAddress: string, channelName?: string): Promise<ILivechatVisitor | null>;
 
-	findOneVisitorByPhone(phone: string): Promise<ILivechatVisitor | null>;
+	findOneVisitorByPhone(phone: string, channelName?: string): Promise<ILivechatVisitor | null>;
 
 	removeDepartmentById(_id: string): Promise<Document | UpdateResult>;
 
@@ -67,9 +71,18 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	findOneEnabledById<T extends Document = ILivechatVisitor>(_id: string, options?: FindOptions<ILivechatVisitor>): Promise<T | null>;
 
+	findOneEnabledByIdAndChannelName<T extends Document = ILivechatVisitor>(
+		{ _id, channelName }: { _id: string; channelName: string },
+		options?: FindOptions<ILivechatVisitor>,
+	): Promise<T | null>;
+
 	disableById(_id: string): Promise<UpdateResult>;
 
-	findEnabled(query: Filter<ILivechatVisitor>, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor>;
+	findEnabledByChannelName(
+		channelName: string,
+		query: Filter<ILivechatVisitor>,
+		options?: FindOptions<ILivechatVisitor>,
+	): FindCursor<ILivechatVisitor>;
 
 	countVisitorsOnPeriod(period: string): Promise<number>;
 	saveGuestById(
@@ -77,4 +90,5 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 		data: { name?: string; username?: string; email?: string; phone?: string; livechatData: { [k: string]: any } },
 	): Promise<UpdateResult | Document | boolean>;
 	setLastChatById(_id: string, lastChat: Required<ILivechatVisitor['lastChat']>): Promise<UpdateResult>;
+	setChannelNameById(_id: string, channelName: Required<ILivechatVisitor['channelName']>): Promise<UpdateResult>;
 }
