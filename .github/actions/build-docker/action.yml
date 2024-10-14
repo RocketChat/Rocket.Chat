@@ -85,6 +85,12 @@ runs:
       if: inputs.setup == 'true'
       shell: bash
 
+    - if: ${{ matrix.platform == 'alpine' }}
+      uses: actions/download-artifact@v4
+      with:
+        name: napi-binary
+        path: /tmp/build/matrix-sdk-crypto.linux-x64-musl.node
+
     - name: Build Docker images
       shell: bash
       run: |
