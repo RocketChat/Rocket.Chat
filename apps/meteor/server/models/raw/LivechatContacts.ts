@@ -1,7 +1,7 @@
-import type { ILivechatContact, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { FindPaginated, ILivechatContactsModel } from '@rocket.chat/model-typings';
+import type { ILivechatContact, ILivechatContactChannel, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { FindPaginated, ILivechatContactsModel, InsertionModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Collection, Db, RootFilterOperators, Filter, FindOptions, FindCursor, IndexDescription, ModifyResult } from 'mongodb';
+import type { Collection, Db, RootFilterOperators, Filter, FindOptions, FindCursor, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -33,8 +33,24 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		];
 	}
 
-	async upsertContact(contactId: string, data: Partial<ILivechatContact>): Promise<ModifyResult<ILivechatContact>> {
-		return this.findOneAndUpdate({ _id: contactId }, { $set: data }, { upsert: true });
+	async insertContact(
+		data: InsertionModel<Omit<ILivechatContact, 'createdAt'>> & { createdAt?: ILivechatContact['createdAt'] },
+	): Promise<ILivechatContact['_id']> {
+		const result = await this.insertOne({
+			createdAt: new Date(),
+			...data,
+		});
+
+		return result.insertedId;
+	}
+
+	async upsertContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact | null> {
+		const result = await this.findOneAndUpdate(
+			{ _id: contactId },
+			{ $set: data, $setOnInsert: { createdAt: new Date() } },
+			{ upsert: true },
+		);
+		return result.value;
 	}
 
 	async updateContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact> {
@@ -63,5 +79,13 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 				...options,
 			},
 		);
+	}
+
+	async addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void> {
+		await this.updateOne({ _id: contactId }, { $push: { channels: channel } });
+	}
+
+	updateLastChatById(contactId: string, lastChat: ILivechatContact['lastChat']): Promise<UpdateResult> {
+		return this.updateOne({ _id: contactId }, { $set: { lastChat } });
 	}
 }

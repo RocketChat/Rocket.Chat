@@ -243,6 +243,34 @@ export function isSingleContactEnabled(): boolean {
 	return process.env.TEST_MODE?.toUpperCase() === 'TRUE';
 }
 
+export async function createContactFromVisitor(visitor: ILivechatVisitor): Promise<string> {
+	if (visitor.contactId) {
+		throw new Error('error-contact-already-exists');
+	}
+
+	const contactData: InsertionModel<Omit<ILivechatContact, 'createdAt'>> = {
+		name: visitor.name || visitor.username,
+		emails: visitor.visitorEmails?.map(({ address }) => address),
+		phones: visitor.phone?.map(({ phoneNumber }) => phoneNumber),
+		unknown: true,
+		channels: [],
+		customFields: visitor.livechatData,
+	};
+
+	if (visitor.contactManager) {
+		const contactManagerId = await Users.findOneByUsername<Pick<IUser, '_id'>>(visitor.contactManager.username, { projection: { _id: 1 } });
+		if (contactManagerId) {
+			contactData.contactManager = contactManagerId._id;
+		}
+	}
+
+	const contactId = await LivechatContacts.insertContact(contactData);
+
+	await LivechatVisitors.updateOne({ _id: visitor._id }, { $set: { contactId } });
+
+	return contactId;
+}
+
 export async function createContact(params: CreateContactParams, upsertId?: ILivechatContact['_id']): Promise<string> {
 	const { name, emails, phones, customFields: receivedCustomFields = {}, contactManager, channels, unknown } = params;
 
@@ -253,7 +281,7 @@ export async function createContact(params: CreateContactParams, upsertId?: ILiv
 	const allowedCustomFields = await getAllowedCustomFields();
 	const customFields = validateCustomFields(allowedCustomFields, receivedCustomFields);
 
-	const data: InsertionModel<ILivechatContact> = {
+	const updateData = {
 		name,
 		emails,
 		phones,
@@ -261,16 +289,14 @@ export async function createContact(params: CreateContactParams, upsertId?: ILiv
 		channels,
 		customFields,
 		unknown,
-	};
+	} as const;
 
 	if (upsertId) {
-		await LivechatContacts.upsertContact(upsertId, data);
+		await LivechatContacts.upsertContact(upsertId, updateData);
 		return upsertId;
 	}
 
-	const { insertedId } = await LivechatContacts.insertOne(data);
-
-	return insertedId;
+	return LivechatContacts.insertContact(insertData);
 }
 
 export async function updateContact(params: UpdateContactParams): Promise<ILivechatContact> {
