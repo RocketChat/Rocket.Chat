@@ -138,6 +138,11 @@ jobs:
 
       - uses: rharkor/caching-for-turbo@v1.5
 
+      - name: Restore turbo build
+        uses: actions/download-artifact@v4
+        with:
+          name: turbo-build
+          path: .turbo/cache
       - run: yarn build
       # if we are testing a PR from a fork, we need to build the docker image at this point
       - uses: ./.github/actions/build-docker
