@@ -1,12 +1,12 @@
-import {
-	type IOmnichannelSource,
-	type AtLeast,
-	type ILivechatContact,
-	type ILivechatContactChannel,
-	type ILivechatCustomField,
-	type ILivechatVisitor,
-	type IOmnichannelRoom,
-	type IUser,
+import type {
+	IOmnichannelSource,
+	AtLeast,
+	ILivechatContact,
+	ILivechatContactChannel,
+	ILivechatCustomField,
+	ILivechatVisitor,
+	IOmnichannelRoom,
+	IUser,
 } from '@rocket.chat/core-typings';
 import {
 	LivechatVisitors,
@@ -182,7 +182,7 @@ export const Contacts = {
 
 async function getContactManagerIdByUsername(username?: IUser['username']): Promise<IUser['_id'] | undefined> {
 	if (!username) {
-		return undefined;
+		return;
 	}
 
 	const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
