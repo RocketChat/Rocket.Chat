@@ -91,6 +91,7 @@ test.describe('Omnichannel Contact Center', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/');
 		await poOmniSection.btnContactCenter.click();
+		await poOmniSection.tabContacts.click();
 		await page.waitForURL(URL.contactCenter);
 	});
 
