@@ -54,6 +54,7 @@ storybook-static
 
 **/.vim/
 
+.env
 data/
 registration.yaml
 
