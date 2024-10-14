@@ -11,7 +11,7 @@ import {
 	isFingerprintProps,
 	isMeteorCall,
 } from '@rocket.chat/rest-typings';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML, escapeRegExp } from '@rocket.chat/string-helpers';
 import EJSON from 'ejson';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
@@ -363,8 +363,14 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, query } = await this.parseJsonQuery();
+			const { text, type, workspace = 'local' } = this.queryParams;
 
-			const { text, type, workspace = 'local' } = query;
+			const filter = {
+				...(query ? { ...query } : {}),
+				...(text ? { text } : {}),
+				...(type ? { type } : {}),
+				...(workspace ? { workspace } : {}),
+			};
 
 			if (sort && Object.keys(sort).length > 1) {
 				return API.v1.failure('This method support only one "sort" parameter');
@@ -373,9 +379,7 @@ API.v1.addRoute(
 			const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
 
 			const result = await Meteor.callAsync('browseChannels', {
-				text,
-				type,
-				workspace,
+				...filter,
 				sortBy,
 				sortDirection,
 				offset: Math.max(0, offset),
