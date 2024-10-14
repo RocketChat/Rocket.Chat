@@ -22,7 +22,7 @@ import { useVoipSounds } from '../hooks/useVoipSounds';
 const VoipProvider = ({ children }: { children: ReactNode }) => {
 	// Settings
 	const isVoipSettingEnabled = useSetting<boolean>('VoIP_TeamCollab_Enabled') || false;
-	const canViewVoipRegistrationInfo = usePermission('view-voip-extension-details');
+	const canViewVoipRegistrationInfo = usePermission('view-user-voip-extension');
 	const isVoipEnabled = isVoipSettingEnabled && canViewVoipRegistrationInfo;
 
 	const [isLocalRegistered, setStorageRegistered] = useLocalStorage('voip-registered', true);
