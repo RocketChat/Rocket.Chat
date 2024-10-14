@@ -580,6 +580,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
+	async setGroupE2EKeyAndOldRoomKeys(_id: string, key: string, oldRoomKeys?: ISubscription['oldRoomKeys']): Promise<UpdateResult> {
+		const query = { _id };
+		const update = { $set: { E2EKey: key, ...(oldRoomKeys && { oldRoomKeys }) } };
+		return this.updateOne(query, update);
+	}
+
 	async setGroupE2EKey(_id: string, key: string): Promise<UpdateResult> {
 		const query = { _id };
 		const update = { $set: { E2EKey: key } };
@@ -592,9 +598,27 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
 	}
 
-	unsetGroupE2ESuggestedKey(_id: string): Promise<UpdateResult | Document> {
+	setE2EKeyByUserIdAndRoomId(userId: string, rid: string, key: string): Promise<ModifyResult<ISubscription>> {
+		const query = { rid, 'u._id': userId };
+		const update = { $set: { E2EKey: key } };
+
+		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
+	}
+
+	setGroupE2ESuggestedKeyAndOldRoomKeys(
+		uid: string,
+		rid: string,
+		key: string,
+		suggestedOldRoomKeys?: ISubscription['suggestedOldRoomKeys'],
+	): Promise<ModifyResult<ISubscription>> {
+		const query = { rid, 'u._id': uid };
+		const update = { $set: { E2ESuggestedKey: key, ...(suggestedOldRoomKeys && { suggestedOldRoomKeys }) } };
+		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
+	}
+
+	unsetGroupE2ESuggestedKeyAndOldRoomKeys(_id: string): Promise<UpdateResult | Document> {
 		const query = { _id };
-		return this.updateOne(query, { $unset: { E2ESuggestedKey: 1 } });
+		return this.updateOne(query, { $unset: { E2ESuggestedKey: 1, suggestedOldRoomKeys: 1 } });
 	}
 
 	setOnHoldByRoomId(rid: string): Promise<UpdateResult> {
@@ -991,6 +1015,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				$unset: {
 					E2EKey: '',
 					E2ESuggestedKey: 1,
+					oldRoomKeys: 1,
 				},
 			},
 		);
