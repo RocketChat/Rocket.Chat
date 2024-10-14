@@ -285,7 +285,7 @@ jobs:
     name: Builds matrix rust bindings against alpine
     runs-on: ubuntu-latest
     steps:
-      - run: sudo apt-get install -y musl-tools && find /usr/include -name stdarg.h 2>/dev/null || true
+      - run: sudo apt-get install -y musl-tools libunwind-dev && find /usr/include -name stdarg.h 2>/dev/null || true
       - uses: actions/checkout@v4
         with:
           repository: matrix-org/matrix-rust-sdk-crypto-nodejs
@@ -300,18 +300,14 @@ jobs:
           targets: x86_64-unknown-linux-musl
 
       - name: Install ziglang
-        uses: goto-bus-stop/setup-zig@v1
-
-      - name: Install cargo toolchains
-        uses: taiki-e/install-action@v2
+        uses: mlugg/setup-zig@v1
         with:
-          tool: cargo-zigbuild
+          version: 0.13.0
 
       - name: Build
         run: |
           npm install --ignore-scripts
-          export RUSTFLAGS="-I/usr/include/x86_64-linux-musl"
-          npx napi build --release --target x86_64-unknown-linux-musl --platform
+          npx napi build --release --target x86_64-unknown-linux-musl --platform --zig
 
       - name: Upload bin
         uses: actions/upload-artifact@v4
