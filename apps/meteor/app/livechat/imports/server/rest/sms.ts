@@ -57,13 +57,13 @@ const defineDepartment = async (idOrName?: string) => {
 };
 
 const defineVisitor = async (smsNumber: string, serviceName: string, destination: string, targetDepartment?: string) => {
-	const visitorSource = {
+	const visitorSource: IOmnichannelSource = {
 		type: OmnichannelSourceType.SMS,
 		alias: serviceName,
-		destination,
 	};
 
 	const visitor = await LivechatVisitors.findOneVisitorByPhone(smsNumber, visitorSource);
+	visitorSource.destination = destination;
 	let data: { token: string; source: IOmnichannelSource; department?: string } = {
 		token: visitor?.token || Random.id(),
 		source: visitorSource,
