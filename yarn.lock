@@ -8883,15 +8883,15 @@ __metadata:
     "@rocket.chat/styled": "npm:~0.31.25"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@storybook/addon-actions": "npm:~6.5.16"
-    "@storybook/addon-docs": "npm:~6.5.16"
-    "@storybook/addon-essentials": "npm:~6.5.16"
-    "@storybook/addon-interactions": "npm:~6.5.16"
-    "@storybook/addon-links": "npm:~6.5.16"
-    "@storybook/builder-webpack4": "npm:~6.5.16"
-    "@storybook/manager-webpack4": "npm:~6.5.16"
-    "@storybook/react": "npm:~6.5.16"
-    "@storybook/testing-library": "npm:~0.0.13"
+    "@storybook/addon-actions": "npm:^8.3.5"
+    "@storybook/addon-docs": "npm:^8.3.5"
+    "@storybook/addon-essentials": "npm:^8.3.5"
+    "@storybook/addon-interactions": "npm:^8.3.5"
+    "@storybook/addon-links": "npm:^8.3.5"
+    "@storybook/addon-styling-webpack": "npm:^1.0.0"
+    "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.3"
+    "@storybook/react": "npm:^8.3.5"
+    "@storybook/react-webpack5": "npm:^8.3.5"
     "@testing-library/react": "npm:~16.0.1"
     "@types/dompurify": "npm:^3.0.5"
     "@types/jest": "npm:~29.5.13"
@@ -8907,15 +8907,15 @@ __metadata:
     eslint-plugin-anti-trojan-source: "npm:~1.1.1"
     eslint-plugin-react: "npm:~7.32.2"
     eslint-plugin-react-hooks: "npm:~4.6.2"
-    eslint-plugin-storybook: "npm:~0.6.15"
+    eslint-plugin-storybook: "npm:^0.9.0"
     highlight.js: "npm:^11.5.1"
     identity-obj-proxy: "npm:^3.0.0"
     jest: "npm:~29.7.0"
     katex: "npm:~0.16.11"
     outdent: "npm:^0.8.0"
-    react-docgen-typescript-plugin: "npm:~1.0.8"
     react-dom: "npm:~17.0.2"
     react-error-boundary: "npm:^3.1.4"
+    storybook: "npm:^8.3.5"
     typescript: "npm:~5.5.4"
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
@@ -10173,16 +10173,16 @@ __metadata:
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/ui-avatar": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:~"
-    "@storybook/addon-actions": "npm:~6.5.16"
-    "@storybook/addon-docs": "npm:~6.5.16"
-    "@storybook/addon-essentials": "npm:~6.5.16"
-    "@storybook/addon-interactions": "npm:~6.5.16"
-    "@storybook/addon-links": "npm:~6.5.16"
+    "@storybook/addon-actions": "npm:^8.3.5"
+    "@storybook/addon-docs": "npm:^8.3.5"
+    "@storybook/addon-essentials": "npm:^8.3.5"
+    "@storybook/addon-interactions": "npm:^8.3.5"
+    "@storybook/addon-links": "npm:^8.3.5"
     "@storybook/addon-postcss": "npm:~2.0.0"
-    "@storybook/builder-webpack4": "npm:~6.5.16"
-    "@storybook/manager-webpack4": "npm:~6.5.16"
-    "@storybook/react": "npm:~6.5.16"
-    "@storybook/testing-library": "npm:~0.0.13"
+    "@storybook/addon-styling-webpack": "npm:^1.0.0"
+    "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.3"
+    "@storybook/react": "npm:^8.3.5"
+    "@storybook/react-webpack5": "npm:^8.3.5"
     "@testing-library/react": "npm:~16.0.1"
     "@types/jest": "npm:~29.5.13"
     "@types/react": "npm:~17.0.80"
@@ -10197,6 +10197,7 @@ __metadata:
     react: "npm:^17.0.2"
     react-dom: "npm:^17.0.2"
     react-hook-form: "npm:~7.45.4"
+    storybook: "npm:^8.3.5"
     typescript: "npm:~5.5.4"
   peerDependencies:
     "@react-aria/toolbar": "*"
@@ -10220,22 +10221,22 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/fuselage": "npm:^0.59.1"
     "@rocket.chat/icons": "npm:~0.38.0"
-    "@storybook/addon-actions": "npm:~6.5.16"
-    "@storybook/addon-docs": "npm:~6.5.16"
-    "@storybook/addon-essentials": "npm:~6.5.16"
-    "@storybook/builder-webpack4": "npm:~6.5.16"
-    "@storybook/manager-webpack4": "npm:~6.5.16"
-    "@storybook/react": "npm:~6.5.16"
-    "@storybook/testing-library": "npm:~0.0.13"
+    "@storybook/addon-actions": "npm:^8.3.5"
+    "@storybook/addon-docs": "npm:^8.3.5"
+    "@storybook/addon-essentials": "npm:^8.3.5"
+    "@storybook/addon-styling-webpack": "npm:^1.0.0"
+    "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.3"
+    "@storybook/react": "npm:^8.3.5"
+    "@storybook/react-webpack5": "npm:^8.3.5"
     "@types/react": "npm:~17.0.80"
     "@types/react-dom": "npm:~17.0.25"
     eslint: "npm:~8.45.0"
     eslint-plugin-react: "npm:~7.32.2"
     eslint-plugin-react-hooks: "npm:~4.6.2"
-    eslint-plugin-storybook: "npm:~0.6.15"
+    eslint-plugin-storybook: "npm:^0.9.0"
     react: "npm:~17.0.2"
-    react-docgen-typescript-plugin: "npm:~1.0.8"
     react-dom: "npm:~17.0.2"
+    storybook: "npm:^8.3.5"
     typescript: "npm:~5.5.4"
   peerDependencies:
     "@react-aria/toolbar": "*"
@@ -10507,7 +10508,6 @@ __metadata:
     "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.3"
     "@storybook/react": "npm:^8.3.5"
     "@storybook/react-webpack5": "npm:^8.3.5"
-    "@storybook/test": "npm:^8.3.5"
     "@storybook/theming": "npm:^8.3.5"
     "@tanstack/react-query": "npm:^4.16.1"
     "@testing-library/react": "npm:~16.0.1"
@@ -10826,7 +10826,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-actions@npm:6.5.16, @storybook/addon-actions@npm:~6.5.16":
+"@storybook/addon-actions@npm:6.5.16":
   version: 6.5.16
   resolution: "@storybook/addon-actions@npm:6.5.16"
   dependencies:
@@ -10960,7 +10960,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-docs@npm:6.5.16, @storybook/addon-docs@npm:~6.5.16":
+"@storybook/addon-docs@npm:6.5.16":
   version: 6.5.16
   resolution: "@storybook/addon-docs@npm:6.5.16"
   dependencies:
@@ -11120,6 +11120,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@storybook/addon-interactions@npm:^8.3.5":
+  version: 8.3.5
+  resolution: "@storybook/addon-interactions@npm:8.3.5"
+  dependencies:
+    "@storybook/global": "npm:^5.0.0"
+    "@storybook/instrumenter": "npm:8.3.5"
+    "@storybook/test": "npm:8.3.5"
+    polished: "npm:^4.2.2"
+    ts-dedent: "npm:^2.2.0"
+  peerDependencies:
+    storybook: ^8.3.5
+  checksum: 10/9ed92e3b8068e22106da52ad7cc9970acb86493acf5fc44e1bb8bb5c37ed74f9f090e2a13825a708f90c5a23f508420226d266d35eb1659fa24af472b5d2256f
+  languageName: node
+  linkType: hard
+
 "@storybook/addon-interactions@npm:~6.5.16":
   version: 6.5.16
   resolution: "@storybook/addon-interactions@npm:6.5.16"
@@ -11151,31 +11166,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-links@npm:~6.5.16":
-  version: 6.5.16
-  resolution: "@storybook/addon-links@npm:6.5.16"
+"@storybook/addon-links@npm:^8.3.5":
+  version: 8.3.5
+  resolution: "@storybook/addon-links@npm:8.3.5"
   dependencies:
-    "@storybook/addons": "npm:6.5.16"
-    "@storybook/client-logger": "npm:6.5.16"
-    "@storybook/core-events": "npm:6.5.16"
-    "@storybook/csf": "npm:0.0.2--canary.4566f4d.1"
-    "@storybook/router": "npm:6.5.16"
-    "@types/qs": "npm:^6.9.5"
-    core-js: "npm:^3.8.2"
-    global: "npm:^4.4.0"
-    prop-types: "npm:^15.7.2"
-    qs: "npm:^6.10.0"
-    regenerator-runtime: "npm:^0.13.7"
+    "@storybook/csf": "npm:^0.1.11"
+    "@storybook/global": "npm:^5.0.0"
     ts-dedent: "npm:^2.0.0"
   peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
+    storybook: ^8.3.5
   peerDependenciesMeta:
     react:
       optional: true
-    react-dom:
-      optional: true
-  checksum: 10/469018fb8921ff56152f9da0ed1b1b77b95d31121f03e7ea7fd02110b029ecb41da3711d8608b2ce121e04fe7077510641246561a1e84ce7fa02ce6f8a99e44e
+  checksum: 10/24ca01676b7983b8db0555b14cdcc9b9e3a1a5409f5d7ced5aa03880b2d0219fed3bd1b9db90a2e2449707d2d7361aa06882a938e483be075bfdc77956fee6da
   languageName: node
   linkType: hard
 
@@ -11438,7 +11442,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/builder-webpack4@npm:6.5.16, @storybook/builder-webpack4@npm:~6.5.16":
+"@storybook/builder-webpack4@npm:6.5.16":
   version: 6.5.16
   resolution: "@storybook/builder-webpack4@npm:6.5.16"
   dependencies:
@@ -12013,7 +12017,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/manager-webpack4@npm:6.5.16, @storybook/manager-webpack4@npm:~6.5.16":
+"@storybook/manager-webpack4@npm:6.5.16":
   version: 6.5.16
   resolution: "@storybook/manager-webpack4@npm:6.5.16"
   dependencies:
@@ -12487,7 +12491,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/test@npm:^8.3.5":
+"@storybook/test@npm:8.3.5":
   version: 8.3.5
   resolution: "@storybook/test@npm:8.3.5"
   dependencies:
@@ -12506,7 +12510,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/testing-library@npm:0.0.13, @storybook/testing-library@npm:~0.0.13":
+"@storybook/testing-library@npm:0.0.13":
   version: 0.0.13
   resolution: "@storybook/testing-library@npm:0.0.13"
   dependencies:

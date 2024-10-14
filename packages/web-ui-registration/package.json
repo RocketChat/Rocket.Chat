@@ -9,12 +9,12 @@
 		"/dist"
 	],
 	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"typecheck": "tsc --noEmit",
 		"storybook": "storybook dev -p 6006 --no-version-updates",
-		"build": "tsc -p tsconfig.build.json",
-		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput"
+		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
@@ -33,7 +33,6 @@
 		"@storybook/addon-webpack5-compiler-babel": "^3.0.3",
 		"@storybook/react": "^8.3.5",
 		"@storybook/react-webpack5": "^8.3.5",
-		"@storybook/test": "^8.3.5",
 		"@storybook/theming": "^8.3.5",
 		"@tanstack/react-query": "^4.16.1",
 		"@testing-library/react": "~16.0.1",
