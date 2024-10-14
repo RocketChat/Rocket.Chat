@@ -25,6 +25,7 @@ import {
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
+import { unverifyContactChannel } from './Contacts';
 import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
 import { Livechat } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
@@ -92,6 +93,12 @@ export class QueueManager {
 			return;
 		}
 
+		if (inquiry.v.contactId && (await Omnichannel.isUnverifiedContact(room))) {
+			logger.error({ msg: 'Contact is not verified, not routing inquiry', inquiry });
+			await Promise.all([unverifyContactChannel(inquiry.v.contactId, room.source.type, inquiry.v._id), saveQueueInquiry(inquiry)]);
+			return;
+		}
+
 		const inquiryAgent = await RoutingManager.delegateAgent(defaultAgent, inquiry);
 		logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
 		await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
@@ -119,6 +126,10 @@ export class QueueManager {
 		}
 
 		if (!(await Omnichannel.isWithinMACLimit(room))) {
+			return LivechatInquiryStatus.QUEUED;
+		}
+
+		if (await Omnichannel.isUnverifiedContact(room)) {
 			return LivechatInquiryStatus.QUEUED;
 		}
 

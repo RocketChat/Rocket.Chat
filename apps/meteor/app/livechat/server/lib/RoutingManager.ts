@@ -10,19 +10,17 @@ import type {
 	SelectedAgent,
 	InquiryWithAgentInfo,
 	TransferData,
-	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
-import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users, LivechatContacts } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
-import { isSingleContactEnabled, unverifyContactChannel } from './Contacts';
 import {
 	createLivechatSubscription,
 	dispatchAgentDelegated,
@@ -239,53 +237,6 @@ export const RoutingManager: Routing = {
 		if (room.servedBy && room.servedBy._id === agent.agentId) {
 			logger.debug(`Cannot take Inquiry ${inquiry._id}: Already taken by agent ${room.servedBy._id}`);
 			return room;
-		}
-
-		if (isSingleContactEnabled() && inquiry.v.contactId) {
-			const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'unknown' | 'channels'>>(inquiry.v.contactId, {
-				projection: {
-					_id: 1,
-					unknown: 1,
-					channels: 1,
-				},
-			});
-
-			if (!contact) {
-				logger.debug(`Could not find associated contact with visitor ${inquiry.v._id}`);
-				return room;
-			}
-
-			if (contact.unknown && settings.get<boolean>('Livechat_Block_Unknown_Contacts')) {
-				logger.debug(`Contact ${inquiry.v._id} is unknown and Livechat_Block_Unknown_Contacts so we can't handle it over to the queue`);
-				return room;
-			}
-
-			// Note: this should either be 1 or 0, if he is verified or not, but since we have an array of channels instead of a set there is no strong
-			//       guarantee that is the case :P
-			const isContactVerified =
-				(contact.channels?.filter((channel) => channel.verified && channel.name === room.source.type) || []).length > 0;
-
-			if (!isContactVerified && settings.get<boolean>('Livechat_Block_Unverified_Contacts')) {
-				logger.debug(
-					`Contact ${inquiry.v._id} is not verified and Livechat_Block_Unverified_Contacts is enabled so we can't handle him down to the queue`,
-				);
-				return room;
-			}
-
-			const contactVerificationApp = settings.get('Livechat_Contact_Verification_App');
-			// Note: Non-empty `Livechat_Contact_Verification_App` means the user has a Contact Verification App setup,
-			//       therefore, we must give the app control over the room
-			if (contactVerificationApp !== '') {
-				// Note: If it is not `Livechat_Request_Verification_On_First_Contact_Only` it means that even though the contact
-				//       was already verified, we must verify it again in order to handle the livechat conversation down to the queue
-				if (
-					!settings.get<boolean>('Livechat_Request_Verification_On_First_Contact_Only') ||
-					(!isContactVerified && settings.get<boolean>('Livechat_Block_Unverified_Contacts'))
-				) {
-					await unverifyContactChannel(contact, room.source.type, inquiry.v._id);
-					return room;
-				}
-			}
 		}
 
 		try {

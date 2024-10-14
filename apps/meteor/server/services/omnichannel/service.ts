@@ -1,9 +1,11 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IOmnichannelService } from '@rocket.chat/core-services';
-import type { AtLeast, IOmnichannelQueue, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { AtLeast, ILivechatContact, IOmnichannelQueue, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
+import { LivechatContacts } from '@rocket.chat/models';
 import moment from 'moment';
 
+import { isSingleContactEnabled } from '../../../app/livechat/server/lib/Contacts';
 import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../app/settings/server';
@@ -59,5 +61,41 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 	async isWithinMACLimit(room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean> {
 		const currentMonth = moment.utc().format('YYYY-MM');
 		return room.v?.activity?.includes(currentMonth) || !(await License.shouldPreventAction('monthlyActiveContacts'));
+	}
+
+	async isUnverifiedContact(room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean> {
+		if (!isSingleContactEnabled() || !room.v.contactId) {
+			return false;
+		}
+
+		const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'unknown' | 'channels'>>(room.v.contactId, {
+			projection: {
+				_id: 1,
+				unknown: 1,
+				channels: 1,
+			},
+		});
+
+		// Sanity check, should never happen
+		if (!contact) {
+			return false;
+		}
+
+		if (contact.unknown && settings.get<boolean>('Livechat_Block_Unknown_Contacts')) {
+			return true;
+		}
+
+		const isContactVerified =
+			(contact.channels?.filter((channel) => channel.verified && channel.name === room.source?.type) || []).length > 0;
+
+		if (!isContactVerified && settings.get<boolean>('Livechat_Block_Unverified_Contacts')) {
+			return true;
+		}
+
+		if (!settings.get<boolean>('Livechat_Request_Verification_On_First_Contact_Only')) {
+			return true;
+		}
+
+		return false;
 	}
 }

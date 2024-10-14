@@ -301,6 +301,11 @@ API.v1.addRoute(
 				throw new Error('error-mac-limit-reached');
 			}
 
+			if (await Omnichannel.isUnverifiedContact(room)) {
+				// TODO: register the error
+				throw new Error('error-unverified-contact');
+			}
+
 			const guest = await LivechatVisitors.findOneEnabledById(room.v?._id);
 			if (!guest) {
 				throw new Error('error-invalid-visitor');
@@ -353,6 +358,10 @@ API.v1.addRoute(
 
 			if (!(await Omnichannel.isWithinMACLimit(room))) {
 				throw new Error('error-mac-limit-reached');
+			}
+
+			if (await Omnichannel.isUnverifiedContact(room)) {
+				throw new Error('error-unverified-contact');
 			}
 
 			if (!(await canAccessRoomAsync(room, user))) {

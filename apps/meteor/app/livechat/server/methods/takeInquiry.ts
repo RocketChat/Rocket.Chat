@@ -54,6 +54,10 @@ export const takeInquiry = async (
 		throw new Error('error-mac-limit-reached');
 	}
 
+	if (await Omnichannel.isUnverifiedContact(room)) {
+		throw new Error('error-unverified-contact');
+	}
+
 	const agent = {
 		agentId: user._id,
 		username: user.username,
