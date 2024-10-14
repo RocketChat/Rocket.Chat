@@ -64,7 +64,7 @@ router.use(async (req: Request, res, next) => {
 	const { id: appId } = req.params;
 
 	if (visitorToken) {
-		req.body.visitor = await Apps.getConverters()?.get('visitors').convertByTokenAndChannelName(visitorToken, appId);
+		req.body.visitor = await Apps.getConverters()?.get('visitors').convertByTokenAndSource(visitorToken, appId);
 	}
 
 	if (!req.user && !req.body.visitor) {

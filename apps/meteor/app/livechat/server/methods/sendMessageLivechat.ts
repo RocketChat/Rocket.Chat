@@ -42,8 +42,8 @@ export const sendMessageLivechat = async ({
 		}),
 	);
 
-	const guest = await LivechatVisitors.getVisitorByTokenAndChannelName(
-		{ token, channelName: OmnichannelSourceType.API },
+	const guest = await LivechatVisitors.getVisitorByTokenAndSource(
+		{ token, source: { type: OmnichannelSourceType.API } },
 		{
 			projection: {
 				name: 1,
@@ -58,8 +58,8 @@ export const sendMessageLivechat = async ({
 		throw new Meteor.Error('invalid-token');
 	}
 
-	if (!guest.channelName) {
-		await LivechatVisitors.setChannelNameById(guest._id, OmnichannelSourceType.API);
+	if (!guest.source) {
+		await LivechatVisitors.setSourceById(guest._id, { type: OmnichannelSourceType.API });
 	}
 
 	if (settings.get('Livechat_enable_message_character_limit') && msg.length > parseInt(settings.get('Livechat_message_character_limit'))) {

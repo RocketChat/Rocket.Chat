@@ -48,7 +48,7 @@ async function findDepartments(
 	}));
 }
 
-export function findGuest(token: string, channelName?: string): Promise<ILivechatVisitor | null> {
+export function findGuest(token: string, sourceType?: string): Promise<ILivechatVisitor | null> {
 	const projection = {
 		name: 1,
 		username: 1,
@@ -57,11 +57,11 @@ export function findGuest(token: string, channelName?: string): Promise<ILivecha
 		department: 1,
 		activity: 1,
 		contactId: 1,
-		channelName: 1,
+		source: 1,
 	};
 
-	if (channelName) {
-		return LivechatVisitors.getVisitorByTokenAndChannelName({ token, channelName }, { projection });
+	if (sourceType) {
+		return LivechatVisitors.getVisitorByTokenAndSource({ token, source: { type: sourceType } }, { projection });
 	}
 	return LivechatVisitors.getVisitorByToken(token, { projection });
 }
