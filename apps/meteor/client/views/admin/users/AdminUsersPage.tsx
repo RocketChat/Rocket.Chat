@@ -39,9 +39,9 @@ export type UsersFilters = {
 	roles: OptionProp[];
 };
 
-export type AdminUserTab = 'all' | 'active' | 'deactivated' | 'pending';
+export type AdminUsersTab = 'all' | 'active' | 'deactivated' | 'pending';
 
-export type UsersTableSortingOptions = 'name' | 'username' | 'emails.address' | 'status' | 'active';
+export type UsersTableSortingOption = 'name' | 'username' | 'emails.address' | 'status' | 'active' | 'freeSwitchExtension';
 
 const AdminUsersPage = (): ReactElement => {
 	const t = useTranslation();
@@ -65,9 +65,9 @@ const AdminUsersPage = (): ReactElement => {
 	const { data, error } = useQuery(['roles'], async () => getRoles());
 
 	const paginationData = usePagination();
-	const sortData = useSort<UsersTableSortingOptions>('name');
+	const sortData = useSort<UsersTableSortingOption>('name');
 
-	const [tab, setTab] = useState<AdminUserTab>('all');
+	const [tab, setTab] = useState<AdminUsersTab>('all');
 	const [userFilters, setUserFilters] = useState<UsersFilters>({ text: '', roles: [] });
 
 	const searchTerm = useDebouncedValue(userFilters.text, 500);
@@ -89,7 +89,7 @@ const AdminUsersPage = (): ReactElement => {
 		filteredUsersQueryResult?.refetch();
 	};
 
-	const handleTabChange = (tab: AdminUserTab) => {
+	const handleTabChange = (tab: AdminUsersTab) => {
 		setTab(tab);
 
 		paginationData.setCurrent(0);
