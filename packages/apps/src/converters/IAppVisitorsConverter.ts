@@ -3,8 +3,9 @@ import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 import type { IAppsVisitor } from '../AppsEngine';
 
 export interface IAppVisitorsConverter {
-	convertById(visitorId: ILivechatVisitor['_id']): Promise<IAppsVisitor | undefined>;
+	convertById(visitorId: ILivechatVisitor['_id'], appId?: string): Promise<IAppsVisitor | undefined>;
 	convertByToken(token: string): Promise<IAppsVisitor | undefined>;
+	convertByTokenAndChannelName(token: string, appId?: string): Promise<IAppsVisitor | undefined>;
 	convertVisitor(visitor: undefined | null): Promise<undefined>;
 	convertVisitor(visitor: ILivechatVisitor): Promise<IAppsVisitor>;
 	convertVisitor(visitor: ILivechatVisitor | undefined | null): Promise<IAppsVisitor | undefined>;
