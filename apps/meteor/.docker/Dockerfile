@@ -46,6 +46,8 @@ RUN aptMark="$(apt-mark showmanual)" \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
     && npm cache clear --force
 
+# Suggestion: Increase the memory limit for the container
+
 USER rocketchat
 
 VOLUME /app/uploads

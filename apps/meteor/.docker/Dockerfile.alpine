@@ -88,6 +88,8 @@ RUN set -x \
     && npm cache clear --force \
     && apk del .fetch-deps
 
+# Suggestion: Increase the memory limit for the container
+
 VOLUME /app/uploads
 
 WORKDIR /app/bundle

@@ -71,6 +71,38 @@ After initialized, you can access the server at http://localhost:3000
 More details at: [Developer Docs](https://developer.rocket.chat/v1/docs/server-environment-setup)
 PS: For Windows you MUST use WSL2 and have +12Gb RAM
 
+**Minimum RAM Requirement:**
+
+Rocket.Chat requires a minimum of 2GB RAM to run smoothly. If your system has less than 2GB RAM, you may encounter out-of-memory (OOM) errors.
+
+**Adding Swap Space:**
+
+If increasing the RAM is not an option, you can add swap space to your system. Swap space can help alleviate memory pressure by providing additional virtual memory. Here are the steps to add swap space:
+
+1. Create a swap file:
+   ```bash
+   sudo fallocate -l 1G /swapfile
+   ```
+
+2. Secure the swap file:
+   ```bash
+   sudo chmod 600 /swapfile
+   ```
+
+3. Set up the swap file:
+   ```bash
+   sudo mkswap /swapfile
+   ```
+
+4. Enable the swap file:
+   ```bash
+   sudo swapon /swapfile
+   ```
+
+5. Make the swap file permanent by adding it to `/etc/fstab`:
+   ```bash
+   echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+   ```
 
 # Gitpod Setup
 

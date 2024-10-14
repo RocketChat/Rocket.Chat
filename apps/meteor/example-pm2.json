@@ -1,7 +1,7 @@
 {
 	"apps": [{
 		"name": "rocket.chat.0",
-		"max_memory_restart": "1024M",
+		"max_memory_restart": "2048M",
 		"log_date_format": "YYYY-MM-DD HH:mm:ss SSS",
 		"script": "/var/www/rocket.chat/bundle/main.js",
 		"out_file": "/var/log/rocket.chat/app.log",
@@ -16,7 +16,7 @@
 		}
 	}, {
 		"name": "rocket.chat.1",
-		"max_memory_restart": "1024M",
+		"max_memory_restart": "2048M",
 		"log_date_format": "YYYY-MM-DD HH:mm:ss SSS",
 		"script": "/var/www/rocket.chat/bundle/main.js",
 		"out_file": "/var/log/rocket.chat/app.log",
@@ -31,7 +31,7 @@
 		}
 	}, {
 		"name": "rocket.chat.2",
-		"max_memory_restart": "1024M",
+		"max_memory_restart": "2048M",
 		"log_date_format": "YYYY-MM-DD HH:mm:ss SSS",
 		"script": "/var/www/rocket.chat/bundle/main.js",
 		"out_file": "/var/log/rocket.chat/app.log",
@@ -46,7 +46,7 @@
 		}
 	}, {
 		"name": "rocket.chat.3",
-		"max_memory_restart": "1024M",
+		"max_memory_restart": "2048M",
 		"log_date_format": "YYYY-MM-DD HH:mm:ss SSS",
 		"script": "/var/www/rocket.chat/bundle/main.js",
 		"out_file": "/var/log/rocket.chat/app.log",
