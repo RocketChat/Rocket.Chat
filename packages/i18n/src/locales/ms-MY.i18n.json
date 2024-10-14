@@ -2372,7 +2372,7 @@
   "Thank_you_for_your_feedback": "Terima kasih atas maklum balas anda",
   "The_application_name_is_required": "Nama permohonan diperlukan",
   "The_channel_name_is_required": "Nama saluran diperlukan",
-  "The_emails_are_being_sent": "E-mel yang sedang dihantar.",   
+  "The_emails_are_being_sent": "E-mel yang sedang dihantar.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "The saiz semula imej tidak akan berfungsi kerana kita tidak dapat mengesan ImageMagick atau GraphicsMagick dipasang pada pelayan anda.",
   "The_redirectUri_is_required": "The redirectUri diperlukan",
   "The_server_will_restart_in_s_seconds": "Server akan memulakan semula dalam %s saat",

@@ -3,9 +3,9 @@ import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, Menu, Option } from '@rocket.chat/fuselage';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { Roles } from '../../../../../app/models/client/models/Roles';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
@@ -40,7 +40,7 @@ const UsersTableRow = ({
 	isSeatsCapExceeded,
 	showVoipExtension,
 }: UsersTableRowProps): ReactElement => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 
 	const { _id, emails, username = '', name = '', roles, status, active, avatarETag, lastLogin, type, freeSwitchExtension } = user;
 	const registrationStatusText = useMemo(() => {

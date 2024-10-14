@@ -2691,7 +2691,7 @@
   "Thank_you_for_your_feedback": "សូមអរគុណសម្រាប់មតិរបស់អ្នក",
   "The_application_name_is_required": "ឈ្មោះកម្មវិធីនេះគឺត្រូវបានទាមទារ",
   "The_channel_name_is_required": "ឈ្មោះឆានែលនេះគឺត្រូវបានទាមទារ",
-  "The_emails_are_being_sent": "នេះ​អ៊ីមែល​ត្រូវ​បាន​បញ្ជូន​។",   
+  "The_emails_are_being_sent": "នេះ​អ៊ីមែល​ត្រូវ​បាន​បញ្ជូន​។",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "ប្ដូរទំហំរូបភាពនឹងមិនធ្វើការដោយសារតែយើងមិនអាចរកឃើញ ImageMagick ឬ GraphicsMagick ដែលបានដំឡើងនៅលើម៉ាស៊ីនបម្រើរបស់អ្នក។",
   "The_redirectUri_is_required": "redirectUri នេះគឺត្រូវបានទាមទារ",
   "The_server_will_restart_in_s_seconds": "ម៉ាស៊ីនបម្រើនេះនឹងចាប់ផ្ដើមឡើងវិញនៅក្នុង %s វិនាទី",

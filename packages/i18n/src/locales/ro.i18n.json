@@ -2364,7 +2364,7 @@
   "Thank_you_for_your_feedback": "Vă mulțumim pentru feedback",
   "The_application_name_is_required": "Este nevoie de numele aplicației",
   "The_channel_name_is_required": "Este nevoie de numele canalului",
-  "The_emails_are_being_sent": "E-mail-urile sunt trimise.",   
+  "The_emails_are_being_sent": "E-mail-urile sunt trimise.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Redimensionarea imaginii nu va funcționa, deoarece nu putem detecta ImageMagick sau GraphicsMagick instalat pe server.",
   "The_redirectUri_is_required": "URI de redirectare este necesar",
   "The_server_will_restart_in_s_seconds": "Serverul va reporni în %s secunde",

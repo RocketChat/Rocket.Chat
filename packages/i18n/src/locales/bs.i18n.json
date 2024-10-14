@@ -2360,7 +2360,7 @@
   "Thank_you_for_your_feedback": "Hvala vam na povratnim informacijama",
   "The_application_name_is_required": "Naziv aplikacije je potreban",
   "The_channel_name_is_required": "Ime sobe je potrebno",
-  "The_emails_are_being_sent": "E-mailovi su poslani.",   
+  "The_emails_are_being_sent": "E-mailovi su poslani.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Promjena veličine slike neće raditi, jer ne možemo provjeriti da je ImageMagick ili GraphicsMagick instaliran na vašem poslužitelju.",
   "The_redirectUri_is_required": "RedirectUri je potrebno",
   "The_server_will_restart_in_s_seconds": "Poslužitelj će se ponovno pokrenuti u %s sekundi",
