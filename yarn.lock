@@ -5423,16 +5423,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@newhighsco/storybook-addon-transpile-modules@npm:^1.0.21":
-  version: 1.0.21
-  resolution: "@newhighsco/storybook-addon-transpile-modules@npm:1.0.21"
-  peerDependencies:
-    "@storybook/react-webpack5": 7.6.17
-    storybook: 7.6.17
-  checksum: 10/68bcc9ee0bbb1eefb15c60302630410079b9bef097726a51f42479ec95deca22b4af453fac2fdc1731529be8b1180d76f3b198f8edfd6473e376ef0c9c54e0f7
-  languageName: node
-  linkType: hard
-
 "@nicolo-ribaudo/eslint-scope-5-internals@npm:5.1.1-v1":
   version: 5.1.1-v1
   resolution: "@nicolo-ribaudo/eslint-scope-5-internals@npm:5.1.1-v1"
@@ -8786,7 +8776,6 @@ __metadata:
     "@babel/preset-env": "npm:~7.22.20"
     "@babel/preset-react": "npm:~7.22.15"
     "@babel/preset-typescript": "npm:~7.22.15"
-    "@newhighsco/storybook-addon-transpile-modules": "npm:^1.0.21"
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
@@ -8803,11 +8792,13 @@ __metadata:
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:~"
     "@rocket.chat/ui-video-conf": "workspace:^"
-    "@storybook/addon-essentials": "npm:~6.5.16"
-    "@storybook/addons": "npm:~6.5.16"
-    "@storybook/react": "npm:~6.5.16"
+    "@storybook/addon-essentials": "npm:^8.3.5"
+    "@storybook/addon-styling-webpack": "npm:^1.0.0"
+    "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.3"
+    "@storybook/blocks": "npm:^8.3.5"
+    "@storybook/react": "npm:^8.3.5"
     "@storybook/react-webpack5": "npm:^8.3.5"
-    "@storybook/theming": "npm:~6.5.16"
+    "@storybook/theming": "npm:^8.3.5"
     "@tanstack/react-query": "npm:^4.16.1"
     "@testing-library/react": "npm:~16.0.1"
     "@testing-library/user-event": "npm:~14.5.2"
@@ -8821,10 +8812,12 @@ __metadata:
     normalize.css: "npm:^8.0.1"
     npm-run-all: "npm:^4.1.5"
     prettier: "npm:~2.8.8"
+    react: "npm:~17.0.2"
     react-dom: "npm:^17.0.2"
     react-i18next: "npm:~13.2.2"
     rimraf: "npm:^3.0.2"
-    storybook-dark-mode: "npm:~2.1.1"
+    storybook: "npm:^8.3.5"
+    storybook-dark-mode: "npm:^4.0.2"
     typescript: "npm:~5.5.4"
   peerDependencies:
     "@rocket.chat/apps-engine": "*"
@@ -8840,7 +8833,7 @@ __metadata:
     "@rocket.chat/ui-kit": "*"
     "@rocket.chat/ui-video-conf": 11.0.0
     "@tanstack/react-query": "*"
-    react: "*"
+    react: ~17.0.2
     react-dom: "*"
   languageName: unknown
   linkType: soft
@@ -9452,6 +9445,7 @@ __metadata:
     eslint-plugin-you-dont-need-lodash-underscore: "npm:~6.12.0"
     eventemitter3: "npm:^4.0.7"
     exif-be-gone: "npm:^1.3.2"
+    expiry-map: "npm:^2.0.0"
     express: "npm:^4.17.3"
     express-rate-limit: "npm:^5.5.1"
     fast-glob: "npm:^3.2.12"
@@ -9794,13 +9788,16 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/fuselage-tokens": "npm:^0.33.1"
     "@rocket.chat/jest-presets": "workspace:~"
-    "@storybook/addon-essentials": "npm:~6.5.16"
-    "@storybook/react": "npm:~6.5.16"
+    "@storybook/addon-essentials": "npm:^8.3.5"
+    "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.3"
+    "@storybook/react": "npm:^8.3.5"
+    "@storybook/react-webpack5": "npm:^8.3.5"
     "@testing-library/react": "npm:~16.0.1"
     "@types/emojione": "npm:^2.2.9"
     "@types/jest": "npm:~29.5.13"
     "@types/react": "npm:~17.0.80"
     "@types/react-dom": "npm:~17.0.25"
+    buffer: "npm:~6.0.3"
     emoji-assets: "npm:^7.0.1"
     emoji-toolkit: "npm:^7.0.1"
     eslint: "npm:~8.45.0"
@@ -9809,6 +9806,7 @@ __metadata:
     moment-timezone: "npm:^0.5.46"
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
+    storybook: "npm:^8.3.5"
     typescript: "npm:~5.5.4"
   languageName: unknown
   linkType: soft
@@ -11361,7 +11359,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addons@npm:6.5.16, @storybook/addons@npm:^6.5.14, @storybook/addons@npm:~6.5.16":
+"@storybook/addons@npm:6.5.16, @storybook/addons@npm:~6.5.16":
   version: 6.5.16
   resolution: "@storybook/addons@npm:6.5.16"
   dependencies:
@@ -11383,7 +11381,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/api@npm:6.5.16, @storybook/api@npm:^6.5.14":
+"@storybook/api@npm:6.5.16":
   version: 6.5.16
   resolution: "@storybook/api@npm:6.5.16"
   dependencies:
@@ -11411,7 +11409,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/blocks@npm:8.3.5":
+"@storybook/blocks@npm:8.3.5, @storybook/blocks@npm:^8.3.5":
   version: 8.3.5
   resolution: "@storybook/blocks@npm:8.3.5"
   dependencies:
@@ -11623,7 +11621,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/components@npm:6.5.16, @storybook/components@npm:^6.5.14":
+"@storybook/components@npm:6.5.16":
   version: 6.5.16
   resolution: "@storybook/components@npm:6.5.16"
   dependencies:
@@ -11750,7 +11748,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/core-events@npm:6.5.16, @storybook/core-events@npm:^6.5.14":
+"@storybook/core-events@npm:6.5.16":
   version: 6.5.16
   resolution: "@storybook/core-events@npm:6.5.16"
   dependencies:
@@ -12523,7 +12521,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/theming@npm:6.5.16, @storybook/theming@npm:^6.5.14, @storybook/theming@npm:~6.5.16":
+"@storybook/theming@npm:6.5.16":
   version: 6.5.16
   resolution: "@storybook/theming@npm:6.5.16"
   dependencies:
@@ -18446,6 +18444,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"buffer@npm:~6.0.3":
+  version: 6.0.3
+  resolution: "buffer@npm:6.0.3"
+  dependencies:
+    base64-js: "npm:^1.3.1"
+    ieee754: "npm:^1.2.1"
+  checksum: 10/b6bc68237ebf29bdacae48ce60e5e28fc53ae886301f2ad9496618efac49427ed79096750033e7eab1897a4f26ae374ace49106a5758f38fb70c78c9fda2c3b1
+  languageName: node
+  linkType: hard
+
 "bufrw@npm:^1.3.0":
   version: 1.3.0
   resolution: "bufrw@npm:1.3.0"
@@ -23917,6 +23925,15 @@ __metadata:
     jest-message-util: "npm:^29.7.0"
     jest-util: "npm:^29.7.0"
   checksum: 10/63f97bc51f56a491950fb525f9ad94f1916e8a014947f8d8445d3847a665b5471b768522d659f5e865db20b6c2033d2ac10f35fcbd881a4d26407a4f6f18451a
+  languageName: node
+  linkType: hard
+
+"expiry-map@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "expiry-map@npm:2.0.0"
+  dependencies:
+    map-age-cleaner: "npm:^0.2.0"
+  checksum: 10/9be8662e1a5c1084fb6d0ddc5402658dd06101c330454062b2f5efbf1477259d272e54ec16663d7d12a93d08ed510535781c36acb214696c5bc3a690a02a7a9d
   languageName: node
   linkType: hard
 
@@ -30908,6 +30925,15 @@ __metadata:
   dependencies:
     p-defer: "npm:^1.0.0"
   checksum: 10/cb2804a5bcb3cbdfe4b59066ea6d19f5e7c8c196cd55795ea4c28f792b192e4c442426ae52524e5e1acbccf393d3bddacefc3d41f803e66453f6c4eda3650bc1
+  languageName: node
+  linkType: hard
+
+"map-age-cleaner@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "map-age-cleaner@npm:0.2.0"
+  dependencies:
+    p-defer: "npm:^1.0.0"
+  checksum: 10/13a6810b76b0067efa7f4b0f3dc58b58b4a4b5faa4cae5a0e8d5d59eda04d7074724eee426c9b5890a1d7e14d1e2902a090587acc8e2430198e79ab1556a2dad
   languageName: node
   linkType: hard
 
@@ -39395,30 +39421,6 @@ __metadata:
     fast-deep-equal: "npm:^3.1.3"
     memoizerific: "npm:^1.11.3"
   checksum: 10/c9ef7bc6734df7486ff763c9da3c69505269eaf5fd7b5b489553f023b363ea892862241e6d701ad647ca5d1e64fd9a2646b8985c7ea8ac97a3bca87891db6fe5
-  languageName: node
-  linkType: hard
-
-"storybook-dark-mode@npm:~2.1.1":
-  version: 2.1.1
-  resolution: "storybook-dark-mode@npm:2.1.1"
-  dependencies:
-    "@storybook/addons": "npm:^6.5.14"
-    "@storybook/api": "npm:^6.5.14"
-    "@storybook/components": "npm:^6.5.14"
-    "@storybook/core-events": "npm:^6.5.14"
-    "@storybook/global": "npm:^5.0.0"
-    "@storybook/theming": "npm:^6.5.14"
-    fast-deep-equal: "npm:^3.1.3"
-    memoizerific: "npm:^1.11.3"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  peerDependenciesMeta:
-    react:
-      optional: true
-    react-dom:
-      optional: true
-  checksum: 10/b5f33ff6f257fa4bd23384d5e7b8d8d78d2a06107b20ceb5c1d6304cbc6d5457c108cd8aefb8a194fc88b32f46714479bcd761811a62b0fcb3fdb53e3ddcee68
   languageName: node
   linkType: hard
 
