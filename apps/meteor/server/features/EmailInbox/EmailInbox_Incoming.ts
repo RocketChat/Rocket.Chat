@@ -25,7 +25,7 @@ const language = settings.get<string>('Language') || 'en';
 const t = i18n.getFixedT(language);
 
 async function getGuestByEmail(email: string, name: string, department = ''): Promise<ILivechatVisitor | null> {
-	const guest = await LivechatVisitors.findOneGuestByEmailAddress(email);
+	const guest = await LivechatVisitors.findOneGuestByEmailAddress(email, OmnichannelSourceType.EMAIL);
 
 	if (guest) {
 		if (guest.department !== department) {
@@ -37,6 +37,9 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 			await LivechatTyped.setDepartmentForGuest({ token: guest.token, department });
 			return LivechatVisitors.findOneEnabledById(guest._id, {});
 		}
+		if (!guest.channelName) {
+			await LivechatVisitors.setChannelNameById(guest._id, OmnichannelSourceType.EMAIL);
+		}
 		return guest;
 	}
 
@@ -45,6 +48,7 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 		name: name || email,
 		email,
 		department,
+		channelName: OmnichannelSourceType.EMAIL,
 	});
 
 	if (!livechatVisitor) {
