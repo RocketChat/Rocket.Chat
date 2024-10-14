@@ -1,5 +1,5 @@
 import { OmnichannelIntegration } from '@rocket.chat/core-services';
-import { isEditedMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 
 import { callbacks } from '../../../lib/callbacks';
@@ -55,10 +55,17 @@ callbacks.add(
 			return message;
 		}
 
-		const visitor = await LivechatVisitors.getVisitorByToken(room.v.token, { projection: { phone: 1 } });
+		const visitor = await LivechatVisitors.getVisitorByTokenAndChannelName(
+			{ token: room.v.token, channelName: OmnichannelSourceType.SMS },
+			{ projection: { phone: 1, channelName: 1 } },
+		);
 
 		if (!visitor?.phone || visitor.phone.length === 0) {
 			return message;
+		}
+
+		if (!visitor.channelName) {
+			await LivechatVisitors.setChannelNameById(visitor._id, OmnichannelSourceType.SMS);
 		}
 
 		try {
