@@ -6,7 +6,7 @@ import { notifyOnSubscriptionChanged, notifyOnRoomChangedById } from '../../../l
 
 export const provideUsersSuggestedGroupKeys = async (
 	userId: IUser['_id'],
-	usersSuggestedGroupKeys: Record<IRoom['_id'], { _id: IUser['_id']; key: string; oldKeys: ISubscription['oldRoomKeys'] }[]>,
+	usersSuggestedGroupKeys: Record<IRoom['_id'], { _id: IUser['_id']; key: string; oldKeys?: ISubscription['oldRoomKeys'] }[]>,
 ) => {
 	const roomIds = Object.keys(usersSuggestedGroupKeys);
 

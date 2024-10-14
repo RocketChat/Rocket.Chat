@@ -580,7 +580,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	async setGroupE2EKeyAndOldRoomKeys(_id: string, key: string, oldRoomKeys: ISubscription['oldRoomKeys']): Promise<UpdateResult> {
+	async setGroupE2EKeyAndOldRoomKeys(_id: string, key: string, oldRoomKeys?: ISubscription['oldRoomKeys']): Promise<UpdateResult> {
 		const query = { _id };
 		const update = { $set: { E2EKey: key, ...(oldRoomKeys && { oldRoomKeys }) } };
 		return this.updateOne(query, update);
@@ -609,7 +609,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		uid: string,
 		rid: string,
 		key: string,
-		suggestedOldRoomKeys: ISubscription['suggestedOldRoomKeys'],
+		suggestedOldRoomKeys?: ISubscription['suggestedOldRoomKeys'],
 	): Promise<ModifyResult<ISubscription>> {
 		const query = { rid, 'u._id': uid };
 		const update = { $set: { E2ESuggestedKey: key, ...(suggestedOldRoomKeys && { suggestedOldRoomKeys }) } };
