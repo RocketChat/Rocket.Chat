@@ -15,7 +15,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 		if (!this.request.headers['x-visitor-token']) {
 			return API.v1.unauthorized();
 		}
-		const channelName = isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API;
+		const sourceType = isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API;
 
 		const canUpload = settings.get<boolean>('Livechat_fileupload_enabled') && settings.get<boolean>('FileUpload_Enabled');
 
@@ -26,7 +26,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 		}
 
 		const visitorToken = this.request.headers['x-visitor-token'];
-		const visitor = await LivechatVisitors.getVisitorByTokenAndChannelName({ token: visitorToken as string, channelName });
+		const visitor = await LivechatVisitors.getVisitorByTokenAndSource({ token: visitorToken as string, source: { type: sourceType } });
 
 		if (!visitor) {
 			return API.v1.unauthorized();
@@ -79,8 +79,8 @@ API.v1.addRoute('livechat/upload/:rid', {
 			return API.v1.failure('Invalid file');
 		}
 
-		if (!visitor.channelName) {
-			await LivechatVisitors.setChannelNameById(visitor._id, channelName);
+		if (!visitor.source) {
+			await LivechatVisitors.setSourceById(visitor._id, { type: sourceType });
 		}
 
 		uploadedFile.description = fields.description;

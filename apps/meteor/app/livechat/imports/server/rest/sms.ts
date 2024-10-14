@@ -6,6 +6,7 @@ import type {
 	MessageAttachment,
 	ServiceData,
 	FileAttachmentProps,
+	IOmnichannelSource,
 } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -55,11 +56,17 @@ const defineDepartment = async (idOrName?: string) => {
 	return department?._id;
 };
 
-const defineVisitor = async (smsNumber: string, targetDepartment?: string) => {
-	const visitor = await LivechatVisitors.findOneVisitorByPhone(smsNumber, OmnichannelSourceType.SMS);
-	let data: { token: string; channelName: string; department?: string } = {
+const defineVisitor = async (smsNumber: string, serviceName: string, destination: string, targetDepartment?: string) => {
+	const visitorSource = {
+		type: OmnichannelSourceType.SMS,
+		alias: serviceName,
+		destination,
+	};
+
+	const visitor = await LivechatVisitors.findOneVisitorByPhone(smsNumber, visitorSource);
+	let data: { token: string; source: IOmnichannelSource; department?: string } = {
 		token: visitor?.token || Random.id(),
-		channelName: OmnichannelSourceType.SMS,
+		source: visitorSource,
 	};
 
 	if (!visitor) {
@@ -118,7 +125,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			targetDepartment = await defineDepartment(smsDepartment);
 		}
 
-		const visitor = await defineVisitor(sms.from, targetDepartment);
+		const visitor = await defineVisitor(sms.from, service, sms.to, targetDepartment);
 		if (!visitor) {
 			return API.v1.success(SMSService.error(new Error('Invalid visitor')));
 		}

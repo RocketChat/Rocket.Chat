@@ -1,3 +1,4 @@
+import type { IOmnichannelSource } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -26,9 +27,9 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { token, rid, agent, msg } = this.bodyParams;
-			const channelName = isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API;
+			const sourceType = isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API;
 
-			const guest = await findGuest(token, channelName);
+			const guest = await findGuest(token, sourceType);
 			if (!guest) {
 				throw new Error('invalid-token');
 			}
@@ -49,8 +50,8 @@ API.v1.addRoute(
 				throw new Error('message-length-exceeds-character-limit');
 			}
 
-			if (!guest.channelName) {
-				await LivechatVisitors.setChannelNameById(guest._id, channelName);
+			if (!guest.source) {
+				await LivechatVisitors.setSourceById(guest._id, { type: sourceType });
 			}
 
 			const _id = this.bodyParams._id || Random.id();
@@ -66,7 +67,7 @@ API.v1.addRoute(
 				agent,
 				roomInfo: {
 					source: {
-						type: channelName,
+						type: sourceType,
 					},
 				},
 			};
@@ -255,9 +256,9 @@ API.v1.addRoute(
 	{
 		async post() {
 			const visitorToken = this.bodyParams.visitor.token;
-			const channelName = isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API;
+			const sourceType = isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API;
 
-			const visitor = await LivechatVisitors.getVisitorByTokenAndChannelName({ token: visitorToken, channelName }, {});
+			const visitor = await LivechatVisitors.getVisitorByTokenAndSource({ token: visitorToken, source: { type: sourceType } }, {});
 			let rid: string;
 			if (visitor) {
 				const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
@@ -268,15 +269,15 @@ API.v1.addRoute(
 					rid = Random.id();
 				}
 
-				if (!visitor.channelName) {
-					await LivechatVisitors.setChannelNameById(visitor._id, channelName);
+				if (!visitor.source) {
+					await LivechatVisitors.setSourceById(visitor._id, { type: sourceType });
 				}
 			} else {
 				rid = Random.id();
 
-				const guest: typeof this.bodyParams.visitor & { connectionData?: unknown; channelName?: string } = this.bodyParams.visitor;
+				const guest: typeof this.bodyParams.visitor & { connectionData?: unknown; source?: IOmnichannelSource } = this.bodyParams.visitor;
 				guest.connectionData = normalizeHttpHeaderData(this.request.headers);
-				guest.channelName = channelName;
+				guest.source = { type: sourceType };
 
 				const visitor = await LivechatTyped.registerGuest(guest);
 				if (!visitor) {
@@ -301,7 +302,7 @@ API.v1.addRoute(
 						},
 						roomInfo: {
 							source: {
-								type: channelName,
+								type: sourceType,
 							},
 						},
 					};
