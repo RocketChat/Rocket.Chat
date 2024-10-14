@@ -61,7 +61,11 @@ async function saveRegistrationDataBase({
 
 	const promises = [
 		...settingsData.map(({ _id, value }) => Settings.updateValueById(_id, value)),
-		WorkspaceCredentials.updateCredentialByScope('', '', new Date(0)),
+		WorkspaceCredentials.updateCredentialByScope({
+			scope: '',
+			accessToken: '',
+			expirationDate: new Date(0),
+		}),
 	];
 
 	(await Promise.all(promises)).forEach((value, index) => {

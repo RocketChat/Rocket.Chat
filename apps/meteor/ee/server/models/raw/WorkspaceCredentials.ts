@@ -1,6 +1,6 @@
 import type { RocketChatRecordDeleted, IWorkspaceCredentials } from '@rocket.chat/core-typings';
 import type { IWorkspaceCredentialsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, Filter, IndexDescription } from 'mongodb';
+import type { Collection, Db, DeleteResult, Filter, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
@@ -24,7 +24,7 @@ export class WorkspaceCredentialsRaw extends BaseRaw<IWorkspaceCredentials> impl
 		return this.findOne(query);
 	}
 
-	async unsetCredentialByScope(scope: string): Promise<void> {
+	unsetCredentialByScope(scope: string): Promise<DeleteResult> {
 		const query: Filter<IWorkspaceCredentials> = {
 			scopes: {
 				$all: [scope],
@@ -32,10 +32,18 @@ export class WorkspaceCredentialsRaw extends BaseRaw<IWorkspaceCredentials> impl
 			},
 		};
 
-		await this.deleteOne(query);
+		return this.deleteOne(query);
 	}
 
-	async updateCredentialByScope(scope: string, accessToken: string, expirationDate: Date): Promise<void> {
+	updateCredentialByScope({
+		scope,
+		accessToken,
+		expirationDate,
+	}: {
+		scope: string;
+		accessToken: string;
+		expirationDate: Date;
+	}): Promise<UpdateResult> {
 		const record = {
 			$set: {
 				scopes: [scope],
@@ -51,10 +59,10 @@ export class WorkspaceCredentialsRaw extends BaseRaw<IWorkspaceCredentials> impl
 			},
 		};
 
-		await this.updateOne(query, record, { upsert: true });
+		return this.updateOne(query, record, { upsert: true });
 	}
 
-	async removeAllCredentials(): Promise<void> {
-		await this.col.deleteMany({});
+	removeAllCredentials(): Promise<DeleteResult> {
+		return this.col.deleteMany({});
 	}
 }
