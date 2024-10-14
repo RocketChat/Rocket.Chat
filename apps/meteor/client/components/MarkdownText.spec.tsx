@@ -15,26 +15,30 @@ const markdownText = `
   **Paragraph text**: *Bold with one asterisk* **Bold with two asterisks** Lorem ipsum dolor sit amet, consectetur adipiscing elit.
   ## Heading 2
   _Italic Text_: _Italic with one underscore_ __Italic with two underscores__ Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  ### Heading 3 
+  ### Heading 3
   Lists, Links and elements
-  **Unordered List** 
-  - List Item 1 
-  - List Item 2 
-  - List Item 3 
+  **Unordered List**
+  - List Item 1
+  - List Item 2
+  - List Item 3
   - List Item 4
-  **Ordered List** 
+  **Ordered List**
   1. List Item 1
   2. List Item 2
   3. List Item 3
   4. List Item 4
-  **Links:** 
+  **Links:**
   [Rocket.Chat](rocket.chat)
-  gabriel.engel@rocket.chat 
-  +55991999999 
+  gabriel.engel@rocket.chat
+  +55991999999
   \`Inline code\`
-  \`\`\`typescript 
+  \`\`\`typescript
   const test = 'this is code'
   \`\`\`
+  **Bold text within __Italics__**
+  *Bold text with single asterik and underscore within _Italics_*
+  __Italics within **Bold** text__
+  _Italics within *Bold* text with single underscore and asterik_
 `;
 
 it('should render html elements as expected using default parser', async () => {
@@ -54,13 +58,17 @@ it('should render html elements as expected using default parser', async () => {
 		'<em>Italic Text</em>: <em>Italic with one underscore</em> <em>Italic with two underscores</em> Lorem ipsum dolor sit amet',
 	);
 	expect(normalizedHtml).toContain('<h3>Heading 3</h3>');
-	expect(normalizedHtml).toContain('<ul> <li>List Item 1 </li><li>List Item 2 </li><li>List Item 3 </li><li>List Item 4');
+	expect(normalizedHtml).toContain('<ul> <li>List Item 1</li><li>List Item 2</li><li>List Item 3</li><li>List Item 4');
 	expect(normalizedHtml).toContain('<ol> <li>List Item 1</li><li>List Item 2</li><li>List Item 3</li><li>List Item 4');
 	expect(normalizedHtml).toContain('<a title="" rel="nofollow noopener noreferrer" target="_blank">Rocket.Chat</a>');
 	expect(normalizedHtml).toContain('gabriel.engel@rocket.chat');
 	expect(normalizedHtml).toContain('+55991999999');
 	expect(normalizedHtml).toContain('<code>Inline code</code>');
 	expect(normalizedHtml).toContain('<pre><code class="language-typescript">const test = \'this is code\' </code></pre>');
+	expect(normalizedHtml).toContain('<strong>Bold text within <em>Italics</em></strong>');
+	expect(normalizedHtml).toContain('<strong>Bold text with single asterik and underscore within <em>Italics</em></strong>');
+	expect(normalizedHtml).toContain('<em>Italics within <strong>Bold</strong> text</em>');
+	expect(normalizedHtml).toContain('<em>Italics within <strong>Bold</strong> text with single underscore and asterik</em>');
 });
 
 it('should render html elements as expected using inline parser', async () => {
@@ -89,4 +97,8 @@ it('should render html elements as expected using inline parser', async () => {
 	expect(normalizedHtml).toContain('+55991999999');
 	expect(normalizedHtml).toContain('Inline code');
 	expect(normalizedHtml).toContain(`typescript const test = 'this is code'`);
+	expect(normalizedHtml).toContain('<strong>Bold text within <em>Italics</em></strong>');
+	expect(normalizedHtml).toContain('<strong>Bold text with single asterik and underscore within <em>Italics</em></strong>');
+	expect(normalizedHtml).toContain('<em>Italics within <strong>Bold</strong> text</em>');
+	expect(normalizedHtml).toContain('<em>Italics within <strong>Bold</strong> text with single underscore and asterik</em>');
 });

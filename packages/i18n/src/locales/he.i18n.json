@@ -1304,7 +1304,7 @@
   "Thank_you_for_your_feedback": "תודה לך על המשוב",
   "The_application_name_is_required": "שם האפליקציה נדרש",
   "The_channel_name_is_required": "שם הערוץ נדרש",
-  "The_emails_are_being_sent": "האימיילים נשלחים.",   
+  "The_emails_are_being_sent": "האימיילים נשלחים.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "שינוי גודל התמונה לא יעבוד כי אנחנו לא יכולים לזהות ImageMagick או GraphicsMagick מותקן על השרת שלך.",
   "The_redirectUri_is_required": "RedirectUri נדרש",
   "The_server_will_restart_in_s_seconds": "השרת יפעיל את עצמו מחדש בעוד ",

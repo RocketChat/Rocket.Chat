@@ -85,7 +85,7 @@ export const createLivechatRoom = async <
 	);
 
 	const extraRoomInfo = await callbacks.run('livechat.beforeRoom', roomInfo, extraData);
-	const { _id, username, token, department: departmentId, status = 'online' } = guest;
+	const { _id, username, token, department: departmentId, status = 'online', contactId } = guest;
 	const newRoomAt = new Date();
 
 	const { activity } = guest;
@@ -109,6 +109,7 @@ export const createLivechatRoom = async <
 			username,
 			token,
 			status,
+			contactId,
 			...(activity?.length && { activity }),
 		},
 		cl: false,
@@ -439,8 +440,8 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 			hasMentionToHere: false,
 			message: { _id: '', u: v, msg: '' },
 			// we should use server's language for this type of messages instead of user's
-			notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName, lng: language }),
-			room: Object.assign(room, { name: i18n.t('New_chat_in_queue', { lng: language }) }),
+			notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName }, language),
+			room: Object.assign(room, { name: i18n.t('New_chat_in_queue', {}, language) }),
 			mentionIds: [],
 		});
 	}

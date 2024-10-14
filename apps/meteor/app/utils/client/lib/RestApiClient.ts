@@ -1,6 +1,5 @@
 import { RestClient } from '@rocket.chat/api-client';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 
 import { invokeTwoFactorModal } from '../../../../client/lib/2fa/process2faReturn';
 import { baseURI } from '../../../../client/lib/baseURI';
@@ -12,7 +11,10 @@ class RestApiClient extends RestClient {
 				'X-Auth-Token': string;
 		  }
 		| undefined {
-		const [uid, token] = [Meteor._localStorage.getItem(Accounts.USER_ID_KEY), Meteor._localStorage.getItem(Accounts.LOGIN_TOKEN_KEY)];
+		const [uid, token] = [
+			Accounts.storageLocation.getItem(Accounts.USER_ID_KEY),
+			Accounts.storageLocation.getItem(Accounts.LOGIN_TOKEN_KEY),
+		];
 
 		if (!uid || !token) {
 			return;
