@@ -2366,7 +2366,7 @@
   "Thank_you_for_your_feedback": "Dankon pro viaj sugestoj",
   "The_application_name_is_required": "La aplika nomo estas postulita",
   "The_channel_name_is_required": "La kanala nomo estas postulita",
-  "The_emails_are_being_sent": "La retpoŝtoj estas senditaj.",   
+  "The_emails_are_being_sent": "La retpoŝtoj estas senditaj.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "La regrandigo de bildoj ne funkcios ĉar ni ne povas detekti ImageMagick aŭ GraphicsMagick instalitan sur via servilo.",
   "The_redirectUri_is_required": "La redirectUri estas postulita",
   "The_server_will_restart_in_s_seconds": "La servilo rekomencos en%s sekundoj",
