@@ -10,7 +10,6 @@ import { useExternalLink } from '../../../../../hooks/useExternalLink';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
 import type { AppInfo } from '../../../definitions/AppInfo';
-import { doesAppRequireAddon } from '../../../helpers/doesAppRequireAddon';
 import { purifyOptions } from '../../../lib/purifyOptions';
 import AppDetailsAPIs from './AppDetailsAPIs';
 import { normalizeUrl } from './normalizeUrl';
@@ -43,15 +42,13 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 	const normalizedSupportUrl = support ? normalizeUrl(support) : undefined;
 	const normalizedDocumentationUrl = documentation ? normalizeUrl(documentation) : undefined;
 
-	const appNeedAddon = doesAppRequireAddon(app as App);
-
-	const userHasAddon = useHasLicenseModule((app as any).addon); // The information of the addon will be added here by the other PR
+	const userHasAddon = useHasLicenseModule((app as App).addon);
 
 	const openExternalLink = useExternalLink();
 
 	return (
 		<Box mbs='36px' maxWidth='x640' w='full' marginInline='auto' color='default'>
-			{appNeedAddon && userHasAddon && (
+			{userHasAddon && userHasAddon !== 'loading' && (
 				<Callout
 					mb='16px'
 					title={t('Subscription_add-on_required')}
