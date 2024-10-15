@@ -50,7 +50,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 		<Box mbs='36px' maxWidth='x640' w='full' marginInline='auto' color='default'>
 			{userHasAddon && userHasAddon !== 'loading' && (
 				<Callout
-					mb='16px'
+					mb={16}
 					title={t('Subscription_add-on_required')}
 					type='info'
 					actions={
@@ -65,13 +65,13 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 			{app.licenseValidation && (
 				<>
 					{Object.entries(app.licenseValidation.warnings).map(([key]) => (
-						<Callout key={key} type='warning' mb='16px'>
+						<Callout key={key} type='warning' mb={16}>
 							{t(`Apps_License_Message_${key}` as TranslationKey)}
 						</Callout>
 					))}
 
 					{Object.entries(app.licenseValidation.errors).map(([key]) => (
-						<Callout key={key} type='danger' mb='16px'>
+						<Callout key={key} type='danger' mb={16}>
 							{t(`Apps_License_Message_${key}` as TranslationKey)}
 						</Callout>
 					))}
