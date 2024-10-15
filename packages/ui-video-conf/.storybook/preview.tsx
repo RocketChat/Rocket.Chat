@@ -1,8 +1,11 @@
+import type { Decorator } from '@storybook/react';
+import type { ReactElement } from 'react';
+
 import '../../../apps/meteor/app/theme/client/main.css';
 import 'highlight.js/styles/github.css';
+import '@rocket.chat/icons/dist/rocketchat.css';
 
 export const parameters = {
-	actions: { argTypesRegex: '^on[A-Z].*' },
 	controls: {
 		matchers: {
 			color: /(background|color)$/i,
@@ -11,8 +14,8 @@ export const parameters = {
 	},
 };
 
-export const decorators = [
-	(Story) => (
+export const decorators: Decorator[] = [
+	(Story): ReactElement => (
 		<div className='rc-old'>
 			<style>{`
 				body {
@@ -23,3 +26,4 @@ export const decorators = [
 		</div>
 	),
 ];
+export const tags = ['autodocs'];

@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import ServersSection from './ServersSection';
@@ -10,9 +10,9 @@ export default {
 		layout: 'centered',
 		controls: { hideNoControlsWarning: true },
 	},
-} as ComponentMeta<typeof ServersSection>;
+} satisfies Meta<typeof ServersSection>;
 
-const Template: ComponentStory<typeof ServersSection> = () => <ServersSection />;
+const Template: StoryFn<typeof ServersSection> = () => <ServersSection />;
 
 export const Example = Template.bind({});
 Example.parameters = {

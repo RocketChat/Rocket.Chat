@@ -1,5 +1,5 @@
 import { Field } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import IntSettingInput from './IntSettingInput';
@@ -13,9 +13,9 @@ export default {
 		},
 	},
 	decorators: [(fn) => <Field>{fn()}</Field>],
-} as ComponentMeta<typeof IntSettingInput>;
+} satisfies Meta<typeof IntSettingInput>;
 
-const Template: ComponentStory<typeof IntSettingInput> = (args) => <IntSettingInput {...args} />;
+const Template: StoryFn<typeof IntSettingInput> = (args) => <IntSettingInput {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {

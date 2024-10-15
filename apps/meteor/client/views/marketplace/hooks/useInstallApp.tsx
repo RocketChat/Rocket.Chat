@@ -5,11 +5,8 @@ import React, { useCallback, useState } from 'react';
 
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import { useAppsReload } from '../../../contexts/hooks/useAppsReload';
-import { useExternalLink } from '../../../hooks/useExternalLink';
-import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 import AppPermissionsReviewModal from '../AppPermissionsReviewModal';
 import AppUpdateModal from '../AppUpdateModal';
-import AppInstallationModal from '../components/AppInstallModal/AppInstallModal';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { handleInstallError } from '../helpers/handleInstallError';
 import { getManifestFromZippedApp } from '../lib/getManifestFromZippedApp';
@@ -17,13 +14,11 @@ import { useAppsCountQuery } from './useAppsCountQuery';
 
 export const useInstallApp = (file: File): { install: () => void; isInstalling: boolean } => {
 	const reloadAppsList = useAppsReload();
-	const openExternalLink = useExternalLink();
 	const setModal = useSetModal();
 
 	const router = useRouter();
 
 	const appCountQuery = useAppsCountQuery('private');
-	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'marketplace-app-install', action: 'Enable_unlimited_apps' });
 
 	const uploadAppEndpoint = useUpload('/apps');
 	const uploadUpdateEndpoint = useUpload('/apps/update');
@@ -126,25 +121,7 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 			return cancelAction();
 		}
 
-		if (appCountQuery.data.hasUnlimitedApps) {
-			return uploadFile(appFile, manifest);
-		}
-
-		setModal(
-			<AppInstallationModal
-				context='private'
-				enabled={appCountQuery.data.enabled}
-				limit={appCountQuery.data.limit}
-				appName={manifest.name}
-				handleClose={cancelAction}
-				handleConfirm={() => uploadFile(appFile, manifest)}
-				handleEnableUnlimitedApps={() => {
-					openExternalLink(manageSubscriptionUrl);
-					setModal(null);
-					setInstalling(false);
-				}}
-			/>,
-		);
+		return uploadFile(appFile, manifest);
 	};
 
 	return { install, isInstalling };
