@@ -168,6 +168,10 @@ API.v1.addRoute(
 		post: {
 			twoFactorRequired: true,
 			async action(): Promise<ResultFor<'POST', '/v1/settings/:_id'>> {
+				console.log(this);
+
+				console.time('settingupdate');
+
 				if (typeof this.urlParams._id !== 'string') {
 					throw new Meteor.Error('error-id-param-not-provided', 'The parameter "id" is required');
 				}
@@ -213,6 +217,8 @@ API.v1.addRoute(
 					setValue(this.urlParams._id, this.bodyParams.value);
 
 					await notifyOnSettingChanged(s);
+
+					console.timeEnd('settingupdate');
 
 					return API.v1.success();
 				}
