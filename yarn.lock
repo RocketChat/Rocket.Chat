@@ -8634,9 +8634,9 @@ __metadata:
     "@types/crypto-js": "npm:~4.1.3"
     "@types/markdown-it": "npm:^14.0.1"
     "@types/mini-css-extract-plugin": "npm:~1.4.3"
-    "@types/webpack": "npm:^5.28.5"
     "@types/webpack-bundle-analyzer": "npm:^4.6.2"
     "@types/webpack-dev-server": "npm:~4.7.2"
+    "@types/webpack-env": "npm:~1.18.5"
     "@types/whatwg-fetch": "npm:~0.0.33"
     "@typescript-eslint/eslint-plugin": "npm:~5.60.1"
     "@typescript-eslint/parser": "npm:~5.60.1"
@@ -13219,14 +13219,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/webpack@npm:^5.28.5":
-  version: 5.28.5
-  resolution: "@types/webpack@npm:5.28.5"
-  dependencies:
-    "@types/node": "npm:*"
-    tapable: "npm:^2.2.0"
-    webpack: "npm:^5"
-  checksum: 10/14359d9ccecef7ef1ea271c00baec5337213c7fda63a34c61b9e519505b3928d0807cdbb5b1172d1994e1179920b89c57eaf2cbf64599958b67cd70720ac2a9b
+"@types/webpack-env@npm:~1.18.5":
+  version: 1.18.5
+  resolution: "@types/webpack-env@npm:1.18.5"
+  checksum: 10/3c8dd0b23d45e2d33abdfbae7f1d8f75ce23d54588b08943e833f4dba81eb683ac68672a75eccbdba8e008bc1647638803c1bcadc8cdfd1dd7142fa2c3f612de
   languageName: node
   linkType: hard
 
