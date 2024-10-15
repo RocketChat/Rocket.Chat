@@ -20,4 +20,4 @@ export type LicenseModule =
 	| 'custom-roles'
 	| 'accessibility-certification'
 	| 'unlimited-presence'
-	| 'single-contact';
+	| 'chat.rocket.contact-id-verification';

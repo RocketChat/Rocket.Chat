@@ -23,7 +23,7 @@ export async function changeContactBlockStatus({ contactId, block, visitorId }: 
 }
 
 export async function hasSingleContactLicense() {
-	if (!License.hasModule('single-contact')) {
+	if (!License.hasModule('chat.rocket.contact-id-verification')) {
 		throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature');
 	}
 }
