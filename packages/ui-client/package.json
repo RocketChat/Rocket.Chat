@@ -33,7 +33,6 @@
 		"@storybook/addon-essentials": "^8.3.5",
 		"@storybook/addon-interactions": "^8.3.5",
 		"@storybook/addon-links": "^8.3.5",
-		"@storybook/addon-postcss": "~2.0.0",
 		"@storybook/addon-styling-webpack": "^1.0.0",
 		"@storybook/addon-webpack5-compiler-babel": "^3.0.3",
 		"@storybook/react": "^8.3.5",
