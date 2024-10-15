@@ -105,8 +105,8 @@ export class ContactMerger {
 
 		const fields = new Set<FieldAndValue>();
 
-		contact.emails?.forEach((value) => fields.add({ type: 'email', value }));
-		contact.phones?.forEach((value) => fields.add({ type: 'phone', value }));
+		contact.emails?.forEach(({ address: value }) => fields.add({ type: 'email', value }));
+		contact.phones?.forEach(({ phoneNumber: value }) => fields.add({ type: 'phone', value }));
 		contact.channels?.forEach((value) => fields.add({ type: 'channel', value }));
 
 		if (name) {
@@ -254,8 +254,8 @@ export class ContactMerger {
 
 		// Phones, Emails and Channels are simply added to the contact's existing list
 		const dataToAdd: UpdateFilter<ILivechatContact>['$addToSet'] = {
-			...(newPhones.length ? { phones: newPhones } : {}),
-			...(newEmails.length ? { emails: newEmails } : {}),
+			...(newPhones.length ? { phones: newPhones.map((phoneNumber) => ({ phoneNumber })) } : {}),
+			...(newEmails.length ? { emails: newEmails.map((address) => ({ address })) } : {}),
 			...(newChannels.length ? { channels: newChannels } : {}),
 			...(allConflicts.length ? { conflictingFields: allConflicts } : {}),
 		};
