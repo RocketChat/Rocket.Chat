@@ -48,7 +48,7 @@ class NotificationClass {
 			try {
 				const span = tracer.startSpan(`NotificationWorker`, {
 					attributes: {
-						a: new Date(),
+						workerTime: new Date().toISOString(),
 					},
 				});
 

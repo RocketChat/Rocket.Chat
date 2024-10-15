@@ -5,6 +5,7 @@ import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
 import { EnterpriseCheck } from './EnterpriseCheck';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 interface Carrier {
 	traceparent?: string;
 	tracestate?: string;
