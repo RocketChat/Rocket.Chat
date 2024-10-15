@@ -9028,7 +9028,6 @@ __metadata:
     "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.3"
     "@storybook/react": "npm:^8.3.5"
     "@storybook/react-webpack5": "npm:^8.3.5"
-    "@storybook/test": "npm:^8.3.5"
     "@tanstack/react-query": "npm:^4.16.1"
     "@tanstack/react-query-devtools": "npm:^4.19.1"
     "@testing-library/react": "npm:~16.0.1"
@@ -11067,7 +11066,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/test@npm:8.3.5, @storybook/test@npm:^8.3.5":
+"@storybook/test@npm:8.3.5":
   version: 8.3.5
   resolution: "@storybook/test@npm:8.3.5"
   dependencies:
