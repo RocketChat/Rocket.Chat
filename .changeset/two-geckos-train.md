@@ -3,4 +3,4 @@
 "@rocket.chat/i18n": major
 ---
 
-Added new empty states for the marketplace view
+Adds new empty states for the marketplace view
