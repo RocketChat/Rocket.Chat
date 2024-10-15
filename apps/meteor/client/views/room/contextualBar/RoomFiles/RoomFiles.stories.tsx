@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import { Contextualbar } from '../../../../components/Contextualbar';
@@ -13,9 +13,9 @@ export default {
 		actions: { argTypesRegex: '^on.*' },
 	},
 	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
-} as ComponentMeta<typeof RoomFiles>;
+} satisfies Meta<typeof RoomFiles>;
 
-const Template: ComponentStory<typeof RoomFiles> = (args) => <RoomFiles {...args} />;
+const Template: StoryFn<typeof RoomFiles> = (args) => <RoomFiles {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {

@@ -1,12 +1,10 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { Button } from '.';
 import { gazzoAvatar } from '../../../.storybook/helpers';
 import ChatIcon from '../../icons/chat.svg';
-
-const iconElement = <ChatIcon />;
 
 export default {
 	title: 'components/Button',
@@ -28,9 +26,10 @@ export default {
 	},
 	argTypes: {
 		icon: {
-			control: {
-				type: 'select',
-				options: [null, iconElement],
+			options: ['none', 'chat'],
+			mapping: {
+				none: null,
+				chat: <ChatIcon />,
 			},
 		},
 	},
@@ -39,7 +38,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof Button>>;
 
-const Template: Story<ComponentProps<typeof Button>> = (args) => <Button {...args} />;
+const Template: StoryFn<ComponentProps<typeof Button>> = (args) => <Button {...args} />;
 
 export const Normal = Template.bind({});
 Normal.storyName = 'normal';
@@ -101,12 +100,12 @@ WithBadge.args = {
 export const WithIcon = Template.bind({});
 WithIcon.storyName = 'with icon';
 WithIcon.args = {
-	icon: iconElement,
+	icon: <ChatIcon />,
 };
 
 export const TransparentWithBackgroundImage = Template.bind({});
 TransparentWithBackgroundImage.storyName = 'transparent with background image';
 TransparentWithBackgroundImage.args = {
 	img: gazzoAvatar,
-	icon: iconElement,
+	icon: <ChatIcon />,
 };

@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { PasswordInput } from '.';
@@ -29,7 +29,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof PasswordInput>>;
 
-const Template: Story<ComponentProps<typeof PasswordInput>> = (args) => <PasswordInput {...args} />;
+const Template: StoryFn<ComponentProps<typeof PasswordInput>> = (args) => <PasswordInput {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

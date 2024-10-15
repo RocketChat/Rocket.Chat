@@ -38,3 +38,5 @@ export const UiKitContext = createContext<UiKitContextValue>({
   appId: 'core',
   values: {},
 });
+
+Object.assign(UiKitContext.Provider, { displayName: 'UiKitContext.Provider' });
