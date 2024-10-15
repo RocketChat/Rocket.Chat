@@ -1,7 +1,7 @@
 import { isPOSTOmnichannelBlockContactProps, isPOSTOmnichannelUnblockContactProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
-import { changeContactBlockStatus, hasSingleContactLicense } from './lib/contacts';
+import { changeContactBlockStatus, closeBlockedRoom, hasSingleContactLicense } from './lib/contacts';
 
 API.v1.addRoute(
 	'omnichannel/contacts.block',
@@ -20,6 +20,8 @@ API.v1.addRoute(
 				visitorId,
 				block: true,
 			});
+
+			await closeBlockedRoom(visitorId);
 
 			return API.v1.success();
 		},
