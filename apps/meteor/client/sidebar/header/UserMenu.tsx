@@ -1,11 +1,15 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { FeaturePreview, FeaturePreviewOn, FeaturePreviewOff } from '@rocket.chat/ui-client';
+import {
+	FeaturePreview,
+	FeaturePreviewOn,
+	FeaturePreviewOff,
+	GenericMenu,
+	useHandleMenuAction,
+	type GenericMenuItemProps,
+} from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState, memo } from 'react';
 
-import GenericMenu from '../../components/GenericMenu/GenericMenu';
-import type { GenericMenuItemProps } from '../../components/GenericMenu/GenericMenuItem';
-import { useHandleMenuAction } from '../../components/GenericMenu/hooks/useHandleMenuAction';
 import UserAvatarWithStatus from './UserAvatarWithStatus';
 import UserAvatarWithStatusUnstable from './UserAvatarWithStatusUnstable';
 import { useUserMenu } from './hooks/useUserMenu';

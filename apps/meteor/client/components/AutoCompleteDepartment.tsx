@@ -42,8 +42,9 @@ const AutoCompleteDepartment = ({
 				haveNone,
 				excludeDepartmentId,
 				showArchived,
+				selectedDepartment: value,
 			}),
-			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId, showArchived],
+			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId, showArchived, value],
 		),
 	);
 
