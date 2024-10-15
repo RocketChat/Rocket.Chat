@@ -4,7 +4,6 @@ import type { UseMutationOptions, UseMutationResult } from '@tanstack/react-quer
 import { useMutation } from '@tanstack/react-query';
 
 import { e2e } from '../../../../app/e2e/client';
-import { dispatchToastMessage } from '../../../lib/toast';
 
 type UseE2EEResetRoomKeyVariables = {
 	roomId: RoomID;
@@ -30,7 +29,7 @@ export const useE2EEResetRoomKey = (
 		try {
 			await resetRoomKey({ rid: roomId, e2eKeyId, e2eKey });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			throw error;
 		}
 	}, options);
 };
