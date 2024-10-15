@@ -4711,6 +4711,8 @@
   "view-l-room": "Ver salas de omnichannel",
   "create-livechat-contact": "Criar contatos do omnichannel",
   "update-livechat-contact": "Atualizar contatos do omnichannel",
+  "view-livechat-contact": "Ver contatos do omnichannel",
+  "view-livechat-contact-history": "Ver histórico do contato do omnichannel",
   "view-l-room_description": "Permissão para ver salas de omnichannel",
   "view-livechat-analytics": "Ver a análise do omnichannel",
   "onboarding.page.awaitingConfirmation.subtitle": "Enviamos um e-mail para {{emailAddress}} com um link de confirmação. Verifique se o código de segurança abaixo coincide com o do e-mail.",
