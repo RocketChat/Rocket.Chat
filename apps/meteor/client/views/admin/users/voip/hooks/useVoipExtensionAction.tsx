@@ -3,19 +3,18 @@ import { useSetModal } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { Action } from '../../../hooks/useActionSpread';
-import AssignExtensionModal from '../voip/AssignExtensionModal';
-import RemoveExtensionModal from '../voip/RemoveExtensionModal';
-import { useVoipExtensionPermission } from '../voip/hooks/useVoipExtensionPermission';
+import type { Action } from '../../../../hooks/useActionSpread';
+import AssignExtensionModal from '../AssignExtensionModal';
+import RemoveExtensionModal from '../RemoveExtensionModal';
 
 type VoipExtensionActionParams = {
 	name: string;
 	username: string;
 	extension?: string;
+	enabled: boolean;
 };
 
-export const useVoipExtensionAction = ({ name, username, extension }: VoipExtensionActionParams): Action | undefined => {
-	const canManageVoipExtensions = useVoipExtensionPermission();
+export const useVoipExtensionAction = ({ name, username, extension, enabled }: VoipExtensionActionParams): Action | undefined => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
@@ -28,7 +27,7 @@ export const useVoipExtensionAction = ({ name, username, extension }: VoipExtens
 		setModal(<AssignExtensionModal defaultUsername={username} onClose={(): void => setModal(null)} />);
 	});
 
-	return canManageVoipExtensions
+	return enabled
 		? {
 				icon: extension ? 'phone-disabled' : 'phone',
 				label: extension ? t('Unassign_extension') : t('Assign_extension'),
