@@ -55,7 +55,9 @@ async function findDepartments(
 	}));
 }
 
-export function findGuest(token: string): Promise<ILivechatVisitor | null> {
+export function findGuest(
+	token: string,
+): Promise<Pick<ILivechatVisitor, 'name' | 'username' | 'token' | 'visitorEmails' | 'department' | 'activity' | 'contactId'> | null> {
 	return LivechatVisitors.getVisitorByToken(token, {
 		projection: {
 			name: 1,
@@ -69,7 +71,13 @@ export function findGuest(token: string): Promise<ILivechatVisitor | null> {
 	});
 }
 
-export function findGuestBySource(token: string, sourceType: OmnichannelSourceType): Promise<ILivechatVisitor | null> {
+export function findGuestBySource(
+	token: string,
+	sourceType: OmnichannelSourceType,
+): Promise<Pick<
+	ILivechatVisitor,
+	'name' | 'username' | 'token' | 'visitorEmails' | 'department' | 'activity' | 'contactId' | 'source'
+> | null> {
 	const projection = {
 		name: 1,
 		username: 1,

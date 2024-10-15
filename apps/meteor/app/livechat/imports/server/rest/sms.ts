@@ -62,10 +62,14 @@ const defineVisitor = async (smsNumber: string, serviceName: string, destination
 		alias: serviceName,
 	};
 
-	const visitor = await LivechatVisitors.findOneVisitorByPhoneAndSource(smsNumber, {
-		'source.type': visitorSource.type,
-		'source.alias': visitorSource.alias,
-	});
+	const visitor = await LivechatVisitors.findOneVisitorByPhoneAndSource(
+		smsNumber,
+		{
+			'source.type': visitorSource.type,
+			'source.alias': visitorSource.alias,
+		},
+		{ projection: { token: 1 } },
+	);
 	visitorSource.destination = destination;
 	let data: { token: string; source: IOmnichannelSource; department?: string } = {
 		token: visitor?.token || Random.id(),

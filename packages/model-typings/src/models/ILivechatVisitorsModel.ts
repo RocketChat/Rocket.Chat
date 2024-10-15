@@ -51,11 +51,19 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null>;
 
-	findOneGuestByEmailAddressAndSource(emailAddress: string, sourceFilter: Filter<ILivechatVisitor>): Promise<ILivechatVisitor | null>;
+	findOneGuestByEmailAddressAndSource(
+		emailAddress: string,
+		sourceFilter: Filter<ILivechatVisitor>,
+		options?: FindOptions<ILivechatVisitor>,
+	): Promise<ILivechatVisitor | null>;
 
 	findOneVisitorByPhone(phone: string): Promise<ILivechatVisitor | null>;
 
-	findOneVisitorByPhoneAndSource(phone: string, sourceFilter: Filter<ILivechatVisitor>): Promise<ILivechatVisitor | null>;
+	findOneVisitorByPhoneAndSource(
+		phone: string,
+		sourceFilter: Filter<ILivechatVisitor>,
+		options?: FindOptions<ILivechatVisitor>,
+	): Promise<ILivechatVisitor | null>;
 
 	removeDepartmentById(_id: string): Promise<Document | UpdateResult>;
 
