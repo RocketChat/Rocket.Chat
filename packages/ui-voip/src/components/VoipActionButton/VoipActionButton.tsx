@@ -1,8 +1,8 @@
 import { Icon, IconButton } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
-import type { ComponentProps } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
-type ActionButtonProps = Pick<ComponentProps<typeof IconButton>, 'className' | 'disabled' | 'pressed' | 'danger' | 'success'> & {
+type ActionButtonProps = Pick<ComponentPropsWithoutRef<typeof IconButton>, 'className' | 'disabled' | 'pressed' | 'danger' | 'success'> & {
 	label: string;
 	icon: Keys;
 	onClick?: () => void;

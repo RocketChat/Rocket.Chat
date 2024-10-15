@@ -1,5 +1,5 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
-import type { Story } from '@storybook/react';
+import type { StoryFn } from '@storybook/react';
 import React, { useState } from 'react';
 
 import type { CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
@@ -55,10 +55,10 @@ const testCategories: CategoryDropDownListProps['categories'] = [
 	},
 ];
 
-export const Anchor: Story = () => (
+export const Anchor: StoryFn = () => (
 	<CategoryDropDownAnchor selectedCategoriesCount={testCategories.flatMap((group) => group.items).length} />
 );
-export const List: Story = () => {
+export const List: StoryFn = () => {
 	const [data, setData] = useState(() => testCategories);
 
 	const onSelected = useCategoryToggle(setData);
@@ -66,7 +66,7 @@ export const List: Story = () => {
 	return <CategoryDropDownList categories={data} onSelected={onSelected} />;
 };
 
-export const Default: Story = () => {
+export const Default: StoryFn = () => {
 	const [, selectedCategories, categoryTagList] = useCategories();
 
 	const [data, setData] = useState(testCategories);
