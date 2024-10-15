@@ -33,4 +33,5 @@ export interface ILivechatContact extends IRocketChatRecord {
 		_id: string;
 		ts: Date;
 	};
+	importIds?: string[];
 }
