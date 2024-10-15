@@ -494,72 +494,12 @@ async function mergeContacts(contactId: string, channel: ILivechatContactChannel
 		return originalContact;
 	}
 
-	const conflictingFields: ILivechatContactConflictingField[] = [];
-	const visitorsIds = new Set<string>();
-	const channelsToInsert = new Map<string, ILivechatContactChannel>();
-	const emails = new Set<string>();
-	const phones = new Set<string>();
-
-	originalContact.emails?.forEach((email) => emails.add(email));
-	originalContact.phones?.forEach((phone) => phones.add(phone));
-
-	for (const similarContact of similarContacts) {
-		if (similarContact.hasConflict) {
-			conflictingFields.push(...(similarContact.conflictingFields as ILivechatContactConflictingField[]));
-		}
-
-		if (similarContact.name !== originalContact.name) {
-			conflictingFields.push({
-				field: 'name',
-				oldValue: originalContact.name,
-				newValue: similarContact.name,
-			});
-		}
-
-		if (similarContact.contactManager && similarContact.contactManager !== originalContact.contactManager) {
-			conflictingFields.push({
-				field: 'contactManager',
-				oldValue: originalContact.contactManager,
-				newValue: similarContact.contactManager,
-			});
-		}
-
-		for (const customField of Object.keys(similarContact.customFields || {})) {
-			if (similarContact.customFields?.[customField] !== originalContact.customFields?.[customField]) {
-				conflictingFields.push({
-					field: customField,
-					oldValue: originalContact.customFields?.[customField] as string | undefined,
-					newValue: similarContact.customFields?.[customField] as string | undefined,
-				});
-			}
-		}
-
-		similarContact.emails?.forEach((email) => emails.add(email));
-		similarContact.phones?.forEach((phone) => phones.add(phone));
-
-		similarContact.channels?.forEach((channel: ILivechatContactChannel) => {
-			visitorsIds.add(channel.visitorId);
-			channelsToInsert.set(channel.visitorId + channel.name, channel);
-		});
+	for await (const similarContact of similarContacts) {
+		await ContactMerger.mergeContact(originalContact, similarContact);
 	}
 
-	originalContact.channels?.forEach((channel: ILivechatContactChannel) => {
-		channelsToInsert.set(channel.visitorId + channel.name, channel);
-	});
-
-	const updatedContact = await LivechatContacts.updateContact(contactId, {
-		emails: Array.from(emails),
-		phones: Array.from(phones),
-		channels: Array.from(channelsToInsert.values()),
-		conflictingFields,
-		hasConflict: conflictingFields.length > 0,
-	});
-
-	await LivechatVisitors.updateMany({ _id: { $in: Array.from(visitorsIds) } }, { $set: { contactId } });
-
 	await LivechatContacts.deleteMany({ _id: { $in: similarContacts.map((c) => c._id) } });
-
-	return updatedContact;
+	return LivechatContacts.findOneById(contactId);
 }
 
 export async function verifyContactChannel(params: VerifyContactChannelParams): Promise<ILivechatContact> {
