@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
-import { usePermission, useRouter, useSetModal, useSetting } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,7 +7,8 @@ import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
 import SeatsCapUsage from './SeatsCapUsage';
 import type { SeatCapProps } from './useSeatsCap';
-import AssignExtensionModal from './voip/AssignExtensionModal';
+import AssignExtensionButton from './voip/AssignExtensionButton';
+import { useVoipExtensionPermission } from './voip/hooks/useVoipExtensionPermission';
 
 type UsersPageHeaderContentProps = {
 	isSeatsCapExceeded: boolean;
@@ -17,10 +18,9 @@ type UsersPageHeaderContentProps = {
 const UsersPageHeaderContent = ({ isSeatsCapExceeded, seatsCap }: UsersPageHeaderContentProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const setModal = useSetModal();
 	const canCreateUser = usePermission('create-user');
 	const canBulkCreateUser = usePermission('bulk-register-user');
-	const canRegisterExtension = useSetting('VoIP_TeamCollab_Enabled');
+	const canManageVoipExtension = useVoipExtensionPermission();
 
 	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'user-page', action: 'buy_more' });
 	const openExternalLink = useExternalLink();
@@ -41,11 +41,7 @@ const UsersPageHeaderContent = ({ isSeatsCapExceeded, seatsCap }: UsersPageHeade
 				</Margins>
 			)}
 			<ButtonGroup>
-				{canRegisterExtension && (
-					<Button icon='phone' onClick={(): void => setModal(<AssignExtensionModal onClose={(): void => setModal(null)} />)}>
-						{t('Assign_extension')}
-					</Button>
-				)}
+				{canManageVoipExtension && <AssignExtensionButton />}
 
 				{canBulkCreateUser && (
 					<Button icon='mail' onClick={handleInviteButtonClick} disabled={isSeatsCapExceeded}>

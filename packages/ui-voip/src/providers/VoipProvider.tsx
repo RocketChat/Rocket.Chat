@@ -1,6 +1,12 @@
 import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { Device } from '@rocket.chat/ui-contexts';
-import { useSetInputMediaDevice, useSetOutputMediaDevice, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import {
+	usePermission,
+	useSetInputMediaDevice,
+	useSetOutputMediaDevice,
+	useSetting,
+	useToastMessageDispatch,
+} from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
@@ -15,16 +21,22 @@ import { useVoipSounds } from '../hooks/useVoipSounds';
 
 const VoipProvider = ({ children }: { children: ReactNode }) => {
 	// Settings
-	const isVoipEnabled = useSetting<boolean>('VoIP_TeamCollab_Enabled') || false;
+	const isVoipSettingEnabled = useSetting<boolean>('VoIP_TeamCollab_Enabled') || false;
+	const canViewVoipRegistrationInfo = usePermission('view-user-voip-extension');
+	const isVoipEnabled = isVoipSettingEnabled && canViewVoipRegistrationInfo;
+
 	const [isLocalRegistered, setStorageRegistered] = useLocalStorage('voip-registered', true);
 
 	// Hooks
+	const { t } = useTranslation();
 	const voipSounds = useVoipSounds();
-	const { voipClient, error } = useVoipClient({ autoRegister: isLocalRegistered });
+	const { voipClient, error } = useVoipClient({
+		enabled: isVoipEnabled,
+		autoRegister: isLocalRegistered,
+	});
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { t } = useTranslation();
 
 	// Refs
 	const remoteAudioMediaRef = useRef<HTMLAudioElement>(null);
