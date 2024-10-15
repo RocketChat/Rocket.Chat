@@ -11,7 +11,7 @@ import type { App } from '../views/marketplace/types';
 import type { IAppExternalURL, ICategory } from './@types/IOrchestrator';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 
-const isApiError = (e: unknown): e is { error: string } =>
+const isErrorObject = (e: unknown): e is { error: string } =>
 	typeof e === 'object' && e !== null && 'error' in e && typeof e.error === 'string';
 
 class AppClientOrchestrator {
@@ -61,8 +61,11 @@ class AppClientOrchestrator {
 		try {
 			result = await sdk.rest.get('/apps/marketplace', { isAdminUser: isAdminUser ? isAdminUser.toString() : 'false' });
 		} catch (e) {
-			if (isApiError(e)) {
+			if (isErrorObject(e)) {
 				return { apps: [], error: e.error };
+			}
+			if (typeof e === 'string') {
+				return { apps: [], error: e };
 			}
 		}
 

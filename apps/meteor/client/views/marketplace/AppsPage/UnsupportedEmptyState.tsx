@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import UpdateRocketChatBtn from '../components/UpdateRocketChatBtn';
+import UpdateRocketChatButton from '../components/UpdateRocketChatButton';
 
 const UnsupportedEmptyState = (): ReactElement => {
 	const isAdmin = usePermission('manage-apps');
@@ -23,7 +23,7 @@ const UnsupportedEmptyState = (): ReactElement => {
 					<Button secondary is='a' href='https://go.rocket.chat/i/support-prerequisites ' external>
 						{t('Learn_more')}
 					</Button>
-					{isAdmin && <UpdateRocketChatBtn />}
+					{isAdmin && <UpdateRocketChatButton />}
 				</StatesActions>
 			</States>
 		</Box>

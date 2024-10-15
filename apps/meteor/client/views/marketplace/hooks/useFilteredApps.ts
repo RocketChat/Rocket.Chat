@@ -40,7 +40,12 @@ export const useFilteredApps = ({
 	status: string;
 	context?: string;
 }): AsyncState<
-	{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult & { allApps: App[] } & { totalAppsLength: number }
+	PaginatedResult<{
+		items: App[];
+		shouldShowSearchText: boolean;
+		allApps: App[];
+		totalAppsLength: number;
+	}>
 > => {
 	const value = useMemo(() => {
 		if (appsData.value === undefined) {

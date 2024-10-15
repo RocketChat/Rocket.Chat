@@ -2,7 +2,7 @@ import { Button } from '@rocket.chat/fuselage';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-const UpdateRocketChatBtn = () => {
+const UpdateRocketChatButton = () => {
 	const { t } = useTranslation();
 
 	return (
@@ -12,4 +12,4 @@ const UpdateRocketChatBtn = () => {
 	);
 };
 
-export default UpdateRocketChatBtn;
+export default UpdateRocketChatButton;

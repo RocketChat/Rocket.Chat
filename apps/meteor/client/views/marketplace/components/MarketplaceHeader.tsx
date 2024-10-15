@@ -8,7 +8,7 @@ import { PageHeader } from '../../../components/Page';
 import UnlimitedAppsUpsellModal from '../UnlimitedAppsUpsellModal';
 import { useAppsCountQuery } from '../hooks/useAppsCountQuery';
 import EnabledAppsCount from './EnabledAppsCount';
-import UpdateRocketChatBtn from './UpdateRocketChatBtn';
+import UpdateRocketChatButton from './UpdateRocketChatButton';
 
 const MarketplaceHeader = ({ title, unsupportedVersion }: { title: string; unsupportedVersion: boolean }): ReactElement | null => {
 	const t = useTranslation();
@@ -46,7 +46,7 @@ const MarketplaceHeader = ({ title, unsupportedVersion }: { title: string; unsup
 
 				{isAdmin && context === 'private' && <Button onClick={handleUploadButtonClick}>{t('Upload_private_app')}</Button>}
 
-				{unsupportedVersion && context !== 'private' && <UpdateRocketChatBtn />}
+				{unsupportedVersion && context !== 'private' && <UpdateRocketChatButton />}
 			</ButtonGroup>
 		</PageHeader>
 	);
