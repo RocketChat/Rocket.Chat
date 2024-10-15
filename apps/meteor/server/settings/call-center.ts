@@ -1,7 +1,7 @@
 import { settingsRegistry } from '../../app/settings/server';
 
 export const createCallCenterSettings = () =>
-	settingsRegistry.addGroup('Call_Center', async function () {
+	settingsRegistry.addGroup('VoIP_Omnichannel', async function () {
 		// TODO: Check with the backend team if an i18nPlaceholder is possible
 		await this.with({ tab: 'Settings' }, async function () {
 			await this.section('General_Settings', async function () {

@@ -80,14 +80,6 @@ export const Template = Object.assign(
 	},
 );
 
-export const Blaze = {
-	Template,
-	registerHelper: () => {},
-	renderWithData: () => {},
-};
-
-window.Blaze = Blaze;
-
 export const check = () => {};
 
 export const FlowRouter = {
