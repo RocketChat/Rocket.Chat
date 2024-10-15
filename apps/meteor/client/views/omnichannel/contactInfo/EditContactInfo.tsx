@@ -71,7 +71,7 @@ const EditContactInfo = ({ id, contactData, onClose, onCancel }: ContactNewEditP
 
 	const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
-	const getContactBy = useEndpoint('GET', '/v1/omnichannel/contact.search');
+	const getContact = useEndpoint('GET', '/v1/omnichannel/contacts.get');
 	const createContact = useEndpoint('POST', '/v1/omnichannel/contacts');
 	const updateContact = useEndpoint('POST', '/v1/omnichannel/contacts.update');
 
@@ -85,11 +85,11 @@ const EditContactInfo = ({ id, contactData, onClose, onCancel }: ContactNewEditP
 	const {
 		formState: { errors, isSubmitting },
 		control,
+		watch,
 		handleSubmit,
-		setError,
 	} = useForm<ContactFormData>({
-		mode: 'onChange',
-		reValidateMode: 'onChange',
+		mode: 'onBlur',
+		reValidateMode: 'onBlur',
 		defaultValues: initialValue,
 	});
 
@@ -111,39 +111,29 @@ const EditContactInfo = ({ id, contactData, onClose, onCancel }: ContactNewEditP
 		name: 'phones',
 	});
 
-	const validateEmailFormat = (email: string): boolean | string => {
-		if (!email || email === initialValue.email) {
-			return true;
-		}
+	const { emails, phones } = watch();
 
-		if (!validateEmail(email)) {
+	const validateEmailFormat = async (emailValue: string) => {
+		const currentEmails = emails.map(({ address }) => address);
+		const isDuplicated = currentEmails.filter((email) => email === emailValue).length > 1;
+
+		if (!validateEmail(emailValue)) {
 			return t('error-invalid-email-address');
 		}
 
-		return true;
+		const { contact } = await getContact({ email: emailValue });
+		return (!contact || contact._id === id) && !isDuplicated ? true : t('Email_already_exists');
 	};
 
-	const validateContactField = async (name: 'phone' | 'email', value: string, optional = true) => {
-		if ((optional && !value) || value === initialValue[name]) {
-			return true;
-		}
+	const validatePhone = async (phoneValue: string) => {
+		const currentPhones = phones.map(({ phoneNumber }) => phoneNumber);
+		const isDuplicated = currentPhones.filter((phone) => phone === phoneValue).length > 1;
 
-		const query = { [name]: value } as Record<'phone' | 'email', string>;
-		const { contact } = await getContactBy(query);
-		return !contact || contact._id === id;
+		const { contact } = await getContact({ phone: phoneValue });
+		return (!contact || contact._id === id) && !isDuplicated ? true : t('Phone_already_exists');
 	};
 
 	const validateName = (v: string): string | boolean => (!v.trim() ? t('Required_field', { field: t('Name') }) : true);
-
-	const validateAsync = async ({ phone = '', email = '' } = {}) => {
-		const isEmailValid = await validateContactField('email', email);
-		const isPhoneValid = await validateContactField('phone', phone);
-
-		!isEmailValid && setError('email', { message: t('Email_already_exists') });
-		!isPhoneValid && setError('phone', { message: t('Phone_already_exists') });
-
-		return isEmailValid && isPhoneValid;
-	};
 
 	const handleSave = async (data: ContactFormData): Promise<void> => {
 		const { name, phones, emails, customFields, contactManager } = data;
@@ -212,7 +202,10 @@ const EditContactInfo = ({ id, contactData, onClose, onCancel }: ContactNewEditP
 								<Controller
 									name={`emails.${index}.address`}
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Email')), validate: validateEmailFormat }}
+									rules={{
+										required: t('Required_field', { field: t('Email') }),
+										validate: validateEmailFormat,
+									}}
 									render={({ field }) => <TextInput {...field} error={errors.emails?.[index]?.address?.message} />}
 								/>
 								<IconButton small onClick={() => removeEmail(index)} mis={8} icon='trash' />
@@ -232,7 +225,10 @@ const EditContactInfo = ({ id, contactData, onClose, onCancel }: ContactNewEditP
 								<Controller
 									name={`phones.${index}.phoneNumber`}
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Phone')) }}
+									rules={{
+										required: t('Required_field', { field: t('Phone') }),
+										validate: validatePhone,
+									}}
 									render={({ field }) => <TextInput {...field} error={errors.phones?.[index]?.message} />}
 								/>
 								<IconButton small onClick={() => removePhone(index)} mis={8} icon='trash' />

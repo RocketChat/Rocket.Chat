@@ -1,14 +1,12 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Box, IconButton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-// import type { RouteName } from '@rocket.chat/ui-contexts';
 import { useTranslation, useEndpoint, usePermission, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../components/Contextualbar';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-// import { FormSkeleton } from '../directory/components/FormSkeleton';
 import { useContactRoute } from '../../hooks/useContactRoute';
 import ContactInfoChannels from '../tabs/ContactInfoChannels';
 import ContactInfoDetails from '../tabs/ContactInfoDetails';

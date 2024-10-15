@@ -5,7 +5,6 @@ import React from 'react';
 
 import { ContextualbarSkeleton } from '../../../../components/Contextualbar';
 import ContactInfo from './ContactInfo';
-// import { FormSkeleton } from '../directory/components/FormSkeleton';
 
 type ContactInfoWithDataProps = {
 	id: string;
