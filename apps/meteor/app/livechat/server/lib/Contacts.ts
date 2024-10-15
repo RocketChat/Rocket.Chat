@@ -317,8 +317,8 @@ export function isSingleContactEnabled(): boolean {
 export async function mapVisitorToContact(visitor: ILivechatVisitor, source: IOmnichannelSource): Promise<CreateContactParams> {
 	return {
 		name: visitor.name || visitor.username,
-		emails: visitor.visitorEmails,
-		phones: visitor.phone || undefined,
+		emails: visitor.visitorEmails?.map(({ address }) => address),
+		phones: visitor.phone?.map(({ phoneNumber }) => phoneNumber),
 		unknown: true,
 		channels: [
 			{
