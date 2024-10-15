@@ -1794,7 +1794,6 @@
   "Enabled": "Aktiviert",
   "Encrypted": "Verschlüsselt",
   "Encrypted_channel_Description": "Ende-zu-Ende verschlüsselter Kanal. Die Suche funktioniert nicht mit verschlüsselten Channels. In Benachrichtigungen wird der Inhalt der Nachricht möglicherweise nicht angezeigt.",
-  "Encrypted_key_title": "Klicken Sie hier, um die Ende-zu-Ende-Verschlüsselung für diesen Kanal zu deaktivieren (e2ee-Berechtigung erforderlich)",
   "Encrypted_message": "Verschlüsselte Nachricht",
   "Encrypted_setting_changed_successfully": "Die Verschlüsselungseinstellungen wurden gespeichert ",
   "Encrypted_not_available": "Für öffentliche Kanäle nicht verfügbar",
