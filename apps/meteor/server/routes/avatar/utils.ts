@@ -33,8 +33,14 @@ export const serveAvatarFile = (file: IUpload, req: IIncomingMessage, res: Serve
 	if (file.uploadedAt) {
 		res.setHeader('Last-Modified', file.uploadedAt?.toUTCString());
 	}
-	res.setHeader('Content-Type', file.type || '');
-	res.setHeader('Content-Length', file.size || 0);
+
+	if (file.type) {
+		res.setHeader('Content-Type', file.type);
+	}
+
+	if (file.size) {
+		res.setHeader('Content-Length', file.size);
+	}
 
 	return FileUpload.get(file, req, res, next);
 };
