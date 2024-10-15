@@ -3486,15 +3486,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/rangeset@npm:^0.19.5":
-  version: 0.19.9
-  resolution: "@codemirror/rangeset@npm:0.19.9"
-  dependencies:
-    "@codemirror/state": "npm:^0.19.0"
-  checksum: 10/27eb8fd7d1233000c24a08b9a6933d76e3e6c43de995a4c18b7fcf8ff06375f3a3f55d610e4f1d4dc2fbb2a2502a49fb92a0e5293cbffdd150d3e3d77be8b42f
-  languageName: node
-  linkType: hard
-
 "@codemirror/search@npm:^6.0.0":
   version: 6.4.0
   resolution: "@codemirror/search@npm:6.4.0"
@@ -3506,49 +3497,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/state@npm:^0.19.0, @codemirror/state@npm:^0.19.3":
-  version: 0.19.9
-  resolution: "@codemirror/state@npm:0.19.9"
-  dependencies:
-    "@codemirror/text": "npm:^0.19.0"
-  checksum: 10/e8aa48391719ecadc37f404b7bf5182420f7f45bcf7e63fb23df0f90b2accc03ab7871db5c6939492b1ec759f9c9fa908d031aa219851cde9cc5c831d77a08e7
-  languageName: node
-  linkType: hard
-
 "@codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.1.4, @codemirror/state@npm:^6.2.0":
   version: 6.2.1
   resolution: "@codemirror/state@npm:6.2.1"
   checksum: 10/c5fd6f214b78852f805b8410074cfcbb2284ed8cc187fd91b02c2fecba65594db413e9be0fd10a7156bff357285e6ed362fb2a9f2157edd16d9063cfd0cc464d
-  languageName: node
-  linkType: hard
-
-"@codemirror/text@npm:^0.19.0":
-  version: 0.19.6
-  resolution: "@codemirror/text@npm:0.19.6"
-  checksum: 10/f2c206204b9531bf7dc8315fe72a9a0b6d4f2b7063abcb45585297a83a1b9766f7028eb57782f578c85e2e00393eb51ca82eea3db24dc2076f99c5ff2a061438
-  languageName: node
-  linkType: hard
-
-"@codemirror/tooltip@npm:^0.19.16":
-  version: 0.19.16
-  resolution: "@codemirror/tooltip@npm:0.19.16"
-  dependencies:
-    "@codemirror/state": "npm:^0.19.0"
-    "@codemirror/view": "npm:^0.19.0"
-  checksum: 10/2a72759e0593dd82cc8b08d40f2fa2cf35a16cb1eaace6a263b14e189a9e6101f69be3cd614e90072007f4fe21cd1f40fa440ee5b7d7821c42bdbefdffc32e0c
-  languageName: node
-  linkType: hard
-
-"@codemirror/view@npm:^0.19.0":
-  version: 0.19.48
-  resolution: "@codemirror/view@npm:0.19.48"
-  dependencies:
-    "@codemirror/rangeset": "npm:^0.19.5"
-    "@codemirror/state": "npm:^0.19.3"
-    "@codemirror/text": "npm:^0.19.0"
-    style-mod: "npm:^4.0.0"
-    w3c-keyname: "npm:^2.2.4"
-  checksum: 10/4e1fef378a1aed96cc3120c1f5b8d170d570bbd570e9bfab4591b0cc13377c7ab7e8210c77ac9d5a5f37c705ad4381ee474a415d9f62b1ebe4b1559e8bbda6de
   languageName: node
   linkType: hard
 
@@ -10223,7 +10175,6 @@ __metadata:
   dependencies:
     "@codemirror/lang-javascript": "npm:^6.1.9"
     "@codemirror/lang-json": "npm:^6.0.1"
-    "@codemirror/tooltip": "npm:^0.19.16"
     "@lezer/highlight": "npm:^1.1.6"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
