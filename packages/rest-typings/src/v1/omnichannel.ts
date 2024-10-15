@@ -1419,7 +1419,7 @@ const POSTOmnichannelUnblockContactSchema = {
 		},
 		visitorId: {
 			type: 'string',
-		}
+		},
 	},
 	required: ['contactId'],
 	additionalProperties: false,
