@@ -5626,6 +5626,7 @@
   "Update_every": "Update every",
   "Update_LatestAvailableVersion": "Update Latest Available Version",
   "Update_to_version": "Update to {{version}}",
+  "Update_your_RocketChat": "Update your Rocket.Chat",
   "Update_to_access_marketplace": "Update to access marketplace",
   "Update_to_access_marketplace_description": "This workspace cannot access the marketplace because it's running an unsupported version of Rocket.Chat.",
   "Updated_at": "Updated at",
