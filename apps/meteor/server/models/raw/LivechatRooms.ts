@@ -54,9 +54,10 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { servedBy: 1 }, sparse: true },
 			{ key: { 'v.token': 1, 'email.thread': 1 }, sparse: true },
 			{ key: { 'v._id': 1 }, sparse: true },
-			{ key: { 't': 1, 'fname': 1, 'servedBy._id': 1, 'onHold': 1 } }, // created with username
-			{ key: { 't': 1, 'ts': -1, 'servedBy._id': 1, 'onHold': 1 } },
-			{ key: { 't': 1, 'closedAt': -1, 'servedBy._id': 1, 'onHold': 1 } },
+			// { key: { 't': 1, 'fname': 1, 'servedBy._id': 1, 'onHold': 1 } }, // created with username
+			// { key: { 't': 1, 'ts': -1, 'servedBy._id': 1, 'onHold': 1 } },
+			// { key: { 't': 1, 'closedAt': -1, 'servedBy._id': 1, 'onHold': 1 } },
+			{ key: { 'onHold': 1, 'ts': -1, 'servedBy._id': 1, 't': 1 } },
 			{ key: { t: 1, departmentId: 1, closedAt: 1 }, partialFilterExpression: { closedAt: { $exists: true } } },
 			{ key: { source: 1 }, sparse: true },
 			{ key: { departmentAncestors: 1 }, sparse: true },
