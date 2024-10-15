@@ -391,7 +391,7 @@
 		"nats": "^2.6.1",
 		"node-abort-controller": "^3.1.1",
 		"node-dogstatsd": "^0.0.7",
-		"node-fetch": "2.3.0",
+		"node-fetch": "2.7.0",
 		"node-gcm": "1.0.5",
 		"node-rsa": "^1.1.1",
 		"nodemailer": "^6.7.8",

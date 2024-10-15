@@ -9238,7 +9238,7 @@ __metadata:
     nats: "npm:^2.6.1"
     node-abort-controller: "npm:^3.1.1"
     node-dogstatsd: "npm:^0.0.7"
-    node-fetch: "npm:2.3.0"
+    node-fetch: "npm:2.7.0"
     node-gcm: "npm:1.0.5"
     node-rsa: "npm:^1.1.1"
     nodemailer: "npm:^6.7.8"
@@ -9778,7 +9778,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     http-proxy-agent: "npm:^5.0.0"
     https-proxy-agent: "npm:^5.0.1"
-    node-fetch: "npm:2.3.0"
+    node-fetch: "npm:2.7.0"
     proxy-from-env: "npm:^1.1.0"
     typescript: "npm:~5.5.4"
   languageName: unknown
@@ -28836,13 +28836,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:2.3.0":
-  version: 2.3.0
-  resolution: "node-fetch@npm:2.3.0"
-  checksum: 10/340a96e1378844d9332f08c4986696ae00b9f1bf7b3ac1d76e526a6a39cf3ca69f2a6bda67ccbe719fd035da0156665f801ecaed108e870bf3e4069d62e065bd
-  languageName: node
-  linkType: hard
-
 "node-fetch@npm:2.6.7":
   version: 2.6.7
   resolution: "node-fetch@npm:2.6.7"
@@ -28857,7 +28850,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.0, node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.11, node-fetch@npm:^2.6.7, node-fetch@npm:^2.7.0":
+"node-fetch@npm:2.7.0, node-fetch@npm:^2.6.0, node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.11, node-fetch@npm:^2.6.7, node-fetch@npm:^2.7.0":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:
