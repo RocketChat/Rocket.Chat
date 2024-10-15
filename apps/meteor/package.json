@@ -66,8 +66,6 @@
 		"@axe-core/playwright": "^4.7.3",
 		"@babel/core": "~7.22.20",
 		"@babel/eslint-parser": "~7.23.10",
-		"@babel/plugin-transform-nullish-coalescing-operator": "~7.25.8",
-		"@babel/plugin-transform-optional-chaining": "~7.25.8",
 		"@babel/preset-env": "~7.22.20",
 		"@babel/preset-react": "~7.22.15",
 		"@babel/register": "~7.22.15",
