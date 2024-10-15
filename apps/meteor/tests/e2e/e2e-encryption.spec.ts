@@ -133,13 +133,11 @@ test.describe.serial('e2e-encryption', () => {
 
 	test.beforeAll(async ({ api }) => {
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true })).status()).toBe(200);
-		expect((await api.post('/settings/E2E_Enabled_Mentions', { value: true })).status()).toBe(200);
 	});
 
 	test.afterAll(async ({ api }) => {
 		expect((await api.post('/settings/E2E_Enable', { value: false })).status()).toBe(200);
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
-		expect((await api.post('/settings/E2E_Enabled_Mentions', { value: false })).status()).toBe(200);
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
