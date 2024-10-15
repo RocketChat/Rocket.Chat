@@ -9212,7 +9212,7 @@ __metadata:
     jschardet: "npm:^3.0.0"
     jsdom: "npm:^16.7.0"
     jsdom-global: "npm:^3.0.2"
-    jsrsasign: "npm:^10.5.24"
+    jsrsasign: "npm:^11.1.0"
     juice: "npm:^8.0.0"
     katex: "npm:~0.16.11"
     ldap-escape: "npm:^2.0.6"
@@ -26399,10 +26399,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsrsasign@npm:^10.5.24":
-  version: 10.5.25
-  resolution: "jsrsasign@npm:10.5.25"
-  checksum: 10/c3931ad92550bf8cd095305409df73d603d1667d0bd0e5a92dbcba4083f77cf34fb57fc44fd95fa23762613ade000fca697c9a2e6f365f37663a5028b809ea0f
+"jsrsasign@npm:^11.1.0":
+  version: 11.1.0
+  resolution: "jsrsasign@npm:11.1.0"
+  checksum: 10/fb46eb8d08634be64a20629da500925c23aea1d6a802e3a528eb3ac647bd3fa1b75070a4bf3425cb3492cb813b3a8b88d097a26225ff78c5ebec28791ddf9016
   languageName: node
   linkType: hard
 
