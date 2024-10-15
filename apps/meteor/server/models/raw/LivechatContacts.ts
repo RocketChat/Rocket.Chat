@@ -108,7 +108,10 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		const query = {
 			$and: [
 				{
-					$or: [...emails?.map((email) => ({ emails: email })), ...phoneNumbers?.map((phone) => ({ phones: phone }))],
+					$or: [
+						...emails?.map((email) => ({ 'emails.address': email })),
+						...phoneNumbers?.map((phone) => ({ 'phones.phoneNumber': phone })),
+					],
 				},
 				{
 					$or: [
