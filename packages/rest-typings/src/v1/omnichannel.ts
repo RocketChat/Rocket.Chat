@@ -1315,17 +1315,41 @@ const POSTUpdateOmnichannelContactsSchema = {
 
 export const isPOSTUpdateOmnichannelContactsProps = ajv.compile<POSTUpdateOmnichannelContactsProps>(POSTUpdateOmnichannelContactsSchema);
 
-type GETOmnichannelContactsProps = { contactId: string };
+type GETOmnichannelContactsProps = { contactId?: string; email?: string; phone?: string };
 
 const GETOmnichannelContactsSchema = {
-	type: 'object',
-	properties: {
-		contactId: {
-			type: 'string',
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				email: {
+					type: 'string',
+				},
+			},
+			required: ['email'],
+			additionalProperties: false,
 		},
-	},
-	required: ['contactId'],
-	additionalProperties: false,
+		{
+			type: 'object',
+			properties: {
+				phone: {
+					type: 'string',
+				},
+			},
+			required: ['phone'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				contactId: {
+					type: 'string',
+				},
+			},
+			required: ['contactId'],
+			additionalProperties: false,
+		},
+	],
 };
 
 export const isGETOmnichannelContactsProps = ajv.compile<GETOmnichannelContactsProps>(GETOmnichannelContactsSchema);
@@ -3554,7 +3578,7 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/visitors.info': {
 		GET: (params: LivechatVisitorsInfo) => {
-			visitor: ILivechatVisitor;
+			visitor: ILivechatVisitor & { contactId?: string };
 		};
 	};
 	'/v1/livechat/room.onHold': {
@@ -3734,7 +3758,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/visitor/:token': {
-		GET: (params?: LivechatVisitorTokenGet) => { visitor: ILivechatVisitor };
+		GET: (params?: LivechatVisitorTokenGet) => { visitor: ILivechatVisitor & { contactId?: string } };
 		DELETE: (params: LivechatVisitorTokenDelete) => {
 			visitor: { _id: string; ts: string };
 		};
