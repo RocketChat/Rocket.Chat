@@ -19,7 +19,6 @@ describe('with private apps enabled', () => {
 					privateApps: asyncState.resolved({ apps: [] }),
 					reload: () => Promise.resolve(),
 					orchestrator: undefined,
-					privateAppsEnabled: true,
 				}}
 			>
 				{children}
