@@ -1,5 +1,5 @@
 import type { RoomType } from '@rocket.chat/core-typings';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import { Contextualbar } from '../../../../../components/Contextualbar';
@@ -16,7 +16,7 @@ export default {
 	args: {
 		icon: 'lock',
 	},
-} as ComponentMeta<typeof RoomInfo>;
+} satisfies Meta<typeof RoomInfo>;
 
 const roomArgs = {
 	_id: 'myRoom',
@@ -39,7 +39,7 @@ const roomArgs = {
 		'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit libero',
 };
 
-const Template: ComponentStory<typeof RoomInfo> = (args) => <RoomInfo {...args} />;
+const Template: StoryFn<typeof RoomInfo> = (args) => <RoomInfo {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {

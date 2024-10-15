@@ -1,19 +1,29 @@
-import type { StorybookConfig } from '@storybook/core-common';
+import { dirname, join } from 'path';
+
+import type { StorybookConfig } from '@storybook/react-webpack5';
 
 export default {
   stories: ['../src/**/*.stories.tsx', '../src/**/stories.tsx'],
+
   addons: [
-    '@storybook/addon-essentials',
-    'storybook-dark-mode',
-    {
-      name: '@newhighsco/storybook-addon-transpile-modules',
-      options: {
-        transpileModules: ['date-fns', 'typia', 'react-i18next'],
-      },
-    },
+    getAbsolutePath('@storybook/addon-essentials'),
+    getAbsolutePath('storybook-dark-mode'),
+    getAbsolutePath('@storybook/addon-webpack5-compiler-babel'),
+    getAbsolutePath('@storybook/addon-styling-webpack'),
   ],
-  features: {
-    postcss: false,
+
+  framework: {
+    name: getAbsolutePath('@storybook/react-webpack5'),
+    options: {},
   },
-  framework: '@storybook/react',
+
+  typescript: {
+    reactDocgen: 'react-docgen',
+  },
+
+  docs: {},
 } satisfies StorybookConfig;
+
+function getAbsolutePath(value: string): any {
+  return dirname(require.resolve(join(value, 'package.json')));
+}

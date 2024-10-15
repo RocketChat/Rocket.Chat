@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Avatar } from '@rocket.chat/fuselage';
 import { SettingsContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta } from '@storybook/react';
+import type { Meta } from '@storybook/react';
 import { ComponentProps } from 'react';
 
 import {
@@ -68,7 +68,7 @@ export default {
 			</SettingsContext.Provider>
 		),
 	],
-} as ComponentMeta<typeof Header>;
+} satisfies Meta<typeof Header>;
 
 const room: IRoom = {
 	t: 'c',

@@ -1,6 +1,6 @@
 import { BlockContext } from '@rocket.chat/ui-kit';
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import ButtonElement from '.';
@@ -42,5 +42,5 @@ export default {
 	},
 } as Meta<ComponentProps<typeof ButtonElement>>;
 
-export const Default: Story<ComponentProps<typeof ButtonElement>> = (args) => <ButtonElement {...args} parser={parser} />;
+export const Default: StoryFn<ComponentProps<typeof ButtonElement>> = (args) => <ButtonElement {...args} parser={parser} />;
 Default.storyName = 'default';
