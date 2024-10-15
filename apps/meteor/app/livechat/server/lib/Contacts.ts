@@ -485,7 +485,7 @@ async function getAllowedCustomFields(): Promise<Pick<ILivechatCustomField, '_id
 	).toArray();
 }
 
-async function mergeContacts(contactId: string, channel: ILivechatContactChannel): Promise<ILivechatContact> {
+export async function mergeContacts(contactId: string, channel: ILivechatContactChannel): Promise<ILivechatContact> {
 	const originalContact = (await LivechatContacts.findOneById(contactId)) as ILivechatContact;
 
 	const similarContacts: ILivechatContact[] = await LivechatContacts.findSimilarVerifiedContacts(channel, contactId);
@@ -500,39 +500,6 @@ async function mergeContacts(contactId: string, channel: ILivechatContactChannel
 
 	await LivechatContacts.deleteMany({ _id: { $in: similarContacts.map((c) => c._id) } });
 	return LivechatContacts.findOneById(contactId);
-}
-
-export async function verifyContactChannel(params: VerifyContactChannelParams): Promise<ILivechatContact> {
-	const { contactId, field, value, channelName, visitorId, roomId } = params;
-
-	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'channels'>>(contactId, {
-		projection: { _id: 1, channels: 1 },
-	});
-
-	if (!contact) {
-		throw new Error('error-contact-not-found');
-	}
-
-	const channel = contact.channels?.find(
-		(channel: ILivechatContactChannel) => channel.name === channelName && channel.visitorId === visitorId,
-	);
-
-	if (!channel) {
-		throw new Error('error-invalid-channel');
-	}
-
-	channel.verified = true;
-	channel.verifiedAt = new Date();
-	channel.field = field;
-	channel.value = value;
-
-	await LivechatContacts.updateContact(contactId, {
-		channels: contact.channels,
-	});
-
-	await LivechatRooms.update({ _id: roomId }, { $set: { verified: true } });
-
-	return mergeContacts(contactId, channel);
 }
 
 export function validateCustomFields(

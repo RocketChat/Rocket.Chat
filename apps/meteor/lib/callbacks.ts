@@ -226,6 +226,14 @@ type ChainedCallbackSignatures = {
 	'roomAvatarChanged': (room: IRoom) => void;
 	'beforeGetMentions': (mentionIds: string[], teamMentions: MessageMention[]) => Promise<string[]>;
 	'livechat.manageDepartmentUnit': (params: { userId: string; departmentId: string; unitId?: string }) => void;
+	'contact-id-verification.verifyContactChannel': (params: {
+		contactId: string;
+		field: string;
+		value: string;
+		channelName: string;
+		visitorId: string;
+		roomId: string;
+	}) => void;
 };
 
 export type Hook =
