@@ -5638,8 +5638,6 @@
   "Upload_anyway": "Lataa silti",
   "App_limit_reached": "Sovellusraja saavutettu",
   "App_limit_exceeded": "Sovellusraja ylitetty",
-  "Private_apps_limit_reached": "Yksityisten sovellusten raja saavutettu",
-  "Private_apps_limit_exceeded": "Yksityisten sovellusten raja ylitetty",
   "Disable_at_least_more_apps": "Poista käytöstä vähintään {{numberOfExceededApps}} muuta sovellusta tai päivitä yritysversioon, jotta voit ottaa tämän sovelluksen käyttöön.",
   "Community_Private_apps_limit_exceeded": "Yhteisöversion sovellusraja on ylitetty.",
   "Theme_match_system": "Järjestelmän mukaan",
