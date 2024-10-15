@@ -8821,7 +8821,7 @@ __metadata:
     mini-css-extract-plugin: "npm:~1.6.2"
     mitt: "npm:^2.1.0"
     npm-run-all: "npm:^4.1.5"
-    path-to-regexp: "npm:^6.2.1"
+    path-to-regexp: "npm:^6.3.0"
     postcss-css-variables: "npm:^0.17.0"
     postcss-dir-pseudo-class: "npm:^5.0.0"
     postcss-flexbugs-fixes: "npm:^4.2.1"
@@ -9247,7 +9247,7 @@ __metadata:
     object-path: "npm:^0.11.8"
     outdent: "npm:~0.8.0"
     path: "npm:^0.12.7"
-    path-to-regexp: "npm:^6.2.1"
+    path-to-regexp: "npm:^6.3.0"
     pdfjs-dist: "npm:^2.16.105"
     pino: "npm:^8.15.0"
     pino-pretty: "npm:^7.6.1"
@@ -30242,6 +30242,13 @@ __metadata:
   version: 6.2.1
   resolution: "path-to-regexp@npm:6.2.1"
   checksum: 10/1e266be712d1a08086ee77beab12a1804842ec635dfed44f9ee1ba960a0e01cec8063fb8c92561115cdc0ce73158cdc7766e353ffa039340b4a85b370084c4d4
+  languageName: node
+  linkType: hard
+
+"path-to-regexp@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "path-to-regexp@npm:6.3.0"
+  checksum: 10/6822f686f01556d99538b350722ef761541ec0ce95ca40ce4c29e20a5b492fe8361961f57993c71b2418de12e604478dcf7c430de34b2c31a688363a7a944d9c
   languageName: node
   linkType: hard
 

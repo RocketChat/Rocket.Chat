@@ -114,7 +114,7 @@
 		"markdown-it": "^11.0.1",
 		"mem": "^6.1.1",
 		"mitt": "^2.1.0",
-		"path-to-regexp": "^6.2.1",
+		"path-to-regexp": "^6.3.0",
 		"preact": "~10.24.2",
 		"preact-router": "^3.2.1",
 		"query-string": "^7.1.3",
