@@ -20,6 +20,7 @@ const modelsMock = {
 	},
 	LivechatRooms: {
 		findNewestByVisitorIdOrToken: sinon.stub(),
+		setContactIdByVisitorIdOrToken: sinon.stub(),
 	},
 	LivechatVisitors: {
 		findOneById: sinon.stub(),
@@ -46,7 +47,7 @@ const { validateCustomFields, validateContactManager, updateContact, getContact 
 		},
 	});
 
-describe('[OC] Contacts', () => {
+describe.only('[OC] Contacts', () => {
 	describe('validateCustomFields', () => {
 		const mockCustomFields = [{ _id: 'cf1', label: 'Custom Field 1', regexp: '^[0-9]+$', required: true }];
 
