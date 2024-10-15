@@ -1,14 +1,51 @@
-import { isPOSTOmnichannelBlockContactProps, isPOSTOmnichannelUnblockContactProps } from '@rocket.chat/rest-typings';
+import Ajv from 'ajv';
 
 import { API } from '../../../../../app/api/server';
 import { changeContactBlockStatus, closeBlockedRoom, hasSingleContactLicense } from './lib/contacts';
+
+const ajv = new Ajv({
+	coerceTypes: true,
+});
+
+type blockContactProps = {
+	contactId: string;
+	visitorId: string;
+};
+
+const blockContactSchema = {
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+		},
+		visitorId: {
+			type: 'string',
+		},
+	},
+	required: ['contactId', 'visitorId'],
+	additionalProperties: false,
+};
+
+const isBlockContactProps = ajv.compile<blockContactProps>(blockContactSchema);
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Endpoints {
+		'/v1/omnichannel/contacts.block': {
+			POST: (params: blockContactProps) => void;
+		};
+		'/v1/omnichannel/contacts.unblock': {
+			POST: (params: blockContactProps) => void;
+		};
+	}
+}
 
 API.v1.addRoute(
 	'omnichannel/contacts.block',
 	{
 		authRequired: true,
 		permissionsRequired: ['block-livechat-contact'],
-		validateParams: isPOSTOmnichannelBlockContactProps,
+		validateParams: isBlockContactProps,
 	},
 	{
 		async post() {
@@ -33,7 +70,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		permissionsRequired: ['unblock-livechat-contact'],
-		validateParams: isPOSTOmnichannelUnblockContactProps,
+		validateParams: isBlockContactProps,
 	},
 	{
 		async post() {
