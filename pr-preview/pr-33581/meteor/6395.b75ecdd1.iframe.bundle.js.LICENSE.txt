@@ -1,4 +1,0 @@
-/*!
- 2022 Jason Mulligan <jason.mulligan@avoidwork.com>
- @version 9.0.11
-*/
