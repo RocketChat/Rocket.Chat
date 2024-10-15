@@ -10034,6 +10034,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/server-fetch@workspace:packages/server-fetch"
   dependencies:
+    "@types/node-fetch": "npm:~2.6.11"
     "@types/proxy-from-env": "npm:^1.0.4"
     eslint: "npm:~8.45.0"
     http-proxy-agent: "npm:^5.0.0"
@@ -14225,6 +14226,16 @@ __metadata:
     "@types/node": "npm:*"
     form-data: "npm:^3.0.0"
   checksum: 10/088cd7de89383f18f21c7dc176f9613f946f7281757c9bb217224b5ee114a46a27a662ea0ae3b59ddf8b7a705066dec8e5109c23ff3c97892abadd9e9974cab2
+  languageName: node
+  linkType: hard
+
+"@types/node-fetch@npm:~2.6.11":
+  version: 2.6.11
+  resolution: "@types/node-fetch@npm:2.6.11"
+  dependencies:
+    "@types/node": "npm:*"
+    form-data: "npm:^4.0.0"
+  checksum: 10/c416df8f182ec3826278ea42557fda08f169a48a05e60722d9c8edd4e5b2076ae281c6b6601ad406035b7201f885b0257983b61c26b3f9eb0f41192a807b5de5
   languageName: node
   linkType: hard
 
