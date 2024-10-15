@@ -13,7 +13,7 @@ type VerifyContactChannelParams = {
 	roomId: string;
 };
 
-export const verifyContactChannel = async (params: VerifyContactChannelParams): Promise<ILivechatContact> => {
+export const verifyContactChannel = async (params: VerifyContactChannelParams): Promise<ILivechatContact | null> => {
 	const { contactId, field, value, channelName, visitorId, roomId } = params;
 
 	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'channels'>>(contactId, {

@@ -1,5 +1,5 @@
 import { License } from '@rocket.chat/license';
 
-await License.onLicense('contact-id-verification.verifyContactChannel', async () => {
+await License.onLicense('chat.rocket.contact-id-verification', async () => {
 	await import('./hooks');
 });

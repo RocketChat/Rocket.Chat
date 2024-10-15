@@ -3,12 +3,12 @@ import type {
 	AtLeast,
 	ILivechatContact,
 	ILivechatContactChannel,
-	ILivechatContactConflictingField,
 	ILivechatCustomField,
 	ILivechatVisitor,
 	IOmnichannelRoom,
 	IUser,
 } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import {
 	LivechatVisitors,
 	Users,
@@ -73,6 +73,15 @@ type GetContactsParams = {
 	count: number;
 	offset: number;
 	sort: Sort;
+};
+
+type VerifyContactChannelParams = {
+	contactId: string;
+	field: string;
+	value: string;
+	channelName: string;
+	visitorId: string;
+	roomId: string;
 };
 
 type GetContactHistoryParams = {
@@ -485,7 +494,7 @@ async function getAllowedCustomFields(): Promise<Pick<ILivechatCustomField, '_id
 	).toArray();
 }
 
-export async function mergeContacts(contactId: string, channel: ILivechatContactChannel): Promise<ILivechatContact> {
+export async function mergeContacts(contactId: string, channel: ILivechatContactChannel): Promise<ILivechatContact | null> {
 	const originalContact = (await LivechatContacts.findOneById(contactId)) as ILivechatContact;
 
 	const similarContacts: ILivechatContact[] = await LivechatContacts.findSimilarVerifiedContacts(channel, contactId);
@@ -500,6 +509,14 @@ export async function mergeContacts(contactId: string, channel: ILivechatContact
 
 	await LivechatContacts.deleteMany({ _id: { $in: similarContacts.map((c) => c._id) } });
 	return LivechatContacts.findOneById(contactId);
+}
+
+export async function verifyContactChannel(params: VerifyContactChannelParams): Promise<ILivechatContact | null> {
+	if (!License.hasModule('chat.rocket.contact-id-verification')) {
+		return null;
+	}
+
+	return callbacks.run('contact-id-verification.verifyContactChannel', params);
 }
 
 export function validateCustomFields(

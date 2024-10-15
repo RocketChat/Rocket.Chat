@@ -22,6 +22,7 @@ import type {
 	ILivechatDepartment,
 	MessageMention,
 	OmnichannelSourceType,
+	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
@@ -233,7 +234,7 @@ type ChainedCallbackSignatures = {
 		channelName: string;
 		visitorId: string;
 		roomId: string;
-	}) => void;
+	}) => Promise<ILivechatContact | null>;
 };
 
 export type Hook =
