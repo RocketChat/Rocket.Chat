@@ -1,5 +1,5 @@
 ---
-"@rocket.chat/meteor": patch
+"@rocket.chat/meteor": major
 "@rocket.chat/i18n": patch
 ---
 
