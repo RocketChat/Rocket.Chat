@@ -13,7 +13,7 @@ import type { MessageBoxAction } from '../../app/ui-utils/client/lib/messageBox'
 import { Utilities } from '../../ee/lib/misc/Utilities';
 import { useUiKitActionManager } from '../uikit/hooks/useUiKitActionManager';
 import { useApplyButtonFilters, useApplyButtonAuthFilter } from './useApplyButtonFilters';
-import { useFilterActionsByContextAndCategory } from './useFilterActions';
+import { useFilterActionsByContext } from './useFilterActions';
 
 const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${appId}/${actionId}`;
 
@@ -164,15 +164,15 @@ export const useUserDropdownAppsActionButtons = () => {
 export const useMessageActionAppsActionButtons = (context?: MessageActionContext, category?: string) => {
 	const result = useAppActionButtons('messageAction');
 	const actionManager = useUiKitActionManager();
-	const applyButtonFilters = useApplyButtonFilters();
+	const applyButtonFilters = useApplyButtonFilters(category);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
-	const filterActionsByContextAndCategory = useFilterActionsByContextAndCategory(context, category);
+	const filterActionsByContext = useFilterActionsByContext(context);
 	const data = useMemo(
 		() =>
 			result.data
 				?.filter((action) => {
-					if (!filterActionsByContextAndCategory(action)) {
+					if (!filterActionsByContext(action)) {
 						return false;
 					}
 					return applyButtonFilters(action);
@@ -211,7 +211,7 @@ export const useMessageActionAppsActionButtons = (context?: MessageActionContext
 
 					return item;
 				}),
-		[actionManager, applyButtonFilters, dispatchToastMessage, filterActionsByContextAndCategory, result.data, t],
+		[actionManager, applyButtonFilters, dispatchToastMessage, filterActionsByContext, result.data, t],
 	);
 	return {
 		...result,
