@@ -9162,7 +9162,7 @@ __metadata:
     date.js: "npm:~0.3.3"
     debug: "npm:~4.1.1"
     docker-compose: "npm:^0.24.8"
-    dompurify: "npm:^2.3.8"
+    dompurify: "npm:^3.1.7"
     ejson: "npm:^2.2.3"
     emailreplyparser: "npm:^0.0.5"
     emoji-toolkit: "npm:^7.0.1"
@@ -19514,13 +19514,6 @@ __metadata:
   version: 1.0.3
   resolution: "dommatrix@npm:1.0.3"
   checksum: 10/1645c5857db8a25aa85e737fad9a4913edd581c852c619e0122e1848e23ffbc4249f06dc99b4d841a840f9bf421c965ace4862a86b3f6789d727c1323c6becc9
-  languageName: node
-  linkType: hard
-
-"dompurify@npm:^2.3.8":
-  version: 2.3.8
-  resolution: "dompurify@npm:2.3.8"
-  checksum: 10/1e46e58fa3732eee15253f6ce2f94c1e4ad42ec33f45e7eb660080429226d1139d149e7508d795280bc63b94f35f51ef3c8f115b97e4d2be2aa97bc026ccc62e
   languageName: node
   linkType: hard
 
