@@ -36,7 +36,7 @@ export const createE2ESettings = () =>
 			enableQuery: { _id: 'E2E_Enable', value: true },
 		});
 
-		await this.add('E2E_Enabled_Mentions', false, {
+		await this.add('E2E_Enabled_Mentions', true, {
 			type: 'boolean',
 			public: true,
 			enableQuery: { _id: 'E2E_Enable', value: true },
