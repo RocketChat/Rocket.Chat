@@ -8,7 +8,7 @@
 		"date.js": "~0.3.3",
 		"debug": "~4.1.1",
 		"human-interval": "^2.0.1",
-		"moment-timezone": "~0.5.45",
+		"moment-timezone": "~0.5.46",
 		"mongodb": "^4.17.2"
 	},
 	"devDependencies": {

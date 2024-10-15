@@ -2363,7 +2363,7 @@
   "Thank_you_for_your_feedback": "Благодарим Ви за обратната връзка",
   "The_application_name_is_required": "Името на приложението е задължително",
   "The_channel_name_is_required": "Името на канала е задължително",
-  "The_emails_are_being_sent": "Изпращат се имейлите.",   
+  "The_emails_are_being_sent": "Изпращат се имейлите.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Размерът на изображението няма да работи, защото не можем да открием ImageMagick или GraphicsMagick, инсталирани на вашия сървър.",
   "The_redirectUri_is_required": "Необходимо е пренасочването",
   "The_server_will_restart_in_s_seconds": "Сървъра ще бъде рестартиран след %s секунди",

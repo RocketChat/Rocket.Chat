@@ -12,6 +12,7 @@ import type {
 	AggregationCursor,
 	DeleteOptions,
 	CountDocumentsOptions,
+	ModifyResult,
 } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -115,7 +116,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	setGroupE2EKey(_id: string, key: string): Promise<UpdateResult>;
 
-	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<UpdateResult>;
+	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<ModifyResult<ISubscription>>;
 
 	unsetGroupE2ESuggestedKey(_id: string): Promise<UpdateResult | Document>;
 
