@@ -3,6 +3,7 @@ import {
 	isPOSTOmnichannelContactsProps,
 	isPOSTUpdateOmnichannelContactsProps,
 	isGETOmnichannelContactsProps,
+	isGETOmnichannelContactHistoryProps,
 	isGETOmnichannelContactsSearchProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -11,7 +12,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { Contacts, createContact, updateContact, getContacts, isSingleContactEnabled } from '../../lib/Contacts';
+import { getContactHistory, Contacts, createContact, updateContact, getContacts, isSingleContactEnabled } from '../../lib/Contacts';
 
 API.v1.addRoute(
 	'omnichannel/contact',
@@ -158,6 +159,26 @@ API.v1.addRoute(
 			const result = await getContacts({ searchText, offset, count, sort });
 
 			return API.v1.success(result);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'omnichannel/contacts.history',
+	{ authRequired: true, permissionsRequired: ['view-livechat-contact-history'], validateParams: isGETOmnichannelContactHistoryProps },
+	{
+		async get() {
+			if (!isSingleContactEnabled()) {
+				return API.v1.unauthorized();
+			}
+
+			const { contactId, source } = this.queryParams;
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+
+			const history = await getContactHistory({ contactId, source, count, offset, sort });
+
+			return API.v1.success(history);
 		},
 	},
 );

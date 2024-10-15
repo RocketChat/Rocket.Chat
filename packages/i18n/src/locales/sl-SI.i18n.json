@@ -2355,7 +2355,7 @@
   "Thank_you_for_your_feedback": "Hvala za vaše mnenje",
   "The_application_name_is_required": "Ime aplikacije je obvezno",
   "The_channel_name_is_required": "Ime kanala je obvezno",
-  "The_emails_are_being_sent": "Pošiljanje e-poštnih sporočil.",   
+  "The_emails_are_being_sent": "Pošiljanje e-poštnih sporočil.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Velikost slike ne bo delovala, ker ne moremo zaznati ImageMagick ali GraphicsMagick, nameščenega na vašem strežniku.",
   "The_redirectUri_is_required": "Preusmeritveni uri (redirectUri) je zahtevan",
   "The_server_will_restart_in_s_seconds": "Strežnik se bo znova zagnal v %s sekundah",

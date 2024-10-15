@@ -4727,7 +4727,7 @@
   "The_application_will_be_able_to": "<1>{{appName}}</1> voi:",
   "The_channel_name_is_required": "Kanavan nimi on pakollinen",
   "The_emails_are_being_sent": "Sähköpostiviestejä lähetetään.",
-  "The_empty_room__roomName__will_be_removed_automatically": "Tyhjä huone <span style=\"font-weight: bold;\">{{roomName}}</span> poistetaan automaattisesti.",   
+  "The_empty_room__roomName__will_be_removed_automatically": "Tyhjä huone <span style=\"font-weight: bold;\">{{roomName}}</span> poistetaan automaattisesti.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Kuvien koon muuttaminen ei toimi, koska ImageMagickia tai GraphicsMagickia ei havaittu asennettuna palvelimessa.",
   "The_message_is_a_discussion_you_will_not_be_able_to_recover": "Viesti on keskustelu, et voi palauttaa näitä viestejä!",
   "The_mobile_notifications_were_disabled_to_all_users_go_to_Admin_Push_to_enable_the_Push_Gateway_again": "Mobiili-ilmoitukset oli poistettu käytöstä kaikilta käyttäjiltä. Ota Push Gateway uudelleen käyttöön kohdassa \"Admin > Push\"",

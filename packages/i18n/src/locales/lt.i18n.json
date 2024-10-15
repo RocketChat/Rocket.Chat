@@ -2421,7 +2421,7 @@
   "Thank_you_for_your_feedback": "Dėkojame už jūsų atsiliepimus",
   "The_application_name_is_required": "Būtina nurodyti programos pavadinimą",
   "The_channel_name_is_required": "Reikalingas kanalo pavadinimas",
-  "The_emails_are_being_sent": "El. Laiškai siunčiami.",   
+  "The_emails_are_being_sent": "El. Laiškai siunčiami.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Vaizdo dydžio keitimas neveiks, nes negalime nustatyti serverio \"ImageMagick\" ar \"GraphicsMagick\".",
   "The_redirectUri_is_required": "Reikia redirectUri",
   "The_server_will_restart_in_s_seconds": "Serveris bus paleistas iš naujo po%s sekundžių",
