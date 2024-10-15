@@ -1602,7 +1602,6 @@
   "Enabled": "تم التمكين",
   "Encrypted": "مشفر",
   "Encrypted_channel_Description": "القناة المشفرة بين النهايات. لن يعمل البحث مع الفِرَق المشفرة وقد لا تعرض الإشعارات محتوى الرسائل.",
-  "Encrypted_key_title": "انقر هنا لتعطيل التشفير بين النهايات لهذه القناة (يتطلب إذن التشفير بين النهايات)",
   "Encrypted_message": "رسالة مشفرة",
   "Encrypted_setting_changed_successfully": "تم تغيير الإعداد المشفر بنجاح!",
   "Encrypted_not_available": "غير متاح لـ Channel العامة",
