@@ -5011,13 +5011,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mixmark-io/domino@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "@mixmark-io/domino@npm:2.2.0"
-  checksum: 10/839624ba6baab655c4f7393e8b8561516849926651e02f40484729b9869436b1e077906810bcac0bba4762448512d3ebd2f6d9b463d8ab0d5f54d75ca5306519
-  languageName: node
-  linkType: hard
-
 "@mongodb-js/saslprep@npm:^1.1.0":
   version: 1.1.0
   resolution: "@mongodb-js/saslprep@npm:1.1.0"
@@ -9225,7 +9218,6 @@ __metadata:
     textarea-caret: "npm:^3.1.0"
     tinykeys: "npm:^1.4.0"
     ts-node: "npm:^10.9.2"
-    turndown: "npm:^7.2.0"
     twilio: "npm:^3.76.1"
     twit: "npm:^2.2.11"
     typescript: "npm:~5.5.4"
@@ -36892,15 +36884,6 @@ __metadata:
   bin:
     turbo: bin/turbo
   checksum: 10/b8e90a38f47dc5c07e5f1c0bd708f9dc6b00b744847a45c06e5de5a5379a32bb155e8ad994eb03e60f697afc87f0815dd02fc680e22c0fad83d65c0a1fb6fc96
-  languageName: node
-  linkType: hard
-
-"turndown@npm:^7.2.0":
-  version: 7.2.0
-  resolution: "turndown@npm:7.2.0"
-  dependencies:
-    "@mixmark-io/domino": "npm:^2.2.0"
-  checksum: 10/ad373d9cff76e80196effe29c19c1a14fda428fa9f41ef7458daa9c0c8939f37bbc36d0a504940f95ba34a6db8fd4d9cafd1ae498f91d010805f8d540e9e71bb
   languageName: node
   linkType: hard
 
