@@ -1,4 +1,4 @@
-import type { ILivechatContact } from '@rocket.chat/core-typings';
+import type { ILivechatContact, IUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
 
@@ -26,12 +26,12 @@ export async function changeContactBlockStatus({ contactId, block, visitorId }: 
 }
 
 export async function hasSingleContactLicense() {
-	if (!License.hasModule('chat.rocket.contact-id-verification')) {
+	if (!License.hasValidLicense()) {
 		throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature');
 	}
 }
 
-export async function closeBlockedRoom(visitorId: string) {
+export async function closeBlockedRoom(visitorId: string, user: IUser) {
 	const visitor = await LivechatVisitors.findOneById(visitorId);
 
 	if (!visitor) {
@@ -44,5 +44,5 @@ export async function closeBlockedRoom(visitorId: string) {
 		return;
 	}
 
-	await Livechat.closeRoom({ room, visitor, comment: i18n.t('close-blocked-room-comment') });
+	await Livechat.closeRoom({ room, visitor, comment: i18n.t('close-blocked-room-comment'), user });
 }

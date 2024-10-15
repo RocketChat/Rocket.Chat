@@ -51,6 +51,7 @@ API.v1.addRoute(
 		async post() {
 			await hasSingleContactLicense();
 			const { contactId, visitorId } = this.bodyParams;
+			const { user } = this;
 
 			await changeContactBlockStatus({
 				contactId,
@@ -58,7 +59,7 @@ API.v1.addRoute(
 				block: true,
 			});
 
-			await closeBlockedRoom(visitorId);
+			await closeBlockedRoom(visitorId, user);
 
 			return API.v1.success();
 		},
