@@ -1315,17 +1315,41 @@ const POSTUpdateOmnichannelContactsSchema = {
 
 export const isPOSTUpdateOmnichannelContactsProps = ajv.compile<POSTUpdateOmnichannelContactsProps>(POSTUpdateOmnichannelContactsSchema);
 
-type GETOmnichannelContactsProps = { contactId: string };
+type GETOmnichannelContactsProps = { contactId?: string; email?: string; phone?: string };
 
 const GETOmnichannelContactsSchema = {
-	type: 'object',
-	properties: {
-		contactId: {
-			type: 'string',
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				email: {
+					type: 'string',
+				},
+			},
+			required: ['email'],
+			additionalProperties: false,
 		},
-	},
-	required: ['contactId'],
-	additionalProperties: false,
+		{
+			type: 'object',
+			properties: {
+				phone: {
+					type: 'string',
+				},
+			},
+			required: ['phone'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				contactId: {
+					type: 'string',
+				},
+			},
+			required: ['contactId'],
+			additionalProperties: false,
+		},
+	],
 };
 
 export const isGETOmnichannelContactsProps = ajv.compile<GETOmnichannelContactsProps>(GETOmnichannelContactsSchema);
