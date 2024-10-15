@@ -20,8 +20,6 @@ const modelsMock = {
 	},
 	LivechatRooms: {
 		findNewestByVisitorIdOrToken: sinon.stub(),
-		setContactIdByVisitorIdOrToken: sinon.stub(),
-		update: sinon.stub(),
 	},
 	LivechatVisitors: {
 		findOneById: sinon.stub(),
@@ -233,7 +231,6 @@ describe('[OC] Contacts', () => {
 		beforeEach(() => {
 			modelsMock.LivechatContacts.findOneById.reset();
 			modelsMock.LivechatContacts.findOneById.reset();
-			modelsMock.LivechatRooms.update.reset();
 			modelsMock.LivechatContacts.findSimilarVerifiedContacts.reset();
 			modelsMock.LivechatVisitors.updateMany.reset();
 			modelsMock.LivechatContacts.updateContact.reset();
