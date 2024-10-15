@@ -199,7 +199,11 @@ jobs:
           deno-version: 1.37.1
           cache-modules: true
           install: true
-
+      - name: Restore turbo build
+        uses: actions/download-artifact@v4
+        with:
+          name: turbo-build
+          path: .turbo/cache
       - name: Build
         if: github.event.action != 'closed'
         run: |
