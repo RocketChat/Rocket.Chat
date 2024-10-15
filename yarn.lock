@@ -9241,7 +9241,7 @@ __metadata:
     node-fetch: "npm:2.7.0"
     node-gcm: "npm:1.0.5"
     node-rsa: "npm:^1.1.1"
-    nodemailer: "npm:^6.7.8"
+    nodemailer: "npm:^6.9.15"
     nyc: "npm:^15.1.0"
     oauth2-server: "npm:3.1.1"
     object-path: "npm:^0.11.8"
@@ -28980,10 +28980,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:^6.7.8":
-  version: 6.7.8
-  resolution: "nodemailer@npm:6.7.8"
-  checksum: 10/ebcd079bffc08035cb10a452f9d6a11051eb052d784f3be53596288f0fb8a8900241037026783ee708af9c883b3532c5f50ce1510106577c5aa94a4e82ec5ab6
+"nodemailer@npm:^6.9.15":
+  version: 6.9.15
+  resolution: "nodemailer@npm:6.9.15"
+  checksum: 10/16079406fe603f6e4debb8ac34bdb919688ad169ddf61e7b10e56abef85b537762eb3a19a15ce32bb9446d68e2f93a1ba4e24836ba86c7363fc42145aa36a291
   languageName: node
   linkType: hard
 
