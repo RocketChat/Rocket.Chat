@@ -664,6 +664,7 @@ API.v1.addRoute(
 			const settingsIds: string[] = [];
 
 			if (this.bodyParams.setDeploymentAs === 'new-workspace') {
+				await WorkspaceCredentials.unsetCredentialByScope('');
 				settingsIds.push(
 					'Cloud_Service_Agree_PrivacyTerms',
 					'Cloud_Workspace_Id',
@@ -676,7 +677,6 @@ API.v1.addRoute(
 					'Cloud_Workspace_License',
 					'Cloud_Workspace_Had_Trial',
 					'uniqueID',
-					'unsetCredentials',
 				);
 			}
 
@@ -693,10 +693,6 @@ API.v1.addRoute(
 
 				if (settingId === 'Deployment_FingerPrint_Verified') {
 					return Settings.updateValueById('Deployment_FingerPrint_Verified', true);
-				}
-
-				if (settingId === 'unsetCredentials') {
-					return WorkspaceCredentials.unsetCredentialByScope('');
 				}
 
 				return Settings.resetValueById(settingId);

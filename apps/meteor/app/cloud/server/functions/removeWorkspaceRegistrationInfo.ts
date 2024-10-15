@@ -9,6 +9,8 @@ export async function removeWorkspaceRegistrationInfo() {
 		return true;
 	}
 
+	await WorkspaceCredentials.removeAllCredentials();
+
 	const settingsIds = [
 		'Cloud_Workspace_Id',
 		'Cloud_Workspace_Name',
@@ -18,16 +20,11 @@ export async function removeWorkspaceRegistrationInfo() {
 		'Cloud_Workspace_PublicKey',
 		'Cloud_Workspace_Registration_Client_Uri',
 		'Show_Setup_Wizard',
-		'clearCredentials',
 	];
 
 	const promises = settingsIds.map((settingId) => {
 		if (settingId === 'Show_Setup_Wizard') {
 			return Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
-		}
-
-		if (settingId === 'clearCredentials') {
-			return WorkspaceCredentials.removeAllCredentials();
 		}
 
 		return Settings.resetValueById(settingId, null);
