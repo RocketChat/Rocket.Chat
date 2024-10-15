@@ -16,3 +16,5 @@ export const startTracing = () => {
 };
 
 startTracing();
+
+export { initDatabaseTracing } from './traceDatabaseCalls';
