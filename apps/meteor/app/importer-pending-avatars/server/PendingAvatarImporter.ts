@@ -20,7 +20,7 @@ export class PendingAvatarImporter extends Importer {
 		await this.updateRecord({ 'count.messages': fileCount, 'messagesstatus': null });
 		await this.addCountToTotal(fileCount);
 
-		const fileData = new Selection(this.info.name, [], [], fileCount);
+		const fileData = new Selection<false>(this.info.name, [], [], fileCount, []);
 		await this.updateRecord({ fileData });
 
 		await super.updateProgress(ProgressStep.IMPORTING_FILES);
@@ -31,7 +31,7 @@ export class PendingAvatarImporter extends Importer {
 		return fileCount;
 	}
 
-	async startImport(importSelection: Selection): Promise<ImporterProgress> {
+	async startImport(importSelection: Selection<false>): Promise<ImporterProgress> {
 		const pendingFileUserList = Users.findAllUsersWithPendingAvatar();
 		try {
 			for await (const user of pendingFileUserList) {
