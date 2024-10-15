@@ -1972,7 +1972,11 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find(query, options);
 	}
 
-	async findNewestByVisitorIdOrToken<T extends Document = IOmnichannelRoom>(visitorId: string, visitorToken: string, options: Omit<FindOptions<IOmnichannelRoom>, 'sort' | 'limit'> = {}): Promise<T | null> {
+	async findNewestByVisitorIdOrToken<T extends Document = IOmnichannelRoom>(
+		visitorId: string,
+		visitorToken: string,
+		options: Omit<FindOptions<IOmnichannelRoom>, 'sort' | 'limit'> = {},
+	): Promise<T | null> {
 		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
 			$or: [
