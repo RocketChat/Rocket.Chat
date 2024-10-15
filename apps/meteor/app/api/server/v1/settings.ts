@@ -13,6 +13,7 @@ import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { disableCustomScripts } from '../../../lib/server/functions/disableCustomScripts';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
@@ -171,6 +172,11 @@ API.v1.addRoute(
 
 				if (typeof this.urlParams._id !== 'string') {
 					throw new Meteor.Error('error-id-param-not-provided', 'The parameter "id" is required');
+				}
+
+				// Disable custom scripts in cloud trials to prevent phishing campaigns
+				if (disableCustomScripts() && /^Custom_Script_/.test(this.urlParams._id)) {
+					return API.v1.unauthorized();
 				}
 
 				// allow special handling of particular setting types
