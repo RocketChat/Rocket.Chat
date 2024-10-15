@@ -37,7 +37,6 @@ export async function _disableAppsWithAddonsCallback(
 				lng: adminUser.language || 'en',
 				count: affectedApps.length,
 				appNames: affectedApps,
-				url: '/home',
 			}),
 		}),
 	});
