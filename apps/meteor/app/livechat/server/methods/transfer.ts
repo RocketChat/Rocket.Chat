@@ -54,10 +54,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-mac-limit-reached', 'MAC limit reached', { method: 'livechat:transfer' });
 		}
 
-		if (await Omnichannel.isUnverifiedContact(room)) {
-			throw new Meteor.Error('error-unverified-contact', 'Unverified contact', { method: 'livechat:transfer' });
-		}
-
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, uid, {
 			projection: { _id: 1 },
 		});

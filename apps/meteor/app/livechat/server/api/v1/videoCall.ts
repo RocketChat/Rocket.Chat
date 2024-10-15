@@ -33,10 +33,6 @@ API.v1.addRoute(
 				throw new Error('error-mac-limit-reached');
 			}
 
-			if (await Omnichannel.isUnverifiedContact(room as IOmnichannelRoom)) {
-				throw new Error('error-unverified-contact');
-			}
-
 			const webrtcCallingAllowed = rcSettings.get('WebRTC_Enabled') === true && rcSettings.get('Omnichannel_call_provider') === 'WebRTC';
 			if (!webrtcCallingAllowed) {
 				throw new Error('webRTC calling not enabled');
@@ -97,10 +93,6 @@ API.v1.addRoute(
 
 			if (!(await Omnichannel.isWithinMACLimit(room as IOmnichannelRoom))) {
 				throw new Error('error-mac-limit-reached');
-			}
-
-			if (await Omnichannel.isUnverifiedContact(room as IOmnichannelRoom)) {
-				throw new Error('error-unverified-contact');
 			}
 
 			const call = await Messages.findOneById(callId);

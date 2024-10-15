@@ -1478,10 +1478,6 @@ class LivechatClass {
 			throw new Error('error-mac-limit-reached');
 		}
 
-		if (await Omnichannel.isUnverifiedContact(room as IOmnichannelRoom)) {
-			throw new Error('error-unverified-contact');
-		}
-
 		const { _id, username, name, utcOffset } = user;
 		const transcriptRequest = {
 			requestedAt: new Date(),
