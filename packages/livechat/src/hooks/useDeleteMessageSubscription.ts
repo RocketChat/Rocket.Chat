@@ -1,5 +1,5 @@
 import { useStream } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
+import { useEffect } from 'preact/hooks';
 
 import store from '../store';
 

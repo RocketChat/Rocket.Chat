@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import UninstallGrandfatheredAppModal from './UninstallGrandfatheredAppModal';
@@ -9,9 +9,9 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} as ComponentMeta<typeof UninstallGrandfatheredAppModal>;
+} satisfies Meta<typeof UninstallGrandfatheredAppModal>;
 
-const Template: ComponentStory<typeof UninstallGrandfatheredAppModal> = (args) => <UninstallGrandfatheredAppModal {...args} />;
+const Template: StoryFn<typeof UninstallGrandfatheredAppModal> = (args) => <UninstallGrandfatheredAppModal {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'UninstallGrandfatheredAppModal';

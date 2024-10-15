@@ -1,5 +1,6 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
+import type { ComponentType } from 'react';
 import React from 'react';
 
 import { Page, PageContent, PageHeader, PageScrollableContent, PageScrollableContentWithShadow } from '.';
@@ -9,7 +10,7 @@ export default {
 	component: Page,
 	subcomponents: {
 		PageContent,
-		PageHeader,
+		PageHeader: PageHeader as ComponentType<any>,
 		PageScrollableContent,
 		PageScrollableContentWithShadow,
 	},
@@ -17,7 +18,7 @@ export default {
 		layout: 'fullscreen',
 		controls: { hideNoControlsWarning: true },
 	},
-} as ComponentMeta<typeof Page>;
+} satisfies Meta<typeof Page>;
 
 const DummyContent = ({ rows = 10 }: { rows?: number }) => (
 	<>
@@ -27,7 +28,7 @@ const DummyContent = ({ rows = 10 }: { rows?: number }) => (
 	</>
 );
 
-export const Example: ComponentStory<typeof Page> = () => (
+export const Example: StoryFn<typeof Page> = () => (
 	<Page>
 		<PageHeader title='A platform that prioritizes collaboration over vendor choices' />
 		<PageContent>
@@ -39,7 +40,7 @@ export const Example: ComponentStory<typeof Page> = () => (
 	</Page>
 );
 
-export const WithButtonsAtTheHeader: ComponentStory<typeof Page> = () => (
+export const WithButtonsAtTheHeader: StoryFn<typeof Page> = () => (
 	<Page>
 		<PageHeader title='Page Title'>
 			<ButtonGroup>
@@ -54,7 +55,7 @@ export const WithButtonsAtTheHeader: ComponentStory<typeof Page> = () => (
 	</Page>
 );
 
-export const WithScrollableContent: ComponentStory<typeof Page> = () => (
+export const WithScrollableContent: StoryFn<typeof Page> = () => (
 	<Page>
 		<PageHeader title='Page Title' />
 		<PageScrollableContent>
@@ -63,7 +64,7 @@ export const WithScrollableContent: ComponentStory<typeof Page> = () => (
 	</Page>
 );
 
-export const WithScrollableContentWithShadow: ComponentStory<typeof Page> = () => (
+export const WithScrollableContentWithShadow: StoryFn<typeof Page> = () => (
 	<Page>
 		<PageHeader title='Page Title' />
 		<PageScrollableContentWithShadow>
