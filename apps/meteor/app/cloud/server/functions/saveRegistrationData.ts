@@ -59,14 +59,13 @@ async function saveRegistrationDataBase({
 		{ _id: 'Cloud_Workspace_Registration_Client_Uri', value: registration_client_uri },
 	];
 
-	const promises = [
-		...settingsData.map(({ _id, value }) => Settings.updateValueById(_id, value)),
-		WorkspaceCredentials.updateCredentialByScope({
-			scope: '',
-			accessToken: '',
-			expirationDate: new Date(0),
-		}),
-	];
+	await WorkspaceCredentials.updateCredentialByScope({
+		scope: '',
+		accessToken: '',
+		expirationDate: new Date(0),
+	});
+
+	const promises = [...settingsData.map(({ _id, value }) => Settings.updateValueById(_id, value))];
 
 	(await Promise.all(promises)).forEach((value, index) => {
 		if (value?.modifiedCount) {
