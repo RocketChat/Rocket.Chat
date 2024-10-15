@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import { Contextualbar } from '../../../../components/Contextualbar';
@@ -26,11 +26,10 @@ export default {
 	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
 	args: {
 		room,
-		icon: 'lock',
 	},
-} as ComponentMeta<typeof TeamsInfo>;
+} satisfies Meta<typeof TeamsInfo>;
 
-const Template: ComponentStory<typeof TeamsInfo> = (args) => <TeamsInfo {...args} />;
+const Template: StoryFn<typeof TeamsInfo> = (args) => <TeamsInfo {...args} />;
 
 export const Default = Template.bind({});
 

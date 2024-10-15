@@ -1,6 +1,6 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import { Contextualbar } from '../../../../components/Contextualbar';
@@ -14,9 +14,9 @@ export default {
 		actions: { argTypesRegex: '^on.*' },
 	},
 	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
-} as ComponentMeta<typeof RoomMembers>;
+} satisfies Meta<typeof RoomMembers>;
 
-const Template: ComponentStory<typeof RoomMembers> = (args) => <RoomMembers {...args} />;
+const Template: StoryFn<typeof RoomMembers> = (args) => <RoomMembers {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {

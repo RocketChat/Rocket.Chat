@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import SettingsGroupPage from './SettingsGroupPage';
@@ -11,14 +11,14 @@ export default {
 		layout: 'fullscreen',
 		controls: { hideNoControlsWarning: true },
 	},
-} as ComponentMeta<typeof SettingsGroupPage>;
+} satisfies Meta<typeof SettingsGroupPage>;
 
-export const Default: ComponentStory<typeof SettingsGroupPage> = (args) => <SettingsGroupPage {...args} />;
+export const Default: StoryFn<typeof SettingsGroupPage> = (args) => <SettingsGroupPage {...args} />;
 
-export const WithGroup: ComponentStory<typeof SettingsGroupPage> = (args) => <SettingsGroupPage {...args} />;
+export const WithGroup: StoryFn<typeof SettingsGroupPage> = (args) => <SettingsGroupPage {...args} />;
 WithGroup.args = {
 	_id: 'General',
 	i18nLabel: 'General',
 };
 
-export const Skeleton: ComponentStory<typeof SettingsGroupPageSkeleton> = () => <SettingsGroupPageSkeleton />;
+export const Skeleton: StoryFn<typeof SettingsGroupPageSkeleton> = () => <SettingsGroupPageSkeleton />;
