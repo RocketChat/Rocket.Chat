@@ -11,7 +11,7 @@ export const useVoipItemsSection = (): { items: GenericMenuItemProps[] } | undef
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { clientError, isEnabled, isReady, isRegistered } = useVoipState();
-	const { register, unregister, onRegistered, onUnregistered } = useVoipAPI();
+	const { register, unregister, onRegisteredOnce, onUnregisteredOnce } = useVoipAPI();
 
 	const toggleVoip = useMutation({
 		mutationFn: async () => {
@@ -25,15 +25,9 @@ export const useVoipItemsSection = (): { items: GenericMenuItemProps[] } | undef
 		},
 		onSuccess: (isEnabled: boolean) => {
 			if (isEnabled) {
-				const offRegistered = onRegistered(() => {
-					dispatchToastMessage({ type: 'success', message: t('Voice_calling_enabled') });
-					offRegistered();
-				});
+				onRegisteredOnce(() => dispatchToastMessage({ type: 'success', message: t('Voice_calling_enabled') }));
 			} else {
-				const offUnregistered = onUnregistered(() => {
-					dispatchToastMessage({ type: 'success', message: t('Voice_calling_disabled') });
-					offUnregistered();
-				});
+				onUnregisteredOnce(() => dispatchToastMessage({ type: 'success', message: t('Voice_calling_disabled') }));
 			}
 		},
 		onError: () => {
