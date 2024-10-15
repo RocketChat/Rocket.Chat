@@ -1,5 +1,6 @@
+import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
+import { after, afterEach, before, describe, it } from 'mocha';
 
 import { sleep } from '../../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -516,6 +517,14 @@ describe('LIVECHAT - Utils', () => {
 	});
 
 	describe('livechat/message', () => {
+		let visitor: ILivechatVisitor | undefined;
+
+		afterEach(() => {
+			if (visitor?.token) {
+				return deleteVisitor(visitor.token);
+			}
+		});
+
 		it('should fail if no token', async () => {
 			await request.post(api('livechat/message')).set(credentials).send({}).expect(400);
 		});
