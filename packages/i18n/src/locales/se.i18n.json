@@ -6337,8 +6337,6 @@
   "Upload_anyway": "Upload anyway",
   "App_limit_reached": "App limit reached",
   "App_limit_exceeded": "App limit exceeded",
-  "Private_apps_limit_reached": "Private apps limit reached",
-  "Private_apps_limit_exceeded": "Private apps limit exceeded",
   "Disable_at_least_more_apps": "You will need to disable at least {{numberOfExceededApps}} other apps or upgrade to a Premium plan to enable this app.",
   "Community_Private_apps_limit_exceeded": "Community app limit has been exceeded.",
   "Theme_match_system": "Match system",

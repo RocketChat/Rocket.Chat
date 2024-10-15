@@ -5932,8 +5932,6 @@
   "Upload_anyway": "फिर भी अपलोड करें",
   "App_limit_reached": "ऐप की सीमा पूरी हो गई",
   "App_limit_exceeded": "ऐप की सीमा पार हो गई",
-  "Private_apps_limit_reached": "निजी ऐप्स की सीमा पूरी हो गई",
-  "Private_apps_limit_exceeded": "निजी ऐप्स की सीमा पार हो गई",
   "Disable_at_least_more_apps": "इस ऐप को सक्षम करने के लिए आपको कम से कम {{numberOfExceededApps}} अन्य ऐप्स को अक्षम करना होगा या प्रीमियम प्लान में अपग्रेड करना होगा।",
   "Community_Private_apps_limit_exceeded": "सामुदायिक ऐप की सीमा पार हो गई है.",
   "Theme_match_system": "मिलान प्रणाली",
