@@ -8106,7 +8106,7 @@ __metadata:
     debug: "npm:^4.3.7"
     esbuild: "npm:^0.20.2"
     eslint: "npm:~8.45.0"
-    jose: "npm:^4.11.1"
+    jose: "npm:^4.15.9"
     jsonrpc-lite: "npm:^2.2.0"
     lodash.clonedeep: "npm:^4.5.0"
     nedb: "npm:^1.8.0"
@@ -8724,7 +8724,7 @@ __metadata:
     "@types/jest": "npm:~29.5.13"
     eslint: "npm:~8.45.0"
     jest: "npm:~29.7.0"
-    jose: "npm:^4.14.4"
+    jose: "npm:^4.15.9"
     typescript: "npm:~5.5.4"
   languageName: unknown
   linkType: soft
@@ -25970,10 +25970,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^4.11.1, jose@npm:^4.14.4":
-  version: 4.14.6
-  resolution: "jose@npm:4.14.6"
-  checksum: 10/7bb72ba25467e12ea854498d91045d2f943f787b8ec3e546593d162a1a56844b9742e957bed9cd1e4d30295b5de926cf7ff58a4e6837f24c5bc338d07146eec4
+"jose@npm:^4.15.9":
+  version: 4.15.9
+  resolution: "jose@npm:4.15.9"
+  checksum: 10/256234b6f85cdc080b1331f2d475bd58c8ccf459cb20f70ac5e4200b271bce10002b1c2f8e5b96dd975d83065ae5a586d52cdf89d28471d56de5d297992f9905
   languageName: node
   linkType: hard
 
