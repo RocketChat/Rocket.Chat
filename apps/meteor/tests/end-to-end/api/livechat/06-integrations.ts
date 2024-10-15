@@ -4,6 +4,7 @@ import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { deleteVisitor } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - Integrations', () => {
@@ -49,6 +50,8 @@ describe('LIVECHAT - Integrations', () => {
 	});
 
 	describe('Incoming SMS', () => {
+		const visitorTokens: string[] = [];
+
 		before(async () => {
 			await updateSetting('SMS_Enabled', true);
 			await updateSetting('SMS_Service', '');
@@ -57,6 +60,7 @@ describe('LIVECHAT - Integrations', () => {
 		after(async () => {
 			await updateSetting('SMS_Default_Omnichannel_Department', '');
 			await updateSetting('SMS_Service', 'twilio');
+			return Promise.all(visitorTokens.map((token) => deleteVisitor(token)));
 		});
 
 		describe('POST livechat/sms-incoming/:service', () => {
@@ -132,6 +136,7 @@ describe('LIVECHAT - Integrations', () => {
 				expect(createVisitorResponse).to.have.property('visitor').and.to.be.an('object');
 				expect(createVisitorResponse.visitor).to.have.property('_id');
 				const visitorId = createVisitorResponse.visitor._id;
+				visitorTokens.push(createVisitorResponse.visitor.token);
 
 				await request
 					.post(api('livechat/sms-incoming/twilio'))
