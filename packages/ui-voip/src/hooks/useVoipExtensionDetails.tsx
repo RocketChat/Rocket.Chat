@@ -7,10 +7,7 @@ export const useVoipExtensionDetails = ({ extension, enabled = true }: { extensi
 	const { data, ...result } = useQuery(
 		['voip', 'voip-extension-details', extension, getContactDetails],
 		() => getContactDetails({ extension: extension as string }),
-		{
-			enabled: isEnabled,
-			onError: () => undefined,
-		},
+		{ enabled: isEnabled },
 	);
 
 	return {
