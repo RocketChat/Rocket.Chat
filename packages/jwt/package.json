@@ -24,7 +24,7 @@
 		"/dist"
 	],
 	"dependencies": {
-		"jose": "^4.14.4"
+		"jose": "^4.15.9"
 	},
 	"volta": {
 		"extends": "../../package.json"
