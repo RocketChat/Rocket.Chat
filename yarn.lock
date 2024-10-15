@@ -9282,7 +9282,7 @@ __metadata:
     react-virtuoso: "npm:^4.7.1"
     redis: "npm:^4.0.6"
     rewire: "npm:^6.0.0"
-    sanitize-html: "npm:^2.7.2"
+    sanitize-html: "npm:^2.13.1"
     semver: "npm:^7.6.3"
     sharp: "npm:^0.32.6"
     sinon: "npm:^19.0.2"
@@ -33643,7 +33643,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sanitize-html@npm:^2.6.1, sanitize-html@npm:^2.7.2":
+"sanitize-html@npm:^2.13.1":
+  version: 2.13.1
+  resolution: "sanitize-html@npm:2.13.1"
+  dependencies:
+    deepmerge: "npm:^4.2.2"
+    escape-string-regexp: "npm:^4.0.0"
+    htmlparser2: "npm:^8.0.0"
+    is-plain-object: "npm:^5.0.0"
+    parse-srcset: "npm:^1.0.2"
+    postcss: "npm:^8.3.11"
+  checksum: 10/c6c3218ebd4d50650efc6927eb988e1fe501f9d4d8a5cefaa7c60a158c004f0cde4f3c580b0f74f37d4c640e9cc912b763fa7a154fd121173bcdd9f3f72dbc11
+  languageName: node
+  linkType: hard
+
+"sanitize-html@npm:^2.6.1":
   version: 2.7.2
   resolution: "sanitize-html@npm:2.7.2"
   dependencies:
