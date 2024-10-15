@@ -1385,6 +1385,48 @@ const GETOmnichannelContactHistorySchema = {
 
 export const isGETOmnichannelContactHistoryProps = ajv.compile<GETOmnichannelContactHistoryProps>(GETOmnichannelContactHistorySchema);
 
+type POSTOmnichannelBlockContactProps = PaginatedRequest<{
+	contactId: string;
+	visitorId: string;
+}>;
+
+const POSTOmnichannelBlockContactSchema = {
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+		},
+		visitorId: {
+			type: 'string',
+		},
+	},
+	required: ['contactId'],
+	additionalProperties: false,
+};
+
+export const isPOSTOmnichannelBlockContactProps = ajv.compile<POSTOmnichannelBlockContactProps>(POSTOmnichannelBlockContactSchema);
+
+type POSTOmnichannelUnblockContactProps = PaginatedRequest<{
+	contactId: string;
+	visitorId: string;
+}>;
+
+const POSTOmnichannelUnblockContactSchema = {
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+		},
+		visitorId: {
+			type: 'string',
+		}
+	},
+	required: ['contactId'],
+	additionalProperties: false,
+};
+
+export const isPOSTOmnichannelUnblockContactProps = ajv.compile<POSTOmnichannelUnblockContactProps>(POSTOmnichannelUnblockContactSchema);
+
 type GETOmnichannelContactProps = { contactId: string };
 
 const GETOmnichannelContactSchema = {
@@ -3837,6 +3879,12 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/omnichannel/contacts.history': {
 		GET: (params: GETOmnichannelContactHistoryProps) => PaginatedResult<{ history: VisitorSearchChatsResult[] }>;
+	};
+	'/v1/omnichannel/contacts.block': {
+		POST: (params: POSTOmnichannelBlockContactProps) => void;
+	};
+	'/v1/omnichannel/contacts.unblock': {
+		POST: (params: POSTOmnichannelUnblockContactProps) => void;
 	};
 	'/v1/omnichannel/contact.search': {
 		GET: (params: GETOmnichannelContactSearchProps) => { contact: ILivechatVisitor | null };
