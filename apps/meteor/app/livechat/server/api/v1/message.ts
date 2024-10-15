@@ -258,7 +258,10 @@ API.v1.addRoute(
 			const visitorToken = this.bodyParams.visitor.token;
 			const sourceType = isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API;
 
-			const visitor = await LivechatVisitors.getVisitorByTokenAndSource({ token: visitorToken, source: { type: sourceType } }, {});
+			const visitor = await LivechatVisitors.getVisitorByTokenAndSource(
+				{ token: visitorToken, sourceFilter: { 'source.type': sourceType } },
+				{},
+			);
 			let rid: string;
 			if (visitor) {
 				const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});

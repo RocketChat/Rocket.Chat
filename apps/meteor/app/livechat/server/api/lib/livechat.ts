@@ -68,7 +68,7 @@ export function findGuest(token: string, sourceType?: OmnichannelSourceType): Pr
 	};
 
 	if (sourceType) {
-		return LivechatVisitors.getVisitorByTokenAndSource({ token, source: { type: sourceType } }, { projection });
+		return LivechatVisitors.getVisitorByTokenAndSource({ token, sourceFilter: { 'source.type': sourceType } }, { projection });
 	}
 	return LivechatVisitors.getVisitorByToken(token, { projection });
 }

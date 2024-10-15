@@ -10,7 +10,10 @@ export class AppVisitorsConverter {
 	}
 
 	async convertById(id, appId) {
-		const visitor = await LivechatVisitors.findOneEnabledByIdAndSource({ _id: id, source: { type: OmnichannelSourceType.APP, id: appId } });
+		const visitor = await LivechatVisitors.findOneEnabledByIdAndSource({
+			_id: id,
+			sourceFilter: { 'source.type': OmnichannelSourceType.APP, 'source.id': appId },
+		});
 
 		return this.convertVisitor(visitor);
 	}
@@ -22,7 +25,10 @@ export class AppVisitorsConverter {
 	}
 
 	async convertByTokenAndSource(token, appId) {
-		const visitor = await LivechatVisitors.getVisitorByTokenAndSource({ token, source: { type: OmnichannelSourceType.APP, id: appId } });
+		const visitor = await LivechatVisitors.getVisitorByTokenAndSource({
+			token,
+			sourceFilter: { 'source.type': OmnichannelSourceType.APP, 'source.id': appId },
+		});
 
 		return this.convertVisitor(visitor);
 	}

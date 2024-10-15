@@ -58,7 +58,7 @@ callbacks.add(
 
 		const visitorSource: IOmnichannelSource = { type: OmnichannelSourceType.SMS, alias: service };
 		const visitor = await LivechatVisitors.getVisitorByTokenAndSource(
-			{ token: room.v.token, source: visitorSource },
+			{ token: room.v.token, sourceFilter: { 'source.type': visitorSource.type, 'source.alias': visitorSource.alias } },
 			{ projection: { phone: 1, source: 1 } },
 		);
 

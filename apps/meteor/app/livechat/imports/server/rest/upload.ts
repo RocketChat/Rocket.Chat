@@ -26,7 +26,10 @@ API.v1.addRoute('livechat/upload/:rid', {
 		}
 
 		const visitorToken = this.request.headers['x-visitor-token'];
-		const visitor = await LivechatVisitors.getVisitorByTokenAndSource({ token: visitorToken as string, source: { type: sourceType } });
+		const visitor = await LivechatVisitors.getVisitorByTokenAndSource({
+			token: visitorToken as string,
+			sourceFilter: { 'source.type': sourceType },
+		});
 
 		if (!visitor) {
 			return API.v1.unauthorized();
