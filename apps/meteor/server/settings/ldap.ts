@@ -209,6 +209,11 @@ export const createLdapSettings = () =>
 					enableQuery,
 					displayQuery: ldapOnly,
 				});
+
+				await this.add('LDAP_Extension_Field', '', {
+					type: 'string',
+					enableQuery,
+				});
 			});
 
 			await this.section('LDAP_DataSync_Avatar', async function () {
