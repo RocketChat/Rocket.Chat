@@ -5,14 +5,14 @@ import { parse } from 'csv-parse/lib/sync';
 
 import { addParsedContacts } from '../../importer-csv/server/addParsedContacts';
 import { Importer, ProgressStep, ImporterWebsocket } from '../../importer/server';
-import type { IConverterOptions } from '../../importer/server/classes/ImportDataConverter';
+import type { ConverterOptions } from '../../importer/server/classes/ImportDataConverter';
 import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
 import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
 
 export class ContactImporter extends Importer {
 	private csvParser: (csv: string) => string[][];
 
-	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: IConverterOptions = {}) {
+	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: ConverterOptions = {}) {
 		super(info, importRecord, converterOptions);
 
 		this.csvParser = parse;
