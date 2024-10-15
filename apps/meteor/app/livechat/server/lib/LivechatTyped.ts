@@ -539,6 +539,16 @@ class LivechatClass {
 		Livechat.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
 		const room = await LivechatRooms.findOneById(message.rid);
 
+		if (room?.v.contactId) {
+			const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, 'channels'>>(room?.v.contactId, {
+				projection: { channels: 1 },
+			});
+			const channel = contact?.channels?.find((channel: ILivechatContactChannel) => channel.visitorId === guest._id);
+			if (channel?.blocked) {
+				throw new Error('error-contact-blocked');
+			}
+		}
+
 		if (room && !room.open) {
 			Livechat.logger.debug(`Last room for visitor ${guest._id} closed. Creating new one`);
 		}
