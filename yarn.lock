@@ -1314,6 +1314,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/helper-plugin-utils@npm:^7.25.7":
+  version: 7.25.7
+  resolution: "@babel/helper-plugin-utils@npm:7.25.7"
+  checksum: 10/e1b0ea5e67b05378d6360e3fc370e99bfb247eed9f68145b5cce541da703424e1887fb6fc60ab2f7f743c72dcbfbed79d3032af43f2c251c229c734dc2572a5b
+  languageName: node
+  linkType: hard
+
 "@babel/helper-remap-async-to-generator@npm:^7.18.9, @babel/helper-remap-async-to-generator@npm:^7.22.20, @babel/helper-remap-async-to-generator@npm:^7.22.9":
   version: 7.22.20
   resolution: "@babel/helper-remap-async-to-generator@npm:7.22.20"
@@ -1356,6 +1363,16 @@ __metadata:
   dependencies:
     "@babel/types": "npm:^7.22.5"
   checksum: 10/1012ef2295eb12dc073f2b9edf3425661e9b8432a3387e62a8bc27c42963f1f216ab3124228015c748770b2257b4f1fda882ca8fa34c0bf485e929ae5bc45244
+  languageName: node
+  linkType: hard
+
+"@babel/helper-skip-transparent-expression-wrappers@npm:^7.25.7":
+  version: 7.25.7
+  resolution: "@babel/helper-skip-transparent-expression-wrappers@npm:7.25.7"
+  dependencies:
+    "@babel/traverse": "npm:^7.25.7"
+    "@babel/types": "npm:^7.25.7"
+  checksum: 10/466c81d09981bfb9e10aa6697ecb621389ff92a86187daaca34a969ca990d7327ebe931e87f7d52a200e499542d398469478d83dfaaa244d2f49df4e078490b3
   languageName: node
   linkType: hard
 
@@ -1608,7 +1625,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-proposal-nullish-coalescing-operator@npm:^7.18.6, @babel/plugin-proposal-nullish-coalescing-operator@npm:~7.18.6":
+"@babel/plugin-proposal-nullish-coalescing-operator@npm:^7.18.6":
   version: 7.18.6
   resolution: "@babel/plugin-proposal-nullish-coalescing-operator@npm:7.18.6"
   dependencies:
@@ -1659,7 +1676,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-proposal-optional-chaining@npm:^7.21.0, @babel/plugin-proposal-optional-chaining@npm:~7.21.0":
+"@babel/plugin-proposal-optional-chaining@npm:^7.21.0":
   version: 7.21.0
   resolution: "@babel/plugin-proposal-optional-chaining@npm:7.21.0"
   dependencies:
@@ -2293,6 +2310,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/plugin-transform-nullish-coalescing-operator@npm:~7.25.8":
+  version: 7.25.8
+  resolution: "@babel/plugin-transform-nullish-coalescing-operator@npm:7.25.8"
+  dependencies:
+    "@babel/helper-plugin-utils": "npm:^7.25.7"
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: 10/d742fedc1abf404d7f40065cdff9afc521236607f0d06c48d1e471f43d3a7471010d1651ba4758d80c73347a39dc278d86c43a9c814382ded4e9c7c519ace021
+  languageName: node
+  linkType: hard
+
 "@babel/plugin-transform-numeric-separator@npm:^7.22.11":
   version: 7.22.11
   resolution: "@babel/plugin-transform-numeric-separator@npm:7.22.11"
@@ -2354,6 +2382,18 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0
   checksum: 10/0ef24e889d6151428953fc443af5f71f4dae73f373dc1b7f5dd3f6a61d511296eb77e9b870e8c2c02a933e3455ae24c1fa91738c826b72a4ff87e0337db527e8
+  languageName: node
+  linkType: hard
+
+"@babel/plugin-transform-optional-chaining@npm:~7.25.8":
+  version: 7.25.8
+  resolution: "@babel/plugin-transform-optional-chaining@npm:7.25.8"
+  dependencies:
+    "@babel/helper-plugin-utils": "npm:^7.25.7"
+    "@babel/helper-skip-transparent-expression-wrappers": "npm:^7.25.7"
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: 10/ffb5d81e6dbb28907d5346c8e12a1ed1ea0e30170fbe609d48d0466cdbc9d11b5774c8781682693f7cf7bd39da6111980e54813af96c6b3086dc769369c67d28
   languageName: node
   linkType: hard
 
@@ -8943,8 +8983,8 @@ __metadata:
     "@axe-core/playwright": "npm:^4.7.3"
     "@babel/core": "npm:~7.22.20"
     "@babel/eslint-parser": "npm:~7.23.10"
-    "@babel/plugin-proposal-nullish-coalescing-operator": "npm:~7.18.6"
-    "@babel/plugin-proposal-optional-chaining": "npm:~7.21.0"
+    "@babel/plugin-transform-nullish-coalescing-operator": "npm:~7.25.8"
+    "@babel/plugin-transform-optional-chaining": "npm:~7.25.8"
     "@babel/preset-env": "npm:~7.22.20"
     "@babel/preset-react": "npm:~7.22.15"
     "@babel/register": "npm:~7.22.15"
