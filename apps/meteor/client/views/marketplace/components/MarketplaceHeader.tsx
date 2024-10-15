@@ -8,8 +8,9 @@ import { PageHeader } from '../../../components/Page';
 import UnlimitedAppsUpsellModal from '../UnlimitedAppsUpsellModal';
 import { useAppsCountQuery } from '../hooks/useAppsCountQuery';
 import EnabledAppsCount from './EnabledAppsCount';
+import UpdateRocketChatButton from './UpdateRocketChatButton';
 
-const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null => {
+const MarketplaceHeader = ({ title, unsupportedVersion }: { title: string; unsupportedVersion: boolean }): ReactElement | null => {
 	const t = useTranslation();
 	const isAdmin = usePermission('manage-apps');
 	const context = (useRouteParameter('context') || 'explore') as 'private' | 'explore' | 'installed' | 'premium' | 'requested';
@@ -29,8 +30,11 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 		<PageHeader title={title}>
 			<ButtonGroup wrap align='end'>
 				{result.isLoading && <GenericResourceUsageSkeleton />}
-				{result.isSuccess && !result.data.hasUnlimitedApps && <EnabledAppsCount {...result.data} context={context} />}
-				{isAdmin && result.isSuccess && !result.data.hasUnlimitedApps && (
+				{!unsupportedVersion && result.isSuccess && !result.data.hasUnlimitedApps && (
+					<EnabledAppsCount {...result.data} context={context} />
+				)}
+
+				{!unsupportedVersion && isAdmin && result.isSuccess && !result.data.hasUnlimitedApps && (
 					<Button
 						onClick={() => {
 							setModal(<UnlimitedAppsUpsellModal onClose={() => setModal(null)} />);
@@ -39,7 +43,10 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 						{t('Enable_unlimited_apps')}
 					</Button>
 				)}
+
 				{isAdmin && context === 'private' && <Button onClick={handleUploadButtonClick}>{t('Upload_private_app')}</Button>}
+
+				{unsupportedVersion && context !== 'private' && <UpdateRocketChatButton />}
 			</ButtonGroup>
 		</PageHeader>
 	);
