@@ -22,6 +22,7 @@ import { ObjectId } from 'mongodb';
 import { notifyOnSettingChanged } from '../../../app/lib/server/lib/notifyListener';
 import { BaseRaw } from './BaseRaw';
 
+const emptySourceFilter = { source: { $exists: false } };
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements ILivechatVisitorsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatVisitor>>) {
 		super(db, 'livechat_visitor', trash);
@@ -49,14 +50,17 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query);
 	}
 
-	findOneVisitorByPhoneAndSource(phone: string, sourceFilter: Filter<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
-		const emptySourceFilter = { source: { $exists: false } };
+	findOneVisitorByPhoneAndSource(
+		phone: string,
+		sourceFilter: Filter<ILivechatVisitor>,
+		options?: FindOptions<ILivechatVisitor>,
+	): Promise<ILivechatVisitor | null> {
 		const query = {
 			'phone.phoneNumber': phone,
 			...(sourceFilter ? { $or: [sourceFilter, emptySourceFilter] } : emptySourceFilter),
 		};
 
-		return this.findOne(query);
+		return this.findOne(query, options);
 	}
 
 	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null> {
@@ -67,14 +71,17 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query);
 	}
 
-	findOneGuestByEmailAddressAndSource(emailAddress: string, sourceFilter: Filter<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
-		const emptySourceFilter = { source: { $exists: false } };
+	findOneGuestByEmailAddressAndSource(
+		emailAddress: string,
+		sourceFilter: Filter<ILivechatVisitor>,
+		options?: FindOptions<ILivechatVisitor>,
+	): Promise<ILivechatVisitor | null> {
 		const query = {
-			'visitorEmails.address': String(emailAddress).toLowerCase(),
+			'visitorEmails.address': emailAddress.toLowerCase(),
 			...(sourceFilter ? { $or: [sourceFilter, emptySourceFilter] } : emptySourceFilter),
 		};
 
-		return this.findOne(query);
+		return this.findOne(query, options);
 	}
 
 	/**
@@ -97,7 +104,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.find(
 			{
 				...query,
-				$or: [sourceFilter, { source: { $exists: false } }],
+				$or: [sourceFilter, emptySourceFilter],
 				disabled: { $ne: true },
 			},
 			options,
@@ -117,7 +124,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		{ _id, sourceFilter }: { _id: string; sourceFilter: Filter<ILivechatVisitor> },
 		options?: FindOptions<ILivechatVisitor>,
 	): Promise<T | null> {
-		const emptySourceFilter = { source: { $exists: false } };
 		const query = {
 			_id,
 			disabled: { $ne: true },
@@ -148,7 +154,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		{ token, sourceFilter }: { token: string; sourceFilter?: Filter<ILivechatVisitor> },
 		options: FindOptions<ILivechatVisitor>,
 	): Promise<ILivechatVisitor | null> {
-		const emptySourceFilter = { source: { $exists: false } };
 		const query = {
 			token,
 			...(sourceFilter ? { $or: [sourceFilter, emptySourceFilter] } : emptySourceFilter),
