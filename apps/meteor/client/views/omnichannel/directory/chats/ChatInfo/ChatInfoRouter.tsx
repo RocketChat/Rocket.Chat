@@ -5,7 +5,7 @@ import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, Contextualb
 import { useRoom } from '../../../../room/contexts/RoomContext';
 import { useRoomToolbox } from '../../../../room/contexts/RoomToolboxContext';
 import ChatInfo from './ChatInfo';
-import { RoomEditWithData } from './RoomEdit';
+import RoomEdit from './RoomEdit';
 
 const PATH = 'live';
 
@@ -36,7 +36,7 @@ const ChatsContextualBar = () => {
 				<ContextualbarClose onClick={closeTab} />
 			</ContextualbarHeader>
 			{context === 'edit' ? (
-				<RoomEditWithData id={room._id} onClose={handleRoomEditBarCloseButtonClick} />
+				<RoomEdit id={room._id} onClose={handleRoomEditBarCloseButtonClick} />
 			) : (
 				<ChatInfo route={PATH} id={room._id} />
 			)}

@@ -13,7 +13,15 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { getContactHistory, Contacts, createContact, updateContact, getContacts, isSingleContactEnabled } from '../../lib/Contacts';
+import {
+	getContactHistory,
+	Contacts,
+	createContact,
+	getContact,
+	updateContact,
+	getContacts,
+	isSingleContactEnabled,
+} from '../../lib/Contacts';
 
 API.v1.addRoute(
 	'omnichannel/contact',
@@ -142,7 +150,7 @@ API.v1.addRoute(
 			let contact: ILivechatContact | null = null;
 
 			if (contactId) {
-				contact = await LivechatContacts.findOneById(contactId);
+				contact = await getContact(contactId);
 			}
 
 			if (email) {

@@ -44,6 +44,7 @@ import {
 	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
+import { isSingleContactEnabled, migrateVisitorIfMissingContact } from './Contacts';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -85,7 +86,7 @@ export const createLivechatRoom = async <
 	);
 
 	const extraRoomInfo = await callbacks.run('livechat.beforeRoom', roomInfo, extraData);
-	const { _id, username, token, department: departmentId, status = 'online', contactId } = guest;
+	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
 
 	const { activity } = guest;
@@ -93,6 +94,14 @@ export const createLivechatRoom = async <
 		msg: `Creating livechat room for visitor ${_id}`,
 		visitor: { _id, username, departmentId, status, activity },
 	});
+
+	const contactId = await (async () => {
+		if (!isSingleContactEnabled()) {
+			return undefined;
+		}
+
+		return migrateVisitorIfMissingContact(_id, extraRoomInfo.source || roomInfo.source || { type: OmnichannelSourceType.OTHER });
+	})();
 
 	// TODO: Solve `u` missing issue
 	const room: InsertionModel<IOmnichannelRoom> = {

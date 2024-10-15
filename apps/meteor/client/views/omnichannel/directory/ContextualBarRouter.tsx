@@ -5,18 +5,14 @@ import CallsContextualBarDirectory from './CallsContextualBarDirectory';
 import ChatsContextualBar from './ChatsContextualBar';
 import ContactContextualBar from './ContactContextualBar';
 
-type ContextualBarProps = {
-	chatReload?: () => void;
-};
+const ContextualBarRouter = () => {
+	const tab = useRouteParameter('tab');
 
-const ContextualBar = ({ chatReload }: ContextualBarProps) => {
-	const page = useRouteParameter('page');
-
-	switch (page) {
+	switch (tab) {
 		case 'contacts':
 			return <ContactContextualBar />;
 		case 'chats':
-			return <ChatsContextualBar chatReload={chatReload} />;
+			return <ChatsContextualBar />;
 		case 'calls':
 			return <CallsContextualBarDirectory />;
 		default:
@@ -24,4 +20,4 @@ const ContextualBar = ({ chatReload }: ContextualBarProps) => {
 	}
 };
 
-export default ContextualBar;
+export default ContextualBarRouter;

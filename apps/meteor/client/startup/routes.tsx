@@ -8,7 +8,7 @@ const IndexRoute = lazy(() => import('../views/root/IndexRoute'));
 const MeetRoute = lazy(() => import('../views/meet/MeetRoute'));
 const HomePage = lazy(() => import('../views/home/HomePage'));
 const DirectoryPage = lazy(() => import('../views/directory'));
-const OmnichannelDirectoryPage = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'));
+const OmnichannelDirectoryRouter = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryRouter'));
 const OmnichannelQueueList = lazy(() => import('../views/omnichannel/queueList'));
 const CMSPage = lazy(() => import('@rocket.chat/web-ui-registration').then(({ CMSPage }) => ({ default: CMSPage })));
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
@@ -48,10 +48,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/directory/:tab?';
 		};
 		'omnichannel-directory': {
-			pathname: `/omnichannel-directory${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}${
-				| `/${string}`
-				| ''}`;
-			pattern: '/omnichannel-directory/:page?/:bar?/:id?/:tab?/:context?';
+			pathname: `/omnichannel-directory${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/omnichannel-directory/:tab?/:context?/:id?/';
 		};
 		'livechat-queue': {
 			pathname: '/livechat-queue';
@@ -153,11 +151,11 @@ router.defineRoutes([
 		),
 	},
 	{
-		path: '/omnichannel-directory/:page?/:bar?/:id?/:tab?/:context?',
+		path: '/omnichannel-directory/:tab?/:context?/:id?/',
 		id: 'omnichannel-directory',
 		element: appLayout.wrap(
 			<MainLayout>
-				<OmnichannelDirectoryPage />
+				<OmnichannelDirectoryRouter />
 			</MainLayout>,
 		),
 	},

@@ -733,7 +733,7 @@ describe('LIVECHAT - contacts', () => {
 			});
 
 			it('should return the last chat', async () => {
-				const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: visitor.contactId });
+				const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.v.contactId });
 
 				expect(res.status).to.be.equal(200);
 				expect(res.body).to.have.property('success', true);
@@ -859,9 +859,9 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should add a channel to a contact when creating a new room', async () => {
-			await request.get(api('livechat/room')).query({ token: visitor.token });
+			const room = await createLivechatRoom(visitor.token);
 
-			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: visitor.contactId });
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.v.contactId });
 
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
@@ -874,19 +874,19 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should not add a channel if visitor already has one with same type', async () => {
-			const roomResult = await request.get(api('livechat/room')).query({ token: visitor.token });
+			const room = await createLivechatRoom(visitor.token);
 
-			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: visitor.contactId });
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.v.contactId });
 
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
 			expect(res.body.contact.channels).to.be.an('array');
 			expect(res.body.contact.channels.length).to.be.equal(1);
 
-			await closeOmnichannelRoom(roomResult.body.room._id);
+			await closeOmnichannelRoom(room._id);
 			await request.get(api('livechat/room')).query({ token: visitor.token });
 
-			const secondResponse = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: visitor.contactId });
+			const secondResponse = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.v.contactId });
 
 			expect(secondResponse.status).to.be.equal(200);
 			expect(secondResponse.body).to.have.property('success', true);
