@@ -17,7 +17,6 @@ import { useMutation } from '@tanstack/react-query';
 import fileSize from 'filesize';
 import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler, MouseEvent } from 'react';
 import React, { memo, useRef, useReducer, useCallback, useState, useEffect } from 'react';
-import { Trans } from 'react-i18next';
 import { useSubscription } from 'use-subscription';
 
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
