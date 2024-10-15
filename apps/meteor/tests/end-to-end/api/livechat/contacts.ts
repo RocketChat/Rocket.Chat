@@ -349,8 +349,16 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body).to.have.property('success', true);
 			expect(res.body.contact._id).to.be.equal(contactId);
 			expect(res.body.contact.name).to.be.equal(name);
-			expect(res.body.contact.emails).to.be.deep.equal(emails);
-			expect(res.body.contact.phones).to.be.deep.equal(phones);
+			expect(res.body.contact.emails).to.be.deep.equal([
+				{
+					address: emails[0],
+				},
+			]);
+			expect(res.body.contact.phones).to.be.deep.equal([
+				{
+					phoneNumber: phones[0],
+				},
+			]);
 		});
 
 		it('should set the unknown field to false when updating a contact', async () => {
@@ -607,8 +615,12 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.contact).to.have.property('createdAt');
 			expect(res.body.contact._id).to.be.equal(contactId);
 			expect(res.body.contact.name).to.be.equal(contact.name);
-			expect(res.body.contact.emails).to.be.deep.equal(contact.emails);
-			expect(res.body.contact.phones).to.be.deep.equal(contact.phones);
+			expect(res.body.contact.emails).to.be.deep.equal([
+				{
+					address: contact.emails[0],
+				},
+			]);
+			expect(res.body.contact.phones).to.be.deep.equal([{ phoneNumber: contact.phones[0] }]);
 			expect(res.body.contact.contactManager).to.be.equal(contact.contactManager);
 		});
 
@@ -715,7 +727,7 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.total).to.be.equal(1);
 			expect(res.body.contacts[0]._id).to.be.equal(contactId);
 			expect(res.body.contacts[0].name).to.be.equal(contact.name);
-			expect(res.body.contacts[0].emails[0]).to.be.equal(contact.emails[0]);
+			expect(res.body.contacts[0].emails[0].address).to.be.equal(contact.emails[0]);
 		});
 
 		it('should return only contacts that match the searchText using phone number', async () => {
@@ -727,7 +739,7 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.total).to.be.equal(1);
 			expect(res.body.contacts[0]._id).to.be.equal(contactId);
 			expect(res.body.contacts[0].name).to.be.equal(contact.name);
-			expect(res.body.contacts[0].emails[0]).to.be.equal(contact.emails[0]);
+			expect(res.body.contacts[0].phones[0].phoneNumber).to.be.equal(contact.phones[0]);
 		});
 
 		it('should return only contacts that match the searchText using name', async () => {
@@ -739,7 +751,7 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.total).to.be.equal(1);
 			expect(res.body.contacts[0]._id).to.be.equal(contactId);
 			expect(res.body.contacts[0].name).to.be.equal(contact.name);
-			expect(res.body.contacts[0].emails[0]).to.be.equal(contact.emails[0]);
+			expect(res.body.contacts[0].emails[0].address).to.be.equal(contact.emails[0]);
 		});
 
 		it('should return an empty list if no contacts exist', async () => {
