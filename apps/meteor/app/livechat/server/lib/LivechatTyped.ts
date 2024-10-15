@@ -446,55 +446,6 @@ class LivechatClass {
 			}
 		}
 
-		if (isSingleContactEnabled()) {
-			let { contactId } = visitor;
-
-			if (!contactId) {
-				const visitorContact = await LivechatVisitors.findOne<
-					Pick<ILivechatVisitor, 'name' | 'contactManager' | 'livechatData' | 'phone' | 'visitorEmails' | 'username' | 'contactId'>
-				>(visitor._id, {
-					projection: {
-						name: 1,
-						contactManager: 1,
-						livechatData: 1,
-						phone: 1,
-						visitorEmails: 1,
-						username: 1,
-						contactId: 1,
-					},
-				});
-
-				contactId = visitorContact?.contactId;
-			}
-
-			if (!contactId) {
-				// ensure that old visitors have a contact
-				contactId = await createContactFromVisitor(visitor);
-			}
-
-			const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'channels'>>(contactId, {
-				projection: { _id: 1, channels: 1 },
-			});
-
-			if (contact) {
-				const channel = contact.channels?.find(
-					(channel: ILivechatContactChannel) => channel.name === roomInfo.source?.type && channel.visitorId === visitor._id,
-				);
-
-				if (!channel) {
-					Livechat.logger.debug(`Adding channel for contact ${contact._id}`);
-
-					await LivechatContacts.addChannel(contact._id, {
-						name: roomInfo.source?.label || roomInfo.source?.type.toString() || OmnichannelSourceType.OTHER,
-						visitorId: visitor._id,
-						blocked: false,
-						verified: false,
-						details: roomInfo.source,
-					});
-				}
-			}
-		}
-
 		// delegate room creation to QueueManager
 		Livechat.logger.debug(`Calling QueueManager to request a room for visitor ${visitor._id}`);
 
