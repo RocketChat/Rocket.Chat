@@ -41,7 +41,15 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		];
 	}
 
-	findOneVisitorByPhone(phone: string, sourceFilter?: Filter<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
+	findOneVisitorByPhone(phone: string): Promise<ILivechatVisitor | null> {
+		const query = {
+			'phone.phoneNumber': phone,
+		};
+
+		return this.findOne(query);
+	}
+
+	findOneVisitorByPhoneAndSource(phone: string, sourceFilter: Filter<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
 		const emptySourceFilter = { source: { $exists: false } };
 		const query = {
 			'phone.phoneNumber': phone,
@@ -51,7 +59,15 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query);
 	}
 
-	findOneGuestByEmailAddress(emailAddress: string, sourceFilter?: Filter<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
+	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null> {
+		const query = {
+			'visitorEmails.address': String(emailAddress).toLowerCase(),
+		};
+
+		return this.findOne(query);
+	}
+
+	findOneGuestByEmailAddressAndSource(emailAddress: string, sourceFilter: Filter<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
 		const emptySourceFilter = { source: { $exists: false } };
 		const query = {
 			'visitorEmails.address': String(emailAddress).toLowerCase(),

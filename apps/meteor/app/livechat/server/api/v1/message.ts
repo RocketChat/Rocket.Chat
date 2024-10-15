@@ -29,7 +29,7 @@ API.v1.addRoute(
 			const { token, rid, agent, msg } = this.bodyParams;
 			const sourceType = isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API;
 
-			const guest = await findGuest(token, sourceType);
+			const guest = await findGuestBySource(token, sourceType);
 			if (!guest) {
 				throw new Error('invalid-token');
 			}

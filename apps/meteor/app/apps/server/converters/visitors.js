@@ -9,7 +9,13 @@ export class AppVisitorsConverter {
 		this.orch = orch;
 	}
 
-	async convertById(id, appId) {
+	async convertById(id) {
+		const visitor = await LivechatVisitors.findOneEnabledById(id);
+
+		return this.convertVisitor(visitor);
+	}
+
+	async convertByIdAndSource(id, appId) {
 		const visitor = await LivechatVisitors.findOneEnabledByIdAndSource({
 			_id: id,
 			sourceFilter: { 'source.type': OmnichannelSourceType.APP, 'source.id': appId },
