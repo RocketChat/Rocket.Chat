@@ -1653,7 +1653,6 @@
   "Enabled": "Ativado",
   "Encrypted": "Criptografado",
   "Encrypted_channel_Description": "Canal criptografado de ponta a ponta. A pesquisa não funcionará com canais criptografados e as notificações podem não mostrar o conteúdo das mensagens.",
-  "Encrypted_key_title": "Clique aqui para desabilitar a criptografia de ponta a ponta para esse canal (exige e2ee-permission)",
   "Encrypted_message": "Mensagem criptografada",
   "Encrypted_setting_changed_successfully": "Configuração de criptografia alterada com sucesso",
   "Encrypted_not_available": "Indisponível para canais públicos",

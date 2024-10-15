@@ -1762,7 +1762,6 @@
   "Enabled": "Engedélyezve",
   "Encrypted": "Titkosítva",
   "Encrypted_channel_Description": "Végpontok között titkosított csatorna. A keresés nem fog működni a titkosított csatornákkal, és az értesítések esetleg nem jelenítik meg az üzenetek tartalmát.",
-  "Encrypted_key_title": "Kattintson ide a csatorna végpontok közötti titkosításának letiltásához (végpontok közötti titkosítás jogosultságot igényel)",
   "Encrypted_message": "Titkosított üzenet",
   "Encrypted_setting_changed_successfully": "A titkosított beállítás sikeresen megváltoztatva",
   "Encrypted_not_available": "Nem érhető el nyilvános csatornáknál",

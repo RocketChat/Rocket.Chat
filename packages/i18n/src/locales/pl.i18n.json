@@ -1795,8 +1795,6 @@
   "Enabled": "Włączone",
   "Encrypted": "Szyfrowane",
   "Encrypted_channel_Description": "Kanał zaszyfrowany od końca do końca. Wyszukiwanie nie działa z szyfrowanymi kanałami, a powiadomienia mogą nie wyświetlać treści wiadomości.",
-  "Encrypted_key_title": "Kliknij tutaj, aby wyłączyć szyfrowanie od końca do końca dla tego kanału (wymaga uprawnień e2ee-permission)",
-  "Encrypted_message": "Zaszyfrowana wiadomość",
   "Encrypted_setting_changed_successfully": "Ustawienia szyfrowania zostały pomyślnie zmienione",
   "Encrypted_not_available": "Niedostępne dla publicznych {{roomType}}",
   "Encryption_key_saved_successfully": "Twój klucz szyfrowania został zapisany pomyślnie.",

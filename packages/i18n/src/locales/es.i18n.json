@@ -1608,7 +1608,6 @@
   "Enabled": "Habilitada",
   "Encrypted": "Cifrado",
   "Encrypted_channel_Description": "Canal cifrado de extremo a extremo. La búsqueda no funcionará con canales cifrados y es posible que las notificaciones no muestren el contenido de los mensajes.",
-  "Encrypted_key_title": "Haz clic aquí para deshabilitar el cifrado de extremo a extremo para este canal (requiere permiso de E2EE)",
   "Encrypted_message": "Mensaje cifrado",
   "Encrypted_setting_changed_successfully": "Configuración cifrada cambiada correctamente",
   "Encrypted_not_available": "No disponible para Channels públicos",

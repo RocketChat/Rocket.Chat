@@ -1593,7 +1593,6 @@
   "Enabled": "Ingeschakeld",
   "Encrypted": "Versleuteld",
   "Encrypted_channel_Description": "End-to-end gecodeerd kanaal. Zoeken werkt niet met gecodeerde kanalen en meldingen geven de inhoud van het bericht mogelijk niet weer.",
-  "Encrypted_key_title": "Klik hier om end-to-end encryptie voor dit kanaal uit te schakelen (vereist e2ee-toestemming)",
   "Encrypted_message": "Gecodeerd bericht",
   "Encrypted_setting_changed_successfully": "Versleutelde instelling is succesvol gewijzigd",
   "Encrypted_not_available": "Niet beschikbaar voor openbare kanalen",
