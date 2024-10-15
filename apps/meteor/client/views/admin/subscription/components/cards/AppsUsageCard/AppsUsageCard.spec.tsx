@@ -36,9 +36,7 @@ it('should render data as progress bars', async () => {
 
 	await userEvent.click(screen.getByRole('button', { name: 'Click_here_for_more_info' }));
 
-	expect(
-		screen.getByText('Community workspaces can enable up to 5 marketplace apps. Private apps can only be enabled in premium plans.'),
-	).toBeInTheDocument();
+	expect(screen.getByRole('link', { name: 'premium plans' })).toHaveAttribute('href', 'https://go.rocket.chat/i/pricing-product');
 });
 
 it('should render an upgrade button if marketplace apps reached 80% of the limit', async () => {
@@ -54,9 +52,7 @@ it('should render an upgrade button if marketplace apps reached 80% of the limit
 
 	await userEvent.click(screen.getByRole('button', { name: 'Click_here_for_more_info' }));
 
-	expect(
-		screen.getByText('Community workspaces can enable up to 5 marketplace apps. Private apps can only be enabled in premium plans.'),
-	).toBeInTheDocument();
+	expect(screen.getByRole('link', { name: 'premium plans' })).toHaveAttribute('href', 'https://go.rocket.chat/i/pricing-product');
 });
 
 it('should render a full progress bar with private apps disabled', async () => {
@@ -78,7 +74,5 @@ it('should render a full progress bar with private apps disabled', async () => {
 
 	await userEvent.click(screen.getByRole('button', { name: 'Click_here_for_more_info' }));
 
-	expect(
-		screen.getByText('Community workspaces can enable up to 5 marketplace apps. Private apps can only be enabled in premium plans.'),
-	).toBeInTheDocument();
+	expect(screen.getByRole('link', { name: 'premium plans' })).toHaveAttribute('href', 'https://go.rocket.chat/i/pricing-product');
 });
