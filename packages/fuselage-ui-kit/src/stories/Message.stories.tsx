@@ -2,7 +2,6 @@
 import { Message, Avatar } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { action } from '@storybook/addon-actions';
-import React from 'react';
 
 import { UiKitContext, UiKitMessage } from '..';
 import * as payloads from './payloads';

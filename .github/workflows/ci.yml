@@ -174,6 +174,50 @@ jobs:
       - name: Build Rocket.Chat Packages
         run: yarn build
 
+      - name: Store turbo build
+        uses: actions/upload-artifact@v4
+        with:
+          name: turbo-build
+          path: .turbo/cache
+          overwrite: true
+          include-hidden-files: true
+
+  deploy-preview:
+    runs-on: ubuntu-latest
+    needs: [release-versions, packages-build]
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: rharkor/caching-for-turbo@v1.5
+        if: github.event.action != 'closed'
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        if: github.event.action != 'closed'
+        with:
+          node-version: 14.21.3
+          deno-version: 1.37.1
+          cache-modules: true
+          install: true
+      - name: Restore turbo build
+        uses: actions/download-artifact@v4
+        with:
+          name: turbo-build
+          path: .turbo/cache
+      - name: Build
+        if: github.event.action != 'closed'
+        run: |
+          yarn turbo run build-preview
+          yarn turbo run .:build-preview-move
+          npx indexifier .preview --html  --extensions .html  > .preview/index.html
+
+      - uses: rossjrw/pr-preview-action@v1
+        with:
+          source-dir: .preview
+          preview-branch: gh-pages
+          umbrella-dir: pr-preview
+          action: auto
+
   build:
     name: 📦 Meteor Build - coverage
     needs: [release-versions, packages-build]

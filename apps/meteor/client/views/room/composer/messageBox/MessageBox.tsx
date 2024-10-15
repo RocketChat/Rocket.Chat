@@ -10,7 +10,6 @@ import {
 	MessageComposerToolbar,
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
-	MessageComposerHint,
 	MessageComposerButton,
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -46,6 +45,7 @@ import FilePreview from './FilePreview/FilePreview';
 import { handleSendFiles } from './HandleFileUploads';
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
+import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
@@ -85,7 +85,6 @@ type MessageBoxProps = {
 	filesToUpload: File[];
 	setFilesToUpload: any;
 	tmid?: IMessage['_id'];
-	readOnly: boolean;
 	onSend?: (params: { value: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean }) => Promise<void>;
 	onJoin?: () => Promise<void>;
 	onResize?: () => void;
@@ -114,7 +113,6 @@ const MessageBox = ({
 	onUploadFiles,
 	onEscape,
 	onTyping,
-	readOnly,
 	tshow,
 	previewUrls,
 }: MessageBoxProps): ReactElement => {
@@ -477,21 +475,12 @@ const MessageBox = ({
 					suspended={suspended}
 				/>
 			)}
-			{isEditing && (
-				<MessageComposerHint
-					icon='pencil'
-					helperText={
-						!isMobile ? (
-							<Trans i18nKey='Editing_message_hint'>
-								<strong>esc</strong> to cancel · <strong>enter</strong> to save
-							</Trans>
-						) : undefined
-					}
-				>
-					{t('Editing_message')}
-				</MessageComposerHint>
-			)}
-			{readOnly && !isEditing && <MessageComposerHint>{t('This_room_is_read_only')}</MessageComposerHint>}
+			<MessageBoxHint
+				isEditing={isEditing}
+				e2eEnabled={e2eEnabled}
+				unencryptedMessagesAllowed={unencryptedMessagesAllowed}
+				isMobile={isMobile}
+			/>
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
