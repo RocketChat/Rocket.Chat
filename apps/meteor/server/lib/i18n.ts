@@ -6,6 +6,7 @@ import { availableTranslationNamespaces, defaultTranslationNamespace, extractTra
 
 void i18n.init({
 	lng: 'en',
+	fallbackLng: 'en',
 	defaultNS: defaultTranslationNamespace,
 	ns: availableTranslationNamespaces,
 	nsSeparator: '.',

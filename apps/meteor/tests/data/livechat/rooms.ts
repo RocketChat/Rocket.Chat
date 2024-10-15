@@ -33,10 +33,32 @@ export const createLivechatRoom = async (visitorToken: string, extraRoomParams?:
 	return response.body.room;
 };
 
-export const createVisitor = (department?: string, visitorName?: string): Promise<ILivechatVisitor> =>
+export const createLivechatRoomWidget = async (
+	visitorToken: string,
+	extraRoomParams?: Record<string, string>,
+): Promise<IOmnichannelRoom> => {
+	const urlParams = new URLSearchParams();
+	urlParams.append('token', visitorToken);
+	if (extraRoomParams) {
+		for (const [key, value] of Object.entries(extraRoomParams)) {
+			urlParams.append(key, value);
+		}
+	}
+
+	const response = await request
+		.get(api('livechat/room'))
+		.set('Cookie', [`rc_room_type=l`, `rc_is_widget=t`])
+		.query(urlParams.toString())
+		.set(credentials)
+		.expect(200);
+
+	return response.body.room;
+};
+
+export const createVisitor = (department?: string, visitorName?: string, customEmail?: string): Promise<ILivechatVisitor> =>
 	new Promise((resolve, reject) => {
 		const token = getRandomVisitorToken();
-		const email = `${token}@${token}.com`;
+		const email = customEmail || `${token}@${token}.com`;
 		const phone = `${Math.floor(Math.random() * 10000000000)}`;
 		void request.get(api(`livechat/visitor/${token}`)).end((err: Error, res: DummyResponse<ILivechatVisitor>) => {
 			if (!err && res && res.body && res.body.visitor) {
@@ -98,11 +120,13 @@ export const createDepartment = (
 	name?: string,
 	enabled = true,
 	opts: Record<string, any> = {},
+	departmentUnit?: { _id?: string },
+	userCredentials: Credentials = credentials,
 ): Promise<ILivechatDepartment> => {
 	return new Promise((resolve, reject) => {
 		void request
 			.post(api('livechat/department'))
-			.set(credentials)
+			.set(userCredentials)
 			.send({
 				department: {
 					name: name || `Department ${Date.now()}`,
@@ -113,6 +137,49 @@ export const createDepartment = (
 					...opts,
 				},
 				agents,
+				departmentUnit,
+			})
+			.end((err: Error, res: DummyResponse<ILivechatDepartment>) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body.department);
+			});
+	});
+};
+
+export const updateDepartment = ({
+	departmentId,
+	userCredentials,
+	agents,
+	name,
+	enabled = true,
+	opts = {},
+	departmentUnit,
+}: {
+	departmentId: string;
+	userCredentials: Credentials;
+	agents?: { agentId: string }[];
+	name?: string;
+	enabled?: boolean;
+	opts?: Record<string, any>;
+	departmentUnit?: { _id?: string };
+}): Promise<ILivechatDepartment> => {
+	return new Promise((resolve, reject) => {
+		void request
+			.put(api(`livechat/department/${departmentId}`))
+			.set(userCredentials)
+			.send({
+				department: {
+					name: name || `Department ${Date.now()}`,
+					enabled,
+					showOnOfflineForm: true,
+					showOnRegistration: true,
+					email: 'a@b.com',
+					...opts,
+				},
+				agents,
+				departmentUnit,
 			})
 			.end((err: Error, res: DummyResponse<ILivechatDepartment>) => {
 				if (err) {

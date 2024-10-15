@@ -1,5 +1,130 @@
 # @rocket.chat/core-typings
 
+## 6.13.0
+
+### Minor Changes
+
+- ([#32693](https://github.com/RocketChat/Rocket.Chat/pull/32693)) Introduced "create contacts" endpoint to omnichannel
+
+- ([#33225](https://github.com/RocketChat/Rocket.Chat/pull/33225)) Implemented new feature preview for Sidepanel
+
+### Patch Changes
+
+- ([#32510](https://github.com/RocketChat/Rocket.Chat/pull/32510)) Added a new setting to enable mentions in end to end encrypted channels
+
+- <details><summary>Updated dependencies [79c16d315a]:</summary>
+
+  - @rocket.chat/message-parser@0.31.31
+  </details>
+
+## 6.13.0-rc.6
+
+## 6.13.0-rc.5
+
+## 6.13.0-rc.4
+
+## 6.13.0-rc.3
+
+## 6.13.0-rc.2
+
+## 6.13.0-rc.1
+
+## 6.13.0-rc.0
+
+### Minor Changes
+
+- ([#32693](https://github.com/RocketChat/Rocket.Chat/pull/32693)) Introduced "create contacts" endpoint to omnichannel
+
+- ([#33225](https://github.com/RocketChat/Rocket.Chat/pull/33225)) Implemented new feature preview for Sidepanel
+
+### Patch Changes
+
+- ([#32510](https://github.com/RocketChat/Rocket.Chat/pull/32510)) Added a new setting to enable mentions in end to end encrypted channels
+
+- <details><summary>Updated dependencies [79c16d315a]:</summary>
+
+  - @rocket.chat/message-parser@0.31.30-rc.0
+  </details>
+
+## 6.12.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [3cbb9f6252]:</summary>
+
+  - @rocket.chat/message-parser@0.31.30
+  </details>
+
+## 6.12.0
+
+### Minor Changes
+
+- ([#33003](https://github.com/RocketChat/Rocket.Chat/pull/33003)) Added a new setting to enable/disable file encryption in an end to end encrypted room.
+
+- ([#32868](https://github.com/RocketChat/Rocket.Chat/pull/32868)) Added `sidepanel` field to `teams.create` and `rooms.saveRoomSettings` endpoints
+
+- ([#33003](https://github.com/RocketChat/Rocket.Chat/pull/33003)) Fixed a bug related to uploading end to end encrypted file.
+
+  E2EE files and uploads are uploaded as files of mime type `application/octet-stream` as we can't reveal the mime type of actual content since it is encrypted and has to be kept confidential.
+
+  The server resolves the mime type of encrypted file as `application/octet-stream` but it wasn't playing nicely with existing settings related to whitelisted and blacklisted media types.
+
+  E2EE files upload was getting blocked if `application/octet-stream` is not a whitelisted media type.
+
+  Now this PR solves this issue by always accepting E2EE uploads even if `application/octet-stream` is not whitelisted but it will block the upload if `application/octet-stream` is black listed.
+
+### Patch Changes
+
+- ([#32846](https://github.com/RocketChat/Rocket.Chat/pull/32846)) Fixed issue with system messages being counted as agents' first responses in livechat rooms (which caused the "best first response time" and "average first response time" metrics to be unreliable for all agents)
+
+- <details><summary>Updated dependencies [c11f3722df]:</summary>
+
+  - @rocket.chat/ui-kit@0.36.1
+  </details>
+
+## 6.12.0-rc.6
+
+## 6.12.0-rc.5
+
+## 6.12.0-rc.4
+
+## 6.12.0-rc.3
+
+## 6.12.0-rc.2
+
+## 6.12.0-rc.1
+
+## 6.12.0-rc.0
+
+### Minor Changes
+
+- ([#33003](https://github.com/RocketChat/Rocket.Chat/pull/33003)) Added a new setting to enable/disable file encryption in an end to end encrypted room.
+
+- ([#32868](https://github.com/RocketChat/Rocket.Chat/pull/32868)) Added `sidepanel` field to `teams.create` and `rooms.saveRoomSettings` endpoints
+
+- ([#33003](https://github.com/RocketChat/Rocket.Chat/pull/33003)) Fixed a bug related to uploading end to end encrypted file.
+
+  E2EE files and uploads are uploaded as files of mime type `application/octet-stream` as we can't reveal the mime type of actual content since it is encrypted and has to be kept confidential.
+
+  The server resolves the mime type of encrypted file as `application/octet-stream` but it wasn't playing nicely with existing settings related to whitelisted and blacklisted media types.
+
+  E2EE files upload was getting blocked if `application/octet-stream` is not a whitelisted media type.
+
+  Now this PR solves this issue by always accepting E2EE uploads even if `application/octet-stream` is not whitelisted but it will block the upload if `application/octet-stream` is black listed.
+
+### Patch Changes
+
+- ([#32846](https://github.com/RocketChat/Rocket.Chat/pull/32846)) Fixed issue with system messages being counted as agents' first responses in livechat rooms (which caused the "best first response time" and "average first response time" metrics to be unreliable for all agents)
+
+- <details><summary>Updated dependencies [c11f3722df]:</summary>
+
+  - @rocket.chat/ui-kit@0.36.1-rc.0
+  </details>
+
+## 6.11.2
+
+## 6.11.1
+
 ## 6.11.0
 
 ### Minor Changes

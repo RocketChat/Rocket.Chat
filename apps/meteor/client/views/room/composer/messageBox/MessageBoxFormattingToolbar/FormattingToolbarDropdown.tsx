@@ -1,9 +1,9 @@
+import { GenericMenu } from '@rocket.chat/ui-client';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { isPromptButton, type FormattingButton } from '../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
-import GenericMenu from '../../../../../components/GenericMenu/GenericMenu';
-import type { GenericMenuItemProps } from '../../../../../components/GenericMenu/GenericMenuItem';
 import type { ComposerAPI } from '../../../../../lib/chats/ChatAPI';
 
 type FormattingToolbarDropdownProps = {

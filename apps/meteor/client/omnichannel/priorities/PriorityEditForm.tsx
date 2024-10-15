@@ -47,7 +47,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 		const { name } = getValues();
 
 		if (!isValid) {
-			return dispatchToastMessage({ type: 'error', message: t('The_field_is_required') });
+			return dispatchToastMessage({ type: 'error', message: t('Required_field', { field: t('Name') }) });
 		}
 
 		try {
@@ -77,7 +77,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 				<Controller
 					name='name'
 					control={control}
-					rules={{ required: t('The_field_is_required', t('Name')), validate: (v) => v?.trim() !== '' }}
+					rules={{ required: t('Required_field', { field: t('Name') }), validate: (v) => v?.trim() !== '' }}
 					render={({ field: { value, onChange } }): ReactElement => (
 						<StringSettingInput
 							_id=''

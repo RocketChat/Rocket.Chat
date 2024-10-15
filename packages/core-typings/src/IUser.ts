@@ -45,40 +45,13 @@ export type ILoginUsername =
 	  };
 export type LoginUsername = string | ILoginUsername;
 
-export interface IUserServices {
-	password?: {
-		exists?: boolean;
-		bcrypt?: string;
-	};
-	passwordHistory?: string[];
-	email?: {
-		verificationTokens?: IUserEmailVerificationToken[];
-	};
-	resume?: {
-		loginTokens?: LoginToken[];
-	};
-	cloud?: {
-		accessToken: string;
-		refreshToken: string;
-		expiresAt: Date;
-	};
+export interface IOAuthUserServices {
 	google?: any;
 	facebook?: any;
 	github?: any;
 	linkedin?: any;
 	twitter?: any;
 	gitlab?: any;
-	totp?: {
-		enabled: boolean;
-		hashedBackup: string[];
-		secret: string;
-		tempSecret?: string;
-	};
-	email2fa?: {
-		enabled: boolean;
-		changedAt: Date;
-	};
-	emailCode?: IUserEmailCode;
 	saml?: {
 		inResponseTo?: string;
 		provider?: string;
@@ -99,6 +72,65 @@ export interface IUserServices {
 		NickName?: string;
 	};
 }
+
+export interface IUserServices extends IOAuthUserServices {
+	password?: {
+		exists?: boolean;
+		bcrypt?: string;
+	};
+	passwordHistory?: string[];
+	email?: {
+		verificationTokens?: IUserEmailVerificationToken[];
+	};
+	resume?: {
+		loginTokens?: LoginToken[];
+	};
+	cloud?: {
+		accessToken: string;
+		refreshToken: string;
+		expiresAt: Date;
+	};
+	totp?: {
+		enabled: boolean;
+		hashedBackup: string[];
+		secret: string;
+		tempSecret?: string;
+	};
+	email2fa?: {
+		enabled: boolean;
+		changedAt: Date;
+	};
+	emailCode?: IUserEmailCode;
+}
+
+type IUserService = keyof IUserServices;
+type IOAuthService = keyof IOAuthUserServices;
+
+const defaultOAuthKeys = [
+	'google',
+	'dolphin',
+	'facebook',
+	'github',
+	'gitlab',
+	'google',
+	'ldap',
+	'linkedin',
+	'nextcloud',
+	'saml',
+	'twitter',
+] as IOAuthService[];
+const userServiceKeys = ['emailCode', 'email2fa', 'totp', 'resume', 'password', 'passwordHistory', 'cloud', 'email'] as IUserService[];
+
+export const isUserServiceKey = (key: string): key is IUserService =>
+	userServiceKeys.includes(key as IUserService) || defaultOAuthKeys.includes(key as IOAuthService);
+
+export const isDefaultOAuthUser = (user: IUser): boolean =>
+	!!user.services && Object.keys(user.services).some((key) => defaultOAuthKeys.includes(key as IOAuthService));
+
+export const isCustomOAuthUser = (user: IUser): boolean =>
+	!!user.services && Object.keys(user.services).some((key) => !isUserServiceKey(key));
+
+export const isOAuthUser = (user: IUser): boolean => isDefaultOAuthUser(user) || isCustomOAuthUser(user);
 
 export interface IUserEmail {
 	address: string;
@@ -157,6 +189,7 @@ export interface IUser extends IRocketChatRecord {
 	defaultRoom?: string;
 	ldap?: boolean;
 	extension?: string;
+	freeSwitchExtension?: string;
 	inviteToken?: string;
 	canViewAllInfo?: boolean;
 	phone?: string;
@@ -183,6 +216,7 @@ export interface IUser extends IRocketChatRecord {
 	_pendingAvatarUrl?: string;
 	requirePasswordChange?: boolean;
 	requirePasswordChangeReason?: string;
+	isOAuthUser?: boolean; // client only field
 }
 
 export interface IRegisterUser extends IUser {

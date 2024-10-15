@@ -30,7 +30,7 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 		control,
 		handleSubmit,
 		formState: { errors },
-	} = useForm<{ accountId: string }>();
+	} = useForm<{ accountId: string }>({ mode: 'all' });
 
 	const enabled = useSetting<boolean>('Webdav_Integration_Enabled', false);
 
@@ -98,13 +98,13 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 								<Controller
 									name='accountId'
 									control={control}
-									rules={{ required: true }}
+									rules={{ required: t('Required_field', { field: t('Select_a_webdav_server') }) }}
 									render={({ field }): ReactElement => (
 										<Select {...field} options={accountsOptions} id={accountIdField} placeholder={t('Select_an_option')} />
 									)}
 								/>
 							</FieldRow>
-							{errors.accountId && <FieldError>{t('Field_required')}</FieldError>}
+							{errors.accountId && <FieldError>{errors.accountId.message}</FieldError>}
 						</Field>
 					</FieldGroup>
 				)}
