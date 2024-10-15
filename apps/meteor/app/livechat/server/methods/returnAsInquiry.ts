@@ -34,7 +34,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-mac-limit-reached', 'MAC limit reached', { method: 'livechat:returnAsInquiry' });
 		}
 
-        if (!room.open) {
+		if (!room.open) {
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:returnAsInquiry' });
 		}
 
