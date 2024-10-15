@@ -3896,7 +3896,7 @@
   "The_application_name_is_required": "應用程式名稱是必需的",
   "The_channel_name_is_required": "頻道名稱是必需的",
   "The_emails_are_being_sent": "電子郵件傳送中",
-  "The_empty_room__roomName__will_be_removed_automatically": "空房間 <span style=\"font-weight: bold;\">{{roomName}}</span> 將自動刪除。",   
+  "The_empty_room__roomName__will_be_removed_automatically": "空房間 <span style=\"font-weight: bold;\">{{roomName}}</span> 將自動刪除。",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "圖片大小調整不會起作用，因為在我們偵測不到伺服器上安裝的 ImageMagick 或 GraphicsMagick 工具",
   "The_message_is_a_discussion_you_will_not_be_able_to_recover": "此訊息是在論壇中您不可以復原訊息!",
   "The_mobile_notifications_were_disabled_to_all_users_go_to_Admin_Push_to_enable_the_Push_Gateway_again": "所有使用者都停用了手機通知，請到“管理>推送”以再次啟用推送閘道",

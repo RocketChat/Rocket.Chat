@@ -4044,7 +4044,7 @@
   "The_application_name_is_required": "El nom de laplicació és obligatori.",
   "The_channel_name_is_required": "Es requereix el nom del canal",
   "The_emails_are_being_sent": "Els missatges de correu-e s'estan enviant.",
-  "The_empty_room__roomName__will_be_removed_automatically": "La sala buida <span style=\"font-weight: bold;\">{{roomName}}</span> s'eliminarà automàticament.",   
+  "The_empty_room__roomName__will_be_removed_automatically": "La sala buida <span style=\"font-weight: bold;\">{{roomName}}</span> s'eliminarà automàticament.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "L'ajust de mida de les imatges no funcionarà perquè no podem detectar ni ImageMagick ni GraphicsMagick al servidor.",
   "The_message_is_a_discussion_you_will_not_be_able_to_recover": "El missatge és una discussió, no podrà recuperar els missatges!",
   "The_mobile_notifications_were_disabled_to_all_users_go_to_Admin_Push_to_enable_the_Push_Gateway_again": "Les notificacions mòbils es deshabilitaron per a tots els usuaris, aneu a \"Admin> Push\" per habilitar Push inici novament",
