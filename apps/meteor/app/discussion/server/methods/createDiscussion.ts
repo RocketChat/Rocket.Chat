@@ -223,7 +223,8 @@ export const createDiscussion = async (
 	if (!(await hasAtLeastOnePermissionAsync(userId, ['start-discussion', 'start-discussion-other-user'], prid))) {
 		throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 	}
-	const user = await Users.findOneById(userId);
+	const user = await Users.findOneById(userId, { projection: { services: 0 } });
+
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'createDiscussion',
