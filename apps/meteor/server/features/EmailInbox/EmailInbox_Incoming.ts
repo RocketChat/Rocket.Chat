@@ -25,7 +25,10 @@ const language = settings.get<string>('Language') || 'en';
 const t = i18n.getFixedT(language);
 
 async function getGuestByEmail(email: string, name: string, inbox: string, department = ''): Promise<ILivechatVisitor | null> {
-	const guest = await LivechatVisitors.findOneGuestByEmailAddress(email, { type: OmnichannelSourceType.EMAIL, id: inbox });
+	const guest = await LivechatVisitors.findOneGuestByEmailAddress(email, {
+		'source.type': OmnichannelSourceType.EMAIL,
+		'source.id': inbox,
+	});
 
 	if (guest) {
 		if (guest.department !== department) {

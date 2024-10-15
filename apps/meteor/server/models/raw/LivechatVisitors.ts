@@ -1,4 +1,4 @@
-import type { ILivechatVisitor, IOmnichannelSource, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatVisitorsModel } from '@rocket.chat/model-typings';
 import { Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -30,7 +30,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	protected modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { token: 1 } },
-			{ key: { 'token': 1, 'source.type': 1 } },
 			{ key: { 'phone.phoneNumber': 1 }, sparse: true },
 			{ key: { 'visitorEmails.address': 1 }, sparse: true },
 			{ key: { name: 1 }, sparse: true },
@@ -42,21 +41,21 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		];
 	}
 
-	findOneVisitorByPhone(phone: string, source?: IOmnichannelSource): Promise<ILivechatVisitor | null> {
+	findOneVisitorByPhone(phone: string, sourceFilter?: Filter<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
 		const emptySourceFilter = { source: { $exists: false } };
 		const query = {
 			'phone.phoneNumber': phone,
-			...(source ? { $or: [{ source }, emptySourceFilter] } : emptySourceFilter),
+			...(sourceFilter ? { $or: [sourceFilter, emptySourceFilter] } : emptySourceFilter),
 		};
 
 		return this.findOne(query);
 	}
 
-	findOneGuestByEmailAddress(emailAddress: string, source?: IOmnichannelSource): Promise<ILivechatVisitor | null> {
+	findOneGuestByEmailAddress(emailAddress: string, sourceFilter?: Filter<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
 		const emptySourceFilter = { source: { $exists: false } };
 		const query = {
 			'visitorEmails.address': String(emailAddress).toLowerCase(),
-			...(source ? { $or: [{ source }, emptySourceFilter] } : emptySourceFilter),
+			...(sourceFilter ? { $or: [sourceFilter, emptySourceFilter] } : emptySourceFilter),
 		};
 
 		return this.findOne(query);
@@ -75,14 +74,14 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	}
 
 	findEnabledBySource(
-		source: IOmnichannelSource,
+		sourceFilter: Filter<ILivechatVisitor>,
 		query: Filter<ILivechatVisitor>,
 		options?: FindOptions<ILivechatVisitor>,
 	): FindCursor<ILivechatVisitor> {
 		return this.find(
 			{
 				...query,
-				$or: [{ source }, { source: { $exists: false } }],
+				$or: [sourceFilter, { source: { $exists: false } }],
 				disabled: { $ne: true },
 			},
 			options,
@@ -99,14 +98,14 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	}
 
 	findOneEnabledByIdAndSource<T extends Document = ILivechatVisitor>(
-		{ _id, source }: { _id: string; source: IOmnichannelSource },
+		{ _id, sourceFilter }: { _id: string; sourceFilter: Filter<ILivechatVisitor> },
 		options?: FindOptions<ILivechatVisitor>,
 	): Promise<T | null> {
 		const emptySourceFilter = { source: { $exists: false } };
 		const query = {
 			_id,
 			disabled: { $ne: true },
-			...(source ? { $or: [{ source }, emptySourceFilter] } : emptySourceFilter),
+			...(sourceFilter ? { $or: [sourceFilter, emptySourceFilter] } : emptySourceFilter),
 		};
 
 		return this.findOne<T>(query, options);
@@ -130,13 +129,13 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	}
 
 	getVisitorByTokenAndSource(
-		{ token, source }: { token: string; source?: IOmnichannelSource },
+		{ token, sourceFilter }: { token: string; sourceFilter?: Filter<ILivechatVisitor> },
 		options: FindOptions<ILivechatVisitor>,
 	): Promise<ILivechatVisitor | null> {
 		const emptySourceFilter = { source: { $exists: false } };
 		const query = {
 			token,
-			...(source ? { $or: [{ source }, emptySourceFilter] } : emptySourceFilter),
+			...(sourceFilter ? { $or: [sourceFilter, emptySourceFilter] } : emptySourceFilter),
 		};
 
 		return this.findOne(query, options);

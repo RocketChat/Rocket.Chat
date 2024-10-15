@@ -1,4 +1,4 @@
-import type { ILivechatVisitor, IOmnichannelSource } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 import type {
 	AggregationCursor,
 	FindCursor,
@@ -17,7 +17,7 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	findById(_id: string, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor>;
 	getVisitorByToken(token: string, options?: FindOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null>;
 	getVisitorByTokenAndSource(
-		{ token, source }: { token: string; source?: IOmnichannelSource },
+		{ token, sourceFilter }: { token: string; sourceFilter?: Filter<ILivechatVisitor> },
 		options?: FindOptions<ILivechatVisitor>,
 	): Promise<ILivechatVisitor | null>;
 	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): FindCursor<ILivechatVisitor>;
@@ -49,9 +49,9 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	updateLivechatDataByToken(token: string, key: string, value: unknown, overwrite: boolean): Promise<UpdateResult | Document | boolean>;
 
-	findOneGuestByEmailAddress(emailAddress: string, source?: IOmnichannelSource): Promise<ILivechatVisitor | null>;
+	findOneGuestByEmailAddress(emailAddress: string, sourceFilter?: Filter<ILivechatVisitor>): Promise<ILivechatVisitor | null>;
 
-	findOneVisitorByPhone(phone: string, source?: IOmnichannelSource): Promise<ILivechatVisitor | null>;
+	findOneVisitorByPhone(phone: string, sourceFilter?: Filter<ILivechatVisitor>): Promise<ILivechatVisitor | null>;
 
 	removeDepartmentById(_id: string): Promise<Document | UpdateResult>;
 
@@ -72,14 +72,14 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	findOneEnabledById<T extends Document = ILivechatVisitor>(_id: string, options?: FindOptions<ILivechatVisitor>): Promise<T | null>;
 
 	findOneEnabledByIdAndSource<T extends Document = ILivechatVisitor>(
-		{ _id, source }: { _id: string; source: IOmnichannelSource },
+		{ _id, sourceFilter }: { _id: string; sourceFilter: Filter<ILivechatVisitor> },
 		options?: FindOptions<ILivechatVisitor>,
 	): Promise<T | null>;
 
 	disableById(_id: string): Promise<UpdateResult>;
 
 	findEnabledBySource(
-		source: IOmnichannelSource,
+		source: Filter<ILivechatVisitor>,
 		query: Filter<ILivechatVisitor>,
 		options?: FindOptions<ILivechatVisitor>,
 	): FindCursor<ILivechatVisitor>;

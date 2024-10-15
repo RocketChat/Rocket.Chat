@@ -58,7 +58,10 @@ export class AppLivechatBridge extends LivechatBridge {
 				id: appId,
 				alias: this.orch.getManager()?.getOneById(appId)?.getNameSlug(),
 			};
-			const fullVisitor = await LivechatVisitors.findOneEnabledByIdAndSource({ _id: guest._id, source: visitorSource });
+			const fullVisitor = await LivechatVisitors.findOneEnabledByIdAndSource({
+				_id: guest._id,
+				sourceFilter: { 'source.type': visitorSource.type, 'source.id': visitorSource.id, 'source.alias': visitorSource.alias },
+			});
 			if (!fullVisitor?.source) {
 				await LivechatVisitors.setSourceById(guest._id, visitorSource);
 			}
@@ -298,7 +301,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		}
 
 		return Promise.all(
-			(await LivechatVisitors.findEnabledBySource({ type: OmnichannelSourceType.APP, id: appId }, query).toArray()).map(
+			(await LivechatVisitors.findEnabledBySource({ 'source.type': OmnichannelSourceType.APP, 'source.id': appId }, query).toArray()).map(
 				async (visitor) => visitor && this.orch.getConverters()?.get('visitors').convertVisitor(visitor),
 			),
 		);
@@ -316,7 +319,9 @@ export class AppLivechatBridge extends LivechatBridge {
 		return this.orch
 			.getConverters()
 			?.get('visitors')
-			.convertVisitor(await LivechatVisitors.findOneGuestByEmailAddress(email, { type: OmnichannelSourceType.APP, id: appId }));
+			.convertVisitor(
+				await LivechatVisitors.findOneGuestByEmailAddress(email, { 'source.type': OmnichannelSourceType.APP, 'source.id': appId }),
+			);
 	}
 
 	protected async findVisitorByToken(token: string, appId: string): Promise<IVisitor | undefined> {
@@ -325,7 +330,12 @@ export class AppLivechatBridge extends LivechatBridge {
 		return this.orch
 			.getConverters()
 			?.get('visitors')
-			.convertVisitor(await LivechatVisitors.getVisitorByTokenAndSource({ token, source: { type: OmnichannelSourceType.APP, id: appId } }));
+			.convertVisitor(
+				await LivechatVisitors.getVisitorByTokenAndSource({
+					token,
+					sourceFilter: { 'source.type': OmnichannelSourceType.APP, 'source.id': appId },
+				}),
+			);
 	}
 
 	protected async findVisitorByPhoneNumber(phoneNumber: string, appId: string): Promise<IVisitor | undefined> {
@@ -334,7 +344,9 @@ export class AppLivechatBridge extends LivechatBridge {
 		return this.orch
 			.getConverters()
 			?.get('visitors')
-			.convertVisitor(await LivechatVisitors.findOneVisitorByPhone(phoneNumber, { type: OmnichannelSourceType.APP, id: appId }));
+			.convertVisitor(
+				await LivechatVisitors.findOneVisitorByPhone(phoneNumber, { 'source.type': OmnichannelSourceType.APP, 'source.id': appId }),
+			);
 	}
 
 	protected async findDepartmentByIdOrName(value: string, appId: string): Promise<IDepartment | undefined> {

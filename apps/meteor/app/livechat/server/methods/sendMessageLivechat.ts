@@ -43,13 +43,14 @@ export const sendMessageLivechat = async ({
 	);
 
 	const guest = await LivechatVisitors.getVisitorByTokenAndSource(
-		{ token, source: { type: OmnichannelSourceType.API } },
+		{ token, sourceFilter: { 'source.type': { $in: [OmnichannelSourceType.API, OmnichannelSourceType.WIDGET] } } },
 		{
 			projection: {
 				name: 1,
 				username: 1,
 				department: 1,
 				token: 1,
+				source: 1,
 			},
 		},
 	);
