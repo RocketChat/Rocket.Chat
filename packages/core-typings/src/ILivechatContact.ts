@@ -13,9 +13,8 @@ export interface ILivechatContactChannel {
 }
 
 export interface ILivechatContactConflictingField {
-	field: string;
-	oldValue: string;
-	newValue: string;
+	field: 'name' | 'manager' | `customFields.${string}`;
+	value: string;
 }
 
 export interface ILivechatContact extends IRocketChatRecord {

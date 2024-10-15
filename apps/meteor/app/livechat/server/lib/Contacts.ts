@@ -31,6 +31,7 @@ import {
 	notifyOnLivechatInquiryChangedByRoom,
 } from '../../../lib/server/lib/notifyListener';
 import { i18n } from '../../../utils/lib/i18n';
+import { ContactMerger } from './ContactMerger';
 import { Livechat } from './LivechatTyped';
 
 type RegisterContactProps = {
@@ -180,7 +181,7 @@ export const Contacts = {
 	},
 };
 
-async function getContactManagerIdByUsername(username?: IUser['username']): Promise<IUser['_id'] | undefined> {
+export async function getContactManagerIdByUsername(username?: IUser['username']): Promise<IUser['_id'] | undefined> {
 	if (!username) {
 		return;
 	}
@@ -262,14 +263,9 @@ export async function migrateVisitorToContactId(
 
 	// There is already an existing contact with no linked visitors and matching this visitor's phone or email, so let's use it
 	Livechat.logger.debug(`Adding channel to existing contact ${existingContact._id}`);
-	await LivechatContacts.addChannel(existingContact._id, {
-		name: visitorSource.label || visitorSource.type.toString(),
-		visitorId: visitor._id,
-		blocked: false,
-		verified: false,
-		details: visitorSource,
-	});
+	await ContactMerger.mergeVisitorIntoContact(visitor, existingContact);
 
+	// Update all existing rooms of that visitor to add the contactId to them
 	await LivechatRooms.setContactIdByVisitorIdOrToken(existingContact._id, visitor._id, visitor.token);
 
 	return existingContact._id;
