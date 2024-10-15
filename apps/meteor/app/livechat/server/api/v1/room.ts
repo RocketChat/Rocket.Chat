@@ -76,7 +76,9 @@ API.v1.addRoute(
 
 				const roomInfo = {
 					source: {
-						type: isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+						...(isWidget(this.request.headers)
+							? { type: OmnichannelSourceType.WIDGET, destination: this.request.headers.host }
+							: { type: OmnichannelSourceType.API }),
 					},
 				};
 
@@ -106,6 +108,10 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { rid, token } = this.bodyParams;
+
+			if (!rcSettings.get('Omnichannel_allow_visitors_to_close_conversation')) {
+				throw new Error('error-not-allowed-to-close-conversation');
+			}
 
 			const visitor = await findGuest(token);
 			if (!visitor) {

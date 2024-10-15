@@ -1,9 +1,9 @@
 import type { App } from '@rocket.chat/core-typings';
 import { MenuItem, MenuItemContent, MenuSection, MenuV2, Skeleton } from '@rocket.chat/fuselage';
+import { useHandleMenuAction } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
-import { useHandleMenuAction } from '../../components/GenericMenu/hooks/useHandleMenuAction';
 import type { AppMenuOption } from './hooks/useAppMenu';
 import { useAppMenu } from './hooks/useAppMenu';
 

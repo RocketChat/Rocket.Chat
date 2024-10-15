@@ -1,5 +1,23 @@
 # Change Log
 
+## 0.31.31
+
+### Patch Changes
+
+- ([#33227](https://github.com/RocketChat/Rocket.Chat/pull/33227)) Improved the performance of the message parser
+
+## 0.31.31-rc.0
+
+### Patch Changes
+
+- ([#33227](https://github.com/RocketChat/Rocket.Chat/pull/33227)) Improved the performance of the message parser
+
+## 0.31.30
+
+### Patch Changes
+
+- ([#33254](https://github.com/RocketChat/Rocket.Chat/pull/33254) by [@dionisio-bot](https://github.com/dionisio-bot)) Improved the performance of the message parser
+
 ## 0.31.29
 
 ### Patch Changes

@@ -43,7 +43,7 @@ const CannedResponseForm = () => {
 				<Controller
 					name='shortcut'
 					control={control}
-					rules={{ required: t('The_field_is_required', t('Shortcut')) }}
+					rules={{ required: t('Required_field', { field: t('Shortcut') }) }}
 					render={({ field }) => (
 						<TextInput
 							{...field}
@@ -76,7 +76,7 @@ const CannedResponseForm = () => {
 					<Controller
 						name='text'
 						control={control}
-						rules={{ required: t('The_field_is_required', t('Message')) }}
+						rules={{ required: t('Required_field', { field: t('Message') }) }}
 						render={({ field: { value, onChange, name, onBlur } }) => (
 							<CannedResponsesComposer
 								id={messageField}
@@ -168,7 +168,7 @@ const CannedResponseForm = () => {
 								<Controller
 									name='departmentId'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Department')) }}
+									rules={{ required: t('Required_field', { field: t('Department') }) }}
 									render={({ field: { value, onChange } }) => (
 										<AutoCompleteDepartment
 											{...(hasMonitorPermission && { onlyMyDepartments: hasMonitorPermission })}
