@@ -139,8 +139,6 @@ class E2E extends Emitter {
 		this.log('decryptSubscriptions');
 		await this.decryptSubscriptions();
 		this.log('decryptSubscriptions -> Done');
-		await this.initiateDecryptingPendingMessages();
-		this.log('DecryptingPendingMessages -> Done');
 		await this.initiateKeyDistribution();
 		this.log('initiateKeyDistribution -> Done');
 		this.observeSubscriptions();
@@ -330,10 +328,6 @@ class E2E extends Emitter {
 
 	initiateHandshake() {
 		Object.keys(this.instancesByRoomId).map((key) => this.instancesByRoomId[key].handshake());
-	}
-
-	async initiateDecryptingPendingMessages() {
-		await Promise.all(Object.keys(this.instancesByRoomId).map((key) => this.instancesByRoomId[key].decryptPendingMessages()));
 	}
 
 	openSaveE2EEPasswordModal(randomPassword: string) {
