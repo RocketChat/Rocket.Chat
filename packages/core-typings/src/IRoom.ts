@@ -197,9 +197,10 @@ export interface IOmnichannelSourceFromApp extends IOmnichannelSource {
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast'> {
 	t: 'l' | 'v';
-	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'activity' | 'contactId'> & {
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'activity'> & {
 		lastMessageTs?: Date;
 		phone?: string;
+		contactId?: string;
 	};
 	email?: {
 		// Data used when the room is created from an email, via email Integration.
@@ -336,7 +337,11 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 	queue: string;
 	// The ID assigned to the call (opaque ID)
 	callUniqueId?: string;
-	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'contactId'> & { lastMessageTs?: Date; phone?: string };
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token'> & {
+		lastMessageTs?: Date;
+		phone?: string;
+		contactId?: string;
+	};
 	// Outbound means the call was initiated from Rocket.Chat and vise versa
 	direction: 'inbound' | 'outbound';
 }

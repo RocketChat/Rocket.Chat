@@ -1,4 +1,4 @@
-import { LivechatContacts, LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
+import { LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
 import {
 	isPOSTOmnichannelContactsProps,
 	isPOSTUpdateOmnichannelContactsProps,
@@ -12,7 +12,15 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { getContactHistory, Contacts, createContact, updateContact, getContacts, isSingleContactEnabled } from '../../lib/Contacts';
+import {
+	getContactHistory,
+	Contacts,
+	createContact,
+	getContact,
+	updateContact,
+	getContacts,
+	isSingleContactEnabled,
+} from '../../lib/Contacts';
 
 API.v1.addRoute(
 	'omnichannel/contact',
@@ -136,7 +144,7 @@ API.v1.addRoute(
 			if (!isSingleContactEnabled()) {
 				return API.v1.unauthorized();
 			}
-			const contact = await LivechatContacts.findOneById(this.queryParams.contactId);
+			const contact = await getContact(this.queryParams.contactId);
 
 			return API.v1.success({ contact });
 		},
