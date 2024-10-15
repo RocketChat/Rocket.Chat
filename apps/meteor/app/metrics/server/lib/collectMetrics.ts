@@ -1,7 +1,7 @@
 import http from 'http';
 
 import { Statistics } from '@rocket.chat/models';
-import { trace, ROOT_CONTEXT, context } from '@rocket.chat/tracing';
+import { tracerSpan } from '@rocket.chat/tracing';
 import connect from 'connect';
 import { Facts } from 'meteor/facts-base';
 import { Meteor } from 'meteor/meteor';
@@ -16,8 +16,6 @@ import { settings } from '../../../settings/server';
 import { getAppsStatistics } from '../../../statistics/server/lib/getAppsStatistics';
 import { Info } from '../../../utils/rocketchat.info';
 import { metrics } from './metrics';
-
-const tracer = trace.getTracer('core');
 
 const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 
@@ -173,18 +171,18 @@ const updatePrometheusConfig = async (): Promise<void> => {
 		});
 
 		timer = setInterval(async () => {
-			const span = tracer.startSpan(`setPrometheusData`, {
-				attributes: {
-					port: is.port,
-					host: process.env.BIND_IP || '0.0.0.0',
+			void tracerSpan(
+				'setPrometheusData',
+				{
+					attributes: {
+						port: is.port,
+						host: process.env.BIND_IP || '0.0.0.0',
+					},
 				},
-			});
-
-			await context.with(trace.setSpan(ROOT_CONTEXT, span), async () => {
-				void setPrometheusData();
-			});
-
-			span.end();
+				() => {
+					void setPrometheusData();
+				},
+			);
 		}, 5000);
 	}
 

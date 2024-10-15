@@ -25,20 +25,16 @@ export const startTracing = ({ service }: { service: string }) => {
 
 const enabled = true; // process.env.TRACING_ENABLED
 
-export function tracerSpan<F extends (span?: Span) => Promise<ReturnType<F>>>(
-	name: string,
-	options: SpanOptions,
-	fn: F,
-): Promise<ReturnType<F>> {
+export function tracerSpan<F extends (span?: Span) => unknown>(name: string, options: SpanOptions, fn: F): ReturnType<F> {
 	if (!enabled) {
-		return fn();
+		return fn() as ReturnType<F>;
 	}
 
-	return tracer.startActiveSpan(name, options, async (span: Span): Promise<ReturnType<F>> => {
+	return tracer.startActiveSpan(name, options, async (span: Span) => {
 		const result = await fn(span);
 
 		span.end();
 
 		return result;
-	});
+	}) as ReturnType<F>;
 }
