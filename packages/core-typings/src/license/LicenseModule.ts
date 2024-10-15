@@ -19,5 +19,4 @@ export type LicenseModule =
 	| 'hide-watermark'
 	| 'custom-roles'
 	| 'accessibility-certification'
-	| 'unlimited-presence'
-	| 'chat.rocket.contact-id-verification';
+	| 'unlimited-presence';
