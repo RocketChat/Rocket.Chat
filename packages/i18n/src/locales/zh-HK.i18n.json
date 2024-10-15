@@ -2392,7 +2392,7 @@
   "Thank_you_for_your_feedback": "感谢您的反馈意见",
   "The_application_name_is_required": "应用程序名称是必需的",
   "The_channel_name_is_required": "频道名称是必需的",
-  "The_emails_are_being_sent": "电子邮件正在发送。",   
+  "The_emails_are_being_sent": "电子邮件正在发送。",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "图像大小调整不起作用，因为我们无法检测到服务器上安装的ImageMagick或GraphicsMagick。",
   "The_redirectUri_is_required": "redirectUri是必需的",
   "The_server_will_restart_in_s_seconds": "服务器将以％s秒为单位重新启动",

@@ -2373,7 +2373,7 @@
   "Thank_you_for_your_feedback": "Ευχαριστούμε για τα σχόλιά σας",
   "The_application_name_is_required": "Το όνομα της εφαρμογής απαιτείται",
   "The_channel_name_is_required": "Το όνομα του καναλιού απαιτείται",
-  "The_emails_are_being_sent": "Τα μηνύματα ηλεκτρονικού ταχυδρομείου που αποστέλλονται.",   
+  "The_emails_are_being_sent": "Τα μηνύματα ηλεκτρονικού ταχυδρομείου που αποστέλλονται.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Το μέγεθος της εικόνας δεν θα λειτουργήσει, επειδή δεν μπορεί να ανιχνεύσει ImageMagick ή GraphicsMagick εγκατεστημένο στον server σας.",
   "The_redirectUri_is_required": "Η redirectUri απαιτείται",
   "The_server_will_restart_in_s_seconds": "Ο διακομιστής θα κάνει επανεκκίνηση στο %s δευτερόλεπτα",

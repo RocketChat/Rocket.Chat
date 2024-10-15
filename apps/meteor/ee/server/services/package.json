@@ -5,8 +5,6 @@
 	"description": "Rocket.Chat Authorization service",
 	"main": "index.js",
 	"scripts": {
-		"dev": "pm2 start ecosystem.config.js",
-		"pm2": "pm2",
 		"typecheck": "tsc --noEmit --skipLibCheck",
 		"build": "tsc",
 		"build-containers": "npm run build && docker-compose build && rm -rf ./dist",
@@ -18,13 +16,14 @@
 	"author": "Rocket.Chat",
 	"license": "MIT",
 	"dependencies": {
-		"@rocket.chat/apps-engine": "1.46.0",
+		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
+		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"@rocket.chat/ui-kit": "workspace:~",
@@ -33,7 +32,7 @@
 		"body-parser": "^1.20.3",
 		"colorette": "^2.0.20",
 		"cookie": "^0.5.0",
-		"cookie-parser": "^1.4.6",
+		"cookie-parser": "^1.4.7",
 		"ejson": "^2.2.3",
 		"eventemitter3": "^4.0.7",
 		"express": "^4.17.3",
@@ -47,7 +46,7 @@
 		"sodium-native": "^3.3.0",
 		"sodium-plus": "^0.9.0",
 		"uuid": "^8.3.2",
-		"ws": "^8.8.1"
+		"ws": "^8.18.0"
 	},
 	"devDependencies": {
 		"@rocket.chat/icons": "~0.38.0",
@@ -60,7 +59,6 @@
 		"@types/ws": "^8.5.12",
 		"npm-run-all": "^4.1.5",
 		"pino-pretty": "^7.6.1",
-		"pm2": "^5.2.0",
 		"ts-node": "^10.9.2",
 		"typescript": "~5.5.4"
 	},
