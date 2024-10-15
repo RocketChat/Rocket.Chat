@@ -3,7 +3,7 @@ import { Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { notifyOnSubscriptionChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedById, notifyOnSubscriptionChanged } from '../../../lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -34,9 +34,9 @@ Meteor.methods<ServerMethods>({
 			}
 
 			// uid also has subscription to this room
-			const { modifiedCount } = await Subscriptions.setGroupE2ESuggestedKey(uid, rid, key);
-			if (modifiedCount) {
-				void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, uid);
+			const { value } = await Subscriptions.setGroupE2ESuggestedKey(uid, rid, key);
+			if (value) {
+				void notifyOnSubscriptionChanged(value);
 			}
 		}
 	},

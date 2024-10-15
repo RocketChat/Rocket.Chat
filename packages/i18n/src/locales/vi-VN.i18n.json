@@ -2465,7 +2465,7 @@
   "Thank_you_for_your_feedback": "Cảm ơn phản hồi của bạn",
   "The_application_name_is_required": "Tên ứng dụng là bắt buộc",
   "The_channel_name_is_required": "Tên kênh là bắt buộc",
-  "The_emails_are_being_sent": "Các email đang được gửi.",   
+  "The_emails_are_being_sent": "Các email đang được gửi.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Thay đổi kích thước hình ảnh sẽ không hoạt động vì chúng tôi không thể phát hiện ImageMagick hoặc GraphicsMagick được cài đặt trên máy chủ của bạn.",
   "The_redirectUri_is_required": "RedirectUri là bắt buộc",
   "The_server_will_restart_in_s_seconds": "Máy chủ sẽ khởi động lại trong%s giây",

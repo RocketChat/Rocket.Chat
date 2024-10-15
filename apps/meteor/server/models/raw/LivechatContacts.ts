@@ -1,7 +1,7 @@
-import type { ILivechatContact, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { ILivechatContact, ILivechatContactChannel, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatContactsModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Collection, Db, RootFilterOperators, Filter, FindOptions, FindCursor, IndexDescription } from 'mongodb';
+import type { Collection, Db, RootFilterOperators, Filter, FindOptions, FindCursor, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -19,14 +19,14 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 				collation: { locale: 'en', strength: 2, caseLevel: false },
 			},
 			{
-				key: { emails: 1 },
+				key: { 'emails.address': 1 },
 				unique: false,
 				name: 'emails_insensitive',
 				partialFilterExpression: { emails: { $exists: true } },
 				collation: { locale: 'en', strength: 2, caseLevel: false },
 			},
 			{
-				key: { phones: 1 },
+				key: { 'phones.phoneNumber': 1 },
 				partialFilterExpression: { phones: { $exists: true } },
 				unique: false,
 			},
@@ -47,8 +47,8 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		const match: Filter<ILivechatContact & RootFilterOperators<ILivechatContact>> = {
 			$or: [
 				{ name: { $regex: searchRegex, $options: 'i' } },
-				{ emails: { $regex: searchRegex, $options: 'i' } },
-				{ phones: { $regex: searchRegex, $options: 'i' } },
+				{ 'emails.address': { $regex: searchRegex, $options: 'i' } },
+				{ 'phones.phoneNumber': { $regex: searchRegex, $options: 'i' } },
 			],
 		};
 
@@ -59,5 +59,13 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 				...options,
 			},
 		);
+	}
+
+	async addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void> {
+		await this.updateOne({ _id: contactId }, { $push: { channels: channel } });
+	}
+
+	updateLastChatById(contactId: string, lastChat: ILivechatContact['lastChat']): Promise<UpdateResult> {
+		return this.updateOne({ _id: contactId }, { $set: { lastChat } });
 	}
 }

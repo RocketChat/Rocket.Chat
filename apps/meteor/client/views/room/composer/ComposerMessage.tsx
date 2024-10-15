@@ -14,7 +14,6 @@ export type ComposerMessageProps = {
 	tmid?: IMessage['_id'];
 	children?: ReactNode;
 	subscription?: ISubscription;
-	readOnly?: boolean;
 	tshow?: boolean;
 	previewUrls?: string[];
 	onResize?: () => void;
@@ -25,7 +24,7 @@ export type ComposerMessageProps = {
 	onUploadFiles?: (files: readonly File[]) => void;
 };
 
-const ComposerMessage = ({ tmid, readOnly, onSend, ...props }: ComposerMessageProps): ReactElement => {
+const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): ReactElement => {
 	const chat = useChat();
 	const room = useRoom();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -89,7 +88,7 @@ const ComposerMessage = ({ tmid, readOnly, onSend, ...props }: ComposerMessagePr
 		return <ComposerSkeleton />;
 	}
 
-	return <MessageBox readOnly={readOnly ?? false} key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
+	return <MessageBox key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
 };
 
 export default memo(ComposerMessage);
