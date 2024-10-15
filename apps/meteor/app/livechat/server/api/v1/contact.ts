@@ -1,3 +1,4 @@
+import type { ILivechatContact } from '@rocket.chat/core-typings';
 import { LivechatContacts, LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
 import {
 	isPOSTOmnichannelContactsProps,
@@ -136,7 +137,21 @@ API.v1.addRoute(
 			if (!isSingleContactEnabled()) {
 				return API.v1.unauthorized();
 			}
-			const contact = await LivechatContacts.findOneById(this.queryParams.contactId);
+
+			const { contactId, email, phone } = this.queryParams;
+			let contact: ILivechatContact | null = null;
+
+			if (contactId) {
+				contact = await LivechatContacts.findOneById(contactId);
+			}
+
+			if (email) {
+				contact = await LivechatContacts.findOne({ 'emails.address': email });
+			}
+
+			if (phone) {
+				contact = await LivechatContacts.findOne({ 'phones.phoneNumber': phone });
+			}
 
 			return API.v1.success({ contact });
 		},
