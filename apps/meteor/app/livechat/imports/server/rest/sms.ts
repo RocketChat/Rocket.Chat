@@ -61,7 +61,7 @@ const defineVisitor = async (smsNumber: string, serviceName: string, destination
 		alias: serviceName,
 	};
 
-	const visitor = await LivechatVisitors.findOneVisitorByPhone(smsNumber, {
+	const visitor = await LivechatVisitors.findOneVisitorByPhoneAndSource(smsNumber, {
 		'source.type': visitorSource.type,
 		'source.alias': visitorSource.alias,
 	});

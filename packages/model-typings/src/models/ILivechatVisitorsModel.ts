@@ -49,9 +49,13 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	updateLivechatDataByToken(token: string, key: string, value: unknown, overwrite: boolean): Promise<UpdateResult | Document | boolean>;
 
-	findOneGuestByEmailAddress(emailAddress: string, sourceFilter?: Filter<ILivechatVisitor>): Promise<ILivechatVisitor | null>;
+	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null>;
 
-	findOneVisitorByPhone(phone: string, sourceFilter?: Filter<ILivechatVisitor>): Promise<ILivechatVisitor | null>;
+	findOneGuestByEmailAddressAndSource(emailAddress: string, sourceFilter: Filter<ILivechatVisitor>): Promise<ILivechatVisitor | null>;
+
+	findOneVisitorByPhone(phone: string): Promise<ILivechatVisitor | null>;
+
+	findOneVisitorByPhoneAndSource(phone: string, sourceFilter: Filter<ILivechatVisitor>): Promise<ILivechatVisitor | null>;
 
 	removeDepartmentById(_id: string): Promise<Document | UpdateResult>;
 
@@ -79,7 +83,7 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	disableById(_id: string): Promise<UpdateResult>;
 
 	findEnabledBySource(
-		source: Filter<ILivechatVisitor>,
+		sourceFilter: Filter<ILivechatVisitor>,
 		query: Filter<ILivechatVisitor>,
 		options?: FindOptions<ILivechatVisitor>,
 	): FindCursor<ILivechatVisitor>;

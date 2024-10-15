@@ -310,7 +310,7 @@ export class AppLivechatBridge extends LivechatBridge {
 	protected async findVisitorById(id: string, appId: string): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${appId} is looking for livechat visitors.`);
 
-		return this.orch.getConverters()?.get('visitors').convertById(id, appId);
+		return this.orch.getConverters()?.get('visitors').convertByIdAndSource(id, appId);
 	}
 
 	protected async findVisitorByEmail(email: string, appId: string): Promise<IVisitor | undefined> {
@@ -320,7 +320,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			.getConverters()
 			?.get('visitors')
 			.convertVisitor(
-				await LivechatVisitors.findOneGuestByEmailAddress(email, { 'source.type': OmnichannelSourceType.APP, 'source.id': appId }),
+				await LivechatVisitors.findOneGuestByEmailAddressAndSource(email, { 'source.type': OmnichannelSourceType.APP, 'source.id': appId }),
 			);
 	}
 
@@ -345,7 +345,10 @@ export class AppLivechatBridge extends LivechatBridge {
 			.getConverters()
 			?.get('visitors')
 			.convertVisitor(
-				await LivechatVisitors.findOneVisitorByPhone(phoneNumber, { 'source.type': OmnichannelSourceType.APP, 'source.id': appId }),
+				await LivechatVisitors.findOneVisitorByPhoneAndSource(phoneNumber, {
+					'source.type': OmnichannelSourceType.APP,
+					'source.id': appId,
+				}),
 			);
 	}
 
