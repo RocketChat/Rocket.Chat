@@ -309,7 +309,7 @@ export class E2ERoom extends Emitter {
 		try {
 			const room = ChatRoom.findOne({ _id: this.roomId });
 			// Only room creator can set keys for room
-			if (!room.e2eKeyId && room.u._id === this.userId) {
+			if (!room.e2eKeyId && this.userShouldCreateKeys(room)) {
 				this.setState(E2ERoomState.CREATING_KEYS);
 				await this.createGroupKey();
 				this.setState(E2ERoomState.READY);
@@ -323,6 +323,15 @@ export class E2ERoom extends Emitter {
 			// this.error = error;
 			this.setState(E2ERoomState.ERROR);
 		}
+	}
+
+	userShouldCreateKeys(room) {
+		// On DMs, we'll allow any user to set the keys
+		if (room.t === 'd') {
+			return true;
+		}
+
+		return room.u._id === this.userId;
 	}
 
 	isSupportedRoomType(type) {
