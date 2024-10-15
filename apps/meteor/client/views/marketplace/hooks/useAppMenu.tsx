@@ -15,6 +15,7 @@ import React, { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
 
 import WarningModal from '../../../components/WarningModal';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import type { AddonActionType } from '../AppsList/AddonRequiredModal';
 import AddonRequiredModal from '../AppsList/AddonRequiredModal';
@@ -22,7 +23,6 @@ import IframeModal from '../IframeModal';
 import UninstallGrandfatheredAppModal from '../components/UninstallGrandfatheredAppModal/UninstallGrandfatheredAppModal';
 import type { Actions } from '../helpers';
 import { appEnabledStatuses, appButtonProps } from '../helpers';
-import { doesAppRequireAddon } from '../helpers/doesAppRequireAddon';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { warnEnableDisableApp } from '../helpers/warnEnableDisableApp';
 import { useAppInstallationHandler } from './useAppInstallationHandler';
@@ -58,6 +58,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const isAdminUser = usePermission('manage-apps');
 	const { data } = useIsEnterprise();
 	const isEnterpriseLicense = !!data?.isEnterprise;
+	const userHasAddon = useHasLicenseModule((app as App).addon);
 
 	const [isLoading, setLoading] = useState(false);
 	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
@@ -130,13 +131,13 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	const handleAddon = useCallback(
 		(actionType: AddonActionType, callback: () => void) => {
-			if (!doesAppRequireAddon(app)) {
+			if (!userHasAddon) {
 				callback();
 			}
 
 			addonHandler(actionType);
 		},
-		[addonHandler, app],
+		[addonHandler, userHasAddon],
 	);
 
 	const handleAcquireApp = useCallback(() => {
