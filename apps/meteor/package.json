@@ -51,9 +51,7 @@
 		"release": "meteor yarn set-version --silent",
 		"storybook": "storybook dev -p 6006 --no-version-updates",
 		"prepare": "node playwright.prepare.mjs",
-		"docker:start": "docker-compose up",
-		"build-preview": "yarn sb build",
-		".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./storybook-static ../../.preview/meteor"
+		"docker:start": "docker-compose up"
 	},
 	"license": "MIT",
 	"repository": {
