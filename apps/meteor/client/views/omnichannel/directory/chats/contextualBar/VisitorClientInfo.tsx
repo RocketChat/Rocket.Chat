@@ -9,7 +9,11 @@ import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 import { FormSkeleton } from '../../components/FormSkeleton';
 
-const VisitorClientInfo = ({ uid }) => {
+type VisitorClientInfoProps = {
+	uid: string;
+};
+
+const VisitorClientInfo = ({ uid }: VisitorClientInfoProps) => {
 	const t = useTranslation();
 	const {
 		value: userData,
@@ -25,13 +29,14 @@ const VisitorClientInfo = ({ uid }) => {
 		return null;
 	}
 
-	const clientData = {};
 	const ua = new UAParser();
 	ua.setUA(userData.visitor.userAgent);
-	clientData.os = `${ua.getOS().name} ${ua.getOS().version}`;
-	clientData.browser = `${ua.getBrowser().name} ${ua.getBrowser().version}`;
-	clientData.host = userData.visitor.host;
-	clientData.ip = userData.visitor.ip;
+	const clientData = {
+		os: `${ua.getOS().name} ${ua.getOS().version}`,
+		browser: `${ua.getBrowser().name} ${ua.getBrowser().version}`,
+		host: userData.visitor.host,
+		ip: userData.visitor.ip,
+	};
 
 	return (
 		<>
