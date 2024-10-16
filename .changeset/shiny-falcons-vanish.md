@@ -4,4 +4,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Added a new setting to allow mapping LDAP attributes to the user's extension
+Adds a new setting to allow mapping LDAP attributes to the user's extension
