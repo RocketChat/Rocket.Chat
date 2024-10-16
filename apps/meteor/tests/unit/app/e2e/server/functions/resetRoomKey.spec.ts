@@ -152,7 +152,7 @@ describe('resetRoomKey', () => {
 		expect(updateOps).to.have.lengthOf(10);
 		expect(updateOps.every((op: any) => op.updateOne)).to.be.true;
 		updateOps.forEach((op: any) => {
-			const sub = subs.find((s) => s._id === op.updateOne.filter._id);
+			const sub = subs.find((s: any) => s._id === op.updateOne.filter._id);
 
 			expect(op.updateOne.update.$unset).to.be.deep.equal({ E2EKey: 1, E2ESuggestedKey: 1, suggestedOldRoomKeys: 1 });
 
