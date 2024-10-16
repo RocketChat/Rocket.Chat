@@ -122,6 +122,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		setIsPurchased: setPurchased,
 	});
 
+	// TODO: There is no necessity of all these callbacks being out of the above useMemo.
+	// My propose here is to refactor the hook to make it clearer and with less unnecessary caching.
 	const addonHandler = useCallback(
 		(actionType: AddonActionType) => {
 			setModal(<AddonRequiredModal actionType={actionType} onDismiss={closeModal} onInstallAnyway={appInstallationHandler} />);
