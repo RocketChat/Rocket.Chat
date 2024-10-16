@@ -48,9 +48,9 @@
     "docs": "typedoc"
   },
   "devDependencies": {
-    "@babel/core": "~7.21.8",
-    "@babel/eslint-parser": "~7.21.8",
-    "@babel/preset-env": "~7.21.5",
+    "@babel/core": "~7.25.8",
+    "@babel/eslint-parser": "~7.25.8",
+    "@babel/preset-env": "~7.25.8",
     "@rocket.chat/eslint-config": "workspace:^",
     "@rocket.chat/jest-presets": "workspace:~",
     "@rocket.chat/peggy-loader": "workspace:~",
