@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': major
 ---
 
-Removes unused Omnichannel_External_Frame_GenerateKey setting and omnichannelExternalFrameGenerateKey meteor method
+Removes unused Accounts_OAuth_Custom_Button_Label_Color and Accounts_OAuth_Custom_Button_Color settings and translations
