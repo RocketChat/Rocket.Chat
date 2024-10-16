@@ -14,13 +14,17 @@ export async function changeContactBlockStatus({ contactId, block, visitorId }: 
 		throw new Error('error-contact-not-found');
 	}
 
-	const channel = contact.channels?.find((channel) => channel.visitorId === visitorId);
+	if (!contact.channels) {
+		throw new Error('error-contact-has-no-channels');
+	}
 
-	if (!channel) {
+	const channelIndex = contact.channels?.findIndex((channel) => channel.visitorId === visitorId);
+
+	if (channelIndex === -1) {
 		throw new Error('error-channel-not-found');
 	}
 
-	channel.blocked = block;
+	contact.channels[channelIndex].blocked = block;
 
 	await LivechatContacts.updateOne({ _id: contactId }, { $set: { channels: contact.channels } });
 }
