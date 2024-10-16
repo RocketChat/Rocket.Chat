@@ -449,6 +449,16 @@ class LivechatClass {
 			}
 		}
 
+		if (visitor.contactId) {
+			const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, 'channels'>>(visitor.contactId, {
+				projection: { channels: 1 },
+			});
+			const channel = contact?.channels?.find((channel: ILivechatContactChannel) => channel.visitorId === visitor._id);
+			if (channel?.blocked) {
+				throw new Error('error-contact-channel-blocked');
+			}
+		}
+
 		// delegate room creation to QueueManager
 		Livechat.logger.debug(`Calling QueueManager to request a room for visitor ${visitor._id}`);
 
@@ -545,7 +555,7 @@ class LivechatClass {
 			});
 			const channel = contact?.channels?.find((channel: ILivechatContactChannel) => channel.visitorId === guest._id);
 			if (channel?.blocked) {
-				throw new Error('error-contact-blocked');
+				throw new Error('error-contact-channel-blocked');
 			}
 		}
 
