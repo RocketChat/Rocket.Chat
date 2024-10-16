@@ -41,7 +41,7 @@
   "scripts": {
     "build": "run-s .:build:clean .:build:bundle",
     ".:build:clean": "rimraf dist",
-    ".:build:bundle": "webpack",
+    ".:build:bundle": "webpack-cli",
     "lint": "eslint .",
     "test": "jest",
     "testunit": "jest",
