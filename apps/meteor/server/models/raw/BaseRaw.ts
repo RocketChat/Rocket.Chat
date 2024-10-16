@@ -46,23 +46,6 @@ type ModelOptions = {
 	_updatedAtIndexOptions?: Omit<IndexDescription, 'key'>;
 };
 
-// function getCallerNames(skip = 1, limit = 4) {
-// 	// const a = Date.now();
-// 	let data = [];
-// 	try {
-// 		try {
-// 			throw new Error();
-// 		} catch (e) {
-// 			// console.log(e.stack);
-// 			data = e.stack.match(/(?<=at )[^\(\n]+(?= \()/g).splice(skip, limit);
-// 		}
-// 	} catch (e) {
-// 		// return [];
-// 	}
-// 	// console.log(Date.now() - a);
-// 	return data;
-// }
-
 export abstract class BaseRaw<
 	T extends { _id: string },
 	C extends DefaultFields<T> = undefined,

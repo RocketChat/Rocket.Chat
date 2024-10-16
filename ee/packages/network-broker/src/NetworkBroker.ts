@@ -66,8 +66,6 @@ export class NetworkBroker implements IBroker {
 
 		propagation.inject(traceContext.active(), output);
 
-		console.log({ method, output, currentSpan });
-
 		return this.broker.call(method, data, {
 			requestID: currentSpan?.spanContext().traceId,
 			meta: {
@@ -98,8 +96,6 @@ export class NetworkBroker implements IBroker {
 		const output: Carrier = {};
 
 		propagation.inject(traceContext.active(), output);
-
-		console.log({ method, output, currentSpan });
 
 		return this.broker.call(method, data, {
 			requestID: currentSpan?.spanContext().traceId,
@@ -188,7 +184,6 @@ export class NetworkBroker implements IBroker {
 				if (ctx.meta?.optl) {
 					const activeContext = propagation.extract(traceContext.active(), ctx.meta.optl);
 
-					console.log(`action ${method}`, ctx.meta.optl);
 					const span = tracer.startSpan(`action ${name}:${method}`, {}, activeContext);
 
 					const result = await traceContext.with(trace.setSpan(activeContext, span), async () => {

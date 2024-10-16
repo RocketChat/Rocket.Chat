@@ -27,7 +27,6 @@ export function traceInstanceMethods<T extends object>(instance: T, ignoreMethod
 
 						const currentSpan = trace.getSpan(context.active());
 						if (currentSpan) {
-							// console.log(`in model ${className}.${prop}`);
 							const span = tracer.startSpan(`model ${className}.${prop}`, {
 								attributes: {
 									model: className,

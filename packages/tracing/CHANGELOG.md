@@ -1,1 +1,0 @@
-# @rocket.chat/log-format
