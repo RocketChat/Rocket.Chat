@@ -53,6 +53,9 @@ COPY ./ee/packages/license/dist packages/license/dist
 COPY ./packages/instance-status/package.json packages/instance-status/package.json
 COPY ./packages/instance-status/dist packages/instance-status/dist
 
+COPY ./packages/tracing/package.json packages/tracing/package.json
+COPY ./packages/tracing/dist packages/tracing/dist
+
 COPY ./packages/ui-kit/package.json packages/ui-kit/package.json
 COPY ./packages/ui-kit/dist packages/ui-kit/dist
 
