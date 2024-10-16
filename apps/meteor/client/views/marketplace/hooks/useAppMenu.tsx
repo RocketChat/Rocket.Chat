@@ -132,7 +132,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const handleAddon = useCallback(
 		(actionType: AddonActionType, callback: () => void) => {
 			if (!userHasAddon) {
-				callback();
+				return callback();
 			}
 
 			addonHandler(actionType);
