@@ -8,8 +8,6 @@ const findSmallestFederatedRoomInNumberOfUsers = sinon.stub();
 const countFederatedExternalUsers = sinon.stub();
 const countFederatedRooms = sinon.stub();
 const getExternalServerConnectedExcluding = sinon.stub();
-const countMessagesInActiveFederatedRooms = sinon.stub();
-const getAmountOfMessagesInActiveFederatedRooms = sinon.stub();
 
 const { getMatrixFederationStatistics } = proxyquire
 	.noCallThru()
