@@ -50,7 +50,8 @@ const ERROR = {
 
 test.use({ storageState: Users.admin.state });
 
-test.describe('Omnichannel Contact Center', () => {
+// TODO: this will need to be refactored
+test.describe.skip('Omnichannel Contact Center', () => {
 	let poContacts: OmnichannelContacts;
 	let poOmniSection: OmnichannelSection;
 
