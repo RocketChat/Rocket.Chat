@@ -5,4 +5,5 @@
 "@rocket.chat/models": major
 ---
 
-Now, we are not fetching cloud credentials from a cache, by doing so, we are avoiding the use of stale cloud credentials when comunicating with cloud services. We are, also, using a new collection to store the credentials and their scopes.
+Adds a new collection to store all the workspace cloud tokens to defer the race condition management to MongoDB instead of having to handle it within the settings cache.
+Removes the Cloud_Workspace_Access_Token & Cloud_Workspace_Access_Token_Expires_At settings since they are not going to be used anymore.

@@ -664,7 +664,7 @@ API.v1.addRoute(
 			const settingsIds: string[] = [];
 
 			if (this.bodyParams.setDeploymentAs === 'new-workspace') {
-				await WorkspaceCredentials.unsetCredentialByScope('');
+				await WorkspaceCredentials.unsetCredentialByScope();
 				settingsIds.push(
 					'Cloud_Service_Agree_PrivacyTerms',
 					'Cloud_Workspace_Id',
