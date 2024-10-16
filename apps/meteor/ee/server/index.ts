@@ -6,6 +6,7 @@ import '../app/canned-responses/server/index';
 import '../app/livechat-enterprise/server/index';
 import '../app/message-read-receipt/server/index';
 import '../app/voip-enterprise/server/index';
+import '../app/contact-id-verification/server/index';
 import '../app/settings/server/index';
 import './api';
 import './requestSeatsRoute';

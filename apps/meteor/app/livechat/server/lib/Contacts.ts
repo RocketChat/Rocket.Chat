@@ -75,15 +75,6 @@ type GetContactsParams = {
 	sort: Sort;
 };
 
-type VerifyContactChannelParams = {
-	contactId: string;
-	field: string;
-	value: string;
-	channelName: string;
-	visitorId: string;
-	roomId: string;
-};
-
 type GetContactHistoryParams = {
 	contactId: string;
 	source?: string;
@@ -492,31 +483,6 @@ async function getAllowedCustomFields(): Promise<Pick<ILivechatCustomField, '_id
 		},
 		false,
 	).toArray();
-}
-
-export async function mergeContacts(contactId: string, channel: ILivechatContactChannel): Promise<ILivechatContact | null> {
-	const originalContact = (await LivechatContacts.findOneById(contactId)) as ILivechatContact;
-
-	const similarContacts: ILivechatContact[] = await LivechatContacts.findSimilarVerifiedContacts(channel, contactId);
-
-	if (!similarContacts.length) {
-		return originalContact;
-	}
-
-	for await (const similarContact of similarContacts) {
-		await ContactMerger.mergeContact(originalContact, similarContact);
-	}
-
-	await LivechatContacts.deleteMany({ _id: { $in: similarContacts.map((c) => c._id) } });
-	return LivechatContacts.findOneById(contactId);
-}
-
-export async function verifyContactChannel(params: VerifyContactChannelParams): Promise<ILivechatContact | null> {
-	if (!License.hasModule('chat.rocket.contact-id-verification')) {
-		return null;
-	}
-
-	return callbacks.run('contact-id-verification.verifyContactChannel', params);
 }
 
 export function validateCustomFields(
