@@ -4,7 +4,7 @@ import { addMigration } from '../../lib/migrations';
 
 addMigration({
 	version: 314,
-	name: 'Update default behavior of E2EE settings, to not allow un-encrypted messages by default and allow files encryption by default.',
+	name: 'Update default behavior of E2E_Allow_Unencrypted_Messages setting, to not allow un-encrypted messages by default.',
 	async up() {
 		await Settings.updateOne(
 			{
@@ -14,17 +14,6 @@ addMigration({
 				$set: {
 					value: false,
 					packageValue: false,
-				},
-			},
-		);
-		await Settings.updateOne(
-			{
-				_id: 'E2E_Enable_Encrypt_Files',
-			},
-			{
-				$set: {
-					value: true,
-					packageValue: true,
 				},
 			},
 		);
