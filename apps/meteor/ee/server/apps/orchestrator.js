@@ -180,7 +180,7 @@ export class AppServerOrchestrator {
 			const canEnable = await canEnableApp(app.getStorageItem());
 
 			if (!canEnable) {
-				this._rocketchatLogger.warn(`App "${app.getInfo().name}" can't be enabled due to CE limits.`);
+				this._rocketchatLogger.info(`App "${app.getInfo().name}" can't be enabled due to CE limits.`);
 				// We need to continue as the limits are applied depending on the app installation source
 				// i.e. if one limit is hit, we can't break the loop as the following apps might still be valid
 				continue;
