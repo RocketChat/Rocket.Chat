@@ -50,6 +50,7 @@ jobs:
           DISABLE_DB_WATCHERS: 'false'
           LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
           RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
+          DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
         run: |
           docker compose -f docker-compose-ci.yml up -d
       - name: Wait services to start up
