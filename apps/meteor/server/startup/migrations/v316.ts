@@ -22,6 +22,10 @@ addMigration({
 			await Settings.removeById('Cloud_Workspace_Access_Token_Expires_At');
 		}
 
-		await WorkspaceCredentials.updateCredentialByScope('', accessToken, accessTokenExpiresAt);
+		await WorkspaceCredentials.updateCredentialByScope({
+			scope: '',
+			accessToken,
+			expirationDate: accessTokenExpiresAt,
+		});
 	},
 });
