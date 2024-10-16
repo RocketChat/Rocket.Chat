@@ -787,7 +787,6 @@
   "Broadcasting_media_server_url": "URL till medieserver för sändning",
   "Browse_Files": "Bläddra bland filer",
   "Browser_does_not_support_audio_element": "Webbläsaren har inte stöd för ljudkomponenten.",
-  "Call_number_enterprise_only": "Ring upp nummer (endast Enterprise Edition)",
   "Browser_does_not_support_video_element": "Webbläsaren har inte stöd för videokomponenten.",
   "Browser_does_not_support_recording_video": "Webbläsaren har inte stöd för videoinspelning",
   "Bugsnag_api_key": "Bugsnag API-nyckel",

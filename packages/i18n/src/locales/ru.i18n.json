@@ -781,7 +781,6 @@
   "Broadcasting_media_server_url": "URL-адрес трансляционного медиа-сервера",
   "Browse_Files": "Просмотр файлов",
   "Browser_does_not_support_audio_element": "Ваш браузер не поддерживает звуковой элемент.",
-  "Call_number_enterprise_only": "Вызов номера (Только для ЕЕ)",
   "Browser_does_not_support_video_element": "Ваш браузер не поддерживает видео элемент.",
   "Browser_does_not_support_recording_video": "Ваш браузер не поддерживает запись видео",
   "Bugsnag_api_key": "Ключ Bugsnag API",

@@ -787,7 +787,6 @@
   "Broadcasting_media_server_url": "Lähettävän mediapalvelimen URL-osoite",
   "Browse_Files": "Selaa tiedostoja",
   "Browser_does_not_support_audio_element": "Selain ei tue äänielementtiä.",
-  "Call_number_enterprise_only": "Soittajanumero (vain Enterprise Edition)",
   "Browser_does_not_support_video_element": "Selain ei tue videoelementtiä.",
   "Browser_does_not_support_recording_video": "Selain ei tue videon tallentamista",
   "Bugsnag_api_key": "Bugsnag API -avain",
