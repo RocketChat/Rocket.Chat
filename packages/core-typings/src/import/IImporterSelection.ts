@@ -1,4 +1,5 @@
 import type { IImporterSelectionChannel } from './IImporterSelectionChannel';
+import type { IImporterSelectionMessage } from './IImporterSelectionMessage';
 import type { IImporterSelectionUser } from './IImporterSelectionUser';
 
 export interface IImporterSelection {
@@ -6,4 +7,5 @@ export interface IImporterSelection {
 	users: IImporterSelectionUser[];
 	channels: IImporterSelectionChannel[];
 	message_count: number;
+	messages: IImporterSelectionMessage[];
 }

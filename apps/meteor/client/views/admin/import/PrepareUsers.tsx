@@ -5,14 +5,15 @@ import React, { useState, useCallback } from 'react';
 
 import type { UserDescriptor } from './UserDescriptor';
 
-type PrepareUsersProps = {
+export type PrepareUsersProps = {
 	usersCount: number;
 	users: UserDescriptor[];
 	setUsers: Dispatch<SetStateAction<UserDescriptor[]>>;
+	indeterminate: boolean;
 };
 
 // TODO: review inner logic
-const PrepareUsers = ({ usersCount, users, setUsers }: PrepareUsersProps) => {
+const PrepareUsers = ({ usersCount, users, setUsers, indeterminate }: PrepareUsersProps) => {
 	const t = useTranslation();
 	const [current, setCurrent] = useState(0);
 	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
@@ -30,7 +31,7 @@ const PrepareUsers = ({ usersCount, users, setUsers }: PrepareUsersProps) => {
 						<TableCell width='x36'>
 							<CheckBox
 								checked={usersCount > 0}
-								indeterminate={usersCount > 0 && usersCount !== users.length}
+								indeterminate={indeterminate}
 								onChange={(): void => {
 									setUsers((users) => {
 										const hasCheckedDeletedUsers = users.some(({ is_deleted, do_import }) => is_deleted && do_import);
