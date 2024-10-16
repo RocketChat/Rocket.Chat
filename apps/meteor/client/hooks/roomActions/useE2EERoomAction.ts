@@ -5,12 +5,14 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { E2EEState } from '../../../app/e2e/client/E2EEState';
+import { E2ERoomState } from '../../../app/e2e/client/E2ERoomState';
 import { OtrRoomState } from '../../../app/otr/lib/OtrRoomState';
 import { getRoomTypeTranslation } from '../../lib/getRoomTypeTranslation';
 import { imperativeModal } from '../../lib/imperativeModal';
 import { dispatchToastMessage } from '../../lib/toast';
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
+import { useE2EERoomState } from '../../views/room/hooks/useE2EERoomState';
 import { useE2EEState } from '../../views/room/hooks/useE2EEState';
 import BaseDisableE2EEModal from '../../views/room/modals/E2EEModals/BaseDisableE2EEModal';
 import EnableE2EEModal from '../../views/room/modals/E2EEModals/EnableE2EEModal';
@@ -21,6 +23,7 @@ export const useE2EERoomAction = () => {
 	const room = useRoom();
 	const subscription = useRoomSubscription();
 	const e2eeState = useE2EEState();
+	const e2eeRoomState = useE2EERoomState(room._id);
 	const isE2EEReady = e2eeState === E2EEState.READY || e2eeState === E2EEState.SAVE_PASSWORD;
 	const readyToEncrypt = isE2EEReady || room.encrypted;
 	const permittedToToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id);
@@ -30,6 +33,20 @@ export const useE2EERoomAction = () => {
 	const { t } = useTranslation();
 	const { otrState } = useOTR();
 
+	const isE2EERoomNotReady = () => {
+		if (
+			e2eeRoomState === E2ERoomState.NO_PASSWORD_SET ||
+			e2eeRoomState === E2ERoomState.NOT_STARTED ||
+			e2eeRoomState === E2ERoomState.DISABLED ||
+			e2eeRoomState === E2ERoomState.ERROR ||
+			e2eeRoomState === E2ERoomState.WAITING_KEYS
+		) {
+			return true;
+		}
+
+		return false;
+	};
+
 	const enabledOnRoom = !!room.encrypted;
 
 	const roomType = useMemo(() => getRoomTypeTranslation(room)?.toLowerCase(), [room]);
@@ -38,7 +55,7 @@ export const useE2EERoomAction = () => {
 
 	const toggleE2E = useEndpoint('POST', '/v1/rooms.saveRoomSettings');
 
-	const canResetRoomKey = enabled && isE2EEReady && (room.t === 'd' || permittedToToggleEncryption);
+	const canResetRoomKey = enabled && isE2EEReady && (room.t === 'd' || permittedToToggleEncryption) && isE2EERoomNotReady();
 
 	const action = useEffectEvent(async () => {
 		if (otrState === OtrRoomState.ESTABLISHED || otrState === OtrRoomState.ESTABLISHING || otrState === OtrRoomState.REQUESTED) {
