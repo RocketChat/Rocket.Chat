@@ -8,3 +8,5 @@ export const configureLogLevel = async (): Promise<void> => {
 		logLevel.emit('changed', LogLevel as LogLevelSetting);
 	}
 };
+
+// Suggestion: Reduce log level to minimize memory usage

@@ -33,3 +33,5 @@ await configureLoginServices();
 await registerEEBroker();
 await startup();
 await startLicense();
+
+// Suggestion: Optimize Rocket.Chat configuration to reduce memory usage

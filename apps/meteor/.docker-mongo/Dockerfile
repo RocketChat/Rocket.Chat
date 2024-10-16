@@ -61,6 +61,8 @@ ENV DEPLOY_METHOD=docker-preview \
 
 EXPOSE 3000
 
+# Suggestion: Increase the memory limit for the container
+
 RUN chmod +x /app/bundle/entrypoint.sh
 
 ENTRYPOINT /app/bundle/entrypoint.sh
