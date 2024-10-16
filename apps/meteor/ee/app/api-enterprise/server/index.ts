@@ -4,6 +4,6 @@ await License.onLicense('canned-responses', async () => {
 	await import('./canned-responses');
 });
 
-await License.onLicense('voip-enterprise', async () => {
+License.onValidateLicense(async () => {
 	await import('./voip-freeswitch');
 });
