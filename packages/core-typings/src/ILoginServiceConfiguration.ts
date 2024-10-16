@@ -14,7 +14,9 @@ export type OAuthConfiguration = {
 	scope: string;
 	accessTokenParam: string;
 	buttonLabelText: string;
+	buttonLabelColor: string;
 	loginStyle: '' | 'redirect' | 'popup';
+	buttonColor: string;
 	tokenSentVia: 'header' | 'payload';
 	identityTokenSentVia: 'default' | 'header' | 'payload';
 	keyField: 'username' | 'email';
@@ -53,6 +55,8 @@ export type CASConfiguration = {
 	base_url: string;
 	login_url: string;
 	buttonLabelText: string;
+	buttonLabelColor: string;
+	buttonColor: string;
 	width: number;
 	height: number;
 	autoclose: boolean;
@@ -60,6 +64,8 @@ export type CASConfiguration = {
 
 export type SAMLConfiguration = {
 	buttonLabelText: string;
+	buttonLabelColor: string;
+	buttonColor: string;
 	clientConfig: {
 		provider?: string;
 	};
