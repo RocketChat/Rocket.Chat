@@ -1346,7 +1346,6 @@
   "Markdown_Parser": "Markdown Parser",
   "Markdown_SupportSchemesForLink": "Markdown Support Schemes for Link",
   "Markdown_SupportSchemesForLink_Description": "Kommasepareret liste over tilladte ordninger",
-  "E2E_Enable_alert": "Denne funktion er i øjeblikket i beta! Rapportér fejl til github.com/RocketChat/Rocket.Chat/issues og vær opmærksom på: <br/> - Krypterede meddelelser om krypterede rum vil ikke blive fundet ikke ved søgning.<br/>- Mobilapps understøtter muligvis ikke de krypterede meddelelser (de er ved at implementere det). <br/> - Bots er muligvis ikke i stand til at se krypterede meddelelser før de implementerer support for det. <br/> - Uploads vil ikke blive krypteret i denne version.",
   "E2E_Enable_description": "Aktivér mulighed for at oprette krypterede grupper og at være i stand til at ændre grupper og direkte beskeder med kryptering",
   "E2E_Enabled": "E2E aktiveret",
   "E2E_Enabled_Default_DirectRooms": "Aktivér kryptering for direkte rum som standard",

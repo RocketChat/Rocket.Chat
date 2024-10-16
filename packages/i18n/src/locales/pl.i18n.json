@@ -1664,7 +1664,6 @@
   "Markdown_SupportSchemesForLink_Description": "Oddzielonych przecinkami lista dozwolonych programów",
   "E2E_enable": "Włącz E2E",
   "E2E_disable": "Wyłącz E2E",
-  "E2E_Enable_alert": "Ta funkcja jest obecnie w wersji beta! Wszelkie błędy prosimy zgłaszać na github.com/RocketChat/Rocket.Chat/issues oraz pamiętać o: <br/>- Zaszyfrowane wiadomości zaszyfrowanych pomieszczeń nie zostaną znalezione podczas operacji wyszukiwania. <br/>- Aplikacje mobilne mogą nie obsługiwać zaszyfrowanych wiadomości (funkcjonalność w trakcie implementacji). <br/>- Boty mogą nie widzieć zaszyfrowanych wiadomości, dopóki obsługa nie zostanie zaimplementowana po ich stronie. <br/>- Przesłane pliki nie będą szyfrowane w tej wersji.",
   "E2E_Enable_description": "Włącz opcję tworzenia zaszyfrowanych grup i możliwość zmiany grup, oraz szyfrowania bezpośrednich wiadomości",
   "E2E_Enabled": "E2E włączone",
   "E2E_Enabled_Default_DirectRooms": "Domyślnie włączyć szyfrowanie dla Direct Rooms",

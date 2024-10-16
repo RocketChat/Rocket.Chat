@@ -1472,7 +1472,6 @@
   "Markdown_SupportSchemesForLink_Description": "Llista dels scheme:// permesos separats per comes",
   "E2E_enable": "Habilitar E2E",
   "E2E_disable": "Deshabilitat E2E",
-  "E2E_Enable_alert": "Aquesta funció està actualment en versió beta. Informeu d’errors a github.com/RocketChat/Rocket.Chat/issues i tingueu en compte: <br/>- Les operacions de cerca no trobaran els missatges xifrats de les sales xifrades.<br/>- És possible que les aplicacions mòbils no admetin els missatges encriptats. (ho estan implementant).<br/>- És possible que els robots no puguin veure els missatges xifrats fins que no implementin el suport.<br/>- Les càrregues no es xifraran en aquesta versió.",
   "E2E_Enable_description": "Habiliteu l'opció per crear grups encriptats i poder canviar grups i missatges directes per ser encriptats",
   "E2E_Enabled": "E2E activat",
   "E2E_Enabled_Default_DirectRooms": "Habilitar l'encriptació per a les Rooms directes per defecte",

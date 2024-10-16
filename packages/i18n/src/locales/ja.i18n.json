@@ -1465,7 +1465,6 @@
   "Markdown_SupportSchemesForLink_Description": "許可するスキームのコンマ区切り一覧",
   "E2E_enable": "E2Eを有効にする",
   "E2E_disable": "E2Eを無効にする",
-  "E2E_Enable_alert": "この機能は現在ベータ版です！バグはgithub.com/RocketChat/Rocket.Chat/issuesに報告してください。<br/> - 暗号化されたルームの暗号化されたメッセージは検索操作で見つかりません。<br/> - モバイルアプリは暗号化されたメッセージをサポートしていない可能性があります（実装はしています）。<br/> - ボットは、サポートを実装するまで、暗号化されたメッセージを見ることができません。<br/> - このバージョンでは、アップロードは暗号化されません。",
   "E2E_Enable_description": "暗号化されたグループを作成しプライベートグループとダイレクトメッセージを暗号化できるオプションを有効にする",
   "E2E_Enabled": "E2Eが有効",
   "E2E_Enabled_Default_DirectRooms": "デフォルトでダイレクトRoomの暗号化を有効にする",

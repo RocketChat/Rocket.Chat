@@ -1462,7 +1462,6 @@
   "Markdown_SupportSchemesForLink_Description": "以逗號分隔列出允許的協議",
   "E2E_enable": "E2E 已啟用",
   "E2E_disable": "E2E 已停用",
-  "E2E_Enable_alert": "這個功能目前還在測試! 請回報臭蟲到 github.com/RocketChat/Rocket.Chat/issues 且要知道:<br/>- 在已加密的房間中加密的訊息是沒辦法搜尋得到的。<br/>- 手機應用程式可能不支援加密訊息 (他們實施中)。<br/>- 機器人可能也無法看到已加密訊息直到他們支援這個。<br/>- 這個版本無法加密檔案。",
   "E2E_Enable_description": "啟用選項來建立加密群組就可以變更群組和直接訊息加密",
   "E2E_Enabled": "E2E 已啟用",
   "E2E_Enabled_Default_DirectRooms": "預設情況下為 Direct Rooms 啟用加密",

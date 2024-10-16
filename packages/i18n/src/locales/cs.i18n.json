@@ -1264,7 +1264,6 @@
   "Markdown_Parser": "Parser markdownu",
   "Markdown_SupportSchemesForLink": "Schémata používaná pro automatické odkazy markdown",
   "Markdown_SupportSchemesForLink_Description": "Čárkami oddělený seznam povolených schémat",
-  "E2E_Enable_alert": "Tato funkce je aktuálně ve verzi beta! Nahlaste chyby na github.com/RocketChat/Rocket.Chat/issues a mějte na paměti: <br/>- Šifrované zprávy šifrovaných místností nebudou nalezeny vyhledávacími operacemi. <br/>- Mobilní aplikace nemusí podporovat šifrované zprávy (teprve se implementují). <br/>- Boti nemusí vidět šifrované zprávy, dokud pro ně neimplementují podporu. <br/>- Nahráváné soubory nebudou v této verzi šifrovány.",
   "E2E_Enable_description": "Povolit možnost vytváření šifrovaných skupin a možnost měnit skupiny a přímé zprávy, které mají být šifrovány",
   "E2E_Enabled": "E2E povoleno",
   "E2E_Enabled_Default_DirectRooms": "Přímé konverzace ve výchozím stavu šifrovat",

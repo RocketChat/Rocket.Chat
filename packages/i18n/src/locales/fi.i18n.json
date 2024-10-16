@@ -1676,7 +1676,6 @@
   "Markdown_SupportSchemesForLink_Description": "Pilkulla erotettu luettelo sallittuista malleista",
   "E2E_enable": "Ota käyttöön E2E",
   "E2E_disable": "Poista käytöstä E2E",
-  "E2E_Enable_alert": "Ominaisuus on betavaiheessa! Ilmoita virheistä kanavalla github.com/RocketChat/Rocket.Chat/issues ja huomioi seuraavat:<br/>- Salattujen huoneiden salattuja viestejä ei löydy hakutoiminnoilla.<br/>- Mobiilisovellukset eivät välttämättä tue salattuja viestejä (ominaisuutta otetaan käyttöön).<br/>- Botit eivät välttämättä näe salattuja viestejä, ennen kuin niiden tuki otetaan käyttöön.<br/>- Latauksia ei salata tässä versiossa.",
   "E2E_Enable_description": "Ottamalla asetuksen käyttöön voit luoda salattuja ryhmiä ja voit muuttaa ryhmiä ja salattavia suoria viestejä",
   "E2E_Enabled": "E2E käytössä",
   "E2E_Enabled_Default_DirectRooms": "Ota salaus käyttöön Direct Room Room -huoneissa oletuksena",

@@ -1312,7 +1312,6 @@
   "Markdown_SupportSchemesForLink_Description": "쉼표로 구분된 허용할 스키마",
   "E2E_enable": "E2E 활성화",
   "E2E_disable": "E2E 비활성화",
-  "E2E_Enable_alert": "이 기능은 현재 베타 버전입니다! 버그를 github.com/RocketChat/Rocket.Chat/issues에 보고해 보세요. <br/>- 암호화된 대화방의 암호화된 메시지는 검색할 수 없습니다. <br/>- 모바일 앱이 암호화된 메시지를 지원하지 않을 수 있습니다. (구현 중입니다.) <br/>- 봇은 암호화된 메시지를 지원할 때까지 암호화된 메시지를 볼 수 없습니다. <br/>-이 버전에서는 업로드가 암호화되지 않습니다.",
   "E2E_Enable_description": "암호화 된 그룹을 생성하고, 기존 생성된 그룹과 1:1대화방을 암호화할 수 있는 옵션 사용",
   "E2E_Enabled": "E2E 사용",
   "E2E_Enabled_Default_DirectRooms": "기본적으로 1:1 Room에 대한 암호화 사용",
