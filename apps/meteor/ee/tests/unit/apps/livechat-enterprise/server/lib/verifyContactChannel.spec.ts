@@ -2,8 +2,6 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-import { runMergeContacts } from '../../../../../../server/patches/mergeContacts';
-
 const modelsMock = {
 	LivechatContacts: {
 		findOneById: sinon.stub(),
@@ -37,7 +35,6 @@ describe('verifyContactChannel', () => {
 		modelsMock.LivechatContacts.deleteMany.reset();
 		modelsMock.LivechatVisitors.updateMany.reset();
 		modelsMock.LivechatContacts.updateContact.reset();
-		mergeContactsStub.callsFake((contactId, channel) => runMergeContacts(() => undefined, contactId, channel));
 
 		sinon.useFakeTimers(new Date().getTime());
 	});
