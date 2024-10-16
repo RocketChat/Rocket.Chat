@@ -26,45 +26,58 @@ export const startTracing = ({ service }: { service: string }) => {
 	// return new TracingEnabled(service);
 };
 
-export async function tracerSpan<F extends (span?: Span) => unknown>(
+export function tracerSpan<F extends (span?: Span) => ReturnType<F>>(
 	name: string,
 	options: SpanOptions,
 	fn: F,
 	optl?: unknown,
-): Promise<ReturnType<F>> {
+): ReturnType<F> {
 	if (!isTracingEnabled()) {
-		return fn() as Promise<ReturnType<F>>;
+		return fn();
 	}
 
 	if (optl) {
 		const activeContext = propagation.extract(context.active(), optl);
-		return tracer.startActiveSpan(name, options, activeContext, async (span: Span) => {
-			const result = await fn(span);
+
+		return tracer.startActiveSpan(name, options, activeContext, (span: Span) => {
+			const result = fn(span);
+			if (result instanceof Promise) {
+				result.finally(() => {
+					span.end();
+				});
+				return result;
+			}
 			span.end();
 			return result;
-		}) as Promise<ReturnType<F>>;
+		});
 	}
 
-	return tracer.startActiveSpan(name, options, async (span: Span) => {
-		const result = await fn(span);
+	return tracer.startActiveSpan(name, options, (span: Span) => {
+		const result = fn(span);
+		if (result instanceof Promise) {
+			result.finally(() => {
+				span.end();
+			});
+			return result;
+		}
 		span.end();
 		return result;
-	}) as Promise<ReturnType<F>>;
+	});
 }
 
-export function tracerActiveSpan<F extends (span?: Span) => unknown>(
+export function tracerActiveSpan<F extends (span?: Span) => ReturnType<F>>(
 	name: string,
 	options: SpanOptions,
 	fn: F,
 	optl?: unknown,
-): Promise<ReturnType<F>> {
+): ReturnType<F> {
 	const currentSpan = trace.getSpan(context.active());
 
 	if (process.env.LOG_UNTRACED_METHODS) {
 		console.log(`No active span for ${name}`, new Error().stack);
 	}
 
-	return currentSpan ? tracerSpan(name, options, fn, optl) : (fn() as Promise<ReturnType<F>>);
+	return currentSpan ? tracerSpan(name, options, fn, optl) : fn();
 }
 
 export function injectCurrentContext() {
