@@ -8,7 +8,7 @@ import('./OmnichannelServiceLevelAgreements');
 import('./AuditLog');
 import('./ReadReceipts');
 
-await License.onLicense('livechat-enterprise', () => {
+void License.onLicense('livechat-enterprise', () => {
 	import('./CannedResponse');
 	import('./LivechatTag');
 	import('./LivechatUnit');

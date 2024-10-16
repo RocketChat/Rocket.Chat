@@ -16,18 +16,12 @@ export class RocketChatFileAdapter {
 		internalUser: IUser,
 		fileRecord: Partial<IUpload>,
 	): Promise<{ files: IMessage['files']; attachments: IMessage['attachments'] }> {
-		return new Promise<{ files: IMessage['files']; attachments: IMessage['attachments'] }>(async (resolve, reject) => {
-			const fileStore = FileUpload.getStore('Uploads');
+		const fileStore = FileUpload.getStore('Uploads');
 
-			const uploadedFile = await fileStore.insert(fileRecord, readableStream);
-			try {
-				const { files, attachments } = await parseFileIntoMessageAttachments(uploadedFile, internalRoomId, internalUser);
+		const uploadedFile = await fileStore.insert(fileRecord, readableStream);
+		const { files, attachments } = await parseFileIntoMessageAttachments(uploadedFile, internalRoomId, internalUser);
 
-				resolve({ files, attachments });
-			} catch (error) {
-				reject(error);
-			}
-		});
+		return { files, attachments };
 	}
 
 	public async getBufferFromFileRecord(fileRecord: IUpload): Promise<Buffer> {

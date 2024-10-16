@@ -36,6 +36,10 @@ export class AccountProfile {
 		return this.page.locator('.avatar-file-input');
 	}
 
+	get userAvatarEditor(): Locator {
+		return this.page.locator('[data-qa-id="UserAvatarEditor"]');
+	}
+
 	get emailTextInput(): Locator {
 		return this.page.locator('//label[contains(text(), "Email")]/..//input');
 	}
@@ -74,6 +78,18 @@ export class AccountProfile {
 
 	get inputImageFile(): Locator {
 		return this.page.locator('input[type=file]');
+	}
+
+	get securityHeader(): Locator {
+		return this.page.locator('h1[data-qa-type="PageHeader-title"]:has-text("Security")');
+	}
+
+	get securityPasswordSection(): Locator {
+		return this.page.locator('[role="button"]:has-text("Password")');
+	}
+
+	get security2FASection(): Locator {
+		return this.page.locator('[role="button"]:has-text("Two Factor Authentication")');
 	}
 
 	get securityE2EEncryptionSection(): Locator {

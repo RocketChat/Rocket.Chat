@@ -1,8 +1,8 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import { screenProps, loremIpsum, screenDecorator } from '../../helpers.stories';
+import { loremIpsum, screenDecorator } from '../../../.storybook/helpers';
 import ChatFinished from './component';
 
 export default {
@@ -13,7 +13,6 @@ export default {
 		greeting: '',
 		message: '',
 		onRedirectChat: action('redirectChat'),
-		...screenProps(),
 	},
 	decorators: [screenDecorator],
 	parameters: {
@@ -21,7 +20,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof ChatFinished>>;
 
-const Template: Story<ComponentProps<typeof ChatFinished>> = (args) => <ChatFinished {...args} />;
+const Template: StoryFn<ComponentProps<typeof ChatFinished>> = (args) => <ChatFinished {...args} />;
 
 export const Normal = Template.bind({});
 Normal.storyName = 'normal';

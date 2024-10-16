@@ -1,7 +1,7 @@
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 
 import CreateDiscussion from '../../../../components/CreateDiscussion';
-import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import CreateChannelWithData from '../../CreateChannel';
 import CreateDirectMessage from '../../CreateDirectMessage';
 import CreateTeam from '../../CreateTeam';
@@ -44,7 +44,7 @@ export const useCreateRoomItems = (): GenericMenuItemProps[] => {
 	};
 	const createDirectMessageItem: GenericMenuItemProps = {
 		id: 'direct',
-		content: t('Direct_Messages'),
+		content: t('Direct_message'),
 		icon: 'balloon',
 		onClick: () => {
 			createDirectMessage();
@@ -60,9 +60,9 @@ export const useCreateRoomItems = (): GenericMenuItemProps[] => {
 	};
 
 	return [
-		...(canCreateChannel ? [createChannelItem] : []),
-		...(canCreateTeam ? [createTeamItem] : []),
 		...(canCreateDirectMessages ? [createDirectMessageItem] : []),
 		...(canCreateDiscussion && discussionEnabled ? [createDiscussionItem] : []),
+		...(canCreateChannel ? [createChannelItem] : []),
+		...(canCreateTeam ? [createTeamItem] : []),
 	];
 };

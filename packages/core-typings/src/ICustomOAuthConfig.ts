@@ -1,7 +1,7 @@
 export type OauthConfig = {
 	serverURL?: string;
 	identityPath?: string;
-	addAutopublishFields: {
+	addAutopublishFields?: {
 		forLoggedInUser: string[];
 		forOtherUsers: string[];
 	};
@@ -13,4 +13,5 @@ export type OauthConfig = {
 	tokenSentVia?: string;
 	usernameField?: string;
 	mergeUsers?: boolean;
+	responseType?: string;
 };

@@ -1,11 +1,11 @@
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IWorkspaceToken } from '@rocket.chat/apps-engine/definition/cloud/IWorkspaceToken';
 import { CloudWorkspaceBridge } from '@rocket.chat/apps-engine/server/bridges/CloudWorkspaceBridge';
 
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { getWorkspaceAccessTokenWithScope } from '../../../cloud/server';
 
 export class AppCloudBridge extends CloudWorkspaceBridge {
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 	}
 

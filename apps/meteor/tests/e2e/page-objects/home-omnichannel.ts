@@ -10,7 +10,7 @@ import { OmnichannelTranscript } from './omnichannel-transcript';
 import { OmnichannelTriggers } from './omnichannel-triggers';
 
 export class HomeOmnichannel {
-	private readonly page: Page;
+	readonly page: Page;
 
 	readonly content: HomeOmnichannelContent;
 

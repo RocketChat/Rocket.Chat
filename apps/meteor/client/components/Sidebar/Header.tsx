@@ -1,14 +1,15 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import React from 'react';
 
 type HeaderProps = {
+	children?: ReactNode;
 	title?: ReactNode;
 	onClose?: () => void;
 };
 
-const Header: FC<HeaderProps> = ({ title, onClose, children, ...props }) => {
+const Header = ({ title, onClose, children, ...props }: HeaderProps) => {
 	const t = useTranslation();
 
 	return (

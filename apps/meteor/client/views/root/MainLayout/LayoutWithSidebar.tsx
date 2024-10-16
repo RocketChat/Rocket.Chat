@@ -1,12 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useLayout, useSetting, useCurrentModal, useRoute, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
-import { PaletteStyleTag } from '@rocket.chat/ui-theming/src/PaletteStyleTag';
-import { SidebarPaletteStyleTag } from '@rocket.chat/ui-theming/src/SidebarPaletteStyleTag';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useRef } from 'react';
 
 import Sidebar from '../../../sidebar';
 import AccessibilityShortcut from './AccessibilityShortcut';
+import { MainLayoutStyleTags } from './MainLayoutStyleTags';
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
@@ -48,8 +47,7 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 			aria-hidden={Boolean(modal)}
 		>
 			<AccessibilityShortcut />
-			<PaletteStyleTag />
-			<SidebarPaletteStyleTag />
+			<MainLayoutStyleTags />
 			{!removeSidenav && <Sidebar />}
 			<main
 				id='main-content'

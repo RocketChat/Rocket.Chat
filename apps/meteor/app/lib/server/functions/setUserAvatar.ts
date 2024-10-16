@@ -10,6 +10,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { FileUpload } from '../../../file-upload/server';
 import { RocketChatFile } from '../../../file/server';
 import { settings } from '../../../settings/server';
+import { checkUrlForSsrf } from './checkUrlForSsrf';
 
 export const setAvatarFromServiceWithValidation = async (
 	userId: string,
@@ -88,8 +89,17 @@ export async function setUserAvatar(
 	const { buffer, type } = await (async (): Promise<{ buffer: Buffer; type: string }> => {
 		if (service === 'url' && typeof dataURI === 'string') {
 			let response: Response;
+
+			const isSsrfSafe = await checkUrlForSsrf(dataURI);
+			if (!isSsrfSafe) {
+				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${encodeURI(dataURI)}`, {
+					function: 'setUserAvatar',
+					url: dataURI,
+				});
+			}
+
 			try {
-				response = await fetch(dataURI);
+				response = await fetch(dataURI, { redirect: 'error' });
 			} catch (e) {
 				SystemLogger.info(`Not a valid response, from the avatar url: ${encodeURI(dataURI)}`);
 				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${encodeURI(dataURI)}`, {

@@ -3,7 +3,6 @@ import { LivechatInquiry, LivechatDepartment, Users } from '@rocket.chat/models'
 import {
 	isGETLivechatInquiriesListParams,
 	isPOSTLivechatInquiriesTakeParams,
-	isGETLivechatInquiriesQueuedParams,
 	isGETLivechatInquiriesQueuedForUserParams,
 	isGETLivechatInquiriesGetOneParams,
 } from '@rocket.chat/rest-typings';
@@ -23,7 +22,7 @@ API.v1.addRoute(
 			const { department } = this.queryParams;
 			const ourQuery: { status: string; department?: string } = { status: 'queued' };
 			if (department) {
-				const departmentFromDB = await LivechatDepartment.findOneByIdOrName(department);
+				const departmentFromDB = await LivechatDepartment.findOneByIdOrName(department, { projection: { _id: 1 } });
 				if (departmentFromDB) {
 					ourQuery.department = departmentFromDB._id;
 				}
@@ -65,36 +64,6 @@ API.v1.addRoute(
 			return API.v1.success({
 				inquiry: await takeInquiry(this.bodyParams.userId || this.userId, this.bodyParams.inquiryId),
 			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'livechat/inquiries.queued',
-	{
-		authRequired: true,
-		permissionsRequired: ['view-l-room'],
-		validateParams: isGETLivechatInquiriesQueuedParams,
-		deprecationVersion: '7.0.0',
-	},
-	{
-		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await this.parseJsonQuery();
-			const { department } = this.queryParams;
-
-			return API.v1.success(
-				await findInquiries({
-					userId: this.userId,
-					department,
-					status: LivechatInquiryStatus.QUEUED,
-					pagination: {
-						offset,
-						count,
-						sort,
-					},
-				}),
-			);
 		},
 	},
 );

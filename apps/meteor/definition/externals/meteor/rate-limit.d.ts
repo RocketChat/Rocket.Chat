@@ -4,8 +4,14 @@ declare module 'meteor/rate-limit' {
 		route: string;
 	};
 
+	type RateLimiterCheckResult = {
+		allowed: boolean;
+		timeToReset: number;
+		numInvocationsLeft: number;
+	};
+
 	class RateLimiter {
-		public check(input: RateLimiterOptionsToCheck);
+		public check(input: RateLimiterOptionsToCheck): Promise<RateLimiterCheckResult>;
 
 		public increment(input: RateLimiterOptionsToCheck);
 

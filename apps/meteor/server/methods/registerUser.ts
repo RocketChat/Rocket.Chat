@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
@@ -11,7 +11,7 @@ import { validateEmailDomain, passwordPolicy, RateLimiter } from '../../app/lib/
 import { settings } from '../../app/settings/server';
 import { trim } from '../../lib/utils/stringUtils';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		registerUser(
@@ -33,7 +33,7 @@ Meteor.methods<ServerMethods>({
 		const AllowAnonymousWrite = settings.get<boolean>('Accounts_AllowAnonymousWrite');
 		const manuallyApproveNewUsers = settings.get<boolean>('Accounts_ManuallyApproveNewUsers');
 		if (AllowAnonymousRead === true && AllowAnonymousWrite === true && !formData.email) {
-			const userId = Accounts.insertUserDoc(
+			const userId = await Accounts.insertUserDoc(
 				{},
 				{
 					globalRoles: ['anonymous'],
@@ -41,9 +41,9 @@ Meteor.methods<ServerMethods>({
 				},
 			);
 
-			const stampedLoginToken = Accounts._generateStampedLoginToken();
+			const stampedLoginToken = await Accounts._generateStampedLoginToken();
 
-			Accounts._insertLoginToken(userId, stampedLoginToken);
+			await Accounts._insertLoginToken(userId, stampedLoginToken);
 			return stampedLoginToken;
 		}
 		check(

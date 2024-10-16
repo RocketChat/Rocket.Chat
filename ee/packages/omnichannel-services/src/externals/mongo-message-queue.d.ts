@@ -30,5 +30,7 @@ declare module 'mongo-message-queue' {
 		enqueueAndProcess<T>(type: Actions, message: T, options?: { nextReceivableTime: Date; priority: number }): Promise<void>;
 
 		stopPolling(): void;
+
+		pollingInterval?: number;
 	}
 }

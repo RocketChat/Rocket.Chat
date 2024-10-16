@@ -3,8 +3,13 @@ import { Meteor } from 'meteor/meteor';
 
 import { Apps } from '../../apps';
 
-Meteor.startup(() => {
-	License.onInvalidateLicense(() => {
-		void Apps.disableApps();
-	});
+Meteor.startup(async () => {
+	const migratePrivateAppsCallback = async () => {
+		if (!Apps.isInitialized) return;
+
+		void Apps.migratePrivateApps();
+	};
+
+	License.onInvalidateLicense(migratePrivateAppsCallback);
+	License.onRemoveLicense(migratePrivateAppsCallback);
 });

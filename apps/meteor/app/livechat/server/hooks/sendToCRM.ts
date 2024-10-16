@@ -35,18 +35,28 @@ type OmnichannelRoomWithExtraFields = IOmnichannelRoom & {
 	oldDepartmentId?: IOmnichannelRoom['departmentId'];
 };
 
+type CRMActions =
+	| 'LivechatSessionStart'
+	| 'LivechatSessionQueued'
+	| 'LivechatSession'
+	| 'LivechatSessionTaken'
+	| 'LivechatSessionForwarded'
+	| 'LivechatEdit'
+	| 'Message'
+	| 'LeadCapture';
+
 const msgNavType = 'livechat_navigation_history';
 const msgClosingType = 'livechat-close';
 
-const isOmnichannelNavigationMessage = (message: IMessage): message is IOmnichannelSystemMessage => {
+export const isOmnichannelNavigationMessage = (message: IMessage): message is IOmnichannelSystemMessage => {
 	return message.t === msgNavType;
 };
 
-const isOmnichannelClosingMessage = (message: IMessage): message is IOmnichannelSystemMessage => {
+export const isOmnichannelClosingMessage = (message: IMessage): message is IOmnichannelSystemMessage => {
 	return message.t === msgClosingType;
 };
 
-const sendMessageType = (msgType: string): boolean => {
+export const sendMessageType = (msgType: string): boolean => {
 	switch (msgType) {
 		case msgClosingType:
 			return true;
@@ -60,10 +70,10 @@ const sendMessageType = (msgType: string): boolean => {
 	}
 };
 
-const getAdditionalFieldsByType = (type: string, room: OmnichannelRoomWithExtraFields): AdditionalFields => {
+export const getAdditionalFieldsByType = (type: CRMActions, room: OmnichannelRoomWithExtraFields): AdditionalFields => {
 	const { departmentId, servedBy, closedAt, closedBy, closer, oldServedBy, oldDepartmentId } = room;
 	switch (type) {
-		case 'LivechatSessionStarted':
+		case 'LivechatSessionStart':
 		case 'LivechatSessionQueued':
 			return { departmentId };
 		case 'LivechatSession':
@@ -78,7 +88,7 @@ const getAdditionalFieldsByType = (type: string, room: OmnichannelRoomWithExtraF
 };
 
 async function sendToCRM(
-	type: string,
+	type: CRMActions,
 	room: OmnichannelRoomWithExtraFields,
 	includeMessages: boolean | IOmnichannelSystemMessage[] = true,
 ): Promise<OmnichannelRoomWithExtraFields> {
@@ -170,15 +180,8 @@ callbacks.add(
 
 callbacks.add(
 	'livechat.afterTakeInquiry',
-	async (inquiry) => {
+	async ({ inquiry, room }) => {
 		if (!settings.get('Livechat_webhook_on_chat_taken')) {
-			return inquiry;
-		}
-
-		const { rid } = inquiry;
-		const room = await LivechatRooms.findOneById(rid);
-
-		if (!room) {
 			return inquiry;
 		}
 
@@ -258,13 +261,8 @@ callbacks.add(
 );
 
 callbacks.add(
-	'afterSaveMessage',
-	async (message, room) => {
-		// only call webhook if it is a livechat room
-		if (!isOmnichannelRoom(room) || !room?.v?.token) {
-			return message;
-		}
-
+	'afterOmnichannelSaveMessage',
+	async (message, { room }) => {
 		// if the message has a token, it was sent from the visitor
 		// if not, it was sent from the agent
 		if (message.token && !settings.get('Livechat_webhook_on_visitor_message')) {

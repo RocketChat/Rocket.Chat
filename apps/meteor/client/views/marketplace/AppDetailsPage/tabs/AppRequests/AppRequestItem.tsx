@@ -1,9 +1,9 @@
 import { Badge, Box } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 
 type AppRequestItemProps = {

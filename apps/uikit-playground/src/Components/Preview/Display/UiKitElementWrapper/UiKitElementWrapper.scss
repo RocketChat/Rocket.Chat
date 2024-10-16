@@ -1,0 +1,62 @@
+@use '../../../../cssVariables.css';
+
+.uikit-element-wrapper{
+    position: relative;
+    box-sizing: border-box;
+    outline: 1px solid transparent;
+    height: fit-content;
+    align-items: center;
+    transition: var(--animation-fast);
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      inset: -8px;
+      border-radius: 4px;
+      outline: var(--elements-border) !important;
+      box-shadow: 0px 0px 8px 1px #ddd;
+      opacity: 0;
+      transition: var(--animation-fast);
+    }
+
+    &:hover {
+      > * {
+        position: relative;
+      }
+      &::before {
+        opacity: 1;
+      }
+
+      > .uikit-element-delete-btn {
+        visibility: visible !important;
+      }
+    }
+
+    &:active {
+      > * {
+        position: relative;
+      }
+      &::before {
+        background: white;
+        opacity: 1;
+      }
+    }
+}
+
+.uikit-element-delete-btn{
+    position: absolute !important;
+    top: 50%;
+    right: -19px;
+    width: 20px;
+    height: 20px;
+    visibility: hidden;
+    cursor: pointer;
+    z-index: 1;
+    background-color: white;
+    border-radius: 4px;
+    border: var(--elements-border);
+    display: grid;
+    place-items: center;
+    transform: translateY(-50%);
+}

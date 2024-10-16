@@ -1,14 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
+import type { ReactNode } from 'react';
 import React from 'react';
 
 import Attachment from './Attachment';
 
-const AttachmentBlock: FC<{ pre?: JSX.Element | string | undefined; color?: string | undefined }> = ({
-	pre,
-	color = 'annotation',
-	children,
-}) => (
+type AttachmentBlockProps = { pre?: ReactNode; color?: string | undefined; children?: ReactNode };
+
+const AttachmentBlock = ({ pre, color = 'annotation', children }: AttachmentBlockProps) => (
 	<Attachment>
 		{pre}
 		<Box

@@ -1,0 +1,25 @@
+{
+	"name": "@rocket.chat/patch-injection",
+	"version": "0.0.1",
+	"private": true,
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@types/jest": "~29.5.13",
+		"eslint": "~8.45.0",
+		"jest": "~29.7.0",
+		"typescript": "~5.5.4"
+	},
+	"scripts": {
+		"build": "rm -rf dist && tsc",
+		"dev": "tsc --watch --preserveWatchOutput",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "jest"
+	},
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	]
+}

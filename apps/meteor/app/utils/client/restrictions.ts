@@ -1,7 +1,7 @@
 import { settings } from '../../settings/client';
 import { fileUploadIsValidContentTypeFromSettings } from '../lib/restrictions';
 
-export const fileUploadIsValidContentType = function (type: string, customWhiteList?: string): boolean {
+export const fileUploadIsValidContentType = function (type: string | undefined, customWhiteList?: string): boolean {
 	const blackList = settings.get<string>('FileUpload_MediaTypeBlackList');
 	const whiteList = customWhiteList || settings.get<string>('FileUpload_MediaTypeWhiteList');
 

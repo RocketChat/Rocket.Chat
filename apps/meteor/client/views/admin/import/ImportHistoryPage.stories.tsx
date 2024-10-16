@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import ImportHistoryPage from './ImportHistoryPage';
@@ -10,7 +10,7 @@ export default {
 		layout: 'fullscreen',
 		controls: { hideNoControlsWarning: true },
 	},
-} as ComponentMeta<typeof ImportHistoryPage>;
+} satisfies Meta<typeof ImportHistoryPage>;
 
-export const Default: ComponentStory<typeof ImportHistoryPage> = () => <ImportHistoryPage />;
+export const Default: StoryFn<typeof ImportHistoryPage> = () => <ImportHistoryPage />;
 Default.storyName = 'ImportHistoryPage';

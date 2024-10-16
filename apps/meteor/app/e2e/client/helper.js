@@ -53,6 +53,10 @@ export async function encryptAES(vector, key, data) {
 	return crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, key, data);
 }
 
+export async function encryptAESCTR(vector, key, data) {
+	return crypto.subtle.encrypt({ name: 'AES-CTR', counter: vector, length: 64 }, key, data);
+}
+
 export async function decryptRSA(key, data) {
 	return crypto.subtle.decrypt({ name: 'RSA-OAEP' }, key, data);
 }
@@ -63,6 +67,10 @@ export async function decryptAES(vector, key, data) {
 
 export async function generateAESKey() {
 	return crypto.subtle.generateKey({ name: 'AES-CBC', length: 128 }, true, ['encrypt', 'decrypt']);
+}
+
+export async function generateAESCTRKey() {
+	return crypto.subtle.generateKey({ name: 'AES-CTR', length: 256 }, true, ['encrypt', 'decrypt']);
 }
 
 export async function generateRSAKey() {
@@ -137,4 +145,16 @@ export async function generateMnemonicPhrase(n, sep = ' ') {
 		taken[x] = --len in taken ? taken[len] : len;
 	}
 	return result.join(sep);
+}
+
+export async function createSha256HashFromText(data) {
+	const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(data));
+	return Array.from(new Uint8Array(hash))
+		.map((b) => b.toString(16).padStart(2, '0'))
+		.join('');
+}
+
+export async function sha256HashFromArrayBuffer(arrayBuffer) {
+	const hashArray = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', arrayBuffer)));
+	return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }

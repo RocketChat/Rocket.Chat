@@ -1,7 +1,7 @@
 import type { Meta } from '@storybook/preact';
 
 import { renderMessageBlocks } from '.';
-import { accessoryImage } from '../../../helpers.stories';
+import { accessoryImage } from '../../../../.storybook/helpers';
 
 export default {
 	title: 'UiKit/Message/Context block',
@@ -9,7 +9,7 @@ export default {
 		layout: 'centered',
 	},
 	decorators: [(storyFn) => <div children={storyFn()} style={{ width: '100vw', maxWidth: 500 }} />],
-} as Meta;
+} satisfies Meta;
 
 export const PlainText = () =>
 	renderMessageBlocks([

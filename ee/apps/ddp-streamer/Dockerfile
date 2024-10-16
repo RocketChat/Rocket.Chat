@@ -1,4 +1,4 @@
-FROM node:14.21.3-alpine
+FROM node:20.17.0-alpine3.20
 
 ARG SERVICE
 
@@ -6,6 +6,10 @@ WORKDIR /app
 
 COPY ./packages/core-services/package.json packages/core-services/package.json
 COPY ./packages/core-services/dist packages/core-services/dist
+
+COPY ./packages/apps-engine/package.json packages/apps-engine/package.json
+COPY ./packages/apps-engine/client packages/apps-engine/client
+COPY ./packages/apps-engine/definition packages/apps-engine/definition
 
 COPY ./packages/agenda/package.json packages/agenda/package.json
 COPY ./packages/agenda/dist packages/agenda/dist
@@ -16,11 +20,15 @@ COPY ./packages/core-typings/dist packages/core-typings/dist
 COPY ./packages/rest-typings/package.json packages/rest-typings/package.json
 COPY ./packages/rest-typings/dist packages/rest-typings/dist
 
+COPY ./packages/message-parser/package.json packages/message-parser/package.json
+COPY ./packages/message-parser/dist packages/message-parser/dist
+COPY ./packages/message-parser/messageParser.js packages/message-parser/messageParser.js
+
+COPY ./packages/peggy-loader/package.json packages/peggy-loader/package.json
+COPY ./packages/peggy-loader/dist packages/peggy-loader/dist
+
 COPY ./packages/password-policies/package.json packages/password-policies/package.json
 COPY ./packages/password-policies/dist packages/password-policies/dist
-
-COPY ./packages/ui-contexts/package.json packages/ui-contexts/package.json
-COPY ./packages/ui-contexts/dist packages/ui-contexts/dist
 
 COPY ./packages/model-typings/package.json packages/model-typings/package.json
 COPY ./packages/model-typings/dist packages/model-typings/dist
@@ -35,6 +43,9 @@ COPY ./packages/logger/package.json packages/logger/package.json
 COPY ./packages/logger/dist packages/logger/dist
 
 COPY ./packages/server-cloud-communication/ packages/server-cloud-communication/
+
+COPY ./ee/packages/network-broker/package.json ee/packages/network-broker/package.json
+COPY ./ee/packages/network-broker/dist ee/packages/network-broker/dist
 
 COPY ./ee/packages/license/package.json packages/license/package.json
 COPY ./ee/packages/license/dist packages/license/dist
@@ -61,7 +72,7 @@ ENV NODE_ENV=production \
 WORKDIR /app/ee/apps/${SERVICE}
 
 RUN apk update && \
-    apk --no-cache --virtual build-dependencies add g++ python3 make && \
+    apk --no-cache --virtual build-dependencies add g++ python3 make py3-setuptools && \
     yarn workspaces focus --production && \
     rm -rf /var/cache/apk/* && \
     apk del build-dependencies

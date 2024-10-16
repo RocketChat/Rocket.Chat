@@ -33,7 +33,7 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void) => {
 		},
 		onSettled: () => {
 			onChange();
-			queryClient.invalidateQueries({ queryKey: ['moderation.reports'] });
+			queryClient.invalidateQueries({ queryKey: ['moderation', 'msgReports'] });
 			setModal();
 		},
 	});

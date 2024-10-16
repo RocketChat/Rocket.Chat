@@ -1,6 +1,6 @@
 import type { IUserStatus } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { FieldGroup, Button, ButtonGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, Select } from '@rocket.chat/fuselage';
+import { FieldGroup, Button, ButtonGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, Select, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRoute, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -28,9 +28,10 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 		register,
 		control,
 		handleSubmit,
-		formState: { isDirty, errors },
+		formState: { errors },
 	} = useForm({
 		defaultValues: { name: status?.name ?? '', statusType: status?.statusType ?? '' },
+		mode: 'all',
 	});
 
 	const saveStatus = useEndpoint('POST', _id ? '/v1/custom-user-status.update' : '/v1/custom-user-status.create');
@@ -94,9 +95,9 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 					<Field>
 						<FieldLabel>{t('Name')}</FieldLabel>
 						<FieldRow>
-							<TextInput {...register('name', { required: true })} placeholder={t('Name')} />
+							<TextInput {...register('name', { required: t('Required_field', { field: t('Name') }) })} placeholder={t('Name')} />
 						</FieldRow>
-						{errors?.name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
+						{errors.name && <FieldError>{errors.name.message}</FieldError>}
 					</Field>
 					<Field>
 						<FieldLabel>{t('Presence')}</FieldLabel>
@@ -104,27 +105,29 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 							<Controller
 								name='statusType'
 								control={control}
-								rules={{ required: true }}
+								rules={{ required: t('Required_field', { field: t('Presence') }) }}
 								render={({ field }): ReactElement => <Select {...field} placeholder={t('Presence')} options={presenceOptions} />}
 							/>
 						</FieldRow>
-						{errors?.statusType && <FieldError>{t('error-the-field-is-required', { field: t('Presence') })}</FieldError>}
+						{errors.statusType && <FieldError>{errors.statusType.message}</FieldError>}
 					</Field>
 				</FieldGroup>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} primary type='submit' disabled={!isDirty}>
+					<Button form={formId} primary type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 				{_id && (
-					<ButtonGroup mbs={8} stretch>
-						<Button icon='trash' danger onClick={handleDeleteStatus}>
-							{t('Delete')}
-						</Button>
-					</ButtonGroup>
+					<Box mbs={8}>
+						<ButtonGroup stretch>
+							<Button icon='trash' danger onClick={handleDeleteStatus}>
+								{t('Delete')}
+							</Button>
+						</ButtonGroup>
+					</Box>
 				)}
 			</ContextualbarFooter>
 		</>

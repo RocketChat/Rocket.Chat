@@ -1,8 +1,8 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { TypingIndicator } from '.';
-import { avatarResolver } from '../../../helpers.stories';
+import { avatarResolver } from '../../../../.storybook/helpers';
 
 export default {
 	title: 'Messages/TypingIndicator',
@@ -17,7 +17,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof TypingIndicator>>;
 
-const Template: Story<ComponentProps<typeof TypingIndicator>> = (args) => <TypingIndicator {...args} />;
+const Template: StoryFn<ComponentProps<typeof TypingIndicator>> = (args) => <TypingIndicator {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

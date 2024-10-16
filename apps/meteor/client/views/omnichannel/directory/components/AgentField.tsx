@@ -1,10 +1,10 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 import { UserStatus } from '../../../../components/UserStatus';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
 import AgentInfoDetails from '../../components/AgentInfoDetails';
 import Field from '../../components/Field';
 import Info from '../../components/Info';

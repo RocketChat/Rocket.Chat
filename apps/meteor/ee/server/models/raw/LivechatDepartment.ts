@@ -1,7 +1,18 @@
 import type { ILivechatDepartment, RocketChatRecordDeleted, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
 import { LivechatUnit } from '@rocket.chat/models';
-import type { Collection, DeleteResult, Document, Filter, FindCursor, FindOptions, UpdateFilter, UpdateResult, Db } from 'mongodb';
+import type {
+	Collection,
+	DeleteResult,
+	Document,
+	Filter,
+	FindCursor,
+	FindOptions,
+	UpdateFilter,
+	UpdateResult,
+	Db,
+	AggregationCursor,
+} from 'mongodb';
 
 import { LivechatDepartmentRaw } from '../../../../server/models/raw/LivechatDepartment';
 
@@ -22,6 +33,7 @@ declare module '@rocket.chat/model-typings' {
 			projection: FindOptions<ILivechatDepartment>['projection'],
 		): Promise<FindCursor<ILivechatDepartment>>;
 		findByParentId(parentId: string, options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
+		findAgentsByBusinessHourId(businessHourId: string): AggregationCursor<{ agentIds: string[] }>;
 	}
 }
 
@@ -79,5 +91,36 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 
 	findByParentId(parentId: string, options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
 		return this.col.find({ parentId }, options);
+	}
+
+	findAgentsByBusinessHourId(businessHourId: string): AggregationCursor<{ agentIds: string[] }> {
+		return this.col.aggregate<{ agentIds: string[] }>([
+			[
+				{
+					$match: {
+						businessHourId,
+					},
+				},
+				{
+					$lookup: {
+						from: 'rocketchat_livechat_department_agents',
+						localField: '_id',
+						foreignField: 'departmentId',
+						as: 'agents',
+					},
+				},
+				{
+					$unwind: '$agents',
+				},
+				{
+					$group: {
+						_id: null,
+						agentIds: {
+							$addToSet: '$agents.agentId',
+						},
+					},
+				},
+			],
+		]);
 	}
 }

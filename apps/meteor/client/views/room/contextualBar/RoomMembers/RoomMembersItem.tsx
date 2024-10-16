@@ -11,12 +11,12 @@ import {
 	OptionSkeleton,
 } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement, MouseEvent } from 'react';
 import React, { useState } from 'react';
 
 import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import UserActions from './RoomMembersActions';
 
@@ -25,9 +25,19 @@ type RoomMembersItemProps = {
 	rid: IRoom['_id'];
 	reload: () => void;
 	useRealName: boolean;
-} & Pick<IUser, 'federated' | 'username' | 'name' | '_id'>;
+} & Pick<IUser, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension'>;
 
-const RoomMembersItem = ({ _id, name, username, federated, onClickView, rid, reload, useRealName }: RoomMembersItemProps): ReactElement => {
+const RoomMembersItem = ({
+	_id,
+	name,
+	username,
+	federated,
+	freeSwitchExtension,
+	onClickView,
+	rid,
+	reload,
+	useRealName,
+}: RoomMembersItemProps): ReactElement => {
 	const [showButton, setShowButton] = useState();
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
@@ -50,7 +60,7 @@ const RoomMembersItem = ({ _id, name, username, federated, onClickView, rid, rel
 			</OptionContent>
 			<OptionMenu onClick={preventPropagation}>
 				{showButton ? (
-					<UserActions username={username} name={name} rid={rid} _id={_id} reload={reload} />
+					<UserActions username={username} name={name} rid={rid} _id={_id} freeSwitchExtension={freeSwitchExtension} reload={reload} />
 				) : (
 					<IconButton tiny icon='kebab' />
 				)}

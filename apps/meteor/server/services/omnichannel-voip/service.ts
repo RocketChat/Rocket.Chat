@@ -1,5 +1,5 @@
 import type { IOmnichannelVoipService, FindVoipRoomsParams } from '@rocket.chat/core-services';
-import { api, ServiceClassInternal, Voip } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, VoipAsterisk } from '@rocket.chat/core-services';
 import type {
 	IVoipExtensionBase,
 	IVoipExtensionWithAgentInfo,
@@ -197,7 +197,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 	}
 
 	async getFreeExtensions(): Promise<string[]> {
-		const allExtensions = await Voip.getExtensionList();
+		const allExtensions = await VoipAsterisk.getExtensionList();
 		const allocatedExtensions = await this.getAllocatedExtesionAllocationData({
 			extension: 1,
 		});
@@ -349,8 +349,8 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 	}
 
 	async getExtensionListWithAgentData(): Promise<IVoipExtensionWithAgentInfo[]> {
-		const { result: extensions } = await Voip.getExtensionList();
-		const summary = await (await Voip.cachedQueueDetails())();
+		const { result: extensions } = await VoipAsterisk.getExtensionList();
+		const summary = await (await VoipAsterisk.cachedQueueDetails())();
 		const allocatedExtensions = await this.getAllocatedExtesionAllocationData({
 			extension: 1,
 			_id: 1,

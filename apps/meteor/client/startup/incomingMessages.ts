@@ -2,8 +2,8 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { ChatMessage } from '../../app/models/client';
-import { Notifications } from '../../app/notifications/client';
 import { CachedCollectionManager } from '../../app/ui-cached-collection/client';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
@@ -11,7 +11,9 @@ Meteor.startup(() => {
 			return;
 		}
 
-		Notifications.onUser('message', (msg: IMessage) => {
+		// Only event I found triggers this is from ephemeral messages
+		// Other types of messages come from another stream
+		sdk.stream('notify-user', [`${Meteor.userId()}/message`], (msg: IMessage) => {
 			msg.u = msg.u || { username: 'rocket.cat' };
 			msg.private = true;
 
@@ -20,7 +22,7 @@ Meteor.startup(() => {
 	});
 
 	CachedCollectionManager.onLogin(() => {
-		Notifications.onUser('subscriptions-changed', (_action, sub) => {
+		sdk.stream('notify-user', [`${Meteor.userId()}/subscriptions-changed`], (_action, sub) => {
 			ChatMessage.update(
 				{
 					rid: sub.rid,

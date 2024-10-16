@@ -8,11 +8,11 @@ import {
 	MessageSystemBody,
 } from '@rocket.chat/fuselage';
 import type { VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Dispatch, ReactElement, SetStateAction } from 'react';
 import React, { memo } from 'react';
 
-import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { clickableItem } from '../../../lib/clickableItem';
 
@@ -32,9 +32,7 @@ function ContactHistoryItem({ history, setChatId, ...props }: ContactHistoryItem
 
 	return (
 		<Box pbs={16} is={Message} onClick={onClick} data-qa='chat-history-item' {...props}>
-			<Message.LeftContainer>
-				{username && <UserAvatar username={username} className='rcx-message__avatar' size='x36' />}
-			</Message.LeftContainer>
+			<Message.LeftContainer>{username && <UserAvatar username={username} size='x36' />}</Message.LeftContainer>
 			<Message.Container>
 				<Message.Header>
 					<Message.Name title={username}>{username}</Message.Name>

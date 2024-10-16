@@ -11,23 +11,8 @@ import CustomSounds from './models/CustomSounds';
 import EmojiCustom from './models/EmojiCustom';
 import { Roles } from './models/Roles';
 import { RoomRoles } from './models/RoomRoles';
-import { UserAndRoom } from './models/UserAndRoom';
 import { UserRoles } from './models/UserRoles';
 import { Users } from './models/Users';
-import { WebdavAccounts } from './models/WebdavAccounts';
-
-// overwrite Meteor.users collection so records on it don't get erased whenever the client reconnects to websocket
-const meteorUserOverwrite = () => {
-	const uid = Meteor.userId();
-
-	if (!uid) {
-		return null;
-	}
-
-	return (Users.findOne({ _id: uid }) ?? null) as Meteor.User | null;
-};
-Meteor.users = Users as typeof Meteor.users;
-Meteor.user = meteorUserOverwrite;
 
 export {
 	Base,
@@ -37,23 +22,21 @@ export {
 	CachedChatSubscription,
 	CachedUserList,
 	RoomRoles,
-	UserAndRoom,
 	UserRoles,
 	AuthzCachedCollection,
 	ChatPermissions,
 	CustomSounds,
 	EmojiCustom,
-	WebdavAccounts,
-	/** @deprecated */
+	/** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
 	Users,
-	/** @deprecated */
+	/** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
 	ChatRoom,
-	/** @deprecated */
+	/** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
 	ChatSubscription,
-	/** @deprecated */
+	/** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
 	ChatSubscription as Subscriptions,
-	/** @deprecated */
+	/** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
 	ChatMessage,
-	/** @deprecated */
+	/** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
 	ChatMessage as Messages,
 };

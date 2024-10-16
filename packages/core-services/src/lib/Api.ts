@@ -15,13 +15,13 @@ export class Api implements IApiService {
 		this.services.forEach((service) => this.broker?.createService(service));
 	}
 
-	destroyService(instance: IServiceClass): void {
+	async destroyService(instance: IServiceClass): Promise<void> {
 		if (!this.services.has(instance)) {
 			return;
 		}
 
 		if (this.broker) {
-			this.broker.destroyService(instance);
+			await this.broker.destroyService(instance);
 		}
 
 		this.services.delete(instance);

@@ -59,4 +59,6 @@ Meteor.startup(async () => {
 	await updateSettings();
 
 	License.onValidateLicense(updateSettings);
+	License.onInvalidateLicense(updateSettings);
+	License.onRemoveLicense(updateSettings);
 });

@@ -52,12 +52,7 @@ const LinearScaleElement = ({
         </Box>
       )}
       <Box>
-        <ButtonGroup
-          className={className}
-          align='center'
-          marginInline={-2}
-          minWidth={0}
-        >
+        <ButtonGroup className={className as string} align='center'>
           {points.map((point, i) => (
             <Button
               key={i}

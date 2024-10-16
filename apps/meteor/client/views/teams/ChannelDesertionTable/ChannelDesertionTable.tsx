@@ -1,7 +1,7 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box, CheckBox } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import { GenericTable, GenericTableHeaderCell, GenericTableHeader, GenericTableBody } from '../../../components/GenericTable';
@@ -19,14 +19,14 @@ type ChannelDesertionTableProps = {
 	onToggleAllRooms: () => void;
 };
 
-const ChannelDesertionTable: FC<ChannelDesertionTableProps> = ({
+const ChannelDesertionTable = ({
 	rooms,
 	eligibleRoomsLength,
 	onChangeRoomSelection,
 	selectedRooms,
 	onToggleAllRooms,
 	lastOwnerWarning,
-}) => {
+}: ChannelDesertionTableProps) => {
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'ts'>('name');
 
 	const t = useTranslation();

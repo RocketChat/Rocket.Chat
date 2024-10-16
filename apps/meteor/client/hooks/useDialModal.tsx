@@ -4,7 +4,7 @@ import React, { Suspense, lazy, useCallback, useMemo } from 'react';
 import { useIsVoipEnterprise } from '../contexts/CallContext';
 import { dispatchToastMessage } from '../lib/toast';
 
-const DialPadModal = lazy(() => import('../../ee/client/voip/modal/DialPad/DialPadModal'));
+const DialPadModal = lazy(() => import('../voip/modal/DialPad/DialPadModal'));
 
 type DialModalProps = {
 	initialValue?: string;

@@ -1,12 +1,4 @@
-import type {
-	IExportOperation,
-	AvatarServiceObject,
-	ISubscription,
-	ITeam,
-	IUser,
-	IPersonalAccessToken,
-	UserStatus,
-} from '@rocket.chat/core-typings';
+import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToken, UserStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -18,8 +10,10 @@ import type { UserRegisterParamsPOST } from './users/UserRegisterParamsPOST';
 import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusParamsPOST';
 import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParamsGET';
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
+import type { UsersListStatusParamsGET } from './users/UsersListStatusParamsGET';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
 import type { UsersSendConfirmationEmailParamsPOST } from './users/UsersSendConfirmationEmailParamsPOST';
+import type { UsersSendWelcomeEmailParamsPOST } from './users/UsersSendWelcomeEmailParamsPOST';
 import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
 import type { UsersUpdateOwnBasicInfoParamsPOST } from './users/UsersUpdateOwnBasicInfoParamsPOST';
 import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
@@ -118,6 +112,22 @@ export type UserPresence = Readonly<
 
 export type UserPersonalTokens = Pick<IPersonalAccessToken, 'name' | 'lastTokenPart' | 'bypassTwoFactor'> & { createdAt: string };
 
+export type DefaultUserInfo = Pick<
+	IUser,
+	| '_id'
+	| 'username'
+	| 'name'
+	| 'status'
+	| 'roles'
+	| 'emails'
+	| 'active'
+	| 'avatarETag'
+	| 'lastLogin'
+	| 'type'
+	| 'federated'
+	| 'freeSwitchExtension'
+>;
+
 export type UsersEndpoints = {
 	'/v1/users.2fa.enableEmail': {
 		POST: () => void;
@@ -147,8 +157,18 @@ export type UsersEndpoints = {
 
 	'/v1/users.list': {
 		GET: (params: PaginatedRequest<{ fields: string }>) => PaginatedResult<{
-			users: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>[];
+			users: DefaultUserInfo[];
 		}>;
+	};
+
+	'/v1/users.listByStatus': {
+		GET: (params: UsersListStatusParamsGET) => PaginatedResult<{
+			users: DefaultUserInfo[];
+		}>;
+	};
+
+	'/v1/users.sendWelcomeEmail': {
+		POST: (params: UsersSendWelcomeEmailParamsPOST) => void;
 	};
 
 	'/v1/users.setAvatar': {
@@ -241,7 +261,15 @@ export type UsersEndpoints = {
 
 	'/v1/users.getAvatarSuggestion': {
 		GET: () => {
-			suggestions: Record<string, AvatarServiceObject>;
+			suggestions: Record<
+				string,
+				{
+					blob: string;
+					contentType: string;
+					service: string;
+					url: string;
+				}
+			>;
 		};
 	};
 
@@ -373,6 +401,8 @@ export * from './users/UserCreateParamsPOST';
 export * from './users/UserSetActiveStatusParamsPOST';
 export * from './users/UserDeactivateIdleParamsPOST';
 export * from './users/UsersInfoParamsGet';
+export * from './users/UsersListStatusParamsGET';
+export * from './users/UsersSendWelcomeEmailParamsPOST';
 export * from './users/UserRegisterParamsPOST';
 export * from './users/UserLogoutParamsPOST';
 export * from './users/UsersListTeamsParamsGET';

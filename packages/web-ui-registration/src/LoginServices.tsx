@@ -3,7 +3,7 @@ import { useLoginServices, useSetting } from '@rocket.chat/ui-contexts';
 import type { Dispatch, ReactElement, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { LoginErrors } from './LoginForm';
+import type { LoginErrorState } from './LoginForm';
 import LoginServicesButton from './LoginServicesButton';
 
 const LoginServices = ({
@@ -11,7 +11,7 @@ const LoginServices = ({
 	setError,
 }: {
 	disabled?: boolean;
-	setError: Dispatch<SetStateAction<LoginErrors | undefined>>;
+	setError: Dispatch<SetStateAction<LoginErrorState>>;
 }): ReactElement | null => {
 	const { t } = useTranslation();
 	const services = useLoginServices();

@@ -30,6 +30,21 @@ export default {
 				branch: process.env.REPORTER_ROCKETCHAT_BRANCH,
 				run: Number(process.env.REPORTER_ROCKETCHAT_RUN),
 				draft: process.env.REPORTER_ROCKETCHAT_DRAFT === 'true',
+				headSha: process.env.REPORTER_ROCKETCHAT_HEAD_SHA,
+			},
+		],
+		process.env.REPORTER_ROCKETCHAT_REPORT === 'true' && [
+			'./reporters/jira.ts',
+			{
+				url: `https://rocketchat.atlassian.net`,
+				apiKey: process.env.REPORTER_JIRA_ROCKETCHAT_API_KEY ?? process.env.JIRA_TOKEN,
+				branch: process.env.REPORTER_ROCKETCHAT_BRANCH,
+				run: Number(process.env.REPORTER_ROCKETCHAT_RUN),
+				headSha: process.env.REPORTER_ROCKETCHAT_HEAD_SHA,
+				author: process.env.REPORTER_ROCKETCHAT_AUTHOR,
+				run_url: process.env.REPORTER_ROCKETCHAT_RUN_URL,
+				pr: Number(process.env.REPORTER_ROCKETCHAT_PR),
+				draft: process.env.REPORTER_ROCKETCHAT_DRAFT === 'true',
 			},
 		],
 		[
@@ -53,5 +68,5 @@ export default {
 	globalTimeout: (process.env.IS_EE === 'true' ? 50 : 40) * 60 * 1000,
 	maxFailures: process.env.CI ? 5 : undefined,
 	// Retry on CI only.
-	retries: process.env.CI ? 2 : 0,
+	retries: parseInt(String(process.env.PLAYWRIGHT_RETRIES)) || 0,
 } as PlaywrightTestConfig;

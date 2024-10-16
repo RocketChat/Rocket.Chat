@@ -1,10 +1,10 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Flex } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import React from 'react';
 
 import { GenericTableRow, GenericTableCell } from '../../../../../components/GenericTable';
 import MarkdownText from '../../../../../components/MarkdownText';
-import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 
 type UsersTableRowProps = {

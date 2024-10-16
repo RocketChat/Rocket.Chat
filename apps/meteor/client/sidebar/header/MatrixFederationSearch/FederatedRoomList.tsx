@@ -2,11 +2,10 @@ import { Throbber, Box } from '@rocket.chat/fuselage';
 import type { IFederationPublicRooms } from '@rocket.chat/rest-typings';
 import { useSetModal, useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { VFC } from 'react';
 import React from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
+import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import FederatedRoomListEmptyPlaceholder from './FederatedRoomListEmptyPlaceholder';
 import FederatedRoomListItem from './FederatedRoomListItem';
@@ -19,7 +18,7 @@ type FederatedRoomListProps = {
 	count?: number;
 };
 
-const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, count }) => {
+const FederatedRoomList = ({ serverName, roomName, count }: FederatedRoomListProps) => {
 	const joinExternalPublicRoom = useEndpoint('POST', '/v1/federation/joinExternalPublicRoom');
 
 	const setModal = useSetModal();
@@ -29,9 +28,8 @@ const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, 
 
 	const { mutate: onClickJoin, isLoading: isLoadingMutation } = useMutation(
 		['federation/joinExternalPublicRoom'],
-		async ({ id, pageToken }: IFederationPublicRooms) => {
-			return joinExternalPublicRoom({ externalRoomId: id as `!${string}:${string}`, roomName, pageToken });
-		},
+		async ({ id, pageToken }: IFederationPublicRooms) =>
+			joinExternalPublicRoom({ externalRoomId: id as `!${string}:${string}`, roomName, pageToken }),
 		{
 			onSuccess: (_, data) => {
 				dispatchToastMessage({
@@ -68,7 +66,7 @@ const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, 
 				components={{
 					// eslint-disable-next-line react/no-multi-comp
 					Footer: () => (isFetchingNextPage ? <Throbber /> : null),
-					Scroller: ScrollableContentWrapper,
+					Scroller: VirtuosoScrollbars,
 					EmptyPlaceholder: FederatedRoomListEmptyPlaceholder,
 				}}
 				endReached={isLoading || isFetchingNextPage ? () => undefined : () => fetchNextPage()}

@@ -10,9 +10,9 @@ import semver from 'semver';
 import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
 import type { appStatusSpanResponseProps } from '../../../helpers';
 import { appButtonProps, appMultiStatusProps } from '../../../helpers';
-import { marketplaceActions } from '../../../helpers/marketplaceActions';
 import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstallationHandler';
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
+import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 
 type AppStatusProps = {
@@ -48,18 +48,21 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const action = button?.action;
 
+	const marketplaceActions = useMarketplaceActions();
+
 	const confirmAction = useCallback<AppInstallationHandlerParams['onSuccess']>(
 		async (action, permissionsGranted) => {
-			if (action !== 'request') {
-				setPurchased(true);
-				await marketplaceActions[action]({ ...app, permissionsGranted });
-			} else {
-				setEndUserRequested(true);
+			if (action) {
+				if (action !== 'request') {
+					await marketplaceActions[action]({ ...app, permissionsGranted });
+				} else {
+					setEndUserRequested(true);
+				}
 			}
 
 			setLoading(false);
 		},
-		[app, setLoading, setPurchased],
+		[app, marketplaceActions, setLoading],
 	);
 
 	const cancelAction = useCallback(() => {
@@ -73,6 +76,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		isAppPurchased,
 		onDismiss: cancelAction,
 		onSuccess: confirmAction,
+		setIsPurchased: setPurchased,
 	});
 
 	const handleAcquireApp = useCallback(() => {
@@ -147,7 +151,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 			{statuses?.map((status, index) => (
 				<Margins inlineEnd={index !== statuses.length - 1 ? 8 : undefined} key={index}>
-					<Tag variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
+					<Tag data-qa-type='app-status-tag' variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
 						{handleAppRequestsNumber(status)} {t(`${status.label}` as TranslationKey)}
 					</Tag>
 				</Margins>

@@ -1,10 +1,9 @@
-import { api, ServiceClassInternal, listenToMessageSentEvent } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
-import type { ILivechatAgent, UserStatus } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import type { ILivechatAgent, LoginServiceConfiguration, UserStatus } from '@rocket.chat/core-typings';
+import { LoginServiceConfiguration as LoginServiceConfigurationModel, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
-import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
 import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
@@ -38,7 +37,7 @@ if (disableOplog) {
 	// Overrides the native observe changes to prevent database polling and stores the callbacks
 	// for the users' tokens to re-implement the reactivity based on our database listeners
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-	MongoInternals.Connection.prototype._observeChanges = function (
+	MongoInternals.Connection.prototype._observeChanges = async function (
 		{
 			collectionName,
 			selector,
@@ -53,19 +52,18 @@ if (disableOplog) {
 		},
 		_ordered: boolean,
 		callbacks: Callbacks,
-	): any {
+	): Promise<any> {
 		// console.error('Connection.Collection.prototype._observeChanges', collectionName, selector, options);
 		let cbs: Set<{ hashedToken: string; callbacks: Callbacks }>;
 		let data: { hashedToken: string; callbacks: Callbacks };
 		if (callbacks?.added) {
-			const records = Promise.await(
-				mongo
-					.rawCollection(collectionName)
-					.find(selector, {
-						...(options.projection || options.fields ? { projection: options.projection || options.fields } : {}),
-					})
-					.toArray(),
-			);
+			const records = await mongo
+				.rawCollection(collectionName)
+				.find(selector, {
+					...(options.projection || options.fields ? { projection: options.projection || options.fields } : {}),
+				})
+				.toArray();
+
 			for (const { _id, ...fields } of records) {
 				callbacks.added(String(_id), fields);
 			}
@@ -152,9 +150,11 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 					return;
 				}
 
-				serviceConfigCallbacks.forEach((callbacks) => {
-					callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data);
-				});
+				if (data) {
+					serviceConfigCallbacks.forEach((callbacks) => {
+						callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data);
+					});
+				}
 			});
 		}
 
@@ -221,7 +221,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		});
 
 		if (!disableMsgRoundtripTracking) {
-			listenToMessageSentEvent(this, async (message) => {
+			this.onEvent('watch.messages', async ({ message }) => {
 				if (message?._updatedAt instanceof Date) {
 					metrics.messageRoundtripTime.observe(Date.now() - message._updatedAt.getTime());
 				}
@@ -256,8 +256,8 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		return Object.fromEntries(clientVersionsStore);
 	}
 
-	async getLoginServiceConfiguration(): Promise<any[]> {
-		return ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetchAsync();
+	async getLoginServiceConfiguration(): Promise<LoginServiceConfiguration[]> {
+		return LoginServiceConfigurationModel.find({}, { projection: { secret: 0 } }).toArray();
 	}
 
 	async callMethodWithToken(userId: string, token: string, method: string, args: any[]): Promise<void | any> {

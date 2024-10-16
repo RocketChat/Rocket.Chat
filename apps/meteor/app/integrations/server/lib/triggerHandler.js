@@ -6,19 +6,18 @@ import _ from 'underscore';
 
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
+import { notifyOnIntegrationChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { outgoingEvents } from '../../lib/outgoingEvents';
 import { outgoingLogger } from '../logger';
 import { IsolatedVMScriptEngine } from './isolated-vm/isolated-vm';
 import { updateHistory } from './updateHistory';
-import { VM2ScriptEngine } from './vm2/vm2';
 
 class RocketChatIntegrationHandler {
 	constructor() {
 		this.successResults = [200, 201, 202];
 		this.compiledScripts = {};
 		this.triggers = {};
-		this.vm2Engine = new VM2ScriptEngine(false);
 		this.ivmEngine = new IsolatedVMScriptEngine(false);
 	}
 
@@ -46,8 +45,9 @@ class RocketChatIntegrationHandler {
 		}
 	}
 
-	getEngine(integration) {
-		return integration.scriptEngine === 'isolated-vm' ? this.ivmEngine : this.vm2Engine;
+	// eslint-disable-next-line no-unused-vars
+	getEngine(_integration) {
+		return this.ivmEngine;
 	}
 
 	removeIntegration(record) {
@@ -503,6 +503,7 @@ class RocketChatIntegrationHandler {
 			{
 				method: opts.method,
 				headers: opts.headers,
+				...(opts.timeout && { timeout: opts.timeout }),
 				...(opts.data && { body: opts.data }),
 			},
 			settings.get('Allow_Invalid_SelfSigned_Certs'),
@@ -578,6 +579,7 @@ class RocketChatIntegrationHandler {
 							await updateHistory({ historyId, step: 'after-process-http-status-410', error: true });
 							outgoingLogger.error(`Disabling the Integration "${trigger.name}" because the status code was 401 (Gone).`);
 							await Integrations.updateOne({ _id: trigger._id }, { $set: { enabled: false } });
+							void notifyOnIntegrationChangedById(trigger._id);
 							return;
 						}
 

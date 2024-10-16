@@ -32,7 +32,6 @@ const getWarningModalForFederatedRooms = (
 	</GenericModal>
 );
 
-// TODO: Remove endpoint concatenation
 export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const room = useUserRoom(rid);
@@ -51,10 +50,10 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 		throw Error('Room not provided');
 	}
 
-	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const { roomCanSetModerator } = getRoomDirectives({ room, showingUserId: uid, userSubscription });
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
+	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const changeModeratorEndpoint = isModerator ? 'removeModerator' : 'addModerator';
 	const changeModeratorMessage = isModerator
 		? 'User__username__removed_from__room_name__moderators'

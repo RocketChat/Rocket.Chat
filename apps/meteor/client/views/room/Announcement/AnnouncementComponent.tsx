@@ -1,13 +1,14 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import type { FC, MouseEvent } from 'react';
+import type { MouseEvent, ReactNode } from 'react';
 import React from 'react';
 
-type AnnouncementComponentParams = {
+type AnnouncementComponentProps = {
+	children?: ReactNode;
 	onClickOpen: (e: MouseEvent<HTMLAnchorElement>) => void;
 };
 
-const AnnouncementComponent: FC<AnnouncementComponentParams> = ({ children, onClickOpen }) => {
+const AnnouncementComponent = ({ children, onClickOpen }: AnnouncementComponentProps) => {
 	const announcementBar = css`
 		background-color: ${Palette.status['status-background-info'].theme('announcement-background')};
 		color: ${Palette.text['font-pure-black'].theme('announcement-text')};

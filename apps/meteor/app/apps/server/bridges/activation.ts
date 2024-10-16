@@ -1,13 +1,11 @@
-import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { IAppServerOrchestrator, AppStatus } from '@rocket.chat/apps';
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import { AppActivationBridge as ActivationBridge } from '@rocket.chat/apps-engine/server/bridges/AppActivationBridge';
 import { Users } from '@rocket.chat/models';
 
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
-
 export class AppActivationBridge extends ActivationBridge {
 	// eslint-disable-next-line no-empty-function
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 	}
 

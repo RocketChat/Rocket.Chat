@@ -1,8 +1,8 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import { screenDecorator, screenProps } from '../../helpers.stories';
+import { screenDecorator } from '../../../.storybook/helpers';
 import TriggerMessage from './component';
 
 const now = new Date(Date.parse('2021-01-01T00:00:00.000Z'));
@@ -28,7 +28,6 @@ export default {
 		title: '',
 		onSubmit: action('submit'),
 		onCancel: action('cancel'),
-		...screenProps(),
 	},
 	decorators: [screenDecorator],
 	parameters: {
@@ -36,7 +35,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof TriggerMessage>>;
 
-const Template: Story<ComponentProps<typeof TriggerMessage>> = (args) => <TriggerMessage {...args} />;
+const Template: StoryFn<ComponentProps<typeof TriggerMessage>> = (args) => <TriggerMessage {...args} />;
 
 export const Single = Template.bind({});
 Single.storyName = 'single';

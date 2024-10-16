@@ -1,0 +1,18 @@
+:root {
+    --primaryBackgroundColor: #f6f9fc;
+    --RCPG-primary-color: #f5455c;
+    --RCPG-secondary-color: #19ac7c;
+    --RCPG-tertary-color: #156ff5;
+    --default-border-color: #e6e6e6;
+    --item-border-color: #d6d6d6;
+    --animation-default:  0.5s ease;
+    --animation-fast:  0.3s ease;
+    --animation-very-fast:  0.1s ease;
+    --sidebar-width: min(35%, 250px);
+    --dropdown-box-shadow: inset -15px 15px 20px -30px rgb(47 52 61 / 55%);
+    --default-border: 1px solid var(--default-border-color);
+    --elements-border: 1px solid #b9b8b8;
+    --elements-box-shadow:  0px 0px 8px 1px #ddd;
+    --navbar-height: min(60px, 25vw);
+    --content-height: calc(100vh - var(--navbar-height));
+  }

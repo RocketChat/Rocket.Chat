@@ -11,6 +11,7 @@ import {
 	Select,
 	TextInput,
 	ToggleSwitch,
+	Box,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
@@ -111,7 +112,7 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 										name='field'
 										control={control}
 										rules={{
-											required: t('The_field_is_required', t('Field')),
+											required: t('Required_field', { field: t('Field') }),
 											validate: (value) => (!/^[0-9a-zA-Z-_]+$/.test(value) ? t('error-invalid-custom-field-name') : undefined),
 										}}
 										render={({ field }) => (
@@ -140,7 +141,7 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 									<Controller
 										name='label'
 										control={control}
-										rules={{ required: t('The_field_is_required', t('Label')) }}
+										rules={{ required: t('Required_field', { field: t('Label') }) }}
 										render={({ field }) => (
 											<TextInput
 												id={labelField}
@@ -207,11 +208,13 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 					</Button>
 				</ButtonGroup>
 				{customFieldData?._id && (
-					<ButtonGroup stretch mbs={8}>
-						<Button icon='trash' danger onClick={() => handleDelete(customFieldData._id)}>
-							{t('Delete')}
-						</Button>
-					</ButtonGroup>
+					<Box mbs={8}>
+						<ButtonGroup stretch>
+							<Button icon='trash' danger onClick={() => handleDelete(customFieldData._id)}>
+								{t('Delete')}
+							</Button>
+						</ButtonGroup>
+					</Box>
 				)}
 			</ContextualbarFooter>
 		</Contextualbar>

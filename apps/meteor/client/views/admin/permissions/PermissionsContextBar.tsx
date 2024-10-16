@@ -3,8 +3,14 @@ import { useRouteParameter, useRoute, useTranslation, useSetModal } from '@rocke
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
-import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
-import { Contextualbar, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
+import {
+	Contextualbar,
+	ContextualbarHeader,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarDialog,
+} from '../../../components/Contextualbar';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import CustomRoleUpsellModal from './CustomRoleUpsellModal';
 import EditRolePageWithData from './EditRolePageWithData';
 
@@ -31,13 +37,15 @@ const PermissionsContextBar = (): ReactElement | null => {
 
 	return (
 		(context && (
-			<Contextualbar>
-				<ContextualbarHeader>
-					<ContextualbarTitle>{context === 'edit' ? t('Role_Editing') : t('New_role')}</ContextualbarTitle>
-					<ContextualbarClose onClick={handleCloseContextualbar} />
-				</ContextualbarHeader>
-				<EditRolePageWithData roleId={_id} />
-			</Contextualbar>
+			<ContextualbarDialog>
+				<Contextualbar>
+					<ContextualbarHeader>
+						<ContextualbarTitle>{context === 'edit' ? t('Role_Editing') : t('New_role')}</ContextualbarTitle>
+						<ContextualbarClose onClick={handleCloseContextualbar} />
+					</ContextualbarHeader>
+					<EditRolePageWithData roleId={_id} />
+				</Contextualbar>
+			</ContextualbarDialog>
 		)) ||
 		null
 	);

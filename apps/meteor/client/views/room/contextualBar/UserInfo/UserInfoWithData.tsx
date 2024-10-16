@@ -14,8 +14,8 @@ import {
 	ContextualbarContent,
 } from '../../../../components/Contextualbar';
 import { FormSkeleton } from '../../../../components/Skeleton';
-import UserCard from '../../../../components/UserCard';
-import UserInfo from '../../../../components/UserInfo';
+import { UserCardRole } from '../../../../components/UserCard';
+import { UserInfo } from '../../../../components/UserInfo';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
@@ -61,6 +61,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			nickname,
 			createdAt,
 			canViewAllInfo,
+			freeSwitchExtension,
 		} = data.user;
 
 		return {
@@ -68,7 +69,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			name,
 			username,
 			lastLogin,
-			roles: roles && getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
+			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
 			phone,
@@ -80,6 +81,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			status: <ReactiveUserStatus uid={_id} />,
 			statusText,
 			nickname,
+			freeSwitchExtension,
 		};
 	}, [data, getRoles]);
 

@@ -13,8 +13,10 @@ import type {
 	IndexDescription,
 	DeleteResult,
 	UpdateFilter,
+	AggregationCursor,
 } from 'mongodb';
 
+import { notifyOnLivechatDepartmentAgentChangedByDepartmentId } from '../../../app/lib/server/lib/notifyListener';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implements ILivechatDepartmentModel {
@@ -220,6 +222,14 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.updateOne({ _id }, { $set: { archived: true, enabled: false } });
 	}
 
+	addDepartmentToUnit(_id: string, unitId: string, ancestors: string[]): Promise<Document | UpdateResult> {
+		return this.updateOne({ _id }, { $set: { parentId: unitId, ancestors } });
+	}
+
+	removeDepartmentFromUnit(_id: string): Promise<Document | UpdateResult> {
+		return this.updateOne({ _id }, { $set: { parentId: null, ancestors: null } });
+	}
+
 	async createOrUpdateDepartment(
 		_id: string | null,
 		data: {
@@ -250,6 +260,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 
 		if (current?.enabled !== data.enabled) {
 			await LivechatDepartmentAgents.setDepartmentEnabledByDepartmentId(_id, data.enabled);
+			void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id, current ? 'updated' : 'inserted');
 		}
 
 		const latestDept = await this.findOneById(_id);
@@ -323,6 +334,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		};
 
 		return this.find(query, options);
+	}
+
+	countDepartmentsInUnit(unitId: string): Promise<number> {
+		return this.countDocuments({ parentId: unitId });
 	}
 
 	findActiveByUnitIds(unitIds: string[], options: FindOptions<ILivechatDepartment> = {}): FindCursor<ILivechatDepartment> {
@@ -444,6 +459,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 	}
 
 	findByParentId(_parentId: string, _options?: FindOptions<ILivechatDepartment> | undefined): FindCursor<ILivechatDepartment> {
+		throw new Error('Method not implemented in CE');
+	}
+
+	findAgentsByBusinessHourId(_businessHourId: string): AggregationCursor<{ agentIds: string[] }> {
 		throw new Error('Method not implemented in CE');
 	}
 }

@@ -23,7 +23,7 @@ const BusinessHoursDisabledPage = () => {
 								<StatesAction onClick={() => router.navigate('/admin/settings/Omnichannel')}>{t('Enable_business_hours')}</StatesAction>
 							</StatesActions>
 						)}
-						<StatesLink target='_blank' href='https://go.rocket.chat/omnichannel-docs'>
+						<StatesLink target='_blank' href='https://go.rocket.chat/i/omnichannel-docs'>
 							{t('Learn_more_about_business_hours')}
 						</StatesLink>
 					</States>

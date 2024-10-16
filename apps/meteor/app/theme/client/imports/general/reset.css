@@ -137,7 +137,3 @@ table {
 
 	border-collapse: collapse;
 }
-
-a {
-	color: var(--rcx-color-font-info, #095ad2);
-}

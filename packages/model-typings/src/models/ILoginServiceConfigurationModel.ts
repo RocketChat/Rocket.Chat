@@ -1,8 +1,16 @@
-import type { ILoginServiceConfiguration } from '@rocket.chat/core-typings';
+import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
+import type { DeleteResult, Document, FindOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ILoginServiceConfigurationModel extends IBaseModel<ILoginServiceConfiguration> {
-	//
+export interface ILoginServiceConfigurationModel extends IBaseModel<LoginServiceConfiguration> {
+	createOrUpdateService(
+		serviceName: LoginServiceConfiguration['service'],
+		serviceData: Partial<LoginServiceConfiguration>,
+	): Promise<LoginServiceConfiguration['_id']>;
+	removeService(_id: LoginServiceConfiguration['_id']): Promise<DeleteResult>;
+	findOneByService<P extends Document = LoginServiceConfiguration>(
+		serviceName: LoginServiceConfiguration['service'],
+		options?: FindOptions<P>,
+	): Promise<P | null>;
 }

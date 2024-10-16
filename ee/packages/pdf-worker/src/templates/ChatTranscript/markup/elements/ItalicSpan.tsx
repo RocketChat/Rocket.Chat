@@ -17,7 +17,8 @@ type MessageBlock =
 	| MessageParser.ChannelMention
 	| MessageParser.UserMention
 	| MessageParser.Link
-	| MessageParser.MarkupExcluding<MessageParser.Italic>;
+	| MessageParser.MarkupExcluding<MessageParser.Italic>
+	| MessageParser.InlineCode;
 
 type ItalicSpanProps = {
 	children: MessageBlock[];

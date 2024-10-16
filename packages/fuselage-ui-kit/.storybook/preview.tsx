@@ -1,26 +1,19 @@
-import { codeBlock } from '@rocket.chat/ui-theming/src/codeBlockStyles';
-import { convertToCss } from '@rocket.chat/ui-theming/src/helpers/convertToCss';
-import { filterOnlyChangedColors } from '@rocket.chat/ui-theming/src/helpers/filterOnlyChangedColors';
-import { useCreateStyleContainer } from '@rocket.chat/ui-theming/src/hooks/useCreateStyleContainer';
-import { defaultPalette } from '@rocket.chat/ui-theming/src/palette';
-import { darkPalette } from '@rocket.chat/ui-theming/src/paletteDark';
-import { type Parameters } from '@storybook/addons';
-import { type DecoratorFn } from '@storybook/react';
+import { PaletteStyleTag } from '@rocket.chat/fuselage';
+import type { Decorator, Parameters } from '@storybook/react';
 import { themes } from '@storybook/theming';
-import { createElement } from 'react';
-import { createPortal } from 'react-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useDarkMode } from 'storybook-dark-mode';
 
 import manifest from '../package.json';
+import DocsContainer from './DocsContainer';
+import { surface } from './helpers';
 import logo from './logo.svg';
 
 import '@rocket.chat/fuselage/dist/fuselage.css';
 import '@rocket.chat/icons/dist/rocketchat.css';
-import '@rocket.chat/fuselage-polyfills';
 import 'normalize.css/normalize.css';
 
 export const parameters: Parameters = {
-  actions: { argTypesRegex: '^on[A-Z].*' },
   backgrounds: {
     grid: {
       cellSize: 4,
@@ -29,12 +22,20 @@ export const parameters: Parameters = {
     },
   },
   options: {
-    storySort: ([, a], [, b]) => a.kind.localeCompare(b.kind),
+    storySort: {
+      method: 'alphabetical',
+    },
   },
   layout: 'fullscreen',
+  docs: {
+    container: DocsContainer,
+  },
   darkMode: {
     dark: {
       ...themes.dark,
+      appBg: surface.sidebar,
+      appContentBg: surface.main,
+      barBg: surface.main,
       brandTitle: manifest.name,
       brandImage: logo,
       brandUrl: manifest.homepage,
@@ -48,24 +49,20 @@ export const parameters: Parameters = {
   },
 };
 
-export const decorators: DecoratorFn[] = [
-  (fn) =>
-    createElement(function RocketChatDarkMode() {
-      const dark = useDarkMode();
+const queryClient = new QueryClient();
 
-      const palette = convertToCss(
-        filterOnlyChangedColors(defaultPalette, dark ? darkPalette : {}),
-        'body'
-      );
+export const decorators: Decorator[] = [
+  (fn) => {
+    const dark = useDarkMode();
 
-      return (
-        <>
-          {createPortal(
-            dark ? palette + codeBlock : palette,
-            useCreateStyleContainer('main-palette')
-          )}
-          {fn()}
-        </>
-      );
-    }),
+    return (
+      <>
+        <PaletteStyleTag theme={dark ? 'dark' : 'light'} />
+        {fn()}
+      </>
+    );
+  },
+  (fn) => <QueryClientProvider client={queryClient} children={fn()} />,
 ];
+
+export const tags = ['autodocs'];

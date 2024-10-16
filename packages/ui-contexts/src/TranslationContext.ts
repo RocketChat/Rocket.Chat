@@ -1,8 +1,5 @@
+import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import { createContext } from 'react';
-
-import type keys from './en.json';
-
-export { keys };
 
 export type TranslationLanguage = {
 	en: string;
@@ -11,7 +8,13 @@ export type TranslationLanguage = {
 	key: string;
 };
 
-export type TranslationKey = keyof typeof keys | `app-${string}.${string}`;
+type KeysWithoutSuffix = {
+	[K in RocketchatI18nKeys as K extends `${infer T extends string}_${'one' | 'other' | 'zero' | 'few' | 'many' | 'two' | 'three' | 'four'}`
+		? T
+		: K]: never;
+};
+
+export type TranslationKey = keyof KeysWithoutSuffix | `app-${string}.${string}`;
 
 export type TranslationContextValue = {
 	languages: TranslationLanguage[];

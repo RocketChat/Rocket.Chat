@@ -2,6 +2,7 @@ import { Button } from '@rocket.chat/fuselage';
 import { useRouteParameter, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
+import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import EditTrigger from './EditTrigger';
 import EditTriggerWithData from './EditTriggerWithData';
@@ -23,8 +24,12 @@ const TriggersPage = () => {
 					<TriggersTable />
 				</PageContent>
 			</Page>
-			{context === 'edit' && id && <EditTriggerWithData triggerId={id} />}
-			{context === 'new' && <EditTrigger />}
+			{context && (
+				<ContextualbarDialog>
+					{context === 'edit' && id && <EditTriggerWithData triggerId={id} />}
+					{context === 'new' && <EditTrigger />}
+				</ContextualbarDialog>
+			)}
 		</Page>
 	);
 };

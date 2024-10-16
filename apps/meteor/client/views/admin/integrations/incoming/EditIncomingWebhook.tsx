@@ -13,17 +13,17 @@ import { useUpdateIntegration } from '../hooks/useUpdateIntegration';
 import IncomingWebhookForm from './IncomingWebhookForm';
 
 const getInitialValue = (webhookData: Serialized<IIncomingIntegration> | undefined) => ({
-	enabled: webhookData?.enabled || false,
-	channel: webhookData?.channel.join(', ') || '',
-	username: webhookData?.username || '',
-	name: webhookData?.name || '',
-	alias: webhookData?.alias || '',
-	avatar: webhookData?.avatar || '',
-	emoji: webhookData?.emoji || '',
-	scriptEnabled: webhookData?.scriptEnabled || false,
-	scriptEngine: webhookData?.scriptEngine || 'isolated-vm',
-	overrideDestinationChannelEnabled: webhookData?.overrideDestinationChannelEnabled || false,
-	script: webhookData?.script || '',
+	enabled: webhookData?.enabled ?? true,
+	channel: webhookData?.channel.join(', ') ?? '',
+	username: webhookData?.username ?? '',
+	name: webhookData?.name ?? '',
+	alias: webhookData?.alias ?? '',
+	avatar: webhookData?.avatar ?? '',
+	emoji: webhookData?.emoji ?? '',
+	scriptEnabled: webhookData?.scriptEnabled ?? false,
+	scriptEngine: webhookData?.scriptEngine ?? 'isolated-vm',
+	overrideDestinationChannelEnabled: webhookData?.overrideDestinationChannelEnabled ?? false,
+	script: webhookData?.script ?? '',
 });
 
 const INCOMING_TYPE = 'webhook-incoming';

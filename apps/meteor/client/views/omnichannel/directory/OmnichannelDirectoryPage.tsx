@@ -3,6 +3,7 @@ import { useRouteParameter, usePermission, useTranslation, useRouter } from '@ro
 import type { ReactElement } from 'react';
 import React, { useEffect, useCallback } from 'react';
 
+import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { queryClient } from '../../../lib/queryClient';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
@@ -14,8 +15,10 @@ import ContactTab from './contacts/ContactTab';
 const DEFAULT_TAB = 'contacts';
 
 const OmnichannelDirectoryPage = (): ReactElement => {
+	const t = useTranslation();
 	const router = useRouter();
 	const page = useRouteParameter('page');
+	const bar = useRouteParameter('bar');
 	const canViewDirectory = usePermission('view-omnichannel-contact-center');
 
 	useEffect(
@@ -36,8 +39,6 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 	const handleTabClick = useCallback((tab) => () => router.navigate({ name: 'omnichannel-directory', params: { tab } }), [router]);
 
 	const chatReload = () => queryClient.invalidateQueries({ queryKey: ['current-chats'] });
-
-	const t = useTranslation();
 
 	if (!canViewDirectory) {
 		return <NotAuthorizedPage />;
@@ -62,7 +63,11 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 					{(page === 'contacts' && <ContactTab />) || (page === 'chats' && <ChatTab />) || (page === 'calls' && <CallTab />)}
 				</PageContent>
 			</Page>
-			<ContextualBar chatReload={chatReload} />
+			{bar && (
+				<ContextualbarDialog>
+					<ContextualBar chatReload={chatReload} />
+				</ContextualbarDialog>
+			)}
 		</Page>
 	);
 };

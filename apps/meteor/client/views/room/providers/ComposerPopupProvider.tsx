@@ -7,25 +7,25 @@ import React, { useMemo } from 'react';
 import type { ReactNode } from 'react';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
+import { CannedResponse } from '../../../../app/canned-responses/client/collections/CannedResponse';
 import { emoji } from '../../../../app/emoji/client';
 import { Subscriptions } from '../../../../app/models/client';
-import ComposerPopupCannedResponse from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupCannedResponse';
-import type { ComposerBoxPopupEmojiProps } from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupEmoji';
-import ComposerPopupEmoji from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupEmoji';
-import type { ComposerBoxPopupRoomProps } from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupRoom';
-import ComposerBoxPopupRoom from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupRoom';
-import type { ComposerBoxPopupSlashCommandProps } from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupSlashCommand';
-import ComposerPopupSlashCommand from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupSlashCommand';
-import ComposerBoxPopupUser from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupUser';
-import type { ComposerBoxPopupUserProps } from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupUser';
 import { usersFromRoomMessages } from '../../../../app/ui-message/client/popup/messagePopupConfig';
 import { slashCommands } from '../../../../app/utils/client';
-import { CannedResponse } from '../../../../ee/app/canned-responses/client/collections/CannedResponse';
+import ComposerBoxPopupCannedResponse from '../composer/ComposerBoxPopupCannedResponse';
+import type { ComposerBoxPopupEmojiProps } from '../composer/ComposerBoxPopupEmoji';
+import ComposerBoxPopupEmoji from '../composer/ComposerBoxPopupEmoji';
+import ComposerBoxPopupRoom from '../composer/ComposerBoxPopupRoom';
+import type { ComposerBoxPopupRoomProps } from '../composer/ComposerBoxPopupRoom';
+import type { ComposerBoxPopupSlashCommandProps } from '../composer/ComposerBoxPopupSlashCommand';
+import ComposerBoxPopupSlashCommand from '../composer/ComposerBoxPopupSlashCommand';
+import ComposerBoxPopupUser from '../composer/ComposerBoxPopupUser';
+import type { ComposerBoxPopupUserProps } from '../composer/ComposerBoxPopupUser';
 import type { ComposerPopupContextValue } from '../contexts/ComposerPopupContext';
 import { ComposerPopupContext, createMessageBoxPopupConfig } from '../contexts/ComposerPopupContext';
 
 const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: IRoom }) => {
-	const { _id: rid } = room;
+	const { _id: rid, encrypted: isRoomEncrypted } = room;
 	const userSpotlight = useMethod('spotlight');
 	const suggestionsCount = useSetting<number>('Number_of_users_autocomplete_suggestions');
 	const cannedResponseEnabled = useSetting<boolean>('Canned_Responses_Enable');
@@ -33,6 +33,9 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 	const isOmnichannel = isOmnichannelRoom(room);
 	const useEmoji = useUserPreference('useEmojis');
 	const t = useTranslation();
+	const e2eEnabled = useSetting<boolean>('E2E_Enable');
+	const unencryptedMessagesAllowed = useSetting<boolean>('E2E_Allow_Unencrypted_Messages');
+	const encrypted = isRoomEncrypted && e2eEnabled && !unencryptedMessagesAllowed;
 
 	const call = useMethod('getSlashCommandPreviews');
 	const value: ComposerPopupContextValue = useMemo(() => {
@@ -128,8 +131,14 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 					const filterRegex = new RegExp(escapeRegExp(filter), 'i');
 					const records = Subscriptions.find(
 						{
-							name: filterRegex,
-							$or: [{ federated: { $exists: false } }, { federated: false }],
+							$and: [
+								{
+									$or: [{ fname: filterRegex }, { name: filterRegex }],
+								},
+								{
+									$or: [{ federated: { $exists: false } }, { federated: false }],
+								},
+							],
 							t: {
 								$in: ['c', 'p'],
 							},
@@ -207,7 +216,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 						return [];
 					},
 					getValue: (item) => `${item._id.substring(1)}`,
-					renderItem: ({ item }) => <ComposerPopupEmoji {...item} />,
+					renderItem: ({ item }) => <ComposerBoxPopupEmoji {...item} />,
 				}),
 			createMessageBoxPopupConfig<ComposerBoxPopupEmojiProps>({
 				title: t('Emoji'),
@@ -264,7 +273,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 					return [];
 				},
 				getValue: (item) => `${item._id}`,
-				renderItem: ({ item }) => <ComposerPopupEmoji {...item} />,
+				renderItem: ({ item }) => <ComposerBoxPopupEmoji {...item} />,
 			}),
 
 			createMessageBoxPopupConfig<ComposerBoxPopupSlashCommandProps>({
@@ -272,7 +281,8 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				trigger: '/',
 				suffix: ' ',
 				triggerAnywhere: false,
-				renderItem: ({ item }) => <ComposerPopupSlashCommand {...item} />,
+				disabled: encrypted,
+				renderItem: ({ item }) => <ComposerBoxPopupSlashCommand {...item} />,
 				getItemsFromLocal: async (filter: string) => {
 					return Object.keys(slashCommands.commands)
 						.map((command) => {
@@ -282,6 +292,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 								params: item.params && t.has(item.params) ? t(item.params) : item.params ?? '',
 								description: item.description && t.has(item.description) ? t(item.description) : item.description,
 								permission: item.permission,
+								...(encrypted && { disabled: encrypted }),
 							};
 						})
 						.filter((command) => {
@@ -313,7 +324,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 					trigger: '!',
 					prefix: '',
 					triggerAnywhere: true,
-					renderItem: ({ item }) => <ComposerPopupCannedResponse {...item} />,
+					renderItem: ({ item }) => <ComposerBoxPopupCannedResponse {...item} />,
 					getItemsFromLocal: async (filter: string) => {
 						const exp = new RegExp(filter, 'i');
 						return CannedResponse.find(
@@ -354,7 +365,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				},
 			}),
 		].filter(Boolean);
-	}, [t, cannedResponseEnabled, isOmnichannel, recentEmojis, suggestionsCount, userSpotlight, rid, call, useEmoji]);
+	}, [t, cannedResponseEnabled, isOmnichannel, recentEmojis, suggestionsCount, userSpotlight, rid, call, useEmoji, encrypted]);
 
 	return <ComposerPopupContext.Provider value={value} children={children} />;
 };

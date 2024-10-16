@@ -75,7 +75,7 @@ const CustomFieldsTable = () => {
 
 	return (
 		<>
-			{((isSuccess && data?.customFields.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }) => setFilter(text)} />}
+			{((isSuccess && data?.customFields.length > 0) || queryHasChanged) && <FilterByText onChange={setFilter} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -92,7 +92,7 @@ const CustomFieldsTable = () => {
 					description={t('No_custom_fields_yet_description')}
 					buttonAction={handleAddNew}
 					buttonTitle={t('Create_custom_field')}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_custom_fields')}
 				/>
 			)}

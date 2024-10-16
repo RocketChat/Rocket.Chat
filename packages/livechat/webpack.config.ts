@@ -162,12 +162,12 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 	{
 		...common(args),
 		entry: {
-			script: _('./src/widget.js'),
+			'rocketchat-livechat.min': _('./src/widget.ts'),
 		} as webpack.Entry,
 		output: {
 			path: _('./dist'),
 			publicPath: args.mode === 'production' ? 'livechat/' : '/',
-			filename: 'rocketchat-livechat.min.js',
+			filename: '[name].js',
 		},
 		module: {
 			rules: [

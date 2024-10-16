@@ -1,3 +1,4 @@
+import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel, createTargetTeam, createDirectMessage } from './utils';
@@ -6,6 +7,7 @@ import { expect, test } from './utils/test';
 test.use({ storageState: Users.user1.state });
 
 test.describe('video conference', () => {
+	test.skip(!IS_EE, 'Premium Only');
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 	let targetReadOnlyChannel: string;
@@ -28,7 +30,8 @@ test.describe('video conference', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 
 		await poHomeChannel.content.btnCall.click();
-		await poHomeChannel.content.btnStartCall.click();
+		await poHomeChannel.content.menuItemVideoCall.click();
+		await poHomeChannel.content.btnStartVideoCall.click();
 		await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 	});
 
@@ -44,7 +47,8 @@ test.describe('video conference', () => {
 		await poHomeChannel.sidenav.openChat('user2');
 
 		await poHomeChannel.content.btnCall.click();
-		await poHomeChannel.content.btnStartCall.click();
+		await poHomeChannel.content.menuItemVideoCall.click();
+		await poHomeChannel.content.btnStartVideoCall.click();
 		await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 	});
 
@@ -60,7 +64,8 @@ test.describe('video conference', () => {
 		await poHomeChannel.sidenav.openChat(targetTeam);
 
 		await poHomeChannel.content.btnCall.click();
-		await poHomeChannel.content.btnStartCall.click();
+		await poHomeChannel.content.menuItemVideoCall.click();
+		await poHomeChannel.content.btnStartVideoCall.click();
 		await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 	});
 
@@ -76,7 +81,8 @@ test.describe('video conference', () => {
 		await poHomeChannel.sidenav.openChat('rocketchat.internal.admin.test, user2');
 
 		await poHomeChannel.content.btnCall.click();
-		await poHomeChannel.content.btnStartCall.click();
+		await poHomeChannel.content.menuItemVideoCall.click();
+		await poHomeChannel.content.btnStartVideoCall.click();
 		await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 	});
 

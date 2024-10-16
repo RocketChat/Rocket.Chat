@@ -1,11 +1,12 @@
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { ServerSettingBridge } from '@rocket.chat/apps-engine/server/bridges/ServerSettingBridge';
 import { Settings } from '@rocket.chat/models';
 
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 
 export class AppSettingBridge extends ServerSettingBridge {
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 	}
 
@@ -55,7 +56,7 @@ export class AppSettingBridge extends ServerSettingBridge {
 			throw new Error(`The setting "${setting.id}" is not readable.`);
 		}
 
-		await Settings.updateValueById(setting.id, setting.value);
+		(await Settings.updateValueById(setting.id, setting.value)).modifiedCount && void notifyOnSettingChangedById(setting.id);
 	}
 
 	protected async incrementValue(id: string, value: number, appId: string): Promise<void> {
@@ -65,6 +66,9 @@ export class AppSettingBridge extends ServerSettingBridge {
 			throw new Error(`The setting "${id}" is not readable.`);
 		}
 
-		await Settings.incrementValueById(id, value);
+		const { value: setting } = await Settings.incrementValueById(id, value, { returnDocument: 'after' });
+		if (setting) {
+			void notifyOnSettingChanged(setting);
+		}
 	}
 }

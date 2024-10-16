@@ -1,5 +1,5 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useTranslation, useEndpoint, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation, useEndpoint, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -17,12 +17,17 @@ const OmnichannelPreferencesPage = (): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
+	const alwaysSendEmailTranscript = useSetting<boolean>('Livechat_transcript_send_always');
 	const omnichannelTranscriptPDF = useUserPreference<boolean>('omnichannelTranscriptPDF') ?? false;
 	const omnichannelTranscriptEmail = useUserPreference<boolean>('omnichannelTranscriptEmail') ?? false;
 	const omnichannelHideConversationAfterClosing = useUserPreference<boolean>('omnichannelHideConversationAfterClosing') ?? true;
 
 	const methods = useForm({
-		defaultValues: { omnichannelTranscriptPDF, omnichannelTranscriptEmail, omnichannelHideConversationAfterClosing },
+		defaultValues: {
+			omnichannelTranscriptPDF,
+			omnichannelTranscriptEmail: alwaysSendEmailTranscript || omnichannelTranscriptEmail,
+			omnichannelHideConversationAfterClosing,
+		},
 	});
 
 	const {

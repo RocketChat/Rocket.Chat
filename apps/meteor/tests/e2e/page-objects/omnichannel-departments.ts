@@ -13,7 +13,7 @@ export class OmnichannelDepartments {
 	}
 
 	get inputSearch() {
-		return this.page.locator('[placeholder="Search"]');
+		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	async search(text: string) {

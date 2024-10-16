@@ -23,7 +23,7 @@ export class OEmbedCacheRaw extends BaseRaw<IOEmbedCache> implements IOEmbedCach
 		return record;
 	}
 
-	removeAfterDate(date: Date): Promise<DeleteResult> {
+	removeBeforeDate(date: Date): Promise<DeleteResult> {
 		const query = {
 			updatedAt: {
 				$lte: date,

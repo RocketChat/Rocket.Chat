@@ -4,8 +4,8 @@ import { PassThrough } from 'stream';
 import { Email } from 'meteor/email';
 import { Mongo } from 'meteor/mongo';
 
-const shouldDisableOplog = ['yes', 'true'].includes(String(process.env.USE_NATIVE_OPLOG).toLowerCase());
-if (!shouldDisableOplog) {
+const shouldUseNativeOplog = ['yes', 'true'].includes(String(process.env.USE_NATIVE_OPLOG).toLowerCase());
+if (!shouldUseNativeOplog) {
 	Package['disable-oplog'] = {};
 }
 

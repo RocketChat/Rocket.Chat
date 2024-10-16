@@ -7,14 +7,14 @@ import { GenericTable, GenericTableHeaderCell, GenericTableBody, GenericTableHea
 import { useSort } from '../../../../../../components/GenericTable/hooks/useSort';
 import ChannelDeletionTableRow from './ChannelDeletionTableRow';
 
-type ChannelDeletationTable = {
+type ChannelDeletionTableProps = {
 	rooms: Serialized<IRoom>[];
 	onToggleAllRooms: () => void;
 	onChangeRoomSelection: (room: Serialized<IRoom>) => void;
 	selectedRooms: { [key: string]: Serialized<IRoom> };
 };
 
-const ChannelDeletionTable = ({ rooms, onChangeRoomSelection, selectedRooms, onToggleAllRooms }: ChannelDeletationTable) => {
+const ChannelDeletionTable = ({ rooms, onChangeRoomSelection, selectedRooms, onToggleAllRooms }: ChannelDeletionTableProps) => {
 	const t = useTranslation();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'usersCount'>('name');
 

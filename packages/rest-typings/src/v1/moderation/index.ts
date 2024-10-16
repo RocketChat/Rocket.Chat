@@ -5,5 +5,5 @@ export * from './ModerationDeleteMsgHistoryParams';
 export * from './ReportHistoryProps';
 export * from './ReportInfoParams';
 export * from './ReportsByMsgIdParams';
-export * from './ReportMessageHistoryParams';
+export * from './GetUserReportsParams';
 export * from './ModerationReportUserPOST';

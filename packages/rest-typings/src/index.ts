@@ -47,6 +47,7 @@ import type { TeamsEndpoints } from './v1/teams';
 import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
+import type { VoipFreeSwitchEndpoints } from './v1/voip-freeswitch';
 import type { WebdavEndpoints } from './v1/webdav';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -99,6 +100,7 @@ export interface Endpoints
 		CalendarEndpoints,
 		AuthEndpoints,
 		ImportEndpoints,
+		VoipFreeSwitchEndpoints,
 		DefaultEndpoints {}
 
 type OperationsByPathPatternAndMethod<
@@ -186,7 +188,7 @@ export type MatchPathPattern<TPath extends Path> = TPath extends any ? Extract<O
 
 export type JoinPathPattern<TBasePath extends string, TSubPathPattern extends string> = Extract<
 	PathPattern,
-	`${TBasePath}/${TSubPathPattern}` | TSubPathPattern
+	`${TBasePath}${TSubPathPattern extends '' ? TSubPathPattern : `/${TSubPathPattern}`}` | TSubPathPattern
 >;
 
 type GetParams<TOperation> = TOperation extends (...args: any) => any ? Parameters<TOperation>[0] : never;
@@ -247,7 +249,6 @@ export * from './v1/users/UsersSetPreferenceParamsPOST';
 export * from './v1/users/UsersUpdateOwnBasicInfoParamsPOST';
 export * from './v1/users/UsersUpdateParamsPOST';
 export * from './v1/users/UsersCheckUsernameAvailabilityParamsGET';
-export * from './v1/users/UsersGetAvatarSuggestionParamsGET';
 export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
 export * from './v1/moderation';
 
@@ -258,8 +259,10 @@ export * from './v1/e2e/e2eGetUsersOfRoomWithoutKeyParamsGET';
 export * from './v1/e2e/e2eSetRoomKeyIDParamsPOST';
 export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
 export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
+export * from './v1/e2e';
 export * from './v1/import';
 export * from './v1/voip';
+export * from './v1/voip-freeswitch';
 export * from './v1/email-inbox';
 export * from './v1/calendar';
 export * from './v1/federation';
@@ -267,3 +270,5 @@ export * from './v1/rooms';
 export * from './v1/groups';
 export * from './v1/chat';
 export * from './v1/auth';
+export * from './v1/cloud';
+export * from './v1/banners';

@@ -1,14 +1,13 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, Palette } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, ComponentProps } from 'react';
 import React from 'react';
 
 import ImageBox from './ImageBox';
 
-type RetryProps = ComponentProps<typeof Box> & { retry: () => void };
+type RetryProps = { retry: () => void };
 
-const Retry: FC<RetryProps> = ({ retry }) => {
+const Retry = ({ retry }: RetryProps) => {
 	const t = useTranslation();
 	const clickable = css`
 		cursor: pointer;

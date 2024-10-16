@@ -7,11 +7,12 @@ import type { MatchKeysAndValues, MongoServerError } from 'mongodb';
 
 import { Selection, SelectionChannel, SelectionUser } from '..';
 import { callbacks } from '../../../../lib/callbacks';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { t } from '../../../utils/lib/i18n';
 import { ProgressStep, ImportPreparingStartedStates } from '../../lib/ImporterProgressStep';
 import type { ImporterInfo } from '../definitions/ImporterInfo';
 import { ImportDataConverter } from './ImportDataConverter';
-import type { IConverterOptions } from './ImportDataConverter';
+import type { ConverterOptions } from './ImportDataConverter';
 import { ImporterProgress } from './ImporterProgress';
 import { ImporterWebsocket } from './ImporterWebsocket';
 
@@ -45,17 +46,15 @@ export class Importer {
 
 	public progress: ImporterProgress;
 
-	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: IConverterOptions = {}) {
+	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: ConverterOptions = {}) {
 		if (!info.key || !info.importer) {
 			throw new Error('Information passed in must be a valid ImporterInfo instance.');
 		}
 
-		this.converter = new ImportDataConverter(converterOptions);
-
 		this.info = info;
-
 		this.logger = new Logger(`${this.info.name} Importer`);
-		this.converter.setLogger(this.logger);
+
+		this.converter = new ImportDataConverter(this.logger, converterOptions);
 
 		this.importRecord = importRecord;
 		this.progress = new ImporterProgress(this.info.key, this.info.name);
@@ -119,7 +118,7 @@ export class Importer {
 
 		const beforeImportFn = async ({ data, dataType: type }: IImportRecord) => {
 			if (this.importRecord.valid === false) {
-				this.converter.aborted = true;
+				this.converter.abort();
 				throw new Error('The import operation is no longer valid.');
 			}
 
@@ -166,7 +165,7 @@ export class Importer {
 			await this.addCountCompleted(1);
 
 			if (this.importRecord.valid === false) {
-				this.converter.aborted = true;
+				this.converter.abort();
 				throw new Error('The import operation is no longer valid.');
 			}
 		};
@@ -183,7 +182,7 @@ export class Importer {
 			}
 
 			if (this.importRecord.valid === false) {
-				this.converter.aborted = true;
+				this.converter.abort();
 				throw new Error('The import operation is no longer valid.');
 			}
 		};
@@ -245,10 +244,20 @@ export class Importer {
 	}
 
 	async applySettingValues(settingValues: OldSettings) {
-		await Settings.updateValueById('Accounts_AllowUsernameChange', settingValues.allowUsernameChange ?? true);
-		await Settings.updateValueById('FileUpload_MaxFileSize', settingValues.maxFileSize ?? -1);
-		await Settings.updateValueById('FileUpload_MediaTypeWhiteList', settingValues.mediaTypeWhiteList ?? '*');
-		await Settings.updateValueById('FileUpload_MediaTypeBlackList', settingValues.mediaTypeBlackList ?? '');
+		const settingsIds = [
+			{ _id: 'Accounts_AllowUsernameChange', value: settingValues.allowUsernameChange ?? true },
+			{ _id: 'FileUpload_MaxFileSize', value: settingValues.maxFileSize ?? -1 },
+			{ _id: 'FileUpload_MediaTypeWhiteList', value: settingValues.mediaTypeWhiteList ?? '*' },
+			{ _id: 'FileUpload_MediaTypeBlackList', value: settingValues.mediaTypeBlackList ?? '' },
+		];
+
+		const promises = settingsIds.map((setting) => Settings.updateValueById(setting._id, setting.value));
+
+		(await Promise.all(promises)).forEach((value, index) => {
+			if (value?.modifiedCount) {
+				void notifyOnSettingChangedById(settingsIds[index]._id);
+			}
+		});
 	}
 
 	getProgress(): ImporterProgress {

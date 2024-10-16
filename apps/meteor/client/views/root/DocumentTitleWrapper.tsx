@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ReactNode } from 'react';
 import React, { useEffect, useCallback } from 'react';
 
 import { useUnreadMessages } from './hooks/useUnreadMessages';
@@ -17,7 +17,11 @@ const useRouteTitleFocus = () => {
 	}, []);
 };
 
-const DocumentTitleWrapper: FC = ({ children }) => {
+type DocumentTitleWrapperProps = {
+	children?: ReactNode;
+};
+
+const DocumentTitleWrapper = ({ children }: DocumentTitleWrapperProps) => {
 	useDocumentTitle(useSetting<string>('Site_Name') || '', false);
 	const { title, key } = useDocumentTitle(useUnreadMessages(), false);
 

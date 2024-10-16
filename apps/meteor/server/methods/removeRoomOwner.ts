@@ -1,15 +1,16 @@
 import { api, Message, Team } from '@rocket.chat/core-services';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { getUsersInRole } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		removeRoomOwner(rid: string, userId: string): boolean;
@@ -71,7 +72,10 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await Subscriptions.removeRoleById(subscription._id, 'owner');
+		const removeRoleResponse = await Subscriptions.removeRoleById(subscription._id, 'owner');
+		if (removeRoleResponse.modifiedCount) {
+			void notifyOnSubscriptionChangedById(subscription._id);
+		}
 
 		const fromUser = await Users.findOneById(uid);
 		if (!fromUser) {

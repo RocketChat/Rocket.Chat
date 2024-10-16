@@ -34,7 +34,7 @@ export const normalizeTransferHistoryMessage = (
 			if (!sender.username) {
 				return t('the_chat_was_moved_back_to_queue');
 			}
-			return t('from_returned_the_chat_to_the_queue', { from });
+			return t('from_returned_the_chat_to_the_queue', { from, interpolation: { escapeValue: false } });
 		},
 		autoTransferUnansweredChatsToAgent: () => t('the_chat_was_transferred_to_another_agent_due_to_unanswered', { duration: comment }),
 		autoTransferUnansweredChatsToQueue: () => t('the_chat_was_moved_back_to_queue_due_to_unanswered', { duration: comment }),

@@ -1,5 +1,6 @@
 declare module 'meteor/accounts-base' {
 	namespace Accounts {
+		const storageLocation: Window['localStorage'];
 		function createUser(
 			options: {
 				username?: string;
@@ -22,9 +23,9 @@ declare module 'meteor/accounts-base' {
 
 		function _insertLoginToken(userId: string, token: { token: string; when: Date }): void;
 
-		function _runLoginHandlers<T>(methodInvocation: T, loginRequest: Record<string, any>): LoginMethodResult | undefined;
+		function _runLoginHandlers<T>(methodInvocation: T, loginRequest: Record<string, any>): Promise<LoginMethodResult>;
 
-		function registerLoginHandler(name: string, handler: (options: any) => undefined | Object): void;
+		function registerLoginHandler(name: string, handler: (options: any) => undefined | object): void;
 
 		function _storedLoginToken(): unknown;
 
@@ -42,6 +43,8 @@ declare module 'meteor/accounts-base' {
 
 		function _clearAllLoginTokens(userId: string | null): void;
 
+		function config(options: { clientStorage: 'session' | 'local' }): void;
+
 		class ConfigError extends Error {}
 
 		class LoginCancelledError extends Error {
@@ -53,5 +56,23 @@ declare module 'meteor/accounts-base' {
 		const LOGIN_TOKEN_KEY: string;
 
 		const _accountData: Record<string, any>;
+
+		interface AccountsServerOptions {
+			ambiguousErrorMessages?: boolean;
+			restrictCreationByEmailDomain?: string | (() => string);
+			forbidClientAccountCreation?: boolean | undefined;
+		}
+
+		export const _options: AccountsServerOptions;
+
+		// eslint-disable-next-line @typescript-eslint/no-namespace
+		namespace oauth {
+			function credentialRequestCompleteHandler(
+				callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
+				totpCode?: string,
+			): (credentialTokenOrError?: string | globalThis.Error | Meteor.Error | Meteor.TypedError) => void;
+
+			function registerService(name: string): void;
+		}
 	}
 }

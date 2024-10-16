@@ -19,5 +19,3 @@ Livechat.rest.use(async function (request, next) {
 		throw error;
 	}
 });
-
-Livechat.connection.connect();

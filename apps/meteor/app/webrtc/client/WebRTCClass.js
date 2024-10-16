@@ -7,8 +7,8 @@ import GenericModal from '../../../client/components/GenericModal';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { ChatSubscription } from '../../models/client';
-import { Notifications } from '../../notifications/client';
 import { settings } from '../../settings/client';
+import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 import { WEB_RTC_EVENTS } from '../lib/constants';
 import { ChromeScreenShare } from './screenShare';
@@ -18,7 +18,7 @@ class WebRTCTransportClass extends Emitter {
 		super();
 		this.debug = false;
 		this.webrtcInstance = webrtcInstance;
-		Notifications.onRoom(this.webrtcInstance.room, WEB_RTC_EVENTS.WEB_RTC, (type, data) => {
+		sdk.stream('notify-room', [`${this.webrtcInstance.room}/${WEB_RTC_EVENTS.WEB_RTC}`], (type, data) => {
 			this.log('WebRTCTransportClass - onRoom', type, data);
 			this.emit(type, data);
 		});
@@ -41,30 +41,42 @@ class WebRTCTransportClass extends Emitter {
 
 	startCall(data) {
 		this.log('WebRTCTransportClass - startCall', this.webrtcInstance.room, this.webrtcInstance.selfId);
-		Notifications.notifyUsersOfRoom(this.webrtcInstance.room, WEB_RTC_EVENTS.WEB_RTC, WEB_RTC_EVENTS.CALL, {
-			from: this.webrtcInstance.selfId,
-			room: this.webrtcInstance.room,
-			media: data.media,
-			monitor: data.monitor,
-		});
+		sdk.publish('notify-room-users', [
+			`${this.webrtcInstance.room}/${WEB_RTC_EVENTS.WEB_RTC}`,
+			WEB_RTC_EVENTS.CALL,
+			{
+				from: this.webrtcInstance.selfId,
+				room: this.webrtcInstance.room,
+				media: data.media,
+				monitor: data.monitor,
+			},
+		]);
 	}
 
 	joinCall(data) {
 		this.log('WebRTCTransportClass - joinCall', this.webrtcInstance.room, this.webrtcInstance.selfId);
 		if (data.monitor === true) {
-			Notifications.notifyUser(data.to, WEB_RTC_EVENTS.WEB_RTC, WEB_RTC_EVENTS.JOIN, {
-				from: this.webrtcInstance.selfId,
-				room: this.webrtcInstance.room,
-				media: data.media,
-				monitor: data.monitor,
-			});
+			sdk.publish('notify-user', [
+				`${data.to}/${WEB_RTC_EVENTS.WEB_RTC}`,
+				WEB_RTC_EVENTS.JOIN,
+				{
+					from: this.webrtcInstance.selfId,
+					room: this.webrtcInstance.room,
+					media: data.media,
+					monitor: data.monitor,
+				},
+			]);
 		} else {
-			Notifications.notifyUsersOfRoom(this.webrtcInstance.room, WEB_RTC_EVENTS.WEB_RTC, WEB_RTC_EVENTS.JOIN, {
-				from: this.webrtcInstance.selfId,
-				room: this.webrtcInstance.room,
-				media: data.media,
-				monitor: data.monitor,
-			});
+			sdk.publish('notify-room-users', [
+				`${this.webrtcInstance.room}/${WEB_RTC_EVENTS.WEB_RTC}`,
+				WEB_RTC_EVENTS.JOIN,
+				{
+					from: this.webrtcInstance.selfId,
+					room: this.webrtcInstance.room,
+					media: data.media,
+					monitor: data.monitor,
+				},
+			]);
 		}
 	}
 
@@ -72,20 +84,20 @@ class WebRTCTransportClass extends Emitter {
 		data.from = this.webrtcInstance.selfId;
 		data.room = this.webrtcInstance.room;
 		this.log('WebRTCTransportClass - sendCandidate', data);
-		Notifications.notifyUser(data.to, WEB_RTC_EVENTS.WEB_RTC, WEB_RTC_EVENTS.CANDIDATE, data);
+		sdk.publish('notify-user', [`${data.to}/${WEB_RTC_EVENTS.WEB_RTC}`, WEB_RTC_EVENTS.CANDIDATE, data]);
 	}
 
 	sendDescription(data) {
 		data.from = this.webrtcInstance.selfId;
 		data.room = this.webrtcInstance.room;
 		this.log('WebRTCTransportClass - sendDescription', data);
-		Notifications.notifyUser(data.to, WEB_RTC_EVENTS.WEB_RTC, WEB_RTC_EVENTS.DESCRIPTION, data);
+		sdk.publish('notify-user', [`${data.to}/${WEB_RTC_EVENTS.WEB_RTC}`, WEB_RTC_EVENTS.DESCRIPTION, data]);
 	}
 
 	sendStatus(data) {
 		this.log('WebRTCTransportClass - sendStatus', data, this.webrtcInstance.room);
 		data.from = this.webrtcInstance.selfId;
-		Notifications.notifyRoom(this.webrtcInstance.room, WEB_RTC_EVENTS.WEB_RTC, WEB_RTC_EVENTS.STATUS, data);
+		sdk.publish('notify-room', [`${this.webrtcInstance.room}/${WEB_RTC_EVENTS.WEB_RTC}`, WEB_RTC_EVENTS.STATUS, data]);
 	}
 
 	onRemoteCall(fn) {
@@ -969,7 +981,7 @@ const WebRTC = new (class {
 Meteor.startup(() => {
 	Tracker.autorun(() => {
 		if (Meteor.userId()) {
-			Notifications.onUser(WEB_RTC_EVENTS.WEB_RTC, (type, data) => {
+			sdk.stream('notify-user', [`${Meteor.userId()}/${WEB_RTC_EVENTS.WEB_RTC}`], (type, data) => {
 				if (data.room == null) {
 					return;
 				}

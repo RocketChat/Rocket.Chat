@@ -2,10 +2,10 @@ import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import type { Dispatch, ReactElement, SetStateAction } from 'react';
 
-const roomTypeFilterStructure = [
+const initialRoomTypeFilterStructure = [
 	{
 		id: 'filter_by_room',
 		text: 'Filter_by_room',
@@ -49,6 +49,13 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 
 	const [roomTypeSelectedOptions, setRoomTypeSelectedOptions] = useState<OptionProp[]>([]);
 
+	const roomTypeFilterStructure = useMemo(() => {
+		return initialRoomTypeFilterStructure.map((option) => ({
+			...option,
+			checked: roomTypeSelectedOptions.some((selectedOption) => selectedOption.id === option.id),
+		}));
+	}, [roomTypeSelectedOptions]);
+
 	const handleSearchTextChange = useCallback(
 		(event) => {
 			const text = event.currentTarget.value;
@@ -64,7 +71,7 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 			setRoomTypeSelectedOptions(options);
 		},
 		[text, setFilters],
-	) as Dispatch<SetStateAction<OptionProp[]>>;
+	);
 
 	return (
 		<Box
@@ -89,7 +96,7 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 			<Box minWidth='x224' m='x4'>
 				<MultiSelectCustom
 					dropdownOptions={roomTypeFilterStructure}
-					defaultTitle={'All_rooms' as any}
+					defaultTitle='All_rooms'
 					selectedOptionsTitle='Rooms'
 					setSelectedOptions={handleRoomTypeChange}
 					selectedOptions={roomTypeSelectedOptions}

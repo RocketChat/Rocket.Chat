@@ -6,6 +6,8 @@ import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { UpdateResult } from 'mongodb';
 
+import { notifyOnSubscriptionChangedByRoomId } from '../../../lib/server/lib/notifyListener';
+
 export const saveRoomEncrypted = async function (rid: string, encrypted: boolean, user: IUser, sendMessage = true): Promise<UpdateResult> {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
@@ -27,7 +29,10 @@ export const saveRoomEncrypted = async function (rid: string, encrypted: boolean
 	}
 
 	if (encrypted) {
-		await Subscriptions.disableAutoTranslateByRoomId(rid);
+		const { modifiedCount } = await Subscriptions.disableAutoTranslateByRoomId(rid);
+		if (modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomId(rid);
+		}
 	}
 	return update;
 };

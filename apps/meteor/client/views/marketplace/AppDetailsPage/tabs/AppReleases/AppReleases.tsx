@@ -5,10 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import AccordionLoading from '../../../AccordionLoading';
+import AccordionLoading from '../../../components/AccordionLoading';
 import AppReleasesItem from './AppReleasesItem';
 
-// TODO: replace useEndpointData
 const AppReleases = ({ id }: { id: App['id'] }): ReactElement => {
 	const getVersions = useEndpoint('GET', '/apps/:id/versions', { id });
 	const dispatchToastMessage = useToastMessageDispatch();

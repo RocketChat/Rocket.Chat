@@ -5,6 +5,7 @@ declare module 'meteor/ddp-common' {
 		class MethodInvocation {
 			constructor(options: {
 				connection: {
+					id: string;
 					close: () => void;
 					clientAddress: string;
 					httpHeaders: Record<string, any>;

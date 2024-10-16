@@ -53,7 +53,8 @@ export interface ISettingBase {
 		| 'roomPick'
 		| 'group'
 		| 'date'
-		| 'lookup';
+		| 'lookup'
+		| 'timespan';
 	public: boolean;
 	env: boolean;
 	group?: GroupId;

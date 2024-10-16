@@ -6,8 +6,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 
-export const STATUS_MAP = [UserStatus.OFFLINE, UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY, UserStatus.DISABLED];
-
 type InternalEvents = {
 	remove: IUser['_id'];
 	reset: undefined;

@@ -1,0 +1,22 @@
+@import url('../../cssVariables.css');
+
+.screen-thumbnail-wrapper{
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    overflow: hidden;
+    transition: var(--animation-very-fast);
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 0px 0px 1px var(--item-border-color);
+
+    &:hover {
+      transition: var(--animation-very-fast);
+      box-shadow: 0px 0px 0px 1px var(--RCPG-tertary-color) !important;
+      .screenThumbnailBackdrop {
+        z-index: 10;
+        background: #cfcfcf20;
+        transition: var(--animation-very-fast);
+      }
+    }
+}

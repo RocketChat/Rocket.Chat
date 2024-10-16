@@ -1,5 +1,5 @@
-import { useSession, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useEffect, useRef } from 'react';
+import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEffect } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import { imperativeModal } from '../../../lib/imperativeModal';
@@ -18,17 +18,9 @@ export const useEscapeKeyStroke = () => {
 		},
 	});
 
-	const { current: unread } = useRef(useSession('unread'));
-
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
-			if (
-				event.code !== 'Escape' ||
-				!(event.shiftKey === true || event.ctrlKey === true) ||
-				unread === undefined ||
-				unread === null ||
-				unread === ''
-			) {
+			if (event.code !== 'Escape' || !(event.shiftKey === true || event.ctrlKey === true)) {
 				return;
 			}
 
@@ -54,5 +46,5 @@ export const useEscapeKeyStroke = () => {
 		return () => {
 			document.body.removeEventListener('keydown', handleKeyDown);
 		};
-	}, [clearUnreadAllMessagesMutation.mutate, dispatchToastMessage, t, unread]);
+	}, [clearUnreadAllMessagesMutation.mutate, dispatchToastMessage, t]);
 };

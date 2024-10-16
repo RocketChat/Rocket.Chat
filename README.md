@@ -50,8 +50,9 @@ Free for 30 days. Afterward, choose between continuing to host on our secure clo
 You can follow these instructions to setup a dev environment:
 
 - Install **Node 14.x (LTS)** either [manually](https://nodejs.org/dist/latest-v14.x/) or using a tool like [nvm](https://github.com/creationix/nvm) or [volta](https://volta.sh/) (recommended)
-- Install **Meteor** ([version here](apps/meteor/.meteor/release)): https://www.meteor.com/developers/install
+- Install **Meteor** ([version here](apps/meteor/.meteor/release)): https://docs.meteor.com/about/install.html
 - Install **yarn**: https://yarnpkg.com/getting-started/install
+- Install **Deno 1.x**: https://docs.deno.com/runtime/fundamentals/installation/
 - Clone this repo: `git clone https://github.com/RocketChat/Rocket.Chat.git`
 - Run `yarn` to install dependencies
 
@@ -66,6 +67,18 @@ yarn dsv # run only meteor (front and back) with pre-built packages
 ```
 
 After initialized, you can access the server at http://localhost:3000
+
+More details at: [Developer Docs](https://developer.rocket.chat/v1/docs/server-environment-setup)
+PS: For Windows you MUST use WSL2 and have +12Gb RAM
+
+
+# Gitpod Setup
+
+1. Click the button below to open this project in Gitpod.
+
+2. This will open a fully configured workspace in your browser with all the necessary dependencies already installed.
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/RocketChat/Rocket.Chat)
 
 **Starting Rocket.Chat in microservices mode:**
 

@@ -1,14 +1,25 @@
-import { LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
+import { LivechatContacts, LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
+import {
+	isPOSTOmnichannelContactsProps,
+	isPOSTUpdateOmnichannelContactsProps,
+	isGETOmnichannelContactsProps,
+	isGETOmnichannelContactHistoryProps,
+	isGETOmnichannelContactsSearchProps,
+} from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
-import { Contacts } from '../../lib/Contacts';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { getContactHistory, Contacts, createContact, updateContact, getContacts, isSingleContactEnabled } from '../../lib/Contacts';
 
 API.v1.addRoute(
 	'omnichannel/contact',
-	{ authRequired: true, permissionsRequired: ['view-l-room'] },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-l-room'],
+	},
 	{
 		async post() {
 			check(this.bodyParams, {
@@ -42,7 +53,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'omnichannel/contact.search',
-	{ authRequired: true, permissionsRequired: ['view-l-room'] },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-l-room'],
+	},
 	{
 		async get() {
 			check(this.queryParams, {
@@ -79,6 +93,92 @@ API.v1.addRoute(
 
 			const contact = await LivechatVisitors.findOneByEmailAndPhoneAndCustomField(email, phone, foundCF);
 			return API.v1.success({ contact });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'omnichannel/contacts',
+	{ authRequired: true, permissionsRequired: ['create-livechat-contact'], validateParams: isPOSTOmnichannelContactsProps },
+	{
+		async post() {
+			if (!isSingleContactEnabled()) {
+				return API.v1.unauthorized();
+			}
+			const contactId = await createContact({ ...this.bodyParams, unknown: false });
+
+			return API.v1.success({ contactId });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'omnichannel/contacts.update',
+	{ authRequired: true, permissionsRequired: ['update-livechat-contact'], validateParams: isPOSTUpdateOmnichannelContactsProps },
+	{
+		async post() {
+			if (!isSingleContactEnabled()) {
+				return API.v1.unauthorized();
+			}
+
+			const contact = await updateContact({ ...this.bodyParams });
+
+			return API.v1.success({ contact });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'omnichannel/contacts.get',
+	{ authRequired: true, permissionsRequired: ['view-livechat-contact'], validateParams: isGETOmnichannelContactsProps },
+	{
+		async get() {
+			if (!isSingleContactEnabled()) {
+				return API.v1.unauthorized();
+			}
+			const contact = await LivechatContacts.findOneById(this.queryParams.contactId);
+
+			return API.v1.success({ contact });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'omnichannel/contacts.search',
+	{ authRequired: true, permissionsRequired: ['view-livechat-contact'], validateParams: isGETOmnichannelContactsSearchProps },
+	{
+		async get() {
+			if (!isSingleContactEnabled()) {
+				return API.v1.unauthorized();
+			}
+
+			const { searchText } = this.queryParams;
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+
+			const result = await getContacts({ searchText, offset, count, sort });
+
+			return API.v1.success(result);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'omnichannel/contacts.history',
+	{ authRequired: true, permissionsRequired: ['view-livechat-contact-history'], validateParams: isGETOmnichannelContactHistoryProps },
+	{
+		async get() {
+			if (!isSingleContactEnabled()) {
+				return API.v1.unauthorized();
+			}
+
+			const { contactId, source } = this.queryParams;
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+
+			const history = await getContactHistory({ contactId, source, count, offset, sort });
+
+			return API.v1.success(history);
 		},
 	},
 );

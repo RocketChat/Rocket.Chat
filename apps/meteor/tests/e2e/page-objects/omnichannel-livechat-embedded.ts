@@ -1,14 +1,14 @@
-import type { Page, Locator, APIResponse } from '@playwright/test';
+import type { Page, Locator } from '@playwright/test';
 
 export class OmnichannelLiveChatEmbedded {
 	readonly page: Page;
 
-	constructor(page: Page, private readonly api: { get(url: string): Promise<APIResponse> }) {
+	constructor(page: Page) {
 		this.page = page;
 	}
 
-	btnOpenLiveChat(label: string): Locator {
-		return this.page.frameLocator('#rocketchat-iframe').locator(`role=button[name="${label}"]`);
+	btnOpenLiveChat(): Locator {
+		return this.page.frameLocator('#rocketchat-iframe').locator(`[data-qa-id="chat-button"]`);
 	}
 
 	btnOpenOfflineLiveChat(): Locator {
@@ -35,12 +35,44 @@ export class OmnichannelLiveChatEmbedded {
 		return this.page.frameLocator('#rocketchat-iframe').locator('div >> text="Chat Finished"');
 	}
 
+	get headerTitle(): Locator {
+		return this.page.frameLocator('#rocketchat-iframe').locator('[data-qa="header-title"]');
+	}
+
 	get btnChatNow(): Locator {
 		return this.page.frameLocator('#rocketchat-iframe').locator('[type="button"] >> text="Chat now"');
 	}
 
+	get btnNewChat(): Locator {
+		return this.page.frameLocator('#rocketchat-iframe').locator(`role=button[name="New Chat"]`);
+	}
+
+	get messageList(): Locator {
+		return this.page.frameLocator('#rocketchat-iframe').locator('[data-qa="message-list"]');
+	}
+
+	get messageListBackground(): Promise<string> {
+		return this.messageList.evaluate((el) => window.getComputedStyle(el).getPropertyValue('background-color'));
+	}
+
+	messageBubble(message: string): Locator {
+		return this.page
+			.frameLocator('#rocketchat-iframe')
+			.locator('[data-qa="message-bubble"]', { has: this.page.frameLocator('#rocketchat-iframe').locator(`div >> text="${message}"`) });
+	}
+
+	messageBubbleBackground(message: string): Promise<string> {
+		return this.messageBubble(message)
+			.last()
+			.evaluate((el) => window.getComputedStyle(el).getPropertyValue('background-color'));
+	}
+
 	txtChatMessage(message: string): Locator {
-		return this.page.frameLocator('#rocketchat-iframe').locator(`text="${message}"`);
+		return this.page.frameLocator('#rocketchat-iframe').locator(`li >> text="${message}"`);
+	}
+
+	imgAvatar(username: string): Locator {
+		return this.page.frameLocator('#rocketchat-iframe').locator(`img[alt="${username}"]`).last();
 	}
 
 	async closeChat(): Promise<void> {
@@ -49,12 +81,8 @@ export class OmnichannelLiveChatEmbedded {
 		await this.btnCloseChatConfirm.click();
 	}
 
-	async openLiveChat(offline: boolean): Promise<void> {
-		const { value: siteName } = await (await this.api.get('/settings/Site_Name')).json();
-		if (offline) {
-			return this.btnOpenOfflineLiveChat().click();
-		}
-		await this.btnOpenLiveChat(siteName).click();
+	async openLiveChat(): Promise<void> {
+		await this.btnOpenLiveChat().click();
 	}
 
 	unreadMessagesBadge(count: number): Locator {
@@ -97,10 +125,10 @@ export class OmnichannelLiveChatEmbedded {
 
 	public async sendMessage(liveChatUser: { name: string; email: string }, isOffline = true): Promise<void> {
 		const buttonLabel = isOffline ? 'Send' : 'Start chat';
-		await this.inputName.type(liveChatUser.name);
-		await this.inputEmail.type(liveChatUser.email);
+		await this.inputName.fill(liveChatUser.name);
+		await this.inputEmail.fill(liveChatUser.email);
 		if (isOffline) {
-			await this.textAreaMessage.type('any_message');
+			await this.textAreaMessage.fill('any_message');
 			await this.btnSendMessage(buttonLabel).click();
 			return this.btnFinishOfflineMessage().click();
 		}

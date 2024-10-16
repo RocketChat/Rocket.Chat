@@ -1,7 +1,6 @@
 import type { AppPricingPlan, PurchaseType } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React, { useMemo } from 'react';
 
 import { formatPriceAndPurchaseType } from '../../../helpers/formatPriceAndPurchaseType';
@@ -14,7 +13,7 @@ type AppStatusPriceDisplayProps = {
 	marginInline?: string;
 };
 
-const AppStatusPriceDisplay: FC<AppStatusPriceDisplayProps> = ({ purchaseType, pricingPlans, price, showType = true }) => {
+const AppStatusPriceDisplay = ({ purchaseType, pricingPlans, price, showType = true }: AppStatusPriceDisplayProps) => {
 	const t = useTranslation();
 
 	const { type, price: formattedPrice } = useMemo(

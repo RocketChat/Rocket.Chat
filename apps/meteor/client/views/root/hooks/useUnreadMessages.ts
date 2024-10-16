@@ -2,10 +2,11 @@ import { useSession, useTranslation } from '@rocket.chat/ui-contexts';
 
 export const useUnreadMessages = (): string | undefined => {
 	const t = useTranslation();
-	const unreadMessages = useSession('unread');
+	const unreadMessages = useSession('unread') as number | '' | '999+' | '•';
 
 	return (() => {
-		if (unreadMessages === '') {
+		// TODO: remove this when we have a better way to handle this
+		if (typeof unreadMessages !== 'number') {
 			return undefined;
 		}
 

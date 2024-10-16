@@ -10,11 +10,12 @@ import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../lib/isTruthy';
 import { i18n } from '../../../server/lib/i18n';
+import { canAccessRoomAsync } from '../../authorization/server';
 import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
 import { createChannelMethod } from '../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../lib/server/methods/createPrivateGroup';
 import { settings } from '../../settings/server';
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { slashCommands } from '../../utils/server/slashCommand';
 
 function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 	return async function inviteAll({ command, params, message, userId }: SlashCommandCallbackParams<T>): Promise<void> {
@@ -55,6 +56,14 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 			});
 			return;
 		}
+
+		if (!(await canAccessRoomAsync(baseChannel, user))) {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+				msg: i18n.t('Room_not_exist_or_not_permission', { lng }),
+			});
+			return;
+		}
+
 		const cursor = Subscriptions.findByRoomIdWhenUsernameExists(baseChannel._id, {
 			projection: { 'u.username': 1 },
 		});

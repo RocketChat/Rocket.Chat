@@ -1,9 +1,9 @@
 import type { BadgeProps } from '@rocket.chat/fuselage';
-import { HeaderToolboxAction, HeaderToolboxActionBadge } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import React, { lazy, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { HeaderToolbarAction, HeaderToolbarActionBadge } from '../../components/Header';
 import { useRoomSubscription } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
@@ -46,7 +46,7 @@ export const useThreadRoomAction = () => {
 			tabComponent: Threads,
 			order: 2,
 			renderToolboxItem: ({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }) => (
-				<HeaderToolboxAction
+				<HeaderToolbarAction
 					key={id}
 					className={className}
 					index={index}
@@ -58,8 +58,8 @@ export const useThreadRoomAction = () => {
 					disabled={disabled}
 					tooltip={tooltip}
 				>
-					{!!unread && <HeaderToolboxActionBadge variant={variant}>{unread}</HeaderToolboxActionBadge>}
-				</HeaderToolboxAction>
+					{!!unread && <HeaderToolbarActionBadge variant={variant}>{unread}</HeaderToolbarActionBadge>}
+				</HeaderToolbarAction>
 			),
 		};
 	}, [enabled, t, unread, variant]);

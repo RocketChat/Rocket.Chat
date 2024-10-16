@@ -465,9 +465,9 @@ export class LDAPConnection {
 
 		searchLogger.debug({ msg: 'Group filter LDAP:', filter: searchOptions.filter });
 
-		const result = await this.searchRaw(this.options.baseDN, searchOptions);
+		const result = await this.searchAndCount(this.options.baseDN, searchOptions);
 
-		if (!Array.isArray(result) || result.length === 0) {
+		if (result === 0) {
 			return false;
 		}
 		return true;
@@ -660,12 +660,8 @@ export class LDAPConnection {
 		this.client._updateIdle(override);
 	}
 
-	protected async maybeBindDN(): Promise<void> {
-		if (this.usingAuthentication) {
-			return;
-		}
-
-		if (!this.options.authentication) {
+	protected async maybeBindDN({ forceBindAuthenticationUser = false } = {}): Promise<void> {
+		if (!forceBindAuthenticationUser && (this.usingAuthentication || !this.options.authentication)) {
 			return;
 		}
 
@@ -690,6 +686,10 @@ export class LDAPConnection {
 
 	protected async runBeforeSearch(_searchOptions: ldapjs.SearchOptions): Promise<void> {
 		return this.maybeBindDN();
+	}
+
+	public async bindAuthenticationUser(): Promise<void> {
+		return this.maybeBindDN({ forceBindAuthenticationUser: true });
 	}
 
 	/*

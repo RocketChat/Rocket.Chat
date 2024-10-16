@@ -36,7 +36,7 @@ Accounts.registerLoginHandler(async (options) => {
 
 	// Make sure we're configured
 	if (!(await ServiceConfiguration.configurations.findOneAsync({ service: options.serviceName }))) {
-		throw new ServiceConfiguration.ConfigError();
+		throw new Accounts.ConfigError();
 	}
 
 	if (!_.contains(Accounts.oauth.serviceNames(), service.serviceName)) {

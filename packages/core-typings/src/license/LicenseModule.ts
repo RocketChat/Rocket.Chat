@@ -18,4 +18,5 @@ export type LicenseModule =
 	| 'outlook-calendar'
 	| 'hide-watermark'
 	| 'custom-roles'
-	| 'accessibility-certification';
+	| 'accessibility-certification'
+	| 'unlimited-presence';

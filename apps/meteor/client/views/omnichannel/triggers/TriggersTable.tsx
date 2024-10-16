@@ -61,7 +61,7 @@ const TriggersTable = () => {
 					description={t('No_triggers_yet_description')}
 					buttonAction={handleAddNew}
 					buttonTitle={t('Create_trigger')}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_triggers')}
 				/>
 			)}

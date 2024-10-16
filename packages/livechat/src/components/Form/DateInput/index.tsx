@@ -6,7 +6,7 @@ import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
 
 type DateInputProps = {
-	name: string;
+	name?: string;
 	value?: string;
 	placeholder?: string;
 	disabled?: boolean;

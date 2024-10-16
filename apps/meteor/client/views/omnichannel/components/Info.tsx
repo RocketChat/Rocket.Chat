@@ -1,15 +1,15 @@
 import { css } from '@rocket.chat/css-in-js';
-import type { CSSProperties, FC } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import React from 'react';
 
-import UserCard from '../../../components/UserCard';
+import { UserCardInfo } from '../../../components/UserCard';
 
 const wordBreak = css`
 	word-break: break-word;
 `;
 
-const Info: FC<{ className?: string; style?: CSSProperties }> = ({ className, ...props }) => (
-	<UserCard.Info className={[className, wordBreak]} flexShrink={0} {...props} />
-);
+type InfoProps = { className?: string; style?: CSSProperties; children?: ReactNode };
+
+const Info = ({ className, ...props }: InfoProps) => <UserCardInfo className={[className, wordBreak]} flexShrink={0} {...props} />;
 
 export default Info;
