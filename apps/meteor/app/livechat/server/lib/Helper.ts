@@ -197,7 +197,7 @@ export const createLivechatInquiry = async ({
 		visitor: { _id, username, department, status, activity },
 	});
 
-    const contactId = await getContactIdByVisitorId(_id);
+	const contactId = await getContactIdByVisitorId(_id);
 
 	const result = await LivechatInquiry.findOneAndUpdate(
 		{
