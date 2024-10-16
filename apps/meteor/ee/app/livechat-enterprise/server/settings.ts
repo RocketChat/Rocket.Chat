@@ -165,17 +165,6 @@ export const createSettings = async (): Promise<void> => {
 				modules: ['livechat-enterprise'],
 				invalidValue: '',
 			});
-
-			await this.add('Livechat_Block_Unknown_Contacts', false, {
-				type: 'boolean',
-				public: true,
-				hidden: true,
-				enableQuery: omnichannelEnabledQuery,
-				invalidValue: false,
-				section: 'Contact_identification',
-				enterprise: true,
-				modules: ['livechat-enterprise'],
-			});
 		});
 
 		await this.add('Livechat_Block_Unknown_Contacts', false, {
