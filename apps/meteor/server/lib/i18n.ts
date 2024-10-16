@@ -22,9 +22,8 @@ void i18n.init({
 declare module 'i18next' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface TFunction {
-		(key: RocketchatI18nKeys, options?: TOptions): string;
-		(key: RocketchatI18nKeys, ...options: unknown[]): string;
-		<T>(key: T extends string ? (T extends RocketchatI18nKeys ? T : never) : never, options?: TOptions): string;
+		(key: RocketchatI18nKeys): string;
+		(key: RocketchatI18nKeys, options: TOptions): string;
 	}
 }
 

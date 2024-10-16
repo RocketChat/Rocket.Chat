@@ -1,8 +1,8 @@
 import type { IVoipRoom, Serialized } from '@rocket.chat/core-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { useIsCallReady } from '../../../../contexts/CallContext';
@@ -15,7 +15,7 @@ type CallTableRowProps = {
 };
 
 export const CallTableRow = ({ room, onRowClick }: CallTableRowProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const isCallReady = useIsCallReady();
 
 	const { _id, fname, callStarted, queue, callDuration = 0, v, direction } = room;

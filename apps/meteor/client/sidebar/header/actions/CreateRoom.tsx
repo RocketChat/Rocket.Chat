@@ -1,15 +1,15 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useCreateRoom } from './hooks/useCreateRoomMenu';
 
 type CreateRoomProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const CreateRoom = (props: CreateRoomProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const sections = useCreateRoom();
 

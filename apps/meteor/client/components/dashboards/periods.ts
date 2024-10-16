@@ -1,10 +1,7 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 
-const label = (
-	translationKey: TranslationKey,
-	...replacements: unknown[]
-): readonly [translationKey: TranslationKey, ...replacements: unknown[]] => [translationKey, ...replacements];
+const label = (translationKey: TranslationKey): readonly [translationKey: TranslationKey] => [translationKey];
 
 const lastNDays =
 	(

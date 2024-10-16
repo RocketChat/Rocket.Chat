@@ -1,8 +1,8 @@
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { MessageActionConditionProps, MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 
@@ -29,7 +29,7 @@ const MessageToolbarStarsActionMenu = ({
 	context,
 	isMessageEncrypted,
 }: MessageActionMenuProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const id = useUniqueId();
 
 	const groupOptions = options.reduce((acc, option) => {
