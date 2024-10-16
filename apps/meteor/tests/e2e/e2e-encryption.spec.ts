@@ -161,7 +161,7 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.tabs.btnDisableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnDisableE2E.click({ force: true });
 		await expect(page.getByRole('dialog', { name: 'Disable encryption' })).toBeVisible();
-		await page.getByRole('button', { name: 'Disable encryption' }).click({ force: true });
+		await page.getByRole('button', { name: 'Disable encryption' }).click();
 		await poHomeChannel.dismissToast();
 		await page.waitForTimeout(1000);
 
@@ -174,7 +174,7 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
 		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
-		await page.getByRole('button', { name: 'Enable encryption' }).click({ force: true });
+		await page.getByRole('button', { name: 'Enable encryption' }).click();
 		await poHomeChannel.dismissToast();
 		await page.waitForTimeout(1000);
 
@@ -260,7 +260,7 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
 		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
-		await page.getByRole('button', { name: 'Enable encryption' }).click({ force: true });
+		await page.getByRole('button', { name: 'Enable encryption' }).click();
 		await page.waitForTimeout(1000);
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
@@ -374,7 +374,7 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
 		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
-		await page.getByRole('button', { name: 'Enable encryption' }).click({ force: true });
+		await page.getByRole('button', { name: 'Enable encryption' }).click();
 		await page.waitForTimeout(1000);
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
@@ -455,7 +455,7 @@ test.describe.serial('e2e-encryption', () => {
 			await expect(poHomeChannel.tabs.btnDisableE2E).toBeVisible();
 			await poHomeChannel.tabs.btnDisableE2E.click();
 			await expect(page.getByRole('dialog', { name: 'Disable encryption' })).toBeVisible();
-			await page.getByRole('button', { name: 'Disable encryption' }).click({ force: true });
+			await page.getByRole('button', { name: 'Disable encryption' }).click();
 			await poHomeChannel.dismissToast();
 			// will wait till the key icon in header goes away
 			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toHaveCount(0);
@@ -483,7 +483,7 @@ test.describe.serial('e2e-encryption', () => {
 			await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 			await poHomeChannel.tabs.btnEnableE2E.click();
 			await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
-			await page.getByRole('button', { name: 'Enable encryption' }).click({ force: true });
+			await page.getByRole('button', { name: 'Enable encryption' }).click();
 			await poHomeChannel.dismissToast();
 			// will wait till the key icon in header appears
 			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toHaveCount(1);
@@ -740,7 +740,7 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
 		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
-		await page.getByRole('button', { name: 'Enable encryption' }).click({ force: true });
+		await page.getByRole('button', { name: 'Enable encryption' }).click();
 		await page.waitForTimeout(1000);
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
