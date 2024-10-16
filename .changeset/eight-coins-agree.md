@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-Added omnichannel contact feature
+Adds omnichannel contact feature
