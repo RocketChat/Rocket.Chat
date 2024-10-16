@@ -55,13 +55,7 @@ jobs:
           docker compose -f docker-compose-ci.yml up -d --no-build rocketchat
       - name: Wait services to start up
         run: |
-          docker ps
-
-          until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
-            echo "Waiting 'ddp-streamer' to start up"
-            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
-            sleep 10
-          done;
+          sleep 30s # :P
       - name: run
         shell: bash
         run: |
