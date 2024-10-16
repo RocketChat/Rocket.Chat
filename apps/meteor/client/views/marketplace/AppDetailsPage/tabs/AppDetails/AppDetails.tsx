@@ -41,13 +41,13 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 	const normalizedSupportUrl = support ? normalizeUrl(support) : undefined;
 	const normalizedDocumentationUrl = documentation ? normalizeUrl(documentation) : undefined;
 
-	const userHasAddon = useHasLicenseModule((app as App).addon);
+	const workspaceHasAddon = useHasLicenseModule((app as App).addon);
 
 	const openExternalLink = useExternalLink();
 
 	return (
 		<Box mbs='36px' maxWidth='x640' w='full' marginInline='auto' color='default'>
-			{userHasAddon && userHasAddon !== 'loading' && (
+			{!workspaceHasAddon && (
 				<Callout
 					mb={16}
 					title={t('Subscription_add-on_required')}

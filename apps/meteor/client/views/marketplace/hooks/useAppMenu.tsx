@@ -58,7 +58,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const isAdminUser = usePermission('manage-apps');
 	const { data } = useIsEnterprise();
 	const isEnterpriseLicense = !!data?.isEnterprise;
-	const userHasAddon = useHasLicenseModule((app as App).addon);
+	const workspaceHasAddon = useHasLicenseModule((app as App).addon);
 
 	const [isLoading, setLoading] = useState(false);
 	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
@@ -124,7 +124,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	// TODO: There is no necessity of all these callbacks being out of the above useMemo.
 	// My propose here is to refactor the hook to make it clearer and with less unnecessary caching.
-	const addonHandler = useCallback(
+	const missingAddonHandler = useCallback(
 		(actionType: AddonActionType) => {
 			setModal(<AddonRequiredModal actionType={actionType} onDismiss={closeModal} onInstallAnyway={appInstallationHandler} />);
 		},
@@ -133,13 +133,13 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	const handleAddon = useCallback(
 		(actionType: AddonActionType, callback: () => void) => {
-			if (!userHasAddon) {
+			if (workspaceHasAddon) {
 				return callback();
 			}
 
-			addonHandler(actionType);
+			missingAddonHandler(actionType);
 		},
-		[addonHandler, userHasAddon],
+		[missingAddonHandler, workspaceHasAddon],
 	);
 
 	const handleAcquireApp = useCallback(() => {

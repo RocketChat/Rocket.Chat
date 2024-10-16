@@ -43,7 +43,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const { data } = useIsEnterprise();
 	const isEnterprise = data?.isEnterprise ?? false;
 
-	const userHasAddon = useHasLicenseModule((app as App).addon);
+	const workspaceHasAddon = useHasLicenseModule((app as App).addon);
 
 	const statuses = appMultiStatusProps(app, isAppDetailsPage, context || '', isEnterprise);
 
@@ -86,12 +86,12 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const handleAcquireApp = useCallback(() => {
 		setLoading(true);
 
-		if (userHasAddon) {
+		if (!workspaceHasAddon) {
 			return setModal(<AddonRequiredModal actionType='install' onDismiss={cancelAction} onInstallAnyway={appInstallationHandler} />);
 		}
 
 		appInstallationHandler();
-	}, [appInstallationHandler, cancelAction, setLoading, setModal, userHasAddon]);
+	}, [appInstallationHandler, cancelAction, setLoading, setModal, workspaceHasAddon]);
 
 	// @TODO we should refactor this to not use the label to determine the variant
 	const getStatusVariant = (status: appStatusSpanResponseProps) => {
