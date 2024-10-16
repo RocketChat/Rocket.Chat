@@ -23,7 +23,7 @@ function VoipGroupPage({ _id, onClickBack, ...group }: VoipGroupPageProps) {
 
 	const [tab, setTab] = useState(tabs[0]);
 	const handleTabClick = useMemo(() => (tab: string) => (): void => setTab(tab), [setTab]);
-	const sections = useEditableSettingsGroupSections('Call_Center', tab);
+	const sections = useEditableSettingsGroupSections('VoIP_Omnichannel', tab);
 
 	if (!tab && tabs[0]) {
 		setTab(tabs[0]);

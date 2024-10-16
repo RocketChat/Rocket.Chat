@@ -2,17 +2,10 @@ import { Settings } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
 
-// Removes deprecated Show Message In Main Thread preference
 addMigration({
 	version: 313,
+	name: 'Remove "Call_Center" setting group',
 	async up() {
-		const customOauthServicesButtonColors = await Settings.find(
-			{ _id: /Accounts_OAuth_.+button.+color$/ },
-			{ projection: { _id: 1 } },
-		).toArray();
-
-		for await (const setting of customOauthServicesButtonColors) {
-			await Settings.removeById(setting._id);
-		}
+		await Settings.deleteOne({ _id: 'Call_Center', type: 'group' });
 	},
 });
