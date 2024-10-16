@@ -56,10 +56,11 @@ jobs:
       - name: Wait services to start up
         run: |
           sleep 30s # :P
+          docker compose -f docker-compose-ci.yml logs rocketchat
       - name: run
         shell: bash
         run: |
-          token=$(curl -H 'content-type: application/json' -d '{"user": "rocketchat.internal.admin.test", "password": "rocketchat.internal.admin.test"}' http://localhost:3000/api/login -s | jq -r .data.authToken)"
+          token=$(curl -H 'content-type: application/json' -d '{"user": "rocketchat.internal.admin.test", "password": "rocketchat.internal.admin.test"}' http://localhost:3000/api/login -s | jq -r .data.authToken)
           userId=rocketchat.internal.admin.test
           args=(
             curl
