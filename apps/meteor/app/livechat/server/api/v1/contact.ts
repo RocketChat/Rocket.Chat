@@ -1,3 +1,4 @@
+import type { ILivechatContact } from '@rocket.chat/core-typings';
 import { LivechatContacts, LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
 import {
 	isPOSTOmnichannelContactsProps,
@@ -12,7 +13,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { getContactHistory, Contacts, createContact, updateContact, getContacts } from '../../lib/Contacts';
+import { getContactHistory, Contacts, createContact, getContact, updateContact, getContacts } from '../../lib/Contacts';
 
 API.v1.addRoute(
 	'omnichannel/contact',
@@ -126,7 +127,24 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-contact'], validateParams: isGETOmnichannelContactsProps },
 	{
 		async get() {
-			const contact = await LivechatContacts.findOneById(this.queryParams.contactId);
+			const { contactId, email, phone } = this.queryParams;
+			let contact: ILivechatContact | null = null;
+
+			if (contactId) {
+				contact = await getContact(contactId);
+			}
+
+			if (email) {
+				contact = await LivechatContacts.findOne({ 'emails.address': email });
+			}
+
+			if (phone) {
+				contact = await LivechatContacts.findOne({ 'phones.phoneNumber': phone });
+			}
+
+			if (!contact) {
+				return API.v1.notFound();
+			}
 
 			return API.v1.success({ contact });
 		},

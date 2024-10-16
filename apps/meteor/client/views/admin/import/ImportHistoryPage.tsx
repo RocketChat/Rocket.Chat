@@ -152,6 +152,9 @@ function ImportHistoryPage() {
 									{t('Users')}
 								</TableCell>
 								<TableCell is='th' align='center'>
+									{t('Contacts')}
+								</TableCell>
+								<TableCell is='th' align='center'>
 									{t('Channels')}
 								</TableCell>
 								<TableCell is='th' align='center'>

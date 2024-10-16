@@ -37,7 +37,7 @@ const URL = {
 		return `${this.contactCenter}/edit/${NEW_CONTACT.id}`;
 	},
 	get contactInfo() {
-		return `${this.contactCenter}/info/${NEW_CONTACT.id}`;
+		return `${this.contactCenter}/details/${NEW_CONTACT.id}`;
 	},
 };
 
@@ -91,6 +91,7 @@ test.describe('Omnichannel Contact Center', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/');
 		await poOmniSection.btnContactCenter.click();
+		await poOmniSection.tabContacts.click();
 		await page.waitForURL(URL.contactCenter);
 	});
 

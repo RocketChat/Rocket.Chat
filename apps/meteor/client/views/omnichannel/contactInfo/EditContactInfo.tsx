@@ -1,5 +1,5 @@
 import type { ILivechatVisitor, Serialized } from '@rocket.chat/core-typings';
-import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, ContextualbarContent } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -7,18 +7,28 @@ import type { ReactElement } from 'react';
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
-import { validateEmail } from '../../../../../../lib/emailValidator';
-import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
-import { createToken } from '../../../../../lib/utils/createToken';
-import { ContactManager as ContactManagerForm } from '../../../additionalForms';
-import { FormSkeleton } from '../../components/FormSkeleton';
-import { useCustomFieldsMetadata } from '../../hooks/useCustomFieldsMetadata';
+import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
+import { validateEmail } from '../../../../lib/emailValidator';
+import {
+	ContextualbarScrollableContent,
+	ContextualbarContent,
+	ContextualbarFooter,
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+} from '../../../components/Contextualbar';
+import { createToken } from '../../../lib/utils/createToken';
+import { ContactManager as ContactManagerForm } from '../additionalForms';
+import { FormSkeleton } from '../directory/components/FormSkeleton';
+import { useCustomFieldsMetadata } from '../directory/hooks/useCustomFieldsMetadata';
+import { useContactRoute } from '../hooks/useContactRoute';
 
 type ContactNewEditProps = {
 	id: string;
-	data?: { contact: Serialized<ILivechatVisitor> | null };
-	close(): void;
+	contactData?: { contact: Serialized<ILivechatVisitor> | null };
+	onClose: () => void;
+	onCancel: () => void;
 };
 
 type ContactFormData = {
@@ -39,7 +49,7 @@ const DEFAULT_VALUES = {
 	customFields: {},
 };
 
-const getInitialValues = (data: ContactNewEditProps['data']): ContactFormData => {
+const getInitialValues = (data: ContactNewEditProps['contactData']): ContactFormData => {
 	if (!data) {
 		return DEFAULT_VALUES;
 	}
@@ -56,10 +66,11 @@ const getInitialValues = (data: ContactNewEditProps['data']): ContactFormData =>
 	};
 };
 
-const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement => {
+const EditContactInfo = ({ id, contactData, onClose, onCancel }: ContactNewEditProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
+	const handleNavigate = useContactRoute();
 
 	const canViewCustomFields = (): boolean =>
 		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
@@ -74,7 +85,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 		enabled: canViewCustomFields(),
 	});
 
-	const initialValue = getInitialValues(data);
+	const initialValue = getInitialValues(contactData);
 	const { username: initialUsername } = initialValue;
 
 	const {
@@ -167,7 +178,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 			await saveContact(payload);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			await queryClient.invalidateQueries({ queryKey: ['current-contacts'] });
-			close();
+			contactData ? handleNavigate({ context: 'details' }) : handleNavigate({ tab: 'contacts', context: '' });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -183,6 +194,11 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 
 	return (
 		<>
+			<ContextualbarHeader>
+				<ContextualbarIcon name={contactData ? 'pencil' : 'user'} />
+				<ContextualbarTitle>{contactData ? t('Edit_Contact_Profile') : t('New_contact')}</ContextualbarTitle>
+				<ContextualbarClose onClick={onClose} />
+			</ContextualbarHeader>
 			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
 				<Field>
 					<FieldLabel>{t('Name')}*</FieldLabel>
@@ -210,7 +226,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button flexGrow={1} onClick={close}>
+					<Button flexGrow={1} onClick={onCancel}>
 						{t('Cancel')}
 					</Button>
 					<Button
@@ -230,4 +246,4 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 	);
 };
 
-export default ContactNewEdit;
+export default EditContactInfo;
