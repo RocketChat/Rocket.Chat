@@ -49,7 +49,6 @@ export interface ILivechatVisitor extends IRocketChatRecord {
 	};
 	activity?: string[];
 	disabled?: boolean;
-	contactId?: string;
 }
 
 export interface ILivechatVisitorDTO {
