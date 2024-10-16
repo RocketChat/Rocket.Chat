@@ -25,7 +25,6 @@ import { useCustomFieldsMetadata } from '../directory/hooks/useCustomFieldsMetad
 import { useContactRoute } from '../hooks/useContactRoute';
 
 type ContactNewEditProps = {
-	id: string;
 	contactData?: Serialized<ILivechatContact> | null;
 	onClose: () => void;
 	onCancel: () => void;
@@ -63,7 +62,7 @@ const getInitialValues = (data: ContactNewEditProps['contactData']): ContactForm
 	};
 };
 
-const EditContactInfo = ({ id, contactData, onClose, onCancel }: ContactNewEditProps): ReactElement => {
+const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
@@ -122,7 +121,7 @@ const EditContactInfo = ({ id, contactData, onClose, onCancel }: ContactNewEditP
 		}
 
 		const { contact } = await getContact({ email: emailValue });
-		return (!contact || contact._id === id) && !isDuplicated ? true : t('Email_already_exists');
+		return (!contact || contact._id === contactData?._id) && !isDuplicated ? true : t('Email_already_exists');
 	};
 
 	const validatePhone = async (phoneValue: string) => {
@@ -130,7 +129,7 @@ const EditContactInfo = ({ id, contactData, onClose, onCancel }: ContactNewEditP
 		const isDuplicated = currentPhones.filter((phone) => phone === phoneValue).length > 1;
 
 		const { contact } = await getContact({ phone: phoneValue });
-		return (!contact || contact._id === id) && !isDuplicated ? true : t('Phone_already_exists');
+		return (!contact || contact._id === contactData?._id) && !isDuplicated ? true : t('Phone_already_exists');
 	};
 
 	const validateName = (v: string): string | boolean => (!v.trim() ? t('Required_field', { field: t('Name') }) : true);
