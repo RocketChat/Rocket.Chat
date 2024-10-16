@@ -46,8 +46,6 @@ Meteor.methods<ServerMethods>({
 			`Accounts_OAuth_Custom-${name}-id`,
 			`Accounts_OAuth_Custom-${name}-secret`,
 			`Accounts_OAuth_Custom-${name}-button_label_text`,
-			`Accounts_OAuth_Custom-${name}-button_label_color`,
-			`Accounts_OAuth_Custom-${name}-button_color`,
 			`Accounts_OAuth_Custom-${name}-login_style`,
 			`Accounts_OAuth_Custom-${name}-key_field`,
 			`Accounts_OAuth_Custom-${name}-username_field`,

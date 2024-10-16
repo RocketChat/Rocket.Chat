@@ -47,9 +47,7 @@ export async function updateOAuthServices(): Promise<void> {
 				data.scope = settings.get(`${key}-scope`);
 				data.accessTokenParam = settings.get(`${key}-access_token_param`);
 				data.buttonLabelText = settings.get(`${key}-button_label_text`);
-				data.buttonLabelColor = settings.get(`${key}-button_label_color`);
 				data.loginStyle = settings.get(`${key}-login_style`);
-				data.buttonColor = settings.get(`${key}-button_color`);
 				data.tokenSentVia = settings.get(`${key}-token_sent_via`);
 				data.identityTokenSentVia = settings.get(`${key}-identity_token_sent_via`);
 				data.keyField = settings.get(`${key}-key_field`);
@@ -112,8 +110,6 @@ export async function updateOAuthServices(): Promise<void> {
 
 			if (serviceName === 'Nextcloud') {
 				data.buttonLabelText = settings.get('Accounts_OAuth_Nextcloud_button_label_text');
-				data.buttonLabelColor = settings.get('Accounts_OAuth_Nextcloud_button_label_color');
-				data.buttonColor = settings.get('Accounts_OAuth_Nextcloud_button_color');
 			}
 
 			await LoginServiceConfiguration.createOrUpdateService(serviceKey, data);
