@@ -1,6 +1,6 @@
 import type { ILivechatInquiryRecord, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useDebouncedState, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { TranslationKey, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
@@ -98,6 +98,10 @@ export const useRoomList = (): {
 		queue = inquiries.queue;
 	}
 
+	const shouldAddUnread = (room: SubscriptionWithRoom) =>
+		!(sidebarShowUnread && isCollapsed(CATEGORIES.Unread) && (room.alert || room.unread));
+	const isCollapsed = (groupTitle: string) => collapsedGroups.includes(groupTitle);
+
 	useEffect(() => {
 		// eslint-disable-next-line complexity
 		setFlatRoomList(() => {
@@ -118,43 +122,43 @@ export const useRoomList = (): {
 					return;
 				}
 
-				if (incomingCalls.find((call) => call.rid === room.rid) && !collapsedGroups.includes(CATEGORIES.Incoming_Calls)) {
+				if (incomingCalls.find((call) => call.rid === room.rid) && !isCollapsed(CATEGORIES.Incoming_Calls)) {
 					return incomingCall.add(room);
 				}
 
-				if (sidebarShowUnread && (room.alert || room.unread) && !room.hideUnreadStatus && !collapsedGroups.includes(CATEGORIES.Unread)) {
+				if (sidebarShowUnread && !isCollapsed(CATEGORIES.Unread) && (room.alert || room.unread)) {
 					return unread.add(room);
 				}
 
-				if (favoritesEnabled && room.f && !collapsedGroups.includes(CATEGORIES.Favorites)) {
+				if (favoritesEnabled && room.f && !isCollapsed(CATEGORIES.Favorites) && shouldAddUnread(room)) {
 					return favorite.add(room);
 				}
 
-				if (sidebarGroupByType && room.teamMain && !collapsedGroups.includes(CATEGORIES.Teams)) {
+				if (sidebarGroupByType && room.teamMain && !isCollapsed(CATEGORIES.Teams) && shouldAddUnread(room)) {
 					return team.add(room);
 				}
 
-				if (sidebarGroupByType && isDiscussionEnabled && room.prid && !collapsedGroups.includes(CATEGORIES.Discussions)) {
+				if (sidebarGroupByType && isDiscussionEnabled && room.prid && !isCollapsed(CATEGORIES.Discussions) && shouldAddUnread(room)) {
 					return discussion.add(room);
 				}
 
-				if ((room.t === 'c' || room.t === 'p') && !collapsedGroups.includes(CATEGORIES.Channels)) {
+				if ((room.t === 'c' || room.t === 'p') && !isCollapsed(CATEGORIES.Channels) && shouldAddUnread(room)) {
 					channels.add(room);
 				}
 
-				if (room.t === 'l' && room.onHold && !collapsedGroups.includes(CATEGORIES.On_Hold_Chats)) {
+				if (room.t === 'l' && room.onHold && !isCollapsed(CATEGORIES.On_Hold_Chats) && shouldAddUnread(room)) {
 					return showOmnichannel && onHold.add(room);
 				}
 
-				if (room.t === 'l' && !collapsedGroups.includes(CATEGORIES.Open_Livechats)) {
+				if (room.t === 'l' && !isCollapsed(CATEGORIES.Open_Livechats) && shouldAddUnread(room)) {
 					return showOmnichannel && omnichannel.add(room);
 				}
 
-				if (room.t === 'd' && !collapsedGroups.includes(CATEGORIES.Direct_Messages)) {
+				if (room.t === 'd' && !isCollapsed(CATEGORIES.Direct_Messages) && shouldAddUnread(room)) {
 					direct.add(room);
 				}
 
-				if (!collapsedGroups.includes(CATEGORIES.Conversations)) {
+				if (!isCollapsed(CATEGORIES.Conversations) && shouldAddUnread(room)) {
 					conversation.add(room);
 				}
 			});
@@ -163,21 +167,19 @@ export const useRoomList = (): {
 			incomingCall.size && groups.set('Incoming_Calls', incomingCall);
 			showOmnichannel &&
 				inquiries.enabled &&
-				(queue.length || collapsedGroups.includes(CATEGORIES.Incoming_Livechats)) &&
+				(queue.length || isCollapsed(CATEGORIES.Incoming_Livechats)) &&
 				groups.set('Incoming_Livechats', queue);
-			showOmnichannel &&
-				(omnichannel.size || collapsedGroups.includes(CATEGORIES.Open_Livechats)) &&
-				groups.set('Open_Livechats', omnichannel);
-			showOmnichannel && (onHold.size || collapsedGroups.includes(CATEGORIES.On_Hold_Chats)) && groups.set('On_Hold_Chats', onHold);
-			sidebarShowUnread && (unread.size || collapsedGroups.includes(CATEGORIES.Unread)) && groups.set('Unread', unread);
-			favoritesEnabled && (favorite.size || collapsedGroups.includes(CATEGORIES.Favorites)) && groups.set('Favorites', favorite);
-			sidebarGroupByType && (team.size || collapsedGroups.includes(CATEGORIES.Teams)) && groups.set('Teams', team);
+			showOmnichannel && (omnichannel.size || isCollapsed(CATEGORIES.Open_Livechats)) && groups.set('Open_Livechats', omnichannel);
+			showOmnichannel && (onHold.size || isCollapsed(CATEGORIES.On_Hold_Chats)) && groups.set('On_Hold_Chats', onHold);
+			sidebarShowUnread && (unread.size || isCollapsed(CATEGORIES.Unread)) && groups.set('Unread', unread);
+			favoritesEnabled && (favorite.size || isCollapsed(CATEGORIES.Favorites)) && groups.set('Favorites', favorite);
+			sidebarGroupByType && (team.size || isCollapsed(CATEGORIES.Teams)) && groups.set('Teams', team);
 			sidebarGroupByType &&
 				isDiscussionEnabled &&
-				(discussion.size || collapsedGroups.includes(CATEGORIES.Discussions)) &&
+				(discussion.size || isCollapsed(CATEGORIES.Discussions)) &&
 				groups.set('Discussions', discussion);
-			sidebarGroupByType && (channels.size || collapsedGroups.includes(CATEGORIES.Channels)) && groups.set('Channels', channels);
-			sidebarGroupByType && (direct.size || collapsedGroups.includes(CATEGORIES.Direct_Messages)) && groups.set('Direct_Messages', direct);
+			sidebarGroupByType && (channels.size || isCollapsed(CATEGORIES.Channels)) && groups.set('Channels', channels);
+			sidebarGroupByType && (direct.size || isCollapsed(CATEGORIES.Direct_Messages)) && groups.set('Direct_Messages', direct);
 			!sidebarGroupByType && groups.set('Conversations', conversation);
 			const flatList = sidebarOrder
 				.map((key) => {
