@@ -1677,7 +1677,6 @@
   "Enabled": "aktivert",
   "Encrypted": "Kryptert",
   "Encrypted_channel_Description": "Ende-til-ende kryptert kanal. Søk fungerer ikke med krypterte kanaler, og varsler viser kanskje ikke meldingsinnholdet.",
-  "Encrypted_key_title": "Klikk her for å deaktivere ende-til-ende-kryptering for denne kanalen (krever e2e-tillatelse)",
   "Encrypted_message": "Kryptert melding",
   "Encrypted_not_available": "Ikke tilgjengelig for offentlige Channel",
   "Encryption_key_saved_successfully": "Krypteringsnøkkelen din ble lagret.",

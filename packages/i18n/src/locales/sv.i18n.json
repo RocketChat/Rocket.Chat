@@ -1818,7 +1818,6 @@
   "Enabled": "Aktiverad",
   "Encrypted": "Krypterad",
   "Encrypted_channel_Description": "End-to-end-krypterad kanal. Sökfunktionen fungerar inte för krypterade kanaler och meddelandeinnehållet kanske inte visas i meddelanden.",
-  "Encrypted_key_title": "Klicka här om du vill inaktivera end-to-end-kryptering för den här kanalen (e2ee-behörighet krävs)",
   "Encrypted_message": "Krypterat meddelande",
   "Encrypted_setting_changed_successfully": "Krypteringsinställningen har ändrats",
   "Encrypted_not_available": "Inte tillgängligt för offentliga kanaler",

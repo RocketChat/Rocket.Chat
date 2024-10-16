@@ -20,7 +20,7 @@ const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\
 const getRocketCatUser = async (): Promise<IUser | null> => Users.findOneById('rocket.cat');
 
 const language = settings.get<string>('Language') || 'en';
-const t = (s: string): string => i18n.t(s, { lng: language });
+const t = i18n.getFixedT(language);
 
 // TODO: change these messages with room notifications
 const sendErrorReplyMessage = async (error: string, options: any) => {

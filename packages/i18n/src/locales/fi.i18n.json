@@ -1816,7 +1816,6 @@
   "Enabled": "Käytössä",
   "Encrypted": "Salattu",
   "Encrypted_channel_Description": "Täysin salattu kanava. Haku ei toimi salatuilla kanavilla, ja ilmoituksissa ei välttämättä näy viestien sisältöä.",
-  "Encrypted_key_title": "Poista käytöstä tämän kanavan täysi salaus napsauttamalla tätä (edellyttää e2ee-oikeutta)",
   "Encrypted_message": "Salattu viesti",
   "Encrypted_setting_changed_successfully": "Salausasetus on muutettu",
   "Encrypted_not_available": "Ei saatavilla ylesellä kanavalla Channel",
