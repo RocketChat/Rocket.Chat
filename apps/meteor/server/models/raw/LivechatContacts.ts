@@ -143,7 +143,15 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		await this.updateOne({ _id: contactId }, { $push: { channels: channel } });
 	}
 
-	updateLastChatById(contactId: string, lastChat: ILivechatContact['lastChat']): Promise<UpdateResult> {
-		return this.updateOne({ _id: contactId }, { $set: { lastChat } });
+	async updateLastChatById(contactId: string, visitorId: string, lastChat: ILivechatContact['lastChat']): Promise<UpdateResult> {
+		const contact = (await this.findOneById(contactId)) as ILivechatContact;
+
+		// this should be always true, but just in case
+		if (contact.channels) {
+			const channelIndex = contact?.channels?.findIndex((c) => c.visitorId === visitorId);
+			contact.channels[channelIndex].lastChat = lastChat;
+		}
+
+		return this.updateOne({ _id: contactId }, { $set: { lastChat, channels: contact?.channels } });
 	}
 }

@@ -740,6 +740,8 @@ describe('LIVECHAT - contacts', () => {
 				expect(res.body.contact).to.have.property('lastChat');
 				expect(res.body.contact.lastChat).to.have.property('ts');
 				expect(res.body.contact.lastChat._id).to.be.equal(room._id);
+				expect(res.body.contact.channels[0].lastChat).to.have.property('ts');
+				expect(res.body.contact.channels[0].lastChat._id).to.be.equal(room._id);
 			});
 
 			it('should not return the last chat if contact never chatted', async () => {
