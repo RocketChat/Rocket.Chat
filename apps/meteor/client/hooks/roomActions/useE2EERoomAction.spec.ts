@@ -47,6 +47,10 @@ jest.mock('../../views/room/hooks/useE2EEState', () => ({
 	useE2EEState: jest.fn(),
 }));
 
+jest.mock('../../views/room/hooks/useE2EERoomState', () => ({
+	useE2EERoomState: jest.fn(),
+}));
+
 jest.mock('react-i18next', () => ({
 	useTranslation: () => ({
 		t: (key: string) => key,
