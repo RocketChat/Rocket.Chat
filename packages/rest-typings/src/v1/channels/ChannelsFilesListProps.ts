@@ -6,13 +6,13 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type ChannelsFilesListProps = PaginatedRequest<{
-	roomId?: string;
-	roomName?: string;
-	name?: string;
-	typeGroup?: string;
-	query?: string;
-}>;
+export type ChannelsFilesListProps = PaginatedRequest<
+	({ roomId: string; roomName?: string } | { roomId?: string; roomName: string }) & {
+		name?: string;
+		typeGroup?: string;
+		query?: string;
+	}
+>;
 
 const channelsFilesListPropsSchema = {
 	type: 'object',
@@ -50,6 +50,7 @@ const channelsFilesListPropsSchema = {
 			nullable: true,
 		},
 	},
+	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
 	required: [],
 	additionalProperties: false,
 };
