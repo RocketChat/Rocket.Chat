@@ -1,33 +1,65 @@
 import type { ILivechatContactChannel, Serialized } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Palette, IconButton } from '@rocket.chat/fuselage';
+import { useTranslation, type TranslationKey } from '@rocket.chat/ui-contexts';
+import React, { useState } from 'react';
 
-// import { ContextualbarScrollableContent } from '../../../../components/Contextualbar';
 import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/OmnichannelRoomIcon';
-// import { useFormatDate } from '../../../../hooks/useFormatDate';
-// import { useTimeAgo } from '../../../../hooks/useTimeAgo';
+import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 
 type ContactInfoHistoryItemProps = Serialized<ILivechatContactChannel>;
 
-const ContactInfoHistoryItem = ({ name, details, ...props }: ContactInfoHistoryItemProps) => {
-	// const formatDate = useFormatDate();
-	// const timeAgo = useTimeAgo();
+const sourceTypeMap: { [key: string]: string } = {
+	widget: 'Livechat',
+	email: 'Email',
+	sms: 'SMS',
+	app: 'Apps',
+	api: 'API',
+	other: 'Other',
+};
+
+// TODO: implement menu in order to block action
+const ContactInfoHistoryItem = ({ name, details, blocked, lastChat }: ContactInfoHistoryItemProps) => {
+	const t = useTranslation();
+	const timeAgo = useTimeAgo();
+	const [showButton, setShowButton] = useState(false);
+
+	const customClass = css`
+		&:hover,
+		&:focus {
+			background: ${Palette.surface['surface-hover']};
+		}
+	`;
 
 	return (
-		<Box display='flex' alignItems='center' {...props}>
-			{details && (
-				<Box size='x36' p={8} backgroundColor='tint' borderRadius={4}>
-					<OmnichannelRoomIcon source={details} size='x20' placement='default' />
+		<Box
+			tabIndex={0}
+			borderBlockEndWidth={1}
+			borderBlockEndColor='stroke-extra-light'
+			borderBlockEndStyle='solid'
+			className={['rcx-box--animated', customClass]}
+			pi={24}
+			pb={8}
+			display='flex'
+			flexDirection='column'
+			onFocus={() => setShowButton(true)}
+			onPointerEnter={() => setShowButton(true)}
+			onPointerLeave={() => setShowButton(false)}
+		>
+			<Box display='flex' alignItems='center'>
+				{details && <OmnichannelRoomIcon source={details} size='x18' placement='default' />}
+				<Box mi={4} fontScale='p2m'>
+					{t(sourceTypeMap[name] as TranslationKey)} {blocked && `(${t('Blocked')})`}
 				</Box>
-			)}
-			<Box mis={4} display='flex' flexDirection='column'>
-				<Box display='flex' alignItems='center'>
-					<Box fontScale='p2m'>{name}</Box>
+				{lastChat && (
 					<Box mis={4} fontScale='c1'>
-						{/* {timeAgo(time)} */}
+						{timeAgo(lastChat.ts)}
 					</Box>
-				</Box>
+				)}
+			</Box>
+			<Box minHeight='x24' alignItems='center' mbs={4} display='flex' justifyContent='space-between'>
 				<Box>{details?.destination}</Box>
+				{showButton && <IconButton icon='menu' tiny />}
 			</Box>
 		</Box>
 	);
