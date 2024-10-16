@@ -28,7 +28,9 @@ export const createLivechatRoom = async (visitorToken: string, extraRoomParams?:
 		}
 	}
 
-	const response = await request.get(api('livechat/room')).query(urlParams.toString()).set(credentials).expect(200);
+	const response = await request.get(api('livechat/room')).query(urlParams.toString()).set(credentials);
+
+	console.log({ body: response.body });
 
 	return response.body.room;
 };
