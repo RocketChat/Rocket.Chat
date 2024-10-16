@@ -5,7 +5,7 @@ import { LivechatContacts } from '@rocket.chat/models';
 import { settings } from '../../../../../app/settings/server';
 import { OmnichannelService } from '../../../../../server/services/omnichannel/service';
 
-await License.overwriteClassOnLicense('chat.rocket.contact-id-verification', OmnichannelService, {
+await License.overwriteClassOnLicense('contact-id-verification', OmnichannelService, {
 	async isUnverifiedContact(room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean> {
 		if (!room.v.contactId) {
 			return false;
