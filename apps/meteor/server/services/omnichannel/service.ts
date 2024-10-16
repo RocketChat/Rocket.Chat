@@ -60,8 +60,4 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 		const currentMonth = moment.utc().format('YYYY-MM');
 		return room.v?.activity?.includes(currentMonth) || !(await License.shouldPreventAction('monthlyActiveContacts'));
 	}
-
-	async isUnverifiedContact(_room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean> {
-		return false;
-	}
 }

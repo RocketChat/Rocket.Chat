@@ -25,7 +25,7 @@ import {
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
-import { unverifyContactChannel } from './Contacts';
+import { isUnverifiedContact, unverifyContactChannel } from './Contacts';
 import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
 import { Livechat } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
@@ -260,7 +260,7 @@ export class QueueManager {
 		let newRoom;
 		// Note: if the contact is not verified, we cannot add it to the queue, since no agent should be able to pick the conversation
 		//       up. So if the contact is not verified we don't add it to queue and wait an event to be sent to properly add it to queue
-		if (await Omnichannel.isUnverifiedContact(room)) {
+		if (await isUnverifiedContact(room)) {
 			newRoom = await LivechatRooms.findOneById(rid);
 			await unverifyContactChannel(inquiry.v.contactId, room.source.type, inquiry.v._id);
 			// void Apps.self?.triggerEvent(AppEvents.IPostContactVerificationAppAssigned, inquiry.v, room);
