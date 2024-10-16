@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useExternalLink } from '../../../../../hooks/useExternalLink';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
+import { GET_ADDONS_LINK } from '../../../../admin/subscription/utils/links';
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
 import type { AppInfo } from '../../../definitions/AppInfo';
 import { purifyOptions } from '../../../lib/purifyOptions';
@@ -20,8 +21,6 @@ type AppDetailsProps = {
 		documentationUrl?: AppInfo['documentationUrl'];
 	};
 };
-
-const GET_ADDONS_LINK = 'https://go.rocket.chat/i/get-addons';
 
 const AppDetails = ({ app }: AppDetailsProps) => {
 	const { t } = useTranslation();
