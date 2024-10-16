@@ -43,7 +43,7 @@ import {
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { Filter, FindCursor, ClientSession, MongoError } from 'mongodb';
+import type { Filter, ClientSession, MongoError } from 'mongodb';
 import UAParser from 'ua-parser-js';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -187,27 +187,6 @@ class LivechatClass {
 		const agentsOnline = await this.checkOnlineAgents(department, undefined, skipFallbackCheck);
 		Livechat.logger.debug(`Are online agents ${department ? `for department ${department}` : ''}?: ${agentsOnline}`);
 		return agentsOnline;
-	}
-
-	async getOnlineAgents(department?: string, agent?: SelectedAgent | null): Promise<FindCursor<ILivechatAgent> | undefined> {
-		if (agent?.agentId) {
-			return Users.findOnlineAgents(agent.agentId);
-		}
-
-		if (department) {
-			const departmentAgents = await LivechatDepartmentAgents.getOnlineForDepartment(department);
-			if (!departmentAgents) {
-				return;
-			}
-
-			const agentIds = await departmentAgents.map(({ agentId }) => agentId).toArray();
-			if (!agentIds.length) {
-				return;
-			}
-
-			return Users.findByIds<ILivechatAgent>([...new Set(agentIds)]);
-		}
-		return Users.findOnlineAgents();
 	}
 
 	async closeRoom(params: CloseRoomParams, attempts = 2): Promise<void> {
