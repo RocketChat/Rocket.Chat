@@ -4,5 +4,5 @@ export function doesAppRequireAddon(app: App): boolean {
 	const { categories } = app;
 
 	// Phase 1 validation
-	return categories.includes('Add-on');
+	return categories?.includes('Add-on');
 }
