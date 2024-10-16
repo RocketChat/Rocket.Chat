@@ -187,11 +187,6 @@ export const Contacts = {
 	},
 };
 
-export function isSingleContactEnabled(): boolean {
-	// The Single Contact feature is not yet available in production, but can already be partially used in test environments.
-	return process.env.TEST_MODE?.toUpperCase() === 'TRUE';
-}
-
 export async function createContactFromVisitor(visitor: ILivechatVisitor): Promise<string> {
 	if (visitor.contactId) {
 		throw new Error('error-contact-already-exists');
