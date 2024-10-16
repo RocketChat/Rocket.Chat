@@ -2,6 +2,7 @@ import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/cor
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
 
+import { hasLicense } from '../../../app/license/client';
 import { verifyContactChannel, mergeContacts } from '../../../app/livechat/server/lib/Contacts';
 
 await License.onLicense('contact-id-verification', () => {
@@ -20,7 +21,7 @@ await License.onLicense('contact-id-verification', () => {
 			if (!(await hasLicense('contact-id-verification'))) {
 				return null;
 			}
-			
+
 			const { contactId, field, value, channelName, visitorId, roomId } = params;
 
 			const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'channels'>>(contactId, {
