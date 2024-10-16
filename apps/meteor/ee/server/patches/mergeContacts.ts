@@ -1,8 +1,8 @@
-import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/core-typings';	
-import { License } from '@rocket.chat/license';	
-import { LivechatContacts } from '@rocket.chat/models';	
+import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
+import { LivechatContacts } from '@rocket.chat/models';
 
-import { hasLicense } from '../../../app/license/client';	
+import { hasLicense } from '../../../app/license/client';
 import { ContactMerger } from '../../../app/livechat/server/lib/ContactMerger';
 import { mergeContacts } from '../../../app/livechat/server/lib/Contacts';
 
