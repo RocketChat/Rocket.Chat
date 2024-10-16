@@ -1,7 +1,7 @@
 import { settingsRegistry } from '../../app/settings/server';
 
 export const createE2ESettings = () =>
-	settingsRegistry.addGroup('E2E Encryption', async function () {
+	settingsRegistry.addGroup('End-to-end_encryption', async function () {
 		await this.add('E2E_Enable', false, {
 			type: 'boolean',
 			i18nLabel: 'End-to-end_encryption',
