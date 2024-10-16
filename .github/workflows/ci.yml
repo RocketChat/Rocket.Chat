@@ -46,13 +46,13 @@ jobs:
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
           ENTERPRISE_LICENSE: X/XumwIkgwQuld0alWKt37lVA90XjKOrfiMvMZ0/RtqsMtrdL9GoAk+4jXnaY1b2ePoG7XSzGhuxEDxFKIWJK3hIKGNTvrd980LgH5sM5+1T4P42ivSpd8UZi0bwjJkCFLIu9RozzYwslGG0IehMxe0S6VjcO0UYlUJtbMCBHuR2WmTAmO6YVU3ln+pZCbrPFaTPSS1RovhKaNCNkZwIx/CLWW8UTXUuFV/ML4PbKKVoa5nvvJwPeatgL7UCnlSD90lfCiiuikpzj/Y/JLkIL6velFbwNxsrxg9iRJ2k0sKheMMSmlTiGzSvZUm+na5WQq91aKGncih+DmaEZA7QGrjp4eoA0dqTk6OmItsy0fHmQhvZIOKNMeO7vNQiLbaSV6rqibrzu7WPpeIvsvL57T1h37USoCSB6+jDqkzdfoqIpz8BxTiJDj1d8xGPJFVrgxoqQqkj9qIP/gCaEz5DF39QFv5sovk4yK2O8fEQYod2d14V9yECYl4szZPMk1IBfCAC2w7czWGHHFonhL+CQGT403y5wmDmnsnjlCqMKF72odqfTPTI8XnCvJDriPMWohnQEAGtTTyciAhNokx/mjAVJ4NeZPcsbm4BjhvJvnjxx/BhYhBBTNWPaCSZzocfrGUj9Z+ZA7BEz+xAFQyGDx3xRzqIXfT0G7w8fvgYJMU=
-          TRANSPORTER: 'nats://nats:4222'
+          TRANSPORTER: ''
           DISABLE_DB_WATCHERS: 'false'
           LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
           RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
           DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
         run: |
-          docker compose -f docker-compose-ci.yml up -d --no-build rocketchat account-service authorization-service presence-service ddp-streamer-service stream-hub-service nats traefik
+          docker compose -f docker-compose-ci.yml up -d --no-build rocketchat
       - name: Wait services to start up
         run: |
           docker ps
