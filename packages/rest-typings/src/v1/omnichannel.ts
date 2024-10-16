@@ -3554,7 +3554,7 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/visitors.info': {
 		GET: (params: LivechatVisitorsInfo) => {
-			visitor: ILivechatVisitor;
+			visitor: ILivechatVisitor & { contactId?: string };
 		};
 	};
 	'/v1/livechat/room.onHold': {
@@ -3734,7 +3734,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/visitor/:token': {
-		GET: (params?: LivechatVisitorTokenGet) => { visitor: ILivechatVisitor };
+		GET: (params?: LivechatVisitorTokenGet) => { visitor: ILivechatVisitor & { contactId?: string } };
 		DELETE: (params: LivechatVisitorTokenDelete) => {
 			visitor: { _id: string; ts: string };
 		};
