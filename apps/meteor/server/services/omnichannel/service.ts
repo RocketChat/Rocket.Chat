@@ -1,11 +1,9 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IOmnichannelService } from '@rocket.chat/core-services';
-import type { AtLeast, IOmnichannelQueue, IOmnichannelRoom, ILivechatContact, ILivechatContactChannel } from '@rocket.chat/core-typings';
+import type { AtLeast, IOmnichannelQueue, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
-import { LivechatContacts } from '@rocket.chat/models';
 import moment from 'moment';
 
-import { ContactMerger } from '../../../app/livechat/server/lib/ContactMerger';
 import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../app/settings/server';
@@ -61,33 +59,5 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 	async isWithinMACLimit(room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean> {
 		const currentMonth = moment.utc().format('YYYY-MM');
 		return room.v?.activity?.includes(currentMonth) || !(await License.shouldPreventAction('monthlyActiveContacts'));
-	}
-
-	async mergeContacts(contactId: string, channel: ILivechatContactChannel): Promise<ILivechatContact | null> {
-		const originalContact = (await LivechatContacts.findOneById(contactId)) as ILivechatContact;
-
-		const similarContacts: ILivechatContact[] = await LivechatContacts.findSimilarVerifiedContacts(channel, contactId);
-
-		if (!similarContacts.length) {
-			return originalContact;
-		}
-
-		for await (const similarContact of similarContacts) {
-			await ContactMerger.mergeContact(originalContact, similarContact);
-		}
-
-		await LivechatContacts.deleteMany({ _id: { $in: similarContacts.map((c) => c._id) } });
-		return LivechatContacts.findOneById(contactId);
-	}
-
-	async verifyContactChannel(_params: {
-		contactId: string;
-		field: string;
-		value: string;
-		channelName: string;
-		visitorId: string;
-		roomId: string;
-	}): Promise<ILivechatContact | null> {
-		return null;
 	}
 }
