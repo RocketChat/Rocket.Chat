@@ -62,6 +62,7 @@ jobs:
         run: |
           token=$(curl -H 'content-type: application/json' -d '{"user": "rocketchat.internal.admin.test", "password": "rocketchat.internal.admin.test"}' http://localhost:3000/api/login -s | jq -r .data.authToken)
           userId=rocketchat.internal.admin.test
+          echo $token
           args=(
             curl
             -H
