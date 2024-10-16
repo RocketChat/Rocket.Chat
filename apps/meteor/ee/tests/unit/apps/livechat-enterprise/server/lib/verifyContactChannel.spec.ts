@@ -47,7 +47,7 @@ describe('verifyContactChannel', () => {
 		modelsMock.LivechatContacts.findOneById.resolves({ _id: 'contactId', channels: [{ name: 'channelName', visitorId: 'visitorId' }] });
 		modelsMock.LivechatContacts.findSimilarVerifiedContacts.resolves([]);
 
-		await runVerifyContactChannel({
+		await runVerifyContactChannel(() => undefined, {
 			contactId: 'contactId',
 			field: 'field',
 			value: 'value',
@@ -88,7 +88,7 @@ describe('verifyContactChannel', () => {
 			},
 		]);
 
-		await runVerifyContactChannel({
+		await runVerifyContactChannel(() => undefined, {
 			contactId: 'contactId',
 			field: 'field',
 			value: 'value',
@@ -132,7 +132,7 @@ describe('verifyContactChannel', () => {
 			},
 		]);
 
-		await runVerifyContactChannel({
+		await runVerifyContactChannel(() => undefined, {
 			contactId: 'contactId',
 			field: 'field',
 			value: 'value',
@@ -158,7 +158,7 @@ describe('verifyContactChannel', () => {
 		modelsMock.LivechatContacts.findOneById.resolves(undefined);
 
 		await expect(
-			runVerifyContactChannel({
+			runVerifyContactChannel(() => undefined, {
 				contactId: 'invalidId',
 				field: 'field',
 				value: 'value',
@@ -176,7 +176,7 @@ describe('verifyContactChannel', () => {
 		});
 
 		await expect(
-			runVerifyContactChannel({
+			runVerifyContactChannel(() => undefined, {
 				contactId: 'contactId',
 				field: 'field',
 				value: 'value',
