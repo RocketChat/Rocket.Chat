@@ -17,6 +17,71 @@ env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
 
 jobs:
+  test-manual:
+    name: test federation ones manually
+    runs-on: ubuntu-latest
+    needs: [release-versions]
+    steps:
+      - name: Setup kernel limits
+        run: |
+          sudo sysctl -w net.ipv4.ip_local_port_range="500   65535"
+          sudo sysctl -w net.ipv4.tcp_mem="383865   511820   2303190"
+
+          echo fs.file-max=20000500 | sudo tee -a /etc/sysctl.conf
+          echo fs.nr_open=20000500 | sudo tee -a /etc/sysctl.conf
+          sudo sysctl -p
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+      - name: Launch MongoDB
+        uses: supercharge/mongodb-github-action@v1.10.0
+        with:
+          mongodb-version: '7.0'
+          mongodb-replica-set: rs0
+      - uses: actions/checkout@v4
+      - name: Start containers for EE
+        env:
+          MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
+          ENTERPRISE_LICENSE: X/XumwIkgwQuld0alWKt37lVA90XjKOrfiMvMZ0/RtqsMtrdL9GoAk+4jXnaY1b2ePoG7XSzGhuxEDxFKIWJK3hIKGNTvrd980LgH5sM5+1T4P42ivSpd8UZi0bwjJkCFLIu9RozzYwslGG0IehMxe0S6VjcO0UYlUJtbMCBHuR2WmTAmO6YVU3ln+pZCbrPFaTPSS1RovhKaNCNkZwIx/CLWW8UTXUuFV/ML4PbKKVoa5nvvJwPeatgL7UCnlSD90lfCiiuikpzj/Y/JLkIL6velFbwNxsrxg9iRJ2k0sKheMMSmlTiGzSvZUm+na5WQq91aKGncih+DmaEZA7QGrjp4eoA0dqTk6OmItsy0fHmQhvZIOKNMeO7vNQiLbaSV6rqibrzu7WPpeIvsvL57T1h37USoCSB6+jDqkzdfoqIpz8BxTiJDj1d8xGPJFVrgxoqQqkj9qIP/gCaEz5DF39QFv5sovk4yK2O8fEQYod2d14V9yECYl4szZPMk1IBfCAC2w7czWGHHFonhL+CQGT403y5wmDmnsnjlCqMKF72odqfTPTI8XnCvJDriPMWohnQEAGtTTyciAhNokx/mjAVJ4NeZPcsbm4BjhvJvnjxx/BhYhBBTNWPaCSZzocfrGUj9Z+ZA7BEz+xAFQyGDx3xRzqIXfT0G7w8fvgYJMU=
+          TRANSPORTER: ''
+          DISABLE_DB_WATCHERS: 'false'
+          LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
+          RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
+          DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
+        run: |
+          docker compose -f docker-compose-ci.yml up -d --no-build rocketchat
+      - name: Wait services to start up
+        run: |
+          sleep 30s # :P
+          docker compose -f docker-compose-ci.yml logs rocketchat
+      - name: run
+        shell: bash
+        run: |
+          token=$(curl -H 'content-type: application/json' -d '{"user": "rocketchat.internal.admin.test", "password": "rocketchat.internal.admin.test"}' http://localhost:3000/api/login -s | jq -r .data.authToken)
+          userId=rocketchat.internal.admin.test
+          echo $token
+          c() {
+            curl \
+              -H \
+              "content-type: application/json" \
+              -H \
+              "x-user-id: $userId" \
+              -H \
+              "x-auth-token: $token" \
+              --silent \
+              "$@"
+          }
+          c http://localhost:3000/api/v1/settings/Federation_Matrix_enabled -d '{"value": true}'
+          c http://localhost:3000/api/v1/settings/Federation_Matrix_serve_well_known -d '{"value": false}'
+          curl http://localhost:3000/.well-known/matrix/server -vvv
+          echo 'enabling'
+          c http://localhost:3000/api/v1/settings/Federation_Matrix_serve_well_known -d '{"value": true}'
+          curl http://localhost:3000/.well-known/matrix/server -vvv
+          curl http://localhost:3000/.well-known/matrix/client -vvv
+
   release-versions:
     name: ⚙️ Variables Setup
     runs-on: ubuntu-latest
@@ -276,9 +341,45 @@ jobs:
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           coverage: ${{ github.event_name != 'release' }}
 
+  # TODO: this should go away once upstream builds are fixed
+  build-matrix-rust-bindings-for-alpine:
+    name: Builds matrix rust bindings against alpine
+    runs-on: ubuntu-latest
+    steps:
+      - run: sudo apt-get install -y musl-tools libunwind-dev && find /usr/include -name stdarg.h 2>/dev/null || true
+      - uses: actions/checkout@v4
+        with:
+          repository: matrix-org/matrix-rust-sdk-crypto-nodejs
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          targets: x86_64-unknown-linux-musl
+
+      - name: Install ziglang
+        uses: mlugg/setup-zig@v1
+        with:
+          version: 0.13.0
+
+      - name: Build
+        run: |
+          npm install --ignore-scripts
+          npx napi build --release --target x86_64-unknown-linux-musl --platform --zig
+
+      - name: Upload bin
+        uses: actions/upload-artifact@v4
+        with:
+          path: matrix-sdk-crypto.linux-x64-musl.node
+          name: napi-binary
+          if-no-files-found: error
+
   build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing
-    needs: [build, release-versions]
+    needs: [build, release-versions, build-matrix-rust-bindings-for-alpine]
     runs-on: ubuntu-20.04
 
     env:
@@ -306,6 +407,12 @@ jobs:
           platform: ${{ matrix.platform }}
           build-containers: ${{ matrix.platform == 'alpine' && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: temp test something before the long test
+        if: ${{ matrix.platform == 'alpine' }}
+        run: |
+          docker run --rm -w /app/bundle/programs/server/npm/node_modules/matrix-appservice-bridge ghcr.io/rocketchat/rocket.chat:pr-33525.alpine -e 'require(".")'
+
 
   build-gh-docker:
     name: 🚢 Build Docker Images for Production
