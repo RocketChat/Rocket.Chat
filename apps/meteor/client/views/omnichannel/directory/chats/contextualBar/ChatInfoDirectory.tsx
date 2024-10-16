@@ -1,5 +1,7 @@
+import type { ILivechatCustomField, IOmnichannelRoom, IVisitor, Serialized } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
@@ -19,12 +21,18 @@ import { formatQueuedAt } from '../../utils/formatQueuedAt';
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
 
-function ChatInfoDirectory({ id, route = undefined, room }) {
+type ChatInfoDirectoryProps = {
+	id: string;
+	route?: keyof IRouterPaths;
+	room: Serialized<IOmnichannelRoom>; // FIXME: `room` is serialized, but we need to deserialize it
+};
+
+function ChatInfoDirectory({ id, route = undefined, room }: ChatInfoDirectoryProps) {
 	const t = useTranslation();
 
 	const formatDateAndTime = useFormatDateAndTime();
 	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('/v1/livechat/custom-fields');
-	const [customFields, setCustomFields] = useState([]);
+	const [customFields, setCustomFields] = useState<Serialized<ILivechatCustomField>[]>([]);
 	const formatDuration = useFormatDuration();
 
 	const {
@@ -42,7 +50,7 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 		priorityId,
 		livechatData,
 		queuedAt,
-	} = room || { room: { v: {} } };
+	} = room || { v: {} };
 
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
@@ -62,7 +70,7 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 		}
 	}, [allCustomFields, stateCustomFields]);
 
-	const checkIsVisibleAndScopeRoom = (key) => {
+	const checkIsVisibleAndScopeRoom = (key: string) => {
 		const field = customFields.find(({ _id }) => _id === key);
 		if (field && field.visibility === 'visible' && field.scope === 'room') {
 			return true;
@@ -95,9 +103,9 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 		<>
 			<ContextualbarScrollableContent p={24}>
 				<Margins block='x4'>
-					{room && v && <ContactField contact={v} room={room} />}
+					{room && v && <ContactField contact={v as IVisitor} room={room as unknown as IOmnichannelRoom} />}
 					{visitorId && <VisitorClientInfo uid={visitorId} />}
-					{servedBy && <AgentField agent={servedBy} />}
+					{servedBy && <AgentField agent={servedBy as unknown as IOmnichannelRoom['servedBy']} />}
 					{departmentId && <DepartmentField departmentId={departmentId} />}
 					{tags && tags.length > 0 && (
 						<InfoPanelField>
