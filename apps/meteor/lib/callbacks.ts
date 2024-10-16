@@ -22,7 +22,6 @@ import type {
 	ILivechatDepartment,
 	MessageMention,
 	OmnichannelSourceType,
-	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
@@ -227,14 +226,6 @@ type ChainedCallbackSignatures = {
 	'roomAvatarChanged': (room: IRoom) => void;
 	'beforeGetMentions': (mentionIds: string[], teamMentions: MessageMention[]) => Promise<string[]>;
 	'livechat.manageDepartmentUnit': (params: { userId: string; departmentId: string; unitId?: string }) => void;
-	'contact-id-verification.verifyContactChannel': (params: {
-		contactId: string;
-		field: string;
-		value: string;
-		channelName: string;
-		visitorId: string;
-		roomId: string;
-	}) => Promise<ILivechatContact | null>;
 };
 
 export type Hook =

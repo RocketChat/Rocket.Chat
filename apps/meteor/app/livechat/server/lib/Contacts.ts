@@ -8,7 +8,6 @@ import type {
 	IOmnichannelRoom,
 	IUser,
 } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
 import {
 	LivechatVisitors,
 	Users,
