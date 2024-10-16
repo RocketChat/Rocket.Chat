@@ -1,15 +1,9 @@
 import { asyncLocalStorage } from '@rocket.chat/core-services';
 import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
-import { trace, context as traceContext, propagation } from '@rocket.chat/tracing';
+import { injectCurrentContext, tracerSpan } from '@rocket.chat/tracing';
 import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
 import { EnterpriseCheck } from './EnterpriseCheck';
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-interface Carrier {
-	traceparent?: string;
-	tracestate?: string;
-}
 
 const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',
@@ -60,16 +54,9 @@ export class NetworkBroker implements IBroker {
 			return new Error('method-not-available');
 		}
 
-		const currentSpan = trace.getSpan(traceContext.active());
-
-		const output: Carrier = {};
-
-		propagation.inject(traceContext.active(), output);
-
 		return this.broker.call(method, data, {
-			requestID: currentSpan?.spanContext().traceId,
 			meta: {
-				optl: output,
+				optl: injectCurrentContext(),
 			},
 		});
 	}
@@ -91,16 +78,9 @@ export class NetworkBroker implements IBroker {
 			return context.ctx.call(method, data);
 		}
 
-		const currentSpan = trace.getSpan(traceContext.active());
-
-		const output: Carrier = {};
-
-		propagation.inject(traceContext.active(), output);
-
 		return this.broker.call(method, data, {
-			requestID: currentSpan?.spanContext().traceId,
 			meta: {
-				optl: output,
+				optl: injectCurrentContext(),
 			},
 		});
 	}
@@ -157,8 +137,6 @@ export class NetworkBroker implements IBroker {
 			return;
 		}
 
-		const tracer = trace.getTracer(`service: ${name}`);
-
 		for (const method of methods) {
 			if (method.match(/^on[A-Z]/)) {
 				service.events[events[method]] = serviceInstance[method].bind(serviceInstance);
@@ -180,13 +158,11 @@ export class NetworkBroker implements IBroker {
 				continue;
 			}
 
-			service.actions[method] = async (ctx: Context<[], { optl?: Carrier }>): Promise<any> => {
-				if (ctx.meta?.optl) {
-					const activeContext = propagation.extract(traceContext.active(), ctx.meta.optl);
-
-					const span = tracer.startSpan(`action ${name}:${method}`, {}, activeContext);
-
-					const result = await traceContext.with(trace.setSpan(activeContext, span), async () => {
+			service.actions[method] = async (ctx: Context<[], { optl?: unknown }>): Promise<any> => {
+				return tracerSpan(
+					`action ${name}:${method}`,
+					{},
+					() => {
 						return asyncLocalStorage.run(
 							{
 								id: ctx.id,
@@ -197,22 +173,8 @@ export class NetworkBroker implements IBroker {
 							},
 							() => serviceInstance[method](...ctx.params),
 						);
-					});
-
-					span.end();
-
-					return result;
-				}
-
-				return asyncLocalStorage.run(
-					{
-						id: ctx.id,
-						nodeID: ctx.nodeID,
-						requestID: ctx.requestID,
-						broker: this,
-						ctx,
 					},
-					() => serviceInstance[method](...ctx.params),
+					ctx.meta?.optl,
 				);
 			};
 		}

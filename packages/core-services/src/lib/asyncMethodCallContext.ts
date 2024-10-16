@@ -1,4 +1,4 @@
-import { trace, context } from '@rocket.chat/tracing';
+import { tracerActiveSpan } from '@rocket.chat/tracing';
 
 import { AsyncContextStore } from './ContextStore';
 
@@ -10,8 +10,6 @@ export type asyncMethodCallContextStoreItem = {
 }[];
 
 export const asyncMethodCallContextStore = new AsyncContextStore<asyncMethodCallContextStoreItem>();
-
-const tracer = trace.getTracer('core');
 
 export function traceInstanceMethods<T extends object>(instance: T, ignoreMethods: string[] = []): T {
 	const className = instance.constructor.name;
@@ -25,32 +23,19 @@ export function traceInstanceMethods<T extends object>(instance: T, ignoreMethod
 							return Reflect.apply(target, thisArg, argumentsList);
 						}
 
-						const currentSpan = trace.getSpan(context.active());
-						if (currentSpan) {
-							const span = tracer.startSpan(`model ${className}.${prop}`, {
+						return tracerActiveSpan(
+							`model ${className}.${prop}`,
+							{
 								attributes: {
 									model: className,
 									method: prop,
 									parameters: JSON.stringify(argumentsList),
 								},
-							});
-							const result = context.with(trace.setSpan(context.active(), span), () => {
+							},
+							() => {
 								return Reflect.apply(target, thisArg, argumentsList);
-							});
-							if (result instanceof Promise) {
-								result.finally(() => {
-									span.end();
-								});
-								return result;
-							}
-							span.end();
-							return result;
-						}
-
-						if (process.env.LOG_UNTRACED_METHODS) {
-							console.log(`out model ${className}.${prop}`, new Error().stack);
-						}
-						return Reflect.apply(target, thisArg, argumentsList);
+							},
+						);
 					},
 				});
 			}

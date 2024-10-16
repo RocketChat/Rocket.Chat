@@ -1,9 +1,8 @@
-import { trace } from '@opentelemetry/api';
+import { context, propagation, trace } from '@opentelemetry/api';
 import type { Span, SpanOptions, Tracer } from '@opentelemetry/api';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 
-export { trace, context, propagation, ROOT_CONTEXT } from '@opentelemetry/api';
 export { initDatabaseTracing } from './traceDatabaseCalls';
 
 let tracer: Tracer;
@@ -27,16 +26,49 @@ export const startTracing = ({ service }: { service: string }) => {
 	// return new TracingEnabled(service);
 };
 
-export async function tracerSpan<F extends (span?: Span) => unknown>(name: string, options: SpanOptions, fn: F): Promise<ReturnType<F>> {
+export async function tracerSpan<F extends (span?: Span) => unknown>(
+	name: string,
+	options: SpanOptions,
+	fn: F,
+	optl?: unknown,
+): Promise<ReturnType<F>> {
 	if (!isTracingEnabled()) {
 		return fn() as Promise<ReturnType<F>>;
 	}
 
+	if (optl) {
+		const activeContext = propagation.extract(context.active(), optl);
+		return tracer.startActiveSpan(name, options, activeContext, async (span: Span) => {
+			const result = await fn(span);
+			span.end();
+			return result;
+		}) as Promise<ReturnType<F>>;
+	}
+
 	return tracer.startActiveSpan(name, options, async (span: Span) => {
 		const result = await fn(span);
-
 		span.end();
-
 		return result;
 	}) as Promise<ReturnType<F>>;
+}
+
+export function tracerActiveSpan<F extends (span?: Span) => unknown>(
+	name: string,
+	options: SpanOptions,
+	fn: F,
+	optl?: unknown,
+): Promise<ReturnType<F>> {
+	const currentSpan = trace.getSpan(context.active());
+
+	if (process.env.LOG_UNTRACED_METHODS) {
+		console.log(`No active span for ${name}`, new Error().stack);
+	}
+
+	return currentSpan ? tracerSpan(name, options, fn, optl) : (fn() as Promise<ReturnType<F>>);
+}
+
+export function injectCurrentContext() {
+	const output: Record<string, string> = {};
+	propagation.inject(context.active(), output);
+	return output;
 }
