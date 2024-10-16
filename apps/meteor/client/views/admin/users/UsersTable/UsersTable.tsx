@@ -18,18 +18,19 @@ import {
 } from '../../../../components/GenericTable';
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import type { AdminUserTab, UsersFilters, UsersTableSortingOptions } from '../AdminUsersPage';
+import type { AdminUsersTab, UsersFilters, UsersTableSortingOption } from '../AdminUsersPage';
+import { useVoipExtensionPermission } from '../voip/hooks/useVoipExtensionPermission';
 import UsersTableFilters from './UsersTableFilters';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
-	tab: AdminUserTab;
+	tab: AdminUsersTab;
 	roleData: { roles: IRole[] } | undefined;
 	onReload: () => void;
 	setUserFilters: Dispatch<SetStateAction<UsersFilters>>;
 	filteredUsersQueryResult: UseQueryResult<PaginatedResult<{ users: Serialized<DefaultUserInfo>[] }>>;
 	paginationData: ReturnType<typeof usePagination>;
-	sortData: ReturnType<typeof useSort<UsersTableSortingOptions>>;
+	sortData: ReturnType<typeof useSort<UsersTableSortingOption>>;
 	isSeatsCapExceeded: boolean;
 };
 
@@ -54,6 +55,8 @@ const UsersTable = ({
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = paginationData;
 	const { sortBy, sortDirection, setSort } = sortData;
+
+	const canManageVoipExtension = useVoipExtensionPermission();
 
 	const isKeyboardEvent = (
 		event: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>,
@@ -111,9 +114,21 @@ const UsersTable = ({
 					{t('Pending_action')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell key='actions' w={tab === 'pending' ? 'x204' : ''} />,
+			tab === 'all' && canManageVoipExtension && (
+				<GenericTableHeaderCell
+					w='x180'
+					key='freeSwitchExtension'
+					direction={sortDirection}
+					active={sortBy === 'freeSwitchExtension'}
+					onClick={setSort}
+					sort='freeSwitchExtension'
+				>
+					{t('Voice_call_extension')}
+				</GenericTableHeaderCell>
+			),
+			<GenericTableHeaderCell key='actions' w={tab === 'pending' ? 'x204' : 'x50'} />,
 		],
-		[isLaptop, isMobile, setSort, sortBy, sortDirection, t, tab],
+		[isLaptop, isMobile, setSort, sortBy, sortDirection, t, tab, canManageVoipExtension],
 	);
 
 	return (
@@ -149,13 +164,14 @@ const UsersTable = ({
 							{data.users.map((user) => (
 								<UsersTableRow
 									key={user._id}
-									onClick={handleClickOrKeyDown}
+									tab={tab}
+									user={user}
 									isMobile={isMobile}
 									isLaptop={isLaptop}
-									user={user}
-									onReload={onReload}
-									tab={tab}
 									isSeatsCapExceeded={isSeatsCapExceeded}
+									showVoipExtension={canManageVoipExtension}
+									onReload={onReload}
+									onClick={handleClickOrKeyDown}
 								/>
 							))}
 						</GenericTableBody>
