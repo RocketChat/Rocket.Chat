@@ -1,3 +1,5 @@
+import type { IVisitorEmail } from './IVisitorEmail';
+
 export interface ILivechatContactChannel {
     name: string;
     verified: boolean;
@@ -14,7 +16,7 @@ export interface ILivechatContact {
     _id: string;
     name: string;
     phones?: string[];
-    emails?: string[];
+    emails?: IVisitorEmail[];
     contactManager?: string;
     unknown?: boolean;
     hasConflict?: boolean;

@@ -404,6 +404,21 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 	return updatedContact;
 }
 
+export async function addContactEmail(contactId: ILivechatContact['_id'], email: string): Promise<ILivechatContact> {
+	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'emails'>>(contactId, {
+		projection: { _id: 1, emails: 1 },
+	});
+	if (!contact) {
+		throw new Error('error-contact-not-found');
+	}
+
+	const emails = contact.emails || [];
+	emails.push({ address: email });
+	return LivechatContacts.updateContact(contactId, {
+		emails,
+	});
+}
+
 export async function getContacts(params: GetContactsParams): Promise<PaginatedResult<{ contacts: ILivechatContact[] }>> {
 	const { searchText, count, offset, sort } = params;
 

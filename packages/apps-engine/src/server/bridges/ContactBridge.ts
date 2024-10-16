@@ -26,9 +26,17 @@ export abstract class ContactBridge extends BaseBridge {
         }
     }
 
+    public async doAddContactEmail(contactId: ILivechatContact['_id'], email: string, appId: string): Promise<ILivechatContact> {
+        if (this.hasWritePermission(appId)) {
+            return this.addContactEmail(contactId, email, appId);
+        }
+    }
+
     protected abstract getById(id: ILivechatContact['_id'], appId: string): Promise<ILivechatContact>;
 
     protected abstract verifyContact(verifyContactChannelParams: VerifyContactChannelParams, appId: string): Promise<void>;
+
+    protected abstract addContactEmail(contactId: ILivechatContact['_id'], email: string, appId: string): Promise<ILivechatContact>;
 
     private hasReadPermission(appId: string): boolean {
         if (AppPermissionManager.hasPermission(appId, AppPermissions.contact.read)) {
