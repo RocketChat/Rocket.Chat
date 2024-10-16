@@ -7,7 +7,7 @@ import { i18n } from '../../../../../../server/lib/i18n';
 
 export async function changeContactBlockStatus({ contactId, block, visitorId }: { contactId: string; visitorId: string; block: boolean }) {
 	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'channels'>>(contactId, {
-		projection: { _id: 1, channels: 1 },
+		projection: { channels: 1 },
 	});
 
 	if (!contact) {
