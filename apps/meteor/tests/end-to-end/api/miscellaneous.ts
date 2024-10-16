@@ -233,10 +233,8 @@ describe('miscellaneous', () => {
 				.get(api('directory'))
 				.set(credentials)
 				.query({
-					query: JSON.stringify({
-						text: user.username,
-						type: 'users',
-					}),
+					text: user.username,
+					type: 'users',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -260,10 +258,8 @@ describe('miscellaneous', () => {
 				.get(api('directory'))
 				.set(normalUserCredentials)
 				.query({
-					query: JSON.stringify({
-						text: user.username,
-						type: 'users',
-					}),
+					text: user.username,
+					type: 'users',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -286,10 +282,8 @@ describe('miscellaneous', () => {
 				.get(api('directory'))
 				.set(credentials)
 				.query({
-					query: JSON.stringify({
-						text: testChannel.name,
-						type: 'channels',
-					}),
+					text: testChannel.name,
+					type: 'channels',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -311,10 +305,8 @@ describe('miscellaneous', () => {
 				.get(api('directory'))
 				.set(credentials)
 				.query({
-					query: JSON.stringify({
-						text: testChannel.name,
-						type: 'channels',
-					}),
+					text: testChannel.name,
+					type: 'channels',
 					sort: JSON.stringify({
 						name: 1,
 					}),
@@ -339,10 +331,8 @@ describe('miscellaneous', () => {
 				.get(api('directory'))
 				.set(credentials)
 				.query({
-					query: JSON.stringify({
-						text: 'invalid channel',
-						type: 'invalid',
-					}),
+					text: 'invalid channel',
+					type: 'invalid',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -356,10 +346,8 @@ describe('miscellaneous', () => {
 				.get(api('directory'))
 				.set(credentials)
 				.query({
-					query: JSON.stringify({
-						text: testChannel.name,
-						type: 'channels',
-					}),
+					text: testChannel.name,
+					type: 'channels',
 					sort: JSON.stringify({
 						name: 1,
 						test: 1,
@@ -378,10 +366,8 @@ describe('miscellaneous', () => {
 				.get(api('directory'))
 				.set(normalUserCredentials)
 				.query({
-					query: JSON.stringify({
-						text: '',
-						type: 'teams',
-					}),
+					text: '',
+					type: 'teams',
 					sort: JSON.stringify({
 						name: 1,
 					}),
