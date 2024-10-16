@@ -1,6 +1,7 @@
 import { Omnichannel } from '@rocket.chat/core-services';
 import type { ILivechatAgent, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { LivechatVisitors, Users, LivechatRooms, Messages } from '@rocket.chat/models';
 import {
 	isLiveChatRoomForwardProps,
@@ -31,6 +32,8 @@ import { findVisitorInfo } from '../lib/visitors';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 
+const logger = new Logger('DebugCI');
+
 API.v1.addRoute(
 	'livechat/room',
 	{
@@ -41,61 +44,73 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			// I'll temporary use check for validation, as validateParams doesnt support what's being done here
-			const extraCheckParams = await onCheckRoomParams({
-				token: String,
-				rid: Match.Maybe(String),
-				agentId: Match.Maybe(String),
-			});
+			try {
+				logger.error({ msg: 'getting livechat room' }, this.queryParams);
 
-			check(this.queryParams, extraCheckParams as any);
-
-			const { token, rid, agentId, ...extraParams } = this.queryParams;
-
-			const guest = token && (await findGuest(token));
-			if (!guest) {
-				throw new Error('invalid-token');
-			}
-
-			if (!rid) {
-				const room = await LivechatRooms.findOneOpenByVisitorToken(token, {});
-				if (room) {
-					return API.v1.success({ room, newRoom: false });
-				}
-
-				let agent: SelectedAgent | undefined;
-				const agentObj = agentId && (await findAgent(agentId));
-				if (agentObj) {
-					if (isAgentWithInfo(agentObj)) {
-						const { username = undefined } = agentObj;
-						agent = { agentId, username };
-					} else {
-						agent = { agentId };
-					}
-				}
-
-				const roomInfo = {
-					source: {
-						...(isWidget(this.request.headers)
-							? { type: OmnichannelSourceType.WIDGET, destination: this.request.headers.host }
-							: { type: OmnichannelSourceType.API }),
-					},
-				};
-
-				const newRoom = await LivechatTyped.createRoom({ visitor: guest, roomInfo, agent, extraData: extraParams });
-
-				return API.v1.success({
-					room: newRoom,
-					newRoom: true,
+				// I'll temporary use check for validation, as validateParams doesnt support what's being done here
+				const extraCheckParams = await onCheckRoomParams({
+					token: String,
+					rid: Match.Maybe(String),
+					agentId: Match.Maybe(String),
 				});
-			}
 
-			const froom = await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(rid, token, {});
-			if (!froom) {
-				throw new Error('invalid-room');
-			}
+				check(this.queryParams, extraCheckParams as any);
 
-			return API.v1.success({ room: froom, newRoom: false });
+				const { token, rid, agentId, ...extraParams } = this.queryParams;
+
+				logger.error({ msg: 'searching for existing visitor' });
+				const guest = token && (await findGuest(token));
+				if (!guest) {
+					throw new Error('invalid-token');
+				}
+
+				if (!rid) {
+					logger.error({ msg: 'searching for room' });
+					const room = await LivechatRooms.findOneOpenByVisitorToken(token, {});
+					if (room) {
+						return API.v1.success({ room, newRoom: false });
+					}
+
+					logger.error({ msg: 'searching for agent' });
+					let agent: SelectedAgent | undefined;
+					const agentObj = agentId && (await findAgent(agentId));
+					if (agentObj) {
+						if (isAgentWithInfo(agentObj)) {
+							const { username = undefined } = agentObj;
+							agent = { agentId, username };
+						} else {
+							agent = { agentId };
+						}
+					}
+
+					const roomInfo = {
+						source: {
+							...(isWidget(this.request.headers)
+								? { type: OmnichannelSourceType.WIDGET, destination: this.request.headers.host }
+								: { type: OmnichannelSourceType.API }),
+						},
+					};
+
+					logger.error({ msg: 'creating new room' });
+					const newRoom = await LivechatTyped.createRoom({ visitor: guest, roomInfo, agent, extraData: extraParams });
+
+					return API.v1.success({
+						room: newRoom,
+						newRoom: true,
+					});
+				}
+
+				logger.error({ msg: 'find room by room id and visitor token' });
+				const froom = await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(rid, token, {});
+				if (!froom) {
+					throw new Error('invalid-room');
+				}
+
+				return API.v1.success({ room: froom, newRoom: false });
+			} catch (e) {
+				logger.error({ msg: 'Failed to get livechat room', error: e });
+				throw e;
+			}
 		},
 	},
 );
