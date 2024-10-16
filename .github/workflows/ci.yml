@@ -63,18 +63,19 @@ jobs:
           token=$(curl -H 'content-type: application/json' -d '{"user": "rocketchat.internal.admin.test", "password": "rocketchat.internal.admin.test"}' http://localhost:3000/api/login -s | jq -r .data.authToken)
           userId=rocketchat.internal.admin.test
           echo $token
-          args=(
-            curl
-            -H
-            "content-type: application/json"
-            -H
-            "x-user-id: $userId"
-            -H
-            "x-auth-token: $token"
-            --silent
-          )
-          ${args[@]} http://localhost:3000/api/v1/settings/Federation_Matrix_enabled -d '{"value": true}'
-          ${args[@]} http://localhost:3000/api/v1/settings/Federation_Matrix_serve_well_known -d '{"value": false}'
+          c() {
+            curl \
+              -H \
+              "content-type: application/json" \
+              -H \
+              "x-user-id: $userId" \
+              -H \
+              "x-auth-token: $token" \
+              --silent \
+              "$@"
+          }
+          c http://localhost:3000/api/v1/settings/Federation_Matrix_enabled -d '{"value": true}'
+          c http://localhost:3000/api/v1/settings/Federation_Matrix_serve_well_known -d '{"value": false}'
           curl http://localhost:3000/.well-known/matrix/server -vvv
 
   release-versions:
