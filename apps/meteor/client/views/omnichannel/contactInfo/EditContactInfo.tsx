@@ -1,11 +1,12 @@
-import type { ILivechatVisitor, Serialized } from '@rocket.chat/core-typings';
-import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
+import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { Fragment } from 'react';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { validateEmail } from '../../../../lib/emailValidator';
@@ -18,34 +19,30 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 } from '../../../components/Contextualbar';
-import { createToken } from '../../../lib/utils/createToken';
-import { ContactManager as ContactManagerForm } from '../additionalForms';
+import { ContactManagerInput } from '../additionalForms';
 import { FormSkeleton } from '../directory/components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../directory/hooks/useCustomFieldsMetadata';
 import { useContactRoute } from '../hooks/useContactRoute';
 
 type ContactNewEditProps = {
-	id: string;
-	contactData?: { contact: Serialized<ILivechatVisitor> | null };
+	contactData?: Serialized<ILivechatContact> | null;
 	onClose: () => void;
 	onCancel: () => void;
 };
 
 type ContactFormData = {
-	token: string;
 	name: string;
-	email: string;
-	phone: string;
-	username: string;
+	emails: { address: string }[];
+	phones: { phoneNumber: string }[];
 	customFields: Record<any, any>;
+	contactManager: string;
 };
 
 const DEFAULT_VALUES = {
-	token: '',
 	name: '',
-	email: '',
-	phone: '',
-	username: '',
+	emails: [],
+	phones: [],
+	contactManager: '',
 	customFields: {},
 };
 
@@ -54,135 +51,117 @@ const getInitialValues = (data: ContactNewEditProps['contactData']): ContactForm
 		return DEFAULT_VALUES;
 	}
 
-	const { name, token, phone, visitorEmails, livechatData, contactManager } = data.contact ?? {};
+	const { name, phones, emails, customFields, contactManager } = data ?? {};
 
 	return {
-		token: token ?? '',
 		name: name ?? '',
-		email: visitorEmails ? visitorEmails[0].address : '',
-		phone: phone ? phone[0].phoneNumber : '',
-		customFields: livechatData ?? {},
-		username: contactManager?.username ?? '',
+		emails: emails ?? [],
+		phones: phones ?? [],
+		customFields: customFields ?? {},
+		contactManager: contactManager ?? '',
 	};
 };
 
-const EditContactInfo = ({ id, contactData, onClose, onCancel }: ContactNewEditProps): ReactElement => {
+const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
 	const handleNavigate = useContactRoute();
 
-	const canViewCustomFields = (): boolean =>
-		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
+	const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
-	const [userId, setUserId] = useState('no-agent-selected');
-	const saveContact = useEndpoint('POST', '/v1/omnichannel/contact');
-	const getContactBy = useEndpoint('GET', '/v1/omnichannel/contact.search');
-	const getUserData = useEndpoint('GET', '/v1/users.info');
+	const getContact = useEndpoint('GET', '/v1/omnichannel/contacts.get');
+	const createContact = useEndpoint('POST', '/v1/omnichannel/contacts');
+	const updateContact = useEndpoint('POST', '/v1/omnichannel/contacts.update');
 
 	const { data: customFieldsMetadata = [], isInitialLoading: isLoadingCustomFields } = useCustomFieldsMetadata({
 		scope: 'visitor',
-		enabled: canViewCustomFields(),
+		enabled: canViewCustomFields,
 	});
 
 	const initialValue = getInitialValues(contactData);
-	const { username: initialUsername } = initialValue;
 
 	const {
-		register,
-		formState: { errors, isValid, isDirty, isSubmitting },
+		formState: { errors, isSubmitting },
 		control,
-		setValue,
+		watch,
 		handleSubmit,
-		setError,
 	} = useForm<ContactFormData>({
-		mode: 'onChange',
-		reValidateMode: 'onChange',
+		mode: 'onBlur',
+		reValidateMode: 'onBlur',
 		defaultValues: initialValue,
 	});
 
-	useEffect(() => {
-		if (!initialUsername) {
-			return;
-		}
+	const {
+		fields: emailFields,
+		append: appendEmail,
+		remove: removeEmail,
+	} = useFieldArray({
+		control,
+		name: 'emails',
+	});
 
-		getUserData({ username: initialUsername }).then(({ user }) => {
-			setUserId(user._id);
-		});
-	}, [getUserData, initialUsername]);
+	const {
+		fields: phoneFields,
+		append: appendPhone,
+		remove: removePhone,
+	} = useFieldArray({
+		control,
+		name: 'phones',
+	});
 
-	const validateEmailFormat = (email: string): boolean | string => {
-		if (!email || email === initialValue.email) {
-			return true;
-		}
+	const { emails, phones } = watch();
 
-		if (!validateEmail(email)) {
+	const validateEmailFormat = async (emailValue: string) => {
+		const currentEmails = emails.map(({ address }) => address);
+		const isDuplicated = currentEmails.filter((email) => email === emailValue).length > 1;
+
+		if (!validateEmail(emailValue)) {
 			return t('error-invalid-email-address');
 		}
 
-		return true;
+		const { contact } = await getContact({ email: emailValue });
+		return (!contact || contact._id === contactData?._id) && !isDuplicated ? true : t('Email_already_exists');
 	};
 
-	const validateContactField = async (name: 'phone' | 'email', value: string, optional = true) => {
-		if ((optional && !value) || value === initialValue[name]) {
-			return true;
-		}
+	const validatePhone = async (phoneValue: string) => {
+		const currentPhones = phones.map(({ phoneNumber }) => phoneNumber);
+		const isDuplicated = currentPhones.filter((phone) => phone === phoneValue).length > 1;
 
-		const query = { [name]: value } as Record<'phone' | 'email', string>;
-		const { contact } = await getContactBy(query);
-		return !contact || contact._id === id;
+		const { contact } = await getContact({ phone: phoneValue });
+		return (!contact || contact._id === contactData?._id) && !isDuplicated ? true : t('Phone_already_exists');
 	};
 
 	const validateName = (v: string): string | boolean => (!v.trim() ? t('Required_field', { field: t('Name') }) : true);
 
-	const handleContactManagerChange = async (userId: string): Promise<void> => {
-		setUserId(userId);
-
-		if (userId === 'no-agent-selected') {
-			setValue('username', '', { shouldDirty: true });
-			return;
-		}
-
-		const { user } = await getUserData({ userId });
-		setValue('username', user.username || '', { shouldDirty: true });
-	};
-
-	const validateAsync = async ({ phone = '', email = '' } = {}) => {
-		const isEmailValid = await validateContactField('email', email);
-		const isPhoneValid = await validateContactField('phone', phone);
-
-		!isEmailValid && setError('email', { message: t('Email_already_exists') });
-		!isPhoneValid && setError('phone', { message: t('Phone_already_exists') });
-
-		return isEmailValid && isPhoneValid;
-	};
-
 	const handleSave = async (data: ContactFormData): Promise<void> => {
-		if (!(await validateAsync(data))) {
-			return;
-		}
-
-		const { name, phone, email, customFields, username, token } = data;
+		const { name, phones, emails, customFields, contactManager } = data;
 
 		const payload = {
 			name,
-			phone,
-			email,
+			phones: phones.map(({ phoneNumber }) => phoneNumber),
+			emails: emails.map(({ address }) => address),
 			customFields,
-			token: token || createToken(),
-			...(username && { contactManager: { username } }),
-			...(id && { _id: id }),
+			contactManager,
 		};
 
 		try {
-			await saveContact(payload);
+			if (contactData) {
+				await updateContact({ contactId: contactData?._id, ...payload });
+				handleNavigate({ context: 'details', id: contactData?._id });
+			} else {
+				const { contactId } = await createContact(payload);
+				handleNavigate({ context: 'details', id: contactId });
+			}
+
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			await queryClient.invalidateQueries({ queryKey: ['current-contacts'] });
-			contactData ? handleNavigate({ context: 'details' }) : handleNavigate({ tab: 'contacts', context: '' });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
+
+	const nameField = useUniqueId();
 
 	if (isLoadingCustomFields) {
 		return (
@@ -201,43 +180,89 @@ const EditContactInfo = ({ id, contactData, onClose, onCancel }: ContactNewEditP
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
 				<Field>
-					<FieldLabel>{t('Name')}*</FieldLabel>
+					<FieldLabel htmlFor={nameField} required>
+						{t('Name')}
+					</FieldLabel>
 					<FieldRow>
-						<TextInput {...register('name', { validate: validateName })} error={errors.name?.message} flexGrow={1} />
+						<Controller
+							name='name'
+							control={control}
+							rules={{ validate: validateName }}
+							render={({ field }) => <TextInput id={nameField} {...field} error={errors.name?.message} />}
+						/>
 					</FieldRow>
-					<FieldError>{errors.name?.message}</FieldError>
+					{errors.name && <FieldError>{errors.name.message}</FieldError>}
 				</Field>
 				<Field>
 					<FieldLabel>{t('Email')}</FieldLabel>
-					<FieldRow>
-						<TextInput {...register('email', { validate: validateEmailFormat })} error={errors.email?.message} flexGrow={1} />
-					</FieldRow>
-					<FieldError>{errors.email?.message}</FieldError>
+					{emailFields.map((field, index) => (
+						<Fragment key={field.id}>
+							<FieldRow>
+								<Controller
+									name={`emails.${index}.address`}
+									control={control}
+									rules={{
+										required: t('Required_field', { field: t('Email') }),
+										validate: validateEmailFormat,
+									}}
+									render={({ field }) => <TextInput {...field} error={errors.emails?.[index]?.address?.message} />}
+								/>
+								<IconButton small onClick={() => removeEmail(index)} mis={8} icon='trash' />
+							</FieldRow>
+							{errors.emails?.[index]?.address && <FieldError>{errors.emails?.[index]?.address?.message}</FieldError>}
+						</Fragment>
+					))}
+					<Button mbs={8} onClick={() => appendEmail({ address: '' })}>
+						{t('Add_email')}
+					</Button>
 				</Field>
 				<Field>
 					<FieldLabel>{t('Phone')}</FieldLabel>
-					<FieldRow>
-						<TextInput {...register('phone')} error={errors.phone?.message} flexGrow={1} />
-					</FieldRow>
-					<FieldError>{errors.phone?.message}</FieldError>
+					{phoneFields.map((field, index) => (
+						<Fragment key={field.id}>
+							<FieldRow>
+								<Controller
+									name={`phones.${index}.phoneNumber`}
+									control={control}
+									rules={{
+										required: t('Required_field', { field: t('Phone') }),
+										validate: validatePhone,
+									}}
+									render={({ field }) => <TextInput {...field} error={errors.phones?.[index]?.message} />}
+								/>
+								<IconButton small onClick={() => removePhone(index)} mis={8} icon='trash' />
+							</FieldRow>
+							{errors.phones?.[index]?.phoneNumber && <FieldError>{errors.phones?.[index]?.phoneNumber?.message}</FieldError>}
+							<FieldError>{errors.phones?.[index]?.message}</FieldError>
+						</Fragment>
+					))}
+					<Button mbs={8} onClick={() => appendPhone({ phoneNumber: '' })}>
+						{t('Add_phone')}
+					</Button>
 				</Field>
-				{canViewCustomFields() && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
-				<ContactManagerForm value={userId} handler={handleContactManagerChange} />
+				<Controller
+					name='contactManager'
+					control={control}
+					render={({ field: { value, onChange } }) => (
+						<ContactManagerInput
+							value={value}
+							handler={(currentValue) => {
+								if (currentValue === 'no-agent-selected') {
+									return onChange('');
+								}
+
+								onChange(currentValue);
+							}}
+						/>
+					)}
+				/>
+				<Divider />
+				{canViewCustomFields && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button flexGrow={1} onClick={onCancel}>
-						{t('Cancel')}
-					</Button>
-					<Button
-						mie='none'
-						type='submit'
-						onClick={handleSubmit(handleSave)}
-						flexGrow={1}
-						loading={isSubmitting}
-						disabled={!isValid || !isDirty}
-						primary
-					>
+					<Button onClick={onCancel}>{t('Cancel')}</Button>
+					<Button onClick={handleSubmit(handleSave)} loading={isSubmitting} primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
