@@ -9147,7 +9147,7 @@ __metadata:
     emoji-toolkit: "npm:^7.0.1"
     emojione: "npm:^4.5.0"
     emojione-assets: "npm:^4.5.0"
-    esl: "github:pierre-lehnen-rc/esl"
+    esl: "npm:^11.2.1"
     eslint: "npm:~8.45.0"
     eslint-config-prettier: "npm:~8.8.0"
     eslint-plugin-anti-trojan-source: "npm:~1.1.1"
@@ -20590,6 +20590,13 @@ __metadata:
   version: 11.1.1
   resolution: "esl@https://github.com/pierre-lehnen-rc/esl.git#commit=22f2167a4acaa129d214592cfb0d46a419d08663"
   checksum: 10/6a67c2e77b292d1dc419f753d67ef0114b8509d1c21a8b4509233d09d0e69d603a2451feae36f7bc380875587a6826cd7d9e7608e8d64b937cf2711546e6cbed
+  languageName: node
+  linkType: hard
+
+"esl@npm:^11.2.1":
+  version: 11.2.1
+  resolution: "esl@npm:11.2.1"
+  checksum: 10/7fa33268e3e5bbd28ec12216302fa87a9721255766236f429309965592839ccc3d74558c9302d5da4e466a255f8f7827e815725c009ad7676cbbcca45eda2e39
   languageName: node
   linkType: hard
 
