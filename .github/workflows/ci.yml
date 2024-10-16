@@ -52,7 +52,7 @@ jobs:
           RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
           DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
         run: |
-          docker compose -f docker-compose-ci.yml up -d
+          docker compose -f docker-compose-ci.yml up -d --no-build
       - name: Wait services to start up
         run: |
           docker ps
