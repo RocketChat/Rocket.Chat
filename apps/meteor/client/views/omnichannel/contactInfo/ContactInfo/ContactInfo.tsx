@@ -99,7 +99,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 				/>
 			)}
 			{context === 'channels' && contact?.channels && <ContactInfoChannels channels={contact?.channels} />}
-			{context === 'history' && showContactHistory && <ContactInfoHistory />}
+			{context === 'history' && showContactHistory && <ContactInfoHistory contactId={contact._id} />}
 		</>
 	);
 };

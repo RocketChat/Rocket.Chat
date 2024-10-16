@@ -19,7 +19,7 @@ const sourceTypeMap: { [key: string]: string } = {
 };
 
 // TODO: implement menu in order to block action
-const ContactInfoHistoryItem = ({ name, details, blocked, lastChat }: ContactInfoHistoryItemProps) => {
+const ContactInfoHistoryItem = ({ details, blocked, lastChat, onClick }: ContactInfoHistoryItemProps) => {
 	const t = useTranslation();
 	const timeAgo = useTimeAgo();
 	const [showButton, setShowButton] = useState(false);
@@ -45,12 +45,15 @@ const ContactInfoHistoryItem = ({ name, details, blocked, lastChat }: ContactInf
 			onFocus={() => setShowButton(true)}
 			onPointerEnter={() => setShowButton(true)}
 			onPointerLeave={() => setShowButton(false)}
+			onClick={onClick}
 		>
 			<Box display='flex' alignItems='center'>
 				{details && <OmnichannelRoomIcon source={details} size='x18' placement='default' />}
-				<Box mi={4} fontScale='p2m'>
-					{t(sourceTypeMap[name] as TranslationKey)} {blocked && `(${t('Blocked')})`}
-				</Box>
+				{details && (
+					<Box mi={4} fontScale='p2b'>
+						{t(sourceTypeMap[details?.type] as TranslationKey)} {blocked && `(${t('Blocked')})`}
+					</Box>
+				)}
 				{lastChat && (
 					<Box mis={4} fontScale='c1'>
 						{timeAgo(lastChat.ts)}
