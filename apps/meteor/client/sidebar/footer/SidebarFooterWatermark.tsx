@@ -1,12 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useLicense, useLicenseName } from '../../hooks/useLicense';
 
 export const SidebarFooterWatermark = (): ReactElement | null => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const response = useLicense();
 

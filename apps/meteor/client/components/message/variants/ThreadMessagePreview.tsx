@@ -13,9 +13,9 @@ import {
 	MessageStatusIndicatorItem,
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
 import {
@@ -42,7 +42,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 	const parentMessage = useParentMessage(message.tmid);
 
 	const translated = useShowTranslated(message);
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const isSelecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);

@@ -1,7 +1,7 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Icon } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';
 
@@ -16,7 +16,7 @@ type SecondStepsProps = {
 };
 
 const SecondStep = ({ onClose, onCancel, onConfirm, deletedRooms = {}, rooms = [], ...props }: SecondStepsProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<GenericModal

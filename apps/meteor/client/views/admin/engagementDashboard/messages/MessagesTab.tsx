@@ -1,13 +1,13 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import EngagementDashboardCard from '../EngagementDashboardCard';
 import MessagesPerChannelSection from './MessagesPerChannelSection';
 import MessagesSentSection from './MessagesSentSection';
 
 const MessagesTab = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<>

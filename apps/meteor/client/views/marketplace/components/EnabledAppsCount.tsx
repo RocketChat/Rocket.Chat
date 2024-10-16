@@ -1,6 +1,6 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericResourceUsage } from '../../../components/GenericResourceUsage';
 
@@ -15,7 +15,7 @@ const EnabledAppsCount = ({
 	context: 'private' | 'explore' | 'installed' | 'premium' | 'requested';
 	tooltip?: string;
 }): ReactElement | null => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const variant = useMemo(() => {
 		if (enabled + 1 === limit) {
