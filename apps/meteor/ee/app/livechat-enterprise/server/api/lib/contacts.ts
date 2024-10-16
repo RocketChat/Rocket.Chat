@@ -29,8 +29,8 @@ export async function changeContactBlockStatus({ contactId, block, visitorId }: 
 	await LivechatContacts.updateOne({ _id: contactId }, { $set: { channels: contact.channels } });
 }
 
-export async function hasSingleContactLicense() {
-	if (!License.hasValidLicense()) {
+export function hasSingleContactLicense() {
+	if (!License.hasModule('contact-id-verification')) {
 		throw new Error('error-action-not-allowed');
 	}
 }

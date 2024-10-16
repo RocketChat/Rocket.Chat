@@ -49,7 +49,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			await hasSingleContactLicense();
+			hasSingleContactLicense();
 			const { contactId, visitorId } = this.bodyParams;
 			const { user } = this;
 
@@ -75,7 +75,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			await hasSingleContactLicense();
+			hasSingleContactLicense();
 			const { contactId, visitorId } = this.bodyParams;
 
 			await changeContactBlockStatus({
