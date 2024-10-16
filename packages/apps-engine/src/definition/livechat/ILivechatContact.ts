@@ -1,3 +1,4 @@
+import type { IOmnichannelSource } from './IOmnichannelSource';
 import type { IVisitorEmail } from './IVisitorEmail';
 import type { IVisitorPhone } from './IVisitorPhone';
 
@@ -5,12 +6,16 @@ export interface ILivechatContactChannel {
     name: string;
     verified: boolean;
     visitorId: string;
+    blocked: boolean;
+    field?: string;
+    value?: string;
+    verifiedAt?: Date;
+    details?: IOmnichannelSource;
 }
 
 export interface ILivechatContactConflictingField {
-    field: string;
-    oldValue: string;
-    newValue: string;
+    field: 'name' | 'manager' | `customFields.${string}`;
+    value: string;
 }
 
 export interface ILivechatContact {
@@ -24,4 +29,9 @@ export interface ILivechatContact {
     conflictingFields?: ILivechatContactConflictingField[];
     customFields?: Record<string, string | unknown>;
     channels?: ILivechatContactChannel[];
+    createdAt: Date;
+    lastChat?: {
+        _id: string;
+        ts: Date;
+    };
 }
