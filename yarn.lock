@@ -8986,7 +8986,6 @@ __metadata:
     "@types/jest": "npm:~29.5.13"
     "@types/jsdom": "npm:^16.2.15"
     "@types/jsdom-global": "npm:^3.0.7"
-    "@types/jsrsasign": "npm:^10.5.14"
     "@types/katex": "npm:^0.14.0"
     "@types/later": "npm:^1.2.9"
     "@types/ldapjs": "npm:^2.2.5"
@@ -9015,7 +9014,6 @@ __metadata:
     "@types/psl": "npm:^1.1.3"
     "@types/react": "npm:~17.0.80"
     "@types/react-dom": "npm:~17.0.25"
-    "@types/rewire": "npm:^2.5.30"
     "@types/sanitize-html": "npm:^2.9.3"
     "@types/semver": "npm:^7.3.10"
     "@types/sharp": "npm:^0.30.5"
@@ -12373,13 +12371,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsrsasign@npm:^10.5.14":
-  version: 10.5.14
-  resolution: "@types/jsrsasign@npm:10.5.14"
-  checksum: 10/afab955b4ca861c602ff327d0421272b382dbb13c55858038fef9bc7ac4e798a1655df9cf05de7de6674cccfa3437a3718102b95fc3283e2dfa28ae4f7f5f5f2
-  languageName: node
-  linkType: hard
-
 "@types/katex@npm:^0.14.0":
   version: 0.14.0
   resolution: "@types/katex@npm:0.14.0"
@@ -12955,13 +12946,6 @@ __metadata:
   version: 0.12.2
   resolution: "@types/retry@npm:0.12.2"
   checksum: 10/e5675035717b39ce4f42f339657cae9637cf0c0051cf54314a6a2c44d38d91f6544be9ddc0280587789b6afd056be5d99dbe3e9f4df68c286c36321579b1bf4a
-  languageName: node
-  linkType: hard
-
-"@types/rewire@npm:^2.5.30":
-  version: 2.5.30
-  resolution: "@types/rewire@npm:2.5.30"
-  checksum: 10/75f756ee068ad7f8aac697dc80f0007afa8c837e7aa211fd95ba7eeea8905043b20439e9b1c8326be77643159580aeebc49a464e626b0837ee188bd8a05dfe84
   languageName: node
   linkType: hard
 
