@@ -441,7 +441,7 @@ export class LDAPManager {
 	}
 
 	private static getLdapExtension(ldapUser: ILDAPEntry): string | undefined {
-		const extensionAttribute = settings.get<string | undefined>('LDAP_Extension_Field');
+		const extensionAttribute = settings.get<string>('LDAP_Extension_Field');
 		if (!extensionAttribute) {
 			return;
 		}
