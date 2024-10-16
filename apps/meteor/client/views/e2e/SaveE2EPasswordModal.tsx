@@ -1,9 +1,9 @@
 import { Box, CodeSnippet } from '@rocket.chat/fuselage';
 import { useClipboard } from '@rocket.chat/fuselage-hooks';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../components/GenericModal';
 
@@ -17,7 +17,7 @@ type SaveE2EPasswordModalProps = {
 const DOCS_URL = 'https://go.rocket.chat/i/e2ee-guide';
 
 const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: SaveE2EPasswordModalProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { copy, hasCopied } = useClipboard(randomPassword);
 
 	return (
