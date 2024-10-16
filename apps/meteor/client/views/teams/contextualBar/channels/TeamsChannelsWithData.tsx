@@ -45,7 +45,7 @@ const TeamsChannelsWithData = () => {
 	});
 
 	const handleCreateNew = useEffectEvent(() => {
-		setModal(<CreateChannelWithData teamId={teamId} onClose={() => setModal(null)} reload={reload} />);
+		setModal(<CreateChannelWithData teamId={teamId} mainRoom={room} onClose={() => setModal(null)} reload={reload} />);
 	});
 
 	const goToRoom = useEffectEvent((room: IRoom) => {

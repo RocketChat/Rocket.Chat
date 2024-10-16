@@ -1,3 +1,4 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import {
 	Box,
 	Modal,
@@ -25,7 +26,6 @@ import {
 	useToastMessageDispatch,
 	usePermissionWithScopedRoles,
 } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -37,6 +37,7 @@ import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescriptio
 
 type CreateChannelModalProps = {
 	teamId?: string;
+	mainRoom?: IRoom;
 	onClose: () => void;
 	reload?: () => void;
 };
@@ -62,7 +63,7 @@ const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModu
 	return 'Federation_Matrix_Federated_Description';
 };
 
-const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModalProps): ReactElement => {
+const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateChannelModalProps): ReactElement => {
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');
@@ -79,19 +80,12 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 	const federatedModule = useHasLicenseModule('federation');
 	const canUseFederation = federatedModule !== 'loading' && federatedModule && federationEnabled;
 
-	const teamsInfoEndpoint = useEndpoint('GET', '/v1/teams.info');
 	const channelNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 	const createChannel = useEndpoint('POST', '/v1/channels.create');
 	const createPrivateChannel = useEndpoint('POST', '/v1/groups.create');
 
-	const { data: teamInfoData } = useQuery(['teamId', teamId], async () => teamsInfoEndpoint({ teamId }), {
-		keepPreviousData: true,
-		retry: false,
-		enabled: teamId !== '',
-	});
-
-	const canCreateTeamChannel = usePermission('create-team-channel', teamInfoData?.teamInfo.roomId);
-	const canCreateTeamGroup = usePermission('create-team-group', teamInfoData?.teamInfo.roomId);
+	const canCreateTeamChannel = usePermission('create-team-channel', mainRoom?._id);
+	const canCreateTeamGroup = usePermission('create-team-group', mainRoom?._id);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
