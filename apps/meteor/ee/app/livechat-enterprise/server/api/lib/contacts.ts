@@ -27,7 +27,7 @@ export async function changeContactBlockStatus({ contactId, block, visitorId }: 
 
 export async function hasSingleContactLicense() {
 	if (!License.hasValidLicense()) {
-		throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature');
+		throw new Error('error-action-not-allowed');
 	}
 }
 
