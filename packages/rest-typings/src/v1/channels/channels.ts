@@ -7,6 +7,7 @@ import type { ChannelsArchiveProps } from './ChannelsArchiveProps';
 import type { ChannelsConvertToTeamProps } from './ChannelsConvertToTeamProps';
 import type { ChannelsCreateProps } from './ChannelsCreateProps';
 import type { ChannelsDeleteProps } from './ChannelsDeleteProps';
+import type { ChannelsFilesListProps } from './ChannelsFilesListProps';
 import type { ChannelsGetAllUserMentionsByChannelProps } from './ChannelsGetAllUserMentionsByChannelProps';
 import type { ChannelsGetIntegrationsProps } from './ChannelsGetIntegrationsProps';
 import type { ChannelsHistoryProps } from './ChannelsHistoryProps';
@@ -32,9 +33,11 @@ import type { ChannelsSetTopicProps } from './ChannelsSetTopicProps';
 import type { ChannelsSetTypeProps } from './ChannelsSetTypeProps';
 import type { ChannelsUnarchiveProps } from './ChannelsUnarchiveProps';
 
+export * from './ChannelsFilesListProps';
+
 export type ChannelsEndpoints = {
 	'/v1/channels.files': {
-		GET: (params: PaginatedRequest<{ roomId: string } | { roomName: string }>) => PaginatedResult<{
+		GET: (params: ChannelsFilesListProps) => PaginatedResult<{
 			files: IUploadWithUser[];
 		}>;
 	};

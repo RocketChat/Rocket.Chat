@@ -18,6 +18,7 @@ import {
 	isChannelsConvertToTeamProps,
 	isChannelsSetReadOnlyProps,
 	isChannelsDeleteProps,
+	isChannelsFilesListProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -763,11 +764,16 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.files',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChannelsFilesListProps },
 	{
 		async get() {
+			const { typeGroup, name, roomId, roomName } = this.queryParams;
+
 			const findResult = await findChannelByIdOrName({
-				params: this.queryParams,
+				params: {
+					...(roomId ? { roomId } : {}),
+					...(roomName ? { roomName } : {}),
+				},
 				checkedArchived: false,
 			});
 
@@ -778,9 +784,14 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
-			const ourQuery = Object.assign({}, query, { rid: findResult._id });
+			const filter = {
+				rid: findResult._id,
+				...query,
+				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
+				...(typeGroup ? { typeGroup } : {}),
+			};
 
-			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(ourQuery, {
+			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
