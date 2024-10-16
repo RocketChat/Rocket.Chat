@@ -48,5 +48,5 @@ export async function closeBlockedRoom(visitorId: string, user: IUser) {
 		return;
 	}
 
-	await Livechat.closeRoom({ room, visitor, comment: i18n.t('close-blocked-room-comment'), user });
+	return Livechat.closeRoom({ room, visitor, comment: i18n.t('close-blocked-room-comment'), user });
 }
