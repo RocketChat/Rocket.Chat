@@ -2755,6 +2755,13 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	setContactIdByVisitorIdOrToken(_contactId: string, _visitorId: string, _visitorToken: string): Promise<UpdateResult | Document> {
-		throw new Error('Method not implemented.');
+		return this.updateMany(
+			{
+				't': 'l',
+				'$or': [{ 'v._id': visitorId }, { 'v.token': visitorToken }],
+				'v.contactId': { $exists: false },
+			},
+			{ $set: { 'v.contactId': contactId } },
+		);
 	}
 }
