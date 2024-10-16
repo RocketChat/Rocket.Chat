@@ -35,7 +35,7 @@ export const createChannelMethod = async (
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createChannel' });
 	}
 
-	const user = await Users.findOneById(userId);
+	const user = await Users.findOneById(userId, { projection: { services: 0 } });
 	if (!user?.username) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createChannel' });
 	}

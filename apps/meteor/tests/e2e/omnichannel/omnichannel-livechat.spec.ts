@@ -58,7 +58,7 @@ test.describe.serial('OC - Livechat', () => {
 		});
 	});
 
-	test('OC - Livechat - Send message to livechat costumer', async () => {
+	test('OC - Livechat - Send message to livechat customer', async () => {
 		await poHomeOmnichannel.sidenav.openChat(firstVisitor.name);
 
 		await test.step('expect message to be sent by agent', async () => {
@@ -76,9 +76,23 @@ test.describe.serial('OC - Livechat', () => {
 			await expect(poLiveChat.unreadMessagesBadge(1)).toBeVisible();
 		});
 
+		await test.step('expect multiple messages to be received by minimized livechat', async () => {
+			await poHomeOmnichannel.content.sendMessage('this_a_test_message_once_again_from_agent');
+			await expect(poLiveChat.unreadMessagesBadge(2)).toBeVisible();
+		});
+
 		await test.step('expect unread messages to be visible after a reload', async () => {
 			await poLiveChat.page.reload();
-			await expect(poLiveChat.unreadMessagesBadge(1)).toBeVisible();
+			await expect(poLiveChat.unreadMessagesBadge(2)).toBeVisible();
+		});
+	});
+
+	test('OC - Livechat - Send message to agent after reload', async () => {
+		await test.step('expect unread counter to be empty after user sends a message', async () => {
+			await poLiveChat.openAnyLiveChat();
+			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
+			await poLiveChat.btnSendMessageToOnlineAgent.click();
+			expect(await poLiveChat.unreadMessagesBadge(0).all()).toHaveLength(0);
 		});
 	});
 

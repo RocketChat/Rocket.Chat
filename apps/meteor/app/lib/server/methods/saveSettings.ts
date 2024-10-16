@@ -9,6 +9,7 @@ import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
+import { disableCustomScripts } from '../functions/disableCustomScripts';
 import { notifyOnSettingChangedById } from '../lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
@@ -70,6 +71,11 @@ Meteor.methods<ServerMethods>({
 					// Verify the _id passed in is a string.
 					check(_id, String);
 					if (!editPrivilegedSetting && !(manageSelectedSettings && (await hasPermissionAsync(uid, getSettingPermissionId(_id))))) {
+						return settingsNotAllowed.push(_id);
+					}
+
+					// Disable custom scripts in cloud trials to prevent phishing campaigns
+					if (disableCustomScripts() && /^Custom_Script_/.test(_id)) {
 						return settingsNotAllowed.push(_id);
 					}
 
