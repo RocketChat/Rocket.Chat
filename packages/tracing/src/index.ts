@@ -25,11 +25,9 @@ export const startTracing = ({ service }: { service: string }) => {
 
 const enabled = true; // process.env.TRACING_ENABLED
 
-type MaybePromise<T> = T | Promise<T>;
-
-export function tracerSpan<F extends (span?: Span) => unknown>(name: string, options: SpanOptions, fn: F): MaybePromise<ReturnType<F>> {
+export async function tracerSpan<F extends (span?: Span) => unknown>(name: string, options: SpanOptions, fn: F): Promise<ReturnType<F>> {
 	if (!enabled) {
-		return fn() as MaybePromise<ReturnType<F>>;
+		return fn() as Promise<ReturnType<F>>;
 	}
 
 	return tracer.startActiveSpan(name, options, async (span: Span) => {
@@ -38,5 +36,5 @@ export function tracerSpan<F extends (span?: Span) => unknown>(name: string, opt
 		span.end();
 
 		return result;
-	}) as MaybePromise<ReturnType<F>>;
+	}) as Promise<ReturnType<F>>;
 }
