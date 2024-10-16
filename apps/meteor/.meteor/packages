@@ -14,7 +14,7 @@ rocketchat:streamer
 rocketchat:version
 rocketchat:user-presence
 
-accounts-base@3.0.2
+accounts-base@3.0.3
 accounts-facebook@1.3.4
 accounts-github@1.5.1
 accounts-google@1.4.1
@@ -27,14 +27,14 @@ google-oauth@1.4.5
 oauth@3.0.0
 oauth2@1.3.3
 
-check@1.4.2
+check@1.4.4
 ddp-rate-limiter@1.2.2
 rate-limit@1.1.2
 email@3.1.0
 
 meteor-base@1.5.2
 ddp-common@1.4.4
-webapp@2.0.1
+webapp@2.0.3
 
 mongo@2.0.2
 
@@ -59,7 +59,7 @@ tracker@1.3.4
 reactive-dict@1.3.2
 reactive-var@1.0.13
 
-babel-compiler@7.11.0
+babel-compiler@7.11.1
 standard-minifier-css@1.9.3
 dynamic-import@0.7.4
 ecmascript@0.16.9
