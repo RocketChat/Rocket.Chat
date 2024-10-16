@@ -455,6 +455,8 @@ export async function getContactHistory(
 			closer: 1,
 			tags: 1,
 			source: 1,
+			lastMessage: 1,
+			verified: 1,
 		},
 	};
 
