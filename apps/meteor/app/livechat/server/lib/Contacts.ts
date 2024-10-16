@@ -413,9 +413,7 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
  * @returns the updated contact
  */
 export async function addContactEmail(contactId: ILivechatContact['_id'], email: string): Promise<ILivechatContact> {
-	const contact = await LivechatContacts.findOneById(contactId, {
-		projection: { _id: 1, emails: 1 },
-	});
+	const contact = await LivechatContacts.findOneById(contactId);
 	if (!contact) {
 		throw new Error('error-contact-not-found');
 	}
