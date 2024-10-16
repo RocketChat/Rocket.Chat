@@ -3,9 +3,9 @@ import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Options, Box, Option, Field, FieldLabel, FieldRow, SelectLegacy } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { useCallback, forwardRef, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { PriorityIcon } from '../priorities/PriorityIcon';
@@ -18,7 +18,7 @@ type PrioritiesSelectProps = {
 };
 
 export const PrioritiesSelect = ({ value = '', label, options, onChange }: PrioritiesSelectProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 	const [sorting] = useState<Record<string, LivechatPriorityWeight>>({});
 

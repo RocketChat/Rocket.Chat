@@ -1,11 +1,11 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericResourceUsage, GenericResourceUsageSkeleton } from '../../../components/GenericResourceUsage';
 import { useActiveConnections } from '../../hooks/useActiveConnections';
 
 const CustomUserActiveConnections = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const result = useActiveConnections();
 

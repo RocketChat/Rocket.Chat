@@ -1,7 +1,7 @@
 import { FieldLabel as BaseFieldLabel, Box, Tag } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
@@ -11,7 +11,7 @@ type FieldLabelProps = ComponentProps<typeof BaseFieldLabel> & {
 };
 
 const FieldLabel = ({ children: label, premium = false }: FieldLabelProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 	const shouldDisableEnterprise = premium && !hasLicense;
 
