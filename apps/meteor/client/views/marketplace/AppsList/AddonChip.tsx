@@ -3,12 +3,10 @@ import { Tag } from '@rocket.chat/fuselage';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { doesAppRequireAddon } from '../helpers/doesAppRequireAddon';
-
 const AddonChip = ({ app }: { app: App }) => {
 	const { t } = useTranslation();
 
-	if (!doesAppRequireAddon(app)) {
+	if (!app.addon) {
 		return null;
 	}
 
