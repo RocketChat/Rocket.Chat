@@ -1,4 +1,4 @@
-import { initDatabaseTracing } from '@rocket.chat/tracing';
+import { initDatabaseTracing, isTracingEnabled } from '@rocket.chat/tracing';
 import { MongoClient } from 'mongodb';
 import type { Db, Collection, MongoClientOptions, Document } from 'mongodb';
 
@@ -9,7 +9,7 @@ const name = /^mongodb:\/\/.*?(?::[0-9]+)?\/([^?]*)/.exec(MONGO_URL)?.[1];
 function connectDb(options?: MongoClientOptions): Promise<MongoClient> {
 	const client = new MongoClient(MONGO_URL, {
 		...options,
-		monitorCommands: true,
+		monitorCommands: isTracingEnabled(),
 	});
 
 	return client.connect().catch((error) => {

@@ -8,6 +8,10 @@ export { initDatabaseTracing } from './traceDatabaseCalls';
 
 let tracer: Tracer;
 
+export function isTracingEnabled() {
+	return true; // TODO replace by ['yes', 'true'].includes(String(process.env.TRACING_ENABLED).toLowerCase());
+}
+
 export const startTracing = ({ service }: { service: string }) => {
 	const exporter = new OTLPTraceExporter();
 
@@ -23,10 +27,8 @@ export const startTracing = ({ service }: { service: string }) => {
 	// return new TracingEnabled(service);
 };
 
-const enabled = true; // process.env.TRACING_ENABLED
-
 export async function tracerSpan<F extends (span?: Span) => unknown>(name: string, options: SpanOptions, fn: F): Promise<ReturnType<F>> {
-	if (!enabled) {
+	if (!isTracingEnabled()) {
 		return fn() as Promise<ReturnType<F>>;
 	}
 
