@@ -975,6 +975,52 @@ describe('LIVECHAT - contacts', () => {
 			expect(closedRoom).to.have.property('closedBy');
 			expect(closedRoom.lastMessage?.msg).to.be.equal('This channel has been blocked');
 		});
+
+		it('should not be able to open a room when contact is blocked', async () => {
+			await request.post(api('omnichannel/contacts.block')).set(credentials).send({ contactId: visitor.contactId, visitorId: visitor._id });
+
+			const createRoomResponse = await request.get(api('livechat/room')).query({ token: visitor.token }).set(credentials);
+
+			expect(createRoomResponse.status).to.be.equal(400);
+			expect(createRoomResponse.body).to.have.property('success', false);
+			expect(createRoomResponse.body).to.have.property('error', 'error-contact-channel-blocked');
+		});
+
+		it('should return an error if contactId is missing', async () => {
+			const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitorId: visitor._id });
+
+			expect(res.status).to.be.equal(400);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal("must have required property 'contactId' [invalid-params]");
+		});
+
+		it('should return an error if visitorId is missing', async () => {
+			const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({ contactId: visitor.contactId });
+
+			expect(res.status).to.be.equal(400);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal("must have required property 'visitorId' [invalid-params]");
+		});
+
+		describe('Permissions', () => {
+			before(async () => {
+				await removePermissionFromAllRoles('block-livechat-contact');
+			});
+
+			after(async () => {
+				await restorePermissionToRoles('block-livechat-contact');
+			});
+
+			it("should return an error if user doesn't have 'block-livechat-contact' permission", async () => {
+				const res = await request
+					.post(api('omnichannel/contacts.block'))
+					.set(credentials)
+					.send({ contactId: visitor.contactId, visitorId: visitor._id });
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			});
+		});
 	});
 
 	(IS_EE ? describe : describe.skip)('[POST] omnichannel/contacts.unblock', async () => {
@@ -1035,6 +1081,42 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.status).to.be.equal(400);
 			expect(res.body).to.have.property('success', false);
 			expect(res.body.error).to.be.equal('error-channel-not-found');
+		});
+
+		it('should return an error if contactId is missing', async () => {
+			const res = await request.post(api('omnichannel/contacts.unblock')).set(credentials).send({ visitorId: visitor._id });
+
+			expect(res.status).to.be.equal(400);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal("must have required property 'contactId' [invalid-params]");
+		});
+
+		it('should return an error if visitorId is missing', async () => {
+			const res = await request.post(api('omnichannel/contacts.unblock')).set(credentials).send({ contactId: visitor.contactId });
+
+			expect(res.status).to.be.equal(400);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal("must have required property 'visitorId' [invalid-params]");
+		});
+
+		describe('Permissions', () => {
+			before(async () => {
+				await removePermissionFromAllRoles('unblock-livechat-contact');
+			});
+
+			after(async () => {
+				await restorePermissionToRoles('unblock-livechat-contact');
+			});
+
+			it("should return an error if user doesn't have 'unblock-livechat-contact' permission", async () => {
+				const res = await request
+					.post(api('omnichannel/contacts.unblock'))
+					.set(credentials)
+					.send({ contactId: visitor.contactId, visitorId: visitor._id });
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			});
 		});
 	});
 });
