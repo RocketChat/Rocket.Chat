@@ -7,8 +7,8 @@ import useVideoConfMenuOptions from './useVideoConfMenuOptions';
 import useVoipMenuOptions from './useVoipMenuOptions';
 
 export const useStartCallRoomAction = () => {
-	const voipCall = useVideoConfMenuOptions();
-	const videoCall = useVoipMenuOptions();
+	const videoCall = useVideoConfMenuOptions();
+	const voipCall = useVoipMenuOptions();
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!videoCall.allowed && !voipCall.allowed) {
