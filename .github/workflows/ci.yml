@@ -77,6 +77,10 @@ jobs:
           c http://localhost:3000/api/v1/settings/Federation_Matrix_enabled -d '{"value": true}'
           c http://localhost:3000/api/v1/settings/Federation_Matrix_serve_well_known -d '{"value": false}'
           curl http://localhost:3000/.well-known/matrix/server -vvv
+          echo 'enabling'
+          c http://localhost:3000/api/v1/settings/Federation_Matrix_serve_well_known -d '{"value": true}'
+          curl http://localhost:3000/.well-known/matrix/server -vvv
+          curl http://localhost:3000/.well-known/matrix/client -vvv
 
   release-versions:
     name: ⚙️ Variables Setup
