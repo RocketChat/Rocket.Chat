@@ -41,7 +41,7 @@
   "scripts": {
     "build": "run-s .:build:clean .:build:bundle",
     ".:build:clean": "rimraf dist",
-    ".:build:bundle": "webpack",
+    ".:build:bundle": "webpack-cli",
     "lint": "eslint .",
     "test": "jest",
     "testunit": "jest",
@@ -65,7 +65,7 @@
     "peggy": "3.0.2",
     "prettier": "~2.8.8",
     "prettier-plugin-pegjs": "~0.5.4",
-    "rimraf": "^3.0.2",
+    "rimraf": "^6.0.1",
     "ts-loader": "~9.4.4",
     "typedoc": "~0.24.8",
     "typescript": "~5.5.4",

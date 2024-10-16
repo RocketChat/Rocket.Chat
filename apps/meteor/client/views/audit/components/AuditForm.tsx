@@ -1,8 +1,8 @@
 import type { IAuditLog, IRoom } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useController } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import type { AuditFields } from '../hooks/useAuditForm';
 import { useAuditForm } from '../hooks/useAuditForm';
@@ -20,7 +20,7 @@ type AuditFormProps = {
 };
 
 const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const form = useAuditForm();
 	const { control, handleSubmit, register } = form;

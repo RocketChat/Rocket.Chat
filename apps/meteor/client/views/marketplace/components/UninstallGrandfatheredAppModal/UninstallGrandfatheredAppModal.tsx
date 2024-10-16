@@ -34,7 +34,7 @@ const UninstallGrandfatheredAppModal = ({ context, limit, appName, handleUninsta
 			<Modal.Content>
 				<MarkdownText content={modalContent} />
 			</Modal.Content>
-			<Modal.Footer>
+			<Modal.Footer justifyContent='space-between'>
 				<Modal.FooterAnnotation>
 					{/* TODO: Move the link to a go link when available */}
 					<a target='_blank' rel='noopener noreferrer' href='https://docs.rocket.chat/docs/rocketchat-marketplace'>
