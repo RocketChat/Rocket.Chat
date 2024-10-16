@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 
 import AppsUsageCard from './AppsUsageCard';
+import { PRICING_LINK } from '../../../utils/links';
 
 const appRoot = mockAppRoot().withTranslations('en', 'core', {
 	Apps_InfoText_limited:
@@ -36,7 +37,7 @@ it('should render data as progress bars', async () => {
 
 	await userEvent.click(screen.getByRole('button', { name: 'Click_here_for_more_info' }));
 
-	expect(screen.getByRole('link', { name: 'premium plans' })).toHaveAttribute('href', 'https://go.rocket.chat/i/pricing-product');
+	expect(screen.getByRole('link', { name: 'premium plans' })).toHaveAttribute('href', PRICING_LINK);
 });
 
 it('should render an upgrade button if marketplace apps reached 80% of the limit', async () => {
@@ -52,7 +53,7 @@ it('should render an upgrade button if marketplace apps reached 80% of the limit
 
 	await userEvent.click(screen.getByRole('button', { name: 'Click_here_for_more_info' }));
 
-	expect(screen.getByRole('link', { name: 'premium plans' })).toHaveAttribute('href', 'https://go.rocket.chat/i/pricing-product');
+	expect(screen.getByRole('link', { name: 'premium plans' })).toHaveAttribute('href', PRICING_LINK);
 });
 
 it('should render a full progress bar with private apps disabled', async () => {
@@ -74,5 +75,5 @@ it('should render a full progress bar with private apps disabled', async () => {
 
 	await userEvent.click(screen.getByRole('button', { name: 'Click_here_for_more_info' }));
 
-	expect(screen.getByRole('link', { name: 'premium plans' })).toHaveAttribute('href', 'https://go.rocket.chat/i/pricing-product');
+	expect(screen.getByRole('link', { name: 'premium plans' })).toHaveAttribute('href', PRICING_LINK);
 });
