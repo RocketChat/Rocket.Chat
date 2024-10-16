@@ -6,7 +6,9 @@ import {
 	isIntegrationsRemoveProps,
 	isIntegrationsGetProps,
 	isIntegrationsUpdateProps,
+	isIntegrationsListProps,
 } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
@@ -86,6 +88,7 @@ API.v1.addRoute(
 	'integrations.list',
 	{
 		authRequired: true,
+		validateParams: isIntegrationsListProps,
 		permissionsRequired: {
 			GET: {
 				permissions: [
@@ -101,15 +104,22 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields: projection, query } = await this.parseJsonQuery();
+			const { sort, fields, query } = await this.parseJsonQuery();
+			const { name, type } = this.queryParams;
 
-			const ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), query) as Filter<IIntegration>;
+			const filter = {
+				...query,
+				...(name ? { name: { $regex: escapeRegExp(name as string), $options: 'i' } } : {}),
+				...(type ? { type } : {}),
+			};
+
+			const ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), filter) as Filter<IIntegration>;
 
 			const { cursor, totalCount } = Integrations.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,
-				projection,
+				projection: fields,
 			});
 
 			const [integrations, total] = await Promise.all([cursor.toArray(), totalCount]);

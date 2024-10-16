@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import { isExternal, getBaseURI } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import dompurify from 'dompurify';
 import { marked } from 'marked';
 import type { ComponentProps } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { renderMessageEmoji } from '../lib/utils/renderMessageEmoji';
 
@@ -95,7 +95,7 @@ const MarkdownText = ({
 	...props
 }: MarkdownTextProps) => {
 	const sanitizer = dompurify.sanitize;
-	const t = useTranslation();
+	const { t } = useTranslation();
 	let markedOptions: marked.MarkedOptions;
 
 	const schemes = 'http,https,notes,ftp,ftps,tel,mailto,sms,cid';

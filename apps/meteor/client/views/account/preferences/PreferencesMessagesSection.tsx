@@ -1,12 +1,12 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { FieldRow, FieldLink, FieldHint, FieldLabel, Accordion, Field, Select, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 const PreferencesMessagesSection = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { control } = useFormContext();
 
 	const alsoSendThreadMessageToChannelOptions = useMemo(
