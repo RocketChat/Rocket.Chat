@@ -1,8 +1,10 @@
+import { useFocusManager } from '@react-aria/focus';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, TextInput, Palette, SidebarV2Section, IconButton } from '@rocket.chat/fuselage';
 import { useMergedRefs, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { FocusScope } from 'react-aria';
 import { useForm } from 'react-hook-form';
 import tinykeys from 'tinykeys';
 
@@ -48,8 +50,11 @@ const shortcut = ((): string => {
 	return '(Ctrl+K)';
 })();
 
+const isRecentButton = (node: EventTarget) => (node as HTMLElement).title === 'Recent';
+
 const SearchSection = () => {
 	const t = useTranslation();
+	const focusManager = useFocusManager();
 	const user = useUser();
 	const [showRecentSearch, setShowRecent] = useState(false);
 
@@ -82,6 +87,12 @@ const SearchSection = () => {
 	}, [filterText]);
 
 	useEffect(() => {
+		if (showRecentSearch) {
+			focusManager.focusNext({ accept: (node) => isRecentButton(node) });
+		}
+	}, [focusManager, showRecentSearch]);
+
+	useEffect(() => {
 		const unsubscribe = tinykeys(window, {
 			'$mod+K': (event) => {
 				event.preventDefault();
@@ -96,7 +107,6 @@ const SearchSection = () => {
 			'Shift+$mod+K': (event) => {
 				event.preventDefault();
 				setShowRecent(true);
-				setFocus('filterText');
 			},
 			'Escape': (event) => {
 				event.preventDefault();
@@ -139,7 +149,9 @@ const SearchSection = () => {
 				)}
 			</SidebarV2Section>
 			{(isDirty || showRecentSearch) && (
-				<SearchList filterText={filterText} onEscSearch={handleEscSearch} showRecentSearch={showRecentSearch} />
+				<FocusScope>
+					<SearchList filterText={filterText} onEscSearch={handleEscSearch} showRecentSearch={showRecentSearch} />
+				</FocusScope>
 			)}
 		</Box>
 	);
