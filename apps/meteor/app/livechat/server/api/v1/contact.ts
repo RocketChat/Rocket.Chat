@@ -161,6 +161,10 @@ API.v1.addRoute(
 				contact = await LivechatContacts.findOne({ 'phones.phoneNumber': phone });
 			}
 
+			if (!contact) {
+				return API.v1.notFound();
+			}
+
 			return API.v1.success({ contact });
 		},
 	},

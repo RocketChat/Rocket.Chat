@@ -11,7 +11,7 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	updateContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact>;
 	addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void>;
 	findPaginatedContacts(searchText?: string, options?: FindOptions): FindPaginated<FindCursor<ILivechatContact>>;
-	updateLastChatById(contactId: string, lastChat: ILivechatContact['lastChat']): Promise<UpdateResult>;
+	updateLastChatById(contactId: string, visitorId: string, lastChat: ILivechatContact['lastChat']): Promise<UpdateResult>;
 	findContactMatchingVisitor(visitor: AtLeast<ILivechatVisitor, 'visitorEmails' | 'phone'>): Promise<ILivechatContact | null>;
 	findOneByVisitorId<T extends Document = ILivechatContact>(
 		visitorId: ILivechatVisitor['_id'],
