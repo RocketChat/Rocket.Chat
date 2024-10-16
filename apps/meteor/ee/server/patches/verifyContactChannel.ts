@@ -17,6 +17,10 @@ await License.onLicense('contact-id-verification', () => {
 				roomId: string;
 			},
 		): Promise<ILivechatContact | null> => {
+			if (!(await hasLicense('contact-id-verification'))) {
+				return null;
+			}
+			
 			const { contactId, field, value, channelName, visitorId, roomId } = params;
 
 			const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'channels'>>(contactId, {
