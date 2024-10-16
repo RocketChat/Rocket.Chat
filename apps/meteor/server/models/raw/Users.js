@@ -3121,20 +3121,4 @@ export class UsersRaw extends BaseRaw {
 			},
 		);
 	}
-
-	async countActiveUsersWithCustomRoles() {
-		// Regex to match object IDs from roles array
-		const customRoleRegex = /^[0-9a-fA-F]{24}$/;
-		const query = {
-			active: true,
-			roles: {
-				$elemMatch: {
-					$regex: customRoleRegex,
-				},
-			},
-		};
-
-		const result = await this.col.countDocuments(query);
-		return result;
-	}
 }

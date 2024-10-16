@@ -2584,7 +2584,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	countLivechatRoomsWithDepartment(): Promise<number> {
-		return this.col.countDocuments({ departmentId: { $exists: true }, t: 'l' });
+		return this.col.countDocuments({ departmentId: { $exists: true } });
 	}
 
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {

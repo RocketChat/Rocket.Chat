@@ -868,27 +868,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.col.countDocuments({ federated: true });
 	}
 
-	async countMessagesInActiveFederatedRooms(): Promise<number> {
-		const pipeline = [
-			{
-				$match: {
-					federated: true,
-					archived: { $ne: true },
-				},
-			},
-			{
-				$group: {
-					_id: null,
-					sum: { $sum: '$msgs' },
-				},
-			},
-		];
-
-		const result = await this.col.aggregate<{ sum: number }>(pipeline).toArray();
-
-		return result.length ? result[0].sum : 0;
-	}
-
 	incMsgCountById(_id: IRoom['_id'], inc = 1): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 

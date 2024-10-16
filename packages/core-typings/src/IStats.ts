@@ -34,7 +34,6 @@ export interface IStats {
 	busyUsers: number;
 	totalConnectedUsers: number;
 	offlineUsers: number;
-	activeUsersWithCustomRoles: number;
 	userLanguages: Record<string, number>;
 	totalRooms: number;
 	totalChannels: number;
