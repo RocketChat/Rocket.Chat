@@ -81,7 +81,6 @@ API.v1.addRoute(
 			await changeContactBlockStatus({
 				contactId,
 				visitorId,
-
 				block: false,
 			});
 
