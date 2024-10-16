@@ -45,7 +45,6 @@
 		"@types/markdown-it": "^14.0.1",
 		"@types/mini-css-extract-plugin": "~1.4.3",
 		"@types/webpack-bundle-analyzer": "^4.6.2",
-		"@types/webpack-dev-server": "~4.7.2",
 		"@types/webpack-env": "~1.18.5",
 		"@types/whatwg-fetch": "~0.0.33",
 		"@typescript-eslint/eslint-plugin": "~5.60.1",
@@ -91,10 +90,10 @@
 		"terser-webpack-plugin": "~4.2.3",
 		"typescript": "~5.5.4",
 		"url-loader": "^4.1.1",
-		"webpack": "^5.95.0",
+		"webpack": "~5.95.0",
 		"webpack-bundle-analyzer": "^4.9.1",
-		"webpack-cli": "^5.1.4",
-		"webpack-dev-server": "~4.13.3"
+		"webpack-cli": "~5.1.4",
+		"webpack-dev-server": "~5.1.0"
 	},
 	"peerDependencies": {
 		"@rocket.chat/fuselage-tokens": "*",
