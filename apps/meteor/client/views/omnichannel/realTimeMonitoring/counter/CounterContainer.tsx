@@ -1,5 +1,7 @@
+import type { Box } from '@rocket.chat/fuselage';
 import { Skeleton } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { ComponentPropsWithoutRef } from 'react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,7 +22,7 @@ type CounterContainerProps = {
 	data?: Totalizers;
 	state: AsyncStatePhase;
 	initialData: DataType;
-};
+} & Omit<ComponentPropsWithoutRef<typeof Box>, 'data'>;
 
 const CounterContainer = ({ data, state, initialData, ...props }: CounterContainerProps) => {
 	const { t } = useTranslation();

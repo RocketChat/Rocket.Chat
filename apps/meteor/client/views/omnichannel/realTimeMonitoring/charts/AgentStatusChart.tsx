@@ -1,8 +1,9 @@
+import type { Box } from '@rocket.chat/fuselage';
 import type { OperationParams } from '@rocket.chat/rest-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { Chart as ChartType } from 'chart.js';
 import type { TFunction } from 'i18next';
-import type { MutableRefObject } from 'react';
+import type { ComponentPropsWithoutRef, MutableRefObject } from 'react';
 import React, { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -33,7 +34,7 @@ const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: TFun
 type AgentStatusChartsProps = {
 	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/charts/agents-status'>;
 	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
-};
+} & Omit<ComponentPropsWithoutRef<typeof Box>, 'data'>;
 
 const AgentStatusChart = ({ params, reloadRef, ...props }: AgentStatusChartsProps) => {
 	const { t } = useTranslation();
