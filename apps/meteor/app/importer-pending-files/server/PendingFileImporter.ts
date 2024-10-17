@@ -36,7 +36,6 @@ export class PendingFileImporter extends Importer {
 		});
 		this.reportProgress();
 
-		await super.updateProgress(ProgressStep.IMPORTING_FILES);
 		setImmediate(() => {
 			void this.startImport({});
 		});
