@@ -133,6 +133,7 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 							| 'ignored'
 							| 'E2EKey'
 							| 'E2ESuggestedKey'
+							| 'oldRoomKeys'
 							| 'tunread'
 							| 'tunreadGroup'
 							| 'tunreadUser'

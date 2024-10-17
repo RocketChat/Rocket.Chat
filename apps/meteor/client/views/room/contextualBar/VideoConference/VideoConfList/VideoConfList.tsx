@@ -1,9 +1,9 @@
 import type { VideoConference } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import {
@@ -29,7 +29,7 @@ type VideoConfListProps = {
 };
 
 const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loadMoreItems }: VideoConfListProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,

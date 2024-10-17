@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import Menu, { Group, Item } from '.';
@@ -11,7 +11,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof Group>>;
 
-export const Single: Story<ComponentProps<typeof Group>> = (args) => (
+export const Single: StoryFn<ComponentProps<typeof Group>> = (args) => (
 	<Menu>
 		<Group {...args}>
 			<Item>A menu item</Item>
@@ -21,7 +21,7 @@ export const Single: Story<ComponentProps<typeof Group>> = (args) => (
 );
 Single.storyName = 'single';
 
-export const Multiple: Story<ComponentProps<typeof Group>> = (args) => (
+export const Multiple: StoryFn<ComponentProps<typeof Group>> = (args) => (
 	<Menu>
 		<Group {...args}>
 			<Item>A menu item</Item>
@@ -34,7 +34,7 @@ export const Multiple: Story<ComponentProps<typeof Group>> = (args) => (
 );
 Multiple.storyName = 'multiple';
 
-export const WithTitle: Story<ComponentProps<typeof Group>> = (args) => (
+export const WithTitle: StoryFn<ComponentProps<typeof Group>> = (args) => (
 	<Menu>
 		<Group {...args}>
 			<Item>A menu item</Item>

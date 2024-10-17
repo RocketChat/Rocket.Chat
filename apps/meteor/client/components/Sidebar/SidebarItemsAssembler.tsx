@@ -1,6 +1,6 @@
 import { Divider } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { Fragment, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { SidebarItem } from '../../lib/createSidebarItems';
 import { isSidebarItem } from '../../lib/createSidebarItems';
@@ -12,7 +12,7 @@ type SidebarItemsAssemblerProps = {
 };
 
 const SidebarItemsAssembler = ({ items, currentPath }: SidebarItemsAssemblerProps) => {
-	const t = useTranslation();
+	const { t, i18n } = useTranslation();
 
 	return (
 		<>
@@ -25,7 +25,7 @@ const SidebarItemsAssembler = ({ items, currentPath }: SidebarItemsAssemblerProp
 							icon={props.icon}
 							label={t((props.i18nLabel || props.name) as Parameters<typeof t>[0])}
 							currentPath={currentPath}
-							tag={props.tag && t.has(props.tag) ? t(props.tag) : props.tag}
+							tag={props.tag && i18n.exists(props.tag) ? t(props.tag) : props.tag}
 							externalUrl={props.externalUrl}
 							badge={props.badge}
 						/>

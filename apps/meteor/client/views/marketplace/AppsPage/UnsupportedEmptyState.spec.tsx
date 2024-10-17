@@ -17,6 +17,7 @@ describe('with private apps enabled', () => {
 					installedApps: asyncState.resolved({ apps: [] }),
 					marketplaceApps: asyncState.rejected(new Error('unsupported version')),
 					privateApps: asyncState.resolved({ apps: [] }),
+					privateAppsEnabled: true,
 					reload: () => Promise.resolve(),
 					orchestrator: undefined,
 				}}

@@ -32,6 +32,7 @@ export type AppsContextValue = {
 	privateApps: AsyncState<{ apps: App[] }>;
 	reload: () => Promise<void>;
 	orchestrator?: IAppsOrchestrator;
+	privateAppsEnabled: boolean;
 };
 
 export const AppsContext = createContext<AppsContextValue>({
@@ -52,4 +53,5 @@ export const AppsContext = createContext<AppsContextValue>({
 	},
 	reload: () => Promise.resolve(),
 	orchestrator: undefined,
+	privateAppsEnabled: false,
 });

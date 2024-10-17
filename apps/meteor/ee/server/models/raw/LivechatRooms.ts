@@ -726,15 +726,4 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 			...extraQuery,
 		});
 	}
-
-	async setContactIdByVisitorIdOrToken(contactId: string, visitorId: string, visitorToken: string): Promise<UpdateResult | Document> {
-		return this.updateMany(
-			{
-				't': 'l',
-				'$or': [{ 'v._id': visitorId }, { 'v.token': visitorToken }],
-				'v.contactId': { $exists: false },
-			},
-			{ $set: { 'v.contactId': contactId } },
-		);
-	}
 }
