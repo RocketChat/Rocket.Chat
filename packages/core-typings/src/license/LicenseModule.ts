@@ -20,4 +20,5 @@ export type LicenseModule =
 	| 'custom-roles'
 	| 'accessibility-certification'
 	| 'unlimited-presence'
-	| 'contact-id-verification';
+	| 'contact-id-verification'
+	| 'teams-voip';
