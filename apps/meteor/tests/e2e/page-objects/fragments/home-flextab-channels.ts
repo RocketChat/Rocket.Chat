@@ -15,6 +15,10 @@ export class HomeFlextabChannels {
 		return this.page.locator('button >> text="Add Existing"');
 	}
 
+	get btnCreateNew(): Locator {
+		return this.page.locator('button >> text="Create new"');
+	}
+
 	get inputChannels(): Locator {
 		return this.page.locator('#modal-root input').first();
 	}
@@ -41,5 +45,9 @@ export class HomeFlextabChannels {
 			.getByRole('dialog', { name: 'Are you sure?', exact: true })
 			.getByRole('button', { name: 'Remove', exact: true })
 			.click();
+	}
+
+	async confirmDeleteRoom() {
+		return this.page.getByRole('button', { name: 'Yes, delete', exact: true }).click();
 	}
 }

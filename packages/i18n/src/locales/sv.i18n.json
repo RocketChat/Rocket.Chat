@@ -308,8 +308,6 @@
   "add-oauth-service_description": "Tillstånd att lägga till en ny Oauth-tjänst",
   "bypass-time-limit-edit-and-delete": "Överskrid tidsbegränsning",
   "bypass-time-limit-edit-and-delete_description": "Behörighet att överskrida gränsen för att ändra och radera meddelanden",
-  "add-team-channel": "Lägg till team Channel",
-  "add-team-channel_description": "Behörighet att lägga till en kanal till ett team",
   "add-team-member": "Lägg till teammedlem",
   "add-team-member_description": "Behörighet att lägga till medlemmar i ett team",
   "add-user": "Lägg till användare",
