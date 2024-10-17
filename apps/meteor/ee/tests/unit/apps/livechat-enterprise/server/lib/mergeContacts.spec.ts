@@ -43,6 +43,21 @@ describe('mergeContacts', () => {
 		sinon.restore();
 	});
 
+	it('should throw an error if contact does not exist', async () => {
+		modelsMock.LivechatContacts.findOneById.resolves(undefined);
+
+		await expect(runMergeContacts(() => undefined, 'invalidId', 'visitorId')).to.be.rejectedWith('error-invalid-contact');
+	});
+
+	it('should throw an error if contact channel does not exist', async () => {
+		modelsMock.LivechatContacts.findOneById.resolves({
+			_id: 'contactId',
+			channels: [{ name: 'channelName', visitorId: 'visitorId' }],
+		});
+
+		await expect(runMergeContacts(() => undefined, 'contactId', 'invalidVisitor')).to.be.rejectedWith('error-invalid-channel');
+	});
+
 	it('should do nothing if there are no similar verified contacts', async () => {
 		modelsMock.LivechatContacts.findOneById.resolves({ _id: 'contactId', channels: [targetChannel] });
 		modelsMock.LivechatContacts.findSimilarVerifiedContacts.resolves([]);

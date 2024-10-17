@@ -62,7 +62,6 @@ type VerifyContactChannelParams = {
 	contactId: string;
 	field: string;
 	value: string;
-	channelName: string;
 	visitorId: string;
 	roomId: string;
 };
@@ -540,5 +539,5 @@ export async function validateContactManager(contactManagerUserId: string) {
 export const verifyContactChannel = makeFunction(async (_params: VerifyContactChannelParams): Promise<ILivechatContact | null> => null);
 
 export const mergeContacts = makeFunction(
-	async (_contactId: string, _channel: ILivechatContactChannel): Promise<ILivechatContact | null> => null,
+	async (_contactId: string, _visitorId: string): Promise<ILivechatContact | null> => null,
 );
