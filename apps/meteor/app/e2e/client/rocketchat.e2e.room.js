@@ -677,7 +677,7 @@ export class E2ERoom extends Emitter {
 					return await this.doDecrypt(vector, this.groupSessionKey, cipherText);
 				} catch (error) {
 					this.error('Error decrypting message: ', error, message);
-					return { msg: t('E2E_Key_Error') };
+					return { msg: t('E2E_indecipherable') };
 				}
 			}
 			oldKey = oldRoomKey.E2EKey;
