@@ -1,8 +1,10 @@
-import { Box, Skeleton } from '@rocket.chat/fuselage';
+import { Skeleton } from '@rocket.chat/fuselage';
+import { ExternalLink } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { PRICING_LINK } from '../../../utils/links';
 import type { CardProps } from '../../FeatureUsageCard';
 import FeatureUsageCard from '../../FeatureUsageCard';
 import UpgradeButton from '../../UpgradeButton';
@@ -41,13 +43,11 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 	const card: CardProps = {
 		title: t('Apps'),
 		infoText: (
-			<Trans i18nKey='Apps_InfoText_limited' tOptions={{ marketplaceAppsMaxCount }}>
-				Community workspaces can enable up to {{ marketplaceAppsMaxCount }} marketplace apps. Private apps can only be enabled in{' '}
-				<Box is='a' href='https://www.rocket.chat/pricing' target='_blank' color='info'>
-					premium plans
-				</Box>
-				.
-			</Trans>
+			<Trans
+				i18nKey='Apps_InfoText_limited'
+				values={{ marketplaceAppsMaxCount }}
+				components={{ 1: <ExternalLink to={PRICING_LINK}>premium plans</ExternalLink> }}
+			/>
 		),
 
 		...(marketplaceAppsAboveWarning && {
