@@ -186,7 +186,7 @@ export class AppServerOrchestrator {
 				continue;
 			}
 
-			await this.getManager().loadOne(app.getID());
+			await this.getManager().loadOne(app.getID(), true);
 		}
 		/* eslint-enable no-await-in-loop */
 
