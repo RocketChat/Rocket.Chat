@@ -411,7 +411,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.findOne(query);
 	}
 
-	findOneByContactId(contactId: string): Promise<ILivechatInquiryRecord | null> {
+	findOneReadyByContactId(contactId: string): Promise<ILivechatInquiryRecord | null> {
 		const query: Filter<ILivechatInquiryRecord> = {
 			'v.contactId': contactId,
 			'status': LivechatInquiryStatus.READY,

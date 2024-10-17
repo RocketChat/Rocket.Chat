@@ -542,4 +542,6 @@ export const verifyContactChannel = makeFunction(async (_params: VerifyContactCh
 
 export const mergeContacts = makeFunction(async (_contactId: string, _visitorId: string): Promise<ILivechatContact | null> => null);
 
-export const isUnverifiedContact = makeFunction(async (_room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean> => false);
+export const shouldTriggerVerificationApp = makeFunction(
+	async (_contactId: ILivechatContact['_id'], _source: IOmnichannelSource): Promise<boolean> => false,
+);

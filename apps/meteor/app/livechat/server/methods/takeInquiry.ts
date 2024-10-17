@@ -5,8 +5,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
+import { isSingleContactEnabled, shouldTriggerVerificationApp, migrateVisitorIfMissingContact } from '../lib/Contacts';
 import { RoutingManager } from '../lib/RoutingManager';
-import { isUnverifiedContact } from '../lib/Contacts';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -55,7 +55,15 @@ export const takeInquiry = async (
 		throw new Error('error-mac-limit-reached');
 	}
 
-	if (await isUnverifiedContact(room)) {
+	const contactId = await (async () => {
+		if (!isSingleContactEnabled()) {
+			return undefined;
+		}
+
+		return migrateVisitorIfMissingContact(inquiry.v._id, room.source);
+	})();
+
+	if (contactId && (await shouldTriggerVerificationApp(contactId, room.source))) {
 		throw new Error('error-unverified-contact');
 	}
 
