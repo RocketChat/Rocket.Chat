@@ -52,6 +52,6 @@ export const runVerifyContactChannel = async (
 	return mergeContacts(contactId, channel);
 };
 
-await License.onLicense('contact-id-verification', () => {
+void License.onLicense('contact-id-verification', () => {
 	verifyContactChannel.patch(runVerifyContactChannel);
 });
