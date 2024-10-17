@@ -1,5 +1,5 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import UAParser from 'ua-parser-js';
 
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
@@ -14,7 +14,7 @@ type VisitorClientInfoProps = {
 };
 
 const VisitorClientInfo = ({ uid }: VisitorClientInfoProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const {
 		value: userData,
 		phase: state,
