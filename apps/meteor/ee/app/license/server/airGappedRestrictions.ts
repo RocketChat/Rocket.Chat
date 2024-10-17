@@ -39,7 +39,7 @@ License.onValidateLicense(async () => {
 	void AirGappedRestriction.computeRestriction(token);
 });
 
-License.onInvalidateLicense(async () => {
+License.onRemoveLicense(async () => {
 	const token = await Statistics.findLastStatsToken();
 	void AirGappedRestriction.computeRestriction(token);
 });
