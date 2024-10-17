@@ -1,3 +1,4 @@
+import type { ISettingColor } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
@@ -15,11 +16,11 @@ export * from './inject';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		const injections = Object.values(headInjections.all());
+		const injections = Object.values(headInjections.all()).filter((injection): injection is NonNullable<typeof injection> => !!injection);
 		Inject.rawModHtml('headInjections', applyHeadInjections(injections));
 	});
 
-	settings.watch('Default_Referrer_Policy', (value) => {
+	settings.watch<string>('Default_Referrer_Policy', (value) => {
 		if (!value) {
 			return injectIntoHead('noreferrer', '<meta name="referrer" content="same-origin" />');
 		}
@@ -40,7 +41,7 @@ Meteor.startup(() => {
 		);
 	}
 
-	settings.watch('Assets_SvgFavicon_Enable', (value) => {
+	settings.watch<boolean>('Assets_SvgFavicon_Enable', (value) => {
 		const standardFavicons = `
 			<link rel="icon" sizes="16x16" type="image/png" href=${getURL('assets/favicon_16.png')} />
 			<link rel="icon" sizes="32x32" type="image/png" href=${getURL('assets/favicon_32.png')} />`;
@@ -56,7 +57,7 @@ Meteor.startup(() => {
 		}
 	});
 
-	settings.watch('theme-color-sidebar-background', (value) => {
+	settings.watch<string>('theme-color-sidebar-background', (value) => {
 		const escapedValue = escapeHTML(value);
 		injectIntoHead(
 			'theme-color-sidebar-background',
@@ -64,7 +65,7 @@ Meteor.startup(() => {
 		);
 	});
 
-	settings.watch('Site_Name', (value = 'Rocket.Chat') => {
+	settings.watch<string>('Site_Name', (value = 'Rocket.Chat') => {
 		const escapedValue = escapeHTML(value);
 		injectIntoHead(
 			'Site_Name',
@@ -74,7 +75,7 @@ Meteor.startup(() => {
 		);
 	});
 
-	settings.watch('Meta_language', (value = '') => {
+	settings.watch<string>('Meta_language', (value = '') => {
 		const escapedValue = escapeHTML(value);
 		injectIntoHead(
 			'Meta_language',
@@ -82,27 +83,27 @@ Meteor.startup(() => {
 		);
 	});
 
-	settings.watch('Meta_robots', (value = '') => {
+	settings.watch<string>('Meta_robots', (value = '') => {
 		const escapedValue = escapeHTML(value);
 		injectIntoHead('Meta_robots', `<meta name="robots" content="${escapedValue}">`);
 	});
 
-	settings.watch('Meta_msvalidate01', (value = '') => {
+	settings.watch<string>('Meta_msvalidate01', (value = '') => {
 		const escapedValue = escapeHTML(value);
 		injectIntoHead('Meta_msvalidate01', `<meta name="msvalidate.01" content="${escapedValue}">`);
 	});
 
-	settings.watch('Meta_google-site-verification', (value = '') => {
+	settings.watch<string>('Meta_google-site-verification', (value = '') => {
 		const escapedValue = escapeHTML(value);
 		injectIntoHead('Meta_google-site-verification', `<meta name="google-site-verification" content="${escapedValue}">`);
 	});
 
-	settings.watch('Meta_fb_app_id', (value = '') => {
+	settings.watch<string>('Meta_fb_app_id', (value = '') => {
 		const escapedValue = escapeHTML(value);
 		injectIntoHead('Meta_fb_app_id', `<meta property="fb:app_id" content="${escapedValue}">`);
 	});
 
-	settings.watch('Meta_custom', (value = '') => {
+	settings.watch<string>('Meta_custom', (value = '') => {
 		injectIntoHead('Meta_custom', value);
 	});
 
@@ -127,7 +128,7 @@ const renderDynamicCssList = withDebouncing({ wait: 500 })(async () => {
 	// const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
 	const colors = await Settings.find({ _id: /theme-color-rc/i }, { projection: { value: 1, editor: 1 } }).toArray();
 	const css = colors
-		.filter((color) => color && color.value)
+		.filter((color): color is ISettingColor => !!color?.value)
 		.map(({ _id, value, editor }) => {
 			if (editor === 'expression') {
 				return `--${_id.replace('theme-color-', '')}: var(--${value});`;
@@ -138,7 +139,7 @@ const renderDynamicCssList = withDebouncing({ wait: 500 })(async () => {
 	injectIntoBody('dynamic-variables', `<style id='css-variables'> :root {${css}}</style>`);
 });
 
-renderDynamicCssList();
+await renderDynamicCssList();
 
 settings.watchByRegex(/theme-color-rc/i, renderDynamicCssList);
 
@@ -160,4 +161,4 @@ injectIntoBody(
 `,
 );
 
-injectIntoBody('icons', await Assets.getTextAsync('public/icons.svg'));
+injectIntoBody('icons', (await Assets.getTextAsync('public/icons.svg')) ?? '');
