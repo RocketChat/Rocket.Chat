@@ -5,7 +5,7 @@ import { federationRequestToPeer } from '../lib/http';
 import { isFederationEnabled } from '../lib/isFederationEnabled';
 import { clientLogger } from '../lib/logger';
 
-export async function federationSearchUsers(query) {
+export async function federationSearchUsers(query: string) {
 	if (!isFederationEnabled()) {
 		throw disabled('client.searchUsers');
 	}
@@ -23,7 +23,7 @@ export async function federationSearchUsers(query) {
 	return users;
 }
 
-export async function getUserByUsername(query) {
+export async function getUserByUsername(query: string) {
 	if (!isFederationEnabled()) {
 		throw disabled('client.searchUsers');
 	}
@@ -41,7 +41,13 @@ export async function getUserByUsername(query) {
 	return user;
 }
 
-export async function requestEventsFromLatest(domain, fromDomain, contextType, contextQuery, latestEventIds) {
+export async function requestEventsFromLatest(
+	domain: string,
+	fromDomain: string,
+	contextType: unknown,
+	contextQuery: unknown,
+	latestEventIds: unknown,
+) {
 	if (!isFederationEnabled()) {
 		throw disabled('client.requestEventsFromLatest');
 	}
@@ -64,7 +70,7 @@ export async function requestEventsFromLatest(domain, fromDomain, contextType, c
 	});
 }
 
-export async function dispatchEvents(domains, events) {
+export async function dispatchEvents(domains: string[], events: unknown[]) {
 	if (!isFederationEnabled()) {
 		throw disabled('client.dispatchEvents');
 	}
@@ -80,11 +86,11 @@ export async function dispatchEvents(domains, events) {
 	}
 }
 
-export async function dispatchEvent(domains, event) {
+export async function dispatchEvent(domains: string[], event: unknown) {
 	await dispatchEvents([...new Set(domains)], [event]);
 }
 
-export async function getUpload(domain, fileId) {
+export async function getUpload(domain: string, fileId: string) {
 	const {
 		data: { upload, buffer },
 	} = await federationRequestToPeer('GET', domain, `/api/v1/federation.uploads?${qs.stringify({ upload_id: fileId })}`);
