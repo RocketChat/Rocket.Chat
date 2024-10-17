@@ -252,6 +252,10 @@ export class ContactMerger {
 			...customFieldConflicts.map(({ type, value }): ILivechatContactConflictingField => ({ field: type, value })),
 		];
 
+		if (allConflicts.length) {
+			dataToSet.hasConflicts = true;
+		}
+
 		// Phones, Emails and Channels are simply added to the contact's existing list
 		const dataToAdd: UpdateFilter<ILivechatContact>['$addToSet'] = {
 			...(newPhones.length ? { phones: newPhones.map((phoneNumber) => ({ phoneNumber })) } : {}),
@@ -273,10 +277,5 @@ export class ContactMerger {
 	public static async mergeVisitorIntoContact(visitor: ILivechatVisitor, contact: ILivechatContact): Promise<void> {
 		const fields = await ContactMerger.getAllFieldsFromVisitor(visitor);
 		await ContactMerger.mergeFieldsIntoContact(fields, contact);
-	}
-
-	public static async mergeContacts(source: ILivechatContact, target: ILivechatContact): Promise<void> {
-		const fields = await ContactMerger.getAllFieldsFromContact(source);
-		await ContactMerger.mergeFieldsIntoContact(fields, target);
 	}
 }
