@@ -41,8 +41,8 @@ const CallTable = () => {
 	const onRowClick = useMutableCallback((id, token) => {
 		directoryRoute.push(
 			{
-				page: 'calls',
-				bar: 'info',
+				tab: 'calls',
+				context: 'info',
 				id,
 			},
 			{ token },

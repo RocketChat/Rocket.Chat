@@ -11,16 +11,16 @@ import { VoipInfo } from './calls/contextualBar/VoipInfo';
 import { FormSkeleton } from './components/FormSkeleton';
 
 const CallsContextualBarDirectory = () => {
-	const directoryRoute = useRoute('omnichannel-directory');
-
-	const bar = useRouteParameter('bar') || 'info';
-	const id = useRouteParameter('id');
-	const token = useSearchParameter('token');
-
 	const t = useTranslation();
 
+	const id = useRouteParameter('id');
+	const token = useSearchParameter('token');
+	const context = useRouteParameter('context');
+
+	const directoryRoute = useRoute('omnichannel-directory');
+
 	const handleClose = (): void => {
-		directoryRoute.push({ page: 'calls' });
+		directoryRoute.push({ tab: 'calls' });
 	};
 
 	const query = useMemo(
@@ -33,7 +33,7 @@ const CallsContextualBarDirectory = () => {
 
 	const { value: data, phase: state, error } = useEndpointData(`/v1/voip/room`, { params: query });
 
-	if (bar === 'view' && id) {
+	if (context === 'view' && id) {
 		return <Call rid={id} />;
 	}
 
@@ -51,7 +51,7 @@ const CallsContextualBarDirectory = () => {
 
 	const room = data.room as unknown as IVoipRoom; // TODO Check why types are incompatible even though the endpoint returns an IVoipRooms
 
-	return <Contextualbar>{bar === 'info' && <VoipInfo room={room} onClickClose={handleClose} />}</Contextualbar>;
+	return <Contextualbar>{context === 'info' && <VoipInfo room={room} onClickClose={handleClose} />}</Contextualbar>;
 };
 
 export default CallsContextualBarDirectory;

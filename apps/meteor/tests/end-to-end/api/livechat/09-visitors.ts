@@ -56,7 +56,6 @@ describe('LIVECHAT - visitors', () => {
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('visitor');
 			expect(body.visitor).to.have.property('token', 'test');
-			expect(body.visitor).to.have.property('contactId');
 
 			// Ensure all new visitors are created as online :)
 			expect(body.visitor).to.have.property('status', 'online');

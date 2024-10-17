@@ -30,7 +30,7 @@ export class PendingFileImporter extends Importer {
 		await this.updateRecord({ 'count.messages': fileCount, 'messagesstatus': null });
 		await this.addCountToTotal(fileCount);
 
-		const fileData = new Selection(this.info.name, [], [], fileCount);
+		const fileData = new Selection<false>(this.info.name, [], [], fileCount, []);
 		await this.updateRecord({ fileData });
 
 		await super.updateProgress(ProgressStep.IMPORTING_FILES);
@@ -41,7 +41,7 @@ export class PendingFileImporter extends Importer {
 		return fileCount;
 	}
 
-	async startImport(importSelection: Selection): Promise<ImporterProgress> {
+	async startImport(importSelection: Selection<false>): Promise<ImporterProgress> {
 		const downloadedFileIds: string[] = [];
 		const maxFileCount = 10;
 		const maxFileSize = 1024 * 1024 * 500;

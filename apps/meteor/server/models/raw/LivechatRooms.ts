@@ -1992,6 +1992,32 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find(query, options);
 	}
 
+	async findNewestByVisitorIdOrToken<T extends Document = IOmnichannelRoom>(
+		visitorId: string,
+		visitorToken: string,
+		options: Omit<FindOptions<IOmnichannelRoom>, 'sort' | 'limit'> = {},
+	): Promise<T | null> {
+		const query: Filter<IOmnichannelRoom> = {
+			t: 'l',
+			$or: [
+				{
+					'v._id': visitorId,
+				},
+				{
+					'v.token': visitorToken,
+				},
+			],
+		};
+
+		const cursor = this.find<T>(query, {
+			...options,
+			sort: { _updatedAt: -1 },
+			limit: 1,
+		});
+
+		return (await cursor.toArray()).pop() || null;
+	}
+
 	findOneOpenByRoomIdAndVisitorToken(roomId: string, visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
@@ -2726,5 +2752,16 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 
 	getTotalConversationsWithoutDepartmentBetweenDates(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
 		throw new Error('Method not implemented.');
+	}
+
+	setContactIdByVisitorIdOrToken(contactId: string, visitorId: string, visitorToken: string): Promise<UpdateResult | Document> {
+		return this.updateMany(
+			{
+				't': 'l',
+				'$or': [{ 'v._id': visitorId }, { 'v.token': visitorToken }],
+				'v.contactId': { $exists: false },
+			},
+			{ $set: { 'v.contactId': contactId } },
+		);
 	}
 }

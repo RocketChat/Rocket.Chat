@@ -9,6 +9,7 @@ import type {
 	ILivechatVisitorDTO,
 	IMessage,
 	IOmnichannelRoom,
+	IOmnichannelRoomWithDepartment,
 	IRoom,
 	ISetting,
 	ILivechatAgentActivity,
@@ -988,6 +989,23 @@ export type LivechatRoomsProps = {
 	onhold?: boolean;
 };
 
+export type ContactSearchChatsResult = Pick<
+	IOmnichannelRoom,
+	| 'fname'
+	| 'ts'
+	| 'v'
+	| 'msgs'
+	| 'servedBy'
+	| 'closedAt'
+	| 'closedBy'
+	| 'closer'
+	| 'tags'
+	| '_id'
+	| 'closingMessage'
+	| 'source'
+	| 'lastMessage'
+>;
+
 export type VisitorSearchChatsResult = Pick<
 	IOmnichannelRoom,
 	'fname' | 'ts' | 'msgs' | 'servedBy' | 'closedAt' | 'closedBy' | 'closer' | 'tags' | '_id' | 'closingMessage'
@@ -1314,17 +1332,41 @@ const POSTUpdateOmnichannelContactsSchema = {
 
 export const isPOSTUpdateOmnichannelContactsProps = ajv.compile<POSTUpdateOmnichannelContactsProps>(POSTUpdateOmnichannelContactsSchema);
 
-type GETOmnichannelContactsProps = { contactId: string };
+type GETOmnichannelContactsProps = { contactId?: string; email?: string; phone?: string };
 
 const GETOmnichannelContactsSchema = {
-	type: 'object',
-	properties: {
-		contactId: {
-			type: 'string',
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				email: {
+					type: 'string',
+				},
+			},
+			required: ['email'],
+			additionalProperties: false,
 		},
-	},
-	required: ['contactId'],
-	additionalProperties: false,
+		{
+			type: 'object',
+			properties: {
+				phone: {
+					type: 'string',
+				},
+			},
+			required: ['phone'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				contactId: {
+					type: 'string',
+				},
+			},
+			required: ['contactId'],
+			additionalProperties: false,
+		},
+	],
 };
 
 export const isGETOmnichannelContactsProps = ajv.compile<GETOmnichannelContactsProps>(GETOmnichannelContactsSchema);
@@ -3501,7 +3543,7 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/visitors.info': {
 		GET: (params: LivechatVisitorsInfo) => {
-			visitor: ILivechatVisitor;
+			visitor: ILivechatVisitor & { contactId?: string };
 		};
 	};
 	'/v1/livechat/room.onHold': {
@@ -3681,7 +3723,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/visitor/:token': {
-		GET: (params?: LivechatVisitorTokenGet) => { visitor: ILivechatVisitor };
+		GET: (params?: LivechatVisitorTokenGet) => { visitor: ILivechatVisitor & { contactId?: string } };
 		DELETE: (params: LivechatVisitorTokenDelete) => {
 			visitor: { _id: string; ts: string };
 		};
@@ -3784,7 +3826,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETOmnichannelContactsSearchProps) => PaginatedResult<{ contacts: ILivechatContact[] }>;
 	};
 	'/v1/omnichannel/contacts.history': {
-		GET: (params: GETOmnichannelContactHistoryProps) => PaginatedResult<{ history: VisitorSearchChatsResult[] }>;
+		GET: (params: GETOmnichannelContactHistoryProps) => PaginatedResult<{ history: ContactSearchChatsResult[] }>;
 	};
 	'/v1/omnichannel/contact.search': {
 		GET: (params: GETOmnichannelContactSearchProps) => { contact: ILivechatVisitor | null };
@@ -3886,7 +3928,7 @@ export type OmnichannelEndpoints = {
 		DELETE: () => void;
 	};
 	'/v1/livechat/rooms': {
-		GET: (params: GETLivechatRoomsParams) => PaginatedResult<{ rooms: IOmnichannelRoom[] }>;
+		GET: (params: GETLivechatRoomsParams) => PaginatedResult<{ rooms: IOmnichannelRoomWithDepartment[] }>;
 	};
 	'/v1/livechat/room/:rid/priority': {
 		POST: (params: POSTLivechatRoomPriorityParams) => void;

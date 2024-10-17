@@ -1,4 +1,4 @@
-import type { IImportRecord, IImportUser, IImportMessage, IImportChannel } from '@rocket.chat/core-typings';
+import type { IImportRecord, IImportUser, IImportMessage, IImportChannel, IImportContact } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import { ImportData } from '@rocket.chat/models';
 import { pick } from '@rocket.chat/tools';
@@ -90,6 +90,10 @@ export class ImportDataConverter {
 		this._messageConverter = new MessageConverter(messageOptions, logger, this._cache);
 	}
 
+	async addContact(_data: IImportContact): Promise<void> {
+		// #ToDo
+	}
+
 	async addUser(data: IImportUser): Promise<void> {
 		return this._userConverter.addObject(data);
 	}
@@ -102,6 +106,10 @@ export class ImportDataConverter {
 		return this._messageConverter.addObject(data, {
 			useQuickInsert: useQuickInsert || undefined,
 		});
+	}
+
+	async convertContacts(_callbacks: IConversionCallbacks): Promise<void> {
+		// #ToDo
 	}
 
 	async convertUsers(callbacks: IConversionCallbacks): Promise<void> {
@@ -118,6 +126,7 @@ export class ImportDataConverter {
 
 	async convertData(startedByUserId: string, callbacks: IConversionCallbacks = {}): Promise<void> {
 		await this.convertUsers(callbacks);
+		await this.convertContacts(callbacks);
 		await this.convertChannels(startedByUserId, callbacks);
 		await this.convertMessages(callbacks);
 

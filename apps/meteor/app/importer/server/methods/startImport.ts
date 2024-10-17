@@ -28,7 +28,11 @@ export const executeStartImport = async ({ input }: StartImportParamsPOST, start
 		(channel) =>
 			new SelectionChannel(channel.channel_id, channel.name, channel.is_archived, channel.do_import, channel.is_private, channel.is_direct),
 	);
-	const selection = new Selection(importer.name, usersSelection, channelsSelection, 0);
+	const contactSelection = (input.contacts || []).map(({ id, do_import = true }) => ({
+		id,
+		do_import,
+	}));
+	const selection = new Selection<false>(importer.name, usersSelection, channelsSelection, 0, contactSelection);
 	await instance.startImport(selection, startedByUserId);
 };
 

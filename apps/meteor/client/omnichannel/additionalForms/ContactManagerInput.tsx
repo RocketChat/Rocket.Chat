@@ -5,13 +5,14 @@ import { useTranslation } from 'react-i18next';
 import AutoCompleteAgent from '../../components/AutoCompleteAgent';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
-type ContactManagerProps = {
+type ContactManagerInputProps = {
 	value: string;
-	handler: (value: string) => void;
+	handler: (currentValue: string) => void;
 };
 
-const ContactManager = ({ value: userId, handler }: ContactManagerProps) => {
+const ContactManagerInput = ({ value: userId, handler }: ContactManagerInputProps) => {
 	const { t } = useTranslation();
+
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
 	if (!hasLicense) {
@@ -28,4 +29,4 @@ const ContactManager = ({ value: userId, handler }: ContactManagerProps) => {
 	);
 };
 
-export default ContactManager;
+export default ContactManagerInput;
