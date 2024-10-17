@@ -1,6 +1,5 @@
 import { IconButton, MenuItem, MenuSection, MenuV2 } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactNode } from 'react';
-import { cloneElement } from 'react';
+import { cloneElement, type ComponentProps, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { GenericMenuItemProps } from './GenericMenuItem';
@@ -64,6 +63,8 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 					icon={icon}
 					title={i18n.exists(title) ? t(title) : title}
 					onAction={onAction || handleAction}
+					className={className}
+					button={button}
 					{...(disabledKeys && { disabledKeys })}
 					{...props}
 				>

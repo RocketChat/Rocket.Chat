@@ -167,7 +167,8 @@ export const sendFileMessage = async (
 		parseAttachmentsForE2EE: true,
 	},
 ): Promise<boolean> => {
-	const user = await Users.findOneById(userId);
+	const user = await Users.findOneById(userId, { projection: { services: 0 } });
+
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'sendFileMessage',

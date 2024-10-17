@@ -7,6 +7,7 @@ import('./LivechatPriority');
 import('./OmnichannelServiceLevelAgreements');
 import('./AuditLog');
 import('./ReadReceipts');
+import('./WorkspaceCredentials');
 
 void License.onLicense('livechat-enterprise', () => {
 	import('./CannedResponse');

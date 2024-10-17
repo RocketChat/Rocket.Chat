@@ -84,9 +84,7 @@ const cjs = `module.exports = {
 
 const keys = Object.keys(JSON.parse(fs.readFileSync(`./src/locales/en.i18n.json`, 'utf8')));
 
-const tds = `import 'i18next';
-
-export interface RocketchatI18n {
+const tds = `export interface RocketchatI18n {
 	${keys.map((key) => `${JSON.stringify(key)}: string;`).join('\n\t')}
 }
 
@@ -96,16 +94,6 @@ const dict: {
 
 export type RocketchatI18nKeys = keyof RocketchatI18n;
 
-declare module 'i18next' {
-	interface TFunction {
-		<TKey extends keyof RocketchatI18n>(key: TKey, options?: TOptions): string;
-		<TKey extends \`\${string}_\$\{'one' | 'other' | 'zero' | 'few' | 'many' | 'two' | 'three' | 'four'}\`>(
-			key: TKey,
-			options?: TOptions,
-		): string;
-	}
-}
-
 export = dict;
 `;
 
@@ -113,7 +101,7 @@ const languages = files.map((file) => path.basename(file, '.i18n.json'));
 
 // write the files
 if (fs.existsSync(`./dist`)) {
-	fs.rmdirSync(`./dist`, { recursive: true });
+	fs.rmSync(`./dist`, { recursive: true, force: true });
 }
 fs.mkdirSync(`./dist`, { recursive: true });
 

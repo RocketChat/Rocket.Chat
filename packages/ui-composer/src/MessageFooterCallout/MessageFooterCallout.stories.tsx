@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import { MessageFooterCallout, MessageFooterCalloutAction } from '.';
 import MessageComposer from '../MessageComposer/MessageComposer';
@@ -10,16 +10,16 @@ import '@rocket.chat/icons/dist/rocketchat.css';
 export default {
 	title: 'Components/MessageComposer/Locked',
 	component: MessageComposer,
-} as ComponentMeta<typeof MessageComposer>;
+} satisfies Meta<typeof MessageComposer>;
 
-export const MessageComposerBlocked: ComponentStory<typeof MessageComposer> = () => (
+export const MessageComposerBlocked: StoryFn<typeof MessageComposer> = () => (
 	<MessageFooterCallout>
 		<MessageComposerIcon name='burger' />
 		Feedback text
 	</MessageFooterCallout>
 );
 
-export const MessageComposerBlockedLargeText: ComponentStory<typeof MessageComposer> = () => (
+export const MessageComposerBlockedLargeText: StoryFn<typeof MessageComposer> = () => (
 	<MessageFooterCallout>
 		<MessageComposerIcon name='burger' />
 		<MessageFooterCalloutContent>
@@ -32,7 +32,7 @@ export const MessageComposerBlockedLargeText: ComponentStory<typeof MessageCompo
 	</MessageFooterCallout>
 );
 
-export const MessageComposerBlockedLargeTextDashed: ComponentStory<typeof MessageComposer> = () => (
+export const MessageComposerBlockedLargeTextDashed: StoryFn<typeof MessageComposer> = () => (
 	<MessageFooterCallout dashed>
 		<MessageComposerIcon name='burger' />
 		<MessageFooterCalloutContent>
@@ -45,7 +45,7 @@ export const MessageComposerBlockedLargeTextDashed: ComponentStory<typeof Messag
 	</MessageFooterCallout>
 );
 
-export const _MessageFooterCalloutAction: ComponentStory<typeof MessageComposer> = () => (
+export const _MessageFooterCalloutAction: StoryFn<typeof MessageComposer> = () => (
 	<MessageFooterCallout>
 		Feedback text <MessageFooterCalloutDivider />
 		<MessageFooterCalloutAction onClick={(): void => undefined}>Button</MessageFooterCalloutAction>

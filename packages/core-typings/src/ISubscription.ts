@@ -5,6 +5,8 @@ import type { RoomType } from './RoomType';
 
 type RoomID = string;
 
+export type OldKey = { e2eKeyId: string; ts: Date; E2EKey: string };
+
 export interface ISubscription extends IRocketChatRecord {
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	v?: Pick<IUser, '_id' | 'username' | 'name' | 'status'> & { token?: string };
@@ -68,6 +70,8 @@ export interface ISubscription extends IRocketChatRecord {
 
 	/* @deprecated */
 	customFields?: Record<string, any>;
+	oldRoomKeys?: OldKey[];
+	suggestedOldRoomKeys?: OldKey[];
 }
 
 export interface IOmnichannelSubscription extends ISubscription {

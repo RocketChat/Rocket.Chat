@@ -1,6 +1,7 @@
 Package.describe({
+	name: 'autoupdate',
 	summary: 'Update the client when new client code is available',
-	version: '1.8.0',
+	version: '2.0.0',
 });
 
 Package.onUse(function (api) {

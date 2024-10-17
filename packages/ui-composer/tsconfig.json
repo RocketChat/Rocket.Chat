@@ -1,8 +1,8 @@
 {
 	"extends": "../../tsconfig.base.client.json",
 	"compilerOptions": {
-		"rootDir": "./src",
+		"rootDirs": ["./src", "./"],
 		"outDir": "./dist"
 	},
-	"include": ["./src/**/*"]
+	"include": ["./src/**/*", "./.storybook/**/*", "./jest.config.ts"],
 }

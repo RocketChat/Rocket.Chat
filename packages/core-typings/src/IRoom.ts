@@ -180,6 +180,8 @@ export interface IOmnichannelSource {
 	sidebarIcon?: string;
 	// The default sidebar icon
 	defaultIcon?: string;
+	// The destination of the message (e.g widget host, email address, whatsapp number, etc)
+	destination?: string;
 }
 
 export interface IOmnichannelSourceFromApp extends IOmnichannelSource {
@@ -189,11 +191,12 @@ export interface IOmnichannelSourceFromApp extends IOmnichannelSource {
 	sidebarIcon?: string;
 	defaultIcon?: string;
 	alias?: string;
+	destination?: string;
 }
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast'> {
 	t: 'l' | 'v';
-	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'activity'> & {
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'activity' | 'contactId'> & {
 		lastMessageTs?: Date;
 		phone?: string;
 	};
@@ -332,7 +335,7 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 	queue: string;
 	// The ID assigned to the call (opaque ID)
 	callUniqueId?: string;
-	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token'> & { lastMessageTs?: Date; phone?: string };
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'contactId'> & { lastMessageTs?: Date; phone?: string };
 	// Outbound means the call was initiated from Rocket.Chat and vise versa
 	direction: 'inbound' | 'outbound';
 }
