@@ -1,3 +1,4 @@
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback } from 'react';
@@ -10,6 +11,15 @@ const STEPS = {
 	CONFIRM_DELETE: 'CONFIRM_DELETE',
 };
 
+type BaseRemoveUsersModalProps = {
+	onClose: () => void;
+	onCancel: () => void;
+	onConfirm: (deletedRooms: { [key: string]: Serialized<IRoom> }) => void;
+	currentStep?: string;
+	rooms?: (Serialized<IRoom> & { isLastOwner?: boolean })[];
+	username?: string;
+};
+
 const BaseRemoveUsersModal = ({
 	onClose,
 	onCancel,
@@ -17,17 +27,17 @@ const BaseRemoveUsersModal = ({
 	rooms,
 	currentStep = rooms?.length === 0 ? STEPS.CONFIRM_DELETE : STEPS.LIST_ROOMS,
 	username,
-}) => {
+}: BaseRemoveUsersModalProps) => {
 	const [step, setStep] = useState(currentStep);
 
-	const [selectedRooms, setSelectedRooms] = useState({});
+	const [selectedRooms, setSelectedRooms] = useState<Record<string, Serialized<IRoom> & { isLastOwner?: boolean }>>({});
 
 	const onContinue = useMutableCallback(() => setStep(STEPS.CONFIRM_DELETE));
 	const onReturn = useMutableCallback(() => setStep(STEPS.LIST_ROOMS));
 
 	const canViewUserRooms = usePermission('view-all-team-channels');
 
-	const eligibleRooms = rooms.filter(({ isLastOwner }) => !isLastOwner);
+	const eligibleRooms = rooms?.filter(({ isLastOwner }) => !isLastOwner);
 
 	const onChangeRoomSelection = useCallback((room) => {
 		setSelectedRooms((selectedRooms) => {
@@ -41,7 +51,7 @@ const BaseRemoveUsersModal = ({
 
 	const onToggleAllRooms = useMutableCallback(() => {
 		if (Object.values(selectedRooms).filter(Boolean).length === 0) {
-			return setSelectedRooms(Object.fromEntries(eligibleRooms.map((room) => [room._id, room])));
+			return setSelectedRooms(Object.fromEntries(eligibleRooms?.map((room) => [room._id, room]) ?? []));
 		}
 		setSelectedRooms({});
 	});
@@ -51,7 +61,7 @@ const BaseRemoveUsersModal = ({
 			<RemoveUsersSecondStep
 				onConfirm={onConfirm}
 				onClose={onClose}
-				onCancel={rooms?.length > 0 ? onReturn : onCancel}
+				onCancel={(rooms?.length ?? 0) > 0 ? onReturn : onCancel}
 				deletedRooms={selectedRooms}
 				rooms={rooms}
 				username={username}
@@ -65,12 +75,10 @@ const BaseRemoveUsersModal = ({
 			onClose={onClose}
 			onCancel={onCancel}
 			rooms={rooms}
-			params={{}}
 			selectedRooms={selectedRooms}
 			onToggleAllRooms={onToggleAllRooms}
-			// onChangeParams={(...args) => console.log(args)}
 			onChangeRoomSelection={onChangeRoomSelection}
-			eligibleRoomsLength={eligibleRooms.length}
+			eligibleRoomsLength={eligibleRooms?.length}
 		/>
 	);
 };

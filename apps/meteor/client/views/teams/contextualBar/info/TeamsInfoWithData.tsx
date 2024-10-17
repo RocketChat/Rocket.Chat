@@ -1,14 +1,9 @@
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import {
-	useSetModal,
-	useToastMessageDispatch,
-	useUserId,
-	usePermission,
-	useMethod,
-	useTranslation,
-	useRouter,
-} from '@rocket.chat/ui-contexts';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUserId, usePermission, useMethod, useRouter } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { UiTextContext } from '../../../../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
@@ -22,10 +17,14 @@ import ConvertToChannelModal from '../../ConvertToChannelModal';
 import LeaveTeam from './LeaveTeam';
 import TeamsInfo from './TeamsInfo';
 
-const TeamsInfoWithLogic = ({ openEditing }) => {
+type TeamsInfoWithLogicProps = {
+	openEditing: () => void;
+};
+
+const TeamsInfoWithLogic = ({ openEditing }: TeamsInfoWithLogicProps) => {
 	const room = useRoom();
 	const { openTab, closeTab } = useRoomToolbox();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const userId = useUserId();
 
 	const dontAskHideRoom = useDontAskAgain('hideRoom');
@@ -48,13 +47,13 @@ const TeamsInfoWithLogic = ({ openEditing }) => {
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room);
 
 	const onClickLeave = useMutableCallback(() => {
-		const onConfirm = async (roomsLeft) => {
-			roomsLeft = Object.keys(roomsLeft);
+		const onConfirm = async (selectedRooms: { [key: string]: Serialized<IRoom> & { isLastOwner?: boolean } } = {}) => {
+			const roomsLeft = Object.keys(selectedRooms);
 			const roomsToLeave = Array.isArray(roomsLeft) && roomsLeft.length > 0 ? roomsLeft : [];
 
 			try {
 				await leaveTeam({
-					teamId: room.teamId,
+					teamId: room.teamId!,
 					...(roomsToLeave.length && { rooms: roomsToLeave }),
 				});
 				dispatchToastMessage({ type: 'success', message: t('Teams_left_team_successfully') });
@@ -66,7 +65,7 @@ const TeamsInfoWithLogic = ({ openEditing }) => {
 			}
 		};
 
-		setModal(<LeaveTeam onConfirm={onConfirm} onCancel={closeModal} teamId={room.teamId} />);
+		setModal(<LeaveTeam onConfirm={onConfirm} onCancel={closeModal} teamId={room.teamId!} />);
 	});
 
 	const handleHide = useMutableCallback(async () => {
@@ -81,7 +80,7 @@ const TeamsInfoWithLogic = ({ openEditing }) => {
 			}
 		};
 
-		const warnText = roomCoordinator.getRoomDirectives(room.t).getUiText(UiTextContext.HIDE_WARNING);
+		const warnText = roomCoordinator.getRoomDirectives(room.t).getUiText(UiTextContext.HIDE_WARNING) as TranslationKey;
 
 		if (dontAskHideRoom) {
 			return hide();
@@ -100,7 +99,7 @@ const TeamsInfoWithLogic = ({ openEditing }) => {
 					label: t('Hide_room'),
 				}}
 			>
-				{t(warnText, room.fname)}
+				{t(warnText, { postProcess: 'sprintf', sprintf: [room.fname] })}
 			</GenericModalDoNotAskAgain>,
 		);
 	});
@@ -108,10 +107,10 @@ const TeamsInfoWithLogic = ({ openEditing }) => {
 	const onClickViewChannels = useCallback(() => openTab('team-channels'), [openTab]);
 
 	const onClickConvertToChannel = useMutableCallback(() => {
-		const onConfirm = async (roomsToRemove) => {
+		const onConfirm = async (roomsToRemove: { [key: string]: Serialized<IRoom> }) => {
 			try {
 				await convertTeamToChannel({
-					teamId: room.teamId,
+					teamId: room.teamId!,
 					roomsToRemove: Object.keys(roomsToRemove),
 				});
 
@@ -124,20 +123,20 @@ const TeamsInfoWithLogic = ({ openEditing }) => {
 		};
 
 		setModal(
-			<ConvertToChannelModal onClose={closeModal} onCancel={closeModal} onConfirm={onConfirm} teamId={room.teamId} userId={userId} />,
+			<ConvertToChannelModal onClose={closeModal} onCancel={closeModal} onConfirm={onConfirm} teamId={room.teamId!} userId={userId!} />,
 		);
 	});
 
 	return (
 		<TeamsInfo
 			room={room}
-			onClickEdit={canEdit && openEditing}
+			onClickEdit={canEdit ? openEditing : undefined}
 			onClickClose={closeTab}
-			onClickDelete={canDeleteRoom && handleDelete}
-			onClickLeave={/* canLeave && */ onClickLeave}
-			onClickHide={/* joined && */ handleHide}
+			onClickDelete={canDeleteRoom ? handleDelete : undefined}
+			onClickLeave={onClickLeave}
+			onClickHide={handleHide}
 			onClickViewChannels={onClickViewChannels}
-			onClickConvertToChannel={canEdit && onClickConvertToChannel}
+			onClickConvertToChannel={canEdit ? onClickConvertToChannel : undefined}
 		/>
 	);
 };

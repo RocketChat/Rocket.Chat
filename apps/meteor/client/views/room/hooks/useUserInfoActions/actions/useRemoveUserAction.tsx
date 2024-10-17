@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, Serialized } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
@@ -50,7 +50,7 @@ export const useRemoveUserAction = (
 	});
 
 	const removeUserOptionAction = useMutableCallback(() => {
-		const handleRemoveFromTeam = async (rooms: IRoom[]): Promise<void> => {
+		const handleRemoveFromTeam = async (rooms: Record<string, Serialized<IRoom>>): Promise<void> => {
 			if (room.teamId) {
 				const roomKeys = Object.keys(rooms);
 				await removeFromTeam({

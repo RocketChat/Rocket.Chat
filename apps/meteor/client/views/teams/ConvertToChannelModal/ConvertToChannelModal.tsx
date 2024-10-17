@@ -9,7 +9,7 @@ import BaseConvertToChannelModal from './BaseConvertToChannelModal';
 type ConvertToChannelModalProps = {
 	onClose: () => void;
 	onCancel: () => void;
-	onConfirm: () => Serialized<IRoom>[];
+	onConfirm: (deletedRooms: { [key: string]: Serialized<IRoom> }) => void;
 	teamId: string;
 	userId: string;
 };

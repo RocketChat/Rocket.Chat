@@ -12,7 +12,7 @@ const TeamsInfoWithRooms = () => {
 		return <EditChannelWithData onClickBack={onClickBack} />;
 	}
 
-	return <TeamsInfoWithData openEditing={setEditing} />;
+	return <TeamsInfoWithData openEditing={() => setEditing(true)} />;
 };
 
 export default TeamsInfoWithRooms;

@@ -12,8 +12,6 @@ type ChannelDesertionTableProps = {
 	lastOwnerWarning?: string;
 	rooms?: (Serialized<IRoom> & { isLastOwner?: boolean })[];
 	eligibleRoomsLength: number | undefined;
-	params?: { current: number; itemsPerPage: 25 | 50 | 100 };
-	onChangeParams?: () => void;
 	onChangeRoomSelection: (room: Serialized<IRoom>) => void;
 	selectedRooms: { [key: string]: Serialized<IRoom> };
 	onToggleAllRooms: () => void;
