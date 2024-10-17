@@ -179,7 +179,7 @@ export class AppServerOrchestrator {
 			try {
 				await canEnableApp(app.getStorageItem());
 
-				await this.getManager().loadOne(app.getID());
+				await this.getManager().loadOne(app.getID(), true);
 			} catch (error) {
 				this._rocketchatLogger.warn(`App "${app.getInfo().name}" could not be enabled: `, error.message);
 			}
