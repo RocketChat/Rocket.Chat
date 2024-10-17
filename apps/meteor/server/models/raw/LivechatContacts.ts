@@ -160,16 +160,39 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		);
 	}
 
-	async updateContactChannel(visitorId: ILivechatVisitor['_id'], data: Partial<ILivechatContactChannel>): Promise<UpdateResult> {
+	async updateContactChannel(
+		visitorId: ILivechatVisitor['_id'],
+		data: Partial<ILivechatContactChannel>,
+		contactData?: Partial<Omit<ILivechatContact, 'channels'>>,
+	): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				'channels.visitorId': visitorId,
 			},
 			{
-				$set: Object.fromEntries(
-					Object.keys(data).map((key) => [`channels.$.${key}`, data[key as keyof ILivechatContactChannel]]),
-				) as UpdateFilter<ILivechatContact>['$set'],
+				$set: {
+					...contactData,
+					...(Object.fromEntries(
+						Object.keys(data).map((key) => [`channels.$.${key}`, data[key as keyof ILivechatContactChannel]]),
+					) as UpdateFilter<ILivechatContact>['$set']),
+				},
 			},
 		);
+	}
+
+	async findSimilarVerifiedContacts(
+		{ field, value }: Pick<ILivechatContactChannel, 'field' | 'value'>,
+		originalContactId: string,
+		options?: FindOptions<ILivechatContact>,
+	): Promise<ILivechatContact[]> {
+		return this.find(
+			{
+				'channels.field': field,
+				'channels.value': value,
+				'channels.verified': true,
+				'_id': { $ne: originalContactId },
+			},
+			options,
+		).toArray();
 	}
 }
