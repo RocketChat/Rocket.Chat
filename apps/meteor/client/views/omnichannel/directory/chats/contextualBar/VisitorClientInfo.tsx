@@ -1,5 +1,5 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import UAParser from 'ua-parser-js';
 
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
@@ -9,8 +9,12 @@ import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 import { FormSkeleton } from '../../components/FormSkeleton';
 
-const VisitorClientInfo = ({ uid }) => {
-	const t = useTranslation();
+type VisitorClientInfoProps = {
+	uid: string;
+};
+
+const VisitorClientInfo = ({ uid }: VisitorClientInfoProps) => {
+	const { t } = useTranslation();
 	const {
 		value: userData,
 		phase: state,
@@ -25,13 +29,14 @@ const VisitorClientInfo = ({ uid }) => {
 		return null;
 	}
 
-	const clientData = {};
 	const ua = new UAParser();
 	ua.setUA(userData.visitor.userAgent);
-	clientData.os = `${ua.getOS().name} ${ua.getOS().version}`;
-	clientData.browser = `${ua.getBrowser().name} ${ua.getBrowser().version}`;
-	clientData.host = userData.visitor.host;
-	clientData.ip = userData.visitor.ip;
+	const clientData = {
+		os: `${ua.getOS().name} ${ua.getOS().version}`,
+		browser: `${ua.getBrowser().name} ${ua.getBrowser().version}`,
+		host: userData.visitor.host,
+		ip: userData.visitor.ip,
+	};
 
 	return (
 		<>

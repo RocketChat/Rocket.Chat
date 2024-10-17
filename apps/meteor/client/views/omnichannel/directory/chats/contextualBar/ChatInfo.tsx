@@ -1,5 +1,7 @@
+import type { ILivechatCustomField, IOmnichannelRoom, IVisitor, Serialized } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
@@ -19,17 +21,22 @@ import { formatQueuedAt } from '../../utils/formatQueuedAt';
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
 
+type ChatInfoProps = {
+	id: string;
+	route: keyof IRouterPaths;
+};
+
 // TODO: Remove moment we are mixing moment and our own formatters :sadface:
-function ChatInfo({ id, route }) {
+function ChatInfo({ id, route }: ChatInfoProps) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const formatDateAndTime = useFormatDateAndTime();
 	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('/v1/livechat/custom-fields');
-	const [customFields, setCustomFields] = useState([]);
+	const [customFields, setCustomFields] = useState<Serialized<ILivechatCustomField>[]>([]);
 	const formatDuration = useFormatDuration();
 
-	const { data: room } = useOmnichannelRoomInfo(id);
+	const { data: room } = useOmnichannelRoomInfo(id); // FIXME: `room` is serialized, but we need to deserialize it
 
 	const {
 		ts,
@@ -47,7 +54,7 @@ function ChatInfo({ id, route }) {
 		livechatData,
 		source,
 		queuedAt,
-	} = room || { room: { v: {} } };
+	} = room || { v: {} };
 
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
@@ -66,7 +73,7 @@ function ChatInfo({ id, route }) {
 		}
 	}, [allCustomFields, stateCustomFields]);
 
-	const checkIsVisibleAndScopeRoom = (key) => {
+	const checkIsVisibleAndScopeRoom = (key: string) => {
 		const field = customFields.find(({ _id }) => _id === key);
 		return field?.visibility === 'visible' && field?.scope === 'room';
 	};
@@ -92,16 +99,18 @@ function ChatInfo({ id, route }) {
 		);
 	});
 
-	const customFieldEntries = Object.entries(livechatData || {}).filter(([key]) => checkIsVisibleAndScopeRoom(key) && livechatData[key]);
+	const customFieldEntries: [string, any][] = Object.entries(livechatData || {}).filter(
+		([key]) => checkIsVisibleAndScopeRoom(key) && livechatData[key],
+	);
 
 	return (
 		<>
 			<ContextualbarScrollableContent p={24}>
 				<Margins block='x4'>
-					{source && <SourceField room={room} />}
-					{room && v && <ContactField contact={v} room={room} />}
+					{source && <SourceField room={room as unknown as IOmnichannelRoom} />}
+					{room && v && <ContactField contact={v as IVisitor} room={room as unknown as IOmnichannelRoom} />}
 					{visitorId && <VisitorClientInfo uid={visitorId} />}
-					{servedBy && <AgentField agent={servedBy} />}
+					{servedBy && <AgentField agent={servedBy as unknown as IOmnichannelRoom['servedBy']} />}
 					{departmentId && <DepartmentField departmentId={departmentId} />}
 					{tags && tags.length > 0 && (
 						<InfoPanelField>
