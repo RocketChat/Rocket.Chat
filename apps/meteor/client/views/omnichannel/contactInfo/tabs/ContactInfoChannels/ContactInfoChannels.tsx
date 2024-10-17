@@ -3,8 +3,8 @@ import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { ContextualbarEmptyContent, ContextualbarScrollableContent } from '../../../../components/Contextualbar';
-import ContactInfoHistoryItem from '../components/ContactInfoHistoryItem';
+import { ContextualbarEmptyContent, ContextualbarScrollableContent } from '../../../../../components/Contextualbar';
+import ContactInfoChannelsItem from './ContactInfoChannelsItem';
 
 type ContactInfoChannelsProps = {
 	channels: Serialized<ILivechatContactChannel>[];
@@ -24,7 +24,7 @@ const ContactInfoChannels = ({ channels }: ContactInfoChannelsProps) => {
 			</Box>
 			<ContextualbarScrollableContent p={0}>
 				{channels.map((channel) => (
-					<ContactInfoHistoryItem key={channel.visitorId} {...channel} />
+					<ContactInfoChannelsItem key={channel.visitorId} {...channel} />
 				))}
 			</ContextualbarScrollableContent>
 		</>

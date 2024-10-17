@@ -7,21 +7,15 @@ import { Virtuoso } from 'react-virtuoso';
 
 import { ContextualbarContent, ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../../components/CustomScrollbars';
-// import { useRecordList } from '../../../../../hooks/lists/useRecordList';
-// import { AsyncStatePhase } from '../../../../../lib/asyncState';
-// import { useOmnichannelRoom } from '../../../../room/contexts/RoomContext';
-// import { useHistoryList } from '../../../contactHistory/useHistoryList';
-import ContactInfoHistoryItem from '../../components/ContactInfoHistoryItem';
+import ContactInfoHistoryItem from './ContactInfoHistoryItem';
 
-const ContactInfoHistory = ({ contactId, setChatId }) => {
+type ContactInfoHistoryProps = {
+	contactId: string;
+	setChatId: (chatId: string) => void;
+};
+
+const ContactInfoHistory = ({ contactId, setChatId }: ContactInfoHistoryProps) => {
 	const t = useTranslation();
-
-	// const [text, setText] = useState('');
-	// const room = useOmnichannelRoom();
-
-	// const { itemsList: historyList, loadMoreItems } = useHistoryList(
-	// 	useMemo(() => ({ roomId: room._id, filter: text, visitorId: room.v._id }), [room, text]),
-	// );
 
 	const historyFilterOptions: [string, string][] = [
 		['all', t('All')],
@@ -33,20 +27,12 @@ const ContactInfoHistory = ({ contactId, setChatId }) => {
 		['other', t('Other')],
 	];
 
-	// const handleSearchChange = (event: ChangeEvent<HTMLInputElement>): void => {
-	// 	setText(event.currentTarget.value);
-	// };
-
 	const [type, setType] = useLocalStorage<string>('contact-history-type', 'all');
 
 	const getContactHistory = useEndpoint('GET', '/v1/omnichannel/contacts.history');
 	const { data, isLoading, isError } = useQuery(['getContactHistory', contactId, type], () =>
 		getContactHistory({ contactId, source: type === 'all' ? undefined : type }),
 	);
-
-	console.log(data);
-
-	// const { phase, error, items: history, itemCount: totalItemCount } = useRecordList(historyList);
 
 	return (
 		<ContextualbarContent paddingInline={0}>
@@ -65,9 +51,6 @@ const ContactInfoHistory = ({ contactId, setChatId }) => {
 					</Margins>
 				</Box>
 			</Box>
-			{/* <Box p={24}>
-				<Callout>Only conversations you are contact manager of appear here.</Callout>
-			</Box> */}
 			{isLoading && (
 				<Box pi={24} pb={12}>
 					<Throbber size='x12' />
@@ -77,28 +60,29 @@ const ContactInfoHistory = ({ contactId, setChatId }) => {
 				<States>
 					<StatesIcon name='warning' variation='danger' />
 					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
-					{/* <StatesSubtitle>{error.toString()}</StatesSubtitle> */}
 				</States>
 			)}
 			{data?.history.length === 0 && (
 				<ContextualbarEmptyContent icon='history' title={t('No_history_yet')} subtitle={t('No_history_yet_description')} />
 			)}
-			<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-				{!isError && data?.history && data.history.length > 0 && (
-					<Virtuoso
-						totalCount={data.history.length}
-						// endReached={
-						// 	phase === AsyncStatePhase.LOADING ? () => undefined : (start) => loadMoreItems(start, Math.min(50, totalItemCount - start))
-						// }
-						overscan={25}
-						data={data?.history}
-						components={{ Scroller: VirtuosoScrollbars }}
-						itemContent={(index, data) => (
-							<ContactInfoHistoryItem key={index} details={data.source} onClick={() => setChatId(data._id)} {...data} />
-						)}
-					/>
-				)}
-			</Box>
+			{!isError && data?.history && data.history.length > 0 && (
+				<>
+					<Box pi={24} pb={12}>
+						<Box is='span' color='hint' fontScale='p2'>
+							{t('Showing_current_of_total', { current: data?.history.length, total: data?.total })}
+						</Box>
+					</Box>
+					<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
+						<Virtuoso
+							totalCount={data.history.length}
+							overscan={25}
+							data={data?.history}
+							components={{ Scroller: VirtuosoScrollbars }}
+							itemContent={(index, data) => <ContactInfoHistoryItem key={index} onClick={() => setChatId(data._id)} {...data} />}
+						/>
+					</Box>
+				</>
+			)}
 		</ContextualbarContent>
 	);
 };

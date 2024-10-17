@@ -4,10 +4,10 @@ import { Box, Palette, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation, type TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
-import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/OmnichannelRoomIcon';
-import { useTimeAgo } from '../../../../hooks/useTimeAgo';
+import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
+import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 
-type ContactInfoHistoryItemProps = Serialized<ILivechatContactChannel>;
+type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel>;
 
 const sourceTypeMap: { [key: string]: string } = {
 	widget: 'Livechat',
@@ -18,8 +18,7 @@ const sourceTypeMap: { [key: string]: string } = {
 	other: 'Other',
 };
 
-// TODO: implement menu in order to block action
-const ContactInfoHistoryItem = ({ details, blocked, lastChat, onClick }: ContactInfoHistoryItemProps) => {
+const ContactInfoChannelsItem = ({ details, blocked, lastChat }: ContactInfoChannelsItemProps) => {
 	const t = useTranslation();
 	const timeAgo = useTimeAgo();
 	const [showButton, setShowButton] = useState(false);
@@ -45,7 +44,6 @@ const ContactInfoHistoryItem = ({ details, blocked, lastChat, onClick }: Contact
 			onFocus={() => setShowButton(true)}
 			onPointerEnter={() => setShowButton(true)}
 			onPointerLeave={() => setShowButton(false)}
-			onClick={onClick}
 		>
 			<Box display='flex' alignItems='center'>
 				{details && <OmnichannelRoomIcon source={details} size='x18' placement='default' />}
@@ -68,4 +66,4 @@ const ContactInfoHistoryItem = ({ details, blocked, lastChat, onClick }: Contact
 	);
 };
 
-export default ContactInfoHistoryItem;
+export default ContactInfoChannelsItem;
