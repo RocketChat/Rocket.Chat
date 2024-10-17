@@ -58,7 +58,7 @@ describe('mergeContacts', () => {
 		expect(contactMergerStub.mergeFieldsIntoContact.notCalled).to.be.true;
 	});
 
-	it('should be able to verify a contact and merge it', async () => {
+	it('should be able to merge similar contacts', async () => {
 		const similarContact = {
 			_id: 'differentId',
 			emails: ['email2'],
