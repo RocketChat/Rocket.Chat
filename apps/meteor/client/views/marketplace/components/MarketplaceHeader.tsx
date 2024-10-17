@@ -56,10 +56,6 @@ const MarketplaceHeader = ({ title, unsupportedVersion }: { title: string; unsup
 			)}
 
 			<ButtonGroup wrap align='end'>
-				{!unsupportedVersion && result.isSuccess && !result.data.hasUnlimitedApps && (
-					<EnabledAppsCount {...result.data} context={context} />
-				)}
-
 				{!unsupportedVersion && isAdmin && result.isSuccess && !result.data.hasUnlimitedApps && context !== 'private' && (
 					<Button
 						onClick={() => {
@@ -71,7 +67,7 @@ const MarketplaceHeader = ({ title, unsupportedVersion }: { title: string; unsup
 				)}
 
 				{isAdmin && context === 'private' && <Button onClick={handleClickPrivate}>{t('Upload_private_app')}</Button>}
-				{!unsupportedVersion && isAdmin && context !== 'private' && <UpdateRocketChatButton />}
+				{unsupportedVersion && isAdmin && context !== 'private' && <UpdateRocketChatButton />}
 			</ButtonGroup>
 		</PageHeader>
 	);
