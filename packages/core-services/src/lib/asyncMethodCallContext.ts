@@ -1,16 +1,5 @@
 import { tracerActiveSpan } from '@rocket.chat/tracing';
 
-import { AsyncContextStore } from './ContextStore';
-
-export type asyncMethodCallContextStoreItem = {
-	type: 'rest' | 'ddp' | 'model';
-	userId?: string;
-	method?: string;
-	route?: string;
-}[];
-
-export const asyncMethodCallContextStore = new AsyncContextStore<asyncMethodCallContextStoreItem>();
-
 export function traceInstanceMethods<T extends object>(instance: T, ignoreMethods: string[] = []): T {
 	const className = instance.constructor.name;
 

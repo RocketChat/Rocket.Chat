@@ -22,8 +22,6 @@ export const startTracing = ({ service }: { service: string }) => {
 	sdk.start();
 
 	tracer = trace.getTracer(service);
-
-	// return new TracingEnabled(service);
 };
 
 export function tracerSpan<F extends (span?: Span) => ReturnType<F>>(
