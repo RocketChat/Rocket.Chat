@@ -93,11 +93,11 @@ export class AccountProfile {
 	}
 
 	get securityE2EEncryptionSection(): Locator {
-		return this.page.locator('[role="button"]:has-text("E2E Encryption")');
+		return this.page.locator('[role="button"]:has-text("End-to-end encryption")');
 	}
 
 	get securityE2EEncryptionResetKeyButton(): Locator {
-		return this.page.locator("role=button[name='Reset E2E Key']");
+		return this.page.locator("role=button[name='Reset E2EE key']");
 	}
 
 	get securityE2EEncryptionPassword(): Locator {
