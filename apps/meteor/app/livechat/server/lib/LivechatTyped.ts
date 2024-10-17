@@ -77,7 +77,7 @@ import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normaliz
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
-import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
+import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor, ILivechatMessage } from './localTypes';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
 
 type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username' | 'source'>> & {
@@ -94,30 +94,6 @@ type OfflineMessageData = {
 	department?: string;
 	host?: string;
 };
-
-type UploadedFile = {
-	_id: string;
-	name?: string;
-	type?: string;
-	size?: number;
-	description?: string;
-	identify?: { size: { width: number; height: number } };
-	format?: string;
-};
-
-export interface ILivechatMessage {
-	token: string;
-	_id: string;
-	rid: string;
-	msg: string;
-	file?: UploadedFile;
-	files?: UploadedFile[];
-	attachments?: MessageAttachment[];
-	alias?: string;
-	groupable?: boolean;
-	blocks?: IMessage['blocks'];
-	email?: IMessageInbox['email'];
-}
 
 type AKeyOf<T> = {
 	[K in keyof T]?: T[K];

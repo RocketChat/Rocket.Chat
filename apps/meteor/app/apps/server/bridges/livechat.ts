@@ -10,7 +10,8 @@ import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@roc
 
 import { callbacks } from '../../../../lib/callbacks';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
-import { type ILivechatMessage, Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
+import type { ILivechatMessage } from '../../../livechat/server/lib/localTypes';
+import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
 import { getRoomMessages } from '../../../livechat/server/lib/getRoomMessages';
 import { settings } from '../../../settings/server';
 
