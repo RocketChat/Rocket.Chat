@@ -20,6 +20,8 @@ export const CoreModules = [
 	'custom-roles',
 	'accessibility-certification',
 	'unlimited-presence',
+	'contact-id-verification',
+	'teams-voip',
 ] as const;
 
 export type InternalModuleName = (typeof CoreModules)[number];
