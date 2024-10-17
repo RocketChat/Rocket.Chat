@@ -1,8 +1,8 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { hashQueryKey } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
@@ -22,7 +22,7 @@ import AgentsTableRow from './AgentsTableRow';
 
 // TODO: missing error state
 const AgentsTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
 
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address' | 'statusLivechat'>('name');

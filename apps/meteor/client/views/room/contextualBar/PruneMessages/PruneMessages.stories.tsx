@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
@@ -27,9 +27,9 @@ export default {
 			);
 		},
 	],
-} as ComponentMeta<typeof PruneMessages>;
+} satisfies Meta<typeof PruneMessages>;
 
-const Template: ComponentStory<typeof PruneMessages> = (args) => <PruneMessages {...args} />;
+const Template: StoryFn<typeof PruneMessages> = (args) => <PruneMessages {...args} />;
 
 export const Default = Template.bind({});
 

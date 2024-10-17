@@ -1,8 +1,8 @@
 import { Skeleton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useGetMessageByID } from '../../../../views/room/contextualBar/Threads/hooks/useGetMessageByID';
 import MarkdownText from '../../../MarkdownText';
@@ -37,7 +37,7 @@ const getTranslationKey = (users: string[], mine: boolean): TranslationKey => {
 };
 
 const ReactionTooltip = ({ emojiName, usernames, mine, messageId, showRealName, username }: ReactionTooltipProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const key = getTranslationKey(usernames, mine);
 

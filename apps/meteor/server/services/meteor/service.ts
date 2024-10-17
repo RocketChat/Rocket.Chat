@@ -37,7 +37,7 @@ if (disableOplog) {
 	// Overrides the native observe changes to prevent database polling and stores the callbacks
 	// for the users' tokens to re-implement the reactivity based on our database listeners
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-	MongoInternals.Connection.prototype._observeChanges = function (
+	MongoInternals.Connection.prototype._observeChanges = async function (
 		{
 			collectionName,
 			selector,
@@ -52,19 +52,18 @@ if (disableOplog) {
 		},
 		_ordered: boolean,
 		callbacks: Callbacks,
-	): any {
+	): Promise<any> {
 		// console.error('Connection.Collection.prototype._observeChanges', collectionName, selector, options);
 		let cbs: Set<{ hashedToken: string; callbacks: Callbacks }>;
 		let data: { hashedToken: string; callbacks: Callbacks };
 		if (callbacks?.added) {
-			const records = Promise.await(
-				mongo
-					.rawCollection(collectionName)
-					.find(selector, {
-						...(options.projection || options.fields ? { projection: options.projection || options.fields } : {}),
-					})
-					.toArray(),
-			);
+			const records = await mongo
+				.rawCollection(collectionName)
+				.find(selector, {
+					...(options.projection || options.fields ? { projection: options.projection || options.fields } : {}),
+				})
+				.toArray();
+
 			for (const { _id, ...fields } of records) {
 				callbacks.added(String(_id), fields);
 			}

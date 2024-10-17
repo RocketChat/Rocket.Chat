@@ -1,8 +1,8 @@
 import { Box, PasswordInput, FieldGroup, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, Ref, SyntheticEvent } from 'react';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../GenericModal';
 import type { OnConfirm } from './TwoFactorModal';
@@ -15,7 +15,7 @@ type TwoFactorPasswordModalProps = {
 };
 
 const TwoFactorPasswordModal = ({ onConfirm, onClose, invalidAttempt }: TwoFactorPasswordModalProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [code, setCode] = useState<string>('');
 	const ref = useAutoFocus();
 

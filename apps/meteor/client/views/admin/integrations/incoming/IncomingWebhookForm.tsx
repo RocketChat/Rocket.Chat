@@ -57,13 +57,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 	const { copy: copyToken } = useClipboardWithToast(`${webhookData?._id}/${webhookData?.token}`);
 	const { copy: copyCurlData } = useClipboardWithToast(curlData);
 
-	const scriptEngineOptions: SelectOption[] = useMemo(
-		() => [
-			['vm2', t('Script_Engine_vm2')],
-			['isolated-vm', t('Script_Engine_isolated_vm')],
-		],
-		[t],
-	);
+	const scriptEngineOptions: SelectOption[] = useMemo(() => [['isolated-vm', t('Script_Engine_isolated_vm')]], [t]);
 
 	const hilightedExampleJson = useHighlightedCode('json', JSON.stringify(exampleData, null, 2));
 

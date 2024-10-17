@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import { Contextualbar } from '../../../../components/Contextualbar';
@@ -12,9 +12,9 @@ export default {
 		layout: 'fullscreen',
 	},
 	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
-} as ComponentMeta<typeof NotificationsPreferences>;
+} satisfies Meta<typeof NotificationsPreferences>;
 
-export const Default: ComponentStory<typeof NotificationsPreferences> = (args) => <NotificationsPreferences {...args} />;
+export const Default: StoryFn<typeof NotificationsPreferences> = (args) => <NotificationsPreferences {...args} />;
 Default.storyName = 'NotificationsPreferences';
 Default.args = {
 	handleClose: action('handleClose'),

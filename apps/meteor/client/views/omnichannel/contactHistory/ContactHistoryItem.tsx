@@ -9,9 +9,9 @@ import {
 } from '@rocket.chat/fuselage';
 import type { VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { Dispatch, ReactElement, SetStateAction } from 'react';
+import type { ComponentPropsWithoutRef, Dispatch, ReactElement, SetStateAction } from 'react';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { clickableItem } from '../../../lib/clickableItem';
@@ -19,10 +19,10 @@ import { clickableItem } from '../../../lib/clickableItem';
 type ContactHistoryItemProps = {
 	history: VisitorSearchChatsResult;
 	setChatId: Dispatch<SetStateAction<string>>;
-};
+} & ComponentPropsWithoutRef<typeof Box>;
 
 function ContactHistoryItem({ history, setChatId, ...props }: ContactHistoryItemProps): ReactElement {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDate = useFormatDateAndTime();
 	const username = history.servedBy?.username;
 	const hasClosingMessage = !!history.closingMessage?.msg?.trim();

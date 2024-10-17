@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import FileUploadModal from '.';
@@ -16,7 +16,7 @@ export default {
 		fileDescription: '',
 		invalidContentType: false,
 	},
-} as ComponentMeta<typeof FileUploadModal>;
+} satisfies Meta<typeof FileUploadModal>;
 
-export const Default: ComponentStory<typeof FileUploadModal> = (args) => <FileUploadModal {...args} />;
+export const Default: StoryFn<typeof FileUploadModal> = (args) => <FileUploadModal {...args} />;
 Default.storyName = 'FileUploadModal';
