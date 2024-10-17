@@ -27,6 +27,8 @@ const bundles: IBundle = {
 		'custom-roles',
 		'accessibility-certification',
 		'unlimited-presence',
+		'contact-id-verification',
+		'teams-voip',
 	],
 	pro: [],
 };
