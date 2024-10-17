@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { before, beforeEach, describe, it } from 'mocha';
+import { beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
