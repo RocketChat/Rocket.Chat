@@ -45,7 +45,7 @@ import {
 	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
-import { isSingleContactEnabled, migrateVisitorIfMissingContact } from './Contacts';
+import { migrateVisitorIfMissingContact } from './Contacts';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -97,10 +97,6 @@ export const createLivechatRoom = async <
 	});
 
 	const contactId = await (async () => {
-		if (!isSingleContactEnabled()) {
-			return undefined;
-		}
-
 		return migrateVisitorIfMissingContact(
 			_id,
 			(extraRoomInfo.source || roomInfo.source || { type: OmnichannelSourceType.OTHER }) as IOmnichannelSource,
