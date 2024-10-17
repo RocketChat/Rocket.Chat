@@ -17,15 +17,11 @@ const modelsMock = {
 const mergeContactsStub = sinon.stub();
 
 const { runVerifyContactChannel } = proxyquire.noCallThru().load('../../../../../../server/patches/verifyContactChannel', {
-	'../../../app/livechat/server/lib/Contacts': mergeContactsStub,
-	'@rocket.chat/models': modelsMock,
-	'./LivechatTyped': {
-		Livechat: {
-			logger: {
-				debug: sinon.stub(),
-			},
-		},
+	'../../../app/livechat/server/lib/Contacts': { mergeContacts: mergeContactsStub },
+	'../../../app/license/client': {
+		hasLicense: sinon.stub().resolves(true),
 	},
+	'@rocket.chat/models': modelsMock,
 });
 
 describe('verifyContactChannel', () => {
