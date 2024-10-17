@@ -12,9 +12,18 @@ const wordBreak = css`
 	word-break: break-word;
 `;
 
-function ContactManagerInfo({ username }) {
+type ContactManagerInfoProps = {
+	username: string;
+};
+
+function ContactManagerInfo({ username }: ContactManagerInfoProps) {
 	const { value: data, phase: state } = useEndpointData('/v1/users.info', { params: useMemo(() => ({ username }), [username]) });
+
 	if (!data && state === AsyncStatePhase.LOADING) {
+		return null;
+	}
+
+	if (state === AsyncStatePhase.REJECTED) {
 		return null;
 	}
 

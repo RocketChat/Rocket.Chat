@@ -9,7 +9,7 @@ import {
 } from '@rocket.chat/fuselage';
 import type { VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import type { Dispatch, ReactElement, SetStateAction } from 'react';
+import type { ComponentPropsWithoutRef, Dispatch, ReactElement, SetStateAction } from 'react';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,7 +19,7 @@ import { clickableItem } from '../../../lib/clickableItem';
 type ContactHistoryItemProps = {
 	history: VisitorSearchChatsResult;
 	setChatId: Dispatch<SetStateAction<string>>;
-};
+} & ComponentPropsWithoutRef<typeof Box>;
 
 function ContactHistoryItem({ history, setChatId, ...props }: ContactHistoryItemProps): ReactElement {
 	const { t } = useTranslation();
