@@ -1,5 +1,4 @@
-import { startTracing } from '@rocket.chat/tracing';
-
+import './tracing';
 import './models/startup';
 /**
  * ./settings uses top level await, in theory the settings creation
@@ -25,8 +24,6 @@ import './lib/logger/startup';
 import '../lib/oauthRedirectUriServer';
 import './lib/pushConfig';
 import './features/EmailInbox/index';
-
-startTracing({ service: 'core' });
 
 await Promise.all([configureLogLevel(), registerServices(), registerEEBroker(), startup()]);
 
