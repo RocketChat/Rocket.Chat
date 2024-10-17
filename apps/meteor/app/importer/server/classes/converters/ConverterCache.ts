@@ -62,7 +62,7 @@ export class ConverterCache {
 		this.addUser(userData.importIds[0], userData._id, userData.username);
 	}
 
-	addUserNameToId(username: string, id: string): void {
+	addUsernameToId(username: string, id: string): void {
 		this._userNameToIdCache.set(username, id);
 	}
 
@@ -215,7 +215,7 @@ export class ConverterCache {
 		}
 
 		const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
-		this._userNameToIdCache.set(username, user?._id);
+		this.addUsernameToId(username, user?._id);
 
 		return user?._id;
 	}

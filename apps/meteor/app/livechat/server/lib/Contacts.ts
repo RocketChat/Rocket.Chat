@@ -358,7 +358,7 @@ export async function createContact(params: CreateContactParams, upsertId?: ILiv
 		channels,
 		customFields,
 		unknown,
-		importIds,
+		...(importIds?.length ? { importIds } : {}),
 	} as const;
 
 	// Use upsert when doing auto-migration so that if there's multiple requests processing at the same time, they won't interfere with each other
