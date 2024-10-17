@@ -73,7 +73,6 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 						{
 							loader: 'postcss-loader',
 							options: {
-								ident: 'postcss',
 								sourceMap: true,
 							},
 						},
@@ -97,7 +96,6 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 						{
 							loader: 'postcss-loader',
 							options: {
-								ident: 'postcss',
 								sourceMap: true,
 							},
 						},

@@ -72,7 +72,7 @@
 		"postcss-dir-pseudo-class": "^5.0.0",
 		"postcss-flexbugs-fixes": "^4.2.1",
 		"postcss-ie11-supports": "^0.1.3",
-		"postcss-loader": "^3.0.0",
+		"postcss-loader": "^8.1.1",
 		"postcss-logical": "^4.0.2",
 		"postcss-scss": "^4.0.9",
 		"postcss-selector-not": "^4.0.1",
