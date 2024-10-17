@@ -28,5 +28,5 @@ export const runMergeContacts = async (
 };
 
 void License.onLicense('contact-id-verification', () => {
-	mergeContacts.patch(runMergeContacts, License.hasModule('contact-id-verification'));
+	mergeContacts.patch(runMergeContacts, () => License.hasModule('contact-id-verification'));
 });

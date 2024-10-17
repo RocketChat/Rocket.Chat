@@ -48,5 +48,5 @@ export const runVerifyContactChannel = async (
 };
 
 void License.onLicense('contact-id-verification', () => {
-	verifyContactChannel.patch(runVerifyContactChannel, License.hasModule('contact-id-verification'));
+	verifyContactChannel.patch(runVerifyContactChannel, () => License.hasModule('contact-id-verification'));
 });
