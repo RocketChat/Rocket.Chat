@@ -13,8 +13,6 @@ const modelsMock = {
 		insertOne: sinon.stub(),
 		upsertContact: sinon.stub(),
 		updateContact: sinon.stub(),
-		deleteMany: sinon.stub(),
-		findSimilarVerifiedContacts: sinon.stub(),
 		findContactMatchingVisitor: sinon.stub(),
 		findOneByVisitorId: sinon.stub(),
 	},
@@ -26,7 +24,6 @@ const modelsMock = {
 		findOneById: sinon.stub(),
 		updateById: sinon.stub(),
 		updateOne: sinon.stub(),
-		updateMany: sinon.stub(),
 	},
 	LivechatCustomField: {
 		findByScope: sinon.stub(),

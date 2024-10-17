@@ -12,6 +12,9 @@ const modelsMock = {
 	LivechatVisitors: {
 		updateMany: sinon.stub(),
 	},
+	LivechatRooms: {
+		update: sinon.stub(),
+	},
 };
 
 const mergeContactsStub = sinon.stub();
@@ -31,6 +34,7 @@ describe('verifyContactChannel', () => {
 		modelsMock.LivechatContacts.deleteMany.reset();
 		modelsMock.LivechatVisitors.updateMany.reset();
 		modelsMock.LivechatContacts.updateContact.reset();
+		modelsMock.LivechatRooms.update.reset();
 
 		sinon.useFakeTimers(new Date().getTime());
 	});
@@ -66,6 +70,7 @@ describe('verifyContactChannel', () => {
 				},
 			],
 		});
+		expect(modelsMock.LivechatRooms.update.getCall(0).args[0]).to.be.deep.contain({ _id: 'roomId' });
 	});
 
 	it('should be able to verify a contact and merge it', async () => {
@@ -112,6 +117,7 @@ describe('verifyContactChannel', () => {
 		expect(modelsMock.LivechatVisitors.updateMany.getCall(0).args[0]).to.be.deep.equal({ _id: { $in: ['visitorId2'] } });
 		expect(modelsMock.LivechatVisitors.updateMany.getCall(0).args[1]).to.be.deep.equal({ $set: { contactId: 'contactId' } });
 		expect(modelsMock.LivechatContacts.deleteMany.getCall(0).args[0]).to.be.deep.equal({ _id: { $in: ['differentId'] } });
+		expect(modelsMock.LivechatRooms.update.getCall(0).args[0]).to.be.deep.contain({ _id: 'roomId' });
 	});
 
 	it('should handle conflicting fields when merging contacts', async () => {
