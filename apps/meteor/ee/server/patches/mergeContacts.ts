@@ -27,6 +27,4 @@ export const runMergeContacts = async (
 	return LivechatContacts.findOneById(contactId);
 };
 
-void License.onLicense('contact-id-verification', () => {
-	mergeContacts.patch(runMergeContacts, () => License.hasModule('contact-id-verification'));
-});
+mergeContacts.patch(runMergeContacts, () => License.hasModule('contact-id-verification'));
