@@ -27,8 +27,6 @@ describe('verifyContactChannel', () => {
 		modelsMock.LivechatContacts.findOneById.reset();
 		modelsMock.LivechatContacts.updateContact.reset();
 		modelsMock.LivechatRooms.update.reset();
-
-		sinon.useFakeTimers(new Date().getTime());
 	});
 
 	afterEach(() => {
