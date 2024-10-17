@@ -10,7 +10,7 @@ import {
 	type OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
+import { LivechatContacts, LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -25,7 +25,7 @@ import {
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
-import { shouldTriggerVerificationApp, unverifyContactChannel } from './Contacts';
+import { shouldTriggerVerificationApp } from './Contacts';
 import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
 import { Livechat } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
@@ -262,7 +262,7 @@ export class QueueManager {
 		//       up. So if the contact is not verified we don't add it to queue and wait an event to be sent to properly add it to queue
 		if (inquiry.v.contactId && (await shouldTriggerVerificationApp(inquiry.v.contactId, room.source))) {
 			newRoom = await LivechatRooms.findOneById(rid);
-			await unverifyContactChannel(inquiry.v.contactId, room.source.type, inquiry.v._id);
+			await LivechatContacts.unverifyContactChannel(inquiry.v.contactId, room.source.type, inquiry.v._id);
 			// void Apps.self?.triggerEvent(AppEvents.IPostContactVerificationAppAssigned, inquiry.v, room);
 		} else {
 			newRoom = (await this.queueInquiry(inquiry, room, defaultAgent)) ?? (await LivechatRooms.findOneById(rid));
