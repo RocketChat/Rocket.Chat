@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { before, beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
@@ -120,12 +121,14 @@ describe('User Converter', () => {
 			},
 			...expectedData,
 		});
-
 		const converter = new UserConverter({ workInMemory: true });
-		sinon.stub(converter, 'generateTempPassword');
-		sinon.stub(converter, 'hashPassword');
-		converter.generateTempPassword.returns('tempPassword');
-		converter.hashPassword.callsFake((pass: string) => `hashed=${pass}`);
+
+		before(() => {
+			sinon.stub(converter, 'generateTempPassword');
+			sinon.stub(converter, 'hashPassword');
+			converter.generateTempPassword.returns('tempPassword');
+			converter.hashPassword.callsFake((pass: string) => `hashed=${pass}`);
+		});
 
 		it('should map an empty object', async () => {
 			expect(
