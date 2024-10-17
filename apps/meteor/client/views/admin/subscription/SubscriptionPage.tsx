@@ -59,7 +59,7 @@ const SubscriptionPage = () => {
 
 	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isLoading, 10000);
 
-	const { license, limits, activeModules = [], trial } = licensesData?.license || {};
+	const { license, limits, activeModules = [], cloudSyncAnnouncement } = licensesData || {};
 	const { isEnterprise = true } = enterpriseData || {};
 
 	const getKeyLimit = (key: 'monthlyActiveContacts' | 'activeUsers') => {
@@ -114,38 +114,11 @@ const SubscriptionPage = () => {
 					</UpgradeButton>
 				</ButtonGroup>
 			</PageHeaderNoShadow>
-			<PageBlockWithBorder>
-				<UiKitSubscriptionLicense
-					key='license'
-					initialView={{
-						viewId: 'license',
-						appId: 'cloud-announcements-core',
-						blocks: [
-							{
-								type: 'callout',
-								title: {
-									type: 'plain_text',
-									text: 'Callout Title',
-								},
-								text: {
-									type: 'plain_text',
-									text: 'Callout Text',
-								},
-								accessory: {
-									type: 'button',
-									text: {
-										type: 'plain_text',
-										text: 'Callout Action',
-									},
-									actionId: 'callout-action',
-									appId: 'cloud-announcements-core',
-									blockId: 'section-button',
-								},
-							},
-						],
-					}}
-				/>
-			</PageBlockWithBorder>
+			{cloudSyncAnnouncement && (
+				<PageBlockWithBorder>
+					<UiKitSubscriptionLicense key='license' initialView={JSON.parse(cloudSyncAnnouncement)} />
+				</PageBlockWithBorder>
+			)}
 			<PageScrollableContentWithShadow p={16}>
 				{(showSubscriptionCallout || syncLicenseUpdate.isLoading) && (
 					<Callout type='info' title={t('Sync_license_update_Callout_Title')} m={8}>

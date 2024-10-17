@@ -1,5 +1,6 @@
 import type { Cloud, Serialized } from '@rocket.chat/core-typings';
 import { DuplicatedLicenseError } from '@rocket.chat/license';
+import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { v, compile } from 'suretype';
 
@@ -58,17 +59,17 @@ const fetchWorkspaceSyncPayload = async ({
 				type: 'callout',
 				title: {
 					type: 'plain_text',
-					text: 'Workspace eligible for Starter Plan',
+					text: 'Callout Title',
 				},
 				text: {
 					type: 'plain_text',
-					text: 'Get free access to premium capabilities for up to 50 users',
+					text: 'Callout Text',
 				},
 				accessory: {
 					type: 'button',
 					text: {
 						type: 'plain_text',
-						text: 'Switch Plan',
+						text: 'Callout Action',
 					},
 					actionId: 'callout-action',
 					appId: 'cloud-announcements-core',
@@ -95,10 +96,18 @@ export async function syncCloudData() {
 
 		const workspaceRegistrationData = await buildWorkspaceRegistrationData(undefined);
 
-		const { license, removeLicense = false } = await fetchWorkspaceSyncPayload({
+		const {
+			license,
+			removeLicense = false,
+			cloudSyncAnnouncement,
+		} = await fetchWorkspaceSyncPayload({
 			token,
 			data: workspaceRegistrationData,
 		});
+
+		if (cloudSyncAnnouncement) {
+			await Settings.updateValueById('Cloud_Sync_Announcement_Payload', JSON.stringify(cloudSyncAnnouncement));
+		}
 
 		if (removeLicense) {
 			await callbacks.run('workspaceLicenseRemoved');
