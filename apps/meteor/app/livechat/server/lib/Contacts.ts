@@ -18,6 +18,7 @@ import {
 	Subscriptions,
 	LivechatContacts,
 } from '@rocket.chat/models';
+import { makeFunction } from '@rocket.chat/patch-injection';
 import type { PaginatedResult, VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -55,6 +56,14 @@ type CreateContactParams = {
 	customFields?: Record<string, string | unknown>;
 	contactManager?: string;
 	channels?: ILivechatContactChannel[];
+};
+
+type VerifyContactChannelParams = {
+	contactId: string;
+	field: string;
+	value: string;
+	visitorId: string;
+	roomId: string;
 };
 
 type UpdateContactParams = {
@@ -552,3 +561,7 @@ export async function validateContactManager(contactManagerUserId: string) {
 		throw new Error('error-contact-manager-not-found');
 	}
 }
+
+export const verifyContactChannel = makeFunction(async (_params: VerifyContactChannelParams): Promise<ILivechatContact | null> => null);
+
+export const mergeContacts = makeFunction(async (_contactId: string, _visitorId: string): Promise<ILivechatContact | null> => null);
