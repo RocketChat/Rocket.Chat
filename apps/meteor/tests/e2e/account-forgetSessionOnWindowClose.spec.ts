@@ -30,7 +30,7 @@ test.describe.serial('Forget session on window close setting', () => {
 		});
 	});
 
-	//TODO: Fix this test
+	// TODO: Fix this test
 	test.describe.skip('Setting on', async () => {
 		test.beforeAll(async ({ api }) => {
 			await api.post('/settings/Accounts_ForgetUserSessionOnWindowClose', { value: true });
