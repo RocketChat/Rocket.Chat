@@ -204,6 +204,12 @@ export class AppServerOrchestrator {
 		await Promise.all(apps.map((app) => this.getNotifier().appUpdated(app.getID())));
 	}
 
+	async disableMarketplaceApps() {
+		const apps = await this.getManager().get({ installationSource: 'marketplace' });
+
+		await Promise.all(apps.map((app) => this.getManager().disable(app.getID())));
+	}
+
 	async unload() {
 		// Don't try to unload it if it's already been
 		// unlaoded or wasn't unloaded to start with
