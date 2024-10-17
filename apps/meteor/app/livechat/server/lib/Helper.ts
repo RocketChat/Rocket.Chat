@@ -45,7 +45,7 @@ import {
 	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
-import { migrateVisitorIfMissingContact } from './Contacts';
+import { getContactIdByVisitorId, migrateVisitorIfMissingContact } from './Contacts';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';

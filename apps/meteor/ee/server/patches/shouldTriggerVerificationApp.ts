@@ -1,11 +1,16 @@
 import type { IOmnichannelSource, ILivechatContact } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { LivechatContacts } from '@rocket.chat/models';
 
 import { hasLicense } from '../../../app/license/client';
 import { shouldTriggerVerificationApp } from '../../../app/livechat/server/lib/Contacts';
 import { settings } from '../../../app/settings/server';
 
-shouldTriggerVerificationApp.patch(async (_next, contactId: ILivechatContact['_id'], source: IOmnichannelSource): Promise<boolean> => {
+const runShouldTriggerVerificationApp = async (
+	_next: any,
+	contactId: ILivechatContact['_id'],
+	source: IOmnichannelSource,
+): Promise<boolean> => {
 	const hasContactIdLicense = await hasLicense('contact-id-verification');
 
 	if (hasContactIdLicense) {
@@ -40,4 +45,8 @@ shouldTriggerVerificationApp.patch(async (_next, contactId: ILivechatContact['_i
 	}
 
 	return false;
+};
+
+void License.onLicense('contact-id-verification', () => {
+	shouldTriggerVerificationApp.patch(runShouldTriggerVerificationApp);
 });
