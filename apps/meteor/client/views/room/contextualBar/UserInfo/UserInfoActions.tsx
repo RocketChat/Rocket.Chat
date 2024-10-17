@@ -13,7 +13,7 @@ import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 type UserInfoActionsProps = {
 	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>;
 	rid: IRoom['_id'];
-	backToList: () => void;
+	backToList?: () => void;
 };
 
 const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): ReactElement => {
