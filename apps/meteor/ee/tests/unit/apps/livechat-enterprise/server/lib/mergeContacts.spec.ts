@@ -16,7 +16,7 @@ const contactMergerStub = {
 };
 
 const { runMergeContacts } = proxyquire.noCallThru().load('../../../../../../server/patches/mergeContacts', {
-	'../../../app/livechat/server/lib/Contacts': { mergeContacts: sinon.stub() },
+	'../../../app/livechat/server/lib/Contacts': { mergeContacts: { patch: sinon.stub() } },
 	'../../../app/livechat/server/lib/ContactMerger': { ContactMerger: contactMergerStub },
 	'@rocket.chat/models': modelsMock,
 });

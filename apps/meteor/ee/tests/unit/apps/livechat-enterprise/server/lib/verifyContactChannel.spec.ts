@@ -14,7 +14,7 @@ const modelsMock = {
 const mergeContactsStub = sinon.stub();
 
 const { runVerifyContactChannel } = proxyquire.noCallThru().load('../../../../../../server/patches/verifyContactChannel', {
-	'../../../app/livechat/server/lib/Contacts': { mergeContacts: mergeContactsStub },
+	'../../../app/livechat/server/lib/Contacts': { mergeContacts: mergeContactsStub, verifyContactChannel: { patch: sinon.stub() } },
 	'@rocket.chat/models': modelsMock,
 });
 
