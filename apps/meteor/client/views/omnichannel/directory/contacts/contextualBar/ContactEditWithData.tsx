@@ -1,14 +1,19 @@
 import { Box, ContextualbarContent } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { FormSkeleton } from '../../components/FormSkeleton';
 import ContactNewEdit from './ContactNewEdit';
 
-function ContactEditWithData({ id, close }) {
-	const t = useTranslation();
+type ContactEditWithDataProps = {
+	id: string;
+	close: () => void;
+};
+
+function ContactEditWithData({ id, close }: ContactEditWithDataProps) {
+	const { t } = useTranslation();
 	const {
 		value: data,
 		phase: state,
