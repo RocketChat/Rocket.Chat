@@ -1,6 +1,6 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { Upload } from '../../../lib/chats/Upload';
 
@@ -11,7 +11,7 @@ type ErroredUploadProgressIndicatorProps = {
 };
 
 const ErroredUploadProgressIndicator = ({ id, error, onClose }: ErroredUploadProgressIndicatorProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const handleCloseClick = useCallback(() => {
 		onClose?.(id);

@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import AppearanceForm from './AppearanceForm';
@@ -6,7 +6,7 @@ import AppearanceForm from './AppearanceForm';
 export default {
 	title: 'Omnichannel/AppearanceForm',
 	component: AppearanceForm,
-} as ComponentMeta<typeof AppearanceForm>;
+} satisfies Meta<typeof AppearanceForm>;
 
-export const Default: ComponentStory<typeof AppearanceForm> = () => <AppearanceForm />;
+export const Default: StoryFn<typeof AppearanceForm> = () => <AppearanceForm />;
 Default.storyName = 'AppearanceForm';

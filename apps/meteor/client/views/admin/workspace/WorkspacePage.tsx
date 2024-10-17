@@ -1,8 +1,8 @@
 import type { IWorkspaceInfo, IStats } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Callout, CardGrid } from '@rocket.chat/fuselage';
 import type { IInstance } from '@rocket.chat/rest-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
@@ -30,7 +30,7 @@ const WorkspacePage = ({
 	onClickRefreshButton,
 	onClickDownloadInfo,
 }: WorkspaceStatusPageProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { data } = useIsEnterprise();
 

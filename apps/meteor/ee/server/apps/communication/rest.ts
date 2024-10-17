@@ -125,6 +125,12 @@ export class AppsRestApi {
 								...(this.queryParams.isAdminUser === 'false' && { endUserID: this.user._id }),
 							},
 						});
+
+						if (request.status === 426) {
+							orchestrator.getRocketChatLogger().error('Workspace out of support window:', await request.json());
+							return API.v1.failure({ error: 'unsupported version' });
+						}
+
 						if (request.status !== 200) {
 							orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
 							return API.v1.failure();
@@ -327,12 +333,6 @@ export class AppsRestApi {
 						} catch (e: any) {
 							orchestrator.getRocketChatLogger().error('Error getting the app from url:', e.response.data);
 							return API.v1.internalError();
-						}
-
-						if (this.bodyParams.downloadOnly) {
-							apiDeprecationLogger.parameter(this.request.route, 'downloadOnly', '7.0.0', this.response);
-
-							return API.v1.success({ buff });
 						}
 					} else if ('appId' in this.bodyParams && this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
 						const baseUrl = orchestrator.getMarketplaceUrl();

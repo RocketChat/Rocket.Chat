@@ -1,11 +1,11 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericUpsellModal from '../../../components/GenericUpsellModal';
 import { useUpsellActions } from '../../../components/GenericUpsellModal/hooks';
 
 const CustomRoleUpsellModal = ({ onClose }: { onClose: () => void }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { handleManageSubscription } = useUpsellActions();
 
 	return (
