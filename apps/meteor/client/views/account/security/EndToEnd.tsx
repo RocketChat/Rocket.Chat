@@ -71,9 +71,14 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' {...props}>
-			<Box is='p' fontScale='p1' dangerouslySetInnerHTML={{ __html: t('End-to-end_encryption_Profile_Description') }} />
+			<Box
+				is='p'
+				fontScale='p1'
+				id={e2ePasswordExplanationId}
+				dangerouslySetInnerHTML={{ __html: t('E2E_Encryption_Password_Explanation') }}
+			/>
 
-			<Box mbs={36}>
+			<Box mbs={36} w='full'>
 				<Box is='h4' fontScale='h4' mbe={12}>
 					{t('E2E_Encryption_Password_Change')}
 				</Box>
@@ -137,13 +142,6 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 						</Field>
 					)}
 				</FieldGroup>
-				<Box
-					is='p'
-					fontScale='p1'
-					mb={12}
-					id={e2ePasswordExplanationId}
-					dangerouslySetInnerHTML={{ __html: t('E2E_Encryption_Password_Explanation') }}
-				/>
 				<Button
 					primary
 					disabled={!(keysExist && isValid)}
