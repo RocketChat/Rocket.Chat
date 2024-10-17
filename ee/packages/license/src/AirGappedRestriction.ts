@@ -15,7 +15,7 @@ class AirGappedRestrictionClass extends EventEmitter {
 	}
 
 	public async computeRestriction(encryptedToken?: string): Promise<void> {
-		if (License.hasModule('unlimited-presence')) {
+		if (License.hasValidLicense()) {
 			this.removeRestrictionsUnderLicense();
 			return;
 		}

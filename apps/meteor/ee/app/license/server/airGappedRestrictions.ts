@@ -1,5 +1,5 @@
-import { AirGappedRestriction } from '@rocket.chat/license';
-import { Settings } from '@rocket.chat/models';
+import { AirGappedRestriction, License } from '@rocket.chat/license';
+import { Settings, Statistics } from '@rocket.chat/models';
 
 import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../app/settings/server';
@@ -32,4 +32,14 @@ const sendRocketCatWarningToAdmins = async (remainingDays: number) => {
 AirGappedRestriction.on('remainingDays', async ({ days }: { days: number }) => {
 	await updateRestrictionSetting(days);
 	await sendRocketCatWarningToAdmins(days);
+});
+
+License.onValidateLicense(async () => {
+	const token = await Statistics.findLastStatsToken();
+	void AirGappedRestriction.computeRestriction(token);
+});
+
+License.onInvalidateLicense(async () => {
+	const token = await Statistics.findLastStatsToken();
+	void AirGappedRestriction.computeRestriction(token);
 });

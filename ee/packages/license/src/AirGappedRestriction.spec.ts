@@ -4,7 +4,7 @@ import { License } from './licenseImp';
 
 jest.mock('./licenseImp', () => ({
 	License: {
-		hasModule: jest.fn().mockReturnValue(false),
+		hasValidLicense: jest.fn().mockReturnValue(false),
 	},
 }));
 
@@ -79,9 +79,9 @@ describe('AirGappedRestriction', () => {
 			});
 			expect(AirGappedRestriction.restricted).toBe(true);
 		});
-		it('should notify remaining days = -1 when unlimited-presence module is available', () => {
+		it('should notify remaining days = -1 when has valid license', () => {
 			const handler = jest.fn();
-			(License.hasModule as jest.Mock).mockReturnValueOnce(true);
+			(License.hasValidLicense as jest.Mock).mockReturnValueOnce(true);
 
 			AirGappedRestriction.on('remainingDays', handler);
 			AirGappedRestriction.computeRestriction();
