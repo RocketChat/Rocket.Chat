@@ -62,7 +62,7 @@ describe('verifyContactChannel', () => {
 				],
 			}),
 		).to.be.true;
-		expect(modelsMock.LivechatRooms.update.calledOnceWith({ _id: 'roomId' })).to.be.true;
+		expect(modelsMock.LivechatRooms.update.calledOnceWith({ _id: 'roomId' }, { $set: { verified: true } })).to.be.true;
 		expect(mergeContactsStub.calledOnceWith('contactId', { name: 'channelName', visitorId: 'visitorId' }));
 	});
 
