@@ -173,9 +173,6 @@ export class Importer {
 				await this.applySettingValues({});
 
 				await this.updateProgress(ProgressStep.IMPORTING_USERS);
-				// #TODO: Get the proper count by matching the selection with the list on the covnerter
-				const userCount = importSelection.users?.list?.length || 0;
-				await callbacks.run('beforeUserImport', { userCount });
 				await this.converter.convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn });
 
 				await this.updateProgress(ProgressStep.IMPORTING_CHANNELS);
