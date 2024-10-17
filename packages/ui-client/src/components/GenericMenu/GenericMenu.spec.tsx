@@ -1,3 +1,4 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -30,7 +31,7 @@ const sections = [regular, danger];
 
 describe('Room Actions Menu', () => {
 	it('should render kebab menu with the list content', async () => {
-		render(<GenericMenu title='Kebab' sections={sections} />, { legacyRoot: true });
+		render(<GenericMenu title='Kebab' sections={sections} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
 
 		await userEvent.click(screen.getByRole('button'));
 
@@ -39,7 +40,7 @@ describe('Room Actions Menu', () => {
 	});
 
 	it('should have two different sections, regular and danger', async () => {
-		render(<GenericMenu title='Kebab' sections={sections} />, { legacyRoot: true });
+		render(<GenericMenu title='Kebab' sections={sections} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
 
 		await userEvent.click(screen.getByRole('button'));
 
@@ -48,7 +49,7 @@ describe('Room Actions Menu', () => {
 	});
 
 	it('should call the action when item clicked', async () => {
-		render(<GenericMenu title='Kebab' sections={sections} />, { legacyRoot: true });
+		render(<GenericMenu title='Kebab' sections={sections} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
 
 		await userEvent.click(screen.getByRole('button'));
 		await userEvent.click(screen.getAllByRole('menuitem')[0]);

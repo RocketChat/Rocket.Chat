@@ -265,4 +265,5 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		source?: string;
 		options?: FindOptions;
 	}): FindPaginated<FindCursor<IOmnichannelRoom>>;
+	countLivechatRoomsWithDepartment(): Promise<number>;
 }

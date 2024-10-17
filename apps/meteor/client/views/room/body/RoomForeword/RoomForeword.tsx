@@ -2,9 +2,9 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isVoipRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Flex, Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { VoipRoomForeword } from '../../../../components/voip/room/VoipRoomForeword';
 import RoomForewordUsernameList from './RoomForewordUsernameList';
@@ -12,7 +12,7 @@ import RoomForewordUsernameList from './RoomForewordUsernameList';
 type RoomForewordProps = { user: IUser | null; room: IRoom };
 
 const RoomForeword = ({ user, room }: RoomForewordProps): ReactElement | null => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	if (isVoipRoom(room)) {
 		return <VoipRoomForeword room={room} />;

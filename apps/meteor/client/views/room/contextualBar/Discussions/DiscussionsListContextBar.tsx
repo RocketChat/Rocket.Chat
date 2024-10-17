@@ -41,7 +41,6 @@ const DiscussionListContextBar = (): ReactElement | null => {
 	return (
 		<DiscussionsList
 			onClose={closeTab}
-			userId={userId}
 			error={error}
 			discussions={discussions}
 			total={totalItemCount}
