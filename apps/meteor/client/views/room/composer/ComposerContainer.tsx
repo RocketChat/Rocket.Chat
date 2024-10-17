@@ -3,7 +3,9 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
+import { useAirGappedRestriction } from '../../../hooks/useAirGappedRestriction';
 import { useRoom } from '../contexts/RoomContext';
+import ComposerAirGappedRestricted from './ComposerAirGappedRestricted';
 import ComposerAnonymous from './ComposerAnonymous';
 import ComposerArchived from './ComposerArchived';
 import ComposerBlocked from './ComposerBlocked';
@@ -21,6 +23,7 @@ import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOn
 
 const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactElement => {
 	const room = useRoom();
+
 	const canJoinWithoutCode = usePermission('join-without-join-code');
 	const mustJoinWithCode = !props.subscription && room.joinCodeRequired && !canJoinWithoutCode;
 
@@ -32,6 +35,12 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactE
 	const isOmnichannel = isOmnichannelRoom(room);
 	const isFederation = isRoomFederated(room);
 	const isVoip = isVoipRoom(room);
+
+	const [isAirGappedRestricted] = useAirGappedRestriction();
+
+	if (isAirGappedRestricted) {
+		return <ComposerAirGappedRestricted />;
+	}
 
 	if (isOmnichannel) {
 		return <ComposerOmnichannel {...props} />;
