@@ -58,7 +58,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const isAdminUser = usePermission('manage-apps');
 	const { data } = useIsEnterprise();
 	const isEnterpriseLicense = !!data?.isEnterprise;
-	const workspaceHasAddon = useHasLicenseModule((app as App).addon);
+
+	const appAddon = (app as App).addon;
+	const workspaceHasAddon = useHasLicenseModule(appAddon);
 
 	const [isLoading, setLoading] = useState(false);
 	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
@@ -133,13 +135,13 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	const handleAddon = useCallback(
 		(actionType: AddonActionType, callback: () => void) => {
-			if (workspaceHasAddon) {
-				return callback();
+			if (appAddon && !workspaceHasAddon) {
+				return missingAddonHandler(actionType);
 			}
 
-			missingAddonHandler(actionType);
+			callback();
 		},
-		[missingAddonHandler, workspaceHasAddon],
+		[appAddon, missingAddonHandler, workspaceHasAddon],
 	);
 
 	const handleAcquireApp = useCallback(() => {
