@@ -52,21 +52,22 @@ describe('verifyContactChannel', () => {
 			roomId: 'roomId',
 		});
 
-		expect(modelsMock.LivechatContacts.findOneById.getCall(0).args[0]).to.be.equal('contactId');
-		expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[0]).to.be.equal('contactId');
-		expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[1]).to.be.deep.contain({
-			channels: [
-				{
-					name: 'channelName',
-					visitorId: 'visitorId',
-					verified: true,
-					verifiedAt: new Date(),
-					field: 'field',
-					value: 'value',
-				},
-			],
-		});
-		expect(modelsMock.LivechatRooms.update.getCall(0).args[0]).to.be.deep.contain({ _id: 'roomId' });
+		expect(modelsMock.LivechatContacts.findOneById.calledOnceWith('contactId')).to.be.true;
+		expect(
+			modelsMock.LivechatContacts.updateContact.calledOnceWith('contactId', {
+				channels: [
+					{
+						name: 'channelName',
+						visitorId: 'visitorId',
+						verified: true,
+						verifiedAt: new Date(),
+						field: 'field',
+						value: 'value',
+					},
+				],
+			}),
+		).to.be.true;
+		expect(modelsMock.LivechatRooms.update.calledOnceWith({ _id: 'roomId' })).to.be.true;
 	});
 
 	it('should be able to verify a contact and merge it', async () => {
@@ -94,24 +95,25 @@ describe('verifyContactChannel', () => {
 			roomId: 'roomId',
 		});
 
-		expect(modelsMock.LivechatContacts.updateContact.getCall(1).args[0]).to.be.equal('contactId');
-		expect(modelsMock.LivechatContacts.updateContact.getCall(1).args[1]).to.be.deep.contain({
-			emails: ['email1', 'email2'],
-			phones: ['phone1', 'phone2'],
-			channels: [
-				{ name: 'channelName2', visitorId: 'visitorId2' },
-				{
-					name: 'channelName',
-					visitorId: 'visitorId',
-					verified: true,
-					verifiedAt: new Date(),
-					field: 'field',
-					value: 'value',
-				},
-			],
-		});
-		expect(modelsMock.LivechatContacts.deleteMany.getCall(0).args[0]).to.be.deep.equal({ _id: { $in: ['differentId'] } });
-		expect(modelsMock.LivechatRooms.update.getCall(0).args[0]).to.be.deep.contain({ _id: 'roomId' });
+		expect(
+			modelsMock.LivechatContacts.updateContact.calledOnceWith('contactId', {
+				emails: ['email1', 'email2'],
+				phones: ['phone1', 'phone2'],
+				channels: [
+					{ name: 'channelName2', visitorId: 'visitorId2' },
+					{
+						name: 'channelName',
+						visitorId: 'visitorId',
+						verified: true,
+						verifiedAt: new Date(),
+						field: 'field',
+						value: 'value',
+					},
+				],
+			}),
+		).to.be.true;
+		expect(modelsMock.LivechatContacts.deleteMany.calledOnceWith({ _id: { $in: ['differentId'] } })).to.be.true;
+		expect(modelsMock.LivechatRooms.update.calledOnceWith({ _id: 'roomId' })).to.be.true;
 	});
 
 	it('should handle conflicting fields when merging contacts', async () => {
@@ -137,17 +139,18 @@ describe('verifyContactChannel', () => {
 			roomId: 'roomId',
 		});
 
-		expect(modelsMock.LivechatContacts.updateContact.getCall(1).args[0]).to.be.equal('contactId');
-		expect(modelsMock.LivechatContacts.updateContact.getCall(1).args[1]).to.be.deep.contain({
-			hasConflict: true,
-			conflictingFields: [
-				{
-					field: 'name',
-					oldValue: 'name1',
-					newValue: 'name2',
-				},
-			],
-		});
+		expect(
+			modelsMock.LivechatContacts.updateContact.calledOnceWith('contactId', {
+				hasConflict: true,
+				conflictingFields: [
+					{
+						field: 'name',
+						oldValue: 'name1',
+						newValue: 'name2',
+					},
+				],
+			}),
+		).to.be.true;
 	});
 
 	it('should throw an error if contact not exists', async () => {
