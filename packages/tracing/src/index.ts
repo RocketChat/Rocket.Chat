@@ -1,4 +1,4 @@
-import { context, propagation, trace } from '@opentelemetry/api';
+import { context, propagation, SpanStatusCode, trace } from '@opentelemetry/api';
 import type { Span, SpanOptions, Tracer } from '@opentelemetry/api';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { NodeSDK } from '@opentelemetry/sdk-node';
@@ -34,33 +34,40 @@ export function tracerSpan<F extends (span?: Span) => ReturnType<F>>(
 		return fn();
 	}
 
+	const computeResult = (span: Span) => {
+		try {
+			const result = fn(span);
+			if (result instanceof Promise) {
+				result.catch((err) => {
+					span.recordException(err);
+					span.setStatus({
+						code: SpanStatusCode.ERROR,
+						message: err.message,
+					});
+				});
+
+				return result;
+			}
+			return result;
+		} catch (err: any) {
+			span.recordException(err);
+			span.setStatus({
+				code: SpanStatusCode.ERROR,
+				message: err.message,
+			});
+			throw err;
+		} finally {
+			span.end();
+		}
+	};
+
 	if (optl) {
 		const activeContext = propagation.extract(context.active(), optl);
 
-		return tracer.startActiveSpan(name, options, activeContext, (span: Span) => {
-			const result = fn(span);
-			if (result instanceof Promise) {
-				result.finally(() => {
-					span.end();
-				});
-				return result;
-			}
-			span.end();
-			return result;
-		});
+		return tracer.startActiveSpan(name, options, activeContext, computeResult);
 	}
 
-	return tracer.startActiveSpan(name, options, (span: Span) => {
-		const result = fn(span);
-		if (result instanceof Promise) {
-			result.finally(() => {
-				span.end();
-			});
-			return result;
-		}
-		span.end();
-		return result;
-	});
+	return tracer.startActiveSpan(name, options, computeResult);
 }
 
 export function tracerActiveSpan<F extends (span?: Span) => ReturnType<F>>(
