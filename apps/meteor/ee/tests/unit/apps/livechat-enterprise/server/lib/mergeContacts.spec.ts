@@ -78,7 +78,8 @@ describe('mergeContacts', () => {
 
 		await runMergeContacts(() => undefined, 'contactId', targetChannel);
 
-		expect(modelsMock.LivechatContacts.findOneById.calledOnceWith('contactId')).to.be.true;
+		expect(modelsMock.LivechatContacts.findOneById.calledTwice).to.be.true;
+		expect(modelsMock.LivechatContacts.findOneById.calledWith('contactId')).to.be.true;
 		expect(modelsMock.LivechatContacts.findSimilarVerifiedContacts.calledOnceWith(targetChannel, 'contactId')).to.be.true;
 		expect(contactMergerStub.getAllFieldsFromContact.calledOnceWith(similarContact)).to.be.true;
 		expect(contactMergerStub.mergeFieldsIntoContact.calledOnceWith(originalContact)).to.be.true;
