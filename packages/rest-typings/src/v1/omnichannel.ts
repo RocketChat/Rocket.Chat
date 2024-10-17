@@ -989,6 +989,23 @@ export type LivechatRoomsProps = {
 	onhold?: boolean;
 };
 
+export type ContactSearchChatsResult = Pick<
+	IOmnichannelRoom,
+	| 'fname'
+	| 'ts'
+	| 'v'
+	| 'msgs'
+	| 'servedBy'
+	| 'closedAt'
+	| 'closedBy'
+	| 'closer'
+	| 'tags'
+	| '_id'
+	| 'closingMessage'
+	| 'source'
+	| 'lastMessage'
+>;
+
 export type VisitorSearchChatsResult = Pick<
 	IOmnichannelRoom,
 	'fname' | 'ts' | 'msgs' | 'servedBy' | 'closedAt' | 'closedBy' | 'closer' | 'tags' | '_id' | 'closingMessage'
@@ -3809,7 +3826,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETOmnichannelContactsSearchProps) => PaginatedResult<{ contacts: ILivechatContact[] }>;
 	};
 	'/v1/omnichannel/contacts.history': {
-		GET: (params: GETOmnichannelContactHistoryProps) => PaginatedResult<{ history: VisitorSearchChatsResult[] }>;
+		GET: (params: GETOmnichannelContactHistoryProps) => PaginatedResult<{ history: ContactSearchChatsResult[] }>;
 	};
 	'/v1/omnichannel/contact.search': {
 		GET: (params: GETOmnichannelContactSearchProps) => { contact: ILivechatVisitor | null };
