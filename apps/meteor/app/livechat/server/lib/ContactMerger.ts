@@ -278,9 +278,4 @@ export class ContactMerger {
 		const fields = await ContactMerger.getAllFieldsFromVisitor(visitor);
 		await ContactMerger.mergeFieldsIntoContact(fields, contact);
 	}
-
-	public static async mergeContact(targetContact: ILivechatContact, sourceContact: ILivechatContact): Promise<void> {
-		const fields = await ContactMerger.getAllFieldsFromContact(sourceContact);
-		await ContactMerger.mergeFieldsIntoContact(fields, targetContact);
-	}
 }

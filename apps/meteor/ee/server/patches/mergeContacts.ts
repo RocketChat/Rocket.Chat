@@ -6,25 +6,32 @@ import { hasLicense } from '../../../app/license/client';
 import { ContactMerger } from '../../../app/livechat/server/lib/ContactMerger';
 import { mergeContacts } from '../../../app/livechat/server/lib/Contacts';
 
-await License.onLicense('contact-id-verification', () => {
-	mergeContacts.patch(async (_next, contactId: string, channel: ILivechatContactChannel): Promise<ILivechatContact | null> => {
-		if (!(await hasLicense('contact-id-verification'))) {
-			return null;
-		}
+export const runMergeContacts = async (
+	_next: any,
+	contactId: string,
+	channel: ILivechatContactChannel,
+): Promise<ILivechatContact | null> => {
+	if (!(await hasLicense('contact-id-verification'))) {
+		return null;
+	}
 
-		const originalContact = (await LivechatContacts.findOneById(contactId)) as ILivechatContact;
+	const originalContact = (await LivechatContacts.findOneById(contactId)) as ILivechatContact;
 
-		const similarContacts: ILivechatContact[] = await LivechatContacts.findSimilarVerifiedContacts(channel, contactId);
+	const similarContacts: ILivechatContact[] = await LivechatContacts.findSimilarVerifiedContacts(channel, contactId);
 
-		if (!similarContacts.length) {
-			return originalContact;
-		}
+	if (!similarContacts.length) {
+		return originalContact;
+	}
 
-		for await (const similarContact of similarContacts) {
-			await ContactMerger.mergeContact(originalContact, similarContact);
-		}
+	for await (const similarContact of similarContacts) {
+		const fields = await ContactMerger.getAllFieldsFromContact(similarContact);
+		await ContactMerger.mergeFieldsIntoContact(fields, originalContact);
+	}
 
-		await LivechatContacts.deleteMany({ _id: { $in: similarContacts.map((c) => c._id) } });
-		return LivechatContacts.findOneById(contactId);
-	});
+	await LivechatContacts.deleteMany({ _id: { $in: similarContacts.map((c) => c._id) } });
+	return LivechatContacts.findOneById(contactId);
+};
+
+void License.onLicense('contact-id-verification', () => {
+	mergeContacts.patch(runMergeContacts);
 });
