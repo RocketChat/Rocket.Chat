@@ -18,6 +18,7 @@ import {
 	isChannelsConvertToTeamProps,
 	isChannelsSetReadOnlyProps,
 	isChannelsDeleteProps,
+	isChannelsListProps,
 	isChannelsFilesListProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
@@ -929,6 +930,7 @@ API.v1.addRoute(
 		permissionsRequired: {
 			GET: { permissions: ['view-c-room', 'view-joined-room'], operation: 'hasAny' },
 		},
+		validateParams: isChannelsListProps,
 	},
 	{
 		async get() {
@@ -936,7 +938,13 @@ API.v1.addRoute(
 			const { sort, fields, query } = await this.parseJsonQuery();
 			const hasPermissionToSeeAllPublicChannels = await hasPermissionAsync(this.userId, 'view-c-room');
 
-			const ourQuery: Record<string, any> = { ...query, t: 'c' };
+			const { _id } = this.queryParams;
+
+			const ourQuery = {
+				...query,
+				...(_id ? { _id } : {}),
+				t: 'c',
+			};
 
 			if (!hasPermissionToSeeAllPublicChannels) {
 				const roomIds = (
