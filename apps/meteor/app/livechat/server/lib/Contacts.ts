@@ -212,10 +212,6 @@ export async function migrateVisitorIfMissingContact(
 	visitorId: ILivechatVisitor['_id'],
 	source: IOmnichannelSource,
 ): Promise<ILivechatContact['_id'] | null> {
-	if (!isSingleContactEnabled()) {
-		return null;
-	}
-
 	Livechat.logger.debug(`Detecting visitor's contact ID`);
 	// Check if there is any contact already linking to this visitorId
 	const contactId = await getContactIdByVisitorId(visitorId);
@@ -308,11 +304,6 @@ export async function getContact(contactId: ILivechatContact['_id']): Promise<IL
 
 	// Finally, let's return the data of the migrated contact
 	return LivechatContacts.findOneById(newContactId);
-}
-
-export function isSingleContactEnabled(): boolean {
-	// The Single Contact feature is not yet available in production, but can already be partially used in test environments.
-	return process.env.TEST_MODE?.toUpperCase() === 'TRUE';
 }
 
 export async function mapVisitorToContact(visitor: ILivechatVisitor, source: IOmnichannelSource): Promise<CreateContactParams> {

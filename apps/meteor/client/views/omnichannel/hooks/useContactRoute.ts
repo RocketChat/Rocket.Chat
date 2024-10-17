@@ -8,7 +8,7 @@ export const useContactRoute = () => {
 	const currentParams = getRouteParameters();
 
 	const handleNavigate = useCallback(
-		(params: RouteParameters) => {
+		({ id, ...params }: RouteParameters) => {
 			if (!currentRouteName) {
 				return;
 			}
@@ -19,6 +19,7 @@ export const useContactRoute = () => {
 					params: {
 						...currentParams,
 						tab: 'contacts',
+						id: id || currentParams.id,
 						...params,
 					},
 				});
@@ -28,6 +29,7 @@ export const useContactRoute = () => {
 				name: currentRouteName,
 				params: {
 					...currentParams,
+					id: currentParams.id,
 					...params,
 				},
 			});

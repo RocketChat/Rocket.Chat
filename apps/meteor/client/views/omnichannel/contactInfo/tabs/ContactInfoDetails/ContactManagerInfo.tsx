@@ -6,13 +6,13 @@ import React from 'react';
 
 import { UserStatus } from '../../../../../components/UserStatus';
 
-type ContactManagerInfoProps = { username: string };
+type ContactManagerInfoProps = { userId: string };
 
-const ContactManagerInfo = ({ username }: ContactManagerInfoProps) => {
+const ContactManagerInfo = ({ userId }: ContactManagerInfoProps) => {
 	const t = useTranslation();
 
 	const getContactManagerByUsername = useEndpoint('GET', '/v1/users.info');
-	const { data, isLoading } = useQuery(['getContactManagerByUsername', username], async () => getContactManagerByUsername({ username }));
+	const { data, isLoading } = useQuery(['getContactManagerByUserId', userId], async () => getContactManagerByUsername({ userId }));
 
 	if (isLoading) {
 		return null;
@@ -22,7 +22,7 @@ const ContactManagerInfo = ({ username }: ContactManagerInfoProps) => {
 		<Box>
 			<Box mbe={4}>{t('Contact_Manager')}</Box>
 			<Box display='flex' alignItems='center'>
-				<UserAvatar size='x18' username={username} />
+				{data?.user.username && <UserAvatar size='x18' username={data.user.username} />}
 				<Box mi={8}>
 					<UserStatus status={data?.user.status} />
 				</Box>

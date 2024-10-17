@@ -5,7 +5,12 @@ import React from 'react';
 import AutoCompleteAgent from '../../components/AutoCompleteAgent';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
-export const ContactManager = ({ value: userId, handler }) => {
+type ContactManagerInputProps = {
+	value: string;
+	handler: (currentValue: string) => void;
+};
+
+export const ContactManagerInput = ({ value: userId, handler }: ContactManagerInputProps) => {
 	const t = useTranslation();
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
@@ -23,4 +28,4 @@ export const ContactManager = ({ value: userId, handler }) => {
 	);
 };
 
-export default ContactManager;
+export default ContactManagerInput;

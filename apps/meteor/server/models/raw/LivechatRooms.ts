@@ -2609,6 +2609,10 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			.toArray();
 	}
 
+	countLivechatRoomsWithDepartment(): Promise<number> {
+		return this.col.countDocuments({ departmentId: { $exists: true } });
+	}
+
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
@@ -2750,7 +2754,14 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		throw new Error('Method not implemented.');
 	}
 
-	setContactIdByVisitorIdOrToken(_contactId: string, _visitorId: string, _visitorToken: string): Promise<UpdateResult | Document> {
-		throw new Error('Method not implemented.');
+	setContactIdByVisitorIdOrToken(contactId: string, visitorId: string, visitorToken: string): Promise<UpdateResult | Document> {
+		return this.updateMany(
+			{
+				't': 'l',
+				'$or': [{ 'v._id': visitorId }, { 'v.token': visitorToken }],
+				'v.contactId': { $exists: false },
+			},
+			{ $set: { 'v.contactId': contactId } },
+		);
 	}
 }

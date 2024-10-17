@@ -4,38 +4,35 @@ import React from 'react';
 
 import { ContextualbarScrollableContent } from '../../../../../components/Contextualbar';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
-import { parseOutboundPhoneNumber } from '../../../../../lib/voip/parseOutboundPhoneNumber';
 import CustomField from '../../../components/CustomField';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
-import ContactInfoDetailsEntry from './ContactInfoDetailsEntry';
+import ContactInfoDetailsGroup from './ContactInfoDetailsGroup';
 import ContactManagerInfo from './ContactManagerInfo';
 
 type ContactInfoDetailsProps = {
-	email: string;
-	phoneNumber: string;
-	ts: string;
+	emails?: string[];
+	phones?: string[];
+	createdAt: string;
 	customFieldEntries: [string, string][];
-	contactManager?: {
-		username: string;
-	};
+	contactManager?: string;
 };
 
-const ContactInfoDetails = ({ email, phoneNumber, ts, customFieldEntries, contactManager }: ContactInfoDetailsProps) => {
+const ContactInfoDetails = ({ emails, phones, createdAt, customFieldEntries, contactManager }: ContactInfoDetailsProps) => {
 	const t = useTranslation();
 	const formatDate = useFormatDate();
 
 	return (
 		<ContextualbarScrollableContent>
-			{email && <ContactInfoDetailsEntry type='email' label={t('Email')} value={email} />}
-			{phoneNumber && <ContactInfoDetailsEntry type='phone' label={t('Phone')} value={parseOutboundPhoneNumber(phoneNumber)} />}
-			{contactManager && <ContactManagerInfo username={contactManager.username} />}
+			{emails?.length ? <ContactInfoDetailsGroup type='email' label={t('Email')} values={emails} /> : null}
+			{phones?.length ? <ContactInfoDetailsGroup type='phone' label={t('Phone_number')} values={phones} /> : null}
+			{contactManager && <ContactManagerInfo userId={contactManager} />}
 			<Margins block={4}>
-				{ts && (
+				{createdAt && (
 					<Field>
 						<Label>{t('Created_at')}</Label>
-						<Info>{formatDate(ts)}</Info>
+						<Info>{formatDate(createdAt)}</Info>
 					</Field>
 				)}
 				{customFieldEntries.length > 0 && <Divider mi={-24} />}

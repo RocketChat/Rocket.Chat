@@ -11,6 +11,10 @@ export interface ILivechatContactChannel {
 	value?: string;
 	verifiedAt?: Date;
 	details?: IOmnichannelSource;
+	lastChat?: {
+		_id: string;
+		ts: Date;
+	};
 }
 
 export interface ILivechatContactConflictingField {

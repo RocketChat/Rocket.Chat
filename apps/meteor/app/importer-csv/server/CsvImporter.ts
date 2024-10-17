@@ -9,7 +9,6 @@ import type { ConverterOptions } from '../../importer/server/classes/ImportDataC
 import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
 import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
 import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';
-import { isSingleContactEnabled } from '../../livechat/server/lib/Contacts';
 
 export class CsvImporter extends Importer {
 	private csvParser: (csv: string) => string[][];
@@ -145,14 +144,12 @@ export class CsvImporter extends Importer {
 
 			// Parse the contacts
 			if (entry.entryName.toLowerCase() === 'contacts.csv') {
-				if (isSingleContactEnabled()) {
-					await super.updateProgress(ProgressStep.PREPARING_CONTACTS);
-					const parsedContacts = this.csvParser(entry.getData().toString());
+				await super.updateProgress(ProgressStep.PREPARING_CONTACTS);
+				const parsedContacts = this.csvParser(entry.getData().toString());
 
-					contactsCount = await addParsedContacts.call(this.converter, parsedContacts);
+				contactsCount = await addParsedContacts.call(this.converter, parsedContacts);
 
-					await super.updateRecord({ 'count.contacts': contactsCount });
-				}
+				await super.updateRecord({ 'count.contacts': contactsCount });
 				increaseProgressCount();
 				continue;
 			}
