@@ -46,7 +46,7 @@ export class AppRealStorage extends AppMetadataStorage {
 	}
 
 	public async update(item: IAppStorageItem): Promise<IAppStorageItem> {
-		await this.db.updateOne({ id: item.id }, { $set: item });
+		await this.db.updateOne({ id: item.id, _id: item._id }, { $set: item });
 		return this.retrieveOne(item.id);
 	}
 

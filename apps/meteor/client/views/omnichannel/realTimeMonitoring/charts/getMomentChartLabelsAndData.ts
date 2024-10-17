@@ -10,5 +10,5 @@ export const getMomentChartLabelsAndData = (timestamp = Date.now()) => {
 		initData.push(0);
 	}
 
-	return [timingLabels, initData];
+	return [timingLabels, initData] as const;
 };
