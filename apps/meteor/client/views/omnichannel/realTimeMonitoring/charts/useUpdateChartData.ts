@@ -1,19 +1,24 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import type { TranslationContextValue } from '@rocket.chat/ui-contexts';
-import { type Chart } from 'chart.js';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import type * as chartjs from 'chart.js';
+import type { TFunction } from 'i18next';
 import { type MutableRefObject } from 'react';
 
 import { updateChart } from '../../../../../app/livechat/client/lib/chartHandler';
 
-type UseUpdateChartDataOptions = {
-	context: MutableRefObject<Chart | undefined>;
+type UseUpdateChartDataOptions<TChart> = {
+	context: MutableRefObject<TChart | undefined>;
 	canvas: MutableRefObject<HTMLCanvasElement | null>;
-	init: (canvas: HTMLCanvasElement, context: undefined, t: TranslationContextValue['translate']) => Promise<Chart>;
-	t: TranslationContextValue['translate'];
+	init: (canvas: HTMLCanvasElement, context: TChart | undefined, t: TFunction) => Promise<TChart>;
+	t: TFunction;
 };
 
-export const useUpdateChartData = ({ context: contextRef, canvas: canvasRef, init, t }: UseUpdateChartDataOptions) =>
-	useMutableCallback(async (label: string, data: number[]) => {
+export function useUpdateChartData<TChartType extends chartjs.ChartType>({
+	context: contextRef,
+	canvas: canvasRef,
+	init,
+	t,
+}: UseUpdateChartDataOptions<chartjs.Chart<TChartType>>) {
+	return useEffectEvent(async (label: string, data: number[]) => {
 		const canvas = canvasRef.current;
 
 		if (!canvas) {
@@ -24,3 +29,4 @@ export const useUpdateChartData = ({ context: contextRef, canvas: canvasRef, ini
 
 		await updateChart(context, label, data);
 	});
+}

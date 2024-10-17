@@ -1,5 +1,5 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import type { useTranslation } from '@rocket.chat/ui-contexts';
+import type { TFunction } from 'i18next';
 import React, { memo, useMemo } from 'react';
 
 import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
@@ -10,7 +10,7 @@ import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
 type RoomListRowProps = {
 	data: {
 		extended: boolean;
-		t: ReturnType<typeof useTranslation>;
+		t: TFunction;
 		SidebarItemTemplate: ReturnType<typeof useTemplateByViewMode>;
 		AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
 		openedRoom: string;

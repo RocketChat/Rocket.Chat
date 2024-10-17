@@ -1,6 +1,6 @@
-import { OperationParams } from '@rocket.chat/rest-typings';
+import type { OperationParams } from '@rocket.chat/rest-typings';
 
-import { VoipErrorSession, VoipIncomingSession, VoipOngoingSession, VoipOutgoingSession, VoipSession } from '../../definitions';
+import type { VoipErrorSession, VoipIncomingSession, VoipOngoingSession, VoipOutgoingSession, VoipSession } from '../../definitions';
 
 export const createMockFreeSwitchExtensionDetails = (
 	overwrite?: Partial<OperationParams<'GET', '/v1/voip-freeswitch.extension.getDetails'>>,

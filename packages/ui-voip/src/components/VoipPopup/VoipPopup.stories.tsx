@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { MockedModalContext } from '@rocket.chat/mock-providers';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 
@@ -64,24 +64,24 @@ export default {
 			</QueryClientProvider>
 		),
 	],
-} satisfies ComponentMeta<typeof VoipPopup>;
+} satisfies Meta<typeof VoipPopup>;
 
-export const IncomingCall: ComponentStory<typeof VoipPopup> = () => {
+export const IncomingCall: StoryFn<typeof VoipPopup> = () => {
 	client.setSessionType('INCOMING');
 	return <VoipPopup />;
 };
 
-export const OngoingCall: ComponentStory<typeof VoipPopup> = () => {
+export const OngoingCall: StoryFn<typeof VoipPopup> = () => {
 	client.setSessionType('ONGOING');
 	return <VoipPopup />;
 };
 
-export const OutgoingCall: ComponentStory<typeof VoipPopup> = () => {
+export const OutgoingCall: StoryFn<typeof VoipPopup> = () => {
 	client.setSessionType('OUTGOING');
 	return <VoipPopup />;
 };
 
-export const ErrorCall: ComponentStory<typeof VoipPopup> = () => {
+export const ErrorCall: StoryFn<typeof VoipPopup> = () => {
 	client.setSessionType('ERROR');
 	return <VoipPopup />;
 };

@@ -1,5 +1,5 @@
 import { Button } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import '@rocket.chat/icons/dist/rocketchat.css';
 import {
@@ -17,9 +17,9 @@ import {
 export default {
 	title: 'Components/MessageComposer',
 	component: MessageComposer,
-} as ComponentMeta<typeof MessageComposer>;
+} satisfies Meta<typeof MessageComposer>;
 
-const _MessageToolbarActions: ComponentStory<typeof MessageComposerToolbarActions> = () => (
+const _MessageToolbarActions: StoryFn<typeof MessageComposerToolbarActions> = () => (
 	<MessageComposerToolbarActions>
 		<MessageComposerAction icon='emoji' />
 		<MessageComposerActionsDivider />
@@ -40,7 +40,7 @@ const _MessageToolbarActions: ComponentStory<typeof MessageComposerToolbarAction
 	</MessageComposerToolbarActions>
 );
 
-export const _MessageComposer: ComponentStory<typeof MessageComposer> = () => (
+export const _MessageComposer: StoryFn<typeof MessageComposer> = () => (
 	<MessageComposer>
 		<MessageComposerInput placeholder='Text' />
 		<MessageComposerToolbar>
@@ -49,7 +49,7 @@ export const _MessageComposer: ComponentStory<typeof MessageComposer> = () => (
 	</MessageComposer>
 );
 
-export const MessageComposerWithHints: ComponentStory<typeof MessageComposer> = () => (
+export const MessageComposerWithHints: StoryFn<typeof MessageComposer> = () => (
 	<>
 		<MessageComposerHint
 			icon='pencil'
@@ -73,7 +73,7 @@ export const MessageComposerWithHints: ComponentStory<typeof MessageComposer> = 
 	</>
 );
 
-export const MessageComposerWithSubmitActions: ComponentStory<typeof MessageComposer> = () => (
+export const MessageComposerWithSubmitActions: StoryFn<typeof MessageComposer> = () => (
 	<MessageComposer>
 		<MessageComposerInput placeholder='Text' />
 		<MessageComposerToolbar>
@@ -88,4 +88,4 @@ export const MessageComposerWithSubmitActions: ComponentStory<typeof MessageComp
 	</MessageComposer>
 );
 
-export const MessageComposerLoading: ComponentStory<typeof MessageComposer> = () => <MessageComposerSkeleton />;
+export const MessageComposerLoading: StoryFn<typeof MessageComposer> = () => <MessageComposerSkeleton />;

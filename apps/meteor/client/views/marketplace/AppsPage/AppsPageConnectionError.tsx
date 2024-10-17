@@ -1,10 +1,10 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const AppsPageContentError = ({ onButtonClick }: { onButtonClick: () => void }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Box mbs={20}>
