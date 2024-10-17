@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import { Contextualbar } from '../../../../components/Contextualbar';
@@ -11,9 +11,9 @@ export default {
 		layout: 'fullscreen',
 	},
 	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
-} as ComponentMeta<typeof AutoTranslate>;
+} satisfies Meta<typeof AutoTranslate>;
 
-export const Default: ComponentStory<typeof AutoTranslate> = (args) => <AutoTranslate {...args} />;
+export const Default: StoryFn<typeof AutoTranslate> = (args) => <AutoTranslate {...args} />;
 Default.storyName = 'AutoTranslate';
 Default.args = {
 	language: 'en',

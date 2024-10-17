@@ -1,6 +1,6 @@
 import { Box, Skeleton, Margins, Callout } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const blogSpotStyleScriptImport = (src: string) =>
 	new Promise((resolve) => {
@@ -16,7 +16,7 @@ const blogSpotStyleScriptImport = (src: string) =>
 	});
 
 const NewZapier = ({ ...props }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [script, setScript] = useState<HTMLScriptElement>();
 
 	useEffect(() => {

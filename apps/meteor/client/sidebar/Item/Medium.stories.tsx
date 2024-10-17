@@ -1,7 +1,7 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import * as Status from '../../components/UserStatus';
@@ -11,7 +11,6 @@ export default {
 	title: 'Sidebar/Medium',
 	component: Medium,
 	args: {
-		clickable: true,
 		title: 'John Doe',
 	},
 	decorators: [
@@ -21,9 +20,9 @@ export default {
 			</Box>
 		),
 	],
-} as ComponentMeta<typeof Medium>;
+} satisfies Meta<typeof Medium>;
 
-const Template: ComponentStory<typeof Medium> = (args) => (
+const Template: StoryFn<typeof Medium> = (args) => (
 	<Medium
 		{...args}
 		titleIcon={

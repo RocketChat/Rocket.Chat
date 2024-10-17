@@ -7,6 +7,7 @@ import type {
 	IOmnichannelRoom,
 	IUser,
 } from '@rocket.chat/core-typings';
+import type { InsertionModel } from '@rocket.chat/model-typings';
 import {
 	LivechatVisitors,
 	Users,
@@ -17,10 +18,10 @@ import {
 	Subscriptions,
 	LivechatContacts,
 } from '@rocket.chat/models';
-import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { PaginatedResult, VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { MatchKeysAndValues, OnlyFieldsOfType, Sort } from 'mongodb';
+import type { MatchKeysAndValues, OnlyFieldsOfType, FindOptions, Sort } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
@@ -66,6 +67,14 @@ type UpdateContactParams = {
 
 type GetContactsParams = {
 	searchText?: string;
+	count: number;
+	offset: number;
+	sort: Sort;
+};
+
+type GetContactHistoryParams = {
+	contactId: string;
+	source?: string;
 	count: number;
 	offset: number;
 	sort: Sort;
@@ -183,6 +192,35 @@ export function isSingleContactEnabled(): boolean {
 	return process.env.TEST_MODE?.toUpperCase() === 'TRUE';
 }
 
+export async function createContactFromVisitor(visitor: ILivechatVisitor): Promise<string> {
+	if (visitor.contactId) {
+		throw new Error('error-contact-already-exists');
+	}
+
+	const contactData: InsertionModel<ILivechatContact> = {
+		name: visitor.name || visitor.username,
+		emails: visitor.visitorEmails,
+		phones: visitor.phone || undefined,
+		unknown: true,
+		channels: [],
+		customFields: visitor.livechatData,
+		createdAt: new Date(),
+	};
+
+	if (visitor.contactManager) {
+		const contactManagerId = await Users.findOneByUsername<Pick<IUser, '_id'>>(visitor.contactManager.username, { projection: { _id: 1 } });
+		if (contactManagerId) {
+			contactData.contactManager = contactManagerId._id;
+		}
+	}
+
+	const { insertedId: contactId } = await LivechatContacts.insertOne(contactData);
+
+	await LivechatVisitors.updateOne({ _id: visitor._id }, { $set: { contactId } });
+
+	return contactId;
+}
+
 export async function createContact(params: CreateContactParams): Promise<string> {
 	const { name, emails, phones, customFields: receivedCustomFields = {}, contactManager, channels, unknown } = params;
 
@@ -195,8 +233,8 @@ export async function createContact(params: CreateContactParams): Promise<string
 
 	const { insertedId } = await LivechatContacts.insertOne({
 		name,
-		emails,
-		phones,
+		emails: emails?.map((address) => ({ address })),
+		phones: phones?.map((phoneNumber) => ({ phoneNumber })),
 		contactManager,
 		channels,
 		customFields,
@@ -224,8 +262,8 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 
 	const updatedContact = await LivechatContacts.updateContact(contactId, {
 		name,
-		emails,
-		phones,
+		emails: emails?.map((address) => ({ address })),
+		phones: phones?.map((phoneNumber) => ({ phoneNumber })),
 		contactManager,
 		channels,
 		customFields,
@@ -248,6 +286,57 @@ export async function getContacts(params: GetContactsParams): Promise<PaginatedR
 	return {
 		contacts,
 		count,
+		offset,
+		total,
+	};
+}
+
+export async function getContactHistory(
+	params: GetContactHistoryParams,
+): Promise<PaginatedResult<{ history: VisitorSearchChatsResult[] }>> {
+	const { contactId, source, count, offset, sort } = params;
+
+	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, 'channels'>>(contactId, { projection: { channels: 1 } });
+
+	if (!contact) {
+		throw new Error('error-contact-not-found');
+	}
+
+	const visitorsIds = new Set(contact.channels?.map((channel: ILivechatContactChannel) => channel.visitorId));
+
+	if (!visitorsIds?.size) {
+		return { history: [], count: 0, offset, total: 0 };
+	}
+
+	const options: FindOptions<IOmnichannelRoom> = {
+		sort: sort || { ts: -1 },
+		skip: offset,
+		limit: count,
+		projection: {
+			fname: 1,
+			ts: 1,
+			v: 1,
+			msgs: 1,
+			servedBy: 1,
+			closedAt: 1,
+			closedBy: 1,
+			closer: 1,
+			tags: 1,
+			source: 1,
+		},
+	};
+
+	const { totalCount, cursor } = LivechatRooms.findPaginatedRoomsByVisitorsIdsAndSource({
+		visitorsIds: Array.from(visitorsIds),
+		source,
+		options,
+	});
+
+	const [total, history] = await Promise.all([totalCount, cursor.toArray()]);
+
+	return {
+		history,
+		count: history.length,
 		offset,
 		total,
 	};

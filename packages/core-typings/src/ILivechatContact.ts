@@ -1,9 +1,16 @@
+import type { IVisitorEmail, IVisitorPhone } from './ILivechatVisitor';
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IOmnichannelSource } from './IRoom';
 
 export interface ILivechatContactChannel {
 	name: string;
 	verified: boolean;
 	visitorId: string;
+	blocked: boolean;
+	field?: string;
+	value?: string;
+	verifiedAt?: Date;
+	details?: IOmnichannelSource;
 }
 
 export interface ILivechatContactConflictingField {
@@ -14,8 +21,8 @@ export interface ILivechatContactConflictingField {
 
 export interface ILivechatContact extends IRocketChatRecord {
 	name: string;
-	phones?: string[];
-	emails?: string[];
+	phones?: IVisitorPhone[];
+	emails?: IVisitorEmail[];
 	contactManager?: string;
 	unknown?: boolean;
 	hasConflict?: boolean;

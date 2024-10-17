@@ -19,6 +19,7 @@ import { API } from '../../../../api/server';
 import { FileUpload } from '../../../../file-upload/server';
 import { checkUrlForSsrf } from '../../../../lib/server/functions/checkUrlForSsrf';
 import { settings } from '../../../../settings/server';
+import { setCustomField } from '../../../server/api/lib/customFields';
 import type { ILivechatMessage } from '../../../server/lib/LivechatTyped';
 import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
 
@@ -121,13 +122,17 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			return API.v1.success(SMSService.error(new Error('Invalid visitor')));
 		}
 
-		const roomInfo = {
+		const roomInfo: {
+			source?: IOmnichannelRoom['source'];
+			[key: string]: unknown;
+		} = {
 			sms: {
 				from: sms.to,
 			},
 			source: {
 				type: OmnichannelSourceType.SMS,
 				alias: service,
+				destination: sms.to,
 			},
 		};
 
@@ -263,16 +268,16 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			setImmediate(async () => {
 				if (sms.extra) {
 					if (sms.extra.fromCountry) {
-						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'country', sms.extra.fromCountry);
+						await setCustomField(sendMessage.message.token, 'country', sms.extra.fromCountry);
 					}
 					if (sms.extra.fromState) {
-						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'state', sms.extra.fromState);
+						await setCustomField(sendMessage.message.token, 'state', sms.extra.fromState);
 					}
 					if (sms.extra.fromCity) {
-						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'city', sms.extra.fromCity);
+						await setCustomField(sendMessage.message.token, 'city', sms.extra.fromCity);
 					}
-					if (sms.extra.toPhone) {
-						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'phoneNumber', sms.extra.toPhone);
+					if (sms.extra.fromZip) {
+						await setCustomField(sendMessage.message.token, 'zip', sms.extra.fromZip);
 					}
 				}
 			});

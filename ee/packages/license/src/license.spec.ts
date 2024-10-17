@@ -291,7 +291,7 @@ describe('License.getInfo', () => {
 					})
 				).limits,
 			).toMatchObject({
-				privateApps: { max: 3 },
+				privateApps: { max: 0 },
 				marketplaceApps: { max: 5 },
 			});
 		});

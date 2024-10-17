@@ -5,12 +5,15 @@ import { Apps } from '../apps';
 import { makeDisableAppsWithAddonsCallback } from '../lib/apps/makeDisableAppsWithAddonsCallback';
 
 Meteor.startup(() => {
-	async function disableAppsCallback() {
-		void Apps.disableApps();
+	async function migratePrivateAppsCallback() {
+		if (!Apps.isInitialized) return;
+
+		void Apps.migratePrivateApps();
 	}
 
-	License.onInvalidateLicense(disableAppsCallback);
-	License.onRemoveLicense(disableAppsCallback);
+	License.onInvalidateLicense(migratePrivateAppsCallback);
+	License.onRemoveLicense(migratePrivateAppsCallback);
+
 	// Disable apps that depend on add-ons (external modules) if they are invalidated
 	License.onModule(makeDisableAppsWithAddonsCallback({ Apps }));
 });

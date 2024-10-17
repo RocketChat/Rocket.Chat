@@ -2576,15 +2576,11 @@ describe('LIVECHAT - rooms', () => {
 			const { _id } = await createLivechatRoom(visitor.token);
 			// First, request transcript with livechat:requestTranscript method
 			await request
-				.post(methodCall('livechat:requestTranscript'))
+				.post(api(`livechat/transcript/${_id}`))
 				.set(credentials)
 				.send({
-					message: JSON.stringify({
-						method: 'livechat:requestTranscript',
-						params: [_id, 'test@test.com', 'Transcript of your omnichannel conversation'],
-						id: 'id',
-						msg: 'method',
-					}),
+					email: 'test@test.com',
+					subject: 'Transcript of your omnichannel conversation',
 				})
 				.expect(200);
 
