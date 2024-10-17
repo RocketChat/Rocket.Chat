@@ -113,7 +113,7 @@ export class AppsRestApi {
 					if (token) {
 						headers.Authorization = `Bearer ${token}`;
 					}
-					console.log(baseUrl);
+
 					let result;
 					try {
 						const request = await fetch(`${baseUrl}/v1/apps`, {
