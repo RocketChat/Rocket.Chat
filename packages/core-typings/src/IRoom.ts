@@ -321,7 +321,6 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	autoTransferredAt?: Date;
 	autoTransferOngoing?: boolean;
 
-	// Whether the contact is verified or not
 	verified?: boolean;
 }
 
