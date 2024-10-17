@@ -1,9 +1,15 @@
 import { trace, context } from '@opentelemetry/api';
 import type { MongoClient } from 'mongodb';
 
+import { isTracingEnabled } from '.';
+
 const tracer = trace.getTracer('core');
 
 export const initDatabaseTracing = (client: MongoClient) => {
+	if (!isTracingEnabled()) {
+		return;
+	}
+
 	const DurationStart = new Map();
 
 	client.on('commandStarted', (event) => {
