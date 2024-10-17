@@ -8,7 +8,7 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 		data: InsertionModel<Omit<ILivechatContact, 'createdAt'>> & { createdAt?: ILivechatContact['createdAt'] },
 	): Promise<ILivechatContact['_id']>;
 	upsertContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact | null>;
-	updateContact(contactId: string, visitorId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact>;
+	updateContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact>;
 	updateContactChannel(contactId: string, visitorId: string, data: UpdateFilter<ILivechatContact>['$set']): Promise<UpdateResult>;
 	addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void>;
 	findPaginatedContacts(searchText?: string, options?: FindOptions): FindPaginated<FindCursor<ILivechatContact>>;
