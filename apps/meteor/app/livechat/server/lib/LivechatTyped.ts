@@ -1931,4 +1931,3 @@ class LivechatClass {
 }
 
 export const Livechat = new LivechatClass();
-export * from './localTypes';
