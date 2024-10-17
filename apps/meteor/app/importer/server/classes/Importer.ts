@@ -1,12 +1,18 @@
 import { api } from '@rocket.chat/core-services';
-import type { IImport, IImportRecord, IImportChannel, IImportUser, IImportProgress, IImporterShortSelection } from '@rocket.chat/core-typings';
+import type {
+	IImport,
+	IImportRecord,
+	IImportChannel,
+	IImportUser,
+	IImportProgress,
+	IImporterShortSelection,
+} from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Settings, ImportData, Imports } from '@rocket.chat/models';
 import AdmZip from 'adm-zip';
 import type { MatchKeysAndValues, MongoServerError } from 'mongodb';
 
 import { Selection, SelectionChannel, SelectionUser } from '..';
-import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { t } from '../../../utils/lib/i18n';
 import { ProgressStep, ImportPreparingStartedStates } from '../../lib/ImporterProgressStep';
