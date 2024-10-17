@@ -40,4 +40,4 @@ const runShouldTriggerVerificationApp = async (
 	return false;
 };
 
-shouldTriggerVerificationApp.patch(runShouldTriggerVerificationApp, License.hasModule('contact-id-verification'));
+shouldTriggerVerificationApp.patch(runShouldTriggerVerificationApp, () => License.hasModule('contact-id-verification'));
