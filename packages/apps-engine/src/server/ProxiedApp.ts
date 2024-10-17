@@ -8,7 +8,7 @@ import { AppConsole } from './logging';
 import { AppLicenseValidationResult } from './marketplace/license';
 import type { AppsEngineRuntime } from './runtime/AppsEngineRuntime';
 import { JSONRPC_METHOD_NOT_FOUND, type DenoRuntimeSubprocessController } from './runtime/deno/AppsEngineDenoRuntime';
-import type { IAppStorageItem } from './storage';
+import type { AppInstallationSource, IAppStorageItem } from './storage';
 
 export class ProxiedApp {
     private previousStatus: AppStatus;
@@ -106,6 +106,10 @@ export class ProxiedApp {
 
     public getID(): string {
         return this.storageItem.id;
+    }
+
+    public getInstallationSource(): AppInstallationSource {
+        return this.storageItem.installationSource;
     }
 
     public getVersion(): string {

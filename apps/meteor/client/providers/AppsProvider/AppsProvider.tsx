@@ -44,7 +44,7 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 
 	const queryClient = useQueryClient();
 
-	const { isLoading: isLicenseInformationLoading, data: { license } = {} } = useLicense({ loadValues: true });
+	const { isLoading: isLicenseInformationLoading, data: { license, limits } = {} } = useLicense({ loadValues: true });
 	const isEnterprise = isLicenseInformationLoading ? undefined : !!license;
 
 	const [marketplaceError, setMarketplaceError] = useState<Error>();
@@ -132,6 +132,7 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 					await Promise.all([queryClient.invalidateQueries(['marketplace'])]);
 				},
 				orchestrator: AppClientOrchestratorInstance,
+				privateAppsEnabled: (limits?.privateApps?.max ?? 0) !== 0,
 			}}
 		/>
 	);

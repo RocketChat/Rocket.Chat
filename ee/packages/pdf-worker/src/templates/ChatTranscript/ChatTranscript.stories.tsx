@@ -1,5 +1,5 @@
 import { Font, PDFViewer } from '@react-pdf/renderer';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import type { ChatTranscriptData } from '.';
 import { ChatTranscriptPDF } from '.';
@@ -28,11 +28,11 @@ Font.registerHyphenationCallback((word) => [word]);
 export default {
 	title: 'ChatTranscriptPDFTemplate',
 	component: ChatTranscriptPDF,
-} as ComponentMeta<typeof ChatTranscriptPDF>;
+} satisfies Meta<typeof ChatTranscriptPDF>;
 
 const data = new ChatTranscript().parseTemplateData(exampleData) as unknown as ChatTranscriptData;
 
-export const ChatTranscriptPDFTemplate: ComponentStory<typeof ChatTranscriptPDF> = () => (
+export const ChatTranscriptPDFTemplate: StoryFn<typeof ChatTranscriptPDF> = () => (
 	<PDFViewer width='100%' height='800'>
 		<ChatTranscriptPDF {...data} />
 	</PDFViewer>

@@ -1,6 +1,6 @@
 import { IconButton, MenuItem, MenuSection, MenuV2 } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { cloneElement, type ComponentProps, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { GenericMenuItemProps } from './GenericMenuItem';
 import GenericMenuItem from './GenericMenuItem';
@@ -30,7 +30,7 @@ type GenericMenuConditionalProps =
 type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof MenuV2>, 'children'>;
 
 const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction, button, className, ...props }: GenericMenuProps) => {
-	const t = useTranslation();
+	const { t, i18n } = useTranslation();
 
 	const sections = 'sections' in props && props.sections;
 	const items = 'items' in props && props.items;
@@ -61,7 +61,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 			{sections && (
 				<MenuV2
 					icon={icon}
-					title={t.has(title) ? t(title) : title}
+					title={i18n.exists(title) ? t(title) : title}
 					onAction={onAction || handleAction}
 					className={className}
 					button={button}
@@ -70,7 +70,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 				>
 					{sections.map(({ title, items }, key) => (
 						<MenuSection
-							title={typeof title === 'string' && t.has(title) ? t(title) : title}
+							title={typeof title === 'string' && i18n.exists(title) ? t(title) : title}
 							items={handleItems(items)}
 							key={`${title}-${key}`}
 						>
@@ -86,7 +86,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 			{items && (
 				<MenuV2
 					icon={icon}
-					title={t.has(title) ? t(title) : title}
+					title={i18n.exists(title) ? t(title) : title}
 					onAction={onAction || handleAction}
 					className={className}
 					button={button}

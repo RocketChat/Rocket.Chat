@@ -3,8 +3,9 @@ import type { ISubscription, IRoom } from '@rocket.chat/core-typings';
 import { Box, SidebarV2GroupTitle } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserPreference, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso } from 'react-virtuoso';
 
 import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
@@ -39,7 +40,7 @@ const getRoomsByGroup = (rooms: (ISubscription & IRoom)[]) => {
 };
 
 const RoomList = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const isAnonymous = !useUserId();
 	const roomsList = useRoomList();
 	const avatarTemplate = useAvatarTemplate();

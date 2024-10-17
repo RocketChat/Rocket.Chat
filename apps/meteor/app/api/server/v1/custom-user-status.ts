@@ -1,4 +1,6 @@
 import { CustomUserStatus } from '@rocket.chat/models';
+import { isCustomUserStatusListProps } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -7,13 +9,21 @@ import { getPaginationItems } from '../helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'custom-user-status.list',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isCustomUserStatusListProps },
 	{
 		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
 			const { sort, query } = await this.parseJsonQuery();
 
-			const { cursor, totalCount } = CustomUserStatus.findPaginated(query, {
+			const { name, _id } = this.queryParams;
+
+			const filter = {
+				...query,
+				...(name ? { name: { $regex: escapeRegExp(name as string), $options: 'i' } } : {}),
+				...(_id ? { _id } : {}),
+			};
+
+			const { cursor, totalCount } = CustomUserStatus.findPaginated(filter, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,

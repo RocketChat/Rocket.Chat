@@ -1,13 +1,13 @@
 import type { IUpload } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, IconButton, Palette, Throbber } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useState } from 'react';
 import { FocusScope } from 'react-aria';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { Keyboard, Navigation, Zoom, A11y } from 'swiper';
-import type { SwiperRef } from 'swiper/react';
-import { type SwiperClass, Swiper, SwiperSlide } from 'swiper/react';
+import type { SwiperClass, SwiperRef } from 'swiper/react';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
 // Import Swiper styles
 import 'swiper/swiper.css';
@@ -108,7 +108,7 @@ const swiperStyle = css`
 `;
 
 export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[]; onClose: () => void; loadMore?: () => void }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const swiperRef = useRef<SwiperRef>(null);
 	const [, setSwiperInst] = useState<SwiperClass>();
 	const [zoomScale, setZoomScale] = useState(1);

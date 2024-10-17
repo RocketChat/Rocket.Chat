@@ -1,12 +1,12 @@
 import type { IIntegrationHistory, Serialized } from '@rocket.chat/core-typings';
 import { Skeleton, Box, Accordion } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import HistoryItem from './HistoryItem';
 
 const HistoryContent = ({ data, isLoading }: { data: Serialized<IIntegrationHistory>[]; isLoading: boolean }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	if (isLoading) {
 		return (

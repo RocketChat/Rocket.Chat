@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import FederationDashboardPage from './FederationDashboardPage';
@@ -10,9 +10,9 @@ export default {
 		layout: 'fullscreen',
 		controls: { hideNoControlsWarning: true },
 	},
-} as ComponentMeta<typeof FederationDashboardPage>;
+} satisfies Meta<typeof FederationDashboardPage>;
 
-const Template: ComponentStory<typeof FederationDashboardPage> = () => <FederationDashboardPage />;
+const Template: StoryFn<typeof FederationDashboardPage> = () => <FederationDashboardPage />;
 
 export const Example = Template.bind({});
 Example.parameters = {

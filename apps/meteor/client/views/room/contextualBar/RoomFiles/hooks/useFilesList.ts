@@ -53,11 +53,9 @@ export const useFilesList = (
 				offset: start,
 				count: end,
 				sort: JSON.stringify({ uploadedAt: -1 }),
-				query: JSON.stringify({
-					name: { $regex: options.text || '', $options: 'i' },
-					...(options.type !== 'all' && {
-						typeGroup: options.type,
-					}),
+				...(options.text ? { name: options.text } : {}),
+				...(options.type !== 'all' && {
+					typeGroup: options.type,
 				}),
 			});
 

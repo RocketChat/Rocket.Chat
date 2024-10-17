@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../components/FilterByText';
 import CategoryDropDown from '../components/CategoryFilter/CategoryDropDown';
@@ -43,7 +43,7 @@ const AppsFilters = ({
 	statusFilterOnSelected,
 	context,
 }: AppsFiltersProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const isPrivateAppsPage = context === 'private';
 	const breakpoints = useBreakpoints();
@@ -59,7 +59,7 @@ const AppsFilters = ({
 	const fixFiltersSize = breakpoints.includes('lg') ? { maxWidth: 'x200', minWidth: 'x200' } : null;
 
 	return (
-		<Box pi={24} mbe={4}>
+		<Box pi={24}>
 			<FilterByText placeholder={appsSearchPlaceholders[context]} onChange={setText}>
 				{!isPrivateAppsPage && (
 					<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} flexGrow={1} {...fixFiltersSize} />

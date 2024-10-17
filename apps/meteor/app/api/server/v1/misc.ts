@@ -10,7 +10,6 @@ import {
 	isMethodCallAnonProps,
 	isFingerprintProps,
 	isMeteorCall,
-	validateParamsPwGetPolicyRest,
 } from '@rocket.chat/rest-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import EJSON from 'ejson';
@@ -22,7 +21,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { getLogs } from '../../../../server/stream/stdout';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { passwordPolicy } from '../../../lib/server';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
@@ -365,8 +363,14 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, query } = await this.parseJsonQuery();
+			const { text, type, workspace = 'local' } = this.queryParams;
 
-			const { text, type, workspace = 'local' } = query;
+			const filter = {
+				...(query ? { ...query } : {}),
+				...(text ? { text } : {}),
+				...(type ? { type } : {}),
+				...(workspace ? { workspace } : {}),
+			};
 
 			if (sort && Object.keys(sort).length > 1) {
 				return API.v1.failure('This method support only one "sort" parameter');
@@ -375,9 +379,7 @@ API.v1.addRoute(
 			const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
 
 			const result = await Meteor.callAsync('browseChannels', {
-				text,
-				type,
-				workspace,
+				...filter,
 				sortBy,
 				sortDirection,
 				offset: Math.max(0, offset),
@@ -404,36 +406,6 @@ API.v1.addRoute(
 	},
 	{
 		get() {
-			return API.v1.success(passwordPolicy.getPasswordPolicy());
-		},
-	},
-);
-
-API.v1.addRoute(
-	'pw.getPolicyReset',
-	{
-		authRequired: false,
-		validateParams: validateParamsPwGetPolicyRest,
-		deprecation: {
-			version: '7.0.0',
-			alternatives: ['pw.getPolicy'],
-		},
-	},
-	{
-		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					token: String,
-				}),
-			);
-			const { token } = this.queryParams;
-
-			const user = await Users.findOneByResetToken(token, { projection: { _id: 1 } });
-			if (!user) {
-				return API.v1.unauthorized();
-			}
-
 			return API.v1.success(passwordPolicy.getPasswordPolicy());
 		},
 	},
@@ -477,12 +449,9 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'stdout.queue',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-logs'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-logs'))) {
-				return API.v1.unauthorized();
-			}
 			return API.v1.success({ queue: getLogs() });
 		},
 	},

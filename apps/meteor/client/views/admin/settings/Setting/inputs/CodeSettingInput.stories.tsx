@@ -1,5 +1,5 @@
 import { Field } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import CodeSettingInput from './CodeSettingInput';
@@ -19,9 +19,9 @@ export default {
 			</div>
 		),
 	],
-} as ComponentMeta<typeof CodeSettingInput>;
+} satisfies Meta<typeof CodeSettingInput>;
 
-const Template: ComponentStory<typeof CodeSettingInput> = (args) => <CodeSettingInput {...args} />;
+const Template: StoryFn<typeof CodeSettingInput> = (args) => <CodeSettingInput {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
