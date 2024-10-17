@@ -28,6 +28,7 @@ const bundles: IBundle = {
 		'accessibility-certification',
 		'unlimited-presence',
 		'contact-id-verification',
+		'teams-voip',
 	],
 	pro: [],
 };
