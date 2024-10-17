@@ -30,7 +30,8 @@ const IntegrationsTable = ({ type }: { type?: string }) => {
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
-				query: JSON.stringify({ name: { $regex: escapeRegExp(text), $options: 'i' }, type }),
+				name: escapeRegExp(text),
+				type,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: current,

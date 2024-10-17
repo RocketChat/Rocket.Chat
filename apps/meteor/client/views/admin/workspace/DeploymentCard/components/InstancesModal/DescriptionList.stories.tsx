@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import DescriptionList from './DescriptionList';
@@ -11,9 +11,9 @@ export default {
 		layout: 'centered',
 	},
 	decorators: [(fn) => <div className='rc-old'>{fn()}</div>],
-} as ComponentMeta<typeof DescriptionList>;
+} satisfies Meta<typeof DescriptionList>;
 
-export const Default: ComponentStory<typeof DescriptionList> = (args) => (
+export const Default: StoryFn<typeof DescriptionList> = (args) => (
 	<DescriptionList {...args}>
 		<DescriptionListEntry label='Key'>Value</DescriptionListEntry>
 		<DescriptionListEntry label='Key'>Value</DescriptionListEntry>

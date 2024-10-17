@@ -1,5 +1,5 @@
 import { Box, RadioButton } from '@rocket.chat/fuselage';
-import { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useAvailableDevices, useSelectedDevices, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { MouseEvent } from 'react';

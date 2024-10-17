@@ -1,3 +1,4 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
@@ -52,7 +53,7 @@ describe('TimespanSettingInput component', () => {
 				placeholder='Enter timespan'
 				onChangeValue={onChangeValueMock}
 			/>,
-			{ legacyRoot: true },
+			{ wrapper: mockAppRoot().build(), legacyRoot: true },
 		);
 
 		const numberInput = screen.getByRole('spinbutton');
@@ -74,7 +75,7 @@ describe('TimespanSettingInput component', () => {
 				placeholder='Enter timespan'
 				onChangeValue={onChangeValueMock}
 			/>,
-			{ legacyRoot: true },
+			{ wrapper: mockAppRoot().build(), legacyRoot: true },
 		);
 
 		const selectInput = screen.getByRole('button', { name: 'hours' });
@@ -99,7 +100,7 @@ describe('TimespanSettingInput component', () => {
 				placeholder='Enter timespan'
 				onChangeValue={onChangeValueMock}
 			/>,
-			{ legacyRoot: true },
+			{ wrapper: mockAppRoot().build(), legacyRoot: true },
 		);
 
 		const selectInput = screen.getByRole('button', { name: 'days' });
@@ -124,7 +125,7 @@ describe('TimespanSettingInput component', () => {
 				placeholder='Enter timespan'
 				onChangeValue={onChangeValueMock}
 			/>,
-			{ legacyRoot: true },
+			{ wrapper: mockAppRoot().build(), legacyRoot: true },
 		);
 
 		const selectInput = screen.getByRole('button', { name: 'hours' });
@@ -150,7 +151,7 @@ describe('TimespanSettingInput component', () => {
 				hasResetButton
 				onResetButtonClick={onResetButtonClickMock}
 			/>,
-			{ legacyRoot: true },
+			{ wrapper: mockAppRoot().build(), legacyRoot: true },
 		);
 
 		const resetButton = screen.getByTitle('Reset');

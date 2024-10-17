@@ -1,7 +1,7 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import * as Status from '../../components/UserStatus';
@@ -21,9 +21,9 @@ export default {
 			</Box>
 		),
 	],
-} as ComponentMeta<typeof Condensed>;
+} satisfies Meta<typeof Condensed>;
 
-const Template: ComponentStory<typeof Condensed> = (args) => (
+const Template: StoryFn<typeof Condensed> = (args) => (
 	<Condensed
 		{...args}
 		titleIcon={

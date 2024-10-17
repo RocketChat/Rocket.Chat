@@ -1,7 +1,7 @@
 import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
 import { Box, Bubble, MessageDivider } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import SystemMessage from '../../../../../components/message/variants/SystemMessage';
 import ThreadMessage from '../../../../../components/message/variants/ThreadMessage';
@@ -27,7 +27,7 @@ export const ThreadMessageItem = ({
 	firstUnread,
 	system,
 }: ThreadMessageProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDate = useFormatDate();
 	const ref = useDateRef();
 

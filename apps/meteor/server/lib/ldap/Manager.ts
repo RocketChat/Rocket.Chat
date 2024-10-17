@@ -8,14 +8,14 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
+import type { UserConverterOptions } from '../../../app/importer/server/classes/converters/UserConverter';
 import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
 import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { omit } from '../../../lib/utils/omit';
 import { LDAPConnection } from './Connection';
-import { LDAPDataConverter } from './DataConverter';
 import { logger, authLogger, connLogger } from './Logger';
+import { LDAPUserConverter } from './UserConverter';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 
 export class LDAPManager {
@@ -149,7 +149,7 @@ export class LDAPManager {
 		}
 	}
 
-	protected static getConverterOptions(): IConverterOptions {
+	protected static getConverterOptions(): UserConverterOptions {
 		return {
 			flagEmailsAsVerified: settings.get<boolean>('Accounts_Verify_Email_For_External_Accounts') ?? false,
 			skipExistingUsers: false,
@@ -360,7 +360,7 @@ export class LDAPManager {
 		}
 
 		const options = this.getConverterOptions();
-		await LDAPDataConverter.convertSingleUser(userData, options);
+		await LDAPUserConverter.convertSingleUser(userData, options);
 
 		return existingUser || this.findExistingLDAPUser(ldapUser);
 	}

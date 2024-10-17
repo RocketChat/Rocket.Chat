@@ -1,7 +1,7 @@
 import { OptionAvatar, OptionColumn, OptionContent, OptionInput } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ReactiveUserStatus from '../../../components/UserStatus/ReactiveUserStatus';
 
@@ -19,7 +19,7 @@ export type ComposerBoxPopupUserProps = {
 };
 
 function ComposerBoxPopupUser({ _id, system, username, name, nickname, outside, suggestion, variant }: ComposerBoxPopupUserProps) {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<>

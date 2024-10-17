@@ -1,9 +1,9 @@
 import { Box, FieldHint, FieldLabel, FieldRow, RadioButton } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import type { UserFormProps } from './AdminUserForm';
 
@@ -22,7 +22,7 @@ const AdminUserSetRandomPasswordRadios = ({
 	setRandomPasswordId,
 	setValue,
 }: AdminUserSetRandomPasswordProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const setPasswordManuallyId = useUniqueId();
 

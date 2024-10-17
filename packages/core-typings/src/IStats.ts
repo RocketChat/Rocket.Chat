@@ -56,6 +56,8 @@ export interface IStats {
 	totalDirectMessages: number;
 	totalDiscussionsMessages: number;
 	totalLivechatMessages: number;
+	totalLivechatRoomsWithPriority: number;
+	totalLivechatRoomsWithDepartment: number;
 	totalTriggers: number;
 	totalMessages: number;
 	federatedServers: number;

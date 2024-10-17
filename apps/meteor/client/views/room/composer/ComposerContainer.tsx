@@ -42,7 +42,7 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactE
 	}
 
 	if (isFederation) {
-		return <ComposerFederation room={room} {...props} />;
+		return <ComposerFederation {...props} />;
 	}
 
 	if (isAnonymous) {
@@ -68,7 +68,7 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactE
 	return (
 		<>
 			{children}
-			<ComposerMessage readOnly={room.ro} {...props} />
+			<ComposerMessage {...props} />
 		</>
 	);
 };

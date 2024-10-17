@@ -13,7 +13,6 @@
   "dependencies": {
     "@codemirror/lang-javascript": "^6.1.9",
     "@codemirror/lang-json": "^6.0.1",
-    "@codemirror/tooltip": "^0.19.16",
     "@lezer/highlight": "^1.1.6",
     "@rocket.chat/core-typings": "workspace:^",
     "@rocket.chat/css-in-js": "~0.31.25",
@@ -51,9 +50,9 @@
     "@vitejs/plugin-react": "^4.0.0",
     "eslint": "~8.45.0",
     "eslint-plugin-react-hooks": "^4.6.2",
-    "eslint-plugin-react-refresh": "^0.4.11",
+    "eslint-plugin-react-refresh": "^0.4.12",
     "typescript": "~5.5.4",
-    "vite": "^4.3.9"
+    "vite": "^4.5.5"
   },
   "volta": {
     "extends": "../../package.json"

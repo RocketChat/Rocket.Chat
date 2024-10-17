@@ -1,7 +1,7 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type HeaderProps = {
 	children?: ReactNode;
@@ -10,7 +10,7 @@ type HeaderProps = {
 };
 
 const Header = ({ title, onClose, children, ...props }: HeaderProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Box display='flex' flexDirection='column' pb={16} {...props}>

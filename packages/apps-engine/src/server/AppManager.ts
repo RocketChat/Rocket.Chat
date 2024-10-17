@@ -400,6 +400,10 @@ export class AppManager {
             rls = rls.filter((rl) => filter.ids.includes(rl.getID()));
         }
 
+        if (typeof filter.installationSource !== 'undefined') {
+            rls = rls.filter((rl) => rl.getInstallationSource() === filter.installationSource);
+        }
+
         if (typeof filter.name === 'string') {
             rls = rls.filter((rl) => rl.getName() === filter.name);
         } else if (filter.name instanceof RegExp) {
@@ -488,6 +492,37 @@ export class AppManager {
         // This is async, but we don't care since it only updates in the database
         // and it should not mutate any properties we care about
         await this.appMetadataStorage.update(storageItem).catch();
+
+        return true;
+    }
+
+    public async migrate(id: string): Promise<boolean> {
+        const app = this.apps.get(id);
+
+        if (!app) {
+            throw new Error(`No App by the id "${id}" exists.`);
+        }
+
+        await app.call(AppMethod.ONUPDATE).catch((e) => console.warn('Error while migrating:', e));
+
+        await this.purgeAppConfig(app, { keepScheduledJobs: true });
+
+        const storageItem = await this.appMetadataStorage.retrieveOne(id);
+
+        app.getStorageItem().marketplaceInfo = storageItem.marketplaceInfo;
+        await app.validateLicense().catch();
+
+        storageItem.migrated = true;
+        storageItem.signature = await this.getSignatureManager().signApp(storageItem);
+        // This is async, but we don't care since it only updates in the database
+        // and it should not mutate any properties we care about
+        const stored = await this.appMetadataStorage.update(storageItem).catch();
+
+        await this.updateLocal(stored, app);
+        await this.bridges
+            .getAppActivationBridge()
+            .doAppUpdated(app)
+            .catch(() => {});
 
         return true;
     }
@@ -720,7 +755,12 @@ export class AppManager {
         aff.setApp(app);
 
         if (updateOptions.loadApp) {
-            await this.updateLocal(stored, app);
+            const shouldEnableApp = AppStatusUtils.isEnabled(old.status);
+            if (shouldEnableApp) {
+                await this.updateAndStartupLocal(stored, app);
+            } else {
+                await this.updateAndInitializeLocal(stored, app);
+            }
 
             await this.bridges
                 .getAppActivationBridge()
@@ -742,7 +782,7 @@ export class AppManager {
      * With an instance of a ProxiedApp, start it up and replace
      * the reference in the local app collection
      */
-    public async updateLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer) {
+    async updateLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer): Promise<ProxiedApp> {
         const app = await (async () => {
             if (appPackageOrInstance instanceof Buffer) {
                 const parseResult = await this.getParser().unpackageApp(appPackageOrInstance);
@@ -761,8 +801,17 @@ export class AppManager {
         await this.purgeAppConfig(app, { keepScheduledJobs: true });
 
         this.apps.set(app.getID(), app);
+        return app;
+    }
 
+    public async updateAndStartupLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer) {
+        const app = await this.updateLocal(stored, appPackageOrInstance);
         await this.runStartUpProcess(stored, app, false, true);
+    }
+
+    public async updateAndInitializeLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer) {
+        const app = await this.updateLocal(stored, appPackageOrInstance);
+        await this.initializeApp(stored, app, true, true);
     }
 
     public getLanguageContent(): { [key: string]: object } {
@@ -883,7 +932,7 @@ export class AppManager {
      *
      * @param appId the id of the application to load
      */
-    public async loadOne(appId: string): Promise<ProxiedApp> {
+    public async loadOne(appId: string, silenceStatus = false): Promise<ProxiedApp> {
         const rl = this.apps.get(appId);
 
         if (!rl) {
@@ -892,14 +941,14 @@ export class AppManager {
 
         const item = rl.getStorageItem();
 
-        await this.initializeApp(item, rl, false);
+        await this.initializeApp(item, rl, false, silenceStatus);
 
         if (!this.areRequiredSettingsSet(item)) {
             await rl.setStatus(AppStatus.INVALID_SETTINGS_DISABLED);
         }
 
         if (!AppStatusUtils.isDisabled(await rl.getStatus()) && AppStatusUtils.isEnabled(rl.getPreviousStatus())) {
-            await this.enableApp(item, rl, false, rl.getPreviousStatus() === AppStatus.MANUALLY_ENABLED);
+            await this.enableApp(item, rl, false, rl.getPreviousStatus() === AppStatus.MANUALLY_ENABLED, silenceStatus);
         }
 
         return this.apps.get(item.id);

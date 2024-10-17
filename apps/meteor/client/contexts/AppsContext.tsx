@@ -14,7 +14,7 @@ export interface IAppsOrchestrator {
 	getAppClientManager(): AppClientManager;
 	handleError(error: unknown): void;
 	getInstalledApps(): Promise<App[]>;
-	getAppsFromMarketplace(isAdminUser?: boolean): Promise<App[]>;
+	getAppsFromMarketplace(isAdminUser?: boolean): Promise<{ apps: App[]; error?: unknown }>;
 	getAppsOnBundle(bundleId: string): Promise<App[]>;
 	getApp(appId: string): Promise<App>;
 	setAppSettings(appId: string, settings: ISetting[]): Promise<void>;
@@ -27,26 +27,31 @@ export interface IAppsOrchestrator {
 }
 
 export type AppsContextValue = {
-	installedApps: Omit<AsyncState<{ apps: App[] }>, 'error'>;
-	marketplaceApps: Omit<AsyncState<{ apps: App[] }>, 'error'>;
-	privateApps: Omit<AsyncState<{ apps: App[] }>, 'error'>;
+	installedApps: AsyncState<{ apps: App[] }>;
+	marketplaceApps: AsyncState<{ apps: App[] }>;
+	privateApps: AsyncState<{ apps: App[] }>;
 	reload: () => Promise<void>;
 	orchestrator?: IAppsOrchestrator;
+	privateAppsEnabled: boolean;
 };
 
 export const AppsContext = createContext<AppsContextValue>({
 	installedApps: {
 		phase: AsyncStatePhase.LOADING,
 		value: undefined,
+		error: undefined,
 	},
 	marketplaceApps: {
 		phase: AsyncStatePhase.LOADING,
 		value: undefined,
+		error: undefined,
 	},
 	privateApps: {
 		phase: AsyncStatePhase.LOADING,
 		value: undefined,
+		error: undefined,
 	},
 	reload: () => Promise.resolve(),
 	orchestrator: undefined,
+	privateAppsEnabled: false,
 });

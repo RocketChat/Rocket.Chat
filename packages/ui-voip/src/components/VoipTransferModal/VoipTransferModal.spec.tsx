@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import VoipTransferModal from '.';
@@ -58,8 +58,10 @@ it('should be able to select transfer target', async () => {
 	expect(hangUpAnTransferButton).toBeDisabled();
 
 	screen.getByLabelText('Transfer_to').focus();
-	const userOption = await screen.findByRole('option', { name: 'Jane Doe' });
-	await userEvent.click(userOption);
+	await act(async () => {
+		const userOption = await screen.findByRole('option', { name: 'Jane Doe' });
+		await userEvent.click(userOption);
+	});
 
 	expect(hangUpAnTransferButton).toBeEnabled();
 	hangUpAnTransferButton.click();

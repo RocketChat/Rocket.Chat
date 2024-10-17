@@ -1,7 +1,7 @@
 import type { IVideoConferenceUser, Serialized } from '@rocket.chat/core-typings';
 import { Avatar, Box } from '@rocket.chat/fuselage';
 import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import { ReactElement, memo } from 'react';
+import { memo, type ReactElement } from 'react';
 
 const MAX_USERS = 3;
 

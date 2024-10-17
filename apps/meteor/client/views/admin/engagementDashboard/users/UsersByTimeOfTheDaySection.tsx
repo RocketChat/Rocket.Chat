@@ -1,10 +1,10 @@
 import { ResponsiveHeatMapCanvas } from '@nivo/heatmap';
 import { Box, Flex, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
 import React, { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
@@ -23,7 +23,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 
 	const { data, isLoading } = useUsersByTimeOfTheDay({ period, utc });
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [dates, values] = useMemo(() => {
 		if (!data || isLoading) {

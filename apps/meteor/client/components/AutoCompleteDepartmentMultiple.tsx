@@ -1,9 +1,9 @@
 import { CheckOption, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { memo, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useRecordList } from '../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../hooks/useAsyncState';
@@ -24,7 +24,7 @@ const AutoCompleteDepartmentMultiple = ({
 	enabled = false,
 	onChange = () => undefined,
 }: AutoCompleteDepartmentMultipleProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);

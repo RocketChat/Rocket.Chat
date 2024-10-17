@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { BASE_API_URL } from './config/constants';
+import { BASE_API_URL, IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import injectInitialData from './fixtures/inject-initial-data';
 import { Users, storeState, restoreState } from './fixtures/userStates';
@@ -133,13 +133,11 @@ test.describe.serial('e2e-encryption', () => {
 
 	test.beforeAll(async ({ api }) => {
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true })).status()).toBe(200);
-		expect((await api.post('/settings/E2E_Enabled_Mentions', { value: true })).status()).toBe(200);
 	});
 
 	test.afterAll(async ({ api }) => {
 		expect((await api.post('/settings/E2E_Enable', { value: false })).status()).toBe(200);
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
-		expect((await api.post('/settings/E2E_Enabled_Mentions', { value: false })).status()).toBe(200);
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
@@ -641,6 +639,7 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test('expect slash commands to be enabled in an e2ee room', async ({ page }) => {
+		test.skip(!IS_EE, 'Premium Only');
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
@@ -668,6 +667,7 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test.describe('un-encrypted messages not allowed in e2ee rooms', () => {
+		test.skip(!IS_EE, 'Premium Only');
 		let poHomeChannel: HomeChannel;
 
 		test.beforeEach(async ({ page }) => {

@@ -7,9 +7,9 @@ import {
 	MessageStatusPrivateIndicator,
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, ReactElement } from 'react';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { getUserDisplayName } from '../../../lib/getUserDisplayName';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
@@ -27,7 +27,7 @@ type MessageHeaderProps = {
 };
 
 const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const formatTime = useFormatTime();
 	const formatDateAndTime = useFormatDateAndTime();

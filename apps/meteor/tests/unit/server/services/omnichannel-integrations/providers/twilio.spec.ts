@@ -66,19 +66,6 @@ describe('Twilio Request Validation', () => {
 		expect(twilio.validateRequest(request)).to.be.true;
 	});
 
-	it('should not validate a request when process.env.TEST_MODE is true', () => {
-		process.env.TEST_MODE = 'true';
-
-		const twilio = new Twilio();
-		const request = {
-			headers: {
-				'x-twilio-signature': 'test',
-			},
-		};
-
-		expect(twilio.validateRequest(request)).to.be.true;
-	});
-
 	it('should validate a request when process.env.TEST_MODE is false', () => {
 		process.env.TEST_MODE = 'false';
 
@@ -95,6 +82,30 @@ describe('Twilio Request Validation', () => {
 		const request = {
 			headers: {
 				'x-twilio-signature': getSignature('test', 'https://example.com/api/v1/livechat/sms-incoming/twilio', requestBody),
+			},
+			body: requestBody,
+		};
+
+		expect(twilio.validateRequest(request)).to.be.true;
+	});
+
+	it('should validate a request when query string is present', () => {
+		process.env.TEST_MODE = 'false';
+
+		settingsStub.get.withArgs('SMS_Twilio_authToken').returns('test');
+		settingsStub.get.withArgs('Site_Url').returns('https://example.com/');
+
+		const twilio = new Twilio();
+		const requestBody = {
+			To: 'test',
+			From: 'test',
+			Body: 'test',
+		};
+
+		const request = {
+			originalUrl: '/api/v1/livechat/sms-incoming/twilio?department=1',
+			headers: {
+				'x-twilio-signature': getSignature('test', 'https://example.com/api/v1/livechat/sms-incoming/twilio?department=1', requestBody),
 			},
 			body: requestBody,
 		};

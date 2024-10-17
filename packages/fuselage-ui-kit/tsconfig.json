@@ -4,6 +4,5 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
   },
-	"include": ["src", ".storybook/**/*"],
-  "exclude": ["node_modules", "src/**/*.stories.tsx", "src/**/*.spec.ts", "src/**/*.spec.tsx"]
+	"include": ["src", ".storybook/**/*", "jest.config.ts"]
 }

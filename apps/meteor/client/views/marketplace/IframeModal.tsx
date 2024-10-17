@@ -1,7 +1,7 @@
 import { Box, Modal } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const iframeMsgListener = (confirm: (data: any) => void, cancel: () => void) => (e: MessageEvent<any>) => {
 	let data;
@@ -22,7 +22,7 @@ type IframeModalProps = {
 } & ComponentProps<typeof Modal>;
 
 const IframeModal = ({ url, confirm, cancel, wrapperHeight = 'x360', ...props }: IframeModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		const listener = iframeMsgListener(confirm, cancel);

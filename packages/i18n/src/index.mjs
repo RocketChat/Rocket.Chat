@@ -101,7 +101,7 @@ const languages = files.map((file) => path.basename(file, '.i18n.json'));
 
 // write the files
 if (fs.existsSync(`./dist`)) {
-	fs.rmdirSync(`./dist`, { recursive: true });
+	fs.rmSync(`./dist`, { recursive: true, force: true });
 }
 fs.mkdirSync(`./dist`, { recursive: true });
 

@@ -51,6 +51,7 @@ const AppRow = ({ className, ...props }: App & { className?: string }): ReactEle
 	return (
 		<div role='listitem' className={className} key={id}>
 			<Card
+				data-qa-type='app-row'
 				horizontal
 				clickable
 				role='link'

@@ -1,7 +1,7 @@
 import { Select } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import ContentForDays from './ContentForDays';
@@ -14,7 +14,7 @@ type BusiestChatTimesSectionProps = {
 };
 
 const BusiestChatTimesSection = ({ timezone }: BusiestChatTimesSectionProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [timeUnit, setTimeUnit] = useState<TimeUnit>('hours');
 	const timeUnitOptions = useMemo<[timeUnit: TimeUnit, label: string][]>(

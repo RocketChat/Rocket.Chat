@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import Message from '.';
@@ -96,7 +96,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof Message>>;
 
-export const Default: Story<ComponentProps<typeof Message>> = (args) => (
+export const Default: StoryFn<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -112,7 +112,7 @@ export const Default: Story<ComponentProps<typeof Message>> = (args) => (
 );
 Default.storyName = 'default';
 
-export const System: Story<ComponentProps<typeof Message>> = (args) => (
+export const System: StoryFn<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -132,7 +132,7 @@ System.args = {
 	t: MESSAGE_TYPE_WELCOME,
 };
 
-export const Me: Story<ComponentProps<typeof Message>> = (args) => (
+export const Me: StoryFn<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -151,7 +151,7 @@ Me.args = {
 	me: true,
 };
 
-export const Markdown: Story<ComponentProps<typeof Message>> = (args) => (
+export const Markdown: StoryFn<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -170,7 +170,7 @@ Markdown.args = {
 	msg: defaultMarkdownMessage,
 };
 
-export const Grouping: Story<ComponentProps<typeof Message>> = (args) => (
+export const Grouping: StoryFn<ComponentProps<typeof Message>> = (args) => (
 	<div>
 		<Message
 			attachmentResolver={attachmentResolver}
@@ -200,7 +200,7 @@ Grouping.args = {
 	compact: true,
 };
 
-export const WithQuotation: Story<ComponentProps<typeof Message>> = (args) => (
+export const WithQuotation: StoryFn<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -224,7 +224,7 @@ WithQuotation.args = {
 	],
 };
 
-export const WithAudioAttachment: Story<ComponentProps<typeof Message>> = (args) => (
+export const WithAudioAttachment: StoryFn<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -247,7 +247,7 @@ WithAudioAttachment.args = {
 	],
 };
 
-export const WithVideoAttachment: Story<ComponentProps<typeof Message>> = (args) => (
+export const WithVideoAttachment: StoryFn<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -270,7 +270,7 @@ WithVideoAttachment.args = {
 	],
 };
 
-export const WithImageAttachment: Story<ComponentProps<typeof Message>> = (args) => (
+export const WithImageAttachment: StoryFn<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -293,7 +293,7 @@ WithImageAttachment.args = {
 	],
 };
 
-export const WithFilesAttachments: Story<ComponentProps<typeof Message>> = (args) => (
+export const WithFilesAttachments: StoryFn<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -315,7 +315,7 @@ WithFilesAttachments.args = {
 	})),
 };
 
-export const WithMultipleAttachments: Story<ComponentProps<typeof Message>> = (args) => (
+export const WithMultipleAttachments: StoryFn<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}
@@ -348,7 +348,7 @@ WithMultipleAttachments.args = {
 	],
 };
 
-export const WithUiKitBlocks: Story<ComponentProps<typeof Message>> = (args) => (
+export const WithUiKitBlocks: StoryFn<ComponentProps<typeof Message>> = (args) => (
 	<Message
 		attachmentResolver={attachmentResolver}
 		avatarResolver={avatarResolver}

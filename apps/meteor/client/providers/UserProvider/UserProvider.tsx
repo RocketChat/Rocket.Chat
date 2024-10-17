@@ -21,6 +21,8 @@ import { useUpdateAvatar } from './hooks/useUpdateAvatar';
 
 const getUser = (): IUser | null => Meteor.user() as IUser | null;
 
+const getUserId = (): string | null => Meteor.userId();
+
 const logout = (): Promise<void> =>
 	new Promise((resolve, reject) => {
 		const user = getUser();
@@ -41,7 +43,7 @@ type UserProviderProps = {
 
 const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	const user = useReactiveValue(getUser);
-	const userId = user?._id ?? null;
+	const userId = useReactiveValue(getUserId);
 	const previousUserId = useRef(userId);
 	const [userLanguage, setUserLanguage] = useLocalStorage('userLanguage', '');
 	const [preferedLanguage, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');

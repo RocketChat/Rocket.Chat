@@ -1,8 +1,8 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
@@ -12,7 +12,7 @@ type RoomMembersActionsProps = Pick<IUser, '_id' | 'name' | 'username' | 'freeSw
 };
 
 const RoomMembersActions = ({ username, _id, name, rid, freeSwitchExtension, reload }: RoomMembersActionsProps): ReactElement | null => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { menuActions: menuOptions } = useUserInfoActions({
 		rid,

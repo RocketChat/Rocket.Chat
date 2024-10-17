@@ -127,7 +127,7 @@ jobs:
           fi;
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"5.0\", \"6.0\", \"7.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
   packages-build:
@@ -160,6 +160,7 @@ jobs:
           cache-modules: true
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          HARDENED_MODE: '1'
 
       - name: Cache vite
         uses: actions/cache@v3
@@ -173,6 +174,50 @@ jobs:
 
       - name: Build Rocket.Chat Packages
         run: yarn build
+
+      - name: Store turbo build
+        uses: actions/upload-artifact@v4
+        with:
+          name: turbo-build
+          path: .turbo/cache
+          overwrite: true
+          include-hidden-files: true
+
+  deploy-preview:
+    runs-on: ubuntu-latest
+    needs: [release-versions, packages-build]
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: rharkor/caching-for-turbo@v1.5
+        if: github.event.action != 'closed'
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        if: github.event.action != 'closed'
+        with:
+          node-version: 20.17.0
+          deno-version: 1.37.1
+          cache-modules: true
+          install: true
+      - name: Restore turbo build
+        uses: actions/download-artifact@v4
+        with:
+          name: turbo-build
+          path: .turbo/cache
+      - name: Build
+        if: github.event.action != 'closed'
+        run: |
+          yarn turbo run build-preview
+          yarn turbo run .:build-preview-move
+          npx indexifier .preview --html  --extensions .html  > .preview/index.html
+
+      - uses: rossjrw/pr-preview-action@v1
+        with:
+          source-dir: .preview
+          preview-branch: gh-pages
+          umbrella-dir: pr-preview
+          action: auto
 
   build:
     name: 📦 Meteor Build - coverage
@@ -384,7 +429,7 @@ jobs:
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      mongodb-version: "['4.4']"
+      mongodb-version: "['5.0']"
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
@@ -409,7 +454,7 @@ jobs:
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       shard: '[1, 2, 3, 4, 5]'
       total-shard: 5
-      mongodb-version: "['4.4']"
+      mongodb-version: "['5.0']"
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
@@ -440,7 +485,7 @@ jobs:
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       shard: '[1, 2, 3, 4, 5]'
       total-shard: 5
-      mongodb-version: "['6.0']"
+      mongodb-version: "['7.0']"
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
@@ -825,7 +870,7 @@ jobs:
           fi;
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"5.0\", \"6.0\", \"7.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
           # Makes build fail if the release isn't there

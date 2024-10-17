@@ -1,7 +1,7 @@
 import type { AppPricingPlan, PurchaseType } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { formatPriceAndPurchaseType } from '../../../helpers/formatPriceAndPurchaseType';
 
@@ -14,7 +14,7 @@ type AppStatusPriceDisplayProps = {
 };
 
 const AppStatusPriceDisplay = ({ purchaseType, pricingPlans, price, showType = true }: AppStatusPriceDisplayProps) => {
-	const t = useTranslation();
+	const { t, i18n } = useTranslation();
 
 	const { type, price: formattedPrice } = useMemo(
 		() => formatPriceAndPurchaseType(purchaseType, pricingPlans, price),
@@ -24,7 +24,7 @@ const AppStatusPriceDisplay = ({ purchaseType, pricingPlans, price, showType = t
 	return (
 		<Margins inline={4}>
 			<Tag>
-				{showType && <Box color='default'>{t.has(type) ? t(type) : type}</Box>}
+				{showType && <Box color='default'>{i18n.exists(type) ? t(type) : type}</Box>}
 				<Box>{!showType && type === 'Free' ? t(type) : formattedPrice}</Box>
 			</Tag>
 		</Margins>

@@ -13,7 +13,9 @@ export class AppsLogsModel extends BaseRaw<any> implements IAppLogsModel {
 	}
 
 	async resetTTLIndex(expireAfterSeconds: number): Promise<void> {
-		await this.col.dropIndex('_updatedAt_1');
+		if (await this.col.indexExists('_updatedAt_1')) {
+			await this.col.dropIndex('_updatedAt_1');
+		}
 		await this.col.createIndex({ _updatedAt: 1 }, { expireAfterSeconds });
 	}
 }

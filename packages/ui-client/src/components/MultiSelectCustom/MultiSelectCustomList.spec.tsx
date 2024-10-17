@@ -1,3 +1,4 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
 import MultiSelectCustomList from './MultiSelectCustomList';
@@ -11,7 +12,7 @@ it('should render options with correct checked state', () => {
 			]}
 			onSelected={jest.fn()}
 		/>,
-		{ legacyRoot: true },
+		{ wrapper: mockAppRoot().build(), legacyRoot: true },
 	);
 
 	const option1 = screen.getByLabelText('Option 1');
@@ -32,7 +33,7 @@ it('should not render group title as selectable option', () => {
 			]}
 			onSelected={jest.fn()}
 		/>,
-		{ legacyRoot: true },
+		{ wrapper: mockAppRoot().build(), legacyRoot: true },
 	);
 
 	expect(screen.getByText('Group title')).toBeInTheDocument();

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import DiscussionMessage from './DiscussionsListItem';
+import DiscussionsListItem from './DiscussionsListItem';
 
 const message = {
 	msg: 'hello world',
@@ -21,12 +21,12 @@ const noReplies = {
 };
 
 export default {
-	title: 'Room/Contextual Bar/Discussion/Message',
-	component: DiscussionMessage,
+	title: 'Room/Contextual Bar/Discussion/DiscussionsListItem',
+	component: DiscussionsListItem,
 };
 
-export const Basic = () => <DiscussionMessage {...(message as any)} />;
+export const Basic = () => <DiscussionsListItem {...(message as any)} />;
 
-export const LargeText = () => <DiscussionMessage {...(largeText as any)} />;
+export const LargeText = () => <DiscussionsListItem {...(largeText as any)} />;
 
-export const NoReplies = () => <DiscussionMessage {...(noReplies as any)} />;
+export const NoReplies = () => <DiscussionsListItem {...(noReplies as any)} />;

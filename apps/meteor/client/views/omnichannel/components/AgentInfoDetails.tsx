@@ -5,7 +5,7 @@ import React from 'react';
 import * as UserStatus from '../../../components/UserStatus';
 
 type AgentInfoDetailsProps = ComponentProps<typeof Box> & {
-	name: string;
+	name: string | undefined;
 	status: ReactNode;
 	shortName?: string;
 };

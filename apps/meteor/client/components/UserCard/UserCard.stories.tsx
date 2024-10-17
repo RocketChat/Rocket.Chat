@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import { UserCard, UserCardRole, UserCardAction } from '.';
@@ -28,9 +28,9 @@ export default {
 		),
 		localTime: 'Local Time: 7:44 AM',
 	},
-} as ComponentMeta<typeof UserCard>;
+} satisfies Meta<typeof UserCard>;
 
-const Template: ComponentStory<typeof UserCard> = (args) => <UserCard {...args} />;
+const Template: StoryFn<typeof UserCard> = (args) => <UserCard {...args} />;
 
 export const Example = Template.bind({});
 

@@ -1,8 +1,8 @@
 import type { IWebdavNode } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
@@ -36,7 +36,7 @@ const WebdavFilePickerTable = ({
 	onNodeClick,
 	isLoading,
 }: WebdavFilePickerTableProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Box display='flex' flexDirection='column' overflowY='hidden' height='x256'>

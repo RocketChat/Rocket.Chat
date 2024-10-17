@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import MessageSeparator from '.';
@@ -15,7 +15,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof MessageSeparator>>;
 
-const Template: Story<ComponentProps<typeof MessageSeparator>> = (args) => <MessageSeparator {...args} />;
+const Template: StoryFn<ComponentProps<typeof MessageSeparator>> = (args) => <MessageSeparator {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

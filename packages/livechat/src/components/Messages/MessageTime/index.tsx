@@ -1,6 +1,7 @@
 import { parseISO } from 'date-fns/fp';
 import isToday from 'date-fns/isToday';
 import type { TFunction } from 'i18next';
+import type { CSSProperties } from 'preact/compat';
 import { memo } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
@@ -22,7 +23,7 @@ type MessageTimeProps = {
 	normal?: boolean;
 	inverted?: boolean;
 	className?: string;
-	style?: React.CSSProperties;
+	style?: CSSProperties;
 	t: TFunction;
 };
 const MessageTime = ({ ts, normal, inverted, className, style = {}, t }: MessageTimeProps) => {

@@ -1,15 +1,15 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import RoomAnnouncement from '.';
 
 export default {
-	title: 'Room/Announcement',
+	title: 'Room/RoomAnnouncement',
 	component: RoomAnnouncement,
-} as ComponentMeta<typeof RoomAnnouncement>;
+} satisfies Meta<typeof RoomAnnouncement>;
 
-export const Default: ComponentStory<typeof RoomAnnouncement> = (args) => <RoomAnnouncement {...args} />;
+export const Default: StoryFn<typeof RoomAnnouncement> = (args) => <RoomAnnouncement {...args} />;
 Default.storyName = 'Announcement';
 Default.args = {
 	announcement: 'Lorem Ipsum Indolor',

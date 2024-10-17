@@ -1,10 +1,10 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, Chip, ButtonGroup } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
 	ContextualbarIcon,
@@ -30,7 +30,7 @@ type VoipInfoPropsType = {
 };
 
 export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfoPropsType): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const isCallReady = useIsCallReady();
 
 	const { servedBy, queue, v, fname, name, callDuration, callTotalHoldTime, closedAt, callWaitingTime, tags, lastMessage } = room;

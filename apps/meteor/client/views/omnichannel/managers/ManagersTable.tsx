@@ -36,7 +36,6 @@ const ManagersTable = () => {
 		useMemo(
 			() => ({
 				text: debouncedText,
-				fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: current,

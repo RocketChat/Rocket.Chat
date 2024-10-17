@@ -11,8 +11,6 @@ $form-input-select-arrow-color: $color-text-light;
 	flex: 1;
 
 	&__select {
-		@include form__input-box;
-
 		flex: 1;
 
 		padding-right: (3 * $form-input-select-arrow-padding + $form-input-select-arrow-size);
@@ -34,6 +32,8 @@ $form-input-select-arrow-color: $color-text-light;
 		&--small {
 			padding-right: (3 * $form-input-select-arrow-padding + $form-input-select-arrow-size);
 		}
+
+		@include form__input-box;
 	}
 
 	&__option {

@@ -8,13 +8,9 @@ import { API } from '../api';
 
 API.v1.addRoute(
 	'oauth-apps.list',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-oauth-apps'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
-				throw new Error('error-not-allowed');
-			}
-
 			return API.v1.success({
 				oauthApps: await OAuthApps.find().toArray(),
 			});
@@ -54,13 +50,10 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isUpdateOAuthAppParams,
+		permissionsRequired: ['manage-oauth-apps'],
 	},
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
-				return API.v1.unauthorized();
-			}
-
 			const { appId } = this.bodyParams;
 
 			const result = await Meteor.callAsync('updateOAuthApp', appId, this.bodyParams);
@@ -75,13 +68,10 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isDeleteOAuthAppParams,
+		permissionsRequired: ['manage-oauth-apps'],
 	},
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
-				return API.v1.unauthorized();
-			}
-
 			const { appId } = this.bodyParams;
 
 			const result = await Meteor.callAsync('deleteOAuthApp', appId);
@@ -96,13 +86,10 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isOauthAppsAddParams,
+		permissionsRequired: ['manage-oauth-apps'],
 	},
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
-				return API.v1.unauthorized();
-			}
-
 			const application = await addOAuthApp(this.bodyParams, this.userId);
 
 			return API.v1.success({ application });
