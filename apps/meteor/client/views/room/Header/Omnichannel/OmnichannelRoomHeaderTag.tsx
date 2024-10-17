@@ -21,6 +21,8 @@ const OmnichannelRoomHeaderTag = ({ room }: OmnichannelRoomHeaderTagProps) => {
 	const { data } = useQuery(['getContactById', contactId], () => getContactById({ contactId: contactId || _id }));
 	const isVerifiedContact = data?.contact?.channels?.some((channel) => channel.verified);
 
+	console.log(isVerifiedContact);
+
 	useEffect(() => {
 		if (!isVerifiedContact) {
 			setModal(<AdvancedContactModal onCancel={() => setModal(null)} />);
