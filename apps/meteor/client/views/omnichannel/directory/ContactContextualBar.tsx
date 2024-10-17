@@ -19,7 +19,7 @@ const ContactContextualBar = () => {
 	};
 
 	if (context === 'new') {
-		return <EditContactInfo id={contactId} onClose={handleClose} onCancel={handleClose} />;
+		return <EditContactInfo onClose={handleClose} onCancel={handleClose} />;
 	}
 
 	if (context === 'edit') {

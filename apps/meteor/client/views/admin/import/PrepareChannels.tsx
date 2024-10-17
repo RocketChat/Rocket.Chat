@@ -1,7 +1,7 @@
 import { CheckBox, Table, Tag, Pagination, TableHead, TableRow, TableCell, TableBody } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Dispatch, SetStateAction, ChangeEvent } from 'react';
 import React, { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { ChannelDescriptor } from './ChannelDescriptor';
 
@@ -13,11 +13,12 @@ type PrepareChannelsProps = {
 
 // TODO: review inner logic
 const PrepareChannels = ({ channels, channelsCount, setChannels }: PrepareChannelsProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [current, setCurrent] = useState(0);
 	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
 	const showingResultsLabel = useCallback(
-		({ count, current, itemsPerPage }) => t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count),
+		({ count, current, itemsPerPage }) =>
+			t('Showing_results_of', { postProcess: 'sprintf', sprintf: [current + 1, Math.min(current + itemsPerPage, count), count] }),
 		[t],
 	);
 	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);

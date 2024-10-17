@@ -4,6 +4,7 @@ import React from 'react';
 
 import { useIsCallReady } from '../../../../../contexts/CallContext';
 import useClipboardWithToast from '../../../../../hooks/useClipboardWithToast';
+import { parseOutboundPhoneNumber } from '../../../../../lib/voip/parseOutboundPhoneNumber';
 import ContactInfoCallButton from './ContactInfoCallButton';
 
 type ContactInfoDetailsEntryProps = {
@@ -12,27 +13,22 @@ type ContactInfoDetailsEntryProps = {
 	value: string;
 };
 
-const ContactInfoDetailsEntry = ({ type, label, value }: ContactInfoDetailsEntryProps) => {
+const ContactInfoDetailsEntry = ({ type, value }: ContactInfoDetailsEntryProps) => {
 	const t = useTranslation();
 	const { copy } = useClipboardWithToast(value);
 
 	const isCallReady = useIsCallReady();
 
 	return (
-		<Box>
-			<Box mbe={4} fontScale='p2'>
-				{label}
-			</Box>
-			<Box display='flex' alignItems='center'>
-				<Icon size='x18' name={type === 'phone' ? 'phone' : 'mail'} />
-				<Box display='flex' flexGrow={1} alignItems='center' justifyContent='space-between'>
-					<Box data-qa-id={type === 'phone' ? 'contactInfo-phone' : 'contactInfo-email'} mi={4} fontScale='p2'>
-						{value}
-					</Box>
-					<Box display='flex' alignItems='center'>
-						{isCallReady && type === 'phone' && <ContactInfoCallButton phoneNumber={value} />}
-						<IconButton onClick={() => copy()} tiny title={t('Copy')} icon='copy' />
-					</Box>
+		<Box display='flex' alignItems='center'>
+			<Icon size='x18' name={type === 'phone' ? 'phone' : 'mail'} />
+			<Box display='flex' flexGrow={1} alignItems='center' justifyContent='space-between'>
+				<Box data-qa-id={type === 'phone' ? 'contactInfo-phone' : 'contactInfo-email'} mi={4} fontScale='p2'>
+					{type === 'phone' ? parseOutboundPhoneNumber(value) : value}
+				</Box>
+				<Box display='flex' alignItems='center'>
+					{isCallReady && type === 'phone' && <ContactInfoCallButton phoneNumber={value} />}
+					<IconButton onClick={() => copy()} tiny title={t('Copy')} icon='copy' />
 				</Box>
 			</Box>
 		</Box>

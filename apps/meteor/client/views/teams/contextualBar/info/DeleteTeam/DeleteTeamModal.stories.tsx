@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import DeleteTeamModal from '.';
@@ -12,9 +12,9 @@ export default {
 	parameters: {
 		layout: 'fullscreen',
 	},
-} as ComponentMeta<typeof DeleteTeamModal>;
+} satisfies Meta<typeof DeleteTeamModal>;
 
-export const Default: ComponentStory<typeof DeleteTeamModal> = (args) => <DeleteTeamModal {...args} />;
+export const Default: StoryFn<typeof DeleteTeamModal> = (args) => <DeleteTeamModal {...args} />;
 Default.storyName = 'DeleteTeamModal';
 Default.args = {
 	teamId: '123',
@@ -22,7 +22,7 @@ Default.args = {
 	onCancel: action('onCancel'),
 };
 
-export const ChannelsStep: ComponentStory<typeof DeleteTeamChannels> = (args) => <DeleteTeamChannels {...args} />;
+export const ChannelsStep: StoryFn<typeof DeleteTeamChannels> = (args) => <DeleteTeamChannels {...args} />;
 ChannelsStep.args = {
 	rooms: Array.from({ length: 15 }).map((_, i) => ({
 		_id: `${i}`,
@@ -45,7 +45,7 @@ ChannelsStep.args = {
 	onToggleAllRooms: action('onToggleAllRooms'),
 };
 
-export const ConfirmationStep: ComponentStory<typeof DeleteTeamConfirmation> = (args) => <DeleteTeamConfirmation {...args} />;
+export const ConfirmationStep: StoryFn<typeof DeleteTeamConfirmation> = (args) => <DeleteTeamConfirmation {...args} />;
 ConfirmationStep.args = {
 	deletedRooms: {
 		test123: {

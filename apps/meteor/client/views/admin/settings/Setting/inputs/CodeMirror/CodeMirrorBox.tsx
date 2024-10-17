@@ -1,12 +1,12 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 
 const CodeMirrorBox = ({ label, children }: { label: ReactNode; children: ReactElement }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [fullScreen, toggleFullScreen] = useToggle(false);
 
 	if (fullScreen) {

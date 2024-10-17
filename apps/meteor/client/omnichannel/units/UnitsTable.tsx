@@ -30,7 +30,6 @@ const UnitsTable = () => {
 
 	const query = useMemo(
 		() => ({
-			fields: JSON.stringify({ name: 1 }),
 			text: debouncedFilter,
 			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
 			...(itemsPerPage && { count: itemsPerPage }),

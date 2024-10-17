@@ -1,7 +1,7 @@
 import { Box, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type GenericErrorProps = {
 	icon?: IconName;
@@ -11,7 +11,7 @@ type GenericErrorProps = {
 };
 
 const GenericError = ({ icon = 'magnifier', title, buttonTitle, buttonAction }: GenericErrorProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Box display='flex' height='100%' flexDirection='column' justifyContent='center'>

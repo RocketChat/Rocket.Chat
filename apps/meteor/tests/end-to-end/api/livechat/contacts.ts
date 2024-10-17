@@ -661,28 +661,28 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.contact.contactManager).to.be.equal(contact.contactManager);
 		});
 
-		it('should return null if contact does not exist using contactId', async () => {
+		it('should return 404 if contact does not exist using contactId', async () => {
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: 'invalid' });
 
-			expect(res.status).to.be.equal(200);
-			expect(res.body).to.have.property('success', true);
-			expect(res.body.contact).to.be.null;
+			expect(res.status).to.be.equal(404);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'Resource not found');
 		});
 
-		it('should return null if contact does not exist using email', async () => {
+		it('should return 404 if contact does not exist using email', async () => {
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ email: 'invalid' });
 
-			expect(res.status).to.be.equal(200);
-			expect(res.body).to.have.property('success', true);
-			expect(res.body.contact).to.be.null;
+			expect(res.status).to.be.equal(404);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'Resource not found');
 		});
 
-		it('should return null if contact does not exist using phone', async () => {
+		it('should return 404 if contact does not exist using phone', async () => {
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ phone: 'invalid' });
 
-			expect(res.status).to.be.equal(200);
-			expect(res.body).to.have.property('success', true);
-			expect(res.body.contact).to.be.null;
+			expect(res.status).to.be.equal(404);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'Resource not found');
 		});
 
 		it("should return an error if user doesn't have 'view-livechat-contact' permission", async () => {
@@ -740,6 +740,8 @@ describe('LIVECHAT - contacts', () => {
 				expect(res.body.contact).to.have.property('lastChat');
 				expect(res.body.contact.lastChat).to.have.property('ts');
 				expect(res.body.contact.lastChat._id).to.be.equal(room._id);
+				expect(res.body.contact.channels[0].lastChat).to.have.property('ts');
+				expect(res.body.contact.channels[0].lastChat._id).to.be.equal(room._id);
 			});
 
 			it('should not return the last chat if contact never chatted', async () => {

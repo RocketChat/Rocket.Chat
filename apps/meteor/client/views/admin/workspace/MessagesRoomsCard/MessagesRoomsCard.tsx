@@ -1,8 +1,8 @@
 import type { IStats } from '@rocket.chat/core-typings';
 import { Card } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import WorkspaceCardSection from '../components/WorkspaceCardSection';
 import WorkspaceCardTextSeparator from '../components/WorkspaceCardTextSeparator';
@@ -12,7 +12,7 @@ type MessagesRoomsCardProps = {
 };
 
 const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Card height='full'>

@@ -1,8 +1,8 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type ReadReceiptIndicatorProps = {
 	mid: IMessage['_id'];
@@ -10,7 +10,7 @@ type ReadReceiptIndicatorProps = {
 };
 
 const ReadReceiptIndicator = ({ mid, unread }: ReadReceiptIndicatorProps): ReactElement | null => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Box

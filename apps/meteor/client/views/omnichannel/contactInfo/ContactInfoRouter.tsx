@@ -18,14 +18,14 @@ const ContactInfoRouter = () => {
 	};
 
 	const {
-		v: { _id },
+		v: { contactId },
 	} = room;
 
 	if (context === 'edit') {
-		return <ContactEditWithData id={_id} onClose={closeTab} onCancel={handleCloseEdit} />;
+		return <ContactEditWithData id={contactId || ''} onClose={closeTab} onCancel={handleCloseEdit} />;
 	}
 
-	return <ContactInfo id={_id} onClose={closeTab} />;
+	return <ContactInfo id={contactId || ''} onClose={closeTab} />;
 };
 
 export default ContactInfoRouter;
