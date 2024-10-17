@@ -104,7 +104,7 @@ test.describe.serial('imports', () => {
 		});
 	});
 
-	test.fail('expect import users data from zipped CSV files', async ({ page }) => {
+	test('expect import users data from zipped CSV files', async ({ page }) => {
 		const poAdmin: Admin = new Admin(page);
 		await page.goto('/admin/import');
 
@@ -115,10 +115,7 @@ test.describe.serial('imports', () => {
 		await poAdmin.inputFile.setInputFiles(zipCsvImportDir);
 		await poAdmin.btnImport.click();
 
-		await page
-			.locator('tr', { has: page.getByRole('cell', { name: 'billy.billy' }) })
-			.locator('checkbox')
-			.uncheck();
+		await poAdmin.findFileCheckboxByUsername('billy.billy').click();
 
 		await poAdmin.btnStartImport.click();
 
