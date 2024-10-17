@@ -222,6 +222,7 @@ export * from './v1/videoConference';
 export * from './v1/assets';
 export * from './v1/channels';
 export * from './v1/customUserStatus';
+export * from './v1/customSounds';
 export * from './v1/subscriptionsEndpoints';
 export * from './v1/mailer';
 export * from './v1/mailer/MailerParamsPOST';

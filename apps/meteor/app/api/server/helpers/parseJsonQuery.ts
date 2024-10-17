@@ -59,6 +59,7 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 		'/api/v1/channels.files',
 		'/api/v1/integrations.list',
 		'/api/v1/custom-user-status.list',
+		'/api/v1/custom-sounds.list',
 	].includes(route);
 
 	const isUnsafeQueryParamsAllowed = process.env.ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS?.toUpperCase() === 'TRUE';
@@ -70,7 +71,6 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 		try {
 			apiDeprecationLogger.parameter(route, 'fields', '8.0.0', response, messageGenerator);
 			fields = JSON.parse(params.fields) as Record<string, 0 | 1>;
-
 			Object.entries(fields).forEach(([key, value]) => {
 				if (value !== 1 && value !== 0) {
 					throw new Meteor.Error('error-invalid-sort-parameter', `Invalid fields parameter: ${key}`, {
