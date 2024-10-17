@@ -8,7 +8,7 @@ import React from 'react';
 import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../components/Contextualbar';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useContactRoute } from '../../hooks/useContactRoute';
-import ContactInfoChannels from '../tabs/ContactInfoChannels';
+import ContactInfoChannels from '../tabs/ContactInfoChannels/ContactInfoChannels';
 import ContactInfoDetails from '../tabs/ContactInfoDetails';
 import ContactInfoHistory from '../tabs/ContactInfoHistory';
 
@@ -98,8 +98,8 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 					customFieldEntries={customFieldEntries}
 				/>
 			)}
-			{context === 'channels' && <ContactInfoChannels />}
-			{context === 'history' && showContactHistory && <ContactInfoHistory />}
+			{context === 'channels' && contact?.channels && <ContactInfoChannels channels={contact?.channels} />}
+			{context === 'history' && showContactHistory && <ContactInfoHistory contactId={contact._id} />}
 		</>
 	);
 };
