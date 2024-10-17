@@ -538,6 +538,4 @@ export async function validateContactManager(contactManagerUserId: string) {
 
 export const verifyContactChannel = makeFunction(async (_params: VerifyContactChannelParams): Promise<ILivechatContact | null> => null);
 
-export const mergeContacts = makeFunction(
-	async (_contactId: string, _visitorId: string): Promise<ILivechatContact | null> => null,
-);
+export const mergeContacts = makeFunction(async (_contactId: string, _visitorId: string): Promise<ILivechatContact | null> => null);
