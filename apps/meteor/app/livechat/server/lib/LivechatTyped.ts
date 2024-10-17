@@ -22,6 +22,8 @@ import type {
 	LivechatDepartmentDTO,
 	ILivechatInquiryRecord,
 	OmnichannelSourceType,
+	ILivechatContact,
+	ILivechatContactChannel,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -37,6 +39,7 @@ import {
 	ReadReceipts,
 	Rooms,
 	LivechatCustomField,
+	LivechatContacts,
 } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
@@ -446,14 +449,8 @@ class LivechatClass {
 			}
 		}
 
-		if (visitor.contactId) {
-			const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, 'channels'>>(visitor.contactId, {
-				projection: { channels: 1 },
-			});
-			const channel = contact?.channels?.find((channel: ILivechatContactChannel) => channel.visitorId === visitor._id);
-			if (channel?.blocked) {
-				throw new Error('error-contact-channel-blocked');
-			}
+		if (await LivechatContacts.isChannelBlocked(visitor._id)) {
+			throw new Error('error-contact-channel-blocked');
 		}
 
 		// delegate room creation to QueueManager
@@ -497,14 +494,8 @@ class LivechatClass {
 		Livechat.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
 		const room = await LivechatRooms.findOneById(message.rid);
 
-		if (room?.v.contactId) {
-			const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, 'channels'>>(room?.v.contactId, {
-				projection: { channels: 1 },
-			});
-			const channel = contact?.channels?.find((channel: ILivechatContactChannel) => channel.visitorId === guest._id);
-			if (channel?.blocked) {
-				throw new Error('error-contact-channel-blocked');
-			}
+		if (room?.v._id && (await LivechatContacts.isChannelBlocked(room?.v._id))) {
+			throw new Error('error-contact-channel-blocked');
 		}
 
 		if (room && !room.open) {

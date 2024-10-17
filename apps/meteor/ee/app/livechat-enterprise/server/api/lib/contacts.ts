@@ -1,35 +1,19 @@
-import type { ILivechatContact, IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
 
 import { Livechat } from '../../../../../../app/livechat/server/lib/LivechatTyped';
 import { i18n } from '../../../../../../server/lib/i18n';
 
-export async function changeContactBlockStatus({ contactId, block, visitorId }: { contactId: string; visitorId: string; block: boolean }) {
-	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'channels'>>(contactId, {
-		projection: { channels: 1 },
-	});
+export async function changeContactBlockStatus({ block, visitorId }: { visitorId: string; block: boolean }) {
+	const result = await LivechatContacts.updateContactChannel(visitorId, { blocked: block });
 
-	if (!contact) {
+	if (!result.modifiedCount) {
 		throw new Error('error-contact-not-found');
 	}
-
-	if (!contact.channels) {
-		throw new Error('error-contact-has-no-channels');
-	}
-
-	const channelIndex = contact.channels?.findIndex((channel) => channel.visitorId === visitorId);
-
-	if (channelIndex === -1) {
-		throw new Error('error-channel-not-found');
-	}
-
-	contact.channels[channelIndex].blocked = block;
-
-	await LivechatContacts.updateOne({ _id: contactId }, { $set: { channels: contact.channels } });
 }
 
-export function hasSingleContactLicense() {
+export function ensureSingleContactLicense() {
 	if (!License.hasModule('contact-id-verification')) {
 		throw new Error('error-action-not-allowed');
 	}

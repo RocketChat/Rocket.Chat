@@ -17,4 +17,6 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 		visitorId: ILivechatVisitor['_id'],
 		options?: FindOptions<ILivechatContact>,
 	): Promise<T | null>;
+	isChannelBlocked(visitorId: ILivechatVisitor['_id']): Promise<boolean>;
+	updateContactChannel(visitorId: ILivechatVisitor['_id'], data: Partial<ILivechatContactChannel>): Promise<UpdateResult>;
 }

@@ -17,6 +17,7 @@ import type {
 	FindCursor,
 	IndexDescription,
 	UpdateResult,
+	UpdateFilter,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -145,5 +146,30 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 
 	async updateLastChatById(contactId: string, visitorId: string, lastChat: ILivechatContact['lastChat']): Promise<UpdateResult> {
 		return this.updateOne({ '_id': contactId, 'channels.visitorId': visitorId }, { $set: { lastChat, 'channels.$.lastChat': lastChat } });
+	}
+
+	async isChannelBlocked(visitorId: ILivechatVisitor['_id']): Promise<boolean> {
+		return Boolean(
+			await this.findOne(
+				{
+					'channels.visitorId': visitorId,
+					'channels.blocked': true,
+				},
+				{ projection: { _id: 1 } },
+			),
+		);
+	}
+
+	async updateContactChannel(visitorId: ILivechatVisitor['_id'], data: Partial<ILivechatContactChannel>): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				'channels.visitorId': visitorId,
+			},
+			{
+				$set: Object.fromEntries(
+					Object.keys(data).map((key) => [`channels.$.${key}`, data[key as keyof ILivechatContactChannel]]),
+				) as UpdateFilter<ILivechatContact>['$set'],
+			},
+		);
 	}
 }

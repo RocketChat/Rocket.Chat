@@ -992,15 +992,12 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should be able to block a contact channel', async () => {
-			const res = await request
-				.post(api('omnichannel/contacts.block'))
-				.set(credentials)
-				.send({ contactId: visitor.contactId, visitorId: visitor._id });
+			const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitorId: visitor._id });
 
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
 
-			const { body } = await request.get(api('omnichannel/contacts.get')).set(credentials).query({ contactId: visitor.contactId });
+			const { body } = await request.get(api('omnichannel/contacts.get')).set(credentials).query({ contactId: visitor._id });
 
 			expect(body.contact.channels).to.be.an('array');
 			expect(body.contact.channels.length).to.be.equal(1);
@@ -1008,32 +1005,15 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should return an error if contact does not exist', async () => {
-			const res = await request
-				.post(api('omnichannel/contacts.block'))
-				.set(credentials)
-				.send({ contactId: 'invalid', visitorId: visitor._id });
+			const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitorId: 'invalid' });
 
 			expect(res.status).to.be.equal(400);
 			expect(res.body).to.have.property('success', false);
 			expect(res.body.error).to.be.equal('error-contact-not-found');
 		});
 
-		it('should return an error if channel not exists', async () => {
-			const res = await request
-				.post(api('omnichannel/contacts.block'))
-				.set(credentials)
-				.send({ contactId: visitor.contactId, visitorId: 'invalid' });
-
-			expect(res.status).to.be.equal(400);
-			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-channel-not-found');
-		});
-
 		it('should close room when contact is blocked', async () => {
-			const res = await request
-				.post(api('omnichannel/contacts.block'))
-				.set(credentials)
-				.send({ contactId: visitor.contactId, visitorId: visitor._id });
+			const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitorId: visitor._id });
 
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
@@ -1046,7 +1026,7 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should not be able to open a room when contact is blocked', async () => {
-			await request.post(api('omnichannel/contacts.block')).set(credentials).send({ contactId: visitor.contactId, visitorId: visitor._id });
+			await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitorId: visitor._id });
 
 			const createRoomResponse = await request.get(api('livechat/room')).query({ token: visitor.token }).set(credentials);
 
@@ -1055,16 +1035,8 @@ describe('LIVECHAT - contacts', () => {
 			expect(createRoomResponse.body).to.have.property('error', 'error-contact-channel-blocked');
 		});
 
-		it('should return an error if contactId is missing', async () => {
-			const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitorId: visitor._id });
-
-			expect(res.status).to.be.equal(400);
-			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal("must have required property 'contactId' [invalid-params]");
-		});
-
 		it('should return an error if visitorId is missing', async () => {
-			const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({ contactId: visitor.contactId });
+			const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({});
 
 			expect(res.status).to.be.equal(400);
 			expect(res.body).to.have.property('success', false);
@@ -1081,10 +1053,7 @@ describe('LIVECHAT - contacts', () => {
 			});
 
 			it("should return an error if user doesn't have 'block-livechat-contact' permission", async () => {
-				const res = await request
-					.post(api('omnichannel/contacts.block'))
-					.set(credentials)
-					.send({ contactId: visitor.contactId, visitorId: visitor._id });
+				const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitorId: visitor._id });
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
@@ -1107,23 +1076,20 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should be able to unblock a contact channel', async () => {
-			await request.post(api('omnichannel/contacts.block')).set(credentials).send({ contactId: visitor.contactId, visitorId: visitor._id });
+			await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitorId: visitor._id });
 
-			const { body } = await request.get(api('omnichannel/contacts.get')).set(credentials).query({ contactId: visitor.contactId });
+			const { body } = await request.get(api('omnichannel/contacts.get')).set(credentials).query({ contactId: visitor._id });
 
 			expect(body.contact.channels).to.be.an('array');
 			expect(body.contact.channels.length).to.be.equal(1);
 			expect(body.contact.channels[0].blocked).to.be.true;
 
-			const res = await request
-				.post(api('omnichannel/contacts.unblock'))
-				.set(credentials)
-				.send({ contactId: visitor.contactId, visitorId: visitor._id });
+			const res = await request.post(api('omnichannel/contacts.unblock')).set(credentials).send({ visitorId: visitor._id });
 
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
 
-			const { body: body2 } = await request.get(api('omnichannel/contacts.get')).set(credentials).query({ contactId: visitor.contactId });
+			const { body: body2 } = await request.get(api('omnichannel/contacts.get')).set(credentials).query({ contactId: visitor._id });
 
 			expect(body2.contact.channels).to.be.an('array');
 			expect(body2.contact.channels.length).to.be.equal(1);
@@ -1142,26 +1108,15 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should return an error if channel not exists', async () => {
-			const res = await request
-				.post(api('omnichannel/contacts.block'))
-				.set(credentials)
-				.send({ contactId: visitor.contactId, visitorId: 'invalid' });
+			const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitorId: 'invalid' });
 
 			expect(res.status).to.be.equal(400);
 			expect(res.body).to.have.property('success', false);
 			expect(res.body.error).to.be.equal('error-channel-not-found');
 		});
 
-		it('should return an error if contactId is missing', async () => {
-			const res = await request.post(api('omnichannel/contacts.unblock')).set(credentials).send({ visitorId: visitor._id });
-
-			expect(res.status).to.be.equal(400);
-			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal("must have required property 'contactId' [invalid-params]");
-		});
-
 		it('should return an error if visitorId is missing', async () => {
-			const res = await request.post(api('omnichannel/contacts.unblock')).set(credentials).send({ contactId: visitor.contactId });
+			const res = await request.post(api('omnichannel/contacts.unblock')).set(credentials).send({});
 
 			expect(res.status).to.be.equal(400);
 			expect(res.body).to.have.property('success', false);
@@ -1178,10 +1133,7 @@ describe('LIVECHAT - contacts', () => {
 			});
 
 			it("should return an error if user doesn't have 'unblock-livechat-contact' permission", async () => {
-				const res = await request
-					.post(api('omnichannel/contacts.unblock'))
-					.set(credentials)
-					.send({ contactId: visitor.contactId, visitorId: visitor._id });
+				const res = await request.post(api('omnichannel/contacts.unblock')).set(credentials).send({ visitorId: visitor._id });
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');

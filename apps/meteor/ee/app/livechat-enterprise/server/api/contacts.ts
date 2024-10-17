@@ -1,14 +1,13 @@
 import Ajv from 'ajv';
 
 import { API } from '../../../../../app/api/server';
-import { changeContactBlockStatus, closeBlockedRoom, hasSingleContactLicense } from './lib/contacts';
+import { changeContactBlockStatus, closeBlockedRoom, ensureSingleContactLicense } from './lib/contacts';
 
 const ajv = new Ajv({
 	coerceTypes: true,
 });
 
 type blockContactProps = {
-	contactId: string;
 	visitorId: string;
 };
 
@@ -49,12 +48,11 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			hasSingleContactLicense();
-			const { contactId, visitorId } = this.bodyParams;
+			ensureSingleContactLicense();
+			const { visitorId } = this.bodyParams;
 			const { user } = this;
 
 			await changeContactBlockStatus({
-				contactId,
 				visitorId,
 				block: true,
 			});
@@ -75,11 +73,10 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			hasSingleContactLicense();
-			const { contactId, visitorId } = this.bodyParams;
+			ensureSingleContactLicense();
+			const { visitorId } = this.bodyParams;
 
 			await changeContactBlockStatus({
-				contactId,
 				visitorId,
 				block: false,
 			});
