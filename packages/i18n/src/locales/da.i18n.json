@@ -303,8 +303,6 @@
   "add-livechat-department-agents": "Tilføj omni-kanal-agenter til afdelinger",
   "add-oauth-service": "Tilføj OAuth-tjeneste",
   "add-oauth-service_description": "Tilladelse til at tilføje nye OAuth-tjenester",
-  "add-team-channel": "Tilføj teamkanal",
-  "add-team-channel_description": "Tilladelse til at tilføje en kanal til et team",
   "add-team-member": "Tilføj teammedlem",
   "add-user": "Tilføj bruger",
   "add-user_description": "Tilladelse til at tilføje nye brugere til serveren via brugere-menuen",
