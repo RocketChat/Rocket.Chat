@@ -3,12 +3,12 @@ import { Settings, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { parse } from 'csv-parse/lib/sync';
 
+import { addParsedContacts } from '../../importer-omnichannel-contacts/server/addParsedContacts';
 import { Importer, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import type { ConverterOptions } from '../../importer/server/classes/ImportDataConverter';
 import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
 import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
 import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';
-import { addParsedContacts } from './addParsedContacts';
 
 export class CsvImporter extends Importer {
 	private csvParser: (csv: string) => string[][];
