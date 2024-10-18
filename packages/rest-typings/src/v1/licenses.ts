@@ -50,7 +50,7 @@ export type LicensesEndpoints = {
 			cloudSyncAnnouncement: {
 				viewId: string;
 				appId: string;
-				blocks: CloudSyncAnnouncementLayout[];
+				blocks: CloudSyncAnnouncementLayout;
 			};
 		};
 	};
