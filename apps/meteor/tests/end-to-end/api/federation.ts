@@ -31,7 +31,7 @@ describe('federation', () => {
 		describe('when matrix enabled but well-known disabled', () => {
 			before(async () => {
 				await updateSetting('Federation_Matrix_enabled', true);
-				// await updateSetting('Federation_Matrix_serve_well_known', false);
+				await updateSetting('Federation_Matrix_serve_well_known', false);
 			});
 
 			after(async () => {
@@ -43,7 +43,7 @@ describe('federation', () => {
 				console.log('should start the actual test now');
 				await request.get('/.well-known/matrix/server').expect(404);
 
-				// await request.get('/.well-known/matrix/client').expect(404);
+				await request.get('/.well-known/matrix/client').expect(404);
 			});
 		});
 
