@@ -9,6 +9,7 @@ export enum OmnichannelSourceType {
     EMAIL = 'email',
     SMS = 'sms',
     APP = 'app',
+    API = 'api',
     OTHER = 'other',
 }
 

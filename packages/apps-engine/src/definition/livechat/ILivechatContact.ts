@@ -24,6 +24,7 @@ export interface ILivechatContactConflictingField {
 
 export interface ILivechatContact {
     _id: string;
+    _updatedAt: Date;
     name: string;
     phones?: IVisitorPhone[];
     emails?: IVisitorEmail[];
