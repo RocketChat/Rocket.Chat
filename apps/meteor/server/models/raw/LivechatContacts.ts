@@ -195,11 +195,4 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			options,
 		).toArray();
 	}
-
-	async unverifyContactChannel(contactId: ILivechatContact['_id'], channelName: string, visitorId: string): Promise<UpdateResult> {
-		return this.updateOne(
-			{ '_id': contactId, 'channels.visitorId': visitorId, 'channels.channelName': channelName },
-			{ $set: { 'channels.$.verified': false } },
-		);
-	}
 }

@@ -262,7 +262,7 @@ export class QueueManager {
 		//       up. So if the contact is not verified we don't add it to queue and wait an event to be sent to properly add it to queue
 		if (inquiry.v.contactId && (await shouldTriggerVerificationApp(inquiry.v.contactId, room.source))) {
 			newRoom = await LivechatRooms.findOneById(rid);
-			await LivechatContacts.unverifyContactChannel(inquiry.v.contactId, room.source.type, inquiry.v._id);
+			await LivechatContacts.updateContactChannel(inquiry.v._id, { verified: true });
 			// void Apps.self?.triggerEvent(AppEvents.IPostContactVerificationAppAssigned, inquiry.v, room);
 		} else {
 			newRoom = (await this.queueInquiry(inquiry, room, defaultAgent)) ?? (await LivechatRooms.findOneById(rid));
