@@ -74,7 +74,7 @@ import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
 import { Contacts } from './Contacts';
-import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
+import { parseAgentCustomFields, updateDepartmentAgents, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { Visitors } from './Visitors';
@@ -608,7 +608,7 @@ class LivechatClass {
 		const result = await Visitors.registerGuest(newData);
 
 		if (result) {
-			await Contacts.registerGuestData(newData, result._id);
+			await Contacts.registerGuestData(newData, result);
 		}
 
 		return result;
