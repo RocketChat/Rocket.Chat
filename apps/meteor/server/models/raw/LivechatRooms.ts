@@ -1998,7 +1998,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		options: Omit<FindOptions<IOmnichannelRoom>, 'sort' | 'limit'> = {},
 	): Promise<T | null> {
 		const query: Filter<IOmnichannelRoom> = {
-			t: 'l',
 			$or: [
 				{
 					'v._id': visitorId,
@@ -2009,13 +2008,11 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			],
 		};
 
-		const cursor = this.find<T>(query, {
+		return this.findOne<T>(query, {
 			...options,
 			sort: { _updatedAt: -1 },
 			limit: 1,
 		});
-
-		return (await cursor.toArray()).pop() || null;
 	}
 
 	findOneOpenByRoomIdAndVisitorToken(roomId: string, visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}) {

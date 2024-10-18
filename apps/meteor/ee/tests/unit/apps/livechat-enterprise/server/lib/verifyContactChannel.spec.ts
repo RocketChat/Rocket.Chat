@@ -16,10 +16,11 @@ const modelsMock = {
 };
 
 const mergeContactsStub = sinon.stub();
+const saveQueueInquiryStub = sinon.stub();
 
 const { runVerifyContactChannel } = proxyquire.noCallThru().load('../../../../../../server/patches/verifyContactChannel', {
 	'../../../app/livechat/server/lib/Contacts': { mergeContacts: mergeContactsStub, verifyContactChannel: { patch: sinon.stub() } },
-	'../../../app/livechat/server/lib/QueueManager': { saveQueueInquiry: sinon.stub() },
+	'../../../app/livechat/server/lib/QueueManager': { saveQueueInquiry: saveQueueInquiryStub },
 	'@rocket.chat/models': modelsMock,
 });
 
@@ -28,6 +29,8 @@ describe('verifyContactChannel', () => {
 		modelsMock.LivechatContacts.updateContactChannel.reset();
 		modelsMock.LivechatRooms.update.reset();
 		modelsMock.LivechatInquiry.findOneReadyByContactId.reset();
+		mergeContactsStub.reset();
+		saveQueueInquiryStub.reset();
 	});
 
 	afterEach(() => {
@@ -58,6 +61,36 @@ describe('verifyContactChannel', () => {
 			),
 		).to.be.true;
 		expect(modelsMock.LivechatRooms.update.calledOnceWith({ _id: 'roomId' }, { $set: { verified: true } })).to.be.true;
-		expect(mergeContactsStub.calledOnceWith('contactId', 'visitorId'));
+		expect(mergeContactsStub.calledOnceWith('contactId', 'visitorId')).to.be.true;
+		expect(saveQueueInquiryStub.calledOnceWith({ _id: 'inquiryId' })).to.be.true;
+	});
+	it('should fail if no matching inquiry is found', async () => {
+		modelsMock.LivechatInquiry.findOneReadyByContactId.resolves(undefined);
+		await expect(
+			runVerifyContactChannel(() => undefined, {
+				contactId: 'contactId',
+				field: 'field',
+				value: 'value',
+				visitorId: 'visitorId',
+				roomId: 'roomId',
+			}),
+		).to.be.rejectedWith('error-invalid-inquiry');
+
+		expect(
+			modelsMock.LivechatContacts.updateContactChannel.calledOnceWith(
+				'visitorId',
+				sinon.match({
+					verified: true,
+					field: 'field',
+					value: 'value',
+				}),
+				sinon.match({
+					unknown: false,
+				}),
+			),
+		).to.be.true;
+		expect(modelsMock.LivechatRooms.update.calledOnceWith({ _id: 'roomId' }, { $set: { verified: true } })).to.be.true;
+		expect(mergeContactsStub.calledOnceWith('contactId', 'visitorId')).to.be.true;
+		expect(saveQueueInquiryStub.notCalled).to.be.true;
 	});
 });

@@ -1,4 +1,4 @@
-import type { IImportUser } from '@rocket.chat/core-typings';
+import type { IImportUser, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
 export type UserIdentification = {

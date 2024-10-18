@@ -241,7 +241,7 @@ export async function getContactManagerIdByUsername(username?: IUser['username']
 		return;
 	}
 
-	const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+	const user = await Users.findOneByUsername<Pick<IUser, '_id'>>(username, { projection: { _id: 1 } });
 
 	return user?._id;
 }
