@@ -8,7 +8,7 @@ import { getURL } from '../../../utils/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 import { isSetNotNull } from './function-isSet';
 
-export const getEmojiUrlFromName = function (name, extension) {
+export const getEmojiUrlFromName = function (name, extension, etag) {
 	if (name == null) {
 		return;
 	}
@@ -17,7 +17,7 @@ export const getEmojiUrlFromName = function (name, extension) {
 
 	const random = isSetNotNull(() => Session.keys[key]) ? Session.keys[key] : 0;
 
-	return getURL(`/emoji-custom/${encodeURIComponent(name)}.${extension}?_dc=${random}`);
+	return getURL(`/emoji-custom/${encodeURIComponent(name)}.${extension}?_dc=${random}${etag ? `&etag=${etag}` : ''}`);
 };
 
 export const deleteEmojiCustom = function (emojiData) {
@@ -112,6 +112,7 @@ const customRender = (html) => {
 		return `<span class="emoji" style="background-image:url(${getEmojiUrlFromName(
 			emojiAlias,
 			dataCheck.extension,
+			dataCheck.etag,
 		)});" data-emoji="${emojiAlias}" title="${shortname}">${shortname}</span>`;
 	});
 
