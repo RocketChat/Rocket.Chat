@@ -2,7 +2,7 @@ import type { IWorkspaceCredentials } from '@rocket.chat/core-typings';
 import type { IWorkspaceCredentialsModel } from '@rocket.chat/model-typings';
 import type { Db, DeleteResult, Filter, IndexDescription, UpdateResult } from 'mongodb';
 
-import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
+import { BaseRaw } from './BaseRaw';
 
 export class WorkspaceCredentialsRaw extends BaseRaw<IWorkspaceCredentials> implements IWorkspaceCredentialsModel {
 	constructor(db: Db) {
