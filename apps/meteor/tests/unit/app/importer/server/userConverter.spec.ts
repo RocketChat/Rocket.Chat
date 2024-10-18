@@ -18,6 +18,7 @@ const callbacks = {
 };
 const bcryptHash = sinon.stub();
 const sha = sinon.stub();
+const generateTempPassword = sinon.stub();
 
 const { UserConverter } = proxyquire.noCallThru().load('../../../../../app/importer/server/classes/converters/UserConverter', {
 	'../../../../../lib/callbacks': {
@@ -40,6 +41,10 @@ const { UserConverter } = proxyquire.noCallThru().load('../../../../../app/impor
 	},
 	'../../../../lib/server/lib/notifyListener': {
 		notifyOnUserChange: sinon.stub(),
+	},
+	'./generateTempPassword': {
+		generateTempPassword,
+		'@global': true,
 	},
 	'bcrypt': {
 		'hash': bcryptHash,
@@ -131,7 +136,6 @@ describe('User Converter', () => {
 		});
 
 		const converter = new UserConverter({ workInMemory: true });
-		const generateTempPassword = sinon.stub(converter, 'generateTempPassword');
 		const hashPassword = sinon.stub(converter, 'hashPassword');
 
 		generateTempPassword.returns('tempPassword');

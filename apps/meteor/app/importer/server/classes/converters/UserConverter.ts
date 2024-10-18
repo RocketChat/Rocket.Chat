@@ -13,6 +13,7 @@ import { setUserActiveStatus } from '../../../../lib/server/functions/setUserAct
 import { notifyOnUserChange } from '../../../../lib/server/lib/notifyListener';
 import type { IConversionCallbacks } from '../../definitions/IConversionCallbacks';
 import { RecordConverter, type RecordConverterOptions } from './RecordConverter';
+import { generateTempPassword } from './generateTempPassword';
 
 export type UserConverterOptions = {
 	flagEmailsAsVerified?: boolean;
@@ -324,7 +325,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 	}
 
 	generateTempPassword(userData: IImportUser): string {
-		return `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
+		return generateTempPassword(userData);
 	}
 
 	async buildNewUserObject(userData: IImportUser): Promise<Partial<IUser>> {
