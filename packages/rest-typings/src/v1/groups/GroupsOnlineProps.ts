@@ -5,7 +5,8 @@ const ajv = new Ajv({
 });
 
 export type GroupsOnlineProps = { _id?: string; query?: Record<string, any> };
-const groupsOnlyPropsSchema = {
+
+const groupsOnlinePropsSchema = {
 	type: 'object',
 	properties: {
 		_id: {
@@ -20,4 +21,5 @@ const groupsOnlyPropsSchema = {
 	required: [],
 	additionalProperties: false,
 };
-export const isGroupsOnlineProps = ajv.compile<GroupsOnlineProps>(groupsOnlyPropsSchema);
+
+export const isGroupsOnlineProps = ajv.compile<GroupsOnlineProps>(groupsOnlinePropsSchema);
