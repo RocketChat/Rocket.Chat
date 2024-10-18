@@ -31,11 +31,11 @@ import { useRetentionPolicy } from '../../../room/hooks/useRetentionPolicy';
 
 type TeamsInfoProps = {
 	room: IRoom;
-	onClickHide: () => void;
-	onClickClose: () => void;
-	onClickLeave: () => void;
-	onClickEdit: () => void;
-	onClickDelete: () => void;
+	onClickHide?: () => void;
+	onClickClose?: () => void;
+	onClickLeave?: () => void;
+	onClickEdit?: () => void;
+	onClickDelete?: () => void;
 	onClickViewChannels: () => void;
 	onClickConvertToChannel?: () => void;
 };

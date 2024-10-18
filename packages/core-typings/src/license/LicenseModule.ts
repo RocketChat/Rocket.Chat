@@ -19,4 +19,6 @@ export type LicenseModule =
 	| 'hide-watermark'
 	| 'custom-roles'
 	| 'accessibility-certification'
-	| 'unlimited-presence';
+	| 'unlimited-presence'
+	| 'contact-id-verification'
+	| 'teams-voip';

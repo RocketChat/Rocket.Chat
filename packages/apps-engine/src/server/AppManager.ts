@@ -932,7 +932,7 @@ export class AppManager {
      *
      * @param appId the id of the application to load
      */
-    public async loadOne(appId: string): Promise<ProxiedApp> {
+    public async loadOne(appId: string, silenceStatus = false): Promise<ProxiedApp> {
         const rl = this.apps.get(appId);
 
         if (!rl) {
@@ -941,14 +941,14 @@ export class AppManager {
 
         const item = rl.getStorageItem();
 
-        await this.initializeApp(item, rl, false);
+        await this.initializeApp(item, rl, false, silenceStatus);
 
         if (!this.areRequiredSettingsSet(item)) {
             await rl.setStatus(AppStatus.INVALID_SETTINGS_DISABLED);
         }
 
         if (!AppStatusUtils.isDisabled(await rl.getStatus()) && AppStatusUtils.isEnabled(rl.getPreviousStatus())) {
-            await this.enableApp(item, rl, false, rl.getPreviousStatus() === AppStatus.MANUALLY_ENABLED);
+            await this.enableApp(item, rl, false, rl.getPreviousStatus() === AppStatus.MANUALLY_ENABLED, silenceStatus);
         }
 
         return this.apps.get(item.id);

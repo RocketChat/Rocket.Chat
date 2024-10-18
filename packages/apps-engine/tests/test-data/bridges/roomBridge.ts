@@ -64,4 +64,12 @@ export class TestsRoomBridge extends RoomBridge {
     public removeUsers(roomId: string, usernames: string[], appId: string): Promise<void> {
         throw new Error('Method not implemented');
     }
+
+    public getUnreadByUser(roomId: string, uid: string, options: GetMessagesOptions, appId: string): Promise<IMessageRaw[]> {
+        throw new Error('Method not implemented.');
+    }
+
+    protected getUserUnreadMessageCount(roomId: string, uid: string, appId: string): Promise<number> {
+        throw new Error('Method not implemented.');
+    }
 }
