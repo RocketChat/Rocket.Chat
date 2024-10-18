@@ -81,7 +81,7 @@ import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
 
-type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username'>> & {
+type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username' | 'source'>> & {
 	id?: string;
 	connectionData?: any;
 	email?: string;
@@ -654,6 +654,7 @@ class LivechatClass {
 		username,
 		connectionData,
 		status = UserStatus.ONLINE,
+		source,
 	}: RegisterGuestType): Promise<ILivechatVisitor | null> {
 		check(token, String);
 		check(id, Match.Maybe(String));
@@ -663,6 +664,7 @@ class LivechatClass {
 		const visitorDataToUpdate: Partial<ILivechatVisitor> & { userAgent?: string; ip?: string; host?: string } = {
 			token,
 			status,
+			source,
 			...(phone?.number ? { phone: [{ phoneNumber: phone.number }] } : {}),
 			...(name ? { name } : {}),
 		};
@@ -708,6 +710,7 @@ class LivechatClass {
 			visitorDataToUpdate.username = username || (await LivechatVisitors.getNextVisitorUsername());
 			visitorDataToUpdate.status = status;
 			visitorDataToUpdate.ts = new Date();
+			visitorDataToUpdate.source = source;
 
 			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations') && Livechat.isValidObject(connectionData)) {
 				Livechat.logger.debug(`Saving connection data for visitor ${token}`);

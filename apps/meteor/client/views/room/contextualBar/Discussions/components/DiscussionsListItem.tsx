@@ -12,7 +12,7 @@ type DiscussionListItemProps = {
 	_id: IDiscussionMessage['_id'];
 	msg: ReactNode;
 	dcount: number;
-	dlm: Date;
+	dlm: Date | undefined;
 	formatDate: (date: Date) => string;
 	username: IDiscussionMessage['u']['username'];
 	name?: IDiscussionMessage['u']['name'];
@@ -61,7 +61,7 @@ const DiscussionListItem = ({
 						{!!dcount && (
 							<Message.Metrics.Item>
 								<Message.Metrics.Item.Icon name='clock' />
-								<Message.Metrics.Item.Label>{formatDate(dlm)}</Message.Metrics.Item.Label>
+								<Message.Metrics.Item.Label>{dlm ? formatDate(dlm) : undefined}</Message.Metrics.Item.Label>
 							</Message.Metrics.Item>
 						)}
 					</Message.Metrics>

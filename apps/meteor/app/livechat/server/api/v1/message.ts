@@ -1,3 +1,4 @@
+import type { IOmnichannelSource } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -18,7 +19,7 @@ import { loadMessageHistory } from '../../../../lib/server/functions/loadMessage
 import { settings } from '../../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
-import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
+import { findGuest, findGuestBySource, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 
 API.v1.addRoute(
 	'livechat/message',
@@ -26,8 +27,9 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { token, rid, agent, msg } = this.bodyParams;
+			const sourceType = isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API;
 
-			const guest = await findGuest(token);
+			const guest = await findGuestBySource(token, sourceType);
 			if (!guest) {
 				throw new Error('invalid-token');
 			}
@@ -48,6 +50,10 @@ API.v1.addRoute(
 				throw new Error('message-length-exceeds-character-limit');
 			}
 
+			if (!guest.source) {
+				await LivechatVisitors.setSourceById(guest._id, { type: sourceType });
+			}
+
 			const _id = this.bodyParams._id || Random.id();
 
 			const sendMessage = {
@@ -61,7 +67,7 @@ API.v1.addRoute(
 				agent,
 				roomInfo: {
 					source: {
-						type: isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+						type: sourceType,
 					},
 				},
 			};
@@ -250,8 +256,12 @@ API.v1.addRoute(
 	{
 		async post() {
 			const visitorToken = this.bodyParams.visitor.token;
+			const sourceType = isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API;
 
-			const visitor = await LivechatVisitors.getVisitorByToken(visitorToken, {});
+			const visitor = await LivechatVisitors.getVisitorByTokenAndSource(
+				{ token: visitorToken, sourceFilter: { 'source.type': sourceType } },
+				{},
+			);
 			let rid: string;
 			if (visitor) {
 				const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
@@ -261,11 +271,16 @@ API.v1.addRoute(
 				} else {
 					rid = Random.id();
 				}
+
+				if (!visitor.source) {
+					await LivechatVisitors.setSourceById(visitor._id, { type: sourceType });
+				}
 			} else {
 				rid = Random.id();
 
-				const guest: typeof this.bodyParams.visitor & { connectionData?: unknown } = this.bodyParams.visitor;
+				const guest: typeof this.bodyParams.visitor & { connectionData?: unknown; source?: IOmnichannelSource } = this.bodyParams.visitor;
 				guest.connectionData = normalizeHttpHeaderData(this.request.headers);
+				guest.source = { type: sourceType };
 
 				const visitor = await LivechatTyped.registerGuest(guest);
 				if (!visitor) {
@@ -290,7 +305,7 @@ API.v1.addRoute(
 						},
 						roomInfo: {
 							source: {
-								type: isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+								type: sourceType,
 							},
 						},
 					};
