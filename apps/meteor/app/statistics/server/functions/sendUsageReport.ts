@@ -1,13 +1,12 @@
-import { cronJobs } from '@rocket.chat/cron';
 import type { Logger } from '@rocket.chat/logger';
 import { Statistics } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 
-import { getWorkspaceAccessToken } from '../../app/cloud/server';
-import { statistics } from '../../app/statistics/server';
+import { statistics } from '..';
+import { getWorkspaceAccessToken } from '../../../cloud/server';
 
-async function generateStatistics(logger: Logger): Promise<void> {
+export async function sendUsageReport(logger: Logger): Promise<string | undefined> {
 	const cronStatistics = await statistics.save();
 
 	try {
@@ -27,20 +26,10 @@ async function generateStatistics(logger: Logger): Promise<void> {
 
 		if (statsToken != null) {
 			await Statistics.updateOne({ _id: cronStatistics._id }, { $set: { statsToken } });
+			return statsToken;
 		}
 	} catch (error) {
 		/* error*/
 		logger.warn('Failed to send usage report');
 	}
-}
-
-export async function statsCron(logger: Logger): Promise<void> {
-	const name = 'Generate and save statistics';
-	await generateStatistics(logger);
-
-	const now = new Date();
-
-	await cronJobs.add(name, `12 ${now.getHours()} * * *`, async () => {
-		await generateStatistics(logger);
-	});
 }
