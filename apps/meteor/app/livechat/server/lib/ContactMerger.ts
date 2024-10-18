@@ -24,11 +24,13 @@ type ContactFields = {
 
 type CustomFieldAndValue = { type: `customFields.${string}`; value: string };
 
-type FieldAndValue =
+export type FieldAndValue =
 	| { type: keyof Omit<ContactFields, 'manager' | 'channel'>; value: string }
 	| { type: 'manager'; value: ManagerValue }
 	| { type: 'channel'; value: ILivechatContactChannel }
 	| CustomFieldAndValue;
+
+type ConflictHandlingMode = 'conflict' | 'overwrite' | 'ignore';
 
 export class ContactMerger {
 	private managerList = new Map<IUser['username'], IUser['_id'] | undefined>();
@@ -167,8 +169,13 @@ export class ContactMerger {
 		return fields.filter((field) => field.type === type).map(({ value }) => value) as ContactFields[T][];
 	}
 
-	static async mergeFieldsIntoContact(fields: FieldAndValue[], contact: ILivechatContact): Promise<void> {
+	static async mergeFieldsIntoContact(
+		fields: FieldAndValue[],
+		contact: ILivechatContact,
+		conflictHandlingMode: ConflictHandlingMode = 'conflict',
+	): Promise<void> {
 		const existingFields = await ContactMerger.getAllFieldsFromContact(contact);
+		const overwriteData = conflictHandlingMode === 'overwrite';
 
 		const merger = new ContactMerger();
 		await merger.loadDataForFields(fields, existingFields);
@@ -208,14 +215,14 @@ export class ContactMerger {
 			})
 			.filter((id) => Boolean(id));
 
-		if (newNames.length && !contact.name) {
+		if (newNames.length && (!contact.name || overwriteData)) {
 			const firstName = newNames.shift();
 			if (firstName) {
 				dataToSet.name = firstName;
 			}
 		}
 
-		if (newManagers.length && !contact.contactManager) {
+		if (newManagers.length && (!contact.contactManager || overwriteData)) {
 			const firstManager = newManagers.shift();
 			if (firstManager) {
 				dataToSet.contactManager = firstManager;
@@ -236,7 +243,7 @@ export class ContactMerger {
 			const fieldName = key.replace('customFields.', '');
 
 			// If the contact does not have this custom field yet, save the first value directly to the contact instead of as a conflict
-			if (!contact.customFields?.[fieldName]) {
+			if (!contact.customFields?.[fieldName] || overwriteData) {
 				const first = customFields.shift();
 				if (first) {
 					dataToSet[key] = first.value;
@@ -246,11 +253,14 @@ export class ContactMerger {
 			customFieldConflicts.push(...customFields);
 		}
 
-		const allConflicts: ILivechatContactConflictingField[] = [
-			...newNames.map((name): ILivechatContactConflictingField => ({ field: 'name', value: name })),
-			...newManagers.map((manager): ILivechatContactConflictingField => ({ field: 'manager', value: manager as string })),
-			...customFieldConflicts.map(({ type, value }): ILivechatContactConflictingField => ({ field: type, value })),
-		];
+		const allConflicts: ILivechatContactConflictingField[] =
+			conflictHandlingMode !== 'conflict'
+				? []
+				: [
+						...newNames.map((name): ILivechatContactConflictingField => ({ field: 'name', value: name })),
+						...newManagers.map((manager): ILivechatContactConflictingField => ({ field: 'manager', value: manager as string })),
+						...customFieldConflicts.map(({ type, value }): ILivechatContactConflictingField => ({ field: type, value })),
+				  ];
 
 		if (allConflicts.length) {
 			dataToSet.hasConflicts = true;
@@ -276,6 +286,7 @@ export class ContactMerger {
 
 	public static async mergeVisitorIntoContact(visitor: ILivechatVisitor, contact: ILivechatContact): Promise<void> {
 		const fields = await ContactMerger.getAllFieldsFromVisitor(visitor);
-		await ContactMerger.mergeFieldsIntoContact(fields, contact);
+
+		await ContactMerger.mergeFieldsIntoContact(fields, contact, contact.unknown ? 'overwrite' : 'conflict');
 	}
 }
