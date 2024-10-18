@@ -22,8 +22,6 @@ import type {
 	LivechatDepartmentDTO,
 	ILivechatInquiryRecord,
 	OmnichannelSourceType,
-	ILivechatContact,
-	ILivechatContactChannel,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
