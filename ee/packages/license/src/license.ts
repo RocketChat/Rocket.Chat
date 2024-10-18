@@ -12,7 +12,6 @@ import type {
 	LicenseModule,
 } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { Settings } from '@rocket.chat/models';
 
 import { getLicenseLimit } from './deprecated';
 import { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
@@ -503,7 +502,6 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			limits: limits as Record<LicenseLimitKind, { max: number; value: number }>,
 			tags: license?.information.tags || [],
 			trial: Boolean(license?.information.trial),
-			cloudSyncAnnouncement: cloudSyncAnnouncementSetting?.value,
 		};
 	}
 }

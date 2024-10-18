@@ -59,7 +59,7 @@ const SubscriptionPage = () => {
 
 	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isLoading, 10000);
 
-	const { license, limits, activeModules = [], cloudSyncAnnouncement } = licensesData || {};
+	const { license, limits, activeModules = [], trial } = licensesData?.license || {};
 	const { isEnterprise = true } = enterpriseData || {};
 
 	const getKeyLimit = (key: 'monthlyActiveContacts' | 'activeUsers') => {
