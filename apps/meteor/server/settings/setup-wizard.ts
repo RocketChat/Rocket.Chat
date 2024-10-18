@@ -1364,5 +1364,10 @@ export const createSetupWSettings = () =>
 				},
 				secret: true,
 			});
+			await this.add('Cloud_Sync_Announcement_Payload', '{}', {
+				type: 'string', // tODO: replace setting type string for object once is implemented.
+				hidden: true,
+				secret: true,
+			});
 		});
 	});

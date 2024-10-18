@@ -12,6 +12,7 @@ import type {
 	LimitContext,
 } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import { Settings } from '@rocket.chat/models';
 
 import { getLicenseLimit } from './deprecated';
 import { DuplicatedLicenseError } from './errors/DuplicatedLicenseError';
@@ -473,7 +474,8 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 	}): Promise<LicenseInfo> {
 		const activeModules = getModules.call(this);
 		const license = this.getLicense();
-
+		const cloudSyncAnnouncementSetting = await Settings.findOneById('Cloud_Sync_Announcement_Payload');
+		console.info(cloudSyncAnnouncementSetting);
 		// Get all limits present in the license and their current value
 		const limits = Object.fromEntries(
 			(includeLimits &&
@@ -500,6 +502,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			limits: limits as Record<LicenseLimitKind, { max: number; value: number }>,
 			tags: license?.information.tags || [],
 			trial: Boolean(license?.information.trial),
+			cloudSyncAnnouncement: cloudSyncAnnouncementSetting?.value,
 		};
 	}
 }

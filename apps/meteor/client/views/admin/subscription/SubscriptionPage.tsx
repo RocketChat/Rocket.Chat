@@ -5,7 +5,9 @@ import { t } from 'i18next';
 import React, { memo, useCallback, useEffect } from 'react';
 import tinykeys from 'tinykeys';
 
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
+import { Page, PageScrollableContentWithShadow } from '../../../components/Page';
+import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
+import PageHeaderNoShadow from '../../../components/Page/PageHeaderNoShadow';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { useInvalidateLicense, useLicense } from '../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
@@ -25,6 +27,7 @@ import PlanCardCommunity from './components/cards/PlanCard/PlanCardCommunity';
 import SeatsCard from './components/cards/SeatsCard';
 import { useRemoveLicense } from './hooks/useRemoveLicense';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
+import UiKitSubscriptionLicense from './surface/UiKitSubscriptionLicense';
 
 function useShowLicense() {
 	const [showLicenseTab, setShowLicenseTab] = useSessionStorage('admin:showLicenseTab', false);
@@ -56,7 +59,7 @@ const SubscriptionPage = () => {
 
 	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isLoading, 10000);
 
-	const { license, limits, activeModules = [] } = licensesData || {};
+	const { license, limits, activeModules = [], cloudSyncAnnouncement } = licensesData || {};
 	const { isEnterprise = true } = enterpriseData || {};
 
 	const getKeyLimit = (key: 'monthlyActiveContacts' | 'activeUsers') => {
@@ -99,7 +102,7 @@ const SubscriptionPage = () => {
 
 	return (
 		<Page bg='tint'>
-			<PageHeader title={t('Subscription')}>
+			<PageHeaderNoShadow title={t('Subscription')}>
 				<ButtonGroup>
 					{isRegistered && (
 						<Button loading={syncLicenseUpdate.isLoading} icon='reload' onClick={() => handleSyncLicenseUpdate()}>
@@ -110,7 +113,12 @@ const SubscriptionPage = () => {
 						{t(isEnterprise ? 'Manage_subscription' : 'Upgrade')}
 					</UpgradeButton>
 				</ButtonGroup>
-			</PageHeader>
+			</PageHeaderNoShadow>
+			{cloudSyncAnnouncement && (
+				<PageBlockWithBorder>
+					<UiKitSubscriptionLicense key='license' initialView={JSON.parse(cloudSyncAnnouncement)} />
+				</PageBlockWithBorder>
+			)}
 			<PageScrollableContentWithShadow p={16}>
 				{(showSubscriptionCallout || syncLicenseUpdate.isLoading) && (
 					<Callout type='info' title={t('Sync_license_update_Callout_Title')} m={8}>

@@ -9,4 +9,5 @@ export type LicenseInfo = {
 	limits: Record<LicenseLimitKind, { value?: number; max: number }>;
 	tags: ILicenseTag[];
 	trial: boolean;
+	cloudSyncAnnouncement?: unknown;
 };
