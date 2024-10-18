@@ -309,7 +309,7 @@ export class E2ERoom extends Emitter {
 		try {
 			const room = ChatRoom.findOne({ _id: this.roomId });
 			// Only room creator can set keys for room
-			if (!room.e2eKeyId && room.u._id === this.userId) {
+			if (!room.e2eKeyId && this.userShouldCreateKeys(room)) {
 				this.setState(E2ERoomState.CREATING_KEYS);
 				await this.createGroupKey();
 				this.setState(E2ERoomState.READY);
@@ -323,6 +323,15 @@ export class E2ERoom extends Emitter {
 			// this.error = error;
 			this.setState(E2ERoomState.ERROR);
 		}
+	}
+
+	userShouldCreateKeys(room) {
+		// On DMs, we'll allow any user to set the keys
+		if (room.t === 'd') {
+			return true;
+		}
+
+		return room.u._id === this.userId;
 	}
 
 	isSupportedRoomType(type) {
@@ -644,8 +653,16 @@ export class E2ERoom extends Emitter {
 		};
 	}
 
+	async doDecrypt(vector, key, cipherText) {
+		const result = await decryptAES(vector, key, cipherText);
+		return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
+	}
+
 	async decrypt(message) {
 		const keyID = message.slice(0, 12);
+		message = message.slice(12);
+
+		const [vector, cipherText] = splitVectorAndEcryptedData(Base64.decode(message));
 
 		let oldKey = '';
 		if (keyID !== this.keyID) {
@@ -653,20 +670,21 @@ export class E2ERoom extends Emitter {
 			// Messages already contain a keyID stored with them
 			// That means that if we cannot find a keyID for the key the message has preppended to
 			// The message is indecipherable.
+			// In these cases, we'll give a last shot using the current session key, which may not work
+			// but will be enough to help with some mobile issues.
 			if (!oldRoomKey) {
-				this.error(`Message is indecipherable. Message KeyID ${keyID} not found in old room keys`);
-				return { msg: t('E2E_indecipherable') };
+				try {
+					return await this.doDecrypt(vector, this.groupSessionKey, cipherText);
+				} catch (error) {
+					this.error('Error decrypting message: ', error, message);
+					return { msg: t('E2E_indecipherable') };
+				}
 			}
 			oldKey = oldRoomKey.E2EKey;
 		}
 
-		message = message.slice(12);
-
-		const [vector, cipherText] = splitVectorAndEcryptedData(Base64.decode(message));
-
 		try {
-			const result = await decryptAES(vector, oldKey || this.groupSessionKey, cipherText);
-			return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
+			return await this.doDecrypt(vector, oldKey || this.groupSessionKey, cipherText);
 		} catch (error) {
 			this.error('Error decrypting message: ', error, message);
 			return { msg: t('E2E_Key_Error') };
