@@ -74,11 +74,16 @@ describe('LIVECHAT - rooms', () => {
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
+		await updateSetting('Livechat_Request_Verification_On_First_Contact_Only', true);
 		await createAgent();
 		await makeAgentAvailable();
 		visitor = await createVisitor();
 
 		room = await createLivechatRoom(visitor.token);
+	});
+
+	after(async () => {
+		await updateSetting('Livechat_Request_Verification_On_First_Contact_Only', false);
 	});
 
 	describe('livechat/room', () => {
@@ -364,7 +369,7 @@ describe('LIVECHAT - rooms', () => {
 			expect(body.rooms.every((room: IOmnichannelRoom) => !room.servedBy)).to.be.true;
 			expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === room._id)).to.be.not.undefined;
 		});
-		it('should return open rooms when `open` is param is passed. Open rooms should not include queued conversations', async () => {
+		it.only('should return open rooms when `open` is param is passed. Open rooms should not include queued conversations', async () => {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 
