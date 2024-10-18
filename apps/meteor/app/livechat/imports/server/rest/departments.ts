@@ -16,6 +16,7 @@ import {
 } from '../../../server/api/lib/departments';
 import { DepartmentHelper } from '../../../server/lib/Departments';
 import { Livechat as LivechatTs } from '../../../server/lib/LivechatTyped';
+import { saveDepartment } from '../../../server/lib/departmentsLib';
 import { isDepartmentCreationAvailable } from '../../../server/lib/isDepartmentCreationAvailable';
 
 API.v1.addRoute(
@@ -62,7 +63,7 @@ API.v1.addRoute(
 
 			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
 			const { departmentUnit } = this.bodyParams;
-			const department = await LivechatTs.saveDepartment(
+			const department = await saveDepartment(
 				this.userId,
 				null,
 				this.bodyParams.department as ILivechatDepartment,
@@ -131,7 +132,7 @@ API.v1.addRoute(
 			}
 
 			const agentParam = permissionToAddAgents && agents ? { upsert: agents } : {};
-			await LivechatTs.saveDepartment(this.userId, _id, department, agentParam, departmentUnit || {});
+			await saveDepartment(this.userId, _id, department, agentParam, departmentUnit || {});
 
 			return API.v1.success({
 				department: await LivechatDepartment.findOneById(_id),
