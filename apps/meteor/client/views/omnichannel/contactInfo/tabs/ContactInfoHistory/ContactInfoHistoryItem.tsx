@@ -1,13 +1,15 @@
 import type { Serialized } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette, IconButton } from '@rocket.chat/fuselage';
+import { Box, Palette, IconButton, Icon } from '@rocket.chat/fuselage';
 import type { ContactSearchChatsResult } from '@rocket.chat/rest-typings';
-import { useTranslation, type TranslationKey } from '@rocket.chat/ui-contexts';
+import { useSetModal, useTranslation, type TranslationKey } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
+import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { usePreventPropagation } from '../../../../../hooks/usePreventPropagation';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
+import AdvancedContactModal from '../../AdvancedContactModal';
 
 type ContactInfoHistoryItemProps = Serialized<ContactSearchChatsResult> & {
 	onClick: () => void;
@@ -22,10 +24,12 @@ const sourceTypeMap: { [key: string]: string } = {
 	other: 'Other',
 };
 
-const ContactInfoHistoryItem = ({ source, lastMessage, closedAt, onClick }: ContactInfoHistoryItemProps) => {
+const ContactInfoHistoryItem = ({ source, lastMessage, verified, closedAt, onClick }: ContactInfoHistoryItemProps) => {
 	const t = useTranslation();
 	const timeAgo = useTimeAgo();
+	const setModal = useSetModal();
 	const preventPropagation = usePreventPropagation();
+	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
 
 	const customClass = css`
 		&:hover {
@@ -67,7 +71,11 @@ const ContactInfoHistoryItem = ({ source, lastMessage, closedAt, onClick }: Cont
 			<Box minHeight='x24' alignItems='center' mbs={4} display='flex' justifyContent='space-between'>
 				<Box>{!closedAt ? t('Conversation_in_progress') : t('Conversation_closed_without_comment')}</Box>
 				<Box is='span' onClick={preventPropagation}>
-					<IconButton icon='warning' tiny />
+					{hasLicense && verified ? (
+						<Icon mis={4} size='x16' name='success-circle' color='stroke-highlight' />
+					) : (
+						<IconButton onClick={() => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />)} icon='question-mark' tiny />
+					)}
 				</Box>
 			</Box>
 		</Box>
