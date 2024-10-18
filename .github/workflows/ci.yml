@@ -5,6 +5,8 @@ on:
     types: [published]
   pull_request:
     branches: '**'
+    paths-ignore:
+      - '**.md'
   push:
     branches:
       - develop
