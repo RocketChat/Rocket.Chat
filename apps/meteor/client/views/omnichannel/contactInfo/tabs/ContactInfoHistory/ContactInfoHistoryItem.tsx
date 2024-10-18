@@ -74,7 +74,12 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, closedAt, onCli
 					{hasLicense && verified ? (
 						<Icon mis={4} size='x16' name='success-circle' color='stroke-highlight' />
 					) : (
-						<IconButton onClick={() => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />)} icon='question-mark' tiny />
+						<IconButton
+							title={t('Unverified')}
+							onClick={() => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />)}
+							icon='question-mark'
+							tiny
+						/>
 					)}
 				</Box>
 			</Box>
