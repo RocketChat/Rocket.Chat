@@ -80,5 +80,7 @@ export * from './models/IAuditLogModel';
 export * from './models/ICronHistoryModel';
 export * from './models/IMigrationsModel';
 export * from './models/IModerationReportsModel';
+export * from './models/IMatrixEventsQueue';
+export * from './models/IMatrixEventsFailedModel';
 export * from './updater';
 export * from './models/IWorkspaceCredentialsModel';
