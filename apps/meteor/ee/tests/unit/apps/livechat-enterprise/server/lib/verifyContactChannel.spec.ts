@@ -39,13 +39,14 @@ describe('verifyContactChannel', () => {
 
 		expect(
 			modelsMock.LivechatContacts.updateContactChannel.calledOnceWith(
-				'contactId',
 				'visitorId',
 				sinon.match({
-					'unknown': false,
-					'channels.$.verified': true,
-					'channels.$.field': 'field',
-					'channels.$.value': 'value',
+					verified: true,
+					field: 'field',
+					value: 'value',
+				}),
+				sinon.match({
+					unknown: false,
 				}),
 			),
 		).to.be.true;

@@ -37,6 +37,7 @@ import {
 	ReadReceipts,
 	Rooms,
 	LivechatCustomField,
+	LivechatContacts,
 } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
@@ -446,6 +447,10 @@ class LivechatClass {
 			}
 		}
 
+		if (await LivechatContacts.isChannelBlocked(visitor._id)) {
+			throw new Error('error-contact-channel-blocked');
+		}
+
 		// delegate room creation to QueueManager
 		Livechat.logger.debug(`Calling QueueManager to request a room for visitor ${visitor._id}`);
 
@@ -486,6 +491,10 @@ class LivechatClass {
 		}
 		Livechat.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
 		const room = await LivechatRooms.findOneById(message.rid);
+
+		if (room?.v._id && (await LivechatContacts.isChannelBlocked(room?.v._id))) {
+			throw new Error('error-contact-channel-blocked');
+		}
 
 		if (room && !room.open) {
 			Livechat.logger.debug(`Last room for visitor ${guest._id} closed. Creating new one`);
