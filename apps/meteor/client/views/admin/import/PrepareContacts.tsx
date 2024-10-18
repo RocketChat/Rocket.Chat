@@ -1,8 +1,10 @@
 import type { IImporterSelectionContact } from '@rocket.chat/core-typings';
 import { CheckBox, Table, Pagination, TableHead, TableRow, TableCell, TableBody } from '@rocket.chat/fuselage';
 import type { Dispatch, SetStateAction, ChangeEvent } from 'react';
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 
 type PrepareContactsProps = {
 	contactsCount: number;
@@ -12,17 +14,7 @@ type PrepareContactsProps = {
 
 const PrepareContacts = ({ contactsCount, contacts, setContacts }: PrepareContactsProps) => {
 	const { t } = useTranslation();
-	const [current, setCurrent] = useState(0);
-	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
-	const showingResultsLabel = useCallback(
-		({ count, current, itemsPerPage }) =>
-			t('Showing_results_of', {
-				postProcess: 'sprintf',
-				sprintf: [current + 1, Math.min(current + itemsPerPage, count), count],
-			}),
-		[t],
-	);
-	const itemsPerPageLabel = useCallback(() => t('Items_per_page:'), [t]);
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	return (
 		<>
@@ -74,8 +66,7 @@ const PrepareContacts = ({ contactsCount, contacts, setContacts }: PrepareContac
 				count={contacts.length || 0}
 				onSetItemsPerPage={setItemsPerPage}
 				onSetCurrent={setCurrent}
-				itemsPerPageLabel={itemsPerPageLabel}
-				showingResultsLabel={showingResultsLabel}
+				{...paginationProps}
 			/>
 		</>
 	);
