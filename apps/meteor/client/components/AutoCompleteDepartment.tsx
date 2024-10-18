@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useRecordList } from '../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../hooks/useAsyncState';
 import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
+import { useMissingDepartment } from './Omnichannel/hooks/useMissingDepartment';
 
 type AutoCompleteDepartmentProps = {
 	value?: string;
@@ -33,6 +34,8 @@ const AutoCompleteDepartment = ({
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
+	const missingDepartment = useMissingDepartment(value || '', onChange);
+
 	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
 		useMemo(
 			() => ({
@@ -42,9 +45,9 @@ const AutoCompleteDepartment = ({
 				haveNone,
 				excludeDepartmentId,
 				showArchived,
-				selectedDepartment: value,
+				selectedDepartment: missingDepartment,
 			}),
-			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId, showArchived, value],
+			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId, showArchived, missingDepartment],
 		),
 	);
 
