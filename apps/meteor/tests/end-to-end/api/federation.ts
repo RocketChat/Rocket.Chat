@@ -7,6 +7,8 @@ import { updateSetting } from '../../data/permissions.helper';
 describe('federation', () => {
 	before((done) => getCredentials(done));
 
+	// FIXME: why debouncing is causing timeouts here on the hooks?
+	// Since we don't care about the watchers on this setting, not debouncing is fine.
 	describe('well-known', () => {
 		describe('when matrix disabled', () => {
 			before(async () => {
