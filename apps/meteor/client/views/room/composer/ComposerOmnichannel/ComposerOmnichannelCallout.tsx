@@ -1,5 +1,5 @@
 import { Box, Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
-import { useAtLeastOnePermission, useEndpoint, useRouter, useSetting } from '@rocket.chat/ui-contexts';
+import { useAtLeastOnePermission, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -11,7 +11,6 @@ const ComposerOmnichannelCallout = () => {
 	const { t } = useTranslation();
 	const room = useOmnichannelRoom();
 	const { navigate, buildRoutePath } = useRouter();
-	const canBlockUnknown = useSetting('Livechat_Block_Unknown_Contacts');
 	const securityPrivacyRoute = buildRoutePath('/omnichannel/security-privacy');
 
 	const canViewSecurityPrivacy = useAtLeastOnePermission([
@@ -45,11 +44,9 @@ const ComposerOmnichannelCallout = () => {
 					<Button onClick={() => navigate(`/live/${_id}/contact-profile/edit`)} small>
 						{t('Add_contact')}
 					</Button>
-					{canBlockUnknown && (
-						<Button danger small onClick={handleBlock}>
-							{t('Block')}
-						</Button>
-					)}
+					<Button danger small onClick={handleBlock}>
+						{t('Block')}
+					</Button>
 				</ButtonGroup>
 			}
 		>
