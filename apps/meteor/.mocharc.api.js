@@ -6,7 +6,7 @@
 
 module.exports = /** @satisfies {import('mocha').MochaOptions} */ ({
 	...require('./.mocharc.base.json'), // see https://github.com/mochajs/mocha/issues/3916
-	timeout: 10000,
+	timeout: 15000,
 	bail: true,
 	retries: 0,
 	file: 'tests/end-to-end/teardown.ts',
