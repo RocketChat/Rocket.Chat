@@ -9,6 +9,7 @@ Meteor.startup(() => {
 		if (!Apps.isInitialized) return;
 
 		void Apps.migratePrivateApps();
+		void Apps.disableMarketplaceApps();
 	}
 
 	License.onInvalidateLicense(migratePrivateAppsCallback);

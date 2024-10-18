@@ -42,17 +42,25 @@ export const sendMessageLivechat = async ({
 		}),
 	);
 
-	const guest = await LivechatVisitors.getVisitorByToken(token, {
-		projection: {
-			name: 1,
-			username: 1,
-			department: 1,
-			token: 1,
+	const guest = await LivechatVisitors.getVisitorByTokenAndSource(
+		{ token, sourceFilter: { 'source.type': { $in: [OmnichannelSourceType.API, OmnichannelSourceType.WIDGET] } } },
+		{
+			projection: {
+				name: 1,
+				username: 1,
+				department: 1,
+				token: 1,
+				source: 1,
+			},
 		},
-	});
+	);
 
 	if (!guest) {
 		throw new Meteor.Error('invalid-token');
+	}
+
+	if (!guest.source) {
+		await LivechatVisitors.setSourceById(guest._id, { type: OmnichannelSourceType.API });
 	}
 
 	if (settings.get('Livechat_enable_message_character_limit') && msg.length > parseInt(settings.get('Livechat_message_character_limit'))) {
