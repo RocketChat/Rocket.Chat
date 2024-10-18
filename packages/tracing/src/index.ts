@@ -5,7 +5,7 @@ import { NodeSDK } from '@opentelemetry/sdk-node';
 
 export { initDatabaseTracing } from './traceDatabaseCalls';
 
-let tracer: Tracer;
+let tracer: Tracer | undefined;
 
 export function isTracingEnabled() {
 	return ['yes', 'true'].includes(String(process.env.TRACING_ENABLED).toLowerCase());
@@ -32,6 +32,10 @@ export function tracerSpan<F extends (span?: Span) => ReturnType<F>>(
 ): ReturnType<F> {
 	if (!isTracingEnabled()) {
 		return fn();
+	}
+
+	if (!tracer) {
+		throw new Error(`Tracing is enabled but not started. You should call 'startTracing()' to fix this.`);
 	}
 
 	const computeResult = (span: Span) => {
