@@ -39,11 +39,9 @@ const emojiCustomListSchema = {
 		},
 		_updatedAt: {
 			type: 'string',
-			nullable: true,
 		},
 		_id: {
 			type: 'string',
-			nullable: true,
 		},
 	},
 	required: [],
