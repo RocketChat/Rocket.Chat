@@ -4,10 +4,14 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GroupsOnlineProps = { query?: Record<string, any> };
+export type GroupsOnlineProps = { _id?: string; query?: Record<string, any> };
 const groupsOnlyPropsSchema = {
 	type: 'object',
 	properties: {
+		_id: {
+			type: 'string',
+			nullable: true,
+		},
 		query: {
 			type: 'string',
 			nullable: true,
