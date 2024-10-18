@@ -2,15 +2,10 @@ import { AirGappedRestriction, License } from '@rocket.chat/license';
 import { Settings, Statistics } from '@rocket.chat/models';
 
 import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../app/settings/server';
 import { i18n } from '../../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 
 const updateRestrictionSetting = async (remainingDays: number) => {
-	const value = settings.get('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days');
-	if (value === remainingDays) {
-		return;
-	}
 	await Settings.updateValueById('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days', remainingDays);
 	void notifyOnSettingChangedById('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days');
 };

@@ -24,7 +24,6 @@ const mocks = {
 	sendMessagesToAdmins: ({ msgs }: any) => {
 		msgs({ adminUser: { language: 'pt-br' } });
 	},
-	settingsGet: sinon.stub(),
 	settingsUpdate: sinon.spy(),
 	notifySetting: sinon.spy(),
 	i18n: sinon.spy(),
@@ -58,11 +57,6 @@ proxyquire.noCallThru().load('./airGappedRestrictions.ts', {
 	'../../../../app/lib/server/lib/notifyListener': {
 		notifyOnSettingChangedById: mocks.notifySetting,
 	},
-	'../../../../app/settings/server': {
-		settings: {
-			get: mocks.settingsGet,
-		},
-	},
 	'../../../../server/lib/i18n': {
 		i18n: {
 			t: mocks.i18n,
@@ -88,37 +82,28 @@ describe('airgappedRestrictions', () => {
 		promises = [];
 	});
 	it('should update setting when restriction is removed', async () => {
-		mocks.settingsGet.returns(0);
-
 		airgappedRestrictionObj.emit('remainingDays', { days: -1 });
 
 		await Promise.all(promises);
-		expect(mocks.settingsGet.calledOnce).to.be.true;
 		expect(mocks.settingsUpdate.calledWith('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days', -1)).to.be.true;
 		expect(mocks.notifySetting.calledWith('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days')).to.be.true;
 		expect(airgappedRestrictionObj.isWarningPeriod.called).to.be.false;
 	});
 
 	it('should update setting when restriction is applied', async () => {
-		mocks.settingsGet.returns(1);
-
 		airgappedRestrictionObj.emit('remainingDays', { days: 0 });
 
 		await Promise.all(promises);
-		expect(mocks.settingsGet.calledOnce).to.be.true;
 		expect(mocks.settingsUpdate.calledWith('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days', 0)).to.be.true;
 		expect(mocks.notifySetting.calledWith('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days')).to.be.true;
 		expect(airgappedRestrictionObj.isWarningPeriod.called).to.be.false;
 	});
 
 	it('should update setting and send rocket.cat message when in warning period', async () => {
-		mocks.settingsGet.returns(2);
-
 		airgappedRestrictionObj.emit('remainingDays', { days: 1 });
 		airgappedRestrictionObj.isWarningPeriod.returns(true);
 
 		await Promise.all(promises);
-		expect(mocks.settingsGet.calledOnce).to.be.true;
 		expect(mocks.settingsUpdate.calledWith('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days', 1)).to.be.true;
 		expect(mocks.notifySetting.calledWith('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days')).to.be.true;
 		expect(airgappedRestrictionObj.isWarningPeriod.called).to.be.true;
