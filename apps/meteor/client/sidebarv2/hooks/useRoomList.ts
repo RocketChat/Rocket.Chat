@@ -1,8 +1,8 @@
 import type { ILivechatInquiryRecord, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useDebouncedState, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
 import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
@@ -13,19 +13,7 @@ const query = { open: { $ne: false } };
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
 
-const order: (
-	| 'Incoming_Calls'
-	| 'Incoming_Livechats'
-	| 'Open_Livechats'
-	| 'On_Hold_Chats'
-	| 'Unread'
-	| 'Favorites'
-	| 'Teams'
-	| 'Discussions'
-	| 'Channels'
-	| 'Direct_Messages'
-	| 'Conversations'
-)[] = [
+const order = [
 	'Incoming_Calls',
 	'Incoming_Livechats',
 	'Open_Livechats',
@@ -37,7 +25,7 @@ const order: (
 	'Channels',
 	'Direct_Messages',
 	'Conversations',
-];
+] as const;
 
 const CATEGORIES = {
 	Incoming_Calls: 'Incoming_Calls',
@@ -72,11 +60,7 @@ export const useRoomList = (): {
 	handleCollapsedGroups: (groupTitle: string) => void;
 	collapsedGroups: string[];
 } => {
-	const [collapsedGroupsStorage, setCollapsedGroupsStorage] = useLocalStorage<string[]>('sidebarGroups', []);
-
-	const [flatRoomList, setFlatRoomList] = useDebouncedState<(ISubscription & IRoom)[]>([], 150);
-	const [groupsCount, setGroupsCount] = useDebouncedState<number[]>([0], 150);
-	const [collapsedGroups, setCollapsedGroups] = useDebouncedState<string[]>(collapsedGroupsStorage, 150);
+	const [collapsedGroups, setCollapsedGroups] = useLocalStorage<string[]>('sidebarGroups', []);
 
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
@@ -98,13 +82,12 @@ export const useRoomList = (): {
 		queue = inquiries.queue;
 	}
 
-	const shouldAddUnread = (room: SubscriptionWithRoom) =>
-		!(sidebarShowUnread && isCollapsed(CATEGORIES.Unread) && (room.alert || room.unread));
-	const isCollapsed = (groupTitle: string) => collapsedGroups.includes(groupTitle);
+	const { flatRoomList, groupsCount, groupsList, roomList } = useDebouncedValue(
+		useMemo(() => {
+			const isCollapsed = (groupTitle: string) => collapsedGroups.includes(groupTitle);
+			const shouldAddUnread = (room: SubscriptionWithRoom) =>
+				!(sidebarShowUnread && isCollapsed(CATEGORIES.Unread) && (room.alert || room.unread));
 
-	useEffect(() => {
-		// eslint-disable-next-line complexity
-		setFlatRoomList(() => {
 			const incomingCall = new Set();
 			const favorite = new Set();
 			const team = new Set();
@@ -116,113 +99,120 @@ export const useRoomList = (): {
 			const conversation = new Set();
 			const onHold = new Set();
 
-			// eslint-disable-next-line complexity
 			rooms.forEach((room) => {
 				if (room.archived) {
 					return;
 				}
 
-				if (incomingCalls.find((call) => call.rid === room.rid) && !isCollapsed(CATEGORIES.Incoming_Calls)) {
+				if (incomingCalls.find((call) => call.rid === room.rid)) {
 					return incomingCall.add(room);
 				}
 
-				if (sidebarShowUnread && !isCollapsed(CATEGORIES.Unread) && (room.alert || room.unread)) {
+				if (sidebarShowUnread && (room.alert || room.unread)) {
 					return unread.add(room);
 				}
 
-				if (favoritesEnabled && room.f && !isCollapsed(CATEGORIES.Favorites) && shouldAddUnread(room)) {
-					return favorite.add(room);
+				if (favoritesEnabled && room.f) {
+					return shouldAddUnread(room) && favorite.add(room);
 				}
 
-				if (sidebarGroupByType && room.teamMain && !isCollapsed(CATEGORIES.Teams) && shouldAddUnread(room)) {
-					return team.add(room);
+				if (sidebarGroupByType && room.teamMain) {
+					return shouldAddUnread(room) && team.add(room);
 				}
 
-				if (sidebarGroupByType && isDiscussionEnabled && room.prid && !isCollapsed(CATEGORIES.Discussions) && shouldAddUnread(room)) {
-					return discussion.add(room);
+				if (sidebarGroupByType && isDiscussionEnabled && room.prid) {
+					return shouldAddUnread(room) && discussion.add(room);
 				}
 
-				if ((room.t === 'c' || room.t === 'p') && !isCollapsed(CATEGORIES.Channels) && shouldAddUnread(room)) {
-					channels.add(room);
+				if (room.t === 'c' || room.t === 'p') {
+					shouldAddUnread(room) && channels.add(room);
 				}
 
-				if (room.t === 'l' && room.onHold && !isCollapsed(CATEGORIES.On_Hold_Chats) && shouldAddUnread(room)) {
-					return showOmnichannel && onHold.add(room);
+				if (room.t === 'l' && room.onHold) {
+					return showOmnichannel && shouldAddUnread(room) && onHold.add(room);
 				}
 
-				if (room.t === 'l' && !isCollapsed(CATEGORIES.Open_Livechats) && shouldAddUnread(room)) {
-					return showOmnichannel && omnichannel.add(room);
+				if (room.t === 'l') {
+					return showOmnichannel && shouldAddUnread(room) && omnichannel.add(room);
 				}
 
-				if (room.t === 'd' && !isCollapsed(CATEGORIES.Direct_Messages) && shouldAddUnread(room)) {
-					direct.add(room);
+				if (room.t === 'd') {
+					shouldAddUnread(room) && direct.add(room);
 				}
 
-				if (!isCollapsed(CATEGORIES.Conversations) && shouldAddUnread(room)) {
+				if (shouldAddUnread(room)) {
 					conversation.add(room);
 				}
 			});
 
 			const groups = new Map();
 			incomingCall.size && groups.set('Incoming_Calls', incomingCall);
-			showOmnichannel &&
-				inquiries.enabled &&
-				(queue.length || isCollapsed(CATEGORIES.Incoming_Livechats)) &&
-				groups.set('Incoming_Livechats', queue);
-			showOmnichannel && (omnichannel.size || isCollapsed(CATEGORIES.Open_Livechats)) && groups.set('Open_Livechats', omnichannel);
-			showOmnichannel && (onHold.size || isCollapsed(CATEGORIES.On_Hold_Chats)) && groups.set('On_Hold_Chats', onHold);
-			sidebarShowUnread && (unread.size || isCollapsed(CATEGORIES.Unread)) && groups.set('Unread', unread);
-			favoritesEnabled && (favorite.size || isCollapsed(CATEGORIES.Favorites)) && groups.set('Favorites', favorite);
-			sidebarGroupByType && (team.size || isCollapsed(CATEGORIES.Teams)) && groups.set('Teams', team);
-			sidebarGroupByType &&
-				isDiscussionEnabled &&
-				(discussion.size || isCollapsed(CATEGORIES.Discussions)) &&
-				groups.set('Discussions', discussion);
-			sidebarGroupByType && (channels.size || isCollapsed(CATEGORIES.Channels)) && groups.set('Channels', channels);
-			sidebarGroupByType && (direct.size || isCollapsed(CATEGORIES.Direct_Messages)) && groups.set('Direct_Messages', direct);
+
+			showOmnichannel && inquiries.enabled && queue.length && groups.set('Incoming_Livechats', queue);
+			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
+			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
+
+			sidebarShowUnread && unread.size && groups.set('Unread', unread);
+
+			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
+
+			sidebarGroupByType && team.size && groups.set('Teams', team);
+
+			sidebarGroupByType && isDiscussionEnabled && discussion.size && groups.set('Discussions', discussion);
+
+			sidebarGroupByType && channels.size && groups.set('Channels', channels);
+
+			sidebarGroupByType && direct.size && groups.set('Direct_Messages', direct);
+
 			!sidebarGroupByType && groups.set('Conversations', conversation);
-			const flatList = sidebarOrder
+
+			const groupsList: TranslationKey[] = [];
+			const roomList: Array<ISubscription & IRoom> = [];
+
+			const flatRoomList = sidebarOrder
 				.map((key) => {
 					const group = groups.get(key);
 					if (!group) {
 						return [];
 					}
+					groupsList.push(key);
+					if (isCollapsed(key)) {
+						return [key];
+					}
+
+					roomList.push(...group);
 
 					return [key, ...group];
 				})
 				.flat();
 
-			setGroupsCount(getGroupsCount([...flatList]));
-			return flatList;
-		});
-	}, [
-		rooms,
-		showOmnichannel,
-		incomingCalls,
-		inquiries.enabled,
-		queue,
-		sidebarShowUnread,
-		favoritesEnabled,
-		sidebarGroupByType,
-		setFlatRoomList,
-		isDiscussionEnabled,
-		sidebarOrder,
-		setGroupsCount,
-		collapsedGroups,
-	]);
+			return { flatRoomList, groupsCount: getGroupsCount([...flatRoomList]), groupsList, roomList };
+		}, [
+			rooms,
+			showOmnichannel,
+			incomingCalls,
+			inquiries.enabled,
+			queue,
+			sidebarShowUnread,
+			favoritesEnabled,
+			sidebarGroupByType,
+			isDiscussionEnabled,
+			sidebarOrder,
+			collapsedGroups,
+		]),
+		50,
+	);
 
-	const handleCollapsedGroups = (group: string) => {
-		if (collapsedGroups.includes(group)) {
-			setCollapsedGroups(collapsedGroups.filter((item) => item !== group));
-			setCollapsedGroupsStorage(collapsedGroups.filter((item) => item !== group));
-		} else {
-			setCollapsedGroups([...collapsedGroups, group]);
-			setCollapsedGroupsStorage([...collapsedGroups, group]);
-		}
-	};
-
-	const groupsList = flatRoomList.filter((item) => typeof item === 'string');
-	const roomList = flatRoomList.filter((item) => typeof item !== 'string');
+	const handleCollapsedGroups = useCallback(
+		(group: string) => {
+			if (collapsedGroups.includes(group)) {
+				setCollapsedGroups(collapsedGroups.filter((item) => item !== group));
+			} else {
+				setCollapsedGroups([...collapsedGroups, group]);
+			}
+		},
+		[collapsedGroups, setCollapsedGroups],
+	);
 
 	return {
 		flatList: flatRoomList,
