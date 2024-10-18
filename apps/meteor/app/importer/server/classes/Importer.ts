@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import type { IImport, IImportRecord, IImportChannel, IImportUser, IImportProgress } from '@rocket.chat/core-typings';
+import type { IImport, IImportRecord, IImportChannel, IImportUser, IImportProgress, IImportContact } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Settings, ImportData, Imports } from '@rocket.chat/models';
 import AdmZip from 'adm-zip';
@@ -94,7 +94,7 @@ export class Importer {
 	 * @param {Selection} importSelection The selection data.
 	 * @returns {ImporterProgress} The progress record of the import.
 	 */
-	async startImport(importSelection: Selection, startedByUserId: string): Promise<ImporterProgress> {
+	async startImport(importSelection: Selection<false>, startedByUserId: string): Promise<ImporterProgress> {
 		if (!(importSelection instanceof Selection)) {
 			throw new Error(`Invalid Selection data provided to the ${this.info.name} importer.`);
 		} else if (importSelection.users === undefined) {
@@ -156,6 +156,19 @@ export class Importer {
 
 					return false;
 				}
+
+				case 'contact': {
+					const contactData = data as IImportContact;
+
+					const id = contactData.importIds[0];
+					for (const contact of importSelection.contacts) {
+						if (contact.id === id) {
+							return contact.do_import;
+						}
+					}
+
+					return false;
+				}
 			}
 
 			return false;
@@ -201,6 +214,9 @@ export class Importer {
 				const usersToImport = importSelection.users.filter((user) => user.do_import);
 				await callbacks.run('beforeUserImport', { userCount: usersToImport.length });
 				await this.converter.convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn });
+
+				await this.updateProgress(ProgressStep.IMPORTING_CONTACTS);
+				await this.converter.convertContacts({ beforeImportFn, afterImportFn, onErrorFn });
 
 				await this.updateProgress(ProgressStep.IMPORTING_CHANNELS);
 				await this.converter.convertChannels(startedByUserId, { beforeImportFn, afterImportFn, onErrorFn });
@@ -324,14 +340,10 @@ export class Importer {
 	}
 
 	async maybeUpdateRecord() {
-		// Only update the database every 500 messages (or 50 for users/channels)
+		// Only update the database every 500 messages (or 50 for other records)
 		// Or the completed is greater than or equal to the total amount
 		const count = this.progress.count.completed + this.progress.count.error;
-		const range = ([ProgressStep.IMPORTING_USERS, ProgressStep.IMPORTING_CHANNELS] as IImportProgress['step'][]).includes(
-			this.progress.step,
-		)
-			? 50
-			: 500;
+		const range = this.progress.step === ProgressStep.IMPORTING_MESSAGES ? 500 : 50;
 
 		if (count % range === 0 || count >= this.progress.count.total || count - this._lastProgressReportTotal > range) {
 			this._lastProgressReportTotal = this.progress.count.completed + this.progress.count.error;
@@ -379,6 +391,7 @@ export class Importer {
 
 		const users = await ImportData.getAllUsersForSelection();
 		const channels = await ImportData.getAllChannelsForSelection();
+		const contacts = await ImportData.getAllContactsForSelection();
 		const hasDM = await ImportData.checkIfDirectMessagesExists();
 
 		const selectionUsers = users.map(
@@ -388,13 +401,20 @@ export class Importer {
 		const selectionChannels = channels.map(
 			(c) => new SelectionChannel(c.data.importIds[0], c.data.name, Boolean(c.data.archived), true, c.data.t === 'p', c.data.t === 'd'),
 		);
+		const selectionContacts = contacts.map((c) => ({
+			id: c.data.importIds[0],
+			name: c.data.name || '',
+			emails: c.data.emails || [],
+			phones: c.data.phones || [],
+			do_import: true,
+		}));
 		const selectionMessages = await ImportData.countMessages();
 
 		if (hasDM) {
 			selectionChannels.push(new SelectionChannel('__directMessages__', t('Direct_Messages'), false, true, true, true));
 		}
 
-		const results = new Selection(this.info.name, selectionUsers, selectionChannels, selectionMessages);
+		const results = new Selection(this.info.name, selectionUsers, selectionChannels, selectionMessages, selectionContacts);
 
 		return results;
 	}

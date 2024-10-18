@@ -1,4 +1,4 @@
-import type { IImport, IImporterSelection, Serialized } from '@rocket.chat/core-typings';
+import type { IImport, IImporterSelection, IImporterSelectionContact, Serialized } from '@rocket.chat/core-typings';
 import { Badge, Box, Button, ButtonGroup, Margins, ProgressBar, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -17,6 +17,7 @@ import { numberFormat } from '../../../../lib/utils/stringUtils';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import type { ChannelDescriptor } from './ChannelDescriptor';
 import PrepareChannels from './PrepareChannels';
+import PrepareContacts from './PrepareContacts';
 import PrepareUsers from './PrepareUsers';
 import type { UserDescriptor } from './UserDescriptor';
 import { useErrorHandler } from './useErrorHandler';
@@ -47,11 +48,13 @@ function PrepareImportPage() {
 	const [status, setStatus] = useSafely(useState<string | null>(null));
 	const [messageCount, setMessageCount] = useSafely(useState(0));
 	const [users, setUsers] = useState<UserDescriptor[]>([]);
+	const [contacts, setContacts] = useState<IImporterSelectionContact[]>([]);
 	const [channels, setChannels] = useState<ChannelDescriptor[]>([]);
 	const [isImporting, setImporting] = useSafely(useState(false));
 
 	const usersCount = useMemo(() => users.filter(({ do_import }) => do_import).length, [users]);
 	const channelsCount = useMemo(() => channels.filter(({ do_import }) => do_import).length, [channels]);
+	const contactsCount = useMemo(() => contacts.filter(({ do_import }) => do_import).length, [contacts]);
 
 	const router = useRouter();
 
@@ -89,6 +92,7 @@ function PrepareImportPage() {
 				setMessageCount(data.message_count);
 				setUsers(data.users.map((user) => ({ ...user, username: user.username ?? '', do_import: true })));
 				setChannels(data.channels.map((channel) => ({ ...channel, name: channel.name ?? '', do_import: true })));
+				setContacts(data.contacts?.map((contact) => ({ ...contact, name: contact.name ?? '', do_import: true })) || []);
 				setPreparing(false);
 				setProgressRate(null);
 			} catch (error) {
@@ -155,6 +159,7 @@ function PrepareImportPage() {
 				input: {
 					users: users.map((user) => ({ is_bot: false, is_email_taken: false, ...user })),
 					channels: channels.map((channel) => ({ is_private: false, is_direct: false, ...channel })),
+					contacts: contacts.map(({ id, do_import }) => ({ id, do_import })),
 				},
 			});
 			router.navigate('/admin/import/progress');
@@ -170,8 +175,8 @@ function PrepareImportPage() {
 	const statusDebounced = useDebouncedValue(status, 100);
 
 	const handleMinimumImportData = !!(
-		(!usersCount && !channelsCount && !messageCount) ||
-		(!usersCount && !channelsCount && messageCount !== 0)
+		(!usersCount && !channelsCount && !contactsCount && !messageCount) ||
+		(!usersCount && !channelsCount && !contactsCount && messageCount !== 0)
 	);
 
 	return (
@@ -192,6 +197,9 @@ function PrepareImportPage() {
 						<Tabs flexShrink={0}>
 							<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>
 								{t('Users')} <Badge>{usersCount}</Badge>
+							</Tabs.Item>
+							<Tabs.Item selected={tab === 'contacts'} onClick={handleTabClick('contacts')}>
+								{t('Contacts')} <Badge>{contactsCount}</Badge>
 							</Tabs.Item>
 							<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
 								{t('Channels')} <Badge>{channelsCount}</Badge>
@@ -218,6 +226,9 @@ function PrepareImportPage() {
 							</>
 						)}
 						{!isPreparing && tab === 'users' && <PrepareUsers usersCount={usersCount} users={users} setUsers={setUsers} />}
+						{!isPreparing && tab === 'contacts' && (
+							<PrepareContacts contactsCount={contactsCount} contacts={contacts} setContacts={setContacts} />
+						)}
 						{!isPreparing && tab === 'channels' && (
 							<PrepareChannels channels={channels} channelsCount={channelsCount} setChannels={setChannels} />
 						)}
