@@ -41,7 +41,8 @@ const { UserConverter } = proxyquire.noCallThru().load('../../../../../app/impor
 		notifyOnUserChange: sinon.stub(),
 	},
 	'bcrypt': {
-		hash: bcryptHash,
+		'hash': bcryptHash,
+		'@global': true,
 	},
 	'meteor/check': sinon.stub(),
 	'meteor/meteor': sinon.stub(),
