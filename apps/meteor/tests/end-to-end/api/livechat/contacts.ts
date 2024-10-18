@@ -1097,22 +1097,11 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should return an error if contact does not exist', async () => {
-			const res = await request
-				.post(api('omnichannel/contacts.block'))
-				.set(credentials)
-				.send({ contactId: 'invalid', visitorId: visitor._id });
-
-			expect(res.status).to.be.equal(400);
-			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-contact-not-found');
-		});
-
-		it('should return an error if channel not exists', async () => {
 			const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitorId: 'invalid' });
 
 			expect(res.status).to.be.equal(400);
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-channel-not-found');
+			expect(res.body.error).to.be.equal('error-contact-not-found');
 		});
 
 		it('should return an error if visitorId is missing', async () => {
