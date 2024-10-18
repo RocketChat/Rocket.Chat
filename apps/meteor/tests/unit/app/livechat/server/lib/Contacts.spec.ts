@@ -35,6 +35,8 @@ const { validateCustomFields, validateContactManager, updateContact, getContact 
 		'meteor/check': sinon.stub(),
 		'meteor/meteor': sinon.stub(),
 		'@rocket.chat/models': modelsMock,
+		'@rocket.chat/tools': { wrapExceptions: sinon.stub() },
+		'./Helper': { validateEmail: sinon.stub() },
 		'./LivechatTyped': {
 			Livechat: {
 				logger: {
