@@ -1,5 +1,14 @@
 import { tracerActiveSpan } from '@rocket.chat/tracing';
 
+const getArguments = (args: any[]): any[] => {
+	return args.map((arg) => {
+		if (typeof arg === 'object' && arg != null && 'session' in arg) {
+			return '[mongo options with session]';
+		}
+		return arg;
+	});
+};
+
 export function traceInstanceMethods<T extends object>(instance: T, ignoreMethods: string[] = []): T {
 	const className = instance.constructor.name;
 
@@ -18,7 +27,7 @@ export function traceInstanceMethods<T extends object>(instance: T, ignoreMethod
 								attributes: {
 									model: className,
 									method: prop,
-									parameters: JSON.stringify(argumentsList),
+									parameters: getArguments(argumentsList),
 								},
 							},
 							() => {
