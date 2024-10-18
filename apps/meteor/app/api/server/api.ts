@@ -660,9 +660,13 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 									if (span) {
 										this.response.setHeader('X-Trace-Id', span.spanContext().traceId);
 									}
-									return (
-										(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success()
-									);
+
+									const result =
+										(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success();
+
+									span?.setAttribute('status', result.statusCode);
+
+									return result;
 								},
 							);
 
