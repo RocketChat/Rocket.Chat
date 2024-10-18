@@ -29,11 +29,11 @@ describe('federation', () => {
 		});
 
 		describe('when matrix enabled but well-known disabled', () => {
-			before(async () => {
-				await updateSetting('Federation_Matrix_enabled', true);
-				console.log('done');
-				await updateSetting('Federation_Matrix_serve_well_known', false);
-				console.log('done');
+			before((done) => {
+				updateSetting('Federation_Matrix_enabled', true)
+					.then(() => updateSetting('Federation_Matrix_serve_well_known', false))
+					.then(done)
+					.catch(console.error);
 			});
 
 			after(async () => {
