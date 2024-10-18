@@ -1,11 +1,14 @@
 import type { ILivechatContactChannel, Serialized } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette, IconButton } from '@rocket.chat/fuselage';
+import { Box, Palette } from '@rocket.chat/fuselage';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import { useTranslation, type TranslationKey } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
+import { useBlockChannel } from './useBlockChannel';
 
 type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel>;
 
@@ -18,10 +21,11 @@ const sourceTypeMap: { [key: string]: string } = {
 	other: 'Other',
 };
 
-const ContactInfoChannelsItem = ({ details, blocked, lastChat }: ContactInfoChannelsItemProps) => {
+const ContactInfoChannelsItem = ({ visitorId, details, blocked, lastChat }: ContactInfoChannelsItemProps) => {
 	const t = useTranslation();
 	const timeAgo = useTimeAgo();
 	const [showButton, setShowButton] = useState(false);
+	const handleBlockContact = useBlockChannel({ visitorId, blocked });
 
 	const customClass = css`
 		&:hover,
@@ -29,6 +33,16 @@ const ContactInfoChannelsItem = ({ details, blocked, lastChat }: ContactInfoChan
 			background: ${Palette.surface['surface-hover']};
 		}
 	`;
+
+	const menuItems: GenericMenuItemProps[] = [
+		{
+			id: 'block',
+			icon: 'ban',
+			content: blocked ? t('Unblock') : t('Block'),
+			variant: 'danger',
+			onClick: handleBlockContact,
+		},
+	];
 
 	return (
 		<Box
@@ -60,7 +74,7 @@ const ContactInfoChannelsItem = ({ details, blocked, lastChat }: ContactInfoChan
 			</Box>
 			<Box minHeight='x24' alignItems='center' mbs={4} display='flex' justifyContent='space-between'>
 				<Box>{details?.destination}</Box>
-				{showButton && <IconButton icon='menu' tiny />}
+				{showButton && <GenericMenu detached title={t('Options')} sections={[{ items: menuItems }]} tiny />}
 			</Box>
 		</Box>
 	);
