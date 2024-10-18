@@ -39,8 +39,6 @@ import type { GroupsSetTopicProps } from './GroupsSetTopicProps';
 import type { GroupsSetTypeProps } from './GroupsSetTypeProps';
 import type { GroupsUnarchiveProps } from './GroupsUnarchiveProps';
 
-export * from './GroupsOnlineProps';
-
 export type GroupsEndpoints = {
 	'/v1/groups.files': {
 		GET: (params: GroupsFilesProps) => PaginatedResult<{
