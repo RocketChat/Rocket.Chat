@@ -81,6 +81,11 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return takeInquiry(uid, inquiryId, options);
+		try {
+			const inquiry = await takeInquiry(uid, inquiryId, options);
+			return inquiry;
+		} catch (e: any) {
+			throw new Meteor.Error(e.message);
+		}
 	},
 });
