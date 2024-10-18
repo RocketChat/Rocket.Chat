@@ -11,11 +11,14 @@ describe('federation', () => {
 		describe('when matrix disabled', () => {
 			before(async () => {
 				await updateSetting('Federation_Matrix_enabled', false);
+				console.log('done');
 				await updateSetting('Federation_Matrix_serve_well_known', true);
+				console.log('done');
 			});
 
 			after(async () => {
 				await updateSetting('Federation_Matrix_serve_well_known', false);
+				console.log('done after');
 			});
 
 			it('should return 404 not found', async () => {
@@ -28,11 +31,14 @@ describe('federation', () => {
 		describe('when matrix enabled but well-known disabled', () => {
 			before(async () => {
 				await updateSetting('Federation_Matrix_enabled', true);
+				console.log('done');
 				await updateSetting('Federation_Matrix_serve_well_known', false);
+				console.log('done');
 			});
 
 			after(async () => {
 				await updateSetting('Federation_Matrix_enabled', false);
+				console.log('done after');
 			});
 
 			it('should return 404 not found', async () => {
