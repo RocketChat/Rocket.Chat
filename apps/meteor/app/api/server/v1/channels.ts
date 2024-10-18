@@ -20,6 +20,7 @@ import {
 	isChannelsDeleteProps,
 	isChannelsListProps,
 	isChannelsFilesListProps,
+	isChannelsOnlineProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -1083,17 +1084,23 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.online',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChannelsOnlineProps },
 	{
 		async get() {
 			const { query } = await this.parseJsonQuery();
-			if (!query || Object.keys(query).length === 0) {
+			const { _id } = this.queryParams;
+
+			if ((!query || Object.keys(query).length === 0) && !_id) {
 				return API.v1.failure('Invalid query');
 			}
 
-			const ourQuery = Object.assign({}, query, { t: 'c' });
+			const filter = {
+				...query,
+				...(_id ? { _id } : {}),
+				t: 'c',
+			};
 
-			const room = await Rooms.findOne(ourQuery as Record<string, any>);
+			const room = await Rooms.findOne(filter as Record<string, any>);
 			if (!room) {
 				return API.v1.failure('Channel does not exists');
 			}
