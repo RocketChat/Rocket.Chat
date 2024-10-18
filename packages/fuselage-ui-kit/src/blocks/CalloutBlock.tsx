@@ -11,7 +11,18 @@ const CalloutBlock = ({
   surfaceRenderer,
 }: CalloutBlockProps): ReactElement => {
   return (
-    <Callout type={block.variant} title={block.title?.text}>
+    <Callout
+      type={block.variant}
+      title={block.title?.text}
+      actions={
+        (block.accessory &&
+          surfaceRenderer.renderSectionAccessoryBlockElement(
+            block.accessory,
+            0
+          )) ||
+        undefined
+      }
+    >
       {surfaceRenderer.renderTextObject(block.text, 0, UiKit.BlockContext.NONE)}
     </Callout>
   );
