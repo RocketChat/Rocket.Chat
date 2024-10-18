@@ -8,7 +8,6 @@ export type VerifyContactChannelParams = {
     contactId: string;
     field: string;
     value: string;
-    channelName: string;
     visitorId: string;
     roomId: string;
 };

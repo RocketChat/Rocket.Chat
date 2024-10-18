@@ -20,7 +20,6 @@ export class AppContactBridge extends ContactBridge {
 			contactId: string;
 			field: string;
 			value: string;
-			channelName: string;
 			visitorId: string;
 			roomId: string;
 		},
