@@ -48,7 +48,7 @@ describe('[CustomSounds]', () => {
 	const fileName = `test-file-${randomUUID()}`;
 	let fileId: string;
 	let fileId2: string;
-	let uploadDate: unknown;
+	let uploadDate: string | undefined;
 
 	before((done) => getCredentials(done));
 

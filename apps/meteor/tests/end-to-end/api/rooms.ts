@@ -2698,7 +2698,7 @@ describe('[Rooms]', () => {
 			file,
 		}: {
 			roomId: IRoom['_id'];
-			file: Blob | Buffer | fs.ReadStream | string | boolean | number;
+			file: Buffer | fs.ReadStream | string | boolean | number;
 		}) => {
 			const { body } = await request
 				.post(api(`rooms.upload/${roomId}`))
