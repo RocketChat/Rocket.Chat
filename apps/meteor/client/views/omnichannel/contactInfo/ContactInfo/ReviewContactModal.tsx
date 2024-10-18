@@ -1,4 +1,4 @@
-import type { CustomFieldMetadata, ILivechatContact } from '@rocket.chat/core-typings';
+import type { CustomFieldMetadata, ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Badge, Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useAtLeastOnePermission, useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
@@ -17,7 +17,7 @@ const fieldNameMap: { [key: string]: TranslationKey } = {
 };
 
 function mapConflicts(
-	contact: ILivechatContact,
+	contact: Serialized<ILivechatContact>,
 	metadata: CustomFieldMetadata[],
 ): Record<string, { name: string; label: string; values: string[] }> {
 	const conflicts = contact.conflictingFields?.reduce((acc, current) => {
@@ -48,7 +48,7 @@ function mapConflicts(
 }
 
 type ReviewContactModalProps = {
-	contact: ILivechatContact;
+	contact: Serialized<ILivechatContact>;
 	onCancel: () => void;
 };
 
