@@ -3,4 +3,6 @@
 ---
 
 
- Changes the default base Docker image to Alpine. We will generate a tag with the debian suffix, e.g., `7.0.0` -> `7.0.0-debian`. On the other hand, if you are already used to using alpine verision, you will need to remove the alpine suffix from the tag `7.0.0-alpine` -> `7.0.0`.
+ Changes the default base Docker image to Alpine. Previously we were shipping Alpine as an alternative flavor under the tag rocketchat/rocket.chat:{release}.alpine , we have been testing this for a while now so we're migrating to use the official one to Alpine.
+
+We'll still ship a Debian variant under the tag rocketchat/rocket.chat:{release}.debian.
