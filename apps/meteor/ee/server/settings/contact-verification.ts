@@ -31,7 +31,7 @@ export const addSettings = async (): Promise<void> => {
 
 				await this.add('Livechat_Request_Verification_On_First_Contact_Only', false, {
 					type: 'boolean',
-					invalidValue: false,
+					invalidValue: true,
 				});
 			},
 		);

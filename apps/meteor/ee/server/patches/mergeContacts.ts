@@ -6,7 +6,7 @@ import { ContactMerger } from '../../../app/livechat/server/lib/ContactMerger';
 import { mergeContacts } from '../../../app/livechat/server/lib/Contacts';
 
 export const runMergeContacts = async (_next: any, contactId: string, visitorId: string): Promise<ILivechatContact | null> => {
-	const originalContact = (await LivechatContacts.findOneById(contactId)) as ILivechatContact;
+	const originalContact = await LivechatContacts.findOneById(contactId);
 	if (!originalContact) {
 		throw new Error('error-invalid-contact');
 	}

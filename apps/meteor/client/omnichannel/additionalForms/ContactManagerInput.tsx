@@ -1,32 +1,29 @@
-import { Field } from '@rocket.chat/fuselage';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../components/AutoCompleteAgent';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 type ContactManagerInputProps = {
 	value: string;
-	handler: (currentValue: string) => void;
+	onChange: (currentValue: string) => void;
 };
 
-const ContactManagerInput = ({ value: userId, handler }: ContactManagerInputProps) => {
-	const { t } = useTranslation();
-
+const ContactManagerInput = ({ value: userId, onChange }: ContactManagerInputProps) => {
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
 	if (!hasLicense) {
 		return null;
 	}
 
-	return (
-		<Field>
-			<Field.Label>{t('Contact_Manager')}</Field.Label>
-			<Field.Row>
-				<AutoCompleteAgent haveNoAgentsSelectedOption value={userId} onChange={handler} />
-			</Field.Row>
-		</Field>
-	);
+	const handleChange = (currentValue: string) => {
+		if (currentValue === 'no-agent-selected') {
+			return onChange('');
+		}
+
+		onChange(currentValue);
+	};
+
+	return <AutoCompleteAgent haveNoAgentsSelectedOption value={userId} onChange={handleChange} />;
 };
 
 export default ContactManagerInput;
