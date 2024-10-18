@@ -25,9 +25,9 @@
 		"typecheck": "tsc -p tsconfig.typecheck.json"
 	},
 	"devDependencies": {
-		"@babel/eslint-parser": "~7.23.10",
-		"@babel/preset-env": "~7.22.20",
-		"@babel/preset-typescript": "~7.22.15",
+		"@babel/eslint-parser": "~7.25.8",
+		"@babel/preset-env": "~7.25.8",
+		"@babel/preset-typescript": "~7.25.7",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
