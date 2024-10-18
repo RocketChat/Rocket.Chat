@@ -159,7 +159,7 @@ const MailExportForm = ({ formId, rid, onCancel, exportOptions }: MailExportForm
 													return undefined;
 												}
 
-												if (additionalEmails !== '' && validateEmail(additionalEmails)) {
+												if (additionalEmails !== '' && validateEmail(additionalEmails, {style: 'rfc'})) {
 													return undefined;
 												}
 
