@@ -58,6 +58,7 @@ const RoomList = () => {
 					<SidebarV2CollapseGroup
 						title={t(groupsList[index])}
 						onClick={() => handleCollapse(groupsList[index])}
+						onKeyDown={() => handleCollapse(groupsList[index])}
 						expanded={!collapsedGroups.includes(groupsList[index])}
 					/>
 				)}
