@@ -45,10 +45,10 @@ const OmnichannelRoomHeader = ({ slots: parentSlot }: OmnichannelRoomHeaderProps
 					<BackButton routeName={currentRouteName} />
 				</HeaderToolbar>
 			),
-			insideContent: <OmnichannelRoomHeaderTag room={room} />,
+			insideContent: <OmnichannelRoomHeaderTag />,
 			posContent: <QuickActions />,
 		}),
-		[isMobile, currentRouteName, parentSlot, room],
+		[isMobile, currentRouteName, parentSlot],
 	);
 
 	return <RoomHeader slots={slots} room={room} />;

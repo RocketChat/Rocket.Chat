@@ -16,11 +16,11 @@ const ContactInfoWithData = ({ id: contactId, onClose }: ContactInfoWithDataProp
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 
 	const getContact = useEndpoint('GET', '/v1/omnichannel/contacts.get');
-	const { data, isInitialLoading, isError } = useQuery(['getContactById', contactId], () => getContact({ contactId }), {
+	const { data, isLoading, isError } = useQuery(['getContactById', contactId], () => getContact({ contactId }), {
 		enabled: canViewCustomFields && !!contactId,
 	});
 
-	if (isInitialLoading) {
+	if (isLoading) {
 		return <ContextualbarSkeleton />;
 	}
 
