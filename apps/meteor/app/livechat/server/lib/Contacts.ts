@@ -74,6 +74,7 @@ type UpdateContactParams = {
 	customFields?: Record<string, unknown>;
 	contactManager?: string;
 	channels?: ILivechatContactChannel[];
+	wipeConflicts?: boolean;
 };
 
 type GetContactsParams = {
@@ -378,7 +379,7 @@ export async function createContact(params: CreateContactParams, upsertId?: ILiv
 }
 
 export async function updateContact(params: UpdateContactParams): Promise<ILivechatContact> {
-	const { contactId, name, emails, phones, customFields: receivedCustomFields, contactManager, channels } = params;
+	const { contactId, name, emails, phones, customFields: receivedCustomFields, contactManager, channels, wipeConflicts } = params;
 
 	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id'>>(contactId, { projection: { _id: 1 } });
 
@@ -399,6 +400,7 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		contactManager,
 		channels,
 		customFields,
+		...(wipeConflicts && { conflictingFields: [], hasConflict: false }),
 	});
 
 	return updatedContact;
