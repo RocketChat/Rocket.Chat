@@ -32,20 +32,25 @@ const updateManyPermissions = (permissions: { [key: string]: string[] }): Promis
 
 export const updateSetting = (setting: string, value: ISetting['value']): Promise<void | Error> =>
 	new Promise((resolve, reject) => {
-		void request
-			.post(`/api/v1/settings/${setting}`)
-			.set(credentials)
-			.send({ value })
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.end((err?: Error) => {
-				console.log(`done ${setting}`);
-				if (!err) {
-					return resolve();
-				}
+		try {
+			void request
+				.post(`/api/v1/settings/${setting}`)
+				.set(credentials)
+				.send({ value })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.end((err?: Error) => {
+					console.log(`done ${setting}`);
+					if (!err) {
+						setTimeout(resolve, 100);
+						return;
+					}
 
-				reject(err);
-			});
+					reject(err);
+				});
+		} catch(err) {
+			reject(err);
+		}
 	});
 
 export const getSettingValueById = async (setting: string): Promise<ISetting['value']> => {
