@@ -120,16 +120,24 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 			return t('error-invalid-email-address');
 		}
 
-		const { contact } = await getContact({ email: emailValue });
-		return (!contact || contact._id === contactData?._id) && !isDuplicated ? true : t('Email_already_exists');
+		try {
+			const { contact } = await getContact({ email: emailValue });
+			return (!contact || contact._id === contactData?._id) && !isDuplicated ? true : t('Email_already_exists');
+		} catch (error) {
+			return !isDuplicated ? true : t('Email_already_exists');
+		}
 	};
 
 	const validatePhone = async (phoneValue: string) => {
 		const currentPhones = phones.map(({ phoneNumber }) => phoneNumber);
 		const isDuplicated = currentPhones.filter((phone) => phone === phoneValue).length > 1;
 
-		const { contact } = await getContact({ phone: phoneValue });
-		return (!contact || contact._id === contactData?._id) && !isDuplicated ? true : t('Phone_already_exists');
+		try {
+			const { contact } = await getContact({ phone: phoneValue });
+			return (!contact || contact._id === contactData?._id) && !isDuplicated ? true : t('Phone_already_exists');
+		} catch (error) {
+			return !isDuplicated ? true : t('Phone_already_exists');
+		}
 	};
 
 	const validateName = (v: string): string | boolean => (!v.trim() ? t('Required_field', { field: t('Name') }) : true);
