@@ -34,6 +34,8 @@ export const updateSetting = (setting: string, value: ISetting['value']): Promis
 	new Promise((resolve, reject) => {
 		const start = Date.now();
 		console.log(`starting ${setting} ${value}`);
+		// @ts-ignore
+		console.log(process._getActiveHandles().length)
 		try {
 			void request
 				.post(`/api/v1/settings/${setting}`)
@@ -44,6 +46,8 @@ export const updateSetting = (setting: string, value: ISetting['value']): Promis
 				.end((err?: Error) => {
 					console.log(`done ${setting} ${value}`);
 					console.log(`took ${Date.now() - start}ms`);
+					// @ts-ignore
+					console.log(process._getActiveHandles().length)
 					if (!err) {
 						setTimeout(() => {
 							console.log('resolving', setting, value);
