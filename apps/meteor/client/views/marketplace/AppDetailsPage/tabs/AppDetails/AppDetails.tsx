@@ -1,4 +1,3 @@
-import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -16,10 +15,7 @@ import AppDetailsAPIs from './AppDetailsAPIs';
 import { normalizeUrl } from './normalizeUrl';
 
 type AppDetailsProps = {
-	app: Omit<AppInfo, 'author' | 'documentationUrl'> & {
-		author?: Partial<AppInfo['author']>;
-		documentationUrl?: AppInfo['documentationUrl'];
-	};
+	app: AppInfo;
 };
 
 const AppDetails = ({ app }: AppDetailsProps) => {
@@ -32,6 +28,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 		screenshots,
 		apis,
 		documentationUrl: documentation,
+		addon: appAddon,
 	} = app;
 
 	const isMarkdown = detailedDescription && Object.keys(detailedDescription).length !== 0 && detailedDescription.rendered;
@@ -41,7 +38,6 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 	const normalizedSupportUrl = support ? normalizeUrl(support) : undefined;
 	const normalizedDocumentationUrl = documentation ? normalizeUrl(documentation) : undefined;
 
-	const appAddon = (app as App).addon;
 	const workspaceHasAddon = useHasLicenseModule(appAddon);
 
 	const openExternalLink = useExternalLink();

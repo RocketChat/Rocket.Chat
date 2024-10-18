@@ -59,7 +59,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const { data } = useIsEnterprise();
 	const isEnterpriseLicense = !!data?.isEnterprise;
 
-	const appAddon = (app as App).addon;
+	const appAddon = app.addon;
 	const workspaceHasAddon = useHasLicenseModule(appAddon);
 
 	const [isLoading, setLoading] = useState(false);
