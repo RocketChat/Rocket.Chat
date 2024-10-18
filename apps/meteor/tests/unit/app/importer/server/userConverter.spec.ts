@@ -141,7 +141,7 @@ describe('User Converter', () => {
 
 		it('should map an empty object', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 				}),
@@ -150,7 +150,7 @@ describe('User Converter', () => {
 
 		it('should map the name and username', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					name: 'name1',
@@ -166,7 +166,7 @@ describe('User Converter', () => {
 
 		it('should map optional fields', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					statusText: 'statusText1',
@@ -206,7 +206,7 @@ describe('User Converter', () => {
 
 		it('should not map roles', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					roles: ['role1'],
@@ -216,7 +216,7 @@ describe('User Converter', () => {
 
 		it('should map identifiers', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					name: 'user1',
 					emails: ['user1@domain.com'],
 					importIds: ['importId1'],
@@ -234,7 +234,7 @@ describe('User Converter', () => {
 
 		it('should map password', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					password: 'batata',
@@ -252,7 +252,7 @@ describe('User Converter', () => {
 
 		it('should map ldap service data', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					services: {
@@ -275,7 +275,7 @@ describe('User Converter', () => {
 
 		it('should map deleted users', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					deleted: true,
@@ -289,7 +289,7 @@ describe('User Converter', () => {
 
 		it('should map restored users', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					deleted: false,
@@ -303,7 +303,7 @@ describe('User Converter', () => {
 
 		it('should map user type', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					type: 'user',
@@ -313,7 +313,7 @@ describe('User Converter', () => {
 
 		it('should map bot type', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					type: 'bot',

@@ -319,15 +319,15 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 		void notifyOnUserChange({ clientAction: 'updated', id: _id, diff: updateData.$set });
 	}
 
-	private async hashPassword(password: string): Promise<string> {
+	async hashPassword(password: string): Promise<string> {
 		return bcryptHash(SHA256(password), Accounts._bcryptRounds());
 	}
 
-	private generateTempPassword(userData: IImportUser): string {
+	generateTempPassword(userData: IImportUser): string {
 		return `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
 	}
 
-	private async buildNewUserObject(userData: IImportUser): Promise<Partial<IUser>> {
+	async buildNewUserObject(userData: IImportUser): Promise<Partial<IUser>> {
 		return {
 			type: userData.type || 'user',
 			...(userData.username && { username: userData.username }),
