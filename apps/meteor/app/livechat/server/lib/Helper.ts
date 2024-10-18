@@ -45,7 +45,7 @@ import {
 	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
-import { migrateVisitorIfMissingContact } from './Contacts';
+import { getContactIdByVisitorId, migrateVisitorIfMissingContact } from './Contacts';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -195,6 +195,8 @@ export const createLivechatInquiry = async ({
 		visitor: { _id, username, department, status, activity },
 	});
 
+	const contactId = await getContactIdByVisitorId(_id);
+
 	const result = await LivechatInquiry.findOneAndUpdate(
 		{
 			rid,
@@ -209,6 +211,7 @@ export const createLivechatInquiry = async ({
 				token,
 				status,
 				...(activity?.length && { activity }),
+				contactId,
 			},
 			t: 'l',
 			priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
