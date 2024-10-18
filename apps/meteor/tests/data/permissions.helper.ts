@@ -43,7 +43,7 @@ export const updateSetting = (setting: string, value: ISetting['value']): Promis
 					console.log(`done ${setting}`);
 					if (!err) {
 						setTimeout(() => {
-							console.log('resolving');
+							console.log('resolving', setting, value);
 							resolve();
 						}, 100);
 						return;
