@@ -1,11 +1,13 @@
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
-import type { ILivechatAgent, LoginServiceConfiguration, UserStatus } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IUser, LoginServiceConfiguration, UserStatus } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
 import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
+import { _setRealName } from '../../../app/lib/server/functions/setRealName';
+import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
 import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
 import { metrics } from '../../../app/metrics/server';
@@ -281,5 +283,19 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 
 	async getURL(path: string, params: Record<string, any> = {}, cloudDeepLinkUrl?: string): Promise<string> {
 		return getURL(path, params, cloudDeepLinkUrl);
+	}
+
+	async setUserRealName(userId: string, name: string, fullUser?: IUser | undefined): Promise<IUser | undefined> {
+		return _setRealName(userId, name, fullUser);
+	}
+
+	async setUserAvatar(
+		user: Pick<IUser, '_id' | 'username'>,
+		dataURI: string,
+		contentType: string | undefined,
+		service?: string | undefined,
+		etag?: string | undefined,
+	): Promise<void> {
+		return setUserAvatar(user, dataURI, contentType, service, etag);
 	}
 }
