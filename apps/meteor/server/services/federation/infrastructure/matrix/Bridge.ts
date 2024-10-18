@@ -2,6 +2,8 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
+import { MatrixEventQueue, MatrixFailedEvents } from '@rocket.chat/models';
+
 import type { IExternalUserProfileInformation, IFederationBridge, IFederationBridgeRegistrationFile } from '../../domain/IFederationBridge';
 import type { RocketChatSettingsAdapter } from '../rocket-chat/adapters/Settings';
 import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
@@ -33,7 +35,7 @@ export class MatrixBridge implements IFederationBridge {
 
 	protected isUpdatingBridgeStatus = false;
 
-	constructor(protected internalSettings: RocketChatSettingsAdapter, protected eventHandler: (event: AbstractMatrixEvent) => void) {} // eslint-disable-line no-empty-function
+	constructor(protected internalSettings: RocketChatSettingsAdapter, protected eventHandler: (event: AbstractMatrixEvent) => void) { } // eslint-disable-line no-empty-function
 
 	public async start(): Promise<void> {
 		if (this.isUpdatingBridgeStatus) {
@@ -45,7 +47,8 @@ export class MatrixBridge implements IFederationBridge {
 			await this.createInstance();
 
 			if (!this.isRunning) {
-				await this.bridgeInstance.run(this.internalSettings.getBridgePort());
+				await this.bridgeInstance.initalise();
+				// await this.bridgeInstance.run(this.internalSettings.getBridgePort());
 
 				this.bridgeInstance.addAppServicePath({
 					method: 'POST',
@@ -71,6 +74,33 @@ export class MatrixBridge implements IFederationBridge {
 						res.status(200).json({});
 					},
 				});
+
+				this.bridgeInstance.addAppServicePath({
+					method: 'PUT',
+					path: '/_matrix/app/v1/transactions/:txnId',
+					checkToken: true,
+					handler: async (req, res) => {
+						const { events } = req.body;
+						try {
+							await MatrixEventQueue.enqueue(events);
+						} catch (e) {
+							if (e instanceof Error && /E11000 duplicate key/.test(e.toString())) {
+								// noop
+							}
+
+							throw e;
+						}
+						res.send({});
+					},
+				});
+
+				const pendingEvents = await MatrixEventQueue.findPending();
+
+				pendingEvents.forEach((event: any) => (this.bridgeInstance as any).queue.push(event));
+
+				await this.bridgeInstance.listen(this.internalSettings.getBridgePort());
+
+				(this.bridgeInstance as any).queue.consume(); // starts consumtion without waiting for a transaction to come in
 
 				this.isRunning = true;
 			}
@@ -101,8 +131,8 @@ export class MatrixBridge implements IFederationBridge {
 				displayName: externalInformation.displayname || '',
 				...(externalInformation.avatar_url
 					? {
-							avatarUrl: externalInformation.avatar_url,
-					  }
+						avatarUrl: externalInformation.avatar_url,
+					}
 					: {}),
 			};
 		} catch (err) {
@@ -754,7 +784,7 @@ export class MatrixBridge implements IFederationBridge {
 			registration: AppServiceRegistration.fromObject(this.convertRegistrationFileToMatrixFormat(registrationFile)),
 			disableStores: true,
 			controller: {
-				onEvent: (request) => {
+				onEvent: async (request) => {
 					const event = request.getData() as unknown as AbstractMatrixEvent;
 
 					// TODO: can we ignore all events from out homeserver?
@@ -766,18 +796,32 @@ export class MatrixBridge implements IFederationBridge {
 						return;
 					}
 
-					this.eventHandler(event);
+					try {
+						this.eventHandler(event);
+					} catch (e) {
+						let reason = 'Unknown reason';
+						if (e instanceof Error && 'toString' in e) {
+							reason = e.toString();
+						}
+						await MatrixFailedEvents.insertOne({
+							_id: event.event_id,
+							data: event,
+							reason,
+						});
+					} finally {
+						await MatrixEventQueue.dequeue(event);
+					}
 				},
 				onLog: (line, isError) => {
 					console.log(line, isError);
 				},
 				...(this.internalSettings.getAppServiceRegistrationObject().enableEphemeralEvents
 					? {
-							onEphemeralEvent: (request) => {
-								const event = request.getData() as unknown as AbstractMatrixEvent;
-								this.eventHandler(event);
-							},
-					  }
+						onEphemeralEvent: (request) => {
+							const event = request.getData() as unknown as AbstractMatrixEvent;
+							this.eventHandler(event);
+						},
+					}
 					: {}),
 			},
 		});
