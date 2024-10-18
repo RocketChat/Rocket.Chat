@@ -8,7 +8,7 @@ export { initDatabaseTracing } from './traceDatabaseCalls';
 let tracer: Tracer;
 
 export function isTracingEnabled() {
-	return true; // TODO replace by ['yes', 'true'].includes(String(process.env.TRACING_ENABLED).toLowerCase());
+	return ['yes', 'true'].includes(String(process.env.TRACING_ENABLED).toLowerCase());
 }
 
 export const startTracing = ({ service }: { service: string }) => {
