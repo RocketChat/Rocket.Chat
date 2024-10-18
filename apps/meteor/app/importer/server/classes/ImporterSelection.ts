@@ -2,17 +2,17 @@ import type {
 	IImporterSelection,
 	IImporterSelectionChannel,
 	IImporterSelectionUser,
-	IImporterSelectionContactOrIdentifier,
+	IImporterSelectionContact,
 } from '@rocket.chat/core-typings';
 
-export class ImporterSelection<WithData extends boolean = true> implements IImporterSelection<WithData> {
+export class ImporterSelection implements IImporterSelection {
 	public name: string;
 
 	public users: IImporterSelectionUser[];
 
 	public channels: IImporterSelectionChannel[];
 
-	public contacts: IImporterSelectionContactOrIdentifier<WithData>[];
+	public contacts: IImporterSelectionContact[];
 
 	public message_count: number;
 
@@ -29,7 +29,7 @@ export class ImporterSelection<WithData extends boolean = true> implements IImpo
 		users: IImporterSelectionUser[],
 		channels: IImporterSelectionChannel[],
 		messageCount: number,
-		contacts: IImporterSelectionContactOrIdentifier<WithData>[],
+		contacts: IImporterSelectionContact[],
 	) {
 		this.name = name;
 		this.users = users;
