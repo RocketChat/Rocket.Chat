@@ -56,6 +56,7 @@ type CreateContactParams = {
 	customFields?: Record<string, string | unknown>;
 	contactManager?: string;
 	channels?: ILivechatContactChannel[];
+	importIds?: string[];
 };
 
 type VerifyContactChannelParams = {
@@ -349,7 +350,7 @@ export async function createContactFromVisitor(
 }
 
 export async function createContact(params: CreateContactParams, upsertId?: ILivechatContact['_id']): Promise<string> {
-	const { name, emails, phones, customFields: receivedCustomFields = {}, contactManager, channels, unknown } = params;
+	const { name, emails, phones, customFields: receivedCustomFields = {}, contactManager, channels, unknown, importIds } = params;
 
 	if (contactManager) {
 		await validateContactManager(contactManager);
@@ -366,6 +367,7 @@ export async function createContact(params: CreateContactParams, upsertId?: ILiv
 		channels,
 		customFields,
 		unknown,
+		...(importIds?.length ? { importIds } : {}),
 	} as const;
 
 	// Use upsert when doing auto-migration so that if there's multiple requests processing at the same time, they won't interfere with each other
@@ -500,7 +502,7 @@ export async function getContactHistory(
 	};
 }
 
-async function getAllowedCustomFields(): Promise<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>[]> {
+export async function getAllowedCustomFields(): Promise<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>[]> {
 	return LivechatCustomField.findByScope(
 		'visitor',
 		{
