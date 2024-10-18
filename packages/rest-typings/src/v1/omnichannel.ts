@@ -1004,6 +1004,7 @@ export type ContactSearchChatsResult = Pick<
 	| 'closingMessage'
 	| 'source'
 	| 'lastMessage'
+	| 'verified'
 >;
 
 export type VisitorSearchChatsResult = Pick<
