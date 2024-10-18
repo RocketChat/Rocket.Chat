@@ -28,12 +28,15 @@ const runShouldTriggerVerificationApp = async (
 	}
 
 	const isContactVerified = (contact.channels?.filter((channel) => channel.verified && channel.name === source.type) || []).length > 0;
+	const verificationRequirement = settings.get<string>('Livechat_Require_Contact_Verification');
 
-	if (!isContactVerified && settings.get<boolean>('Livechat_Block_Unverified_Contacts')) {
+	// If the contact has never been verified and it needs to be verified at least once, trigger the app
+	if (!isContactVerified && verificationRequirement === 'once') {
 		return true;
 	}
 
-	if (!settings.get<boolean>('Livechat_Request_Verification_On_First_Contact_Only')) {
+	// If the contact needs to re-verify for every inquiry, trigger the app
+	if (verificationRequirement === 'always') {
 		return true;
 	}
 
