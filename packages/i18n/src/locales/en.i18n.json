@@ -6657,5 +6657,6 @@
   "Add_contact": "Add contact",
   "Add_to_contact_or_enable_verification_description": "Add to contact list manually or <1>enable verification</1> using multi-factor authentication.",
   "Ask_enable_advanced_contact_profile": "Ask your workspace admin to enable advanced contact profile",
-  "close-blocked-room-comment": "This channel has been blocked"
+  "close-blocked-room-comment": "This channel has been blocked",
+  "Contact_unverified_and_unknown": "Contact unverified and unknown"
 }

@@ -2,12 +2,15 @@ import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } fro
 import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 
+import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
+import AdvancedContactModal from '../../AdvancedContactModal';
 import BlockChannelModal from './BlockChannelModal';
 
 export const useBlockChannel = ({ blocked, visitorId }: { blocked: boolean; visitorId: string }) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
 	const queryClient = useQueryClient();
 
 	const blockContact = useEndpoint('POST', '/v1/omnichannel/contacts.block');
@@ -24,6 +27,10 @@ export const useBlockChannel = ({ blocked, visitorId }: { blocked: boolean; visi
 	};
 
 	const handleBlock = () => {
+		if (!hasLicense) {
+			return setModal(<AdvancedContactModal onCancel={() => setModal(null)} />);
+		}
+
 		const blockAction = async () => {
 			try {
 				await blockContact({ visitorId });

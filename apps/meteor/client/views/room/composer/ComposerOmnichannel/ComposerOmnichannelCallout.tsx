@@ -1,16 +1,19 @@
 import { Box, Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
-import { useAtLeastOnePermission, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useAtLeastOnePermission, useEndpoint, useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { useBlockChannel } from '../../../omnichannel/contactInfo/tabs/ContactInfoChannels/useBlockChannel';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 
 const ComposerOmnichannelCallout = () => {
 	const { t } = useTranslation();
 	const room = useOmnichannelRoom();
 	const { navigate, buildRoutePath } = useRouter();
+	const canBlockUnknown = useSetting('Livechat_Block_Unknown_Contacts');
 	const securityPrivacyRoute = buildRoutePath('/omnichannel/security-privacy');
+
 	const canViewSecurityPrivacy = useAtLeastOnePermission([
 		'view-privileged-setting',
 		'edit-privileged-setting',
@@ -19,15 +22,15 @@ const ComposerOmnichannelCallout = () => {
 
 	const {
 		_id,
-		v: { contactId },
+		v: { _id: visitorId, contactId },
 	} = room;
-
-	if (!contactId) {
-		throw Error('No contactId provided');
-	}
 
 	const getContactById = useEndpoint('GET', '/v1/omnichannel/contacts.get');
 	const { data } = useQuery(['getContactById', contactId], () => getContactById({ contactId }));
+
+	const currentChannel = data?.contact?.channels?.find((channel) => channel.visitorId === visitorId);
+
+	const handleBlock = useBlockChannel({ blocked: currentChannel?.blocked || false, visitorId });
 
 	if (!data?.contact?.unknown) {
 		return null;
@@ -36,12 +39,17 @@ const ComposerOmnichannelCallout = () => {
 	return (
 		<Callout
 			mbe={16}
-			title='Contact unverified and unknown'
+			title={t('Contact_unverified_and_unknown')}
 			actions={
 				<ButtonGroup>
 					<Button onClick={() => navigate(`/live/${_id}/contact-profile/edit`)} small>
 						{t('Add_contact')}
 					</Button>
+					{canBlockUnknown && (
+						<Button danger small onClick={handleBlock}>
+							{t('Block')}
+						</Button>
+					)}
 				</ButtonGroup>
 			}
 		>
