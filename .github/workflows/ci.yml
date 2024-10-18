@@ -5,9 +5,13 @@ on:
     types: [published]
   pull_request:
     branches: '**'
+    paths-ignore:
+      - '**.md'
   push:
     branches:
       - develop
+    paths-ignore:
+      - '**.md'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
