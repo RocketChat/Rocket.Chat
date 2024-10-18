@@ -1,6 +1,7 @@
 import Ajv from 'ajv';
 
 import { API } from '../../../../../app/api/server';
+import { logger } from '../lib/logger';
 import { changeContactBlockStatus, closeBlockedRoom, ensureSingleContactLicense } from './lib/contacts';
 
 const ajv = new Ajv({
@@ -53,6 +54,7 @@ API.v1.addRoute(
 				visitorId,
 				block: true,
 			});
+			logger.info(`Visitor with id ${visitorId} blocked by user with id ${user._id}`);
 
 			await closeBlockedRoom(visitorId, user);
 
@@ -72,11 +74,13 @@ API.v1.addRoute(
 		async post() {
 			ensureSingleContactLicense();
 			const { visitorId } = this.bodyParams;
+			const { user } = this;
 
 			await changeContactBlockStatus({
 				visitorId,
 				block: false,
 			});
+			logger.info(`Visitor with id ${visitorId} unblocked by user with id ${user._id}`);
 
 			return API.v1.success();
 		},

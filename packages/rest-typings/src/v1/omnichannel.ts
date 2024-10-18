@@ -1341,7 +1341,7 @@ export const isPOSTUpdateOmnichannelContactsProps = ajv.compile<POSTUpdateOmnich
 type GETOmnichannelContactsProps = { contactId?: string; email?: string; phone?: string };
 
 const GETOmnichannelContactsSchema = {
-	anyOf: [
+	oneOf: [
 		{
 			type: 'object',
 			properties: {

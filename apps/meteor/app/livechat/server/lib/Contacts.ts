@@ -20,6 +20,7 @@ import {
 } from '@rocket.chat/models';
 import { makeFunction } from '@rocket.chat/patch-injection';
 import type { PaginatedResult, VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
+import { wrapExceptions } from '@rocket.chat/tools';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { MatchKeysAndValues, OnlyFieldsOfType, FindOptions, Sort } from 'mongodb';
@@ -32,7 +33,10 @@ import {
 	notifyOnLivechatInquiryChangedByRoom,
 } from '../../../lib/server/lib/notifyListener';
 import { i18n } from '../../../utils/lib/i18n';
+import type { FieldAndValue } from './ContactMerger';
 import { ContactMerger } from './ContactMerger';
+import { validateEmail } from './Helper';
+import type { RegisterGuestType } from './LivechatTyped';
 import { Livechat } from './LivechatTyped';
 
 type RegisterContactProps = {
@@ -198,6 +202,38 @@ export const Contacts = {
 
 		return contactId;
 	},
+
+	async registerGuestData(
+		{ name, phone, email, username }: Pick<RegisterGuestType, 'name' | 'phone' | 'email' | 'username'>,
+		visitor: AtLeast<ILivechatVisitor, '_id'>,
+	): Promise<void> {
+		// If a visitor was updated who already had a contact, load up that contact and update that information as well
+		const contact = await LivechatContacts.findOneByVisitorId(visitor._id);
+		if (!contact) {
+			return;
+		}
+
+		const validatedEmail =
+			email &&
+			wrapExceptions(() => {
+				const trimmedEmail = email.trim().toLowerCase();
+				validateEmail(trimmedEmail);
+				return trimmedEmail;
+			}).suppress();
+
+		const fields = [
+			{ type: 'name', value: name },
+			{ type: 'phone', value: phone?.number },
+			{ type: 'email', value: validatedEmail },
+			{ type: 'username', value: username || visitor.username },
+		].filter((field) => Boolean(field.value)) as FieldAndValue[];
+
+		if (!fields.length) {
+			return;
+		}
+
+		await ContactMerger.mergeFieldsIntoContact(fields, contact, contact.unknown ? 'overwrite' : 'conflict');
+	},
 };
 
 export async function getContactManagerIdByUsername(username?: IUser['username']): Promise<IUser['_id'] | undefined> {
@@ -205,7 +241,7 @@ export async function getContactManagerIdByUsername(username?: IUser['username']
 		return;
 	}
 
-	const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+	const user = await Users.findOneByUsername<Pick<IUser, '_id'>>(username, { projection: { _id: 1 } });
 
 	return user?._id;
 }

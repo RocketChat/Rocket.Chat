@@ -4,6 +4,7 @@ import { LivechatContacts } from '@rocket.chat/models';
 
 import { ContactMerger } from '../../../app/livechat/server/lib/ContactMerger';
 import { mergeContacts } from '../../../app/livechat/server/lib/Contacts';
+import { logger } from '../../app/livechat-enterprise/server/lib/logger';
 
 export const runMergeContacts = async (_next: any, contactId: string, visitorId: string): Promise<ILivechatContact | null> => {
 	const originalContact = await LivechatContacts.findOneById(contactId);
@@ -26,7 +27,13 @@ export const runMergeContacts = async (_next: any, contactId: string, visitorId:
 		await ContactMerger.mergeFieldsIntoContact(fields, originalContact);
 	}
 
-	await LivechatContacts.deleteMany({ _id: { $in: similarContacts.map((c) => c._id) } });
+	const similarContactIds = similarContacts.map((c) => c._id);
+	const { deletedCount } = await LivechatContacts.deleteMany({ _id: { $in: similarContactIds } });
+	logger.info(
+		`${deletedCount} contacts (ids: ${JSON.stringify(similarContactIds)}) have been deleted and merged with contact with id ${
+			originalContact._id
+		}`,
+	);
 	return LivechatContacts.findOneById(contactId);
 };
 
