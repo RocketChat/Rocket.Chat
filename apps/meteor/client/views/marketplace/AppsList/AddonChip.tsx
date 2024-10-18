@@ -3,7 +3,11 @@ import { Tag } from '@rocket.chat/fuselage';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-const AddonChip = ({ app }: { app: App }) => {
+type AddonChipProps = {
+	app: App;
+};
+
+const AddonChip = ({ app }: AddonChipProps) => {
 	const { t } = useTranslation();
 
 	if (!app.addon) {
