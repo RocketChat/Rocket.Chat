@@ -61,6 +61,7 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 		'/api/v1/custom-user-status.list',
 		'/api/v1/custom-sounds.list',
 		'/api/v1/channels.list',
+		'/api/v1/channels.online',
 	].includes(route);
 
 	const isUnsafeQueryParamsAllowed = process.env.ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS?.toUpperCase() === 'TRUE';
