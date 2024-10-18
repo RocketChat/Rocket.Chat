@@ -56,7 +56,7 @@ const SearchSection = () => {
 	const t = useTranslation();
 	const focusManager = useFocusManager();
 	const user = useUser();
-	const [showRecentItems, setShowRecentItems] = useState(false);
+	const [recentButtonPressed, setRecentButtonPressed] = useState(false);
 
 	const {
 		formState: { isDirty },
@@ -68,7 +68,7 @@ const SearchSection = () => {
 	const { filterText } = watch();
 	const { ref: filterRef, ...rest } = register('filterText');
 
-	const showRecentList = Boolean(showRecentItems && !filterText);
+	const showRecentList = Boolean(recentButtonPressed && !filterText);
 
 	const inputRef = useRef<HTMLInputElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
@@ -76,7 +76,7 @@ const SearchSection = () => {
 
 	const handleEscSearch = useCallback(() => {
 		resetField('filterText');
-		setShowRecentItems(false);
+		setRecentButtonPressed(false);
 		inputRef.current?.blur();
 	}, [resetField]);
 
@@ -94,7 +94,7 @@ const SearchSection = () => {
 			},
 			'Shift+$mod+K': (event) => {
 				event.preventDefault();
-				setShowRecentItems(true);
+				setRecentButtonPressed(true);
 				focusManager.focusNext({ accept: (node) => isRecentButton(node) });
 			},
 			'Escape': (event) => {
@@ -128,15 +128,15 @@ const SearchSection = () => {
 							small
 							icon='clock'
 							title={t('Recent')}
-							onClick={() => setShowRecentItems(!showRecentItems)}
-							pressed={showRecentItems}
+							onClick={() => setRecentButtonPressed(!recentButtonPressed)}
+							pressed={recentButtonPressed}
 						/>
-						{showRecentItems ? <IconButton icon='sort' disabled small /> : <Sort />}
+						{recentButtonPressed ? <IconButton icon='sort' disabled small /> : <Sort />}
 						<CreateRoom />
 					</>
 				)}
 			</SidebarV2Section>
-			{(isDirty || showRecentItems) && (
+			{(isDirty || recentButtonPressed) && (
 				<FocusScope>
 					<SearchList filterText={filterText} onEscSearch={handleEscSearch} showRecentList={showRecentList} />
 				</FocusScope>
