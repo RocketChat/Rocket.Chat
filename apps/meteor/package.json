@@ -35,7 +35,7 @@
 		"test:e2e": "playwright test",
 		"test:e2e:federation": "playwright test --config=playwright-federation.config.ts",
 		"test:e2e:nyc": "nyc report --reporter=lcov",
-		"testapi": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.api.js",
+		"testapi": "DEBUG=* TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.api.js",
 		"testunit": "yarn .testunit:definition && yarn .testunit:client && yarn .testunit:server:cov",
 		".testunit:server": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.js",
 		".testunit:server:cov": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' nyc -r text -r lcov mocha --config ./.mocharc.js",
