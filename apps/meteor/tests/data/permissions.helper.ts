@@ -38,7 +38,7 @@ export const updateSetting = (setting: string, value: ISetting['value']): Promis
 			.send({ value })
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.end((err?: Error) => setTimeout(() => (!err && resolve()) || reject(err), 100));
+			.end((err?: Error) => (err ? reject(err) : resolve()));
 	});
 
 export const getSettingValueById = async (setting: string): Promise<ISetting['value']> => {
