@@ -41,14 +41,13 @@ export const updateSetting = (setting: string, value: ISetting['value']): Promis
 				.send({ value })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.end((err?: Error) => {
+				.end(async (err?: Error) => {
 					console.log(`done ${setting} ${value}`);
 					console.log(`took ${Date.now() - start}ms`);
 					if (!err) {
-						setTimeout(() => {
-							console.log('resolving', setting, value);
-							resolve();
-						}, 100);
+						await new Promise((r) => setTimeout(r, 100));
+						console.log('resolving', setting, value);
+						resolve();
 						return;
 					}
 
