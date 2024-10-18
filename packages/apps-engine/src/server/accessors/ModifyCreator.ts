@@ -9,6 +9,7 @@ import type {
     IUserBuilder,
     IVideoConferenceBuilder,
 } from '../../definition/accessors';
+import type { IContactCreator } from '../../definition/accessors/IContactCreator';
 import type { IEmailCreator } from '../../definition/accessors/IEmailCreator';
 import type { ILivechatMessage } from '../../definition/livechat/ILivechatMessage';
 import type { IMessage } from '../../definition/messages';
@@ -21,6 +22,7 @@ import { UserType } from '../../definition/users/UserType';
 import type { AppVideoConference } from '../../definition/videoConferences';
 import type { AppBridges } from '../bridges';
 import { UIHelper } from '../misc/UIHelper';
+import { ContactCreator } from './ContactCreator';
 import { DiscussionBuilder } from './DiscussionBuilder';
 import { EmailCreator } from './EmailCreator';
 import { LivechatCreator } from './LivechatCreator';
@@ -38,10 +40,13 @@ export class ModifyCreator implements IModifyCreator {
 
     private emailCreator: EmailCreator;
 
+    private contactCreator: ContactCreator;
+
     constructor(private readonly bridges: AppBridges, private readonly appId: string) {
         this.livechatCreator = new LivechatCreator(bridges, appId);
         this.uploadCreator = new UploadCreator(bridges, appId);
         this.emailCreator = new EmailCreator(bridges, appId);
+        this.contactCreator = new ContactCreator(bridges, appId);
     }
 
     public getLivechatCreator(): ILivechatCreator {
@@ -54,6 +59,10 @@ export class ModifyCreator implements IModifyCreator {
 
     public getEmailCreator(): IEmailCreator {
         return this.emailCreator;
+    }
+
+    public getContactCreator(): IContactCreator {
+        return this.contactCreator;
     }
 
     /**

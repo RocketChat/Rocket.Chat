@@ -1,6 +1,7 @@
 import type { IModifyCreator } from '@rocket.chat/apps-engine/definition/accessors/IModifyCreator.ts';
 import type { IUploadCreator } from '@rocket.chat/apps-engine/definition/accessors/IUploadCreator.ts';
 import type { IEmailCreator } from '@rocket.chat/apps-engine/definition/accessors/IEmailCreator.ts';
+import type { IContactCreator } from '@rocket.chat/apps-engine/definition/accessors/IContactCreator.ts';
 import type { ILivechatCreator } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator.ts';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage.ts';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
@@ -96,6 +97,26 @@ export class ModifyCreator implements IModifyCreator {
                                 ? {}
                                 : this.senderFn({
                                     method: `accessor:getModifier:getCreator:getEmailCreator:${prop}`,
+                                    params
+                                })
+                                    .then((response) => response.result)
+                                    .catch((err) => {
+                                        throw new Error(err.error);
+                                    }),
+            }
+        )
+    }
+
+    getContactCreator(): IContactCreator {
+        return new Proxy(
+            { __kind: 'getContactCreator' },
+            {
+                get: (_target: unknown, prop: string) => 
+                        (...params: unknown[]) =>
+                            prop === 'toJSON'
+                                ? {}
+                                : this.senderFn({
+                                    method: `accessor:getModifier:getCreator:getContactCreator:${prop}`,
                                     params
                                 })
                                     .then((response) => response.result)

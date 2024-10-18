@@ -1,10 +1,12 @@
 import { IDepartment } from './IDepartment';
+import { ILivechatContact } from './ILivechatContact';
 import { ILivechatEventContext } from './ILivechatEventContext';
 import { ILivechatMessage } from './ILivechatMessage';
 import { ILivechatRoom } from './ILivechatRoom';
 import { ILivechatRoomClosedHandler } from './ILivechatRoomClosedHandler';
 import { ILivechatTransferData } from './ILivechatTransferData';
 import { ILivechatTransferEventContext, LivechatTransferEventType } from './ILivechatTransferEventContext';
+import { IOmnichannelSource, OmnichannelSourceType } from './IOmnichannelSource';
 import { IPostLivechatAgentAssigned } from './IPostLivechatAgentAssigned';
 import { IPostLivechatAgentUnassigned } from './IPostLivechatAgentUnassigned';
 import { IPostLivechatGuestSaved } from './IPostLivechatGuestSaved';
@@ -21,6 +23,7 @@ export {
     ILivechatMessage,
     ILivechatRoom,
     IPostLivechatAgentAssigned,
+    ILivechatContact,
     IPostLivechatAgentUnassigned,
     IPostLivechatGuestSaved,
     IPostLivechatRoomStarted,
@@ -35,4 +38,6 @@ export {
     IVisitorEmail,
     IVisitorPhone,
     LivechatTransferEventType,
+    OmnichannelSourceType,
+    IOmnichannelSource,
 };
