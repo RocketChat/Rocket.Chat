@@ -21,7 +21,7 @@ const OmnichannelRoomHeaderTag = () => {
 	const isVerifiedContact = data?.contact?.channels?.some((channel) => channel.verified);
 
 	if (isVerifiedContact) {
-		return <Icon mis={4} size='x16' name='success-circle' color='stroke-highlight' />;
+		return <Icon title={t('Verified')} mis={4} size='x16' name='success-circle' color='stroke-highlight' />;
 	}
 
 	if (isLoading) {

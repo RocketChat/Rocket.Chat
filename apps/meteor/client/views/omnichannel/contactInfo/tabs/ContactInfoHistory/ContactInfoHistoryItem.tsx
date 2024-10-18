@@ -72,7 +72,7 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, closedAt, onCli
 				<Box>{!closedAt ? t('Conversation_in_progress') : t('Conversation_closed_without_comment')}</Box>
 				<Box is='span' onClick={preventPropagation}>
 					{hasLicense && verified ? (
-						<Icon mis={4} size='x16' name='success-circle' color='stroke-highlight' />
+						<Icon title={t('Verified')} mis={4} size='x16' name='success-circle' color='stroke-highlight' />
 					) : (
 						<IconButton
 							title={t('Unverified')}
