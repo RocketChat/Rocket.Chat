@@ -10,9 +10,9 @@ export class AppContactBridge extends ContactBridge {
 		super();
 	}
 
-	async getById(id: ILivechatContact['_id'], appId: string): Promise<ILivechatContact> {
+	async getById(id: ILivechatContact['_id'], appId: string): Promise<ILivechatContact | null> {
 		this.orch.debugLog(`The app ${appId} is fetching a contact`);
-		return (await LivechatContacts.findOne({ _id: id })) as ILivechatContact;
+		return LivechatContacts.findOneById(id);
 	}
 
 	async verifyContact(

@@ -14,7 +14,7 @@ export type VerifyContactChannelParams = {
 };
 
 export abstract class ContactBridge extends BaseBridge {
-    public async doGetById(id: ILivechatContact['_id'], appId: string): Promise<ILivechatContact> {
+    public async doGetById(id: ILivechatContact['_id'], appId: string): Promise<ILivechatContact | null> {
         if (this.hasReadPermission(appId)) {
             return this.getById(id, appId);
         }
@@ -32,7 +32,7 @@ export abstract class ContactBridge extends BaseBridge {
         }
     }
 
-    protected abstract getById(id: ILivechatContact['_id'], appId: string): Promise<ILivechatContact>;
+    protected abstract getById(id: ILivechatContact['_id'], appId: string): Promise<ILivechatContact | null>;
 
     protected abstract verifyContact(verifyContactChannelParams: VerifyContactChannelParams, appId: string): Promise<void>;
 

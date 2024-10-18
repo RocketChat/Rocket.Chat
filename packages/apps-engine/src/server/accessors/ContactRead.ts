@@ -5,7 +5,7 @@ import type { AppBridges } from '../bridges';
 export class ContactRead implements IContactRead {
     constructor(private readonly bridges: AppBridges, private readonly appId: string) {}
 
-    public getById(id: ILivechatContact['_id']): Promise<ILivechatContact> {
+    public getById(id: ILivechatContact['_id']): Promise<ILivechatContact | null> {
         return this.bridges.getContactBridge().doGetById(id, this.appId);
     }
 }
