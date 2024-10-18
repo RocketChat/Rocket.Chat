@@ -321,7 +321,7 @@ jobs:
       - name: Build
         run: |
           npm install --ignore-scripts
-          npx napi build --release --target x86_64-unknown-linux-musl --platform --zig'
+          npx napi build --release --target x86_64-unknown-linux-musl --platform --zig
           mv matrix-sdk-crypto.linux-x64-musl.node /tmp/build/matrix-sdk-crypto.linux-x64-musl.node
 
       - name: Store Cache
