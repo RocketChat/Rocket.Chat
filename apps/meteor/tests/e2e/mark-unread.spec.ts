@@ -47,6 +47,35 @@ test.describe.serial('mark-unread', () => {
 		});
 	});
 
+	test.describe('Mark Unread - Other Channel', () => {
+		let poHomeChannelUser2: HomeChannel;
+		let secondChannel: string;
+
+		test.beforeEach(async ({ api }) => {
+			secondChannel = await createTargetChannel(api);
+		});
+
+		test.afterEach(async ({ api }) => {
+			await api.post('/channels.delete', { roomName: secondChannel });
+		});
+
+		test('should mark a populated room as unread', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.content.sendMessage('this is a message for reply');
+
+			await poHomeChannel.sidenav.openChat(secondChannel);
+			await poHomeChannel.content.sendMessage('this is a message for reply');
+
+			await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel);
+
+			await expect(poHomeChannel.sidenav.getRoomBadge(targetChannel)).toBeVisible();
+		});
+
+		test.afterAll(async () => {
+			await poHomeChannelUser2.page.close();
+		});
+	});
+
 	test.describe('Mark Unread - Message Action', () => {
 		let poHomeChannelUser2: HomeChannel;
 
