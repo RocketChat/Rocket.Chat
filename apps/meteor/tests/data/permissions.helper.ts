@@ -40,7 +40,7 @@ export const updateSetting = (setting: string, value: ISetting['value']): Promis
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.end((err?: Error) => {
-					console.log(`done ${setting}`);
+					console.log(`done ${setting} ${value}`);
 					if (!err) {
 						setTimeout(() => {
 							console.log('resolving', setting, value);
