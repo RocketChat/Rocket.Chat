@@ -11,4 +11,5 @@ export * from './IImporterSelection';
 export * from './IImporterSelectionUser';
 export * from './IImporterSelectionChannel';
 export * from './IImporterSelectionContact';
+export * from './IImporterShortSelection';
 export * from './ImportState';
