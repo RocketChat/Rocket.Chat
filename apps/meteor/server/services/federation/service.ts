@@ -320,10 +320,6 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	}
 
 	public async verifyConfiguration(): Promise<void> {
-		if (process.env.TEST_MODE) {
-			return this.markConfigurationValid();
-		}
-
 		try {
 			await this.bridge?.ping(); // throws error if fails
 

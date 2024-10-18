@@ -126,7 +126,6 @@ jobs:
           mongodb-replica-set: rs0
 
       - uses: actions/checkout@v4
-      - run: docker compose -f docker-compose-ci.yml pull rocketchat &
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -139,25 +138,25 @@ jobs:
 
       - uses: rharkor/caching-for-turbo@v1.5
 
-      # - name: Restore turbo build
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: turbo-build
-      #     path: .turbo/cache
+      - name: Restore turbo build
+        uses: actions/download-artifact@v4
+        with:
+          name: turbo-build
+          path: .turbo/cache
       - run: yarn build
       # if we are testing a PR from a fork, we need to build the docker image at this point
-      # - uses: ./.github/actions/build-docker
-      #   if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
-      #   with:
-      #     CR_USER: ${{ secrets.CR_USER }}
-      #     CR_PAT: ${{ secrets.CR_PAT }}
-      #     node-version: ${{ inputs.node-version }}
-      #     # we already called the turbo cache at this point, so it should be false
-      #     turbo-cache: false
-      #     # the same reason we need to rebuild the docker image at this point is the reason we dont want to publish it
-      #     publish-image: false
-      #     setup: false
-      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - uses: ./.github/actions/build-docker
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        with:
+          CR_USER: ${{ secrets.CR_USER }}
+          CR_PAT: ${{ secrets.CR_PAT }}
+          node-version: ${{ inputs.node-version }}
+          # we already called the turbo cache at this point, so it should be false
+          turbo-cache: false
+          # the same reason we need to rebuild the docker image at this point is the reason we dont want to publish it
+          publish-image: false
+          setup: false
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Start httpbin container and wait for it to be ready
         if: inputs.type == 'api'
@@ -189,7 +188,7 @@ jobs:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
         run: |
           # when we are testing CE, we only need to start the rocketchat container
-          docker compose -f docker-compose-ci.yml up -d rocketchat --no-build
+          docker compose -f docker-compose-ci.yml up -d rocketchat
 
       - name: Start containers for EE
         if: inputs.release == 'ee'
@@ -237,8 +236,8 @@ jobs:
             sleep 10
           done;
 
-      # - name: Remove unused Docker images
-      #   run: docker system prune -af
+      - name: Remove unused Docker images
+        run: docker system prune -af
       - name: E2E Test API
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
@@ -249,8 +248,7 @@ jobs:
           COVERAGE_REPORTER: 'lcovonly'
         run: |
           for i in $(seq 1 2); do
-            npm run testapi -- --grep 'federation' && s=0 && break || s=$?
-            # npm run testapi && s=0 && break || s=$?
+            npm run testapi && s=0 && break || s=$?
 
             docker compose -f ../../docker-compose-ci.yml logs --tail=100
 
