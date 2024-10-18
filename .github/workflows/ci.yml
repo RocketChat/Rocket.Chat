@@ -479,7 +479,8 @@ jobs:
 
   test-api:
     name: 🔨 Test API (CE)
-    needs: [checks, build-gh-docker-coverage, release-versions]
+    # needs: [checks, build-gh-docker-coverage, release-versions]
+    needs: [release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:

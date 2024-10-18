@@ -248,7 +248,7 @@ jobs:
           COVERAGE_REPORTER: 'lcovonly'
         run: |
           for i in $(seq 1 2); do
-            TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.api.js --grep 'federation' && s=0 && break || s=$?
+            TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' npm run mocha --config ./.mocharc.api.js --grep 'federation' && s=0 && break || s=$?
             # npm run testapi && s=0 && break || s=$?
 
             docker compose -f ../../docker-compose-ci.yml logs --tail=100
