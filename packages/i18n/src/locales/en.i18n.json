@@ -529,6 +529,8 @@
   "App_Info": "App Info",
   "App_Information": "App Information",
   "Apps_context_enterprise": "Enterprise",
+  "App_has_been_disabled_addon_message_one": "The app {{appNames}} has been disabled because of an invalid add-on. A valid add-on subscription is required to re-enable it",
+  "App_has_been_disabled_addon_message_other": "The apps {{appNames}} have been disabled because of invalid add-ons. A valid add-on subscription is required to re-enable them",
   "App_Installation": "App Installation",
   "App_Installation_Deprecation_Title": "Deprecation Warning",
   "App_Installation_Deprecation": "Install apps from URL is deprecated and will be removed in the next major release.",
