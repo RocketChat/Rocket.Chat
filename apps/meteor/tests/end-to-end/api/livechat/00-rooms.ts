@@ -75,7 +75,7 @@ describe('LIVECHAT - rooms', () => {
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
-		await updateEESetting('Livechat_Request_Verification_On_First_Contact_Only', true);
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 		await createAgent();
 		await makeAgentAvailable();
 		visitor = await createVisitor();
@@ -84,7 +84,7 @@ describe('LIVECHAT - rooms', () => {
 	});
 
 	after(async () => {
-		await updateEESetting('Livechat_Request_Verification_On_First_Contact_Only', false);
+		await updateEESetting('Livechat_Require_Contact_Verification', 'always');
 	});
 
 	describe('livechat/room', () => {
