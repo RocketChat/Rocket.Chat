@@ -93,7 +93,7 @@ export type App = {
 	categories: string[];
 	version: string;
 	versionIncompatible?: boolean;
-	addon: ExternalModuleName;
+	addon?: ExternalModuleName;
 	price: number;
 	purchaseType: PurchaseType;
 	pricingPlans: AppPricingPlan[];
