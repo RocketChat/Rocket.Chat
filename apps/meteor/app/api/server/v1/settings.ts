@@ -169,7 +169,24 @@ API.v1.addRoute(
 		post: {
 			twoFactorRequired: true,
 			async action(): Promise<ResultFor<'POST', '/v1/settings/:_id'>> {
-				console.time(this.urlParams._id);
+				// @ts-ignore
+				const { matchedCount } = await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+				if (!matchedCount) {
+					return API.v1.failure();
+				}
+
+				const s = await Settings.findOneNotHiddenById(this.urlParams._id);
+				if (!s) {
+					return API.v1.failure();
+				}
+
+				settings.set(s);
+				// @ts-ignore
+				setValue(this.urlParams._id, this.bodyParams.value);
+
+				// await notifyOnSettingChanged(s);
+
+				return API.v1.success();
 				if (typeof this.urlParams._id !== 'string') {
 					throw new Meteor.Error('error-id-param-not-provided', 'The parameter "id" is required');
 				}
@@ -221,7 +238,6 @@ API.v1.addRoute(
 
 					await notifyOnSettingChanged(s);
 
-					console.timeEnd(this.urlParams._id);
 					return API.v1.success();
 				}
 

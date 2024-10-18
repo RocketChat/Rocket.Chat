@@ -32,30 +32,13 @@ const updateManyPermissions = (permissions: { [key: string]: string[] }): Promis
 
 export const updateSetting = (setting: string, value: ISetting['value']): Promise<void | Error> =>
 	new Promise((resolve, reject) => {
-		const start = Date.now();
-		console.log(`starting ${setting} ${value}`);
-		try {
-			void request
-				.post(`/api/v1/settings/${setting}`)
-				.set(credentials)
-				.send({ value })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.end(async (err?: Error) => {
-					console.log(`done ${setting} ${value}`);
-					console.log(`took ${Date.now() - start}ms`);
-					if (!err) {
-						await new Promise((r) => setTimeout(r, 100));
-						console.log('resolving', setting, value);
-						resolve();
-						return;
-					}
-
-					reject(err);
-				});
-		} catch(err) {
-			reject(err);
-		}
+		void request
+			.post(`/api/v1/settings/${setting}`)
+			.set(credentials)
+			.send({ value })
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.end((err?: Error) => setTimeout(() => (!err && resolve()) || reject(err), 100));
 	});
 
 export const getSettingValueById = async (setting: string): Promise<ISetting['value']> => {
@@ -67,14 +50,14 @@ export const getSettingValueById = async (setting: string): Promise<ISetting['va
 export const updateEESetting = (setting: string, value: ISetting['value']): Promise<void | Error> =>
 	IS_EE
 		? new Promise((resolve, reject) => {
-			void request
-				.post(`/api/v1/settings/${setting}`)
-				.set(credentials)
-				.send({ value })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.end((err?: Error) => setTimeout(() => (!err && resolve()) || reject(err), 100));
-		})
+				void request
+					.post(`/api/v1/settings/${setting}`)
+					.set(credentials)
+					.send({ value })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.end((err?: Error) => setTimeout(() => (!err && resolve()) || reject(err), 100));
+		  })
 		: Promise.resolve();
 
 export const removePermissions = async (perms: string[]) => {
