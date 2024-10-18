@@ -1,28 +1,26 @@
-import type { IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, type IRoom } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
 import { migrateVisitorIfMissingContact } from '../../../livechat/server/lib/Contacts';
 
 export async function maybeMigrateLivechatRoom(room: IRoom | null, options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
-	if (room?.t !== 'l') {
+	if (!room || !isOmnichannelRoom(room)) {
 		return room;
 	}
 
-	const livechatRoom = room as IOmnichannelRoom;
-
 	// Already migrated
-	if (livechatRoom.v.contactId) {
-		return livechatRoom;
+	if (room.v.contactId) {
+		return room;
 	}
 
-	const contactId = await migrateVisitorIfMissingContact(livechatRoom.v._id, livechatRoom.source);
+	const contactId = await migrateVisitorIfMissingContact(room.v._id, room.source);
 
 	// Did not migrate
 	if (!contactId) {
-		return livechatRoom;
+		return room;
 	}
 
 	// Load the room again with the same options so it can be reloaded with the contactId in place
-	return Rooms.findOneById(livechatRoom._id, options);
+	return Rooms.findOneById(room._id, options);
 }
