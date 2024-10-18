@@ -36,11 +36,11 @@ export class OmnichannelContacts {
 		return this.page.getByText('Filters');
 	}
 
-	get chipName(): Locator{
+	get chipName(): Locator {
 		return this.page.locator('//span[contains(@class, "rcx-chip__text")]');
 	}
 
-	get closeChip(): Locator{
+	get closeChip(): Locator {
 		return this.page.locator('//i[@class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon  rcx-css-trljwa rcx-css-1wv1vf9"]');
 	}
 
@@ -56,7 +56,7 @@ export class OmnichannelContacts {
 		return this.page.getByRole('button', { name: 'Apply' });
 	}
 
-	get clickChats(): Locator {
+	get clickChat(): Locator {
 		return this.page.getByRole('tab', { name: 'Chats' });
 	}
 
@@ -113,13 +113,6 @@ export class OmnichannelContacts {
 
 	async removeTag(option: string) {
 		await this.page.locator(`role=option[name='${option}']`).click();
-		await this.page.getByRole('button', { name: 'Apply' }).click();
-	}
-
-	async selectFromDate(option: string) {
-		await this.inputFromDate.click();
-		await this.inputFromDate.fill(option);
-		//await this.page.locator(`type=date[value='${option}']`).click();
 		await this.page.getByRole('button', { name: 'Apply' }).click();
 	}
 }
