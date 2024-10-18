@@ -131,10 +131,11 @@ describe('User Converter', () => {
 		});
 
 		const converter = new UserConverter({ workInMemory: true });
-		sinon.stub(converter, 'generateTempPassword');
-		sinon.stub(converter, 'hashPassword');
-		converter.generateTempPassword.returns('tempPassword');
-		converter.hashPassword.callsFake((pass: string) => `hashed=${pass}`);
+		const generateTempPassword = sinon.stub(converter, 'generateTempPassword');
+		const hashPassword = sinon.stub(converter, 'hashPassword');
+
+		generateTempPassword.returns('tempPassword');
+		hashPassword.callsFake(async (pass) => `hashed=${pass}`);
 		bcryptHash.callsFake((pass: string) => `hashed=${pass}`);
 		sha.callsFake((pass: string) => pass);
 
