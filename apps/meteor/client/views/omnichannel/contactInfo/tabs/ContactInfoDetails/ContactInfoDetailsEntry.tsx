@@ -22,8 +22,8 @@ const ContactInfoDetailsEntry = ({ type, value }: ContactInfoDetailsEntryProps) 
 	return (
 		<Box display='flex' alignItems='center'>
 			<Icon size='x18' name={type === 'phone' ? 'phone' : 'mail'} />
-			<Box display='flex' flexGrow={1} alignItems='center' justifyContent='space-between'>
-				<Box data-qa-id={type === 'phone' ? 'contactInfo-phone' : 'contactInfo-email'} mi={4} fontScale='p2'>
+			<Box withTruncatedText display='flex' flexGrow={1} alignItems='center' justifyContent='space-between'>
+				<Box withTruncatedText data-qa-id={type === 'phone' ? 'contactInfo-phone' : 'contactInfo-email'} mi={4} fontScale='p2'>
 					{type === 'phone' ? parseOutboundPhoneNumber(value) : value}
 				</Box>
 				<Box display='flex' alignItems='center'>
