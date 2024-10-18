@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
-import { emojiParser } from '../../../emoji/client/emojiParser.js';
+import { emojiParser } from '../../../emoji/client/emojiParser';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
 import { MentionsParser } from '../../../mentions/lib/MentionsParser';
 import { Users } from '../../../models/client';
@@ -26,7 +26,7 @@ export function normalizeThreadTitle({ ...message }: Readonly<IMessage>) {
 			userTemplate: ({ label }) => `<strong> ${label} </strong>`,
 			roomTemplate: ({ prefix, mention }) => `${prefix}<strong> ${mention} </strong>`,
 		});
-		const { html } = emojiParser({ html: filteredMessage });
+		const html = emojiParser(filteredMessage);
 		return instance.parse({ ...message, msg: filteredMessage, html }).html;
 	}
 
