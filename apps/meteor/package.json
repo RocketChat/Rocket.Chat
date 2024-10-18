@@ -91,6 +91,7 @@
 		"@types/bcrypt": "^5.0.2",
 		"@types/body-parser": "^1.19.5",
 		"@types/busboy": "^1.5.4",
+		"@types/bytebuffer": "~5.0.49",
 		"@types/chai": "~4.3.19",
 		"@types/chai-as-promised": "^7.1.8",
 		"@types/chai-datetime": "0.0.39",

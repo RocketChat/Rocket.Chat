@@ -9002,6 +9002,7 @@ __metadata:
     "@types/bcrypt": "npm:^5.0.2"
     "@types/body-parser": "npm:^1.19.5"
     "@types/busboy": "npm:^1.5.4"
+    "@types/bytebuffer": "npm:~5.0.49"
     "@types/chai": "npm:~4.3.19"
     "@types/chai-as-promised": "npm:^7.1.8"
     "@types/chai-datetime": "npm:0.0.39"
@@ -11539,6 +11540,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/bytebuffer@npm:~5.0.49":
+  version: 5.0.49
+  resolution: "@types/bytebuffer@npm:5.0.49"
+  dependencies:
+    "@types/long": "npm:^3.0.0"
+    "@types/node": "npm:*"
+  checksum: 10/31eb2521d2710f256c3d17a3e8d87f04394f335b29f7276c31c054ddbf4795146f2663effa3b6e910442da69238e994d2db9f7d5918eead4313e3f9e29165932
+  languageName: node
+  linkType: hard
+
 "@types/chai-as-promised@npm:^7.1.8":
   version: 7.1.8
   resolution: "@types/chai-as-promised@npm:7.1.8"
@@ -12532,6 +12543,13 @@ __metadata:
   version: 4.14.200
   resolution: "@types/lodash@npm:4.14.200"
   checksum: 10/aed5943a4f43b898c18e7148b6ad825dba4611230c8dc12126f20ab4ffc9250794d9134fca0c17218ad7594879835438e9c95e57b801ca6c8da0d3fbc6ef811d
+  languageName: node
+  linkType: hard
+
+"@types/long@npm:^3.0.0":
+  version: 3.0.32
+  resolution: "@types/long@npm:3.0.32"
+  checksum: 10/cc5422875a085b49b74ffeb5c60a8681d30f700859a8931012b4a58c5c6005cdacb4d3ce3e5af7a7f579ee20d5c2e442a773a83b3a4f7a2d39795a7a8e9a962d
   languageName: node
   linkType: hard
 
