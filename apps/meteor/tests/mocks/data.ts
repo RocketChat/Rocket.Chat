@@ -205,6 +205,7 @@ export const createFakeLicenseInfo = (partial: Partial<Omit<LicenseInfo, 'licens
 		'custom-roles',
 		'accessibility-certification',
 	]),
+	externalModules: [],
 	preventedActions: {
 		activeUsers: faker.datatype.boolean(),
 		guestUsers: faker.datatype.boolean(),

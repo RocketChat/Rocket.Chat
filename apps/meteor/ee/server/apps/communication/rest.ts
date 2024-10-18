@@ -1,9 +1,7 @@
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
-import { AppInstallationSource } from '@rocket.chat/apps-engine/server/storage';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
@@ -20,7 +18,6 @@ import { i18n } from '../../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 import { canEnableApp } from '../../../app/license/server/canEnableApp';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
-import { appEnableCheck } from '../marketplace/appEnableCheck';
 import { notifyAppInstall } from '../marketplace/appInstall';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
@@ -418,9 +415,13 @@ export class AppsRestApi {
 
 					void notifyAppInstall(orchestrator.getMarketplaceUrl() as string, 'install', info);
 
-					if (await canEnableApp(aff.getApp().getStorageItem())) {
+					try {
+						await canEnableApp(aff.getApp().getStorageItem());
+
 						const success = await manager.enable(info.id);
 						info.status = success ? AppStatus.AUTO_ENABLED : info.status;
+					} catch (error) {
+						orchestrator.getRocketChatLogger().warn(`App "${info.id}" was installed but could not be enabled: `, error);
 					}
 
 					void orchestrator.getNotifier().appAdded(info.id);
@@ -1157,31 +1158,12 @@ export class AppsRestApi {
 						return API.v1.notFound(`No App found by the id of: ${appId}`);
 					}
 
-					const storedApp = prl.getStorageItem();
-					const { installationSource, marketplaceInfo } = storedApp;
-
-					if (!License.hasValidLicense() && installationSource === AppInstallationSource.MARKETPLACE) {
+					if (AppStatusUtils.isEnabled(status)) {
 						try {
-							const baseUrl = orchestrator.getMarketplaceUrl() as string;
-							const headers = getDefaultHeaders();
-							const { version } = prl.getInfo();
-
-							await appEnableCheck({
-								baseUrl,
-								headers,
-								appId,
-								version,
-								marketplaceInfo,
-								status,
-								logger: orchestrator.getRocketChatLogger(),
-							});
-						} catch (error: any) {
-							return API.v1.failure(error.message);
+							await canEnableApp(prl.getStorageItem());
+						} catch (error: unknown) {
+							return API.v1.failure((error as Error).message);
 						}
-					}
-
-					if (AppStatusUtils.isEnabled(status) && !(await canEnableApp(storedApp))) {
-						return API.v1.failure('Enabled apps have been maxed out');
 					}
 
 					const result = await manager.changeStatus(prl.getID(), status);
