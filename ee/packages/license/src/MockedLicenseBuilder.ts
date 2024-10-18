@@ -10,7 +10,7 @@ import {
 	type Timestamp,
 } from '@rocket.chat/core-typings';
 
-import { encrypt } from './token';
+import { encrypt, encryptStatsToken } from './token';
 
 export class MockedLicenseBuilder {
 	information: {
@@ -239,5 +239,33 @@ export class MockedLicenseBuilder {
 
 	public sign(): Promise<string> {
 		return encrypt(this.build());
+	}
+}
+
+export class StatsTokenBuilder {
+	private token: Record<string, any>;
+
+	constructor() {
+		this.token = {
+			workspaceId: '123456789',
+			uniqueId: '123456789',
+			recordId: '123456789',
+			timestamp: new Date().toISOString(),
+			info: {},
+		};
+	}
+
+	public withTimeStamp(date: Date): StatsTokenBuilder {
+		this.token.timestamp = date.toISOString();
+
+		return this;
+	}
+
+	public build(): Record<string, any> {
+		return this.token;
+	}
+
+	public sign(): Promise<string> {
+		return encryptStatsToken(this.token);
 	}
 }
