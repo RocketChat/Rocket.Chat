@@ -28,7 +28,6 @@ module.exports = {
 		'ee/server/lib/ldap/*.spec.ts',
 		'ee/tests/**/*.tests.ts',
 		'ee/tests/**/*.spec.ts',
-		'ee/app/license/server/*.spec.ts',
 		'tests/unit/app/**/*.spec.ts',
 		'tests/unit/app/**/*.tests.js',
 		'tests/unit/app/**/*.tests.ts',

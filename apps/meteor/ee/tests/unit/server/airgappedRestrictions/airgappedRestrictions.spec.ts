@@ -41,7 +41,7 @@ const licenseMock = {
 	},
 };
 
-proxyquire.noCallThru().load('./airGappedRestrictions.ts', {
+proxyquire.noCallThru().load('../../../../app/license/server/airGappedRestrictions.ts', {
 	'@rocket.chat/license': {
 		AirGappedRestriction: airgappedRestrictionObj,
 		License: licenseMock,
