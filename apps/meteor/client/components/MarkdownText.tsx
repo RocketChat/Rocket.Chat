@@ -123,7 +123,7 @@ const MarkdownText = ({
 					// We are using the old emoji parser here. This could come
 					// with additional processing use, but is the workaround available right now.
 					// Should be replaced in the future with the new parser.
-					return renderMessageEmoji({ html: markedHtml });
+					return renderMessageEmoji(markedHtml);
 				}
 
 				return markedHtml;
