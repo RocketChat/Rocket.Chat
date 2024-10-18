@@ -16,7 +16,7 @@ type CustomUserStatusFormWithDataProps = {
 
 const CustomUserStatusFormWithData = ({ _id, onReload, onClose }: CustomUserStatusFormWithDataProps): ReactElement => {
 	const t = useTranslation();
-	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
+	const query = useMemo(() => ({ _id }), [_id]);
 
 	const getCustomUserStatus = useEndpoint('GET', '/v1/custom-user-status.list');
 

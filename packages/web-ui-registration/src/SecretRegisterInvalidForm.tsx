@@ -1,10 +1,10 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import VerticalTemplate from './template/VerticalTemplate';
 
 const SecretRegisterInvalidForm = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<VerticalTemplate>

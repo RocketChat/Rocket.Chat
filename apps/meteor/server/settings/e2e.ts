@@ -10,7 +10,7 @@ export const createE2ESettings = () =>
 			alert: 'E2E_Enable_alert',
 		});
 
-		await this.add('E2E_Allow_Unencrypted_Messages', true, {
+		await this.add('E2E_Allow_Unencrypted_Messages', false, {
 			type: 'boolean',
 			public: true,
 			enableQuery: { _id: 'E2E_Enable', value: true },
@@ -36,7 +36,7 @@ export const createE2ESettings = () =>
 			enableQuery: { _id: 'E2E_Enable', value: true },
 		});
 
-		await this.add('E2E_Enabled_Mentions', false, {
+		await this.add('E2E_Enabled_Mentions', true, {
 			type: 'boolean',
 			public: true,
 			enableQuery: { _id: 'E2E_Enable', value: true },

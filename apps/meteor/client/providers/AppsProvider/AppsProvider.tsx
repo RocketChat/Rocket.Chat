@@ -2,7 +2,7 @@ import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import { AppClientOrchestratorInstance } from '../../apps/orchestrator';
 import { AppsContext } from '../../contexts/AppsContext';
@@ -44,10 +44,8 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 
 	const queryClient = useQueryClient();
 
-	const { isLoading: isLicenseInformationLoading, data: { license } = {} } = useLicense({ loadValues: true });
+	const { isLoading: isLicenseInformationLoading, data: { license, limits } = {} } = useLicense({ loadValues: true });
 	const isEnterprise = isLicenseInformationLoading ? undefined : !!license;
-
-	const [marketplaceError, setMarketplaceError] = useState<Error>();
 
 	const invalidateAppsCountQuery = useInvalidateAppsCountQueryCallback();
 	const invalidateLicenseQuery = useInvalidateLicense();
@@ -80,8 +78,7 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 			const result = await AppClientOrchestratorInstance.getAppsFromMarketplace(isAdminUser);
 			queryClient.invalidateQueries(['marketplace', 'apps-stored']);
 			if (result.error && typeof result.error === 'string') {
-				setMarketplaceError(new Error(result.error));
-				return [];
+				throw new Error(result.error);
 			}
 			return result.apps;
 		},
@@ -125,13 +122,18 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 			children={children}
 			value={{
 				installedApps: getAppState(isMarketplaceDataLoading, installedAppsData),
-				marketplaceApps: getAppState(isMarketplaceDataLoading, marketplaceAppsData, marketplaceError),
+				marketplaceApps: getAppState(
+					isMarketplaceDataLoading,
+					marketplaceAppsData,
+					marketplace.error instanceof Error ? marketplace.error : undefined,
+				),
 				privateApps: getAppState(isMarketplaceDataLoading, privateAppsData),
 
 				reload: async () => {
 					await Promise.all([queryClient.invalidateQueries(['marketplace'])]);
 				},
 				orchestrator: AppClientOrchestratorInstance,
+				privateAppsEnabled: (limits?.privateApps?.max ?? 0) !== 0,
 			}}
 		/>
 	);

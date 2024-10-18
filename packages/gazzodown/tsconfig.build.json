@@ -4,6 +4,5 @@
 		"rootDir": "./src",
 		"outDir": "./dist"
 	},
-	"include": ["./src/**/*"],
-	"exclude": ["./src/**/*.spec.ts", "./src/**/*.spec.tsx"]
+	"exclude": ["./src/**/*.stories.tsx", "./src/**/*.spec.ts", "./src/**/*.spec.tsx", "./.storybook/**/*", "./jest.config.ts"]
 }

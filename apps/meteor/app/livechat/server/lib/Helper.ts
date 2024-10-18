@@ -96,12 +96,10 @@ export const createLivechatRoom = async <
 		visitor: { _id, username, departmentId, status, activity },
 	});
 
-	const contactId = await (async () => {
-		return migrateVisitorIfMissingContact(
-			_id,
-			(extraRoomInfo.source || roomInfo.source || { type: OmnichannelSourceType.OTHER }) as IOmnichannelSource,
-		);
-	})();
+	const contactId = await migrateVisitorIfMissingContact(
+		_id,
+		(extraRoomInfo.source || roomInfo.source || { type: OmnichannelSourceType.OTHER }) as IOmnichannelSource,
+	);
 
 	// TODO: Solve `u` missing issue
 	const room: InsertionModel<IOmnichannelRoom> = {
@@ -449,8 +447,8 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 			hasMentionToHere: false,
 			message: { _id: '', u: v, msg: '' },
 			// we should use server's language for this type of messages instead of user's
-			notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName }, language),
-			room: Object.assign(room, { name: i18n.t('New_chat_in_queue', {}, language) }),
+			notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName, lng: language }),
+			room: Object.assign(room, { name: i18n.t('New_chat_in_queue', { lng: language }) }),
 			mentionIds: [],
 		});
 	}
