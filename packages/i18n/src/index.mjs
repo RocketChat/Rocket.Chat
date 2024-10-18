@@ -94,7 +94,7 @@ const dict: {
 
 export type RocketchatI18nKeys = keyof RocketchatI18n;
 
-export = dict;
+export default dict;
 `;
 
 const languages = files.map((file) => path.basename(file, '.i18n.json'));

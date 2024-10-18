@@ -69,6 +69,7 @@ API.v1.addRoute(
 				shortcut,
 				text,
 				scope,
+				// @ts-expect-error - tags is now inferred as never[] instead of any[]
 				tags,
 				departmentId,
 				userId: this.userId,
