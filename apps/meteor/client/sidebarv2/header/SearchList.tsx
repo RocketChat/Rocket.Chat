@@ -12,9 +12,9 @@ import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import Row from '../search/Row';
 import { useSearchItems } from './hooks/useSearchItems';
 
-type SearchListProps = { filterText: string; onEscSearch: () => void; showRecentSearch?: boolean };
+type SearchListProps = { filterText: string; onEscSearch: () => void; showRecentList?: boolean };
 
-const SearchList = ({ filterText, onEscSearch, showRecentSearch }: SearchListProps) => {
+const SearchList = ({ filterText, onEscSearch, showRecentList }: SearchListProps) => {
 	const t = useTranslation();
 
 	const boxRef = useRef<HTMLDivElement>(null);
@@ -58,13 +58,13 @@ const SearchList = ({ filterText, onEscSearch, showRecentSearch }: SearchListPro
 			flexShrink={1}
 			h='full'
 			w='full'
-			pbs={showRecentSearch ? 0 : 8}
+			pbs={showRecentList ? 0 : 8}
 			aria-live='polite'
 			aria-atomic='true'
 			aria-busy={isLoading}
 			onClick={handleClick}
 		>
-			{showRecentSearch && <SidebarV2GroupTitle title={t('Recent')} />}
+			{showRecentList && <SidebarV2GroupTitle title={t('Recent')} />}
 			<Virtuoso
 				style={{ height: '100%', width: '100%' }}
 				totalCount={items.length}

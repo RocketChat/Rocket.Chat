@@ -56,7 +56,7 @@ const SearchSection = () => {
 	const t = useTranslation();
 	const focusManager = useFocusManager();
 	const user = useUser();
-	const [showRecentSearch, setShowRecent] = useState(false);
+	const [showRecentItems, setShowRecentItems] = useState(false);
 
 	const {
 		formState: { isDirty },
@@ -68,49 +68,37 @@ const SearchSection = () => {
 	const { filterText } = watch();
 	const { ref: filterRef, ...rest } = register('filterText');
 
+	const showRecentList = Boolean(showRecentItems && !filterText);
+
 	const inputRef = useRef<HTMLInputElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
 	const mergedRefs = useMergedRefs(filterRef, inputRef);
 
 	const handleEscSearch = useCallback(() => {
 		resetField('filterText');
-		setShowRecent(false);
+		setShowRecentItems(false);
 		inputRef.current?.blur();
 	}, [resetField]);
 
 	useOutsideClick([wrapperRef], handleEscSearch);
 
 	useEffect(() => {
-		if (filterText) {
-			setShowRecent(false);
-		}
-	}, [filterText]);
-
-	useEffect(() => {
-		if (showRecentSearch) {
-			focusManager.focusNext({ accept: (node) => isRecentButton(node) });
-		}
-	}, [focusManager, showRecentSearch]);
-
-	useEffect(() => {
 		const unsubscribe = tinykeys(window, {
 			'$mod+K': (event) => {
 				event.preventDefault();
-				setShowRecent(false);
 				setFocus('filterText');
 			},
 			'$mod+P': (event) => {
 				event.preventDefault();
-				setShowRecent(false);
 				setFocus('filterText');
 			},
 			'Shift+$mod+K': (event) => {
 				event.preventDefault();
-				setShowRecent(true);
+				setShowRecentItems(true);
+				focusManager.focusNext({ accept: (node) => isRecentButton(node) });
 			},
 			'Escape': (event) => {
 				event.preventDefault();
-				setShowRecent(false);
 				handleEscSearch();
 			},
 		});
@@ -118,12 +106,12 @@ const SearchSection = () => {
 		return (): void => {
 			unsubscribe();
 		};
-	}, [handleEscSearch, setFocus]);
+	}, [focusManager, handleEscSearch, setFocus]);
 
 	const placeholder = [t('Search'), shortcut].filter(Boolean).join(' ');
 
 	return (
-		<Box className={['rcx-sidebar', (isDirty || showRecentSearch) && wrapperStyle]} ref={wrapperRef} role='search'>
+		<Box className={['rcx-sidebar', (isDirty || showRecentList) && wrapperStyle]} ref={wrapperRef} role='search'>
 			<SidebarV2Section>
 				<TextInput
 					placeholder={placeholder}
@@ -140,17 +128,17 @@ const SearchSection = () => {
 							small
 							icon='clock'
 							title={t('Recent')}
-							onClick={() => setShowRecent(!showRecentSearch)}
-							pressed={showRecentSearch}
+							onClick={() => setShowRecentItems(!showRecentItems)}
+							pressed={showRecentItems}
 						/>
-						{showRecentSearch ? <IconButton icon='sort' disabled small /> : <Sort />}
+						{showRecentItems ? <IconButton icon='sort' disabled small /> : <Sort />}
 						<CreateRoom />
 					</>
 				)}
 			</SidebarV2Section>
-			{(isDirty || showRecentSearch) && (
+			{(isDirty || showRecentItems) && (
 				<FocusScope>
-					<SearchList filterText={filterText} onEscSearch={handleEscSearch} showRecentSearch={showRecentSearch} />
+					<SearchList filterText={filterText} onEscSearch={handleEscSearch} showRecentList={showRecentList} />
 				</FocusScope>
 			)}
 		</Box>
