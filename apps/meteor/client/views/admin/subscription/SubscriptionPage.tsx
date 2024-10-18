@@ -26,7 +26,7 @@ import { Page, PageScrollableContentWithShadow } from '../../../components/Page'
 import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
 import PageHeaderNoShadow from '../../../components/Page/PageHeaderNoShadow';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import { useInvalidateLicense } from '../../../hooks/useLicense';
+import { useInvalidateLicense, useLicenseWithCloudAnnouncement } from '../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 
 function useShowLicense() {
@@ -51,7 +51,7 @@ const SubscriptionPage = () => {
 	const router = useRouter();
 	const { data: enterpriseData } = useIsEnterprise();
 	const { isRegistered } = useRegistrationStatus();
-	const { data: licensesData, isLoading: isLicenseLoading } = useLicense({ loadValues: true });
+	const { data: licensesData, isLoading: isLicenseLoading } = useLicenseWithCloudAnnouncement({ loadValues: true });
 	const syncLicenseUpdate = useWorkspaceSync();
 	const invalidateLicenseQuery = useInvalidateLicense();
 
@@ -59,7 +59,7 @@ const SubscriptionPage = () => {
 
 	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isLoading, 10000);
 
-	const { license, limits, activeModules = [], cloudSyncAnnouncement } = licensesData || {};
+	const { license, limits, activeModules = [], trial } = licensesData?.license || {};
 	const { isEnterprise = true } = enterpriseData || {};
 
 	const getKeyLimit = (key: 'monthlyActiveContacts' | 'activeUsers') => {
@@ -114,9 +114,9 @@ const SubscriptionPage = () => {
 					</UpgradeButton>
 				</ButtonGroup>
 			</PageHeaderNoShadow>
-			{cloudSyncAnnouncement && (
+			{licensesData?.cloudSyncAnnouncement && (
 				<PageBlockWithBorder>
-					<UiKitSubscriptionLicense key='license' initialView={JSON.parse(cloudSyncAnnouncement)} />
+					<UiKitSubscriptionLicense key='license' initialView={licensesData.cloudSyncAnnouncement} />
 				</PageBlockWithBorder>
 			)}
 			<PageScrollableContentWithShadow p={16}>
@@ -149,7 +149,7 @@ const SubscriptionPage = () => {
 								{seatsLimit.value !== undefined && (
 									<Grid.Item lg={6} xs={4} p={8}>
 										{seatsLimit.max !== Infinity ? (
-											<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={licensesData?.trial} />
+											<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={trial} />
 										) : (
 											<CountSeatsCard activeUsers={seatsLimit?.value} />
 										)}
@@ -159,7 +159,7 @@ const SubscriptionPage = () => {
 								{macLimit.value !== undefined && (
 									<Grid.Item lg={6} xs={4} p={8}>
 										{macLimit.max !== Infinity ? (
-											<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={licensesData?.trial} />
+											<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={trial} />
 										) : (
 											<CountMACCard macsCount={macLimit.value} />
 										)}
