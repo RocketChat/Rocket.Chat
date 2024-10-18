@@ -120,16 +120,24 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 			return t('error-invalid-email-address');
 		}
 
-		const { contact } = await getContact({ email: emailValue });
-		return (!contact || contact._id === contactData?._id) && !isDuplicated ? true : t('Email_already_exists');
+		try {
+			const { contact } = await getContact({ email: emailValue });
+			return (!contact || contact._id === contactData?._id) && !isDuplicated ? true : t('Email_already_exists');
+		} catch (error) {
+			return !isDuplicated ? true : t('Email_already_exists');
+		}
 	};
 
 	const validatePhone = async (phoneValue: string) => {
 		const currentPhones = phones.map(({ phoneNumber }) => phoneNumber);
 		const isDuplicated = currentPhones.filter((phone) => phone === phoneValue).length > 1;
 
-		const { contact } = await getContact({ phone: phoneValue });
-		return (!contact || contact._id === contactData?._id) && !isDuplicated ? true : t('Phone_already_exists');
+		try {
+			const { contact } = await getContact({ phone: phoneValue });
+			return (!contact || contact._id === contactData?._id) && !isDuplicated ? true : t('Phone_already_exists');
+		} catch (error) {
+			return !isDuplicated ? true : t('Phone_already_exists');
+		}
 	};
 
 	const validateName = (v: string): string | boolean => (!v.trim() ? t('Required_field', { field: t('Name') }) : true);
@@ -154,7 +162,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 				handleNavigate({ context: 'details', id: contactId });
 			}
 
-			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			dispatchToastMessage({ type: 'success', message: contactData ? t('Contact_has_been_updated') : t('Contact_has_been_created') });
 			await queryClient.invalidateQueries({ queryKey: ['current-contacts'] });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -240,22 +248,16 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 						{t('Add_phone')}
 					</Button>
 				</Field>
-				<Controller
-					name='contactManager'
-					control={control}
-					render={({ field: { value, onChange } }) => (
-						<ContactManagerInput
-							value={value}
-							handler={(currentValue) => {
-								if (currentValue === 'no-agent-selected') {
-									return onChange('');
-								}
-
-								onChange(currentValue);
-							}}
+				<Field>
+					<FieldLabel>{t('Contact_Manager')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							name='contactManager'
+							control={control}
+							render={({ field: { value, onChange } }) => <ContactManagerInput value={value} onChange={onChange} />}
 						/>
-					)}
-				/>
+					</FieldRow>
+				</Field>
 				<Divider />
 				{canViewCustomFields && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 			</ContextualbarScrollableContent>

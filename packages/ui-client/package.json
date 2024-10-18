@@ -21,7 +21,7 @@
 		"@babel/core": "~7.25.8",
 		"@react-aria/toolbar": "^3.0.0-beta.1",
 		"@rocket.chat/css-in-js": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.59.1",
+		"@rocket.chat/fuselage": "^0.59.3",
 		"@rocket.chat/fuselage-hooks": "^0.33.1",
 		"@rocket.chat/icons": "~0.38.0",
 		"@rocket.chat/jest-presets": "workspace:~",
