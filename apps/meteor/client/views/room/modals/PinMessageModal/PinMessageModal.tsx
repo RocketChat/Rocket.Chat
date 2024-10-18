@@ -8,14 +8,16 @@ import GenericModal from '../../../../components/GenericModal';
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
 import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
+import { usePinMessageMutation } from './usePinMessageMutation';
 
 type PinMessageModalProps = { message: IMessage } & ComponentProps<typeof GenericModal>;
 
-const PinMessageModal = ({ message, ...props }: PinMessageModalProps): ReactElement => {
+const PinMessageModal = ({ message, onCancel, ...props }: PinMessageModalProps): ReactElement => {
 	const t = useTranslation();
 	const getUserAvatarPath = useUserAvatarPath();
 	const displayName = useUserDisplayName(message.u);
 	const avatarUrl = getUserAvatarPath(message.u.username);
+	const pinMessage = usePinMessageMutation();
 
 	const attachment = {
 		author_name: String(displayName),
@@ -27,8 +29,21 @@ const PinMessageModal = ({ message, ...props }: PinMessageModalProps): ReactElem
 		md: message.md,
 	};
 
+	const onConfirm = async () => {
+		pinMessage.mutate({ message });
+		onCancel?.();
+	};
+
 	return (
-		<GenericModal icon='pin' title={t('Pin_Message')} variant='warning' confirmText={t('Yes_pin_message')} {...props}>
+		<GenericModal
+			{...props}
+			icon='pin'
+			title={t('Pin_Message')}
+			variant='warning'
+			confirmText={t('Yes_pin_message')}
+			onCancel={onCancel}
+			onConfirm={onConfirm}
+		>
 			<Box mbe={16} is='p'>
 				{t('Are_you_sure_you_want_to_pin_this_message')}
 			</Box>
