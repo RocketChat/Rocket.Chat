@@ -35,6 +35,7 @@ import type { ChannelsUnarchiveProps } from './ChannelsUnarchiveProps';
 
 export * from './ChannelsFilesListProps';
 export * from './ChannelsListProps';
+export * from './ChannelsOnlineProps';
 
 export type ChannelsEndpoints = {
 	'/v1/channels.files': {
