@@ -67,6 +67,8 @@ class E2E extends Emitter {
 
 	public privateKey: CryptoKey | undefined;
 
+	public publicKey: string | undefined;
+
 	private keyDistributionInterval: ReturnType<typeof setInterval> | null;
 
 	private state: E2EEState;
@@ -137,12 +139,52 @@ class E2E extends Emitter {
 		this.log('decryptSubscriptions');
 		await this.decryptSubscriptions();
 		this.log('decryptSubscriptions -> Done');
-		await this.initiateDecryptingPendingMessages();
-		this.log('DecryptingPendingMessages -> Done');
 		await this.initiateKeyDistribution();
 		this.log('initiateKeyDistribution -> Done');
 		this.observeSubscriptions();
 		this.log('observing subscriptions');
+	}
+
+	async onSubscriptionChanged(sub: ISubscription) {
+		this.log('Subscription changed', sub);
+		if (!sub.encrypted && !sub.E2EKey) {
+			this.removeInstanceByRoomId(sub.rid);
+			return;
+		}
+
+		const e2eRoom = await this.getInstanceByRoomId(sub.rid);
+		if (!e2eRoom) {
+			return;
+		}
+
+		if (sub.E2ESuggestedKey) {
+			if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
+				await this.acceptSuggestedKey(sub.rid);
+				e2eRoom.keyReceived();
+			} else {
+				console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
+				await this.rejectSuggestedKey(sub.rid);
+			}
+		}
+
+		sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+
+		// Cover private groups and direct messages
+		if (!e2eRoom.isSupportedRoomType(sub.t)) {
+			e2eRoom.disable();
+			return;
+		}
+
+		if (sub.E2EKey && e2eRoom.isWaitingKeys()) {
+			e2eRoom.keyReceived();
+			return;
+		}
+
+		if (!e2eRoom.isReady()) {
+			return;
+		}
+
+		await e2eRoom.decryptSubscription();
 	}
 
 	observeSubscriptions() {
@@ -150,47 +192,7 @@ class E2E extends Emitter {
 
 		this.observable = Subscriptions.find().observe({
 			changed: (sub: ISubscription) => {
-				setTimeout(async () => {
-					this.log('Subscription changed', sub);
-					if (!sub.encrypted && !sub.E2EKey) {
-						this.removeInstanceByRoomId(sub.rid);
-						return;
-					}
-
-					const e2eRoom = await this.getInstanceByRoomId(sub.rid);
-					if (!e2eRoom) {
-						return;
-					}
-
-					if (sub.E2ESuggestedKey) {
-						if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
-							await this.acceptSuggestedKey(sub.rid);
-							e2eRoom.keyReceived();
-						} else {
-							console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
-							await this.rejectSuggestedKey(sub.rid);
-						}
-					}
-
-					sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
-
-					// Cover private groups and direct messages
-					if (!e2eRoom.isSupportedRoomType(sub.t)) {
-						e2eRoom.disable();
-						return;
-					}
-
-					if (sub.E2EKey && e2eRoom.isWaitingKeys()) {
-						e2eRoom.keyReceived();
-						return;
-					}
-
-					if (!e2eRoom.isReady()) {
-						return;
-					}
-
-					await e2eRoom.decryptSubscription();
-				}, 0);
+				setTimeout(() => this.onSubscriptionChanged(sub), 0);
 			},
 			added: (sub: ISubscription) => {
 				setTimeout(async () => {
@@ -263,7 +265,17 @@ class E2E extends Emitter {
 		}
 
 		if (!this.instancesByRoomId[rid]) {
-			this.instancesByRoomId[rid] = new E2ERoom(Meteor.userId(), rid, room.t);
+			this.instancesByRoomId[rid] = new E2ERoom(Meteor.userId(), room);
+		}
+
+		// When the key was already set and is changed via an update, we update the room instance
+		if (
+			this.instancesByRoomId[rid].keyID !== undefined &&
+			room.e2eKeyId !== undefined &&
+			this.instancesByRoomId[rid].keyID !== room.e2eKeyId
+		) {
+			// KeyID was changed, update instance with new keyID and put room in waiting keys status
+			this.instancesByRoomId[rid].onRoomKeyReset(room.e2eKeyId);
 		}
 
 		return this.instancesByRoomId[rid];
@@ -316,10 +328,6 @@ class E2E extends Emitter {
 
 	initiateHandshake() {
 		Object.keys(this.instancesByRoomId).map((key) => this.instancesByRoomId[key].handshake());
-	}
-
-	async initiateDecryptingPendingMessages() {
-		await Promise.all(Object.keys(this.instancesByRoomId).map((key) => this.instancesByRoomId[key].decryptPendingMessages()));
 	}
 
 	openSaveE2EEPasswordModal(randomPassword: string) {
@@ -417,6 +425,7 @@ class E2E extends Emitter {
 		Accounts.storageLocation.removeItem('private_key');
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
+		this.publicKey = undefined;
 		this.started = false;
 		this.keyDistributionInterval && clearInterval(this.keyDistributionInterval);
 		this.keyDistributionInterval = null;
@@ -449,6 +458,7 @@ class E2E extends Emitter {
 
 	async loadKeys({ public_key, private_key }: { public_key: string; private_key: string }): Promise<void> {
 		Accounts.storageLocation.setItem('public_key', public_key);
+		this.publicKey = public_key;
 
 		try {
 			this.privateKey = await importRSAKey(EJSON.parse(private_key), ['decrypt']);
@@ -475,6 +485,7 @@ class E2E extends Emitter {
 		try {
 			const publicKey = await exportJWKKey(key.publicKey);
 
+			this.publicKey = JSON.stringify(publicKey);
 			Accounts.storageLocation.setItem('public_key', JSON.stringify(publicKey));
 		} catch (error) {
 			this.setState(E2EEState.ERROR);

@@ -1,7 +1,7 @@
 import { Modal, Button, Box, Callout, Margins } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type VideoConfConfigModalProps = {
 	onClose: () => void;
@@ -10,7 +10,7 @@ type VideoConfConfigModalProps = {
 };
 
 const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigModalProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Modal>

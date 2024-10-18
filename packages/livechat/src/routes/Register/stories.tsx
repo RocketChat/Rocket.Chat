@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import Register from '.';
@@ -13,7 +13,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof Register>>;
 
-const Template: Story<ComponentProps<typeof Register>> = (args) => <Register {...args} />;
+const Template: StoryFn<ComponentProps<typeof Register>> = (args) => <Register {...args} />;
 
 export const Normal = Template.bind({});
 Normal.storyName = 'normal';

@@ -1,18 +1,24 @@
 import { api } from '@rocket.chat/core-services';
-import type { IImport, IImportRecord, IImportChannel, IImportUser, IImportProgress } from '@rocket.chat/core-typings';
+import type {
+	IImport,
+	IImportRecord,
+	IImportChannel,
+	IImportUser,
+	IImportProgress,
+	IImporterShortSelection,
+} from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Settings, ImportData, Imports } from '@rocket.chat/models';
 import AdmZip from 'adm-zip';
 import type { MatchKeysAndValues, MongoServerError } from 'mongodb';
 
 import { Selection, SelectionChannel, SelectionUser } from '..';
-import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { t } from '../../../utils/lib/i18n';
 import { ProgressStep, ImportPreparingStartedStates } from '../../lib/ImporterProgressStep';
 import type { ImporterInfo } from '../definitions/ImporterInfo';
 import { ImportDataConverter } from './ImportDataConverter';
-import type { IConverterOptions } from './ImportDataConverter';
+import type { ConverterOptions } from './ImportDataConverter';
 import { ImporterProgress } from './ImporterProgress';
 import { ImporterWebsocket } from './ImporterWebsocket';
 
@@ -46,17 +52,15 @@ export class Importer {
 
 	public progress: ImporterProgress;
 
-	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: IConverterOptions = {}) {
+	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: ConverterOptions = {}) {
 		if (!info.key || !info.importer) {
 			throw new Error('Information passed in must be a valid ImporterInfo instance.');
 		}
 
-		this.converter = new ImportDataConverter(converterOptions);
-
 		this.info = info;
-
 		this.logger = new Logger(`${this.info.name} Importer`);
-		this.converter.setLogger(this.logger);
+
+		this.converter = new ImportDataConverter(this.logger, converterOptions);
 
 		this.importRecord = importRecord;
 		this.progress = new ImporterProgress(this.info.key, this.info.name);
@@ -93,70 +97,45 @@ export class Importer {
 	 * doesn't end up with a "locked" UI while Meteor waits for a response.
 	 * The returned object should be the progress.
 	 *
-	 * @param {Selection} importSelection The selection data.
+	 * @param {IImporterShortSelection} importSelection The selection data.
 	 * @returns {ImporterProgress} The progress record of the import.
 	 */
-	async startImport(importSelection: Selection, startedByUserId: string): Promise<ImporterProgress> {
-		if (!(importSelection instanceof Selection)) {
-			throw new Error(`Invalid Selection data provided to the ${this.info.name} importer.`);
-		} else if (importSelection.users === undefined) {
-			throw new Error(`Users in the selected data wasn't found, it must but at least an empty array for the ${this.info.name} importer.`);
-		} else if (importSelection.channels === undefined) {
-			throw new Error(
-				`Channels in the selected data wasn't found, it must but at least an empty array for the ${this.info.name} importer.`,
-			);
-		}
-		if (!startedByUserId) {
-			throw new Error('You must be logged in to do this.');
-		}
-
-		if (!startedByUserId) {
-			throw new Error('You must be logged in to do this.');
-		}
-
+	async startImport(importSelection: IImporterShortSelection, startedByUserId: string): Promise<ImporterProgress> {
 		await this.updateProgress(ProgressStep.IMPORTING_STARTED);
 		this.reloadCount();
 		const started = Date.now();
 
 		const beforeImportFn = async ({ data, dataType: type }: IImportRecord) => {
 			if (this.importRecord.valid === false) {
-				this.converter.aborted = true;
+				this.converter.abort();
 				throw new Error('The import operation is no longer valid.');
 			}
 
 			switch (type) {
 				case 'channel': {
-					if (!importSelection.channels) {
+					if (importSelection.channels?.all) {
 						return true;
+					}
+					if (!importSelection.channels?.list?.length) {
+						return false;
 					}
 
 					const channelData = data as IImportChannel;
 
 					const id = channelData.t === 'd' ? '__directMessages__' : channelData.importIds[0];
-					for (const channel of importSelection.channels) {
-						if (channel.channel_id === id) {
-							return channel.do_import;
-						}
-					}
-
-					return false;
+					return importSelection.channels.list?.includes(id);
 				}
 				case 'user': {
-					// #TODO: Replace this workaround
-					if (importSelection.users.length === 0 && this.info.key === 'api') {
+					if (importSelection.users?.all) {
 						return true;
+					}
+					if (!importSelection.users?.list?.length) {
+						return false;
 					}
 
 					const userData = data as IImportUser;
-
 					const id = userData.importIds[0];
-					for (const user of importSelection.users) {
-						if (user.user_id === id) {
-							return user.do_import;
-						}
-					}
-
-					return false;
+					return importSelection.users.list.includes(id);
 				}
 			}
 
@@ -167,7 +146,7 @@ export class Importer {
 			await this.addCountCompleted(1);
 
 			if (this.importRecord.valid === false) {
-				this.converter.aborted = true;
+				this.converter.abort();
 				throw new Error('The import operation is no longer valid.');
 			}
 		};
@@ -184,7 +163,7 @@ export class Importer {
 			}
 
 			if (this.importRecord.valid === false) {
-				this.converter.aborted = true;
+				this.converter.abort();
 				throw new Error('The import operation is no longer valid.');
 			}
 		};
@@ -200,8 +179,6 @@ export class Importer {
 				await this.applySettingValues({});
 
 				await this.updateProgress(ProgressStep.IMPORTING_USERS);
-				const usersToImport = importSelection.users.filter((user) => user.do_import);
-				await callbacks.run('beforeUserImport', { userCount: usersToImport.length });
 				await this.converter.convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn });
 
 				await this.updateProgress(ProgressStep.IMPORTING_CHANNELS);

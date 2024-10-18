@@ -5,7 +5,6 @@ import { Imports, ImportData } from '@rocket.chat/models';
 import { ObjectId } from 'mongodb';
 
 import { Importers } from '../../../app/importer/server';
-import { ImporterSelection } from '../../../app/importer/server/classes/ImporterSelection';
 import { settings } from '../../../app/settings/server';
 import { validateRoleList } from '../../lib/roles/validateRoleList';
 import { getNewUserRoles } from '../user/lib/getNewUserRoles';
@@ -175,7 +174,6 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 			skipExistingUsers: true,
 		});
 
-		const selection = new ImporterSelection(importer.name, [], [], 0);
-		await instance.startImport(selection, userId);
+		await instance.startImport({ users: { all: true } }, userId);
 	}
 }

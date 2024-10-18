@@ -3,7 +3,7 @@ import { Pagination } from '@rocket.chat/fuselage';
 import { useEffectEvent, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRouter, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, Dispatch, SetStateAction } from 'react';
 import React, { useMemo } from 'react';
@@ -19,6 +19,7 @@ import {
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import type { AdminUsersTab, UsersFilters, UsersTableSortingOption } from '../AdminUsersPage';
+import { useVoipExtensionPermission } from '../voip/hooks/useVoipExtensionPermission';
 import UsersTableFilters from './UsersTableFilters';
 import UsersTableRow from './UsersTableRow';
 
@@ -49,12 +50,13 @@ const UsersTable = ({
 
 	const isMobile = !breakpoints.includes('xl');
 	const isLaptop = !breakpoints.includes('xxl');
-	const isVoIPEnabled = useSetting<boolean>('VoIP_TeamCollab_Enabled') || false;
 
 	const { data, isLoading, isError, isSuccess } = filteredUsersQueryResult;
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = paginationData;
 	const { sortBy, sortDirection, setSort } = sortData;
+
+	const canManageVoipExtension = useVoipExtensionPermission();
 
 	const isKeyboardEvent = (
 		event: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>,
@@ -112,7 +114,7 @@ const UsersTable = ({
 					{t('Pending_action')}
 				</GenericTableHeaderCell>
 			),
-			tab === 'all' && isVoIPEnabled && (
+			tab === 'all' && canManageVoipExtension && (
 				<GenericTableHeaderCell
 					w='x180'
 					key='freeSwitchExtension'
@@ -126,7 +128,7 @@ const UsersTable = ({
 			),
 			<GenericTableHeaderCell key='actions' w={tab === 'pending' ? 'x204' : 'x50'} />,
 		],
-		[isLaptop, isMobile, setSort, sortBy, sortDirection, t, tab, isVoIPEnabled],
+		[isLaptop, isMobile, setSort, sortBy, sortDirection, t, tab, canManageVoipExtension],
 	);
 
 	return (
@@ -162,14 +164,14 @@ const UsersTable = ({
 							{data.users.map((user) => (
 								<UsersTableRow
 									key={user._id}
-									onClick={handleClickOrKeyDown}
+									tab={tab}
+									user={user}
 									isMobile={isMobile}
 									isLaptop={isLaptop}
-									user={user}
-									onReload={onReload}
-									tab={tab}
 									isSeatsCapExceeded={isSeatsCapExceeded}
-									showVoipExtension={isVoIPEnabled}
+									showVoipExtension={canManageVoipExtension}
+									onReload={onReload}
+									onClick={handleClickOrKeyDown}
 								/>
 							))}
 						</GenericTableBody>

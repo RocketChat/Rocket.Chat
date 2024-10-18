@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import { Contextualbar } from '../../../../../components/Contextualbar';
@@ -11,9 +11,9 @@ export default {
 		layout: 'fullscreen',
 	},
 	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
-} as ComponentMeta<typeof FileItem>;
+} satisfies Meta<typeof FileItem>;
 
-export const Default: ComponentStory<typeof FileItem> = (args) => <FileItem {...args} />;
+export const Default: StoryFn<typeof FileItem> = (args) => <FileItem {...args} />;
 Default.storyName = 'FileItem';
 Default.args = {
 	fileData: {
