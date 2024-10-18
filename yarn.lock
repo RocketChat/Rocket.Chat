@@ -7911,7 +7911,7 @@ __metadata:
     gc-stats: "npm:^1.4.1"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.34"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.4.0"
     pino: "npm:^8.15.0"
     polka: "npm:^0.5.2"
@@ -7941,7 +7941,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     human-interval: "npm:^2.0.1"
     moment-timezone: "npm:~0.5.46"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     typescript: "npm:~5.5.4"
   languageName: unknown
   linkType: soft
@@ -8044,7 +8044,7 @@ __metadata:
     gc-stats: "npm:^1.4.1"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.34"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.4.0"
     pino: "npm:^8.15.0"
     polka: "npm:^0.5.2"
@@ -8099,7 +8099,7 @@ __metadata:
     babel-jest: "npm:^29.5.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~29.7.0"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     prettier: "npm:~2.8.8"
     typescript: "npm:~5.5.4"
   languageName: unknown
@@ -8116,7 +8116,7 @@ __metadata:
     "@rocket.chat/ui-kit": "workspace:~"
     "@types/express": "npm:^4.17.21"
     eslint: "npm:~8.45.0"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     prettier: "npm:~2.8.8"
     typescript: "npm:~5.5.4"
   languageName: unknown
@@ -8131,7 +8131,7 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/random": "workspace:^"
     eslint: "npm:~8.45.0"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     typescript: "npm:~5.5.4"
   languageName: unknown
   linkType: soft
@@ -8212,7 +8212,7 @@ __metadata:
     jaeger-client: "npm:^3.19.0"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.34"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.4.0"
     pino: "npm:^8.15.0"
     pino-pretty: "npm:^7.6.1"
@@ -8570,7 +8570,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     eslint: "npm:~8.45.0"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     prettier: "npm:~2.8.8"
     typescript: "npm:~5.5.4"
   languageName: unknown
@@ -9111,7 +9111,7 @@ __metadata:
     moment: "npm:^2.29.4"
     moment-timezone: "npm:^0.5.46"
     mongo-message-queue: "npm:^1.0.0"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.6.1"
     node-dogstatsd: "npm:^0.0.7"
     node-fetch: "npm:2.7.0"
@@ -9228,7 +9228,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@types/node-rsa": "npm:^1.1.4"
     eslint: "npm:~8.45.0"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     typescript: "npm:~5.5.4"
   languageName: unknown
   linkType: soft
@@ -9303,7 +9303,7 @@ __metadata:
     mem: "npm:^8.1.1"
     moment-timezone: "npm:^0.5.46"
     mongo-message-queue: "npm:^1.0.0"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     pino: "npm:^8.15.0"
     typescript: "npm:~5.5.4"
   languageName: unknown
@@ -9338,7 +9338,7 @@ __metadata:
     moleculer: "npm:^0.14.34"
     moment-timezone: "npm:^0.5.46"
     mongo-message-queue: "npm:^1.0.0"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.4.0"
     pino: "npm:^8.15.0"
     polka: "npm:^0.5.2"
@@ -9475,7 +9475,7 @@ __metadata:
     gc-stats: "npm:^1.4.1"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.34"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.4.0"
     pino: "npm:^8.15.0"
     polka: "npm:^0.5.2"
@@ -9501,7 +9501,7 @@ __metadata:
     babel-jest: "npm:^29.0.3"
     eslint: "npm:~8.45.0"
     jest: "npm:~29.7.0"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     typescript: "npm:~5.5.4"
   languageName: unknown
   linkType: soft
@@ -9541,7 +9541,7 @@ __metadata:
     moleculer: "npm:^0.14.34"
     moment-timezone: "npm:^0.5.46"
     mongo-message-queue: "npm:^1.0.0"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.4.0"
     pino: "npm:^8.15.0"
     polka: "npm:^0.5.2"
@@ -9614,7 +9614,7 @@ __metadata:
     ajv-formats: "npm:^2.1.1"
     eslint: "npm:~8.45.0"
     jest: "npm:~29.7.0"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     typescript: "npm:~5.5.4"
   languageName: unknown
   linkType: soft
@@ -9698,7 +9698,7 @@ __metadata:
     gc-stats: "npm:^1.4.1"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.34"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.4.0"
     pino: "npm:^8.15.0"
     polka: "npm:^0.5.2"
@@ -9873,7 +9873,7 @@ __metadata:
     "@types/use-sync-external-store": "npm:^0.0.6"
     eslint: "npm:~8.45.0"
     eslint-plugin-react-hooks: "npm:^4.6.2"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     react: "npm:~17.0.2"
     typescript: "npm:~5.5.4"
     use-sync-external-store: "npm:^1.2.2"
@@ -28327,7 +28327,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:^4.17.2, mongodb@npm:^4.3.1":
+"mongodb@npm:4.17.2":
   version: 4.17.2
   resolution: "mongodb@npm:4.17.2"
   dependencies:
@@ -28342,6 +28342,24 @@ __metadata:
     "@mongodb-js/saslprep":
       optional: true
   checksum: 10/e9f252c13a12b6339b5b4912c32d40f447eaeae77f0b0d0e36b7fbaa6800eae69ae68c6e6f005f97e90c90ad2a9f56369a0924963b83f959c83a4c1398093642
+  languageName: node
+  linkType: hard
+
+"mongodb@patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch":
+  version: 4.17.2
+  resolution: "mongodb@patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch::version=4.17.2&hash=e26c00"
+  dependencies:
+    "@aws-sdk/credential-providers": "npm:^3.186.0"
+    "@mongodb-js/saslprep": "npm:^1.1.0"
+    bson: "npm:^4.7.2"
+    mongodb-connection-string-url: "npm:^2.6.0"
+    socks: "npm:^2.7.1"
+  dependenciesMeta:
+    "@aws-sdk/credential-providers":
+      optional: true
+    "@mongodb-js/saslprep":
+      optional: true
+  checksum: 10/6fe983f51a6e7f2a621788d36630cf7a1e87d29ee72d3665186cebb661927b8d62471972d6a8182d40f226e54ebbcd895e09cb00bbbf65ae0050ae55b3009ce4
   languageName: node
   linkType: hard
 
@@ -33341,7 +33359,7 @@ __metadata:
     jaeger-client: "npm:^3.19.0"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.34"
-    mongodb: "npm:^4.17.2"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.6.1"
     npm-run-all: "npm:^4.1.5"
     pino: "npm:^8.15.0"
