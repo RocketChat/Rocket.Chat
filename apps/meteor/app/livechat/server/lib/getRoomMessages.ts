@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
+import type { MessageTypesValues, IRoom } from '@rocket.chat/core-typings';
 import { Rooms, Messages } from '@rocket.chat/models';
-import { MessageTypesValues, IRoom } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
 export async function getRoomMessages({ rid }: { rid: string }) {
 	const room = await Rooms.findOneById<Pick<IRoom, 't'>>(rid, { projection: { t: 1 } });
@@ -21,4 +21,3 @@ export async function getRoomMessages({ rid }: { rid: string }) {
 		sort: { ts: 1 },
 	});
 }
-
