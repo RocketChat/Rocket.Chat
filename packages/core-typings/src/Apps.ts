@@ -1,5 +1,6 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { ExternalModuleName } from './license';
+
+import type { ExternalModuleName } from './license';
 
 export type AppScreenshot = {
 	id: string;
