@@ -9,7 +9,7 @@ import { Page, PageScrollableContentWithShadow } from '../../../components/Page'
 import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
 import PageHeaderNoShadow from '../../../components/Page/PageHeaderNoShadow';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import { useInvalidateLicense, useLicense } from '../../../hooks/useLicense';
+import { useInvalidateLicense, useLicenseWithCloudAnnouncement } from '../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 import { SubscriptionCalloutLimits } from './SubscriptionCalloutLimits';
 import SubscriptionPageSkeleton from './SubscriptionPageSkeleton';
@@ -51,7 +51,7 @@ const SubscriptionPage = () => {
 	const router = useRouter();
 	const { data: enterpriseData } = useIsEnterprise();
 	const { isRegistered } = useRegistrationStatus();
-	const { data: licensesData, isLoading: isLicenseLoading } = useLicense({ loadValues: true });
+	const { data: licensesData, isLoading: isLicenseLoading } = useLicenseWithCloudAnnouncement({ loadValues: true });
 	const syncLicenseUpdate = useWorkspaceSync();
 	const invalidateLicenseQuery = useInvalidateLicense();
 
@@ -59,7 +59,7 @@ const SubscriptionPage = () => {
 
 	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isLoading, 10000);
 
-	const { license, limits, activeModules = [] } = licensesData || {};
+	const { license, limits, activeModules = [], trial } = licensesData?.license || {};
 	const { isEnterprise = true } = enterpriseData || {};
 
 	const getKeyLimit = (key: 'monthlyActiveContacts' | 'activeUsers') => {
@@ -176,7 +176,7 @@ const SubscriptionPage = () => {
 								{seatsLimit.value !== undefined && (
 									<Grid.Item lg={6} xs={4} p={8}>
 										{seatsLimit.max !== Infinity ? (
-											<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={licensesData?.trial} />
+											<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={trial} />
 										) : (
 											<CountSeatsCard activeUsers={seatsLimit?.value} />
 										)}
@@ -186,7 +186,7 @@ const SubscriptionPage = () => {
 								{macLimit.value !== undefined && (
 									<Grid.Item lg={6} xs={4} p={8}>
 										{macLimit.max !== Infinity ? (
-											<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={licensesData?.trial} />
+											<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={trial} />
 										) : (
 											<CountMACCard macsCount={macLimit.value} />
 										)}
@@ -211,7 +211,7 @@ const SubscriptionPage = () => {
 								)}
 							</Grid>
 							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise}>
-								{Boolean(licensesData?.license?.information.cancellable) && (
+								{Boolean(license?.information.cancellable) && (
 									<Button loading={removeLicense.isLoading} secondary danger onClick={() => removeLicense.mutate()}>
 										{t('Cancel_subscription')}
 									</Button>

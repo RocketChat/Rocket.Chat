@@ -13,11 +13,26 @@ API.v1.addRoute(
 	{
 		async get() {
 			const unrestrictedAccess = await hasPermissionAsync(this.userId, 'view-privileged-setting');
+			const canManageCloud = await hasPermissionAsync(this.userId, 'manage-cloud');
 			const loadCurrentValues = unrestrictedAccess && Boolean(this.queryParams.loadValues);
 
-			const license = await License.getInfo({ limits: unrestrictedAccess, license: unrestrictedAccess, currentValues: loadCurrentValues });
+			const license = await License.getInfo({
+				limits: unrestrictedAccess,
+				license: unrestrictedAccess,
+				currentValues: loadCurrentValues,
+			});
 
-			return API.v1.success({ license });
+			const cloudSyncAnnouncementSetting = await Settings.findOneById('Cloud_Sync_Announcement_Payload');
+			let cloudSyncAnnouncement;
+
+			if (canManageCloud && cloudSyncAnnouncementSetting?.value) {
+				cloudSyncAnnouncement = JSON.parse(cloudSyncAnnouncementSetting.value as string);
+			}
+
+			return API.v1.success({
+				license,
+				...(cloudSyncAnnouncement && { cloudSyncAnnouncement }),
+			});
 		},
 	},
 );
