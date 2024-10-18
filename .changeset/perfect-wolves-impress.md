@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': major
 ---
 
-Changed custom emoji listing endpoint by moving query params from the 'query' attribute to standard query parameters.
+Changes custom emoji listing endpoint by moving query params from the 'query' attribute to standard query parameters.
