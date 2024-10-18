@@ -10,7 +10,7 @@ import {
 	type OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
+import { LivechatContacts, LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -25,6 +25,7 @@ import {
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
+import { shouldTriggerVerificationApp } from './Contacts';
 import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
 import { Livechat } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
@@ -179,6 +180,7 @@ export class QueueManager {
 				department: Match.Maybe(String),
 				name: Match.Maybe(String),
 				activity: Match.Maybe([String]),
+				contactId: Match.Maybe(String),
 			}),
 		);
 
@@ -255,7 +257,14 @@ export class QueueManager {
 			void notifyOnSettingChanged(livechatSetting);
 		}
 
-		const newRoom = (await this.queueInquiry(inquiry, room, defaultAgent)) ?? (await LivechatRooms.findOneById(rid));
+		let newRoom;
+		if (inquiry.v.contactId && (await shouldTriggerVerificationApp(inquiry.v.contactId, room.source))) {
+			newRoom = await LivechatRooms.findOneById(rid);
+			await LivechatContacts.updateContactChannel(inquiry.v._id, { verified: false });
+		} else {
+			newRoom = (await this.queueInquiry(inquiry, room, defaultAgent)) ?? (await LivechatRooms.findOneById(rid));
+		}
+
 		if (!newRoom) {
 			logger.error(`Room with id ${rid} not found`);
 			throw new Error('room-not-found');

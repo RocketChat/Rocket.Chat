@@ -31,6 +31,7 @@ export const executeGetImportFileData = async (): Promise<IImporterSelection | {
 		ProgressStep.PREPARING_CHANNELS,
 		ProgressStep.PREPARING_MESSAGES,
 		ProgressStep.PREPARING_USERS,
+		ProgressStep.PREPARING_CONTACTS,
 		ProgressStep.PREPARING_STARTED,
 	];
 

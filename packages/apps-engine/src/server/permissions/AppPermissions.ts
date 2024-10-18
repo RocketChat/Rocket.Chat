@@ -52,6 +52,10 @@ export const AppPermissions = {
         read: { name: 'moderation.read' },
         write: { name: 'moderation.write' },
     },
+    contact: {
+        read: { name: 'contact.read' },
+        write: { name: 'contact.write' },
+    },
     threads: {
         read: { name: 'threads.read' },
     },

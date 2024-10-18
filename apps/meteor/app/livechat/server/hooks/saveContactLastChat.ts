@@ -21,7 +21,7 @@ callbacks.add(
 		};
 		await LivechatVisitors.setLastChatById(guestId, lastChat);
 		if (contactId) {
-			await LivechatContacts.updateLastChatById(contactId, lastChat);
+			await LivechatContacts.updateLastChatById(contactId, guestId, lastChat);
 		}
 	},
 	callbacks.priority.MEDIUM,
