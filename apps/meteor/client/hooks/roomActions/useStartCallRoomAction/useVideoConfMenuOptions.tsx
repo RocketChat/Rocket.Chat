@@ -18,7 +18,7 @@ const useVideoConfMenuOptions = () => {
 	const user = useUser();
 	const federated = isRoomFederated(room);
 
-	const ownUser = room.uids?.length === 1 ?? false;
+	const ownUser = room.uids?.length === 1 || false;
 
 	const permittedToPostReadonly = usePermission('post-readonly', room._id);
 	const permittedToCallManagement = usePermission('call-management', room._id);
