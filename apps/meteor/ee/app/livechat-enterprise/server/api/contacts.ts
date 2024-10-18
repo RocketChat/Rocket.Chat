@@ -14,14 +14,11 @@ type blockContactProps = {
 const blockContactSchema = {
 	type: 'object',
 	properties: {
-		contactId: {
-			type: 'string',
-		},
 		visitorId: {
 			type: 'string',
 		},
 	},
-	required: ['contactId', 'visitorId'],
+	required: ['visitorId'],
 	additionalProperties: false,
 };
 
