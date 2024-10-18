@@ -7,15 +7,17 @@ import { updateSetting } from '../../data/permissions.helper';
 describe('federation', () => {
 	before((done) => getCredentials(done));
 
+	// FIXME: why debouncing is causing timeouts here on the hooks?
+	// Since we don't care about the watchers on this setting, not debouncing is fine.
 	describe('well-known', () => {
 		describe('when matrix disabled', () => {
 			before(async () => {
-				await updateSetting('Federation_Matrix_enabled', false);
-				await updateSetting('Federation_Matrix_serve_well_known', true);
+				await updateSetting('Federation_Matrix_enabled', false, false);
+				await updateSetting('Federation_Matrix_serve_well_known', true, false);
 			});
 
 			after(async () => {
-				await updateSetting('Federation_Matrix_serve_well_known', false);
+				await updateSetting('Federation_Matrix_serve_well_known', false, false);
 			});
 
 			it('should return 404 not found', async () => {
@@ -27,12 +29,12 @@ describe('federation', () => {
 
 		describe('when matrix enabled but well-known disabled', () => {
 			before(async () => {
-				await updateSetting('Federation_Matrix_enabled', true);
-				await updateSetting('Federation_Matrix_serve_well_known', false);
+				await updateSetting('Federation_Matrix_enabled', true, false);
+				await updateSetting('Federation_Matrix_serve_well_known', false, false);
 			});
 
 			after(async () => {
-				await updateSetting('Federation_Matrix_enabled', false);
+				await updateSetting('Federation_Matrix_enabled', false, false);
 			});
 
 			it('should return 404 not found', async () => {
@@ -44,13 +46,13 @@ describe('federation', () => {
 
 		describe('when enabled', () => {
 			before(async () => {
-				await updateSetting('Federation_Matrix_enabled', true);
-				await updateSetting('Federation_Matrix_serve_well_known', true);
+				await updateSetting('Federation_Matrix_enabled', true, false);
+				await updateSetting('Federation_Matrix_serve_well_known', true, false);
 			});
 
 			after(async () => {
-				await updateSetting('Federation_Matrix_enabled', false);
-				await updateSetting('Federation_Matrix_serve_well_known', false);
+				await updateSetting('Federation_Matrix_enabled', false, false);
+				await updateSetting('Federation_Matrix_serve_well_known', false, false);
 			});
 
 			it('should return matrix information', async () => {

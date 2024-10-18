@@ -30,7 +30,7 @@
 		"@babel/core": "~7.25.8",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.59.1",
+		"@rocket.chat/fuselage": "^0.59.3",
 		"@rocket.chat/fuselage-tokens": "^0.33.1",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/message-parser": "workspace:^",

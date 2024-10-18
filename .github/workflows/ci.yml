@@ -280,9 +280,46 @@ jobs:
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           coverage: ${{ github.event_name != 'release' }}
 
+  # TODO: this should go away once upstream builds are fixed
+  build-matrix-rust-bindings-for-alpine:
+    name: Builds matrix rust bindings against alpine
+    runs-on: ubuntu-latest
+    steps:
+      - run: sudo apt-get install -y musl-tools libunwind-dev && find /usr/include -name stdarg.h 2>/dev/null || true
+      - uses: actions/checkout@v4
+        with:
+          repository: matrix-org/matrix-rust-sdk-crypto-nodejs
+          ref: v0.2.0-beta.1 # https://github.com/element-hq/matrix-bot-sdk/blob/e72a4c498e00c6c339a791630c45d00a351f56a8/package.json#L58
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          targets: x86_64-unknown-linux-musl
+
+      - name: Install ziglang
+        uses: mlugg/setup-zig@v1
+        with:
+          version: 0.13.0
+
+      - name: Build
+        run: |
+          npm install --ignore-scripts
+          npx napi build --release --target x86_64-unknown-linux-musl --platform --zig
+
+      - name: Upload bin
+        uses: actions/upload-artifact@v4
+        with:
+          path: matrix-sdk-crypto.linux-x64-musl.node
+          name: napi-binary
+          if-no-files-found: error
+
   build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing
-    needs: [build, release-versions]
+    needs: [build, release-versions, build-matrix-rust-bindings-for-alpine]
     runs-on: ubuntu-20.04
 
     env:
@@ -310,6 +347,11 @@ jobs:
           platform: ${{ matrix.platform }}
           build-containers: ${{ matrix.platform == 'alpine' && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Make sure matrix bindings load
+        if: ${{ matrix.platform == 'alpine' }}
+        run: |
+          docker run --rm -w /app/bundle/programs/server/npm/node_modules/matrix-appservice-bridge ghcr.io/rocketchat/rocket.chat:$RC_DOCKER_TAG -e 'require(".")'
 
   build-gh-docker:
     name: 🚢 Build Docker Images for Production
