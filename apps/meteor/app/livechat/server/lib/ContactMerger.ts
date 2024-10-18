@@ -24,7 +24,7 @@ type ContactFields = {
 
 type CustomFieldAndValue = { type: `customFields.${string}`; value: string };
 
-type FieldAndValue =
+export type FieldAndValue =
 	| { type: keyof Omit<ContactFields, 'manager' | 'channel'>; value: string }
 	| { type: 'manager'; value: ManagerValue }
 	| { type: 'channel'; value: ILivechatContactChannel }

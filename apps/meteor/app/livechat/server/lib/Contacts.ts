@@ -32,7 +32,9 @@ import {
 	notifyOnLivechatInquiryChangedByRoom,
 } from '../../../lib/server/lib/notifyListener';
 import { i18n } from '../../../utils/lib/i18n';
+import type { FieldAndValue } from './ContactMerger';
 import { ContactMerger } from './ContactMerger';
+import type { RegisterGuestType } from './LivechatTyped';
 import { Livechat } from './LivechatTyped';
 
 type RegisterContactProps = {
@@ -197,6 +199,30 @@ export const Contacts = {
 		}
 
 		return contactId;
+	},
+
+	async registerGuestData(
+		{ name, phone, email, username }: Pick<RegisterGuestType, 'name' | 'phone' | 'email' | 'username'>,
+		visitorId: ILivechatVisitor['_id'],
+	): Promise<void> {
+		// If a visitor was updated who already had a contact, load up that contact and update that information as well
+		const contact = await LivechatContacts.findOneByVisitorId(visitorId);
+		if (!contact) {
+			return;
+		}
+
+		const fields = [
+			{ type: 'name', value: name },
+			{ type: 'phone', value: phone?.number },
+			{ type: 'email', value: email },
+			{ type: 'username', value: username },
+		].filter((field) => Boolean(field.value)) as FieldAndValue[];
+
+		if (!fields.length) {
+			return;
+		}
+
+		await ContactMerger.mergeFieldsIntoContact(fields, contact);
 	},
 };
 
