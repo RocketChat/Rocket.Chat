@@ -1,4 +1,4 @@
-import { trace, context } from '@opentelemetry/api';
+import { trace, context, SpanStatusCode } from '@opentelemetry/api';
 import type { MongoClient } from 'mongodb';
 
 import { isTracingEnabled } from '.';
@@ -45,5 +45,21 @@ export const initDatabaseTracing = (client: MongoClient) => {
 		span.end();
 	});
 
-	client.on('commandFailed', (event) => DurationStart.delete(event.requestId));
+	client.on('commandFailed', (event) => {
+		if (!DurationStart.has(event.requestId)) {
+			return;
+		}
+
+		const { span } = DurationStart.get(event.requestId);
+
+		DurationStart.delete(event.requestId);
+
+		span.recordException(event.failure);
+		span.setStatus({
+			code: SpanStatusCode.ERROR,
+			message: event.failure.message,
+		});
+
+		span.end();
+	});
 };
