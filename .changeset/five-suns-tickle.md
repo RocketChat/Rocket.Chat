@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Added `Recent` button on the new sidebar Search section to replicate the previous behavior of focusing the search bar - show recent chats.
+Adds `Recent` button on the new sidebar Search section to replicate the previous behavior of focusing the search bar - show recent chats.
