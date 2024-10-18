@@ -32,7 +32,7 @@ const updateManyPermissions = (permissions: { [key: string]: string[] }): Promis
 
 export const updateSetting = (setting: string, value: ISetting['value']): Promise<void | Error> =>
 	new Promise((resolve, reject) => {
-		console.time(`${setting}_${value}`);
+		const start = Date.now();
 		console.log(`starting ${setting} ${value}`);
 		try {
 			void request
@@ -43,7 +43,7 @@ export const updateSetting = (setting: string, value: ISetting['value']): Promis
 				.expect(200)
 				.end((err?: Error) => {
 					console.log(`done ${setting} ${value}`);
-					console.timeEnd(`${setting}_${value}`);
+					console.log(`took ${Date.now() - start}ms`);
 					if (!err) {
 						setTimeout(() => {
 							console.log('resolving', setting, value);
