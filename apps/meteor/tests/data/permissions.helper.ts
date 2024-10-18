@@ -38,10 +38,14 @@ export const updateSetting = (setting: string, value: ISetting['value']): Promis
 			.send({ value })
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.end((err?: Error) => setTimeout(() => {
+			.end((err?: Error) => {
 				console.log(`done ${setting}`);
-				(!err && resolve()) || reject(err);
-			}, 100));
+				if (!err) {
+					return resolve();
+				}
+
+				reject(err);
+			});
 	});
 
 export const getSettingValueById = async (setting: string): Promise<ISetting['value']> => {
@@ -53,14 +57,14 @@ export const getSettingValueById = async (setting: string): Promise<ISetting['va
 export const updateEESetting = (setting: string, value: ISetting['value']): Promise<void | Error> =>
 	IS_EE
 		? new Promise((resolve, reject) => {
-				void request
-					.post(`/api/v1/settings/${setting}`)
-					.set(credentials)
-					.send({ value })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.end((err?: Error) => setTimeout(() => (!err && resolve()) || reject(err), 100));
-		  })
+			void request
+				.post(`/api/v1/settings/${setting}`)
+				.set(credentials)
+				.send({ value })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.end((err?: Error) => setTimeout(() => (!err && resolve()) || reject(err), 100));
+		})
 		: Promise.resolve();
 
 export const removePermissions = async (perms: string[]) => {
