@@ -16,6 +16,7 @@ const insertUserDoc = sinon.stub();
 const callbacks = {
 	run: sinon.stub(),
 };
+const bcryptHash = sinon.stub();
 
 const { UserConverter } = proxyquire.noCallThru().load('../../../../../app/importer/server/classes/converters/UserConverter', {
 	'../../../../../lib/callbacks': {
@@ -38,6 +39,9 @@ const { UserConverter } = proxyquire.noCallThru().load('../../../../../app/impor
 	},
 	'../../../../lib/server/lib/notifyListener': {
 		notifyOnUserChange: sinon.stub(),
+	},
+	'bcrypt': {
+		hash: bcryptHash,
 	},
 	'meteor/check': sinon.stub(),
 	'meteor/meteor': sinon.stub(),
@@ -126,6 +130,7 @@ describe('User Converter', () => {
 		sinon.stub(converter, 'hashPassword');
 		converter.generateTempPassword.returns('tempPassword');
 		converter.hashPassword.callsFake((pass: string) => `hashed=${pass}`);
+		bcryptHash.callsFake((pass: string) => `hashed=${pass}`);
 
 		it('should map an empty object', async () => {
 			expect(
