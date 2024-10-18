@@ -10,4 +10,6 @@ export interface INpsVoteModel extends IBaseModel<INpsVote> {
 	save(vote: Omit<INpsVote, '_id' | '_updatedAt'>): Promise<UpdateResult>;
 	updateVotesToSent(voteIds: string[]): Promise<UpdateResult | Document>;
 	updateOldSendingToNewByNpsId(npsId: string): Promise<UpdateResult | Document>;
+	countByNpsId(npsId: string): Promise<number>;
+	countByNpsIdAndStatus(npsId: string, status: INpsVoteStatus): Promise<number>;
 }

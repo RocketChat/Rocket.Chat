@@ -251,12 +251,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const results: ITeamInfo[] = [];
 		for await (const record of records) {
-			const rooms = Rooms.findByTeamId(record._id);
-			const users = TeamMember.findByTeamId(record._id);
 			results.push({
 				...record,
-				rooms: await rooms.count(),
-				numberOfUsers: await users.count(),
+				rooms: await Rooms.countByTeamId(record._id),
+				numberOfUsers: await TeamMember.countByTeamId(record._id),
 			});
 		}
 
@@ -279,12 +277,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const results: ITeamInfo[] = [];
 		for await (const record of records) {
-			const rooms = Rooms.findByTeamId(record._id);
-			const users = TeamMember.findByTeamId(record._id);
 			results.push({
 				...record,
-				rooms: await rooms.count(),
-				numberOfUsers: await users.count(),
+				rooms: await Rooms.countByTeamId(record._id),
+				numberOfUsers: await TeamMember.countByTeamId(record._id),
 			});
 		}
 
@@ -797,8 +793,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 			if (existingMember) {
 				if (existingMember.roles?.includes('owner')) {
-					const owners = TeamMember.findByTeamIdAndRole(team._id, 'owner');
-					const totalOwners = await owners.count();
+					const totalOwners = await TeamMember.countByTeamIdAndRole(team._id, 'owner');
 					if (totalOwners === 1) {
 						throw new Error('last-owner-can-not-be-removed');
 					}
@@ -1002,9 +997,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	async getStatistics(): Promise<ITeamStats> {
 		return {
-			totalTeams: await Team.find({}).count(),
-			totalRoomsInsideTeams: await Rooms.findRoomsInsideTeams().count(),
-			totalDefaultRoomsInsideTeams: await Rooms.findRoomsInsideTeams(true).count(),
+			totalTeams: await Team.estimatedDocumentCount(),
+			totalRoomsInsideTeams: await Rooms.countRoomsInsideTeams(),
+			totalDefaultRoomsInsideTeams: await Rooms.countRoomsInsideTeams(true),
 		};
 	}
 
