@@ -23,7 +23,7 @@ export class ContactConverter extends RecordConverter<IImportContactRecord> {
 			phones: data.phones,
 			customFields: await this.convertCustomFields(data.customFields),
 			contactManager: await this._cache.getIdOfUsername(data.contactManager),
-			unknown: true,
+			unknown: false,
 			importIds: data.importIds,
 		});
 
