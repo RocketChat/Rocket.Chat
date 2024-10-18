@@ -1,6 +1,7 @@
+import type { IImporterShortSelection } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { Importer, ProgressStep, Selection } from '../../importer/server';
+import { Importer, ProgressStep } from '../../importer/server';
 import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
 import { setAvatarFromServiceWithValidation } from '../../lib/server/functions/setUserAvatar';
 
@@ -17,21 +18,23 @@ export class PendingAvatarImporter extends Importer {
 			return 0;
 		}
 
-		await this.updateRecord({ 'count.messages': fileCount, 'messagesstatus': null });
-		await this.addCountToTotal(fileCount);
+		this.progress.count.total += fileCount;
+		await this.updateRecord({
+			'count.messages': fileCount,
+			'count.total': fileCount,
+			'messagesstatus': null,
+			'status': ProgressStep.IMPORTING_FILES,
+		});
+		this.reportProgress();
 
-		const fileData = new Selection(this.info.name, [], [], fileCount);
-		await this.updateRecord({ fileData });
-
-		await super.updateProgress(ProgressStep.IMPORTING_FILES);
 		setImmediate(() => {
-			void this.startImport(fileData);
+			void this.startImport({});
 		});
 
 		return fileCount;
 	}
 
-	async startImport(importSelection: Selection): Promise<ImporterProgress> {
+	async startImport(importSelection: IImporterShortSelection): Promise<ImporterProgress> {
 		const pendingFileUserList = Users.findAllUsersWithPendingAvatar();
 		try {
 			for await (const user of pendingFileUserList) {
