@@ -42,6 +42,7 @@ describe('federation', () => {
 			});
 
 			it('should return 404 not found', async () => {
+				console.log('should start the actual test now');
 				await request.get('/.well-known/matrix/server').expect(404);
 
 				await request.get('/.well-known/matrix/client').expect(404);
