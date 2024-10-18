@@ -28,9 +28,11 @@ const FileUploadModal = ({
 }: FileUploadModalProps): ReactElement => {
 	const [name, setName] = useState<string>(fileName);
 	const [description, setDescription] = useState<string>(fileDescription || '');
+	const [descriptionError, setDescriptionError] = useState<boolean>(false);
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const maxFileSize = useSetting('FileUpload_MaxFileSize') as number;
+	const maxCharactersAllowed = useSetting('Message_MaxAllowedSize') as number;
 
 	const ref = useAutoFocus<HTMLInputElement>();
 
@@ -58,6 +60,11 @@ const FileUploadModal = ({
 				type: 'error',
 				message: t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) }),
 			});
+		}
+
+		if (description.length >= maxCharactersAllowed) {
+			setDescriptionError(true);
+			return;
 		}
 
 		onSubmit(name, description);
@@ -107,6 +114,9 @@ const FileUploadModal = ({
 								<FieldRow>
 									<TextInput value={description} onChange={handleDescription} placeholder={t('Description')} ref={ref} />
 								</FieldRow>
+								{descriptionError && (
+									<FieldError>{t('FileUpload_Description_Exceeds_Characters_Error', { limit: maxCharactersAllowed })}</FieldError>
+								)}
 							</Field>
 						)}
 					</FieldGroup>
