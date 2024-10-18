@@ -1119,7 +1119,9 @@ describe('[Groups]', () => {
 		it('should return an array with online members', async () => {
 			const { testUser, testUserCredentials, room } = await createUserAndChannel();
 
-			const response = await request.get(api('groups.online')).set(testUserCredentials).query(`query={"_id": "${room._id}"}`);
+			const response = await request.get(api('groups.online')).set(testUserCredentials).query({
+				_id: room._id,
+			});
 
 			const { body } = response;
 
@@ -1134,7 +1136,9 @@ describe('[Groups]', () => {
 		it('should return an empty array if members are offline', async () => {
 			const { testUserCredentials, room } = await createUserAndChannel(false);
 
-			const response = await request.get(api('groups.online')).set(testUserCredentials).query(`query={"_id": "${room._id}"}`);
+			const response = await request.get(api('groups.online')).set(testUserCredentials).query({
+				_id: room._id,
+			});
 
 			const { body } = response;
 
@@ -1150,7 +1154,9 @@ describe('[Groups]', () => {
 			await request
 				.get(api('groups.online'))
 				.set(outsiderCredentials)
-				.query(`query={"_id": "${room._id}"}`)
+				.query({
+					_id: room._id,
+				})
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);

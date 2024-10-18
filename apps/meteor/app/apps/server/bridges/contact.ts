@@ -1,6 +1,7 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
+import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat';
 import { ContactBridge } from '@rocket.chat/apps-engine/server/bridges';
-import type { ILivechatContact } from '@rocket.chat/core-typings';
+import type { IVisitor } from '@rocket.chat/core-typings';
 import { LivechatContacts } from '@rocket.chat/models';
 
 import { addContactEmail, verifyContactChannel } from '../../../livechat/server/lib/Contacts';
@@ -10,9 +11,9 @@ export class AppContactBridge extends ContactBridge {
 		super();
 	}
 
-	async getById(id: ILivechatContact['_id'], appId: string): Promise<ILivechatContact | null> {
+	async getByVisitorId(visitorId: IVisitor['_id'], appId: string): Promise<ILivechatContact | null> {
 		this.orch.debugLog(`The app ${appId} is fetching a contact`);
-		return LivechatContacts.findOneById(id);
+		return LivechatContacts.findOneByVisitorId<ILivechatContact>(visitorId);
 	}
 
 	async verifyContact(
