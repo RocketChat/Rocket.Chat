@@ -1,1 +1,1 @@
-export { default } from './ContactInfoHistory';
+export { default } from './ContactInfoHistoryRouter';
