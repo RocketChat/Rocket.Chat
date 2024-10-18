@@ -1,3 +1,5 @@
+import { faker } from '@faker-js/faker';
+
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
@@ -24,6 +26,8 @@ test.describe.serial('file-upload', () => {
 
 	test.afterAll(async ({ api }) => {
 		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml');
+		await setSettingValueById(api, 'FileUpload_MaxFileSize', 104857600);
+		await setSettingValueById(api, 'Message_MaxAllowedSize', 5000);
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 	});
 
@@ -75,7 +79,37 @@ test.describe.serial('file-upload', () => {
 		await poHomeChannel.content.sendFileMessage('diagram.drawio');
 		await expect(poHomeChannel.content.btnModalConfirm).not.toBeVisible();
 	});
+
+	test('expect not being able to send file when max file size is exceeded', async ({ api, page }) => {
+		await setSettingValueById(api, 'FileUpload_MaxFileSize', 1004);
+
+		await page.reload();
+		await poHomeChannel.content.dragAndDropTxtFile();
+		await poHomeChannel.content.btnModalConfirm.click();
+		await expect(poHomeChannel.content.lastMessageFileName).not.toContainText('any_file1.txt');
+	});
+
+	test('Upload file exceeding message characters limit', async ({ api, page }) => {
+		const charactersLimit = 100;
+		await setSettingValueById(api, 'Message_MaxAllowedSize', charactersLimit);
+
+		await page.reload();
+
+		await test.step('expect showing an error message when description is too long', async () => {
+			await poHomeChannel.content.dragAndDropTxtFile();
+			await poHomeChannel.content.descriptionInput.fill(faker.string.alpha(101));
+			await poHomeChannel.content.btnModalConfirm.click();
+			await expect(page.getByText(`Cannot upload file, ${charactersLimit} description character limit exceeded`)).toBeVisible();
+		});
+
+		await test.step('expect send file when description is edited to not exceed limit', async () => {
+			await poHomeChannel.content.descriptionInput.fill(faker.string.alpha(99));
+			await poHomeChannel.content.btnModalConfirm.click();
+			await expect(poHomeChannel.content.btnModalConfirm).not.toBeVisible();
+		});
+	});
 });
+
 test.describe('file-upload-not-member', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
