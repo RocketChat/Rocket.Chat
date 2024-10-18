@@ -2011,7 +2011,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.findOne<T>(query, {
 			...options,
 			sort: { _updatedAt: -1 },
-			limit: 1,
 		});
 	}
 
