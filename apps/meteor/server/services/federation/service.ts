@@ -321,7 +321,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 
 	public async verifyConfiguration(): Promise<void> {
 		if (process.env.TEST_MODE) {
-			return;
+			return this.markConfigurationValid();
 		}
 
 		try {
