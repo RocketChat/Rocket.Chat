@@ -34,7 +34,7 @@ export class TestsUserBridge extends UserBridge {
         throw new Error('Method not implemented');
     }
 
-    protected getUserUnreadMessageCount(uid: string): Promise<number> {
+    protected getUserUnreadMessageCount(uid: string, appId: string): Promise<number> {
         throw new Error('Method not implemented.');
     }
 
