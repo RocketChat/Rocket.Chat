@@ -126,6 +126,7 @@ jobs:
           mongodb-replica-set: rs0
 
       - uses: actions/checkout@v4
+      - run: docker compose -f docker-compose-ci.yml pull rocketchat &
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
