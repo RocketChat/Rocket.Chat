@@ -45,7 +45,7 @@ const ComposerOmnichannelCallout = () => {
 						{t('Add_contact')}
 					</Button>
 					<Button danger small onClick={handleBlock}>
-						{t('Block')}
+						{currentChannel?.blocked ? t('Unblock') : t('Block')}
 					</Button>
 				</ButtonGroup>
 			}
