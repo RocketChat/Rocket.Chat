@@ -32,6 +32,7 @@ const updateManyPermissions = (permissions: { [key: string]: string[] }): Promis
 
 export const updateSetting = (setting: string, value: ISetting['value']): Promise<void | Error> =>
 	new Promise((resolve, reject) => {
+		console.log(`starting ${setting} ${value}`);
 		try {
 			void request
 				.post(`/api/v1/settings/${setting}`)
