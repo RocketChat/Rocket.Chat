@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
 import { Livechat } from '../lib/LivechatTyped';
-import type { ILivechatMessage } from '../lib/LivechatTyped';
+import type { ILivechatMessage } from '../lib/localTypes';
 
 interface ILivechatMessageAgent {
 	agentId: string;

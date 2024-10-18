@@ -23,8 +23,8 @@ import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
 import { closeLivechatRoom } from '../../../../lib/server/functions/closeLivechatRoom';
 import { settings as rcSettings } from '../../../../settings/server';
 import { normalizeTransferredByData } from '../../lib/Helper';
-import type { CloseRoomParams } from '../../lib/LivechatTyped';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import type { CloseRoomParams } from '../../lib/localTypes';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
