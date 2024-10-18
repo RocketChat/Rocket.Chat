@@ -87,12 +87,12 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const handleAcquireApp = useCallback(() => {
 		setLoading(true);
 
-		if (appAddon && !workspaceHasAddon) {
+		if (isAdminUser && appAddon && !workspaceHasAddon) {
 			return setModal(<AddonRequiredModal actionType='install' onDismiss={cancelAction} onInstallAnyway={appInstallationHandler} />);
 		}
 
 		appInstallationHandler();
-	}, [appAddon, appInstallationHandler, cancelAction, setLoading, setModal, workspaceHasAddon]);
+	}, [appAddon, appInstallationHandler, cancelAction, isAdminUser, setLoading, setModal, workspaceHasAddon]);
 
 	// @TODO we should refactor this to not use the label to determine the variant
 	const getStatusVariant = (status: appStatusSpanResponseProps) => {

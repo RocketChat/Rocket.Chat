@@ -135,13 +135,13 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	const handleAddon = useCallback(
 		(actionType: AddonActionType, callback: () => void) => {
-			if (appAddon && !workspaceHasAddon) {
+			if (isAdminUser && appAddon && !workspaceHasAddon) {
 				return missingAddonHandler(actionType);
 			}
 
 			callback();
 		},
-		[appAddon, missingAddonHandler, workspaceHasAddon],
+		[appAddon, isAdminUser, missingAddonHandler, workspaceHasAddon],
 	);
 
 	const handleAcquireApp = useCallback(() => {
