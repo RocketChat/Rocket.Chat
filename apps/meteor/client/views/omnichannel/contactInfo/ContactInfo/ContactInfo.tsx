@@ -1,7 +1,7 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
-import { Box, IconButton, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Callout, IconButton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation, useEndpoint, usePermission, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useTranslation, useEndpoint, usePermission, useRouter, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
@@ -11,6 +11,7 @@ import { useContactRoute } from '../../hooks/useContactRoute';
 import ContactInfoChannels from '../tabs/ContactInfoChannels/ContactInfoChannels';
 import ContactInfoDetails from '../tabs/ContactInfoDetails';
 import ContactInfoHistory from '../tabs/ContactInfoHistory';
+import ReviewContactModal from './ReviewContactModal';
 
 type ContactInfoProps = {
 	contact: Serialized<ILivechatContact>;
@@ -21,6 +22,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 	const t = useTranslation();
 
 	const { getRouteName } = useRouter();
+	const setModal = useSetModal();
 	const currentRouteName = getRouteName();
 	const handleNavigate = useContactRoute();
 	const context = useRouteParameter('context');
@@ -33,7 +35,17 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 	const getCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
 	const { data: { customFields } = {} } = useQuery(['/v1/livechat/custom-fields'], () => getCustomFields());
 
-	const { name, emails, phones, createdAt, lastChat, contactManager, customFields: userCustomFields } = contact;
+	const {
+		name,
+		emails,
+		phones,
+		hasConflict,
+		conflictingFields,
+		createdAt,
+		lastChat,
+		contactManager,
+		customFields: userCustomFields,
+	} = contact;
 
 	const showContactHistory = (currentRouteName === 'live' || currentRouteName === 'omnichannel-directory') && lastChat;
 
@@ -56,7 +68,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 				<ContextualbarTitle>{t('Contact')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<Box display='flex' pi={24}>
+			<Box display='flex' flexDirection='column' pi={24}>
 				{name && (
 					<Box width='100%' pb={16} display='flex' alignItems='center' justifyContent='space-between'>
 						<Box display='flex'>
@@ -67,13 +79,28 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 							</Box>
 						</Box>
 						<IconButton
-							disabled={!canEditContact}
+							disabled={!canEditContact || hasConflict}
 							title={canEditContact ? t('Edit') : t('Not_authorized')}
 							small
 							icon='pencil'
 							onClick={() => handleNavigate({ context: 'edit' })}
 						/>
 					</Box>
+				)}
+				{hasConflict && (
+					<Callout
+						mbe={8}
+						alignItems='center'
+						icon='members'
+						actions={
+							<ButtonGroup>
+								<Button onClick={() => setModal(<ReviewContactModal onCancel={() => setModal(null)} contact={contact} />)} small>
+									{t('See_conflicts')}
+								</Button>
+							</ButtonGroup>
+						}
+						title={t('Conflicts_found', { conflicts: conflictingFields?.length })}
+					/>
 				)}
 			</Box>
 			<Tabs>

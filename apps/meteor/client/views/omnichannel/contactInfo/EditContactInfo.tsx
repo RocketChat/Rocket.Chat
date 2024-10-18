@@ -154,7 +154,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 				handleNavigate({ context: 'details', id: contactId });
 			}
 
-			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			dispatchToastMessage({ type: 'success', message: contactData ? t('Contact_has_been_updated') : t('Contact_has_been_created') });
 			await queryClient.invalidateQueries({ queryKey: ['current-contacts'] });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -240,22 +240,16 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 						{t('Add_phone')}
 					</Button>
 				</Field>
-				<Controller
-					name='contactManager'
-					control={control}
-					render={({ field: { value, onChange } }) => (
-						<ContactManagerInput
-							value={value}
-							handler={(currentValue) => {
-								if (currentValue === 'no-agent-selected') {
-									return onChange('');
-								}
-
-								onChange(currentValue);
-							}}
+				<Field>
+					<FieldLabel>{t('Contact_Manager')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							name='contactManager'
+							control={control}
+							render={({ field: { value, onChange } }) => <ContactManagerInput value={value} onChange={onChange} />}
 						/>
-					)}
-				/>
+					</FieldRow>
+				</Field>
 				<Divider />
 				{canViewCustomFields && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 			</ContextualbarScrollableContent>

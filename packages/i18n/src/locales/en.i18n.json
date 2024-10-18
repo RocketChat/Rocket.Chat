@@ -6670,11 +6670,18 @@
   "Block_channel_description": "Are you sure you want to block this channel? Messages from this conversation will no longer reach this workspace.",
   "Contact_unblocked": "Contact unblocked",
   "Contact_blocked": "Contact blocked",
+  "Contact_has_been_updated": "Contact has been updated",
+  "Contact_has_been_created": "Contact has been created",
   "Advanced_contact_profile": "Advanced contact profile",
   "Advanced_contact_profile_description": "Manage multiple emails and phone numbers for a single contact, enabling a comprehensive multi-channel history that keeps you well-informed and improves communication efficiency.",
   "Add_contact": "Add contact",
   "Add_to_contact_or_enable_verification_description": "Add to contact list manually or <1>enable verification</1> using multi-factor authentication.",
   "Ask_enable_advanced_contact_profile": "Ask your workspace admin to enable advanced contact profile",
   "close-blocked-room-comment": "This channel has been blocked",
-  "Contact_unverified_and_unknown": "Contact unverified and unknown"
+  "Contact_unverified_and_unknown": "Contact unverified and unknown",
+  "Review_contact": "Review contact",
+  "See_conflicts": "See conflicts",
+  "Conflicts_found": "Conflicts found",
+  "Contact_history_is_preserved": "Contact history is preserved",
+  "different_values_found": "{{number}} different values found"
 }
