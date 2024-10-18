@@ -12,8 +12,8 @@ export interface ILivechatContactChannel {
     verifiedAt?: Date;
     details?: OmnichannelSource;
     lastChat?: {
-	_id: string;
-	ts: Date;
+        _id: string;
+        ts: Date;
     };
 }
 
