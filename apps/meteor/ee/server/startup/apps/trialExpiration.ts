@@ -4,12 +4,13 @@ import { Meteor } from 'meteor/meteor';
 import { Apps } from '../../apps';
 
 Meteor.startup(async () => {
-	const migratePrivateAppsCallback = async () => {
+	const updateAppsCallback = async () => {
 		if (!Apps.isInitialized) return;
 
 		void Apps.migratePrivateApps();
+		void Apps.disableMarketplaceApps();
 	};
 
-	License.onInvalidateLicense(migratePrivateAppsCallback);
-	License.onRemoveLicense(migratePrivateAppsCallback);
+	License.onInvalidateLicense(updateAppsCallback);
+	License.onRemoveLicense(updateAppsCallback);
 });
