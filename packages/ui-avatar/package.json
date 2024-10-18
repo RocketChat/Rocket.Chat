@@ -3,7 +3,7 @@
 	"version": "7.0.0",
 	"private": true,
 	"devDependencies": {
-		"@babel/core": "~7.22.20",
+		"@babel/core": "~7.25.8",
 		"@rocket.chat/fuselage": "^0.59.1",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@types/react": "~17.0.80",
