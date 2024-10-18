@@ -370,6 +370,7 @@
 		"marked": "^4.2.5",
 		"matrix-appservice": "^2.0.0",
 		"matrix-appservice-bridge": "^10.3.1",
+		"matrix-bot-sdk": "^0.7.1",
 		"mem": "^8.1.1",
 		"meteor-node-stubs": "^1.2.10",
 		"mime-db": "^1.52.0",
