@@ -1,8 +1,9 @@
-import type { LivechatDepartmentDTO } from '@rocket.chat/core-typings';
-import { LivechatDepartment } from '@rocket.chat/models';
+import type { LivechatDepartmentDTO, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { notifyOnLivechatDepartmentAgentChangedByDepartmentId } from '../../../lib/server/lib/notifyListener';
 import { updateDepartmentAgents } from './Helper';
 import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
 /**
@@ -131,4 +132,70 @@ export async function saveDepartment(
 	}
 
 	return departmentDB;
+}
+
+export async function archiveDepartment(_id: string) {
+	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'businessHourId'>>(_id, {
+		projection: { _id: 1, businessHourId: 1 },
+	});
+
+	if (!department) {
+		throw new Error('department-not-found');
+	}
+
+	await Promise.all([LivechatDepartmentAgents.disableAgentsByDepartmentId(_id), LivechatDepartment.archiveDepartment(_id)]);
+
+	void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id);
+
+	await callbacks.run('livechat.afterDepartmentArchived', department);
+}
+
+export async function unarchiveDepartment(_id: string) {
+	const department = await LivechatDepartment.findOneById(_id, { projection: { _id: 1 } });
+
+	if (!department) {
+		throw new Meteor.Error('department-not-found');
+	}
+
+	// TODO: these kind of actions should be on events instead of here
+	await Promise.all([LivechatDepartmentAgents.enableAgentsByDepartmentId(_id), LivechatDepartment.unarchiveDepartment(_id)]);
+
+	void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id);
+
+	return true;
+}
+
+export async function saveDepartmentAgents(
+	_id: string,
+	departmentAgents: {
+		upsert?: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order' | 'username'>[];
+		remove?: Pick<ILivechatDepartmentAgents, 'agentId'>[];
+	},
+) {
+	check(_id, String);
+	check(departmentAgents, {
+		upsert: Match.Maybe([
+			Match.ObjectIncluding({
+				agentId: String,
+				username: String,
+				count: Match.Maybe(Match.Integer),
+				order: Match.Maybe(Match.Integer),
+			}),
+		]),
+		remove: Match.Maybe([
+			Match.ObjectIncluding({
+				agentId: String,
+				username: Match.Maybe(String),
+				count: Match.Maybe(Match.Integer),
+				order: Match.Maybe(Match.Integer),
+			}),
+		]),
+	});
+
+	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'enabled'>>(_id, { projection: { enabled: 1 } });
+	if (!department) {
+		throw new Meteor.Error('error-department-not-found', 'Department not found');
+	}
+
+	return updateDepartmentAgents(_id, departmentAgents, department.enabled);
 }
