@@ -289,37 +289,45 @@ jobs:
     name: Builds matrix rust bindings against alpine
     runs-on: ubuntu-latest
     steps:
-      - run: sudo apt-get install -y musl-tools libunwind-dev && find /usr/include -name stdarg.h 2>/dev/null || true
+      - name: check cache for matrix-rust-sdk-crypto-nodejs
+        id: matrix-rust-sdk-crypto-nodejs
+        uses: actions/cache@v3
+        with:
+          path: /tmp/build/matrix-sdk-crypto.linux-x64-musl.node
+          key: matrix-rust-sdk-crypto-nodejs-v0.2.0-beta.1
+
       - uses: actions/checkout@v4
         with:
           repository: matrix-org/matrix-rust-sdk-crypto-nodejs
           ref: v0.2.0-beta.1 # https://github.com/element-hq/matrix-bot-sdk/blob/e72a4c498e00c6c339a791630c45d00a351f56a8/package.json#L58
 
-      - uses: actions/setup-node@v4
+      - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
+        run: sudo apt-get install -y musl-tools libunwind-dev && find /usr/include -name stdarg.h 2>/dev/null || true
+
+      - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - uses: dtolnay/rust-toolchain@stable
+      - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
           targets: x86_64-unknown-linux-musl
 
-      - name: Install ziglang
+      - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
+        name: Install ziglang
         uses: mlugg/setup-zig@v1
         with:
           version: 0.13.0
 
-      - name: Build
+      - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
+        name: Build
         run: |
           npm install --ignore-scripts
           npx napi build --release --target x86_64-unknown-linux-musl --platform --zig
-
-      - name: Upload bin
-        uses: actions/upload-artifact@v4
-        with:
-          path: matrix-sdk-crypto.linux-x64-musl.node
-          name: napi-binary
-          if-no-files-found: error
+          mkdir -p /tmp/build
+          mv matrix-sdk-crypto.linux-x64-musl.node /tmp/build/matrix-sdk-crypto.linux-x64-musl.node
 
   build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing
