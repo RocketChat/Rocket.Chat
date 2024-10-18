@@ -232,7 +232,7 @@ export const Contacts = {
 			return;
 		}
 
-		await ContactMerger.mergeFieldsIntoContact(fields, contact);
+		await ContactMerger.mergeFieldsIntoContact(fields, contact, contact.unknown ? 'overwrite' : 'conflict');
 	},
 };
 
