@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 import { isOAuthUser, type IUser } from '@rocket.chat/core-typings';
-import { Settings, Users } from '@rocket.chat/models';
+import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import {
 	isShieldSvgProps,
 	isSpotlightProps,
@@ -664,6 +664,7 @@ API.v1.addRoute(
 			const settingsIds: string[] = [];
 
 			if (this.bodyParams.setDeploymentAs === 'new-workspace') {
+				await WorkspaceCredentials.unsetCredentialByScope();
 				settingsIds.push(
 					'Cloud_Service_Agree_PrivacyTerms',
 					'Cloud_Workspace_Id',
@@ -675,9 +676,7 @@ API.v1.addRoute(
 					'Cloud_Workspace_PublicKey',
 					'Cloud_Workspace_License',
 					'Cloud_Workspace_Had_Trial',
-					'Cloud_Workspace_Access_Token',
 					'uniqueID',
-					'Cloud_Workspace_Access_Token_Expires_At',
 				);
 			}
 

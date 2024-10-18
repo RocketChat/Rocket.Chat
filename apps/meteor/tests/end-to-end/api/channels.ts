@@ -373,9 +373,7 @@ describe('[Channels]', () => {
 				.get(api('channels.list'))
 				.set(credentials)
 				.query({
-					query: JSON.stringify({
-						_id: testChannel._id,
-					}),
+					_id: testChannel._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -1003,7 +1001,7 @@ describe('[Channels]', () => {
 			return request
 				.get(api('channels.online'))
 				.set(testUserCredentials)
-				.query(`query={"_id": "${room._id}"}`)
+				.query({ _id: room._id })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -1027,7 +1025,7 @@ describe('[Channels]', () => {
 			return request
 				.get(api('channels.online'))
 				.set(outsiderCredentials)
-				.query(`query={"_id": "${room._id}"}`)
+				.query({ _id: room._id })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
