@@ -14,8 +14,6 @@ import type {
 	ILivechatDepartment,
 	AtLeast,
 	TransferData,
-	MessageAttachment,
-	IMessageInbox,
 	IOmnichannelAgent,
 	ILivechatDepartmentAgents,
 	LivechatDepartmentDTO,
