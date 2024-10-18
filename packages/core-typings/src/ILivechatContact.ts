@@ -1,6 +1,6 @@
-import type { OmnichannelSource } from './ILivechatRoom';
 import type { IVisitorEmail, IVisitorPhone } from './ILivechatVisitor';
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IOmnichannelSource } from './IRoom';
 
 export interface ILivechatContactChannel {
 	name: string;
@@ -10,7 +10,7 @@ export interface ILivechatContactChannel {
 	field?: string;
 	value?: string;
 	verifiedAt?: Date;
-	details?: OmnichannelSource;
+	details?: IOmnichannelSource;
 	lastChat?: {
 		_id: string;
 		ts: Date;

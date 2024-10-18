@@ -1,4 +1,4 @@
-import type { IOmnichannelSource } from './IOmnichannelSource';
+import type { OmnichannelSource } from './ILivechatRoom';
 import type { IVisitorEmail } from './IVisitorEmail';
 import type { IVisitorPhone } from './IVisitorPhone';
 
@@ -10,7 +10,7 @@ export interface ILivechatContactChannel {
     field?: string;
     value?: string;
     verifiedAt?: Date;
-    details?: IOmnichannelSource;
+    details?: OmnichannelSource;
 }
 
 export interface ILivechatContactConflictingField {
