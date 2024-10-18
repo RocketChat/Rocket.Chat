@@ -42,7 +42,11 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 
 	return (
 		<>
-			<AttachmentContent className={quoteStyles} width='full'>
+			<AttachmentContent
+				className={quoteStyles}
+				width='full'
+				{...(attachment.message_link && { is: 'a', href: attachment.message_link, style: { textDecoration: 'none' } })}
+			>
 				<AttachmentDetails
 					is='blockquote'
 					borderRadius='x2'
@@ -59,10 +63,7 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 							{attachment.author_name}
 						</AttachmentAuthorName>
 						{attachment.ts && (
-							<Box
-								fontScale='c1'
-								{...(attachment.message_link ? { is: 'a', href: attachment.message_link, color: 'hint' } : { color: 'hint' })}
-							>
+							<Box fontScale='c1' color='hint'>
 								{formatTime(attachment.ts)}
 							</Box>
 						)}
