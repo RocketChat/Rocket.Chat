@@ -49,10 +49,3 @@ registerOmnichannelSidebarItem({
 	i18nLabel: 'Priorities',
 	permissionGranted: () => hasAtLeastOnePermission('manage-livechat-priorities'),
 });
-
-registerOmnichannelSidebarItem({
-	href: '/omnichannel/security-privacy',
-	icon: 'shield-check',
-	i18nLabel: 'Security_and_privacy',
-	permissionGranted: () => hasAtLeastOnePermission(['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings']),
-});
