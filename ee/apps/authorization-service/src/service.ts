@@ -1,10 +1,13 @@
 import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
 import { broker } from '@rocket.chat/network-broker';
+import { startTracing } from '@rocket.chat/tracing';
 import polka from 'polka';
 
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
 
 const PORT = process.env.PORT || 3034;
+
+startTracing({ service: 'authorization-service' });
 
 (async () => {
 	const db = await getConnection();

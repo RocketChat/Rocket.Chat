@@ -1,6 +1,7 @@
 import http from 'http';
 
 import { Statistics } from '@rocket.chat/models';
+import { tracerSpan } from '@rocket.chat/tracing';
 import connect from 'connect';
 import { Facts } from 'meteor/facts-base';
 import { Meteor } from 'meteor/meteor';
@@ -169,7 +170,20 @@ const updatePrometheusConfig = async (): Promise<void> => {
 			host: process.env.BIND_IP || '0.0.0.0',
 		});
 
-		timer = setInterval(setPrometheusData, 5000);
+		timer = setInterval(async () => {
+			void tracerSpan(
+				'setPrometheusData',
+				{
+					attributes: {
+						port: is.port,
+						host: process.env.BIND_IP || '0.0.0.0',
+					},
+				},
+				() => {
+					void setPrometheusData();
+				},
+			);
+		}, 5000);
 	}
 
 	clearInterval(resetTimer);

@@ -1,3 +1,4 @@
+import { initDatabaseTracing, isTracingEnabled } from '@rocket.chat/tracing';
 import { MongoClient } from 'mongodb';
 import type { Db, Collection, MongoClientOptions, Document } from 'mongodb';
 
@@ -6,7 +7,10 @@ const { MONGO_URL = 'mongodb://localhost:27017/rocketchat' } = process.env;
 const name = /^mongodb:\/\/.*?(?::[0-9]+)?\/([^?]*)/.exec(MONGO_URL)?.[1];
 
 function connectDb(options?: MongoClientOptions): Promise<MongoClient> {
-	const client = new MongoClient(MONGO_URL, options);
+	const client = new MongoClient(MONGO_URL, {
+		...options,
+		monitorCommands: isTracingEnabled(),
+	});
 
 	return client.connect().catch((error) => {
 		// exits the process in case of any error
@@ -28,6 +32,8 @@ export const getConnection = ((): ((options?: MongoClientOptions) => Promise<Db>
 			client = await connectDb(options);
 			db = client.db(name);
 		}
+
+		initDatabaseTracing(client);
 
 		// if getConnection was called multiple times before it was connected, wait for the connection
 		return client.db(name);
