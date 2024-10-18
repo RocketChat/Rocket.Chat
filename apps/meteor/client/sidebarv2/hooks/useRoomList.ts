@@ -1,8 +1,8 @@
 import type { ILivechatInquiryRecord, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import type { TranslationKey, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
 import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
@@ -27,41 +27,15 @@ const order = [
 	'Conversations',
 ] as const;
 
-const CATEGORIES = {
-	Incoming_Calls: 'Incoming_Calls',
-	Incoming_Livechats: 'Incoming_Livechats',
-	Open_Livechats: 'Open_Livechats',
-	On_Hold_Chats: 'On_Hold_Chats',
-	Unread: 'Unread',
-	Favorites: 'Favorites',
-	Teams: 'Teams',
-	Discussions: 'Discussions',
-	Channels: 'Channels',
-	Direct_Messages: 'Direct_Messages',
-	Conversations: 'Conversations',
-};
-
-const getGroupsCount = (rooms: Array<ISubscription & IRoom>) => {
-	return rooms
-		.reduce((acc, item, index) => {
-			if (typeof item === 'string') {
-				acc.push(index);
-			}
-			return acc;
-		}, [] as number[])
-		.map((item, index, arr) => (arr[index + 1] ? arr[index + 1] : rooms.length) - item - 1);
-};
-
-export const useRoomList = (): {
-	flatList: Array<ISubscription & IRoom>;
+export const useRoomList = ({
+	collapsedGroups,
+}: {
+	collapsedGroups?: string[];
+}): {
 	roomList: Array<ISubscription & IRoom>;
 	groupsCount: number[];
 	groupsList: TranslationKey[];
-	handleCollapsedGroups: (groupTitle: string) => void;
-	collapsedGroups: string[];
 } => {
-	const [collapsedGroups, setCollapsedGroups] = useLocalStorage<string[]>('sidebarGroups', []);
-
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
@@ -77,16 +51,11 @@ export const useRoomList = (): {
 
 	const incomingCalls = useVideoConfIncomingCalls();
 
-	let queue = emptyQueue;
-	if (inquiries.enabled) {
-		queue = inquiries.queue;
-	}
+	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 
-	const { flatRoomList, groupsCount, groupsList, roomList } = useDebouncedValue(
+	const { groupsCount, groupsList, roomList } = useDebouncedValue(
 		useMemo(() => {
-			const isCollapsed = (groupTitle: string) => collapsedGroups.includes(groupTitle);
-			const shouldAddUnread = (room: SubscriptionWithRoom) =>
-				!(sidebarShowUnread && isCollapsed(CATEGORIES.Unread) && (room.alert || room.unread));
+			const isCollapsed = (groupTitle: string) => collapsedGroups?.includes(groupTitle);
 
 			const incomingCall = new Set();
 			const favorite = new Set();
@@ -113,42 +82,40 @@ export const useRoomList = (): {
 				}
 
 				if (favoritesEnabled && room.f) {
-					return shouldAddUnread(room) && favorite.add(room);
+					return favorite.add(room);
 				}
 
 				if (sidebarGroupByType && room.teamMain) {
-					return shouldAddUnread(room) && team.add(room);
+					return team.add(room);
 				}
 
 				if (sidebarGroupByType && isDiscussionEnabled && room.prid) {
-					return shouldAddUnread(room) && discussion.add(room);
+					return discussion.add(room);
 				}
 
 				if (room.t === 'c' || room.t === 'p') {
-					shouldAddUnread(room) && channels.add(room);
+					channels.add(room);
 				}
 
 				if (room.t === 'l' && room.onHold) {
-					return showOmnichannel && shouldAddUnread(room) && onHold.add(room);
+					return showOmnichannel && onHold.add(room);
 				}
 
 				if (room.t === 'l') {
-					return showOmnichannel && shouldAddUnread(room) && omnichannel.add(room);
+					return showOmnichannel && omnichannel.add(room);
 				}
 
 				if (room.t === 'd') {
-					shouldAddUnread(room) && direct.add(room);
+					direct.add(room);
 				}
 
-				if (shouldAddUnread(room)) {
-					conversation.add(room);
-				}
+				conversation.add(room);
 			});
 
-			const groups = new Map();
+			const groups = new Map<string, Set<any>>();
 			incomingCall.size && groups.set('Incoming_Calls', incomingCall);
 
-			showOmnichannel && inquiries.enabled && queue.length && groups.set('Incoming_Livechats', queue);
+			showOmnichannel && inquiries.enabled && queue.length && groups.set('Incoming_Livechats', new Set(queue));
 			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
 
@@ -166,31 +133,39 @@ export const useRoomList = (): {
 
 			!sidebarGroupByType && groups.set('Conversations', conversation);
 
-			const groupsList: TranslationKey[] = [];
-			const roomList: Array<ISubscription & IRoom> = [];
+			const { groupsCount, groupsList, roomList } = sidebarOrder.reduce(
+				(acc, key) => {
+					const value = groups.get(key);
 
-			const flatRoomList = sidebarOrder
-				.map((key) => {
-					const group = groups.get(key);
-					if (!group) {
-						return [];
+					if (!value) {
+						return acc;
 					}
-					groupsList.push(key);
+
+					acc.groupsList.push(key as TranslationKey);
 					if (isCollapsed(key)) {
-						return [key];
+						acc.groupsCount.push(0);
+						return acc;
 					}
 
-					roomList.push(...group);
+					acc.groupsCount.push(value.size);
+					acc.roomList.push(...value);
+					return acc;
+				},
+				{
+					groupsCount: [],
+					groupsList: [],
+					roomList: [],
+				} as {
+					groupsCount: number[];
+					groupsList: TranslationKey[];
+					roomList: Array<ISubscription & IRoom>;
+				},
+			);
 
-					return [key, ...group];
-				})
-				.flat();
-
-			return { flatRoomList, groupsCount: getGroupsCount([...flatRoomList]), groupsList, roomList };
+			return { groupsCount, groupsList, roomList };
 		}, [
 			rooms,
 			showOmnichannel,
-			incomingCalls,
 			inquiries.enabled,
 			queue,
 			sidebarShowUnread,
@@ -199,27 +174,14 @@ export const useRoomList = (): {
 			isDiscussionEnabled,
 			sidebarOrder,
 			collapsedGroups,
+			incomingCalls,
 		]),
 		50,
 	);
 
-	const handleCollapsedGroups = useCallback(
-		(group: string) => {
-			if (collapsedGroups.includes(group)) {
-				setCollapsedGroups(collapsedGroups.filter((item) => item !== group));
-			} else {
-				setCollapsedGroups([...collapsedGroups, group]);
-			}
-		},
-		[collapsedGroups, setCollapsedGroups],
-	);
-
 	return {
-		flatList: flatRoomList,
 		roomList,
 		groupsCount,
 		groupsList,
-		handleCollapsedGroups,
-		collapsedGroups,
 	};
 };

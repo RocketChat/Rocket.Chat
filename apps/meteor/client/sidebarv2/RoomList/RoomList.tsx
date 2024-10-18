@@ -9,6 +9,7 @@ import { GroupedVirtuoso } from 'react-virtuoso';
 import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
@@ -20,7 +21,9 @@ import RoomListWrapper from './RoomListWrapper';
 const RoomList = () => {
 	const { t } = useTranslation();
 	const isAnonymous = !useUserId();
-	const { groupsCount, groupsList, roomList, handleCollapsedGroups, collapsedGroups } = useRoomList();
+
+	const { collapsedGroups, handleCollapsedGroups } = useCollapsedGroups();
+	const { groupsCount, groupsList, roomList } = useRoomList({ collapsedGroups });
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const { ref } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });
@@ -44,12 +47,6 @@ const RoomList = () => {
 	usePreventDefault(ref);
 	useShortcutOpenMenu(ref);
 
-	const handleCollapse = (groupTitle: string) => {
-		if (groupTitle) {
-			handleCollapsedGroups(groupTitle);
-		}
-	};
-
 	return (
 		<Box position='relative' display='flex' overflow='hidden' height='full' flexGrow={1} flexShrink={1} flexBasis='auto' ref={ref}>
 			<GroupedVirtuoso
@@ -57,8 +54,8 @@ const RoomList = () => {
 				groupContent={(index) => (
 					<SidebarV2CollapseGroup
 						title={t(groupsList[index])}
-						onClick={() => handleCollapse(groupsList[index])}
-						onKeyDown={() => handleCollapse(groupsList[index])}
+						onClick={() => handleCollapsedGroups(groupsList[index])}
+						onKeyDown={() => handleCollapsedGroups(groupsList[index])}
 						expanded={!collapsedGroups.includes(groupsList[index])}
 					/>
 				)}
