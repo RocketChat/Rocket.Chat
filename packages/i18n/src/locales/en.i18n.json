@@ -380,6 +380,9 @@
   "admin-video-conf-provider-not-configured": "**Conference call not enabled**: Configure conference calls in order to make it available on this workspace.",
   "admin-no-videoconf-provider-app": "**Conference call not enabled**: Conference call apps are available in the Rocket.Chat marketplace.",
   "Administration": "Administration",
+  "Add-on": "Add-on",
+  "Add-on_required": "Add-on required",
+  "Add-on_required_modal_enable_content": "App cannot be enabled without the required subscription add-on. Contact sales to get the add-on for this app.",
   "Address": "Address",
   "Adjustable_font_size": "Adjustable font size",
   "Adjustable_font_size_description": "Designed for those who prefer larger or smaller text for improved readability. This flexibility promotes inclusivity by empowering users to tailor the software interface to their specific needs.",
@@ -2248,6 +2251,7 @@
   "error-registration-not-found": "Registration information not found",
   "error-extension-not-available": "Extension not available",
   "error-user-not-found": "User not found",
+  "error-voip-disaled": "Team voice calls (VoIP) is disabled",
   "error-extension-not-assigned": "Extension not assigned",
   "Workspace_exceeded_MAC_limit_disclaimer": "The workspace has exceeded the monthly limit of active contacts. Talk to your workspace admin to address this issue.",
   "You_do_not_have_permission_to_do_this": "You do not have permission to do this",
@@ -4583,6 +4587,7 @@
   "Require_any_token": "Require any token",
   "Require_password_change": "Require password change",
   "Require_Two_Factor_Authentication": "Require Two Factor Authentication",
+  "Requires_subscription_add-on": "Requires subscription add-on",
   "Resend_verification_email": "Resend verification email",
   "Resend_welcome_email": "Resend welcome email",
   "Reset": "Reset",
@@ -6356,6 +6361,8 @@
   "onboarding.form.standaloneServerForm.servicesUnavailable": "Some of the services will be unavailable or will require manual setup",
   "onboarding.form.standaloneServerForm.publishOwnApp": "In order to send push notitications you need to compile and publish your own app to Google Play and App Store",
   "onboarding.form.standaloneServerForm.manuallyIntegrate": "Need to manually integrate with external services",
+  "Subscription_add-on_required": "Subscription add-on required",
+  "App_cannot_be_enabled_without_add-on": "App cannot be enabled without add-on.",
   "subscription.callout.servicesDisruptionsMayOccur": "Services disruptions may occur",
   "subscription.callout.servicesDisruptionsOccurring": "Services disruptions occurring",
   "subscription.callout.capabilitiesDisabled": "Capabilities disabled",
@@ -6646,5 +6653,6 @@
   "Sidepanel_navigation": "Secondary navigation for teams",
   "Sidepanel_navigation_description": "Display channels and/or discussions associated with teams by default. This allows team owners to customize communication methods to best meet their team’s needs. This is currently in feature preview and will be a premium capability once fully released.",
   "Show_channels_description": "Show team channels in second sidebar",
-  "Show_discussions_description": "Show team discussions in second sidebar"
+  "Show_discussions_description": "Show team discussions in second sidebar",
+  "Recent": "Recent"
 }
