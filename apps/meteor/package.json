@@ -379,7 +379,7 @@
 		"moment": "^2.29.4",
 		"moment-timezone": "^0.5.46",
 		"mongo-message-queue": "^1.0.0",
-		"mongodb": "^4.17.2",
+		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
 		"nats": "^2.6.1",
 		"node-dogstatsd": "^0.0.7",
 		"node-fetch": "2.7.0",
