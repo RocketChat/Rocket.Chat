@@ -17,6 +17,7 @@ const callbacks = {
 	run: sinon.stub(),
 };
 const bcryptHash = sinon.stub();
+const sha = sinon.stub();
 
 const { UserConverter } = proxyquire.noCallThru().load('../../../../../app/importer/server/classes/converters/UserConverter', {
 	'../../../../../lib/callbacks': {
@@ -46,6 +47,9 @@ const { UserConverter } = proxyquire.noCallThru().load('../../../../../app/impor
 	},
 	'meteor/check': sinon.stub(),
 	'meteor/meteor': sinon.stub(),
+	'@rocket.chat/sha256': {
+		SHA256: sha,
+	},
 	'meteor/accounts-base': {
 		Accounts: {
 			insertUserDoc,
@@ -132,6 +136,7 @@ describe('User Converter', () => {
 		converter.generateTempPassword.returns('tempPassword');
 		converter.hashPassword.callsFake((pass: string) => `hashed=${pass}`);
 		bcryptHash.callsFake((pass: string) => `hashed=${pass}`);
+		sha.callsFake((pass: string) => pass);
 
 		it('should map an empty object', async () => {
 			expect(
