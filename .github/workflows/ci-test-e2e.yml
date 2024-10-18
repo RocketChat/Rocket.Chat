@@ -143,7 +143,7 @@ jobs:
       #   with:
       #     name: turbo-build
       #     path: .turbo/cache
-      # - run: yarn build
+      - run: yarn build
       # if we are testing a PR from a fork, we need to build the docker image at this point
       # - uses: ./.github/actions/build-docker
       #   if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
