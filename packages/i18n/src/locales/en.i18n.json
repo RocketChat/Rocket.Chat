@@ -2247,6 +2247,7 @@
   "error-registration-not-found": "Registration information not found",
   "error-extension-not-available": "Extension not available",
   "error-user-not-found": "User not found",
+  "error-voip-disaled": "Team voice calls (VoIP) is disabled",
   "error-extension-not-assigned": "Extension not assigned",
   "Workspace_exceeded_MAC_limit_disclaimer": "The workspace has exceeded the monthly limit of active contacts. Talk to your workspace admin to address this issue.",
   "You_do_not_have_permission_to_do_this": "You do not have permission to do this",
