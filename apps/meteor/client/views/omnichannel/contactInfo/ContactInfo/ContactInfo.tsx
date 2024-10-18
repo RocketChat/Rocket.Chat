@@ -59,10 +59,12 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 			<Box display='flex' pi={24}>
 				{name && (
 					<Box width='100%' pb={16} display='flex' alignItems='center' justifyContent='space-between'>
-						<Box display='flex'>
+						<Box withTruncatedText display='flex'>
 							<UserAvatar size='x40' title={name} username={name} />
-							<Box mis={16} display='flex' flexDirection='column'>
-								<Box fontScale='h4'>{name}</Box>
+							<Box withTruncatedText mis={16} display='flex' flexDirection='column'>
+								<Box withTruncatedText fontScale='h4'>
+									{name}
+								</Box>
 								{lastChat && <Box fontScale='c1'>{`${t('Last_Chat')}: ${formatDate(lastChat.ts)}`}</Box>}
 							</Box>
 						</Box>
