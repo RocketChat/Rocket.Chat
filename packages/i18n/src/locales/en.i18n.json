@@ -6686,5 +6686,6 @@
   "See_conflicts": "See conflicts",
   "Conflicts_found": "Conflicts found",
   "Contact_history_is_preserved": "Contact history is preserved",
-  "different_values_found": "{{number}} different values found"
+  "different_values_found": "{{number}} different values found",
+  "Recent": "Recent"
 }
