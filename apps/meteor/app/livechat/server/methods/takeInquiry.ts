@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
+import { shouldTriggerVerificationApp, migrateVisitorIfMissingContact } from '../lib/Contacts';
 import { RoutingManager } from '../lib/RoutingManager';
 
 declare module '@rocket.chat/ddp-client' {
@@ -52,6 +53,11 @@ export const takeInquiry = async (
 	const room = await LivechatRooms.findOneById(inquiry.rid);
 	if (!room || !(await Omnichannel.isWithinMACLimit(room))) {
 		throw new Error('error-mac-limit-reached');
+	}
+
+	const contactId = await migrateVisitorIfMissingContact(inquiry.v._id, room.source);
+	if (contactId && (await shouldTriggerVerificationApp(contactId, room.source))) {
+		throw new Error('error-unverified-contact');
 	}
 
 	const agent = {

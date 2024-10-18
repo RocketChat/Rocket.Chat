@@ -1290,6 +1290,7 @@ type POSTUpdateOmnichannelContactsProps = {
 	phones?: string[];
 	customFields?: Record<string, unknown>;
 	contactManager?: string;
+	wipeConflicts?: boolean;
 };
 
 const POSTUpdateOmnichannelContactsSchema = {
@@ -1323,6 +1324,10 @@ const POSTUpdateOmnichannelContactsSchema = {
 		},
 		contactManager: {
 			type: 'string',
+			nullable: true,
+		},
+		wipeConflicts: {
+			type: 'boolean',
 			nullable: true,
 		},
 	},

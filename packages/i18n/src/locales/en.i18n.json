@@ -1667,6 +1667,7 @@
   "Desktop_Notifications_Not_Enabled": "Desktop Notifications are Not Enabled",
   "Unselected_by_default": "Unselected by default",
   "Unseen_features": "Unseen features",
+  "Unverified": "Unverified",
   "Details": "Details",
   "Device_Changes_Not_Available": "Device changes not available in this browser. For guaranteed availability, please use Rocket.Chat's official desktop app.",
   "Device_Changes_Not_Available_Insecure_Context": "Device changes are only available on secure contexts (e.g. https://)",
@@ -6647,9 +6648,14 @@
   "Sidepanel_navigation_description": "Display channels and/or discussions associated with teams by default. This allows team owners to customize communication methods to best meet their team’s needs. This is currently in feature preview and will be a premium capability once fully released.",
   "Show_channels_description": "Show team channels in second sidebar",
   "Show_discussions_description": "Show team discussions in second sidebar",
-  "close-blocked-room-comment": "This channel has been blocked",
   "Block_channel": "Block channel",
   "Block_channel_description": "Are you sure you want to block this channel? Messages from this conversation will no longer reach this workspace.",
   "Contact_unblocked": "Contact unblocked",
-  "Contact_blocked": "Contact blocked"
+  "Contact_blocked": "Contact blocked",
+  "Advanced_contact_profile": "Advanced contact profile",
+  "Advanced_contact_profile_description": "Manage multiple emails and phone numbers for a single contact, enabling a comprehensive multi-channel history that keeps you well-informed and improves communication efficiency.",
+  "Add_contact": "Add contact",
+  "Add_to_contact_or_enable_verification_description": "Add to contact list manually or <1>enable verification</1> using multi-factor authentication.",
+  "Ask_enable_advanced_contact_profile": "Ask your workspace admin to enable advanced contact profile",
+  "close-blocked-room-comment": "This channel has been blocked"
 }

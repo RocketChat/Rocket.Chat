@@ -7,6 +7,7 @@ import SidebarToggler from '../../../../components/SidebarToggler';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 import RoomHeader from '../RoomHeader';
 import { BackButton } from './BackButton';
+import OmnichannelRoomHeaderTag from './OmnichannelRoomHeaderTag';
 import QuickActions from './QuickActions';
 
 type OmnichannelRoomHeaderProps = {
@@ -44,9 +45,10 @@ const OmnichannelRoomHeader = ({ slots: parentSlot }: OmnichannelRoomHeaderProps
 					<BackButton routeName={currentRouteName} />
 				</HeaderToolbar>
 			),
+			insideContent: <OmnichannelRoomHeaderTag room={room} />,
 			posContent: <QuickActions />,
 		}),
-		[isMobile, currentRouteName, parentSlot],
+		[isMobile, currentRouteName, parentSlot, room],
 	);
 
 	return <RoomHeader slots={slots} room={room} />;

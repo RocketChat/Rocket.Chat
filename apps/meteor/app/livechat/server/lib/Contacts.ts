@@ -56,6 +56,7 @@ type CreateContactParams = {
 	customFields?: Record<string, string | unknown>;
 	contactManager?: string;
 	channels?: ILivechatContactChannel[];
+	importIds?: string[];
 };
 
 type VerifyContactChannelParams = {
@@ -74,6 +75,7 @@ type UpdateContactParams = {
 	customFields?: Record<string, unknown>;
 	contactManager?: string;
 	channels?: ILivechatContactChannel[];
+	wipeConflicts?: boolean;
 };
 
 type GetContactsParams = {
@@ -349,7 +351,7 @@ export async function createContactFromVisitor(
 }
 
 export async function createContact(params: CreateContactParams, upsertId?: ILivechatContact['_id']): Promise<string> {
-	const { name, emails, phones, customFields: receivedCustomFields = {}, contactManager, channels, unknown } = params;
+	const { name, emails, phones, customFields: receivedCustomFields = {}, contactManager, channels, unknown, importIds } = params;
 
 	if (contactManager) {
 		await validateContactManager(contactManager);
@@ -366,6 +368,7 @@ export async function createContact(params: CreateContactParams, upsertId?: ILiv
 		channels,
 		customFields,
 		unknown,
+		...(importIds?.length ? { importIds } : {}),
 	} as const;
 
 	// Use upsert when doing auto-migration so that if there's multiple requests processing at the same time, they won't interfere with each other
@@ -378,7 +381,7 @@ export async function createContact(params: CreateContactParams, upsertId?: ILiv
 }
 
 export async function updateContact(params: UpdateContactParams): Promise<ILivechatContact> {
-	const { contactId, name, emails, phones, customFields: receivedCustomFields, contactManager, channels } = params;
+	const { contactId, name, emails, phones, customFields: receivedCustomFields, contactManager, channels, wipeConflicts } = params;
 
 	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id'>>(contactId, { projection: { _id: 1 } });
 
@@ -399,9 +402,34 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		contactManager,
 		channels,
 		customFields,
+		...(wipeConflicts && { conflictingFields: [], hasConflict: false }),
 	});
 
 	return updatedContact;
+}
+
+/**
+ * Adds a new email into the contact's email list, if the email is already in the list it does not add anything
+ * and simply return the data, since the email was aready registered :P
+ *
+ * @param contactId the id of the contact that will be updated
+ * @param email the email that will be added to the contact
+ * @returns the updated contact
+ */
+export async function addContactEmail(contactId: ILivechatContact['_id'], email: string): Promise<ILivechatContact> {
+	const contact = await LivechatContacts.findOneById(contactId);
+	if (!contact) {
+		throw new Error('error-contact-not-found');
+	}
+
+	const emails = contact.emails?.map(({ address }) => address) || [];
+	if (!emails.includes(email)) {
+		return LivechatContacts.updateContact(contactId, {
+			emails: [...emails.map((e) => ({ address: e })), { address: email }],
+		});
+	}
+
+	return contact;
 }
 
 export async function getContacts(params: GetContactsParams): Promise<PaginatedResult<{ contacts: ILivechatContact[] }>> {
@@ -476,7 +504,7 @@ export async function getContactHistory(
 	};
 }
 
-async function getAllowedCustomFields(): Promise<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>[]> {
+export async function getAllowedCustomFields(): Promise<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>[]> {
 	return LivechatCustomField.findByScope(
 		'visitor',
 		{
@@ -541,3 +569,7 @@ export async function validateContactManager(contactManagerUserId: string) {
 export const verifyContactChannel = makeFunction(async (_params: VerifyContactChannelParams): Promise<ILivechatContact | null> => null);
 
 export const mergeContacts = makeFunction(async (_contactId: string, _visitorId: string): Promise<ILivechatContact | null> => null);
+
+export const shouldTriggerVerificationApp = makeFunction(
+	async (_contactId: ILivechatContact['_id'], _source: IOmnichannelSource): Promise<boolean> => false,
+);

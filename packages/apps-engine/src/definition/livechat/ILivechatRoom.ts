@@ -24,7 +24,7 @@ interface IOmnichannelSourceApp {
     // The destination of the message (e.g widget host, email address, whatsapp number, etc)
     destination?: string;
 }
-type OmnichannelSource =
+export type OmnichannelSource =
     | {
           type: Exclude<OmnichannelSourceType, 'app'>;
       }
