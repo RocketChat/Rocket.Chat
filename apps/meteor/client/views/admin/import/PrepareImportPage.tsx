@@ -151,10 +151,19 @@ function PrepareImportPage() {
 		setImporting(true);
 
 		try {
+			const usersToImport = users.filter(({ do_import }) => do_import).map(({ user_id }) => user_id);
+			const channelsToImport = channels.filter(({ do_import }) => do_import).map(({ channel_id }) => channel_id);
+
 			await startImport({
 				input: {
-					users: users.map((user) => ({ is_bot: false, is_email_taken: false, ...user })),
-					channels: channels.map((channel) => ({ is_private: false, is_direct: false, ...channel })),
+					users: {
+						all: users.length > 0 && usersToImport.length === users.length,
+						list: (usersToImport.length !== users.length && usersToImport) || undefined,
+					},
+					channels: {
+						all: channels.length > 0 && channelsToImport.length === channels.length,
+						list: (channelsToImport.length !== channels.length && channelsToImport) || undefined,
+					},
 				},
 			});
 			router.navigate('/admin/import/progress');

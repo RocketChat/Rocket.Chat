@@ -5,7 +5,7 @@
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
 		"eslint": "~8.45.0",
-		"mongodb": "^4.17.2",
+		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
 		"prettier": "~2.8.8",
 		"typescript": "~5.5.4"
 	},

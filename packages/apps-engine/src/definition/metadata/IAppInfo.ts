@@ -17,4 +17,5 @@ export interface IAppInfo {
     iconFileContent?: string;
     essentials?: Array<AppInterface>;
     permissions?: Array<IPermission>;
+    addon?: string;
 }
