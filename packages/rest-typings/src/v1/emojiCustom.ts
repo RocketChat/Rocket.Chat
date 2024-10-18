@@ -25,7 +25,7 @@ const emojiCustomDeletePropsSchema = {
 
 export const isEmojiCustomDelete = ajv.compile<emojiCustomDeleteProps>(emojiCustomDeletePropsSchema);
 
-type emojiCustomList = { query: string; updatedSince?: string; _updatedAt?: string; _id?: string };
+type emojiCustomList = { query?: string; updatedSince?: string; _updatedAt?: string; _id?: string };
 
 const emojiCustomListSchema = {
 	type: 'object',
