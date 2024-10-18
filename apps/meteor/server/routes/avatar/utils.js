@@ -11,7 +11,7 @@ const FALLBACK_LAST_MODIFIED = 'Thu, 01 Jan 2015 00:00:00 GMT';
 
 const cookie = new Cookies();
 
-export const serveAvatar = (avatar, format, res) => {
+export const serveSvgAvatarInRequestedFormat = (avatar, format, res) => {
 	res.setHeader('Last-Modified', FALLBACK_LAST_MODIFIED);
 
 	if (['png', 'jpg', 'jpeg'].includes(format)) {
