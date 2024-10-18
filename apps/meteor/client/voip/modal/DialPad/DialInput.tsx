@@ -1,7 +1,7 @@
 import { IconButton, TextInput } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, FocusEvent } from 'react';
 import React, { forwardRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type DialInputProps = {
 	inputName: string;
@@ -16,7 +16,7 @@ export const DialInput = forwardRef<HTMLInputElement, DialInputProps>(function D
 	{ handleBackspaceClick, handleOnChange, isButtonDisabled, inputError, inputName },
 	ref,
 ) {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<TextInput

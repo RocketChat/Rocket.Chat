@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'preact/compat';
 import { memo } from 'preact/compat';
 
 import { createClassName } from '../../../helpers/createClassName';
@@ -8,7 +9,7 @@ type MessageAvatarsProps = {
 	avatarResolver: (username: string) => string | undefined;
 	usernames: string[];
 	className?: string;
-	style?: React.CSSProperties;
+	style?: CSSProperties;
 };
 
 export const MessageAvatars = memo(({ avatarResolver = () => undefined, usernames = [], className, style = {} }: MessageAvatarsProps) => {

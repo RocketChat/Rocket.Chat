@@ -1,10 +1,10 @@
 import { Banner, Box, Icon } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const LoggedOutBanner = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Banner variant='warning' icon={<Icon name='warning' size='x24' />}>

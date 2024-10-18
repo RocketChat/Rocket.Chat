@@ -1,7 +1,7 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { SidebarV2ItemBadge as SidebarItemBadge, SidebarV2ItemIcon as SidebarItemIcon } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -12,7 +12,7 @@ export const useItemData = (
 	room: ISubscription & IRoom,
 	{ openedRoom, viewMode }: { openedRoom: string | undefined; viewMode?: 'extended' | 'medium' | 'condensed' },
 ) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const AvatarTemplate = useAvatarTemplate();
 
 	const highlighted = Boolean(!room.hideUnreadStatus && (room.alert || room.unread));

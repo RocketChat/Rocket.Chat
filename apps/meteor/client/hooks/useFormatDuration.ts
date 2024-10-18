@@ -1,8 +1,8 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const useFormatDuration = (): ((duration: number) => string) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return useCallback(
 		(duration) => {

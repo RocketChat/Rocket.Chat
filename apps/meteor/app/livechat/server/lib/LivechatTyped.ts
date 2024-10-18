@@ -20,10 +20,11 @@ import type {
 	IOmnichannelAgent,
 	ILivechatDepartmentAgents,
 	LivechatDepartmentDTO,
-	OmnichannelSourceType,
 	ILivechatInquiryRecord,
+	ILivechatContact,
+	ILivechatContactChannel,
 } from '@rocket.chat/core-typings';
-import { ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { OmnichannelSourceType, ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
 import {
 	LivechatDepartment,
@@ -37,6 +38,7 @@ import {
 	ReadReceipts,
 	Rooms,
 	LivechatCustomField,
+	LivechatContacts,
 } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
@@ -71,7 +73,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
-import { createContact, isSingleContactEnabled } from './Contacts';
+import { createContact, createContactFromVisitor, isSingleContactEnabled } from './Contacts';
 import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -79,7 +81,7 @@ import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
 
-type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username'>> & {
+type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username' | 'source'>> & {
 	id?: string;
 	connectionData?: any;
 	email?: string;
@@ -459,6 +461,55 @@ class LivechatClass {
 			extraData,
 		});
 
+		if (isSingleContactEnabled()) {
+			let { contactId } = visitor;
+
+			if (!contactId) {
+				const visitorContact = await LivechatVisitors.findOne<
+					Pick<ILivechatVisitor, 'name' | 'contactManager' | 'livechatData' | 'phone' | 'visitorEmails' | 'username' | 'contactId'>
+				>(visitor._id, {
+					projection: {
+						name: 1,
+						contactManager: 1,
+						livechatData: 1,
+						phone: 1,
+						visitorEmails: 1,
+						username: 1,
+						contactId: 1,
+					},
+				});
+
+				contactId = visitorContact?.contactId;
+			}
+
+			if (!contactId) {
+				// ensure that old visitors have a contact
+				contactId = await createContactFromVisitor(visitor);
+			}
+
+			const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'channels'>>(contactId, {
+				projection: { _id: 1, channels: 1 },
+			});
+
+			if (contact) {
+				const channel = contact.channels?.find(
+					(channel: ILivechatContactChannel) => channel.name === roomInfo.source?.type && channel.visitorId === visitor._id,
+				);
+
+				if (!channel) {
+					Livechat.logger.debug(`Adding channel for contact ${contact._id}`);
+
+					await LivechatContacts.addChannel(contact._id, {
+						name: roomInfo.source?.label || roomInfo.source?.type.toString() || OmnichannelSourceType.OTHER,
+						visitorId: visitor._id,
+						blocked: false,
+						verified: false,
+						details: roomInfo.source,
+					});
+				}
+			}
+		}
+
 		Livechat.logger.debug(`Room obtained for visitor ${visitor._id} -> ${room._id}`);
 
 		await Messages.setRoomIdByToken(visitor.token, room._id);
@@ -603,6 +654,7 @@ class LivechatClass {
 		username,
 		connectionData,
 		status = UserStatus.ONLINE,
+		source,
 	}: RegisterGuestType): Promise<ILivechatVisitor | null> {
 		check(token, String);
 		check(id, Match.Maybe(String));
@@ -612,6 +664,7 @@ class LivechatClass {
 		const visitorDataToUpdate: Partial<ILivechatVisitor> & { userAgent?: string; ip?: string; host?: string } = {
 			token,
 			status,
+			source,
 			...(phone?.number ? { phone: [{ phoneNumber: phone.number }] } : {}),
 			...(name ? { name } : {}),
 		};
@@ -657,6 +710,7 @@ class LivechatClass {
 			visitorDataToUpdate.username = username || (await LivechatVisitors.getNextVisitorUsername());
 			visitorDataToUpdate.status = status;
 			visitorDataToUpdate.ts = new Date();
+			visitorDataToUpdate.source = source;
 
 			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations') && Livechat.isValidObject(connectionData)) {
 				Livechat.logger.debug(`Saving connection data for visitor ${token}`);

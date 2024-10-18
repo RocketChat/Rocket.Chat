@@ -19,6 +19,10 @@ inputs:
   NPM_TOKEN:
     required: false
     description: 'NPM token'
+  HARDENED_MODE:
+    required: false
+    description: 'Hardened mode'
+    default: '0'
 
 outputs:
   node-version:
@@ -68,4 +72,4 @@ runs:
     - name: yarn install
       if: inputs.install
       shell: bash
-      run: yarn
+      run: YARN_ENABLE_HARDENED_MODE=${{ inputs.HARDENED_MODE }} yarn

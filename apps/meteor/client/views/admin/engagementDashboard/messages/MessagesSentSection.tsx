@@ -1,10 +1,10 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Flex, Skeleton, Palette, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
@@ -18,7 +18,7 @@ const MessagesSentSection = (): ReactElement => {
 	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 	const periodLabel = usePeriodLabel(period);
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { data } = useMessagesSent({ period });
 

@@ -1,9 +1,16 @@
 import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
-Meteor.startup(() => {
-	License.onInvalidateLicense(async () => {
-		const { Apps } = await import('../../apps');
-		void Apps.disableApps();
-	});
+import { Apps } from '../../apps';
+
+Meteor.startup(async () => {
+	const updateAppsCallback = async () => {
+		if (!Apps.isInitialized) return;
+
+		void Apps.migratePrivateApps();
+		void Apps.disableMarketplaceApps();
+	};
+
+	License.onInvalidateLicense(updateAppsCallback);
+	License.onRemoveLicense(updateAppsCallback);
 });
