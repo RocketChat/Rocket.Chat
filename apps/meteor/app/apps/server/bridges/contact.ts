@@ -3,7 +3,7 @@ import { ContactBridge } from '@rocket.chat/apps-engine/server/bridges';
 import type { ILivechatContact } from '@rocket.chat/core-typings';
 import { LivechatContacts } from '@rocket.chat/models';
 
-import { addContactEmail } from '../../../livechat/server/lib/Contacts';
+import { addContactEmail, verifyContactChannel } from '../../../livechat/server/lib/Contacts';
 
 export class AppContactBridge extends ContactBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
@@ -15,8 +15,8 @@ export class AppContactBridge extends ContactBridge {
 		return (await LivechatContacts.findOne({ _id: id })) as ILivechatContact;
 	}
 
-	verifyContact(
-		_verifyContactChannelParams: {
+	async verifyContact(
+		verifyContactChannelParams: {
 			contactId: string;
 			field: string;
 			value: string;
@@ -26,8 +26,10 @@ export class AppContactBridge extends ContactBridge {
 		},
 		appId: string,
 	): Promise<void> {
-		this.orch.debugLog(`The app ${appId} is fetching a contact`);
-		throw new Error('TODO');
+		this.orch.debugLog(`The app ${appId} is verifing a contact`);
+		// Note: If there is more than one app installed, whe should validate the app that called this method to be same one
+		//       selected in the setting.
+		await verifyContactChannel(verifyContactChannelParams);
 	}
 
 	protected addContactEmail(contactId: ILivechatContact['_id'], email: string, appId: string): Promise<ILivechatContact> {

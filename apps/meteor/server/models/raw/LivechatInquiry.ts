@@ -411,6 +411,15 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.findOne(query);
 	}
 
+	findOneReadyByContactId(contactId: string): Promise<ILivechatInquiryRecord | null> {
+		const query: Filter<ILivechatInquiryRecord> = {
+			'v.contactId': contactId,
+			'status': LivechatInquiryStatus.READY,
+		};
+
+		return this.findOne(query);
+	}
+
 	removeDefaultAgentById(inquiryId: string): Promise<UpdateResult | Document> {
 		return this.updateOne(
 			{
