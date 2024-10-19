@@ -66,7 +66,7 @@ const getInitialValues = (triggerData: Serialized<ILivechatTrigger> | undefined)
 	name: triggerData?.name ?? '',
 	description: triggerData?.description || '',
 	enabled: triggerData?.enabled ?? true,
-	runOnce: !!triggerData?.runOnce ?? false,
+	runOnce: !!triggerData?.runOnce || false,
 	conditions: triggerData?.conditions.map(({ name, value }) => ({ name: name || 'page-url', value: value || '' })) ?? [
 		DEFAULT_PAGE_URL_CONDITION,
 	],

@@ -301,7 +301,7 @@ describe('[EmojiCustom]', () => {
 	});
 
 	describe('Accessing custom emojis', () => {
-		let uploadDate: unknown;
+		let uploadDate: string | undefined;
 
 		it('should return forbidden if the there is no fileId on the url', (done) => {
 			void request
