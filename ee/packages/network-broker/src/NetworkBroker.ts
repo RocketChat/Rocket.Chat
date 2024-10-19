@@ -1,6 +1,7 @@
 import { asyncLocalStorage } from '@rocket.chat/core-services';
 import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 import type { ServiceBroker, Context, ServiceSchema, LoggerInstance } from 'moleculer';
+import { injectCurrentContext, tracerSpan } from '@rocket.chat/tracing';
 
 import { EnterpriseCheck } from './EnterpriseCheck';
 
@@ -52,7 +53,12 @@ export class NetworkBroker implements IBroker {
 		if (!services.find((service) => service.name === method.split('.')[0])) {
 			return new Error('method-not-available');
 		}
-		return this.broker.call(method, data);
+
+		return this.broker.call(method, data, {
+			meta: {
+				optl: injectCurrentContext(),
+			},
+		});
 	}
 
 	async waitAndCall(method: string, data: any): Promise<any> {
@@ -76,7 +82,11 @@ export class NetworkBroker implements IBroker {
 			return context.ctx.call(method, data);
 		}
 
-		return this.broker.call(method, data);
+		return this.broker.call(method, data, {
+			meta: {
+				optl: injectCurrentContext(),
+			},
+		});
 	}
 
 	async destroyService(instance: IServiceClass): Promise<void> {
@@ -152,16 +162,23 @@ export class NetworkBroker implements IBroker {
 				continue;
 			}
 
-			service.actions[method] = async (ctx: Context<[]>): Promise<any> => {
-				return asyncLocalStorage.run(
-					{
-						id: ctx.id,
-						nodeID: ctx.nodeID,
-						requestID: ctx.requestID,
-						broker: this,
-						ctx,
+			service.actions[method] = async (ctx: Context<[], { optl?: unknown }>): Promise<any> => {
+				return tracerSpan(
+					`action ${name}:${method}`,
+					{},
+					() => {
+						return asyncLocalStorage.run(
+							{
+								id: ctx.id,
+								nodeID: ctx.nodeID,
+								requestID: ctx.requestID,
+								broker: this,
+								ctx,
+							},
+							() => serviceInstance[method](...ctx.params),
+						);
 					},
-					() => serviceInstance[method](...ctx.params),
+					ctx.meta?.optl,
 				);
 			};
 		}

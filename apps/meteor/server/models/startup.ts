@@ -70,3 +70,4 @@ import './AppsTokens';
 import './CronHistory';
 import './Migrations';
 import './ReadReceipts';
+import './WorkspaceCredentials';
