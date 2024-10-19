@@ -16,7 +16,7 @@
     "@lezer/highlight": "^1.1.6",
     "@rocket.chat/core-typings": "workspace:^",
     "@rocket.chat/css-in-js": "~0.31.25",
-    "@rocket.chat/fuselage": "^0.59.1",
+    "@rocket.chat/fuselage": "^0.59.3",
     "@rocket.chat/fuselage-hooks": "^0.33.1",
     "@rocket.chat/fuselage-polyfills": "~0.31.25",
     "@rocket.chat/fuselage-toastbar": "^0.33.0",

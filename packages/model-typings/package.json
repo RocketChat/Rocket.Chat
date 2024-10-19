@@ -5,7 +5,7 @@
 	"devDependencies": {
 		"@types/node-rsa": "^1.1.4",
 		"eslint": "~8.45.0",
-		"mongodb": "^4.17.2",
+		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
 		"typescript": "~5.5.4"
 	},
 	"scripts": {

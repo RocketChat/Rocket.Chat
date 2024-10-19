@@ -174,21 +174,16 @@ export class AppServerOrchestrator {
 		// Before enabling each app we verify if there is still room for it
 		const apps = await this.getManager().get();
 
-		/* eslint-disable no-await-in-loop */
 		// This needs to happen sequentially to keep track of app limits
-		for (const app of apps) {
-			const canEnable = await canEnableApp(app.getStorageItem());
+		for await (const app of apps) {
+			try {
+				await canEnableApp(app.getStorageItem());
 
-			if (!canEnable) {
-				this._rocketchatLogger.warn(`App "${app.getInfo().name}" can't be enabled due to CE limits.`);
-				// We need to continue as the limits are applied depending on the app installation source
-				// i.e. if one limit is hit, we can't break the loop as the following apps might still be valid
-				continue;
+				await this.getManager().loadOne(app.getID(), true);
+			} catch (error) {
+				this._rocketchatLogger.warn(`App "${app.getInfo().name}" could not be enabled: `, error.message);
 			}
-
-			await this.getManager().loadOne(app.getID(), true);
 		}
-		/* eslint-enable no-await-in-loop */
 
 		await this.getBridges().getSchedulerBridge().startScheduler();
 

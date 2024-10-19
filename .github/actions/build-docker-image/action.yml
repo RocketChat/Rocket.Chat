@@ -51,7 +51,7 @@ runs:
         fi;
 
         DOCKERFILE_PATH="${DOCKER_PATH}/Dockerfile"
-        if [[ '${{ inputs.release }}' = 'alpine' ]]; then
+        if [[ '${{ inputs.release }}' = 'debian' ]]; then
           DOCKERFILE_PATH="${DOCKERFILE_PATH}.${{ inputs.release }}"
         fi;
 

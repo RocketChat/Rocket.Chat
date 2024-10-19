@@ -14,7 +14,7 @@ type EditCustomEmojiWithDataProps = {
 
 const EditCustomEmojiWithData = ({ _id, onChange, close, ...props }: EditCustomEmojiWithDataProps) => {
 	const t = useTranslation();
-	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
+	const query = useMemo(() => ({ _id }), [_id]);
 
 	const getEmojis = useEndpoint('GET', '/v1/emoji-custom.list');
 

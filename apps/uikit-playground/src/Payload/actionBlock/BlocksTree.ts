@@ -1,5 +1,5 @@
 import type { Item } from '../../Components/DropDown/types';
-import { callout } from '../callout';
+import { callout, calloutWithAction } from '../callout';
 import {
   actionWithButtonDefault,
   actionWithButtonPrimary,
@@ -323,6 +323,10 @@ const BlocksTree: Item = [
       {
         label: 'Plain',
         payload: callout,
+      },
+      {
+        label: 'With Action',
+        payload: calloutWithAction,
       },
     ],
   },

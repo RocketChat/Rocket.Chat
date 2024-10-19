@@ -22,6 +22,6 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/random": "workspace:^",
-		"mongodb": "^4.17.2"
+		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
 	}
 }

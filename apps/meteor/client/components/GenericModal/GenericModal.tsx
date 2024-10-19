@@ -21,6 +21,7 @@ type GenericModalProps = RequiredModalProps & {
 	tagline?: ReactNode;
 	onCancel?: () => Promise<void> | void;
 	onClose?: () => Promise<void> | void;
+	onDismiss?: () => Promise<void> | void;
 	annotation?: ReactNode;
 } & Omit<ComponentPropsWithoutRef<typeof Modal>, 'title'>;
 
@@ -67,6 +68,7 @@ const GenericModal = ({
 	icon,
 	onCancel,
 	onClose = onCancel,
+	onDismiss = onClose,
 	onConfirm,
 	dontAskAgain,
 	confirmDisabled,
@@ -98,9 +100,9 @@ const GenericModal = ({
 	useEffect(
 		() => () => {
 			if (!dismissedRef.current) return;
-			onClose?.();
+			onDismiss?.();
 		},
-		[onClose],
+		[onDismiss],
 	);
 
 	return (

@@ -2,6 +2,7 @@
 import { EventEmitter } from 'events';
 
 import { InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';
+import { tracerSpan } from '@rocket.chat/tracing';
 import { v4 as uuidv4 } from 'uuid';
 
 const events = new EventEmitter();
@@ -113,8 +114,8 @@ function start(interval?: number) {
 
 	interval = interval || defaultPingInterval;
 
-	pingInterval = setInterval(function () {
-		ping();
+	pingInterval = setInterval(async function () {
+		await tracerSpan('InstanceStatus.ping', {}, () => ping());
 	}, interval * 1000);
 }
 

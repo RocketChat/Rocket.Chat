@@ -1,6 +1,7 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
+import { isGroupsOnlineProps } from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
@@ -779,23 +780,28 @@ API.v1.addRoute(
 // TODO: CACHE: same as channels.online
 API.v1.addRoute(
 	'groups.online',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isGroupsOnlineProps },
 	{
 		async get() {
 			const { query } = await this.parseJsonQuery();
-			if (!query || Object.keys(query).length === 0) {
+			const { _id } = this.queryParams;
+
+			if ((!query || Object.keys(query).length === 0) && !_id) {
 				return API.v1.failure('Invalid query');
 			}
 
-			const ourQuery = Object.assign({}, query, { t: 'p' });
+			const filter = {
+				...query,
+				...(_id ? { _id } : {}),
+				t: 'p',
+			};
 
-			const room = await Rooms.findOne(ourQuery as Record<string, any>);
-
+			const room = await Rooms.findOne(filter as Record<string, any>);
 			if (!room) {
 				return API.v1.failure('Group does not exists');
 			}
-			const user = await getLoggedInUser(this.request);
 
+			const user = await getLoggedInUser(this.request);
 			if (!user) {
 				return API.v1.failure('User does not exists');
 			}

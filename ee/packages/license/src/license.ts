@@ -7,9 +7,9 @@ import type {
 	BehaviorWithContext,
 	LicenseBehavior,
 	LicenseInfo,
-	LicenseModule,
 	LicenseValidationOptions,
 	LimitContext,
+	LicenseModule,
 } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 
@@ -19,7 +19,7 @@ import { InvalidLicenseError } from './errors/InvalidLicenseError';
 import { NotReadyForValidation } from './errors/NotReadyForValidation';
 import { behaviorTriggered, behaviorTriggeredToggled, licenseInvalidated, licenseValidated } from './events/emitter';
 import { logger } from './logger';
-import { getModules, invalidateAll, replaceModules } from './modules';
+import { getExternalModules, getModules, invalidateAll, replaceModules } from './modules';
 import { applyPendingLicense, clearPendingLicense, hasPendingLicense, isPendingLicense, setPendingLicense } from './pendingLicense';
 import { replaceTags } from './tags';
 import { decrypt } from './token';
@@ -472,6 +472,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		license: boolean;
 	}): Promise<LicenseInfo> {
 		const activeModules = getModules.call(this);
+		const externalModules = getExternalModules.call(this);
 		const license = this.getLicense();
 
 		// Get all limits present in the license and their current value
@@ -496,6 +497,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		return {
 			license: (includeLicense && license) || undefined,
 			activeModules,
+			externalModules,
 			preventedActions: await this.shouldPreventActionResultsMap(),
 			limits: limits as Record<LicenseLimitKind, { max: number; value: number }>,
 			tags: license?.information.tags || [],

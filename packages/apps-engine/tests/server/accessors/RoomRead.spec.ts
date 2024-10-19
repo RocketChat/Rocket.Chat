@@ -14,6 +14,10 @@ export class RoomReadAccessorTestFixture {
 
     private messages: IMessageRaw[];
 
+    private unreadRoomId: string;
+
+    private unreadUserId: string;
+
     private mockRoomBridgeWithRoom: RoomBridge;
 
     @SetupFixture
@@ -21,10 +25,16 @@ export class RoomReadAccessorTestFixture {
         this.room = TestData.getRoom();
         this.user = TestData.getUser();
         this.messages = ['507f1f77bcf86cd799439011', '507f191e810c19729de860ea'].map((id) => TestData.getMessageRaw(id));
+        this.unreadRoomId = this.messages[0].roomId;
+        this.unreadUserId = this.messages[0].sender._id;
 
         const theRoom = this.room;
         const theUser = this.user;
         const theMessages = this.messages;
+
+        const theUnreadMsg = this.messages;
+        const { unreadRoomId } = this;
+        const { unreadUserId } = this;
         this.mockRoomBridgeWithRoom = {
             doGetById(id, appId): Promise<IRoom> {
                 return Promise.resolve(theRoom);
@@ -47,6 +57,12 @@ export class RoomReadAccessorTestFixture {
             doGetMessages(roomId, options, appId): Promise<IMessageRaw[]> {
                 return Promise.resolve(theMessages);
             },
+            doGetUnreadByUser(roomId, uid, options, appId): Promise<IMessageRaw[]> {
+                if (roomId === unreadRoomId && uid === unreadUserId) {
+                    return Promise.resolve(theUnreadMsg);
+                }
+                return Promise.resolve([]);
+            },
         } as RoomBridge;
     }
 
@@ -68,6 +84,11 @@ export class RoomReadAccessorTestFixture {
         Expect(await rr.getDirectByUsernames([this.user.username])).toBe(this.room);
         Expect(await rr.getMessages('testing')).toBeDefined();
         Expect(await rr.getMessages('testing')).toBe(this.messages);
+        Expect(await rr.getUnreadByUser(this.unreadRoomId, this.unreadUserId)).toBeDefined();
+        Expect(await rr.getUnreadByUser(this.unreadRoomId, this.unreadUserId)).toEqual(this.messages);
+
+        Expect(await rr.getUnreadByUser('fake', 'fake')).toBeDefined();
+        Expect(await rr.getUnreadByUser('fake', 'fake')).toEqual([]);
     }
 
     @AsyncTest()
