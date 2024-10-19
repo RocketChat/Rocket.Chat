@@ -16,6 +16,9 @@ const UsersInfoParamsGetSchema = {
 				userId: {
 					type: 'string',
 				},
+				includeUserRooms: {
+					type: 'string',
+				},
 				fields: {
 					type: 'string',
 					nullable: true,
@@ -30,6 +33,9 @@ const UsersInfoParamsGetSchema = {
 				username: {
 					type: 'string',
 				},
+				includeUserRooms: {
+					type: 'string',
+				},
 				fields: {
 					type: 'string',
 					nullable: true,
@@ -42,6 +48,9 @@ const UsersInfoParamsGetSchema = {
 			type: 'object',
 			properties: {
 				importId: {
+					type: 'string',
+				},
+				includeUserRooms: {
 					type: 'string',
 				},
 				fields: {

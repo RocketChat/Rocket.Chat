@@ -722,7 +722,7 @@ describe('[Users]', () => {
 				.set(credentials)
 				.query({
 					userId: targetUser._id,
-					fields: JSON.stringify({ userRooms: 1 }),
+					includeUserRooms: true,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -750,6 +750,7 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
+
 		it('should return the rooms when the user request your own rooms but he does NOT have the necessary permission', (done) => {
 			void updatePermission('view-other-user-channels', []).then(() => {
 				void request
@@ -757,7 +758,7 @@ describe('[Users]', () => {
 					.set(credentials)
 					.query({
 						userId: credentials['X-User-Id'],
-						fields: JSON.stringify({ userRooms: 1 }),
+						includeUserRooms: true,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -1111,7 +1112,6 @@ describe('[Users]', () => {
 					'customFields.customFieldText': 'success',
 				}),
 			};
-
 			void request
 				.get(api('users.list'))
 				.query(query)
