@@ -214,7 +214,7 @@ describe('[EmojiCustom]', () => {
 		it('should return emojis when use "query" query parameter', (done) => {
 			void request
 				.get(api('emoji-custom.list'))
-				.query({ query: `{ "_updatedAt": { "$gt": { "$date": "${new Date().toISOString()}" } } }` })
+				.query({ _updatedAt: new Date().toISOString() })
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
@@ -242,7 +242,7 @@ describe('[EmojiCustom]', () => {
 		it('should return emojis when use both, "updateSince" and "query" query parameter', (done) => {
 			void request
 				.get(api('emoji-custom.list'))
-				.query({ query: `{"_updatedAt": {"$gt": { "$date": "${new Date().toISOString()}" } }}`, updatedSince: new Date().toISOString() })
+				.query({ _updatedAt: new Date().toISOString(), updatedSince: new Date().toISOString() })
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
