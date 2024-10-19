@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useStatusDisabledModal } from '../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 
-const StatusDisabledSection = ({ onDismiss }: { onDismiss: () => void }) => {
+const StatusDisabledBanner = ({ onDismiss }: { onDismiss: () => void }) => {
 	const { t } = useTranslation();
 	const handleStatusDisabledModal = useStatusDisabledModal();
 
@@ -18,4 +18,4 @@ const StatusDisabledSection = ({ onDismiss }: { onDismiss: () => void }) => {
 	);
 };
 
-export default StatusDisabledSection;
+export default StatusDisabledBanner;

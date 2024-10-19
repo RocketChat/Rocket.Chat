@@ -27,6 +27,7 @@ const MessageFooterCallout = forwardRef<
 			alignItems='center'
 			minHeight='x48'
 			justifyContent='center'
+			color='default'
 			{...props}
 		/>
 	);
