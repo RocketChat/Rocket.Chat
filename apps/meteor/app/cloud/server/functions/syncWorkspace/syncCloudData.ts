@@ -52,7 +52,7 @@ const fetchWorkspaceSyncPayload = async ({
 	assertWorkspaceSyncPayload(payload);
 
 	const cloudSyncAnnouncement = {
-		viewId: 'license',
+		viewId: 'subscription-announcement',
 		appId: 'cloud-announcements-core',
 		blocks: [
 			{
