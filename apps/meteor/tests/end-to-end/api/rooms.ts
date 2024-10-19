@@ -2676,13 +2676,7 @@ describe('[Rooms]', () => {
 			testUserCreds = await login(user.username, password);
 		});
 
-		const uploadFile = async ({
-			roomId,
-			file,
-		}: {
-			roomId: IRoom['_id'];
-			file: Blob | Buffer | fs.ReadStream | string | boolean | number;
-		}) => {
+		const uploadFile = async ({ roomId, file }: { roomId: IRoom['_id']; file: Buffer | fs.ReadStream | string | boolean | number }) => {
 			const { body } = await request
 				.post(api(`rooms.upload/${roomId}`))
 				.set(credentials)
