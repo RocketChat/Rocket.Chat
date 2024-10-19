@@ -47,7 +47,7 @@ export type LicensesEndpoints = {
 	'/v1/licenses.info': {
 		GET: (params: licensesInfoProps) => {
 			license: LicenseInfo;
-			cloudSyncAnnouncement: {
+			cloudSyncAnnouncement?: {
 				viewId: string;
 				appId: string;
 				blocks: CloudSyncAnnouncementLayout;
