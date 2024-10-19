@@ -1,4 +1,4 @@
-import { TextInput, Field, FieldLabel, FieldRow, FieldError, Box } from '@rocket.chat/fuselage';
+import { TextInput, Field, FieldLabel, FieldRow, FieldError, Box, FieldHint } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -46,9 +46,10 @@ const CreateOAuthModal = ({ onConfirm, onClose }: CreateOAuthModalProps): ReactE
 						id={customOAuthNameId}
 						{...register('customOAuthName', { required: t('Required_field', { field: t('Custom_OAuth_name') }) })}
 						aria-required='true'
-						aria-describedby={`${customOAuthNameId}-error`}
+						aria-describedby={`${customOAuthNameId}-error ${customOAuthNameId}-hint`}
 					/>
 				</FieldRow>
+				<FieldHint id={`${customOAuthNameId}-hint`}>{t('Custom_OAuth_name_hint')}</FieldHint>
 				{errors.customOAuthName && (
 					<FieldError aria-live='assertive' id={`${customOAuthNameId}-error`}>
 						{errors.customOAuthName.message}

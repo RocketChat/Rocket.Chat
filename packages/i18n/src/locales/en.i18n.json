@@ -1537,6 +1537,7 @@
   "Custom_OAuth_has_been_removed": "Custom OAuth has been removed",
   "Custom_oauth_helper": "When setting up your OAuth Provider, you'll have to inform a Callback URL. Use <pre>%s</pre> .",
   "Custom_OAuth_name": "Custom OAuth name",
+  "Custom_OAuth_name_hint": "Enter a unique name that will help you identify and manage different authentication methods.",
   "Custom_roles": "Custom roles",
   "Custom_roles_upsell_add_custom_roles_workspace": "Add custom roles to suit your workspace",
   "Custom_roles_upsell_add_custom_roles_workspace_description": "Custom roles allow you to set permissions for the people in your workspace. Set all the roles you need to make sure people have a safe environment to work on.",
