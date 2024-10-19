@@ -6,6 +6,7 @@ const ajv = new Ajv({
 
 export type UsersInfoParamsGet = ({ userId: string } | { username: string } | { importId: string }) & {
 	fields?: string;
+	includeUserRooms?: string;
 };
 
 const UsersInfoParamsGetSchema = {
