@@ -129,7 +129,7 @@
 		"@types/mkdirp": "^1.0.2",
 		"@types/mocha": "github:whitecolor/mocha-types",
 		"@types/moment-timezone": "^0.5.30",
-		"@types/node": "^16.18.108",
+		"@types/node": "~20.16.12",
 		"@types/node-gcm": "^1.0.5",
 		"@types/node-rsa": "^1.1.4",
 		"@types/nodemailer": "^6.4.15",
