@@ -23,6 +23,7 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/omnichannel-services": "workspace:^",
+		"@rocket.chat/tracing": "workspace:^",
 		"@types/node": "^14.18.63",
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",
@@ -33,7 +34,7 @@
 		"moleculer": "^0.14.34",
 		"moment-timezone": "^0.5.46",
 		"mongo-message-queue": "^1.0.0",
-		"mongodb": "^4.17.2",
+		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
 		"nats": "^2.4.0",
 		"pino": "^8.15.0",
 		"polka": "^0.5.2"
