@@ -1204,7 +1204,7 @@ describe('[Users]', () => {
 			await request.get(api('users.list')).set(user2Credentials).expect('Content-Type', 'application/json').expect(403);
 		});
 
-		it('should exclude inviteToken in the user item for privileged users even when fields={inviteToken:1} is specified', async () => {
+		it('should exclude inviteToken in the user item for privileged users', async () => {
 			await request
 				.post(api('useInviteToken'))
 				.set(user2Credentials)
@@ -1236,7 +1236,7 @@ describe('[Users]', () => {
 				});
 		});
 
-		it('should exclude inviteToken in the user item for normal users even when fields={inviteToken:1} is specified', async () => {
+		it('should exclude inviteToken in the user item for normal users', async () => {
 			await updateSetting('API_Apply_permission_view-outside-room_on_users-list', false);
 			await request
 				.post(api('useInviteToken'))
