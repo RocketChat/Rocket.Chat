@@ -6,7 +6,7 @@ import React, { useCallback, useMemo } from 'react';
 
 import { UserInfoAction } from '../../../components/UserInfo';
 import { useActionSpread } from '../../hooks/useActionSpread';
-import type { AdminUserTab } from './AdminUsersPage';
+import type { AdminUsersTab } from './AdminUsersPage';
 import { useChangeAdminStatusAction } from './hooks/useChangeAdminStatusAction';
 import { useChangeUserStatusAction } from './hooks/useChangeUserStatusAction';
 import { useDeleteUserAction } from './hooks/useDeleteUserAction';
@@ -19,7 +19,7 @@ type AdminUserInfoActionsProps = {
 	isFederatedUser: IUser['federated'];
 	isActive: boolean;
 	isAdmin: boolean;
-	tab: AdminUserTab;
+	tab: AdminUsersTab;
 	onChange: () => void;
 	onReload: () => void;
 };

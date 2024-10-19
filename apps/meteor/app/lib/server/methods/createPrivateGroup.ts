@@ -1,6 +1,6 @@
-import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
+import type { ICreatedRoom, IUser, ITeam } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Users } from '@rocket.chat/models';
+import { Users, Team } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -25,8 +25,8 @@ export const createPrivateGroupMethod = async (
 	name: string,
 	members: string[],
 	readOnly = false,
-	customFields = {},
-	extraData = {},
+	customFields: Record<string, any> = {},
+	extraData: Record<string, any> = {},
 	excludeSelf = false,
 ): Promise<
 	ICreatedRoom & {
@@ -36,7 +36,17 @@ export const createPrivateGroupMethod = async (
 	check(name, String);
 	check(members, Match.Optional([String]));
 
-	if (!(await hasPermissionAsync(user._id, 'create-p'))) {
+	if (extraData.teamId) {
+		const team = await Team.findOneById<Pick<ITeam, '_id' | 'roomId'>>(extraData.teamId, { projection: { roomId: 1 } });
+		if (!team) {
+			throw new Meteor.Error('error-team-not-found', 'The "teamId" param provided does not match any team', {
+				method: 'createPrivateGroup',
+			});
+		}
+		if (!(await hasPermissionAsync(user._id, 'create-team-group', team.roomId))) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
+		}
+	} else if (!(await hasPermissionAsync(user._id, 'create-p'))) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 	}
 
@@ -56,7 +66,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = await Users.findOneById(uid);
+		const user = await Users.findOneById(uid, { projection: { services: 0 } });
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'createPrivateGroup',

@@ -23,11 +23,11 @@ import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified
 import UserInfoActions from './UserInfoActions';
 
 type UserInfoWithDataProps = {
-	uid: IUser['_id'];
+	uid?: IUser['_id'];
 	username?: IUser['username'];
 	rid: IRoom['_id'];
 	onClose: () => void;
-	onClickBack: () => void;
+	onClickBack?: () => void;
 };
 
 const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
@@ -38,7 +38,19 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 		value: data,
 		phase: state,
 		error,
-	} = useEndpointData('/v1/users.info', { params: useMemo(() => ({ userId: uid, username }), [uid, username]) });
+	} = useEndpointData('/v1/users.info', {
+		params: useMemo(() => {
+			if (uid) {
+				return { userId: uid };
+			}
+
+			if (username) {
+				return { username };
+			}
+
+			throw new Error('userId or username is required');
+		}, [uid, username]),
+	});
 
 	const isLoading = state === AsyncStatePhase.LOADING;
 
@@ -61,6 +73,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			nickname,
 			createdAt,
 			canViewAllInfo,
+			freeSwitchExtension,
 		} = data.user;
 
 		return {
@@ -80,6 +93,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			status: <ReactiveUserStatus uid={_id} />,
 			statusText,
 			nickname,
+			freeSwitchExtension,
 		};
 	}, [data, getRoles]);
 

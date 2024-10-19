@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { screenDecorator } from '../../../.storybook/helpers';
@@ -35,7 +35,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof TriggerMessage>>;
 
-const Template: Story<ComponentProps<typeof TriggerMessage>> = (args) => <TriggerMessage {...args} />;
+const Template: StoryFn<ComponentProps<typeof TriggerMessage>> = (args) => <TriggerMessage {...args} />;
 
 export const Single = Template.bind({});
 Single.storyName = 'single';

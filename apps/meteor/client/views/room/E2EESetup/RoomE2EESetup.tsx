@@ -1,3 +1,4 @@
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -5,6 +6,7 @@ import { e2e } from '../../../../app/e2e/client';
 import { E2EEState } from '../../../../app/e2e/client/E2EEState';
 import { E2ERoomState } from '../../../../app/e2e/client/E2ERoomState';
 import RoomBody from '../body/RoomBody';
+import RoomBodyV2 from '../body/RoomBodyV2';
 import { useRoom } from '../contexts/RoomContext';
 import { useE2EERoomState } from '../hooks/useE2EERoomState';
 import { useE2EEState } from '../hooks/useE2EEState';
@@ -63,7 +65,16 @@ const RoomE2EESetup = () => {
 		);
 	}
 
-	return <RoomBody />;
+	return (
+		<FeaturePreview feature='newNavigation'>
+			<FeaturePreviewOn>
+				<RoomBodyV2 />
+			</FeaturePreviewOn>
+			<FeaturePreviewOff>
+				<RoomBody />
+			</FeaturePreviewOff>
+		</FeaturePreview>
+	);
 };
 
 export default RoomE2EESetup;

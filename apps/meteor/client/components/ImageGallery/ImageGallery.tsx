@@ -6,8 +6,8 @@ import { FocusScope } from 'react-aria';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Keyboard, Navigation, Zoom, A11y } from 'swiper';
-import type { SwiperRef } from 'swiper/react';
-import { type SwiperClass, Swiper, SwiperSlide } from 'swiper/react';
+import type { SwiperClass, SwiperRef } from 'swiper/react';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
 // Import Swiper styles
 import 'swiper/swiper.css';

@@ -1,5 +1,11 @@
 # @rocket.chat/ui-theming
 
+## 0.3.0
+
+### Minor Changes
+
+- ([#32821](https://github.com/RocketChat/Rocket.Chat/pull/32821)) Replaced new `SidebarV2` components under feature preview
+
 ## 0.3.0-rc.0
 
 ### Minor Changes

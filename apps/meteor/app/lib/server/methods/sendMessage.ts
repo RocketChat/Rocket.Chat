@@ -1,6 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import { Messages, Users } from '@rocket.chat/models';
 import type { TOptions } from 'i18next';
 import { check } from 'meteor/check';
@@ -11,6 +12,7 @@ import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { MessageTypes } from '../../../ui-utils/server';
@@ -98,7 +100,7 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 	} catch (err: any) {
 		SystemLogger.error({ msg: 'Error sending message:', err });
 
-		const errorMessage = typeof err === 'string' ? err : err.error || err.message;
+		const errorMessage: RocketchatI18nKeys = typeof err === 'string' ? err : err.error || err.message;
 		const errorContext: TOptions = err.details ?? {};
 		void api.broadcast('notify.ephemeralMessage', uid, message.rid, {
 			msg: i18n.t(errorMessage, { ...errorContext, lng: user.language }),
@@ -135,9 +137,9 @@ Meteor.methods<ServerMethods>({
 		}
 
 		try {
-			return await executeSendMessage(uid, message, previewUrls);
+			return await applyAirGappedRestrictionsValidation(() => executeSendMessage(uid, message, previewUrls));
 		} catch (error: any) {
-			if ((error.error || error.message) === 'error-not-allowed') {
+			if (['error-not-allowed', 'restricted-workspace'].includes(error.error || error.message)) {
 				throw new Meteor.Error(error.error || error.message, error.reason, {
 					method: 'sendMessage',
 				});

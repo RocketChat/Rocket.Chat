@@ -51,8 +51,8 @@ const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 		<Sidepanel>
 			<Box pb={8} h='full'>
 				<Virtuoso
-					totalCount={result.data.data.length}
-					data={result.data.data}
+					totalCount={result.data.length}
+					data={result.data}
 					components={{ Item: SidepanelListItem, List: RoomSidepanelListWrapper, Scroller: VirtuosoScrollbars }}
 					itemContent={(_, data) => (
 						<RoomSidepanelItem openedRoom={openedRoom} room={data} parentRid={parentRid} viewMode={sidebarViewMode} />

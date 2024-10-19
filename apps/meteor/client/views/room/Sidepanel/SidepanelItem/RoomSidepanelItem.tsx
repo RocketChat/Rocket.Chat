@@ -1,4 +1,4 @@
-import type { IRoom, ISubscription, Serialized } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useUserSubscription } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
@@ -8,7 +8,7 @@ import { useItemData } from '../hooks/useItemData';
 
 export type RoomSidepanelItemProps = {
 	openedRoom?: string;
-	room: Serialized<IRoom>;
+	room: IRoom;
 	parentRid: string;
 	viewMode?: 'extended' | 'medium' | 'condensed';
 };
