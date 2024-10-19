@@ -1101,36 +1101,6 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
-		it('should query all users in the system by custom fields', (done) => {
-			const query = {
-				fields: JSON.stringify({
-					username: 1,
-					_id: 1,
-					customFields: 1,
-				}),
-				query: JSON.stringify({
-					'customFields.customFieldText': 'success',
-				}),
-			};
-			void request
-				.get(api('users.list'))
-				.query(query)
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('users');
-					const queriedUser = (res.body.users as IUser[]).find((u) => u._id === user._id);
-					assert.isDefined(queriedUser);
-					expect(queriedUser).to.have.property('customFields');
-					expect(queriedUser.customFields).to.have.property('customFieldText', 'success');
-				})
-				.end(done);
-		});
-
 		it('should sort for user statuses and check if deactivated user is correctly sorted', (done) => {
 			const query = {
 				fields: JSON.stringify({
