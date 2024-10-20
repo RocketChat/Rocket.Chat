@@ -1,5 +1,19 @@
 # @rocket.chat/ui-video-conf
 
+## 12.0.0-rc.0
+
+### Minor Changes
+
+- ([#33592](https://github.com/RocketChat/Rocket.Chat/pull/33592)) Adds ability to collapse/expand sidebar groups
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [9274cf4586]:</summary>
+
+  - @rocket.chat/ui-avatar@8.0.0-rc.0
+  - @rocket.chat/ui-contexts@12.0.0-rc.0
+  </details>
+
 ## 11.0.0
 
 ### Minor Changes
