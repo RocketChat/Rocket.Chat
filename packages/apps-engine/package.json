@@ -104,9 +104,6 @@
         "stack-trace": "0.0.10",
         "uuid": "~8.3.2"
     },
-    "peerDependencies": {
-        "@rocket.chat/ui-kit": "workspace:^"
-    },
     "nyc": {
         "include": [
             "src/*.ts",
