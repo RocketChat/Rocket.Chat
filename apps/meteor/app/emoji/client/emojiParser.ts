@@ -3,10 +3,8 @@ import { emoji } from './lib';
 
 /**
  * emojiParser is a function that will replace emojis
- * @param {{ html: string }} message - The message object
- * @return {{ html: string }}
  */
-export const emojiParser = ({ html }) => {
+export const emojiParser = (html: string) => {
 	html = html.trim();
 
 	// &#39; to apostrophe (') for emojis such as :')
@@ -28,8 +26,12 @@ export const emojiParser = ({ html }) => {
 	let hasText = false;
 
 	if (!isIE11) {
-		const filter = (node) => {
-			if (node.nodeType === Node.ELEMENT_NODE && (node.classList.contains('emojione') || node.classList.contains('emoji'))) {
+		const isElement = (node: Node): node is Element => node.nodeType === Node.ELEMENT_NODE;
+
+		const isTextNode = (node: Node): node is Text => node.nodeType === Node.TEXT_NODE;
+
+		const filter = (node: Node) => {
+			if (isElement(node) && (node.classList.contains('emojione') || node.classList.contains('emoji'))) {
 				return NodeFilter.FILTER_REJECT;
 			}
 			return NodeFilter.FILTER_ACCEPT;
@@ -38,7 +40,7 @@ export const emojiParser = ({ html }) => {
 		const walker = document.createTreeWalker(checkEmojiOnly, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, filter);
 
 		while (walker.nextNode()) {
-			if (walker.currentNode.nodeType === Node.TEXT_NODE && walker.currentNode.nodeValue.trim() !== '') {
+			if (isTextNode(walker.currentNode) && walker.currentNode.nodeValue.trim() !== '') {
 				hasText = true;
 				break;
 			}
@@ -60,5 +62,5 @@ export const emojiParser = ({ html }) => {
 	// line breaks ' <br> ' back to '<br>'
 	html = html.replace(/ <br> /g, '<br>');
 
-	return { html };
+	return html;
 };
