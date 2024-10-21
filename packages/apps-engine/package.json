@@ -73,7 +73,7 @@
         "@types/debug": "^4.1.12",
         "@types/lodash.clonedeep": "^4.5.7",
         "@types/nedb": "^1.8.12",
-        "@types/node": "^18.0.0",
+        "@types/node": "~20.16.12",
         "@types/semver": "^5.5.0",
         "@types/stack-trace": "0.0.29",
         "@types/uuid": "~8.3.4",
@@ -103,9 +103,6 @@
         "semver": "^7.6.3",
         "stack-trace": "0.0.10",
         "uuid": "~8.3.2"
-    },
-    "peerDependencies": {
-        "@rocket.chat/ui-kit": "workspace:^"
     },
     "nyc": {
         "include": [

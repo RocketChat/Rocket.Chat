@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { addSettings } from '../settings/voip';
 
 Meteor.startup(async () => {
-	await License.onLicense('voip-enterprise', async () => {
+	License.onValidateLicense(async () => {
 		await addSettings();
 	});
 });
