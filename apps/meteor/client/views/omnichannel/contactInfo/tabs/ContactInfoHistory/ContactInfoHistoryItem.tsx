@@ -45,6 +45,8 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, closedAt, onCli
 	return (
 		<Box
 			tabIndex={0}
+			role='listitem'
+			aria-label={t(sourceTypeMap[source?.type] as TranslationKey)}
 			borderBlockEndWidth={1}
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
