@@ -15,7 +15,7 @@
 	"scripts": {
 		"start": "meteor",
 		"build:ci": "METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --server-only --directory /tmp/dist",
-		"dev": "meteor --exclude-archs \"web.browser.legacy, web.cordova\"",
+		"dev": "NODE_OPTIONS=\"--trace-warnings\" meteor --exclude-archs \"web.browser.legacy, web.cordova\"",
 		"dsv": "meteor npm run dev",
 		"ha": "meteor npm run ha:start",
 		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} meteor npm run dev",
@@ -91,6 +91,7 @@
 		"@types/bcrypt": "^5.0.2",
 		"@types/body-parser": "^1.19.5",
 		"@types/busboy": "^1.5.4",
+		"@types/bytebuffer": "~5.0.49",
 		"@types/chai": "~4.3.19",
 		"@types/chai-as-promised": "^7.1.8",
 		"@types/chai-datetime": "0.0.39",
