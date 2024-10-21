@@ -1,6 +1,7 @@
 import type { IWorkspaceCredentials } from '@rocket.chat/core-typings';
 import { WorkspaceCredentials } from '@rocket.chat/models';
 
+import { workspaceScopes } from '../oauthScopes';
 import { getWorkspaceAccessTokenWithScope } from './getWorkspaceAccessTokenWithScope';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
@@ -24,7 +25,9 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 		return '';
 	}
 
-	const scopes = scope === '' ? [] : [scope];
+	// Note: If no scope is given, it means we should assume the default scope, we store the default scopes
+	//       in the global variable workspaceScopes.
+	const scopes = scope === '' ? [...workspaceScopes] : [scope];
 
 	const workspaceCredentials = await WorkspaceCredentials.getCredentialByScopes(scopes);
 	if (workspaceCredentials && !hasWorkspaceAccessTokenExpired(workspaceCredentials) && !forceNew) {
