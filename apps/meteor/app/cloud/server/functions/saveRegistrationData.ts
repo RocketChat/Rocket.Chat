@@ -1,5 +1,5 @@
 import { applyLicense } from '@rocket.chat/license';
-import { Settings, WorkspaceCredentials } from '@rocket.chat/models';
+import { Settings } from '@rocket.chat/models';
 
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
@@ -58,12 +58,6 @@ async function saveRegistrationDataBase({
 		{ _id: 'Cloud_Workspace_PublicKey', value: publicKey },
 		{ _id: 'Cloud_Workspace_Registration_Client_Uri', value: registration_client_uri },
 	];
-
-	await WorkspaceCredentials.updateCredentialByScope({
-		scope: '',
-		accessToken: '',
-		expirationDate: new Date(0),
-	});
 
 	const promises = [...settingsData.map(({ _id, value }) => Settings.updateValueById(_id, value))];
 

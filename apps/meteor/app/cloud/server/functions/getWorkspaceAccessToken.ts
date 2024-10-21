@@ -24,20 +24,18 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 		return '';
 	}
 
-	const workspaceCredentials = await WorkspaceCredentials.getCredentialByScope(scope);
-	if (!workspaceCredentials) {
-		throw new CloudWorkspaceAccessTokenError();
-	}
+	const scopes = scope === '' ? [] : [scope];
 
-	if (!hasWorkspaceAccessTokenExpired(workspaceCredentials) && !forceNew) {
+	const workspaceCredentials = await WorkspaceCredentials.getCredentialByScopes(scopes);
+	if (workspaceCredentials && !hasWorkspaceAccessTokenExpired(workspaceCredentials) && !forceNew) {
 		return workspaceCredentials.accessToken;
 	}
 
 	const accessToken = await getWorkspaceAccessTokenWithScope(scope, throwOnError);
 
 	if (save) {
-		await WorkspaceCredentials.updateCredentialByScope({
-			scope,
+		await WorkspaceCredentials.updateCredentialByScopes({
+			scopes: accessToken.scopes,
 			accessToken: accessToken.token,
 			expirationDate: accessToken.expiresAt,
 		});
