@@ -28,17 +28,19 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 
 	// Note: If no scope is given, it means we should assume the default scope, we store the default scopes
 	//       in the global variable workspaceScopes.
-	const scopes = scope === '' ? workspaceScopes.join(' ') : scope;
+	if (scope === '') {
+		scope = workspaceScopes.join(' ');
+	}
 
-	const workspaceCredentials = await WorkspaceCredentials.getCredentialByScope(scopes);
+	const workspaceCredentials = await WorkspaceCredentials.getCredentialByScope(scope);
 	if (workspaceCredentials && !hasWorkspaceAccessTokenExpired(workspaceCredentials) && !forceNew) {
 		SystemLogger.debug(
-			`Workspace credentials cache hit using scopes: ${scopes}. Avoiding generating a new access token from cloud services.`,
+			`Workspace credentials cache hit using scope: ${scope}. Avoiding generating a new access token from cloud services.`,
 		);
 		return workspaceCredentials.accessToken;
 	}
 
-	SystemLogger.debug(`Workspace credentials cache miss using scopes: ${scopes}, fetching new access token from cloud services.`);
+	SystemLogger.debug(`Workspace credentials cache miss using scope: ${scope}, fetching new access token from cloud services.`);
 
 	const accessToken = await getWorkspaceAccessTokenWithScope(scope, throwOnError);
 
