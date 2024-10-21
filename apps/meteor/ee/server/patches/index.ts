@@ -4,3 +4,4 @@ import './isDepartmentCreationAvailable';
 import './verifyContactChannel';
 import './mergeContacts';
 import './shouldTriggerVerificationApp';
+import './airGappedRestrictionsWrapper';

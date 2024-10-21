@@ -115,6 +115,7 @@ export const startLicense = async () => {
 	return new Promise<void>((resolve) => {
 		// When settings are loaded, apply the current license if there is one.
 		settings.onReady(async () => {
+			import('./airGappedRestrictions');
 			if (!(await applyLicense(settings.get<string>('Enterprise_License') ?? '', false))) {
 				// License from the envvar is always treated as new, because it would have been saved on the setting if it was already in use.
 				if (process.env.ROCKETCHAT_LICENSE && !License.hasValidLicense()) {
