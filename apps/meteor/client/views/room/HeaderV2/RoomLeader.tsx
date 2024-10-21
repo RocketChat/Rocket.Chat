@@ -2,9 +2,9 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
 import React, { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { HeaderSubtitle } from '../../../components/Header';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
@@ -18,7 +18,7 @@ type RoomLeaderProps = {
 };
 
 const RoomLeader = ({ _id, name, username }: RoomLeaderProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { openUserCard, triggerProps } = useUserCard();
 

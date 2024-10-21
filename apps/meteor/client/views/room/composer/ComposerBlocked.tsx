@@ -1,10 +1,10 @@
 import { MessageFooterCallout } from '@rocket.chat/ui-composer';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const ComposerBlocked = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	return <MessageFooterCallout>{t('room_is_blocked')}</MessageFooterCallout>;
 };
 

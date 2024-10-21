@@ -28,7 +28,7 @@ const SettingsGroupSelector = ({ groupId, onClickBack }: SettingsGroupSelectorPr
 		return <LDAPGroupPage {...group} onClickBack={onClickBack} />;
 	}
 
-	if (groupId === 'Call_Center') {
+	if (groupId === 'VoIP_Omnichannel') {
 		return <VoipGroupPage {...group} onClickBack={onClickBack} />;
 	}
 

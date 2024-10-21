@@ -1,7 +1,7 @@
 import { Box, States, StatesIcon, StatesLink, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type LinkProps = { linkText: string; linkHref: string } | { linkText?: never; linkHref?: never };
 type ButtonProps = { buttonTitle: string; buttonAction: () => void } | { buttonTitle?: never; buttonAction?: never };
@@ -23,7 +23,7 @@ const GenericNoResults = ({
 	linkHref,
 	linkText,
 }: GenericNoResultsProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Box display='flex' height='100%' flexDirection='column' justifyContent='center'>

@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
@@ -13,9 +13,9 @@ export default {
 		actions: { argTypesRegex: '^on.*' },
 	},
 	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
-} as ComponentMeta<typeof OTR>;
+} satisfies Meta<typeof OTR>;
 
-const Template: ComponentStory<typeof OTR> = (args) => <OTR {...args} />;
+const Template: StoryFn<typeof OTR> = (args) => <OTR {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {

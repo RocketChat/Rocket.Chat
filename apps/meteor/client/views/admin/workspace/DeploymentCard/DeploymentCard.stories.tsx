@@ -1,5 +1,5 @@
 import type { IStats } from '@rocket.chat/core-typings';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import DeploymentCard from './DeploymentCard';
@@ -11,14 +11,6 @@ export default {
 		layout: 'centered',
 	},
 	args: {
-		info: {
-			marketplaceApiVersion: '1.0.0',
-			commit: {
-				branch: 'master',
-				hash: '1234567890',
-				subject: 'This is a commit',
-			},
-		},
 		statistics: {
 			uniqueId: '',
 			version: '1.0.0',
@@ -36,10 +28,33 @@ export default {
 			mongoStorageEngine: '',
 		} as IStats,
 		instances: [],
+		serverInfo: {
+			info: {
+				commit: {},
+				marketplaceApiVersion: '',
+				build: {
+					date: '',
+					arch: '',
+					platform: '',
+					cpus: 0,
+					freeMemory: 0,
+					totalMemory: 0,
+					nodeVersion: '',
+					osRelease: '',
+				},
+				version: '',
+			},
+			cloudWorkspaceId: '',
+			minimumClientVersions: {
+				desktop: '',
+				mobile: '',
+			},
+			version: '',
+		},
 	},
-} as ComponentMeta<typeof DeploymentCard>;
+} satisfies Meta<typeof DeploymentCard>;
 
-const Template: ComponentStory<typeof DeploymentCard> = (args) => <DeploymentCard {...args} />;
+const Template: StoryFn<typeof DeploymentCard> = (args) => <DeploymentCard {...args} />;
 
 export const Example = Template.bind({});
 Example.storyName = 'DeploymentCard';

@@ -12,14 +12,12 @@ import { outgoingEvents } from '../../lib/outgoingEvents';
 import { outgoingLogger } from '../logger';
 import { IsolatedVMScriptEngine } from './isolated-vm/isolated-vm';
 import { updateHistory } from './updateHistory';
-import { VM2ScriptEngine } from './vm2/vm2';
 
 class RocketChatIntegrationHandler {
 	constructor() {
 		this.successResults = [200, 201, 202];
 		this.compiledScripts = {};
 		this.triggers = {};
-		this.vm2Engine = new VM2ScriptEngine(false);
 		this.ivmEngine = new IsolatedVMScriptEngine(false);
 	}
 
@@ -47,8 +45,9 @@ class RocketChatIntegrationHandler {
 		}
 	}
 
-	getEngine(integration) {
-		return integration.scriptEngine === 'isolated-vm' ? this.ivmEngine : this.vm2Engine;
+	// eslint-disable-next-line no-unused-vars
+	getEngine(_integration) {
+		return this.ivmEngine;
 	}
 
 	removeIntegration(record) {
@@ -180,6 +179,20 @@ class RocketChatIntegrationHandler {
 	}
 
 	mapEventArgsToData(data, { event, message, room, owner, user }) {
+		/* The "services" field contains sensitive information such as
+		the user's password hash. To prevent this information from being
+		sent to the webhook, we're checking and removing it by destructuring
+		the user and owner objects while discarding the "services" field.
+		*/
+
+		const omitServicesField = (object) => {
+			const { services, ...objectWithoutServicesField } = object;
+			return objectWithoutServicesField;
+		};
+
+		const userWithoutServicesField = user?.services ? omitServicesField(user) : user;
+		const ownerWithoutServicesField = owner?.services ? omitServicesField(owner) : owner;
+
 		switch (event) {
 			case 'sendMessage':
 				data.channel_id = room._id;
@@ -215,7 +228,7 @@ class RocketChatIntegrationHandler {
 				data.user_id = message.u._id;
 				data.user_name = message.u.username;
 				data.text = message.msg;
-				data.user = user;
+				data.user = userWithoutServicesField;
 				data.room = room;
 				data.message = message;
 
@@ -233,7 +246,7 @@ class RocketChatIntegrationHandler {
 				data.timestamp = room.ts;
 				data.user_id = owner._id;
 				data.user_name = owner.username;
-				data.owner = owner;
+				data.owner = ownerWithoutServicesField;
 				data.room = room;
 				break;
 			case 'roomArchived':
@@ -244,7 +257,7 @@ class RocketChatIntegrationHandler {
 				data.channel_name = room.name;
 				data.user_id = user._id;
 				data.user_name = user.username;
-				data.user = user;
+				data.user = userWithoutServicesField;
 				data.room = room;
 
 				if (user.type === 'bot') {
@@ -255,7 +268,7 @@ class RocketChatIntegrationHandler {
 				data.timestamp = user.createdAt;
 				data.user_id = user._id;
 				data.user_name = user.username;
-				data.user = user;
+				data.user = userWithoutServicesField;
 
 				if (user.type === 'bot') {
 					data.bot = true;

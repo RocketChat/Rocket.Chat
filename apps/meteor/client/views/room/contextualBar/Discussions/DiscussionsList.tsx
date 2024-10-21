@@ -1,4 +1,4 @@
-import type { IDiscussionMessage, IUser } from '@rocket.chat/core-typings';
+import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
@@ -26,7 +26,6 @@ type DiscussionsListProps = {
 	loading: boolean;
 	onClose: () => void;
 	error: unknown;
-	userId: IUser['_id'];
 	text: string;
 	onChangeFilter: (e: unknown) => void;
 };
@@ -38,7 +37,6 @@ function DiscussionsList({
 	loading,
 	onClose,
 	error,
-	userId,
 	text,
 	onChangeFilter,
 }: DiscussionsListProps) {
@@ -99,9 +97,7 @@ function DiscussionsList({
 							overscan={25}
 							data={discussions}
 							components={{ Scroller: VirtuosoScrollbars }}
-							itemContent={(_, data) => (
-								<DiscussionsListRow discussion={data} showRealNames={showRealNames} userId={userId} onClick={onClick} />
-							)}
+							itemContent={(_, data) => <DiscussionsListRow discussion={data} showRealNames={showRealNames} onClick={onClick} />}
 						/>
 					)}
 				</Box>

@@ -2,9 +2,9 @@ import type { IAuditLog } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericTableRow, GenericTableCell } from '../../../components/GenericTable';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
@@ -14,7 +14,7 @@ type AuditLogEntryProps = { value: IAuditLog };
 
 const AuditLogEntry = ({ value: { u, results, ts, _id, fields } }: AuditLogEntryProps): ReactElement => {
 	const formatDateAndTime = useFormatDateAndTime();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { username, name, avatarETag } = u;
 

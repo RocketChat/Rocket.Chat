@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer';
+
 import { View, StyleSheet, Text, Image } from '@react-pdf/renderer';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';

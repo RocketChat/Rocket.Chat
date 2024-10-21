@@ -1,5 +1,5 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import type {
@@ -14,7 +14,7 @@ import { useCategoryFlatList } from './useCategoryFlatList';
 import { useCategoryToggle } from './useCategoryToggle';
 
 export const useCategories = (): [CategoryDropDownGroups, selectedCategoriesList, selectedCategoriesList, CategoryOnSelected] => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [categories, setCategories] = useState<CategoryDropDownListProps['categories']>([]);
 
 	const fetchCategories = useCallback(async (): Promise<void> => {

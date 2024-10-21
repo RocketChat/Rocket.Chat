@@ -14,12 +14,12 @@ import { UserInfo } from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
 import AdminUserInfoActions from './AdminUserInfoActions';
-import type { AdminUserTab } from './AdminUsersPage';
+import type { AdminUsersTab } from './AdminUsersPage';
 
 type AdminUserInfoWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
-	tab: AdminUserTab;
+	tab: AdminUsersTab;
 };
 
 const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProps): ReactElement => {

@@ -1,5 +1,5 @@
 import { Field } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import RelativeUrlSettingInput from './RelativeUrlSettingInput';
@@ -13,9 +13,9 @@ export default {
 		},
 	},
 	decorators: [(fn) => <Field>{fn()}</Field>],
-} as ComponentMeta<typeof RelativeUrlSettingInput>;
+} satisfies Meta<typeof RelativeUrlSettingInput>;
 
-const Template: ComponentStory<typeof RelativeUrlSettingInput> = (args) => <RelativeUrlSettingInput {...args} />;
+const Template: StoryFn<typeof RelativeUrlSettingInput> = (args) => <RelativeUrlSettingInput {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {

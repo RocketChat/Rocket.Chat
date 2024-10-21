@@ -1,15 +1,21 @@
-import { Settings } from '@rocket.chat/models';
+import type { IWorkspaceCredentials } from '@rocket.chat/core-typings';
+import { WorkspaceCredentials } from '@rocket.chat/models';
 
-import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
-import { settings } from '../../../settings/server';
 import { getWorkspaceAccessTokenWithScope } from './getWorkspaceAccessTokenWithScope';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
+const hasWorkspaceAccessTokenExpired = (credentials: IWorkspaceCredentials): boolean => new Date() >= credentials.expirationDate;
+
 /**
- * @param {boolean} forceNew
- * @param {string} scope
- * @param {boolean} save
- * @returns string
+ * Returns the access token for the workspace, if it is expired or forceNew is true, it will get a new one
+ * and save it to the database, therefore if this function does not throw an error, it will always return a valid token.
+ *
+ * @param {boolean} forceNew - If true, it will get a new token even if the current one is not expired
+ * @param {string} scope - The scope of the token to get
+ * @param {boolean} save - If true, it will save the new token to the database
+ * @throws {CloudWorkspaceAccessTokenError} If the workspace is not registered (no credentials in the database)
+ *
+ * @returns string - A valid access token for the workspace
  */
 export async function getWorkspaceAccessToken(forceNew = false, scope = '', save = true, throwOnError = false): Promise<string> {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
@@ -18,26 +24,23 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 		return '';
 	}
 
-	const expires = await Settings.findOneById('Cloud_Workspace_Access_Token_Expires_At');
-
-	if (expires === null) {
-		throw new Error('Cloud_Workspace_Access_Token_Expires_At is not set');
+	const workspaceCredentials = await WorkspaceCredentials.getCredentialByScope(scope);
+	if (!workspaceCredentials) {
+		throw new CloudWorkspaceAccessTokenError();
 	}
 
-	const now = new Date();
-
-	if (expires.value && now < expires.value && !forceNew) {
-		return settings.get<string>('Cloud_Workspace_Access_Token');
+	if (!hasWorkspaceAccessTokenExpired(workspaceCredentials) && !forceNew) {
+		return workspaceCredentials.accessToken;
 	}
 
 	const accessToken = await getWorkspaceAccessTokenWithScope(scope, throwOnError);
 
 	if (save) {
-		(await Settings.updateValueById('Cloud_Workspace_Access_Token', accessToken.token)).modifiedCount &&
-			void notifyOnSettingChangedById('Cloud_Workspace_Access_Token');
-
-		(await Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', accessToken.expiresAt)).modifiedCount &&
-			void notifyOnSettingChangedById('Cloud_Workspace_Access_Token_Expires_At');
+		await WorkspaceCredentials.updateCredentialByScope({
+			scope,
+			accessToken: accessToken.token,
+			expirationDate: accessToken.expiresAt,
+		});
 	}
 
 	return accessToken.token;

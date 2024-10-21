@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import Installation from './Installation';
@@ -6,7 +6,7 @@ import Installation from './Installation';
 export default {
 	title: 'Omnichannel/Installation',
 	component: Installation,
-} as ComponentMeta<typeof Installation>;
+} satisfies Meta<typeof Installation>;
 
-export const Default: ComponentStory<typeof Installation> = () => <Installation />;
+export const Default: StoryFn<typeof Installation> = () => <Installation />;
 Default.storyName = 'Installation';

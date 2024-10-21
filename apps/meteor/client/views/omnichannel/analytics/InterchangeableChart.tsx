@@ -1,6 +1,6 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import type { Chart as ChartType, TooltipItem } from 'chart.js';
+import type * as chartjs from 'chart.js';
 import React, { useRef, useEffect } from 'react';
 
 import { drawLineChart } from '../../../../app/livechat/client/lib/chartHandler';
@@ -16,11 +16,11 @@ const getChartTooltips = (chartName: string) => {
 		case 'Avg_reaction_time':
 			return {
 				callbacks: {
-					title([ctx]: TooltipItem<'line'>[]) {
+					title([ctx]: [chartjs.TooltipItem<'line'>]) {
 						const { dataset } = ctx;
 						return dataset.label;
 					},
-					label(ctx: TooltipItem<'line'>) {
+					label(ctx: chartjs.TooltipItem<'line'>) {
 						const { dataset, dataIndex } = ctx;
 						const item = dataset.data[dataIndex];
 						return secondsToHHMMSS(typeof item === 'number' ? item : 0);
@@ -50,7 +50,7 @@ const InterchangeableChart = ({
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canvas = useRef<HTMLCanvasElement | null>(null);
-	const context = useRef<ChartType<'line', number, string> | void>();
+	const context = useRef<chartjs.Chart<'line', number[], string>>();
 
 	const { start, end } = dateRange;
 
@@ -73,7 +73,7 @@ const InterchangeableChart = ({
 					context.current,
 					[result.chartLabel],
 					result.dataLabels,
-					[result.dataPoints as unknown as number], // TODO fix this
+					[result.dataPoints],
 					{
 						tooltipCallbacks,
 					},

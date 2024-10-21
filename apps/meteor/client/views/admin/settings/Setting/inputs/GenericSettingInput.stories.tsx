@@ -1,5 +1,5 @@
 import { Field } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import GenericSettingInput from './GenericSettingInput';
@@ -13,9 +13,9 @@ export default {
 		},
 	},
 	decorators: [(fn) => <Field>{fn()}</Field>],
-} as ComponentMeta<typeof GenericSettingInput>;
+} satisfies Meta<typeof GenericSettingInput>;
 
-const Template: ComponentStory<typeof GenericSettingInput> = (args) => <GenericSettingInput {...args} />;
+const Template: StoryFn<typeof GenericSettingInput> = (args) => <GenericSettingInput {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {

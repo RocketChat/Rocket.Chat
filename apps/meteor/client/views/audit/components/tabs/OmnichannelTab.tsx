@@ -1,9 +1,9 @@
 import { Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { useController } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../../../components/AutoCompleteAgent';
 import type { AuditFields } from '../../hooks/useAuditForm';
@@ -14,7 +14,7 @@ type OmnichannelTabProps = {
 };
 
 const OmnichannelTab = ({ form: { control } }: OmnichannelTabProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { field: visitorField, fieldState: visitorFieldState } = useController({
 		name: 'visitor',

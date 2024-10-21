@@ -1,42 +1,25 @@
-import { DocsContainer as BaseContainer } from '@storybook/addon-docs/blocks';
+import { DocsContainer as BaseContainer } from '@storybook/blocks';
+import { addons } from '@storybook/preview-api';
 import { themes } from '@storybook/theming';
-import type { ComponentProps } from 'react';
-import { useDarkMode } from 'storybook-dark-mode';
+import type { ComponentPropsWithoutRef } from 'react';
+import { useEffect, useState } from 'react';
+import { DARK_MODE_EVENT_NAME } from 'storybook-dark-mode';
 
-import { surface } from './helpers';
+const channel = addons.getChannel();
 
-export const DocsContainer = ({
-  children,
-  context,
-}: ComponentProps<typeof BaseContainer>) => {
-  const dark = useDarkMode();
+const DocsContainer = (
+  props: ComponentPropsWithoutRef<typeof BaseContainer>
+) => {
+  const [isDark, setDark] = useState(false);
+
+  useEffect(() => {
+    channel.on(DARK_MODE_EVENT_NAME, setDark);
+    return () => channel.removeListener(DARK_MODE_EVENT_NAME, setDark);
+  }, [setDark]);
 
   return (
-    <BaseContainer
-      context={{
-        ...context,
-        storyById: (id) => {
-          const storyContext = context.storyById(id);
-          return {
-            ...storyContext,
-            parameters: {
-              ...storyContext?.parameters,
-              docs: {
-                ...storyContext?.parameters?.docs,
-                theme: dark
-                  ? {
-                      ...themes.dark,
-                      appContentBg: surface.main,
-                      barBg: surface.main,
-                    }
-                  : themes.light,
-              },
-            },
-          };
-        },
-      }}
-    >
-      {children}
-    </BaseContainer>
+    <BaseContainer {...props} theme={isDark ? themes.dark : themes.light} />
   );
 };
+
+export default DocsContainer;

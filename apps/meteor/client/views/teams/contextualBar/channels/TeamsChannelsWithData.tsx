@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage, useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, usePermission } from '@rocket.chat/ui-contexts';
+import { useSetModal, usePermission, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
@@ -17,7 +17,8 @@ const TeamsChannelsWithData = () => {
 	const room = useRoom();
 	const setModal = useSetModal();
 	const { closeTab } = useRoomToolbox();
-	const canAddExistingTeam = usePermission('add-team-channel', room._id);
+	const canAddExistingRoomToTeam = usePermission('move-room-to-team', room._id);
+	const canCreateRoomInTeam = useAtLeastOnePermission(['create-team-channel', 'create-team-group'], room._id);
 
 	const { teamId } = room;
 
@@ -44,7 +45,7 @@ const TeamsChannelsWithData = () => {
 	});
 
 	const handleCreateNew = useEffectEvent(() => {
-		setModal(<CreateChannelWithData teamId={teamId} onClose={() => setModal(null)} reload={reload} />);
+		setModal(<CreateChannelWithData teamId={teamId} mainRoom={room} onClose={() => setModal(null)} reload={reload} />);
 	});
 
 	const goToRoom = useEffectEvent((room: IRoom) => {
@@ -62,8 +63,8 @@ const TeamsChannelsWithData = () => {
 			channels={items}
 			total={total}
 			onClickClose={closeTab}
-			onClickAddExisting={canAddExistingTeam && handleAddExisting}
-			onClickCreateNew={canAddExistingTeam && handleCreateNew}
+			onClickAddExisting={canAddExistingRoomToTeam && handleAddExisting}
+			onClickCreateNew={canCreateRoomInTeam && handleCreateNew}
 			onClickView={goToRoom}
 			loadMoreItems={loadMoreItems}
 			reload={reload}

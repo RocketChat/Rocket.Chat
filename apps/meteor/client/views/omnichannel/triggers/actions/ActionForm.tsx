@@ -12,11 +12,11 @@ import {
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { useCallback, useMemo } from 'react';
 import type { Control, UseFormTrigger } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { type TriggersPayload } from '../EditTrigger';
@@ -35,7 +35,7 @@ const ACTION_HINTS: Record<string, TranslationKey> = {
 const PREMIUM_ACTIONS = ['use-external-service'];
 
 export const ActionForm = ({ control, trigger, index, ...props }: SendMessageFormType) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const actionFieldId = useUniqueId();
 	const actionFieldName = `actions.${index}.name` as const;

@@ -1,14 +1,14 @@
 import { Margins, Tabs } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import AnalyticsReports from './AnalyticsReports';
 import ServerLogs from './ServerLogs';
 
 const ViewLogsPage = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [tab, setTab] = useState('Logs');
 
 	return (

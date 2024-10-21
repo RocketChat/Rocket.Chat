@@ -1,8 +1,8 @@
 import { Box, CheckBox, Icon, Option, SearchInput, Tile } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
 import { Fragment, useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { type OptionProp } from './MultiSelectCustom';
 import { useFilteredOptions } from './useFilteredOptions';
@@ -16,7 +16,7 @@ const MultiSelectCustomList = ({
 	onSelected: (item: OptionProp, e?: FormEvent<HTMLElement>) => void;
 	searchBarText?: string;
 }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [text, setText] = useState('');
 
@@ -40,8 +40,8 @@ const MultiSelectCustomList = ({
 			)}
 			{filteredOptions.map((option) => (
 				<Fragment key={option.id}>
-					{!option.hasOwnProperty('checked') ? (
-						<Box mi={12} mb={4} fontScale='p2b' color='default'>
+					{option.isGroupTitle || !option.hasOwnProperty('checked') ? (
+						<Box mi='x10' mb={4} fontScale='p2b' color='default'>
 							{t(option.text as TranslationKey)}
 						</Box>
 					) : (

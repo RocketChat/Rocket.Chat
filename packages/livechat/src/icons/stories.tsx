@@ -1,6 +1,6 @@
 import path from 'path';
 
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 
 export default {
 	title: 'Components/Icons',
@@ -22,7 +22,7 @@ const iconset = req.keys().map((filename) => ({
 	name: path.basename(filename, '.svg'),
 }));
 
-export const All: Story<{ color: string }> = ({ color }) => (
+export const All: StoryFn<{ color: string }> = ({ color }) => (
 	<>
 		{iconset.map(
 			(

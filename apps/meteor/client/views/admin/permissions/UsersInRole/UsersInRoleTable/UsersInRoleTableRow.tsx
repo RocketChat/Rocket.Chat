@@ -2,9 +2,9 @@ import type { IUserInRole } from '@rocket.chat/core-typings';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { getUserEmailAddress } from '../../../../../../lib/getUserEmailAddress';
 import { GenericTableRow, GenericTableCell } from '../../../../../components/GenericTable';
@@ -15,7 +15,7 @@ type UsersInRoleTableRowProps = {
 };
 
 const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { _id, name, username, avatarETag } = user;
 	const email = getUserEmailAddress(user);
 

@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
@@ -31,11 +31,11 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 
 	const persist = withDebouncing({ wait: 300 })(() => {
 		if (input.value) {
-			Meteor._localStorage.setItem(storageID, input.value);
+			Accounts.storageLocation.setItem(storageID, input.value);
 			return;
 		}
 
-		Meteor._localStorage.removeItem(storageID);
+		Accounts.storageLocation.removeItem(storageID);
 	});
 
 	const notifyQuotedMessagesUpdate = (): void => {
@@ -262,7 +262,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 
 	const insertNewLine = (): void => insertText('\n');
 
-	setText(Meteor._localStorage.getItem(storageID) ?? '', {
+	setText(Accounts.storageLocation.getItem(storageID) ?? '', {
 		skipFocus: true,
 	});
 

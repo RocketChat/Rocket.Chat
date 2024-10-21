@@ -1,8 +1,10 @@
+import { useFocusManager } from '@react-aria/focus';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Icon, TextInput, Palette, SidebarV2Section } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Palette, SidebarV2Section, IconButton } from '@rocket.chat/fuselage';
 import { useMergedRefs, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { FocusScope } from 'react-aria';
 import { useForm } from 'react-hook-form';
 import tinykeys from 'tinykeys';
 
@@ -48,9 +50,13 @@ const shortcut = ((): string => {
 	return '(Ctrl+K)';
 })();
 
+const isRecentButton = (node: EventTarget) => (node as HTMLElement).title === 'Recent';
+
 const SearchSection = () => {
 	const t = useTranslation();
+	const focusManager = useFocusManager();
 	const user = useUser();
+	const [recentButtonPressed, setRecentButtonPressed] = useState(false);
 
 	const {
 		formState: { isDirty },
@@ -62,12 +68,15 @@ const SearchSection = () => {
 	const { filterText } = watch();
 	const { ref: filterRef, ...rest } = register('filterText');
 
+	const showRecentList = Boolean(recentButtonPressed && !filterText);
+
 	const inputRef = useRef<HTMLInputElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
 	const mergedRefs = useMergedRefs(filterRef, inputRef);
 
 	const handleEscSearch = useCallback(() => {
 		resetField('filterText');
+		setRecentButtonPressed(false);
 		inputRef.current?.blur();
 	}, [resetField]);
 
@@ -83,6 +92,11 @@ const SearchSection = () => {
 				event.preventDefault();
 				setFocus('filterText');
 			},
+			'Shift+$mod+K': (event) => {
+				event.preventDefault();
+				setRecentButtonPressed(true);
+				focusManager.focusNext({ accept: (node) => isRecentButton(node) });
+			},
 			'Escape': (event) => {
 				event.preventDefault();
 				handleEscSearch();
@@ -92,12 +106,12 @@ const SearchSection = () => {
 		return (): void => {
 			unsubscribe();
 		};
-	}, [handleEscSearch, setFocus]);
+	}, [focusManager, handleEscSearch, setFocus]);
 
 	const placeholder = [t('Search'), shortcut].filter(Boolean).join(' ');
 
 	return (
-		<Box className={['rcx-sidebar', isDirty && wrapperStyle]} ref={wrapperRef} role='search'>
+		<Box className={['rcx-sidebar', (isDirty || showRecentList) && wrapperStyle]} ref={wrapperRef} role='search'>
 			<SidebarV2Section>
 				<TextInput
 					placeholder={placeholder}
@@ -110,12 +124,23 @@ const SearchSection = () => {
 
 				{user && !isDirty && (
 					<>
-						<Sort />
+						<IconButton
+							small
+							icon='clock'
+							title={t('Recent')}
+							onClick={() => setRecentButtonPressed(!recentButtonPressed)}
+							pressed={recentButtonPressed}
+						/>
+						{recentButtonPressed ? <IconButton icon='sort' disabled small /> : <Sort />}
 						<CreateRoom />
 					</>
 				)}
 			</SidebarV2Section>
-			{isDirty && <SearchList filterText={filterText} onEscSearch={handleEscSearch} />}
+			{(isDirty || recentButtonPressed) && (
+				<FocusScope>
+					<SearchList filterText={filterText} onEscSearch={handleEscSearch} showRecentList={showRecentList} />
+				</FocusScope>
+			)}
 		</Box>
 	);
 };

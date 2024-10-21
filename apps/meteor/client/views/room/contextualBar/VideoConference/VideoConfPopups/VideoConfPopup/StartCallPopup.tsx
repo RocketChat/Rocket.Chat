@@ -1,6 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useOutsideClick, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
 	VideoConfPopupHeader,
@@ -15,6 +14,7 @@ import {
 } from '@rocket.chat/ui-video-conf';
 import type { KeyboardEvent, ReactElement } from 'react';
 import React, { useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useVideoConfSetPreferences, useVideoConfCapabilities, useVideoConfPreferences } from '../../../../../../contexts/VideoConfContext';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
@@ -29,7 +29,7 @@ type StartCallPopupProps = {
 };
 
 const StartCallPopup = ({ id, loading, room, onClose, onConfirm }: StartCallPopupProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const ref = useRef(null);
 	useOutsideClick([ref], !loading ? onClose : () => undefined);
 

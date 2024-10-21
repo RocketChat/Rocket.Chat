@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import Item from './Item';
@@ -12,9 +12,9 @@ export default {
 			argTypesRegex: '^on.*',
 		},
 	},
-} as ComponentMeta<typeof Item>;
+} satisfies Meta<typeof Item>;
 
-export const Default: ComponentStory<typeof Item> = (args) => <Item {...args} />;
+export const Default: StoryFn<typeof Item> = (args) => <Item {...args} />;
 Default.storyName = 'Item';
 Default.args = {
 	data: {

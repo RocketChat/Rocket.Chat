@@ -1,8 +1,8 @@
 import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
@@ -25,7 +25,7 @@ function SelectSettingInput({
 	onChangeValue,
 	onResetButtonClick,
 }: SelectSettingInputProps): ReactElement {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const handleChange = (value: string): void => {
 		onChangeValue?.(value);

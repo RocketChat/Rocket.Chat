@@ -6,14 +6,14 @@ import { useMemo } from 'react';
 
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import type { AdminUserTab, UsersTableSortingOptions } from '../AdminUsersPage';
+import type { AdminUsersTab, UsersTableSortingOption } from '../AdminUsersPage';
 
 type UseFilteredUsersOptions = {
 	searchTerm: string;
 	prevSearchTerm: MutableRefObject<string>;
-	tab: AdminUserTab;
+	tab: AdminUsersTab;
 	paginationData: ReturnType<typeof usePagination>;
-	sortData: ReturnType<typeof useSort<UsersTableSortingOptions>>;
+	sortData: ReturnType<typeof useSort<UsersTableSortingOption>>;
 	selectedRoles: string[];
 };
 
@@ -26,7 +26,7 @@ const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData
 			setCurrent(0);
 		}
 
-		const listUsersPayload: Partial<Record<AdminUserTab, UsersListStatusParamsGET>> = {
+		const listUsersPayload: Partial<Record<AdminUsersTab, UsersListStatusParamsGET>> = {
 			all: {},
 			pending: {
 				hasLoggedIn: false,

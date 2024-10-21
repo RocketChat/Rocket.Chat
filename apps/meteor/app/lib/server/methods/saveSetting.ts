@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { disableCustomScripts } from '../functions/disableCustomScripts';
 import { notifyOnSettingChanged } from '../lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
@@ -38,6 +39,14 @@ Meteor.methods<ServerMethods>({
 
 		// Verify the _id passed in is a string.
 		check(_id, String);
+
+		// Disable custom scripts in cloud trials to prevent phishing campaigns
+		if (disableCustomScripts() && /^Custom_Script_/.test(_id)) {
+			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
+				method: 'saveSetting',
+				settingId: _id,
+			});
+		}
 
 		const setting = await Settings.findOneById(_id);
 

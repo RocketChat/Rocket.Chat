@@ -1,8 +1,8 @@
 import { Box, Flex } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import EngagementDashboardCard from '../EngagementDashboardCard';
 import ActiveUsersSection from './ActiveUsersSection';
@@ -15,7 +15,7 @@ type UsersTabProps = {
 };
 
 const UsersTab = ({ timezone }: UsersTabProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const isXxlScreen = useBreakpoints().includes('xxl');
 

@@ -1,7 +1,7 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { getBaseURI, isExternal } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { ReactElement, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import BoldSpan from './BoldSpan';
 import ItalicSpan from './ItalicSpan';
@@ -14,7 +14,7 @@ type LinkSpanProps = {
 };
 
 const LinkSpan = ({ href, label }: LinkSpanProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const children = useMemo(() => {
 		const labelArray = Array.isArray(label) ? label : [label];
 

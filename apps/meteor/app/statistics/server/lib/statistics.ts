@@ -157,6 +157,13 @@ export const statistics = {
 				}),
 		);
 
+		// Number of livechat rooms with department
+		statsPms.push(
+			LivechatRooms.countLivechatRoomsWithDepartment().then((count) => {
+				statistics.totalLivechatRoomsWithDepartment = count;
+			}),
+		);
+
 		// Number of departments
 		statsPms.push(
 			LivechatDepartment.estimatedDocumentCount().then((count) => {

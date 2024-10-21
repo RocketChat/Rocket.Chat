@@ -13,6 +13,7 @@ import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { disableCustomScripts } from '../../../lib/server/functions/disableCustomScripts';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
@@ -150,12 +151,15 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'settings/:_id',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		permissionsRequired: {
+			GET: { permissions: ['view-privileged-setting'], operation: 'hasAll' },
+			POST: { permissions: ['edit-privileged-setting'], operation: 'hasAll' },
+		},
+	},
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
-				return API.v1.unauthorized();
-			}
 			const setting = await Settings.findOneNotHiddenById(this.urlParams._id);
 			if (!setting) {
 				return API.v1.failure();
@@ -165,12 +169,13 @@ API.v1.addRoute(
 		post: {
 			twoFactorRequired: true,
 			async action(): Promise<ResultFor<'POST', '/v1/settings/:_id'>> {
-				if (!(await hasPermissionAsync(this.userId, 'edit-privileged-setting'))) {
-					return API.v1.unauthorized();
-				}
-
 				if (typeof this.urlParams._id !== 'string') {
 					throw new Meteor.Error('error-id-param-not-provided', 'The parameter "id" is required');
+				}
+
+				// Disable custom scripts in cloud trials to prevent phishing campaigns
+				if (disableCustomScripts() && /^Custom_Script_/.test(this.urlParams._id)) {
+					return API.v1.unauthorized();
 				}
 
 				// allow special handling of particular setting types

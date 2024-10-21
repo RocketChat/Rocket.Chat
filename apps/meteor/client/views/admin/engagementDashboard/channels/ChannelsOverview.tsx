@@ -1,8 +1,8 @@
 import { Icon, Margins, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
@@ -14,7 +14,7 @@ import { useChannelsList } from './useChannelsList';
 const ChannelsOverview = (): ReactElement => {
 	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [current, setCurrent] = useState(0);
 	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
@@ -121,7 +121,7 @@ const ChannelsOverview = (): ReactElement => {
 					itemsPerPage={itemsPerPage}
 					itemsPerPageLabel={(): string => t('Items_per_page:')}
 					showingResultsLabel={({ count, current, itemsPerPage }): string =>
-						t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count)
+						t('Showing_results_of', { postProcess: 'sprintf', sprintf: [current + 1, Math.min(current + itemsPerPage, count), count] })
 					}
 					count={data?.total || 0}
 					onSetItemsPerPage={setItemsPerPage}

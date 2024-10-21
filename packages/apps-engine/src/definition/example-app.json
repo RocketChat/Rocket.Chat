@@ -1,0 +1,13 @@
+{
+    //This is an example of how a app.json file will look like
+    "name": "Testing",
+    "nameSlug": "testing",
+    "description": "Testing description",
+    "version": "1.0.0",
+    "requiredApiVersion": "0.0.1",
+    "author": {
+        "name": "Bradley Hilton",
+        "support": "https://github.com/RocketChat/Rocket.Chat.Apps-engine"
+    },
+    "classFile": "ExampleApp.ts"
+}

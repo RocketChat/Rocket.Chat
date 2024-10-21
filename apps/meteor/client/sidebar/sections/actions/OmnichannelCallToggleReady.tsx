@@ -1,12 +1,12 @@
 import { Sidebar } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useCallerInfo, useCallRegisterClient, useCallUnregisterClient, useVoipNetworkStatus } from '../../../contexts/CallContext';
 
 export const OmnichannelCallToggleReady = ({ ...props }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const caller = useCallerInfo();
 	const unregister = useCallUnregisterClient();

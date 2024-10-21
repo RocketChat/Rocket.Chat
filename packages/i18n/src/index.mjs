@@ -94,14 +94,14 @@ const dict: {
 
 export type RocketchatI18nKeys = keyof RocketchatI18n;
 
-export = dict;
+export default dict;
 `;
 
 const languages = files.map((file) => path.basename(file, '.i18n.json'));
 
 // write the files
 if (fs.existsSync(`./dist`)) {
-	fs.rmdirSync(`./dist`, { recursive: true });
+	fs.rmSync(`./dist`, { recursive: true, force: true });
 }
 fs.mkdirSync(`./dist`, { recursive: true });
 

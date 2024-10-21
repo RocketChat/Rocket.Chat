@@ -61,9 +61,10 @@ router.use(authenticationMiddleware({ rejectUnauthorized: false }));
 
 router.use(async (req: Request, res, next) => {
 	const { 'x-visitor-token': visitorToken } = req.headers;
+	const { id: appId } = req.params;
 
 	if (visitorToken) {
-		req.body.visitor = await Apps.getConverters()?.get('visitors').convertByToken(visitorToken);
+		req.body.visitor = await Apps.getConverters()?.get('visitors').convertByTokenAndSource(visitorToken, appId);
 	}
 
 	if (!req.user && !req.body.visitor) {

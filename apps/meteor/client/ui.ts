@@ -3,6 +3,7 @@ import { useCloseChatQuickAction } from './hooks/quickActions/useCloseChatQuickA
 import { useMoveQueueQuickAction } from './hooks/quickActions/useMoveQueueQuickAction';
 import { useOnHoldChatQuickAction } from './hooks/quickActions/useOnHoldChatQuickAction';
 import { useTranscriptQuickAction } from './hooks/quickActions/useTranscriptQuickAction';
+import { useAppsRoomStarActions } from './hooks/roomActions/useAppsRoomStarActions';
 import { useAutotranslateRoomAction } from './hooks/roomActions/useAutotranslateRoomAction';
 import { useCallsRoomAction } from './hooks/roomActions/useCallsRoomAction';
 import { useCannedResponsesRoomAction } from './hooks/roomActions/useCannedResponsesRoomAction';
@@ -69,6 +70,7 @@ export const roomActionHooks = [
 	useUploadedFilesListRoomAction,
 	useVoIPRoomInfoRoomAction,
 	useWebRTCVideoRoomAction,
+	useAppsRoomStarActions,
 ] satisfies (() => RoomToolboxActionConfig | undefined)[];
 
 export const quickActionHooks = [

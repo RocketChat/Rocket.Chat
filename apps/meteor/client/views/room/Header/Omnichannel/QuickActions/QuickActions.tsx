@@ -1,7 +1,7 @@
 import type { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { HeaderToolbar, HeaderToolbarAction, HeaderToolbarDivider } from '../../../../../components/Header';
 import { useOmnichannelRoom } from '../../../contexts/RoomContext';
@@ -13,7 +13,7 @@ type QuickActionsProps = {
 };
 
 const QuickActions = ({ className }: QuickActionsProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const room = useOmnichannelRoom();
 	const { quickActions, actionDefault } = useQuickActions();
 

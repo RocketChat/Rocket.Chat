@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import CreateCannedResponseModal from './CreateCannedResponseModal';
@@ -11,8 +11,8 @@ export default {
 			argTypesRegex: '^on.*',
 		},
 	},
-} as ComponentMeta<typeof CreateCannedResponseModal>;
+} satisfies Meta<typeof CreateCannedResponseModal>;
 
-const Template: ComponentStory<typeof CreateCannedResponseModal> = (args) => <CreateCannedResponseModal {...args} />;
+const Template: StoryFn<typeof CreateCannedResponseModal> = (args) => <CreateCannedResponseModal {...args} />;
 
 export const Default = Template.bind({});

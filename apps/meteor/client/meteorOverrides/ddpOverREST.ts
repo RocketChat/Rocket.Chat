@@ -26,10 +26,10 @@ const shouldBypass = ({ msg, method, params }: Meteor.IDDPMessage): boolean => {
 	return false;
 };
 
-const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor.IDDPMessage) => void) => {
-	return function _sendOverREST(this: Meteor.IMeteorConnection, message: Meteor.IDDPMessage): void {
+const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor.IDDPMessage, ...args: unknown[]) => void) => {
+	return function _sendOverREST(this: Meteor.IMeteorConnection, message: Meteor.IDDPMessage, ...args: unknown[]): void {
 		if (shouldBypass(message)) {
-			return _send.call(this, message);
+			return _send.call(this, message, ...args);
 		}
 
 		const endpoint = Tracker.nonreactive(() => (!Meteor.userId() ? 'method.callAnon' : 'method.call'));
