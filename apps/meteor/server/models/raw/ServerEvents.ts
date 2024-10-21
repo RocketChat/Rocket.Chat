@@ -55,36 +55,36 @@ export class ServerEventsRaw extends BaseRaw<IServerEvent> implements IServerEve
 	}
 
 	async countFailedAttemptsByUsernameSince(username: string, since: Date): Promise<number> {
-		return this.find({
+		return this.countDocuments({
 			'u.username': username,
 			't': ServerEventType.FAILED_LOGIN_ATTEMPT,
 			'ts': {
 				$gte: since,
 			},
-		}).count();
+		});
 	}
 
 	countFailedAttemptsByIpSince(ip: string, since: Date): Promise<number> {
-		return this.find({
+		return this.countDocuments({
 			ip,
 			t: ServerEventType.FAILED_LOGIN_ATTEMPT,
 			ts: {
 				$gte: since,
 			},
-		}).count();
+		});
 	}
 
 	countFailedAttemptsByIp(ip: string): Promise<number> {
-		return this.find({
+		return this.countDocuments({
 			ip,
 			t: ServerEventType.FAILED_LOGIN_ATTEMPT,
-		}).count();
+		});
 	}
 
 	countFailedAttemptsByUsername(username: string): Promise<number> {
-		return this.find({
+		return this.countDocuments({
 			'u.username': username,
 			't': ServerEventType.FAILED_LOGIN_ATTEMPT,
-		}).count();
+		});
 	}
 }

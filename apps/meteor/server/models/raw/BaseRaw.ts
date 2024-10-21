@@ -28,6 +28,7 @@ import type {
 	DeleteResult,
 	DeleteOptions,
 	FindOneAndDeleteOptions,
+	CountDocumentsOptions,
 } from 'mongodb';
 
 import { setUpdatedAt } from './setUpdatedAt';
@@ -497,7 +498,10 @@ export abstract class BaseRaw<
 		return this.col.watch(pipeline);
 	}
 
-	countDocuments(query: Filter<T>): Promise<number> {
+	countDocuments(query: Filter<T>, options?: CountDocumentsOptions): Promise<number> {
+		if (options) {
+			return this.col.countDocuments(query, options);
+		}
 		return this.col.countDocuments(query);
 	}
 
