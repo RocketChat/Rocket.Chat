@@ -88,7 +88,7 @@
 		"stylelint-order": "^5.0.0",
 		"svg-loader": "^0.0.2",
 		"terser-webpack-plugin": "~4.2.3",
-		"typescript": "~5.5.4",
+		"typescript": "~5.6.3",
 		"url-loader": "^4.1.1",
 		"webpack": "~5.95.0",
 		"webpack-bundle-analyzer": "^4.9.1",

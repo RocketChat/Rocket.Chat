@@ -1,3 +1,4 @@
+import { traceInstanceMethods } from '@rocket.chat/core-services';
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
 import type { Updater } from '@rocket.chat/models';
@@ -77,6 +78,8 @@ export abstract class BaseRaw<
 		void this.createIndexes();
 
 		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
+
+		return traceInstanceMethods(this);
 	}
 
 	private pendingIndexes: Promise<void> | undefined;

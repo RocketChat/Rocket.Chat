@@ -1,5 +1,6 @@
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Logger } from '@rocket.chat/logger';
+import { tracerActiveSpan } from '@rocket.chat/tracing';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
@@ -72,9 +73,20 @@ const wrapMethods = function (name, originalHandler, methodsMap) {
 			...getMethodArgs(name, originalArgs),
 		});
 
-		const result = originalHandler.apply(this, originalArgs);
-		end();
-		return result;
+		return tracerActiveSpan(
+			`Method ${name}`,
+			{
+				attributes: {
+					method: name,
+					userId: this.userId,
+				},
+			},
+			async () => {
+				const result = await originalHandler.apply(this, originalArgs);
+				end();
+				return result;
+			},
+		);
 	};
 };
 
