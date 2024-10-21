@@ -1,6 +1,6 @@
 import { License } from '@rocket.chat/license';
 import { Settings, Users } from '@rocket.chat/models';
-import { isLicensesInfoProps } from '@rocket.chat/rest-typings';
+import { isLicensesInfoProps, isLicensesChangeModules } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 
 import { API } from '../../../app/api/server/api';
@@ -56,3 +56,23 @@ API.v1.addRoute(
 		},
 	},
 );
+
+if (process.env.TEST_MODE === 'true') {
+	API.v1.addRoute(
+		'licenses.changeModules',
+		{ authRequired: true, validateParams: isLicensesChangeModules },
+		{
+			async post() {
+				if (!License.canChangeLicenseModulesForTesting()) {
+					return API.v1.failure();
+				}
+
+				const { enable = [], disable = [] } = this.bodyParams;
+
+				License.changeModulesForTesting({ enable, disable });
+
+				return API.v1.success();
+			},
+		},
+	);
+}

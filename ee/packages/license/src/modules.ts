@@ -81,3 +81,21 @@ export function replaceModules(this: LicenseManager, newModules: LicenseModule[]
 
 	return anyChange;
 }
+
+export function canChangeLicenseModulesForTesting(this: LicenseManager): boolean {
+	return Boolean(process.env.TEST_MODE === 'true' && this.getLicense()?.cloudMeta?.testMode);
+}
+
+export function changeModulesForTesting(
+	this: LicenseManager,
+	{ enable = [], disable = [] }: { enable: { module: LicenseModule }[]; disable: { module: LicenseModule }[] },
+): boolean {
+	if (!canChangeLicenseModulesForTesting.call(this)) {
+		return false;
+	}
+
+	const newModuleList = new Set<LicenseModule>(
+		[...this.modules, ...enable.map((item) => item.module)].filter((moduleName) => !disable.some((item) => item.module === moduleName)),
+	);
+	return replaceModules.call(this, [...newModuleList]);
+}
