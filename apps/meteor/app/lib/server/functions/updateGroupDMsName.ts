@@ -8,7 +8,7 @@ const getName = (members: IUser[]): string => members.map(({ username }) => user
 
 async function getUsersWhoAreInTheSameGroupDMsAs(user: IUser) {
 	// add all users to single array so we can fetch details from them all at once
-	if ((await Rooms.countGroupDMsByUids()) === 0) {
+	if ((await Rooms.countGroupDMsByUids([user._id])) === 0) {
 		return;
 	}
 
