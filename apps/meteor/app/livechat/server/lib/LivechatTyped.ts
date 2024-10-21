@@ -7,7 +7,6 @@ import type {
 	IOmnichannelRoom,
 	IOmnichannelRoomClosingInfo,
 	IUser,
-	MessageTypesValues,
 	ILivechatVisitor,
 	SelectedAgent,
 	ILivechatAgent,
@@ -15,11 +14,7 @@ import type {
 	ILivechatDepartment,
 	AtLeast,
 	TransferData,
-	MessageAttachment,
-	IMessageInbox,
 	IOmnichannelAgent,
-	ILivechatDepartmentAgents,
-	LivechatDepartmentDTO,
 	ILivechatInquiryRecord,
 	ILivechatContact,
 	ILivechatContactChannel,
@@ -43,7 +38,7 @@ import {
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { Filter, FindCursor, ClientSession, MongoError } from 'mongodb';
+import type { Filter, ClientSession, MongoError } from 'mongodb';
 import UAParser from 'ua-parser-js';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -65,7 +60,6 @@ import {
 	notifyOnRoomChangedById,
 	notifyOnLivechatInquiryChangedByToken,
 	notifyOnUserChange,
-	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
 	notifyOnSubscriptionChangedByRoomId,
 	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
@@ -77,8 +71,7 @@ import { createContact, createContactFromVisitor, isSingleContactEnabled } from 
 import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
-import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
-import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
+import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor, ILivechatMessage } from './localTypes';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
 
 type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username' | 'source'>> & {
@@ -95,30 +88,6 @@ type OfflineMessageData = {
 	department?: string;
 	host?: string;
 };
-
-type UploadedFile = {
-	_id: string;
-	name?: string;
-	type?: string;
-	size?: number;
-	description?: string;
-	identify?: { size: { width: number; height: number } };
-	format?: string;
-};
-
-export interface ILivechatMessage {
-	token: string;
-	_id: string;
-	rid: string;
-	msg: string;
-	file?: UploadedFile;
-	files?: UploadedFile[];
-	attachments?: MessageAttachment[];
-	alias?: string;
-	groupable?: boolean;
-	blocks?: IMessage['blocks'];
-	email?: IMessageInbox['email'];
-}
 
 type AKeyOf<T> = {
 	[K in keyof T]?: T[K];
@@ -187,27 +156,6 @@ class LivechatClass {
 		const agentsOnline = await this.checkOnlineAgents(department, undefined, skipFallbackCheck);
 		Livechat.logger.debug(`Are online agents ${department ? `for department ${department}` : ''}?: ${agentsOnline}`);
 		return agentsOnline;
-	}
-
-	async getOnlineAgents(department?: string, agent?: SelectedAgent | null): Promise<FindCursor<ILivechatAgent> | undefined> {
-		if (agent?.agentId) {
-			return Users.findOnlineAgents(agent.agentId);
-		}
-
-		if (department) {
-			const departmentAgents = await LivechatDepartmentAgents.getOnlineForDepartment(department);
-			if (!departmentAgents) {
-				return;
-			}
-
-			const agentIds = await departmentAgents.map(({ agentId }) => agentId).toArray();
-			if (!agentIds.length) {
-				return;
-			}
-
-			return Users.findByIds<ILivechatAgent>([...new Set(agentIds)]);
-		}
-		return Users.findOnlineAgents();
 	}
 
 	async closeRoom(params: CloseRoomParams, attempts = 2): Promise<void> {
@@ -966,57 +914,6 @@ class LivechatClass {
 		});
 	}
 
-	async getRoomMessages({ rid }: { rid: string }) {
-		const room = await Rooms.findOneById(rid, { projection: { t: 1 } });
-		if (room?.t !== 'l') {
-			throw new Meteor.Error('invalid-room');
-		}
-
-		const ignoredMessageTypes: MessageTypesValues[] = [
-			'livechat_navigation_history',
-			'livechat_transcript_history',
-			'command',
-			'livechat-close',
-			'livechat-started',
-			'livechat_video_call',
-		];
-
-		return Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, {
-			sort: { ts: 1 },
-		});
-	}
-
-	async archiveDepartment(_id: string) {
-		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'businessHourId'>>(_id, {
-			projection: { _id: 1, businessHourId: 1 },
-		});
-
-		if (!department) {
-			throw new Error('department-not-found');
-		}
-
-		await Promise.all([LivechatDepartmentAgents.disableAgentsByDepartmentId(_id), LivechatDepartment.archiveDepartment(_id)]);
-
-		void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id);
-
-		await callbacks.run('livechat.afterDepartmentArchived', department);
-	}
-
-	async unarchiveDepartment(_id: string) {
-		const department = await LivechatDepartment.findOneById(_id, { projection: { _id: 1 } });
-
-		if (!department) {
-			throw new Meteor.Error('department-not-found');
-		}
-
-		// TODO: these kind of actions should be on events instead of here
-		await Promise.all([LivechatDepartmentAgents.enableAgentsByDepartmentId(_id), LivechatDepartment.unarchiveDepartment(_id)]);
-
-		void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id);
-
-		return true;
-	}
-
 	async updateMessage({ guest, message }: { guest: ILivechatVisitor; message: AtLeast<IMessage, '_id' | 'msg' | 'rid'> }) {
 		check(message, Match.ObjectIncluding({ _id: String }));
 
@@ -1736,41 +1633,6 @@ class LivechatClass {
 		return false;
 	}
 
-	async saveDepartmentAgents(
-		_id: string,
-		departmentAgents: {
-			upsert?: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order' | 'username'>[];
-			remove?: Pick<ILivechatDepartmentAgents, 'agentId'>[];
-		},
-	) {
-		check(_id, String);
-		check(departmentAgents, {
-			upsert: Match.Maybe([
-				Match.ObjectIncluding({
-					agentId: String,
-					username: String,
-					count: Match.Maybe(Match.Integer),
-					order: Match.Maybe(Match.Integer),
-				}),
-			]),
-			remove: Match.Maybe([
-				Match.ObjectIncluding({
-					agentId: String,
-					username: Match.Maybe(String),
-					count: Match.Maybe(Match.Integer),
-					order: Match.Maybe(Match.Integer),
-				}),
-			]),
-		});
-
-		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'enabled'>>(_id, { projection: { enabled: 1 } });
-		if (!department) {
-			throw new Meteor.Error('error-department-not-found', 'Department not found');
-		}
-
-		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
-	}
-
 	async saveRoomInfo(
 		roomData: {
 			_id: string;
@@ -1842,135 +1704,6 @@ class LivechatClass {
 
 		return true;
 	}
-
-	/**
-	 * @param {string|null} _id - The department id
-	 * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
-	 * @param {{upsert?: { agentId: string; count?: number; order?: number; }[], remove?: { agentId: string; count?: number; order?: number; }}} [departmentAgents] - The department agents
-	 * @param {{_id?: string}} [departmentUnit] - The department's unit id
-	 */
-	async saveDepartment(
-		userId: string,
-		_id: string | null,
-		departmentData: LivechatDepartmentDTO,
-		departmentAgents?: {
-			upsert?: { agentId: string; count?: number; order?: number }[];
-			remove?: { agentId: string; count?: number; order?: number };
-		},
-		departmentUnit?: { _id?: string },
-	) {
-		check(_id, Match.Maybe(String));
-		if (departmentUnit?._id !== undefined && typeof departmentUnit._id !== 'string') {
-			throw new Meteor.Error('error-invalid-department-unit', 'Invalid department unit id provided', {
-				method: 'livechat:saveDepartment',
-			});
-		}
-
-		const department = _id
-			? await LivechatDepartment.findOneById(_id, { projection: { _id: 1, archived: 1, enabled: 1, parentId: 1 } })
-			: null;
-
-		if (departmentUnit && !departmentUnit._id && department && department.parentId) {
-			const isLastDepartmentInUnit = (await LivechatDepartment.countDepartmentsInUnit(department.parentId)) === 1;
-			if (isLastDepartmentInUnit) {
-				throw new Meteor.Error('error-unit-cant-be-empty', "The last department in a unit can't be removed", {
-					method: 'livechat:saveDepartment',
-				});
-			}
-		}
-
-		if (!department && !(await isDepartmentCreationAvailable())) {
-			throw new Meteor.Error('error-max-departments-number-reached', 'Maximum number of departments reached', {
-				method: 'livechat:saveDepartment',
-			});
-		}
-
-		if (department?.archived && departmentData.enabled) {
-			throw new Meteor.Error('error-archived-department-cant-be-enabled', 'Archived departments cant be enabled', {
-				method: 'livechat:saveDepartment',
-			});
-		}
-
-		const defaultValidations: Record<string, Match.Matcher<any> | BooleanConstructor | StringConstructor> = {
-			enabled: Boolean,
-			name: String,
-			description: Match.Optional(String),
-			showOnRegistration: Boolean,
-			email: String,
-			showOnOfflineForm: Boolean,
-			requestTagBeforeClosingChat: Match.Optional(Boolean),
-			chatClosingTags: Match.Optional([String]),
-			fallbackForwardDepartment: Match.Optional(String),
-			departmentsAllowedToForward: Match.Optional([String]),
-			allowReceiveForwardOffline: Match.Optional(Boolean),
-		};
-
-		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
-		Object.keys(departmentData).forEach((field) => {
-			if (!defaultValidations.hasOwnProperty(field)) {
-				defaultValidations[field] = Match.OneOf(String, Match.Integer, Boolean);
-			}
-		});
-
-		check(departmentData, defaultValidations);
-		check(
-			departmentAgents,
-			Match.Maybe({
-				upsert: Match.Maybe(Array),
-				remove: Match.Maybe(Array),
-			}),
-		);
-
-		const { requestTagBeforeClosingChat, chatClosingTags, fallbackForwardDepartment } = departmentData;
-		if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {
-			throw new Meteor.Error(
-				'error-validating-department-chat-closing-tags',
-				'At least one closing tag is required when the department requires tag(s) on closing conversations.',
-				{ method: 'livechat:saveDepartment' },
-			);
-		}
-
-		if (_id && !department) {
-			throw new Meteor.Error('error-department-not-found', 'Department not found', {
-				method: 'livechat:saveDepartment',
-			});
-		}
-
-		if (fallbackForwardDepartment === _id) {
-			throw new Meteor.Error(
-				'error-fallback-department-circular',
-				'Cannot save department. Circular reference between fallback department and department',
-			);
-		}
-
-		if (fallbackForwardDepartment) {
-			const fallbackDep = await LivechatDepartment.findOneById(fallbackForwardDepartment, {
-				projection: { _id: 1, fallbackForwardDepartment: 1 },
-			});
-			if (!fallbackDep) {
-				throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', {
-					method: 'livechat:saveDepartment',
-				});
-			}
-		}
-
-		const departmentDB = await LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
-		if (departmentDB && departmentAgents) {
-			await updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
-		}
-
-		// Disable event
-		if (department?.enabled && !departmentDB?.enabled) {
-			await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
-		}
-
-		if (departmentUnit) {
-			await callbacks.run('livechat.manageDepartmentUnit', { userId, departmentId: departmentDB._id, unitId: departmentUnit._id });
-		}
-
-		return departmentDB;
-	}
 }
 
 export const Livechat = new LivechatClass();
-export * from './localTypes';

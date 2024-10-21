@@ -3,8 +3,8 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Subscriptions } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import type { CloseRoomParams } from '../../../livechat/server/lib/LivechatTyped';
 import { Livechat } from '../../../livechat/server/lib/LivechatTyped';
+import type { CloseRoomParams } from '../../../livechat/server/lib/localTypes';
 import { notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
 export const closeLivechatRoom = async (
