@@ -25,10 +25,10 @@ import {
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
-import { shouldTriggerVerificationApp } from './Contacts';
 import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
 import { Livechat } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
+import { shouldTriggerVerificationApp } from './contacts/shouldTriggerVerificationApp';
 import { getInquirySortMechanismSetting } from './settings';
 
 const logger = new Logger('QueueManager');

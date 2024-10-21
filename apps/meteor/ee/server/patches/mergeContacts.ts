@@ -2,8 +2,8 @@ import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/cor
 import { License } from '@rocket.chat/license';
 import { LivechatContacts } from '@rocket.chat/models';
 
-import { ContactMerger } from '../../../app/livechat/server/lib/ContactMerger';
-import { mergeContacts } from '../../../app/livechat/server/lib/Contacts';
+import { ContactMerger } from '../../../app/livechat/server/lib/contacts/ContactMerger';
+import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
 import { logger } from '../../app/livechat-enterprise/server/lib/logger';
 
 export const runMergeContacts = async (_next: any, contactId: string, visitorId: string): Promise<ILivechatContact | null> => {

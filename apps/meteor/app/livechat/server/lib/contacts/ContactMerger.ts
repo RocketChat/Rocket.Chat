@@ -10,7 +10,7 @@ import type {
 import { LivechatContacts } from '@rocket.chat/models';
 import type { UpdateFilter } from 'mongodb';
 
-import { getContactManagerIdByUsername } from './Contacts';
+import { getContactManagerIdByUsername } from './getContactManagerIdByUsername';
 
 type ManagerValue = { id: string } | { username: string };
 type ContactFields = {

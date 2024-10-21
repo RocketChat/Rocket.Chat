@@ -73,11 +73,11 @@ import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
-import { Contacts } from './Contacts';
 import { parseAgentCustomFields, updateDepartmentAgents, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { Visitors } from './Visitors';
+import { registerGuestData } from './contacts/registerGuestData';
 import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
@@ -608,7 +608,7 @@ class LivechatClass {
 		const result = await Visitors.registerGuest(newData);
 
 		if (result) {
-			await Contacts.registerGuestData(newData, result);
+			await registerGuestData(newData, result);
 		}
 
 		return result;
