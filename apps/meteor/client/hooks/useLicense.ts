@@ -49,7 +49,20 @@ export const useLicenseBase = <TData = LicenseDataType>({
 };
 
 export const useLicense = (params?: LicenseParams) => {
-	return useLicenseBase({ params, select: (data) => data.license });
+	return useLicenseBase({
+		params,
+		select: (data) => data.license,
+	});
+};
+
+export const useLicenseWithCloudAnnouncement = (params?: LicenseParams) => {
+	return useLicenseBase({
+		params,
+		select: ({ license, cloudSyncAnnouncement }) => ({
+			...license,
+			cloudSyncAnnouncement,
+		}),
+	});
 };
 
 export const useHasLicense = (): UseQueryResult<boolean> => {

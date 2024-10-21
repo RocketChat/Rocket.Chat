@@ -243,6 +243,100 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 			...userInteraction,
 		};
 
+		if (
+			userInteraction.type === 'blockAction' &&
+			userInteraction.container?.type === 'view' &&
+			userInteraction.actionId === 'callout-action' &&
+			userInteraction.container?.id === 'subscription-announcement'
+		) {
+			return {
+				type: 'modal.open',
+				triggerId: userInteraction.triggerId,
+				appId: this.appId,
+				view: {
+					showIcon: false,
+					id: userInteraction.container.id,
+					title: {
+						type: 'plain_text',
+						text: 'Hello from Cloud',
+					},
+					blocks: [
+						{
+							type: 'image',
+							title: {
+								type: 'plain_text',
+								text: 'I Need a Marg',
+								emoji: true,
+							},
+							imageUrl: 'https://picsum.photos/200/300',
+							altText: 'marg',
+						},
+						{
+							type: 'context',
+							elements: [
+								{
+									type: 'mrkdwn',
+									text: '*This* is :smile: markdown',
+								},
+							],
+						},
+					],
+					appId: this.appId,
+					// export type ButtonElement = Actionable<{
+					// 	type: 'button';
+					// 	text: PlainText;
+					// 	url?: string;
+					// 	value?: string;
+					// 	style?: 'primary' | 'secondary' | 'danger' | 'warning' | 'success';
+					// 	secondary?: boolean;
+					// }>;
+
+					close: {
+						appId: this.appId,
+						blockId: userInteraction.container.id,
+						type: 'button',
+						text: {
+							type: 'plain_text',
+							text: 'Close',
+							emoji: true,
+						},
+						actionId: 'close-modal',
+						url: 'https://rocket.chat',
+					},
+					submit: {
+						appId: this.appId,
+						blockId: userInteraction.container.id,
+						type: 'button',
+						text: {
+							type: 'plain_text',
+							text: 'Submit',
+							emoji: true,
+						},
+						actionId: 'submit-modal',
+						url: 'https://rocket.chat',
+					},
+				},
+			};
+		}
+
+		if (
+			userInteraction.type === 'blockAction' &&
+			userInteraction.container?.type === 'view' &&
+			(userInteraction.actionId === 'submit-modal' || userInteraction.actionId === 'close-modal')
+		) {
+			if (userInteraction.actionId === 'submit-modal') {
+				await syncWorkspace();
+			}
+
+			return {
+				type: 'modal.close',
+				triggerId: userInteraction.triggerId,
+				appId: this.appId,
+			};
+		}
+
+		console.log(userInteraction);
+
 		const response = await fetch(`${this.getCloudUrl()}/api/v3/comms/workspace/interaction`, {
 			method: 'POST',
 			headers: {
