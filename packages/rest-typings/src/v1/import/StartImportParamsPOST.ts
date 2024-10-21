@@ -29,6 +29,7 @@ const StartImportParamsPostSchema = {
 			properties: {
 				users: RecordListSchema,
 				channels: RecordListSchema,
+				contacts: RecordListSchema,
 			},
 			required: [],
 		},

@@ -13,6 +13,7 @@ import { setUserActiveStatus } from '../../../../lib/server/functions/setUserAct
 import { notifyOnUserChange } from '../../../../lib/server/lib/notifyListener';
 import type { IConversionCallbacks } from '../../definitions/IConversionCallbacks';
 import { RecordConverter, type RecordConverterOptions } from './RecordConverter';
+import { generateTempPassword } from './generateTempPassword';
 
 export type UserConverterOptions = {
 	flagEmailsAsVerified?: boolean;
@@ -319,15 +320,15 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 		void notifyOnUserChange({ clientAction: 'updated', id: _id, diff: updateData.$set });
 	}
 
-	private async hashPassword(password: string): Promise<string> {
+	async hashPassword(password: string): Promise<string> {
 		return bcryptHash(SHA256(password), Accounts._bcryptRounds());
 	}
 
-	private generateTempPassword(userData: IImportUser): string {
-		return `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
+	generateTempPassword(userData: IImportUser): string {
+		return generateTempPassword(userData);
 	}
 
-	private async buildNewUserObject(userData: IImportUser): Promise<Partial<IUser>> {
+	async buildNewUserObject(userData: IImportUser): Promise<Partial<IUser>> {
 		return {
 			type: userData.type || 'user',
 			...(userData.username && { username: userData.username }),

@@ -39,7 +39,7 @@ process.env.HTTP_FORWARDED_COUNT = process.env.HTTP_FORWARDED_COUNT || '1';
 
 // Just print to logs if in TEST_MODE due to a bug in Meteor 2.5: TypeError: Cannot read property '_syncSendMail' of null
 if (process.env.TEST_MODE === 'true') {
-	Email.sendAsync = function _sendAsync(options) {
+	Email.sendAsync = async function _sendAsync(options) {
 		console.log('Email.sendAsync', options);
 	};
 } else if (process.env.NODE_ENV !== 'development') {

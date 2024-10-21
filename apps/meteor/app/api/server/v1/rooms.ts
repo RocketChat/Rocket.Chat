@@ -32,6 +32,7 @@ import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessag
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
+import { maybeMigrateLivechatRoom } from '../lib/maybeMigrateLivechatRoom';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -433,8 +434,10 @@ API.v1.addRoute(
 			const { team, parentRoom } = await Team.getRoomInfo(room);
 			const parent = discussionParent || parentRoom;
 
+			const options = { projection: fields };
+
 			return API.v1.success({
-				room: (await Rooms.findOneByIdOrName(room._id, { projection: fields })) ?? undefined,
+				room: (await maybeMigrateLivechatRoom(await Rooms.findOneByIdOrName(room._id, options), options)) ?? undefined,
 				...(team && { team }),
 				...(parent && { parent }),
 			});

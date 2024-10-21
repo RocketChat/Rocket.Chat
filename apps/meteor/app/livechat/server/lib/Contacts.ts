@@ -1,4 +1,5 @@
 import type {
+	IOmnichannelSource,
 	AtLeast,
 	ILivechatContact,
 	ILivechatContactChannel,
@@ -7,7 +8,6 @@ import type {
 	IOmnichannelRoom,
 	IUser,
 } from '@rocket.chat/core-typings';
-import type { InsertionModel } from '@rocket.chat/model-typings';
 import {
 	LivechatVisitors,
 	Users,
@@ -18,7 +18,9 @@ import {
 	Subscriptions,
 	LivechatContacts,
 } from '@rocket.chat/models';
+import { makeFunction } from '@rocket.chat/patch-injection';
 import type { PaginatedResult, VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
+import { wrapExceptions } from '@rocket.chat/tools';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { MatchKeysAndValues, OnlyFieldsOfType, FindOptions, Sort } from 'mongodb';
@@ -31,6 +33,11 @@ import {
 	notifyOnLivechatInquiryChangedByRoom,
 } from '../../../lib/server/lib/notifyListener';
 import { i18n } from '../../../utils/lib/i18n';
+import type { FieldAndValue } from './ContactMerger';
+import { ContactMerger } from './ContactMerger';
+import { validateEmail } from './Helper';
+import type { RegisterGuestType } from './LivechatTyped';
+import { Livechat } from './LivechatTyped';
 
 type RegisterContactProps = {
 	_id?: string;
@@ -53,6 +60,15 @@ type CreateContactParams = {
 	customFields?: Record<string, string | unknown>;
 	contactManager?: string;
 	channels?: ILivechatContactChannel[];
+	importIds?: string[];
+};
+
+type VerifyContactChannelParams = {
+	contactId: string;
+	field: string;
+	value: string;
+	visitorId: string;
+	roomId: string;
 };
 
 type UpdateContactParams = {
@@ -63,6 +79,7 @@ type UpdateContactParams = {
 	customFields?: Record<string, unknown>;
 	contactManager?: string;
 	channels?: ILivechatContactChannel[];
+	wipeConflicts?: boolean;
 };
 
 type GetContactsParams = {
@@ -185,44 +202,192 @@ export const Contacts = {
 
 		return contactId;
 	},
+
+	async registerGuestData(
+		{ name, phone, email, username }: Pick<RegisterGuestType, 'name' | 'phone' | 'email' | 'username'>,
+		visitor: AtLeast<ILivechatVisitor, '_id'>,
+	): Promise<void> {
+		// If a visitor was updated who already had a contact, load up that contact and update that information as well
+		const contact = await LivechatContacts.findOneByVisitorId(visitor._id);
+		if (!contact) {
+			return;
+		}
+
+		const validatedEmail =
+			email &&
+			wrapExceptions(() => {
+				const trimmedEmail = email.trim().toLowerCase();
+				validateEmail(trimmedEmail);
+				return trimmedEmail;
+			}).suppress();
+
+		const fields = [
+			{ type: 'name', value: name },
+			{ type: 'phone', value: phone?.number },
+			{ type: 'email', value: validatedEmail },
+			{ type: 'username', value: username || visitor.username },
+		].filter((field) => Boolean(field.value)) as FieldAndValue[];
+
+		if (!fields.length) {
+			return;
+		}
+
+		await ContactMerger.mergeFieldsIntoContact(fields, contact, contact.unknown ? 'overwrite' : 'conflict');
+	},
 };
 
-export function isSingleContactEnabled(): boolean {
-	// The Single Contact feature is not yet available in production, but can already be partially used in test environments.
-	return process.env.TEST_MODE?.toUpperCase() === 'TRUE';
+export async function getContactManagerIdByUsername(username?: IUser['username']): Promise<IUser['_id'] | undefined> {
+	if (!username) {
+		return;
+	}
+
+	const user = await Users.findOneByUsername<Pick<IUser, '_id'>>(username, { projection: { _id: 1 } });
+
+	return user?._id;
 }
 
-export async function createContactFromVisitor(visitor: ILivechatVisitor): Promise<string> {
-	if (visitor.contactId) {
-		throw new Error('error-contact-already-exists');
+export async function getContactIdByVisitorId(visitorId: ILivechatVisitor['_id']): Promise<ILivechatContact['_id'] | null> {
+	const contact = await LivechatContacts.findOneByVisitorId<Pick<ILivechatContact, '_id'>>(visitorId, { projection: { _id: 1 } });
+	if (!contact) {
+		return null;
+	}
+	return contact._id;
+}
+
+export async function migrateVisitorIfMissingContact(
+	visitorId: ILivechatVisitor['_id'],
+	source: IOmnichannelSource,
+): Promise<ILivechatContact['_id'] | null> {
+	Livechat.logger.debug(`Detecting visitor's contact ID`);
+	// Check if there is any contact already linking to this visitorId
+	const contactId = await getContactIdByVisitorId(visitorId);
+	if (contactId) {
+		return contactId;
 	}
 
-	const contactData: InsertionModel<ILivechatContact> = {
+	const visitor = await LivechatVisitors.findOneById(visitorId);
+	if (!visitor) {
+		throw new Error('Failed to migrate visitor data into Contact information: visitor not found.');
+	}
+
+	return migrateVisitorToContactId(visitor, source);
+}
+
+export async function findContactMatchingVisitor(
+	visitor: AtLeast<ILivechatVisitor, 'phone' | 'visitorEmails'>,
+): Promise<ILivechatContact | null> {
+	// Search for any contact that is not yet associated with any visitor and that have the same email or phone number as this visitor.
+	return LivechatContacts.findContactMatchingVisitor(visitor);
+}
+
+async function getVisitorNewestSource(visitor: ILivechatVisitor): Promise<IOmnichannelSource | null> {
+	const room = await LivechatRooms.findNewestByVisitorIdOrToken<Pick<IOmnichannelRoom, '_id' | 'source'>>(visitor._id, visitor.token, {
+		projection: { source: 1 },
+	});
+
+	if (!room) {
+		return null;
+	}
+
+	return room.source;
+}
+
+/**
+	This function assumes you already ensured that the visitor is not yet linked to any contact
+**/
+export async function migrateVisitorToContactId(
+	visitor: ILivechatVisitor,
+	source?: IOmnichannelSource,
+	useVisitorId = false,
+): Promise<ILivechatContact['_id'] | null> {
+	// If we haven't received any source and the visitor doesn't have any room yet, then there's no need to migrate it
+	const visitorSource = source || (await getVisitorNewestSource(visitor));
+	if (!visitorSource) {
+		return null;
+	}
+
+	const existingContact = await findContactMatchingVisitor(visitor);
+	if (!existingContact) {
+		Livechat.logger.debug(`Creating a new contact for existing visitor ${visitor._id}`);
+		return createContactFromVisitor(visitor, visitorSource, useVisitorId);
+	}
+
+	// There is already an existing contact with no linked visitors and matching this visitor's phone or email, so let's use it
+	Livechat.logger.debug(`Adding channel to existing contact ${existingContact._id}`);
+	await ContactMerger.mergeVisitorIntoContact(visitor, existingContact);
+
+	// Update all existing rooms of that visitor to add the contactId to them
+	await LivechatRooms.setContactIdByVisitorIdOrToken(existingContact._id, visitor._id, visitor.token);
+
+	return existingContact._id;
+}
+
+export async function getContact(contactId: ILivechatContact['_id']): Promise<ILivechatContact | null> {
+	const contact = await LivechatContacts.findOneById(contactId);
+	if (contact) {
+		return contact;
+	}
+
+	// If the contact was not found, search for a visitor with the same ID
+	const visitor = await LivechatVisitors.findOneById(contactId);
+	// If there's also no visitor with that ID, then there's nothing for us to get
+	if (!visitor) {
+		return null;
+	}
+
+	// ContactId is actually the ID of a visitor, so let's get the contact that is linked to this visitor
+	const linkedContact = await LivechatContacts.findOneByVisitorId(contactId);
+	if (linkedContact) {
+		return linkedContact;
+	}
+
+	// If this is the ID of a visitor and there is no contact linking to it yet, then migrate it into a contact
+	const newContactId = await migrateVisitorToContactId(visitor, undefined, true);
+	// If no contact was created by the migration, this visitor doesn't need a contact yet, so let's return null
+	if (!newContactId) {
+		return null;
+	}
+
+	// Finally, let's return the data of the migrated contact
+	return LivechatContacts.findOneById(newContactId);
+}
+
+export async function mapVisitorToContact(visitor: ILivechatVisitor, source: IOmnichannelSource): Promise<CreateContactParams> {
+	return {
 		name: visitor.name || visitor.username,
-		emails: visitor.visitorEmails,
-		phones: visitor.phone || undefined,
+		emails: visitor.visitorEmails?.map(({ address }) => address),
+		phones: visitor.phone?.map(({ phoneNumber }) => phoneNumber),
 		unknown: true,
-		channels: [],
+		channels: [
+			{
+				name: source.label || source.type.toString(),
+				visitorId: visitor._id,
+				blocked: false,
+				verified: false,
+				details: source,
+			},
+		],
 		customFields: visitor.livechatData,
-		createdAt: new Date(),
+		contactManager: await getContactManagerIdByUsername(visitor.contactManager?.username),
 	};
+}
 
-	if (visitor.contactManager) {
-		const contactManagerId = await Users.findOneByUsername<Pick<IUser, '_id'>>(visitor.contactManager.username, { projection: { _id: 1 } });
-		if (contactManagerId) {
-			contactData.contactManager = contactManagerId._id;
-		}
-	}
+export async function createContactFromVisitor(
+	visitor: ILivechatVisitor,
+	source: IOmnichannelSource,
+	useVisitorId = false,
+): Promise<string> {
+	const contactData = await mapVisitorToContact(visitor, source);
 
-	const { insertedId: contactId } = await LivechatContacts.insertOne(contactData);
+	const contactId = await createContact(contactData, useVisitorId ? visitor._id : undefined);
 
-	await LivechatVisitors.updateOne({ _id: visitor._id }, { $set: { contactId } });
+	await LivechatRooms.setContactIdByVisitorIdOrToken(contactId, visitor._id, visitor.token);
 
 	return contactId;
 }
 
-export async function createContact(params: CreateContactParams): Promise<string> {
-	const { name, emails, phones, customFields: receivedCustomFields = {}, contactManager, channels, unknown } = params;
+export async function createContact(params: CreateContactParams, upsertId?: ILivechatContact['_id']): Promise<string> {
+	const { name, emails, phones, customFields: receivedCustomFields = {}, contactManager, channels, unknown, importIds } = params;
 
 	if (contactManager) {
 		await validateContactManager(contactManager);
@@ -231,7 +396,7 @@ export async function createContact(params: CreateContactParams): Promise<string
 	const allowedCustomFields = await getAllowedCustomFields();
 	const customFields = validateCustomFields(allowedCustomFields, receivedCustomFields);
 
-	const { insertedId } = await LivechatContacts.insertOne({
+	const updateData = {
 		name,
 		emails: emails?.map((address) => ({ address })),
 		phones: phones?.map((phoneNumber) => ({ phoneNumber })),
@@ -239,14 +404,20 @@ export async function createContact(params: CreateContactParams): Promise<string
 		channels,
 		customFields,
 		unknown,
-		createdAt: new Date(),
-	});
+		...(importIds?.length ? { importIds } : {}),
+	} as const;
 
-	return insertedId;
+	// Use upsert when doing auto-migration so that if there's multiple requests processing at the same time, they won't interfere with each other
+	if (upsertId) {
+		await LivechatContacts.upsertContact(upsertId, updateData);
+		return upsertId;
+	}
+
+	return LivechatContacts.insertContact(updateData);
 }
 
 export async function updateContact(params: UpdateContactParams): Promise<ILivechatContact> {
-	const { contactId, name, emails, phones, customFields: receivedCustomFields, contactManager, channels } = params;
+	const { contactId, name, emails, phones, customFields: receivedCustomFields, contactManager, channels, wipeConflicts } = params;
 
 	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id'>>(contactId, { projection: { _id: 1 } });
 
@@ -267,9 +438,34 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		contactManager,
 		channels,
 		customFields,
+		...(wipeConflicts && { conflictingFields: [], hasConflict: false }),
 	});
 
 	return updatedContact;
+}
+
+/**
+ * Adds a new email into the contact's email list, if the email is already in the list it does not add anything
+ * and simply return the data, since the email was aready registered :P
+ *
+ * @param contactId the id of the contact that will be updated
+ * @param email the email that will be added to the contact
+ * @returns the updated contact
+ */
+export async function addContactEmail(contactId: ILivechatContact['_id'], email: string): Promise<ILivechatContact> {
+	const contact = await LivechatContacts.findOneById(contactId);
+	if (!contact) {
+		throw new Error('error-contact-not-found');
+	}
+
+	const emails = contact.emails?.map(({ address }) => address) || [];
+	if (!emails.includes(email)) {
+		return LivechatContacts.updateContact(contactId, {
+			emails: [...emails.map((e) => ({ address: e })), { address: email }],
+		});
+	}
+
+	return contact;
 }
 
 export async function getContacts(params: GetContactsParams): Promise<PaginatedResult<{ contacts: ILivechatContact[] }>> {
@@ -323,6 +519,8 @@ export async function getContactHistory(
 			closer: 1,
 			tags: 1,
 			source: 1,
+			lastMessage: 1,
+			verified: 1,
 		},
 	};
 
@@ -342,7 +540,7 @@ export async function getContactHistory(
 	};
 }
 
-async function getAllowedCustomFields(): Promise<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>[]> {
+export async function getAllowedCustomFields(): Promise<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>[]> {
 	return LivechatCustomField.findByScope(
 		'visitor',
 		{
@@ -403,3 +601,11 @@ export async function validateContactManager(contactManagerUserId: string) {
 		throw new Error('error-contact-manager-not-found');
 	}
 }
+
+export const verifyContactChannel = makeFunction(async (_params: VerifyContactChannelParams): Promise<ILivechatContact | null> => null);
+
+export const mergeContacts = makeFunction(async (_contactId: string, _visitorId: string): Promise<ILivechatContact | null> => null);
+
+export const shouldTriggerVerificationApp = makeFunction(
+	async (_contactId: ILivechatContact['_id'], _source: IOmnichannelSource): Promise<boolean> => false,
+);

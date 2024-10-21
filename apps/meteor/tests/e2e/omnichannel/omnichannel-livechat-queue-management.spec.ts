@@ -27,6 +27,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			api.post('/settings/Livechat_waiting_queue', { value: true }),
 			api.post('/settings/Livechat_waiting_queue_message', { value: waitingQueueMessage }),
 			api.post('/livechat/users/agent', { username: 'user1' }),
+			api.post('/settings/Livechat_Require_Contact_Verification', { value: 'never' }),
 		]);
 
 		const { page: omniPage } = await createAuxContext(browser, Users.user1, '/', true);

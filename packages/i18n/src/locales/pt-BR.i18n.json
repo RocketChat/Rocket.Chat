@@ -3153,7 +3153,6 @@
   "No_Canned_Responses_Yet": "Nenhuma resposta modelo ainda",
   "No_Canned_Responses_Yet-description": "Use respostas modelo para dar respostas rápidas e consistentes para perguntas frequentes.",
   "No_channels_in_team": "Nenhum canal nesta equipe",
-  "No_channels_yet": "Você não faz parte de nenhum canal ainda",
   "No_data_found": "Nenhum dado encontrado",
   "No_data_available_for_the_selected_period": "Não há dados disponíveis para o período selecionado",
   "No_direct_messages_yet": "Nenhuma mensagem direta.",
@@ -4706,6 +4705,8 @@
   "update-livechat-contact": "Atualizar contatos do omnichannel",
   "view-livechat-contact": "Ver contatos do omnichannel",
   "view-livechat-contact-history": "Ver histórico do contato do omnichannel",
+  "block-livechat-contact": "Bloquear canal do contato do omnichannel", 
+  "unblock-livechat-contact": "Desbloquear canal do contato do omnichannel",
   "view-l-room_description": "Permissão para ver salas de omnichannel",
   "view-livechat-analytics": "Ver a análise do omnichannel",
   "onboarding.page.awaitingConfirmation.subtitle": "Enviamos um e-mail para {{emailAddress}} com um link de confirmação. Verifique se o código de segurança abaixo coincide com o do e-mail.",
@@ -5057,5 +5058,6 @@
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "Eu concordo com os <1>Termos e condições</1> e a <3>Política de privacidade</3>",
   "Enterprise": "Enterprise",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics",
-  "UpgradeToGetMore_auditing_Title": "Auditoria de mensagem"
+  "UpgradeToGetMore_auditing_Title": "Auditoria de mensagem",
+  "close-blocked-room-comment": "Esse canal foi bloqueado"
 }

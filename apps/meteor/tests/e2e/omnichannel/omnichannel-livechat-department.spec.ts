@@ -24,6 +24,8 @@ test.describe('OC - Livechat - Department Flow', () => {
 	let agent2: Awaited<ReturnType<typeof createAgent>>['data'];
 
 	test.beforeAll(async ({ api }) => {
+		await api.post('/settings/Livechat_Require_Contact_Verification', { value: 'never' });
+
 		// Assign agents & departments
 		agents = await Promise.all([createAgent(api, 'user1'), createAgent(api, 'user2')]);
 		[agent1, agent2] = agents.map(({ data }) => data);

@@ -30,6 +30,7 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 		const responses = await Promise.all([
 			api.post('/settings/Livechat_allow_manual_on_hold', { value: true }),
 			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: false }),
+			api.post('/settings/Livechat_Require_Contact_Verification', { value: 'never' }),
 		]);
 		responses.forEach((res) => expect(res.status()).toBe(200));
 	});

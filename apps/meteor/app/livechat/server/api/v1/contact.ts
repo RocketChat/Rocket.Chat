@@ -1,3 +1,4 @@
+import type { ILivechatContact } from '@rocket.chat/core-typings';
 import { LivechatContacts, LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
 import {
 	isPOSTOmnichannelContactsProps,
@@ -12,7 +13,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { getContactHistory, Contacts, createContact, updateContact, getContacts, isSingleContactEnabled } from '../../lib/Contacts';
+import { getContactHistory, Contacts, createContact, getContact, updateContact, getContacts } from '../../lib/Contacts';
 
 API.v1.addRoute(
 	'omnichannel/contact',
@@ -102,9 +103,6 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['create-livechat-contact'], validateParams: isPOSTOmnichannelContactsProps },
 	{
 		async post() {
-			if (!isSingleContactEnabled()) {
-				return API.v1.unauthorized();
-			}
 			const contactId = await createContact({ ...this.bodyParams, unknown: false });
 
 			return API.v1.success({ contactId });
@@ -117,10 +115,6 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['update-livechat-contact'], validateParams: isPOSTUpdateOmnichannelContactsProps },
 	{
 		async post() {
-			if (!isSingleContactEnabled()) {
-				return API.v1.unauthorized();
-			}
-
 			const contact = await updateContact({ ...this.bodyParams });
 
 			return API.v1.success({ contact });
@@ -133,10 +127,24 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-contact'], validateParams: isGETOmnichannelContactsProps },
 	{
 		async get() {
-			if (!isSingleContactEnabled()) {
-				return API.v1.unauthorized();
+			const { contactId, email, phone } = this.queryParams;
+			let contact: ILivechatContact | null = null;
+
+			if (contactId) {
+				contact = await getContact(contactId);
 			}
-			const contact = await LivechatContacts.findOneById(this.queryParams.contactId);
+
+			if (email) {
+				contact = await LivechatContacts.findOne({ 'emails.address': email });
+			}
+
+			if (phone) {
+				contact = await LivechatContacts.findOne({ 'phones.phoneNumber': phone });
+			}
+
+			if (!contact) {
+				return API.v1.notFound();
+			}
 
 			return API.v1.success({ contact });
 		},
@@ -148,10 +156,6 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-contact'], validateParams: isGETOmnichannelContactsSearchProps },
 	{
 		async get() {
-			if (!isSingleContactEnabled()) {
-				return API.v1.unauthorized();
-			}
-
 			const { searchText } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
@@ -168,10 +172,6 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-contact-history'], validateParams: isGETOmnichannelContactHistoryProps },
 	{
 		async get() {
-			if (!isSingleContactEnabled()) {
-				return API.v1.unauthorized();
-			}
-
 			const { contactId, source } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();

@@ -48,6 +48,7 @@ import {
 	updateEEPermission,
 	updatePermission,
 	updateSetting,
+	updateEESetting,
 } from '../../../data/permissions.helper';
 import { adminUsername, password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
@@ -74,6 +75,7 @@ describe('LIVECHAT - rooms', () => {
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 		await createAgent();
 		await makeAgentAvailable();
 		visitor = await createVisitor();

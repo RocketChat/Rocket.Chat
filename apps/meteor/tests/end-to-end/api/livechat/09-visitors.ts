@@ -17,7 +17,13 @@ import {
 } from '../../../data/livechat/rooms';
 import { getRandomVisitorToken } from '../../../data/livechat/users';
 import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
-import { updatePermission, updateSetting, removePermissionFromAllRoles, restorePermissionToRoles } from '../../../data/permissions.helper';
+import {
+	updatePermission,
+	updateSetting,
+	removePermissionFromAllRoles,
+	restorePermissionToRoles,
+	updateEESetting,
+} from '../../../data/permissions.helper';
 import { adminUsername } from '../../../data/user';
 import { IS_EE } from '../../../e2e/config/constants';
 
@@ -33,6 +39,7 @@ describe('LIVECHAT - visitors', () => {
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updatePermission('view-livechat-manager', ['admin']);
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 		await createAgent();
 		await makeAgentAvailable();
 		visitor = await createVisitor();
@@ -56,7 +63,6 @@ describe('LIVECHAT - visitors', () => {
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('visitor');
 			expect(body.visitor).to.have.property('token', 'test');
-			expect(body.visitor).to.have.property('contactId');
 
 			// Ensure all new visitors are created as online :)
 			expect(body.visitor).to.have.property('status', 'online');
