@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, SlashCommandPreviews } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -24,6 +24,38 @@ import type { ComposerBoxPopupUserProps } from '../composer/ComposerBoxPopupUser
 import type { ComposerPopupContextValue } from '../contexts/ComposerPopupContext';
 import { ComposerPopupContext, createMessageBoxPopupConfig } from '../contexts/ComposerPopupContext';
 
+function debounce<T>(func: (...args: any[]) => Promise<T>, delay: number): () => Promise<T> {
+	let debounceTimer: NodeJS.Timeout | null = null;
+
+	// store to resolve the current promise as undefined, if a new request is received
+	let resolveCurrent: ((value?: any) => void) | null = null;
+
+	return function (...args: any[]) {
+		if (debounceTimer) {
+			clearTimeout(debounceTimer);
+			if (resolveCurrent) {
+				// received a new request, resolve the current promise as undefined
+				resolveCurrent(undefined);
+			}
+		}
+
+		return new Promise<T>((resolve, reject) => {
+			resolveCurrent = resolve;
+			debounceTimer = setTimeout(async () => {
+				try {
+					const result = await func(...args);
+					resolve(result);
+				} catch (error) {
+					reject(error);
+				} finally {
+					debounceTimer = null;
+					resolveCurrent = null;
+				}
+			}, delay);
+		});
+	};
+}
+
 const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: IRoom }) => {
 	const { _id: rid, encrypted: isRoomEncrypted } = room;
 	const userSpotlight = useMethod('spotlight');
@@ -38,6 +70,20 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 	const encrypted = isRoomEncrypted && e2eEnabled && !unencryptedMessagesAllowed;
 
 	const call = useMethod('getSlashCommandPreviews');
+
+	const debouncedCall: ({
+		cmd,
+		params,
+		msg,
+	}: {
+		cmd: string;
+		params: string;
+		msg: { rid: string; tmid: string };
+	}) => Promise<SlashCommandPreviews | undefined> = debounce<SlashCommandPreviews | undefined>(
+		({ cmd, params, msg }: { cmd: string; params: string; msg: { rid: string; tmid: string } }) => call({ cmd, params, msg }),
+		1000,
+	);
+
 	const value: ComposerPopupContextValue = useMemo(() => {
 		return [
 			createMessageBoxPopupConfig({
@@ -354,7 +400,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				matchSelectorRegex: /(?:^)(\/[\w\d\S]+ )[^]*$/,
 				preview: true,
 				getItemsFromLocal: async ({ cmd, params, tmid }: { cmd: string; params: string; tmid: string }) => {
-					const result = await call({ cmd, params, msg: { rid, tmid } });
+					const result = await debouncedCall({ cmd, params, msg: { rid, tmid } });
 					return (
 						result?.items.map((item) => ({
 							_id: item.id,
@@ -365,7 +411,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				},
 			}),
 		].filter(Boolean);
-	}, [t, cannedResponseEnabled, isOmnichannel, recentEmojis, suggestionsCount, userSpotlight, rid, call, useEmoji, encrypted]);
+	}, [t, cannedResponseEnabled, isOmnichannel, recentEmojis, suggestionsCount, userSpotlight, rid, debouncedCall, useEmoji, encrypted]);
 
 	return <ComposerPopupContext.Provider value={value} children={children} />;
 };
