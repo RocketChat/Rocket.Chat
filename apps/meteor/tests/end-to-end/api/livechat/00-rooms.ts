@@ -83,10 +83,6 @@ describe('LIVECHAT - rooms', () => {
 		room = await createLivechatRoom(visitor.token);
 	});
 
-	after(async () => {
-		await updateEESetting('Livechat_Require_Contact_Verification', 'always');
-	});
-
 	describe('livechat/room', () => {
 		it('should fail when token is not passed as query parameter', async () => {
 			await request.get(api('livechat/room')).expect(400);

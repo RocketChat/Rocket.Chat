@@ -704,7 +704,7 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error');
 			expect(res.body.error).to.be.equal(
-				"must have required property 'email'\n must have required property 'phone'\n must have required property 'contactId'\n must match a schema in anyOf [invalid-params]",
+				"must have required property 'email'\n must have required property 'phone'\n must have required property 'contactId'\n must match exactly one schema in oneOf [invalid-params]",
 			);
 			expect(res.body.errorType).to.be.equal('invalid-params');
 		});
@@ -715,7 +715,7 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error');
 			expect(res.body.error).to.be.equal(
-				'must NOT have additional properties\n must NOT have additional properties\n must NOT have additional properties\n must match a schema in anyOf [invalid-params]',
+				'must NOT have additional properties\n must NOT have additional properties\n must NOT have additional properties\n must match exactly one schema in oneOf [invalid-params]',
 			);
 			expect(res.body.errorType).to.be.equal('invalid-params');
 		});
