@@ -1,6 +1,7 @@
 import type { IWorkspaceCredentials } from '@rocket.chat/core-typings';
 import { WorkspaceCredentials } from '@rocket.chat/models';
 
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { workspaceScopes } from '../oauthScopes';
 import { getWorkspaceAccessTokenWithScope } from './getWorkspaceAccessTokenWithScope';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
@@ -31,8 +32,13 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 
 	const workspaceCredentials = await WorkspaceCredentials.getCredentialByScope(scopes);
 	if (workspaceCredentials && !hasWorkspaceAccessTokenExpired(workspaceCredentials) && !forceNew) {
+		SystemLogger.debug(
+			`Workspace credentials cache hit using scopes: ${scopes}. Avoiding generating a new access token from cloud services.`,
+		);
 		return workspaceCredentials.accessToken;
 	}
+
+	SystemLogger.debug(`Workspace credentials cache miss using scopes: ${scopes}, fetching new access token from cloud services.`);
 
 	const accessToken = await getWorkspaceAccessTokenWithScope(scope, throwOnError);
 
