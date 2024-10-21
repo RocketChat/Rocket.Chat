@@ -53,14 +53,6 @@ runs:
         restore-keys: |
           vite-local-cache-${{ runner.os }}-
 
-    - name: Cache meteor local
-      uses: actions/cache@v3
-      with:
-        path: ./apps/meteor/.meteor/local
-        key: meteor-local-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/versions') }}
-        restore-keys: |
-          meteor-local-cache-${{ runner.os }}-
-
     - name: Cache meteor
       uses: actions/cache@v3
       with:
@@ -68,6 +60,14 @@ runs:
         key: meteor-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/release') }}
         restore-keys: |
           meteor-cache-${{ runner.os }}-
+
+    - name: Cache meteor local
+      uses: actions/cache@v3
+      with:
+        path: ./apps/meteor/.meteor/local
+        key: meteor-local-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/versions') }}
+        restore-keys: |
+          meteor-local-cache-${{ runner.os }}-
 
     - name: Install Meteor
       shell: bash
