@@ -1,7 +1,7 @@
 import { asyncLocalStorage } from '@rocket.chat/core-services';
 import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
+import type { ServiceBroker, Context, ServiceSchema, LoggerInstance } from 'moleculer';
 import { injectCurrentContext, tracerSpan } from '@rocket.chat/tracing';
-import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
 import { EnterpriseCheck } from './EnterpriseCheck';
 
@@ -67,7 +67,11 @@ export class NetworkBroker implements IBroker {
 		}
 
 		try {
-			await this.broker.waitForServices(method.split('.')[0], waitForServicesTimeout);
+			await this.broker.waitForServices(method.split('.')[0], waitForServicesTimeout, this.broker.options.dependencyInterval, {
+				...this.broker.logger,
+				// eslint-disable-next-line @typescript-eslint/no-empty-function
+				info: () => {},
+			} as LoggerInstance);
 		} catch (err) {
 			console.error(err);
 			throw new Error('Dependent services not available');
