@@ -44,7 +44,7 @@ import {
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
 
-import './events.js';
+import './events';
 
 let failedToDecodeKey = false;
 
