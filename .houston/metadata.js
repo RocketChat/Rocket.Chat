@@ -16,6 +16,23 @@ const getMongoVersion = async function({ version, git }) {
 	return [];
 };
 
+const getAppsEngineVersion = async function({ version, git }) {
+	try {
+		const result = execSync('yarn why @rocket.chat/apps-engine --json');
+
+		const resultString = result.toString();
+
+		const match = resultString.match(/"@rocket\.chat\/meteor@workspace:apps\/meteor".*"@rocket\.chat\/apps\-engine@[^#]+#npm:([^"]+)"/);
+		if (match) {
+			return match[1];
+		}
+	} catch (e) {
+		console.error(e);
+	}
+
+	return undefined;
+};
+
 const getNodeNpmVersions = async function({ version, git, request }) {
 	try {
 		const meteorRelease = await git.show([`${ version }:apps/meteor/.meteor/release`]);
@@ -36,23 +53,6 @@ const getNodeNpmVersions = async function({ version, git, request }) {
 	}
 
 	return {};
-};
-
-const getAppsEngineVersion = async function({ version, git }) {
-	try {
-		const result = execSync('yarn why @rocket.chat/apps-engine --json');
-
-		const resultString = result.toString();
-
-		const match = resultString.match(/"@rocket\.chat\/meteor@workspace:apps\/meteor".*"@rocket\.chat\/apps\-engine@[^#]+#npm:([^"]+)"/);
-		if (match) {
-			return match[1];
-		}
-	} catch (e) {
-		console.error(e);
-	}
-
-	return undefined;
 };
 
 module.exports = async function({ version, git, request }) {
