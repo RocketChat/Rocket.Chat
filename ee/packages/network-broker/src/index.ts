@@ -27,7 +27,6 @@ const {
 	BULKHEAD_MAX_QUEUE_SIZE = '10000',
 	MS_METRICS = 'false',
 	MS_METRICS_PORT = '9458',
-	TRACING_ENABLED = 'false',
 	SKIP_PROCESS_EVENT_REGISTRATION = 'false',
 } = process.env;
 
@@ -143,27 +142,6 @@ const network = new ServiceBroker({
 		maxQueueSize: parseInt(BULKHEAD_MAX_QUEUE_SIZE),
 	},
 
-	tracing: {
-		enabled: TRACING_ENABLED === 'true',
-		exporter: {
-			type: 'Jaeger',
-			options: {
-				endpoint: null,
-				host: 'jaeger',
-				port: 6832,
-				sampler: {
-					// Sampler type. More info: https://www.jaegertracing.io/docs/1.14/sampling/#client-sampling-configuration
-					type: 'Const',
-					// Sampler specific options.
-					options: {},
-				},
-				// Additional options for `Jaeger.Tracer`
-				tracerOptions: {},
-				// Default tags. They will be added into all span tags.
-				defaultTags: null,
-			},
-		},
-	},
 	errorRegenerator: new CustomRegenerator(),
 	started(): void {
 		console.log('NetworkBroker started successfully.');

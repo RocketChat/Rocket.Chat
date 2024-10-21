@@ -12,6 +12,7 @@ import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { MessageTypes } from '../../../ui-utils/server';
@@ -136,9 +137,9 @@ Meteor.methods<ServerMethods>({
 		}
 
 		try {
-			return await executeSendMessage(uid, message, previewUrls);
+			return await applyAirGappedRestrictionsValidation(() => executeSendMessage(uid, message, previewUrls));
 		} catch (error: any) {
-			if ((error.error || error.message) === 'error-not-allowed') {
+			if (['error-not-allowed', 'restricted-workspace'].includes(error.error || error.message)) {
 				throw new Meteor.Error(error.error || error.message, error.reason, {
 					method: 'sendMessage',
 				});

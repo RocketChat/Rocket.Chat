@@ -1,3 +1,4 @@
+import { traceInstanceMethods } from '@rocket.chat/core-services';
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
 import type { Updater } from '@rocket.chat/models';
@@ -27,6 +28,7 @@ import type {
 	DeleteResult,
 	DeleteOptions,
 	FindOneAndDeleteOptions,
+	CountDocumentsOptions,
 } from 'mongodb';
 
 import { setUpdatedAt } from './setUpdatedAt';
@@ -76,6 +78,8 @@ export abstract class BaseRaw<
 		void this.createIndexes();
 
 		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
+
+		return traceInstanceMethods(this);
 	}
 
 	private pendingIndexes: Promise<void> | undefined;
@@ -494,7 +498,10 @@ export abstract class BaseRaw<
 		return this.col.watch(pipeline);
 	}
 
-	countDocuments(query: Filter<T>): Promise<number> {
+	countDocuments(query: Filter<T>, options?: CountDocumentsOptions): Promise<number> {
+		if (options) {
+			return this.col.countDocuments(query, options);
+		}
 		return this.col.countDocuments(query);
 	}
 

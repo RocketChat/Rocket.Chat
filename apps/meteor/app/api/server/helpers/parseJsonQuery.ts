@@ -53,23 +53,12 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 		}
 	}
 
-	// TODO: Remove this once we have all routes migrated to the new API params
-	const hasSupportedRoutes = [
-		'/api/v1/directory',
-		'/api/v1/channels.files',
-		'/api/v1/integrations.list',
-		'/api/v1/custom-user-status.list',
-		'/api/v1/custom-sounds.list',
-		'/api/v1/channels.list',
-		'/api/v1/channels.online',
-	].includes(route);
-
 	const isUnsafeQueryParamsAllowed = process.env.ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS?.toUpperCase() === 'TRUE';
 	const messageGenerator = ({ endpoint, version, parameter }: { endpoint: string; version: string; parameter: string }): string =>
 		`The usage of the "${parameter}" parameter in endpoint "${endpoint}" breaks the security of the API and can lead to data exposure. It has been deprecated and will be removed in the version ${version}.`;
 
 	let fields: Record<string, 0 | 1> | undefined;
-	if (params.fields && (isUnsafeQueryParamsAllowed || !hasSupportedRoutes)) {
+	if (params.fields && isUnsafeQueryParamsAllowed) {
 		try {
 			apiDeprecationLogger.parameter(route, 'fields', '8.0.0', response, messageGenerator);
 			fields = JSON.parse(params.fields) as Record<string, 0 | 1>;
@@ -119,7 +108,7 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 	}
 
 	let query: Record<string, any> = {};
-	if (params.query && (isUnsafeQueryParamsAllowed || !hasSupportedRoutes)) {
+	if (params.query && isUnsafeQueryParamsAllowed) {
 		apiDeprecationLogger.parameter(route, 'query', '8.0.0', response, messageGenerator);
 		try {
 			query = ejson.parse(params.query);
