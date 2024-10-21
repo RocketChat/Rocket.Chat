@@ -20,7 +20,7 @@ import { Subscriptions, Messages } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
-let userLanguage = 'en';
+let userLanguage = '';
 let username = '';
 
 Meteor.startup(() => {
@@ -29,7 +29,7 @@ Meteor.startup(() => {
 		if (!user) {
 			return;
 		}
-		userLanguage = user.language || 'en';
+		userLanguage = user.language || '';
 		username = user.username || '';
 	});
 });
