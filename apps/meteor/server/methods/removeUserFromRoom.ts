@@ -2,11 +2,11 @@ import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team, Room } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
+import { Subscriptions, Rooms, Users, Roles } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync, getUsersInRole } from '../../app/authorization/server';
+import { canAccessRoomAsync } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
 import { notifyOnRoomChanged, notifyOnSubscriptionChanged } from '../../app/lib/server/lib/notifyListener';
@@ -70,7 +70,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 	}
 
 	if (await hasRoleAsync(removedUser._id, 'owner', room._id)) {
-		const numOwners = await (await getUsersInRole('owner', room._id)).count();
+		const numOwners = await Roles.countUsersInRole('owner', room._id);
 
 		if (numOwners === 1) {
 			throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', {

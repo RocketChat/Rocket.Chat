@@ -254,6 +254,22 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		}
 	}
 
+	async countUsersInRole(roleId: IRole['_id'], scope?: IRoom['_id']): Promise<number> {
+		const role = await this.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
+
+		if (!role) {
+			throw new Error('RolesRaw.countUsersInRole: role not found');
+		}
+
+		switch (role.scope) {
+			case 'Subscriptions':
+				return Subscriptions.countUsersInRoles([role._id], scope);
+			case 'Users':
+			default:
+				return Users.countUsersInRoles([role._id]);
+		}
+	}
+
 	async createWithRandomId(
 		name: IRole['name'],
 		scope: IRole['scope'] = 'Users',

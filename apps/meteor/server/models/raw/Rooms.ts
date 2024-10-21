@@ -1464,6 +1464,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
+	countGroupDMsByUids(uids: NonNullable<IRoom['uids']>): Promise<number> {
+		return this.countDocuments({
+			usersCount: { $gt: 2 },
+			uids: { $in: uids },
+		});
+	}
+
 	find1On1ByUserId(userId: IRoom['_id'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		return this.find(
 			{

@@ -10,8 +10,7 @@ export class PendingAvatarImporter extends Importer {
 		this.logger.debug('start preparing import operation');
 		await super.updateProgress(ProgressStep.PREPARING_STARTED);
 
-		const users = Users.findAllUsersWithPendingAvatar();
-		const fileCount = await users.count();
+		const fileCount = await Users.countAllUsersWithPendingAvatar();
 
 		if (fileCount === 0) {
 			await super.updateProgress(ProgressStep.DONE);

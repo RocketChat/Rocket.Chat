@@ -135,6 +135,16 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	countUsersInRoles(roles) {
+		roles = [].concat(roles);
+
+		const query = {
+			roles: { $in: roles },
+		};
+
+		return this.countDocuments(query);
+	}
+
 	findPaginatedUsersInRoles(roles, options) {
 		roles = [].concat(roles);
 
@@ -3072,6 +3082,16 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.find(query, options);
+	}
+
+	countAllUsersWithPendingAvatar() {
+		const query = {
+			_pendingAvatarUrl: {
+				$exists: true,
+			},
+		};
+
+		return this.countDocuments(query);
 	}
 
 	updateCustomFieldsById(userId, customFields) {
