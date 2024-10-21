@@ -52,6 +52,17 @@ const COMMAND_PONG = '_zPONG';
 
 export const JSONRPC_METHOD_NOT_FOUND = -32601;
 
+export function getDefaultRuntimeTimeout() {
+    const envValue = isFinite(process.env.APPS_ENGINE_RUNTIME_TIMEOUT as any) ? Number(process.env.APPS_ENGINE_RUNTIME_TIMEOUT) : 10000;
+
+    if (envValue < 0) {
+        console.log('Environment variable APPS_ENGINE_RUNTIME_TIMEOUT has a negative value, ignoring...');
+        return 10000;
+    }
+
+    return envValue;
+}
+
 export function isValidOrigin(accessor: string): accessor is (typeof ALLOWED_ACCESSOR_METHODS)[number] {
     return ALLOWED_ACCESSOR_METHODS.includes(accessor as any);
 }
@@ -78,7 +89,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     private readonly debug: debug.Debugger;
 
     private readonly options = {
-        timeout: 10000,
+        timeout: getDefaultRuntimeTimeout(),
     };
 
     private readonly accessors: AppAccessorManager;
