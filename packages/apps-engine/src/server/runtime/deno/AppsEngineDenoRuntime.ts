@@ -53,11 +53,11 @@ const COMMAND_PONG = '_zPONG';
 export const JSONRPC_METHOD_NOT_FOUND = -32601;
 
 export function getDefaultRuntimeTimeout() {
-    const envValue = isFinite(process.env.APPS_ENGINE_RUNTIME_TIMEOUT as any) ? Number(process.env.APPS_ENGINE_RUNTIME_TIMEOUT) : 10000;
+    const envValue = isFinite(process.env.APPS_ENGINE_RUNTIME_TIMEOUT as any) ? Number(process.env.APPS_ENGINE_RUNTIME_TIMEOUT) : 30000;
 
     if (envValue < 0) {
         console.log('Environment variable APPS_ENGINE_RUNTIME_TIMEOUT has a negative value, ignoring...');
-        return 10000;
+        return 30000;
     }
 
     return envValue;
