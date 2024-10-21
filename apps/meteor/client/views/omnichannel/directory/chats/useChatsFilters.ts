@@ -2,6 +2,7 @@ import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 
@@ -51,21 +52,38 @@ const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 		return acc;
 	}, {} as { [key: string]: string | undefined });
 
-	return {
-		from: from !== '' ? `${t('From')}: ${formatDate(from)}` : undefined,
-		to: to !== '' ? `${t('To')}: ${formatDate(to)}` : undefined,
-		guest: guest !== '' ? `${t('Text')}: ${guest}` : undefined,
-		servedBy: servedBy !== 'all' ? `${t('Served_By')}: ${agentData?.user.name}` : undefined,
-		department: department !== 'all' ? `${t('Department')}: ${departmentData?.department.name}` : undefined,
-		status: status !== 'all' ? `${t('Status')}: ${t(statusTextMap[status] as TranslationKey)}` : undefined,
-		tags: tags.length > 0 ? tags.map((tag) => `${t('Tag')}: ${tag.label}`) : undefined,
-		...displayCustomFields,
-	};
+	return useMemo(
+		() => ({
+			from: from !== '' ? `${t('From')}: ${formatDate(from)}` : undefined,
+			to: to !== '' ? `${t('To')}: ${formatDate(to)}` : undefined,
+			guest: guest !== '' ? `${t('Text')}: ${guest}` : undefined,
+			servedBy: servedBy !== 'all' ? `${t('Served_By')}: ${agentData?.user.name}` : undefined,
+			department: department !== 'all' ? `${t('Department')}: ${departmentData?.department.name}` : undefined,
+			status: status !== 'all' ? `${t('Status')}: ${t(statusTextMap[status] as TranslationKey)}` : undefined,
+			tags: tags.length > 0 ? tags.map((tag) => `${t('Tag')}: ${tag.label}`) : undefined,
+			...displayCustomFields,
+		}),
+		[
+			agentData?.user?.name,
+			departmentData?.department?.name,
+			department,
+			formatDate,
+			displayCustomFields,
+			from,
+			guest,
+			servedBy,
+			status,
+			t,
+			to,
+			tags,
+		],
+	);
 };
 
 export const useChatsFilters = () => {
 	const [filtersQuery, setFiltersQuery] = useLocalStorage('conversationsQuery', initialValues);
 	const displayFilters = useDisplayFilters(filtersQuery);
+	const hasAppliedFilters = Object.values(displayFilters).filter((value) => value !== undefined).length > 0;
 
 	const resetFiltersQuery = () =>
 		setFiltersQuery((prevState) => {
@@ -82,5 +100,5 @@ export const useChatsFilters = () => {
 	const removeFilter = (filter: keyof typeof initialValues) =>
 		setFiltersQuery((prevState) => ({ ...prevState, [filter]: initialValues[filter] }));
 
-	return { filtersQuery, setFiltersQuery, resetFiltersQuery, displayFilters, removeFilter };
+	return { filtersQuery, setFiltersQuery, resetFiltersQuery, displayFilters, removeFilter, hasAppliedFilters };
 };
