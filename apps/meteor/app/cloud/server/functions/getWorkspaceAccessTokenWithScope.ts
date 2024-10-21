@@ -8,10 +8,16 @@ import { CloudWorkspaceAccessTokenError } from './getWorkspaceAccessToken';
 import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
-export async function getWorkspaceAccessTokenWithScope(scope = '', throwOnError = false) {
+type WorkspaceAccessTokenWithScope = {
+	token: string;
+	expiresAt: Date;
+	scopes: string[];
+};
+
+export async function getWorkspaceAccessTokenWithScope(scope = '', throwOnError = false): Promise<WorkspaceAccessTokenWithScope> {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
-	const tokenResponse = { token: '', expiresAt: new Date() };
+	const tokenResponse = { token: '', expiresAt: new Date(), scopes: [] };
 
 	if (!workspaceRegistered) {
 		return tokenResponse;
@@ -23,9 +29,7 @@ export async function getWorkspaceAccessTokenWithScope(scope = '', throwOnError 
 		return tokenResponse;
 	}
 
-	if (scope === '') {
-		scope = workspaceScopes.join(' ');
-	}
+	const scopes = scope === '' ? workspaceScopes.join(' ') : scope;
 
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	const client_secret = settings.get<string>('Cloud_Workspace_Client_Secret');
@@ -36,7 +40,7 @@ export async function getWorkspaceAccessTokenWithScope(scope = '', throwOnError 
 		const body = new URLSearchParams();
 		body.append('client_id', client_id);
 		body.append('client_secret', client_secret);
-		body.append('scope', scope);
+		body.append('scope', scopes);
 		body.append('grant_type', 'client_credentials');
 		body.append('redirect_uri', redirectUri);
 
@@ -62,6 +66,7 @@ export async function getWorkspaceAccessTokenWithScope(scope = '', throwOnError 
 		return {
 			token: payload.access_token,
 			expiresAt,
+			scopes: scope === '' ? [...workspaceScopes] : [scope],
 		};
 	} catch (err: any) {
 		if (err instanceof CloudWorkspaceAccessTokenError) {
