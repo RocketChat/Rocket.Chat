@@ -69,6 +69,7 @@
   },
   "changesets": [
     "brown-pants-press",
+    "bump-patch-1729526930133",
     "chilled-boats-sip",
     "chilled-files-relate",
     "chilly-flowers-brake",
