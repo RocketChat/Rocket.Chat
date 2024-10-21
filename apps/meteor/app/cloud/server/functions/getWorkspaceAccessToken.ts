@@ -27,9 +27,9 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 
 	// Note: If no scope is given, it means we should assume the default scope, we store the default scopes
 	//       in the global variable workspaceScopes.
-	const scopes = scope === '' ? [...workspaceScopes] : [scope];
+	const scopes = scope === '' ? workspaceScopes.join(' ') : scope;
 
-	const workspaceCredentials = await WorkspaceCredentials.getCredentialByScopes(scopes);
+	const workspaceCredentials = await WorkspaceCredentials.getCredentialByScope(scopes);
 	if (workspaceCredentials && !hasWorkspaceAccessTokenExpired(workspaceCredentials) && !forceNew) {
 		return workspaceCredentials.accessToken;
 	}
@@ -37,8 +37,8 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 	const accessToken = await getWorkspaceAccessTokenWithScope(scope, throwOnError);
 
 	if (save) {
-		await WorkspaceCredentials.updateCredentialByScopes({
-			scopes: accessToken.scopes,
+		await WorkspaceCredentials.updateCredentialByScope({
+			scope: accessToken.scope,
 			accessToken: accessToken.token,
 			expirationDate: accessToken.expiresAt,
 		});
