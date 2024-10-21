@@ -58,9 +58,9 @@ export const useLicense = (params?: LicenseParams) => {
 export const useLicenseWithCloudAnnouncement = (params?: LicenseParams) => {
 	return useLicenseBase({
 		params,
-		select: (data) => ({
-			license: data.license,
-			cloudSyncAnnouncement: data.cloudSyncAnnouncement,
+		select: ({ license, cloudSyncAnnouncement }) => ({
+			...license,
+			cloudSyncAnnouncement,
 		}),
 	});
 };

@@ -59,7 +59,7 @@ const SubscriptionPage = () => {
 
 	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isLoading, 10000);
 
-	const { license, limits, activeModules = [], trial } = licensesData?.license || {};
+	const { license, limits, activeModules = [], cloudSyncAnnouncement } = licensesData || {};
 	const { isEnterprise = true } = enterpriseData || {};
 
 	const getKeyLimit = (key: 'monthlyActiveContacts' | 'activeUsers') => {
@@ -116,7 +116,7 @@ const SubscriptionPage = () => {
 			</PageHeaderNoShadow>
 			{cloudSyncAnnouncement && (
 				<PageBlockWithBorder>
-					<UiKitSubscriptionLicense key='license' initialView={JSON.parse(cloudSyncAnnouncement)} />
+					<UiKitSubscriptionLicense key='license' initialView={cloudSyncAnnouncement} />
 				</PageBlockWithBorder>
 			)}
 			<PageScrollableContentWithShadow p={16}>
@@ -149,7 +149,7 @@ const SubscriptionPage = () => {
 								{seatsLimit.value !== undefined && (
 									<Grid.Item lg={6} xs={4} p={8}>
 										{seatsLimit.max !== Infinity ? (
-											<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={trial} />
+											<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={licensesData?.trial} />
 										) : (
 											<CountSeatsCard activeUsers={seatsLimit?.value} />
 										)}
@@ -159,7 +159,7 @@ const SubscriptionPage = () => {
 								{macLimit.value !== undefined && (
 									<Grid.Item lg={6} xs={4} p={8}>
 										{macLimit.max !== Infinity ? (
-											<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={trial} />
+											<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={licensesData?.trial} />
 										) : (
 											<CountMACCard macsCount={macLimit.value} />
 										)}
@@ -184,7 +184,7 @@ const SubscriptionPage = () => {
 								)}
 							</Grid>
 							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise}>
-								{Boolean(license?.information.cancellable) && (
+								{Boolean(licensesData?.license?.information.cancellable) && (
 									<Button loading={removeLicense.isLoading} secondary danger onClick={() => removeLicense.mutate()}>
 										{t('Cancel_subscription')}
 									</Button>
