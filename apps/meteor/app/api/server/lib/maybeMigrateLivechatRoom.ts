@@ -2,7 +2,7 @@ import { isOmnichannelRoom, type IRoom } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
-import { migrateVisitorIfMissingContact } from '../../../livechat/server/lib/Contacts';
+import { migrateVisitorIfMissingContact } from '../../../livechat/server/lib/contacts/migrateVisitorIfMissingContact';
 
 export async function maybeMigrateLivechatRoom(room: IRoom | null, options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 	if (!room || !isOmnichannelRoom(room)) {

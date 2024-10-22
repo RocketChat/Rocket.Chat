@@ -2,7 +2,7 @@ import type { IOmnichannelSource, ILivechatContact } from '@rocket.chat/core-typ
 import { License } from '@rocket.chat/license';
 import { LivechatContacts } from '@rocket.chat/models';
 
-import { shouldTriggerVerificationApp } from '../../../app/livechat/server/lib/Contacts';
+import { shouldTriggerVerificationApp } from '../../../app/livechat/server/lib/contacts/shouldTriggerVerificationApp';
 import { settings } from '../../../app/settings/server';
 
 /**

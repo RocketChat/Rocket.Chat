@@ -1,7 +1,9 @@
 import type { IImportContact, IImportContactRecord } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 
-import { createContact, getAllowedCustomFields, validateCustomFields } from '../../../../livechat/server/lib/Contacts';
+import { createContact } from '../../../../livechat/server/lib/contacts/createContact';
+import { getAllowedCustomFields } from '../../../../livechat/server/lib/contacts/getAllowedCustomFields';
+import { validateCustomFields } from '../../../../livechat/server/lib/contacts/validateCustomFields';
 import { RecordConverter } from './RecordConverter';
 
 export class ContactConverter extends RecordConverter<IImportContactRecord> {

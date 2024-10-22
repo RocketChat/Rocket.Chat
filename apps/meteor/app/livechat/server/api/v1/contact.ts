@@ -13,7 +13,12 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { getContactHistory, Contacts, createContact, getContact, updateContact, getContacts } from '../../lib/Contacts';
+import { createContact } from '../../lib/contacts/createContact';
+import { getContact } from '../../lib/contacts/getContact';
+import { getContactHistory } from '../../lib/contacts/getContactHistory';
+import { getContacts } from '../../lib/contacts/getContacts';
+import { registerContact } from '../../lib/contacts/registerContact';
+import { updateContact } from '../../lib/contacts/updateContact';
 
 API.v1.addRoute(
 	'omnichannel/contact',
@@ -36,7 +41,7 @@ API.v1.addRoute(
 				}),
 			});
 
-			const contact = await Contacts.registerContact(this.bodyParams);
+			const contact = await registerContact(this.bodyParams);
 
 			return API.v1.success({ contact });
 		},

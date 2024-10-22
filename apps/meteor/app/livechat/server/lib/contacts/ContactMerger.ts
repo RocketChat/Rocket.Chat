@@ -10,7 +10,7 @@ import type {
 import { LivechatContacts } from '@rocket.chat/models';
 import type { UpdateFilter } from 'mongodb';
 
-import { getContactManagerIdByUsername } from './Contacts';
+import { getContactManagerIdByUsername } from './getContactManagerIdByUsername';
 
 type ManagerValue = { id: string } | { username: string };
 type ContactFields = {
@@ -268,10 +268,10 @@ export class ContactMerger {
 
 		// Phones, Emails and Channels are simply added to the contact's existing list
 		const dataToAdd: UpdateFilter<ILivechatContact>['$addToSet'] = {
-			...(newPhones.length ? { phones: newPhones.map((phoneNumber) => ({ phoneNumber })) } : {}),
-			...(newEmails.length ? { emails: newEmails.map((address) => ({ address })) } : {}),
-			...(newChannels.length ? { channels: newChannels } : {}),
-			...(allConflicts.length ? { conflictingFields: allConflicts } : {}),
+			...(newPhones.length ? { phones: { $each: newPhones.map((phoneNumber) => ({ phoneNumber })) } } : {}),
+			...(newEmails.length ? { emails: { $each: newEmails.map((address) => ({ address })) } } : {}),
+			...(newChannels.length ? { channels: { $each: newChannels } } : {}),
+			...(allConflicts.length ? { conflictingFields: { $each: allConflicts } } : {}),
 		};
 
 		const updateData: UpdateFilter<ILivechatContact> = {

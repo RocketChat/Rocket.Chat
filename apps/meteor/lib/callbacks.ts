@@ -28,7 +28,7 @@ import type { FilterOperators } from 'mongodb';
 
 import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
-import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped';
+import type { CloseRoomParams } from '../app/livechat/server/lib/localTypes';
 import { Callbacks } from './callbacks/callbacksBase';
 
 /**

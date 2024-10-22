@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
+import { withErrorBoundary } from '../../components/withErrorBoundary';
 import * as banners from '../../lib/banners';
 import LegacyBanner from './LegacyBanner';
 import UiKitBanner from './UiKitBanner';
@@ -23,4 +24,4 @@ const BannerRegion = (): ReactElement | null => {
 	return <UiKitBanner key={payload.viewId} initialView={payload} />;
 };
 
-export default BannerRegion;
+export default withErrorBoundary(BannerRegion);
