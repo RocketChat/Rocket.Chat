@@ -1,7 +1,6 @@
 import type { Page } from '@playwright/test';
 
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChatEmbedded } from '../page-objects';
@@ -25,9 +24,6 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 
 	test.beforeAll(async ({ api }) => {
 		agent = await createAgent(api, 'user1');
-		if (IS_EE) {
-			await api.post('/settings/Livechat_Require_Contact_Verification', { value: 'never' });
-		}
 
 		const res = await makeAgentAvailable(api, agent.data._id);
 
