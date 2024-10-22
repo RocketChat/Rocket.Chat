@@ -14,7 +14,15 @@ type WorkspaceAccessTokenWithScope = {
 	scope: string;
 };
 
-export async function getWorkspaceAccessTokenWithScope(scope = '', throwOnError = false): Promise<WorkspaceAccessTokenWithScope> {
+type GetWorkspaceAccessTokenWithScopeParams = {
+	scope?: string;
+	throwOnError?: boolean;
+};
+
+export async function getWorkspaceAccessTokenWithScope({
+	scope = '',
+	throwOnError = false,
+}: GetWorkspaceAccessTokenWithScopeParams): Promise<WorkspaceAccessTokenWithScope> {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
 	const tokenResponse = { token: '', expiresAt: new Date(), scope: '' };

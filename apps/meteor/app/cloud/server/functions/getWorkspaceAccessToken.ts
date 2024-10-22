@@ -42,7 +42,7 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 
 	SystemLogger.debug(`Workspace credentials cache miss using scope: ${scope}, fetching new access token from cloud services.`);
 
-	const accessToken = await getWorkspaceAccessTokenWithScope(scope, throwOnError);
+	const accessToken = await getWorkspaceAccessTokenWithScope({ scope, throwOnError });
 
 	if (save) {
 		await WorkspaceCredentials.updateCredentialByScope({
