@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
 	},
 });
 
-const messageLongerThanPage = (message: string) => message.length > 1200;
+const messageLongerThanPage = (message: string | undefined) => (message?.length ?? 0) > 1200;
 
 const isSystemMessage = (message: PDFMessage) => !!message.t;
 

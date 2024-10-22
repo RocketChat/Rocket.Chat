@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { FormSkeleton } from '../../../components';
 import { useOmnichannelRoomInfo } from '../../../hooks/useOmnichannelRoomInfo';
@@ -15,7 +15,7 @@ type RoomEditWithDataProps = {
 };
 
 function RoomEditWithData({ id: roomId, reload, reloadInfo, onClose }: RoomEditWithDataProps) {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { data: room, isLoading: isRoomLoading, isError: isRoomError } = useOmnichannelRoomInfo(roomId);
 	const { _id: visitorId } = room?.v ?? {};

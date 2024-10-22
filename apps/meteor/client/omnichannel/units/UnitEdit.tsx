@@ -168,7 +168,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 								<Controller
 									name='name'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Name')) }}
+									rules={{ required: t('Required_field', { field: t('Name') }) }}
 									render={({ field }) => (
 										<TextInput
 											id={nameField}
@@ -195,7 +195,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 								<Controller
 									name='visibility'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Visibility')) }}
+									rules={{ required: t('Required_field', { field: t('Visibility') }) }}
 									render={({ field }) => (
 										<Select
 											id={visibilityField}
@@ -220,7 +220,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 								<Controller
 									name='departments'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Departments')) }}
+									rules={{ required: t('Required_field', { field: t('Departments') }) }}
 									render={({ field: { name, value, onChange, onBlur } }) => (
 										<PaginatedMultiSelectFiltered
 											id={departmentsField}
@@ -267,7 +267,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 								<Controller
 									name='monitors'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Monitors')) }}
+									rules={{ required: t('Required_field', { field: t('Monitors') }) }}
 									render={({ field: { name, value, onChange, onBlur } }) => (
 										<PaginatedMultiSelectFiltered
 											id={monitorsField}

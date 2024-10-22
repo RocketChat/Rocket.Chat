@@ -1,9 +1,14 @@
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
-import { isChatReportMessageProps, isChatGetURLPreviewProps } from '@rocket.chat/rest-typings';
+import {
+	isChatReportMessageProps,
+	isChatGetURLPreviewProps,
+	isChatUpdateProps,
+	isChatGetThreadsListProps,
+	isChatDeleteProps,
+} from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
@@ -15,6 +20,7 @@ import { deleteMessageValidatingPermission } from '../../../lib/server/functions
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage';
+import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { OEmbed } from '../../../oembed/server/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { settings } from '../../../settings/server';
@@ -26,18 +32,9 @@ import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } f
 
 API.v1.addRoute(
 	'chat.delete',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatDeleteProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					msgId: String,
-					roomId: String,
-					asUser: Match.Maybe(Boolean),
-				}),
-			);
-
 			const msg = await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
 
 			if (!msg) {
@@ -164,7 +161,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const messageReturn = (await processWebhookMessage(this.bodyParams, this.user))[0];
+			const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
 
 			if (!messageReturn) {
 				return API.v1.failure('unknown-error');
@@ -222,7 +219,9 @@ API.v1.addRoute(
 				throw new Error("Cannot send system messages using 'chat.sendMessage'");
 			}
 
-			const sent = await executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, this.bodyParams.previewUrls);
+			const sent = await applyAirGappedRestrictionsValidation(() =>
+				executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, this.bodyParams.previewUrls),
+			);
 			const [message] = await normalizeMessagesForUser([sent], this.userId);
 
 			return API.v1.success({
@@ -308,20 +307,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.update',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatUpdateProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					roomId: String,
-					msgId: String,
-					text: String, // Using text to be consistant with chat.postMessage
-					customFields: Match.Maybe(Object),
-					previewUrls: Match.Maybe([String]),
-				}),
-			);
-
 			const msg = await Messages.findOneById(this.bodyParams.msgId);
 
 			// Ensure the message exists
@@ -333,16 +321,20 @@ API.v1.addRoute(
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
 
+			const msgFromBody = this.bodyParams.text;
+
 			// Permission checks are already done in the updateMessage method, so no need to duplicate them
-			await executeUpdateMessage(
-				this.userId,
-				{
-					_id: msg._id,
-					msg: this.bodyParams.text,
-					rid: msg.rid,
-					customFields: this.bodyParams.customFields as Record<string, any> | undefined,
-				},
-				this.bodyParams.previewUrls,
+			await applyAirGappedRestrictionsValidation(() =>
+				executeUpdateMessage(
+					this.userId,
+					{
+						_id: msg._id,
+						msg: msgFromBody,
+						rid: msg.rid,
+						customFields: this.bodyParams.customFields as Record<string, any> | undefined,
+					},
+					this.bodyParams.previewUrls,
+				),
 			);
 
 			const updatedMessage = await Messages.findOneById(msg._id);
@@ -376,7 +368,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
 			}
 
-			await executeSetReaction(this.userId, emoji, msg._id, this.bodyParams.shouldReact);
+			await executeSetReaction(this.userId, emoji, msg, this.bodyParams.shouldReact);
 
 			return API.v1.success();
 		},
@@ -504,13 +496,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getThreadsList',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatGetThreadsListProps },
 	{
 		async get() {
 			const { rid, type, text } = this.queryParams;
-			check(rid, String);
-			check(type, Match.Maybe(String));
-			check(text, Match.Maybe(String));
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();

@@ -10,7 +10,7 @@ import type {
 	MACStats,
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -1218,6 +1218,26 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		}
 
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
+	}
+
+	findPaginatedRoomsByVisitorsIdsAndSource({
+		visitorsIds,
+		source,
+		options = {},
+	}: {
+		visitorsIds: string[];
+		source?: string;
+		options?: FindOptions;
+	}): FindPaginated<FindCursor<IOmnichannelRoom>> {
+		return this.findPaginated<IOmnichannelRoom>(
+			{
+				'v._id': { $in: visitorsIds },
+				...(source && {
+					$or: [{ 'source.type': new RegExp(escapeRegExp(source), 'i') }, { 'source.alias': new RegExp(escapeRegExp(source), 'i') }],
+				}),
+			},
+			options,
+		);
 	}
 
 	findRoomsWithCriteria({
@@ -2561,6 +2581,10 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				},
 			])
 			.toArray();
+	}
+
+	countLivechatRoomsWithDepartment(): Promise<number> {
+		return this.col.countDocuments({ departmentId: { $exists: true } });
 	}
 
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {

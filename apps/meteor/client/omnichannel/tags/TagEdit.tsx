@@ -88,7 +88,7 @@ const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
 								<Controller
 									name='name'
 									control={control}
-									rules={{ required: t('The_field_is_required', 'name') }}
+									rules={{ required: t('Required_field', { field: t('Name') }) }}
 									render={({ field }) => <TextInput {...field} error={errors?.name?.message} aria-describedby={`${nameField}-error`} />}
 								/>
 							</FieldRow>

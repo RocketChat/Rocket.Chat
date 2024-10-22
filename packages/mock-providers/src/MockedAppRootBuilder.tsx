@@ -1,9 +1,9 @@
-import type { ISetting, Serialized, SettingValue } from '@rocket.chat/core-typings';
+import type { ISetting, IUser, Serialized, SettingValue } from '@rocket.chat/core-typings';
 import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
-import type { ModalContextValue, TranslationKey } from '@rocket.chat/ui-contexts';
+import type { Device, ModalContextValue, TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	AuthorizationContext,
 	ConnectionStatusContext,
@@ -15,7 +15,7 @@ import {
 	ActionManagerContext,
 	ModalContext,
 } from '@rocket.chat/ui-contexts';
-import type { DecoratorFn } from '@storybook/react';
+import type { Decorator } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createInstance } from 'i18next';
 import type { ObjectId } from 'mongodb';
@@ -23,6 +23,8 @@ import type { ContextType, JSXElementConstructor, ReactNode } from 'react';
 import React, { useEffect, useReducer } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
+
+import { MockedDeviceContext } from './MockedDeviceContext';
 
 type Mutable<T> = {
 	-readonly [P in keyof T]: T[P];
@@ -125,6 +127,10 @@ export class MockedAppRootBuilder {
 	};
 
 	private events = new Emitter<MockedAppRootEvents>();
+
+	private audioInputDevices: Device[] = [];
+
+	private audioOutputDevices: Device[] = [];
 
 	wrap(wrapper: (children: ReactNode) => ReactNode): this {
 		this.wrappers.push(wrapper);
@@ -233,7 +239,7 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	withJohnDoe(): this {
+	withJohnDoe(overrides: Partial<IUser> = {}): this {
 		this.user.userId = 'john.doe';
 
 		this.user.user = {
@@ -245,6 +251,7 @@ export class MockedAppRootBuilder {
 			_updatedAt: new Date(),
 			roles: ['admin'],
 			type: 'user',
+			...overrides,
 		};
 
 		return this;
@@ -253,6 +260,13 @@ export class MockedAppRootBuilder {
 	withAnonymous(): this {
 		this.user.userId = null;
 		this.user.user = null;
+
+		return this;
+	}
+
+	withUser(user: IUser): this {
+		this.user.userId = user._id;
+		this.user.user = user;
 
 		return this;
 	}
@@ -331,6 +345,16 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	withAudioInputDevices(devices: Device[]): this {
+		this.audioInputDevices = devices;
+		return this;
+	}
+
+	withAudioOutputDevices(devices: Device[]): this {
+		this.audioOutputDevices = devices;
+		return this;
+	}
+
 	private i18n = createInstance({
 		// debug: true,
 		lng: 'en',
@@ -375,7 +399,7 @@ export class MockedAppRootBuilder {
 			},
 		});
 
-		const { connectionStatus, server, router, settings, user, i18n, authorization, wrappers } = this;
+		const { connectionStatus, server, router, settings, user, i18n, authorization, wrappers, audioInputDevices, audioOutputDevices } = this;
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
 			return {
@@ -450,46 +474,49 @@ export class MockedAppRootBuilder {
 																		<AvatarUrlProvider>
 																				<CustomSoundProvider> */}
 											<UserContext.Provider value={user}>
-												{/* <DeviceProvider>*/}
-												<ModalContext.Provider value={modal}>
-													<AuthorizationContext.Provider value={authorization}>
-														{/* <EmojiPickerProvider>
+												<MockedDeviceContext
+													availableAudioInputDevices={audioInputDevices}
+													availableAudioOutputDevices={audioOutputDevices}
+												>
+													<ModalContext.Provider value={modal}>
+														<AuthorizationContext.Provider value={authorization}>
+															{/* <EmojiPickerProvider>
 																<OmnichannelRoomIconProvider>
 																		<UserPresenceProvider>*/}
-														<ActionManagerContext.Provider
-															value={{
-																generateTriggerId: () => '',
-																emitInteraction: () => Promise.reject(new Error('not implemented')),
-																getInteractionPayloadByViewId: () => undefined,
-																handleServerInteraction: () => undefined,
-																off: () => undefined,
-																on: () => undefined,
-																openView: () => undefined,
-																disposeView: () => undefined,
-																notifyBusy: () => undefined,
-																notifyIdle: () => undefined,
-															}}
-														>
-															{/* <VideoConfProvider>
+															<ActionManagerContext.Provider
+																value={{
+																	generateTriggerId: () => '',
+																	emitInteraction: () => Promise.reject(new Error('not implemented')),
+																	getInteractionPayloadByViewId: () => undefined,
+																	handleServerInteraction: () => undefined,
+																	off: () => undefined,
+																	on: () => undefined,
+																	openView: () => undefined,
+																	disposeView: () => undefined,
+																	notifyBusy: () => undefined,
+																	notifyIdle: () => undefined,
+																}}
+															>
+																{/* <VideoConfProvider>
 																	<CallProvider>
 																		<OmnichannelProvider> */}
-															{wrappers.reduce<ReactNode>(
-																(children, wrapper) => wrapper(children),
-																<>
-																	{children}
-																	{modal.currentModal.component}
-																</>,
-															)}
-															{/* 		</OmnichannelProvider>
+																{wrappers.reduce<ReactNode>(
+																	(children, wrapper) => wrapper(children),
+																	<>
+																		{children}
+																		{modal.currentModal.component}
+																	</>,
+																)}
+																{/* 		</OmnichannelProvider>
 																	</CallProvider>
 																</VideoConfProvider>*/}
-														</ActionManagerContext.Provider>
-														{/* 		</UserPresenceProvider>
+															</ActionManagerContext.Provider>
+															{/* 		</UserPresenceProvider>
 																</OmnichannelRoomIconProvider>
 															</EmojiPickerProvider>*/}
-													</AuthorizationContext.Provider>
-												</ModalContext.Provider>
-												{/* </DeviceProvider>*/}
+														</AuthorizationContext.Provider>
+													</ModalContext.Provider>
+												</MockedDeviceContext>
 											</UserContext.Provider>
 											{/* 					</CustomSoundProvider>
 																</AvatarUrlProvider>
@@ -508,7 +535,7 @@ export class MockedAppRootBuilder {
 		};
 	}
 
-	buildStoryDecorator(): DecoratorFn {
+	buildStoryDecorator(): Decorator {
 		const WrapperComponent = this.build();
 
 		// eslint-disable-next-line react/display-name, react/no-multi-comp

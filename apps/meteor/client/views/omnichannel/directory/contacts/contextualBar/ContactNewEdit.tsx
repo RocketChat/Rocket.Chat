@@ -122,7 +122,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 		return !contact || contact._id === id;
 	};
 
-	const validateName = (v: string): string | boolean => (!v.trim() ? t('The_field_is_required', t('Name')) : true);
+	const validateName = (v: string): string | boolean => (!v.trim() ? t('Required_field', { field: t('Name') }) : true);
 
 	const handleContactManagerChange = async (userId: string): Promise<void> => {
 		setUserId(userId);

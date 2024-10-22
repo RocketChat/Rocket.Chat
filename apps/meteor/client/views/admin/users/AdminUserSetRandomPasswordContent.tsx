@@ -57,7 +57,7 @@ const AdminUserSetRandomPasswordContent = ({
 					name='password'
 					rules={{
 						validate: () => (password?.length && !passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
-						required: isNewUserPage && t('The_field_is_required', t('Password')),
+						required: isNewUserPage && t('Required_field', { field: t('Password') }),
 					}}
 					render={({ field }) => (
 						<PasswordInput
@@ -83,7 +83,7 @@ const AdminUserSetRandomPasswordContent = ({
 						control={control}
 						name='passwordConfirmation'
 						rules={{
-							required: isNewUserPage && t('The_field_is_required', t('Confirm_password')),
+							required: isNewUserPage && t('Required_field', { field: t('Confirm_password') }),
 							deps: ['password'],
 							validate: (confirmationPassword) => (password !== confirmationPassword ? t('Invalid_confirm_pass') : true),
 						}}

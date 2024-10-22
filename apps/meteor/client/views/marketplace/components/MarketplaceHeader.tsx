@@ -1,25 +1,41 @@
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { usePermission, useRoute, useRouteParameter, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
+import { usePermission, useRoute, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericResourceUsageSkeleton } from '../../../components/GenericResourceUsage';
 import { PageHeader } from '../../../components/Page';
 import UnlimitedAppsUpsellModal from '../UnlimitedAppsUpsellModal';
 import { useAppsCountQuery } from '../hooks/useAppsCountQuery';
+import { usePrivateAppsEnabled } from '../hooks/usePrivateAppsEnabled';
 import EnabledAppsCount from './EnabledAppsCount';
+import PrivateAppInstallModal from './PrivateAppInstallModal/PrivateAppInstallModal';
+import UpdateRocketChatButton from './UpdateRocketChatButton';
 
-const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null => {
-	const t = useTranslation();
+const MarketplaceHeader = ({ title, unsupportedVersion }: { title: string; unsupportedVersion: boolean }): ReactElement | null => {
+	const { t } = useTranslation();
 	const isAdmin = usePermission('manage-apps');
 	const context = (useRouteParameter('context') || 'explore') as 'private' | 'explore' | 'installed' | 'premium' | 'requested';
 	const route = useRoute('marketplace');
 	const setModal = useSetModal();
 	const result = useAppsCountQuery(context);
 
-	const handleUploadButtonClick = useCallback((): void => {
+	const privateAppsEnabled = usePrivateAppsEnabled();
+
+	const handleProceed = (): void => {
+		setModal(null);
 		route.push({ context, page: 'install' });
-	}, [context, route]);
+	};
+
+	const handleClickPrivate = () => {
+		if (!privateAppsEnabled) {
+			setModal(<PrivateAppInstallModal onClose={() => setModal(null)} onProceed={handleProceed} />);
+			return;
+		}
+
+		route.push({ context, page: 'install' });
+	};
 
 	if (result.isError) {
 		return null;
@@ -27,10 +43,20 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 
 	return (
 		<PageHeader title={title}>
+			{result.isLoading && <GenericResourceUsageSkeleton mi={16} />}
+
+			{!unsupportedVersion && result.isSuccess && !result.data.hasUnlimitedApps && (
+				<Margins inline={16}>
+					<EnabledAppsCount
+						{...result.data}
+						tooltip={context === 'private' && !privateAppsEnabled ? t('Private_apps_premium_message') : undefined}
+						context={context}
+					/>
+				</Margins>
+			)}
+
 			<ButtonGroup wrap align='end'>
-				{result.isLoading && <GenericResourceUsageSkeleton />}
-				{result.isSuccess && !result.data.hasUnlimitedApps && <EnabledAppsCount {...result.data} context={context} />}
-				{isAdmin && result.isSuccess && !result.data.hasUnlimitedApps && (
+				{!unsupportedVersion && isAdmin && result.isSuccess && !result.data.hasUnlimitedApps && context !== 'private' && (
 					<Button
 						onClick={() => {
 							setModal(<UnlimitedAppsUpsellModal onClose={() => setModal(null)} />);
@@ -39,7 +65,9 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 						{t('Enable_unlimited_apps')}
 					</Button>
 				)}
-				{isAdmin && context === 'private' && <Button onClick={handleUploadButtonClick}>{t('Upload_private_app')}</Button>}
+
+				{isAdmin && context === 'private' && <Button onClick={handleClickPrivate}>{t('Upload_private_app')}</Button>}
+				{unsupportedVersion && isAdmin && context !== 'private' && <UpdateRocketChatButton />}
 			</ButtonGroup>
 		</PageHeader>
 	);

@@ -1,9 +1,8 @@
+import { GenericMenu, useHandleMenuAction } from '@rocket.chat/ui-client';
 import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes } from 'react';
 import React from 'react';
 
-import GenericMenu from '../../components/GenericMenu/GenericMenu';
-import { useHandleMenuAction } from '../../components/GenericMenu/hooks/useHandleMenuAction';
 import { NavbarAction } from '../../components/Navbar';
 import { useAdministrationItems } from '../../sidebar/header/actions/hooks/useAdministrationItems';
 

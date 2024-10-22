@@ -53,13 +53,13 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 							control={control}
 							name='password'
 							rules={{
+								required: t('Required_field', { field: t('New_password') }),
 								validate: () => (password?.length && !passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
 							}}
-							render={({ field: { onChange, value } }) => (
+							render={({ field }) => (
 								<PasswordInput
+									{...field}
 									id={passwordId}
-									onChange={onChange}
-									value={value}
 									error={errors.password?.message}
 									flexGrow={1}
 									addon={<Icon name='key' size='x20' />}
@@ -84,12 +84,14 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 						<Controller
 							control={control}
 							name='confirmationPassword'
-							rules={{ validate: (confirmationPassword) => (password !== confirmationPassword ? t('Passwords_do_not_match') : true) }}
-							render={({ field: { onChange, value } }) => (
+							rules={{
+								required: t('Required_field', { field: t('Confirm_password') }),
+								validate: (confirmationPassword) => (password !== confirmationPassword ? t('Passwords_do_not_match') : true),
+							}}
+							render={({ field }) => (
 								<PasswordInput
+									{...field}
 									id={confirmPasswordId}
-									onChange={onChange}
-									value={value}
 									error={errors.confirmationPassword?.message}
 									flexGrow={1}
 									addon={<Icon name='key' size='x20' />}

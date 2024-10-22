@@ -1,13 +1,13 @@
 import { Sidebar } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useVoipOutboundStates } from '../../../contexts/CallContext';
 import { useDialModal } from '../../../hooks/useDialModal';
 
 export const OmniChannelCallDialPad = ({ ...props }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { openDialModal } = useDialModal();
 

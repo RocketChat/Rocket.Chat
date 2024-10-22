@@ -251,12 +251,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const results: ITeamInfo[] = [];
 		for await (const record of records) {
-			const rooms = Rooms.findByTeamId(record._id);
-			const users = TeamMember.findByTeamId(record._id);
 			results.push({
 				...record,
-				rooms: await rooms.count(),
-				numberOfUsers: await users.count(),
+				rooms: await Rooms.countByTeamId(record._id),
+				numberOfUsers: await TeamMember.countByTeamId(record._id),
 			});
 		}
 
@@ -279,12 +277,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const results: ITeamInfo[] = [];
 		for await (const record of records) {
-			const rooms = Rooms.findByTeamId(record._id);
-			const users = TeamMember.findByTeamId(record._id);
 			results.push({
 				...record,
-				rooms: await rooms.count(),
-				numberOfUsers: await users.count(),
+				rooms: await Rooms.countByTeamId(record._id),
+				numberOfUsers: await TeamMember.countByTeamId(record._id),
 			});
 		}
 
@@ -593,9 +589,13 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		let teamRoomIds: string[];
 
 		if (showCanDeleteOnly) {
+			const canDeleteTeamChannel = await Authorization.hasPermission(userId, 'delete-team-channel', team.roomId);
+			const canDeleteTeamGroup = await Authorization.hasPermission(userId, 'delete-team-group', team.roomId);
 			for await (const room of teamRooms) {
-				const roomType = room.t;
-				const canDeleteRoom = await Authorization.hasPermission(userId, roomType === 'c' ? 'delete-c' : 'delete-p', room._id);
+				const isPublicRoom = room.t === 'c';
+				const canDeleteTeamRoom = isPublicRoom ? canDeleteTeamChannel : canDeleteTeamGroup;
+				const canDeleteRoom =
+					canDeleteTeamRoom && (await Authorization.hasPermission(userId, isPublicRoom ? 'delete-c' : 'delete-p', room._id));
 				room.userCanDelete = canDeleteRoom;
 			}
 
@@ -793,8 +793,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 			if (existingMember) {
 				if (existingMember.roles?.includes('owner')) {
-					const owners = TeamMember.findByTeamIdAndRole(team._id, 'owner');
-					const totalOwners = await owners.count();
+					const totalOwners = await TeamMember.countByTeamIdAndRole(team._id, 'owner');
 					if (totalOwners === 1) {
 						throw new Error('last-owner-can-not-be-removed');
 					}
@@ -913,8 +912,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		});
 	}
 
-	async getOneByRoomId(roomId: string): Promise<ITeam | null> {
-		const room = await Rooms.findOneById(roomId);
+	async getOneByRoomId(roomId: string, options?: FindOptions<ITeam>): Promise<ITeam | null> {
+		const room = await Rooms.findOneById(roomId, { projection: { teamId: 1 } });
 
 		if (!room) {
 			throw new Error('invalid-room');
@@ -924,7 +923,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('room-not-on-team');
 		}
 
-		return Team.findOneById(room.teamId);
+		return Team.findOneById(room.teamId, options);
 	}
 
 	async addRolesToMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean> {
@@ -998,9 +997,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	async getStatistics(): Promise<ITeamStats> {
 		return {
-			totalTeams: await Team.find({}).count(),
-			totalRoomsInsideTeams: await Rooms.findRoomsInsideTeams().count(),
-			totalDefaultRoomsInsideTeams: await Rooms.findRoomsInsideTeams(true).count(),
+			totalTeams: await Team.estimatedDocumentCount(),
+			totalRoomsInsideTeams: await Rooms.countRoomsInsideTeams(),
+			totalDefaultRoomsInsideTeams: await Rooms.countRoomsInsideTeams(true),
 		};
 	}
 
@@ -1055,8 +1054,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		return rooms;
 	}
 
-	private getParentRoom(team: AtLeast<ITeam, 'roomId'>): Promise<Pick<IRoom, 'name' | 'fname' | 't' | '_id'> | null> {
-		return Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | '_id'>>(team.roomId, { projection: { name: 1, fname: 1, t: 1 } });
+	private getParentRoom(team: AtLeast<ITeam, 'roomId'>): Promise<Pick<IRoom, 'name' | 'fname' | 't' | '_id' | 'sidepanel'> | null> {
+		return Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | '_id' | 'sidepanel'>>(team.roomId, {
+			projection: { name: 1, fname: 1, t: 1, sidepanel: 1 },
+		});
 	}
 
 	async getRoomInfo(
@@ -1077,5 +1078,38 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const parentRoom = await this.getParentRoom(team);
 		return { team, ...(parentRoom && { parentRoom }) };
+	}
+
+	// Returns the list of rooms and discussions a user has access to inside a team
+	// Rooms returned are a composition of the rooms the user is in + public rooms + discussions from the main room (if any)
+	async listChildren(
+		userId: string,
+		team: AtLeast<ITeam, '_id' | 'roomId' | 'type'>,
+		filter?: string,
+		type?: 'channels' | 'discussions',
+		sort?: Record<string, 1 | -1>,
+		skip = 0,
+		limit = 10,
+	): Promise<{ total: number; data: IRoom[] }> {
+		const mainRoom = await Rooms.findOneById(team.roomId, { projection: { _id: 1 } });
+		if (!mainRoom) {
+			throw new Error('error-invalid-team-no-main-room');
+		}
+
+		const isMember = await TeamMember.findOneByUserIdAndTeamId(userId, team._id, {
+			projection: { _id: 1 },
+		});
+
+		if (!isMember) {
+			throw new Error('error-invalid-team-not-a-member');
+		}
+
+		const [{ totalCount: [{ count: total }] = [], paginatedResults: data = [] }] =
+			(await Rooms.findChildrenOfTeam(team._id, mainRoom._id, userId, filter, type, { skip, limit, sort }).toArray()) || [];
+
+		return {
+			total,
+			data,
+		};
 	}
 }

@@ -55,23 +55,32 @@ const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProp
 					<Field>
 						<FieldLabel>{t('Webdav_Server_URL')}</FieldLabel>
 						<FieldRow>
-							<TextInput placeholder={t('Webdav_Server_URL')} {...register('serverURL', { required: true })} />
+							<TextInput
+								placeholder={t('Webdav_Server_URL')}
+								{...register('serverURL', { required: t('Required_field', { field: t('Webdav_Server_URL') }) })}
+							/>
 						</FieldRow>
-						{errors.serverURL && <FieldError>{t('error-the-field-is-required', { field: t('Webdav_Server_URL') })}</FieldError>}
+						{errors.serverURL && <FieldError>{errors.serverURL.message}</FieldError>}
 					</Field>
 					<Field>
 						<FieldLabel>{t('Username')}</FieldLabel>
 						<FieldRow>
-							<TextInput placeholder={t('Username')} {...register('username', { required: true })} />
+							<TextInput
+								placeholder={t('Username')}
+								{...register('username', { required: t('Required_field', { field: t('Username') }) })}
+							/>
 						</FieldRow>
-						{errors.username && <FieldError>{t('error-the-field-is-required', { field: t('Username') })}</FieldError>}
+						{errors.username && <FieldError>{errors.username.message}</FieldError>}
 					</Field>
 					<Field>
 						<FieldLabel>{t('Password')}</FieldLabel>
 						<FieldRow>
-							<PasswordInput placeholder={t('Password')} {...register('password', { required: true })} />
+							<PasswordInput
+								placeholder={t('Password')}
+								{...register('password', { required: t('Required_field', { field: t('Password') }) })}
+							/>
 						</FieldRow>
-						{errors.password && <FieldError>{t('error-the-field-is-required', { field: t('Password') })}</FieldError>}
+						{errors.password && <FieldError>{errors.password.message}</FieldError>}
 					</Field>
 				</FieldGroup>
 			</Modal.Content>

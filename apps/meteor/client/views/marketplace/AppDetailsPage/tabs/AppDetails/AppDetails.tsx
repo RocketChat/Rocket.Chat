@@ -1,23 +1,25 @@
-import { Box, Callout, Chip, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import DOMPurify from 'dompurify';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { useExternalLink } from '../../../../../hooks/useExternalLink';
+import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
+import { GET_ADDONS_LINK } from '../../../../admin/subscription/utils/links';
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
 import type { AppInfo } from '../../../definitions/AppInfo';
+import { purifyOptions } from '../../../lib/purifyOptions';
 import AppDetailsAPIs from './AppDetailsAPIs';
 import { normalizeUrl } from './normalizeUrl';
 
 type AppDetailsProps = {
-	app: Omit<AppInfo, 'author' | 'documentationUrl'> & {
-		author?: Partial<AppInfo['author']>;
-		documentationUrl?: AppInfo['documentationUrl'];
-	};
+	app: AppInfo;
 };
 
 const AppDetails = ({ app }: AppDetailsProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const {
 		author: { homepage, support } = {},
 		detailedDescription,
@@ -26,6 +28,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 		screenshots,
 		apis,
 		documentationUrl: documentation,
+		addon: appAddon,
 	} = app;
 
 	const isMarkdown = detailedDescription && Object.keys(detailedDescription).length !== 0 && detailedDescription.rendered;
@@ -35,18 +38,36 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 	const normalizedSupportUrl = support ? normalizeUrl(support) : undefined;
 	const normalizedDocumentationUrl = documentation ? normalizeUrl(documentation) : undefined;
 
+	const workspaceHasAddon = useHasLicenseModule(appAddon);
+
+	const openExternalLink = useExternalLink();
+
 	return (
-		<Box maxWidth='x640' w='full' marginInline='auto' color='default'>
+		<Box mbs='36px' maxWidth='x640' w='full' marginInline='auto' color='default'>
+			{appAddon && !workspaceHasAddon && (
+				<Callout
+					mb={16}
+					title={t('Subscription_add-on_required')}
+					type='info'
+					actions={
+						<Button small onClick={() => openExternalLink(GET_ADDONS_LINK)}>
+							{t('Contact_sales')}
+						</Button>
+					}
+				>
+					{t('App_cannot_be_enabled_without_add-on')}
+				</Callout>
+			)}
 			{app.licenseValidation && (
 				<>
 					{Object.entries(app.licenseValidation.warnings).map(([key]) => (
-						<Callout key={key} type='warning'>
+						<Callout key={key} type='warning' mb={16}>
 							{t(`Apps_License_Message_${key}` as TranslationKey)}
 						</Callout>
 					))}
 
 					{Object.entries(app.licenseValidation.errors).map(([key]) => (
-						<Callout key={key} type='danger'>
+						<Callout key={key} type='danger' mb={16}>
 							{t(`Apps_License_Message_${key}` as TranslationKey)}
 						</Callout>
 					))}
@@ -61,7 +82,14 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 						<Box fontScale='h4' mbe={8} color='titles-labels'>
 							{t('Description')}
 						</Box>
-						<Box dangerouslySetInnerHTML={{ __html: isMarkdown ? detailedDescription.rendered : description }} withRichContent />
+						<Box
+							dangerouslySetInnerHTML={{
+								__html: isMarkdown
+									? DOMPurify.sanitize(detailedDescription.rendered, purifyOptions)
+									: DOMPurify.sanitize(description, purifyOptions),
+							}}
+							withRichContent
+						/>
 					</Box>
 
 					<Box is='section'>

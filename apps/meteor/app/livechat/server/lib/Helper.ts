@@ -47,6 +47,7 @@ import { settings } from '../../../settings/server';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
+import { getOnlineAgents } from './getOnlineAgents';
 
 const logger = new Logger('LivechatHelper');
 export const allowAgentSkipQueue = (agent: SelectedAgent) => {
@@ -85,7 +86,7 @@ export const createLivechatRoom = async <
 	);
 
 	const extraRoomInfo = await callbacks.run('livechat.beforeRoom', roomInfo, extraData);
-	const { _id, username, token, department: departmentId, status = 'online' } = guest;
+	const { _id, username, token, department: departmentId, status = 'online', contactId } = guest;
 	const newRoomAt = new Date();
 
 	const { activity } = guest;
@@ -109,6 +110,7 @@ export const createLivechatRoom = async <
 			username,
 			token,
 			status,
+			contactId,
 			...(activity?.length && { activity }),
 		},
 		cl: false,
@@ -402,7 +404,7 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 	await saveQueueInquiry(inquiry);
 
 	// Alert only the online agents of the queued request
-	const onlineAgents = await LivechatTyped.getOnlineAgents(department, agent);
+	const onlineAgents = await getOnlineAgents(department, agent);
 	if (!onlineAgents) {
 		logger.debug('Cannot notify agents of queued inquiry. No online agents found');
 		return;
@@ -439,8 +441,8 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 			hasMentionToHere: false,
 			message: { _id: '', u: v, msg: '' },
 			// we should use server's language for this type of messages instead of user's
-			notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName }, language),
-			room: Object.assign(room, { name: i18n.t('New_chat_in_queue', {}, language) }),
+			notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName, lng: language }),
+			room: Object.assign(room, { name: i18n.t('New_chat_in_queue', { lng: language }) }),
 			mentionIds: [],
 		});
 	}

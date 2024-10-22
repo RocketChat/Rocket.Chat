@@ -10,8 +10,8 @@
 	"main": "dist/index.js",
 	"packageManager": "yarn@3.5.1",
 	"devDependencies": {
-		"@types/node": "^16.18.60",
-		"typescript": "~5.5.4"
+		"@types/node": "~20.16.12",
+		"typescript": "~5.6.3"
 	},
 	"dependencies": {
 		"@actions/core": "^1.10.1",
@@ -23,7 +23,7 @@
 		"mdast-util-to-string": "2.0.0",
 		"remark-parse": "9.0.0",
 		"remark-stringify": "9.0.1",
-		"semver": "^7.5.2",
+		"semver": "^7.6.3",
 		"unified": "9.2.2"
 	}
 }

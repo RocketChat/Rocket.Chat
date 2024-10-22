@@ -45,16 +45,16 @@ export default class RocketAdapter {
 		rocketLogger.debug('Register for events');
 		callbacks.add('afterSaveMessage', this.onMessage.bind(this), callbacks.priority.LOW, 'SlackBridge_Out');
 		callbacks.add('afterDeleteMessage', this.onMessageDelete.bind(this), callbacks.priority.LOW, 'SlackBridge_Delete');
-		callbacks.add('setReaction', this.onSetReaction.bind(this), callbacks.priority.LOW, 'SlackBridge_SetReaction');
-		callbacks.add('unsetReaction', this.onUnSetReaction.bind(this), callbacks.priority.LOW, 'SlackBridge_UnSetReaction');
+		callbacks.add('afterSetReaction', this.onSetReaction.bind(this), callbacks.priority.LOW, 'SlackBridge_SetReaction');
+		callbacks.add('afterUnsetReaction', this.onUnSetReaction.bind(this), callbacks.priority.LOW, 'SlackBridge_UnSetReaction');
 	}
 
 	unregisterForEvents() {
 		rocketLogger.debug('Unregister for events');
 		callbacks.remove('afterSaveMessage', 'SlackBridge_Out');
 		callbacks.remove('afterDeleteMessage', 'SlackBridge_Delete');
-		callbacks.remove('setReaction', 'SlackBridge_SetReaction');
-		callbacks.remove('unsetReaction', 'SlackBridge_UnSetReaction');
+		callbacks.remove('afterSetReaction', 'SlackBridge_SetReaction');
+		callbacks.remove('afterUnsetReaction', 'SlackBridge_UnSetReaction');
 	}
 
 	async onMessageDelete(rocketMessageDeleted) {
@@ -72,7 +72,7 @@ export default class RocketAdapter {
 		}
 	}
 
-	async onSetReaction(rocketMsgID, reaction) {
+	async onSetReaction(rocketMsg, { reaction }) {
 		try {
 			if (!this.slackBridge.isReactionsEnabled) {
 				return;
@@ -80,12 +80,11 @@ export default class RocketAdapter {
 
 			rocketLogger.debug('onRocketSetReaction');
 
-			if (rocketMsgID && reaction) {
-				if (this.slackBridge.reactionsMap.delete(`set${rocketMsgID}${reaction}`)) {
+			if (rocketMsg._id && reaction) {
+				if (this.slackBridge.reactionsMap.delete(`set${rocketMsg._id}${reaction}`)) {
 					// This was a Slack reaction, we don't need to tell Slack about it
 					return;
 				}
-				const rocketMsg = await Messages.findOneById(rocketMsgID);
 				if (rocketMsg) {
 					for await (const slack of this.slackAdapters) {
 						const slackChannel = slack.getSlackChannel(rocketMsg.rid);
@@ -101,7 +100,7 @@ export default class RocketAdapter {
 		}
 	}
 
-	async onUnSetReaction(rocketMsgID, reaction) {
+	async onUnSetReaction(rocketMsg, { reaction }) {
 		try {
 			if (!this.slackBridge.isReactionsEnabled) {
 				return;
@@ -109,13 +108,12 @@ export default class RocketAdapter {
 
 			rocketLogger.debug('onRocketUnSetReaction');
 
-			if (rocketMsgID && reaction) {
-				if (this.slackBridge.reactionsMap.delete(`unset${rocketMsgID}${reaction}`)) {
+			if (rocketMsg._id && reaction) {
+				if (this.slackBridge.reactionsMap.delete(`unset${rocketMsg._id}${reaction}`)) {
 					// This was a Slack unset reaction, we don't need to tell Slack about it
 					return;
 				}
 
-				const rocketMsg = await Messages.findOneById(rocketMsgID);
 				if (rocketMsg) {
 					for await (const slack of this.slackAdapters) {
 						const slackChannel = slack.getSlackChannel(rocketMsg.rid);

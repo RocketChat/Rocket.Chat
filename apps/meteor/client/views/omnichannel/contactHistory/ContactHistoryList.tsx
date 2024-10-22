@@ -1,7 +1,7 @@
 import { Box, Margins, TextInput, Icon, Throbber, States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, Dispatch, ReactElement, SetStateAction } from 'react';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import {
@@ -21,7 +21,7 @@ import { useHistoryList } from './useHistoryList';
 
 const ContactHistoryList = ({ setChatId, close }: { setChatId: Dispatch<SetStateAction<string>>; close: () => void }): ReactElement => {
 	const [text, setText] = useState('');
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const room = useOmnichannelRoom();
 	const { itemsList: historyList, loadMoreItems } = useHistoryList(
 		useMemo(() => ({ roomId: room._id, filter: text, visitorId: room.v._id }), [room, text]),

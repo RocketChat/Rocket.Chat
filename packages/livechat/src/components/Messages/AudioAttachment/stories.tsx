@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import AudioAttachment from '.';
@@ -12,7 +12,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof AudioAttachment>>;
 
-export const Default: Story<ComponentProps<typeof AudioAttachment>> = (args) => <AudioAttachment {...args} />;
+export const Default: StoryFn<ComponentProps<typeof AudioAttachment>> = (args) => <AudioAttachment {...args} />;
 Default.storyName = 'default';
 Default.args = {
 	url: sampleAudio,

@@ -1,9 +1,9 @@
 import { Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { useController } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import type { AuditFields } from '../../hooks/useAuditForm';
@@ -13,7 +13,7 @@ type DirectTabProps = {
 };
 
 const DirectTab = ({ form: { control } }: DirectTabProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { field: usersField, fieldState: usersFieldState } = useController({
 		name: 'users',
@@ -39,7 +39,7 @@ const DirectTab = ({ form: { control } }: DirectTabProps): ReactElement => {
 					placeholder={t('Username_Placeholder')}
 				/>
 			</FieldRow>
-			{usersFieldState.error?.type === 'required' && <FieldError>{t('The_field_is_required', t('Users'))}</FieldError>}
+			{usersFieldState.error?.type === 'required' && <FieldError>{t('Required_field', { field: t('Users') })}</FieldError>}
 			{usersFieldState.error?.type === 'validate' && <FieldError>{usersFieldState.error.message}</FieldError>}
 		</Field>
 	);

@@ -1,5 +1,5 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const useMediaActionTitle = (
 	media: 'audio' | 'video',
@@ -8,7 +8,7 @@ export const useMediaActionTitle = (
 	isMediaEnabled: boolean,
 	isAllowed: boolean,
 ) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const getMediaActionTitle = useMemo(() => {
 		if (isPermissionDenied) {

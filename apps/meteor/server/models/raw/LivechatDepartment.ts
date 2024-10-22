@@ -222,6 +222,14 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.updateOne({ _id }, { $set: { archived: true, enabled: false } });
 	}
 
+	addDepartmentToUnit(_id: string, unitId: string, ancestors: string[]): Promise<Document | UpdateResult> {
+		return this.updateOne({ _id }, { $set: { parentId: unitId, ancestors } });
+	}
+
+	removeDepartmentFromUnit(_id: string): Promise<Document | UpdateResult> {
+		return this.updateOne({ _id }, { $set: { parentId: null, ancestors: null } });
+	}
+
 	async createOrUpdateDepartment(
 		_id: string | null,
 		data: {
@@ -326,6 +334,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		};
 
 		return this.find(query, options);
+	}
+
+	countDepartmentsInUnit(unitId: string): Promise<number> {
+		return this.countDocuments({ parentId: unitId });
 	}
 
 	findActiveByUnitIds(unitIds: string[], options: FindOptions<ILivechatDepartment> = {}): FindCursor<ILivechatDepartment> {

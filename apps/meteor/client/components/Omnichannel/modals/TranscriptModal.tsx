@@ -1,8 +1,8 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Field, Button, TextInput, Modal, Box, FieldGroup, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 type TranscriptModalProps = {
 	email: string;
@@ -14,7 +14,7 @@ type TranscriptModalProps = {
 };
 
 const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, onCancel, onDiscard, ...props }: TranscriptModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const {
 		register,
@@ -74,7 +74,7 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 								disabled={!!emailDefault || !!transcriptRequest}
 								error={errors.email?.message}
 								flexGrow={1}
-								{...register('email', { required: t('The_field_is_required', t('Email')) })}
+								{...register('email', { required: t('Required_field', { field: t('Email') }) })}
 							/>
 						</FieldRow>
 						<FieldError>{errors.email?.message}</FieldError>
@@ -86,7 +86,7 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 								disabled={!!transcriptRequest}
 								error={errors.subject?.message}
 								flexGrow={1}
-								{...register('subject', { required: t('The_field_is_required', t('Subject')) })}
+								{...register('subject', { required: t('Required_field', { field: t('Subject') }) })}
 							/>
 						</FieldRow>
 						<FieldError>{errors.subject?.message}</FieldError>

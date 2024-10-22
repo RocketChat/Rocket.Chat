@@ -57,13 +57,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 	const { copy: copyToken } = useClipboardWithToast(`${webhookData?._id}/${webhookData?.token}`);
 	const { copy: copyCurlData } = useClipboardWithToast(curlData);
 
-	const scriptEngineOptions: SelectOption[] = useMemo(
-		() => [
-			['vm2', t('Script_Engine_vm2')],
-			['isolated-vm', t('Script_Engine_isolated_vm')],
-		],
-		[t],
-	);
+	const scriptEngineOptions: SelectOption[] = useMemo(() => [['isolated-vm', t('Script_Engine_isolated_vm')]], [t]);
 
 	const hilightedExampleJson = useHighlightedCode('json', JSON.stringify(exampleData, null, 2));
 
@@ -167,7 +161,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 								<Controller
 									name='channel'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Post_to_Channel')) }}
+									rules={{ required: t('Required_field', { field: t('Post_to_Channel') }) }}
 									render={({ field }) => (
 										<TextInput
 											id={channelField}
@@ -201,7 +195,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 								<Controller
 									name='username'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Post_to_Channel')) }}
+									rules={{ required: t('Required_field', { field: t('Post_to_Channel') }) }}
 									render={({ field }) => (
 										<TextInput
 											id={usernameField}

@@ -1,3 +1,4 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import {
 	Box,
 	Modal,
@@ -36,6 +37,7 @@ import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescriptio
 
 type CreateChannelModalProps = {
 	teamId?: string;
+	mainRoom?: IRoom;
 	onClose: () => void;
 	reload?: () => void;
 };
@@ -61,7 +63,7 @@ const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModu
 	return 'Federation_Matrix_Federated_Description';
 };
 
-const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModalProps): ReactElement => {
+const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateChannelModalProps): ReactElement => {
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');
@@ -71,7 +73,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 
 	const canCreateChannel = usePermission('create-c');
-	const canCreatePrivateChannel = usePermission('create-p');
+	const canCreateGroup = usePermission('create-p');
 	const getEncryptedHint = useEncryptedRoomDescription('channel');
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
@@ -82,17 +84,20 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 	const createChannel = useEndpoint('POST', '/v1/channels.create');
 	const createPrivateChannel = useEndpoint('POST', '/v1/groups.create');
 
+	const canCreateTeamChannel = usePermission('create-team-channel', mainRoom?._id);
+	const canCreateTeamGroup = usePermission('create-team-group', mainRoom?._id);
+
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canOnlyCreateOneType = useMemo(() => {
-		if (!canCreateChannel && canCreatePrivateChannel) {
+		if ((!teamId && !canCreateChannel && canCreateGroup) || (teamId && !canCreateTeamChannel && canCreateTeamGroup)) {
 			return 'p';
 		}
-		if (canCreateChannel && !canCreatePrivateChannel) {
+		if ((!teamId && canCreateChannel && !canCreateGroup) || (teamId && canCreateTeamChannel && !canCreateTeamGroup)) {
 			return 'c';
 		}
 		return false;
-	}, [canCreateChannel, canCreatePrivateChannel]);
+	}, [canCreateChannel, canCreateGroup, canCreateTeamChannel, canCreateTeamGroup, teamId]);
 
 	const {
 		register,
@@ -222,7 +227,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 								id={nameId}
 								data-qa-type='channel-name-input'
 								{...register('name', {
-									required: t('error-the-field-is-required', { field: t('Name') }),
+									required: t('Required_field', { field: t('Name') }),
 									validate: (value) => validateChannelName(value),
 								})}
 								error={errors.name?.message}
@@ -267,7 +272,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 										id={privateId}
 										aria-describedby={`${privateId}-hint`}
 										ref={ref}
-										checked={value}
+										checked={canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : value}
 										disabled={!!canOnlyCreateOneType}
 										onChange={onChange}
 									/>
