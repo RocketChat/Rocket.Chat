@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import type { AppServiceOutput, Bridge } from 'matrix-appservice-bridge';
 
 import type { IExternalUserProfileInformation, IFederationBridge, IFederationBridgeRegistrationFile } from '../../domain/IFederationBridge';
 import type { RocketChatSettingsAdapter } from '../rocket-chat/adapters/Settings';
@@ -50,7 +50,7 @@ export class MatrixBridge implements IFederationBridge {
 				this.bridgeInstance.addAppServicePath({
 					method: 'POST',
 					path: '/_matrix/app/v1/ping',
-					checkToken: true,
+					authenticate: true,
 					handler: (_req, res, _next) => {
 						/*
 						 * https://spec.matrix.org/v1.11/application-service-api/#post_matrixappv1ping
@@ -489,7 +489,7 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public async getReadStreamForFileFromUrl(externalUserId: string, fileUrl: string): Promise<ReadableStream> {
-		const response = await fetch(this.convertMatrixUrlToHttp(externalUserId, fileUrl));
+		const response = await fetch(await this.convertMatrixUrlToHttp(externalUserId, fileUrl));
 		if (!response.body) {
 			throw new Error('Not able to download the file');
 		}
@@ -736,7 +736,7 @@ export class MatrixBridge implements IFederationBridge {
 		await this.bridgeInstance.getIntent(externalUserId).setRoomTopic(externalRoomId, roomTopic);
 	}
 
-	public convertMatrixUrlToHttp(externalUserId: string, matrixUrl: string): string {
+	public convertMatrixUrlToHttp(externalUserId: string, matrixUrl: string): Promise<string> {
 		return this.bridgeInstance.getIntent(externalUserId).matrixClient.mxcToHttp(matrixUrl);
 	}
 
@@ -744,7 +744,7 @@ export class MatrixBridge implements IFederationBridge {
 		federationBridgeLogger.info('Performing Dynamic Import of matrix-appservice-bridge');
 
 		// Dynamic import to prevent Rocket.Chat from loading the module until needed and then handle if that fails
-		const { Bridge, AppServiceRegistration, MatrixUser } = await import('@rocket.chat/forked-matrix-appservice-bridge');
+		const { Bridge, AppServiceRegistration, MatrixUser } = await import('matrix-appservice-bridge');
 		MatrixUserInstance = MatrixUser;
 		const registrationFile = this.internalSettings.getAppServiceRegistrationObject();
 

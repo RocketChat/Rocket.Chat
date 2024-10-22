@@ -190,3 +190,7 @@ export const InputWithLinearScale = createStory(payloads.inputWithLinearScale, {
 });
 
 export const Conditional = createStory(payloads.conditional);
+
+export const Callout = createStory(payloads.callout);
+
+export const CalloutWithAction = createStory(payloads.calloutWithAction);

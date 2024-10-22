@@ -224,6 +224,17 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
+	countByTeamId(teamId: ITeam['_id']): Promise<number> {
+		const query: Filter<IRoom> = {
+			teamId,
+			teamMain: {
+				$exists: false,
+			},
+		};
+
+		return this.countDocuments(query);
+	}
+
 	findPaginatedByTeamIdContainingNameAndDefault(
 		teamId: ITeam['_id'],
 		name: IRoom['name'],
@@ -696,6 +707,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findRoomsInsideTeams(autoJoin = false): FindCursor<IRoom> {
 		return this.find({
+			teamId: { $exists: true },
+			teamMain: { $exists: false },
+			...(autoJoin && { teamDefault: true }),
+		});
+	}
+
+	countRoomsInsideTeams(autoJoin = false): Promise<number> {
+		return this.countDocuments({
 			teamId: { $exists: true },
 			teamMain: { $exists: false },
 			...(autoJoin && { teamDefault: true }),
@@ -1443,6 +1462,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 			options,
 		);
+	}
+
+	countGroupDMsByUids(uids: NonNullable<IRoom['uids']>): Promise<number> {
+		return this.countDocuments({
+			usersCount: { $gt: 2 },
+			uids: { $in: uids },
+		});
 	}
 
 	find1On1ByUserId(userId: IRoom['_id'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {

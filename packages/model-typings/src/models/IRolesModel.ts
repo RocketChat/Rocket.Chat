@@ -61,4 +61,5 @@ export interface IRolesModel extends IBaseModel<IRole> {
 	): Promise<IRole>;
 
 	canAddUserToRole(uid: IUser['_id'], roleId: IRole['_id'], scope?: IRoom['_id']): Promise<boolean>;
+	countUsersInRole(roleId: IRole['_id'], scope?: IRoom['_id']): Promise<number>;
 }

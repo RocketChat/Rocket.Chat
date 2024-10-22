@@ -49,6 +49,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findByTeamId(teamId: ITeam['_id'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
+	countByTeamId(teamId: ITeam['_id']): Promise<number>;
+
 	findPaginatedByTeamIdContainingNameAndDefault(
 		teamId: ITeam['_id'],
 		name: IRoom['name'],
@@ -138,6 +140,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findE2ERoomById(roomId: IRoom['_id'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	findRoomsInsideTeams(autoJoin?: boolean): FindCursor<IRoom>;
+
+	countRoomsInsideTeams(autoJoin?: boolean): Promise<number>;
 
 	findOneDirectRoomContainingAllUserIDs(uid: IDirectMessageRoom['uids'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
@@ -304,4 +308,5 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		e2eKeyId: string,
 		e2eQueue?: IRoom['usersWaitingForE2EKeys'],
 	): Promise<ModifyResult<IRoom>>;
+	countGroupDMsByUids(uids: NonNullable<IRoom['uids']>): Promise<number>;
 }
