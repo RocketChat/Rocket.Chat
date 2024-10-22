@@ -1,8 +1,8 @@
 import { Box, Select, Label } from '@rocket.chat/fuselage';
 import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Dispatch, SetStateAction } from 'react';
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
@@ -12,7 +12,7 @@ type QueueListFilterProps = {
 };
 
 export const QueueListFilter = ({ setFilter, ...props }: QueueListFilterProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const statusOptions: [string, string][] = [
 		['online', t('Online')],

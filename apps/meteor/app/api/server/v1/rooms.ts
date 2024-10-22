@@ -15,7 +15,7 @@ import { Meteor } from 'meteor/meteor';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { omit } from '../../../../lib/utils/omit';
 import * as dataExport from '../../../../server/lib/dataExport';
-import { eraseRoom } from '../../../../server/methods/eraseRoom';
+import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -25,6 +25,7 @@ import { createDiscussion } from '../../../discussion/server/methods/createDiscu
 import { FileUpload } from '../../../file-upload/server';
 import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
+import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
@@ -89,7 +90,9 @@ API.v1.addRoute(
 		async get() {
 			const { roomName } = this.queryParams;
 
-			return API.v1.success({ exists: await Meteor.callAsync('roomNameExists', roomName) });
+			const room = await Rooms.findOneByName(roomName, { projection: { _id: 1 } });
+
+			return API.v1.success({ exists: !!room });
 		},
 	},
 );
@@ -197,7 +200,9 @@ API.v1.addRoute(
 
 			delete fields.description;
 
-			await sendFileMessage(this.userId, { roomId: this.urlParams.rid, file: uploadedFile, msgData: fields });
+			await applyAirGappedRestrictionsValidation(() =>
+				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file: uploadedFile, msgData: fields }),
+			);
 
 			const message = await Messages.getMessageByFileIdAndUsername(uploadedFile._id, this.userId);
 
@@ -297,10 +302,8 @@ API.v1.addRoute(
 			file.description = this.bodyParams.description;
 			delete this.bodyParams.description;
 
-			await sendFileMessage(
-				this.userId,
-				{ roomId: this.urlParams.rid, file, msgData: this.bodyParams },
-				{ parseAttachmentsForE2EE: false },
+			await applyAirGappedRestrictionsValidation(() =>
+				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }, { parseAttachmentsForE2EE: false }),
 			);
 
 			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
@@ -477,15 +480,17 @@ API.v1.addRoute(
 				return API.v1.failure('Body parameter "encrypted" must be a boolean when included.');
 			}
 
-			const discussion = await createDiscussion(this.userId, {
-				prid,
-				pmid,
-				t_name,
-				reply,
-				users: users?.filter(isTruthy) || [],
-				encrypted,
-				topic,
-			});
+			const discussion = await applyAirGappedRestrictionsValidation(() =>
+				createDiscussion(this.userId, {
+					prid,
+					pmid,
+					t_name,
+					reply,
+					users: users?.filter(isTruthy) || [],
+					encrypted,
+					topic,
+				}),
+			);
 
 			return API.v1.success({ discussion });
 		},

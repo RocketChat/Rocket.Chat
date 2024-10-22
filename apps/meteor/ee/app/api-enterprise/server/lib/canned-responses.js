@@ -48,6 +48,21 @@ export async function findAllCannedResponses({ userId }) {
 	return cannedResponses;
 }
 
+/**
+ * @param {Object} param0
+ * @param {String} param0.userId
+ * @param {String} [param0.shortcut]
+ * @param {String} [param0.text]
+ * @param {String} [param0.departmentId]
+ * @param {String} [param0.scope]
+ * @param {String} [param0.createdBy]
+ * @param {String[]} [param0.tags]
+ * @param {Object} param0.options
+ * @param {Number} param0.options.offset
+ * @param {Number} param0.options.count
+ * @param {Object} param0.options.sort
+ * @param {Object} param0.options.fields
+ */
 export async function findAllCannedResponsesFilter({ userId, shortcut, text, departmentId, scope, createdBy, tags = [], options = {} }) {
 	let extraFilter = [];
 	// if user cannot see all, filter to private + public + departments user is in

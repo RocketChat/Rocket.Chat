@@ -8,7 +8,16 @@ import type {
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
-import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, IndexDescription, Collection, Db, FindOptions } from 'mongodb';
+import type {
+	FindCursor,
+	UpdateOptions,
+	UpdateFilter,
+	UpdateResult,
+	IndexDescription,
+	Collection,
+	Db,
+	CountDocumentsOptions,
+} from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -63,15 +72,15 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	public async countByTypeAndStatus(
 		type: VideoConference['type'],
 		status: VideoConferenceStatus,
-		options: FindOptions<VideoConference>,
+		options: CountDocumentsOptions,
 	): Promise<number> {
-		return this.find(
+		return this.countDocuments(
 			{
 				type,
 				status,
 			},
 			options,
-		).count();
+		);
 	}
 
 	public async createDirect({

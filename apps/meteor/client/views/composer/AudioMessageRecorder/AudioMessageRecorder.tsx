@@ -2,9 +2,9 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { AudioRecorder } from '../../../../app/ui/client/lib/recorderjs/AudioRecorder';
 import type { ChatAPI } from '../../../lib/chats/ChatAPI';
@@ -19,7 +19,7 @@ type AudioMessageRecorderProps = {
 };
 
 const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMessageRecorderProps): ReactElement | null => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [state, setState] = useState<'loading' | 'recording'>('recording');
 	const [time, setTime] = useState('00:00');

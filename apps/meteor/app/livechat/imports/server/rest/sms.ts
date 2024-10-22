@@ -6,6 +6,7 @@ import type {
 	MessageAttachment,
 	ServiceData,
 	FileAttachmentProps,
+	IOmnichannelSource,
 } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -19,6 +20,7 @@ import { API } from '../../../../api/server';
 import { FileUpload } from '../../../../file-upload/server';
 import { checkUrlForSsrf } from '../../../../lib/server/functions/checkUrlForSsrf';
 import { settings } from '../../../../settings/server';
+import { setCustomField } from '../../../server/api/lib/customFields';
 import type { ILivechatMessage } from '../../../server/lib/LivechatTyped';
 import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
 
@@ -54,10 +56,24 @@ const defineDepartment = async (idOrName?: string) => {
 	return department?._id;
 };
 
-const defineVisitor = async (smsNumber: string, targetDepartment?: string) => {
-	const visitor = await LivechatVisitors.findOneVisitorByPhone(smsNumber);
-	let data: { token: string; department?: string } = {
+const defineVisitor = async (smsNumber: string, serviceName: string, destination: string, targetDepartment?: string) => {
+	const visitorSource: IOmnichannelSource = {
+		type: OmnichannelSourceType.SMS,
+		alias: serviceName,
+	};
+
+	const visitor = await LivechatVisitors.findOneVisitorByPhoneAndSource(
+		smsNumber,
+		{
+			'source.type': visitorSource.type,
+			'source.alias': visitorSource.alias,
+		},
+		{ projection: { token: 1 } },
+	);
+	visitorSource.destination = destination;
+	let data: { token: string; source: IOmnichannelSource; department?: string } = {
 		token: visitor?.token || Random.id(),
+		source: visitorSource,
 	};
 
 	if (!visitor) {
@@ -116,7 +132,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			targetDepartment = await defineDepartment(smsDepartment);
 		}
 
-		const visitor = await defineVisitor(sms.from, targetDepartment);
+		const visitor = await defineVisitor(sms.from, service, sms.to, targetDepartment);
 		if (!visitor) {
 			return API.v1.success(SMSService.error(new Error('Invalid visitor')));
 		}
@@ -267,16 +283,16 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			setImmediate(async () => {
 				if (sms.extra) {
 					if (sms.extra.fromCountry) {
-						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'country', sms.extra.fromCountry);
+						await setCustomField(sendMessage.message.token, 'country', sms.extra.fromCountry);
 					}
 					if (sms.extra.fromState) {
-						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'state', sms.extra.fromState);
+						await setCustomField(sendMessage.message.token, 'state', sms.extra.fromState);
 					}
 					if (sms.extra.fromCity) {
-						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'city', sms.extra.fromCity);
+						await setCustomField(sendMessage.message.token, 'city', sms.extra.fromCity);
 					}
-					if (sms.extra.toPhone) {
-						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'phoneNumber', sms.extra.toPhone);
+					if (sms.extra.fromZip) {
+						await setCustomField(sendMessage.message.token, 'zip', sms.extra.fromZip);
 					}
 				}
 			});

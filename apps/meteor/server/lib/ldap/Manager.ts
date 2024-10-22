@@ -167,6 +167,7 @@ export class LDAPManager {
 		const username = this.slugifyUsername(ldapUser, usedUsername || id || '') || undefined;
 		const emails = this.getLdapEmails(ldapUser, username).map((email) => email.trim());
 		const name = this.getLdapName(ldapUser) || undefined;
+		const voipExtension = this.getLdapExtension(ldapUser);
 
 		const userData: IImportUser = {
 			type: 'user',
@@ -174,6 +175,7 @@ export class LDAPManager {
 			importIds: [ldapUser.dn],
 			username,
 			name,
+			voipExtension,
 			services: {
 				ldap: {
 					idAttribute,
@@ -436,6 +438,15 @@ export class LDAPManager {
 	private static getLdapName(ldapUser: ILDAPEntry): string | undefined {
 		const nameAttributes = getLDAPConditionalSetting<string | undefined>('LDAP_Name_Field');
 		return this.getLdapDynamicValue(ldapUser, nameAttributes);
+	}
+
+	private static getLdapExtension(ldapUser: ILDAPEntry): string | undefined {
+		const extensionAttribute = settings.get<string>('LDAP_Extension_Field');
+		if (!extensionAttribute) {
+			return;
+		}
+
+		return this.getLdapString(ldapUser, extensionAttribute);
 	}
 
 	private static getLdapEmails(ldapUser: ILDAPEntry, username?: string): string[] {

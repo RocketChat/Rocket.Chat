@@ -1,8 +1,9 @@
-import type {
-	IOmnichannelAgent,
-	OmichannelRoutingConfig,
-	OmnichannelSortingMechanismSettingType,
-	ILivechatInquiryRecord,
+import {
+	type IOmnichannelAgent,
+	type OmichannelRoutingConfig,
+	type OmnichannelSortingMechanismSettingType,
+	type ILivechatInquiryRecord,
+	LivechatInquiryStatus,
 } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useUser, useSetting, usePermission, useMethod, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
@@ -137,7 +138,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 			}
 
 			return LivechatInquiry.find(
-				{ status: 'queued' },
+				{ status: LivechatInquiryStatus.QUEUED },
 				{
 					sort: getOmniChatSortQuery(omnichannelSortingMechanism),
 					limit: omnichannelPoolMaxIncoming,

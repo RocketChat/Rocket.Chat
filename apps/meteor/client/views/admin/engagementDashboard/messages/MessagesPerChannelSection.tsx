@@ -14,9 +14,9 @@ import {
 	TableBody,
 	TableCell,
 } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
@@ -34,7 +34,7 @@ const colors = {
 const MessagesPerChannelSection = (): ReactElement => {
 	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { data: messageOriginsData } = useMessageOrigins({ period });
 	const { data: topFivePopularChannelsData } = useTopFivePopularChannels({ period });
