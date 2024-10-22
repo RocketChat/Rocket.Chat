@@ -2,8 +2,9 @@ import type { ILivechatContact } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
-import { verifyContactChannel, mergeContacts } from '../../../app/livechat/server/lib/Contacts';
 import { saveQueueInquiry } from '../../../app/livechat/server/lib/QueueManager';
+import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
+import { verifyContactChannel } from '../../../app/livechat/server/lib/contacts/verifyContactChannel';
 
 export const runVerifyContactChannel = async (
 	_next: any,

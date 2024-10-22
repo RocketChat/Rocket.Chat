@@ -4,7 +4,8 @@ import { ContactBridge } from '@rocket.chat/apps-engine/server/bridges';
 import type { IVisitor } from '@rocket.chat/core-typings';
 import { LivechatContacts } from '@rocket.chat/models';
 
-import { addContactEmail, verifyContactChannel } from '../../../livechat/server/lib/Contacts';
+import { addContactEmail } from '../../../livechat/server/lib/contacts/addContactEmail';
+import { verifyContactChannel } from '../../../livechat/server/lib/contacts/verifyContactChannel';
 
 export class AppContactBridge extends ContactBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
