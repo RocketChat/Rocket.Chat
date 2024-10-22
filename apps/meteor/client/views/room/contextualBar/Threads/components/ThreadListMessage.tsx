@@ -1,9 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, Box, IconButton } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEventHandler, ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Emoji from '../../../../../components/Emoji';
 import { followStyle, anchor } from '../../../../../components/message/helpers/followSyle';
@@ -47,7 +47,7 @@ const ThreadListMessage = ({
 	emoji,
 	...props
 }: ThreadListMessageProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDate = useTimeAgo();
 
 	const button = !following ? 'bell-off' : 'bell';

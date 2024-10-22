@@ -28,7 +28,7 @@ import type { FilterOperators } from 'mongodb';
 
 import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
-import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped';
+import type { CloseRoomParams } from '../app/livechat/server/lib/localTypes';
 import { Callbacks } from './callbacks/callbacksBase';
 
 /**
@@ -99,7 +99,6 @@ interface EventLikeCallbackSignatures {
 	'beforeSaveUser': ({ user, oldUser }: { user: IUser; oldUser?: IUser }) => void;
 	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser?: IUser | null }) => void;
 	'livechat.afterTagRemoved': (tag: ILivechatTagRecord) => void;
-	'beforeUserImport': (data: { userCount: number }) => void;
 	'afterUserImport': (data: { inserted: IUser['_id'][]; updated: IUser['_id']; skipped: number; failed: number }) => void;
 }
 

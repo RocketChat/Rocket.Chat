@@ -30,7 +30,7 @@ export const mockAppsOrchestrator = () => {
 		getAppClientManager: () => manager,
 		handleError: () => undefined,
 		getInstalledApps: async () => [],
-		getAppsFromMarketplace: async () => [],
+		getAppsFromMarketplace: async () => ({ apps: [] }),
 		getAppsOnBundle: async () => [],
 		getApp: () => Promise.reject(new Error('not implemented')),
 		setAppSettings: async () => undefined,
@@ -62,6 +62,7 @@ export const mockedAppsContext = (children: ReactNode) => (
 			},
 			reload: () => Promise.resolve(),
 			orchestrator: mockAppsOrchestrator(),
+			privateAppsEnabled: false,
 		}}
 	>
 		{children}

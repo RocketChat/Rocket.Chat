@@ -33,10 +33,6 @@ export async function markRoomResponded(
 		}
 	}
 
-	if (room.responseBy) {
-		LivechatRooms.getAgentLastMessageTsUpdateQuery(roomUpdater);
-	}
-
 	if (!room.waitingResponse) {
 		// case where agent sends second message or any subsequent message in a room before visitor responds to the first message
 		// in this case, we just need to update the lastMessageTs of the responseBy object
@@ -47,10 +43,13 @@ export async function markRoomResponded(
 		return room.responseBy;
 	}
 
-	const responseBy: IOmnichannelRoom['responseBy'] = room.responseBy || {
-		_id: message.u._id,
-		username: message.u.username,
-		firstResponseTs: new Date(message.ts),
+	// Since we're updating the whole object anyways, we re-use the same values from object (or from message if not present)
+	// And then we update the lastMessageTs, which is the only thing that should be updating here
+	const { responseBy: { _id, username, firstResponseTs } = {} } = room;
+	const responseBy: IOmnichannelRoom['responseBy'] = {
+		_id: _id || message.u._id,
+		username: username || message.u.username,
+		firstResponseTs: firstResponseTs || new Date(message.ts),
 		lastMessageTs: new Date(message.ts),
 	};
 

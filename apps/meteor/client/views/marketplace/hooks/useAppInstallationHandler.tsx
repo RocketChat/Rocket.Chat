@@ -129,7 +129,6 @@ export function useAppInstallationHandler({
 
 		setModal(
 			<AppInstallModal
-				context={context}
 				enabled={appCountQuery.data.enabled}
 				limit={appCountQuery.data.limit}
 				appName={app.name}
@@ -143,17 +142,16 @@ export function useAppInstallationHandler({
 		);
 	}, [
 		app,
-		appsOrchestrator,
 		action,
 		appCountQuery.data,
 		setModal,
-		context,
 		closeModal,
 		acquireApp,
 		openIncompatibleModal,
 		dispatchToastMessage,
 		notifyAdmins,
 		success,
+		appsOrchestrator,
 		onDismiss,
 		openExternalLink,
 		manageSubscriptionUrl,

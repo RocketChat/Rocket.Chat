@@ -41,7 +41,7 @@ export abstract class UserBridge extends BaseBridge {
 
     public async doGetUserUnreadMessageCount(uid: string, appId: string): Promise<number> {
         if (this.hasReadPermission(appId)) {
-            return this.getUserUnreadMessageCount(uid);
+            return this.getUserUnreadMessageCount(uid, appId);
         }
     }
 
@@ -65,7 +65,7 @@ export abstract class UserBridge extends BaseBridge {
 
     protected abstract getActiveUserCount(): Promise<number>;
 
-    protected abstract getUserUnreadMessageCount(uid: string): Promise<number>;
+    protected abstract getUserUnreadMessageCount(uid: string, appId: string): Promise<number>;
 
     /**
      * Creates a user.

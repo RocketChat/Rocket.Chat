@@ -1,6 +1,6 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
@@ -12,7 +12,7 @@ type DepartmentFieldProps = {
 };
 
 const DepartmentField = ({ departmentId }: DepartmentFieldProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { data, isLoading, isError } = useDepartmentInfo(departmentId);
 
 	return (

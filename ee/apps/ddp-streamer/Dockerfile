@@ -1,4 +1,4 @@
-FROM node:14.21.3-alpine
+FROM node:20.17.0-alpine3.20
 
 ARG SERVICE
 
@@ -53,6 +53,9 @@ COPY ./ee/packages/license/dist packages/license/dist
 COPY ./packages/instance-status/package.json packages/instance-status/package.json
 COPY ./packages/instance-status/dist packages/instance-status/dist
 
+COPY ./packages/tracing/package.json packages/tracing/package.json
+COPY ./packages/tracing/dist packages/tracing/dist
+
 COPY ./packages/ui-kit/package.json packages/ui-kit/package.json
 COPY ./packages/ui-kit/dist packages/ui-kit/dist
 
@@ -72,7 +75,7 @@ ENV NODE_ENV=production \
 WORKDIR /app/ee/apps/${SERVICE}
 
 RUN apk update && \
-    apk --no-cache --virtual build-dependencies add g++ python3 make && \
+    apk --no-cache --virtual build-dependencies add g++ python3 make py3-setuptools && \
     yarn workspaces focus --production && \
     rm -rf /var/cache/apk/* && \
     apk del build-dependencies

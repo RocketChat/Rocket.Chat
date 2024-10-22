@@ -1,7 +1,7 @@
 import type { ILogEntry } from '@rocket.chat/core-typings';
 import { Box, Accordion } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import AppLogsItemEntry from './AppLogsItemEntry';
 
@@ -12,7 +12,7 @@ type AppLogsItemProps = {
 };
 
 const AppLogsItem = ({ entries, instanceId, title, ...props }: AppLogsItemProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Accordion.Item title={title} {...props}>

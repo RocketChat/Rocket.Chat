@@ -2,14 +2,19 @@
 	"name": "@rocket.chat/ui-voip",
 	"version": "1.0.0",
 	"private": true,
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
 	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"eslint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"storybook": "storybook dev -p 6006",
 		"test": "jest",
 		"testunit": "jest",
-		"build": "tsc -p tsconfig.build.json",
-		"storybook": "start-storybook -p 6006",
-		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
 	},
 	"dependencies": {
@@ -19,11 +24,11 @@
 		"sip.js": "^0.20.1"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.22.20",
+		"@babel/core": "~7.25.8",
 		"@faker-js/faker": "~8.0.2",
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/fuselage": "^0.59.1",
+		"@rocket.chat/fuselage": "^0.59.3",
 		"@rocket.chat/fuselage-hooks": "^0.33.1",
 		"@rocket.chat/icons": "~0.38.0",
 		"@rocket.chat/jest-presets": "workspace:~",
@@ -32,27 +37,27 @@
 		"@rocket.chat/ui-avatar": "workspace:^",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"@storybook/addon-a11y": "^6.5.16",
-		"@storybook/addon-actions": "~6.5.16",
-		"@storybook/addon-docs": "~6.5.16",
-		"@storybook/addon-essentials": "~6.5.16",
-		"@storybook/builder-webpack4": "~6.5.16",
-		"@storybook/manager-webpack4": "~6.5.16",
-		"@storybook/react": "~6.5.16",
-		"@storybook/testing-library": "~0.0.13",
-		"@storybook/testing-react": "~1.3.0",
+		"@storybook/addon-a11y": "^8.3.5",
+		"@storybook/addon-actions": "^8.3.5",
+		"@storybook/addon-docs": "^8.3.5",
+		"@storybook/addon-essentials": "^8.3.5",
+		"@storybook/addon-webpack5-compiler-babel": "^3.0.3",
+		"@storybook/react": "^8.3.5",
+		"@storybook/react-webpack5": "^8.3.5",
 		"@testing-library/react": "~16.0.1",
 		"@testing-library/user-event": "~14.5.2",
 		"@types/jest": "~29.5.12",
 		"@types/jest-axe": "~3.5.9",
+		"@types/react": "~17.0.80",
 		"eslint": "~8.45.0",
 		"eslint-plugin-react": "~7.32.2",
 		"eslint-plugin-react-hooks": "~4.6.2",
-		"eslint-plugin-storybook": "~0.6.15",
+		"eslint-plugin-storybook": "^0.9.0",
 		"jest": "~29.7.0",
 		"jest-axe": "~9.0.0",
-		"react-docgen-typescript-plugin": "~1.0.8",
-		"typescript": "~5.5.4"
+		"react": "~17.0.2",
+		"storybook": "^8.3.5",
+		"typescript": "~5.6.3"
 	},
 	"peerDependencies": {
 		"@rocket.chat/css-in-js": "*",
@@ -63,15 +68,10 @@
 		"@rocket.chat/ui-avatar": "*",
 		"@rocket.chat/ui-client": "*",
 		"@rocket.chat/ui-contexts": "*",
-		"react": "^17.0.2",
+		"react": "~17.0.2",
 		"react-aria": "~3.23.1",
 		"react-dom": "^17.0.2"
 	},
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
 	"volta": {
 		"extends": "../../package.json"
 	}

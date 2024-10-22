@@ -11,6 +11,9 @@ import type { App } from '../views/marketplace/types';
 import type { IAppExternalURL, ICategory } from './@types/IOrchestrator';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 
+const isErrorObject = (e: unknown): e is { error: string } =>
+	typeof e === 'object' && e !== null && 'error' in e && typeof e.error === 'string';
+
 class AppClientOrchestrator {
 	private _appClientUIHost: AppsEngineUIHost;
 
@@ -53,15 +56,25 @@ class AppClientOrchestrator {
 		throw new Error('Invalid response from API');
 	}
 
-	public async getAppsFromMarketplace(isAdminUser?: boolean): Promise<App[]> {
-		const result = await sdk.rest.get('/apps/marketplace', { isAdminUser: isAdminUser ? isAdminUser.toString() : 'false' });
+	public async getAppsFromMarketplace(isAdminUser?: boolean): Promise<{ apps: App[]; error?: unknown }> {
+		let result: App[] = [];
+		try {
+			result = await sdk.rest.get('/apps/marketplace', { isAdminUser: isAdminUser ? isAdminUser.toString() : 'false' });
+		} catch (e) {
+			if (isErrorObject(e)) {
+				return { apps: [], error: e.error };
+			}
+			if (typeof e === 'string') {
+				return { apps: [], error: e };
+			}
+		}
 
 		if (!Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one
-			throw new Error('Invalid response from API');
+			return { apps: [], error: 'Invalid response from API' };
 		}
 
-		return (result as App[]).map((app: App) => {
+		const apps = (result as App[]).map((app: App) => {
 			const { latest, appRequestStats, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt, bundledIn, requestedEndUser } = app;
 			return {
 				...latest,
@@ -75,6 +88,8 @@ class AppClientOrchestrator {
 				requestedEndUser,
 			};
 		});
+
+		return { apps, error: undefined };
 	}
 
 	public async getAppsOnBundle(bundleId: string): Promise<App[]> {

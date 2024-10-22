@@ -126,10 +126,10 @@ export const statistics = {
 
 		// Room statistics
 		statistics.totalRooms = await Rooms.col.countDocuments({});
-		statistics.totalChannels = await Rooms.findByType('c').count();
-		statistics.totalPrivateGroups = await Rooms.findByType('p').count();
-		statistics.totalDirect = await Rooms.findByType('d').count();
-		statistics.totalLivechat = await Rooms.findByType('l').count();
+		statistics.totalChannels = await Rooms.countByType('c');
+		statistics.totalPrivateGroups = await Rooms.countByType('p');
+		statistics.totalDirect = await Rooms.countByType('d');
+		statistics.totalLivechat = await Rooms.countByType('l');
 		statistics.totalDiscussions = await Rooms.countDiscussions();
 		statistics.totalThreads = await Messages.countThreads();
 
@@ -157,6 +157,13 @@ export const statistics = {
 				}),
 		);
 
+		// Number of livechat rooms with department
+		statsPms.push(
+			LivechatRooms.countLivechatRoomsWithDepartment().then((count) => {
+				statistics.totalLivechatRoomsWithDepartment = count;
+			}),
+		);
+
 		// Number of departments
 		statsPms.push(
 			LivechatDepartment.estimatedDocumentCount().then((count) => {
@@ -176,7 +183,7 @@ export const statistics = {
 
 		// Number of triggers
 		statsPms.push(
-			LivechatTrigger.col.count().then((count) => {
+			LivechatTrigger.estimatedDocumentCount().then((count) => {
 				statistics.totalTriggers = count;
 			}),
 		);
@@ -198,13 +205,13 @@ export const statistics = {
 
 		// Number of Email Inboxes
 		statsPms.push(
-			EmailInbox.col.count().then((count) => {
+			EmailInbox.estimatedDocumentCount().then((count) => {
 				statistics.emailInboxes = count;
 			}),
 		);
 
 		statsPms.push(
-			LivechatBusinessHours.col.count().then((count) => {
+			LivechatBusinessHours.estimatedDocumentCount().then((count) => {
 				statistics.BusinessHours = {
 					// Number of Business Hours
 					total: count,
@@ -549,7 +556,7 @@ export const statistics = {
 		statistics.totalUserEmail2fa = await Users.countActiveUsersEmail2faEnable({ readPreference });
 		statistics.totalPinned = await Messages.findPinned({ readPreference }).count();
 		statistics.totalStarred = await Messages.findStarred({ readPreference }).count();
-		statistics.totalLinkInvitation = await Invites.find().count();
+		statistics.totalLinkInvitation = await Invites.estimatedDocumentCount();
 		statistics.totalLinkInvitationUses = await Invites.countUses();
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
 		statistics.totalE2ERooms = await Rooms.findByE2E({ readPreference }).count();

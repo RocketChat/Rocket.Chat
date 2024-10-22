@@ -1,25 +1,14 @@
-ARG DENO_VERSION="1.37.1"
-
-FROM denoland/deno:bin-${DENO_VERSION} as deno
-
-FROM node:14.21.3-bullseye-slim
+FROM node:20.17.0-alpine3.20
 
 LABEL maintainer="buildmaster@rocket.chat"
 
-# dependencies
-RUN groupadd -g 65533 -r rocketchat \
-    && useradd -u 65533 -r -g rocketchat rocketchat \
-    && mkdir -p /app/uploads \
-    && chown rocketchat:rocketchat /app/uploads \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends fontconfig
+ENV LANG=C.UTF-8
 
-COPY --from=deno /deno /bin/deno
+RUN apk add --no-cache deno ttf-dejavu
 
-# --chown requires Docker 17.12 and works only on Linux
-ADD --chown=rocketchat:rocketchat . /app
+ADD . /app
 
-# needs a mongoinstance - defaults to container linking with alias 'mongo'
+# needs a mongo instance - defaults to container linking with alias 'mongo'
 ENV DEPLOY_METHOD=docker \
     NODE_ENV=production \
     MONGO_URL=mongodb://mongo:27017/rocketchat \
@@ -28,25 +17,24 @@ ENV DEPLOY_METHOD=docker \
     ROOT_URL=http://localhost:3000 \
     Accounts_AvatarStorePath=/app/uploads
 
-RUN aptMark="$(apt-mark showmanual)" \
-    && apt-get install -y --no-install-recommends g++ make python3 ca-certificates \
+RUN set -x \
+    && apk add --no-cache --virtual .fetch-deps python3 make g++ py3-setuptools libc6-compat \
     && cd /app/bundle/programs/server \
-    && npm install \
-    && cd npm/node_modules/isolated-vm \
-    && npm install \
-    && apt-mark auto '.*' > /dev/null \
-    && apt-mark manual $aptMark > /dev/null \
-    && find /usr/local -type f -executable -exec ldd '{}' ';' \
-    | awk '/=>/ { print $(NF-1) }' \
-    | sort -u \
-    | xargs -r dpkg-query --search \
-    | cut -d: -f1 \
-    | sort -u \
-    | xargs -r apt-mark manual \
-    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-    && npm cache clear --force
-
-USER rocketchat
+    && npm install --omit=dev --unsafe-perm \
+    # Start hack for sharp...
+    && rm -rf npm/node_modules/sharp \
+    && npm install sharp@0.32.6 \
+    && mv node_modules/sharp npm/node_modules/sharp \
+    # End hack for sharp
+    # # Start hack for isolated-vm...
+    # && rm -rf npm/node_modules/isolated-vm \
+    # && npm install isolated-vm@4.6.0 \
+    # && mv node_modules/isolated-vm npm/node_modules/isolated-vm \
+    # # End hack for isolated-vm
+    && cd /app/bundle/programs/server/npm \
+    && npm rebuild bcrypt --build-from-source \
+    && npm cache clear --force \
+    && apk del .fetch-deps
 
 VOLUME /app/uploads
 

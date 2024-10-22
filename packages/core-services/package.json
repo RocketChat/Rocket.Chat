@@ -3,9 +3,9 @@
 	"version": "0.7.0",
 	"private": true,
 	"devDependencies": {
-		"@babel/core": "~7.22.20",
-		"@babel/preset-env": "~7.22.20",
-		"@babel/preset-typescript": "~7.22.15",
+		"@babel/core": "~7.25.8",
+		"@babel/preset-env": "~7.25.8",
+		"@babel/preset-typescript": "~7.25.7",
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
@@ -13,9 +13,9 @@
 		"babel-jest": "^29.5.0",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
-		"mongodb": "^4.17.2",
+		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
 		"prettier": "~2.8.8",
-		"typescript": "~5.5.4"
+		"typescript": "~5.6.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -38,8 +38,7 @@
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@rocket.chat/ui-kit": "workspace:~",
-		"@types/fibers": "^3.1.4",
-		"fibers": "^5.0.3"
+		"@rocket.chat/tracing": "workspace:^",
+		"@rocket.chat/ui-kit": "workspace:~"
 	}
 }
