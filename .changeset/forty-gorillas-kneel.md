@@ -3,4 +3,4 @@
 "@rocket.chat/apps-engine": patch
 ---
 
-Deprecates the `from` field from Email Bridge and uses the value from the settings
+Deprecated the `from` field in the apps email bridge and made it optional, using the server's settings when the field is omitted
