@@ -47,6 +47,14 @@ type ModelOptions = {
 	_updatedAtIndexOptions?: Omit<IndexDescription, 'key'>;
 };
 
+type MappedHoardedUpdatesResult<T extends { _id: string }> = [T['_id'], UpdateResult | HoardedOperationsError];
+
+class HoardedOperationsError extends Error {
+	constructor(public errorDetails: any) {
+		super('hoarded-operations-failed');
+	}
+}
+
 export abstract class BaseRaw<
 	T extends { _id: string },
 	C extends DefaultFields<T> = undefined,
@@ -63,6 +71,8 @@ export abstract class BaseRaw<
 	 * Collection name to store data.
 	 */
 	private collectionName: string;
+
+	private operationHoarders = new Map<T['_id'], Updater<T>>();
 
 	/**
 	 * @param db MongoDB instance
@@ -239,7 +249,83 @@ export abstract class BaseRaw<
 		return this[operation](filter, update, options);
 	}
 
-	updateOne(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<UpdateResult> {
+	async hoardOperations(id: T['_id']): Promise<void> {
+		if (this.operationHoarders.has(id)) {
+			throw new Error('Model operations are already being hoarded by an updater');
+		}
+
+		this.operationHoarders.set(id, this.getUpdater());
+	}
+
+	getHoardedOperationsById(id: T['_id']): Updater<T> | undefined {
+		return this.operationHoarders.get(id);
+	}
+
+	async performHoardedOperationsById(id: T['_id']): Promise<UpdateResult> {
+		const updater = this.operationHoarders.get(id);
+
+		if (!updater) {
+			throw new Error(`Model operations are not being hoarded for id ${id}`);
+		}
+
+		this.operationHoarders.delete(id);
+		const update = updater.getUpdateFilter();
+		return this.updateOne({ _id: id } as Filter<T>, update);
+	}
+
+	/**
+	 * Execute all (or a list of) hoarded update operations
+	 **/
+	async performHoardedOperations(ids?: T['_id'][]): Promise<MappedHoardedUpdatesResult<T>[]> {
+		if (ids) {
+			return Promise.all(
+				ids.map(
+					async (id) => [id, await this.performHoardedOperationsById(id).catch((cause) => new HoardedOperationsError(cause))] as const,
+				),
+			);
+		}
+
+		const allUpdaters = this.operationHoarders.entries();
+		this.operationHoarders.clear();
+
+		// All updaters will be executed independently - even if one fails, the others won't b
+		return Promise.all(
+			[...allUpdaters].map(async ([_id, updater]: [T['_id'], Updater<T>]) => {
+				const update = updater.getUpdateFilter();
+				return [
+					_id,
+					await this.updateOne({ _id } as Filter<T>, update).catch((cause) => new HoardedOperationsError(cause)),
+				] satisfies MappedHoardedUpdatesResult<T>;
+			}),
+		);
+	}
+
+	/**
+	 * If there is an Updater assigned to this specific id, save the operation to it, otherwise return false
+	 **/
+	hoardOperation(id: T['_id'], operation: UpdateFilter<T>): Updater<T> | false {
+		const updater = this.operationHoarders.get(id);
+		if (!updater) {
+			return false;
+		}
+
+		updater.addUpdateFilter(operation);
+		return updater;
+	}
+
+	/**
+	 * Perform an update operation using an id as filter; If the model has any `updater` hoarding operations, add the operation to it instead
+	 **/
+	async updateOneById(id: string, update: UpdateFilter<T> | Partial<T>): Promise<void> {
+		const updater = this.hoardOperation(id, update);
+		if (updater) {
+			return;
+		}
+
+		await this.updateOne({ _id: id } as Filter<T>, update);
+	}
+
+	async updateOne(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<UpdateResult> {
 		this.setUpdatedAt(update);
 		if (options) {
 			return this.col.updateOne(filter, update, options);

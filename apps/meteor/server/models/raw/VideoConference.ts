@@ -8,16 +8,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
-import type {
-	FindCursor,
-	UpdateOptions,
-	UpdateFilter,
-	UpdateResult,
-	IndexDescription,
-	Collection,
-	Db,
-	CountDocumentsOptions,
-} from 'mongodb';
+import type { FindCursor, UpdateFilter, IndexDescription, Collection, Db, CountDocumentsOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -134,14 +125,6 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		};
 
 		return (await this.insertOne(call)).insertedId;
-	}
-
-	public updateOneById(
-		_id: string,
-		update: UpdateFilter<VideoConference> | Partial<VideoConference>,
-		options?: UpdateOptions,
-	): Promise<UpdateResult> {
-		return this.updateOne({ _id }, update, options);
 	}
 
 	public async setEndedById(callId: string, endedBy?: { _id: string; name: string; username: string }, endedAt?: Date): Promise<void> {

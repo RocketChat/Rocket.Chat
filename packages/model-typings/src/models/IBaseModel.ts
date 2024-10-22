@@ -81,6 +81,8 @@ export interface IBaseModel<
 		options?: UpdateOptions & { multi?: true },
 	): Promise<UpdateResult | Document>;
 
+	updateOneById(id: string, update: UpdateFilter<T> | Partial<T>): Promise<void>;
+
 	updateOne(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<UpdateResult>;
 
 	updateMany(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<Document | UpdateResult>;

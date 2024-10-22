@@ -111,6 +111,10 @@ export class BaseDummy<
 		return this.updateOne(filter, update, options);
 	}
 
+	async updateOneById(id: T['_id'], update: UpdateFilter<T> | Partial<T>): Promise<void> {
+		await this.updateOne({ _id: id } as Filter<T>, update);
+	}
+
 	async updateOne(_filter: Filter<T>, _update: UpdateFilter<T> | Partial<T>, _options?: UpdateOptions): Promise<UpdateResult> {
 		return {
 			acknowledged: true,
