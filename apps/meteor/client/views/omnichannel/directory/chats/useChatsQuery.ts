@@ -1,8 +1,9 @@
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useUserId } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
+import { useCallback } from 'react';
 
-import type { ChatsFiltersQuery } from './useChatsFilters';
+import type { ChatsFiltersQuery } from './ChatsContext';
 
 type useQueryType = (
 	debouncedParams: ChatsFiltersQuery,
@@ -33,64 +34,64 @@ export const useChatsQuery = () => {
 	const userIdLoggedIn = useUserId();
 	const canViewLivechatRooms = usePermission('view-livechat-rooms');
 
-	const chatsQuery: useQueryType = (
-		{ guest, servedBy, department, status, from, to, tags, ...customFields },
-		[column, direction],
-		current,
-		itemsPerPage,
-	) => {
-		const query: CurrentChatQuery = {
-			...(guest && { roomName: guest }),
-			sort: JSON.stringify({
-				[column]: sortDir(direction),
-				ts: column === 'ts' ? sortDir(direction) : undefined,
-			}),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		};
-
-		if (from || to) {
-			query.createdAt = JSON.stringify({
-				...(from && {
-					start: moment(new Date(from)).set({ hour: 0, minutes: 0, seconds: 0 }).toISOString(),
+	const chatsQuery: useQueryType = useCallback(
+		({ guest, servedBy, department, status, from, to, tags, ...customFields }, [column, direction], current, itemsPerPage) => {
+			const query: CurrentChatQuery = {
+				...(guest && { roomName: guest }),
+				sort: JSON.stringify({
+					[column]: sortDir(direction),
+					ts: column === 'ts' ? sortDir(direction) : undefined,
 				}),
-				...(to && {
-					end: moment(new Date(to)).set({ hour: 23, minutes: 59, seconds: 59 }).toISOString(),
-				}),
-			});
-		}
+				...(itemsPerPage && { count: itemsPerPage }),
+				...(current && { offset: current }),
+			};
 
-		if (status !== 'all') {
-			query.open = status === 'opened' || status === 'onhold' || status === 'queued';
-			query.onhold = status === 'onhold';
-			query.queued = status === 'queued';
-		}
-
-		if (!canViewLivechatRooms) {
-			query.agents = userIdLoggedIn ? [userIdLoggedIn] : [];
-		}
-
-		if (canViewLivechatRooms && servedBy && servedBy !== 'all') {
-			query.agents = [servedBy];
-		}
-
-		if (department && department !== 'all') {
-			query.departmentId = department;
-		}
-
-		if (tags && tags.length > 0) {
-			query.tags = tags.map((tag) => tag.value);
-		}
-
-		if (customFields && Object.keys(customFields).length > 0) {
-			const customFieldsQuery = Object.fromEntries(Object.entries(customFields).filter((item) => item[1] !== undefined && item[1] !== ''));
-			if (Object.keys(customFieldsQuery).length > 0) {
-				query.customFields = JSON.stringify(customFieldsQuery);
+			if (from || to) {
+				query.createdAt = JSON.stringify({
+					...(from && {
+						start: moment(new Date(from)).set({ hour: 0, minutes: 0, seconds: 0 }).toISOString(),
+					}),
+					...(to && {
+						end: moment(new Date(to)).set({ hour: 23, minutes: 59, seconds: 59 }).toISOString(),
+					}),
+				});
 			}
-		}
 
-		return query;
-	};
+			if (status !== 'all') {
+				query.open = status === 'opened' || status === 'onhold' || status === 'queued';
+				query.onhold = status === 'onhold';
+				query.queued = status === 'queued';
+			}
+
+			if (!canViewLivechatRooms) {
+				query.agents = userIdLoggedIn ? [userIdLoggedIn] : [];
+			}
+
+			if (canViewLivechatRooms && servedBy && servedBy !== 'all') {
+				query.agents = [servedBy];
+			}
+
+			if (department && department !== 'all') {
+				query.departmentId = department;
+			}
+
+			if (tags && tags.length > 0) {
+				query.tags = tags.map((tag) => tag.value);
+			}
+
+			if (customFields && Object.keys(customFields).length > 0) {
+				const customFieldsQuery = Object.fromEntries(
+					Object.entries(customFields).filter((item) => item[1] !== undefined && item[1] !== ''),
+				);
+				if (Object.keys(customFieldsQuery).length > 0) {
+					query.customFields = JSON.stringify(customFieldsQuery);
+				}
+			}
+
+			return query;
+		},
+		[canViewLivechatRooms, userIdLoggedIn],
+	);
 
 	return chatsQuery;
 };

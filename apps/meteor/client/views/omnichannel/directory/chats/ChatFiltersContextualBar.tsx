@@ -16,8 +16,8 @@ import {
 	ContextualbarFooter,
 } from '../../../../components/Contextualbar';
 import { CurrentChatTags } from '../../additionalForms';
-import type { ChatsFiltersQuery } from './useChatsFilters';
-import { useChatsFilters } from './useChatsFilters';
+import type { ChatsFiltersQuery } from './ChatsContext';
+import { useChatsContext } from './ChatsContext';
 
 type ChatFiltersContextualBarProps = {
 	onClose: () => void;
@@ -32,7 +32,7 @@ const ChatFiltersContextualBar = ({ onClose }: ChatFiltersContextualBarProps) =>
 	const { data } = useQuery(['livechat/custom-fields'], async () => allCustomFields());
 	const contactCustomFields = data?.customFields.filter((customField) => customField.scope !== 'visitor');
 
-	const { filtersQuery, setFiltersQuery, resetFiltersQuery, hasAppliedFilters } = useChatsFilters();
+	const { filtersQuery, setFiltersQuery, resetFiltersQuery, hasAppliedFilters } = useChatsContext();
 	const queryClient = useQueryClient();
 
 	const { handleSubmit, control, reset } = useForm<ChatsFiltersQuery>({

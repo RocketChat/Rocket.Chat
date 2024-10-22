@@ -4,12 +4,17 @@ import React from 'react';
 
 import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
 import ChatTable from './ChatTable';
+import ChatsProvider from './ChatsProvider';
 
 const ChatTab = (): ReactElement => {
 	const hasAccess = usePermission('view-l-room');
 
 	if (hasAccess) {
-		return <ChatTable />;
+		return (
+			<ChatsProvider>
+				<ChatTable />
+			</ChatsProvider>
+		);
 	}
 
 	return <NotAuthorizedPage />;

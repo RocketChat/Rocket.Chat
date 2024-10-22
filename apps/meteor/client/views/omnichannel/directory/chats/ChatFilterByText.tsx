@@ -7,7 +7,7 @@ import React from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
 import GenericModal from '../../../../components/GenericModal';
-import { useChatsFilters } from './useChatsFilters';
+import { useChatsContext } from './ChatsContext';
 
 const ChatFilterByText = () => {
 	const t = useTranslation();
@@ -17,7 +17,7 @@ const ChatFilterByText = () => {
 	const removeClosedChats = useMethod('livechat:removeAllClosedRooms');
 	const queryClient = useQueryClient();
 
-	const { displayFilters, setFiltersQuery, removeFilter } = useChatsFilters();
+	const { displayFilters, setFiltersQuery, removeFilter } = useChatsContext();
 
 	const handleRemoveAllClosed = useEffectEvent(async () => {
 		const onDeleteAll = async () => {

@@ -17,20 +17,22 @@ import { useOmnichannelPriorities } from '../../../../omnichannel/hooks/useOmnic
 import { useCurrentChats } from '../../currentChats/hooks/useCurrentChats';
 import ChatFilterByText from './ChatFilterByText';
 import ChatTableRow from './ChatTableRow';
-import { useChatsFilters } from './useChatsFilters';
+import { useChatsContext } from './ChatsContext';
 import { useChatsQuery } from './useChatsQuery';
 
 const ChatTable = () => {
 	const t = useTranslation();
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
+	const { filtersQuery: filters } = useChatsContext();
 
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
-	const { filtersQuery: filters } = useChatsFilters();
+
 	const chatsQuery = useChatsQuery();
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'priorityWeight' | 'department.name' | 'servedBy' | 'ts' | 'lm' | 'status'>(
-		'fname',
+		'lm',
+		'desc',
 	);
 
 	const query = useMemo(

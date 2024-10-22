@@ -3,6 +3,7 @@ import React from 'react';
 
 import ContactHistoryMessagesList from '../contactHistory/MessageList/ContactHistoryMessagesList';
 import ChatFiltersContextualBar from './chats/ChatFiltersContextualBar';
+import ChatsProvider from './chats/ChatsProvider';
 
 const ChatsContextualBar = () => {
 	const router = useRouter();
@@ -13,7 +14,11 @@ const ChatsContextualBar = () => {
 	const handleClose = () => router.navigate('/omnichannel-directory/chats');
 
 	if (context === 'filters') {
-		return <ChatFiltersContextualBar onClose={handleClose} />;
+		return (
+			<ChatsProvider>
+				<ChatFiltersContextualBar onClose={handleClose} />
+			</ChatsProvider>
+		);
 	}
 
 	if (context === 'info' && id) {
