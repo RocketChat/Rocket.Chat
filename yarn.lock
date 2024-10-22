@@ -8133,8 +8133,6 @@ __metadata:
     typescript: "npm:~5.1.6"
     uglify-es: "npm:^3.3.10"
     uuid: "npm:~8.3.2"
-  peerDependencies:
-    "@rocket.chat/ui-kit": "workspace:^"
   languageName: unknown
   linkType: soft
 
