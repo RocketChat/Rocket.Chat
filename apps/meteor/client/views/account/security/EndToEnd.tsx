@@ -4,6 +4,7 @@ import { useToastMessageDispatch, useMethod, useTranslation, useLogout } from '@
 import type { ComponentProps, ReactElement } from 'react';
 import React, { useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { Accounts } from 'meteor/accounts-base';
 
 import { e2e } from '../../../../app/e2e/client/rocketchat.e2e';
 
@@ -12,8 +13,8 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const logout = useLogout();
 
-	const publicKey = localStorage.getItem('public_key');
-	const privateKey = localStorage.getItem('private_key');
+	const publicKey = Accounts.storageLocation.getItem('public_key');
+	const privateKey = Accounts.storageLocation.getItem('private_key');
 
 	const resetE2eKey = useMethod('e2e.resetOwnE2EKey');
 
