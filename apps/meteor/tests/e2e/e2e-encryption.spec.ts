@@ -76,7 +76,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		await poHomeChannel.sidenav.inputChannelName.fill(faker.string.uuid());
 		await poHomeChannel.sidenav.advancedSettingsAccordion.click();
 
-		expect(poHomeChannel.sidenav.checkboxEncryption).toBeDisabled();
+		await expect(poHomeChannel.sidenav.checkboxEncryption).toBeDisabled();
 	});
 
 	test('expect user to enter a valid e2ee password', async ({ page }) => {
@@ -101,9 +101,8 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		await poHomeChannel.sidenav.inputChannelName.fill(faker.string.uuid());
 		await poHomeChannel.sidenav.advancedSettingsAccordion.click();
 
-		expect(poHomeChannel.sidenav.checkboxEncryption).not.toBeDisabled();
+		await expect(poHomeChannel.sidenav.checkboxEncryption).not.toBeDisabled();
 	});
-
 
 	test('expect change the e2ee password', async ({ page }) => {
 		// Change the password to a new one and test it
