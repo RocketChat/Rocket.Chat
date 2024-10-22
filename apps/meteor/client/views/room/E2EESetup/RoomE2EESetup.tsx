@@ -1,7 +1,7 @@
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
+import { Accounts } from 'meteor/accounts-base';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Accounts } from 'meteor/accounts-base';
 
 import { e2e } from '../../../../app/e2e/client';
 import { E2EEState } from '../../../../app/e2e/client/E2EEState';
