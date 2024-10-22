@@ -308,4 +308,5 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		e2eKeyId: string,
 		e2eQueue?: IRoom['usersWaitingForE2EKeys'],
 	): Promise<ModifyResult<IRoom>>;
+	countGroupDMsByUids(uids: NonNullable<IRoom['uids']>): Promise<number>;
 }
