@@ -18,11 +18,6 @@ const runShouldTriggerVerificationApp = async (
 	contactId: ILivechatContact['_id'],
 	source: IOmnichannelSource,
 ): Promise<boolean> => {
-	const verificationRequirement = settings.get<AvailableLivechatRequireContactVerificationSetting>('Livechat_Require_Contact_Verification');
-	if (verificationRequirement === 'never') {
-		return false;
-	}
-
 	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'unknown' | 'channels'>>(contactId, {
 		projection: {
 			_id: 1,
@@ -40,6 +35,13 @@ const runShouldTriggerVerificationApp = async (
 		return true;
 	}
 
+	// There is no configured verification app, so there is no reason to trigger a verification app, since
+	// none will be able to be assigned
+	if (settings.get<string>('Livechat_Contact_Verification_App') === '') {
+		return false;
+	}
+
+	const verificationRequirement = settings.get<AvailableLivechatRequireContactVerificationSetting>('Livechat_Require_Contact_Verification');
 	const isContactVerified = (contact.channels?.filter((channel) => channel.verified && channel.name === source.type) || []).length > 0;
 
 	// If the contact has never been verified and it needs to be verified at least once, trigger the app
