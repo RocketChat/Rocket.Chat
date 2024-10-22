@@ -16,11 +16,15 @@ export const useCollapsedGroups = () => {
 		[collapsedGroups, setCollapsedGroups],
 	);
 
-	const handleKeyDown = (event: KeyboardEvent, group: string) => {
-		if (['Enter', 'Space'].includes(event.code)) {
-			event.preventDefault();
-			handleClick(group);
-		}
-	};
+	const handleKeyDown = useCallback(
+		(event: KeyboardEvent, group: string) => {
+			if (['Enter', 'Space'].includes(event.code)) {
+				event.preventDefault();
+				handleClick(group);
+			}
+		},
+		[handleClick],
+	);
+
 	return { collapsedGroups, handleClick, handleKeyDown };
 };
