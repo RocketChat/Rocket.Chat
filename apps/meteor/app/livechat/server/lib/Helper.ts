@@ -45,10 +45,11 @@ import {
 	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
-import { getContactIdByVisitorId, migrateVisitorIfMissingContact } from './Contacts';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
+import { getContactIdByVisitorId } from './contacts/getContactIdByVisitorId';
+import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissingContact';
 
 const logger = new Logger('LivechatHelper');
 export const allowAgentSkipQueue = (agent: SelectedAgent) => {

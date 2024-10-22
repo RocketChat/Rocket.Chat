@@ -19,7 +19,8 @@ const mergeContactsStub = sinon.stub();
 const saveQueueInquiryStub = sinon.stub();
 
 const { runVerifyContactChannel } = proxyquire.noCallThru().load('../../../../../../server/patches/verifyContactChannel', {
-	'../../../app/livechat/server/lib/Contacts': { mergeContacts: mergeContactsStub, verifyContactChannel: { patch: sinon.stub() } },
+	'../../../app/livechat/server/lib/contacts/mergeContacts': { mergeContacts: mergeContactsStub },
+	'../../../app/livechat/server/lib/contacts/verifyContactChannel': { verifyContactChannel: { patch: sinon.stub() } },
 	'../../../app/livechat/server/lib/QueueManager': { saveQueueInquiry: saveQueueInquiryStub },
 	'@rocket.chat/models': modelsMock,
 });

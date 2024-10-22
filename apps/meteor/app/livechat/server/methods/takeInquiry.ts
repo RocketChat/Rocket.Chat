@@ -5,8 +5,9 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
-import { shouldTriggerVerificationApp, migrateVisitorIfMissingContact } from '../lib/Contacts';
 import { RoutingManager } from '../lib/RoutingManager';
+import { migrateVisitorIfMissingContact } from '../lib/contacts/migrateVisitorIfMissingContact';
+import { shouldTriggerVerificationApp } from '../lib/contacts/shouldTriggerVerificationApp';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
