@@ -30,9 +30,11 @@ import type { ComponentProps, ReactElement } from 'react';
 import React, { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { E2EEState } from '../../../../app/e2e/client/E2EEState';
 import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
+import { useE2EEState } from '../../../views/room/hooks/useE2EEState';
 import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescription';
 
 type CreateChannelModalProps = {
@@ -67,6 +69,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');
+	const e2eeState = useE2EEState();
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const federationEnabled = useSetting<boolean>('Federation_Matrix_enabled') || false;
@@ -75,6 +78,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 	const canCreateChannel = usePermission('create-c');
 	const canCreateGroup = usePermission('create-p');
 	const getEncryptedHint = useEncryptedRoomDescription('channel');
+	const isE2EEReady = e2eeState === E2EEState.READY || e2eeState === E2EEState.SAVE_PASSWORD;
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
 	const federatedModule = useHasLicenseModule('federation');
@@ -190,8 +194,8 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 	};
 
 	const e2eDisabled = useMemo<boolean>(
-		() => !isPrivate || broadcast || Boolean(!e2eEnabled) || Boolean(e2eEnabledForPrivateByDefault),
-		[e2eEnabled, e2eEnabledForPrivateByDefault, broadcast, isPrivate],
+		() => !isPrivate || broadcast || Boolean(!e2eEnabled) || Boolean(e2eEnabledForPrivateByDefault) || !isE2EEReady,
+		[e2eEnabled, e2eEnabledForPrivateByDefault, broadcast, isPrivate, isE2EEReady],
 	);
 
 	const createChannelFormId = useUniqueId();

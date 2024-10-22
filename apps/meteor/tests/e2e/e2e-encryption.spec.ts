@@ -66,7 +66,20 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		await page.locator('role=button[name="Login"]').waitFor();
 
 		await injectInitialData();
+	});
 
+	test('expect encrypted room creation be disabled when E2EE is not setup', async ({ page }) => {
+		await restoreState(page, Users.admin);
+		await poAccountProfile.btnClose.click();
+
+		await poHomeChannel.sidenav.openNewByLabel('Channel');
+		await poHomeChannel.sidenav.inputChannelName.fill(faker.string.uuid());
+		await poHomeChannel.sidenav.advancedSettingsAccordion.click();
+
+		expect(poHomeChannel.sidenav.checkboxEncryption).toBeDisabled();
+	});
+
+	test('expect user to enter a valid e2ee password', async ({ page }) => {
 		await restoreState(page, Users.admin);
 
 		await page.locator('role=banner >> text="Enter your E2E password"').click();
@@ -79,6 +92,18 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await storeState(page, Users.admin);
 	});
+
+	test('expect encrypted room creation be enabled when E2EE is setup', async ({ page }) => {
+		await restoreState(page, Users.admin);
+		await poAccountProfile.btnClose.click();
+
+		await poHomeChannel.sidenav.openNewByLabel('Channel');
+		await poHomeChannel.sidenav.inputChannelName.fill(faker.string.uuid());
+		await poHomeChannel.sidenav.advancedSettingsAccordion.click();
+
+		expect(poHomeChannel.sidenav.checkboxEncryption).not.toBeDisabled();
+	});
+
 
 	test('expect change the e2ee password', async ({ page }) => {
 		// Change the password to a new one and test it
