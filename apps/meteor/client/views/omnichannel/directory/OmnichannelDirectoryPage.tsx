@@ -7,6 +7,7 @@ import { Page, PageHeader, PageContent } from '../../../components/Page';
 import ContextualBarRouter from './ContextualBarRouter';
 import CallTab from './calls/CallTab';
 import ChatTab from './chats/ChatTab';
+import ChatsProvider from './chats/ChatsProvider';
 import ContactTab from './contacts/ContactTab';
 
 const DEFAULT_TAB = 'chats';
@@ -35,32 +36,34 @@ const OmnichannelDirectoryPage = () => {
 	const handleTabClick = useCallback((tab) => router.navigate({ name: 'omnichannel-directory', params: { tab } }), [router]);
 
 	return (
-		<Page flexDirection='row'>
-			<Page>
-				<PageHeader title={t('Omnichannel_Contact_Center')} />
-				<Tabs flexShrink={0}>
-					<Tabs.Item selected={tab === 'chats'} onClick={() => handleTabClick('chats')}>
-						{t('Chats')}
-					</Tabs.Item>
-					<Tabs.Item selected={tab === 'contacts'} onClick={() => handleTabClick('contacts')}>
-						{t('Contacts')}
-					</Tabs.Item>
-					<Tabs.Item selected={tab === 'calls'} onClick={() => handleTabClick('calls')}>
-						{t('Calls')}
-					</Tabs.Item>
-				</Tabs>
-				<PageContent>
-					{tab === 'chats' && <ChatTab />}
-					{tab === 'contacts' && <ContactTab />}
-					{tab === 'calls' && <CallTab />}
-				</PageContent>
+		<ChatsProvider>
+			<Page flexDirection='row'>
+				<Page>
+					<PageHeader title={t('Omnichannel_Contact_Center')} />
+					<Tabs flexShrink={0}>
+						<Tabs.Item selected={tab === 'chats'} onClick={() => handleTabClick('chats')}>
+							{t('Chats')}
+						</Tabs.Item>
+						<Tabs.Item selected={tab === 'contacts'} onClick={() => handleTabClick('contacts')}>
+							{t('Contacts')}
+						</Tabs.Item>
+						<Tabs.Item selected={tab === 'calls'} onClick={() => handleTabClick('calls')}>
+							{t('Calls')}
+						</Tabs.Item>
+					</Tabs>
+					<PageContent>
+						{tab === 'chats' && <ChatTab />}
+						{tab === 'contacts' && <ContactTab />}
+						{tab === 'calls' && <CallTab />}
+					</PageContent>
+				</Page>
+				{context && (
+					<ContextualbarDialog>
+						<ContextualBarRouter />
+					</ContextualbarDialog>
+				)}
 			</Page>
-			{context && (
-				<ContextualbarDialog>
-					<ContextualBarRouter />
-				</ContextualbarDialog>
-			)}
-		</Page>
+		</ChatsProvider>
 	);
 };
 
