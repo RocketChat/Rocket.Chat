@@ -72,6 +72,10 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 		return options ? this.col.find({ teamId }, options) : this.col.find({ teamId }, options);
 	}
 
+	countByTeamId(teamId: string): Promise<number> {
+		return this.countDocuments({ teamId });
+	}
+
 	findByTeamIds(teamIds: Array<string>): FindCursor<ITeamMember>;
 
 	findByTeamIds(teamIds: Array<string>, options: FindOptions<ITeamMember>): FindCursor<ITeamMember>;
@@ -97,6 +101,10 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): FindCursor<P> | FindCursor<ITeamMember> {
 		return options ? this.col.find({ teamId, roles: role }, options) : this.col.find({ teamId, roles: role });
+	}
+
+	countByTeamIdAndRole(teamId: string, role: IRole['_id']): Promise<number> {
+		return this.countDocuments({ teamId, roles: role });
 	}
 
 	findByUserIdAndTeamIds(userId: string, teamIds: Array<string>, options: FindOptions<ITeamMember> = {}): FindCursor<ITeamMember> {

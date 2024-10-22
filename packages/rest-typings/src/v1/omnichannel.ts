@@ -2412,31 +2412,6 @@ const POSTLivechatRoomSurveyParamsSchema = {
 
 export const isPOSTLivechatRoomSurveyParams = ajv.compile<POSTLivechatRoomSurveyParams>(POSTLivechatRoomSurveyParamsSchema);
 
-type PUTLivechatRoomVisitorParams = {
-	rid: string;
-	oldVisitorId: string;
-	newVisitorId: string;
-};
-
-const PUTLivechatRoomVisitorParamsSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
-		},
-		oldVisitorId: {
-			type: 'string',
-		},
-		newVisitorId: {
-			type: 'string',
-		},
-	},
-	required: ['rid', 'oldVisitorId', 'newVisitorId'],
-	additionalProperties: false,
-};
-
-export const isPUTLivechatRoomVisitorParams = ajv.compile<PUTLivechatRoomVisitorParams>(PUTLivechatRoomVisitorParamsSchema);
-
 type POSTCannedResponsesProps = {
 	_id?: string;
 	shortcut: string;
@@ -2976,33 +2951,6 @@ const POSTLivechatInquiriesTakeParamsSchema = {
 };
 
 export const isPOSTLivechatInquiriesTakeParams = ajv.compile<POSTLivechatInquiriesTakeParams>(POSTLivechatInquiriesTakeParamsSchema);
-
-type GETLivechatInquiriesQueuedParams = PaginatedRequest<{ department?: string }>;
-
-const GETLivechatInquiriesQueuedParamsSchema = {
-	type: 'object',
-	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		department: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	additionalProperties: false,
-};
-
-export const isGETLivechatInquiriesQueuedParams = ajv.compile<GETLivechatInquiriesQueuedParams>(GETLivechatInquiriesQueuedParamsSchema);
 
 type GETLivechatInquiriesQueuedForUserParams = PaginatedRequest<{ department?: string }>;
 
@@ -3903,9 +3851,6 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/room.survey': {
 		POST: (params: POSTLivechatRoomSurveyParams) => { rid: string; data: unknown };
 	};
-	'/v1/livechat/room.visitor': {
-		PUT: (params: PUTLivechatRoomVisitorParams) => Deprecated<{ room: IOmnichannelRoom }>;
-	};
 	'/v1/livechat/visitors.pagesVisited/:roomId': {
 		GET: (params: GETLivechatVisitorsPagesVisitedRoomIdParams) => PaginatedResult<{ pages: IMessage[] }>;
 	};
@@ -3968,9 +3913,6 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/inquiries.take': {
 		POST: (params: POSTLivechatInquiriesTakeParams) => { inquiry: ILivechatInquiryRecord };
-	};
-	'/v1/livechat/inquiries.queued': {
-		GET: (params: GETLivechatInquiriesQueuedParams) => PaginatedResult<{ inquiries: ILivechatInquiryRecord[] }>;
 	};
 	'/v1/livechat/inquiries.queuedForUser': {
 		GET: (params: GETLivechatInquiriesQueuedForUserParams) => PaginatedResult<{ inquiries: ILivechatInquiryRecord[] }>;

@@ -1,10 +1,10 @@
 import { ResponsiveLine } from '@nivo/line';
 import { Box, Flex, Skeleton, Tile } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import CounterSet from '../../../../components/dataView/CounterSet';
@@ -101,7 +101,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 	}, [data, utc]);
 
 	const formatDate = useFormatDate();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<>

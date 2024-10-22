@@ -1,19 +1,17 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
+import { isGroupsOnlineProps } from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
+import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
-import {
-	hasAllPermissionAsync,
-	hasAtLeastOnePermissionAsync,
-	hasPermissionAsync,
-} from '../../../authorization/server/functions/hasPermission';
+import { hasAllPermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
@@ -368,7 +366,7 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			await Meteor.callAsync('eraseRoom', findResult.rid);
+			await eraseRoom(findResult.rid, this.userId);
 
 			return API.v1.success();
 		},
@@ -412,20 +410,22 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.getIntegrations',
-	{ authRequired: true },
 	{
-		async get() {
-			if (
-				!(await hasAtLeastOnePermissionAsync(this.userId, [
+		authRequired: true,
+		permissionsRequired: {
+			GET: {
+				permissions: [
 					'manage-outgoing-integrations',
 					'manage-own-outgoing-integrations',
 					'manage-incoming-integrations',
 					'manage-own-incoming-integrations',
-				]))
-			) {
-				return API.v1.unauthorized();
-			}
-
+				],
+				operation: 'hasAny',
+			},
+		},
+	},
+	{
+		async get() {
 			const findResult = await findPrivateGroupByIdOrName({
 				params: this.queryParams,
 				userId: this.userId,
@@ -670,12 +670,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.listAll',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-room-administration'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-room-administration'))) {
-				return API.v1.unauthorized();
-			}
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 			const ourQuery = Object.assign({}, query, { t: 'p' as RoomType });
@@ -783,23 +780,28 @@ API.v1.addRoute(
 // TODO: CACHE: same as channels.online
 API.v1.addRoute(
 	'groups.online',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isGroupsOnlineProps },
 	{
 		async get() {
 			const { query } = await this.parseJsonQuery();
-			if (!query || Object.keys(query).length === 0) {
+			const { _id } = this.queryParams;
+
+			if ((!query || Object.keys(query).length === 0) && !_id) {
 				return API.v1.failure('Invalid query');
 			}
 
-			const ourQuery = Object.assign({}, query, { t: 'p' });
+			const filter = {
+				...query,
+				...(_id ? { _id } : {}),
+				t: 'p',
+			};
 
-			const room = await Rooms.findOne(ourQuery as Record<string, any>);
-
+			const room = await Rooms.findOne(filter as Record<string, any>);
 			if (!room) {
 				return API.v1.failure('Group does not exists');
 			}
-			const user = await getLoggedInUser(this.request);
 
+			const user = await getLoggedInUser(this.request);
 			if (!user) {
 				return API.v1.failure('User does not exists');
 			}

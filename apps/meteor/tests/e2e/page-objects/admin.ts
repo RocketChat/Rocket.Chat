@@ -298,4 +298,12 @@ export class Admin {
 	async adminSectionButton(href: AdminSectionsHref): Promise<Locator> {
 		return this.page.locator(`a[href="${href}"]`);
 	}
+
+	findFileRowByUsername(username: string) {
+		return this.page.locator('tr', { has: this.page.getByRole('cell', { name: username }) });
+	}
+
+	findFileCheckboxByUsername(username: string) {
+		return this.findFileRowByUsername(username).locator('label', { has: this.page.getByRole('checkbox') });
+	}
 }

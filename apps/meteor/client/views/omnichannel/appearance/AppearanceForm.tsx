@@ -13,17 +13,17 @@ import {
 	FieldHint,
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../components/MarkdownText';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import FieldLabel from './AppearanceFieldLabel';
 
 const AppearanceForm = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const isEnterprise = useHasLicenseModule('livechat-enterprise');
 
 	const { control, watch } = useFormContext();

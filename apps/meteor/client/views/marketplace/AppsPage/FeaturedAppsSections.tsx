@@ -1,7 +1,7 @@
 import type { App } from '@rocket.chat/core-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import AppsList from '../AppsList';
 import normalizeFeaturedApps from '../helpers/normalizeFeaturedApps';
@@ -13,7 +13,7 @@ type FeaturedSectionsProps = {
 };
 
 const FeaturedAppsSections = ({ appsResult, appsListId }: FeaturedSectionsProps): ReactElement | null => {
-	const t = useTranslation();
+	const { t, i18n } = useTranslation();
 	const featuredApps = useFeaturedApps();
 
 	if (featuredApps.isSuccess) {
@@ -24,7 +24,7 @@ const FeaturedAppsSections = ({ appsResult, appsListId }: FeaturedSectionsProps)
 						appsListId={`${appsListId + index}`}
 						key={section.slug}
 						apps={normalizeFeaturedApps(section.apps, appsResult)}
-						title={t.has(section.i18nLabel) ? t(section.i18nLabel) : section.i18nLabel}
+						title={i18n.exists(section.i18nLabel) ? t(section.i18nLabel) : section.i18nLabel}
 					/>
 				))}
 			</>

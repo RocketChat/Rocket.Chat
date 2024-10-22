@@ -1,8 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderToolbar } from '../../../components/Header';
 import FederatedRoomOriginServer from './FederatedRoomOriginServer';
@@ -32,7 +32,7 @@ export type RoomHeaderProps = {
 };
 
 const RoomHeader = ({ room, slots = {}, roomToolbox }: RoomHeaderProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Header>

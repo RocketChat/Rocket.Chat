@@ -6,13 +6,13 @@
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/chai": "~4.3.19",
 		"@types/ejson": "^2.2.2",
-		"@types/node": "^14.18.63",
+		"@types/node": "~20.16.12",
 		"@types/sinon": "^10.0.20",
 		"chai": "^4.3.10",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
-		"sinon": "^14.0.2",
-		"typescript": "~5.5.4"
+		"sinon": "^19.0.2",
+		"typescript": "~5.6.3"
 	},
 	"scripts": {
 		"lint": "eslint src",

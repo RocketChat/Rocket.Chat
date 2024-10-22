@@ -1,5 +1,14 @@
 import type { IDirectMessageRoom, IMessage, IOmnichannelGenericRoom, IRoom, IRoomFederated, ITeam, IUser } from '@rocket.chat/core-typings';
-import type { AggregationCursor, DeleteResult, Document, FindCursor, FindOptions, UpdateOptions, UpdateResult } from 'mongodb';
+import type {
+	AggregationCursor,
+	DeleteResult,
+	Document,
+	FindCursor,
+	FindOptions,
+	UpdateOptions,
+	UpdateResult,
+	ModifyResult,
+} from 'mongodb';
 
 import type { Updater } from '../updater';
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -39,6 +48,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	): FindPaginated<FindCursor<IRoom>>;
 
 	findByTeamId(teamId: ITeam['_id'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+
+	countByTeamId(teamId: ITeam['_id']): Promise<number>;
 
 	findPaginatedByTeamIdContainingNameAndDefault(
 		teamId: ITeam['_id'],
@@ -129,6 +140,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findE2ERoomById(roomId: IRoom['_id'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	findRoomsInsideTeams(autoJoin?: boolean): FindCursor<IRoom>;
+
+	countRoomsInsideTeams(autoJoin?: boolean): Promise<number>;
 
 	findOneDirectRoomContainingAllUserIDs(uid: IDirectMessageRoom['uids'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
@@ -290,4 +303,9 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		type?: 'channels' | 'discussions',
 		options?: FindOptions<IRoom>,
 	): AggregationCursor<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }>;
+	resetRoomKeyAndSetE2EEQueueByRoomId(
+		roomId: string,
+		e2eKeyId: string,
+		e2eQueue?: IRoom['usersWaitingForE2EKeys'],
+	): Promise<ModifyResult<IRoom>>;
 }

@@ -13,7 +13,7 @@ const createFakeAdminUser = (freeSwitchExtension?: string) =>
 		freeSwitchExtension,
 	});
 
-it('should not render "Voice call extension" column when voice call is disabled', async () => {
+it('should not render voip extension column when voice call is disabled', async () => {
 	const user = createFakeAdminUser('1000');
 
 	render(
@@ -41,7 +41,7 @@ it('should not render "Voice call extension" column when voice call is disabled'
 	expect(screen.queryByRole('option', { name: /Unassign_extension/ })).not.toBeInTheDocument();
 });
 
-it('should render "Unassign_extension" button when user has a associated extension', async () => {
+it('should not render voip extension column or actions if user doesnt have the required permission', async () => {
 	const user = createFakeAdminUser('1000');
 
 	render(
@@ -58,6 +58,34 @@ it('should render "Unassign_extension" button when user has a associated extensi
 		{
 			legacyRoot: true,
 			wrapper: mockAppRoot().withUser(user).withSetting('VoIP_TeamCollab_Enabled', true).build(),
+		},
+	);
+
+	expect(screen.queryByText('Voice_call_extension')).not.toBeInTheDocument();
+
+	screen.getByRole('button', { name: 'More_actions' }).click();
+	expect(await screen.findByRole('listbox')).toBeInTheDocument();
+	expect(screen.queryByRole('option', { name: /Assign_extension/ })).not.toBeInTheDocument();
+	expect(screen.queryByRole('option', { name: /Unassign_extension/ })).not.toBeInTheDocument();
+});
+
+it('should render "Unassign_extension" button when user has a associated extension', async () => {
+	const user = createFakeAdminUser('1000');
+
+	render(
+		<UsersTable
+			filteredUsersQueryResult={{ isSuccess: true, data: { users: [user], count: 1, offset: 1, total: 1 } } as any}
+			setUserFilters={() => undefined}
+			tab='all'
+			onReload={() => undefined}
+			paginationData={{} as any}
+			sortData={{} as any}
+			isSeatsCapExceeded={false}
+			roleData={undefined}
+		/>,
+		{
+			legacyRoot: true,
+			wrapper: mockAppRoot().withUser(user).withSetting('VoIP_TeamCollab_Enabled', true).withPermission('manage-voip-extensions').build(),
 		},
 	);
 
@@ -85,7 +113,7 @@ it('should render "Assign_extension" button when user has no associated extensio
 		/>,
 		{
 			legacyRoot: true,
-			wrapper: mockAppRoot().withUser(user).withSetting('VoIP_TeamCollab_Enabled', true).build(),
+			wrapper: mockAppRoot().withUser(user).withSetting('VoIP_TeamCollab_Enabled', true).withPermission('manage-voip-extensions').build(),
 		},
 	);
 
