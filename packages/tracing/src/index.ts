@@ -2,8 +2,9 @@ import { context, propagation, SpanStatusCode, trace } from '@opentelemetry/api'
 import type { Span, SpanOptions, Tracer } from '@opentelemetry/api';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { NodeSDK } from '@opentelemetry/sdk-node';
+import type { MongoClient } from 'mongodb';
 
-export { initDatabaseTracing } from './traceDatabaseCalls';
+import { initDatabaseTracing } from './traceDatabaseCalls';
 
 let tracer: Tracer | undefined;
 
@@ -11,7 +12,11 @@ export function isTracingEnabled() {
 	return ['yes', 'true'].includes(String(process.env.TRACING_ENABLED).toLowerCase());
 }
 
-export const startTracing = ({ service }: { service: string }) => {
+export const startTracing = ({ service, db }: { service: string; db: MongoClient }) => {
+	if (!isTracingEnabled()) {
+		return;
+	}
+
 	const exporter = new OTLPTraceExporter();
 
 	const sdk = new NodeSDK({
@@ -22,6 +27,8 @@ export const startTracing = ({ service }: { service: string }) => {
 	sdk.start();
 
 	tracer = trace.getTracer(service);
+
+	initDatabaseTracing(tracer, db);
 };
 
 export function tracerSpan<F extends (span?: Span) => ReturnType<F>>(

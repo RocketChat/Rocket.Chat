@@ -1,4 +1,4 @@
-import { initDatabaseTracing, isTracingEnabled } from '@rocket.chat/tracing';
+import { isTracingEnabled } from '@rocket.chat/tracing';
 import { MongoClient } from 'mongodb';
 import type { Db, Collection, MongoClientOptions, Document } from 'mongodb';
 
@@ -32,8 +32,6 @@ export const getConnection = ((): ((options?: MongoClientOptions) => Promise<Db>
 			client = await connectDb(options);
 			db = client.db(name);
 		}
-
-		initDatabaseTracing(client);
 
 		// if getConnection was called multiple times before it was connected, wait for the connection
 		return client.db(name);
