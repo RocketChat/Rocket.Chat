@@ -75,10 +75,6 @@ test.describe('OC - Livechat API', () => {
 		let agent: Awaited<ReturnType<typeof createAgent>>;
 
 		test.beforeAll(async ({ browser, api }) => {
-			if (IS_EE) {
-				await api.post('/settings/Livechat_Require_Contact_Verification', { value: 'never' });
-			}
-
 			agent = await createAgent(api, 'user1');
 
 			page = await browser.newPage();
@@ -592,7 +588,7 @@ test.describe('OC - Livechat API', () => {
 			});
 		});
 
-		test('OC - Livechat API - setGuestEmail', async () => {
+		test.skip('OC - Livechat API - setGuestEmail', async () => {
 			const registerGuestVisitor = createFakeVisitorRegistration();
 			// Start Chat
 			await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());

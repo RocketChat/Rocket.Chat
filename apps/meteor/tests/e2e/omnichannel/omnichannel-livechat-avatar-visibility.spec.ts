@@ -1,7 +1,6 @@
 import type { Page } from '@playwright/test';
 
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChatEmbedded } from '../page-objects';
@@ -30,10 +29,6 @@ test.describe('OC - Livechat - Avatar visibility', async () => {
 
 		if (res.status() !== 200) {
 			throw new Error('Failed to make agent available');
-		}
-
-		if (IS_EE) {
-			await api.post('/settings/Livechat_Require_Contact_Verification', { value: 'never' });
 		}
 	});
 
