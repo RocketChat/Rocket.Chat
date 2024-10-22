@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, ISubscription } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -6,7 +6,7 @@ import { notifyOnSubscriptionChanged, notifyOnRoomChangedById } from '../../../l
 
 export const provideUsersSuggestedGroupKeys = async (
 	userId: IUser['_id'],
-	usersSuggestedGroupKeys: Record<IRoom['_id'], { _id: IUser['_id']; key: string }[]>,
+	usersSuggestedGroupKeys: Record<IRoom['_id'], { _id: IUser['_id']; key: string; oldKeys?: ISubscription['oldRoomKeys'] }[]>,
 ) => {
 	const roomIds = Object.keys(usersSuggestedGroupKeys);
 
@@ -22,7 +22,12 @@ export const provideUsersSuggestedGroupKeys = async (
 
 		const usersWithSuggestedKeys = [];
 		for await (const user of usersSuggestedGroupKeys[roomId]) {
-			const { value } = await Subscriptions.setGroupE2ESuggestedKey(user._id, roomId, user.key);
+			const { value } = await Subscriptions.setGroupE2ESuggestedKeyAndOldRoomKeys(
+				user._id,
+				roomId,
+				user.key,
+				parseOldKeysDates(user.oldKeys),
+			);
 			if (!value) {
 				continue;
 			}
@@ -33,4 +38,12 @@ export const provideUsersSuggestedGroupKeys = async (
 		await Rooms.removeUsersFromE2EEQueueByRoomId(roomId, usersWithSuggestedKeys);
 		void notifyOnRoomChangedById(roomId);
 	}
+};
+
+const parseOldKeysDates = (oldKeys: ISubscription['oldRoomKeys']) => {
+	if (!oldKeys) {
+		return;
+	}
+
+	return oldKeys.map((key) => ({ ...key, ts: new Date(key.ts) }));
 };

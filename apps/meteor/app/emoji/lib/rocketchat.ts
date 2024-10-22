@@ -9,6 +9,9 @@ export type EmojiPackage = {
 	renderPicker: (emojiToRender: string) => string | undefined;
 	ascii?: boolean;
 	sprites?: unknown;
+	list?: string[];
+	_regexpSignature?: string | null;
+	_regexp?: RegExp | null;
 };
 
 export type EmojiPackages = {
@@ -16,14 +19,25 @@ export type EmojiPackages = {
 		[key: string]: EmojiPackage;
 	};
 	list: {
-		[key: keyof NonNullable<EmojiPackages['packages']>]: {
-			category: string;
-			emojiPackage: string;
-			shortnames: string[];
-			uc_base: string;
-			uc_greedy: string;
-			uc_match: string;
-			uc_output: string;
-		};
+		[key: keyof NonNullable<EmojiPackages['packages']>]:
+			| {
+					category: string;
+					emojiPackage: string;
+					shortnames: string[];
+					uc_base: string;
+					uc_greedy: string;
+					uc_match: string;
+					uc_output: string;
+					aliases?: string[];
+					aliasOf?: undefined;
+					extension?: string;
+			  }
+			| {
+					emojiPackage: string;
+					aliasOf: string;
+					extension?: undefined;
+					aliases?: undefined;
+					shortnames?: undefined;
+			  };
 	};
 };

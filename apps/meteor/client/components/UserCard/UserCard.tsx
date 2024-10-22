@@ -1,9 +1,9 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ComponentProps } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 import MarkdownText from '../MarkdownText';
@@ -52,7 +52,7 @@ const UserCard = ({
 	nickname,
 	...props
 }: UserCardProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
 
 	return (

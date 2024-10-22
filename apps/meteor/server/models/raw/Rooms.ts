@@ -25,6 +25,7 @@ import type {
 	UpdateFilter,
 	UpdateOptions,
 	UpdateResult,
+	ModifyResult,
 } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -223,6 +224,17 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
+	countByTeamId(teamId: ITeam['_id']): Promise<number> {
+		const query: Filter<IRoom> = {
+			teamId,
+			teamMain: {
+				$exists: false,
+			},
+		};
+
+		return this.countDocuments(query);
+	}
+
 	findPaginatedByTeamIdContainingNameAndDefault(
 		teamId: ITeam['_id'],
 		name: IRoom['name'],
@@ -305,7 +317,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				},
 			],
 			prid: { $exists: false },
-			$and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }],
+			$and: [{ federated: { $ne: true } }, { archived: { $ne: true } }],
 		};
 
 		return this.find(query, options);
@@ -695,6 +707,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findRoomsInsideTeams(autoJoin = false): FindCursor<IRoom> {
 		return this.find({
+			teamId: { $exists: true },
+			teamMain: { $exists: false },
+			...(autoJoin && { teamDefault: true }),
+		});
+	}
+
+	countRoomsInsideTeams(autoJoin = false): Promise<number> {
+		return this.countDocuments({
 			teamId: { $exists: true },
 			teamMain: { $exists: false },
 			...(autoJoin && { teamDefault: true }),
@@ -2143,5 +2163,17 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				},
 			},
 		]);
+	}
+
+	resetRoomKeyAndSetE2EEQueueByRoomId(
+		roomId: string,
+		e2eKeyId: string,
+		e2eQueue?: IRoom['usersWaitingForE2EKeys'],
+	): Promise<ModifyResult<IRoom>> {
+		return this.findOneAndUpdate(
+			{ _id: roomId },
+			{ $set: { e2eKeyId, ...(Array.isArray(e2eQueue) && { usersWaitingForE2EKeys: e2eQueue }) } },
+			{ returnDocument: 'after' },
+		);
 	}
 }

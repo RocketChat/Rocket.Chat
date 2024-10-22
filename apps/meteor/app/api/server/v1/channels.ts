@@ -1,5 +1,5 @@
 import { Team, Room } from '@rocket.chat/core-services';
-import type { IRoom, ISubscription, IUser, RoomType, IUpload } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, IUser, RoomType } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
 	isChannelsAddAllProps,
@@ -18,16 +18,19 @@ import {
 	isChannelsConvertToTeamProps,
 	isChannelsSetReadOnlyProps,
 	isChannelsDeleteProps,
-	isRoomsImagesProps,
+	isChannelsListProps,
+	isChannelsFilesListProps,
+	isChannelsOnlineProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
+import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
-import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { addUsersToRoomMethod } from '../../../lib/server/methods/addUsersToRoom';
@@ -272,6 +275,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isChannelsMessagesProps,
+		permissionsRequired: ['view-c-room'],
 	},
 	{
 		async get() {
@@ -290,9 +294,6 @@ API.v1.addRoute(
 				(await hasPermissionAsync(this.userId, 'view-joined-room')) &&
 				!(await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { projection: { _id: 1 } }))
 			) {
-				return API.v1.unauthorized();
-			}
-			if (!(await hasPermissionAsync(this.userId, 'view-c-room'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -465,7 +466,7 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			await Meteor.callAsync('eraseRoom', room._id);
+			await eraseRoom(room._id, this.userId);
 
 			return API.v1.success();
 		},
@@ -477,13 +478,10 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isChannelsConvertToTeamProps,
+		permissionsRequired: ['create-team'],
 	},
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'create-team'))) {
-				return API.v1.unauthorized();
-			}
-
 			const { channelId, channelName } = this.bodyParams;
 
 			if (!channelId && !channelName) {
@@ -647,8 +645,15 @@ async function createChannelValidator(params: {
 	members?: { key: string; value?: string[] };
 	customFields?: { key: string; value?: string };
 	teams?: { key: string; value?: string[] };
+	teamId?: { key: string; value?: string };
 }) {
-	if (!(await hasPermissionAsync(params.user.value, 'create-c'))) {
+	const teamId = params.teamId?.value;
+
+	const team = teamId && (await Team.getInfoById(teamId));
+	if (
+		(!teamId && !(await hasPermissionAsync(params.user.value, 'create-c'))) ||
+		(teamId && team && !(await hasPermissionAsync(params.user.value, 'create-team-channel', team.roomId)))
+	) {
 		throw new Error('unauthorized');
 	}
 
@@ -729,6 +734,10 @@ API.v1.addRoute(
 						value: bodyParams.teams,
 						key: 'teams',
 					},
+					teamId: {
+						value: bodyParams.extraData?.teamId,
+						key: 'teamId',
+					},
 				});
 			} catch (e: any) {
 				if (e.message === 'unauthorized') {
@@ -768,11 +777,16 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.files',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChannelsFilesListProps },
 	{
 		async get() {
+			const { typeGroup, name, roomId, roomName } = this.queryParams;
+
 			const findResult = await findChannelByIdOrName({
-				params: this.queryParams,
+				params: {
+					...(roomId ? { roomId } : {}),
+					...(roomName ? { roomName } : {}),
+				},
 				checkedArchived: false,
 			});
 
@@ -783,9 +797,14 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
-			const ourQuery = Object.assign({}, query, { rid: findResult._id });
+			const filter = {
+				rid: findResult._id,
+				...query,
+				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
+				...(typeGroup ? { typeGroup } : {}),
+			};
 
-			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(ourQuery, {
+			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
@@ -805,70 +824,23 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'channels.images',
+	'channels.getIntegrations',
 	{
 		authRequired: true,
-		validateParams: isRoomsImagesProps,
-		deprecation: {
-			version: '7.0.0',
-			alternatives: ['rooms.images'],
-		},
-	},
-	{
-		async get() {
-			const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>>(this.queryParams.roomId, {
-				projection: { t: 1, teamId: 1, prid: 1 },
-			});
-
-			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-				return API.v1.unauthorized();
-			}
-
-			let initialImage: IUpload | null = null;
-			if (this.queryParams.startingFromId) {
-				initialImage = await Uploads.findOneById(this.queryParams.startingFromId);
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-
-			const { cursor, totalCount } = Uploads.findImagesByRoomId(room._id, initialImage?.uploadedAt, {
-				skip: offset,
-				limit: count,
-			});
-
-			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			// If the initial image was not returned in the query, insert it as the first element of the list
-			if (initialImage && !files.find(({ _id }) => _id === (initialImage as IUpload)._id)) {
-				files.splice(0, 0, initialImage);
-			}
-
-			return API.v1.success({
-				files,
-				count,
-				offset,
-				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'channels.getIntegrations',
-	{ authRequired: true },
-	{
-		async get() {
-			if (
-				!(await hasAtLeastOnePermissionAsync(this.userId, [
+		permissionsRequired: {
+			GET: {
+				permissions: [
 					'manage-outgoing-integrations',
 					'manage-own-outgoing-integrations',
 					'manage-incoming-integrations',
 					'manage-own-incoming-integrations',
-				]))
-			) {
-				return API.v1.unauthorized();
-			}
-
+				],
+				operation: 'hasAny',
+			},
+		},
+	},
+	{
+		async get() {
 			const findResult = await findChannelByIdOrName({
 				params: this.queryParams,
 				checkedArchived: false,
@@ -954,19 +926,28 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.list',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		permissionsRequired: {
+			GET: { permissions: ['view-c-room', 'view-joined-room'], operation: 'hasAny' },
+		},
+		validateParams: isChannelsListProps,
+	},
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 			const hasPermissionToSeeAllPublicChannels = await hasPermissionAsync(this.userId, 'view-c-room');
 
-			const ourQuery: Record<string, any> = { ...query, t: 'c' };
+			const { _id } = this.queryParams;
+
+			const ourQuery = {
+				...query,
+				...(_id ? { _id } : {}),
+				t: 'c',
+			};
 
 			if (!hasPermissionToSeeAllPublicChannels) {
-				if (!(await hasPermissionAsync(this.userId, 'view-joined-room'))) {
-					return API.v1.unauthorized();
-				}
 				const roomIds = (
 					await Subscriptions.findByUserIdAndType(this.userId, 'c', {
 						projection: { rid: 1 },
@@ -1103,17 +1084,23 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.online',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChannelsOnlineProps },
 	{
 		async get() {
 			const { query } = await this.parseJsonQuery();
-			if (!query || Object.keys(query).length === 0) {
+			const { _id } = this.queryParams;
+
+			if ((!query || Object.keys(query).length === 0) && !_id) {
 				return API.v1.failure('Invalid query');
 			}
 
-			const ourQuery = Object.assign({}, query, { t: 'c' });
+			const filter = {
+				...query,
+				...(_id ? { _id } : {}),
+				t: 'c',
+			};
 
-			const room = await Rooms.findOne(ourQuery as Record<string, any>);
+			const room = await Rooms.findOne(filter as Record<string, any>);
 			if (!room) {
 				return API.v1.failure('Channel does not exists');
 			}

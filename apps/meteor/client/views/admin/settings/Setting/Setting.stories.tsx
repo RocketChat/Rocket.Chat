@@ -1,5 +1,5 @@
 import { FieldGroup } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import MemoizedSetting from './MemoizedSetting';
@@ -22,21 +22,23 @@ export default {
 			</div>
 		),
 	],
-} as ComponentMeta<typeof Setting>;
+} satisfies Meta<typeof Setting>;
 
-export const Default: ComponentStory<typeof MemoizedSetting> = (args) => <MemoizedSetting {...args} />;
+export const Default: StoryFn<typeof MemoizedSetting> = (args) => <MemoizedSetting {...args} />;
 Default.args = {
 	_id: 'setting-id',
 	label: 'Label',
 	hint: 'Hint',
+	type: 'string',
 };
 
-export const WithCallout: ComponentStory<typeof MemoizedSetting> = (args) => <MemoizedSetting {...args} />;
+export const WithCallout: StoryFn<typeof MemoizedSetting> = (args) => <MemoizedSetting {...args} />;
 WithCallout.args = {
 	_id: 'setting-id',
 	label: 'Label',
 	hint: 'Hint',
 	callout: 'Callout text',
+	type: 'string',
 };
 
 export const types = () => (

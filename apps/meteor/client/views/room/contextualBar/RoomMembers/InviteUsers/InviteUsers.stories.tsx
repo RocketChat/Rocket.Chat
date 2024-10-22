@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import { Contextualbar } from '../../../../../components/Contextualbar';
@@ -12,9 +12,9 @@ export default {
 		actions: { argTypesRegex: '^on.*' },
 	},
 	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
-} as ComponentMeta<typeof InviteUsers>;
+} satisfies Meta<typeof InviteUsers>;
 
-export const Default: ComponentStory<typeof InviteUsers> = (args) => <InviteUsers {...args} />;
+export const Default: StoryFn<typeof InviteUsers> = (args) => <InviteUsers {...args} />;
 Default.storyName = 'InviteUsers';
 Default.args = {
 	linkText: 'https://go.rocket.chat/invite?host=open.rocket.chat&path=invite%2F5sBs3a',

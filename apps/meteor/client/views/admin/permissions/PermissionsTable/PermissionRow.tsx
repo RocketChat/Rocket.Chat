@@ -1,16 +1,17 @@
 import type { IRole, IPermission } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { TFunction } from 'i18next';
 import type { ReactElement } from 'react';
 import React, { useState, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { CONSTANTS } from '../../../../../app/authorization/lib';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { useChangeRole } from '../hooks/useChangeRole';
 import RoleCell from './RoleCell';
 
-const getName = (t: ReturnType<typeof useTranslation>, permission: IPermission): string => {
+const getName = (t: TFunction, permission: IPermission): string => {
 	if (permission.level === CONSTANTS.SETTINGS_LEVEL) {
 		let path = '';
 		if (permission.group) {
@@ -33,7 +34,7 @@ type PermissionRowProps = {
 };
 
 const PermissionRow = ({ permission, roleList, onGrant, onRemove }: PermissionRowProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { _id, roles } = permission;
 	const [hovered, setHovered] = useState(false);
 	const changeRole = useChangeRole({ onGrant, onRemove, permissionId: _id });
