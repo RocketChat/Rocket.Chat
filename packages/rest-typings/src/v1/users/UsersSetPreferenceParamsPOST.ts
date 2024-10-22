@@ -46,7 +46,9 @@ export type UsersSetPreferencesParamsPOST = {
 		fontSize?: FontSize;
 		receiveLoginDetectionEmail?: boolean;
 		notifyCalendarEvents?: boolean;
-		idleTimeLimit?: number;
+		idleTimeLimitH?: number;
+		idleTimeLimitM?: number;
+		idleTimeLimitS?: number;
 		omnichannelTranscriptEmail?: boolean;
 		omnichannelTranscriptPDF?: boolean;
 		omnichannelHideConversationAfterClosing?: boolean;
@@ -231,7 +233,15 @@ const UsersSetPreferencesParamsPostSchema = {
 					type: 'boolean',
 					nullable: true,
 				},
-				idleTimeLimit: {
+				idleTimeLimitH: {
+					type: 'number',
+					nullable: true,
+				},
+				idleTimeLimitM: {
+					type: 'number',
+					nullable: true,
+				},
+				idleTimeLimitS: {
 					type: 'number',
 					nullable: true,
 				},

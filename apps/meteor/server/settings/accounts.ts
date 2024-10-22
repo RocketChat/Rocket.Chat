@@ -427,10 +427,20 @@ export const createAccountSettings = () =>
 				public: true,
 				i18nLabel: 'Enable_Auto_Away',
 			});
-			await this.add('Accounts_Default_User_Preferences_idleTimeLimit', 300, {
+			await this.add('Accounts_Default_User_Preferences_idleTimeLimitH', 0, {
 				type: 'int',
 				public: true,
-				i18nLabel: 'Idle_Time_Limit',
+				i18nLabel: 'Idle_Time_Limit_Hours',
+			});
+			await this.add('Accounts_Default_User_Preferences_idleTimeLimitM', 5, {
+				type: 'int',
+				public: true,
+				i18nLabel: 'Idle_Time_Limit_Minutes',
+			});
+			await this.add('Accounts_Default_User_Preferences_idleTimeLimitS', 0, {
+				type: 'int',
+				public: true,
+				i18nLabel: 'Idle_Time_Limit_Seconds',
 			});
 			await this.add('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction', false, {
 				type: 'boolean',

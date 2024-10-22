@@ -36,6 +36,9 @@ type UserPreferences = {
 	hideFlexTab: boolean;
 	sendOnEnter: string;
 	idleTimeLimit: number;
+	idleTimeLimitH: number;
+	idleTimeLimitM: number;
+	idleTimeLimitS: number;
 	sidebarShowFavorites: boolean;
 	sidebarShowUnread: boolean;
 	sidebarSortby: string;
@@ -107,6 +110,9 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		displayAvatars: Match.Optional(Boolean),
 		hideFlexTab: Match.Optional(Boolean),
 		sendOnEnter: Match.Optional(String),
+		idleTimeLimitH: Match.Optional(Number),
+		idleTimeLimitM: Match.Optional(Number),
+		idleTimeLimitS: Match.Optional(Number),
 		idleTimeLimit: Match.Optional(Number),
 		sidebarShowFavorites: Match.Optional(Boolean),
 		sidebarShowUnread: Match.Optional(Boolean),
@@ -153,9 +159,12 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		settings.emailNotificationMode = 'nothing';
 	}
 
-	if (settings.idleTimeLimit != null && settings.idleTimeLimit < 60) {
-		throw new Meteor.Error('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
+	const idleTimeLimit = (settings.idleTimeLimitH || 0) * 3600 + (settings.idleTimeLimitM || 0) * 60 + (settings.idleTimeLimitS || 0);
+
+	if (settings.idleTimeLimit != null && idleTimeLimit < 60) {
+	throw new Meteor.Error('invalid-idle-time-limit-value', 'Idle time limit must be at least 1 minutes.');
 	}
+
 
 	await Users.setPreferences(user._id, settings);
 
