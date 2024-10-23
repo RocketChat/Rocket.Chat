@@ -3,4 +3,4 @@
 "@rocket.chat/i18n": patch
 ---
 
-Fixed character limits not being applied to file upload descriptions
+Fixes message character limit not being applied to file upload descriptions

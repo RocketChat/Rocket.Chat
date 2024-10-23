@@ -103,6 +103,7 @@ const FileUploadModal = ({
 										{...register('description', {
 											validate: (value) => isDescriptionValid(value || ''),
 										})}
+										aria-label={t('Upload_file_description')}
 									/>
 								</FieldRow>
 								<FieldError>{errors.description?.message}</FieldError>
