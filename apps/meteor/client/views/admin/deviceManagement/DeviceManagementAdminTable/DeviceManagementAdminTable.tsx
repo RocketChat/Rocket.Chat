@@ -1,6 +1,6 @@
 import type { DeviceManagementPopulatedSession, DeviceManagementSession, Serialized } from '@rocket.chat/core-typings';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement, MutableRefObject } from 'react';
+import type { ReactElement, MutableRefObject, ChangeEvent } from 'react';
 import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -76,7 +76,11 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Devices_Users')} onChange={setText} />
+			<FilterByText
+				placeholder={t('Search_Devices_Users')}
+				value={text}
+				onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.target.value)}
+			/>
 			<DeviceManagementTable
 				data={data}
 				phase={phase}

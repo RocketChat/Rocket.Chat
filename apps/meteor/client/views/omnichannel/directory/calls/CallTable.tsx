@@ -1,7 +1,8 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery, hashQueryKey } from '@tanstack/react-query';
+import type { ChangeEvent } from 'react';
 import React, { useState, useMemo } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
@@ -26,16 +27,19 @@ const CallTable = () => {
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'phone' | 'queue' | 'ts' | 'callDuration' | 'direction'>('fname');
 
-	const query = useMemo(
-		() => ({
-			sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-			open: 'false' as const,
-			roomName: text || '',
-			agents: userIdLoggedIn ? [userIdLoggedIn] : [],
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		}),
-		[sortBy, current, sortDirection, itemsPerPage, userIdLoggedIn, text],
+	const query = useDebouncedValue(
+		useMemo(
+			() => ({
+				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
+				open: 'false' as const,
+				roomName: text || '',
+				agents: userIdLoggedIn ? [userIdLoggedIn] : [],
+				...(itemsPerPage && { count: itemsPerPage }),
+				...(current && { offset: current }),
+			}),
+			[sortBy, current, sortDirection, itemsPerPage, userIdLoggedIn, text],
+		),
+		500,
 	);
 
 	const onRowClick = useMutableCallback((id, token) => {
@@ -95,7 +99,9 @@ const CallTable = () => {
 
 	return (
 		<>
-			{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && <FilterByText onChange={setText} />}
+			{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && (
+				<FilterByText value={text} onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.target.value)} />
+			)}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

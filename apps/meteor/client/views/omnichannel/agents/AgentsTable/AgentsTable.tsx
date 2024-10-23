@@ -1,6 +1,7 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { hashQueryKey } from '@tanstack/react-query';
+import type { ChangeEvent } from 'react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,10 +24,9 @@ import AgentsTableRow from './AgentsTableRow';
 // TODO: missing error state
 const AgentsTable = () => {
 	const { t } = useTranslation();
-	const [filter, setFilter] = useState('');
 
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address' | 'statusLivechat'>('name');
-	const debouncedFilter = useDebouncedValue(filter, 500);
+	const [text, setText] = useState('');
 	const debouncedSort = useDebouncedValue(
 		useMemo(() => [sortBy, sortDirection], [sortBy, sortDirection]),
 		500,
@@ -34,7 +34,7 @@ const AgentsTable = () => {
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
-	const query = useQuery({ text: debouncedFilter, current, itemsPerPage }, debouncedSort);
+	const query = useQuery({ text, current, itemsPerPage }, debouncedSort);
 	const { data, isSuccess, isLoading, refetch } = useAgentsQuery(query);
 
 	const [defaultQuery] = useState(hashQueryKey([query]));
@@ -73,7 +73,9 @@ const AgentsTable = () => {
 	return (
 		<>
 			<AddAgent reload={refetch} />
-			{((isSuccess && data?.users.length > 0) || queryHasChanged) && <FilterByText onChange={setFilter} />}
+			{((isSuccess && data?.users.length > 0) || queryHasChanged) && (
+				<FilterByText value={text} onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.target.value)} />
+			)}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -94,7 +96,7 @@ const AgentsTable = () => {
 			)}
 			{isSuccess && data?.users.length > 0 && (
 				<>
-					<GenericTable aria-busy={filter !== debouncedFilter} data-qa-id='agents-table'>
+					<GenericTable aria-busy={isLoading} data-qa-id='agents-table'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody data-qa='GenericTableAgentInfoBody'>
 							{data?.users.map((user) => (

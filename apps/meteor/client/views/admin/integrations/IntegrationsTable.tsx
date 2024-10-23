@@ -3,6 +3,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useEndpoint, useRoute, useTranslation, useLayout } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import type { ChangeEvent } from 'react';
 import React, { useMemo, useCallback, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
@@ -97,7 +98,11 @@ const IntegrationsTable = ({ type }: { type?: string }) => {
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Integrations')} onChange={setText} />
+			<FilterByText
+				placeholder={t('Search_Integrations')}
+				value={text}
+				onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.target.value)}
+			/>
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

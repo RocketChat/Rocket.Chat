@@ -2,7 +2,7 @@ import { Pagination, States, StatesIcon, StatesActions, StatesAction, StatesTitl
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
+import type { ChangeEvent, MutableRefObject } from 'react';
 import React, { useState, useMemo, useEffect } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
@@ -28,7 +28,7 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
-	const [text, setParams] = useState('');
+	const [text, setText] = useState('');
 
 	const query = useDebouncedValue(
 		useMemo(
@@ -63,7 +63,7 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 
 	return (
 		<>
-			<FilterByText onChange={setParams} />
+			<FilterByText value={text} onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.target.value)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
