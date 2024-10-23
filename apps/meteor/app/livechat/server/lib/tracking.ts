@@ -1,3 +1,4 @@
+import { Message } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
