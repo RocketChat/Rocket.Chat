@@ -1,18 +1,31 @@
-import { WebApp } from 'meteor/webapp';
+import type { IncomingMessage, ServerResponse } from 'http';
+
+import type { IIncomingMessage } from '@rocket.chat/core-typings';
+import type { NextFunction } from 'connect';
+import { Cookies } from 'meteor/ostrio:cookies';
 import parser from 'ua-parser-js';
 
 import { getURL } from '../../../../app/utils/server/getURL';
 
-WebApp.connectHandlers.use((req, res, next) => {
-	if (req.cookies.browser_version_check === 'bypass') {
+const cookies = new Cookies();
+
+export const isIEOlderThan11 = (userAgent: ReturnType<typeof parser>) => {
+	if (!userAgent?.browser.name || !userAgent?.browser.version) {
+		return false;
+	}
+	return userAgent.browser.name === 'IE' && parseInt(userAgent.browser.version) < 11;
+};
+
+export const handleBrowserVersionCheck = (request: IncomingMessage, res: ServerResponse, next: NextFunction) => {
+	const req = request as IIncomingMessage;
+
+	const browserVersionCheck = cookies.get('browser_version_check', req.headers.cookie);
+	if (browserVersionCheck === 'bypass') {
 		return next();
 	}
 
-	const result = parser(req.headers['user-agent']);
-	if (
-		req.cookies.browser_version_check !== 'force' &&
-		(!result || result.browser.name !== 'IE' || parseInt(result.browser.version) >= 11)
-	) {
+	const userAgent = parser(req.headers['user-agent']);
+	if (browserVersionCheck !== 'force' && !isIEOlderThan11(userAgent)) {
 		return next();
 	}
 
@@ -129,4 +142,4 @@ WebApp.connectHandlers.use((req, res, next) => {
 	`);
 
 	return res.end();
-});
+};
