@@ -11,8 +11,6 @@ export interface IApiService {
 
 	call(method: string, data?: unknown): Promise<any>;
 
-	waitAndCall(method: string, data: any): Promise<any>;
-
 	broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void>;
 
 	broadcastToServices<T extends keyof EventSignatures>(
