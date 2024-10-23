@@ -12,7 +12,6 @@ type ChatsProviderProps = {
 const ChatsProvider = ({ children }: ChatsProviderProps) => {
 	const [filtersQuery, setFiltersQuery] = useLocalStorage('conversationsQuery', initialValues);
 	const displayFilters = useDisplayFilters(filtersQuery);
-	const hasAppliedFilters = Object.values(displayFilters).filter((value) => value !== undefined).length > 0;
 
 	const resetFiltersQuery = useCallback(
 		() =>
@@ -41,9 +40,9 @@ const ChatsProvider = ({ children }: ChatsProviderProps) => {
 			resetFiltersQuery,
 			displayFilters,
 			removeFilter,
-			hasAppliedFilters,
+			hasAppliedFilters: Object.values(displayFilters).filter((value) => value !== undefined).length > 0,
 		}),
-		[displayFilters, filtersQuery, hasAppliedFilters, removeFilter, resetFiltersQuery, setFiltersQuery],
+		[displayFilters, filtersQuery, removeFilter, resetFiltersQuery, setFiltersQuery],
 	);
 
 	return <ChatsContext.Provider children={children} value={contextValue} />;
