@@ -1,5 +1,6 @@
 import { Users } from './fixtures/userStates';
 import { AccountProfile, HomeChannel } from './page-objects';
+import { setSettingValueById } from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { test, expect } from './utils/test';
 
@@ -8,6 +9,14 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('feature preview', () => {
 	let poHomeChannel: HomeChannel;
 	let poAccountProfile: AccountProfile;
+
+	test.beforeAll(async ({ api }) => {
+		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', true);
+	});
+
+	test.afterAll(async ({ api }) => {
+		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', false);
+	});
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
