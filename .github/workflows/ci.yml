@@ -31,11 +31,11 @@ jobs:
       gh-docker-tag: ${{ steps.docker.outputs.gh-docker-tag }}
       lowercase-repo: ${{ steps.var.outputs.lowercase-repo }}
       rc-dockerfile: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
-      rc-docker-tag: '${{ steps.docker.outputs.gh-docker-tag }}.official'
-      rc-dockerfile-debian: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile.debian'
+      rc-docker-tag: '${{ steps.docker.outputs.gh-docker-tag }}'
       rc-docker-tag-debian: '${{ steps.docker.outputs.gh-docker-tag }}.debian'
       node-version: ${{ steps.var.outputs.node-version }}
       deno-version: ${{ steps.var.outputs.deno-version }}
+      official-platform: 'alpine'
       # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
       # to avoid this, we are using a dummy license, expiring at 2025-06-31
       enterprise-license: X/XumwIkgwQuld0alWKt37lVA90XjKOrfiMvMZ0/RtqsMtrdL9GoAk+4jXnaY1b2ePoG7XSzGhuxEDxFKIWJK3hIKGNTvrd980LgH5sM5+1T4P42ivSpd8UZi0bwjJkCFLIu9RozzYwslGG0IehMxe0S6VjcO0UYlUJtbMCBHuR2WmTAmO6YVU3ln+pZCbrPFaTPSS1RovhKaNCNkZwIx/CLWW8UTXUuFV/ML4PbKKVoa5nvvJwPeatgL7UCnlSD90lfCiiuikpzj/Y/JLkIL6velFbwNxsrxg9iRJ2k0sKheMMSmlTiGzSvZUm+na5WQq91aKGncih+DmaEZA7QGrjp4eoA0dqTk6OmItsy0fHmQhvZIOKNMeO7vNQiLbaSV6rqibrzu7WPpeIvsvL57T1h37USoCSB6+jDqkzdfoqIpz8BxTiJDj1d8xGPJFVrgxoqQqkj9qIP/gCaEz5DF39QFv5sovk4yK2O8fEQYod2d14V9yECYl4szZPMk1IBfCAC2w7czWGHHFonhL+CQGT403y5wmDmnsnjlCqMKF72odqfTPTI8XnCvJDriPMWohnQEAGtTTyciAhNokx/mjAVJ4NeZPcsbm4BjhvJvnjxx/BhYhBBTNWPaCSZzocfrGUj9Z+ZA7BEz+xAFQyGDx3xRzqIXfT0G7w8fvgYJMU=
@@ -335,15 +335,15 @@ jobs:
     runs-on: ubuntu-20.04
 
     env:
-      RC_DOCKERFILE: ${{ matrix.platform == 'debian' && needs.release-versions.outputs.rc-dockerfile-debian || needs.release-versions.outputs.rc-dockerfile }}
-      RC_DOCKER_TAG: ${{ matrix.platform == 'debian' && needs.release-versions.outputs.rc-docker-tag-debian || needs.release-versions.outputs.rc-docker-tag }}
+      RC_DOCKERFILE: ${{ needs.release-versions.outputs.rc-dockerfile }}.${{ matrix.platform }}
+      RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}-${{ matrix.platform }}
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
     strategy:
       fail-fast: false
       matrix:
-        platform: ['official', 'debian']
+        platform: ['alpine', 'debian']
 
     steps:
       - uses: actions/checkout@v4
@@ -371,15 +371,15 @@ jobs:
     runs-on: ubuntu-20.04
 
     env:
-      RC_DOCKERFILE: ${{ matrix.platform == 'debian' && needs.release-versions.outputs.rc-dockerfile-debian || needs.release-versions.outputs.rc-dockerfile }}
-      RC_DOCKER_TAG: ${{ matrix.platform == 'debian' && needs.release-versions.outputs.rc-docker-tag-debian || needs.release-versions.outputs.rc-docker-tag }}
+      RC_DOCKERFILE: ${{ needs.release-versions.outputs.rc-dockerfile }}.${{ matrix.platform }}
+      RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}-${{ matrix.platform }}
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
     strategy:
       fail-fast: false
       matrix:
-        platform: ['official', 'debian']
+        platform: ['alpine', 'debian']
 
     steps:
       - uses: actions/checkout@v4
@@ -395,7 +395,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Rename official Docker tag to GitHub Container Registry
-        if: matrix.platform == 'official'
+        if: matrix.platform == needs.release-versions.outputs.official-platform
         run: |
           IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}"
 
@@ -437,8 +437,6 @@ jobs:
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
-      rc-dockerfile-debian: ${{ needs.release-versions.outputs.rc-dockerfile-debian }}
-      rc-docker-tag-debian: ${{ needs.release-versions.outputs.rc-docker-tag-debian }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
@@ -461,8 +459,6 @@ jobs:
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
-      rc-dockerfile-debian: ${{ needs.release-versions.outputs.rc-dockerfile-debian }}
-      rc-docker-tag-debian: ${{ needs.release-versions.outputs.rc-docker-tag-debian }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
     secrets:
@@ -489,8 +485,6 @@ jobs:
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
-      rc-dockerfile-debian: ${{ needs.release-versions.outputs.rc-dockerfile-debian }}
-      rc-docker-tag-debian: ${{ needs.release-versions.outputs.rc-docker-tag-debian }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
@@ -514,8 +508,6 @@ jobs:
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
-      rc-dockerfile-debian: ${{ needs.release-versions.outputs.rc-dockerfile-debian }}
-      rc-docker-tag-debian: ${{ needs.release-versions.outputs.rc-docker-tag-debian }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
     secrets:
@@ -545,8 +537,6 @@ jobs:
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
-      rc-dockerfile-debian: ${{ needs.release-versions.outputs.rc-dockerfile-debian }}
-      rc-docker-tag-debian: ${{ needs.release-versions.outputs.rc-docker-tag-debian }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
       db-watcher-disabled: 'true'
@@ -691,7 +681,7 @@ jobs:
     strategy:
       matrix:
         # this is currently a mix of variants and different images
-        release: ['official', 'preview', 'debian']
+        release: ['alpine', 'preview', 'debian']
 
     env:
       IMAGE_NAME: 'rocketchat/rocket.chat'

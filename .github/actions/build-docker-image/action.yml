@@ -15,6 +15,10 @@ inputs:
   deno-version:
     required: true
     type: string
+  official:
+    description: 'Publish image as official'
+    required: false
+    default: 'false'
 
 outputs:
   image-name:
@@ -83,7 +87,7 @@ runs:
 
         docker push ${{ steps.build-image.outputs.image-name }}
 
-        if [[ '${{ inputs.release }}' = 'official' ]]; then
+        if [[ '${{ inputs.official }}' = 'true' ]]; then
           echo "Push release official without variant"
 
           docker tag ${{ steps.build-image.outputs.image-name }} ${{ steps.build-image.outputs.image-name-base }}

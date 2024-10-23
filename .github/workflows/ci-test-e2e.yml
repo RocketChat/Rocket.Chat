@@ -18,12 +18,6 @@ on:
       rc-docker-tag:
         required: true
         type: string
-      rc-dockerfile-debian:
-        required: true
-        type: string
-      rc-docker-tag-debian:
-        required: true
-        type: string
       gh-docker-tag:
         required: true
         type: string
@@ -83,8 +77,8 @@ jobs:
   test:
     runs-on: ubuntu-20.04
     env:
-      RC_DOCKERFILE: ${{ matrix.mongodb-version == '7.0' && inputs.rc-dockerfile-debian || inputs.rc-dockerfile }}
-      RC_DOCKER_TAG: ${{ matrix.mongodb-version == '7.0' && inputs.rc-docker-tag-debian || inputs.rc-docker-tag }}
+      RC_DOCKERFILE: ${{ inputs.rc-dockerfile }}.${{ matrix.mongodb-version == '7.0' && 'debian' || 'alpine' }}
+      RC_DOCKER_TAG: ${{ inputs.rc-docker-tag }}-${{ matrix.mongodb-version == '7.0' && 'debian' || 'alpine' }}
 
     strategy:
       fail-fast: false
