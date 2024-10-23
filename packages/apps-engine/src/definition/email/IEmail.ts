@@ -1,6 +1,9 @@
 export interface IEmail {
     to: string | string[];
-    from: string;
+    /**
+     * @deprecated this will be inferred from the settings
+     */
+    from?: string;
     replyTo?: string;
     subject: string;
     html?: string;
