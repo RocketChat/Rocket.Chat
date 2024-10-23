@@ -25,10 +25,11 @@ import {
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
-import { shouldTriggerVerificationApp } from './Contacts';
 import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
 import { Livechat } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
+import { shouldTriggerVerificationApp } from './contacts/shouldTriggerVerificationApp';
+import { getOnlineAgents } from './getOnlineAgents';
 import { getInquirySortMechanismSetting } from './settings';
 
 const logger = new Logger('QueueManager');
@@ -342,7 +343,7 @@ export class QueueManager {
 
 		const { department, rid, v } = inquiry;
 		// Alert only the online agents of the queued request
-		const onlineAgents = await Livechat.getOnlineAgents(department, agent);
+		const onlineAgents = await getOnlineAgents(department, agent);
 
 		if (!onlineAgents) {
 			logger.debug('Cannot notify agents of queued inquiry. No online agents found');

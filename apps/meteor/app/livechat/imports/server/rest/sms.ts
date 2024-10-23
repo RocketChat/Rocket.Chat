@@ -21,8 +21,8 @@ import { FileUpload } from '../../../../file-upload/server';
 import { checkUrlForSsrf } from '../../../../lib/server/functions/checkUrlForSsrf';
 import { settings } from '../../../../settings/server';
 import { setCustomField } from '../../../server/api/lib/customFields';
-import type { ILivechatMessage } from '../../../server/lib/LivechatTyped';
 import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
+import type { ILivechatMessage } from '../../../server/lib/localTypes';
 
 const logger = new Logger('SMS');
 

@@ -45,10 +45,12 @@ import {
 	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
-import { getContactIdByVisitorId, migrateVisitorIfMissingContact } from './Contacts';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
+import { getContactIdByVisitorId } from './contacts/getContactIdByVisitorId';
+import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissingContact';
+import { getOnlineAgents } from './getOnlineAgents';
 
 const logger = new Logger('LivechatHelper');
 export const allowAgentSkipQueue = (agent: SelectedAgent) => {
@@ -413,7 +415,7 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 	await saveQueueInquiry(inquiry);
 
 	// Alert only the online agents of the queued request
-	const onlineAgents = await LivechatTyped.getOnlineAgents(department, agent);
+	const onlineAgents = await getOnlineAgents(department, agent);
 	if (!onlineAgents) {
 		logger.debug('Cannot notify agents of queued inquiry. No online agents found');
 		return;
