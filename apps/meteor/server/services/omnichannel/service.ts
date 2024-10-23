@@ -16,9 +16,7 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 
 	constructor() {
 		super();
-
 		this.queueWorker = new OmnichannelQueue();
-		console.log('new OmnichannelQueue', this.queueWorker);
 	}
 
 	async created() {
