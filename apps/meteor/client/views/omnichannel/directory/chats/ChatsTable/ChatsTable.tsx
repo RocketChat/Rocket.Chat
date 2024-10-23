@@ -3,34 +3,36 @@ import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import { hashQueryKey } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
 
-import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
+import GenericNoResults from '../../../../../components/GenericNoResults/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableBody,
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
-} from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import { useOmnichannelPriorities } from '../../../../omnichannel/hooks/useOmnichannelPriorities';
-import { useCurrentChats } from '../../currentChats/hooks/useCurrentChats';
-import ChatFilterByText from './ChatFilterByText';
-import ChatTableRow from './ChatTableRow';
-import { useChatsFilters } from './useChatsFilters';
+} from '../../../../../components/GenericTable';
+import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
+import { useSort } from '../../../../../components/GenericTable/hooks/useSort';
+import { useOmnichannelPriorities } from '../../../../../omnichannel/hooks/useOmnichannelPriorities';
+import { useCurrentChats } from '../../../currentChats/hooks/useCurrentChats';
+import { useChatsContext } from '../../contexts/ChatsContext';
+import ChatFilterByText from './ChatsTableFilter';
+import ChatsTableRow from './ChatsTableRow';
 import { useChatsQuery } from './useChatsQuery';
 
-const ChatTable = () => {
+const ChatsTable = () => {
 	const t = useTranslation();
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
+	const { filtersQuery: filters } = useChatsContext();
 
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
-	const { filtersQuery: filters } = useChatsFilters();
+
 	const chatsQuery = useChatsQuery();
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'priorityWeight' | 'department.name' | 'servedBy' | 'ts' | 'lm' | 'status'>(
-		'fname',
+		'lm',
+		'desc',
 	);
 
 	const query = useMemo(
@@ -112,7 +114,7 @@ const ChatTable = () => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.rooms.map((room) => (
-								<ChatTableRow key={room._id} {...room} />
+								<ChatsTableRow key={room._id} {...room} />
 							))}
 						</GenericTableBody>
 					</GenericTable>
@@ -140,4 +142,4 @@ const ChatTable = () => {
 	);
 };
 
-export default ChatTable;
+export default ChatsTable;

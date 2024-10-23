@@ -5,11 +5,11 @@ import { useMethod, useRoute, useSetModal, useToastMessageDispatch, useTranslati
 import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 
-import FilterByText from '../../../../components/FilterByText';
-import GenericModal from '../../../../components/GenericModal';
-import { useChatsFilters } from './useChatsFilters';
+import FilterByText from '../../../../../components/FilterByText';
+import GenericModal from '../../../../../components/GenericModal';
+import { useChatsContext } from '../../contexts/ChatsContext';
 
-const ChatFilterByText = () => {
+const ChatsTableFilter = () => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -17,7 +17,7 @@ const ChatFilterByText = () => {
 	const removeClosedChats = useMethod('livechat:removeAllClosedRooms');
 	const queryClient = useQueryClient();
 
-	const { displayFilters, setFiltersQuery, removeFilter } = useChatsFilters();
+	const { displayFilters, setFiltersQuery, removeFilter } = useChatsContext();
 
 	const handleRemoveAllClosed = useEffectEvent(async () => {
 		const onDeleteAll = async () => {
@@ -90,4 +90,4 @@ const ChatFilterByText = () => {
 	);
 };
 
-export default ChatFilterByText;
+export default ChatsTableFilter;

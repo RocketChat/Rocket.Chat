@@ -1,20 +1,9 @@
-import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-
-export type ChatsFiltersQuery = {
-	guest: string;
-	servedBy: string;
-	status: string;
-	department: string;
-	from: string;
-	to: string;
-	tags: { _id: string; label: string; value: string }[];
-	[key: string]: unknown;
-};
+import type { ChatsFiltersQuery } from '../contexts/ChatsContext';
 
 const statusTextMap: { [key: string]: string } = {
 	all: 'All',
@@ -24,17 +13,7 @@ const statusTextMap: { [key: string]: string } = {
 	queued: 'Queued',
 };
 
-const initialValues: ChatsFiltersQuery = {
-	guest: '',
-	servedBy: 'all',
-	status: 'all',
-	department: 'all',
-	from: '',
-	to: '',
-	tags: [],
-};
-
-const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
+export const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 	const t = useTranslation();
 	const formatDate = useFormatDate();
 
@@ -61,26 +40,4 @@ const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 		tags: tags.length > 0 ? tags.map((tag) => `${t('Tag')}: ${tag.label}`) : undefined,
 		...displayCustomFields,
 	};
-};
-
-export const useChatsFilters = () => {
-	const [filtersQuery, setFiltersQuery] = useLocalStorage('conversationsQuery', initialValues);
-	const displayFilters = useDisplayFilters(filtersQuery);
-
-	const resetFiltersQuery = () =>
-		setFiltersQuery((prevState) => {
-			const customFields = Object.keys(prevState).filter((item) => !Object.keys(initialValues).includes(item));
-
-			const initialCustomFields = customFields.reduce((acc, cv) => {
-				acc[cv] = '';
-				return acc;
-			}, {} as { [key: string]: string });
-
-			return { ...initialValues, ...initialCustomFields };
-		});
-
-	const removeFilter = (filter: keyof typeof initialValues) =>
-		setFiltersQuery((prevState) => ({ ...prevState, [filter]: initialValues[filter] }));
-
-	return { filtersQuery, setFiltersQuery, resetFiltersQuery, displayFilters, removeFilter };
 };

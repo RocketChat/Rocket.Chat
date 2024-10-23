@@ -16,14 +16,14 @@ import {
 	ContextualbarFooter,
 } from '../../../../components/Contextualbar';
 import { CurrentChatTags } from '../../additionalForms';
-import type { ChatsFiltersQuery } from './useChatsFilters';
-import { useChatsFilters } from './useChatsFilters';
+import type { ChatsFiltersQuery } from '../contexts/ChatsContext';
+import { useChatsContext } from '../contexts/ChatsContext';
 
-type ChatFiltersContextualBarProps = {
+type ChatsFiltersContextualBarProps = {
 	onClose: () => void;
 };
 
-const ChatFiltersContextualBar = ({ onClose }: ChatFiltersContextualBarProps) => {
+const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) => {
 	const t = useTranslation();
 	const canViewLivechatRooms = usePermission('view-livechat-rooms');
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
@@ -32,15 +32,10 @@ const ChatFiltersContextualBar = ({ onClose }: ChatFiltersContextualBarProps) =>
 	const { data } = useQuery(['livechat/custom-fields'], async () => allCustomFields());
 	const contactCustomFields = data?.customFields.filter((customField) => customField.scope !== 'visitor');
 
-	const { filtersQuery, setFiltersQuery, resetFiltersQuery } = useChatsFilters();
+	const { filtersQuery, setFiltersQuery, resetFiltersQuery, hasAppliedFilters } = useChatsContext();
 	const queryClient = useQueryClient();
 
-	const {
-		formState: { isDirty },
-		handleSubmit,
-		control,
-		reset,
-	} = useForm<ChatsFiltersQuery>({
+	const { handleSubmit, control, reset } = useForm<ChatsFiltersQuery>({
 		values: filtersQuery,
 	});
 
@@ -171,7 +166,7 @@ const ChatFiltersContextualBar = ({ onClose }: ChatFiltersContextualBarProps) =>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button disabled={!isDirty} onClick={handleResetFilters}>
+					<Button disabled={!hasAppliedFilters} onClick={handleResetFilters}>
 						{t('Clear_filters')}
 					</Button>
 					<Button onClick={handleSubmit(handleSubmitFilters)} primary>
@@ -183,4 +178,4 @@ const ChatFiltersContextualBar = ({ onClose }: ChatFiltersContextualBarProps) =>
 	);
 };
 
-export default ChatFiltersContextualBar;
+export default ChatsFiltersContextualBar;

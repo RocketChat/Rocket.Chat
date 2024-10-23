@@ -2,7 +2,7 @@ import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import ContactHistoryMessagesList from '../contactHistory/MessageList/ContactHistoryMessagesList';
-import ChatFiltersContextualBar from './chats/ChatFiltersContextualBar';
+import ChatsFiltersContextualBar from './chats/ChatsFiltersContextualBar';
 
 const ChatsContextualBar = () => {
 	const router = useRouter();
@@ -13,7 +13,7 @@ const ChatsContextualBar = () => {
 	const handleClose = () => router.navigate('/omnichannel-directory/chats');
 
 	if (context === 'filters') {
-		return <ChatFiltersContextualBar onClose={handleClose} />;
+		return <ChatsFiltersContextualBar onClose={handleClose} />;
 	}
 
 	if (context === 'info' && id) {

@@ -5,13 +5,13 @@ import { usePermission, useRoute, useTranslation } from '@rocket.chat/ui-context
 import moment from 'moment';
 import React from 'react';
 
-import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';
-import { RoomActivityIcon } from '../../../../omnichannel/components/RoomActivityIcon';
-import { useOmnichannelPriorities } from '../../../../omnichannel/hooks/useOmnichannelPriorities';
-import { PriorityIcon } from '../../../../omnichannel/priorities/PriorityIcon';
-import RemoveChatButton from '../../currentChats/RemoveChatButton';
+import { GenericTableCell, GenericTableRow } from '../../../../../components/GenericTable';
+import { RoomActivityIcon } from '../../../../../omnichannel/components/RoomActivityIcon';
+import { useOmnichannelPriorities } from '../../../../../omnichannel/hooks/useOmnichannelPriorities';
+import { PriorityIcon } from '../../../../../omnichannel/priorities/PriorityIcon';
+import RemoveChatButton from '../../../currentChats/RemoveChatButton';
 
-const ChatTableRow = (room: IOmnichannelRoomWithDepartment) => {
+const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	const t = useTranslation();
 	const { _id, fname, tags, servedBy, ts, lm, department, open, onHold, priorityWeight } = room;
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
@@ -85,4 +85,4 @@ const ChatTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	);
 };
 
-export default ChatTableRow;
+export default ChatsTableRow;

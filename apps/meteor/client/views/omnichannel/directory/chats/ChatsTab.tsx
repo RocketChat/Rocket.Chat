@@ -1,18 +1,17 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import React from 'react';
 
 import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
-import ChatTable from './ChatTable';
+import ChatsTable from './ChatsTable';
 
-const ChatTab = (): ReactElement => {
+const ChatsTab = () => {
 	const hasAccess = usePermission('view-l-room');
 
 	if (hasAccess) {
-		return <ChatTable />;
+		return <ChatsTable />;
 	}
 
 	return <NotAuthorizedPage />;
 };
 
-export default ChatTab;
+export default ChatsTab;
