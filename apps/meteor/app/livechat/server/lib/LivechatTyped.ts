@@ -67,6 +67,7 @@ import { createContact, createContactFromVisitor, isSingleContactEnabled } from 
 import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
+import { getRequiredDepartment } from './departmentsLib';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor, ILivechatMessage } from './localTypes';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
 
@@ -329,24 +330,6 @@ class LivechatClass {
 		return { room: newRoom, closedBy: closeData.closedBy, removedInquiry: inquiry };
 	}
 
-	async getRequiredDepartment(onlineRequired = true) {
-		const departments = LivechatDepartment.findEnabledWithAgents();
-
-		for await (const dept of departments) {
-			if (!dept.showOnRegistration) {
-				continue;
-			}
-			if (!onlineRequired) {
-				return dept;
-			}
-
-			const onlineAgents = await LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
-			if (onlineAgents && (await onlineAgents.count())) {
-				return dept;
-			}
-		}
-	}
-
 	async createRoom({
 		visitor,
 		message,
@@ -372,7 +355,7 @@ class LivechatClass {
 		const defaultAgent = await callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, visitor);
 		// if no department selected verify if there is at least one active and pick the first
 		if (!defaultAgent && !visitor.department) {
-			const department = await this.getRequiredDepartment();
+			const department = await getRequiredDepartment();
 			Livechat.logger.debug(`No department or default agent selected for ${visitor._id}`);
 
 			if (department) {

@@ -284,3 +284,21 @@ export async function removeDepartment(departmentId: string) {
 
 	return ret;
 }
+
+export async function getRequiredDepartment(onlineRequired = true) {
+	const departments = LivechatDepartment.findEnabledWithAgents();
+
+	for await (const dept of departments) {
+		if (!dept.showOnRegistration) {
+			continue;
+		}
+		if (!onlineRequired) {
+			return dept;
+		}
+
+		const onlineAgents = await LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
+		if (onlineAgents && (await onlineAgents.count())) {
+			return dept;
+		}
+	}
+}
