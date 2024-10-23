@@ -37,7 +37,7 @@ export const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 		servedBy: servedBy !== 'all' ? `${t('Served_By')}: ${agentData?.user.name}` : undefined,
 		department: department !== 'all' ? `${t('Department')}: ${departmentData?.department.name}` : undefined,
 		status: status !== 'all' ? `${t('Status')}: ${t(statusTextMap[status] as TranslationKey)}` : undefined,
-		tags: tags.length > 0 ? tags.map((tag) => `${t('Tag')}: ${tag.label}`) : undefined,
+		tags: tags.length > 0 ? `${t('Tags')}: ${tags.map((tag) => tag.label).join(', ')}` : undefined,
 		...displayCustomFields,
 	};
 };
