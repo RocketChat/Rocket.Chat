@@ -112,7 +112,11 @@ export class AccountProfile {
 		return this.page.locator("role=button[name='Save changes']");
 	}
 
-	checkboxByLabelText(name: string): Locator {
+	getAccordionItemByName(name: string): Locator {
+		return this.page.getByRole('button', { name, exact: true });
+	}
+
+	getCheckboxByLabelText(name: string): Locator {
 		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name }) });
 	}
 }

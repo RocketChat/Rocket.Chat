@@ -21,11 +21,11 @@ test.describe.serial('feature preview', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		poAccountProfile = new AccountProfile(page);
-
-		await page.goto('/account/feature-preview');
 	});
 
 	test('should show "Message" and "Navigation" feature sections', async ({ page }) => {
+		await page.goto('/account/feature-preview');
+
 		await expect(page.getByRole('button', { name: 'Message' })).toBeVisible();
 		await expect(page.getByRole('button', { name: 'Navigation' })).toBeVisible();
 	});
@@ -54,14 +54,18 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test('should be able to toggle "Enhanced navigation" feature', async ({ page }) => {
-			await page.getByRole('button', { name: 'Navigation' }).click();
-			const checkbox = poAccountProfile.checkboxByLabelText('Enhanced navigation');
-			await expect(checkbox).toBeChecked();
-			await checkbox.click();
-			await expect(checkbox).not.toBeChecked();
+			await page.goto('/account/feature-preview');
+
+			await poAccountProfile.getAccordionItemByName('Navigation').click();
+			const newNavigationCheckbox = poAccountProfile.getCheckboxByLabelText('Enhanced navigation');
+			await expect(newNavigationCheckbox).toBeChecked();
+			await newNavigationCheckbox.click();
+			await expect(newNavigationCheckbox).not.toBeChecked();
 		});
 
-		test('should be rendering new UI with "Enhanced navigation"', async () => {
+		test('should be rendering new UI with "Enhanced navigation"', async ({ page }) => {
+			await page.goto('/account/feature-preview');
+
 			await expect(poHomeChannel.navbar.navbar).toBeVisible();
 		});
 
