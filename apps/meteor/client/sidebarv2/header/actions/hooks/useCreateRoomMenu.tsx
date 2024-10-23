@@ -1,4 +1,5 @@
-import { useAtLeastOnePermission, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useAtLeastOnePermission, useSetting } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 import { useIsEnterprise } from '../../../../hooks/useIsEnterprise';
 import { useCreateRoomItems } from './useCreateRoomItems';
@@ -7,7 +8,7 @@ import { useMatrixFederationItems } from './useMatrixFederationItems';
 const CREATE_ROOM_PERMISSIONS = ['create-c', 'create-p', 'create-d', 'start-discussion', 'start-discussion-other-user'];
 
 export const useCreateRoom = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const showCreate = useAtLeastOnePermission(CREATE_ROOM_PERMISSIONS);
 
 	const { data } = useIsEnterprise();

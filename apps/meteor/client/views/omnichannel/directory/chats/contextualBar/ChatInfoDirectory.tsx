@@ -2,10 +2,11 @@ import type { ILivechatCustomField, IOmnichannelRoom, IVisitor, Serialized } fro
 import { Box, Margins, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { hasPermission } from '../../../../../../app/authorization/client';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
@@ -28,7 +29,7 @@ type ChatInfoDirectoryProps = {
 };
 
 function ChatInfoDirectory({ id, route = undefined, room }: ChatInfoDirectoryProps) {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const formatDateAndTime = useFormatDateAndTime();
 	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('/v1/livechat/custom-fields');

@@ -1,8 +1,9 @@
 import { Box, Callout, Message, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ContextualbarFooter } from '../../../components/Contextualbar';
 import GenericNoResults from '../../../components/GenericNoResults';
@@ -10,7 +11,7 @@ import MessageContextFooter from './MessageContextFooter';
 import ContextMessage from './helpers/ContextMessage';
 
 const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid: string) => void }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const getUserMessages = useEndpoint('GET', '/v1/moderation.user.reportedMessages');
 

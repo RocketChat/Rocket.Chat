@@ -1,7 +1,8 @@
 import { AwaitingConfirmationPage } from '@rocket.chat/onboarding-ui';
-import { useToastMessageDispatch, useSettingSetValue, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSettingSetValue, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
@@ -19,7 +20,7 @@ const CloudAccountConfirmation = (): ReactElement => {
 	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
 	const cloudConfirmationPoll = useEndpoint('GET', '/v1/cloud.confirmationPoll');
 	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const getConfirmation = useCallback(async () => {
 		try {

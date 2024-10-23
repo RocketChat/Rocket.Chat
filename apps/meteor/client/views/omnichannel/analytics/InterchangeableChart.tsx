@@ -1,7 +1,8 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import type * as chartjs from 'chart.js';
 import React, { useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { drawLineChart } from '../../../../app/livechat/client/lib/chartHandler';
 import { secondsToHHMMSS } from '../../../../lib/utils/secondsToHHMMSS';
@@ -46,7 +47,7 @@ const InterchangeableChart = ({
 	w: string;
 	alignSelf: string;
 }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canvas = useRef<HTMLCanvasElement | null>(null);

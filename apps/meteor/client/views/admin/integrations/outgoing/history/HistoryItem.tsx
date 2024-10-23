@@ -1,15 +1,16 @@
 import type { IIntegrationHistory, Serialized } from '@rocket.chat/core-typings';
 import { Button, Icon, Box, Accordion, Field, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMethod } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { outgoingEvents } from '../../../../../../app/integrations/lib/outgoingEvents';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useHighlightedCode } from '../../../../../hooks/useHighlightedCode';
 
 const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const replayOutgoingIntegration = useMethod('replayOutgoingIntegration');
 

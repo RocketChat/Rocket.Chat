@@ -1,14 +1,15 @@
 import type { IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ContextualbarSkeleton } from '../../components/Contextualbar';
 import UnitEdit from './UnitEdit';
 
 const UnitEditWithData = ({ unitId }: { unitId: IOmnichannelBusinessUnit['_id'] }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const getUnitById = useEndpoint('GET', '/v1/livechat/units/:id', { id: unitId });
 	const getMonitorsByUnitId = useEndpoint('GET', '/v1/livechat/units/:unitId/monitors', { unitId });
