@@ -634,7 +634,7 @@ class LivechatClass {
 		return upsertedLivechatVisitor.value;
 	}
 
-	public async getBotAgents(department?: string) {
+	private async getBotAgents(department?: string) {
 		if (department) {
 			return LivechatDepartmentAgents.getBotsForDepartment(department);
 		}
@@ -642,7 +642,7 @@ class LivechatClass {
 		return Users.findBotAgents();
 	}
 
-	public async countBotAgents(department?: string) {
+	private async countBotAgents(department?: string) {
 		if (department) {
 			return LivechatDepartmentAgents.countBotsForDepartment(department);
 		}
