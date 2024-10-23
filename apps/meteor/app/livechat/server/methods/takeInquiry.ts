@@ -53,12 +53,12 @@ export const takeInquiry = async (
 
 	const room = await LivechatRooms.findOneById(inquiry.rid);
 	if (!room || !(await Omnichannel.isWithinMACLimit(room))) {
-		throw new Error('error-mac-limit-reached');
+		throw new Meteor.Error('error-mac-limit-reached');
 	}
 
 	const contactId = await migrateVisitorIfMissingContact(inquiry.v._id, room.source);
 	if (contactId && (await shouldTriggerVerificationApp(contactId, room.source))) {
-		throw new Error('error-unverified-contact');
+		throw new Meteor.Error('error-unverified-contact');
 	}
 
 	const agent = {

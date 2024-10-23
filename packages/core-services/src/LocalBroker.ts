@@ -30,10 +30,6 @@ export class LocalBroker implements IBroker {
 		return result;
 	}
 
-	async waitAndCall(method: string, data: any): Promise<any> {
-		return this.call(method, data);
-	}
-
 	async destroyService(instance: ServiceClass): Promise<void> {
 		const namespace = instance.getName();
 
