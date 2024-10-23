@@ -118,6 +118,19 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.find(query, { projection: { _id: 1 } });
 	}
 
+	countVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): Promise<number> {
+		const query = {
+			disabled: { $ne: true },
+			_updatedAt: {
+				$gte: new Date(start),
+				$lt: new Date(end),
+			},
+			...(department && department !== 'undefined' && { department }),
+		};
+
+		return this.countDocuments(query);
+	}
+
 	async getNextVisitorUsername(): Promise<string> {
 		// TODO remove dependency from another model - this logic should be inside a service/function
 		const livechatCount = await Settings.incrementValueById('Livechat_guest_count', 1, { returnDocument: 'after' });

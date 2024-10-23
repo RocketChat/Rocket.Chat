@@ -8,6 +8,7 @@ import type {
 	UpdateOptions,
 	UpdateResult,
 	ModifyResult,
+	CountDocumentsOptions,
 } from 'mongodb';
 
 import type { Updater } from '../updater';
@@ -309,4 +310,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		e2eQueue?: IRoom['usersWaitingForE2EKeys'],
 	): Promise<ModifyResult<IRoom>>;
 	countGroupDMsByUids(uids: NonNullable<IRoom['uids']>): Promise<number>;
+	countByCreatedOTR(): Promise<number>;
+	countByBroadcast(): Promise<number>;
+	countByE2E(options?: CountDocumentsOptions): Promise<number>;
 }

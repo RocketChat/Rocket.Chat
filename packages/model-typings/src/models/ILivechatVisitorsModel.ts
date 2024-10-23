@@ -77,4 +77,5 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 		data: { name?: string; username?: string; email?: string; phone?: string; livechatData: { [k: string]: any } },
 	): Promise<UpdateResult | Document | boolean>;
 	setLastChatById(_id: string, lastChat: Required<ILivechatVisitor['lastChat']>): Promise<UpdateResult>;
+	countVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): Promise<number>;
 }
