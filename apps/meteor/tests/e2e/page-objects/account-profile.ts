@@ -111,4 +111,8 @@ export class AccountProfile {
 	get securityE2EEncryptionSavePasswordButton(): Locator {
 		return this.page.locator("role=button[name='Save changes']");
 	}
+
+	checkboxByLabelText(name: string): Locator {
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name }) });
+	}
 }
