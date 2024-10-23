@@ -4,8 +4,8 @@ import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '@rocket.chat
 import { notifyOnLivechatInquiryChanged } from '../../../../../app/lib/server/lib/notifyListener';
 import { online } from '../../../../../app/livechat/server/api/lib/livechat';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
-import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
+import { setDepartmentForGuest } from '../../../../../app/livechat/server/lib/departmentsLib';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
@@ -35,7 +35,7 @@ callbacks.add(
 				);
 
 				// update visitor
-				await Livechat.setDepartmentForGuest({
+				await setDepartmentForGuest({
 					token: inquiry?.v?.token,
 					department: department.fallbackForwardDepartment,
 				});

@@ -1,11 +1,12 @@
 import type { LivechatDepartmentDTO, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
-import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
+import { LivechatDepartment, LivechatDepartmentAgents, LivechatVisitors } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatDepartmentAgentChangedByDepartmentId } from '../../../lib/server/lib/notifyListener';
 import { updateDepartmentAgents } from './Helper';
 import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
+import { livechatLogger } from './logger';
 /**
  * @param {string|null} _id - The department id
  * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
@@ -198,4 +199,28 @@ export async function saveDepartmentAgents(
 	}
 
 	return updateDepartmentAgents(_id, departmentAgents, department.enabled);
+}
+
+export async function setDepartmentForGuest({ token, department }: { token: string; department: string }) {
+	check(token, String);
+	check(department, String);
+
+	livechatLogger.debug(`Switching departments for user with token ${token} (to ${department})`);
+
+	const updateUser = {
+		$set: {
+			department,
+		},
+	};
+
+	const dep = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id'>>(department, { projection: { _id: 1 } });
+	if (!dep) {
+		throw new Meteor.Error('invalid-department', 'Provided department does not exists');
+	}
+
+	const visitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
+	if (!visitor) {
+		throw new Meteor.Error('invalid-token', 'Provided token is invalid');
+	}
+	await LivechatVisitors.updateById(visitor._id, updateUser);
 }
