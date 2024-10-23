@@ -77,7 +77,7 @@ export const useRoomList = ({
 					return incomingCall.add(room);
 				}
 
-				if (sidebarShowUnread && (room.alert || room.unread)) {
+				if (sidebarShowUnread && (room.alert || room.unread) && !room.hideUnreadStatus) {
 					return unread.add(room);
 				}
 
