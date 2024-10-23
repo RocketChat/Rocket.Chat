@@ -2,8 +2,8 @@ import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo } from 'react';
 
-import { ChatsContext, initialValues } from './ChatsContext';
-import { useDisplayFilters } from './useDisplayFilters';
+import { ChatsContext, initialValues } from '../contexts/ChatsContext';
+import { useDisplayFilters } from '../hooks/useDisplayFilters';
 
 type ChatsProviderProps = {
 	children: ReactNode;

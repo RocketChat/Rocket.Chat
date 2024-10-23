@@ -5,11 +5,11 @@ import { useMethod, useRoute, useSetModal, useToastMessageDispatch, useTranslati
 import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 
-import FilterByText from '../../../../components/FilterByText';
-import GenericModal from '../../../../components/GenericModal';
-import { useChatsContext } from './ChatsContext';
+import FilterByText from '../../../../../components/FilterByText';
+import GenericModal from '../../../../../components/GenericModal';
+import { useChatsContext } from '../../contexts/ChatsContext';
 
-const ChatFilterByText = () => {
+const ChatsTableFilter = () => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -90,4 +90,4 @@ const ChatFilterByText = () => {
 	);
 };
 
-export default ChatFilterByText;
+export default ChatsTableFilter;

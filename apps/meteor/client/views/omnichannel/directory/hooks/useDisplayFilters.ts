@@ -3,7 +3,7 @@ import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import type { ChatsFiltersQuery } from './ChatsContext';
+import type { ChatsFiltersQuery } from '../contexts/ChatsContext';
 
 const statusTextMap: { [key: string]: string } = {
 	all: 'All',

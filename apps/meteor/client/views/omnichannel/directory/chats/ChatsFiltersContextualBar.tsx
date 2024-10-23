@@ -16,14 +16,14 @@ import {
 	ContextualbarFooter,
 } from '../../../../components/Contextualbar';
 import { CurrentChatTags } from '../../additionalForms';
-import type { ChatsFiltersQuery } from './ChatsContext';
-import { useChatsContext } from './ChatsContext';
+import type { ChatsFiltersQuery } from '../contexts/ChatsContext';
+import { useChatsContext } from '../contexts/ChatsContext';
 
-type ChatFiltersContextualBarProps = {
+type ChatsFiltersContextualBarProps = {
 	onClose: () => void;
 };
 
-const ChatFiltersContextualBar = ({ onClose }: ChatFiltersContextualBarProps) => {
+const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) => {
 	const t = useTranslation();
 	const canViewLivechatRooms = usePermission('view-livechat-rooms');
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
@@ -178,4 +178,4 @@ const ChatFiltersContextualBar = ({ onClose }: ChatFiltersContextualBarProps) =>
 	);
 };
 
-export default ChatFiltersContextualBar;
+export default ChatsFiltersContextualBar;

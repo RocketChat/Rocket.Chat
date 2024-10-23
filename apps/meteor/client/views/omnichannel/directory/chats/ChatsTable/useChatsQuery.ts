@@ -3,7 +3,7 @@ import { usePermission, useUserId } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import { useCallback } from 'react';
 
-import type { ChatsFiltersQuery } from './ChatsContext';
+import type { ChatsFiltersQuery } from '../../contexts/ChatsContext';
 
 type useQueryType = (
 	debouncedParams: ChatsFiltersQuery,

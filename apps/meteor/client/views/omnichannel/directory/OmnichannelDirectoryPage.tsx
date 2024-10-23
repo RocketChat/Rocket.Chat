@@ -6,9 +6,9 @@ import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import ContextualBarRouter from './ContextualBarRouter';
 import CallTab from './calls/CallTab';
-import ChatTab from './chats/ChatTab';
-import ChatsProvider from './chats/ChatsProvider';
+import ChatsTab from './chats/ChatsTab';
 import ContactTab from './contacts/ContactTab';
+import ChatsProvider from './providers/ChatsProvider';
 
 const DEFAULT_TAB = 'chats';
 
@@ -52,7 +52,7 @@ const OmnichannelDirectoryPage = () => {
 						</Tabs.Item>
 					</Tabs>
 					<PageContent>
-						{tab === 'chats' && <ChatTab />}
+						{tab === 'chats' && <ChatsTab />}
 						{tab === 'contacts' && <ContactTab />}
 						{tab === 'calls' && <CallTab />}
 					</PageContent>
