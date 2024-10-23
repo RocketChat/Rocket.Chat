@@ -7,12 +7,14 @@ export { initDatabaseTracing } from './traceDatabaseCalls';
 
 let tracer: Tracer | undefined;
 
+const otelExporterUrl = process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4317';
+
 export function isTracingEnabled() {
 	return ['yes', 'true'].includes(String(process.env.TRACING_ENABLED).toLowerCase());
 }
 
 export const startTracing = ({ service }: { service: string }) => {
-	const exporter = new OTLPTraceExporter();
+	const exporter = new OTLPTraceExporter({ url: otelExporterUrl });
 
 	const sdk = new NodeSDK({
 		traceExporter: exporter,
