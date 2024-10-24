@@ -23,10 +23,12 @@ import { setAvatarFromServiceWithValidation } from '../../../lib/server/function
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
+import { getBaseUserFields } from '../../../utils/server/functions/getBaseUserFields';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 
 Accounts.config({
+	defaultFieldSelector: { ...getBaseUserFields(), services: 1 },
 	forbidClientAccountCreation: true,
 });
 
