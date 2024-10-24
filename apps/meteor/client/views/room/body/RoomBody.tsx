@@ -133,7 +133,6 @@ const RoomBody = (): ReactElement => {
 		leaderBannerInnerRef,
 		unreadBarInnerRef,
 		getMoreInnerRef,
-
 		messageListRef,
 	);
 

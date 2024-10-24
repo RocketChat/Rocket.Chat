@@ -26,10 +26,19 @@ export const MessageList = function MessageList({ rid, messageListRef }: Message
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 
+	const scrollParent: any = messageListRef?.current;
+
 	return (
 		<MessageListProvider messageListRef={messageListRef}>
 			<SelectedMessagesProvider>
 				<Virtuoso
+					totalCount={1000}
+					customScrollParent={scrollParent}
+					overscan={{
+						main: 1000,
+						reverse: 1000,
+					}}
+					computeItemKey={(index) => messages[index]._id}
 					data={messages}
 					itemContent={(index, message) => {
 						const previous = messages[index - 1];
@@ -39,18 +48,16 @@ export const MessageList = function MessageList({ rid, messageListRef }: Message
 						const visible = !isThreadMessage(message) && !system;
 
 						return (
-							<Fragment key={message._id}>
-								<MessageListItem
-									message={message}
-									previous={previous}
-									showUnreadDivider={showUnreadDivider}
-									showUserAvatar={showUserAvatar}
-									sequential={sequential}
-									visible={visible}
-									subscription={subscription}
-									system={system}
-								/>
-							</Fragment>
+							<MessageListItem
+								message={message}
+								previous={previous}
+								showUnreadDivider={showUnreadDivider}
+								showUserAvatar={showUserAvatar}
+								sequential={sequential}
+								visible={visible}
+								subscription={subscription}
+								system={system}
+							/>
 						);
 					}}
 					style={{ height: '100%' }}
