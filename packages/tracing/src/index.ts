@@ -2,6 +2,7 @@ import { context, propagation, SpanStatusCode, trace } from '@opentelemetry/api'
 import type { Span, SpanOptions, Tracer } from '@opentelemetry/api';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { NodeSDK } from '@opentelemetry/sdk-node';
+import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
 
 export { initDatabaseTracing } from './traceDatabaseCalls';
 
@@ -18,6 +19,7 @@ export const startTracing = ({ service }: { service: string }) => {
 		traceExporter: exporter,
 		instrumentations: [],
 		serviceName: service,
+		spanProcessors: [new BatchSpanProcessor(exporter)],
 	});
 	sdk.start();
 
