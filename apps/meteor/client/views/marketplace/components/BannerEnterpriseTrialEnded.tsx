@@ -1,11 +1,12 @@
 import { Banner, Icon } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const BannerEnterpriseTrialEnded = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const isAdmin = usePermission('manage-apps');
 
 	const bannerLink = {

@@ -1,7 +1,8 @@
 import { Tabs } from '@rocket.chat/fuselage';
-import { useRouter, useRouteParameter, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter, useRouteParameter, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageContent } from '../../components/Page';
 import ChannelsTab from './tabs/channels/ChannelsTab';
@@ -11,7 +12,7 @@ import UsersTab from './tabs/users/UsersTab';
 type TabName = 'users' | 'channels' | 'teams' | 'external';
 
 const DirectoryPage = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const defaultTab = useSetting<TabName>('Accounts_Directory_DefaultView') ?? 'users';
 	const federationEnabled = useSetting('FEDERATION_Enabled');

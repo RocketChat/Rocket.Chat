@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-voip",
-	"version": "1.0.0",
+	"version": "2.0.0-rc.2",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -26,6 +26,7 @@
 	"devDependencies": {
 		"@babel/core": "~7.25.8",
 		"@faker-js/faker": "~8.0.2",
+		"@react-spectrum/test-utils": "~1.0.0-alpha.2",
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/fuselage": "^0.59.3",
@@ -49,6 +50,7 @@
 		"@types/jest": "~29.5.12",
 		"@types/jest-axe": "~3.5.9",
 		"@types/react": "~17.0.80",
+		"@types/react-dom": "~17.0.25",
 		"eslint": "~8.45.0",
 		"eslint-plugin-react": "~7.32.2",
 		"eslint-plugin-react-hooks": "~4.6.2",
@@ -65,9 +67,9 @@
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
 		"@rocket.chat/styled": "*",
-		"@rocket.chat/ui-avatar": "*",
-		"@rocket.chat/ui-client": "*",
-		"@rocket.chat/ui-contexts": "*",
+		"@rocket.chat/ui-avatar": "8.0.0-rc.2",
+		"@rocket.chat/ui-client": "12.0.0-rc.2",
+		"@rocket.chat/ui-contexts": "12.0.0-rc.2",
 		"react": "~17.0.2",
 		"react-aria": "~3.23.1",
 		"react-dom": "^17.0.2"

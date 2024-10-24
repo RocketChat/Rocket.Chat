@@ -4,7 +4,7 @@ import { IconButton, Box, Margins } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
-import { useSubscription } from 'use-subscription';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
@@ -18,10 +18,7 @@ const MessageBoxReplies = (): ReactElement | null => {
 		throw new Error('Chat context not found');
 	}
 
-	const replies = useSubscription({
-		getCurrentValue: chat.composer.quotedMessages.get,
-		subscribe: chat.composer.quotedMessages.subscribe,
-	});
+	const replies = useSyncExternalStore(chat.composer.quotedMessages.subscribe, chat.composer.quotedMessages.get);
 
 	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
 
