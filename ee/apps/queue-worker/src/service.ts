@@ -6,12 +6,12 @@ import polka from 'polka';
 
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
 
-startTracing({ service: 'queue-worker' });
-
 const PORT = process.env.PORT || 3038;
 
 (async () => {
-	const db = await getConnection();
+	const { db, client } = await getConnection();
+
+	startTracing({ service: 'queue-worker', db: client });
 
 	registerServiceModels(db, await getTrashCollection());
 
