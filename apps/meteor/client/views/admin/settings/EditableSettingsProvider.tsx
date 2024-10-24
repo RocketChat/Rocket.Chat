@@ -1,4 +1,4 @@
-import type { SettingId, GroupId, ISetting, TabId } from '@rocket.chat/core-typings';
+import type { ISetting } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { SettingsContextQuery } from '@rocket.chat/ui-contexts';
 import { useSettings } from '@rocket.chat/ui-contexts';
@@ -54,7 +54,7 @@ const EditableSettingsProvider = ({ children, query = defaultQuery }: EditableSe
 			return queries.every((query) => settingsCollection.find(query).count() > 0);
 		};
 
-		return createReactiveSubscriptionFactory((_id: SettingId): EditableSetting | undefined => {
+		return createReactiveSubscriptionFactory((_id: ISetting['_id']): EditableSetting | undefined => {
 			const settingsCollection = getSettingsCollection();
 			const editableSetting = settingsCollection.findOne(_id);
 
@@ -113,7 +113,7 @@ const EditableSettingsProvider = ({ children, query = defaultQuery }: EditableSe
 
 	const queryGroupSections = useMemo(
 		() =>
-			createReactiveSubscriptionFactory((_id: GroupId, tab?: TabId) =>
+			createReactiveSubscriptionFactory((_id: ISetting['_id'], tab?: ISetting['_id']) =>
 				Array.from(
 					new Set(
 						getSettingsCollection()
@@ -147,7 +147,7 @@ const EditableSettingsProvider = ({ children, query = defaultQuery }: EditableSe
 
 	const queryGroupTabs = useMemo(
 		() =>
-			createReactiveSubscriptionFactory((_id: GroupId) =>
+			createReactiveSubscriptionFactory((_id: ISetting['_id']) =>
 				Array.from(
 					new Set(
 						getSettingsCollection()
