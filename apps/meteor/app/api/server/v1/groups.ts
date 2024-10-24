@@ -8,7 +8,7 @@ import type { Filter } from 'mongodb';
 
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
-import { hideRoomMethod } from '../../../../server/methods/hideRoom';
+import { hideRoomMethod } from '../../../../server/lib/rooms/hideRoom';
 import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';

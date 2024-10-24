@@ -2,9 +2,9 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useRoomCloseAction } from '../../../../../hooks/useRoomCloseAction';
 import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
 import { useRoomConvertToTeam } from './actions/useRoomConvertToTeam';
-import { useRoomHide } from './actions/useRoomHide';
 import { useRoomLeave } from './actions/useRoomLeave';
 import { useRoomMoveToTeam } from './actions/useRoomMoveToTeam';
 
@@ -18,11 +18,12 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 	const { onClickEnterRoom, onClickEdit, resetState } = options;
 
 	const { t } = useTranslation();
-	const handleHide = useRoomHide(room);
+
 	const handleLeave = useRoomLeave(room);
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room, { reload: resetState });
 	const handleMoveToTeam = useRoomMoveToTeam(room);
 	const handleConvertToTeam = useRoomConvertToTeam(room);
+	const handleHide = useRoomCloseAction({ rid: room._id, type: room.t, name: room.name ?? '' });
 
 	return useMemo(() => {
 		const memoizedActions = {
