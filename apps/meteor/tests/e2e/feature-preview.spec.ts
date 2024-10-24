@@ -53,6 +53,7 @@ test.describe.serial('feature preview', () => {
 			});
 		});
 
+		// After moving `Enhanced navigation` out of feature preview, move these tests to sidebar.spec.ts
 		test('should be able to toggle "Enhanced navigation" feature', async ({ page }) => {
 			await page.goto('/account/feature-preview');
 
@@ -69,11 +70,67 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.navbar.navbar).toBeVisible();
 		});
 
-		test('should be displaying "Recent" button on sidebar search section, and display recent chats when clicked', async ({ page }) => {
+		test('should display "Recent" button on sidebar search section, and display recent chats when clicked', async ({ page }) => {
 			await page.goto('/home');
 
 			await poHomeChannel.sidenav.btnRecent.click();
 			await expect(poHomeChannel.sidenav.sidebar.getByRole('heading', { name: 'Recent' })).toBeVisible();
+		});
+
+		test('should expand/collapse sidebar groups', async ({ page }) => {
+			await page.goto('/home');
+			const collapser = poHomeChannel.sidenav.firstCollapser;
+			let isExpanded: boolean;
+
+			await collapser.click();
+			isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
+			expect(isExpanded).toBeFalsy();
+
+			await collapser.click();
+			isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
+			expect(isExpanded).toBeTruthy();
+		});
+
+		test('should expand/collapse sidebar groups with keyboard', async ({ page }) => {
+			await page.goto('/home');
+
+			const collapser = poHomeChannel.sidenav.firstCollapser;
+			let isExpanded: boolean;
+
+			await collapser.focus();
+			await page.keyboard.press('Enter');
+			isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
+			expect(isExpanded).toBeFalsy();
+
+			await page.keyboard.press('Space');
+			isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
+			expect(isExpanded).toBeTruthy();
+		});
+
+		test('should be able to use keyboard to navigate through sidebar items', async ({ page }) => {
+			await page.goto('/home');
+
+			const collapser = poHomeChannel.sidenav.firstCollapser;
+			await collapser.focus();
+
+			const dataIndex = await collapser.locator('../..').getAttribute('data-index');
+			const nextItem = page.locator(`[data-index="${Number(dataIndex) + 1}"]`).getByRole('link');
+
+			await page.keyboard.press('ArrowDown');
+			await expect(nextItem).toBeFocused();
+		});
+
+		test('should persist collapsed/expanded groups after page reload', async ({ page }) => {
+			await page.goto('/home');
+
+			const collapser = poHomeChannel.sidenav.firstCollapser;
+			await collapser.click();
+			const isExpanded = await collapser.getAttribute('aria-expanded');
+
+			await page.reload();
+
+			const isExpandedAfterReload = await collapser.getAttribute('aria-expanded');
+			expect(isExpanded).toEqual(isExpandedAfterReload);
 		});
 	});
 });

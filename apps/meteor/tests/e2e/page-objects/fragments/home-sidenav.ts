@@ -202,4 +202,16 @@ export class HomeSidenav {
 	get btnRecent(): Locator {
 		return this.sidebarSearchSection.getByRole('button', { name: 'Recent' });
 	}
+
+	get channelsList(): Locator {
+		return this.sidebar.getByRole('list', { name: 'Channels' });
+	}
+
+	getCollapseGroupByName(name: string): Locator {
+		return this.channelsList.getByRole('button', { name, exact: true });
+	}
+
+	get firstCollapser(): Locator {
+		return this.channelsList.getByRole('button').first();
+	}
 }
