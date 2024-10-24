@@ -1,7 +1,6 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { hashQueryKey } from '@tanstack/react-query';
-import type { ChangeEvent } from 'react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -74,7 +73,7 @@ const AgentsTable = () => {
 		<>
 			<AddAgent reload={refetch} />
 			{((isSuccess && data?.users.length > 0) || queryHasChanged) && (
-				<FilterByText value={text} onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.target.value)} />
+				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
 			{isLoading && (
 				<GenericTable>

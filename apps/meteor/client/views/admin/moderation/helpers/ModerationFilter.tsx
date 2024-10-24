@@ -1,4 +1,3 @@
-import type { ChangeEvent } from 'react';
 import React from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
@@ -12,7 +11,7 @@ type ModerationFilterProps = {
 
 const ModerationFilter = ({ text, setText, setDateRange }: ModerationFilterProps) => {
 	return (
-		<FilterByText shouldAutoFocus value={text} onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.target.value)}>
+		<FilterByText shouldAutoFocus value={text} onChange={(event) => setText(event.target.value)}>
 			<DateRangePicker onChange={setDateRange} />
 		</FilterByText>
 	);

@@ -1,11 +1,13 @@
 import { Box, Icon, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import type { ComponentPropsWithoutRef, FormEvent } from 'react';
+import type { ChangeEvent, ComponentPropsWithoutRef, FormEvent } from 'react';
 import React, { forwardRef, memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type FilterByTextProps = ComponentPropsWithoutRef<typeof TextInput> & {
+// TODO: consider changing the type of TextInput's `onChange` to (event: ChangeEvent<HTMLInputElement>) => void
+type FilterByTextProps = Omit<ComponentPropsWithoutRef<typeof TextInput>, 'onChange'> & {
 	shouldAutoFocus?: boolean;
+	onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
 const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function FilterByText(

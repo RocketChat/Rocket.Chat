@@ -2,7 +2,7 @@ import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitl
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import { hashQueryKey } from '@tanstack/react-query';
-import type { ChangeEvent, ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -106,7 +106,7 @@ function ContactTable(): ReactElement {
 	return (
 		<>
 			{((isSuccess && data?.visitors.length > 0) || queryHasChanged) && (
-				<FilterByText value={term} onChange={(event: ChangeEvent<HTMLInputElement>) => setTerm(event.target.value)}>
+				<FilterByText value={term} onChange={(event) => setTerm(event.target.value)}>
 					<Button onClick={onButtonNewClick} primary>
 						{t('New_contact')}
 					</Button>

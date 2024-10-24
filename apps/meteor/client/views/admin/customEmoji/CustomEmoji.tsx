@@ -3,7 +3,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ChangeEvent, MutableRefObject } from 'react';
+import type { MutableRefObject } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
@@ -66,7 +66,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 
 	return (
 		<>
-			<FilterByText value={text} onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.target.value)} />
+			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

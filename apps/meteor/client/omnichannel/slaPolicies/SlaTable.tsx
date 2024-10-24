@@ -2,7 +2,7 @@ import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashQueryKey } from '@tanstack/react-query';
-import type { ChangeEvent, MutableRefObject } from 'react';
+import type { MutableRefObject } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
 import FilterByText from '../../components/FilterByText';
@@ -87,7 +87,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	return (
 		<>
 			{((isSuccess && data?.sla.length > 0) || queryHasChanged) && (
-				<FilterByText value={filter} onChange={(event: ChangeEvent<HTMLInputElement>) => setFilter(event.target.value)} />
+				<FilterByText value={filter} onChange={(event) => setFilter(event.target.value)} />
 			)}
 			{isLoading && (
 				<GenericTable>

@@ -16,7 +16,6 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAutoComplete } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useMethod, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, hashQueryKey } from '@tanstack/react-query';
-import type { ChangeEvent } from 'react';
 import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../components/FilterByText';
@@ -146,7 +145,7 @@ const MonitorsTable = () => {
 				</Field>
 			</Box>
 			{((isSuccess && data?.monitors.length > 0) || queryHasChanged) && (
-				<FilterByText value={text} onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.target.value)} />
+				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
 			{isLoading && (
 				<GenericTable>

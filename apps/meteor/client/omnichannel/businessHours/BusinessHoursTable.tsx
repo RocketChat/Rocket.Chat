@@ -2,7 +2,6 @@ import { Pagination, States, StatesIcon, StatesActions, StatesAction, StatesTitl
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ChangeEvent } from 'react';
 import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../components/FilterByText';
@@ -52,7 +51,7 @@ const BusinessHoursTable = () => {
 
 	return (
 		<>
-			<FilterByText value={text} onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.target.value)} />
+			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

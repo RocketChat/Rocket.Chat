@@ -3,7 +3,7 @@ import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesActio
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ChangeEvent, ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import FilterByText from '../../../../../components/FilterByText';
@@ -94,11 +94,7 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 
 	return (
 		<>
-			<FilterByText
-				placeholder={t('Search_Users')}
-				value={text}
-				onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.target.value)}
-			/>
+			<FilterByText placeholder={t('Search_Users')} value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

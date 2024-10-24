@@ -3,7 +3,6 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { hashQueryKey, useQuery } from '@tanstack/react-query';
-import type { ChangeEvent } from 'react';
 import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
@@ -80,7 +79,7 @@ const ManagersTable = () => {
 		<>
 			<AddManager reload={refetch} />
 			{((isSuccess && data?.users.length > 0) || queryHasChanged) && (
-				<FilterByText value={text} onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.target.value)} />
+				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
 			{isLoading && (
 				<GenericTable aria-busy>

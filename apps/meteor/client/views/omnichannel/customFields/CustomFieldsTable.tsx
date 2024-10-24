@@ -2,7 +2,6 @@ import { IconButton, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashQueryKey } from '@tanstack/react-query';
-import type { ChangeEvent } from 'react';
 import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
@@ -79,7 +78,7 @@ const CustomFieldsTable = () => {
 	return (
 		<>
 			{((isSuccess && data?.customFields.length > 0) || queryHasChanged) && (
-				<FilterByText value={text} onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.target.value)} />
+				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
 			{isLoading && (
 				<GenericTable>
