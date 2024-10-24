@@ -2,7 +2,7 @@ import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { Fragment } from 'react';
@@ -19,10 +19,12 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 } from '../../../components/Contextualbar';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { ContactManagerInput } from '../additionalForms';
 import { FormSkeleton } from '../directory/components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../directory/hooks/useCustomFieldsMetadata';
 import { useContactRoute } from '../hooks/useContactRoute';
+import AdvancedContactModal from './AdvancedContactModal';
 
 type ContactNewEditProps = {
 	contactData?: Serialized<ILivechatContact> | null;
@@ -62,17 +64,23 @@ const getInitialValues = (data: ContactNewEditProps['contactData']): ContactForm
 	};
 };
 
+const validateMultipleFields = (fieldsLength: number, hasLicense: boolean) => fieldsLength >= 1 && !hasLicense;
+
 const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
 	const handleNavigate = useContactRoute();
+	const setModal = useSetModal();
 
+	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
 	const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
 	const getContact = useEndpoint('GET', '/v1/omnichannel/contacts.get');
 	const createContact = useEndpoint('POST', '/v1/omnichannel/contacts');
 	const updateContact = useEndpoint('POST', '/v1/omnichannel/contacts.update');
+
+	const handleOpenUpSellModal = () => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />);
 
 	const { data: customFieldsMetadata = [], isInitialLoading: isLoadingCustomFields } = useCustomFieldsMetadata({
 		scope: 'visitor',
@@ -220,7 +228,10 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 							{errors.emails?.[index]?.address && <FieldError>{errors.emails?.[index]?.address?.message}</FieldError>}
 						</Fragment>
 					))}
-					<Button mbs={8} onClick={() => appendEmail({ address: '' })}>
+					<Button
+						mbs={8}
+						onClick={validateMultipleFields(emailFields.length, hasLicense) ? handleOpenUpSellModal : () => appendEmail({ address: '' })}
+					>
 						{t('Add_email')}
 					</Button>
 				</Field>
@@ -244,7 +255,12 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 							<FieldError>{errors.phones?.[index]?.message}</FieldError>
 						</Fragment>
 					))}
-					<Button mbs={8} onClick={() => appendPhone({ phoneNumber: '' })}>
+					<Button
+						mbs={8}
+						onClick={
+							validateMultipleFields(phoneFields.length, hasLicense) ? handleOpenUpSellModal : () => appendPhone({ phoneNumber: '' })
+						}
+					>
 						{t('Add_phone')}
 					</Button>
 				</Field>
