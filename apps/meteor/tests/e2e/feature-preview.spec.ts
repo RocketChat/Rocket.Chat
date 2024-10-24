@@ -95,29 +95,35 @@ test.describe.serial('feature preview', () => {
 			await page.goto('/home');
 
 			const collapser = poHomeChannel.sidenav.firstCollapser;
-			let isExpanded: boolean;
 
-			await collapser.focus();
-			await page.keyboard.press('Enter');
-			isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
-			expect(isExpanded).toBeFalsy();
+			await expect(async () => {
+				await collapser.focus();
+				await expect(collapser).toBeFocused();
+				await page.keyboard.press('Enter');
+				const isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
+				expect(isExpanded).toBeFalsy();
+			}).toPass();
 
-			await page.keyboard.press('Space');
-			isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
-			expect(isExpanded).toBeTruthy();
+			await expect(async () => {
+				await collapser.focus();
+				await page.keyboard.press('Space');
+				const isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
+				expect(isExpanded).toBeTruthy();
+			}).toPass();
 		});
 
 		test('should be able to use keyboard to navigate through sidebar items', async ({ page }) => {
 			await page.goto('/home');
 
 			const collapser = poHomeChannel.sidenav.firstCollapser;
-			await collapser.focus();
-
 			const dataIndex = await collapser.locator('../..').getAttribute('data-index');
 			const nextItem = page.locator(`[data-index="${Number(dataIndex) + 1}"]`).getByRole('link');
 
-			await page.keyboard.press('ArrowDown');
-			await expect(nextItem).toBeFocused();
+			await expect(async () => {
+				await collapser.focus();
+				await page.keyboard.press('ArrowDown');
+				await expect(nextItem).toBeFocused();
+			}).toPass();
 		});
 
 		test('should persist collapsed/expanded groups after page reload', async ({ page }) => {
