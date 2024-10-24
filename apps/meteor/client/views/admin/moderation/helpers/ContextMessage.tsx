@@ -2,8 +2,9 @@ import type { IMessage, MessageReport, MessageAttachment } from '@rocket.chat/co
 import { isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Message, MessageName, MessageToolbarItem, MessageToolbarWrapper, MessageUsername } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import Attachments from '../../../../components/message/content/Attachments';
@@ -30,7 +31,7 @@ const ContextMessage = ({
 	onRedirect: (id: IMessage['_id']) => void;
 	onChange: () => void;
 }): JSX.Element => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const isEncryptedMessage = isE2EEMessage(message);
 

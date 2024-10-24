@@ -1,17 +1,18 @@
 import type { IRole } from '@rocket.chat/core-typings';
 import { Box, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { ContextualbarFooter, ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
 import RoleForm from './RoleForm';
 
 const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: boolean }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const usersInRoleRouter = useRoute('admin-permissions');

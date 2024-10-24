@@ -1,16 +1,18 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { OrganizationInfoPage } from '@rocket.chat/onboarding-ui';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRole, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRole } from '@rocket.chat/ui-contexts';
+import type { TFunction } from 'i18next';
 import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
 const getSettingOptions = (
 	settings: Array<ISetting> | undefined,
 	settingId: ISetting['_id'],
-	t: ReturnType<typeof useTranslation>,
+	t: TFunction,
 ): Array<[key: string, text: string]> => {
 	if (!settings) {
 		return [];
@@ -26,7 +28,7 @@ const getSettingOptions = (
 };
 
 const OrganizationInfoStep = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const hasAdminRole = useRole('admin');
 
 	const {

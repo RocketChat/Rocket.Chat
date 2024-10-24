@@ -1,7 +1,8 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../components/GenericModal';
 import { useRemoveCurrentChatMutation } from './hooks/useRemoveCurrentChatMutation';
@@ -9,9 +10,9 @@ import { useRemoveCurrentChatMutation } from './hooks/useRemoveCurrentChatMutati
 type RemoveChatButtonProps = { _id: string };
 
 const RemoveChatButton = ({ _id }: RemoveChatButtonProps) => {
-	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const { t } = useTranslation();
 
 	const removeCurrentChatMutation = useRemoveCurrentChatMutation();
 

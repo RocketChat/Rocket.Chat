@@ -1,15 +1,16 @@
 import type { ILivechatBusinessHour, Serialized } from '@rocket.chat/core-typings';
 import { IconButton } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent } from 'react';
 import React, { memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericTableRow, GenericTableCell } from '../../components/GenericTable';
 import { useRemoveBusinessHour } from './useRemoveBusinessHour';
 
 const BusinessHoursRow = ({ _id, name, timezone, workHours, active, type }: Serialized<ILivechatBusinessHour>) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const handleRemove = useRemoveBusinessHour();
 

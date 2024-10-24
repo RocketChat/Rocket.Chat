@@ -1,9 +1,10 @@
 import type { IMessage, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isE2EEMessage, isOTRMessage, isOTRAckMessage, isE2EEPinnedMessage } from '@rocket.chat/core-typings';
 import { MessageStatusIndicator, MessageStatusIndicatorItem } from '@rocket.chat/fuselage';
-import { useUserId, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useMessageDateFormatter, useShowStarred, useShowTranslated, useShowFollowing } from './list/MessageListContext';
 
@@ -12,7 +13,7 @@ type StatusIndicatorsProps = {
 };
 
 const StatusIndicators = ({ message }: StatusIndicatorsProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const translated = useShowTranslated(message);
 	const starred = useShowStarred({ message });
 	const following = useShowFollowing({ message });

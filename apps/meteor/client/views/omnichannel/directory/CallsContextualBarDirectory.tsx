@@ -1,7 +1,8 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { useRoute, useRouteParameter, useSearchParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Contextualbar } from '../../../components/Contextualbar';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
@@ -11,7 +12,7 @@ import { VoipInfo } from './calls/contextualBar/VoipInfo';
 import { FormSkeleton } from './components/FormSkeleton';
 
 const CallsContextualBarDirectory = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const id = useRouteParameter('id');
 	const token = useSearchParameter('token');

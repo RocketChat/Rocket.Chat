@@ -1,8 +1,9 @@
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box, Button } from '@rocket.chat/fuselage';
 import { useDebouncedState, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute } from '@rocket.chat/ui-contexts';
 import { hashQueryKey } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
@@ -24,13 +25,13 @@ import { CallDialpadButton } from '../components/CallDialpadButton';
 import { useCurrentContacts } from './hooks/useCurrentContacts';
 
 function ContactTable() {
-	const t = useTranslation();
-
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'phone' | 'visitorEmails.address' | 'lastChat.ts'>('name');
 	const isCallReady = useIsCallReady();
 
 	const [term, setTerm] = useDebouncedState('', 500);
+
+	const { t } = useTranslation();
 
 	const query = useDebouncedValue(
 		useMemo(
