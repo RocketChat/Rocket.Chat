@@ -28,7 +28,7 @@ import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteor
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 
 Accounts.config({
-	defaultFieldSelector: { ...getBaseUserFields(), services: 1 },
+	defaultFieldSelector: getBaseUserFields(),
 	forbidClientAccountCreation: true,
 });
 
