@@ -9063,7 +9063,6 @@ __metadata:
     "@types/supports-color": "npm:~7.2.1"
     "@types/textarea-caret": "npm:^3.0.3"
     "@types/ua-parser-js": "npm:^0.7.39"
-    "@types/use-subscription": "npm:^1.0.2"
     "@types/use-sync-external-store": "npm:^0.0.6"
     "@types/uuid": "npm:^8.3.4"
     "@types/xml-crypto": "npm:~1.4.6"
@@ -9264,7 +9263,6 @@ __metadata:
     underscore: "npm:^1.13.7"
     universal-perf-hooks: "npm:^1.0.1"
     url-polyfill: "npm:^1.1.12"
-    use-subscription: "npm:~1.6.0"
     use-sync-external-store: "npm:^1.2.2"
     uuid: "npm:^8.3.2"
     webdav: "npm:^4.11.4"
@@ -10169,7 +10167,6 @@ __metadata:
     "@types/react": "npm:~17.0.80"
     "@types/react-beautiful-dnd": "npm:^13.1.8"
     "@types/react-dom": "npm:~17.0.25"
-    "@types/use-subscription": "npm:^1.0.2"
     "@typescript-eslint/eslint-plugin": "npm:~5.60.1"
     "@typescript-eslint/parser": "npm:~5.60.1"
     "@vitejs/plugin-react": "npm:^4.0.0"
@@ -10188,7 +10185,6 @@ __metadata:
     react-virtuoso: "npm:^4.7.1"
     reactflow: "npm:^11.7.2"
     typescript: "npm:~5.6.3"
-    use-subscription: "npm:^1.8.2"
     vite: "npm:^4.5.5"
   languageName: unknown
   linkType: soft
@@ -13320,13 +13316,6 @@ __metadata:
   version: 3.0.3
   resolution: "@types/unist@npm:3.0.3"
   checksum: 10/96e6453da9e075aaef1dc22482463898198acdc1eeb99b465e65e34303e2ec1e3b1ed4469a9118275ec284dc98019f63c3f5d49422f0e4ac707e5ab90fb3b71a
-  languageName: node
-  linkType: hard
-
-"@types/use-subscription@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@types/use-subscription@npm:1.0.2"
-  checksum: 10/e547d8ffdf8410c985c271a30903cd754687a6514a67192378213590f707a0f516e0c11930cba10bd7e98dc4f7917e066b3b8d37a622d02b6fcf3c5df530e467
   languageName: node
   linkType: hard
 
@@ -38009,26 +37998,6 @@ __metadata:
   version: 1.0.1
   resolution: "use-strict@npm:1.0.1"
   checksum: 10/e2798c587b8dc95483ac376e1b9b13fbab179bbd498ed7bd55cba2ef72792569621ba25d9aa5df21f884a161d28624d39165070a690fc5f088bf903e097fc267
-  languageName: node
-  linkType: hard
-
-"use-subscription@npm:^1.8.2":
-  version: 1.8.2
-  resolution: "use-subscription@npm:1.8.2"
-  dependencies:
-    use-sync-external-store: "npm:^1.2.2"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10/6b17f92a75405a4e6015d7762b459a43435f34d0bb9a72e512e305d6d3a61bd170e6666c3a62c2c3c7af1b7ba0b45c5a597b7eeea54c46e1cabf8ef0f971d44e
-  languageName: node
-  linkType: hard
-
-"use-subscription@npm:~1.6.0":
-  version: 1.6.0
-  resolution: "use-subscription@npm:1.6.0"
-  peerDependencies:
-    react: ^18.0.0
-  checksum: 10/afce4295e439069d6139079c7c3a12ac3e6c4e81cd9b1622e62934e007d8cf2885f6aae5bd8de4f031d3eb5bd3cea2fd83d9be8c3da9542d4ba0a9de170be274
   languageName: node
   linkType: hard
 
