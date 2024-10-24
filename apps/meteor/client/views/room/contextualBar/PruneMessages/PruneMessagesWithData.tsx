@@ -1,10 +1,11 @@
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';
 import { useRoom } from '../../contexts/RoomContext';
@@ -37,7 +38,7 @@ export const initialValues = {
 const DEFAULT_PRUNE_LIMIT = 2000;
 
 const PruneMessagesWithData = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const room = useRoom();
 	const setModal = useSetModal();
 	const { closeTab: close } = useRoomToolbox();
@@ -119,14 +120,15 @@ const PruneMessagesWithData = (): ReactElement => {
 	});
 
 	const callOutText = useMemo(() => {
-		const exceptPinned = pinned ? ` ${t('except_pinned', {})}` : '';
+		const name = room && ((isDirectMessageRoom(room) && room.usernames?.join(' x ')) || room.fname || room.name);
+		const exceptPinned = pinned ? ` ${t('except_pinned')}` : '';
 		const ifFrom = users.length
 			? ` ${t('if_they_are_from', {
 					postProcess: 'sprintf',
 					sprintf: [users.map((element) => element).join(', ')],
 			  })}`
 			: '';
-		const filesOrMessages = t(attached ? 'files' : 'messages', {});
+		const filesOrMessages = attached ? t('files') : t('messages');
 
 		if (newerDate && olderDate) {
 			return (
@@ -164,7 +166,7 @@ const PruneMessagesWithData = (): ReactElement => {
 		return (
 			t('Prune_Warning_all', {
 				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, room && ((isDirectMessageRoom(room) && room.usernames?.join(' x ')) || room.fname || room.name)],
+				sprintf: [filesOrMessages, name],
 			}) +
 			exceptPinned +
 			ifFrom
@@ -173,17 +175,11 @@ const PruneMessagesWithData = (): ReactElement => {
 
 	const validateText = useMemo(() => {
 		if (fromDate > toDate) {
-			return t('Newer_than_may_not_exceed_Older_than', {
-				postProcess: 'sprintf',
-				sprintf: [],
-			});
+			return t('Newer_than_may_not_exceed_Older_than');
 		}
 
 		if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
-			return t('error-invalid-date', {
-				postProcess: 'sprintf',
-				sprintf: [],
-			});
+			return t('error-invalid-date');
 		}
 
 		return undefined;

@@ -1,9 +1,10 @@
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box, Button } from '@rocket.chat/fuselage';
 import { useDebouncedState, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute } from '@rocket.chat/ui-contexts';
 import { hashQueryKey } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
@@ -31,7 +32,7 @@ function ContactTable(): ReactElement {
 
 	const [term, setTerm] = useDebouncedState('', 500);
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const query = useDebouncedValue(
 		useMemo(

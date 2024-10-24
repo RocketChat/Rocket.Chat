@@ -1,7 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../components/InfoPanel';
 import { FormSkeleton } from '../directory/components/FormSkeleton';
@@ -12,7 +13,7 @@ type CustomFieldProps = {
 };
 
 const CustomField = ({ id, value }: CustomFieldProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const getCustomField = useEndpoint('GET', '/v1/livechat/custom-fields/:_id', { _id: id });
 	const { data, isLoading, isError } = useQuery(['/v1/livechat/custom-field', id], () => getCustomField());
 

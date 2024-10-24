@@ -1,6 +1,4 @@
-import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import i18nDict from '@rocket.chat/i18n';
-import type { TOptions } from 'i18next';
 
 import { availableTranslationNamespaces, defaultTranslationNamespace, extractTranslationNamespaces, i18n } from '../../app/utils/lib/i18n';
 
@@ -18,13 +16,5 @@ void i18n.init({
 	),
 	initImmediate: false,
 });
-
-declare module 'i18next' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface TFunction {
-		(key: RocketchatI18nKeys): string;
-		(key: RocketchatI18nKeys, options: TOptions): string;
-	}
-}
 
 export { i18n };
