@@ -5,6 +5,7 @@ import { isAtBottom as isAtBottomLib } from '../../../../../app/ui/client/views/
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 
 export const useListIsAtBottom = () => {
+	console.log('USE LIST IS AT BOTTOM RUN');
 	const atBottomRef = useRef(true);
 
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);

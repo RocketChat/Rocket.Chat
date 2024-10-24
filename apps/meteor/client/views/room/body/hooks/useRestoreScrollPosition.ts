@@ -16,11 +16,13 @@ export function useRestoreScrollPosition(roomId: IRoom['_id']) {
 			const store = RoomManager.getStore(roomId);
 
 			if (store?.scroll && !store.atBottom) {
+				console.log('SCROLLING TO', store.scroll);
 				node.scrollTo({
 					left: 30,
 					top: store.scroll,
 				});
 			} else {
+				console.log('SCROLLING TO BOTTOM?');
 				node.scrollTo({
 					top: node.scrollHeight,
 				});

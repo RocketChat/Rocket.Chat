@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import React, { Fragment } from 'react';
+import React, { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
@@ -28,39 +28,45 @@ export const MessageList = function MessageList({ rid, messageListRef }: Message
 
 	const scrollParent: any = messageListRef?.current;
 
+	// Memoize itemContent using useCallback
+	const itemContent = useCallback(
+		(index: number, message) => {
+			const previous = messages[index - 1];
+			const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
+			const showUnreadDivider = firstUnreadMessageId === message._id;
+			const system = MessageTypes.isSystemMessage(message);
+			const visible = !isThreadMessage(message) && !system;
+
+			return (
+				<MessageListItem
+					message={message}
+					previous={previous}
+					showUnreadDivider={showUnreadDivider}
+					showUserAvatar={showUserAvatar}
+					sequential={sequential}
+					visible={visible}
+					subscription={subscription}
+					system={system}
+				/>
+			);
+		},
+		[messages, messageGroupingPeriod, firstUnreadMessageId, showUserAvatar, subscription],
+	);
+
 	return (
 		<MessageListProvider messageListRef={messageListRef}>
 			<SelectedMessagesProvider>
 				<Virtuoso
-					totalCount={1000}
+					// totalCount={messages?.length}
 					customScrollParent={scrollParent}
-					overscan={{
-						main: 1000,
-						reverse: 1000,
+					increaseViewportBy={{
+						top: window?.innerHeight || 1000,
+						bottom: window?.innerHeight || 1000,
 					}}
 					computeItemKey={(index) => messages[index]._id}
 					data={messages}
-					itemContent={(index, message) => {
-						const previous = messages[index - 1];
-						const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
-						const showUnreadDivider = firstUnreadMessageId === message._id;
-						const system = MessageTypes.isSystemMessage(message);
-						const visible = !isThreadMessage(message) && !system;
-
-						return (
-							<MessageListItem
-								message={message}
-								previous={previous}
-								showUnreadDivider={showUnreadDivider}
-								showUserAvatar={showUserAvatar}
-								sequential={sequential}
-								visible={visible}
-								subscription={subscription}
-								system={system}
-							/>
-						);
-					}}
-					style={{ height: '100%' }}
+					itemContent={itemContent}
+					style={{ height: '100%', width: '100%' }}
 				/>
 			</SelectedMessagesProvider>
 		</MessageListProvider>
