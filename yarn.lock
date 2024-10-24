@@ -6705,6 +6705,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-aria/test-utils@npm:1.0.0-alpha.2":
+  version: 1.0.0-alpha.2
+  resolution: "@react-aria/test-utils@npm:1.0.0-alpha.2"
+  dependencies:
+    "@swc/helpers": "npm:^0.5.0"
+  peerDependencies:
+    "@testing-library/react": ^15.0.7
+    "@testing-library/user-event": ^13.0.0 || ^14.0.0
+    jest: ^29.5.0
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0
+  checksum: 10/b4f802492aced144df72c4910a815b04830cdf40817aff13b5106a9760813f6e5d80f2b3b600383900bc6cc6ccbc7fec1f1b4c622b9e618f00e9e3df328567a8
+  languageName: node
+  linkType: hard
+
 "@react-aria/textfield@npm:3.0.0-nightly.1779+afb946c4a":
   version: 3.0.0-nightly.1779
   resolution: "@react-aria/textfield@npm:3.0.0-nightly.1779"
@@ -7019,6 +7033,21 @@ __metadata:
   version: 2.7.0
   resolution: "@react-pdf/types@npm:2.7.0"
   checksum: 10/aabefb525363fd8f0e62ca943fec14090cd50e2bf37a359cafb4f26692ea529c680b64512d52d528bc4cf7d96e909fd6b3136115369d041880e792c95a0a8752
+  languageName: node
+  linkType: hard
+
+"@react-spectrum/test-utils@npm:~1.0.0-alpha.2":
+  version: 1.0.0-alpha.2
+  resolution: "@react-spectrum/test-utils@npm:1.0.0-alpha.2"
+  dependencies:
+    "@react-aria/test-utils": "npm:1.0.0-alpha.2"
+    "@swc/helpers": "npm:^0.5.0"
+  peerDependencies:
+    "@testing-library/react": ^15.0.7
+    "@testing-library/user-event": ^13.0.0 || ^14.0.0
+    jest: ^29.5.0
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0
+  checksum: 10/f9444cf7b4881b3c86c9142894fd6a5c4790aa5a9aab61a59da270b3b2a959f211aa5bf130e8a9baf4695d01b27a319d1f5bcabb2a14c8fe68be78eaac758fc0
   languageName: node
   linkType: hard
 
@@ -10095,6 +10124,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:~7.25.8"
     "@faker-js/faker": "npm:~8.0.2"
+    "@react-spectrum/test-utils": "npm:~1.0.0-alpha.2"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
     "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/eslint-config": "workspace:^"
@@ -10120,6 +10150,7 @@ __metadata:
     "@types/jest": "npm:~29.5.12"
     "@types/jest-axe": "npm:~3.5.9"
     "@types/react": "npm:~17.0.80"
+    "@types/react-dom": "npm:~17.0.25"
     eslint: "npm:~8.45.0"
     eslint-plugin-react: "npm:~7.32.2"
     eslint-plugin-react-hooks: "npm:~4.6.2"
