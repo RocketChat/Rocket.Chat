@@ -61,7 +61,7 @@ const RoomBody = (): ReactElement => {
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useRoomMessages();
 
-	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead') as boolean | undefined;
+	const allowAnonymousRead = useSetting<boolean>('Accounts_AllowAnonymousRead');
 
 	const canPreviewChannelRoom = usePermission('preview-c-room');
 

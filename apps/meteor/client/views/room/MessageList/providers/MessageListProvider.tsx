@@ -38,7 +38,7 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 	const { isMobile } = useLayout();
 
 	const showRealName = useSetting('UI_Use_Real_Name', false);
-	const showColors = useSetting('HexColorPreview_Enabled') as boolean;
+	const showColors = useSetting('HexColorPreview_Enabled', false);
 
 	const displayRolesGlobal = useSetting('UI_DisplayRoles', true);
 	const hideRolesPreference = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);

@@ -12,7 +12,7 @@ import Wrapper from './Wrapper';
 // TODO: use `CodeSnippet` Component
 const Installation = (): ReactElement => {
 	const { t } = useTranslation();
-	const setting = useSetting('Site_Url') as string;
+	const setting = useSetting<string>('Site_Url');
 	const siteUrl = setting?.replace(/\/$/, '');
 
 	const installString = `<!-- Start of Rocket.Chat Livechat Script -->
