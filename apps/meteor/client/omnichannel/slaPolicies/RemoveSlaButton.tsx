@@ -1,13 +1,14 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../components/GenericModal';
 import { GenericTableCell } from '../../components/GenericTable';
 
 const RemoveSlaButton = ({ _id, reload }: { _id: string; reload: () => void }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const slaRoute = useRoute('omnichannel-sla-policies');
 	const dispatchToastMessage = useToastMessageDispatch();

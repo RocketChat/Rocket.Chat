@@ -1,7 +1,8 @@
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 export const useEncryptedRoomDescription = (roomType: 'channel' | 'team') => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms');
 

@@ -1,8 +1,9 @@
 import { Box, Input } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';
 
@@ -14,7 +15,7 @@ type RemoveDepartmentModalProps = {
 };
 
 const RemoveDepartmentModal = ({ _id = '', name, reset, onClose }: RemoveDepartmentModalProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [text, setText] = useState('');
 
 	const removeDepartment = useEndpoint('DELETE', '/v1/livechat/department/:_id', { _id });

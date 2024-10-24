@@ -33,9 +33,11 @@ Meteor.startup(() => {
 			return;
 		}
 
-		if (Meteor.loggingIn()) {
-			return;
-		}
+		// TODO: TEMPORARY UNTIL THIS IS FIXED
+		// BACKEND MS SHOULD SEND USER DATA AFTER LOGIN
+		// if (Meteor.loggingIn()) {
+		// 	return;
+		// }
 
 		const user = await synchronizeUserData(uid);
 		if (!user) {
