@@ -1,6 +1,15 @@
 import type { Serialized } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette, IconButton, Icon } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Palette,
+	IconButton,
+	Icon,
+	MessageGenericPreview,
+	MessageGenericPreviewContent,
+	MessageGenericPreviewDescription,
+	MessageGenericPreviewTitle,
+} from '@rocket.chat/fuselage';
 import type { ContactSearchChatsResult } from '@rocket.chat/rest-typings';
 import { useSetModal, useTranslation, type TranslationKey } from '@rocket.chat/ui-contexts';
 import React from 'react';
@@ -57,22 +66,21 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, closedAt, onCli
 			flexDirection='column'
 			onClick={onClick}
 		>
-			<Box display='flex' alignItems='center'>
-				{source && <OmnichannelRoomIcon source={source} size='x18' placement='default' />}
-				{source && (
-					<Box mi={4} fontScale='p2b'>
-						{t(sourceTypeMap[source?.type] as TranslationKey)}
-					</Box>
-				)}
-				{lastMessage && (
-					<Box mis={4} fontScale='c1'>
-						{timeAgo(lastMessage.ts)}
-					</Box>
-				)}
-			</Box>
-			<Box minHeight='x24' alignItems='center' mbs={4} display='flex' justifyContent='space-between'>
-				<Box>{!closedAt ? t('Conversation_in_progress') : t('Conversation_closed_without_comment')}</Box>
-				<Box is='span' onClick={preventPropagation}>
+			<Box display='flex' justifyContent='space-between'>
+				<Box display='flex' alignItems='center'>
+					{source && <OmnichannelRoomIcon source={source} size='x18' placement='default' />}
+					{source && (
+						<Box mi={4} fontScale='p2b'>
+							{t(sourceTypeMap[source?.type] as TranslationKey)}
+						</Box>
+					)}
+					{lastMessage && (
+						<Box mis={4} fontScale='c1'>
+							{timeAgo(lastMessage.ts)}
+						</Box>
+					)}
+				</Box>
+				<Box mis={4} is='span' onClick={preventPropagation}>
 					{hasLicense && verified ? (
 						<Icon title={t('Verified')} mis={4} size='x16' name='success-circle' color='stroke-highlight' />
 					) : (
@@ -85,6 +93,17 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, closedAt, onCli
 					)}
 				</Box>
 			</Box>
+			<Box mbs={4}>{!closedAt ? t('Conversation_in_progress') : t('Conversation_closed_without_comment')}</Box>
+			{lastMessage?.msg.trim() && (
+				<Box width='full' mbs={8}>
+					<MessageGenericPreview>
+						<MessageGenericPreviewContent>
+							<MessageGenericPreviewTitle>{t('Closing_chat_message')}:</MessageGenericPreviewTitle>
+							<MessageGenericPreviewDescription clamp>{lastMessage?.msg}</MessageGenericPreviewDescription>
+						</MessageGenericPreviewContent>
+					</MessageGenericPreview>
+				</Box>
+			)}
 		</Box>
 	);
 };
