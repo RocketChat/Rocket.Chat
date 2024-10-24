@@ -1,11 +1,11 @@
 import { OmnichannelIntegration } from '@rocket.chat/core-services';
 import type {
 	ILivechatVisitor,
-	IOmnichannelRoom,
 	IUpload,
 	MessageAttachment,
 	ServiceData,
 	FileAttachmentProps,
+	IOmnichannelRoomInfo,
 } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -122,10 +122,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			return API.v1.success(SMSService.error(new Error('Invalid visitor')));
 		}
 
-		const roomInfo: {
-			source?: IOmnichannelRoom['source'];
-			[key: string]: unknown;
-		} = {
+		const roomInfo: IOmnichannelRoomInfo = {
 			sms: {
 				from: sms.to,
 			},
@@ -244,10 +241,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		const sendMessage: {
 			guest: ILivechatVisitor;
 			message: ILivechatMessage;
-			roomInfo: {
-				source?: IOmnichannelRoom['source'];
-				[key: string]: unknown;
-			};
+			roomInfo: IOmnichannelRoomInfo;
 		} = {
 			guest: visitor,
 			roomInfo,

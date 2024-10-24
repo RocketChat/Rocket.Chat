@@ -207,7 +207,7 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 		inbox: string;
 		thread: string[];
 		replyTo: string;
-		subject: string;
+		subject?: string;
 	};
 	source: IOmnichannelSource;
 
@@ -371,6 +371,12 @@ export const isVoipRoom = (room: IRoom): room is IVoipRoom & IRoom => room.t ===
 export const isOmnichannelSourceFromApp = (source: IOmnichannelSource): source is IOmnichannelSourceFromApp => {
 	return source?.type === OmnichannelSourceType.APP;
 };
+
+export type IOmnichannelRoomInfo = Pick<Partial<IOmnichannelRoom>, 'source' | 'sms' | 'email'>;
+
+export type IOmnichannelRoomExtraData = Pick<Partial<IOmnichannelRoom>, 'customFields' | 'source'> & { sla?: string };
+
+export type IOmnichannelInquiryExtraData = IOmnichannelRoomExtraData & { priority?: string };
 
 export type RoomAdminFieldsType =
 	| '_id'
