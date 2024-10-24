@@ -6,7 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ChatSubscription } from '../../app/models/client';
+import { ChatSubscription } from '../../app/models/client/models/ChatSubscription';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
