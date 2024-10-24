@@ -1,14 +1,15 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { FormSkeleton } from '../../../components/Skeleton';
 import type { EditDepartmentProps } from './EditDepartment';
 import EditDepartment from './EditDepartment';
 
 const EditDepartmentWithAllowedForwardData = ({ data, ...props }: Omit<EditDepartmentProps, 'allowedToForwardData'>) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const getDepartmentListByIds = useEndpoint('GET', '/v1/livechat/department.listByIds');
 
 	const {

@@ -17,7 +17,7 @@ const ChatsTableFilter = () => {
 	const removeClosedChats = useMethod('livechat:removeAllClosedRooms');
 	const queryClient = useQueryClient();
 
-	const { displayFilters, setFiltersQuery, removeFilter } = useChatsContext();
+	const { filtersQuery, displayFilters, setFiltersQuery, removeFilter } = useChatsContext();
 
 	const handleRemoveAllClosed = useEffectEvent(async () => {
 		const onDeleteAll = async () => {
@@ -59,7 +59,10 @@ const ChatsTableFilter = () => {
 
 	return (
 		<>
-			<FilterByText onChange={(text) => setFiltersQuery((prevState) => ({ ...prevState, guest: text }))}>
+			<FilterByText
+				value={filtersQuery.guest}
+				onChange={(event) => setFiltersQuery((prevState) => ({ ...prevState, guest: event.target.value }))}
+			>
 				<Button
 					onClick={() =>
 						directoryRoute.push({

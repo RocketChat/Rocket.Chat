@@ -1,8 +1,9 @@
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box, Button } from '@rocket.chat/fuselage';
-import { useDebouncedState, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useRoute } from '@rocket.chat/ui-contexts';
 import { hashQueryKey } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
@@ -24,13 +25,12 @@ import { CallDialpadButton } from '../components/CallDialpadButton';
 import { useCurrentContacts } from './hooks/useCurrentContacts';
 
 function ContactTable() {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'phone' | 'visitorEmails.address' | 'lastChat.ts'>('name');
 	const isCallReady = useIsCallReady();
-
-	const [term, setTerm] = useDebouncedState('', 500);
+	const [term, setTerm] = useState('');
 
 	const query = useDebouncedValue(
 		useMemo(
@@ -48,14 +48,14 @@ function ContactTable() {
 	const directoryRoute = useRoute('omnichannel-directory');
 	const formatDate = useFormatDate();
 
-	const onButtonNewClick = useMutableCallback(() =>
+	const onButtonNewClick = useEffectEvent(() =>
 		directoryRoute.push({
 			tab: 'contacts',
 			context: 'new',
 		}),
 	);
 
-	const onRowClick = useMutableCallback(
+	const onRowClick = useEffectEvent(
 		(id) => (): void =>
 			directoryRoute.push({
 				id,
@@ -102,7 +102,7 @@ function ContactTable() {
 	return (
 		<>
 			{((isSuccess && data?.contacts.length > 0) || queryHasChanged) && (
-				<FilterByText onChange={setTerm}>
+				<FilterByText value={term} onChange={(event) => setTerm(event.target.value)}>
 					<Button onClick={onButtonNewClick} primary>
 						{t('New_contact')}
 					</Button>

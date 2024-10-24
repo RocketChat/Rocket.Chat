@@ -1,5 +1,4 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IOmnichannelSource } from './IRoom';
 import type { UserStatus } from './UserStatus';
 
 export interface IVisitorPhone {
@@ -50,7 +49,6 @@ export interface ILivechatVisitor extends IRocketChatRecord {
 	};
 	activity?: string[];
 	disabled?: boolean;
-	source?: IOmnichannelSource;
 }
 
 export interface ILivechatVisitorDTO {

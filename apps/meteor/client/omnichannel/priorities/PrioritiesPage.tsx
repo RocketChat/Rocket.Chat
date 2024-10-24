@@ -1,9 +1,10 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageContent } from '../../components/Page';
 import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';
@@ -18,7 +19,7 @@ type PrioritiesPageProps = {
 };
 
 export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const prioritiesRoute = useRoute('omnichannel-priorities');
 

@@ -1,7 +1,8 @@
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const style = { width: '100%' };
 
@@ -14,7 +15,7 @@ const AgentOverview = ({
 	dateRange: { start: string; end: string };
 	departmentId: string;
 }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { start, end } = dateRange;
 
 	const params = useMemo(

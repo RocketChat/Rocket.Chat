@@ -1,9 +1,10 @@
 import { Box, Button, Field, FieldLabel, FieldRow, FieldHint, Modal, TextAreaInput } from '@rocket.chat/fuselage';
-import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import Tags from '../../../components/Omnichannel/Tags';
 
@@ -20,7 +21,7 @@ export const WrapUpCallModal = ({ closeRoom }: WrapUpCallModalProps): ReactEleme
 	const setModal = useSetModal();
 
 	const closeModal = (): void => setModal(null);
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { register, handleSubmit, setValue, watch } = useForm<WrapUpCallPayload>();
 
