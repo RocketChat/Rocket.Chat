@@ -1,12 +1,12 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useUiKitActionManager } from '../uikit/hooks/useUiKitActionManager';
 
 const ActionManagerBusyState = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const actionManager = useUiKitActionManager();
 	const [busy, setBusy] = useState(false);
 

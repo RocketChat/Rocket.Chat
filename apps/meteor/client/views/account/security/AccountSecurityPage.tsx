@@ -62,8 +62,8 @@ const AccountSecurityPage = (): ReactElement => {
 						)}
 						{e2eEnabled && (
 							<Accordion.Item
-								title={t('E2E Encryption')}
-								aria-label={t('E2E Encryption')}
+								title={t('End-to-end_encryption')}
+								aria-label={t('End-to-end_encryption')}
 								defaultExpanded={!twoFactorEnabled}
 								data-qa-type='e2e-encryption-section'
 							>

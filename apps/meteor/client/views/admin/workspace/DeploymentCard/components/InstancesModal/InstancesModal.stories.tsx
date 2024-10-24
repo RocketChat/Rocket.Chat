@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import InstancesModal from './InstancesModal';
@@ -12,9 +12,9 @@ export default {
 	argTypes: {
 		onClose: { action: 'onClose' },
 	},
-} as ComponentMeta<typeof InstancesModal>;
+} satisfies Meta<typeof InstancesModal>;
 
-const Template: ComponentStory<typeof InstancesModal> = (args) => <InstancesModal {...args} />;
+const Template: StoryFn<typeof InstancesModal> = (args) => <InstancesModal {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'InstancesModal';

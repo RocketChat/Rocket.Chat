@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import MessageTime from '.';
@@ -14,7 +14,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof MessageTime>>;
 
-const Template: Story<ComponentProps<typeof MessageTime>> = (args) => <MessageTime {...args} />;
+const Template: StoryFn<ComponentProps<typeof MessageTime>> = (args) => <MessageTime {...args} />;
 
 export const Today = Template.bind({});
 Today.storyName = 'today';

@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import { Readable } from 'stream';
 
 import { EmailInbox } from '@rocket.chat/models';
 import type { ImapMessage, ImapMessageBodyInfo } from 'imap';
@@ -164,7 +165,7 @@ export class IMAPInterceptor extends EventEmitter {
 					resolve(mail);
 				}
 			};
-			simpleParser(stream, cb);
+			simpleParser(new Readable().wrap(stream), cb);
 		});
 	}
 
@@ -174,7 +175,7 @@ export class IMAPInterceptor extends EventEmitter {
 			const messagecb = (msg: ImapMessage, seqno: number) => {
 				out.push(seqno);
 				const bodycb = (stream: NodeJS.ReadableStream, _info: ImapMessageBodyInfo): void => {
-					simpleParser(stream, (_err, email) => {
+					simpleParser(new Readable().wrap(stream), (_err, email) => {
 						if (this.options.rejectBeforeTS && email.date && email.date < this.options.rejectBeforeTS) {
 							logger.error({ msg: `Rejecting email on inbox ${this.config.user}`, subject: email.subject });
 							return;

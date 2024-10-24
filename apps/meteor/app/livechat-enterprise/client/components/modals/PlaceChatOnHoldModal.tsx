@@ -1,6 +1,6 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type PlaceChatOnHoldModalProps = {
 	onOnHoldChat: () => void;
@@ -9,7 +9,7 @@ type PlaceChatOnHoldModalProps = {
 };
 
 const PlaceChatOnHoldModal = ({ onCancel, onOnHoldChat, confirm = onOnHoldChat, ...props }: PlaceChatOnHoldModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Modal {...props} data-qa-id='on-hold-modal'>

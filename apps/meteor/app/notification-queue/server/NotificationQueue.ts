@@ -1,5 +1,6 @@
 import type { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem, IUser } from '@rocket.chat/core-typings';
 import { NotificationQueue, Users } from '@rocket.chat/models';
+import { tracerSpan } from '@rocket.chat/tracing';
 import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../../server/lib/logger/system';
@@ -43,7 +44,19 @@ class NotificationClass {
 
 		setTimeout(async () => {
 			try {
-				await this.worker();
+				const continueLater = await tracerSpan(
+					'NotificationWorker',
+					{
+						attributes: {
+							workerTime: new Date().toISOString(),
+						},
+					},
+					() => this.worker(),
+				);
+
+				if (continueLater) {
+					this.executeWorkerLater();
+				}
 			} catch (err) {
 				SystemLogger.error({ msg: 'Error sending notification', err });
 				this.executeWorkerLater();
@@ -51,17 +64,17 @@ class NotificationClass {
 		}, this.cyclePause);
 	}
 
-	async worker(counter = 0): Promise<void> {
+	async worker(counter = 0): Promise<boolean> {
 		const notification = await this.getNextNotification();
 
 		if (!notification) {
-			return this.executeWorkerLater();
+			return true;
 		}
 
 		// Once we start notifying the user we anticipate all the schedules
 		const flush = await NotificationQueue.clearScheduleByUserId(notification.uid);
 
-		// start worker again it queue flushed
+		// start worker again if queue flushed
 		if (flush.modifiedCount) {
 			await NotificationQueue.unsetSendingById(notification._id);
 			return this.worker(counter);
@@ -86,9 +99,10 @@ class NotificationClass {
 		}
 
 		if (counter >= this.maxBatchSize) {
-			return this.executeWorkerLater();
+			return true;
 		}
-		await this.worker(counter++);
+
+		return this.worker(counter++);
 	}
 
 	getNextNotification(): Promise<INotification | null> {

@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { BASE_API_URL } from './config/constants';
+import { BASE_API_URL, IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import injectInitialData from './fixtures/inject-initial-data';
 import { Users, storeState, restoreState } from './fixtures/userStates';
@@ -133,13 +133,11 @@ test.describe.serial('e2e-encryption', () => {
 
 	test.beforeAll(async ({ api }) => {
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true })).status()).toBe(200);
-		expect((await api.post('/settings/E2E_Enabled_Mentions', { value: true })).status()).toBe(200);
 	});
 
 	test.afterAll(async ({ api }) => {
 		expect((await api.post('/settings/E2E_Enable', { value: false })).status()).toBe(200);
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
-		expect((await api.post('/settings/E2E_Enabled_Mentions', { value: false })).status()).toBe(200);
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
@@ -162,6 +160,8 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.tabs.btnDisableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnDisableE2E.click({ force: true });
+		await expect(page.getByRole('dialog', { name: 'Disable encryption' })).toBeVisible();
+		await page.getByRole('button', { name: 'Disable encryption' }).click();
 		await poHomeChannel.dismissToast();
 		await page.waitForTimeout(1000);
 
@@ -173,6 +173,8 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
+		await page.getByRole('button', { name: 'Enable encryption' }).click();
 		await poHomeChannel.dismissToast();
 		await page.waitForTimeout(1000);
 
@@ -257,6 +259,8 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
+		await page.getByRole('button', { name: 'Enable encryption' }).click();
 		await page.waitForTimeout(1000);
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
@@ -369,6 +373,8 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
+		await page.getByRole('button', { name: 'Enable encryption' }).click();
 		await page.waitForTimeout(1000);
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
@@ -414,6 +420,9 @@ test.describe.serial('e2e-encryption', () => {
 			'This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.',
 		);
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+		await poHomeChannel.content.lastUserMessage.hover();
+		await expect(page.locator('[role=toolbar][aria-label="Message actions"]')).not.toBeVisible();
 	});
 
 	test('expect placeholder text in place of encrypted file description, when E2EE is not setup and non-encrypted files upload in disabled e2ee room', async ({
@@ -448,6 +457,8 @@ test.describe.serial('e2e-encryption', () => {
 
 			await expect(poHomeChannel.tabs.btnDisableE2E).toBeVisible();
 			await poHomeChannel.tabs.btnDisableE2E.click();
+			await expect(page.getByRole('dialog', { name: 'Disable encryption' })).toBeVisible();
+			await page.getByRole('button', { name: 'Disable encryption' }).click();
 			await poHomeChannel.dismissToast();
 			// will wait till the key icon in header goes away
 			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toHaveCount(0);
@@ -474,6 +485,8 @@ test.describe.serial('e2e-encryption', () => {
 
 			await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 			await poHomeChannel.tabs.btnEnableE2E.click();
+			await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
+			await page.getByRole('button', { name: 'Enable encryption' }).click();
 			await poHomeChannel.dismissToast();
 			// will wait till the key icon in header appears
 			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toHaveCount(1);
@@ -641,6 +654,7 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test('expect slash commands to be enabled in an e2ee room', async ({ page }) => {
+		test.skip(!IS_EE, 'Premium Only');
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
@@ -668,6 +682,7 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test.describe('un-encrypted messages not allowed in e2ee rooms', () => {
+		test.skip(!IS_EE, 'Premium Only');
 		let poHomeChannel: HomeChannel;
 
 		test.beforeEach(async ({ page }) => {
@@ -727,6 +742,8 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
+		await page.getByRole('button', { name: 'Enable encryption' }).click();
 		await page.waitForTimeout(1000);
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 

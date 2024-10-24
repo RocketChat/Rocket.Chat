@@ -1,6 +1,6 @@
 import { Field } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import SelectSettingInput from './SelectSettingInput';
@@ -14,9 +14,9 @@ export default {
 		},
 	},
 	decorators: [(fn) => <Field>{fn()}</Field>],
-} as ComponentMeta<typeof SelectSettingInput>;
+} satisfies Meta<typeof SelectSettingInput>;
 
-const Template: ComponentStory<typeof SelectSettingInput> = (args) => <SelectSettingInput {...args} />;
+const Template: StoryFn<typeof SelectSettingInput> = (args) => <SelectSettingInput {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {

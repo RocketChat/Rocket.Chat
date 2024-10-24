@@ -17,7 +17,6 @@ export const useQuery = (
 ): PaginatedRequest<{ text: string }> =>
 	useMemo(
 		() => ({
-			fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
 			text,
 			sort: JSON.stringify({
 				[column]: sortDir(direction),

@@ -1425,6 +1425,87 @@ describe('[Chat]', () => {
 			await updateSetting('Message_CustomFields_Enabled', false);
 			await updateSetting('Message_CustomFields', '');
 		});
+		it('should fail updating a message if no room id is provided', () => {
+			return request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					msgId: message._id,
+					text: 'This message was edited via API',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
+		it('should fail updating a message if no message id is provided', () => {
+			return request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					text: 'This message was edited via API',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
+		it('should fail updating a message if no  text is provided', () => {
+			return request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					msgId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
+		it('should fail updating a message if an invalid message id is provided', () => {
+			return request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					msgId: 'invalid-id',
+					text: 'This message was edited via API',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'No message found with the id of "invalid-id".');
+				});
+		});
+
+		it('should fail updating a message if it is not in the provided room', () => {
+			return request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: 'invalid-room',
+					msgId: message._id,
+					text: 'This message was edited via API',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'The room id provided does not match where the message is from.');
+				});
+		});
 
 		it('should update a message successfully', (done) => {
 			void request
@@ -1642,6 +1723,64 @@ describe('[Chat]', () => {
 					msgId = res.body.message._id;
 				})
 				.end(done);
+		});
+		it('should fail deleting a message if no message id is provided', async () => {
+			return request
+				.post(api('chat.delete'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+		it('should fail deleting a message if no room id is provided', async () => {
+			return request
+				.post(api('chat.delete'))
+				.set(credentials)
+				.send({
+					msgId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+		it('should fail deleting a message if it is not in the provided room', async () => {
+			return request
+				.post(api('chat.delete'))
+				.set(credentials)
+				.send({
+					roomId: 'invalid-room',
+					msgId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'The room id provided does not match where the message is from.');
+				});
+		});
+		it('should fail deleting a message if an invalid id is provided', async () => {
+			return request
+				.post(api('chat.delete'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					msgId: 'invalid-id',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', `No message found with the id of "invalid-id".`);
+				});
 		});
 		it('should delete a message successfully', (done) => {
 			void request
@@ -2948,6 +3087,56 @@ describe('Threads', () => {
 					})
 					.end(done);
 			});
+		});
+
+		it("should fail returning a room's thread list if no roomId is provided", async () => {
+			await updatePermission('view-c-room', ['admin', 'user']);
+			return request
+				.get(api('chat.getThreadsList'))
+				.set(credentials)
+				.query({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
+		it("should fail returning a room's thread list if an invalid type is provided", async () => {
+			return request
+				.get(api('chat.getThreadsList'))
+				.set(credentials)
+				.query({
+					rid: testChannel._id,
+					type: 'invalid-type',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
+		it("should return the room's thread list", async () => {
+			return request
+				.get(api('chat.getThreadsList'))
+				.set(credentials)
+				.query({
+					rid: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('threads').and.to.be.an('array');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('count');
+					expect(res.body.threads).to.have.lengthOf(1);
+					expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
+				});
 		});
 
 		it("should return the room's thread list even requested with count and offset params", (done) => {

@@ -1,14 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import OverviewSection from './OverviewSection';
 import ServersSection from './ServersSection';
 
 function FederationDashboardPage(): ReactElement {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Page>

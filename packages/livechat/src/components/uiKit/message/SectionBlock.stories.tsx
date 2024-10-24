@@ -24,7 +24,7 @@ export default {
 			/>
 		),
 	],
-} as Meta;
+} satisfies Meta;
 
 export const TextAsPlainText = () =>
 	renderMessageBlocks([

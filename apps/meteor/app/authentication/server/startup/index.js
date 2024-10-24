@@ -262,11 +262,12 @@ const onCreateUserAsync = async function (options, user = {}) {
 
 Accounts.onCreateUser(function (...args) {
 	// Depends on meteor support for Async
-	return Promise.await(onCreateUserAsync.call(this, ...args));
+	return onCreateUserAsync.call(this, ...args);
 });
 
 const { insertUserDoc } = Accounts;
-const insertUserDocAsync = async function (options, user) {
+
+Accounts.insertUserDoc = async function (options, user) {
 	const globalRoles = new Set();
 
 	if (Match.test(options.globalRoles, [String]) && options.globalRoles.length > 0) {
@@ -307,7 +308,7 @@ const insertUserDocAsync = async function (options, user) {
 		user.roles = [];
 	}
 
-	const _id = insertUserDoc.call(Accounts, options, user);
+	const _id = await insertUserDoc.call(Accounts, options, user);
 
 	user = await Users.findOne({
 		_id,
@@ -366,11 +367,6 @@ const insertUserDocAsync = async function (options, user) {
 	}
 
 	return _id;
-};
-
-Accounts.insertUserDoc = function (...args) {
-	// Depends on meteor support for Async
-	return Promise.await(insertUserDocAsync.call(this, ...args));
 };
 
 const validateLoginAttemptAsync = async function (login) {
@@ -442,7 +438,7 @@ const validateLoginAttemptAsync = async function (login) {
 
 Accounts.validateLoginAttempt(function (...args) {
 	// Depends on meteor support for Async
-	return Promise.await(validateLoginAttemptAsync.call(this, ...args));
+	return validateLoginAttemptAsync.call(this, ...args);
 });
 
 Accounts.validateNewUser((user) => {

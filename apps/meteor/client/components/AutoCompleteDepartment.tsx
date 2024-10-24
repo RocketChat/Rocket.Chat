@@ -1,8 +1,8 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useRecordList } from '../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../hooks/useAsyncState';
@@ -28,7 +28,7 @@ const AutoCompleteDepartment = ({
 	showArchived = false,
 	...props
 }: AutoCompleteDepartmentProps): ReactElement | null => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState<string>('');
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
@@ -42,8 +42,9 @@ const AutoCompleteDepartment = ({
 				haveNone,
 				excludeDepartmentId,
 				showArchived,
+				selectedDepartment: value,
 			}),
-			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId, showArchived],
+			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId, showArchived, value],
 		),
 	);
 

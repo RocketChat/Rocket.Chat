@@ -24,6 +24,7 @@ export type OptionProp = {
 	id: string;
 	text: string;
 	checked?: boolean;
+	isGroupTitle?: boolean;
 };
 
 /**

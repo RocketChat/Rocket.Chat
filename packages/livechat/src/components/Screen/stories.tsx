@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { Screen } from '.';
@@ -31,7 +31,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof Screen>>;
 
-const Template: Story<ComponentProps<typeof Screen>> = (args) => (
+const Template: StoryFn<ComponentProps<typeof Screen>> = (args) => (
 	<Screen {...args}>
 		<Screen.Content>Content</Screen.Content>
 	</Screen>

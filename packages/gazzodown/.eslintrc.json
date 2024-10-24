@@ -51,7 +51,7 @@
 			"files": ["*.ts", "*.tsx"],
 			"rules": {
 				"@typescript-eslint/ban-ts-ignore": "off",
-				"@typescript-eslint/explicit-function-return-type": "warn",
+				"@typescript-eslint/explicit-function-return-type": "off",
 				"@typescript-eslint/indent": "off",
 				"@typescript-eslint/no-extra-parens": "off",
 				"@typescript-eslint/no-explicit-any": "off",

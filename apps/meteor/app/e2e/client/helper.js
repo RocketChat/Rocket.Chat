@@ -146,3 +146,15 @@ export async function generateMnemonicPhrase(n, sep = ' ') {
 	}
 	return result.join(sep);
 }
+
+export async function createSha256HashFromText(data) {
+	const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(data));
+	return Array.from(new Uint8Array(hash))
+		.map((b) => b.toString(16).padStart(2, '0'))
+		.join('');
+}
+
+export async function sha256HashFromArrayBuffer(arrayBuffer) {
+	const hashArray = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', arrayBuffer)));
+	return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}

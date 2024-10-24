@@ -36,8 +36,17 @@ export class AppRealStorage extends AppMetadataStorage {
 		return items;
 	}
 
+	public async retrieveAllPrivate(): Promise<Map<string, IAppStorageItem>> {
+		const docs = await this.db.find({ installationSource: 'private' }).toArray();
+		const items = new Map();
+
+		docs.forEach((i) => items.set(i.id, i));
+
+		return items;
+	}
+
 	public async update(item: IAppStorageItem): Promise<IAppStorageItem> {
-		await this.db.updateOne({ id: item.id }, { $set: item });
+		await this.db.updateOne({ id: item.id, _id: item._id }, { $set: item });
 		return this.retrieveOne(item.id);
 	}
 

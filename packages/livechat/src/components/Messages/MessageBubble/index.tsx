@@ -1,4 +1,5 @@
 import type { ComponentChildren } from 'preact';
+import type { CSSProperties } from 'preact/compat';
 import { memo } from 'preact/compat';
 
 import { createClassName } from '../../../helpers/createClassName';
@@ -9,7 +10,7 @@ type MessageBubbleProps = {
 	nude?: boolean;
 	quoted?: boolean;
 	className?: string;
-	style?: React.CSSProperties;
+	style?: CSSProperties;
 	system?: boolean;
 	children?: ComponentChildren;
 };

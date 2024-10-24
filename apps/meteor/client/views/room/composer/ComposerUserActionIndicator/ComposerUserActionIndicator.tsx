@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { UserAction } from '../../../../../app/ui/client/lib/UserAction';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
@@ -9,7 +9,7 @@ import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 const maxUsernames = 5;
 
 const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const actions = useReactiveValue(
 		useCallback(() => {
 			const roomAction = UserAction.get(tmid || rid) || {};

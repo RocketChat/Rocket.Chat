@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import SettingsGroupSelector from './SettingsGroupSelector';
@@ -10,7 +10,7 @@ export default {
 		layout: 'fullscreen',
 		controls: { hideNoControlsWarning: true },
 	},
-} as ComponentMeta<typeof SettingsGroupSelector>;
+} satisfies Meta<typeof SettingsGroupSelector>;
 
-export const Default: ComponentStory<typeof SettingsGroupSelector> = (args) => <SettingsGroupSelector {...args} />;
+export const Default: StoryFn<typeof SettingsGroupSelector> = (args) => <SettingsGroupSelector {...args} />;
 Default.storyName = 'GroupSelector';

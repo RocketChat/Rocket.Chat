@@ -163,7 +163,7 @@ export class SAML {
 				}
 			}
 
-			const userId = Accounts.insertUserDoc({}, newUser);
+			const userId = await Accounts.insertUserDoc({}, newUser);
 			user = await Users.findOneById(userId);
 
 			if (user && userObject.channels && channelsAttributeUpdate !== true) {
@@ -267,7 +267,7 @@ export class SAML {
 				throw new Meteor.Error('Unable to process Logout Request: missing request data.');
 			}
 
-			let timeoutHandler: NodeJS.Timer | null = null;
+			let timeoutHandler: NodeJS.Timeout | undefined = undefined;
 			const redirect = (url?: string | undefined): void => {
 				if (!timeoutHandler) {
 					// If the handler is null, then we already ended the response;
@@ -275,7 +275,7 @@ export class SAML {
 				}
 
 				clearTimeout(timeoutHandler);
-				timeoutHandler = null;
+				timeoutHandler = undefined;
 
 				res.writeHead(302, {
 					Location: url || Meteor.absoluteUrl(),

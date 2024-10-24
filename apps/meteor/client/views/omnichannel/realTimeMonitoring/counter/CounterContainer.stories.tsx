@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import CounterContainer from './CounterContainer';
@@ -6,9 +6,9 @@ import CounterContainer from './CounterContainer';
 export default {
 	title: 'Omnichannel/Realtime Monitoring/CounterContainer',
 	component: CounterContainer,
-} as ComponentMeta<typeof CounterContainer>;
+} satisfies Meta<typeof CounterContainer>;
 
-export const Default: ComponentStory<typeof CounterContainer> = (args) => <CounterContainer {...args} />;
+export const Default: StoryFn<typeof CounterContainer> = (args) => <CounterContainer {...args} />;
 Default.storyName = 'CounterContainer';
 Default.args = {
 	initialData: [

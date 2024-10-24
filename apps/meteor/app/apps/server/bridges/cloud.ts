@@ -12,7 +12,7 @@ export class AppCloudBridge extends CloudWorkspaceBridge {
 	public async getWorkspaceToken(scope: string, appId: string): Promise<IWorkspaceToken> {
 		this.orch.debugLog(`App ${appId} is getting the workspace's token`);
 
-		const token = await getWorkspaceAccessTokenWithScope(scope);
+		const token = await getWorkspaceAccessTokenWithScope({ scope });
 
 		return token;
 	}

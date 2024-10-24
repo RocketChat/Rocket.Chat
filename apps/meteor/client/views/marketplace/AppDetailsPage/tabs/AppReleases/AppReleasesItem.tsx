@@ -1,8 +1,8 @@
 import { Accordion, Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 import { purifyOptions } from '../../../lib/purifyOptions';
@@ -21,7 +21,7 @@ type ReleaseItemProps = {
 };
 
 const AppReleasesItem = ({ release, ...props }: ReleaseItemProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDate = useTimeAgo();
 
 	const title = (

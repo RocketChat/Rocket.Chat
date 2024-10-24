@@ -1,5 +1,6 @@
+import type { Box } from '@rocket.chat/fuselage';
 import type { OperationParams } from '@rocket.chat/rest-typings';
-import type { MutableRefObject } from 'react';
+import type { ComponentPropsWithoutRef, MutableRefObject } from 'react';
 import React from 'react';
 
 import { useEndpointData } from '../../../../hooks/useEndpointData';
@@ -13,7 +14,7 @@ const overviewInitalValue = {
 type AgentsOverviewChartsProps = {
 	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/agents-productivity-totalizers'>;
 	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
-};
+} & Omit<ComponentPropsWithoutRef<typeof Box>, 'data'>;
 
 const initialData = [overviewInitalValue, overviewInitalValue, overviewInitalValue];
 

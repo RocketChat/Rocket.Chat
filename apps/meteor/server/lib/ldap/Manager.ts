@@ -8,14 +8,14 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
+import type { UserConverterOptions } from '../../../app/importer/server/classes/converters/UserConverter';
 import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
 import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { omit } from '../../../lib/utils/omit';
 import { LDAPConnection } from './Connection';
-import { LDAPDataConverter } from './DataConverter';
 import { logger, authLogger, connLogger } from './Logger';
+import { LDAPUserConverter } from './UserConverter';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 
 export class LDAPManager {
@@ -149,7 +149,7 @@ export class LDAPManager {
 		}
 	}
 
-	protected static getConverterOptions(): IConverterOptions {
+	protected static getConverterOptions(): UserConverterOptions {
 		return {
 			flagEmailsAsVerified: settings.get<boolean>('Accounts_Verify_Email_For_External_Accounts') ?? false,
 			skipExistingUsers: false,
@@ -167,6 +167,7 @@ export class LDAPManager {
 		const username = this.slugifyUsername(ldapUser, usedUsername || id || '') || undefined;
 		const emails = this.getLdapEmails(ldapUser, username).map((email) => email.trim());
 		const name = this.getLdapName(ldapUser) || undefined;
+		const voipExtension = this.getLdapExtension(ldapUser);
 
 		const userData: IImportUser = {
 			type: 'user',
@@ -174,6 +175,7 @@ export class LDAPManager {
 			importIds: [ldapUser.dn],
 			username,
 			name,
+			voipExtension,
 			services: {
 				ldap: {
 					idAttribute,
@@ -360,7 +362,7 @@ export class LDAPManager {
 		}
 
 		const options = this.getConverterOptions();
-		await LDAPDataConverter.convertSingleUser(userData, options);
+		await LDAPUserConverter.convertSingleUser(userData, options);
 
 		return existingUser || this.findExistingLDAPUser(ldapUser);
 	}
@@ -436,6 +438,15 @@ export class LDAPManager {
 	private static getLdapName(ldapUser: ILDAPEntry): string | undefined {
 		const nameAttributes = getLDAPConditionalSetting<string | undefined>('LDAP_Name_Field');
 		return this.getLdapDynamicValue(ldapUser, nameAttributes);
+	}
+
+	private static getLdapExtension(ldapUser: ILDAPEntry): string | undefined {
+		const extensionAttribute = settings.get<string>('LDAP_Extension_Field');
+		if (!extensionAttribute) {
+			return;
+		}
+
+		return this.getLdapString(ldapUser, extensionAttribute);
 	}
 
 	private static getLdapEmails(ldapUser: ILDAPEntry, username?: string): string[] {

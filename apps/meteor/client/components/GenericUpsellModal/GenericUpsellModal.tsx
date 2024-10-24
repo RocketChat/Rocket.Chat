@@ -1,8 +1,8 @@
 import { Box, Button, Modal } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement, ComponentProps } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type GenericUpsellModalProps = {
 	children?: ReactNode;
@@ -35,7 +35,7 @@ const GenericUpsellModal = ({
 	annotation,
 	...props
 }: GenericUpsellModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Modal {...props}>

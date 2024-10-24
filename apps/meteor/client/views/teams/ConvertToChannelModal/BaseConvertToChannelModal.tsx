@@ -13,7 +13,7 @@ const STEPS = {
 type BaseConvertToChannelModalProps = {
 	onClose: () => void;
 	onCancel: () => void;
-	onConfirm: () => Serialized<IRoom>[];
+	onConfirm: (deletedRooms: { [key: string]: Serialized<IRoom> }) => void;
 	currentStep?: string;
 	rooms?: (Serialized<IRoom> & { isLastOwner?: boolean })[];
 };

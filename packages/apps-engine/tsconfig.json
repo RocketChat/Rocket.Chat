@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "sourceMap": true,
+        "target": "es6",
+        "module": "commonjs",
+        "declaration": true,
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "removeComments": false,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "moduleResolution": "node",
+        "types": ["node"],
+        "lib": ["es2017", "dom"],
+        "rootDir": "./src",
+        "outDir": ".",
+        "skipLibCheck": true
+    },
+    "exclude": ["deno-runtime"],
+    "include": ["./src/**/*"]
+}

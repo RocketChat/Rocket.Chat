@@ -1,6 +1,7 @@
-import { Box, Margins, PasswordInput, Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, Button } from '@rocket.chat/fuselage';
+import { Box, PasswordInput, Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, Button, Divider } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useLogout } from '@rocket.chat/ui-contexts';
+import { Accounts } from 'meteor/accounts-base';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -12,8 +13,8 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const logout = useLogout();
 
-	const publicKey = localStorage.getItem('public_key');
-	const privateKey = localStorage.getItem('private_key');
+	const publicKey = Accounts.storageLocation.getItem('public_key');
+	const privateKey = Accounts.storageLocation.getItem('private_key');
 
 	const resetE2eKey = useMethod('e2e.resetOwnE2EKey');
 
@@ -70,10 +71,19 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	const passwordConfirmId = useUniqueId();
 
 	return (
-		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs={16} {...props}>
-			<Margins blockEnd={8}>
-				<Box fontScale='h4'>{t('E2E_Encryption_Password_Change')}</Box>
-				<Box id={e2ePasswordExplanationId} dangerouslySetInnerHTML={{ __html: t('E2E_Encryption_Password_Explanation') }} />
+		<Box display='flex' flexDirection='column' alignItems='flex-start' {...props}>
+			<Box
+				is='p'
+				fontScale='p1'
+				id={e2ePasswordExplanationId}
+				dangerouslySetInnerHTML={{ __html: t('E2E_Encryption_Password_Explanation') }}
+			/>
+
+			<Box mbs={36} w='full'>
+				<Box is='h4' fontScale='h4' mbe={12}>
+					{t('E2E_Encryption_Password_Change')}
+				</Box>
+
 				<FieldGroup w='full'>
 					<Field>
 						<FieldLabel htmlFor={passwordId}>{t('New_encryption_password')}</FieldLabel>
@@ -137,18 +147,24 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 					primary
 					disabled={!(keysExist && isValid)}
 					onClick={handleSubmit(saveNewPassword)}
+					mbs={12}
 					data-qa-type='e2e-encryption-save-password-button'
 				>
 					{t('Save_changes')}
 				</Button>
-				<Box fontScale='h4' mbs={16}>
+			</Box>
+
+			<Divider mb={36} width='full' />
+
+			<Box>
+				<Box is='h4' fontScale='h4' mbe={12}>
 					{t('Reset_E2E_Key')}
 				</Box>
-				<Box dangerouslySetInnerHTML={{ __html: t('E2E_Reset_Key_Explanation') }} />
+				<Box is='p' fontScale='p1' mbe={12} dangerouslySetInnerHTML={{ __html: t('E2E_Reset_Key_Explanation') }} />
 				<Button onClick={handleResetE2eKey} data-qa-type='e2e-encryption-reset-key-button'>
 					{t('Reset_E2E_Key')}
 				</Button>
-			</Margins>
+			</Box>
 		</Box>
 	);
 };

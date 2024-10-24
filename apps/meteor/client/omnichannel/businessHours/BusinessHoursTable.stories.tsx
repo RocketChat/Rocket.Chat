@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import BusinessHoursTable from './BusinessHoursTable';
@@ -12,9 +12,9 @@ export default {
 			argTypesRegex: '^on.*',
 		},
 	},
-} as ComponentMeta<typeof BusinessHoursTable>;
+} satisfies Meta<typeof BusinessHoursTable>;
 
-export const Default: ComponentStory<typeof BusinessHoursTable> = (_args) => <BusinessHoursTable />;
+export const Default: StoryFn<typeof BusinessHoursTable> = (_args) => <BusinessHoursTable />;
 Default.storyName = 'BusinessHoursTable';
 Default.args = {
 	businessHours: [

@@ -1,10 +1,8 @@
-import { DecoratorFn, Parameters } from '@storybook/react';
+import type { Decorator, Parameters } from '@storybook/react';
 
 import { rocketChatDecorator } from './decorators';
 
-export const decorators: DecoratorFn[] = [
-	rocketChatDecorator
-];
+export const decorators: Decorator[] = [rocketChatDecorator];
 
 export const parameters: Parameters = {
 	backgrounds: {
@@ -21,3 +19,4 @@ export const parameters: Parameters = {
 		},
 	},
 };
+export const tags = ['autodocs'];
