@@ -520,7 +520,7 @@ export const statistics = {
 		);
 
 		statsPms.push(
-			NotificationQueue.col.estimatedDocumentCount().then((count) => {
+			NotificationQueue.estimatedDocumentCount().then((count) => {
 				statistics.pushQueue = count;
 			}),
 		);
@@ -546,9 +546,9 @@ export const statistics = {
 		statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
 		statistics.joinJitsiButton = settings.get('Jitsi_Click_To_Join_Count');
 		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
-		statistics.totalOTRRooms = await Rooms.countByCreatedOTR();
+		statistics.totalOTRRooms = await Rooms.countByCreatedOTR({ readPreference });
 		statistics.totalOTR = settings.get('OTR_Count');
-		statistics.totalBroadcastRooms = await Rooms.countByBroadcast();
+		statistics.totalBroadcastRooms = await Rooms.countByBroadcast({ readPreference });
 		statistics.totalTriggeredEmails = settings.get('Triggered_Emails_Count');
 		statistics.totalRoomsWithStarred = await Messages.countRoomsWithStarredMessages({ readPreference });
 		statistics.totalRoomsWithPinned = await Messages.countRoomsWithPinnedMessages({ readPreference });
@@ -564,8 +564,8 @@ export const statistics = {
 		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
 		statistics.totalEncryptedMessages = await Messages.countByType('e2e', { readPreference });
 		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count');
-		statistics.totalSubscriptionRoles = await RolesRaw.countByScope('Subscriptions');
-		statistics.totalUserRoles = await RolesRaw.countByScope('Users');
+		statistics.totalSubscriptionRoles = await RolesRaw.countByScope('Subscriptions', { readPreference });
+		statistics.totalUserRoles = await RolesRaw.countByScope('Users', { readPreference });
 		statistics.totalCustomRoles = await RolesRaw.countCustomRoles({ readPreference });
 		statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count');
 		statistics.uncaughtExceptionsCount = settings.get('Uncaught_Exceptions_Count');

@@ -655,10 +655,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	countByBroadcast(): Promise<number> {
-		return this.countDocuments({
-			broadcast: true,
-		});
+	countByBroadcast(options?: CountDocumentsOptions): Promise<number> {
+		return this.countDocuments(
+			{
+				broadcast: true,
+			},
+			options,
+		);
 	}
 
 	setAsFederated(roomId: IRoom['_id']): Promise<UpdateResult> {
@@ -1501,8 +1504,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find({ createdOTR: true });
 	}
 
-	countByCreatedOTR(): Promise<number> {
-		return this.countDocuments({ createdOTR: true });
+	countByCreatedOTR(options?: CountDocumentsOptions): Promise<number> {
+		return this.countDocuments({ createdOTR: true }, options);
 	}
 
 	findByUsernamesOrUids(uids: IRoom['u']['_id'][], usernames: IRoom['u']['username'][]): FindCursor<IRoom> {

@@ -310,7 +310,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		e2eQueue?: IRoom['usersWaitingForE2EKeys'],
 	): Promise<ModifyResult<IRoom>>;
 	countGroupDMsByUids(uids: NonNullable<IRoom['uids']>): Promise<number>;
-	countByCreatedOTR(): Promise<number>;
-	countByBroadcast(): Promise<number>;
+	countByCreatedOTR(options?: CountDocumentsOptions): Promise<number>;
+	countByBroadcast(options?: CountDocumentsOptions): Promise<number>;
 	countByE2E(options?: CountDocumentsOptions): Promise<number>;
 }
