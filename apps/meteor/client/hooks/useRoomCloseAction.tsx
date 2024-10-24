@@ -6,7 +6,6 @@ import { useMutation } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ChatSubscription } from '../../app/models/client/models/ChatSubscription';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
@@ -30,10 +29,6 @@ const CLOSE_ENDPOINTS_BY_ROOM_TYPE = {
 	l: '/v1/groups.close', // livechat
 } as const;
 
-const updateSubscription = (rid: string) => {
-	ChatSubscription.update({ rid }, { $set: { alert: false, open: false } });
-};
-
 export const useRoomCloseAction = ({ rid, type, name }: RoomCloseProps, { redirect = true }: RoomCloseOptions = {}) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
@@ -47,8 +42,6 @@ export const useRoomCloseAction = ({ rid, type, name }: RoomCloseProps, { redire
 	const hideRoom = useMutation({
 		mutationFn: () => hideRoomEndpoint({ roomId: rid }),
 		onSuccess: () => {
-			updateSubscription(rid);
-
 			if (redirect) {
 				router.navigate('/home');
 			}
