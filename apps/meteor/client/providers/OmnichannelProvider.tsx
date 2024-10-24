@@ -45,7 +45,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	const omniChannelEnabled = useSetting('Livechat_enabled') as boolean;
 	const omnichannelRouting = useSetting('Livechat_Routing_Method');
 	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link') as boolean;
-	const omnichannelPoolMaxIncoming = useSetting<number>('Livechat_guest_pool_max_number_incoming_livechats_displayed') ?? 0;
+	const omnichannelPoolMaxIncoming = useSetting('Livechat_guest_pool_max_number_incoming_livechats_displayed', 0);
 	const omnichannelSortingMechanism = useSetting('Omnichannel_sorting_mechanism') as OmnichannelSortingMechanismSettingType;
 
 	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
