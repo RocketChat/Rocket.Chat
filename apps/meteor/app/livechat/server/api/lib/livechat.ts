@@ -1,4 +1,11 @@
-import type { ILivechatAgent, ILivechatDepartment, ILivechatTrigger, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type {
+	ILivechatAgent,
+	ILivechatDepartment,
+	ILivechatTrigger,
+	ILivechatVisitor,
+	IOmnichannelRoom,
+	OmnichannelSourceType,
+} from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -60,6 +67,21 @@ export function findGuest(token: string): Promise<ILivechatVisitor | null> {
 			contactId: 1,
 		},
 	});
+}
+
+export function findGuestBySource(token: string, sourceType: OmnichannelSourceType): Promise<ILivechatVisitor | null> {
+	const projection = {
+		name: 1,
+		username: 1,
+		token: 1,
+		visitorEmails: 1,
+		department: 1,
+		activity: 1,
+		contactId: 1,
+		source: 1,
+	};
+
+	return LivechatVisitors.getVisitorByTokenAndSource({ token, sourceFilter: { 'source.type': sourceType } }, { projection });
 }
 
 export function findGuestWithoutActivity(token: string): Promise<ILivechatVisitor | null> {
