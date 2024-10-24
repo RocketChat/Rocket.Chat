@@ -1,5 +1,5 @@
 import { Omnichannel } from '@rocket.chat/core-services';
-import type { ILivechatAgent, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IOmnichannelInquiryExtraData, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, Messages } from '@rocket.chat/models';
 import {
@@ -80,7 +80,12 @@ API.v1.addRoute(
 					},
 				};
 
-				const newRoom = await LivechatTyped.createRoom({ visitor: guest, roomInfo, agent, extraData: extraParams });
+				const newRoom = await LivechatTyped.createRoom({
+					visitor: guest,
+					roomInfo,
+					agent,
+					extraData: extraParams as IOmnichannelInquiryExtraData,
+				});
 
 				return API.v1.success({
 					room: newRoom,
