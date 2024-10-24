@@ -1,10 +1,12 @@
 import { Box, ButtonGroup, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
+import DOMPurify from 'dompurify';
 import React, { ReactElement } from 'react';
 
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
 import { AppInfo } from '../../../definitions/AppInfo';
+import { purifyOptions } from '../../../lib/purifyOptions';
 import AppDetailsAPIs from './AppDetailsAPIs';
 
 const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
@@ -47,7 +49,14 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 						<Box fontScale='h4' mbe='x8'>
 							{t('Description')}
 						</Box>
-						<Box dangerouslySetInnerHTML={{ __html: isMarkdown ? detailedDescription.rendered : description }} withRichContent />
+						<Box
+							dangerouslySetInnerHTML={{
+								__html: isMarkdown
+									? DOMPurify.sanitize(detailedDescription.rendered, purifyOptions)
+									: DOMPurify.sanitize(description, purifyOptions),
+							}}
+							withRichContent
+						/>
 					</Box>
 
 					<Box is='section'>

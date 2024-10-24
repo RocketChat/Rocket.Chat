@@ -1,8 +1,10 @@
 import { Accordion, Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import DOMPurify from 'dompurify';
 import React, { ReactElement } from 'react';
 
 import { useTimeAgo } from '../../../../../../hooks/useTimeAgo';
+import { purifyOptions } from '../../../lib/purifyOptions';
 
 type IRelease = {
 	version: string;
@@ -35,7 +37,7 @@ const AppReleasesItem = ({ release, ...props }: ReleaseItemProps): ReactElement 
 	return (
 		<Accordion.Item title={title} {...props}>
 			{release.detailedChangelog?.rendered ? (
-				<Box dangerouslySetInnerHTML={{ __html: release.detailedChangelog?.rendered }} />
+				<Box dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(release.detailedChangelog?.rendered, purifyOptions) }} />
 			) : (
 				t('No_release_information_provided')
 			)}
