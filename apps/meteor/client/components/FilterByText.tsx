@@ -1,10 +1,10 @@
 import { Box, Icon, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps, FormEvent } from 'react';
+import type { ComponentPropsWithoutRef, FormEvent } from 'react';
 import React, { forwardRef, memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type FilterByTextProps = ComponentProps<typeof TextInput> & {
+type FilterByTextProps = ComponentPropsWithoutRef<typeof TextInput> & {
 	shouldAutoFocus?: boolean;
 };
 
