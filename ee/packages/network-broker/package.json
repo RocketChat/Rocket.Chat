@@ -34,6 +34,6 @@
 		"@rocket.chat/core-services": "workspace:^",
 		"ejson": "^2.2.3",
 		"moleculer": "^0.14.34",
-		"pino": "^8.15.0"
+		"pino": "^8.21.0"
 	}
 }
