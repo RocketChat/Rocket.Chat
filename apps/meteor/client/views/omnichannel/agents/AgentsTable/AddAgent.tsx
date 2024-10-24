@@ -1,9 +1,10 @@
 import { Button, Box, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAutoComplete } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 
@@ -12,7 +13,7 @@ type AddAgentProps = {
 };
 
 const AddAgent = ({ reload }: AddAgentProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [username, setUsername] = useState('');
 	const dispatchToastMessage = useToastMessageDispatch();
 

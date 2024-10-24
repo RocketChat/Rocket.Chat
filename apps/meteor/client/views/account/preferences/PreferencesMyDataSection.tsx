@@ -1,11 +1,12 @@
 import { Accordion, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import MyDataModal from './MyDataModal';
 
 const PreferencesMyDataSection = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 

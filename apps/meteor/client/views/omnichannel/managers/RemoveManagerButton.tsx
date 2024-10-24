@@ -1,15 +1,16 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../components/GenericModal';
 import { GenericTableCell } from '../../../components/GenericTable';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
 const RemoveManagerButton = ({ _id, reload }: { _id: string; reload: () => void }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const deleteAction = useEndpointAction('DELETE', '/v1/livechat/users/manager/:_id', { keys: { _id } });
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();

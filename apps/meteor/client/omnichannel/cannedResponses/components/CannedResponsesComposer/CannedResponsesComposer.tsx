@@ -7,16 +7,17 @@ import {
 	MessageComposerToolbar,
 	MessageComposerActionsDivider,
 } from '@rocket.chat/ui-composer';
-import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { memo, useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Backdrop } from '../../../../components/Backdrop';
 import { useEmojiPicker } from '../../../../contexts/EmojiPickerContext';
 import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 
 const CannedResponsesComposer = ({ onChange, ...props }: ComponentProps<typeof MessageComposerInput>) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const useEmojisPreference = useUserPreference('useEmojis');
 
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);

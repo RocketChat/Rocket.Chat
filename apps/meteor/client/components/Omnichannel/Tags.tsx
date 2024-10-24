@@ -1,8 +1,9 @@
 import { TextInput, Chip, Button, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { CurrentChatTags } from '../../views/omnichannel/additionalForms';
 import { FormSkeleton } from './Skeleton';
@@ -17,7 +18,7 @@ type TagsProps = {
 };
 
 const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { data: tagsResult, isInitialLoading } = useLivechatTags({
 		department,

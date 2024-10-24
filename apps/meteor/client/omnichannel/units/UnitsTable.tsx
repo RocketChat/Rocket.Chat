@@ -1,8 +1,9 @@
 import { Pagination, IconButton } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashQueryKey } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../components/FilterByText';
 import GenericNoResults from '../../components/GenericNoResults/GenericNoResults';
@@ -20,7 +21,7 @@ import { useSort } from '../../components/GenericTable/hooks/useSort';
 import { useRemoveUnit } from './useRemoveUnit';
 
 const UnitsTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 500);
 	const router = useRouter();

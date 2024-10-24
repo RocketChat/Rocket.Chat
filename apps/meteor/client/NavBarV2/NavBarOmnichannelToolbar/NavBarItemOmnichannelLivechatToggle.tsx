@@ -1,15 +1,16 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useOmnichannelAgentAvailable } from '../../hooks/omnichannel/useOmnichannelAgentAvailable';
 
 type NavBarItemOmnichannelLivechatToggleProps = Omit<ComponentProps<typeof Sidebar.TopBar.Action>, 'icon'>;
 
 const NavBarItemOmnichannelLivechatToggle = (props: NavBarItemOmnichannelLivechatToggleProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const agentAvailable = useOmnichannelAgentAvailable();
 	const changeAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
 	const dispatchToastMessage = useToastMessageDispatch();

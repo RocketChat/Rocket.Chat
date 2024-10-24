@@ -11,11 +11,12 @@ import {
 	ToggleSwitch,
 	FieldGroup,
 } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 
@@ -26,7 +27,7 @@ type OAuthAddAppPayload = {
 };
 
 const OAuthAddApp = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {

@@ -14,6 +14,9 @@ import type {
 	ILivechatAgent,
 	ILivechatDepartment,
 	IOmnichannelSource,
+	IOmnichannelRoomInfo,
+	IOmnichannelInquiryExtraData,
+	IOmnichannelRoomExtraData,
 } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus, OmnichannelSourceType, DEFAULT_SLA_CONFIG, UserStatus } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
@@ -63,18 +66,12 @@ export const allowAgentSkipQueue = (agent: SelectedAgent) => {
 
 	return hasRoleAsync(agent.agentId, 'bot');
 };
-export const createLivechatRoom = async <
-	E extends Record<string, unknown> & {
-		sla?: string;
-		customFields?: Record<string, unknown>;
-		source?: OmnichannelSourceType;
-	},
->(
+export const createLivechatRoom = async (
 	rid: string,
 	name: string,
 	guest: ILivechatVisitor,
-	roomInfo: Partial<IOmnichannelRoom> = {},
-	extraData?: E,
+	roomInfo: IOmnichannelRoomInfo = {},
+	extraData?: IOmnichannelRoomExtraData,
 ) => {
 	check(rid, String);
 	check(name, String);
@@ -171,7 +168,7 @@ export const createLivechatInquiry = async ({
 	guest?: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'department' | 'name' | 'token' | 'activity'>;
 	message?: string;
 	initialStatus?: LivechatInquiryStatus;
-	extraData?: Pick<ILivechatInquiryRecord, 'source'>;
+	extraData?: IOmnichannelInquiryExtraData;
 }) => {
 	check(rid, String);
 	check(name, String);

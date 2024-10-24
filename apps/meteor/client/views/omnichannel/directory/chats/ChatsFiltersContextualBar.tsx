@@ -1,9 +1,10 @@
 import { Button, ButtonGroup, Field, FieldLabel, FieldRow, InputBox, Select, TextInput } from '@rocket.chat/fuselage';
-import { useEndpoint, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../../../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../../../../components/AutoCompleteDepartment';
@@ -24,7 +25,7 @@ type ChatsFiltersContextualBarProps = {
 };
 
 const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const canViewLivechatRooms = usePermission('view-livechat-rooms');
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 
