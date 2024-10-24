@@ -2,7 +2,7 @@ import { log } from 'console';
 import os from 'os';
 
 import { Analytics, Team, VideoConf, Presence } from '@rocket.chat/core-services';
-import type { IRoom, IStats } from '@rocket.chat/core-typings';
+import type { IRoom, IStats, ISetting } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import {
 	NotificationQueue,
@@ -92,7 +92,7 @@ export const statistics = {
 		};
 
 		// Version
-		const uniqueID = await Settings.findOne('uniqueID');
+		const uniqueID = await Settings.findOne<Pick<ISetting, 'createdAt'>>('uniqueID', { projection: { createdAt: 1 } });
 		statistics.uniqueId = settings.get('uniqueID');
 		if (uniqueID) {
 			statistics.installedAt = uniqueID.createdAt.toISOString();
