@@ -266,7 +266,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		options?: Omit<FindOptions<IOmnichannelRoom>, 'sort' | 'limit'>,
 	): Promise<T | null>;
 	setContactIdByVisitorIdOrToken(contactId: string, visitorId: string, visitorToken: string): Promise<UpdateResult | Document>;
-	findPaginatedRoomsByVisitorsIdsAndSource(params: {
+	findClosedRoomsByVisitorsAndSourcePaginated(params: {
 		visitorsIds: string[];
 		source?: string;
 		options?: FindOptions;

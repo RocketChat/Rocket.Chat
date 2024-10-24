@@ -1220,7 +1220,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	findPaginatedRoomsByVisitorsIdsAndSource({
+	findClosedRoomsByVisitorsAndSourcePaginated({
 		visitorsIds,
 		source,
 		options = {},
