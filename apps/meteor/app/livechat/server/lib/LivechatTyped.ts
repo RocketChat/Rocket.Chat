@@ -73,7 +73,7 @@ import { getRequiredDepartment } from './departmentsLib';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor, ILivechatMessage } from './localTypes';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
 
-type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username'>> & {
+export type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username' | 'source'>> & {
 	id?: string;
 	connectionData?: any;
 	email?: string;
