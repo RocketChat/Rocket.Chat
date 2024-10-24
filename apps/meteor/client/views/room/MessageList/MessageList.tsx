@@ -3,6 +3,7 @@ import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { Fragment } from 'react';
+import { Virtuoso } from 'react-virtuoso';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
 import { useRoomSubscription } from '../contexts/RoomContext';
@@ -28,27 +29,32 @@ export const MessageList = function MessageList({ rid, messageListRef }: Message
 	return (
 		<MessageListProvider messageListRef={messageListRef}>
 			<SelectedMessagesProvider>
-				{messages.map((message, index, { [index - 1]: previous }) => {
-					const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
-					const showUnreadDivider = firstUnreadMessageId === message._id;
-					const system = MessageTypes.isSystemMessage(message);
-					const visible = !isThreadMessage(message) && !system;
+				<Virtuoso
+					data={messages}
+					itemContent={(index, message) => {
+						const previous = messages[index - 1];
+						const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
+						const showUnreadDivider = firstUnreadMessageId === message._id;
+						const system = MessageTypes.isSystemMessage(message);
+						const visible = !isThreadMessage(message) && !system;
 
-					return (
-						<Fragment key={message._id}>
-							<MessageListItem
-								message={message}
-								previous={previous}
-								showUnreadDivider={showUnreadDivider}
-								showUserAvatar={showUserAvatar}
-								sequential={sequential}
-								visible={visible}
-								subscription={subscription}
-								system={system}
-							/>
-						</Fragment>
-					);
-				})}
+						return (
+							<Fragment key={message._id}>
+								<MessageListItem
+									message={message}
+									previous={previous}
+									showUnreadDivider={showUnreadDivider}
+									showUserAvatar={showUserAvatar}
+									sequential={sequential}
+									visible={visible}
+									subscription={subscription}
+									system={system}
+								/>
+							</Fragment>
+						);
+					}}
+					style={{ height: '100%' }}
+				/>
 			</SelectedMessagesProvider>
 		</MessageListProvider>
 	);
