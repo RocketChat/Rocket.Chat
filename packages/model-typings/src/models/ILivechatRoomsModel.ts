@@ -260,7 +260,13 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	getVisitorActiveForPeriodUpdateQuery(period: string, updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 	getMACStatisticsForPeriod(period: string): Promise<MACStats[]>;
 	getMACStatisticsBetweenDates(start: Date, end: Date): Promise<MACStats[]>;
-	findPaginatedRoomsByVisitorsIdsAndSource(params: {
+	findNewestByVisitorIdOrToken<T extends Document = IOmnichannelRoom>(
+		visitorId: string,
+		visitorToken: string,
+		options?: Omit<FindOptions<IOmnichannelRoom>, 'sort' | 'limit'>,
+	): Promise<T | null>;
+	setContactIdByVisitorIdOrToken(contactId: string, visitorId: string, visitorToken: string): Promise<UpdateResult | Document>;
+	findClosedRoomsByVisitorsAndSourcePaginated(params: {
 		visitorsIds: string[];
 		source?: string;
 		options?: FindOptions;

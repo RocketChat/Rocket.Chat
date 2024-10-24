@@ -1,9 +1,12 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { useScrollableMessageList } from '../../../../hooks/lists/useScrollableMessageList';
+import { useStreamUpdatesForMessageList } from '../../../../hooks/lists/useStreamUpdatesForMessageList';
 import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
 import { MessageList } from '../../../../lib/lists/MessageList';
+import { getConfig } from '../../../../lib/utils/getConfig';
 
 type HistoryMessageListOptions = {
 	filter: string;
@@ -12,6 +15,7 @@ type HistoryMessageListOptions = {
 
 export const useHistoryMessageList = (
 	options: HistoryMessageListOptions,
+	uid: IUser['_id'] | null,
 ): {
 	itemsList: MessageList;
 	initialItemCount: number;
@@ -42,7 +46,12 @@ export const useHistoryMessageList = (
 		[getMessages, options.filter],
 	);
 
-	const { loadMoreItems, initialItemCount } = useScrollableMessageList(itemsList, fetchMessages, 25);
+	const { loadMoreItems, initialItemCount } = useScrollableMessageList(
+		itemsList,
+		fetchMessages,
+		useMemo(() => parseInt(`${getConfig('historyMessageListSize', 10)}`), []),
+	);
+	useStreamUpdatesForMessageList(itemsList, uid, options.roomId);
 
 	return {
 		itemsList,

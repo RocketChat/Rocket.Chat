@@ -7,7 +7,7 @@ import { api, request, credentials, getCredentials } from '../../../data/api-dat
 import { createDepartment, addOrRemoveAgentFromDepartment } from '../../../data/livechat/department';
 import { startANewLivechatRoomAndTakeIt, createAgent } from '../../../data/livechat/rooms';
 import { createMonitor, createUnit } from '../../../data/livechat/units';
-import { restorePermissionToRoles, updatePermission } from '../../../data/permissions.helper';
+import { restorePermissionToRoles, updateEESetting, updatePermission } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -19,6 +19,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	let agent3: { user: IUser; credentials: Credentials };
 
 	before(async () => {
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 		const user = await createUser();
 		const userCredentials = await login(user.username, password);
 		if (!user.username) {

@@ -1220,7 +1220,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	findPaginatedRoomsByVisitorsIdsAndSource({
+	findClosedRoomsByVisitorsAndSourcePaginated({
 		visitorsIds,
 		source,
 		options = {},
@@ -1232,6 +1232,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.findPaginated<IOmnichannelRoom>(
 			{
 				'v._id': { $in: visitorsIds },
+				'closedAt': { $exists: true },
 				...(source && {
 					$or: [{ 'source.type': new RegExp(escapeRegExp(source), 'i') }, { 'source.alias': new RegExp(escapeRegExp(source), 'i') }],
 				}),
@@ -1992,6 +1993,28 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find(query, options);
 	}
 
+	async findNewestByVisitorIdOrToken<T extends Document = IOmnichannelRoom>(
+		visitorId: string,
+		visitorToken: string,
+		options: Omit<FindOptions<IOmnichannelRoom>, 'sort' | 'limit'> = {},
+	): Promise<T | null> {
+		const query: Filter<IOmnichannelRoom> = {
+			$or: [
+				{
+					'v._id': visitorId,
+				},
+				{
+					'v.token': visitorToken,
+				},
+			],
+		};
+
+		return this.findOne<T>(query, {
+			...options,
+			sort: { _updatedAt: -1 },
+		});
+	}
+
 	findOneOpenByRoomIdAndVisitorToken(roomId: string, visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
@@ -2726,5 +2749,16 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 
 	getTotalConversationsWithoutDepartmentBetweenDates(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
 		throw new Error('Method not implemented.');
+	}
+
+	setContactIdByVisitorIdOrToken(contactId: string, visitorId: string, visitorToken: string): Promise<UpdateResult | Document> {
+		return this.updateMany(
+			{
+				't': 'l',
+				'$or': [{ 'v._id': visitorId }, { 'v.token': visitorToken }],
+				'v.contactId': { $exists: false },
+			},
+			{ $set: { 'v.contactId': contactId } },
+		);
 	}
 }

@@ -3,6 +3,7 @@ import type {
 	IImportMessageRecord,
 	IImportRecord,
 	IImportUserRecord,
+	IImportContactRecord,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import type { IImportDataModel } from '@rocket.chat/model-typings';
@@ -62,6 +63,22 @@ export class ImportDataRaw extends BaseRaw<IImportRecord> implements IImportData
 					'data.name': 1,
 					'data.archived': 1,
 					'data.t': 1,
+				},
+			},
+		).toArray();
+	}
+
+	getAllContactsForSelection(): Promise<IImportContactRecord[]> {
+		return this.find<IImportContactRecord>(
+			{
+				dataType: 'contact',
+			},
+			{
+				projection: {
+					'data.importIds': 1,
+					'data.name': 1,
+					'data.phones': 1,
+					'data.emails': 1,
 				},
 			},
 		).toArray();

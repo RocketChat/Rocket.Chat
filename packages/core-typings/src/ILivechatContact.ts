@@ -11,12 +11,15 @@ export interface ILivechatContactChannel {
 	value?: string;
 	verifiedAt?: Date;
 	details?: IOmnichannelSource;
+	lastChat?: {
+		_id: string;
+		ts: Date;
+	};
 }
 
 export interface ILivechatContactConflictingField {
-	field: string;
-	oldValue: string;
-	newValue: string;
+	field: 'name' | 'manager' | `customFields.${string}`;
+	value: string;
 }
 
 export interface ILivechatContact extends IRocketChatRecord {
@@ -34,4 +37,5 @@ export interface ILivechatContact extends IRocketChatRecord {
 		_id: string;
 		ts: Date;
 	};
+	importIds?: string[];
 }

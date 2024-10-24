@@ -1,0 +1,90 @@
+import { Box, Margins, Throbber, States, StatesIcon, StatesTitle, Select } from '@rocket.chat/fuselage';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
+import { Virtuoso } from 'react-virtuoso';
+
+import { ContextualbarContent, ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
+import { VirtuosoScrollbars } from '../../../../../components/CustomScrollbars';
+import ContactInfoHistoryItem from './ContactInfoHistoryItem';
+
+type ContactInfoHistoryProps = {
+	contactId: string;
+	setChatId: (chatId: string) => void;
+};
+
+const ContactInfoHistory = ({ contactId, setChatId }: ContactInfoHistoryProps) => {
+	const t = useTranslation();
+
+	const historyFilterOptions: [string, string][] = [
+		['all', t('All')],
+		['widget', t('Livechat')],
+		['email', t('Email')],
+		['sms', t('SMS')],
+		['app', t('Apps')],
+		['api', t('API')],
+		['other', t('Other')],
+	];
+
+	const [type, setType] = useLocalStorage<string>('contact-history-type', 'all');
+
+	const getContactHistory = useEndpoint('GET', '/v1/omnichannel/contacts.history');
+	const { data, isLoading, isError } = useQuery(['getContactHistory', contactId, type], () =>
+		getContactHistory({ contactId, source: type === 'all' ? undefined : type }),
+	);
+
+	return (
+		<ContextualbarContent paddingInline={0}>
+			<Box
+				display='flex'
+				flexDirection='row'
+				p={24}
+				borderBlockEndWidth='default'
+				borderBlockEndStyle='solid'
+				borderBlockEndColor='extra-light'
+				flexShrink={0}
+			>
+				<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
+					<Margins inline={4}>
+						<Select value={type} onChange={(value) => setType(value as string)} placeholder={t('Filter')} options={historyFilterOptions} />
+					</Margins>
+				</Box>
+			</Box>
+			{isLoading && (
+				<Box pi={24} pb={12}>
+					<Throbber size='x12' />
+				</Box>
+			)}
+			{isError && (
+				<States>
+					<StatesIcon name='warning' variation='danger' />
+					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+				</States>
+			)}
+			{data?.history.length === 0 && (
+				<ContextualbarEmptyContent icon='history' title={t('No_history_yet')} subtitle={t('No_history_yet_description')} />
+			)}
+			{!isError && data?.history && data.history.length > 0 && (
+				<>
+					<Box pi={24} pb={12}>
+						<Box is='span' color='hint' fontScale='p2'>
+							{t('Showing_current_of_total', { current: data?.history.length, total: data?.total })}
+						</Box>
+					</Box>
+					<Box role='list' flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
+						<Virtuoso
+							totalCount={data.history.length}
+							overscan={25}
+							data={data?.history}
+							components={{ Scroller: VirtuosoScrollbars }}
+							itemContent={(index, data) => <ContactInfoHistoryItem key={index} onClick={() => setChatId(data._id)} {...data} />}
+						/>
+					</Box>
+				</>
+			)}
+		</ContextualbarContent>
+	);
+};
+
+export default ContactInfoHistory;

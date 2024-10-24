@@ -22,4 +22,8 @@ export class OmnichannelSection {
 	get btnContactCenter(): Locator {
 		return this.page.locator('role=button[name="Contact Center"]');
 	}
+
+	get tabContacts(): Locator {
+		return this.page.locator('role=tab[name="Contacts"]');
+	}
 }

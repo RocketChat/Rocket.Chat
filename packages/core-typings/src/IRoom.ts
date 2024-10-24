@@ -1,3 +1,4 @@
+import type { ILivechatDepartment } from './ILivechatDepartment';
 import type { ILivechatPriority } from './ILivechatPriority';
 import type { ILivechatVisitor } from './ILivechatVisitor';
 import type { IMessage, MessageTypesValues } from './IMessage';
@@ -196,9 +197,10 @@ export interface IOmnichannelSourceFromApp extends IOmnichannelSource {
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast'> {
 	t: 'l' | 'v';
-	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'activity' | 'contactId'> & {
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'activity'> & {
 		lastMessageTs?: Date;
 		phone?: string;
+		contactId?: string;
 	};
 	email?: {
 		// Data used when the room is created from an email, via email Integration.
@@ -318,6 +320,8 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	// which is controlled by Livechat_auto_transfer_chat_timeout setting
 	autoTransferredAt?: Date;
 	autoTransferOngoing?: boolean;
+
+	verified?: boolean;
 }
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {
@@ -335,7 +339,11 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 	queue: string;
 	// The ID assigned to the call (opaque ID)
 	callUniqueId?: string;
-	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'contactId'> & { lastMessageTs?: Date; phone?: string };
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token'> & {
+		lastMessageTs?: Date;
+		phone?: string;
+		contactId?: string;
+	};
 	// Outbound means the call was initiated from Rocket.Chat and vise versa
 	direction: 'inbound' | 'outbound';
 }
@@ -353,6 +361,8 @@ export type IOmnichannelRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer'
 	serviceTimeDuration?: number;
 	chatDuration: number;
 };
+
+export type IOmnichannelRoomWithDepartment = IOmnichannelRoom & { department?: ILivechatDepartment };
 
 export const isOmnichannelRoom = (room: Pick<IRoom, 't'>): room is IOmnichannelRoom & IRoom => room.t === 'l';
 

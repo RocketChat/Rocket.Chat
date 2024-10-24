@@ -3,6 +3,7 @@ import type { Locator, Page } from '@playwright/test';
 import { HomeOmnichannelContent, HomeSidenav, HomeFlextab, OmnichannelSidenav } from './fragments';
 import { OmnichannelAgents } from './omnichannel-agents';
 import { OmnichannelCannedResponses } from './omnichannel-canned-responses';
+import { OmnichannelContacts } from './omnichannel-contacts-list';
 import { OmnichannelCurrentChats } from './omnichannel-current-chats';
 import { OmnichannelManager } from './omnichannel-manager';
 import { OmnichannelMonitors } from './omnichannel-monitors';
@@ -34,6 +35,8 @@ export class HomeOmnichannel {
 
 	readonly monitors: OmnichannelMonitors;
 
+	readonly contacts: OmnichannelContacts;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeOmnichannelContent(page);
@@ -47,6 +50,7 @@ export class HomeOmnichannel {
 		this.agents = new OmnichannelAgents(page);
 		this.managers = new OmnichannelManager(page);
 		this.monitors = new OmnichannelMonitors(page);
+		this.contacts = new OmnichannelContacts(page);
 	}
 
 	get toastSuccess(): Locator {
@@ -57,15 +61,7 @@ export class HomeOmnichannel {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
-	get btnCurrentChats(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-clock"]');
-	}
-
-	get historyItem(): Locator {
-		return this.page.locator('[data-qa="chat-history-item"]').first();
-	}
-
-	get historyMessage(): Locator {
-		return this.page.locator('[data-qa="chat-history-message"]').first();
+	get btnContactInfo(): Locator {
+		return this.page.getByRole('button', { name: 'Contact Information' });
 	}
 }

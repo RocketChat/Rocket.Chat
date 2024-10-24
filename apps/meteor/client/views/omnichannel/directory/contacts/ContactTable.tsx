@@ -2,7 +2,6 @@ import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitl
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import { hashQueryKey } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,18 +24,18 @@ import { parseOutboundPhoneNumber } from '../../../../lib/voip/parseOutboundPhon
 import { CallDialpadButton } from '../components/CallDialpadButton';
 import { useCurrentContacts } from './hooks/useCurrentContacts';
 
-function ContactTable(): ReactElement {
+function ContactTable() {
+	const { t } = useTranslation();
+
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
-	const { sortBy, sortDirection, setSort } = useSort<'username' | 'phone' | 'name' | 'visitorEmails.address' | 'lastChat.ts'>('username');
+	const { sortBy, sortDirection, setSort } = useSort<'name' | 'phone' | 'visitorEmails.address' | 'lastChat.ts'>('name');
 	const isCallReady = useIsCallReady();
 	const [term, setTerm] = useState('');
-
-	const { t } = useTranslation();
 
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
-				term,
+				searchText: term,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				...(itemsPerPage && { count: itemsPerPage }),
 				...(current && { offset: current }),
@@ -51,17 +50,17 @@ function ContactTable(): ReactElement {
 
 	const onButtonNewClick = useEffectEvent(() =>
 		directoryRoute.push({
-			page: 'contacts',
-			bar: 'new',
+			tab: 'contacts',
+			context: 'new',
 		}),
 	);
 
 	const onRowClick = useEffectEvent(
 		(id) => (): void =>
 			directoryRoute.push({
-				page: 'contacts',
 				id,
-				bar: 'info',
+				tab: 'contacts',
+				context: 'details',
 			}),
 	);
 
@@ -72,9 +71,6 @@ function ContactTable(): ReactElement {
 
 	const headers = (
 		<>
-			<GenericTableHeaderCell key='username' direction={sortDirection} active={sortBy === 'username'} onClick={setSort} sort='username'>
-				{t('Username')}
-			</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>
@@ -105,7 +101,7 @@ function ContactTable(): ReactElement {
 
 	return (
 		<>
-			{((isSuccess && data?.visitors.length > 0) || queryHasChanged) && (
+			{((isSuccess && data?.contacts.length > 0) || queryHasChanged) && (
 				<FilterByText value={term} onChange={(event) => setTerm(event.target.value)}>
 					<Button onClick={onButtonNewClick} primary>
 						{t('New_contact')}
@@ -120,8 +116,8 @@ function ContactTable(): ReactElement {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data?.visitors.length === 0 && queryHasChanged && <GenericNoResults />}
-			{isSuccess && data?.visitors.length === 0 && !queryHasChanged && (
+			{isSuccess && data?.contacts.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data?.contacts.length === 0 && !queryHasChanged && (
 				<GenericNoResults
 					icon='user-plus'
 					title={t('No_contacts_yet')}
@@ -132,14 +128,14 @@ function ContactTable(): ReactElement {
 					linkText={t('Learn_more_about_contacts')}
 				/>
 			)}
-			{isSuccess && data?.visitors.length > 0 && (
+			{isSuccess && data?.contacts.length > 0 && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{data?.visitors.map(({ _id, username, fname, name, visitorEmails, phone, lastChat }) => {
-								const phoneNumber = (phone?.length && phone[0].phoneNumber) || '';
-								const visitorEmail = visitorEmails?.length && visitorEmails[0].address;
+							{data?.contacts.map(({ _id, name, emails, phones, lastChat }) => {
+								const phoneNumber = phones?.length && phones[0].phoneNumber;
+								const visitorEmail = emails?.length && emails[0].address;
 
 								return (
 									<GenericTableRow
@@ -152,12 +148,15 @@ function ContactTable(): ReactElement {
 										rcx-show-call-button-on-hover
 										onClick={onRowClick(_id)}
 									>
-										<GenericTableCell withTruncatedText>{username}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(fname || name)}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(phoneNumber)}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{visitorEmail}</GenericTableCell>
+										<GenericTableCell withTruncatedText>{name}</GenericTableCell>
+										<GenericTableCell withTruncatedText>{phoneNumber ? parseOutboundPhoneNumber(phoneNumber) : undefined}</GenericTableCell>
+										<GenericTableCell withTruncatedText>{visitorEmail || undefined}</GenericTableCell>
 										<GenericTableCell withTruncatedText>{lastChat && formatDate(lastChat.ts)}</GenericTableCell>
-										<GenericTableCell>{isCallReady && <CallDialpadButton phoneNumber={phoneNumber} />}</GenericTableCell>
+										{isCallReady && phoneNumber && (
+											<GenericTableCell>
+												<CallDialpadButton phoneNumber={phoneNumber} />
+											</GenericTableCell>
+										)}
 									</GenericTableRow>
 								);
 							})}

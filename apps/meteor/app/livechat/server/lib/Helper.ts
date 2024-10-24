@@ -13,6 +13,7 @@ import type {
 	TransferByData,
 	ILivechatAgent,
 	ILivechatDepartment,
+	IOmnichannelSource,
 	IOmnichannelRoomInfo,
 	IOmnichannelInquiryExtraData,
 	IOmnichannelRoomExtraData,
@@ -50,6 +51,8 @@ import { settings } from '../../../settings/server';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
+import { getContactIdByVisitorId } from './contacts/getContactIdByVisitorId';
+import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissingContact';
 import { getOnlineAgents } from './getOnlineAgents';
 
 const logger = new Logger('LivechatHelper');
@@ -83,7 +86,7 @@ export const createLivechatRoom = async (
 	);
 
 	const extraRoomInfo = await callbacks.run('livechat.beforeRoom', roomInfo, extraData);
-	const { _id, username, token, department: departmentId, status = 'online', contactId } = guest;
+	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
 
 	const { activity } = guest;
@@ -91,6 +94,11 @@ export const createLivechatRoom = async (
 		msg: `Creating livechat room for visitor ${_id}`,
 		visitor: { _id, username, departmentId, status, activity },
 	});
+
+	const contactId = await migrateVisitorIfMissingContact(
+		_id,
+		(extraRoomInfo.source || roomInfo.source || { type: OmnichannelSourceType.OTHER }) as IOmnichannelSource,
+	);
 
 	// TODO: Solve `u` missing issue
 	const room: InsertionModel<IOmnichannelRoom> = {
@@ -186,6 +194,8 @@ export const createLivechatInquiry = async ({
 		visitor: { _id, username, department, status, activity },
 	});
 
+	const contactId = await getContactIdByVisitorId(_id);
+
 	const result = await LivechatInquiry.findOneAndUpdate(
 		{
 			rid,
@@ -200,6 +210,7 @@ export const createLivechatInquiry = async ({
 				token,
 				status,
 				...(activity?.length && { activity }),
+				contactId,
 			},
 			t: 'l',
 			priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,

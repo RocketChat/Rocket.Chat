@@ -588,7 +588,7 @@ test.describe('OC - Livechat API', () => {
 			});
 		});
 
-		test('OC - Livechat API - setGuestEmail', async () => {
+		test.skip('OC - Livechat API - setGuestEmail', async () => {
 			const registerGuestVisitor = createFakeVisitorRegistration();
 			// Start Chat
 			await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());

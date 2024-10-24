@@ -6,6 +6,8 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { RoutingManager } from '../lib/RoutingManager';
+import { migrateVisitorIfMissingContact } from '../lib/contacts/migrateVisitorIfMissingContact';
+import { shouldTriggerVerificationApp } from '../lib/contacts/shouldTriggerVerificationApp';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -51,7 +53,12 @@ export const takeInquiry = async (
 
 	const room = await LivechatRooms.findOneById(inquiry.rid);
 	if (!room || !(await Omnichannel.isWithinMACLimit(room))) {
-		throw new Error('error-mac-limit-reached');
+		throw new Meteor.Error('error-mac-limit-reached');
+	}
+
+	const contactId = await migrateVisitorIfMissingContact(inquiry.v._id, room.source);
+	if (contactId && (await shouldTriggerVerificationApp(contactId, room.source))) {
+		throw new Meteor.Error('error-unverified-contact');
 	}
 
 	const agent = {
