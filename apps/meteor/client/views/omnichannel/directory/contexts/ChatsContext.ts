@@ -1,4 +1,4 @@
-import type { SetStateAction } from 'react';
+import type { RefObject, SetStateAction } from 'react';
 import { createContext, useContext } from 'react';
 
 export type ChatsFiltersQuery = {
@@ -37,6 +37,7 @@ export type ChatsContextValue = {
 	};
 	removeFilter: (filter: keyof ChatsFiltersQuery) => void;
 	hasAppliedFilters: boolean;
+	textInputRef: RefObject<HTMLInputElement> | null;
 };
 
 export const ChatsContext = createContext<ChatsContextValue>({
@@ -54,6 +55,7 @@ export const ChatsContext = createContext<ChatsContextValue>({
 	},
 	removeFilter: () => undefined,
 	hasAppliedFilters: false,
+	textInputRef: null,
 });
 
 export const useChatsContext = (): ChatsContextValue => {

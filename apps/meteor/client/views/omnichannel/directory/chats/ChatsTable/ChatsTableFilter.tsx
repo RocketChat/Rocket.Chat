@@ -17,7 +17,7 @@ const ChatsTableFilter = () => {
 	const removeClosedChats = useMethod('livechat:removeAllClosedRooms');
 	const queryClient = useQueryClient();
 
-	const { filtersQuery, displayFilters, setFiltersQuery, removeFilter } = useChatsContext();
+	const { filtersQuery, displayFilters, setFiltersQuery, removeFilter, textInputRef } = useChatsContext();
 
 	const handleRemoveAllClosed = useEffectEvent(async () => {
 		const onDeleteAll = async () => {
@@ -60,6 +60,7 @@ const ChatsTableFilter = () => {
 	return (
 		<>
 			<FilterByText
+				ref={textInputRef}
 				value={filtersQuery.guest}
 				onChange={(event) => setFiltersQuery((prevState) => ({ ...prevState, guest: event.target.value }))}
 			>
