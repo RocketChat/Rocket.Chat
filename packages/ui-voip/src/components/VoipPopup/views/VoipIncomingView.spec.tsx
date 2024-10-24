@@ -1,5 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { createMockFreeSwitchExtensionDetails, createMockVoipIncomingSession } from '../../../tests/mocks';
 import VoipIncomingView from './VoipIncomingView';
@@ -27,11 +28,11 @@ it('should only enable incoming actions', () => {
 	expect(screen.getByRole('button', { name: 'Accept' })).toBeEnabled();
 });
 
-it('should properly interact with the voice call session', () => {
+it('should properly interact with the voice call session', async () => {
 	render(<VoipIncomingView session={incomingSession} />, { wrapper: appRoot.build(), legacyRoot: true });
 
-	screen.getByRole('button', { name: 'Decline' }).click();
-	screen.getByRole('button', { name: 'Accept' }).click();
+	await userEvent.click(screen.getByRole('button', { name: 'Decline' }));
+	await userEvent.click(screen.getByRole('button', { name: 'Accept' }));
 
 	expect(incomingSession.end).toHaveBeenCalled();
 	expect(incomingSession.accept).toHaveBeenCalled();

@@ -1,10 +1,11 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericError from '../../../../../components/GenericError';
 import GenericModal from '../../../../../components/GenericModal';
@@ -27,7 +28,7 @@ type UsersInRoleTableProps = {
 };
 
 const UsersInRoleTable = ({ rid, roleId, roleName, description }: UsersInRoleTableProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
@@ -73,7 +74,7 @@ const UsersInRoleTable = ({ rid, roleId, roleName, description }: UsersInRoleTab
 
 		setModal(
 			<GenericModal variant='danger' onConfirm={remove} onCancel={() => setModal(null)} confirmText={t('Delete')}>
-				{t('The_user_s_will_be_removed_from_role_s', username, description || roleName)}
+				{t('The_user_s_will_be_removed_from_role_s', { postProcess: 'sprintf', sprintf: [username, description || roleName] })}
 			</GenericModal>,
 		);
 	});

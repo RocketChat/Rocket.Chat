@@ -1,6 +1,6 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { SidebarSection } from '@rocket.chat/fuselage';
-import type { useTranslation } from '@rocket.chat/ui-contexts';
+import type { TFunction } from 'i18next';
 import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
 
@@ -11,7 +11,7 @@ import SideBarItemTemplateWithData from './SideBarItemTemplateWithData';
 
 type RoomListRowProps = {
 	extended: boolean;
-	t: ReturnType<typeof useTranslation>;
+	t: TFunction;
 	SideBarItemTemplate: ReturnType<typeof useTemplateByViewMode>;
 	AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
 	openedRoom: string;

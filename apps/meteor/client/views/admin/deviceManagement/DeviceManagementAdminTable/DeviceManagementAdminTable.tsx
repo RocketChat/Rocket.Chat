@@ -76,7 +76,7 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Devices_Users')} onChange={setText} />
+			<FilterByText placeholder={t('Search_Devices_Users')} value={text} onChange={(event) => setText(event.target.value)} />
 			<DeviceManagementTable
 				data={data}
 				phase={phase}

@@ -1,7 +1,7 @@
 {
   "name": "@rocket.chat/uikit-playground",
   "private": true,
-  "version": "0.6.0-rc.2",
+  "version": "0.6.0-rc.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -37,14 +37,12 @@
     "react-router-dom": "^6.11.2",
     "react-split-pane": "^0.1.92",
     "react-virtuoso": "^4.7.1",
-    "reactflow": "^11.7.2",
-    "use-subscription": "^1.8.2"
+    "reactflow": "^11.7.2"
   },
   "devDependencies": {
     "@types/react": "~17.0.80",
     "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-dom": "~17.0.25",
-    "@types/use-subscription": "^1.0.2",
     "@typescript-eslint/eslint-plugin": "~5.60.1",
     "@typescript-eslint/parser": "~5.60.1",
     "@vitejs/plugin-react": "^4.0.0",

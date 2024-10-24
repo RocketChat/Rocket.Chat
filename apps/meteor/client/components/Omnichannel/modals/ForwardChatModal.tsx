@@ -13,10 +13,11 @@ import {
 	Option,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
@@ -33,7 +34,7 @@ const ForwardChatModal = ({
 	onCancel: () => void;
 	room: IOmnichannelRoom;
 }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const getUserData = useEndpoint('GET', '/v1/users.info');
 	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle') as boolean;
 

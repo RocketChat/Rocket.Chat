@@ -1,13 +1,14 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { HeaderToolbarAction } from '../../../../components/Header';
 
 export const BackButton = ({ routeName }: { routeName?: string }): ReactElement => {
 	const router = useRouter();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const back = useMutableCallback(() => {
 		switch (routeName) {
