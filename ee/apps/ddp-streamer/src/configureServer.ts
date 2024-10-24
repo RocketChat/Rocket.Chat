@@ -2,7 +2,9 @@ import { EventEmitter } from 'events';
 
 import { Account, Presence, MeteorService, MeteorError } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
+import type { Client } from './Client';
 import { Server } from './Server';
 import { DDP_EVENTS, WS_ERRORS } from './constants';
 import { Autoupdate } from './lib/Autoupdate';
@@ -64,6 +66,19 @@ server.publish(autoUpdateCollection, function () {
 	this.ready();
 });
 
+async function sendUserData(client: Client, userId: string) {
+	// TODO figure out what fields to send. maybe to to export function getBaseUserFields to a package
+	const loggedUser = await Users.findOneById(userId, {
+		projection: { name: 1, username: 1, settings: 1, roles: 1, active: 1, statusLivechat: 1, statusDefault: 1 },
+	});
+	if (!loggedUser) {
+		return;
+	}
+
+	// using setImmediate here so login's method result is sent before we send the user data
+	setImmediate(async () => server.added(client, 'users', userId, loggedUser));
+}
+
 server.methods({
 	async 'login'({ resume, user, password }: { resume: string; user: { username: string }; password: string }) {
 		try {
@@ -79,6 +94,9 @@ server.methods({
 			this.emit(DDP_EVENTS.LOGGED);
 
 			server.emit(DDP_EVENTS.LOGGED, this);
+
+			// mimic Meteor's default publication that sends user data after login
+			await sendUserData(this, result.uid);
 
 			return {
 				id: result.uid,
