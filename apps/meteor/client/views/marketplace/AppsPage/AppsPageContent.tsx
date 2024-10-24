@@ -227,8 +227,8 @@ const AppsPageContent = (): ReactElement => {
 	return (
 		<PageContent>
 			<MarketplaceHeader unsupportedVersion={unsupportedVersion} title={t(`Apps_context_${context}`)} />
-
 			<AppsFilters
+				text={text}
 				setText={setText}
 				freePaidFilterStructure={freePaidFilterStructure}
 				freePaidFilterOnSelected={freePaidFilterOnSelected}

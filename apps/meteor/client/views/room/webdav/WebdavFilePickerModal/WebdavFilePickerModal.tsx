@@ -36,7 +36,7 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 	const [parentFolders, setParentFolders] = useState<string[]>([]);
 	const [webdavNodes, setWebdavNodes] = useState<IWebdavNode[]>([]);
 	const [filterText, setFilterText] = useState('');
-	const debouncedFilter = useDebouncedValue(filterText, 500);
+	const debouncedFilter = useDebouncedValue('', 500);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const showFilePreviews = useMutableCallback(async (accountId, nodes) => {
@@ -196,7 +196,7 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 					</Box>
 				</Box>
 				<Box display='flex' flexDirection='column'>
-					<FilterByText onChange={setFilterText}>
+					<FilterByText value={filterText} onChange={(event) => setFilterText(event.target.value)}>
 						{typeView === 'grid' && (
 							<Select value={sortBy} onChange={(value): void => handleSort(value as WebdavSortOptions)} options={options} />
 						)}

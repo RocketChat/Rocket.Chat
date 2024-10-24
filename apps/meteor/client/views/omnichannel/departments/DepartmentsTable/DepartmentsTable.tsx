@@ -27,9 +27,8 @@ const DEPARTMENTS_ENDPOINTS = {
 
 const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 	const t = useTranslation();
-	const [text, setText] = useState('');
 	const router = useRouter();
-	const debouncedText = useDebouncedValue(text, 500);
+	const [text, setText] = useState('');
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description' | 'numAgents' | 'enabled' | 'showOnRegistration'>('name');
@@ -38,15 +37,18 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 
 	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/departments/new'));
 
-	const query = useMemo(
-		() => ({
-			onlyMyDepartments: 'true' as const,
-			text: debouncedText,
-			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-			...(current && { offset: current }),
-			...(itemsPerPage && { count: itemsPerPage }),
-		}),
-		[current, itemsPerPage, sortBy, sortDirection, debouncedText],
+	const query = useDebouncedValue(
+		useMemo(
+			() => ({
+				onlyMyDepartments: 'true' as const,
+				text,
+				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
+				...(current && { offset: current }),
+				...(itemsPerPage && { count: itemsPerPage }),
+			}),
+			[current, itemsPerPage, sortBy, sortDirection, text],
+		),
+		500,
 	);
 
 	const { data, isSuccess, isLoading } = useQuery(['livechat-departments', query, archived], async () => getDepartments(query), {
@@ -91,7 +93,9 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 
 	return (
 		<>
-			{((isSuccess && data?.departments.length > 0) || queryHasChanged) && <FilterByText onChange={setText} />}
+			{((isSuccess && data?.departments.length > 0) || queryHasChanged) && (
+				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
+			)}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -114,7 +118,7 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 			)}
 			{isSuccess && data?.departments.length > 0 && (
 				<>
-					<GenericTable aria-busy={text !== debouncedText} aria-live='assertive'>
+					<GenericTable aria-busy={isLoading} aria-live='assertive'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.departments.map((department: Omit<ILivechatDepartment, '_updatedAt'>) => (

@@ -71,7 +71,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 
 	return (
 		<>
-			<FilterByText onChange={setText} />
+			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			{data.length === 0 && <GenericNoResult />}
 			{data && data.length > 0 && (
 				<>
