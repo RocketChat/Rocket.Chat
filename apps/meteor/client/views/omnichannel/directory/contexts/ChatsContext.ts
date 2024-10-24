@@ -33,7 +33,7 @@ export type ChatsContextValue = {
 		servedBy: string | undefined;
 		department: string | undefined;
 		status: string | undefined;
-		tags: string[] | undefined;
+		tags: string | undefined;
 	};
 	removeFilter: (filter: keyof ChatsFiltersQuery) => void;
 	hasAppliedFilters: boolean;
