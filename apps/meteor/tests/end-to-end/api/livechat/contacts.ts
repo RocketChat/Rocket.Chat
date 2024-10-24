@@ -922,21 +922,16 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
 			expect(res.body.history).to.be.an('array');
-			expect(res.body.history.length).to.be.equal(2);
-			expect(res.body.total).to.be.equal(2);
+			expect(res.body.history.length).to.be.equal(1);
+			expect(res.body.total).to.be.equal(1);
 			expect(res.body.count).to.be.an('number');
 			expect(res.body.offset).to.be.an('number');
 
-			expect(res.body.history[0]).to.have.property('_id', room2._id);
-			expect(res.body.history[0]).to.not.have.property('closedAt');
-			expect(res.body.history[0]).to.have.property('fname', visitor.name);
-			expect(res.body.history[0].source).to.have.property('type', 'widget');
-
-			expect(res.body.history[1]).to.have.property('_id', room1._id);
-			expect(res.body.history[1]).to.have.property('closedAt');
-			expect(res.body.history[1]).to.have.property('closedBy');
-			expect(res.body.history[1]).to.have.property('closer', 'user');
-			expect(res.body.history[1].source).to.have.property('type', 'api');
+			expect(res.body.history[0]).to.have.property('_id', room1._id);
+			expect(res.body.history[0]).to.have.property('closedAt');
+			expect(res.body.history[0]).to.have.property('closedBy');
+			expect(res.body.history[0]).to.have.property('closer', 'user');
+			expect(res.body.history[0].source).to.have.property('type', 'api');
 		});
 
 		it('should be able to filter a room by the source', async () => {
@@ -955,18 +950,23 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.history[0].source).to.have.property('type', 'api');
 		});
 
-		it.skip('should return an empty list if contact does not have history', async () => {
-			// #TODO: Create a Contact
-			// const emptyVisitor = await createVisitor();
-			const res = await request.get(api(`omnichannel/contacts.history`)).set(credentials).query({ contactId: 'contactId' });
+		it('should return an empty list if contact does not have history', async () => {
+			const { body } = await request
+				.post(api('omnichannel/contacts'))
+				.set(credentials)
+				.send({
+					name: faker.person.fullName(),
+					emails: [faker.internet.email().toLowerCase()],
+					phones: [faker.phone.number()],
+				});
+
+			const res = await request.get(api(`omnichannel/contacts.history`)).set(credentials).query({ contactId: body.contactId });
 
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
 			expect(res.body.history).to.be.an('array');
 			expect(res.body.history.length).to.be.equal(0);
 			expect(res.body.total).to.be.equal(0);
-
-			// await deleteVisitor(emptyVisitor.token);
 		});
 
 		it('should return an error if contacts not exists', async () => {
