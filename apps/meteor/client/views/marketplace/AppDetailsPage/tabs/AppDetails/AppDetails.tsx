@@ -1,3 +1,4 @@
+import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Callout, Chip, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -14,33 +15,27 @@ import { purifyOptions } from '../../../lib/purifyOptions';
 import AppDetailsAPIs from './AppDetailsAPIs';
 import { normalizeUrl } from './normalizeUrl';
 
-type AppDetailsProps = {
-	app: AppInfo;
-};
+type AppDetailsProps = { app: App } & Pick<AppInfo, 'apis' | 'screenshots'>;
 
-const AppDetails = ({ app }: AppDetailsProps) => {
+const AppDetails = ({ app, apis, screenshots }: AppDetailsProps) => {
 	const { t } = useTranslation();
+	const openExternalLink = useExternalLink();
+	const workspaceHasAddon = useHasLicenseModule(app.addon);
+
 	const {
-		author: { homepage, support } = {},
+		author: { homepage, support },
 		detailedDescription,
 		description,
-		categories = [],
-		screenshots,
-		apis,
+		categories,
 		documentationUrl: documentation,
 		addon: appAddon,
 	} = app;
 
 	const isMarkdown = detailedDescription && Object.keys(detailedDescription).length !== 0 && detailedDescription.rendered;
 	const isCarouselVisible = screenshots && Boolean(screenshots.length);
-
 	const normalizedHomepageUrl = homepage ? normalizeUrl(homepage) : undefined;
 	const normalizedSupportUrl = support ? normalizeUrl(support) : undefined;
 	const normalizedDocumentationUrl = documentation ? normalizeUrl(documentation) : undefined;
-
-	const workspaceHasAddon = useHasLicenseModule(appAddon);
-
-	const openExternalLink = useExternalLink();
 
 	return (
 		<Box mbs='36px' maxWidth='x640' w='full' marginInline='auto' color='default'>

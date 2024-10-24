@@ -1,5 +1,4 @@
 import type { ISettingSelectValue } from '@rocket.chat/apps-engine/definition/settings';
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/ISetting';
 import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo, useCallback } from 'react';
@@ -8,6 +7,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { Utilities } from '../../../../../../ee/lib/misc/Utilities';
 import MarkdownText from '../../../../../components/MarkdownText';
 import MemoizedSetting from '../../../../admin/settings/Setting/MemoizedSetting';
+import type { AppSetting as AppSettingType } from '../../../definitions/AppInfo';
 
 type AppTranslationFunction = {
 	(key: string, ...replaces: unknown[]): string;
@@ -49,7 +49,7 @@ const useAppTranslation = (appId: string): AppTranslationFunction => {
 	});
 };
 
-const AppSetting = ({ id, type, i18nLabel, i18nDescription, values, value, packageValue, ...props }: ISetting): ReactElement => {
+const AppSetting = ({ id, type, i18nLabel, i18nDescription, values, value, packageValue, ...props }: AppSettingType): ReactElement => {
 	const appId = useRouteParameter('id');
 	const tApp = useAppTranslation(appId || '');
 

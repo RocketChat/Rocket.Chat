@@ -3,13 +3,13 @@ import { usePermission, useRouter, useTranslation } from '@rocket.chat/ui-contex
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import type { ISettings } from '../../../apps/@types/IOrchestrator';
+import type { AppInfo } from '../definitions/AppInfo';
 
 type AppDetailsPageTabsProps = {
 	context: string;
 	installed: boolean | undefined;
 	isSecurityVisible: boolean;
-	settings: ISettings | undefined;
+	settings: AppInfo['settings'];
 	tab: string | undefined;
 };
 

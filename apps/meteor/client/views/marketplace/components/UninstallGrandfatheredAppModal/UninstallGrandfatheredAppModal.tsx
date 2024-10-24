@@ -3,7 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
-import type { MarketplaceRouteContext } from '../../hooks/useAppsCountQuery';
+import type { MarketplaceRouteContext } from '../../definitions/MarketplaceRouterContext';
 import { usePrivateAppsEnabled } from '../../hooks/usePrivateAppsEnabled';
 
 type UninstallGrandfatheredAppModalProps = {

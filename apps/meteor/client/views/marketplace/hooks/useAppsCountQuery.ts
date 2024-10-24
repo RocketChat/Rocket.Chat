@@ -2,11 +2,7 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
-export type MarketplaceRouteContext = 'private' | 'explore' | 'installed' | 'premium' | 'requested' | 'details';
-
-export function isMarketplaceRouteContext(context: string): context is MarketplaceRouteContext {
-	return ['private', 'explore', 'installed', 'premium', 'requested'].includes(context);
-}
+import type { MarketplaceRouteContext } from '../definitions/MarketplaceRouterContext';
 
 export const useAppsCountQuery = (context: MarketplaceRouteContext) => {
 	const getAppsCount = useEndpoint('GET', '/apps/count');
