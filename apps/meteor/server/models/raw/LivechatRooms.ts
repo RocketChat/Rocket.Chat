@@ -1220,7 +1220,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	findPaginatedRoomsByVisitorsIdsAndSource({
+	findClosedRoomsByVisitorsAndSourcePaginated({
 		visitorsIds,
 		source,
 		options = {},
@@ -1232,6 +1232,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.findPaginated<IOmnichannelRoom>(
 			{
 				'v._id': { $in: visitorsIds },
+				'closedAt': { $exists: true },
 				...(source && {
 					$or: [{ 'source.type': new RegExp(escapeRegExp(source), 'i') }, { 'source.alias': new RegExp(escapeRegExp(source), 'i') }],
 				}),

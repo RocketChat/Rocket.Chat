@@ -48,7 +48,7 @@ export async function getContactHistory(
 		},
 	};
 
-	const { totalCount, cursor } = LivechatRooms.findPaginatedRoomsByVisitorsIdsAndSource({
+	const { totalCount, cursor } = LivechatRooms.findClosedRoomsByVisitorsAndSourcePaginated({
 		visitorsIds: Array.from(visitorsIds),
 		source,
 		options,
