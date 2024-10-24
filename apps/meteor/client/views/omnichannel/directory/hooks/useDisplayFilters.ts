@@ -1,11 +1,12 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import type { ChatsFiltersQuery } from '../contexts/ChatsContext';
 
-const statusTextMap: { [key: string]: string } = {
+const statusTextMap: { [key: string]: TranslationKey } = {
 	all: 'All',
 	closed: 'Closed',
 	opened: 'Room_Status_Open',
@@ -14,7 +15,7 @@ const statusTextMap: { [key: string]: string } = {
 };
 
 export const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDate = useFormatDate();
 
 	const { guest, servedBy, status, department, from, to, tags, ...customFields } = filtersQuery;
@@ -36,7 +37,7 @@ export const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 		guest: guest !== '' ? `${t('Text')}: ${guest}` : undefined,
 		servedBy: servedBy !== 'all' ? `${t('Served_By')}: ${agentData?.user.name}` : undefined,
 		department: department !== 'all' ? `${t('Department')}: ${departmentData?.department.name}` : undefined,
-		status: status !== 'all' ? `${t('Status')}: ${t(statusTextMap[status] as TranslationKey)}` : undefined,
+		status: status !== 'all' ? `${t('Status')}: ${t(statusTextMap[status])}` : undefined,
 		tags: tags.length > 0 ? `${t('Tags')}: ${tags.map((tag) => tag.label).join(', ')}` : undefined,
 		...displayCustomFields,
 	};
