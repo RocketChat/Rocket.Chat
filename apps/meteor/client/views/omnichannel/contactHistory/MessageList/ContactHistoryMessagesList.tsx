@@ -12,7 +12,7 @@ import {
 	TextInput,
 	Throbber,
 } from '@rocket.chat/fuselage';
-import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation, useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
@@ -50,10 +50,18 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 		debounceDelay: 200,
 	});
 
-	const { itemsList: messageList, loadMoreItems } = useHistoryMessageList(
-		useMemo(() => ({ roomId: chatId, filter: text }), [chatId, text]),
-		userId,
+	const query = useDebouncedValue(
+		useMemo(
+			() => ({
+				roomId: chatId,
+				filter: text,
+			}),
+			[text, chatId],
+		),
+		500,
 	);
+
+	const { itemsList: messageList, loadMoreItems } = useHistoryMessageList(query, userId);
 
 	const handleSearchChange = (event: ChangeEvent<HTMLInputElement>): void => {
 		setText(event.currentTarget.value);
