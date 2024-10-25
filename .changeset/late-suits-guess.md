@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixed issue where recentList was not always an array, causing a TypeError on emoji recent list updates
+Fixes an issue where the recent emoji list didn’t update properly, which caused errors on the client side.
