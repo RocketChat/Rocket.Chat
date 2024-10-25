@@ -291,23 +291,23 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.updateMany({ _id: { $in: _ids } }, { $inc: { numAgents: -1 } });
 	}
 
-	findEnabledWithAgents(projection: FindOptions<ILivechatDepartment>['projection'] = {}): FindCursor<ILivechatDepartment> {
+	findEnabledWithAgents<T extends Document = ILivechatDepartment>(projection: FindOptions<T>['projection'] = {}): FindCursor<T> {
 		const query = {
 			numAgents: { $gt: 0 },
 			enabled: true,
 		};
-		return this.find(query, projection && { projection });
+		return this.find<T>(query, projection && { projection });
 	}
 
-	async findEnabledWithAgentsAndBusinessUnit(
+	async findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
 		_: any,
-		projection: FindOptions<ILivechatDepartment>['projection'] = {},
-	): Promise<FindCursor<ILivechatDepartment>> {
+		projection: FindOptions<T>['projection'] = {},
+	): Promise<FindCursor<T>> {
 		const query = {
 			numAgents: { $gt: 0 },
 			enabled: true,
 		};
-		return this.find(query, projection && { projection });
+		return this.find<T>(query, projection && { projection });
 	}
 
 	findOneByIdOrName(_idOrName: string, options: FindOptions<ILivechatDepartment> = {}): Promise<ILivechatDepartment | null> {
@@ -340,7 +340,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.countDocuments({ parentId: unitId });
 	}
 
-	findActiveByUnitIds(unitIds: string[], options: FindOptions<ILivechatDepartment> = {}): FindCursor<ILivechatDepartment> {
+	findActiveByUnitIds<T extends Document = ILivechatDepartment>(unitIds: string[], options: FindOptions<T> = {}): FindCursor<T> {
 		const query = {
 			enabled: true,
 			numAgents: { $gt: 0 },
@@ -350,7 +350,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 			},
 		};
 
-		return this.find(query, options);
+		return this.find<T>(query, options);
 	}
 
 	findNotArchived(options: FindOptions<ILivechatDepartment> = {}): FindCursor<ILivechatDepartment> {
