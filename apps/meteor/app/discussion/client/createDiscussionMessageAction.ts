@@ -4,7 +4,6 @@ import { Tracker } from 'meteor/tracker';
 import CreateDiscussion from '../../../client/components/CreateDiscussion/CreateDiscussion';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
-import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { hasPermission } from '../../authorization/client';
 import { settings } from '../../settings/client';
 import { MessageAction } from '../../ui-utils/client';
@@ -21,9 +20,7 @@ Meteor.startup(() => {
 			label: 'Discussion_start',
 			type: 'communication',
 			context: ['message', 'message-mobile', 'videoconf'],
-			async action(_, props) {
-				const { message = messageArgs(this).msg, room } = props;
-
+			async action(_, { message, room }) {
 				imperativeModal.open({
 					component: CreateDiscussion,
 					props: {
