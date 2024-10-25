@@ -23,12 +23,24 @@ import { setAvatarFromServiceWithValidation } from '../../../lib/server/function
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
+import { getBaseUserFields } from '../../../utils/server/functions/getBaseUserFields';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
 });
+/**
+ * Accounts calls `_initServerPublications` and holds the `_defaultPublishFields`, without Object.assign its not possible
+ * to extend the projection
+ *
+ * the idea is to send all required fields to the client during login
+ * we tried `defaultFieldsSelector` , but it changes all Meteor.userAsync projections which is undesirable
+ *
+ *
+ * we are removing the status here because meteor send 'offline'
+ */
+Object.assign(Accounts._defaultPublishFields.projection, (({ status, ...rest }) => rest)(getBaseUserFields()));
 
 Meteor.startup(() => {
 	settings.watchMultiple(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], () => {

@@ -4,10 +4,10 @@ import { startTracing } from '@rocket.chat/tracing';
 
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
 
-startTracing({ service: 'ddp-streamer' });
-
 (async () => {
-	const db = await getConnection();
+	const { db, client } = await getConnection();
+
+	startTracing({ service: 'ddp-streamer', db: client });
 
 	registerServiceModels(db, await getTrashCollection());
 
