@@ -31,10 +31,6 @@ const runShouldTriggerVerificationApp = async (
 		return false;
 	}
 
-	if (contact.unknown && settings.get<boolean>('Livechat_Block_Unknown_Contacts')) {
-		return true;
-	}
-
 	// There is no configured verification app, so there is no reason to trigger a verification app, since
 	// none will be able to be assigned
 	if (settings.get<string>('Livechat_Contact_Verification_App') === '') {

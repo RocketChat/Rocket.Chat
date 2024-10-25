@@ -18,6 +18,11 @@ export const addSettings = async (): Promise<void> => {
 					invalidValue: false,
 				});
 
+				await this.add('Livechat_Block_Unverified_Contacts', false, {
+					type: 'boolean',
+					invalidValue: false,
+				});
+
 				await this.add('Livechat_Require_Contact_Verification', 'always', {
 					type: 'select',
 					values: [
