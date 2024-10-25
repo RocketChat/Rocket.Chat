@@ -32,6 +32,6 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/jwt": "workspace:^",
 		"@rocket.chat/logger": "workspace:^",
-		"bcrypt": "^5.0.1"
+		"bcrypt": "^5.1.1"
 	}
 }
