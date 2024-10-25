@@ -24,7 +24,7 @@
 		"sip.js": "^0.20.1"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.25.8",
+		"@babel/core": "~7.26.0",
 		"@faker-js/faker": "~8.0.2",
 		"@react-spectrum/test-utils": "~1.0.0-alpha.2",
 		"@rocket.chat/css-in-js": "~0.31.25",
