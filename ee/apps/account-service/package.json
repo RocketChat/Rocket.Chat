@@ -37,7 +37,7 @@
 		"nats": "^2.4.0",
 		"pino": "^8.21.0",
 		"polka": "^0.5.2",
-		"uuid": "^9.0.1"
+		"uuid": "^10.0.0"
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",

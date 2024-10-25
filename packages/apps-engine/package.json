@@ -76,7 +76,7 @@
         "@types/node": "~20.16.12",
         "@types/semver": "^5.5.0",
         "@types/stack-trace": "0.0.29",
-        "@types/uuid": "~8.3.4",
+        "@types/uuid": "~10.0.0",
         "@typescript-eslint/eslint-plugin": "~5.60.1",
         "@typescript-eslint/parser": "~5.60.1",
         "alsatian": "^2.4.0",
@@ -102,7 +102,7 @@
         "lodash.clonedeep": "^4.5.0",
         "semver": "^7.6.3",
         "stack-trace": "0.0.10",
-        "uuid": "~8.3.2"
+        "uuid": "~10.0.0"
     },
     "nyc": {
         "include": [

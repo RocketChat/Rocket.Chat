@@ -40,7 +40,7 @@
 		"polka": "^0.5.2",
 		"sharp": "^0.32.6",
 		"underscore": "^1.13.7",
-		"uuid": "^7.0.3",
+		"uuid": "^10.0.0",
 		"ws": "^8.18.0"
 	},
 	"devDependencies": {
@@ -53,7 +53,7 @@
 		"@types/node": "~20.16.12",
 		"@types/polka": "^0.5.7",
 		"@types/sharp": "^0.30.5",
-		"@types/uuid": "^8.3.4",
+		"@types/uuid": "^10.0.0",
 		"@types/ws": "^8.5.12",
 		"eslint": "~8.45.0",
 		"pino-pretty": "^7.6.1",
