@@ -4,4 +4,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixed: 🛠️ Resolved issues with updating custom emojis, including file upload and image caching problems.
+Fixes an issue where updating custom emojis didn’t work as expected, ensuring that uploaded emojis now update correctly and display without any caching problems.
