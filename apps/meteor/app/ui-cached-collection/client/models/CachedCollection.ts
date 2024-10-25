@@ -83,6 +83,9 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 		CachedCollectionManager.onLogin(() => {
 			void this.init();
 		});
+		Accounts.onLogout(() => {
+			this.ready.set(false);
+		});
 	}
 
 	protected get eventName(): `${Name}-changed` | `${string}/${Name}-changed` {
@@ -342,8 +345,6 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 	}
 
 	async init() {
-		this.ready.set(false);
-
 		if (await this.loadFromCache()) {
 			this.trySync();
 		} else {
