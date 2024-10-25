@@ -33,14 +33,14 @@ type ComposerPopupProviderProps = {
 const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) => {
 	const { _id: rid, encrypted: isRoomEncrypted } = room;
 	const userSpotlight = useMethod('spotlight');
-	const suggestionsCount = useSetting<number>('Number_of_users_autocomplete_suggestions');
-	const cannedResponseEnabled = useSetting<boolean>('Canned_Responses_Enable');
+	const suggestionsCount = useSetting('Number_of_users_autocomplete_suggestions', 5);
+	const cannedResponseEnabled = useSetting('Canned_Responses_Enable', true);
 	const [recentEmojis] = useLocalStorage('emoji.recent', []);
 	const isOmnichannel = isOmnichannelRoom(room);
 	const useEmoji = useUserPreference('useEmojis');
 	const { t, i18n } = useTranslation();
-	const e2eEnabled = useSetting<boolean>('E2E_Enable');
-	const unencryptedMessagesAllowed = useSetting<boolean>('E2E_Allow_Unencrypted_Messages');
+	const e2eEnabled = useSetting('E2E_Enable', false);
+	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const encrypted = isRoomEncrypted && e2eEnabled && !unencryptedMessagesAllowed;
 
 	const call = useMethod('getSlashCommandPreviews');

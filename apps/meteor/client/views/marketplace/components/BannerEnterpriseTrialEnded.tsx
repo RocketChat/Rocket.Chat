@@ -15,7 +15,7 @@ const BannerEnterpriseTrialEnded = (): ReactElement => {
 		linkTarget: '_blank',
 	};
 
-	const cloudWorkspaceHadTrial = useSetting<boolean>('Cloud_Workspace_Had_Trial');
+	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial', false);
 
 	const [showTrialBanner, setShowTrialBanner] = useLocalStorage('showAppsTrialEndBanner', cloudWorkspaceHadTrial);
 
