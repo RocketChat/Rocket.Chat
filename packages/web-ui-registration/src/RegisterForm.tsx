@@ -88,8 +88,12 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			{ pass: password, ...formData },
 			{
 				onError: (error: any) => {
-					if ([error.error, error.errorType].includes('error-invalid-email')) {
+					if (error.error.includes('error-invalid-email')) {
 						setError('email', { type: 'invalid-email', message: t('registration.component.form.invalidEmail') });
+					}
+
+					if (/Email not verified/.test(error.reason)) {
+						setError('email', { type: 'email-not-verified', message: 'The email is not verified' });
 					}
 					if (error.errorType === 'error-user-already-exists') {
 						setError('username', { type: 'user-already-exists', message: t('registration.component.form.usernameAlreadyExists') });
@@ -124,7 +128,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		);
 	};
 
-	if (errors.email?.type === 'invalid-email') {
+	if (errors.email?.type === 'email-not-verified') {
 		return <EmailConfirmationForm onBackToLogin={() => clearErrors('email')} email={getValues('email')} />;
 	}
 
