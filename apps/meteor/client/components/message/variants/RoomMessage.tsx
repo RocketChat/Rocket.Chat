@@ -62,6 +62,24 @@ const RoomMessage = ({
 
 	const messageRef = useJumpToMessage(message._id);
 
+	// Add a new function for handling double click events
+	const handleRightClick = async (e: React.MouseEvent) => {
+		e.preventDefault();
+
+		//get the button that oppens the menu
+		const moreButton = document.querySelector('[title="More"]');
+		if (!moreButton) return;
+
+		//hide the button
+		moreButton.setAttribute("style", `position: fixed; top: ${e.clientY}px; left: ${e.clientX}px; visibility: hidden;`);
+		
+		//simulate click on the element
+		moreButton.dispatchEvent(new MouseEvent('click', {
+			bubbles: true,
+		}));
+
+	};
+	
 	return (
 		<Message
 			ref={messageRef}
@@ -71,6 +89,7 @@ const RoomMessage = ({
 			tabIndex={0}
 			aria-labelledby={`${message._id}-displayName ${message._id}-time ${message._id}-content ${message._id}-read-status`}
 			onClick={selecting ? toggleSelected : undefined}
+			onContextMenu={handleRightClick}
 			isSelected={selected}
 			isEditing={editing}
 			isPending={message.temp}
@@ -113,6 +132,7 @@ const RoomMessage = ({
 			{!message.private && message?.e2e !== 'pending' && <MessageToolbarHolder message={message} context={context} />}
 		</Message>
 	);
+
 };
 
 export default memo(RoomMessage);
