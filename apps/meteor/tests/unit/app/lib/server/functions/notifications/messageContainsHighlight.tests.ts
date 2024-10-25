@@ -38,4 +38,32 @@ describe('messageContainsHighlight', () => {
 		};
 		expect(messageContainsHighlight(message, ['high', 'ssage', 'regular', 'light'])).to.be.true;
 	});
+
+	it('should return true if highlight case not match', async () => {
+		const message = {
+			msg: 'highlighted regular message',
+		};
+		expect(messageContainsHighlight(message, ['ReGuLaR'])).to.be.true;
+	});
+
+	it('should return false if the highlight word is an emoji', async () => {
+		const message = {
+			msg: 'highlighted :thumbsup: message',
+		};
+		expect(messageContainsHighlight(message, ['thumbsup'])).to.be.false;
+	});
+
+	it('should return true for a highlight word beggining with :', async () => {
+		const message = {
+			msg: 'highlighted :thumbsup message',
+		};
+		expect(messageContainsHighlight(message, ['thumbsup'])).to.be.true;
+	});
+
+	it('should return true for a highlight word ending with :', async () => {
+		const message = {
+			msg: 'highlighted thumbsup: message',
+		};
+		expect(messageContainsHighlight(message, ['thumbsup'])).to.be.true;
+	});
 });

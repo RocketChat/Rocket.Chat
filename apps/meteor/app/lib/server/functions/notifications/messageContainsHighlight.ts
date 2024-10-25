@@ -15,7 +15,8 @@ export function messageContainsHighlight(message: Pick<IMessage, 'msg'>, highlig
 	}
 
 	return highlights.some((highlight: string) => {
-		const regexp = new RegExp(`\\b${escapeRegExp(highlight)}\\b`, 'i');
+		const hl = escapeRegExp(highlight);
+		const regexp = new RegExp(`(?<!:)\\b${hl}\\b:|:\\b${hl}(?!:)\\b|\\b(?<!:)${hl}(?!:)\\b`, 'i');
 		return regexp.test(message.msg);
 	});
 }
