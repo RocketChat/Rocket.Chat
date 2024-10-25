@@ -47,6 +47,7 @@ const CreateOAuthModal = ({ onConfirm, onClose }: CreateOAuthModalProps): ReactE
 						{...register('customOAuthName', { required: t('Required_field', { field: t('Custom_OAuth_name') }) })}
 						aria-required='true'
 						aria-describedby={`${customOAuthNameId}-error ${customOAuthNameId}-hint`}
+						aria-label={t('Custom_OAuth_name')}
 					/>
 				</FieldRow>
 				<FieldHint id={`${customOAuthNameId}-hint`}>{t('Custom_OAuth_name_hint')}</FieldHint>
