@@ -13,6 +13,7 @@ import { useOmnichannelPriorities } from '../../omnichannel/hooks/useOmnichannel
 import RoomMenu from '../RoomMenu';
 import { OmnichannelBadges } from '../badges/OmnichannelBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
 export const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
@@ -32,24 +33,6 @@ export const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: TF
 		return normalizeSidebarMessage(lastMessage, t);
 	}
 	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizeSidebarMessage(lastMessage, t)}`;
-};
-
-export const getBadgeTitle = (userMentions: number, threadUnread: number, groupMentions: number, unread: number, t: TFunction) => {
-	const title = [] as string[];
-	if (userMentions) {
-		title.push(t('mentions_counter', { count: userMentions }));
-	}
-	if (threadUnread) {
-		title.push(t('threads_counter', { count: threadUnread }));
-	}
-	if (groupMentions) {
-		title.push(t('group_mentions_counter', { count: groupMentions }));
-	}
-	const count = unread - userMentions - groupMentions;
-	if (count > 0) {
-		title.push(t('unread_messages_counter', { count }));
-	}
-	return title.join(', ');
 };
 
 type RoomListRowProps = {
@@ -149,20 +132,24 @@ const SidebarItemTemplateWithData = ({
 	const message = extended && getMessage(room, lastMessage, t);
 	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
 
-	const threadUnread = tunread.length > 0;
-	const variant =
-		((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'secondary';
+	const unreadCount = useMemo(() => {
+		return {
+			mentions: userMentions + tunreadUser.length,
+			threads: tunread.length,
+			groupMentions,
+			total: unread + tunread.length,
+		};
+	}, [groupMentions, tunread.length, tunreadUser.length, unread, userMentions]);
 
-	const isUnread = unread > 0 || threadUnread;
-	const showBadge = !hideUnreadStatus || (!hideMentionStatus && (Boolean(userMentions) || tunreadUser.length > 0));
+	const { unreadTitle, unreadVariant } = useUnreadDisplay(unreadCount);
 
-	const badgeTitle = getBadgeTitle(userMentions, tunread.length, groupMentions, unread, t);
+	const showBadge = (!hideUnreadStatus || !hideMentionStatus) && Boolean(unreadCount.total);
 
 	const badges = (
 		<>
-			{showBadge && isUnread && (
-				<SidebarV2ItemBadge variant={variant} title={badgeTitle}>
-					{unread + tunread?.length}
+			{showBadge && (
+				<SidebarV2ItemBadge variant={unreadVariant} title={unreadTitle}>
+					{unreadCount.total}
 				</SidebarV2ItemBadge>
 			)}
 			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
@@ -197,7 +184,7 @@ const SidebarItemTemplateWithData = ({
 				((): ReactElement => (
 					<RoomMenu
 						alert={alert}
-						threadUnread={threadUnread}
+						threadUnread={unreadCount.threads > 0}
 						rid={rid}
 						unread={!!unread}
 						roomOpen={selected}
