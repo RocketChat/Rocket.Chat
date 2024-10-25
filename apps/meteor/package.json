@@ -416,7 +416,7 @@
 		"react-virtuoso": "^4.12.0",
 		"sanitize-html": "^2.13.1",
 		"semver": "^7.6.3",
-		"sharp": "^0.32.6",
+		"sharp": "^0.33.5",
 		"sip.js": "^0.20.1",
 		"sodium-native": "^3.3.0",
 		"sodium-plus": "^0.9.0",
