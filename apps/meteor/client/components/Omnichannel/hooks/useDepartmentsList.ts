@@ -17,7 +17,7 @@ type DepartmentsListOptions = {
 	excludeDepartmentId?: string;
 	enabled?: boolean;
 	showArchived?: boolean;
-	selectedDepartment?: string;
+	selectedDepartment?: DepartmentListItem | undefined;
 };
 
 export const useDepartmentsList = (
@@ -33,7 +33,6 @@ export const useDepartmentsList = (
 	const reload = useCallback(() => setItemsList(new RecordList<DepartmentListItem>()), []);
 
 	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
-	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: options.selectedDepartment ?? '' });
 
 	useComponentDidUpdate(() => {
 		options && reload();
@@ -67,21 +66,21 @@ export const useDepartmentsList = (
 					}),
 				);
 
-			const normalizedItems = await normalizeDepartments(items, options.selectedDepartment ?? '', getDepartment);
-
 			options.haveAll &&
-				normalizedItems.unshift({
+				items.unshift({
 					_id: '',
 					label: t('All'),
 					value: 'all',
 				});
 
 			options.haveNone &&
-				normalizedItems.unshift({
+				items.unshift({
 					_id: '',
 					label: t('None'),
 					value: '',
 				});
+
+			const normalizedItems = await normalizeDepartments(items, options.selectedDepartment);
 
 			return {
 				items: normalizedItems,
@@ -99,12 +98,11 @@ export const useDepartmentsList = (
 			options.haveAll,
 			options.haveNone,
 			options.departmentId,
-			getDepartment,
 			t,
 		],
 	);
 
-	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);
+	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 5);
 
 	return {
 		reload,
