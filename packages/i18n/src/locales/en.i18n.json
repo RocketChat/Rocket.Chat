@@ -955,6 +955,7 @@
   "Cannot_open_conversation_with_yourself": "Cannot Direct Message with yourself",
   "Cannot_share_your_location": "Cannot share your location...",
   "Cannot_disable_while_on_call": "Can't change status during calls ",
+  "Cannot_upload_file_character_limit": "Cannot upload file, description is over the {{count}} character limit",
   "Cant_join": "Can't join",
   "CAS": "CAS",
   "CAS_Description": "Central Authentication Service allows members to use one set of credentials to sign in to multiple sites over multiple protocols.",

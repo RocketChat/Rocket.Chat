@@ -299,6 +299,10 @@ API.v1.addRoute(
 				throw new Meteor.Error('invalid-file');
 			}
 
+			if ((this.bodyParams.description?.length ?? 0) > settings.get<number>('Message_MaxAllowedSize')) {
+				throw new Meteor.Error('error-message-size-exceeded');
+			}
+
 			file.description = this.bodyParams.description;
 			delete this.bodyParams.description;
 
