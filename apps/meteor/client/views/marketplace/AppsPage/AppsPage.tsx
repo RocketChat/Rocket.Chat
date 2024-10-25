@@ -1,12 +1,12 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
-import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
+import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { Page, PageContent } from '../../../components/Page';
+import { Page } from '../../../components/Page';
 import { useAppsResult } from '../../../contexts/hooks/useAppsResult';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import MarketplaceHeader from '../components/MarketplaceHeader';
@@ -16,15 +16,7 @@ import type { appsDataType } from '../hooks/useFilteredApps';
 import { useFilteredApps } from '../hooks/useFilteredApps';
 import { useRadioToggle } from '../hooks/useRadioToggle';
 import AppsFilters from './AppsFilters';
-import AppsPageConnectionError from './AppsPageConnectionError';
-import AppsPageContentBody from './AppsPageContentBody';
-import AppsPageContentSkeleton from './AppsPageContentSkeleton';
-import NoAppRequestsEmptyState from './NoAppRequestsEmptyState';
-import NoInstalledAppMatchesEmptyState from './NoInstalledAppMatchesEmptyState';
-import NoInstalledAppsEmptyState from './NoInstalledAppsEmptyState';
-import NoMarketplaceOrInstalledAppMatchesEmptyState from './NoMarketplaceOrInstalledAppMatchesEmptyState';
-import PrivateEmptyState from './PrivateEmptyState';
-import UnsupportedEmptyState from './UnsupportedEmptyState';
+import AppsPageContent from './AppsPageContent';
 
 type AppsContext = 'explore' | 'installed' | 'premium' | 'private' | 'requested';
 
@@ -35,12 +27,9 @@ const AppsPage = (): ReactElement => {
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const scrollableRef = useRef<HTMLDivElement>(null);
 
-	const router = useRouter();
-
 	const context = useRouteParameter('context') as AppsContext;
 
 	const isMarketplace = context === 'explore';
-	const isPremium = context === 'premium';
 	const isRequested = context === 'requested';
 
 	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState({
@@ -140,22 +129,7 @@ const AppsPage = (): ReactElement => {
 		context,
 	});
 
-	const noInstalledApps = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value?.totalAppsLength === 0;
-
 	const unsupportedVersion = appsResult.phase === AsyncStatePhase.REJECTED && appsResult.error.message === 'unsupported version';
-
-	const noMarketplaceOrInstalledAppMatches =
-		appsResult.phase === AsyncStatePhase.RESOLVED && (isMarketplace || isPremium) && appsResult.value?.count === 0;
-
-	const noInstalledAppMatches =
-		appsResult.phase === AsyncStatePhase.RESOLVED &&
-		context === 'installed' &&
-		appsResult.value?.totalAppsLength !== 0 &&
-		appsResult.value?.count === 0;
-
-	const noAppRequests = context === 'requested' && appsResult?.value?.count === 0;
-
-	const noErrorsOcurred = !noMarketplaceOrInstalledAppMatches && !noInstalledAppMatches && !noInstalledApps && !noAppRequests;
 
 	const isFiltered =
 		Boolean(text.length) ||
@@ -163,16 +137,6 @@ const AppsPage = (): ReactElement => {
 		statusFilterStructure.items.find((item) => item.checked)?.id !== 'all' ||
 		sortFilterStructure.items.find((item) => item.checked)?.id !== 'mru' ||
 		selectedCategories.length > 0;
-
-	const handleReturn = () => {
-		router.navigate({
-			name: 'marketplace',
-			params: {
-				context: 'explore',
-				page: 'list',
-			},
-		});
-	};
 
 	const toggleInitialSortOption = useCallback((isRequested: boolean) => {
 		setSortFilterStructure((prevState) => {
@@ -198,34 +162,6 @@ const AppsPage = (): ReactElement => {
 		toggleInitialSortOption(isRequested);
 	}, [isMarketplace, isRequested, sortFilterOnSelected, t, toggleInitialSortOption]);
 
-	const getEmptyState = () => {
-		if (unsupportedVersion) {
-			return <UnsupportedEmptyState />;
-		}
-
-		if (noAppRequests) {
-			return <NoAppRequestsEmptyState />;
-		}
-
-		if (noMarketplaceOrInstalledAppMatches) {
-			return <NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={!!appsResult.value?.shouldShowSearchText} text={text} />;
-		}
-
-		if (noInstalledAppMatches) {
-			return (
-				<NoInstalledAppMatchesEmptyState
-					shouldShowSearchText={!!appsResult.value?.shouldShowSearchText}
-					text={text}
-					onButtonClick={handleReturn}
-				/>
-			);
-		}
-
-		if (noInstalledApps) {
-			return context === 'private' ? <PrivateEmptyState /> : <NoInstalledAppsEmptyState onButtonClick={handleReturn} />;
-		}
-	};
-
 	return (
 		<Page background='tint'>
 			<MarketplaceHeader unsupportedVersion={unsupportedVersion} title={t(`Apps_context_${context}`)} />
@@ -244,19 +180,16 @@ const AppsPage = (): ReactElement => {
 				statusFilterOnSelected={statusFilterOnSelected}
 				context={context || 'explore'}
 			/>
-			<PageContent>
-				{appsResult.phase === AsyncStatePhase.LOADING && <AppsPageContentSkeleton />}
-				{appsResult.phase === AsyncStatePhase.RESOLVED && noErrorsOcurred && !unsupportedVersion && (
-					<AppsPageContentBody
-						isMarketplace={isMarketplace}
-						isFiltered={isFiltered}
-						appsResult={appsResult.value}
-						scrollableRef={scrollableRef}
-					/>
-				)}
-				{getEmptyState()}
-				{appsResult.phase === AsyncStatePhase.REJECTED && !unsupportedVersion && <AppsPageConnectionError onButtonClick={reload} />}
-			</PageContent>
+			<AppsPageContent
+				reload={reload}
+				isMarketplace={isMarketplace}
+				isFiltered={isFiltered}
+				appsResult={appsResult}
+				scrollableRef={scrollableRef}
+				unsupportedVersion={unsupportedVersion}
+				text={text}
+				context={context}
+			/>
 			{Boolean(appsResult.value?.count) && (
 				<Pagination
 					divider
