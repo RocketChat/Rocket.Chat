@@ -6,9 +6,10 @@ import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 import IframeModal from '../IframeModal';
 import AppInstallModal from '../components/AppInstallModal/AppInstallModal';
+import { isMarketplaceRouteContext } from '../definitions/MarketplaceRouterContext';
 import type { Actions } from '../helpers';
 import { handleAPIError } from '../helpers/handleAPIError';
-import { isMarketplaceRouteContext, useAppsCountQuery } from './useAppsCountQuery';
+import { useAppsCountQuery } from './useAppsCountQuery';
 import { useAppsOrchestration } from './useAppsOrchestration';
 import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
 import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
@@ -66,30 +67,30 @@ export function useAppInstallationHandler({
 		throw new Error('Apps orchestrator is not available');
 	}
 
-	const acquireApp = useCallback(async () => {
-		if (action === 'purchase' && !isAppPurchased) {
-			try {
-				const data = await appsOrchestrator.buildExternalUrl(app.id, app.purchaseType, false);
-				setModal(
-					<IframeModal
-						url={data.url}
-						cancel={onDismiss}
-						confirm={() => {
-							setIsPurchased(true);
-							openPermissionModal();
-						}}
-					/>,
-				);
-			} catch (error) {
-				handleAPIError(error);
-			}
-			return;
-		}
-
-		openPermissionModal();
-	}, [action, isAppPurchased, openPermissionModal, appsOrchestrator, app.id, app.purchaseType, setModal, onDismiss, setIsPurchased]);
-
 	return useCallback(async () => {
+		const acquireApp = async () => {
+			if (action === 'purchase' && !isAppPurchased) {
+				try {
+					const data = await appsOrchestrator.buildExternalUrl(app.id, app.purchaseType, false);
+					setModal(
+						<IframeModal
+							url={data.url}
+							cancel={onDismiss}
+							confirm={() => {
+								setIsPurchased(true);
+								openPermissionModal();
+							}}
+						/>,
+					);
+				} catch (error) {
+					handleAPIError(error);
+				}
+				return;
+			}
+
+			openPermissionModal();
+		};
+
 		if (app?.versionIncompatible) {
 			openIncompatibleModal(app, action, closeModal);
 			return;
@@ -146,13 +147,15 @@ export function useAppInstallationHandler({
 		appCountQuery.data,
 		setModal,
 		closeModal,
-		acquireApp,
+		isAppPurchased,
+		openPermissionModal,
+		appsOrchestrator,
+		onDismiss,
+		setIsPurchased,
 		openIncompatibleModal,
 		dispatchToastMessage,
 		notifyAdmins,
 		success,
-		appsOrchestrator,
-		onDismiss,
 		openExternalLink,
 		manageSubscriptionUrl,
 	]);

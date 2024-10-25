@@ -1,6 +1,6 @@
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { App } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -9,6 +9,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
+import type { MarketplaceRouteContext } from '../definitions/MarketplaceRouterContext';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetailsPageHeader from './AppDetailsPageHeader';
@@ -28,8 +29,11 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const isAdminUser = usePermission('manage-apps');
 
 	const tab = useRouteParameter('tab');
-	const context = useRouteParameter('context');
-	const appData = useAppInfo(id, context || '');
+	const context = useRouteParameter('context') as MarketplaceRouteContext;
+	const { app, settingsQuery, apisQuery, screenshotsQuery } = useAppInfo(id, context);
+
+	const settings = settingsQuery.data?.settings;
+	const isSecurityVisible = Boolean(app?.privacyPolicySummary || app?.permissions || app?.tosLink || app?.privacyLink);
 
 	const handleReturn = useMutableCallback((): void => {
 		if (!context) {
@@ -41,9 +45,6 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 			params: { context, page: 'list' },
 		});
 	});
-
-	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink, name } = appData || {};
-	const isSecurityVisible = Boolean(privacyPolicySummary || permissions || tosLink || privacyLink);
 
 	const saveAppSettings = useCallback(
 		async (data) => {
@@ -61,7 +62,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 				handleAPIError(e);
 			}
 		},
-		[dispatchToastMessage, id, name, settings],
+		[dispatchToastMessage, id, settings],
 	);
 
 	const reducedSettings = useMemo(() => {
@@ -80,31 +81,34 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 			<PageHeader title={t('App_Info')} onClickBack={handleReturn} />
 			<PageScrollableContentWithShadow pi={24} pbs={24} pbe={0} h='full'>
 				<Box w='full' alignSelf='center' h='full' display='flex' flexDirection='column'>
-					{!appData && <AppDetailsPageLoading />}
-					{appData && (
+					{!app || settingsQuery.isLoading || apisQuery.isLoading || screenshotsQuery.isLoading ? (
+						<AppDetailsPageLoading />
+					) : (
 						<>
-							<AppDetailsPageHeader app={appData} />
+							<AppDetailsPageHeader app={app} />
 							<AppDetailsPageTabs
 								context={context || ''}
-								installed={installed}
+								installed={app.installed}
 								isSecurityVisible={isSecurityVisible}
 								settings={settings}
 								tab={tab}
 							/>
-							{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
+							{Boolean(!tab || tab === 'details') && (
+								<AppDetails app={app} apis={apisQuery.data?.apis || []} screenshots={screenshotsQuery.data?.screenshots || []} />
+							)}
 							{tab === 'requests' && <AppRequests id={id} isAdminUser={isAdminUser} />}
 							{tab === 'security' && isSecurityVisible && (
 								<AppSecurity
-									privacyPolicySummary={privacyPolicySummary}
-									appPermissions={permissions}
-									tosLink={tosLink}
-									privacyLink={privacyLink}
+									privacyPolicySummary={app.privacyPolicySummary}
+									appPermissions={app.permissions}
+									tosLink={app.tosLink}
+									privacyLink={app.privacyLink}
 								/>
 							)}
 							{tab === 'releases' && <AppReleases id={id} />}
 							{Boolean(tab === 'settings' && settings && Object.values(settings).length) && (
 								<FormProvider {...methods}>
-									<AppSettings settings={settings || {}} />
+									<AppSettings settings={settings} />
 								</FormProvider>
 							)}
 							{tab === 'logs' && <AppLogs id={id} />}
@@ -115,7 +119,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset()}>{t('Cancel')}</Button>
-					{installed && isAdminUser && (
+					{app?.installed && isAdminUser && (
 						<Button primary loading={isSubmitting || isSubmitted} onClick={handleSubmit(saveAppSettings)}>
 							{t('Save_changes')}
 						</Button>

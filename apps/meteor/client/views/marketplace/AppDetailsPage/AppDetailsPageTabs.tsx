@@ -4,13 +4,13 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { ISettings } from '../../../apps/@types/IOrchestrator';
+import type { AppInfo } from '../definitions/AppInfo';
 
 type AppDetailsPageTabsProps = {
 	context: string;
 	installed: boolean | undefined;
 	isSecurityVisible: boolean;
-	settings: ISettings | undefined;
+	settings: AppInfo['settings'];
 	tab: string | undefined;
 };
 
