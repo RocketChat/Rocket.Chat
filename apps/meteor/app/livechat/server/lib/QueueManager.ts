@@ -94,8 +94,7 @@ export class QueueManager {
 
 		const inquiryAgent = await RoutingManager.delegateAgent(defaultAgent, inquiry);
 		logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
-		await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
-		const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
+		const dbInquiry = await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
 
 		if (!dbInquiry) {
 			throw new Error('inquiry-not-found');
@@ -151,8 +150,7 @@ export class QueueManager {
 			return;
 		}
 
-		await callbacks.run('livechat.beforeRouteChat', inquiry, defaultAgent);
-		const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
+		const dbInquiry = await callbacks.run('livechat.beforeRouteChat', inquiry, defaultAgent);
 
 		if (!dbInquiry) {
 			throw new Error('inquiry-not-found');
