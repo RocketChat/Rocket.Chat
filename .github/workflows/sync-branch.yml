@@ -1,0 +1,19 @@
+name: Sync branch
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync-branch:
+    name: Update test branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@master
+      - uses: connor-baer/action-sync-branch@main
+        with:
+          branch: develop
+          token: ${{ secrets.GITHUB_TOKEN }}
+          force: false
