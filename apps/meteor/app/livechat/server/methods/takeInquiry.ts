@@ -57,8 +57,9 @@ export const takeInquiry = async (
 	}
 
 	const contactId = await migrateVisitorIfMissingContact(inquiry.v._id, room.source);
-	if (contactId && !(await isAgentAvailableToTakeContactInquiry(contactId, room.source))) {
-		throw new Meteor.Error('error-agent-not-available-to-take-contact-inquiry');
+	const isAgentAvailableToTakeContactInquiryResult = await isAgentAvailableToTakeContactInquiry(room.source, contactId);
+	if (!isAgentAvailableToTakeContactInquiryResult.value) {
+		throw new Meteor.Error(isAgentAvailableToTakeContactInquiryResult.error);
 	}
 
 	const agent = {
