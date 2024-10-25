@@ -104,17 +104,10 @@ test.describe.serial('retention-policy', () => {
 				await auxContext.page.close();
 			});
 			test('should not show prune section in edit channel for users without permission', async () => {
-				await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
-				await auxContext.poHomeChannel.tabs.btnRoomInfo.click();
-				await auxContext.poHomeChannel.tabs.room.btnEdit.click();
-
 				await expect(poHomeChannel.tabs.room.pruneAccordion).not.toBeVisible();
 			});
 
 			test('users without permission should be able to edit the channel', async () => {
-				await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
-				await auxContext.poHomeChannel.tabs.btnRoomInfo.click();
-				await auxContext.poHomeChannel.tabs.room.btnEdit.click();
 				await auxContext.poHomeChannel.tabs.room.advancedSettingsAccordion.click();
 				await auxContext.poHomeChannel.tabs.room.checkboxReadOnly.check();
 				await auxContext.poHomeChannel.tabs.room.btnSave.click();
