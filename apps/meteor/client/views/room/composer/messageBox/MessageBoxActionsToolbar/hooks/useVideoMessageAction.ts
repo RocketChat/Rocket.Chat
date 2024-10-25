@@ -11,7 +11,7 @@ import { useMediaPermissions } from '../../hooks/useMediaPermissions';
 export const useVideoMessageAction = (disabled: boolean): GenericMenuItemProps => {
 	const isFileUploadEnabled = useSetting('FileUpload_Enabled', true);
 	const isVideoRecorderEnabled = useSetting('Message_VideoRecorderEnabled', true);
-	const fileUploadMediaTypeBlackList = useSetting('FileUpload_MediaTypeBlackList', '');
+	const fileUploadMediaTypeBlackList = useSetting('FileUpload_MediaTypeBlackList', 'image/svg+xml');
 	const fileUploadMediaTypeWhiteList = useSetting('FileUpload_MediaTypeWhiteList', '');
 	const [isPermissionDenied, setIsPermissionDenied] = useMediaPermissions('camera');
 

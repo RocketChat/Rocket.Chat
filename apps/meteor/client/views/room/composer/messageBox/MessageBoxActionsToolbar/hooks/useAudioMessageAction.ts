@@ -12,7 +12,7 @@ const audioRecorder = new AudioRecorder();
 
 export const useAudioMessageAction = (disabled: boolean, isMicrophoneDenied: boolean): GenericMenuItemProps => {
 	const isFileUploadEnabled = useSetting('FileUpload_Enabled', true);
-	const isAudioRecorderEnabled = useSetting('Message_AudioRecorderEnabled', false);
+	const isAudioRecorderEnabled = useSetting('Message_AudioRecorderEnabled', true);
 	const fileUploadMediaTypeBlackList = useSetting('FileUpload_MediaTypeBlackList', '');
 	const fileUploadMediaTypeWhiteList = useSetting('FileUpload_MediaTypeWhiteList', '');
 	const [isPermissionDenied] = useMediaPermissions('microphone');
