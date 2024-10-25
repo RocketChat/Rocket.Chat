@@ -19,7 +19,6 @@ import './getRoomNameById';
 import './getSetupWizardParameters';
 import './getTotalChannels';
 import './getUsersOfRoom';
-import './hideRoom';
 import './ignoreUser';
 import './loadHistory';
 import './loadLocale';

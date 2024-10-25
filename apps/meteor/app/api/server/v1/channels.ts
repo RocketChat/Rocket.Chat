@@ -27,7 +27,7 @@ import { Meteor } from 'meteor/meteor';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
-import { hideRoomMethod } from '../../../../server/methods/hideRoom';
+import { hideRoomMethod } from '../../../../server/lib/rooms/hideRoom';
 import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
