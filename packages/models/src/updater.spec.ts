@@ -133,6 +133,190 @@ test('it should add items to array', async () => {
 	expect(updater.getUpdateFilter()).toEqual({ $addToSet: { a: { $each: ['b', 'c'] } } });
 });
 
+test('it should do everything on the update filter', async () => {
+	const updater = new UpdaterImpl<{
+		_id: string;
+		a: string[];
+		b: string;
+		c: number;
+		d: number;
+		e: string[];
+		f: string;
+		g: string;
+		h: string[];
+	}>();
+
+	updater.addUpdateFilter({
+		$addToSet: {
+			a: 'a1',
+			h: { $each: ['h1', 'h2'] },
+		},
+		$set: {
+			b: 'b1',
+			g: 'g1',
+		},
+		$unset: {
+			d: 1,
+		},
+		$inc: {
+			c: 1,
+		},
+	});
+
+	updater.addUpdateFilter({
+		$addToSet: {
+			a: 'a2',
+			e: 'e1',
+		},
+		$set: {
+			b: 'b2',
+			f: 'f2',
+		},
+		$unset: {
+			d: 1,
+		},
+		$inc: {
+			c: 2,
+		},
+	});
+
+	expect(updater.getUpdateFilter()).toEqual({
+		$addToSet: {
+			a: { $each: ['a1', 'a2'] },
+			e: { $each: ['e1'] },
+			h: { $each: ['h1', 'h2'] },
+		},
+		$set: {
+			b: 'b2',
+			f: 'f2',
+			g: 'g1',
+		},
+		$unset: {
+			d: 1,
+		},
+		$inc: {
+			c: 3,
+		},
+	});
+});
+
+test('it should combine $set and $addToSet operations to the same key', async () => {
+	const updater = new UpdaterImpl<{
+		_id: string;
+		a: string[];
+		b: string;
+		c: string[];
+	}>();
+
+	updater.set('a', ['a1', 'a2']);
+	updater.set('b', 'b1');
+	updater.addToSet('a', 'a3');
+
+	expect(updater.getUpdateFilter()).toEqual({
+		$set: {
+			a: ['a1', 'a2', 'a3'],
+			b: 'b1',
+		},
+	});
+});
+
+test('it should discard any actions done on a key before a $set', async () => {
+	const updater = new UpdaterImpl<{
+		_id: string;
+		a?: string;
+		b: number;
+		c: string[];
+		d?: string;
+	}>();
+
+	updater.unset('a');
+	updater.inc('b', 1);
+	updater.addToSet('c', 'c1');
+	updater.addToSet('c', 'c2');
+	updater.unset('d');
+
+	updater.set('a', 'a1');
+	updater.set('b', 5);
+	updater.set('c', ['c3']);
+
+	expect(updater.getUpdateFilter()).toEqual({
+		$set: {
+			a: 'a1',
+			b: 5,
+			c: ['c3'],
+		},
+		$unset: {
+			d: 1,
+		},
+	});
+});
+
+test('it should discard any actions done on a key before an $unset', async () => {
+	const updater = new UpdaterImpl<{
+		_id: string;
+		a?: string;
+		b?: number;
+		c?: string[];
+		d?: string;
+	}>();
+
+	updater.set('a', 'a1');
+	updater.inc('b', 1);
+	updater.addToSet('c', 'c1');
+	updater.addToSet('c', 'c2');
+	updater.set('d', 'd1');
+
+	updater.unset('a');
+	updater.unset('b');
+	updater.unset('c');
+
+	expect(updater.getUpdateFilter()).toEqual({
+		$set: {
+			d: 'd1',
+		},
+		$unset: {
+			a: 1,
+			b: 1,
+			c: 1,
+		},
+	});
+});
+
+test('it should discard any $unset done on a key before another operation', async () => {
+	const updater = new UpdaterImpl<{
+		_id: string;
+		a?: string;
+		b?: number;
+		c?: string[];
+		d?: string;
+	}>();
+
+	updater.unset('a');
+	updater.unset('b');
+	updater.unset('c');
+	updater.unset('d');
+
+	updater.set('a', 'a1');
+	updater.inc('b', 1);
+	updater.addToSet('c', 'c1');
+	updater.addToSet('c', 'c2');
+
+	expect(updater.getUpdateFilter()).toEqual({
+		$set: {
+			a: 'a1',
+		},
+		$inc: {
+			b: 1,
+		},
+		$addToSet: {
+			c: { $each: ['c1', 'c2'] },
+		},
+		$unset: {
+			d: 1,
+		},
+	});
+});
+
 test('it should getUpdateFilter only once', async () => {
 	const updater = new UpdaterImpl<{
 		_id: string;
