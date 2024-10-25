@@ -3,7 +3,7 @@ import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } fro
 import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
-import type { Device, ModalContextValue, TranslationKey } from '@rocket.chat/ui-contexts';
+import type { Device, ModalContextValue, SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	AuthorizationContext,
 	ConnectionStatusContext,
@@ -92,10 +92,12 @@ export class MockedAppRootBuilder {
 		queryPreference: () => [() => () => undefined, () => undefined],
 		queryRoom: () => [() => () => undefined, () => undefined],
 		querySubscription: () => [() => () => undefined, () => undefined],
-		querySubscriptions: () => [() => () => undefined, () => []],
+		querySubscriptions: () => [() => () => undefined, () => this.subscriptions], // apply query and option
 		user: null,
 		userId: null,
 	};
+
+	private subscriptions: SubscriptionWithRoom[] = [];
 
 	private modal: ModalContextValue = {
 		currentModal: { component: null },
@@ -267,6 +269,12 @@ export class MockedAppRootBuilder {
 	withUser(user: IUser): this {
 		this.user.userId = user._id;
 		this.user.user = user;
+
+		return this;
+	}
+
+	withSubscriptions(subscriptions: SubscriptionWithRoom[]): this {
+		this.subscriptions = subscriptions;
 
 		return this;
 	}
