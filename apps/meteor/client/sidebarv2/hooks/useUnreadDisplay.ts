@@ -1,18 +1,29 @@
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const useUnreadDisplay = ({
-	mentions,
-	threads,
-	groupMentions,
-	total,
-}: {
-	mentions: number;
-	threads: number;
-	groupMentions: number;
-	total: number;
-}) => {
+	alert,
+	userMentions,
+	unread,
+	tunread,
+	tunreadUser,
+	groupMentions: groupMentionsProp,
+	hideMentionStatus,
+	hideUnreadStatus,
+}: ISubscription & IRoom) => {
 	const { t } = useTranslation();
+
+	const unreadCount = useMemo(() => {
+		return {
+			mentions: userMentions + (tunreadUser?.length || 0),
+			threads: tunread?.length || 0,
+			groupMentions: groupMentionsProp,
+			total: unread + (tunread?.length || 0),
+		};
+	}, [groupMentionsProp, tunread?.length, tunreadUser?.length, unread, userMentions]);
+
+	const { groupMentions, mentions, threads, total } = unreadCount;
 
 	const unreadTitle = useMemo(() => {
 		const title = [] as string[];
@@ -37,5 +48,9 @@ export const useUnreadDisplay = ({
 		[groupMentions, mentions, threads],
 	) as 'danger' | 'primary' | 'warning' | 'secondary';
 
-	return { unreadTitle, unreadVariant };
+	const showUnread = (!hideUnreadStatus || (!hideMentionStatus && (Boolean(mentions) || Boolean(groupMentions)))) && Boolean(total);
+
+	const highlightUnread = Boolean(!hideUnreadStatus && (alert || unread));
+
+	return { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread };
 };

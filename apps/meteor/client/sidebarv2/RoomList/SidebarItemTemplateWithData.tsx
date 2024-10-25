@@ -92,22 +92,10 @@ const SidebarItemTemplateWithData = ({
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
-	const {
-		lastMessage,
-		hideUnreadStatus,
-		hideMentionStatus,
-		unread = 0,
-		alert,
-		userMentions,
-		groupMentions,
-		tunread = [],
-		tunreadUser = [],
-		rid,
-		t: type,
-		cl,
-	} = room;
+	const { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
 
-	const highlighted = Boolean(!hideUnreadStatus && (alert || unread));
+	const { lastMessage, unread = 0, alert, rid, t: type, cl } = room;
+
 	const icon = (
 		<SidebarV2ItemIcon
 			highlighted={highlighted}
@@ -132,22 +120,9 @@ const SidebarItemTemplateWithData = ({
 	const message = extended && getMessage(room, lastMessage, t);
 	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
 
-	const unreadCount = useMemo(() => {
-		return {
-			mentions: userMentions + tunreadUser.length,
-			threads: tunread.length,
-			groupMentions,
-			total: unread + tunread.length,
-		};
-	}, [groupMentions, tunread.length, tunreadUser.length, unread, userMentions]);
-
-	const { unreadTitle, unreadVariant } = useUnreadDisplay(unreadCount);
-
-	const showBadge = (!hideUnreadStatus || !hideMentionStatus) && Boolean(unreadCount.total);
-
 	const badges = (
 		<>
-			{showBadge && (
+			{showUnread && (
 				<SidebarV2ItemBadge variant={unreadVariant} title={unreadTitle}>
 					{unreadCount.total}
 				</SidebarV2ItemBadge>
