@@ -17,11 +17,7 @@ import { Meteor } from 'meteor/meteor';
 import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { sendNotification } from '../../../lib/server';
-import {
-	notifyOnLivechatInquiryChangedById,
-	notifyOnLivechatInquiryChanged,
-	notifyOnSettingChanged,
-} from '../../../lib/server/lib/notifyListener';
+import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
 import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
@@ -241,10 +237,7 @@ export class QueueManager {
 
 		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
 
-		const livechatSetting = await LivechatRooms.updateRoomCount();
-		if (livechatSetting) {
-			void notifyOnSettingChanged(livechatSetting);
-		}
+		await LivechatRooms.updateRoomCount();
 
 		const newRoom = (await this.queueInquiry(inquiry, room, defaultAgent)) ?? (await LivechatRooms.findOneById(rid));
 		if (!newRoom) {
