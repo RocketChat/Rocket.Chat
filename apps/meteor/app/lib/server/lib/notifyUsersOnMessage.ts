@@ -6,7 +6,7 @@ import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
-import { messageContainsHighlight } from '../functions/notifications';
+import { messageContainsHighlight } from '../functions/notifications/messageContainsHighlight';
 import {
 	notifyOnSubscriptionChanged,
 	notifyOnSubscriptionChangedByRoomIdAndUserId,
