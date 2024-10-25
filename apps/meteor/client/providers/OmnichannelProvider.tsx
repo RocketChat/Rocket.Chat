@@ -1,7 +1,7 @@
 import {
 	type IOmnichannelAgent,
 	type OmichannelRoutingConfig,
-	type OmnichannelSortingMechanismSettingType,
+	OmnichannelSortingMechanismSettingType,
 	type ILivechatInquiryRecord,
 	LivechatInquiryStatus,
 } from '@rocket.chat/core-typings';
@@ -46,7 +46,10 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	const omnichannelRouting = useSetting('Livechat_Routing_Method', 'Auto_Selection');
 	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link', false);
 	const omnichannelPoolMaxIncoming = useSetting('Livechat_guest_pool_max_number_incoming_livechats_displayed', 0);
-	const omnichannelSortingMechanism = useSetting<OmnichannelSortingMechanismSettingType>('Omnichannel_sorting_mechanism');
+	const omnichannelSortingMechanism = useSetting<OmnichannelSortingMechanismSettingType>(
+		'Omnichannel_sorting_mechanism',
+		OmnichannelSortingMechanismSettingType.Timestamp,
+	);
 
 	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
 	const hasAccess = usePermission('view-l-room');

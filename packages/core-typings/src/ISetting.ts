@@ -6,8 +6,6 @@ export enum SettingEditor {
 	EXPRESSION = 'expression',
 }
 
-type AssetValue = { url?: string; defaultUrl?: string };
-
 export type SettingValueMultiSelect = (string | number)[];
 export type SettingValueRoomPick = { _id: string; name?: string }[];
 export type SettingValue =
@@ -17,7 +15,7 @@ export type SettingValue =
 	| SettingValueMultiSelect
 	| SettingValueRoomPick
 	| Date
-	| AssetValue
+	| { url?: string; defaultUrl?: string }
 	| undefined
 	| null;
 
@@ -128,7 +126,7 @@ export interface ISettingAction extends ISettingBase {
 }
 export interface ISettingAsset extends ISettingBase {
 	type: 'asset';
-	value: AssetValue;
+	value: { url?: string; defaultUrl?: string };
 	fileConstraints: IRocketChatAssetConstraint;
 	asset: string;
 }
