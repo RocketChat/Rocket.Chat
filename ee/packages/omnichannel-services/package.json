@@ -26,7 +26,7 @@
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",
 		"eventemitter3": "^4.0.7",
-		"mem": "^8.1.1",
+		"mem": "^10.0.0",
 		"moment-timezone": "^0.5.46",
 		"mongo-message-queue": "^1.0.0",
 		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",

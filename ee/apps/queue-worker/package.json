@@ -30,7 +30,7 @@
 		"event-loop-stats": "^1.4.1",
 		"eventemitter3": "^4.0.7",
 		"gc-stats": "^1.4.1",
-		"mem": "^8.1.1",
+		"mem": "^10.0.0",
 		"moleculer": "^0.14.34",
 		"moment-timezone": "^0.5.46",
 		"mongo-message-queue": "^1.0.0",

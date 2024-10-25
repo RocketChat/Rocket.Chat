@@ -8442,7 +8442,7 @@ __metadata:
     event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^4.0.7"
     gc-stats: "npm:^1.4.1"
-    mem: "npm:^8.1.1"
+    mem: "npm:^10.0.0"
     moleculer: "npm:^0.14.34"
     mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.28.2"
@@ -8574,7 +8574,7 @@ __metadata:
     event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^4.0.7"
     gc-stats: "npm:^1.4.1"
-    mem: "npm:^8.1.1"
+    mem: "npm:^10.0.0"
     moleculer: "npm:^0.14.34"
     mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.28.2"
@@ -8743,7 +8743,7 @@ __metadata:
     eventemitter3: "npm:^4.0.7"
     gc-stats: "npm:^1.4.1"
     jaeger-client: "npm:^3.19.0"
-    mem: "npm:^8.1.1"
+    mem: "npm:^10.0.0"
     moleculer: "npm:^0.14.34"
     mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.28.2"
@@ -9172,7 +9172,7 @@ __metadata:
     image-webpack-loader: "npm:~8.1.0"
     lorem-ipsum: "npm:^2.0.8"
     markdown-it: "npm:^14.1.0"
-    mem: "npm:^6.1.1"
+    mem: "npm:^10.0.0"
     mini-css-extract-plugin: "npm:~1.6.2"
     mitt: "npm:^2.1.0"
     npm-run-all: "npm:^4.1.5"
@@ -9206,7 +9206,7 @@ __metadata:
     typescript: "npm:~5.6.3"
     url-loader: "npm:^4.1.1"
     webpack: "npm:~5.95.0"
-    webpack-bundle-analyzer: "npm:^4.9.1"
+    webpack-bundle-analyzer: "npm:^4.10.2"
     webpack-cli: "npm:~5.1.4"
     webpack-dev-server: "npm:~5.1.0"
     whatwg-fetch: "npm:^3.6.20"
@@ -9578,7 +9578,7 @@ __metadata:
     marked: "npm:^4.2.5"
     matrix-appservice: "npm:^2.0.0"
     matrix-appservice-bridge: "npm:^10.3.1"
-    mem: "npm:^8.1.1"
+    mem: "npm:^10.0.0"
     meteor-node-stubs: "npm:^1.2.10"
     mime-db: "npm:^1.52.0"
     mime-type: "npm:^4.0.0"
@@ -9776,7 +9776,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     eventemitter3: "npm:^4.0.7"
     jest: "npm:~29.7.0"
-    mem: "npm:^8.1.1"
+    mem: "npm:^10.0.0"
     moment-timezone: "npm:^0.5.46"
     mongo-message-queue: "npm:^1.0.0"
     mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
@@ -9811,7 +9811,7 @@ __metadata:
     event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^4.0.7"
     gc-stats: "npm:^1.4.1"
-    mem: "npm:^8.1.1"
+    mem: "npm:^10.0.0"
     moleculer: "npm:^0.14.34"
     moment-timezone: "npm:^0.5.46"
     mongo-message-queue: "npm:^1.0.0"
@@ -9951,7 +9951,7 @@ __metadata:
     event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^4.0.7"
     gc-stats: "npm:^1.4.1"
-    mem: "npm:^8.1.1"
+    mem: "npm:^10.0.0"
     moleculer: "npm:^0.14.34"
     mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.28.2"
@@ -10016,7 +10016,7 @@ __metadata:
     event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^4.0.7"
     gc-stats: "npm:^1.4.1"
-    mem: "npm:^8.1.1"
+    mem: "npm:^10.0.0"
     moleculer: "npm:^0.14.34"
     moment-timezone: "npm:^0.5.46"
     mongo-message-queue: "npm:^1.0.0"
@@ -10176,7 +10176,7 @@ __metadata:
     event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^4.0.7"
     gc-stats: "npm:^1.4.1"
-    mem: "npm:^8.1.1"
+    mem: "npm:^10.0.0"
     moleculer: "npm:^0.14.34"
     mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.28.2"
@@ -19093,6 +19093,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"debounce@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "debounce@npm:1.2.1"
+  checksum: 10/0b95b2a9d80ed69117d890f8dab8c0f2d6066f8d20edd1d810ae51f8f366a6d4c8b1d56e97dcb9304e93d57de4d5db440d34a03def7dad50403fc3f22bf16808
+  languageName: node
+  linkType: hard
+
 "debug@npm:2.6.9, debug@npm:^2.6.9":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
@@ -23708,7 +23715,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-escaper@npm:^2.0.0":
+"html-escaper@npm:^2.0.0, html-escaper@npm:^2.0.2":
   version: 2.0.2
   resolution: "html-escaper@npm:2.0.2"
   checksum: 10/034d74029dcca544a34fb6135e98d427acd73019796ffc17383eaa3ec2fe1c0471dcbbc8f8ed39e46e86d43ccd753a160631615e4048285e313569609b66d5b7
@@ -27206,13 +27213,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.escape@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "lodash.escape@npm:4.0.1"
-  checksum: 10/ba1effab9aea7e20ee69b26cbfeb41c73da2eb4d2ab1c261aaf53dd0902ce1afc2f0b34fb24bc69c1d2dd201c332e1d1eb696092fc844a2c5c8e7ccd1ca32014
-  languageName: node
-  linkType: hard
-
 "lodash.flatten@npm:^4.4.0":
   version: 4.4.0
   resolution: "lodash.flatten@npm:4.4.0"
@@ -27238,13 +27238,6 @@ __metadata:
   version: 4.3.0
   resolution: "lodash.includes@npm:4.3.0"
   checksum: 10/45e0a7c7838c931732cbfede6327da321b2b10482d5063ed21c020fa72b09ca3a4aa3bda4073906ab3f436cf36eb85a52ea3f08b7bab1e0baca8235b0e08fe51
-  languageName: node
-  linkType: hard
-
-"lodash.invokemap@npm:^4.6.0":
-  version: 4.6.0
-  resolution: "lodash.invokemap@npm:4.6.0"
-  checksum: 10/70e629f78dc0e7aabfabf0ef575cc0b3d3b207699a5c91788bf5363d8f53764b80afd5c1985a98043ecc23095a145b271101626ed62dbb785ffcb22237b731c9
   languageName: node
   linkType: hard
 
@@ -27318,13 +27311,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.pullall@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "lodash.pullall@npm:4.2.0"
-  checksum: 10/ec2aa1a1eea37226ef7b69041779221ef6fdc6472589dd4d89cec2a0f3d067301a0274abc6a0522797f9958497c79d8bc754825f23ea21e0e053ef8bdfe742ad
-  languageName: node
-  linkType: hard
-
 "lodash.sortby@npm:^4.7.0":
   version: 4.7.0
   resolution: "lodash.sortby@npm:4.7.0"
@@ -27364,13 +27350,6 @@ __metadata:
   version: 4.5.0
   resolution: "lodash.uniq@npm:4.5.0"
   checksum: 10/86246ca64ac0755c612e5df6d93cfe92f9ecac2e5ff054b965efbbb1d9a647b6310969e78545006f70f52760554b03233ad0103324121ae31474c20d5f7a2812
-  languageName: node
-  linkType: hard
-
-"lodash.uniqby@npm:^4.7.0":
-  version: 4.7.0
-  resolution: "lodash.uniqby@npm:4.7.0"
-  checksum: 10/256616bd1bd6be84d8a5eceb61338a0ab8d8b34314ba7bfd5f0de35227d0e2c1e659c61ff4ac31eba6a664085cc7e397bc34c3534fba208102db660a4f98f211
   languageName: node
   linkType: hard
 
@@ -27924,6 +27903,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mem@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "mem@npm:10.0.0"
+  dependencies:
+    map-age-cleaner: "npm:^0.1.3"
+    mimic-fn: "npm:^4.0.0"
+  checksum: 10/9f725ea48cc355393a532c93b7c897ac5b9894cf47fbb12df6fc93ae7547ca7ade64f4bb2f5796205e95ec0475e2dff4e98b180507b8f85814e9dd45291c41d8
+  languageName: node
+  linkType: hard
+
 "mem@npm:^4.0.0":
   version: 4.3.0
   resolution: "mem@npm:4.3.0"
@@ -27932,26 +27921,6 @@ __metadata:
     mimic-fn: "npm:^2.0.0"
     p-is-promise: "npm:^2.0.0"
   checksum: 10/ae4afa1cac2b4d64e089ecd54e06ae857b6e5aae410802564032cb407aad13aa598c5aededae8cca6c5827f4057ec3f58415a078c80181dd08019ae1a9aa1226
-  languageName: node
-  linkType: hard
-
-"mem@npm:^6.1.1":
-  version: 6.1.1
-  resolution: "mem@npm:6.1.1"
-  dependencies:
-    map-age-cleaner: "npm:^0.1.3"
-    mimic-fn: "npm:^3.0.0"
-  checksum: 10/1715876faa47907683baffa55eb302eb254fad3e3fdd1716535108c434498cb0d15dbb4261c29f28e8a712ac3568b70c0849048a5d113da57536e1508410422f
-  languageName: node
-  linkType: hard
-
-"mem@npm:^8.1.1":
-  version: 8.1.1
-  resolution: "mem@npm:8.1.1"
-  dependencies:
-    map-age-cleaner: "npm:^0.1.3"
-    mimic-fn: "npm:^3.1.0"
-  checksum: 10/5f22117d8a24775f0a61d333bd7fdbe19f7a9f8dc8ccee66f57ba98aeb4ed67e83cc130c482b78fd6a39887547749d8fe376fc44ca7efa81579ad9d0c0fa5acd
   languageName: node
   linkType: hard
 
@@ -28261,10 +28230,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mimic-fn@npm:^3.0.0, mimic-fn@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "mimic-fn@npm:3.1.0"
-  checksum: 10/f7b167f9115b8bbdf2c3ee55dce9149d14be9e54b237259c4bc1d8d0512ea60f25a1b323f814eb1fe8f5a541662804bcfcfff3202ca58df143edb986849d58db
+"mimic-fn@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "mimic-fn@npm:4.0.0"
+  checksum: 10/995dcece15ee29aa16e188de6633d43a3db4611bcf93620e7e62109ec41c79c0f34277165b8ce5e361205049766e371851264c21ac64ca35499acb5421c2ba56
   languageName: node
   linkType: hard
 
@@ -33992,7 +33961,7 @@ __metadata:
     eventemitter3: "npm:^4.0.7"
     express: "npm:^4.21.1"
     jaeger-client: "npm:^3.19.0"
-    mem: "npm:^8.1.1"
+    mem: "npm:^10.0.0"
     moleculer: "npm:^0.14.34"
     mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.28.2"
@@ -38697,30 +38666,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-bundle-analyzer@npm:^4.9.1":
-  version: 4.9.1
-  resolution: "webpack-bundle-analyzer@npm:4.9.1"
+"webpack-bundle-analyzer@npm:^4.10.2":
+  version: 4.10.2
+  resolution: "webpack-bundle-analyzer@npm:4.10.2"
   dependencies:
     "@discoveryjs/json-ext": "npm:0.5.7"
     acorn: "npm:^8.0.4"
     acorn-walk: "npm:^8.0.0"
     commander: "npm:^7.2.0"
+    debounce: "npm:^1.2.1"
     escape-string-regexp: "npm:^4.0.0"
     gzip-size: "npm:^6.0.0"
-    is-plain-object: "npm:^5.0.0"
-    lodash.debounce: "npm:^4.0.8"
-    lodash.escape: "npm:^4.0.1"
-    lodash.flatten: "npm:^4.4.0"
-    lodash.invokemap: "npm:^4.6.0"
-    lodash.pullall: "npm:^4.2.0"
-    lodash.uniqby: "npm:^4.7.0"
+    html-escaper: "npm:^2.0.2"
     opener: "npm:^1.5.2"
     picocolors: "npm:^1.0.0"
     sirv: "npm:^2.0.3"
     ws: "npm:^7.3.1"
   bin:
     webpack-bundle-analyzer: lib/bin/analyzer.js
-  checksum: 10/1126f7ad46d926316f467523c6e512e063b9d82e3252a74b4f997f69f32005735e51a0f58345db6921a37c876256effcdb3b4cc1b2053cd91d1fe583eda18fea
+  checksum: 10/cb7ff9d01dc04ef23634f439ab9fe739e022cce5595cb340e01d106ed474605ce4ef50b11b47e444507d341b16650dcb3610e88944020ca6c1c38e88072d43ba
   languageName: node
   linkType: hard
 

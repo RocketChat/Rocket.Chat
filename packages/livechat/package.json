@@ -91,7 +91,7 @@
 		"typescript": "~5.6.3",
 		"url-loader": "^4.1.1",
 		"webpack": "~5.95.0",
-		"webpack-bundle-analyzer": "^4.9.1",
+		"webpack-bundle-analyzer": "^4.10.2",
 		"webpack-cli": "~5.1.4",
 		"webpack-dev-server": "~5.1.0"
 	},
@@ -111,7 +111,7 @@
 		"history": "~5.3.0",
 		"i18next": "~23.4.9",
 		"markdown-it": "^14.1.0",
-		"mem": "^6.1.1",
+		"mem": "^10.0.0",
 		"mitt": "^2.1.0",
 		"path-to-regexp": "^6.3.0",
 		"preact": "~10.24.3",
