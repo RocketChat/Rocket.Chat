@@ -175,6 +175,7 @@ test.describe.parallel('administration', () => {
 				await poAdmin.getRoomRow(targetChannel).click();
 				await poAdmin.favoriteLabel.click();
 				await poAdmin.btnSave.click();
+				await expect(poAdmin.btnSave).not.toBeVisible();
 
 				await poAdmin.getRoomRow(targetChannel).click();
 				await expect(poAdmin.favoriteInput).toBeChecked();
