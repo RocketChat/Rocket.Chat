@@ -12,6 +12,7 @@ import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
 import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
+import { useQueryClient } from '@tanstack/react-query';
 
 const getWarningModalForFederatedRooms = (
 	closeModalFn: () => void,
@@ -34,6 +35,7 @@ const getWarningModalForFederatedRooms = (
 
 export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
+	const queryClient = useQueryClient();
 	const room = useUserRoom(rid);
 	const { _id: uid } = user;
 	const userCanSetOwner = usePermission('set-owner', rid);
@@ -54,10 +56,14 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const changeOwnerEndpoint = isOwner ? 'removeOwner' : 'addOwner';
 	const changeOwnerMessage = isOwner ? 'User__username__removed_from__room_name__owners' : 'User__username__is_now_an_owner_of__room_name_';
-	const changeOwner = useEndpointAction('POST', `${endpointPrefix}.${changeOwnerEndpoint}`, {
+	const mutateOwnerAsync = useEndpointAction('POST', `${endpointPrefix}.${changeOwnerEndpoint}`, {
 		successMessage: t(changeOwnerMessage, { username: user.username, room_name: roomName }),
 	});
-
+	const changeOwner = useCallback(
+		(params: { roomId: IRoom['_id']; userId: IUser['_id'] }) =>
+			mutateOwnerAsync(params).then(() => queryClient.invalidateQueries({ queryKey: ['roomRoles'] })),
+		[mutateOwnerAsync],
+	);
 	const handleConfirm = useCallback(() => {
 		changeOwner({ roomId: rid, userId: uid });
 		closeModal();
