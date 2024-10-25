@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
+import { OTRRoom } from '../../../app/otr/client/OTRRoom';
+import { OtrRoomState } from '../../../app/otr/lib/OtrRoomState';
 import { settings } from '../../../app/settings/client';
 import { MessageAction } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
@@ -34,6 +36,19 @@ Meteor.startup(() => {
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
 				return false;
+			}
+			const userId = Meteor.userId();
+
+			if (!userId) {
+				return false;
+			}
+			const otrRoom = OTRRoom.create(userId, room._id);
+			if (otrRoom) {
+				const otrState = otrRoom.getState();
+
+				if (otrState === OtrRoomState.ESTABLISHED) {
+					return false;
+				}
 			}
 
 			return !Array.isArray(message.starred) || !message.starred.find((star: any) => star._id === user?._id);
