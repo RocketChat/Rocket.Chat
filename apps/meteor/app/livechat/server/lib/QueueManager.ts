@@ -133,16 +133,40 @@ export class QueueManager {
 		return LivechatInquiryStatus.READY;
 	}
 
-	static async queueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
-		if (inquiry.status === 'ready') {
-			return RoutingManager.delegateInquiry(inquiry, defaultAgent, undefined, room);
-		}
-
+	static async notifyQueuedInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
 		await callbacks.run('livechat.afterInquiryQueued', inquiry);
 
 		void callbacks.run('livechat.chatQueued', room);
 
 		await this.dispatchInquiryQueued(inquiry, room, defaultAgent);
+	}
+
+	static async queueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
+			logger.error({ msg: 'MAC limit reached, not routing inquiry', inquiry });
+			// We'll queue these inquiries so when new license is applied, they just start rolling again
+			// Minimizing disruption
+			await saveQueueInquiry(inquiry);
+			await this.notifyQueuedInquiry(inquiry, room, defaultAgent);
+			return;
+		}
+
+		await callbacks.run('livechat.beforeRouteChat', inquiry, defaultAgent);
+		const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
+
+		if (!dbInquiry) {
+			throw new Error('inquiry-not-found');
+		}
+
+		if (dbInquiry.status === 'ready') {
+			logger.debug({ msg: 'Inquiry is ready. Delegating', inquiry, defaultAgent });
+			return RoutingManager.delegateInquiry(dbInquiry, defaultAgent, undefined, room);
+		}
+
+		if (dbInquiry.status === 'queued') {
+			logger.debug(`Inquiry with id ${inquiry._id} is queued. Notifying`);
+			await this.notifyQueuedInquiry(inquiry, room, defaultAgent);
+		}
 	}
 
 	static async requestRoom({
@@ -252,7 +276,11 @@ export class QueueManager {
 			throw new Error('room-not-found');
 		}
 
-		if (!newRoom.servedBy && settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
+		if (
+			!newRoom.servedBy &&
+			settings.get('Livechat_waiting_queue') &&
+			settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')
+		) {
 			const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
 				inquiryId: inquiry._id,
 				department,
@@ -320,6 +348,10 @@ export class QueueManager {
 	}
 
 	private static dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, agent?: SelectedAgent | null) => {
+		if (RoutingManager.getConfig()?.autoAssignAgent) {
+			return;
+		}
+
 		logger.debug(`Notifying agents of new inquiry ${inquiry._id} queued`);
 
 		const { department, rid, v } = inquiry;
