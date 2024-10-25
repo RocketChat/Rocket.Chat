@@ -393,6 +393,8 @@
 		"nodemailer": "^6.9.15",
 		"oauth2-server": "3.1.1",
 		"object-path": "^0.11.8",
+		"overlayscrollbars": "^2.10.0",
+		"overlayscrollbars-react": "^0.5.6",
 		"path": "^0.12.7",
 		"path-to-regexp": "^6.3.0",
 		"pdfjs-dist": "^2.16.105",

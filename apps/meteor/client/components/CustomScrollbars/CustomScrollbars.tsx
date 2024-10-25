@@ -1,60 +1,65 @@
-import { Palette } from '@rocket.chat/fuselage';
-import type { ScrollValues } from 'rc-scrollbars';
-import { Scrollbars } from 'rc-scrollbars';
-import type { MutableRefObject, CSSProperties, ReactNode } from 'react';
-import React, { memo, forwardRef, useCallback, useMemo } from 'react';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Palette } from '@rocket.chat/fuselage';
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { useOverlayScrollbars } from 'overlayscrollbars-react';
+import type { HTMLAttributes, ReactElement } from 'react';
+import React, { useEffect, useState, useRef, cloneElement, forwardRef, memo } from 'react';
 
-export type CustomScrollbarsProps = {
+import 'overlayscrollbars/styles/overlayscrollbars.css';
+
+type CustomScrollbarsProps = {
+	children: ReactElement;
+	virtualized?: boolean;
 	overflowX?: boolean;
-	style?: CSSProperties;
-	children?: ReactNode;
-	onScroll?: (values: ScrollValues) => void;
-	renderView?: typeof Scrollbars.defaultProps.renderView;
-	renderTrackHorizontal?: typeof Scrollbars.defaultProps.renderTrackHorizontal;
-	autoHide?: boolean;
-};
+} & Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
 
-const styleDefault: CSSProperties = {
-	flexGrow: 1,
-	overflowY: 'hidden',
-};
-
-const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function CustomScrollbars(
-	{ children, style, onScroll, overflowX, renderView, ...props },
+const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function Virtualized(
+	{ virtualized = false, overflowX, ...props },
 	ref,
 ) {
-	const scrollbarsStyle = useMemo(() => ({ ...style, ...styleDefault }), [style]);
+	const rootRef = useRef(null);
+	const mergedRefs = useMergedRefs(rootRef, ref);
+	const [scroller, setScroller] = useState(null);
+	const [initialize, osInstance] = useOverlayScrollbars({
+		options: { scrollbars: { autoHide: 'scroll' }, overflow: { x: overflowX ? 'scroll' : 'hidden' } },
+		defer: true,
+	});
 
-	const refSetter = useCallback(
-		(scrollbarRef) => {
-			if (ref && scrollbarRef) {
-				if (typeof ref === 'function') {
-					ref(scrollbarRef.view ?? null);
-					return;
-				}
+	useEffect(() => {
+		const { current: root } = rootRef;
 
-				(ref as MutableRefObject<HTMLElement | undefined>).current = scrollbarRef.view;
-			}
-		},
-		[ref],
-	);
+		if (scroller && root) {
+			return initialize({
+				target: root,
+				elements: {
+					viewport: scroller,
+				},
+			});
+		}
+
+		if (root) {
+			initialize(root);
+		}
+
+		return () => osInstance()?.destroy();
+	}, [scroller, initialize, osInstance]);
 
 	return (
-		<Scrollbars
+		<Box
+			className={css`
+				.os-scrollbar {
+					--os-handle-bg: ${Palette.stroke['stroke-dark']};
+					--os-handle-bg-hover: ${Palette.stroke['stroke-dark']};
+					--os-handle-bg-active: ${Palette.stroke['stroke-dark']};
+				}
+			`}
+			height='full'
+			data-overlayscrollbars-initialize=''
+			ref={mergedRefs}
 			{...props}
-			autoHide
-			autoHideTimeout={2000}
-			autoHideDuration={500}
-			style={scrollbarsStyle}
-			onScrollFrame={onScroll}
-			renderView={renderView}
-			renderTrackHorizontal={overflowX ? undefined : (props) => <div {...props} className='track-horizontal' style={{ display: 'none' }} />}
-			renderThumbVertical={({ style, ...props }) => (
-				<div {...props} style={{ ...style, backgroundColor: Palette.stroke['stroke-dark'].toString(), borderRadius: '4px' }} />
-			)}
-			children={children}
-			ref={refSetter}
-		/>
+		>
+			{cloneElement(props.children, virtualized ? { scrollerRef: setScroller } : undefined)}
+		</Box>
 	);
 });
 
