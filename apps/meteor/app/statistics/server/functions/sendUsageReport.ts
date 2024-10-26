@@ -15,17 +15,24 @@ export async function sendUsageReport(logger: Logger): Promise<string | undefine
 			const token = await getWorkspaceAccessToken();
 			const headers = { ...(token && { Authorization: `Bearer ${token}` }) };
 
-			const response = await fetch('https://collector.rocket.chat/', {
+			const query = {
 				method: 'POST',
 				body: {
 					...cronStatistics,
 					host: Meteor.absoluteUrl(),
 				},
 				headers,
-			});
+			};
 
-			const { statsToken } = await response.json();
+			logger.debug('Send Usage Report query: ', query);
 
+			const response = await fetch('https://collector.rocket.chat/', query);
+
+			const parsedResponse = await response.json();
+
+			logger.debug('Send Usage Report response: ', parsedResponse);
+
+			const { statsToken } = parsedResponse;
 			if (statsToken != null) {
 				await Statistics.updateOne({ _id: cronStatistics._id }, { $set: { statsToken } });
 				return statsToken;
@@ -33,6 +40,7 @@ export async function sendUsageReport(logger: Logger): Promise<string | undefine
 		} catch (error) {
 			/* error*/
 			logger.warn('Failed to send usage report');
+			logger.debug('Send Usage Report error: ', error);
 		}
 	});
 }
