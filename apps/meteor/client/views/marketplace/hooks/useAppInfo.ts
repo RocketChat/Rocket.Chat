@@ -1,11 +1,11 @@
 import type { App } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 
 import type { ISettings } from '../../../apps/@types/IOrchestrator';
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
-import { MarketplaceContext } from '../../../contexts/MarketplaceContext';
 import type { AppInfo } from '../definitions/AppInfo';
+import { useMarketplaceQuery } from './useMarketplaceQuery';
 
 const getBundledInApp = async (app: App): Promise<App['bundledIn']> => {
 	const { bundledIn = [] } = app;
@@ -20,7 +20,7 @@ const getBundledInApp = async (app: App): Promise<App['bundledIn']> => {
 };
 
 export const useAppInfo = (appId: string, context: string): AppInfo | undefined => {
-	const { apps } = useContext(MarketplaceContext);
+	const marketplaceQueryResult = useMarketplaceQuery();
 
 	const [appData, setAppData] = useState<AppInfo>();
 
@@ -31,18 +31,23 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 
 	useEffect(() => {
 		const fetchAppInfo = async (): Promise<void> => {
-			if ((!apps.data?.marketplace?.length && !apps.data?.installed.length && !apps.data?.private.length) || !appId) {
+			if (
+				(!marketplaceQueryResult.data?.marketplace?.length &&
+					!marketplaceQueryResult.data?.installed.length &&
+					!marketplaceQueryResult.data?.private.length) ||
+				!appId
+			) {
 				return;
 			}
 
 			let appResult: App | undefined;
 			const marketplaceAppsContexts = ['explore', 'premium', 'requested'];
 
-			if (marketplaceAppsContexts.includes(context)) appResult = apps.data?.marketplace.find((app) => app.id === appId);
+			if (marketplaceAppsContexts.includes(context)) appResult = marketplaceQueryResult.data?.marketplace.find((app) => app.id === appId);
 
-			if (context === 'private') appResult = apps.data?.private.find((app) => app.id === appId);
+			if (context === 'private') appResult = marketplaceQueryResult.data?.private.find((app) => app.id === appId);
 
-			if (context === 'installed') appResult = apps.data?.installed.find((app) => app.id === appId);
+			if (context === 'installed') appResult = marketplaceQueryResult.data?.installed.find((app) => app.id === appId);
 
 			if (!appResult) return;
 
@@ -85,9 +90,9 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 		fetchAppInfo();
 	}, [
 		appId,
-		apps.data?.installed,
-		apps.data?.marketplace,
-		apps.data?.private,
+		marketplaceQueryResult.data?.installed,
+		marketplaceQueryResult.data?.marketplace,
+		marketplaceQueryResult.data?.private,
 		context,
 		getApis,
 		getBundledIn,

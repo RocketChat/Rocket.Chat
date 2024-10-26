@@ -3,14 +3,14 @@ import { useEndpoint, useRouteParameter, useSetModal, useToastMessageDispatch } 
 import React, { useCallback } from 'react';
 
 import { isMarketplaceRouteContext, useAppsCountQuery } from './useAppsCountQuery';
+import { useAppsOrchestrator } from './useAppsOrchestrator';
 import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
-import { useAppsResult } from '../../../contexts/hooks/useAppsResult';
+import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 import IframeModal from '../IframeModal';
 import AppInstallModal from '../components/AppInstallModal/AppInstallModal';
 import type { Actions } from '../helpers';
-import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
 import { handleAPIError } from '../helpers/handleAPIError';
 
 export type AppInstallationHandlerParams = {
@@ -60,11 +60,7 @@ export function useAppInstallationHandler({
 
 	const openPermissionModal = useOpenAppPermissionsReviewModal({ app, onCancel: closeModal, onConfirm: success });
 
-	const { orchestrator: appsOrchestrator } = useAppsResult();
-
-	if (!appsOrchestrator) {
-		throw new Error('Apps orchestrator is not available');
-	}
+	const appsOrchestrator = useAppsOrchestrator();
 
 	const acquireApp = useCallback(async () => {
 		if (action === 'purchase' && !isAppPurchased) {

@@ -1,4 +1,4 @@
-import type { App } from '../../views/marketplace/types';
+import type { App } from '../types';
 
 const sortByName = (apps: App[]): App[] => apps.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
 

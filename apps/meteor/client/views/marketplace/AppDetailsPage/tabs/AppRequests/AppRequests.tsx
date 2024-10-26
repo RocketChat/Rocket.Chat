@@ -1,15 +1,13 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement, SetStateAction } from 'react';
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppRequestItem from './AppRequestItem';
 import AppRequestsLoading from './AppRequestsLoading';
-import { useAppsResult } from '../../../../../contexts/hooks/useAppsResult';
-import { queryClient } from '../../../../../lib/queryClient';
 import { useAppRequests } from '../../../hooks/useAppRequests';
 
 type itemsPerPage = 25 | 50 | 100;
@@ -24,13 +22,15 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 	const onSetItemsPerPage = (itemsPerPageOption: SetStateAction<itemsPerPage>) => setLimit(itemsPerPageOption);
 	const onSetCurrent = (currentItemsOption: SetStateAction<number>) => setOffset(currentItemsOption);
 
-	const { reload: reloadApps } = useAppsResult();
 	const markSeen = useEndpoint('POST', '/apps/app-request/markAsSeen');
 	const markAppRequestsAsSeen = useMutation({
 		mutationKey: ['mark-app-requests-as-seen'],
 		mutationFn: (unseenRequests: Array<string>) => markSeen({ unseenRequests }),
 		retry: false,
 	});
+
+	const queryClient = useQueryClient();
+
 	useEffect(() => {
 		return () => {
 			if (isAdminUser && paginatedAppRequests.isSuccess) {
@@ -40,14 +40,13 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 					markAppRequestsAsSeen.mutate(unseenRequests, {
 						onSuccess: () => {
 							queryClient.refetchQueries({ queryKey: ['app-requests-stats'] });
-							reloadApps();
+							queryClient.invalidateQueries(['marketplace']);
 						},
 					});
 				}
 			}
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isAdminUser, paginatedAppRequests.isSuccess, paginatedAppRequests?.data, reloadApps]);
+	}, [isAdminUser, paginatedAppRequests.isSuccess, paginatedAppRequests.data, markAppRequestsAsSeen, queryClient]);
 
 	if (paginatedAppRequests.isLoading) {
 		return (

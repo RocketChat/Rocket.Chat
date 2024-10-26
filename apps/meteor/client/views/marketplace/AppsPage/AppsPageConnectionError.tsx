@@ -1,15 +1,14 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAppsResult } from '../../../contexts/hooks/useAppsResult';
-
 const AppsPageContentError = () => {
 	const { t } = useTranslation();
-	const { reload } = useAppsResult();
+	const queryClient = useQueryClient();
 
 	const handleReloadClick = () => {
-		reload();
+		queryClient.invalidateQueries(['marketplace']);
 	};
 
 	return (

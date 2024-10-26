@@ -4,11 +4,11 @@ import React, { useState, useEffect } from 'react';
 
 import AppDetailsPage from './AppDetailsPage';
 import AppInstallPage from './AppInstallPage';
+import AppsOrchestratorProvider from './AppsOrchestratorProvider';
 import AppsPage from './AppsPage';
-import MarketplaceProvider from '../../providers/AppsProvider';
-import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
 import BannerEnterpriseTrialEnded from './components/BannerEnterpriseTrialEnded';
 import PageSkeleton from '../../components/PageSkeleton';
+import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
 
 const AppsRoute = (): ReactElement => {
 	const [isLoading, setLoading] = useState(true);
@@ -56,12 +56,12 @@ const AppsRoute = (): ReactElement => {
 	}
 
 	return (
-		<MarketplaceProvider>
+		<AppsOrchestratorProvider>
 			<BannerEnterpriseTrialEnded />
 			{(page === 'list' && <AppsPage />) ||
 				(id && page === 'info' && <AppDetailsPage id={id} />) ||
 				(page === 'install' && <AppInstallPage />)}
-		</MarketplaceProvider>
+		</AppsOrchestratorProvider>
 	);
 };
 

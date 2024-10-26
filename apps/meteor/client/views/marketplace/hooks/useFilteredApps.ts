@@ -1,8 +1,6 @@
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import type { ContextType } from 'react';
 import { useMemo } from 'react';
 
-import type { MarketplaceContext } from '../../../contexts/MarketplaceContext';
 import type { AsyncState } from '../../../lib/asyncState';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { filterAppsByCategories } from '../helpers/filterAppsByCategories';
@@ -15,11 +13,11 @@ import { filterAppsByText } from '../helpers/filterAppsByText';
 import { sortAppsByAlphabeticalOrInverseOrder } from '../helpers/sortAppsByAlphabeticalOrInverseOrder';
 import { sortAppsByClosestOrFarthestModificationDate } from '../helpers/sortAppsByClosestOrFarthestModificationDate';
 import type { App } from '../types';
+import { useMarketplaceQuery } from './useMarketplaceQuery';
 
 export type AppsContext = 'explore' | 'installed' | 'premium' | 'private' | 'requested';
 
 export const useFilteredApps = ({
-	appsData,
 	text,
 	current,
 	itemsPerPage,
@@ -29,7 +27,6 @@ export const useFilteredApps = ({
 	status,
 	context,
 }: {
-	appsData: ContextType<typeof MarketplaceContext>['apps'];
 	text: string;
 	current: number;
 	itemsPerPage: number;
@@ -46,9 +43,11 @@ export const useFilteredApps = ({
 		allApps: App[];
 		totalAppsLength: number;
 	}>
-> =>
-	useMemo(() => {
-		if (appsData.status === 'loading') {
+> => {
+	const marketplaceQueryResult = useMarketplaceQuery();
+
+	return useMemo(() => {
+		if (marketplaceQueryResult.status === 'loading') {
 			return {
 				phase: AsyncStatePhase.LOADING,
 				value: undefined,
@@ -56,11 +55,11 @@ export const useFilteredApps = ({
 			};
 		}
 
-		if (appsData.status === 'error') {
+		if (marketplaceQueryResult.status === 'error') {
 			return {
 				phase: AsyncStatePhase.REJECTED,
 				value: undefined,
-				error: appsData.error as Error,
+				error: marketplaceQueryResult.error as Error,
 			};
 		}
 
@@ -70,13 +69,13 @@ export const useFilteredApps = ({
 			case 'premium':
 			case 'explore':
 			case 'requested':
-				apps = appsData.data.marketplace;
+				apps = marketplaceQueryResult.data.marketplace;
 				break;
 			case 'private':
-				apps = appsData.data.private;
+				apps = marketplaceQueryResult.data.private;
 				break;
 			default:
-				apps = appsData.data.installed;
+				apps = marketplaceQueryResult.data.installed;
 		}
 
 		const fallback = (apps: App[]) => apps;
@@ -149,11 +148,11 @@ export const useFilteredApps = ({
 			},
 		};
 	}, [
-		appsData.status,
-		appsData.error,
-		appsData.data?.marketplace,
-		appsData.data?.private,
-		appsData.data?.installed,
+		marketplaceQueryResult.status,
+		marketplaceQueryResult.error,
+		marketplaceQueryResult.data?.marketplace,
+		marketplaceQueryResult.data?.private,
+		marketplaceQueryResult.data?.installed,
 		context,
 		purchaseType,
 		status,
@@ -163,3 +162,4 @@ export const useFilteredApps = ({
 		current,
 		itemsPerPage,
 	]);
+};

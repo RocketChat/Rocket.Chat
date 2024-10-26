@@ -4,8 +4,8 @@ import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { Serialized } from '@rocket.chat/core-typings';
 import { createContext } from 'react';
 
-import type { IAppExternalURL, ICategory } from '../apps/@types/IOrchestrator';
-import type { App } from '../views/marketplace/types';
+import type { IAppExternalURL, ICategory } from '../../apps/@types/IOrchestrator';
+import type { App } from './types';
 
 export interface IAppsOrchestrator {
 	load(): Promise<void>;
@@ -24,23 +24,21 @@ export interface IAppsOrchestrator {
 	getCategories(): Promise<Serialized<ICategory[]>>;
 }
 
-export type MarketplaceContextValue = {
-	apps:
-		| { status: 'loading'; data?: { marketplace: App[]; installed: App[]; private: App[] }; error?: undefined }
-		| { status: 'error'; data?: { marketplace: App[]; installed: App[]; private: App[] }; error: unknown }
-		| { status: 'success'; data: { marketplace: App[]; installed: App[]; private: App[] }; error?: undefined };
-	reload: () => Promise<void>;
-	orchestrator?: IAppsOrchestrator;
-	privateAppsEnabled: boolean;
-};
-
-export const MarketplaceContext = createContext<MarketplaceContextValue>({
-	apps: {
-		status: 'loading',
-		data: undefined,
-		error: undefined,
+export const AppsOrchestratorContext = createContext<IAppsOrchestrator>({
+	load: () => Promise.resolve(),
+	getAppClientManager: () => {
+		throw new Error('not implemented');
 	},
-	reload: () => Promise.resolve(),
-	orchestrator: undefined,
-	privateAppsEnabled: false,
+	handleError: () => undefined,
+	getInstalledApps: async () => [],
+	getAppsFromMarketplace: async () => ({ apps: [] }),
+	getAppsOnBundle: async () => [],
+	getApp: () => Promise.reject(new Error('not implemented')),
+	setAppSettings: async () => undefined,
+	installApp: () => Promise.reject(new Error('not implemented')),
+	updateApp: () => Promise.reject(new Error('not implemented')),
+	buildExternalUrl: () => Promise.reject(new Error('not implemented')),
+	buildExternalAppRequest: () => Promise.reject(new Error('not implemented')),
+	buildIncompatibleExternalUrl: () => Promise.reject(new Error('not implemented')),
+	getCategories: () => Promise.reject(new Error('not implemented')),
 });

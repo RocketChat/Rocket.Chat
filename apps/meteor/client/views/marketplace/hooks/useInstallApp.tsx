@@ -1,11 +1,10 @@
 import type { App, AppPermission } from '@rocket.chat/core-typings';
 import { useRouter, useSetModal, useUpload } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useState } from 'react';
 
 import { useAppsCountQuery } from './useAppsCountQuery';
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
-import { useAppsResult } from '../../../contexts/hooks/useAppsResult';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import AppExemptModal from '../AppExemptModal';
 import AppPermissionsReviewModal from '../AppPermissionsReviewModal';
@@ -15,7 +14,6 @@ import { handleInstallError } from '../helpers/handleInstallError';
 import { getManifestFromZippedApp } from '../lib/getManifestFromZippedApp';
 
 export const useInstallApp = (file: File): { install: () => void; isInstalling: boolean } => {
-	const { reload: reloadAppsList } = useAppsResult();
 	const setModal = useSetModal();
 
 	const router = useRouter();
@@ -27,6 +25,8 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 	const { data } = useIsEnterprise();
 
 	const [isInstalling, setInstalling] = useState(false);
+
+	const queryClient = useQueryClient();
 
 	const { mutate: sendFile } = useMutation(
 		['apps/installPrivateApp'],
@@ -58,7 +58,7 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 			onSettled: () => {
 				setInstalling(false);
 				setModal(null);
-				reloadAppsList();
+				queryClient.invalidateQueries(['marketplace']);
 			},
 		},
 	);

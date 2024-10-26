@@ -1,18 +1,14 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
-import { useAppsResult } from '../../../contexts/hooks/useAppsResult';
 import IframeModal from '../IframeModal';
 import { handleAPIError } from '../helpers/handleAPIError';
+import { useAppsOrchestrator } from './useAppsOrchestrator';
 
 export const useOpenIncompatibleModal = () => {
 	const setModal = useSetModal();
 
-	const { orchestrator: appsOrchestrator } = useAppsResult();
-
-	if (!appsOrchestrator) {
-		throw new Error('Apps orchestrator is not available');
-	}
+	const appsOrchestrator = useAppsOrchestrator();
 
 	return useCallback(
 		async (app, actionName, cancelAction) => {

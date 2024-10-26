@@ -1,9 +1,7 @@
-import { useContext } from 'react';
-
-import { MarketplaceContext } from '../../../contexts/MarketplaceContext';
+import { useLicense } from '../../../hooks/useLicense';
 
 export const usePrivateAppsEnabled = () => {
-	const { privateAppsEnabled } = useContext(MarketplaceContext);
+	const { data: { limits } = {} } = useLicense({ loadValues: true });
 
-	return privateAppsEnabled;
+	return (limits?.privateApps?.max ?? 0) !== 0;
 };

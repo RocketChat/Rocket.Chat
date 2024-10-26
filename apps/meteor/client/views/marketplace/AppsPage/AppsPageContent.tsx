@@ -15,7 +15,6 @@ import NoMarketplaceOrInstalledAppMatchesEmptyState from './NoMarketplaceOrInsta
 import PrivateEmptyState from './PrivateEmptyState';
 import UnsupportedEmptyState from './UnsupportedEmptyState';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useAppsResult } from '../../../contexts/hooks/useAppsResult';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import MarketplaceHeader from '../components/MarketplaceHeader';
 import type { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
@@ -26,7 +25,6 @@ import { useRadioToggle } from '../hooks/useRadioToggle';
 
 const AppsPageContent = (): ReactElement => {
 	const { t } = useTranslation();
-	const { apps } = useAppsResult();
 	const [text, setText] = useState('');
 	const debouncedText = useDebouncedValue(text, 500);
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
@@ -112,7 +110,6 @@ const AppsPageContent = (): ReactElement => {
 
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 	const appsResult = useFilteredApps({
-		appsData: apps,
 		text: debouncedText,
 		current,
 		itemsPerPage,

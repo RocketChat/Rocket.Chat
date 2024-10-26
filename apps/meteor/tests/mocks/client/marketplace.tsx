@@ -1,12 +1,11 @@
-import { faker } from '@faker-js/faker';
 import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
 import { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHost';
 import type { IExternalComponentRoomInfo } from '@rocket.chat/apps-engine/client/definition';
 import React from 'react';
 import type { ReactNode } from 'react';
 
-import { MarketplaceContext, type IAppsOrchestrator } from '../../../client/contexts/MarketplaceContext';
-import { createFakeApp, createFakeExternalComponentRoomInfo, createFakeExternalComponentUserInfo } from '../data';
+import { AppsOrchestratorContext, type IAppsOrchestrator } from '../../../client/views/marketplace/AppsOrchestratorContext';
+import { createFakeExternalComponentRoomInfo, createFakeExternalComponentUserInfo } from '../data';
 
 class MockedAppsEngineUIHost extends AppsEngineUIHost {
 	public async getClientRoomInfo(): Promise<IExternalComponentRoomInfo> {
@@ -44,23 +43,6 @@ export const mockAppsOrchestrator = () => {
 	return orchestrator;
 };
 
-export const mockedAppsContext = (children: ReactNode) => (
-	<MarketplaceContext.Provider
-		value={{
-			apps: {
-				status: 'success',
-				data: {
-					marketplace: faker.helpers.multiple(createFakeApp),
-					installed: faker.helpers.multiple(createFakeApp),
-					private: faker.helpers.multiple(createFakeApp),
-				},
-				error: undefined,
-			},
-			reload: () => Promise.resolve(),
-			orchestrator: mockAppsOrchestrator(),
-			privateAppsEnabled: false,
-		}}
-	>
-		{children}
-	</MarketplaceContext.Provider>
+export const mockedAppsOrchestratorContext = (children: ReactNode) => (
+	<AppsOrchestratorContext.Provider children={children} value={mockAppsOrchestrator()} />
 );
