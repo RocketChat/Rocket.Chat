@@ -48,6 +48,7 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 	const idleTimeLimitH = useUserPreference<number>('idleTimeLimitH');
 	const idleTimeLimitM = useUserPreference<number>('idleTimeLimitM');
 	const idleTimeLimitS = useUserPreference<number>('idleTimeLimitS');
+	
 	const desktopNotificationRequireInteraction = useUserPreference<boolean>('desktopNotificationRequireInteraction');
 	const desktopNotifications = useUserPreference<string>('desktopNotifications');
 	const pushNotifications = useUserPreference<string>('pushNotifications');

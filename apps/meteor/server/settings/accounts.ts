@@ -427,20 +427,10 @@ export const createAccountSettings = () =>
 				public: true,
 				i18nLabel: 'Enable_Auto_Away',
 			});
-			await this.add('Accounts_Default_User_Preferences_idleTimeLimitH', 0, {
+			await this.add('Accounts_Default_User_Preferences_idleTimeLimit', 300, {
 				type: 'int',
 				public: true,
-				i18nLabel: 'Idle_Time_Limit_Hours',
-			});
-			await this.add('Accounts_Default_User_Preferences_idleTimeLimitM', 5, {
-				type: 'int',
-				public: true,
-				i18nLabel: 'Idle_Time_Limit_Minutes',
-			});
-			await this.add('Accounts_Default_User_Preferences_idleTimeLimitS', 0, {
-				type: 'int',
-				public: true,
-				i18nLabel: 'Idle_Time_Limit_Seconds',
+				i18nLabel: 'Idle_Time_Limit',
 			});
 			await this.add('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction', false, {
 				type: 'boolean',
@@ -752,6 +742,11 @@ export const createAccountSettings = () =>
 				values: defaultUserPreferencesSidebarSectionsOrder.map((key) => ({ key, i18nLabel: key })),
 				i18nLabel: 'Sidebar_Sections_Order',
 				i18nDescription: 'Sidebar_Sections_Order_Description',
+			});
+
+			await this.add('Accounts_Default_User_Preferences_featuresPreview', '[]', {
+				type: 'string',
+				public: true,
 			});
 		});
 
