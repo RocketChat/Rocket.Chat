@@ -1046,7 +1046,6 @@
   "The_application_name_is_required": "ئەپنىڭ ئىسمىنى چوقۇم تولدۇرىسىز",
   "The_channel_name_is_required": "قانالنىڭ ئىسمىنى چوقۇم تولدۇرۇڭ",
   "The_emails_are_being_sent": "ئىلخەت يوللاندى",
-  "The_field_is_required": "چوقۇم تولدۇرۇڭ%sخەت بۆلىكى",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "تاپالمىدۇق.GraphicsMagickنى ياكىImageMagick رەسىمنىڭ چوڭ كىچىكلىكىنى ئۆزگەرتكىلى بولمىدى، چۈنكى بىز مۇلازىمتېردا قاچىلىنىپ بولغان",
   "The_redirectUri_is_required": "چوقۇم تولدۇرۇڭURIسەكرەپ يۆتكەلگەن",
   "The_server_will_restart_in_s_seconds": "سېكۇنتتىن كېيىن قايتىدىن قوزغىتىلىدۇ %s مۇلازىمىتېر",

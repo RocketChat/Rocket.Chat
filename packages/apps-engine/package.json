@@ -1,0 +1,128 @@
+{
+    "name": "@rocket.chat/apps-engine",
+    "version": "1.47.0-rc.0",
+    "description": "The engine code for the Rocket.Chat Apps which manages, runs, translates, coordinates and all of that.",
+    "main": "index",
+    "typings": "index",
+    "scripts": {
+        "start": "run-s .:build:clean .:build:watch",
+        "testunit": "run-p .:test:node .:test:deno",
+        ".:test:node": "NODE_ENV=test ts-node ./tests/runner.ts",
+        ".:test:deno": "cd deno-runtime && deno task test",
+        "lint": "run-p .:lint:eslint .:lint:deno",
+        ".:lint:eslint": "eslint .",
+        ".:lint:deno": "deno lint --ignore=deno-runtime/.deno deno-runtime/",
+        "fix-lint": "eslint . --fix",
+        "build": "run-s .:build:clean .:build:default .:build:deno-cache",
+        ".:build:clean": "rimraf client definition server",
+        ".:build:default": "tsc -p tsconfig.json",
+        ".:build:deno-cache": "node scripts/deno-cache.js",
+        ".:build:watch": "yarn .:build:default --watch",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "bundle": "node scripts/bundle.js",
+        "gen-doc": "typedoc",
+        "prepack": "yarn bundle"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/RocketChat/Rocket.Chat.Apps-engine.git"
+    },
+    "keywords": [
+        "rocket.chat",
+        "team chat",
+        "apps engine"
+    ],
+    "files": [
+        "client/**",
+        "definition/**",
+        "deno-runtime/**",
+        "lib/**",
+        "scripts/**",
+        "server/**"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "author": {
+        "name": "Rocket.Chat",
+        "url": "https://rocket.chat/"
+    },
+    "contributors": [
+        {
+            "name": "Bradley Hilton",
+            "email": "bradley.hilton@rocket.chat"
+        },
+        {
+            "name": "Rodrigo Nascimento",
+            "email": "rodrigo.nascimento@rocket.chat"
+        },
+        {
+            "name": "Douglas Gubert",
+            "email": "douglas.gubert@rocket.chat"
+        }
+    ],
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/RocketChat/Rocket.Chat.Apps-engine/issues"
+    },
+    "homepage": "https://github.com/RocketChat/Rocket.Chat.Apps-engine#readme",
+    "devDependencies": {
+        "@rocket.chat/eslint-config": "workspace:~",
+        "@rocket.chat/ui-kit": "workspace:~",
+        "@types/adm-zip": "^0.5.0",
+        "@types/debug": "^4.1.12",
+        "@types/lodash.clonedeep": "^4.5.7",
+        "@types/nedb": "^1.8.12",
+        "@types/node": "~20.16.12",
+        "@types/semver": "^5.5.0",
+        "@types/stack-trace": "0.0.29",
+        "@types/uuid": "~8.3.4",
+        "@typescript-eslint/eslint-plugin": "~5.60.1",
+        "@typescript-eslint/parser": "~5.60.1",
+        "alsatian": "^2.4.0",
+        "browserify": "^16.5.2",
+        "eslint": "~8.45.0",
+        "nedb": "^1.8.0",
+        "npm-run-all": "^4.1.5",
+        "nyc": "^14.1.1",
+        "rimraf": "^6.0.1",
+        "tap-bark": "^1.0.0",
+        "ts-node": "^6.2.0",
+        "typedoc": "~0.24.8",
+        "typescript": "~5.1.6",
+        "uglify-es": "^3.3.10"
+    },
+    "dependencies": {
+        "@msgpack/msgpack": "3.0.0-beta2",
+        "adm-zip": "^0.5.16",
+        "debug": "^4.3.7",
+        "esbuild": "^0.20.2",
+        "jose": "^4.15.9",
+        "jsonrpc-lite": "^2.2.0",
+        "lodash.clonedeep": "^4.5.0",
+        "semver": "^7.6.3",
+        "stack-trace": "0.0.10",
+        "uuid": "~8.3.2"
+    },
+    "nyc": {
+        "include": [
+            "src/*.ts",
+            "src/server/**/*.ts"
+        ],
+        "extension": [
+            ".ts"
+        ],
+        "reporter": [
+            "lcov",
+            "json",
+            "html"
+        ],
+        "all": true
+    },
+    "volta": {
+        "extends": "../../package.json"
+    },
+    "installConfig": {
+        "hoistingLimits": "workspaces"
+    }
+}

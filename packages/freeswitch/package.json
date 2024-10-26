@@ -1,0 +1,30 @@
+{
+	"name": "@rocket.chat/freeswitch",
+	"version": "1.0.0-rc.4",
+	"private": true,
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@types/jest": "~29.5.14",
+		"eslint": "~8.45.0",
+		"jest": "~29.7.0",
+		"typescript": "~5.3.3"
+	},
+	"scripts": {
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "jest",
+		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
+	},
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"dependencies": {
+		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/logger": "workspace:^",
+		"@rocket.chat/tools": "workspace:^",
+		"esl": "github:pierre-lehnen-rc/esl"
+	}
+}

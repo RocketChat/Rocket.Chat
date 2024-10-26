@@ -1,0 +1,39 @@
+{
+	"name": "@rocket.chat/network-broker",
+	"version": "0.1.1-rc.4",
+	"private": true,
+	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:^",
+		"@types/chai": "~4.3.19",
+		"@types/ejson": "^2.2.2",
+		"@types/node": "~20.16.12",
+		"@types/sinon": "^10.0.20",
+		"chai": "^4.3.10",
+		"eslint": "~8.45.0",
+		"jest": "~29.7.0",
+		"sinon": "^19.0.2",
+		"typescript": "~5.6.3"
+	},
+	"scripts": {
+		"lint": "eslint src",
+		"lint:fix": "eslint src --fix",
+		"test": "jest",
+		"build": "tsc",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit --skipLibCheck"
+	},
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"volta": {
+		"extends": "../../../package.json"
+	},
+	"dependencies": {
+		"@rocket.chat/core-services": "workspace:^",
+		"ejson": "^2.2.3",
+		"moleculer": "^0.14.34",
+		"pino": "^8.21.0"
+	}
+}

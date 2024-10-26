@@ -2,7 +2,7 @@ import { log } from 'console';
 import os from 'os';
 
 import { Analytics, Team, VideoConf, Presence } from '@rocket.chat/core-services';
-import type { IRoom, IStats } from '@rocket.chat/core-typings';
+import type { IRoom, IStats, ISetting } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import {
 	NotificationQueue,
@@ -92,7 +92,7 @@ export const statistics = {
 		};
 
 		// Version
-		const uniqueID = await Settings.findOne('uniqueID');
+		const uniqueID = await Settings.findOne<Pick<ISetting, 'createdAt'>>('uniqueID', { projection: { createdAt: 1 } });
 		statistics.uniqueId = settings.get('uniqueID');
 		if (uniqueID) {
 			statistics.installedAt = uniqueID.createdAt.toISOString();
@@ -126,10 +126,10 @@ export const statistics = {
 
 		// Room statistics
 		statistics.totalRooms = await Rooms.col.countDocuments({});
-		statistics.totalChannels = await Rooms.findByType('c').count();
-		statistics.totalPrivateGroups = await Rooms.findByType('p').count();
-		statistics.totalDirect = await Rooms.findByType('d').count();
-		statistics.totalLivechat = await Rooms.findByType('l').count();
+		statistics.totalChannels = await Rooms.countByType('c');
+		statistics.totalPrivateGroups = await Rooms.countByType('p');
+		statistics.totalDirect = await Rooms.countByType('d');
+		statistics.totalLivechat = await Rooms.countByType('l');
 		statistics.totalDiscussions = await Rooms.countDiscussions();
 		statistics.totalThreads = await Messages.countThreads();
 
@@ -157,6 +157,13 @@ export const statistics = {
 				}),
 		);
 
+		// Number of livechat rooms with department
+		statsPms.push(
+			LivechatRooms.countLivechatRoomsWithDepartment().then((count) => {
+				statistics.totalLivechatRoomsWithDepartment = count;
+			}),
+		);
+
 		// Number of departments
 		statsPms.push(
 			LivechatDepartment.estimatedDocumentCount().then((count) => {
@@ -176,7 +183,7 @@ export const statistics = {
 
 		// Number of triggers
 		statsPms.push(
-			LivechatTrigger.col.count().then((count) => {
+			LivechatTrigger.estimatedDocumentCount().then((count) => {
 				statistics.totalTriggers = count;
 			}),
 		);
@@ -198,13 +205,13 @@ export const statistics = {
 
 		// Number of Email Inboxes
 		statsPms.push(
-			EmailInbox.col.count().then((count) => {
+			EmailInbox.estimatedDocumentCount().then((count) => {
 				statistics.emailInboxes = count;
 			}),
 		);
 
 		statsPms.push(
-			LivechatBusinessHours.col.count().then((count) => {
+			LivechatBusinessHours.estimatedDocumentCount().then((count) => {
 				statistics.BusinessHours = {
 					// Number of Business Hours
 					total: count,
@@ -513,7 +520,7 @@ export const statistics = {
 		);
 
 		statsPms.push(
-			NotificationQueue.col.estimatedDocumentCount().then((count) => {
+			NotificationQueue.estimatedDocumentCount().then((count) => {
 				statistics.pushQueue = count;
 			}),
 		);
@@ -539,27 +546,27 @@ export const statistics = {
 		statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
 		statistics.joinJitsiButton = settings.get('Jitsi_Click_To_Join_Count');
 		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
-		statistics.totalOTRRooms = await Rooms.findByCreatedOTR().count();
+		statistics.totalOTRRooms = await Rooms.countByCreatedOTR({ readPreference });
 		statistics.totalOTR = settings.get('OTR_Count');
-		statistics.totalBroadcastRooms = await Rooms.findByBroadcast().count();
+		statistics.totalBroadcastRooms = await Rooms.countByBroadcast({ readPreference });
 		statistics.totalTriggeredEmails = settings.get('Triggered_Emails_Count');
 		statistics.totalRoomsWithStarred = await Messages.countRoomsWithStarredMessages({ readPreference });
 		statistics.totalRoomsWithPinned = await Messages.countRoomsWithPinnedMessages({ readPreference });
 		statistics.totalUserTOTP = await Users.countActiveUsersTOTPEnable({ readPreference });
 		statistics.totalUserEmail2fa = await Users.countActiveUsersEmail2faEnable({ readPreference });
-		statistics.totalPinned = await Messages.findPinned({ readPreference }).count();
-		statistics.totalStarred = await Messages.findStarred({ readPreference }).count();
-		statistics.totalLinkInvitation = await Invites.find().count();
+		statistics.totalPinned = await Messages.countPinned({ readPreference });
+		statistics.totalStarred = await Messages.countStarred({ readPreference });
+		statistics.totalLinkInvitation = await Invites.estimatedDocumentCount();
 		statistics.totalLinkInvitationUses = await Invites.countUses();
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
-		statistics.totalE2ERooms = await Rooms.findByE2E({ readPreference }).count();
+		statistics.totalE2ERooms = await Rooms.countByE2E({ readPreference });
 		statistics.logoChange = Object.keys(settings.get('Assets_logo') || {}).includes('url');
 		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
 		statistics.totalEncryptedMessages = await Messages.countByType('e2e', { readPreference });
 		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count');
-		statistics.totalSubscriptionRoles = await RolesRaw.findByScope('Subscriptions').count();
-		statistics.totalUserRoles = await RolesRaw.findByScope('Users').count();
-		statistics.totalCustomRoles = await RolesRaw.findCustomRoles({ readPreference }).count();
+		statistics.totalSubscriptionRoles = await RolesRaw.countByScope('Subscriptions', { readPreference });
+		statistics.totalUserRoles = await RolesRaw.countByScope('Users', { readPreference });
+		statistics.totalCustomRoles = await RolesRaw.countCustomRoles({ readPreference });
 		statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count');
 		statistics.uncaughtExceptionsCount = settings.get('Uncaught_Exceptions_Count');
 

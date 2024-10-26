@@ -34,7 +34,8 @@ jobs:
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         with:
-          node-version: 14.21.3
+          node-version: 20.18.0
+          deno-version: 1.37.1
           cache-modules: true
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

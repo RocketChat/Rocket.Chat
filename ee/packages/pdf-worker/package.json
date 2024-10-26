@@ -1,45 +1,49 @@
 {
 	"name": "@rocket.chat/pdf-worker",
-	"version": "0.2.3",
+	"version": "0.2.6-rc.4",
 	"private": true,
-	"devDependencies": {
-		"@rocket.chat/jest-presets": "workspace:~",
-		"@storybook/addon-essentials": "~6.5.16",
-		"@storybook/react": "~6.5.16",
-		"@testing-library/react": "~16.0.0",
-		"@types/emojione": "^2.2.8",
-		"@types/jest": "~29.5.12",
-		"@types/react": "~17.0.69",
-		"@types/react-dom": "~17.0.22",
-		"eslint": "~8.45.0",
-		"jest": "~29.7.0",
-		"react-dom": "~18.3.1",
-		"typescript": "~5.5.4"
-	},
-	"scripts": {
-		"build": "tsc -p tsconfig.build.json && cp -r src/public dist/public",
-		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"typecheck": "tsc --noEmit",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"test": "jest",
-		"testunit": "jest",
-		"storybook": "start-storybook -p 6006"
-	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
 	],
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json && cp -r src/public dist/public",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"storybook": "storybook dev -p 6006",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
+	},
 	"dependencies": {
-		"@react-pdf/renderer": "^3.1.14",
+		"@react-pdf/renderer": "^3.4.5",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/fuselage-tokens": "^0.33.1",
 		"emoji-assets": "^7.0.1",
 		"emoji-toolkit": "^7.0.1",
 		"moment": "^2.29.4",
-		"moment-timezone": "^0.5.43",
+		"moment-timezone": "^0.5.46",
 		"react": "~18.3.1"
+	},
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@storybook/addon-essentials": "^8.3.5",
+		"@storybook/addon-webpack5-compiler-babel": "^3.0.3",
+		"@storybook/react": "^8.3.5",
+		"@storybook/react-webpack5": "^8.3.5",
+		"@testing-library/react": "~16.0.1",
+		"@types/emojione": "^2.2.9",
+		"@types/jest": "~29.5.14",
+		"@types/react": "~17.0.80",
+		"@types/react-dom": "~17.0.25",
+		"buffer": "~6.0.3",
+		"eslint": "~8.45.0",
+		"jest": "~29.7.0",
+		"react-dom": "~18.3.1",
+		"storybook": "^8.3.6",
+		"typescript": "~5.6.3"
 	},
 	"volta": {
 		"extends": "../../../package.json"

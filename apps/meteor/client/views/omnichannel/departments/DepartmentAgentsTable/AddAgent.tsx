@@ -1,14 +1,15 @@
 import { Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../../../components/AutoCompleteAgent';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import type { IDepartmentAgent } from '../EditDepartment';
 
 function AddAgent({ agentList, onAdd }: { agentList: IDepartmentAgent[]; onAdd: (agent: IDepartmentAgent) => void }) {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [userId, setUserId] = useState('');
 

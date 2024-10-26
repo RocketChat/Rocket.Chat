@@ -1,14 +1,14 @@
 {
 	"name": "@rocket.chat/api-client",
-	"version": "0.2.6",
+	"version": "0.2.9-rc.4",
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
-		"@types/jest": "~29.5.12",
-		"@types/strict-uri-encode": "^2.0.1",
+		"@types/jest": "~29.5.14",
+		"@types/strict-uri-encode": "^2.0.2",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
 		"jest-fetch-mock": "^3.0.3",
-		"typescript": "~5.5.4"
+		"typescript": "~5.6.3"
 	},
 	"scripts": {
 		"build": "tsc",

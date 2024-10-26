@@ -1,6 +1,7 @@
-import { usePermission, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
@@ -10,7 +11,7 @@ import AgentInfo from './AgentInfo';
 import AgentsTable from './AgentsTable/AgentsTable';
 
 const AgentsPage = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const canViewAgents = usePermission('manage-livechat-agents');
 
 	const context = useRouteParameter('context');

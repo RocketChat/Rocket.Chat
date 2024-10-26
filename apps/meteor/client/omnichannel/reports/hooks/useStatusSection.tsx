@@ -1,7 +1,9 @@
-import type { TranslationContextValue, TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import type { TFunction } from 'i18next';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
@@ -17,7 +19,7 @@ const STATUSES: Record<string, { label: TranslationKey; color: string }> = {
 	Closed: { label: 'Omnichannel_Reports_Status_Closed', color: COLORS.danger },
 };
 
-const formatChartData = (data: { label: string; value: number }[] | undefined = [], total = 0, t: TranslationContextValue['translate']) => {
+const formatChartData = (data: { label: string; value: number }[] | undefined = [], total = 0, t: TFunction) => {
 	return data.map((item) => {
 		const status = STATUSES[item.label];
 		const percentage = total > 0 ? round((item.value / total) * 100) : 0;
@@ -33,7 +35,7 @@ const formatChartData = (data: { label: string; value: number }[] | undefined = 
 };
 
 export const useStatusSection = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [period, periodSelectorProps] = usePeriodSelectorStorage('reports-status-period', PERIOD_OPTIONS);
 	const getConversationsByStatus = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-status');
 	const { start, end } = getPeriodRange(period);

@@ -11,9 +11,10 @@ import {
 	FieldError,
 	IconButton,
 } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch, useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
@@ -33,7 +34,7 @@ type EditCustomEmojiProps = {
 };
 
 const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const absoluteUrl = useAbsoluteUrl();
@@ -150,7 +151,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 						<FieldRow>
 							<TextInput value={name} onChange={handleChangeName} placeholder={t('Name')} />
 						</FieldRow>
-						{errors.name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
+						{errors.name && <FieldError>{t('Required_field', { field: t('Name') })}</FieldError>}
 					</Field>
 					<Field>
 						<FieldLabel>{t('Aliases')}</FieldLabel>

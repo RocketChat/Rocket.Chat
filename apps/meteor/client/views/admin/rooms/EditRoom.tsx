@@ -14,9 +14,10 @@ import {
 	FieldError,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
@@ -63,7 +64,7 @@ const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormV
 });
 
 const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -156,7 +157,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 					<FieldRow>
 						<Controller
 							name='roomName'
-							rules={{ required: t('The_field_is_required', t('Name')) }}
+							rules={{ required: t('Required_field', { field: t('Name') }) }}
 							control={control}
 							render={({ field }) => (
 								<TextInput

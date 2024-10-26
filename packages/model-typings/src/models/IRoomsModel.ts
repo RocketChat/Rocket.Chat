@@ -1,5 +1,15 @@
 import type { IDirectMessageRoom, IMessage, IOmnichannelGenericRoom, IRoom, IRoomFederated, ITeam, IUser } from '@rocket.chat/core-typings';
-import type { AggregationCursor, DeleteResult, Document, FindCursor, FindOptions, UpdateOptions, UpdateResult } from 'mongodb';
+import type {
+	AggregationCursor,
+	DeleteResult,
+	Document,
+	FindCursor,
+	FindOptions,
+	UpdateOptions,
+	UpdateResult,
+	ModifyResult,
+	CountDocumentsOptions,
+} from 'mongodb';
 
 import type { Updater } from '../updater';
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -39,6 +49,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	): FindPaginated<FindCursor<IRoom>>;
 
 	findByTeamId(teamId: ITeam['_id'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+
+	countByTeamId(teamId: ITeam['_id']): Promise<number>;
 
 	findPaginatedByTeamIdContainingNameAndDefault(
 		teamId: ITeam['_id'],
@@ -130,6 +142,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findRoomsInsideTeams(autoJoin?: boolean): FindCursor<IRoom>;
 
+	countRoomsInsideTeams(autoJoin?: boolean): Promise<number>;
+
 	findOneDirectRoomContainingAllUserIDs(uid: IDirectMessageRoom['uids'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	countByType(t: IRoom['t']): Promise<number>;
@@ -192,6 +206,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	setE2eKeyId(roomId: string, e2eKeyId: string, options?: FindOptions<IRoom>): Promise<UpdateResult>;
 	findOneByImportId(importId: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findOneByNameAndNotId(name: string, rid: string): Promise<IRoom | null>;
+	findOneByIdAndType(roomId: IRoom['_id'], type: IRoom['t'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findOneByDisplayName(displayName: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findOneByNameAndType(
 		name: string,
@@ -281,4 +296,21 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	getSubscribedRoomIdsWithoutE2EKeys(uid: IUser['_id']): Promise<IRoom['_id'][]>;
 	removeUsersFromE2EEQueueByRoomId(roomId: IRoom['_id'], uids: IUser['_id'][]): Promise<Document | UpdateResult>;
 	removeUserFromE2EEQueue(uid: IUser['_id']): Promise<Document | UpdateResult>;
+	findChildrenOfTeam(
+		teamId: string,
+		teamRoomId: string,
+		userId: string,
+		filter?: string,
+		type?: 'channels' | 'discussions',
+		options?: FindOptions<IRoom>,
+	): AggregationCursor<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }>;
+	resetRoomKeyAndSetE2EEQueueByRoomId(
+		roomId: string,
+		e2eKeyId: string,
+		e2eQueue?: IRoom['usersWaitingForE2EKeys'],
+	): Promise<ModifyResult<IRoom>>;
+	countGroupDMsByUids(uids: NonNullable<IRoom['uids']>): Promise<number>;
+	countByCreatedOTR(options?: CountDocumentsOptions): Promise<number>;
+	countByBroadcast(options?: CountDocumentsOptions): Promise<number>;
+	countByE2E(options?: CountDocumentsOptions): Promise<number>;
 }

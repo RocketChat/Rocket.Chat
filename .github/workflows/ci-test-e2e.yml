@@ -6,6 +6,9 @@ on:
       node-version:
         required: true
         type: string
+      deno-version:
+        required: true
+        type: string
       lowercase-repo:
         required: true
         type: string
@@ -15,10 +18,10 @@ on:
       rc-docker-tag:
         required: true
         type: string
-      rc-dockerfile-alpine:
+      rc-dockerfile-debian:
         required: true
         type: string
-      rc-docker-tag-alpine:
+      rc-docker-tag-debian:
         required: true
         type: string
       gh-docker-tag:
@@ -29,7 +32,7 @@ on:
       transporter:
         type: string
       mongodb-version:
-        default: "['4.4', '6.0']"
+        default: "['5.0', '7.0']"
         required: false
         type: string
       release:
@@ -80,8 +83,8 @@ jobs:
   test:
     runs-on: ubuntu-20.04
     env:
-      RC_DOCKERFILE: ${{ matrix.mongodb-version == '6.0' && inputs.rc-dockerfile-alpine || inputs.rc-dockerfile }}
-      RC_DOCKER_TAG: ${{ matrix.mongodb-version == '6.0' && inputs.rc-docker-tag-alpine || inputs.rc-docker-tag }}
+      RC_DOCKERFILE: ${{ matrix.mongodb-version == '7.0' && inputs.rc-dockerfile-debian || inputs.rc-dockerfile }}
+      RC_DOCKER_TAG: ${{ matrix.mongodb-version == '7.0' && inputs.rc-docker-tag-debian || inputs.rc-docker-tag }}
 
     strategy:
       fail-fast: false
@@ -89,7 +92,7 @@ jobs:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
 
-    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'true' && ' [no watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})${{ matrix.mongodb-version == '6.0' && ' - Alpine' || '' }}
+    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'true' && ' [no watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }}) - ${{ matrix.mongodb-version == '7.0' && 'Debian' || 'Alpine (Official)' }}
 
     steps:
       - name: Collect Workflow Telemetry
@@ -128,12 +131,18 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ inputs.node-version }}
+          deno-version: ${{ inputs.deno-version }}
           cache-modules: true
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - uses: rharkor/caching-for-turbo@v1.5
 
+      - name: Restore turbo build
+        uses: actions/download-artifact@v4
+        with:
+          name: turbo-build
+          path: .turbo/cache
       - run: yarn build
       # if we are testing a PR from a fork, we need to build the docker image at this point
       - uses: ./.github/actions/build-docker
@@ -291,11 +300,16 @@ jobs:
         if: inputs.type == 'ui' && always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-test-trace-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          name: playwright-test-trace-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/tests/e2e/.playwright*
+          include-hidden-files: true
 
       - name: Show server logs if E2E test failed
-        if: failure()
+        if: failure() && inputs.release == 'ee'
+        run: docker compose -f docker-compose-ci.yml logs
+
+      - name: Show server logs if E2E test failed
+        if: failure() && inputs.release != 'ee'
         run: docker compose -f docker-compose-ci.yml logs rocketchat
 
       - name: Extract e2e:ee:coverage
@@ -326,6 +340,7 @@ jobs:
         with:
           name: e2e-api-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: /tmp/coverage
+          include-hidden-files: true
 
       - name: Store e2e-ee-coverage
         if: inputs.type == 'ui' && inputs.release == 'ee'
@@ -333,3 +348,4 @@ jobs:
         with:
           name: e2e-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/coverage*
+          include-hidden-files: true

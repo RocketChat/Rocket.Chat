@@ -1,53 +1,54 @@
 {
-  "name": "@rocket.chat/ui-composer",
-  "version": "0.2.1",
-  "private": true,
-  "main": "./dist/index.js",
-  "typings": "./dist/index.d.ts",
-  "files": [
-    "/dist"
-  ],
-  "scripts": {
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-    "lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-    "build": "rm -rf dist && tsc -p tsconfig.build.json",
-    "typecheck": "tsc --noEmit",
-    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-    "storybook": "start-storybook -p 6006"
-  },
-  "devDependencies": {
-    "@babel/core": "~7.22.20",
-    "@react-aria/toolbar": "^3.0.0-beta.1",
-    "@rocket.chat/eslint-config": "workspace:^",
-    "@rocket.chat/fuselage": "^0.59.0",
-    "@rocket.chat/icons": "~0.38.0",
-    "@storybook/addon-actions": "~6.5.16",
-    "@storybook/addon-docs": "~6.5.16",
-    "@storybook/addon-essentials": "~6.5.16",
-    "@storybook/builder-webpack4": "~6.5.16",
-    "@storybook/manager-webpack4": "~6.5.16",
-    "@storybook/react": "~6.5.16",
-    "@storybook/testing-library": "~0.0.13",
-    "@types/babel__core": "~7.20.3",
-    "@types/react": "~17.0.69",
-    "@types/react-dom": "~17.0.22",
-    "eslint": "~8.45.0",
-    "eslint-plugin-react": "~7.32.2",
-    "eslint-plugin-react-hooks": "~4.6.0",
-    "eslint-plugin-storybook": "~0.6.15",
-    "react": "~17.0.2",
-    "react-docgen-typescript-plugin": "~1.0.5",
-    "react-dom": "~17.0.2",
-    "typescript": "~5.5.4"
-  },
-  "peerDependencies": {
-    "@react-aria/toolbar": "*",
-    "@rocket.chat/fuselage": "*",
-    "@rocket.chat/icons": "*",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
-  },
-  "volta": {
-    "extends": "../../package.json"
-  }
+	"name": "@rocket.chat/ui-composer",
+	"version": "0.4.0-rc.0",
+	"private": true,
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./storybook-static ../../.preview/ui-composer",
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"build-preview": "storybook build",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"storybook": "storybook dev -p 6006",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@babel/core": "~7.25.8",
+		"@react-aria/toolbar": "^3.0.0-beta.1",
+		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/fuselage": "^0.59.3",
+		"@rocket.chat/icons": "~0.38.0",
+		"@storybook/addon-actions": "^8.3.5",
+		"@storybook/addon-docs": "^8.3.5",
+		"@storybook/addon-essentials": "^8.3.5",
+		"@storybook/addon-styling-webpack": "^1.0.0",
+		"@storybook/addon-webpack5-compiler-babel": "^3.0.3",
+		"@storybook/react": "^8.3.5",
+		"@storybook/react-webpack5": "^8.3.5",
+		"@types/react": "~17.0.80",
+		"@types/react-dom": "~17.0.25",
+		"eslint": "~8.45.0",
+		"eslint-plugin-react": "~7.32.2",
+		"eslint-plugin-react-hooks": "~4.6.2",
+		"eslint-plugin-storybook": "^0.9.0",
+		"react": "~17.0.2",
+		"react-dom": "~17.0.2",
+		"storybook": "^8.3.6",
+		"typescript": "~5.6.3"
+	},
+	"peerDependencies": {
+		"@react-aria/toolbar": "*",
+		"@rocket.chat/fuselage": "*",
+		"@rocket.chat/icons": "*",
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
 }

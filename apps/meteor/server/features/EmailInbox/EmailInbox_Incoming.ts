@@ -15,6 +15,7 @@ import { FileUpload } from '../../../app/file-upload/server';
 import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
+import { setDepartmentForGuest } from '../../../app/livechat/server/lib/departmentsLib';
 import { settings } from '../../../app/settings/server';
 import { i18n } from '../../lib/i18n';
 import { logger } from './logger';
@@ -22,7 +23,7 @@ import { logger } from './logger';
 type FileAttachment = VideoAttachmentProps & ImageAttachmentProps & AudioAttachmentProps;
 
 const language = settings.get<string>('Language') || 'en';
-const t = (s: string): string => i18n.t(s, { lng: language });
+const t = i18n.getFixedT(language);
 
 async function getGuestByEmail(email: string, name: string, department = ''): Promise<ILivechatVisitor | null> {
 	const guest = await LivechatVisitors.findOneGuestByEmailAddress(email);
@@ -34,7 +35,7 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 				delete guest.department;
 				return guest;
 			}
-			await LivechatTyped.setDepartmentForGuest({ token: guest.token, department });
+			await setDepartmentForGuest({ token: guest.token, department });
 			return LivechatVisitors.findOneEnabledById(guest._id, {});
 		}
 		return guest;

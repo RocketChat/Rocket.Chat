@@ -1,10 +1,11 @@
 import { Box, FieldError, FieldLabel, FieldRow, PasswordInput, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import type { Control, FieldErrors } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import type { UserFormProps } from './AdminUserForm';
 
@@ -25,7 +26,7 @@ const AdminUserSetRandomPasswordContent = ({
 	errors,
 	password,
 }: AdminUserSetRandomPasswordContentProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const passwordConfirmationId = useUniqueId();
 	const requirePasswordChangeId = useUniqueId();
@@ -57,7 +58,7 @@ const AdminUserSetRandomPasswordContent = ({
 					name='password'
 					rules={{
 						validate: () => (password?.length && !passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
-						required: isNewUserPage && t('The_field_is_required', t('Password')),
+						required: isNewUserPage && t('Required_field', { field: t('Password') }),
 					}}
 					render={({ field }) => (
 						<PasswordInput
@@ -83,7 +84,7 @@ const AdminUserSetRandomPasswordContent = ({
 						control={control}
 						name='passwordConfirmation'
 						rules={{
-							required: isNewUserPage && t('The_field_is_required', t('Confirm_password')),
+							required: isNewUserPage && t('Required_field', { field: t('Confirm_password') }),
 							deps: ['password'],
 							validate: (confirmationPassword) => (password !== confirmationPassword ? t('Invalid_confirm_pass') : true),
 						}}

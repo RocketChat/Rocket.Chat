@@ -1,8 +1,8 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemBadge, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
-import type { useTranslation } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
+import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
 import React, { memo, useMemo } from 'react';
 
@@ -15,7 +15,7 @@ import { OmnichannelBadges } from '../badges/OmnichannelBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
-export const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: ReturnType<typeof useTranslation>): string | undefined => {
+export const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
 	if (!lastMessage) {
 		return t('No_messages_yet');
 	}
@@ -34,13 +34,7 @@ export const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: Re
 	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizeSidebarMessage(lastMessage, t)}`;
 };
 
-export const getBadgeTitle = (
-	userMentions: number,
-	threadUnread: number,
-	groupMentions: number,
-	unread: number,
-	t: ReturnType<typeof useTranslation>,
-) => {
+export const getBadgeTitle = (userMentions: number, threadUnread: number, groupMentions: number, unread: number, t: TFunction) => {
 	const title = [] as string[];
 	if (userMentions) {
 		title.push(t('mentions_counter', { count: userMentions }));
@@ -60,7 +54,7 @@ export const getBadgeTitle = (
 
 type RoomListRowProps = {
 	extended: boolean;
-	t: ReturnType<typeof useTranslation>;
+	t: TFunction;
 	SidebarItemTemplate: ComponentType<
 		{
 			icon: ReactNode;
@@ -180,6 +174,7 @@ const SidebarItemTemplateWithData = ({
 			is='a'
 			id={id}
 			data-qa='sidebar-item'
+			data-unread={highlighted}
 			unread={highlighted}
 			selected={selected}
 			href={href}
@@ -205,7 +200,7 @@ const SidebarItemTemplateWithData = ({
 						threadUnread={threadUnread}
 						rid={rid}
 						unread={!!unread}
-						roomOpen={false}
+						roomOpen={selected}
 						type={type}
 						cl={cl}
 						name={title}

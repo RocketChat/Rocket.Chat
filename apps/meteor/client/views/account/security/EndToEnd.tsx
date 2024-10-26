@@ -1,8 +1,10 @@
-import { Box, Margins, PasswordInput, Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, Button } from '@rocket.chat/fuselage';
+import { Box, PasswordInput, Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, Button, Divider } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useLogout } from '@rocket.chat/ui-contexts';
+import { Accounts } from 'meteor/accounts-base';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { useCallback, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import { e2e } from '../../../../app/e2e/client/rocketchat.e2e';
 
@@ -11,23 +13,23 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const logout = useLogout();
 
-	const publicKey = localStorage.getItem('public_key');
-	const privateKey = localStorage.getItem('private_key');
+	const publicKey = Accounts.storageLocation.getItem('public_key');
+	const privateKey = Accounts.storageLocation.getItem('private_key');
 
 	const resetE2eKey = useMethod('e2e.resetOwnE2EKey');
 
 	const {
-		register,
 		handleSubmit,
 		watch,
 		resetField,
 		formState: { errors, isValid },
+		control,
 	} = useForm({
 		defaultValues: {
 			password: '',
 			passwordConfirm: '',
 		},
-		mode: 'onChange',
+		mode: 'all',
 	});
 
 	const { password } = watch();
@@ -64,37 +66,80 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 		}
 	}, [password, resetField]);
 
+	const passwordId = useUniqueId();
+	const e2ePasswordExplanationId = useUniqueId();
+	const passwordConfirmId = useUniqueId();
+
 	return (
-		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs={16} {...props}>
-			<Margins blockEnd={8}>
-				<Box fontScale='h4'>{t('E2E_Encryption_Password_Change')}</Box>
-				<Box dangerouslySetInnerHTML={{ __html: t('E2E_Encryption_Password_Explanation') }} />
+		<Box display='flex' flexDirection='column' alignItems='flex-start' {...props}>
+			<Box
+				is='p'
+				fontScale='p1'
+				id={e2ePasswordExplanationId}
+				dangerouslySetInnerHTML={{ __html: t('E2E_Encryption_Password_Explanation') }}
+			/>
+
+			<Box mbs={36} w='full'>
+				<Box is='h4' fontScale='h4' mbe={12}>
+					{t('E2E_Encryption_Password_Change')}
+				</Box>
+
 				<FieldGroup w='full'>
 					<Field>
-						<FieldLabel id='New_encryption_password'>{t('New_encryption_password')}</FieldLabel>
+						<FieldLabel htmlFor={passwordId}>{t('New_encryption_password')}</FieldLabel>
 						<FieldRow>
-							<PasswordInput
-								{...register('password', { required: true })}
-								placeholder={t('New_Password_Placeholder')}
-								disabled={!keysExist}
-								aria-labelledby='New_encryption_password'
+							<Controller
+								control={control}
+								name='password'
+								rules={{ required: t('Required_field', { field: t('New_encryption_password') }) }}
+								render={({ field }) => (
+									<PasswordInput
+										{...field}
+										id={passwordId}
+										error={errors.password?.message}
+										placeholder={t('New_Password_Placeholder')}
+										disabled={!keysExist}
+										aria-describedby={`${e2ePasswordExplanationId} ${passwordId}-hint ${passwordId}-error`}
+										aria-invalid={errors.password ? 'true' : 'false'}
+									/>
+								)}
 							/>
 						</FieldRow>
-						{!keysExist && <FieldHint>{t('EncryptionKey_Change_Disabled')}</FieldHint>}
+						{!keysExist && <FieldHint id={`${passwordId}-hint`}>{t('EncryptionKey_Change_Disabled')}</FieldHint>}
+						{errors?.password && (
+							<FieldError aria-live='assertive' id={`${passwordId}-error`}>
+								{errors.password.message}
+							</FieldError>
+						)}
 					</Field>
 					{hasTypedPassword && (
 						<Field>
-							<FieldLabel id='Confirm_new_encryption_password'>{t('Confirm_new_encryption_password')}</FieldLabel>
-							<PasswordInput
-								error={errors.passwordConfirm?.message}
-								{...register('passwordConfirm', {
-									required: true,
-									validate: (value: string) => (password !== value ? 'Your passwords do no match' : true),
-								})}
-								placeholder={t('Confirm_New_Password_Placeholder')}
-								aria-labelledby='Confirm_new_encryption_password'
-							/>
-							{errors.passwordConfirm && <FieldError>{errors.passwordConfirm.message}</FieldError>}
+							<FieldLabel htmlFor={passwordConfirmId}>{t('Confirm_new_encryption_password')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									control={control}
+									name='passwordConfirm'
+									rules={{
+										required: t('Required_field', { field: t('Confirm_new_encryption_password') }),
+										validate: (value: string) => (password !== value ? 'Your passwords do no match' : true),
+									}}
+									render={({ field }) => (
+										<PasswordInput
+											{...field}
+											id={passwordConfirmId}
+											error={errors.passwordConfirm?.message}
+											placeholder={t('Confirm_New_Password_Placeholder')}
+											aria-describedby={`${passwordConfirmId}-error`}
+											aria-invalid={errors.password ? 'true' : 'false'}
+										/>
+									)}
+								/>
+							</FieldRow>
+							{errors.passwordConfirm && (
+								<FieldError aria-live='assertive' id={`${passwordConfirmId}-error`}>
+									{errors.passwordConfirm.message}
+								</FieldError>
+							)}
 						</Field>
 					)}
 				</FieldGroup>
@@ -102,18 +147,24 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 					primary
 					disabled={!(keysExist && isValid)}
 					onClick={handleSubmit(saveNewPassword)}
+					mbs={12}
 					data-qa-type='e2e-encryption-save-password-button'
 				>
 					{t('Save_changes')}
 				</Button>
-				<Box fontScale='h4' mbs={16}>
+			</Box>
+
+			<Divider mb={36} width='full' />
+
+			<Box>
+				<Box is='h4' fontScale='h4' mbe={12}>
 					{t('Reset_E2E_Key')}
 				</Box>
-				<Box dangerouslySetInnerHTML={{ __html: t('E2E_Reset_Key_Explanation') }} />
+				<Box is='p' fontScale='p1' mbe={12} dangerouslySetInnerHTML={{ __html: t('E2E_Reset_Key_Explanation') }} />
 				<Button onClick={handleResetE2eKey} data-qa-type='e2e-encryption-reset-key-button'>
 					{t('Reset_E2E_Key')}
 				</Button>
-			</Margins>
+			</Box>
 		</Box>
 	);
 };

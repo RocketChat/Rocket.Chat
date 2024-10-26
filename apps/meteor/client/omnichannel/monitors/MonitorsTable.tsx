@@ -13,6 +13,7 @@ import {
 	StatesAction,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { UserAutoComplete } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useMethod, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, hashQueryKey } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
@@ -31,7 +32,6 @@ import {
 } from '../../components/GenericTable';
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../components/GenericTable/hooks/useSort';
-import UserAutoComplete from '../../components/UserAutoComplete';
 import { queryClient } from '../../lib/queryClient';
 
 const MonitorsTable = () => {
@@ -40,7 +40,6 @@ const MonitorsTable = () => {
 
 	const [text, setText] = useState('');
 	const [username, setUsername] = useState('');
-	const debouncedText = useDebouncedValue(text, 500);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -56,19 +55,20 @@ const MonitorsTable = () => {
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = pagination;
 	const { sortBy, sortDirection, setSort } = sort;
 
-	const query = useMemo(
-		() => ({
-			text: debouncedText,
-			sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		}),
-		[debouncedText, itemsPerPage, current, sortBy, sortDirection],
+	const query = useDebouncedValue(
+		useMemo(
+			() => ({
+				text,
+				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
+				...(itemsPerPage && { count: itemsPerPage }),
+				...(current && { offset: current }),
+			}),
+			[text, itemsPerPage, current, sortBy, sortDirection],
+		),
+		500,
 	);
 
-	const { data, refetch, isLoading, isSuccess, isError } = useQuery(['omnichannel', 'monitors', debouncedText, pagination, sort], () =>
-		getMonitors(query),
-	);
+	const { data, refetch, isLoading, isSuccess, isError } = useQuery(['omnichannel', 'monitors', query], () => getMonitors(query));
 
 	const [defaultQuery] = useState(hashQueryKey([query]));
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
@@ -144,7 +144,9 @@ const MonitorsTable = () => {
 					</FieldRow>
 				</Field>
 			</Box>
-			{((isSuccess && data?.monitors.length > 0) || queryHasChanged) && <FilterByText onChange={setText} />}
+			{((isSuccess && data?.monitors.length > 0) || queryHasChanged) && (
+				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
+			)}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -165,7 +167,7 @@ const MonitorsTable = () => {
 			)}
 			{isSuccess && data.monitors.length > 0 && (
 				<>
-					<GenericTable aria-busy={text !== debouncedText} aria-live='assertive' data-qa-id='manage-monitors-table'>
+					<GenericTable aria-busy={isLoading} aria-live='assertive' data-qa-id='manage-monitors-table'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.monitors?.map((monitor) => (

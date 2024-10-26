@@ -1,7 +1,8 @@
 import { MessageMetricsItem, MessageBlock, MessageMetrics, MessageMetricsReply, MessageMetricsFollowing } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
@@ -24,7 +25,7 @@ type ThreadMetricsProps = {
 };
 
 const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, following, lm }: ThreadMetricsProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const format = useTimeAgo();
 
@@ -63,7 +64,7 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 				</MessageMetricsItem>
 				<MessageMetricsItem className={!following ? anchor : undefined} data-rid={rid}>
 					<MessageMetricsFollowing
-						title={t(following ? 'Following' : 'Not_following')}
+						title={following ? t('Following') : t('Not_following')}
 						name={following ? 'bell' : 'bell-off'}
 						onClick={handleFollow}
 					/>

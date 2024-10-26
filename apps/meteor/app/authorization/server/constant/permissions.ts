@@ -74,7 +74,6 @@ export const permissions = [
 	{ _id: 'view-device-management', roles: ['admin'] },
 	{ _id: 'view-engagement-dashboard', roles: ['admin'] },
 	{ _id: 'view-full-other-user-info', roles: ['admin'] },
-	{ _id: 'view-history', roles: ['admin', 'user', 'anonymous'] },
 	{ _id: 'view-joined-room', roles: ['guest', 'bot', 'app', 'anonymous'] },
 	{ _id: 'view-join-code', roles: ['admin'] },
 	{ _id: 'view-logs', roles: ['admin'] },
@@ -99,6 +98,14 @@ export const permissions = [
 	},
 	{
 		_id: 'update-livechat-contact',
+		roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],
+	},
+	{
+		_id: 'view-livechat-contact',
+		roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],
+	},
+	{
+		_id: 'view-livechat-contact-history',
 		roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],
 	},
 	{ _id: 'view-livechat-manager', roles: ['livechat-manager', 'livechat-monitor', 'admin'] },
@@ -186,7 +193,11 @@ export const permissions = [
 	{ _id: 'edit-team', roles: ['admin', 'owner'] },
 	{ _id: 'add-team-member', roles: ['admin', 'owner', 'moderator'] },
 	{ _id: 'edit-team-member', roles: ['admin', 'owner', 'moderator'] },
-	{ _id: 'add-team-channel', roles: ['admin', 'owner', 'moderator'] },
+	{ _id: 'move-room-to-team', roles: ['admin', 'owner', 'moderator'] },
+	{ _id: 'create-team-channel', roles: ['admin', 'owner', 'moderator'] },
+	{ _id: 'create-team-group', roles: ['admin', 'owner', 'moderator'] },
+	{ _id: 'delete-team-channel', roles: ['admin', 'owner', 'moderator'] },
+	{ _id: 'delete-team-group', roles: ['admin', 'owner', 'moderator'] },
 	{ _id: 'edit-team-channel', roles: ['admin', 'owner', 'moderator'] },
 	{ _id: 'remove-team-channel', roles: ['admin', 'owner', 'moderator'] },
 	{ _id: 'view-all-team-channels', roles: ['admin', 'owner'] },
@@ -203,6 +214,13 @@ export const permissions = [
 	{ _id: 'view-agent-extension-association', roles: ['livechat-manager', 'admin', 'livechat-agent'] },
 	// allows to receive a voip call
 	{ _id: 'inbound-voip-calls', roles: ['livechat-agent'] },
+
+	// Allow managing team collab voip extensions
+	{ _id: 'manage-voip-extensions', roles: ['admin'] },
+	// Allow viewing the extension number of other users
+	{ _id: 'view-user-voip-extension', roles: ['admin', 'user'] },
+	// Allow viewing details of an extension
+	{ _id: 'view-voip-extension-details', roles: ['admin', 'user'] },
 
 	{ _id: 'remove-livechat-department', roles: ['livechat-manager', 'admin'] },
 	{ _id: 'manage-apps', roles: ['admin'] },

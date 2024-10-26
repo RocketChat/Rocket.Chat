@@ -4,10 +4,10 @@
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
-		"@types/jest": "~29.5.12",
+		"@types/jest": "~29.5.14",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
-		"typescript": "~5.5.4"
+		"typescript": "~5.6.3"
 	},
 	"scripts": {
 		"build": "rm -rf dist && tsc",
@@ -24,9 +24,12 @@
 		"/dist"
 	],
 	"dependencies": {
-		"jose": "^4.14.4"
+		"jose": "^4.15.9"
 	},
 	"volta": {
 		"extends": "../../package.json"
+	},
+	"installConfig": {
+		"hoistingLimits": "workspaces"
 	}
 }

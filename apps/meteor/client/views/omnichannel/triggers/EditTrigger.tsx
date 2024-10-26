@@ -1,10 +1,11 @@
 import { type ILivechatTrigger, type ILivechatTriggerAction, type Serialized } from '@rocket.chat/core-typings';
 import { FieldGroup, Button, ButtonGroup, Field, FieldLabel, FieldRow, FieldError, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRouter, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import {
 	ContextualbarScrollableContent,
@@ -66,7 +67,7 @@ const getInitialValues = (triggerData: Serialized<ILivechatTrigger> | undefined)
 	name: triggerData?.name ?? '',
 	description: triggerData?.description || '',
 	enabled: triggerData?.enabled ?? true,
-	runOnce: !!triggerData?.runOnce ?? false,
+	runOnce: !!triggerData?.runOnce || false,
 	conditions: triggerData?.conditions.map(({ name, value }) => ({ name: name || 'page-url', value: value || '' })) ?? [
 		DEFAULT_PAGE_URL_CONDITION,
 	],
@@ -74,7 +75,7 @@ const getInitialValues = (triggerData: Serialized<ILivechatTrigger> | undefined)
 });
 
 const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigger> }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -169,7 +170,7 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 								<Controller
 									name='name'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Name')) }}
+									rules={{ required: t('Required_field', { field: t('Name') }) }}
 									render={({ field }) => (
 										<TextInput
 											{...field}

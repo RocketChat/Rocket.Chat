@@ -1,14 +1,14 @@
 {
 	"name": "@rocket.chat/omnichannel-services",
-	"version": "0.3.3",
+	"version": "0.3.6-rc.4",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
-		"@types/jest": "~29.5.12",
+		"@types/jest": "~29.5.14",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
-		"typescript": "~5.5.4"
+		"typescript": "~5.6.3"
 	},
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
@@ -21,17 +21,16 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"@rocket.chat/tools": "workspace:^",
-		"@types/node": "^14.18.63",
-		"date-fns": "^2.28.0",
+		"@types/node": "~20.16.12",
+		"date-fns": "^2.30.0",
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",
 		"eventemitter3": "^4.0.7",
-		"fibers": "^5.0.3",
 		"mem": "^8.1.1",
-		"moment-timezone": "^0.5.43",
+		"moment-timezone": "^0.5.46",
 		"mongo-message-queue": "^1.0.0",
-		"mongodb": "^4.17.2",
-		"pino": "^8.15.0"
+		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
+		"pino": "^8.21.0"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

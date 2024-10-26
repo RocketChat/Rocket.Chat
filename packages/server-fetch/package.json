@@ -3,8 +3,9 @@
 	"version": "0.0.3",
 	"private": true,
 	"devDependencies": {
+		"@types/node-fetch": "~2.6.11",
 		"eslint": "~8.45.0",
-		"typescript": "~5.5.4"
+		"typescript": "~5.6.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -21,10 +22,10 @@
 		"extends": "../../package.json"
 	},
 	"dependencies": {
-		"@types/proxy-from-env": "^1.0.3",
+		"@types/proxy-from-env": "^1.0.4",
 		"http-proxy-agent": "^5.0.0",
 		"https-proxy-agent": "^5.0.1",
-		"node-fetch": "2.3.0",
+		"node-fetch": "2.7.0",
 		"proxy-from-env": "^1.1.0"
 	}
 }

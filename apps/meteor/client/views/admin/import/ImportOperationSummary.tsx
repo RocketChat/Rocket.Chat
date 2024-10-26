@@ -1,8 +1,9 @@
 import type { Serialized } from '@rocket.chat/core-typings';
 import { TableRow, TableCell } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
 	ImportWaitingStates,
@@ -40,7 +41,7 @@ function ImportOperationSummary({
 	count: { users = 0, channels = 0, messages = 0, total = 0 } = {},
 	valid,
 }: ImportOperationSummaryProps) {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 
 	const fileName = useMemo(() => {

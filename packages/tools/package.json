@@ -4,10 +4,10 @@
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
-		"@types/jest": "~29.5.12",
+		"@types/jest": "~29.5.14",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
-		"typescript": "~5.5.4"
+		"typescript": "~5.6.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -24,6 +24,6 @@
 		"/dist"
 	],
 	"dependencies": {
-		"moment-timezone": "^0.5.43"
+		"moment-timezone": "^0.5.46"
 	}
 }

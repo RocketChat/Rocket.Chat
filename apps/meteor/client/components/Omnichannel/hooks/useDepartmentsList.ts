@@ -1,9 +1,12 @@
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { RecordList } from '../../../lib/lists/RecordList';
+import type { DepartmentListItem } from '../Definitions/DepartmentsDefinitions';
+import { normalizeDepartments } from '../utils/normalizeDepartments';
 
 type DepartmentsListOptions = {
 	filter: string;
@@ -14,12 +17,7 @@ type DepartmentsListOptions = {
 	excludeDepartmentId?: string;
 	enabled?: boolean;
 	showArchived?: boolean;
-};
-
-type DepartmentListItem = {
-	_id: string;
-	label: string;
-	value: string;
+	selectedDepartment?: string;
 };
 
 export const useDepartmentsList = (
@@ -30,11 +28,12 @@ export const useDepartmentsList = (
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [itemsList, setItemsList] = useState(() => new RecordList<DepartmentListItem>());
 	const reload = useCallback(() => setItemsList(new RecordList<DepartmentListItem>()), []);
 
 	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
+	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: options.selectedDepartment ?? '' });
 
 	useComponentDidUpdate(() => {
 		options && reload();
@@ -60,30 +59,32 @@ export const useDepartmentsList = (
 					}
 					return true;
 				})
-				.map(({ _id, name, _updatedAt, ...department }): DepartmentListItem => {
-					return {
+				.map(
+					({ _id, name, ...department }): DepartmentListItem => ({
 						_id,
 						label: department.archived ? `${name} [${t('Archived')}]` : name,
 						value: _id,
-					};
-				});
+					}),
+				);
+
+			const normalizedItems = await normalizeDepartments(items, options.selectedDepartment ?? '', getDepartment);
 
 			options.haveAll &&
-				items.unshift({
+				normalizedItems.unshift({
 					_id: '',
 					label: t('All'),
 					value: 'all',
 				});
 
 			options.haveNone &&
-				items.unshift({
+				normalizedItems.unshift({
 					_id: '',
 					label: t('None'),
 					value: '',
 				});
 
 			return {
-				items,
+				items: normalizedItems,
 				itemCount: options.departmentId ? total - 1 : total,
 			};
 		},
@@ -94,9 +95,11 @@ export const useDepartmentsList = (
 			options.excludeDepartmentId,
 			options.enabled,
 			options.showArchived,
+			options.selectedDepartment,
 			options.haveAll,
 			options.haveNone,
 			options.departmentId,
+			getDepartment,
 			t,
 		],
 	);

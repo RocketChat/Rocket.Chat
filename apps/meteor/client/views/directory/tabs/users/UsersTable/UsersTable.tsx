@@ -1,6 +1,6 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -24,10 +24,9 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 	const t = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
-	const [text, setText] = useState('');
 	const directRoute = useRoute('direct');
 	const federation = workspace === 'external';
-	const debouncedText = useDebouncedValue(text, 500);
+	const [text, setText] = useState('');
 	const canViewFullOtherUserInfo = usePermission('view-full-other-user-info');
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
@@ -79,7 +78,7 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 		[setSort, sortBy, sortDirection, t, mediaQuery, canViewFullOtherUserInfo, federation],
 	);
 
-	const query = useDirectoryQuery({ text: debouncedText, current, itemsPerPage }, [sortBy, sortDirection], 'users', workspace);
+	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'users', workspace);
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
 
 	const { data, isFetched, isLoading, isError, refetch } = useQuery(['getDirectoryData', query], () => getDirectoryData(query));
@@ -95,7 +94,7 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Users')} onChange={setText} />
+			<FilterByText placeholder={t('Search_Users')} value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

@@ -41,13 +41,9 @@ export class Api implements IApiService {
 		return this.broker?.call(method, data);
 	}
 
-	async waitAndCall(method: string, data: any): Promise<any> {
-		return this.broker?.waitAndCall(method, data);
-	}
-
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
 		if (!this.broker) {
-			throw new Error(`No broker set to broadcast: ${event}`);
+			throw new Error(`No broker set to broadcast: ${event}, ${JSON.stringify(args)}`);
 		}
 
 		return this.broker.broadcast(event, ...args);

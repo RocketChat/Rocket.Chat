@@ -1,7 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { FormSkeleton } from '../../../components/Skeleton';
 import EditDepartment from './EditDepartment';
@@ -15,7 +16,7 @@ type EditDepartmentWithDataProps = {
 };
 
 const EditDepartmentWithData = ({ id, title }: EditDepartmentWithDataProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: id ?? '' });
 	const { data, isInitialLoading, isError } = useQuery(['/v1/livechat/department/:_id', id], () => getDepartment(params), {
 		enabled: !!id,

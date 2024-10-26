@@ -539,6 +539,16 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
+	countPinned(options?: CountDocumentsOptions): Promise<number> {
+		const query: Filter<IMessage> = {
+			t: { $ne: 'rm' as MessageTypesValues },
+			_hidden: { $ne: true },
+			pinned: true,
+		};
+
+		return this.countDocuments(query, options);
+	}
+
 	findPaginatedPinnedByRoom(roomId: IMessage['rid'], options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
 		const query: Filter<IMessage> = {
 			t: { $ne: 'rm' },
@@ -557,6 +567,15 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 
 		return this.find(query, options);
+	}
+
+	countStarred(options?: CountDocumentsOptions): Promise<number> {
+		const query: Filter<IMessage> = {
+			'_hidden': { $ne: true },
+			'starred._id': { $exists: true },
+		};
+
+		return this.countDocuments(query, options);
 	}
 
 	async setFederationReactionEventId(username: string, _id: string, reaction: string, federationEventId: string): Promise<void> {

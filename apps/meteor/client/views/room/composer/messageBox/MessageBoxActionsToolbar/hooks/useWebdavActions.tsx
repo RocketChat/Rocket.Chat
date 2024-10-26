@@ -1,9 +1,9 @@
 import type { IWebdavAccountIntegration } from '@rocket.chat/core-typings';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { GenericMenuItemProps } from '../../../../../../components/GenericMenu/GenericMenuItem';
 import { useWebDAVAccountIntegrationsQuery } from '../../../../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
 import { useChat } from '../../../../contexts/ChatContext';
 import AddWebdavAccountModal from '../../../../webdav/AddWebdavAccountModal';

@@ -12,6 +12,9 @@ inputs:
     required: false
   password:
     required: false
+  deno-version:
+    required: true
+    type: string
 
 outputs:
   image-name:
@@ -48,7 +51,7 @@ runs:
         fi;
 
         DOCKERFILE_PATH="${DOCKER_PATH}/Dockerfile"
-        if [[ '${{ inputs.release }}' = 'alpine' ]]; then
+        if [[ '${{ inputs.release }}' = 'debian' ]]; then
           DOCKERFILE_PATH="${DOCKERFILE_PATH}.${{ inputs.release }}"
         fi;
 
@@ -59,7 +62,7 @@ runs:
         fi;
 
         echo "Build ${{ inputs.release }} Docker image"
-        docker build -t $IMAGE_NAME .
+        docker build --build-arg DENO_VERSION=${{ inputs.deno-version }} -t $IMAGE_NAME .
 
         echo "image-name-base=${IMAGE_NAME_BASE}" >> $GITHUB_OUTPUT
         echo "image-name=${IMAGE_NAME}" >> $GITHUB_OUTPUT

@@ -1,6 +1,6 @@
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { HeaderToolbarAction } from '../../../../components/Header';
 import { roomActionHooksForE2EESetup } from '../../../../ui';
@@ -8,7 +8,7 @@ import type { RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext'
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 const RoomToolboxE2EESetup = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const toolbox = useRoomToolbox();
 
 	const { tab } = toolbox;

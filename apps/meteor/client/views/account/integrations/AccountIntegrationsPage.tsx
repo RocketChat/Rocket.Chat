@@ -1,9 +1,10 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { SelectLegacy, Box, Button, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { SelectLegacy, Box, Button, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
+import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useWebDAVAccountIntegrationsQuery } from '../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
@@ -13,7 +14,11 @@ import { useRemoveWebDAVAccountIntegrationMutation } from './hooks/useRemoveWebD
 const AccountIntegrationsPage = () => {
 	const { data: webdavAccountIntegrations } = useWebDAVAccountIntegrationsQuery();
 
-	const { handleSubmit, control } = useForm<{ accountSelected: string }>();
+	const {
+		handleSubmit,
+		control,
+		formState: { errors },
+	} = useForm<{ accountSelected: string }>();
 
 	const options: SelectOption[] = useMemo(
 		() => webdavAccountIntegrations?.map(({ _id, ...current }) => [_id, getWebdavServerName(current)]) ?? [],
@@ -21,7 +26,7 @@ const AccountIntegrationsPage = () => {
 	);
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const removeMutation = useRemoveWebDAVAccountIntegrationMutation({
 		onSuccess: () => {
@@ -36,6 +41,8 @@ const AccountIntegrationsPage = () => {
 		removeMutation.mutate({ accountSelected });
 	});
 
+	const accountSelectedId = useUniqueId();
+
 	return (
 		<Page>
 			<PageHeader title={t('Integrations')} />
@@ -47,22 +54,18 @@ const AccountIntegrationsPage = () => {
 							<Controller
 								control={control}
 								name='accountSelected'
-								rules={{ required: true }}
-								render={({ field: { onChange, value, name, ref } }) => (
-									<SelectLegacy
-										ref={ref}
-										name={name}
-										options={options}
-										onChange={onChange}
-										value={value}
-										placeholder={t('Select_an_option')}
-									/>
-								)}
+								rules={{ required: t('Required_field', { field: t('WebDAV_Accounts') }) }}
+								render={({ field }) => <SelectLegacy {...field} options={options} placeholder={t('Select_an_option')} />}
 							/>
 							<Button type='submit' danger>
 								{t('Remove')}
 							</Button>
 						</FieldRow>
+						{errors?.accountSelected && (
+							<FieldError aria-live='assertive' id={`${accountSelectedId}-error`}>
+								{errors.accountSelected.message}
+							</FieldError>
+						)}
 					</Field>
 				</Box>
 			</PageScrollableContentWithShadow>

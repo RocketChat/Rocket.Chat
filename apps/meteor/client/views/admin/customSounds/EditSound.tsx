@@ -1,7 +1,8 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, IconButton } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import type { ReactElement, SyntheticEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
@@ -19,7 +20,7 @@ type EditSoundProps = {
 };
 
 function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactElement {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
@@ -76,10 +77,10 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				}
 			}
 
-			validation.forEach((error) =>
+			validation.forEach((invalidFieldName) =>
 				dispatchToastMessage({
 					type: 'error',
-					message: t('error-the-field-is-required', { field: t(error) }),
+					message: t('Required_field', { field: t(invalidFieldName) }),
 				}),
 			);
 		},
@@ -131,9 +132,9 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				</Field>
 				<Field>
 					<FieldLabel alignSelf='stretch'>{t('Sound_File_mp3')}</FieldLabel>
-					<Box display='flex' flexDirection='row' mbs='none'>
+					<Box display='flex' flexDirection='row' mbs='none' alignItems='center'>
 						<Margins inline={4}>
-							<IconButton icon='upload' secondary onClick={clickUpload} />
+							<IconButton secondary small icon='upload' onClick={clickUpload} />
 							{sound?.name || 'none'}
 						</Margins>
 					</Box>
