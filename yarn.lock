@@ -8449,7 +8449,7 @@ __metadata:
     event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^4.0.7"
     gc-stats: "npm:^1.4.1"
-    mem: "npm:^10.0.0"
+    mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.34"
     mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.28.2"
@@ -8581,7 +8581,7 @@ __metadata:
     event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^4.0.7"
     gc-stats: "npm:^1.4.1"
-    mem: "npm:^10.0.0"
+    mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.34"
     mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.28.2"
@@ -8750,7 +8750,7 @@ __metadata:
     eventemitter3: "npm:^4.0.7"
     gc-stats: "npm:^1.4.1"
     jaeger-client: "npm:^3.19.0"
-    mem: "npm:^10.0.0"
+    mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.34"
     mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.28.2"
@@ -9179,7 +9179,7 @@ __metadata:
     image-webpack-loader: "npm:~8.1.0"
     lorem-ipsum: "npm:^2.0.8"
     markdown-it: "npm:^14.1.0"
-    mem: "npm:^10.0.0"
+    mem: "npm:^8.1.1"
     mini-css-extract-plugin: "npm:~1.6.2"
     mitt: "npm:^2.1.0"
     npm-run-all: "npm:^4.1.5"
@@ -9585,7 +9585,7 @@ __metadata:
     marked: "npm:^4.2.5"
     matrix-appservice: "npm:^2.0.0"
     matrix-appservice-bridge: "npm:^10.3.1"
-    mem: "npm:^10.0.0"
+    mem: "npm:^8.1.1"
     meteor-node-stubs: "npm:^1.2.10"
     mime-db: "npm:^1.52.0"
     mime-type: "npm:^4.0.0"
@@ -9783,7 +9783,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     eventemitter3: "npm:^4.0.7"
     jest: "npm:~29.7.0"
-    mem: "npm:^10.0.0"
+    mem: "npm:^8.1.1"
     moment-timezone: "npm:^0.5.46"
     mongo-message-queue: "npm:^1.0.0"
     mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
@@ -9818,7 +9818,7 @@ __metadata:
     event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^4.0.7"
     gc-stats: "npm:^1.4.1"
-    mem: "npm:^10.0.0"
+    mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.34"
     moment-timezone: "npm:^0.5.46"
     mongo-message-queue: "npm:^1.0.0"
@@ -9958,7 +9958,7 @@ __metadata:
     event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^4.0.7"
     gc-stats: "npm:^1.4.1"
-    mem: "npm:^10.0.0"
+    mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.34"
     mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.28.2"
@@ -10023,7 +10023,7 @@ __metadata:
     event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^4.0.7"
     gc-stats: "npm:^1.4.1"
-    mem: "npm:^10.0.0"
+    mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.34"
     moment-timezone: "npm:^0.5.46"
     mongo-message-queue: "npm:^1.0.0"
@@ -10183,7 +10183,7 @@ __metadata:
     event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^4.0.7"
     gc-stats: "npm:^1.4.1"
-    mem: "npm:^10.0.0"
+    mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.34"
     mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.28.2"
@@ -27915,16 +27915,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mem@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "mem@npm:10.0.0"
-  dependencies:
-    map-age-cleaner: "npm:^0.1.3"
-    mimic-fn: "npm:^4.0.0"
-  checksum: 10/9f725ea48cc355393a532c93b7c897ac5b9894cf47fbb12df6fc93ae7547ca7ade64f4bb2f5796205e95ec0475e2dff4e98b180507b8f85814e9dd45291c41d8
-  languageName: node
-  linkType: hard
-
 "mem@npm:^4.0.0":
   version: 4.3.0
   resolution: "mem@npm:4.3.0"
@@ -27933,6 +27923,16 @@ __metadata:
     mimic-fn: "npm:^2.0.0"
     p-is-promise: "npm:^2.0.0"
   checksum: 10/ae4afa1cac2b4d64e089ecd54e06ae857b6e5aae410802564032cb407aad13aa598c5aededae8cca6c5827f4057ec3f58415a078c80181dd08019ae1a9aa1226
+  languageName: node
+  linkType: hard
+
+"mem@npm:^8.1.1":
+  version: 8.1.1
+  resolution: "mem@npm:8.1.1"
+  dependencies:
+    map-age-cleaner: "npm:^0.1.3"
+    mimic-fn: "npm:^3.1.0"
+  checksum: 10/5f22117d8a24775f0a61d333bd7fdbe19f7a9f8dc8ccee66f57ba98aeb4ed67e83cc130c482b78fd6a39887547749d8fe376fc44ca7efa81579ad9d0c0fa5acd
   languageName: node
   linkType: hard
 
@@ -28242,10 +28242,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mimic-fn@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "mimic-fn@npm:4.0.0"
-  checksum: 10/995dcece15ee29aa16e188de6633d43a3db4611bcf93620e7e62109ec41c79c0f34277165b8ce5e361205049766e371851264c21ac64ca35499acb5421c2ba56
+"mimic-fn@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "mimic-fn@npm:3.1.0"
+  checksum: 10/f7b167f9115b8bbdf2c3ee55dce9149d14be9e54b237259c4bc1d8d0512ea60f25a1b323f814eb1fe8f5a541662804bcfcfff3202ca58df143edb986849d58db
   languageName: node
   linkType: hard
 
@@ -33973,7 +33973,7 @@ __metadata:
     eventemitter3: "npm:^4.0.7"
     express: "npm:^4.21.1"
     jaeger-client: "npm:^3.19.0"
-    mem: "npm:^10.0.0"
+    mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.34"
     mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     nats: "npm:^2.28.2"

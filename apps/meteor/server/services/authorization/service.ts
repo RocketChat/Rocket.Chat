@@ -2,7 +2,7 @@ import type { IAuthorization, RoomAccessValidator } from '@rocket.chat/core-serv
 import { License, ServiceClass } from '@rocket.chat/core-services';
 import type { IUser, IRole, IRoom, ISubscription, IRocketChatRecord } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users, Roles, Permissions } from '@rocket.chat/models';
-import mem, { memClear } from 'mem';
+import mem from 'mem';
 
 import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
 import { canAccessRoom } from './canAccessRoom';
@@ -27,8 +27,8 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		super();
 
 		const clearCache = (): void => {
-			memClear(this.getRolesCached);
-			memClear(this.rolesHasPermissionCached);
+			mem.clear(this.getRolesCached);
+			mem.clear(this.rolesHasPermissionCached);
 		};
 
 		this.onEvent('watch.roles', clearCache);
