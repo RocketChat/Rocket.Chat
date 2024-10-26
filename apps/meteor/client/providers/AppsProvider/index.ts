@@ -1,3 +1,3 @@
-import AppsProvider from './AppsProvider';
+import MarketplaceProvider from './MarketplaceProvider';
 
-export default AppsProvider;
+export default MarketplaceProvider;

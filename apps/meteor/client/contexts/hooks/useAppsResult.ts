@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import type { AppsContextValue } from '../AppsContext';
-import { AppsContext } from '../AppsContext';
+import type { MarketplaceContextValue } from '../MarketplaceContext';
+import { MarketplaceContext } from '../MarketplaceContext';
 
-export const useAppsResult = (): AppsContextValue => useContext(AppsContext);
+export const useAppsResult = (): MarketplaceContextValue => useContext(MarketplaceContext);

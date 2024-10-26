@@ -1,9 +1,9 @@
 import { useContext } from 'react';
 
-import { AppsContext } from '../../../contexts/AppsContext';
+import { MarketplaceContext } from '../../../contexts/MarketplaceContext';
 
 export const usePrivateAppsEnabled = () => {
-	const { privateAppsEnabled } = useContext(AppsContext);
+	const { privateAppsEnabled } = useContext(MarketplaceContext);
 
 	return privateAppsEnabled;
 };

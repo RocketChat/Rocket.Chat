@@ -4,7 +4,7 @@ import { useState, useEffect, useContext } from 'react';
 
 import type { ISettings } from '../../../apps/@types/IOrchestrator';
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
-import { AppsContext } from '../../../contexts/AppsContext';
+import { MarketplaceContext } from '../../../contexts/MarketplaceContext';
 import type { AppInfo } from '../definitions/AppInfo';
 
 const getBundledInApp = async (app: App): Promise<App['bundledIn']> => {
@@ -20,7 +20,7 @@ const getBundledInApp = async (app: App): Promise<App['bundledIn']> => {
 };
 
 export const useAppInfo = (appId: string, context: string): AppInfo | undefined => {
-	const { installedApps, marketplaceApps, privateApps } = useContext(AppsContext);
+	const { installedApps, marketplaceApps, privateApps } = useContext(MarketplaceContext);
 
 	const [appData, setAppData] = useState<AppInfo>();
 

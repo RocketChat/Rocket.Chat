@@ -26,7 +26,7 @@ export interface IAppsOrchestrator {
 	getCategories(): Promise<Serialized<ICategory[]>>;
 }
 
-export type AppsContextValue = {
+export type MarketplaceContextValue = {
 	installedApps: AsyncState<{ apps: App[] }>;
 	marketplaceApps: AsyncState<{ apps: App[] }>;
 	privateApps: AsyncState<{ apps: App[] }>;
@@ -35,7 +35,7 @@ export type AppsContextValue = {
 	privateAppsEnabled: boolean;
 };
 
-export const AppsContext = createContext<AppsContextValue>({
+export const MarketplaceContext = createContext<MarketplaceContextValue>({
 	installedApps: {
 		phase: AsyncStatePhase.LOADING,
 		value: undefined,

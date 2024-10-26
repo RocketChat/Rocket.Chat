@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import AppRequestItem from './AppRequestItem';
 import AppRequestsLoading from './AppRequestsLoading';
-import { useAppsReload } from '../../../../../contexts/hooks/useAppsReload';
+import { useAppsResult } from '../../../../../contexts/hooks/useAppsResult';
 import { queryClient } from '../../../../../lib/queryClient';
 import { useAppRequests } from '../../../hooks/useAppRequests';
 
@@ -24,7 +24,7 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 	const onSetItemsPerPage = (itemsPerPageOption: SetStateAction<itemsPerPage>) => setLimit(itemsPerPageOption);
 	const onSetCurrent = (currentItemsOption: SetStateAction<number>) => setOffset(currentItemsOption);
 
-	const reloadApps = useAppsReload();
+	const { reload: reloadApps } = useAppsResult();
 	const markSeen = useEndpoint('POST', '/apps/app-request/markAsSeen');
 	const markAppRequestsAsSeen = useMutation({
 		mutationKey: ['mark-app-requests-as-seen'],
@@ -34,7 +34,7 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 	useEffect(() => {
 		return () => {
 			if (isAdminUser && paginatedAppRequests.isSuccess) {
-				const unseenRequests = paginatedAppRequests.data.data.filter(({ seen }) => !seen).map(({ id }) => id);
+				const unseenRequests = paginatedAppRequests.data.data?.filter(({ seen }) => !seen).map(({ id }) => id) ?? [];
 
 				if (unseenRequests.length) {
 					markAppRequestsAsSeen.mutate(unseenRequests, {

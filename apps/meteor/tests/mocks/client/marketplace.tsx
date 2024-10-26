@@ -5,7 +5,7 @@ import type { IExternalComponentRoomInfo } from '@rocket.chat/apps-engine/client
 import React from 'react';
 import type { ReactNode } from 'react';
 
-import { AppsContext, type IAppsOrchestrator } from '../../../client/contexts/AppsContext';
+import { MarketplaceContext, type IAppsOrchestrator } from '../../../client/contexts/MarketplaceContext';
 import { AsyncStatePhase } from '../../../client/lib/asyncState';
 import { createFakeApp, createFakeExternalComponentRoomInfo, createFakeExternalComponentUserInfo } from '../data';
 
@@ -46,7 +46,7 @@ export const mockAppsOrchestrator = () => {
 };
 
 export const mockedAppsContext = (children: ReactNode) => (
-	<AppsContext.Provider
+	<MarketplaceContext.Provider
 		value={{
 			installedApps: {
 				phase: AsyncStatePhase.RESOLVED,
@@ -66,5 +66,5 @@ export const mockedAppsContext = (children: ReactNode) => (
 		}}
 	>
 		{children}
-	</AppsContext.Provider>
+	</MarketplaceContext.Provider>
 );

@@ -6,7 +6,7 @@ import React, { useEffect } from 'react';
 
 import { storeQueryFunction } from './storeQueryFunction';
 import { AppClientOrchestratorInstance } from '../../apps/orchestrator';
-import { AppsContext } from '../../contexts/AppsContext';
+import { MarketplaceContext } from '../../contexts/MarketplaceContext';
 import { useInvalidateLicense, useLicense } from '../../hooks/useLicense';
 import type { AsyncState } from '../../lib/asyncState';
 import { AsyncStatePhase } from '../../lib/asyncState';
@@ -35,12 +35,12 @@ const getAppState = (
 	};
 };
 
-type AppsProviderProps = {
+type MarketplaceProviderProps = {
 	children: ReactNode;
 };
 
-const AppsProvider = ({ children }: AppsProviderProps) => {
-	const isAdminUser = usePermission('manage-apps');
+const MarketplaceProvider = ({ children }: MarketplaceProviderProps) => {
+	const canManageApps = usePermission('manage-apps');
 
 	const queryClient = useQueryClient();
 
@@ -54,79 +54,66 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 
 	const invalidate = useDebouncedCallback(
 		() => {
-			queryClient.invalidateQueries(['marketplace', 'apps-instance']);
+			queryClient.invalidateQueries(['marketplace']);
 			invalidateAppsCountQuery();
 		},
 		100,
 		[],
 	);
 
-	useEffect(() => {
-		return stream('apps', ([key]) => {
-			if (['app/added', 'app/removed', 'app/updated', 'app/statusUpdate', 'app/settingUpdated'].includes(key)) {
-				invalidate();
-			}
-			if (['app/added', 'app/removed'].includes(key) && !isEnterprise) {
-				invalidateLicenseQuery();
-			}
-		});
-	}, [invalidate, invalidateLicenseQuery, isEnterprise, stream]);
-
-	const marketplace = useQuery(
-		['marketplace', 'apps-marketplace', isAdminUser],
-		async () => {
-			const result = await AppClientOrchestratorInstance.getAppsFromMarketplace(isAdminUser);
-			queryClient.invalidateQueries(['marketplace', 'apps-stored']);
-			if (result.error && typeof result.error === 'string') {
-				throw new Error(result.error);
-			}
-			return result.apps;
-		},
-		{
-			staleTime: Infinity,
-			keepPreviousData: true,
-			onSettled: () => queryClient.invalidateQueries(['marketplace', 'apps-stored']),
-		},
+	useEffect(
+		() =>
+			stream('apps', ([key]) => {
+				if (['app/added', 'app/removed', 'app/updated', 'app/statusUpdate', 'app/settingUpdated'].includes(key)) {
+					invalidate();
+				}
+				if (['app/added', 'app/removed'].includes(key) && !isEnterprise) {
+					invalidateLicenseQuery();
+				}
+			}),
+		[invalidate, invalidateLicenseQuery, isEnterprise, stream],
 	);
 
-	const instance = useQuery(
-		['marketplace', 'apps-instance', isAdminUser],
-		async () => {
-			const result = await AppClientOrchestratorInstance.getInstalledApps().then((result: App[]) =>
-				result.map((current: App) => ({
+	const {
+		isLoading: isMarketplaceDataLoading,
+		data: marketplaceData,
+		error: marketplaceError,
+	} = useQuery({
+		queryKey: ['marketplace', 'apps-stored', { canManageApps }],
+		queryFn: async () => {
+			const [appsFromMarketplace, installedApps] = await Promise.all([
+				AppClientOrchestratorInstance.getAppsFromMarketplace(canManageApps),
+				AppClientOrchestratorInstance.getInstalledApps(),
+			]);
+
+			if (appsFromMarketplace.error && typeof appsFromMarketplace.error === 'string') {
+				throw new Error(appsFromMarketplace.error);
+			}
+
+			return storeQueryFunction(
+				appsFromMarketplace.apps,
+				installedApps.map((current: App) => ({
 					...current,
 					installed: true,
 				})),
 			);
-			return result;
 		},
-		{
-			staleTime: Infinity,
-			refetchOnMount: 'always',
-			onSettled: () => queryClient.invalidateQueries(['marketplace', 'apps-stored']),
-		},
-	);
-
-	const { isLoading: isMarketplaceDataLoading, data: marketplaceData } = useQuery(
-		['marketplace', 'apps-stored', instance.data, marketplace.data],
-		() => storeQueryFunction(marketplace, instance),
-		{
-			enabled: marketplace.isFetched && instance.isFetched,
-			keepPreviousData: true,
-		},
-	);
+		keepPreviousData: true,
+		refetchOnMount: 'always',
+		staleTime: Infinity,
+	});
 
 	const [marketplaceAppsData, installedAppsData, privateAppsData] = marketplaceData || [];
 
 	return (
-		<AppsContext.Provider
+		<MarketplaceContext.Provider
 			children={children}
 			value={{
 				installedApps: getAppState(isMarketplaceDataLoading, installedAppsData),
 				marketplaceApps: getAppState(
 					isMarketplaceDataLoading,
 					marketplaceAppsData,
-					marketplace.error instanceof Error ? marketplace.error : undefined,
+					marketplaceError instanceof Error ? marketplaceError : undefined,
 				),
 				privateApps: getAppState(isMarketplaceDataLoading, privateAppsData),
 
@@ -140,4 +127,4 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 	);
 };
 
-export default AppsProvider;
+export default MarketplaceProvider;

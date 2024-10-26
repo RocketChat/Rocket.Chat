@@ -3,19 +3,19 @@ import { useRouter, useSetModal, useUpload } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import React, { useCallback, useState } from 'react';
 
+import { useAppsCountQuery } from './useAppsCountQuery';
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
-import { useAppsReload } from '../../../contexts/hooks/useAppsReload';
+import { useAppsResult } from '../../../contexts/hooks/useAppsResult';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import AppExemptModal from '../AppExemptModal';
 import AppPermissionsReviewModal from '../AppPermissionsReviewModal';
 import AppUpdateModal from '../AppUpdateModal';
-import { useAppsCountQuery } from './useAppsCountQuery';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { handleInstallError } from '../helpers/handleInstallError';
 import { getManifestFromZippedApp } from '../lib/getManifestFromZippedApp';
 
 export const useInstallApp = (file: File): { install: () => void; isInstalling: boolean } => {
-	const reloadAppsList = useAppsReload();
+	const { reload: reloadAppsList } = useAppsResult();
 	const setModal = useSetModal();
 
 	const router = useRouter();
