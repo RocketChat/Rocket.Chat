@@ -5,7 +5,7 @@ import { useRole } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { I18nextProvider, useTranslation } from 'react-i18next';
 
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
@@ -28,7 +28,7 @@ const getSettingOptions = (
 };
 
 const OrganizationInfoStep = (): ReactElement => {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const hasAdminRole = useRole('admin');
 
 	const {
@@ -61,17 +61,19 @@ const OrganizationInfoStep = (): ReactElement => {
 	};
 
 	return (
-		<OrganizationInfoPage
-			initialValues={organizationData}
-			onSubmit={handleSubmit}
-			onBackButtonClick={!hasAdminRole ? goToPreviousStep : undefined}
-			currentStep={currentStep}
-			stepCount={maxSteps}
-			organizationIndustryOptions={organizationIndustryOptions}
-			organizationSizeOptions={organizationSizeOptions}
-			countryOptions={countryOptions}
-			nextStep={skipCloudRegistration ? t('Register') : undefined}
-		/>
+		<I18nextProvider i18n={i18n} defaultNS='onboarding'>
+			<OrganizationInfoPage
+				initialValues={organizationData}
+				onSubmit={handleSubmit}
+				onBackButtonClick={!hasAdminRole ? goToPreviousStep : undefined}
+				currentStep={currentStep}
+				stepCount={maxSteps}
+				organizationIndustryOptions={organizationIndustryOptions}
+				organizationSizeOptions={organizationSizeOptions}
+				countryOptions={countryOptions}
+				nextStep={skipCloudRegistration ? t('Register') : undefined}
+			/>
+		</I18nextProvider>
 	);
 };
 

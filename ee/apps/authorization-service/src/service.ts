@@ -7,10 +7,10 @@ import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/reg
 
 const PORT = process.env.PORT || 3034;
 
-startTracing({ service: 'authorization-service' });
-
 (async () => {
-	const db = await getConnection();
+	const { db, client } = await getConnection();
+
+	startTracing({ service: 'authorization-service', db: client });
 
 	registerServiceModels(db, await getTrashCollection());
 

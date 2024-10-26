@@ -296,8 +296,8 @@ export async function getRequiredDepartment(onlineRequired = true) {
 			return dept;
 		}
 
-		const onlineAgents = await LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
-		if (onlineAgents && (await onlineAgents.count())) {
+		const onlineAgents = await LivechatDepartmentAgents.countOnlineForDepartment(dept._id);
+		if (onlineAgents) {
 			return dept;
 		}
 	}
