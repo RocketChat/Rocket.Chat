@@ -1,4 +1,4 @@
-import { useContext, useMemo, useRef } from 'react';
+import { useCallback, useContext, useRef } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { VoipContext } from '../contexts/VoipContext';
@@ -6,25 +6,23 @@ import type VoIPClient from '../lib/VoipClient';
 
 export const useVoipEffect = <T,>(transform: (voipClient: VoIPClient) => T, initialValue: T) => {
 	const { voipClient } = useContext(VoipContext);
-	const initValue = useRef<T>(initialValue);
+	const stateRef = useRef<T>(initialValue);
 	const transformFn = useRef(transform);
 
-	const [subscribe, getSnapshot] = useMemo(() => {
-		let state: T = initValue.current;
+	const getSnapshot = useCallback(() => stateRef.current, []);
 
-		const getSnapshot = (): T => state;
-		const subscribe = (cb: () => void) => {
+	const subscribe = useCallback(
+		(cb: () => void) => {
 			if (!voipClient) return () => undefined;
 
-			state = transformFn.current(voipClient);
+			stateRef.current = transformFn.current(voipClient);
 			return voipClient.on('stateChanged', (): void => {
-				state = transformFn.current(voipClient);
+				stateRef.current = transformFn.current(voipClient);
 				cb();
 			});
-		};
-
-		return [subscribe, getSnapshot];
-	}, [voipClient]);
+		},
+		[voipClient],
+	);
 
 	return useSyncExternalStore(subscribe, getSnapshot);
 };

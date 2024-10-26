@@ -1,6 +1,7 @@
 import { Button } from '@rocket.chat/fuselage';
-import { useRouteParameter, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
@@ -9,7 +10,7 @@ import EditTriggerWithData from './EditTriggerWithData';
 import TriggersTable from './TriggersTable';
 
 const TriggersPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const id = useRouteParameter('id');
 	const context = useRouteParameter('context');
 	const router = useRouter();

@@ -1,9 +1,7 @@
-import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import filesize from 'filesize';
 
 import { API } from '../../../../api/server';
-import { isWidget } from '../../../../api/server/helpers/isWidget';
 import { getUploadFormData } from '../../../../api/server/lib/getUploadFormData';
 import { FileUpload } from '../../../../file-upload/server';
 import { settings } from '../../../../settings/server';
@@ -15,7 +13,6 @@ API.v1.addRoute('livechat/upload/:rid', {
 		if (!this.request.headers['x-visitor-token']) {
 			return API.v1.unauthorized();
 		}
-		const sourceType = isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API;
 
 		const canUpload = settings.get<boolean>('Livechat_fileupload_enabled') && settings.get<boolean>('FileUpload_Enabled');
 
@@ -26,10 +23,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 		}
 
 		const visitorToken = this.request.headers['x-visitor-token'];
-		const visitor = await LivechatVisitors.getVisitorByTokenAndSource({
-			token: visitorToken as string,
-			sourceFilter: { 'source.type': sourceType },
-		});
+		const visitor = await LivechatVisitors.getVisitorByToken(visitorToken as string, {});
 
 		if (!visitor) {
 			return API.v1.unauthorized();
@@ -80,10 +74,6 @@ API.v1.addRoute('livechat/upload/:rid', {
 		const uploadedFile = await fileStore.insert(details, fileBuffer);
 		if (!uploadedFile) {
 			return API.v1.failure('Invalid file');
-		}
-
-		if (!visitor.source) {
-			await LivechatVisitors.setSourceById(visitor._id, { type: sourceType });
 		}
 
 		uploadedFile.description = fields.description;

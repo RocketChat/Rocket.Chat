@@ -1,4 +1,3 @@
-/* eslint-disable react/no-multi-comp */
 import { Box, SidebarV2CollapseGroup } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
@@ -22,7 +21,7 @@ const RoomList = () => {
 	const { t } = useTranslation();
 	const isAnonymous = !useUserId();
 
-	const { collapsedGroups, handleCollapsedGroups } = useCollapsedGroups();
+	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
 	const { groupsCount, groupsList, roomList } = useRoomList({ collapsedGroups });
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
@@ -54,8 +53,8 @@ const RoomList = () => {
 				groupContent={(index) => (
 					<SidebarV2CollapseGroup
 						title={t(groupsList[index])}
-						onClick={() => handleCollapsedGroups(groupsList[index])}
-						onKeyDown={() => handleCollapsedGroups(groupsList[index])}
+						onClick={() => handleClick(groupsList[index])}
+						onKeyDown={(e) => handleKeyDown(e, groupsList[index])}
 						expanded={!collapsedGroups.includes(groupsList[index])}
 					/>
 				)}

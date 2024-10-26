@@ -1,9 +1,10 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, SearchInput, Select } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
 import React, { useCallback, useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import FederatedRoomList from './FederatedRoomList';
 import FederatedRoomListErrorBoundary from './FederatedRoomListErrorBoundary';
@@ -31,7 +32,7 @@ const MatrixFederationSearchModalContent = ({ defaultSelectedServer, servers }: 
 
 	const debouncedRoomName = useDebouncedValue(roomName, 400);
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const serverOptions = useMemo(() => servers.map((server): SelectOption => [server.name, server.name]), [servers]);
 

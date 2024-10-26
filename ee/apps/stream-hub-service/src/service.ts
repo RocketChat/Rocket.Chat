@@ -8,12 +8,12 @@ import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/reg
 import { DatabaseWatcher } from '../../../../apps/meteor/server/database/DatabaseWatcher';
 import { StreamHub } from './StreamHub';
 
-startTracing({ service: 'stream-hub-service' });
-
 const PORT = process.env.PORT || 3035;
 
 (async () => {
-	const db = await getConnection();
+	const { db, client } = await getConnection();
+
+	startTracing({ service: 'stream-hub-service', db: client });
 
 	registerServiceModels(db, await getTrashCollection());
 

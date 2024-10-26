@@ -1,8 +1,9 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useSetting, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useSetModal } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ShareLocationModal from '../../../../ShareLocation/ShareLocationModal';
 
@@ -11,7 +12,7 @@ export const useShareLocationAction = (room?: IRoom, tmid?: IMessage['tmid']): G
 		throw new Error('Invalid room');
 	}
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 
 	const isMapViewEnabled = useSetting('MapView_Enabled') === true;

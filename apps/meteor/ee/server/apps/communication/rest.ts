@@ -189,7 +189,7 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Invalid purchase type' });
 					}
 
-					const response = await getWorkspaceAccessTokenWithScope('marketplace:purchase');
+					const response = await getWorkspaceAccessTokenWithScope({ scope: 'marketplace:purchase' });
 					if (!response.token) {
 						return API.v1.failure({ error: 'Unauthorized' });
 					}
@@ -289,7 +289,7 @@ export class AppsRestApi {
 							return API.v1.failure({ error: 'Invalid purchase type' });
 						}
 
-						const token = await getWorkspaceAccessTokenWithScope('marketplace:purchase');
+						const token = await getWorkspaceAccessTokenWithScope({ scope: 'marketplace:purchase' });
 						if (!token) {
 							return API.v1.failure({ error: 'Unauthorized' });
 						}
