@@ -105,7 +105,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query, options);
 	}
 
-	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): FindCursor<ILivechatVisitor> {
+	countVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): Promise<number> {
 		const query = {
 			disabled: { $ne: true },
 			_updatedAt: {
@@ -115,7 +115,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			...(department && department !== 'undefined' && { department }),
 		};
 
-		return this.find(query, { projection: { _id: 1 } });
+		return this.countDocuments(query);
 	}
 
 	async getNextVisitorUsername(): Promise<string> {
