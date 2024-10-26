@@ -1,17 +1,18 @@
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
 import React, { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { dispatchToastMessage } from '../../lib/toast';
 import { PriorityIcon } from '../priorities/PriorityIcon';
 import { useOmnichannelPriorities } from './useOmnichannelPriorities';
 
 export const useOmnichannelPrioritiesMenu = (rid: string): ComponentProps<typeof Menu>['options'] | Record<string, never> => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const updateRoomPriority = useEndpoint('POST', '/v1/livechat/room/:rid/priority', { rid });
 	const removeRoomPriority = useEndpoint('DELETE', '/v1/livechat/room/:rid/priority', { rid });

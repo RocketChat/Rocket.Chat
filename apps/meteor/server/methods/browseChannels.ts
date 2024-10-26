@@ -116,7 +116,7 @@ const getChannelsAndGroups = async (
 	};
 };
 
-const getChannelsCountForTeam = mem((teamId) => Rooms.findByTeamId(teamId, { projection: { _id: 1 } }).count(), {
+const getChannelsCountForTeam = mem((teamId) => Rooms.countByTeamId(teamId), {
 	maxAge: 2000,
 });
 

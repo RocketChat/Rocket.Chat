@@ -15,7 +15,7 @@ import {
 	ActionManagerContext,
 	ModalContext,
 } from '@rocket.chat/ui-contexts';
-import type { DecoratorFn } from '@storybook/react';
+import type { Decorator } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createInstance } from 'i18next';
 import type { ObjectId } from 'mongodb';
@@ -239,7 +239,7 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	withJohnDoe(): this {
+	withJohnDoe(overrides: Partial<IUser> = {}): this {
 		this.user.userId = 'john.doe';
 
 		this.user.user = {
@@ -251,6 +251,7 @@ export class MockedAppRootBuilder {
 			_updatedAt: new Date(),
 			roles: ['admin'],
 			type: 'user',
+			...overrides,
 		};
 
 		return this;
@@ -534,7 +535,7 @@ export class MockedAppRootBuilder {
 		};
 	}
 
-	buildStoryDecorator(): DecoratorFn {
+	buildStoryDecorator(): Decorator {
 		const WrapperComponent = this.build();
 
 		// eslint-disable-next-line react/display-name, react/no-multi-comp

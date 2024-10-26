@@ -1,7 +1,8 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import { useCustomSound, useTranslation } from '@rocket.chat/ui-contexts';
+import { useCustomSound } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';
 
@@ -14,7 +15,7 @@ type CustomSoundRowProps = {
 };
 
 const CustomSoundRow = ({ onClick, sound }: CustomSoundRowProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [isPlay, setPlayAudio] = useState(false);
 	const customSound = useCustomSound();
 

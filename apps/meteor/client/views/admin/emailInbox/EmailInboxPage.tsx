@@ -1,7 +1,8 @@
 import { Button } from '@rocket.chat/fuselage';
-import { useRouteParameter, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import EmailInboxForm from './EmailInboxForm';
@@ -9,7 +10,7 @@ import EmailInboxFormWithData from './EmailInboxFormWithData';
 import EmailInboxTable from './EmailInboxTable';
 
 const EmailInboxPage = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 
 	const id = useRouteParameter('_id');

@@ -1,9 +1,9 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { EmojiPickerLoadMore, EmojiPickerNotFound, EmojiPickerCategoryWrapper } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, MutableRefObject } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { CUSTOM_CATEGORY } from '../../../../app/emoji/client';
 import type { EmojiByCategory, EmojiCategoryPosition } from '../../../../app/emoji/client';
@@ -26,7 +26,7 @@ const EmojiCategoryRow = ({
 	handleLoadMore,
 	handleSelectEmoji,
 }: EmojiCategoryRowProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const categoryRowStyle = css`
 		button {

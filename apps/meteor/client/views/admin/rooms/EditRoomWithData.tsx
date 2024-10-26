@@ -1,7 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
 	Contextualbar,
@@ -15,7 +16,7 @@ import EditRoom from './EditRoom';
 type EditRoomWithDataProps = { rid?: IRoom['_id']; onReload: () => void };
 
 const EditRoomWithData = ({ rid, onReload }: EditRoomWithDataProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 

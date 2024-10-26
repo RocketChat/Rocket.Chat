@@ -1,8 +1,8 @@
 import type { DeviceManagementPopulatedSession, DeviceManagementSession, Serialized } from '@rocket.chat/core-typings';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MutableRefObject } from 'react';
 import React, { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../../components/FilterByText';
 import { GenericTableHeaderCell } from '../../../../components/GenericTable';
@@ -24,7 +24,7 @@ const isSessionPopulatedSession = (
 ): session is Serialized<DeviceManagementPopulatedSession> => '_user' in session;
 
 const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject<() => void> }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [text, setText] = useState('');
 	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'client' | 'os' | 'username' | 'loginAt'>('username');
@@ -76,7 +76,7 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Devices_Users')} onChange={setText} />
+			<FilterByText placeholder={t('Search_Devices_Users')} value={text} onChange={(event) => setText(event.target.value)} />
 			<DeviceManagementTable
 				data={data}
 				phase={phase}

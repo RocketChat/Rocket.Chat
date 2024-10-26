@@ -17,7 +17,7 @@ import { useMutation } from '@tanstack/react-query';
 import fileSize from 'filesize';
 import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler, MouseEvent } from 'react';
 import React, { memo, useRef, useReducer, useCallback, useState, useEffect } from 'react';
-import { useSubscription } from 'use-subscription';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -333,10 +333,7 @@ const MessageBox = ({
 		onTyping?.();
 	});
 
-	const isEditing = useSubscription({
-		getCurrentValue: chat.composer?.editing.get ?? getEmptyFalse,
-		subscribe: chat.composer?.editing.subscribe ?? emptySubscribe,
-	});
+	const isEditing = useSyncExternalStore(chat.composer?.editing.subscribe ?? emptySubscribe, chat.composer?.editing.get ?? getEmptyFalse);
 
 	useEffect(() => {
 		setIsUploading(filesToUpload.length > 0);
@@ -345,25 +342,25 @@ const MessageBox = ({
 		}
 	}, [filesToUpload, isEditing, setFilesToUpload]);
 
-	const isRecordingAudio = useSubscription({
-		getCurrentValue: chat.composer?.recording.get ?? getEmptyFalse,
-		subscribe: chat.composer?.recording.subscribe ?? emptySubscribe,
-	});
+	const isRecordingAudio = useSyncExternalStore(
+		chat.composer?.recording.subscribe ?? emptySubscribe,
+		chat.composer?.recording.get ?? getEmptyFalse,
+	);
 
-	const isMicrophoneDenied = useSubscription({
-		getCurrentValue: chat.composer?.isMicrophoneDenied.get ?? getEmptyFalse,
-		subscribe: chat.composer?.isMicrophoneDenied.subscribe ?? emptySubscribe,
-	});
+	const isMicrophoneDenied = useSyncExternalStore(
+		chat.composer?.isMicrophoneDenied.subscribe ?? emptySubscribe,
+		chat.composer?.isMicrophoneDenied.get ?? getEmptyFalse,
+	);
 
-	const isRecordingVideo = useSubscription({
-		getCurrentValue: chat.composer?.recordingVideo.get ?? getEmptyFalse,
-		subscribe: chat.composer?.recordingVideo.subscribe ?? emptySubscribe,
-	});
+	const isRecordingVideo = useSyncExternalStore(
+		chat.composer?.recordingVideo.subscribe ?? emptySubscribe,
+		chat.composer?.recordingVideo.get ?? getEmptyFalse,
+	);
 
-	const formatters = useSubscription({
-		getCurrentValue: chat.composer?.formatters.get ?? getEmptyArray,
-		subscribe: chat.composer?.formatters.subscribe ?? emptySubscribe,
-	});
+	const formatters = useSyncExternalStore(
+		chat.composer?.formatters.subscribe ?? emptySubscribe,
+		chat.composer?.formatters.get ?? getEmptyArray,
+	);
 
 	const isRecording = isRecordingAudio || isRecordingVideo;
 

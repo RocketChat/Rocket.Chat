@@ -1,8 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { onClientMessageReceived } from '../../../lib/onClientMessageReceived';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
@@ -29,7 +30,7 @@ const PinnedMessagesTab = (): ReactElement => {
 		return Promise.all(messages.map(onClientMessageReceived));
 	});
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<MessageListTab

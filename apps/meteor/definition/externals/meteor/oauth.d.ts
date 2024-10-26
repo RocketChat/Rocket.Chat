@@ -13,7 +13,7 @@ declare module 'meteor/oauth' {
 	}
 
 	namespace OAuth {
-		function _retrievePendingCredential(key: string, ...args: string[]): void;
+		function _retrievePendingCredential(key: string, ...args: string[]): Promise<string | Error | void>;
 		function openSecret(secret: string): string;
 		function retrieveCredential(credentialToken: string, credentialSecret: string);
 		function _retrieveCredentialSecret(credentialToken: string): string | null;

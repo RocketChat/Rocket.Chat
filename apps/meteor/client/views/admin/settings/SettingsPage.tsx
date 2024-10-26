@@ -1,9 +1,10 @@
 import { Icon, SearchInput, Skeleton, CardGrid } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useIsSettingsContextLoading, useTranslation } from '@rocket.chat/ui-contexts';
+import { useIsSettingsContextLoading } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericNoResults from '../../../components/GenericNoResults';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
@@ -12,7 +13,7 @@ import SettingsGroupCard from './SettingsGroupCard';
 import { useSettingsGroups } from './hooks/useSettingsGroups';
 
 const SettingsPage = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
 	const handleChange = useCallback((e) => setFilter(e.currentTarget.value), []);
 

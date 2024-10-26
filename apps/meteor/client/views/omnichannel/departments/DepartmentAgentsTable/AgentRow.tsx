@@ -1,7 +1,7 @@
 import { NumberInput } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 import type { UseFormRegister } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import type { FormValues, IDepartmentAgent } from '../EditDepartment';
@@ -16,7 +16,7 @@ type AgentRowProps = {
 };
 
 const AgentRow = ({ index, agent, register, onRemove }: AgentRowProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<GenericTableRow key={agent.agentId} tabIndex={0} role='link' action qa-user-id={agent.agentId}>

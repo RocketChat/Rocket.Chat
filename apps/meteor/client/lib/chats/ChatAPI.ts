@@ -79,7 +79,7 @@ export type DataAPI = {
 	canUpdateMessage(message: IMessage): Promise<boolean>;
 	updateMessage(message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>, previewUrls?: string[]): Promise<void>;
 	canDeleteMessage(message: IMessage): Promise<boolean>;
-	deleteMessage(mid: IMessage['_id']): Promise<void>;
+	deleteMessage(msgIdOrMsg: IMessage | IMessage['_id']): Promise<void>;
 	getDraft(mid: IMessage['_id'] | undefined): Promise<string | undefined>;
 	discardDraft(mid: IMessage['_id'] | undefined): Promise<void>;
 	saveDraft(mid: IMessage['_id'] | undefined, text: string): Promise<void>;

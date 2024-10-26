@@ -1,8 +1,9 @@
 import { Box, Margins, ButtonGroup, ContextualbarSkeleton } from '@rocket.chat/fuselage';
-import { useEndpoint, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { HTMLAttributes } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
 	Contextualbar,
@@ -23,7 +24,7 @@ type AgentInfoProps = {
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const AgentInfo = ({ uid }: AgentInfoProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const getAgentById = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: uid });
 	const { data, isLoading, isError } = useQuery(['livechat-getAgentInfoById', uid], async () => getAgentById(), {
@@ -71,7 +72,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 					{statusLivechat && (
 						<>
 							<InfoPanelLabel data-qa='AgentInfoUserInfoLabel'>{t('Livechat_status')}</InfoPanelLabel>
-							<InfoPanelText>{t(statusLivechat === 'available' ? 'Available' : 'Not_Available')}</InfoPanelText>
+							<InfoPanelText>{statusLivechat === 'available' ? t('Available') : t('Not_Available')}</InfoPanelText>
 						</>
 					)}
 					{MaxChatsPerAgentDisplay && <MaxChatsPerAgentDisplay maxNumberSimultaneousChat={data.user.livechat?.maxNumberSimultaneousChat} />}

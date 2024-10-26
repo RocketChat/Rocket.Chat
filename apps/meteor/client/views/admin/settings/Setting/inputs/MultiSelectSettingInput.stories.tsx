@@ -1,6 +1,6 @@
 import { Field } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import type { valuesOption } from './MultiSelectSettingInput';
@@ -15,9 +15,9 @@ export default {
 		},
 	},
 	decorators: [(fn) => <Field>{fn()}</Field>],
-} as ComponentMeta<typeof MultiSelectSettingInput>;
+} satisfies Meta<typeof MultiSelectSettingInput>;
 
-const Template: ComponentStory<typeof MultiSelectSettingInput> = (args) => <MultiSelectSettingInput {...args} />;
+const Template: StoryFn<typeof MultiSelectSettingInput> = (args) => <MultiSelectSettingInput {...args} />;
 
 const options: valuesOption[] = [
 	{ key: '1', i18nLabel: '1' as TranslationKey },
