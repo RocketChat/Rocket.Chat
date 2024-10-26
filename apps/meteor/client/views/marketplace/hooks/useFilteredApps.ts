@@ -16,7 +16,7 @@ import { sortAppsByAlphabeticalOrInverseOrder } from '../helpers/sortAppsByAlpha
 import { sortAppsByClosestOrFarthestModificationDate } from '../helpers/sortAppsByClosestOrFarthestModificationDate';
 import type { App } from '../types';
 
-export type appsDataType = ContextType<typeof MarketplaceContext>['installedApps'] | ContextType<typeof MarketplaceContext>['marketplaceApps'];
+export type AppsContext = 'explore' | 'installed' | 'premium' | 'private' | 'requested';
 
 export const useFilteredApps = ({
 	appsData,
@@ -29,7 +29,7 @@ export const useFilteredApps = ({
 	status,
 	context,
 }: {
-	appsData: appsDataType;
+	appsData: ContextType<typeof MarketplaceContext>['apps'];
 	text: string;
 	current: number;
 	itemsPerPage: number;
@@ -38,7 +38,7 @@ export const useFilteredApps = ({
 	isEnterpriseOnly?: boolean;
 	sortingMethod: string;
 	status: string;
-	context?: string;
+	context?: AppsContext;
 }): AsyncState<
 	PaginatedResult<{
 		items: App[];
@@ -46,13 +46,39 @@ export const useFilteredApps = ({
 		allApps: App[];
 		totalAppsLength: number;
 	}>
-> => {
-	const value = useMemo(() => {
-		if (appsData.value === undefined) {
-			return undefined;
+> =>
+	useMemo(() => {
+		if (appsData.status === 'loading') {
+			return {
+				phase: AsyncStatePhase.LOADING,
+				value: undefined,
+				error: undefined,
+			};
 		}
 
-		const { apps } = appsData.value;
+		if (appsData.status === 'error') {
+			return {
+				phase: AsyncStatePhase.REJECTED,
+				value: undefined,
+				error: appsData.error as Error,
+			};
+		}
+
+		let apps: App[];
+
+		switch (context) {
+			case 'premium':
+			case 'explore':
+			case 'requested':
+				apps = appsData.data.marketplace;
+				break;
+			case 'private':
+				apps = appsData.data.private;
+				break;
+			default:
+				apps = appsData.data.installed;
+		}
+
 		const fallback = (apps: App[]) => apps;
 
 		const sortingMethods: Record<string, (apps: App[]) => App[]> = {
@@ -111,32 +137,29 @@ export const useFilteredApps = ({
 		const slice = filtered.slice(offset, end);
 
 		return {
-			items: slice,
-			offset,
-			total: filtered.length,
-			totalAppsLength: apps.length,
-			count: slice.length,
-			shouldShowSearchText,
-			allApps: filtered,
+			phase: AsyncStatePhase.RESOLVED,
+			value: {
+				items: slice,
+				offset,
+				total: filtered.length,
+				totalAppsLength: apps.length,
+				count: slice.length,
+				shouldShowSearchText,
+				allApps: filtered,
+			},
 		};
-	}, [appsData.value, sortingMethod, purchaseType, status, categories, text, context, current, itemsPerPage]);
-
-	if (appsData.phase === AsyncStatePhase.RESOLVED) {
-		if (!value) {
-			throw new Error('useFilteredApps - Unexpected state');
-		}
-		return {
-			...appsData,
-			value,
-		};
-	}
-
-	if (appsData.phase === AsyncStatePhase.UPDATING) {
-		throw new Error('useFilteredApps - Unexpected state');
-	}
-
-	return {
-		...appsData,
-		value: undefined,
-	};
-};
+	}, [
+		appsData.status,
+		appsData.error,
+		appsData.data?.marketplace,
+		appsData.data?.private,
+		appsData.data?.installed,
+		context,
+		purchaseType,
+		status,
+		categories,
+		text,
+		sortingMethod,
+		current,
+		itemsPerPage,
+	]);

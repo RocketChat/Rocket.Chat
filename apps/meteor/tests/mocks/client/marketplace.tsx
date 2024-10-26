@@ -6,7 +6,6 @@ import React from 'react';
 import type { ReactNode } from 'react';
 
 import { MarketplaceContext, type IAppsOrchestrator } from '../../../client/contexts/MarketplaceContext';
-import { AsyncStatePhase } from '../../../client/lib/asyncState';
 import { createFakeApp, createFakeExternalComponentRoomInfo, createFakeExternalComponentUserInfo } from '../data';
 
 class MockedAppsEngineUIHost extends AppsEngineUIHost {
@@ -48,17 +47,14 @@ export const mockAppsOrchestrator = () => {
 export const mockedAppsContext = (children: ReactNode) => (
 	<MarketplaceContext.Provider
 		value={{
-			installedApps: {
-				phase: AsyncStatePhase.RESOLVED,
-				value: { apps: faker.helpers.multiple(createFakeApp) },
-			},
-			marketplaceApps: {
-				phase: AsyncStatePhase.RESOLVED,
-				value: { apps: faker.helpers.multiple(createFakeApp) },
-			},
-			privateApps: {
-				phase: AsyncStatePhase.RESOLVED,
-				value: { apps: faker.helpers.multiple(createFakeApp) },
+			apps: {
+				status: 'success',
+				data: {
+					marketplace: faker.helpers.multiple(createFakeApp),
+					installed: faker.helpers.multiple(createFakeApp),
+					private: faker.helpers.multiple(createFakeApp),
+				},
+				error: undefined,
 			},
 			reload: () => Promise.resolve(),
 			orchestrator: mockAppsOrchestrator(),

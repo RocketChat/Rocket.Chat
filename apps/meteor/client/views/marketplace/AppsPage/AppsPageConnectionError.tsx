@@ -1,10 +1,16 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-const AppsPageContentError = ({ onButtonClick }: { onButtonClick: () => void }): ReactElement => {
+import { useAppsResult } from '../../../contexts/hooks/useAppsResult';
+
+const AppsPageContentError = () => {
 	const { t } = useTranslation();
+	const { reload } = useAppsResult();
+
+	const handleReloadClick = () => {
+		reload();
+	};
 
 	return (
 		<Box mbs={20}>
@@ -13,7 +19,7 @@ const AppsPageContentError = ({ onButtonClick }: { onButtonClick: () => void }):
 				<StatesTitle>{t('Connection_error')}</StatesTitle>
 				<StatesSubtitle>{t('Marketplace_error')}</StatesSubtitle>
 				<StatesActions>
-					<StatesAction icon='reload' onClick={onButtonClick}>
+					<StatesAction icon='reload' onClick={handleReloadClick}>
 						{t('Reload_page')}
 					</StatesAction>
 				</StatesActions>

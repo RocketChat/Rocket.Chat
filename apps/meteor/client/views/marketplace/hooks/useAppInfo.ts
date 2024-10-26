@@ -20,7 +20,7 @@ const getBundledInApp = async (app: App): Promise<App['bundledIn']> => {
 };
 
 export const useAppInfo = (appId: string, context: string): AppInfo | undefined => {
-	const { installedApps, marketplaceApps, privateApps } = useContext(MarketplaceContext);
+	const { apps } = useContext(MarketplaceContext);
 
 	const [appData, setAppData] = useState<AppInfo>();
 
@@ -31,18 +31,18 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 
 	useEffect(() => {
 		const fetchAppInfo = async (): Promise<void> => {
-			if ((!marketplaceApps.value?.apps?.length && !installedApps.value?.apps.length && !privateApps.value?.apps.length) || !appId) {
+			if ((!apps.data?.marketplace?.length && !apps.data?.installed.length && !apps.data?.private.length) || !appId) {
 				return;
 			}
 
 			let appResult: App | undefined;
 			const marketplaceAppsContexts = ['explore', 'premium', 'requested'];
 
-			if (marketplaceAppsContexts.includes(context)) appResult = marketplaceApps.value?.apps.find((app) => app.id === appId);
+			if (marketplaceAppsContexts.includes(context)) appResult = apps.data?.marketplace.find((app) => app.id === appId);
 
-			if (context === 'private') appResult = privateApps.value?.apps.find((app) => app.id === appId);
+			if (context === 'private') appResult = apps.data?.private.find((app) => app.id === appId);
 
-			if (context === 'installed') appResult = installedApps.value?.apps.find((app) => app.id === appId);
+			if (context === 'installed') appResult = apps.data?.installed.find((app) => app.id === appId);
 
 			if (!appResult) return;
 
@@ -83,7 +83,17 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 		};
 
 		fetchAppInfo();
-	}, [appId, context, getApis, getBundledIn, getScreenshots, getSettings, installedApps, marketplaceApps, privateApps.value?.apps]);
+	}, [
+		appId,
+		apps.data?.installed,
+		apps.data?.marketplace,
+		apps.data?.private,
+		context,
+		getApis,
+		getBundledIn,
+		getScreenshots,
+		getSettings,
+	]);
 
 	return appData;
 };

@@ -8,32 +8,8 @@ import { storeQueryFunction } from './storeQueryFunction';
 import { AppClientOrchestratorInstance } from '../../apps/orchestrator';
 import { MarketplaceContext } from '../../contexts/MarketplaceContext';
 import { useInvalidateLicense, useLicense } from '../../hooks/useLicense';
-import type { AsyncState } from '../../lib/asyncState';
-import { AsyncStatePhase } from '../../lib/asyncState';
 import { useInvalidateAppsCountQueryCallback } from '../../views/marketplace/hooks/useAppsCountQuery';
 import type { App } from '../../views/marketplace/types';
-
-const getAppState = (
-	loading: boolean,
-	apps: App[] | undefined,
-	error?: Error,
-): AsyncState<{
-	apps: App[];
-}> => {
-	if (error) {
-		return {
-			phase: AsyncStatePhase.REJECTED,
-			value: undefined,
-			error,
-		};
-	}
-
-	return {
-		phase: loading ? AsyncStatePhase.LOADING : AsyncStatePhase.RESOLVED,
-		value: { apps: apps || [] },
-		error,
-	};
-};
 
 type MarketplaceProviderProps = {
 	children: ReactNode;
@@ -74,11 +50,7 @@ const MarketplaceProvider = ({ children }: MarketplaceProviderProps) => {
 		[invalidate, invalidateLicenseQuery, isEnterprise, stream],
 	);
 
-	const {
-		isLoading: isMarketplaceDataLoading,
-		data: marketplaceData,
-		error: marketplaceError,
-	} = useQuery({
+	const { status, data, error } = useQuery({
 		queryKey: ['marketplace', 'apps-stored', { canManageApps }],
 		queryFn: async () => {
 			const [appsFromMarketplace, installedApps] = await Promise.all([
@@ -103,20 +75,25 @@ const MarketplaceProvider = ({ children }: MarketplaceProviderProps) => {
 		staleTime: Infinity,
 	});
 
-	const [marketplaceAppsData, installedAppsData, privateAppsData] = marketplaceData || [];
-
 	return (
 		<MarketplaceContext.Provider
 			children={children}
 			value={{
-				installedApps: getAppState(isMarketplaceDataLoading, installedAppsData),
-				marketplaceApps: getAppState(
-					isMarketplaceDataLoading,
-					marketplaceAppsData,
-					marketplaceError instanceof Error ? marketplaceError : undefined,
-				),
-				privateApps: getAppState(isMarketplaceDataLoading, privateAppsData),
-
+				apps:
+					// eslint-disable-next-line no-nested-ternary
+					status === 'loading'
+						? { status: 'loading', data: undefined, error: undefined }
+						: status === 'error'
+						? { status: 'error', data: undefined, error }
+						: {
+								status,
+								data: {
+									marketplace: data[0],
+									installed: data[1],
+									private: data[2],
+								},
+								error: undefined,
+						  },
 				reload: async () => {
 					await Promise.all([queryClient.invalidateQueries(['marketplace'])]);
 				},
