@@ -7,7 +7,7 @@ import type {
 	MessageAttachmentDefault,
 } from '@rocket.chat/core-typings';
 import { isTranslatedMessageAttachment } from '@rocket.chat/core-typings';
-import mem from 'mem';
+import mem, { memClear } from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -123,7 +123,7 @@ export const AutoTranslate = {
 		Subscriptions.find().observeChanges({
 			changed: (_id: string, fields: ISubscription) => {
 				if (fields.hasOwnProperty('autoTranslate') || fields.hasOwnProperty('autoTranslateLanguage')) {
-					mem.clear(this.findSubscriptionByRid);
+					memClear(this.findSubscriptionByRid);
 				}
 			},
 		});
