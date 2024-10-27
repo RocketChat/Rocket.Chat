@@ -16,6 +16,9 @@ import type { App } from '../types';
 import { useMarketplaceQuery } from './useMarketplaceQuery';
 
 export type AppsContext = 'explore' | 'installed' | 'premium' | 'private' | 'requested';
+export type PurchaseType = 'all' | 'free' | 'paid' | 'premium';
+export type Status = 'all' | 'enabled' | 'disabled';
+export type SortingMethod = 'az' | 'za' | 'mru' | 'lru' | 'urf' | 'url';
 
 export const useFilteredApps = ({
 	text,
@@ -27,15 +30,15 @@ export const useFilteredApps = ({
 	status,
 	context,
 }: {
+	context: AppsContext;
 	text: string;
+	purchaseType: PurchaseType;
+	status: Status;
+	sortingMethod: SortingMethod;
 	current: number;
 	itemsPerPage: number;
 	categories: string[];
-	purchaseType: string;
 	isEnterpriseOnly?: boolean;
-	sortingMethod: string;
-	status: string;
-	context?: AppsContext;
 }): AsyncState<
 	PaginatedResult<{
 		items: App[];

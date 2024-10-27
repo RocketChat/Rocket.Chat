@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react';
 import React from 'react';
 
 import UnsupportedEmptyState from './UnsupportedEmptyState';
-import { MarketplaceContext } from '../../../contexts/MarketplaceContext';
 
 describe('with private apps enabled', () => {
 	it('should inform that the marketplace is unavailable due unsupported version', () => {

@@ -1,9 +1,10 @@
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import type { AppFilters } from './AppsFilters';
 import AppsFilters from './AppsFilters';
 import AppsPageConnectionError from './AppsPageConnectionError';
 import AppsPageContentBody from './AppsPageContentBody';
@@ -17,107 +18,41 @@ import UnsupportedEmptyState from './UnsupportedEmptyState';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import MarketplaceHeader from '../components/MarketplaceHeader';
-import type { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
-import { useCategories } from '../hooks/useCategories';
 import { useFilteredApps } from '../hooks/useFilteredApps';
 import type { AppsContext } from '../hooks/useFilteredApps';
-import { useRadioToggle } from '../hooks/useRadioToggle';
 
 const AppsPageContent = (): ReactElement => {
-	const { t } = useTranslation();
-	const [text, setText] = useState('');
-	const debouncedText = useDebouncedValue(text, 500);
+	const context = useRouteParameter('context') as AppsContext;
+
+	const filtersForm = useForm<AppFilters>({
+		defaultValues: {
+			text: '',
+			purchaseType: 'all',
+			status: 'all',
+			categories: [],
+			sortingMethod: context === 'requested' ? 'urf' : 'mru',
+		},
+	});
+	const { watch } = filtersForm;
+
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const router = useRouter();
 
-	const context = useRouteParameter('context') as AppsContext;
-
 	const isMarketplace = context === 'explore';
 	const isPremium = context === 'premium';
-	const isRequested = context === 'requested';
 
-	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState({
-		label: t('Filter_By_Price'),
-		items: [
-			{ id: 'all', label: t('All_Prices'), checked: true },
-			{ id: 'free', label: t('Free_Apps'), checked: false },
-			{ id: 'paid', label: t('Paid_Apps'), checked: false },
-			{ id: 'premium', label: t('Premium'), checked: false },
-		],
-	});
-	const freePaidFilterOnSelected = useRadioToggle(setFreePaidFilterStructure);
+	const { t } = useTranslation();
 
-	const [statusFilterStructure, setStatusFilterStructure] = useState({
-		label: t('Filter_By_Status'),
-		items: [
-			{ id: 'all', label: t('All_status'), checked: true },
-			{ id: 'enabled', label: t('Enabled'), checked: false },
-			{ id: 'disabled', label: t('Disabled'), checked: false },
-		],
-	});
-	const statusFilterOnSelected = useRadioToggle(setStatusFilterStructure);
-
-	const baseFilterStructureItems = [
-		{ id: 'az', label: 'A-Z', checked: false },
-		{ id: 'za', label: 'Z-A', checked: false },
-		{ id: 'mru', label: t('Most_recent_updated'), checked: true },
-		{ id: 'lru', label: t('Least_recent_updated'), checked: false },
-	];
-
-	const requestedFilterItems = [
-		{ id: 'urf', label: t('Unread_Requested_First'), checked: false },
-		{ id: 'url', label: t('Unread_Requested_Last'), checked: false },
-	];
-
-	const createFilterStructureItems = () => {
-		return isRequested ? [...requestedFilterItems, ...baseFilterStructureItems] : baseFilterStructureItems;
-	};
-
-	const [sortFilterStructure, setSortFilterStructure] = useState<RadioDropDownGroup>(() => {
-		return {
-			label: t('Sort_By'),
-			items: createFilterStructureItems(),
-		};
-	});
-
-	useEffect(() => {
-		setSortFilterStructure({
-			label: t('Sort_By'),
-			items: createFilterStructureItems(),
-		});
-	}, [isRequested]);
-
-	const sortFilterOnSelected = useRadioToggle(setSortFilterStructure);
-
-	const findSort = () => {
-		const possibleSort = sortFilterStructure.items.find(({ checked }) => checked);
-
-		return possibleSort ? possibleSort.id : 'mru';
-	};
-
-	const findPurchaseType = () => {
-		const possiblePurchaseType = freePaidFilterStructure.items.find(({ checked }) => checked);
-
-		return possiblePurchaseType ? possiblePurchaseType.id : 'all';
-	};
-
-	const findStatus = () => {
-		const possibleStatus = statusFilterStructure.items.find(({ checked }) => checked);
-
-		return possibleStatus ? possibleStatus.id : 'all';
-	};
-
-	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 	const appsResult = useFilteredApps({
-		text: debouncedText,
+		context,
+		text: watch('text'),
+		purchaseType: watch('purchaseType'),
+		status: watch('status'),
+		categories: watch('categories'),
+		sortingMethod: watch('sortingMethod'),
 		current,
 		itemsPerPage,
-		categories: useMemo(() => selectedCategories.map(({ label }) => label), [selectedCategories]),
-		purchaseType: useMemo(findPurchaseType, [freePaidFilterStructure]),
-		sortingMethod: useMemo(findSort, [sortFilterStructure]),
-		status: useMemo(findStatus, [statusFilterStructure]),
-		context,
 	});
 
 	const noInstalledApps = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value?.totalAppsLength === 0;
@@ -137,12 +72,13 @@ const AppsPageContent = (): ReactElement => {
 
 	const noErrorsOcurred = !noMarketplaceOrInstalledAppMatches && !noInstalledAppMatches && !noInstalledApps && !noAppRequests;
 
+	// FIXME: this actually checks if the filters form is dirty
 	const isFiltered =
-		Boolean(text.length) ||
-		freePaidFilterStructure.items.find((item) => item.checked)?.id !== 'all' ||
-		statusFilterStructure.items.find((item) => item.checked)?.id !== 'all' ||
-		sortFilterStructure.items.find((item) => item.checked)?.id !== 'mru' ||
-		selectedCategories.length > 0;
+		Boolean(watch('text')) ||
+		watch('purchaseType') !== 'all' ||
+		watch('status') !== 'all' ||
+		watch('sortingMethod') !== 'mru' ||
+		watch('categories').length > 0;
 
 	const handleReturn = () => {
 		router.navigate({
@@ -154,30 +90,6 @@ const AppsPageContent = (): ReactElement => {
 		});
 	};
 
-	const toggleInitialSortOption = useCallback((isRequested: boolean) => {
-		setSortFilterStructure((prevState) => {
-			prevState.items.forEach((currentItem) => {
-				if (isRequested && currentItem.id === 'urf') {
-					currentItem.checked = true;
-					return;
-				}
-
-				if (!isRequested && currentItem.id === 'mru') {
-					currentItem.checked = true;
-					return;
-				}
-
-				currentItem.checked = false;
-			});
-
-			return { ...prevState };
-		});
-	}, []);
-
-	useEffect(() => {
-		toggleInitialSortOption(isRequested);
-	}, [isMarketplace, isRequested, sortFilterOnSelected, t, toggleInitialSortOption]);
-
 	const getEmptyState = () => {
 		if (unsupportedVersion) {
 			return <UnsupportedEmptyState />;
@@ -188,14 +100,19 @@ const AppsPageContent = (): ReactElement => {
 		}
 
 		if (noMarketplaceOrInstalledAppMatches) {
-			return <NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={!!appsResult.value?.shouldShowSearchText} text={text} />;
+			return (
+				<NoMarketplaceOrInstalledAppMatchesEmptyState
+					shouldShowSearchText={!!appsResult.value?.shouldShowSearchText}
+					text={watch('text')}
+				/>
+			);
 		}
 
 		if (noInstalledAppMatches) {
 			return (
 				<NoInstalledAppMatchesEmptyState
 					shouldShowSearchText={!!appsResult.value?.shouldShowSearchText}
-					text={text}
+					text={watch('text')}
 					onButtonClick={handleReturn}
 				/>
 			);
@@ -209,21 +126,9 @@ const AppsPageContent = (): ReactElement => {
 	return (
 		<>
 			<MarketplaceHeader unsupportedVersion={unsupportedVersion} title={t(`Apps_context_${context}`)} />
-			<AppsFilters
-				text={text}
-				setText={setText}
-				freePaidFilterStructure={freePaidFilterStructure}
-				freePaidFilterOnSelected={freePaidFilterOnSelected}
-				categories={categories}
-				selectedCategories={selectedCategories}
-				onSelected={onSelected}
-				sortFilterStructure={sortFilterStructure}
-				sortFilterOnSelected={sortFilterOnSelected}
-				categoryTagList={categoryTagList}
-				statusFilterStructure={statusFilterStructure}
-				statusFilterOnSelected={statusFilterOnSelected}
-				context={context || 'explore'}
-			/>
+			<FormProvider {...filtersForm}>
+				<AppsFilters context={context || 'explore'} />
+			</FormProvider>
 			{appsResult.phase === AsyncStatePhase.LOADING && <AppsPageContentSkeleton />}
 			{appsResult.phase === AsyncStatePhase.RESOLVED && noErrorsOcurred && !unsupportedVersion && (
 				<AppsPageContentBody
