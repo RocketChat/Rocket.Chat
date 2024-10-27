@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, apiUsername, apiEmail, methodCall } from '../../data/api-data';
+import { pinMessage, sendMessage, starMessage } from '../../data/chat.helper';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
 import { deleteRoom } from '../../data/rooms.helper';
 import { testFileUploads } from '../../data/uploads.helper';
@@ -369,6 +370,40 @@ describe('[Direct Messages]', () => {
 	});
 
 	describe('/im.messages', () => {
+		let dummyUser: IUser;
+
+		before(async () => {
+			dummyUser = await createUser({ joinDefaultChannels: false });
+
+			const messages = [
+				{
+					rid: testDM._id,
+					msg: `@${adminUsername} youre being mentioned`,
+					mentions: [{ username: adminUsername, _id: adminUsername, name: adminUsername }],
+				},
+				{
+					rid: testDM._id,
+					msg: `@${dummyUser.username} youre being mentioned`,
+					mentions: [{ username: dummyUser.username, _id: dummyUser._id, name: dummyUser.name }],
+				},
+				{
+					rid: testDM._id,
+					msg: `A simple message`,
+				},
+				{
+					rid: testDM._id,
+					msg: `A pinned simple message`,
+				},
+			];
+
+			const [, , starredMessage, pinnedMessage] = await Promise.all(messages.map((message) => sendMessage({ message })));
+
+			await Promise.all([
+				starMessage({ messageId: starredMessage.body.message._id }),
+				pinMessage({ messageId: pinnedMessage.body.message._id }),
+			]);
+		});
+
 		it('should return all DM messages that were sent to yourself using your username', (done) => {
 			void request
 				.get(api('im.messages'))
@@ -383,6 +418,108 @@ describe('[Direct Messages]', () => {
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 				})
 				.end(done);
+		});
+
+		it('should return an error when trying to access a DM that does not belong to the current user', async () => {
+			const { body } = await request.post(api('login')).send({
+				user: dummyUser.username,
+				password,
+			});
+
+			await request
+				.get(api('im.messages'))
+				.set({
+					'X-Auth-Token': body.data.authToken,
+					'X-User-Id': body.data.userId,
+				})
+				.query({ roomId: testDM._id })
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'unauthorized');
+				});
+		});
+
+		it('should return messages that mention a single user', async () => {
+			await request
+				.get(api('im.messages'))
+				.set(credentials)
+				.query({
+					roomId: testDM._id,
+					mentionIds: adminUsername,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages[0]).to.have.nested.property('mentions').that.is.an('array').and.to.have.lengthOf(1);
+					expect(res.body.messages[0].mentions[0]).to.have.property('_id', adminUsername);
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
+				});
+		});
+
+		it('should return messages that mention multiple users', async () => {
+			await request
+				.get(api('im.messages'))
+				.set(credentials)
+				.query({
+					roomId: testDM._id,
+					mentionIds: `${adminUsername},${dummyUser._id}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(2);
+					expect(res.body).to.have.property('count', 2);
+					expect(res.body).to.have.property('total', 2);
+
+					const mentionIds = res.body.messages.map((message: any) => message.mentions[0]._id);
+					expect(mentionIds).to.include.members([adminUsername, dummyUser._id]);
+				});
+		});
+
+		it('should return messages that are starred by a specific user', async () => {
+			await request
+				.get(api('im.messages'))
+				.set(credentials)
+				.query({
+					roomId: testDM._id,
+					starredIds: adminUsername,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages[0]).to.have.nested.property('starred').that.is.an('array').and.to.have.lengthOf(1);
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
+				});
+		});
+
+		it('should return messages that are pinned', async () => {
+			await request
+				.get(api('im.messages'))
+				.set(credentials)
+				.query({
+					roomId: testDM._id,
+					pinned: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages[0]).to.have.nested.property('pinned').that.is.an('boolean').and.to.be.true;
+					expect(res.body.messages[0]).to.have.nested.property('pinnedBy').that.is.an('object');
+					expect(res.body.messages[0].pinnedBy).to.have.property('_id', 'rocketchat.internal.admin.test');
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
+				});
 		});
 	});
 
