@@ -24,7 +24,7 @@ export const runVerifyContactChannel = async (
 			verified: true,
 			verifiedAt: new Date(),
 			field,
-			value,
+			value: value.toLowerCase(),
 		},
 		{
 			unknown: false,

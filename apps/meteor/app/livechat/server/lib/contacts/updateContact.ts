@@ -38,7 +38,7 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		contactManager,
 		channels,
 		customFields,
-		...(wipeConflicts && { conflictingFields: [], hasConflict: false }),
+		...(wipeConflicts && { conflictingFields: [] }),
 	});
 
 	return updatedContact;
