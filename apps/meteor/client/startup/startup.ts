@@ -54,7 +54,7 @@ Meteor.startup(() => {
 
 			const idleTimeLimitS = (getUserPreference(user, 'idleTimeLimitS') as number | null | undefined) || 0;
 
-			const idleTimeLimit = (idleTimeLimitH || 0) * 3600 + (idleTimeLimitM || 0)* 60 + (idleTimeLimitS || 0);
+			const idleTimeLimit = (idleTimeLimitH) * 3600 + (idleTimeLimitM)* 60 + (idleTimeLimitS);
  
 			UserPresence.awayTime = idleTimeLimit * 1000;
 		} else {

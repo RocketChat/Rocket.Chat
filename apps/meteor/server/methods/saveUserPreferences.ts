@@ -162,7 +162,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 	const idleTimeLimit = (settings.idleTimeLimitH || 0) * 3600 + (settings.idleTimeLimitM || 0) * 60 + (settings.idleTimeLimitS || 0);
 
 	if (settings.idleTimeLimit != null && idleTimeLimit < 60) {
-	throw new Meteor.Error('invalid-idle-time-limit-value', 'Idle time limit must be at least 1 minutes.');
+		throw new Meteor.Error('invalid-idle-time-limit-value', 'Idle time limit must be at least 1 minutes.');
 	}
 
 
