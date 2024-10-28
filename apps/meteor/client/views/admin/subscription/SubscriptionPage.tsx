@@ -23,7 +23,7 @@ import MACCard from './components/cards/MACCard';
 import PlanCard from './components/cards/PlanCard';
 import PlanCardCommunity from './components/cards/PlanCard/PlanCardCommunity';
 import SeatsCard from './components/cards/SeatsCard';
-import { useRemoveLicense } from './hooks/useRemoveLicense';
+import { useCancelSubscriptionModal } from './hooks/useCancelSubscriptionModal';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
 
 function useShowLicense() {
@@ -70,6 +70,8 @@ const SubscriptionPage = () => {
 	const macLimit = getKeyLimit('monthlyActiveContacts');
 	const seatsLimit = getKeyLimit('activeUsers');
 
+	const cancelSubscriptionModal = useCancelSubscriptionModal();
+
 	const handleSyncLicenseUpdate = useCallback(() => {
 		syncLicenseUpdate.mutate(undefined, {
 			onSuccess: () => invalidateLicenseQuery(100),
@@ -94,8 +96,6 @@ const SubscriptionPage = () => {
 			);
 		}
 	}, [handleSyncLicenseUpdate, router, subscriptionSuccess, syncLicenseUpdate.isIdle]);
-
-	const removeLicense = useRemoveLicense();
 
 	return (
 		<Page bg='tint'>
@@ -177,7 +177,7 @@ const SubscriptionPage = () => {
 							</Grid>
 							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise}>
 								{Boolean(licensesData?.license?.information.cancellable) && (
-									<Button loading={removeLicense.isLoading} secondary danger onClick={() => removeLicense.mutate()}>
+									<Button loading={cancelSubscriptionModal.isLoading} secondary danger onClick={cancelSubscriptionModal.open}>
 										{t('Cancel_subscription')}
 									</Button>
 								)}
