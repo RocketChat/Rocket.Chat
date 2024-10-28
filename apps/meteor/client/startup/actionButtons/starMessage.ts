@@ -5,6 +5,7 @@ import { MessageAction } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { queryClient } from '../../lib/queryClient';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { starMessage } from '../../lib/starMessage';
 import { dispatchToastMessage } from '../../lib/toast';
 
 Meteor.startup(() => {
@@ -16,7 +17,8 @@ Meteor.startup(() => {
 		context: ['starred', 'message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		async action(_, { message }) {
 			try {
-				await sdk.call('starMessage', { ...message, starred: true });
+				await sdk.rest.post('/v1/chat.starMessage', { messageId: message._id });
+				starMessage(message, true);
 				queryClient.invalidateQueries(['rooms', message.rid, 'starred-messages']);
 			} catch (error) {
 				if (error) {
