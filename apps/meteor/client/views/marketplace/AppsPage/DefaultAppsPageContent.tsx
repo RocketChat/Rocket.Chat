@@ -1,7 +1,6 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { Dispatch, SetStateAction } from 'react';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,28 +11,16 @@ import FeaturedAppsSections from './FeaturedAppsSections';
 import { useSearchFiltersFormContext } from './SearchFiltersForm';
 
 type DefaultAppsPageContentProps = {
-	appsResult: PaginatedResult<{
-		items: App[];
-		shouldShowSearchText: boolean;
-		allApps: App[];
-		totalAppsLength: number;
-	}>;
+	items: App[];
+	count: number;
+	total: number;
 	itemsPerPage: 25 | 50 | 100;
 	current: number;
 	onSetItemsPerPage: Dispatch<SetStateAction<25 | 50 | 100>>;
 	onSetCurrent: Dispatch<SetStateAction<number>>;
-	itemsPerPageLabel: () => string;
-	showingResultsLabel: (context: { count: number; current: number; itemsPerPage: 25 | 50 | 100 }) => string;
 };
 
-const DefaultAppsPageContent = ({
-	appsResult,
-	itemsPerPage,
-	current,
-	onSetItemsPerPage,
-	onSetCurrent,
-	...paginationProps
-}: DefaultAppsPageContentProps) => {
+const DefaultAppsPageContent = ({ items, count, total, ...paginationProps }: DefaultAppsPageContentProps) => {
 	const { formState } = useSearchFiltersFormContext();
 	const context = useMarketplaceContext();
 	const { t } = useTranslation();
@@ -44,23 +31,24 @@ const DefaultAppsPageContent = ({
 		<>
 			<Box display='flex' flexDirection='column' overflow='hidden' height='100%' pi={24}>
 				<Box overflowY='scroll' height='100%' ref={scrollableRef}>
-					{context === 'explore' && !formState.isDirty && <FeaturedAppsSections appsListId={appsListId} appsResult={appsResult.allApps} />}
-					<AppsList appsListId={appsListId} apps={appsResult.items} title={context === 'explore' ? t('All_Apps') : undefined} />
+					{context === 'explore' && !formState.isDirty && <FeaturedAppsSections />}
+					<AppsList appsListId={appsListId} apps={items} title={context === 'explore' ? t('All_Apps') : undefined} />
 				</Box>
 			</Box>
-			{!!appsResult.count && (
+			{!!count && (
 				<Pagination
+					count={total}
 					divider
-					current={current}
-					itemsPerPage={itemsPerPage}
-					count={appsResult.total}
-					onSetItemsPerPage={onSetItemsPerPage}
-					onSetCurrent={(value) => {
-						onSetCurrent(value);
-						scrollableRef.current?.scrollTo(0, 0);
-					}}
+					itemsPerPageLabel={() => t('Items_per_page:')}
+					showingResultsLabel={({ count, current, itemsPerPage }) =>
+						t('Showing_results_of', { postProcess: 'sprintf', sprintf: [current + 1, Math.min(current + itemsPerPage, count), count] })
+					}
 					bg='light'
 					{...paginationProps}
+					onSetCurrent={(value) => {
+						paginationProps.onSetCurrent(value);
+						scrollableRef.current?.scrollTo(0, 0);
+					}}
 				/>
 			)}
 		</>

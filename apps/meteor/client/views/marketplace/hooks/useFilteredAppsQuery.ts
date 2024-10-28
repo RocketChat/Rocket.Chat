@@ -90,7 +90,7 @@ export const useFilteredAppsQuery = ({
 
 	return useMarketplaceQuery({
 		select: (data) => {
-			const apps = selectApps(data, context);
+			const unfiltered = selectApps(data, context);
 
 			// TODO: iterate over the apps instead of over the transforms
 			const filtered = [
@@ -100,18 +100,16 @@ export const useFilteredAppsQuery = ({
 				categories.length ? (apps: App[]) => apps.filter((app) => filterAppsByCategories(app, categories)) : fallback,
 				text ? (apps: App[]) => apps.filter(({ name }) => filterAppsByText(name, text)) : fallback,
 				comparatorBySortingMethod[sortingMethod],
-			].reduce((currentAppsList, currentFilterFunction) => currentFilterFunction(currentAppsList), apps);
+			].reduce((currentAppsList, currentFilterFunction) => currentFilterFunction(currentAppsList), unfiltered);
 
 			const items = filtered.slice(offset, offset + count);
 
 			return {
 				items,
+				unfilteredCount: unfiltered.length,
 				offset,
-				total: filtered.length,
-				totalAppsLength: apps.length,
 				count: items.length,
-				shouldShowSearchText: !!text,
-				allApps: filtered,
+				total: filtered.length,
 			};
 		},
 	});

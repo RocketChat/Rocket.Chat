@@ -11,9 +11,9 @@ import PrivateEmptyState from './PrivateEmptyState';
 import { useSearchFiltersFormContext } from './SearchFiltersForm';
 import SkeletonAppsPageContent from './SkeletonAppsPageContent';
 import UnsupportedEmptyState from './UnsupportedEmptyState';
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useFilteredAppsQuery } from '../hooks/useFilteredAppsQuery';
 import { useMarketplaceContext } from '../hooks/useMarketplaceContext';
+import { usePaginationState } from '../hooks/usePaginationState';
 import { MarketplaceUnsupportedVersionError } from '../lib/MarketplaceUnsupportedVersionError';
 
 const AppsPageContent = () => {
@@ -23,7 +23,7 @@ const AppsPageContent = () => {
 	const text = useDebouncedValue(watch('text'), 100);
 	const [purchaseType, status, categories, sortingMethod] = watch(['purchaseType', 'status', 'categories', 'sortingMethod']);
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+	const paginationProps = usePaginationState();
 
 	const { isLoading, isError, data, error } = useFilteredAppsQuery({
 		text,
@@ -31,8 +31,8 @@ const AppsPageContent = () => {
 		status,
 		categories,
 		sortingMethod,
-		offset: current,
-		count: itemsPerPage,
+		offset: paginationProps.current,
+		count: paginationProps.itemsPerPage,
 	});
 
 	if (isLoading) {
@@ -55,28 +55,19 @@ const AppsPageContent = () => {
 		return <NoMarketplaceOrInstalledAppMatchesEmptyState searchText={text} />;
 	}
 
-	if (context === 'installed' && data.totalAppsLength !== 0 && data.count === 0) {
+	if (context === 'installed' && data.unfilteredCount !== 0 && data.count === 0) {
 		return <NoInstalledAppMatchesEmptyState searchText={text} />;
 	}
 
-	if (context === 'private' && data.totalAppsLength === 0) {
+	if (context === 'private' && data.unfilteredCount === 0) {
 		return <PrivateEmptyState />;
 	}
 
-	if (context !== 'explore' && data.totalAppsLength === 0) {
+	if (context !== 'explore' && data.unfilteredCount === 0) {
 		return <NoInstalledAppsEmptyState />;
 	}
 
-	return (
-		<DefaultAppsPageContent
-			appsResult={data}
-			itemsPerPage={itemsPerPage}
-			current={current}
-			onSetItemsPerPage={onSetItemsPerPage}
-			onSetCurrent={onSetCurrent}
-			{...paginationProps}
-		/>
-	);
+	return <DefaultAppsPageContent items={data.items} count={data.count} total={data.total} {...paginationProps} />;
 };
 
 export default AppsPageContent;
