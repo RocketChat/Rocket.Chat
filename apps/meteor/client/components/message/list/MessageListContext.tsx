@@ -11,12 +11,11 @@ export type MessageListContextValue = {
 	showRoles: boolean;
 	showRealName: boolean;
 	showUsername: boolean;
-	highlights?:
-		| {
-				highlight: string;
-				regex: RegExp;
-				urlRegex: RegExp;
-		  }[];
+	highlights?: {
+		highlight: string;
+		regex: RegExp;
+		urlRegex: RegExp;
+	}[];
 	katex?: {
 		dollarSyntaxEnabled: boolean;
 		parenthesisSyntaxEnabled: boolean;

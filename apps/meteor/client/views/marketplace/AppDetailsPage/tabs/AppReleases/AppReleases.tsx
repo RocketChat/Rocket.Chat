@@ -35,13 +35,7 @@ const AppReleases = ({ id }: { id: App['id'] }): ReactElement => {
 		<>
 			<Accordion width='100%' alignSelf='center'>
 				{isLoading && <AccordionLoading />}
-				{isFetched && (
-					<>
-						{data?.map((release) => (
-							<AppReleasesItem release={release} key={release.version} />
-						))}
-					</>
-				)}
+				{isFetched && <>{data?.map((release) => <AppReleasesItem release={release} key={release.version} />)}</>}
 			</Accordion>
 		</>
 	);

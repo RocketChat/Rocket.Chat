@@ -2752,12 +2752,12 @@ export class UsersRaw extends BaseRaw {
 						$set: {
 							bio,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							bio: 1,
 						},
-				  }),
+					}),
 		};
 		return this.updateOne({ _id }, update);
 	}
@@ -2769,12 +2769,12 @@ export class UsersRaw extends BaseRaw {
 						$set: {
 							nickname,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							nickname: 1,
 						},
-				  }),
+					}),
 		};
 		return this.updateOne({ _id }, update);
 	}

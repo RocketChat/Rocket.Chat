@@ -31,7 +31,7 @@ const RoomAutoCompleteMultiple = ({ value, onChange, ...props }: RoomAutoComplet
 				? result.data.items.map(({ fname, name, _id, avatarETag, t }) => ({
 						value: _id,
 						label: { name: fname || name, avatarETag, type: t },
-				  }))
+					}))
 				: [],
 		[result.data?.items, result.isSuccess],
 	);

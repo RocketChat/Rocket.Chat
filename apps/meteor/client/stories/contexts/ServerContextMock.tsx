@@ -45,7 +45,7 @@ type Operations = {
 							fn: (
 								params: void extends OperationParams<TMethod, TPathPattern> ? void : OperationParams<TMethod, TPathPattern>,
 							) => Promise<void extends OperationResult<TMethod, TPathPattern> ? Serialized<OperationResult<TMethod, TPathPattern>> : void>;
-					  }
+						}
 					: never
 				: never
 			: never

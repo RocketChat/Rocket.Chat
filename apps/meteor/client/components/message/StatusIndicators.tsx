@@ -42,7 +42,7 @@ const StatusIndicators = ({ message }: StatusIndicatorsProps): ReactElement => {
 							: t('Message_has_been_edited_by_at', {
 									username: message.editedBy.username || '?',
 									date: formatter(message.editedAt),
-							  })
+								})
 					}
 				/>
 			)}
