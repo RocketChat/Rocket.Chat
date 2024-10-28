@@ -23,6 +23,7 @@ export const sendSimpleMessage = ({
 		rid: roomId,
 		text,
 	};
+
 	if (tmid) {
 		message.tmid = tmid;
 	}
