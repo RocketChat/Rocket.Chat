@@ -27,6 +27,7 @@ import {
 	LivechatInquiry,
 	LivechatRooms,
 	LivechatDepartment,
+	LivechatContacts,
 	Subscriptions,
 	Rooms,
 	Users,
@@ -88,7 +89,7 @@ export const createLivechatRoom = async (
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
 
-	const { activity } = guest;
+	const activity = guest.activity || (await LivechatContacts.findOneByVisitorId(guest._id, { projection: { activity: 1 } }))?.activity;
 	logger.debug({
 		msg: `Creating livechat room for visitor ${_id}`,
 		visitor: { _id, username, departmentId, status, activity },
@@ -197,7 +198,8 @@ export const createLivechatInquiry = async ({
 
 	const extraInquiryInfo = await callbacks.run('livechat.beforeInquiry', extraData);
 
-	const { _id, username, token, department, status = UserStatus.ONLINE, activity } = guest;
+	const { _id, username, token, department, status = UserStatus.ONLINE } = guest;
+	const activity = guest.activity || (await LivechatContacts.findOneByVisitorId(guest._id, { projection: { activity: 1 } }))?.activity;
 
 	const ts = new Date();
 

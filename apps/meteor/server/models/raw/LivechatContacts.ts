@@ -51,6 +51,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 				unique: false,
 			},
 			{
+<<<<<<< HEAD
 				key: {
 					'channels.visitor.visitorId': 1,
 					'channels.visitor.source.type': 1,
@@ -63,6 +64,10 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 					channels: 1,
 				},
 				unique: false,
+=======
+				key: { activity: 1 },
+				partialFilterExpression: { activity: { $exists: true } },
+>>>>>>> b5a8aaaee3 (feat: use livechat contacts to calculate workspace MAC)
 			},
 		];
 	}
@@ -235,5 +240,37 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		const updatedContact = await this.findOneAndUpdate({ _id: contactId }, { $addToSet: { emails: { address: email } } });
 
 		return updatedContact.value;
+	}
+
+	isContactActiveOnPeriod(visitorId: string, period: string): Promise<boolean> {
+		const query = {
+			'channels.visitorId': visitorId,
+			'activity': period,
+		};
+
+		return this.findOne(query, { projection: { _id: 1 } }).then(Boolean);
+	}
+
+	markContactActiveForPeriod(visitorId: string, period: string): Promise<UpdateResult> {
+		const query = {
+			'channels.visitorId': visitorId,
+		};
+
+		const update = {
+			$push: {
+				activity: {
+					$each: [period],
+					$slice: -12,
+				},
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	countContactsOnPeriod(period: string): Promise<number> {
+		return this.countDocuments({
+			activity: period,
+		});
 	}
 }

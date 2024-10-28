@@ -21,6 +21,7 @@ type ContactFields = {
 	username: string;
 	manager: ManagerValue;
 	channel: ILivechatContactChannel;
+	activity: string[];
 };
 
 type CustomFieldAndValue = { type: `customFields.${string}`; value: string };
@@ -29,6 +30,7 @@ export type FieldAndValue =
 	| { type: keyof Omit<ContactFields, 'manager' | 'channel'>; value: string }
 	| { type: 'manager'; value: ManagerValue }
 	| { type: 'channel'; value: ILivechatContactChannel }
+	| { type: 'activity'; value: string[] }
 	| CustomFieldAndValue;
 
 type ConflictHandlingMode = 'conflict' | 'overwrite' | 'ignore';
@@ -110,6 +112,7 @@ export class ContactMerger {
 		}
 	}
 
+<<<<<<< HEAD
 	static async createWithFields(session: ClientSession | undefined, ...fieldLists: FieldAndValue[][]): Promise<ContactMerger> {
 		const merger = new ContactMerger();
 		await merger.loadDataForFields(session, ...fieldLists);
@@ -119,6 +122,10 @@ export class ContactMerger {
 
 	static getAllFieldsFromContact(contact: ILivechatContact): FieldAndValue[] {
 		const { customFields = {}, name, contactManager } = contact;
+=======
+	static async getAllFieldsFromContact(contact: ILivechatContact): Promise<FieldAndValue[]> {
+		const { customFields = {}, name, contactManager, activity } = contact;
+>>>>>>> b5a8aaaee3 (feat: use livechat contacts to calculate workspace MAC)
 
 		const fields = new Set<FieldAndValue>();
 
@@ -132,6 +139,10 @@ export class ContactMerger {
 
 		if (contactManager) {
 			fields.add({ type: 'manager', value: { id: contactManager } });
+		}
+
+		if (activity) {
+			fields.add({ type: 'activity', value: activity });
 		}
 
 		Object.keys(customFields).forEach((key) =>
@@ -222,6 +233,7 @@ export class ContactMerger {
 		const newPhones = ContactMerger.getFieldValuesByType(newFields, 'phone');
 		const newEmails = ContactMerger.getFieldValuesByType(newFields, 'email');
 		const newChannels = ContactMerger.getFieldValuesByType(newFields, 'channel');
+		const newActivities = ContactMerger.getFieldValuesByType(newFields, 'activity');
 		const newNamesOnly = ContactMerger.getFieldValuesByType(newFields, 'name');
 		const newCustomFields = newFields.filter(({ type }) => type.startsWith('customFields.')) as CustomFieldAndValue[];
 		// Usernames are ignored unless the contact has no other name
@@ -251,6 +263,15 @@ export class ContactMerger {
 			const firstManager = newManagers.shift();
 			if (firstManager) {
 				dataToSet.contactManager = firstManager;
+			}
+		}
+
+		if (newActivities.length) {
+			const newActivity = newActivities.shift();
+			if (newActivity) {
+				const distinctActivities = new Set([...newActivity, ...(contact.activity || [])]);
+				const latestActivities = Array.from(distinctActivities).sort().slice(-12);
+				dataToSet.activity = latestActivities;
 			}
 		}
 
