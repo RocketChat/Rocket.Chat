@@ -104,6 +104,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	private incomingDirectCalls: Map<string, IncomingDirectCall>;
 
+	private directCalls: DirectCallData[] = [];
+
 	private dismissedCalls: Set<string>;
 
 	private _preferences: CallPreferences;
@@ -124,6 +126,13 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this.dismissedCalls = new Set<string>();
 		this._preferences = { mic: true, cam: false };
 		this._capabilities = {};
+
+		this.on('incoming/changed', () => {
+			this.directCalls = [...this.incomingDirectCalls.values()]
+				// Filter out any calls that we're in the process of accepting, so they're already hidden from the UI
+				.filter((call) => !call.acceptTimeout)
+				.map(({ timeout: _, acceptTimeout: _t, ...call }) => ({ ...call, dismissed: this.isCallDismissed(call.callId) }));
+		});
 	}
 
 	public isBusy(): boolean {
@@ -147,12 +156,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	public getIncomingDirectCalls(): DirectCallData[] {
-		return (
-			[...this.incomingDirectCalls.values()]
-				// Filter out any calls that we're in the process of accepting, so they're already hidden from the UI
-				.filter((call) => !call.acceptTimeout)
-				.map(({ timeout: _, acceptTimeout: _t, ...call }) => ({ ...call, dismissed: this.isCallDismissed(call.callId) }))
-		);
+		return this.directCalls;
 	}
 
 	public async startCall(roomId: IRoom['_id'], title?: string): Promise<void> {

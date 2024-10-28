@@ -14,8 +14,13 @@ import {
 	findDepartmentAgents,
 	findArchivedDepartments,
 } from '../../../server/api/lib/departments';
-import { DepartmentHelper } from '../../../server/lib/Departments';
-import { saveDepartment, archiveDepartment, unarchiveDepartment, saveDepartmentAgents } from '../../../server/lib/departmentsLib';
+import {
+	saveDepartment,
+	archiveDepartment,
+	unarchiveDepartment,
+	saveDepartmentAgents,
+	removeDepartment,
+} from '../../../server/lib/departmentsLib';
 import { isDepartmentCreationAvailable } from '../../../server/lib/isDepartmentCreationAvailable';
 
 API.v1.addRoute(
@@ -143,7 +148,7 @@ API.v1.addRoute(
 				_id: String,
 			});
 
-			await DepartmentHelper.removeDepartment(this.urlParams._id);
+			await removeDepartment(this.urlParams._id);
 
 			return API.v1.success();
 		},

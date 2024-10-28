@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
@@ -22,9 +22,7 @@ import ChannelsTableRow from './ChannelsTableRow';
 const ChannelsTable = () => {
 	const t = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
-
 	const [text, setText] = useState('');
-	const debouncedText = useDebouncedValue(text, 500);
 
 	const channelRoute = useRoute('channel');
 	const groupsRoute = useRoute('group');
@@ -82,7 +80,7 @@ const ChannelsTable = () => {
 	);
 
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
-	const query = useDirectoryQuery({ text: debouncedText, current, itemsPerPage }, [sortBy, sortDirection], 'channels');
+	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'channels');
 	const { data, isFetched, isLoading, isError, refetch } = useQuery(['getDirectoryData', query], () => getDirectoryData(query));
 
 	const onClick = useMemo(
@@ -96,7 +94,7 @@ const ChannelsTable = () => {
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Channels')} onChange={setText} />
+			<FilterByText placeholder={t('Search_Channels')} value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

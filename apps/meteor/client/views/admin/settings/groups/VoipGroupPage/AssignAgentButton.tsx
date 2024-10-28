@@ -1,7 +1,8 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericTableCell } from '../../../../../components/GenericTable';
 import AssignAgentModal from './AssignAgentModal';
@@ -9,7 +10,7 @@ import AssignAgentModal from './AssignAgentModal';
 type AssignAgentButtonProps = { extension: string; reload: () => void };
 
 const AssignAgentButton = ({ extension, reload }: AssignAgentButtonProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 
 	const handleAssociation = useMutableCallback((e) => {

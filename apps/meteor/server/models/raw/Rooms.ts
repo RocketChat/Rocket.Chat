@@ -26,6 +26,7 @@ import type {
 	UpdateOptions,
 	UpdateResult,
 	ModifyResult,
+	CountDocumentsOptions,
 } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -654,6 +655,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
+	countByBroadcast(options?: CountDocumentsOptions): Promise<number> {
+		return this.countDocuments(
+			{
+				broadcast: true,
+			},
+			options,
+		);
+	}
+
 	setAsFederated(roomId: IRoom['_id']): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { federated: true } });
 	}
@@ -688,6 +698,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findByE2E(options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		return this.find(
+			{
+				encrypted: true,
+			},
+			options,
+		);
+	}
+
+	countByE2E(options?: CountDocumentsOptions): Promise<number> {
+		return this.countDocuments(
 			{
 				encrypted: true,
 			},
@@ -1483,6 +1502,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findByCreatedOTR(): FindCursor<IRoom> {
 		return this.find({ createdOTR: true });
+	}
+
+	countByCreatedOTR(options?: CountDocumentsOptions): Promise<number> {
+		return this.countDocuments({ createdOTR: true }, options);
 	}
 
 	findByUsernamesOrUids(uids: IRoom['u']['_id'][], usernames: IRoom['u']['username'][]): FindCursor<IRoom> {

@@ -1,8 +1,9 @@
 import { Sidebar, SidebarDivider, SidebarSection } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
-import { useLayout, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useLayout, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
 import { useIsOverMacLimit } from '../../hooks/omnichannel/useIsOverMacLimit';
@@ -12,7 +13,7 @@ import { OverMacLimitSection } from './OverMacLimitSection';
 import { OmniChannelCallDialPad, OmnichannelCallToggle, OmnichannelLivechatToggle } from './actions';
 
 const OmnichannelSection = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const isCallEnabled = useIsCallEnabled();
 	const isCallReady = useIsCallReady();
 	const hasPermissionToSeeContactCenter = usePermission('view-omnichannel-contact-center');

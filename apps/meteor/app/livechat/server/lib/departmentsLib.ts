@@ -1,11 +1,15 @@
 import type { LivechatDepartmentDTO, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
-import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
+import { LivechatDepartment, LivechatDepartmentAgents, LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { notifyOnLivechatDepartmentAgentChangedByDepartmentId } from '../../../lib/server/lib/notifyListener';
+import {
+	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
+	notifyOnLivechatDepartmentAgentChanged,
+} from '../../../lib/server/lib/notifyListener';
 import { updateDepartmentAgents } from './Helper';
 import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
+import { livechatLogger } from './logger';
 /**
  * @param {string|null} _id - The department id
  * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
@@ -198,4 +202,103 @@ export async function saveDepartmentAgents(
 	}
 
 	return updateDepartmentAgents(_id, departmentAgents, department.enabled);
+}
+
+export async function setDepartmentForGuest({ token, department }: { token: string; department: string }) {
+	check(token, String);
+	check(department, String);
+
+	livechatLogger.debug(`Switching departments for user with token ${token} (to ${department})`);
+
+	const updateUser = {
+		$set: {
+			department,
+		},
+	};
+
+	const dep = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id'>>(department, { projection: { _id: 1 } });
+	if (!dep) {
+		throw new Meteor.Error('invalid-department', 'Provided department does not exists');
+	}
+
+	const visitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
+	if (!visitor) {
+		throw new Meteor.Error('invalid-token', 'Provided token is invalid');
+	}
+	await LivechatVisitors.updateById(visitor._id, updateUser);
+}
+
+export async function removeDepartment(departmentId: string) {
+	livechatLogger.debug(`Removing department: ${departmentId}`);
+
+	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'businessHourId'>>(departmentId, {
+		projection: { _id: 1, businessHourId: 1 },
+	});
+	if (!department) {
+		throw new Error('error-department-not-found');
+	}
+
+	const { _id } = department;
+
+	const ret = await LivechatDepartment.removeById(_id);
+	if (ret.acknowledged !== true) {
+		throw new Error('error-failed-to-delete-department');
+	}
+
+	const removedAgents = await LivechatDepartmentAgents.findByDepartmentId(department._id, { projection: { agentId: 1 } }).toArray();
+
+	livechatLogger.debug(
+		`Performing post-department-removal actions: ${_id}. Removing department agents, unsetting fallback department and removing department from rooms`,
+	);
+
+	const removeByDept = LivechatDepartmentAgents.removeByDepartmentId(_id);
+
+	const promiseResponses = await Promise.allSettled([
+		removeByDept,
+		LivechatDepartment.unsetFallbackDepartmentByDepartmentId(_id),
+		LivechatRooms.bulkRemoveDepartmentAndUnitsFromRooms(_id),
+	]);
+
+	promiseResponses.forEach((response, index) => {
+		if (response.status === 'rejected') {
+			livechatLogger.error(`Error while performing post-department-removal actions: ${_id}. Action No: ${index}. Error:`, response.reason);
+		}
+	});
+
+	const { deletedCount } = await removeByDept;
+
+	if (deletedCount > 0) {
+		removedAgents.forEach(({ _id: docId, agentId }) => {
+			void notifyOnLivechatDepartmentAgentChanged(
+				{
+					_id: docId,
+					agentId,
+					departmentId: _id,
+				},
+				'removed',
+			);
+		});
+	}
+
+	await callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds: removedAgents.map(({ agentId }) => agentId) });
+
+	return ret;
+}
+
+export async function getRequiredDepartment(onlineRequired = true) {
+	const departments = LivechatDepartment.findEnabledWithAgents();
+
+	for await (const dept of departments) {
+		if (!dept.showOnRegistration) {
+			continue;
+		}
+		if (!onlineRequired) {
+			return dept;
+		}
+
+		const onlineAgents = await LivechatDepartmentAgents.countOnlineForDepartment(dept._id);
+		if (onlineAgents) {
+			return dept;
+		}
+	}
 }

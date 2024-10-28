@@ -1,4 +1,5 @@
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
+import { Accounts } from 'meteor/accounts-base';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,7 +20,7 @@ const RoomE2EESetup = () => {
 	const e2eRoomState = useE2EERoomState(room._id);
 
 	const { t } = useTranslation();
-	const randomPassword = window.localStorage.getItem('e2e.randomPassword');
+	const randomPassword = Accounts.storageLocation.getItem('e2e.randomPassword');
 
 	const onSavePassword = useCallback(() => {
 		if (!randomPassword) {

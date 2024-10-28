@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
 	Contextualbar,
@@ -24,7 +25,7 @@ const ChatsContextualBar = ({ chatReload }: ChatsContextualBarProps) => {
 	const bar = useRouteParameter('bar') || 'info';
 	const id = useRouteParameter('id') || '';
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const openInRoom = (): void => {
 		id && directoryRoute.push({ page: 'chats', id, bar: 'view' });

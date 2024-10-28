@@ -1,7 +1,8 @@
 import { Box, Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useMethod, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMethod, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import useFeatureBullets from '../hooks/useFeatureBullets';
 
@@ -11,7 +12,7 @@ type RegisteredWorkspaceModalProps = {
 };
 
 const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: RegisteredWorkspaceModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const bulletFeatures = useFeatureBullets();

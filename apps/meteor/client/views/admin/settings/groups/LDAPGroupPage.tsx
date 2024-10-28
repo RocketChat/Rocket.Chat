@@ -1,9 +1,10 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Button, Box, TextInput, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useSetting, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
 import React, { memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
@@ -15,7 +16,7 @@ type LDAPGroupPageProps = ISetting & {
 };
 
 function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageProps) {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const testConnection = useEndpoint('POST', '/v1/ldap.testConnection');
 	const syncNow = useEndpoint('POST', '/v1/ldap.syncNow');

@@ -1,11 +1,12 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction, StatesLink, Box } from '@rocket.chat/fuselage';
-import { useRole, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRole, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const BusinessHoursDisabledPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const isAdmin = useRole('admin');
 

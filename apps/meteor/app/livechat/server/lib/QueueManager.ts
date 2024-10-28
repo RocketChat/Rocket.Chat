@@ -1,13 +1,12 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Omnichannel } from '@rocket.chat/core-services';
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IOmnichannelRoomInfo, IOmnichannelRoomExtraData } from '@rocket.chat/core-typings';
 import {
 	LivechatInquiryStatus,
 	type ILivechatInquiryRecord,
 	type ILivechatVisitor,
 	type IOmnichannelRoom,
 	type SelectedAgent,
-	type OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
@@ -146,29 +145,20 @@ export class QueueManager {
 		await this.dispatchInquiryQueued(inquiry, room, defaultAgent);
 	}
 
-	static async requestRoom<
-		E extends Record<string, unknown> & {
-			sla?: string;
-			customFields?: Record<string, unknown>;
-			source?: OmnichannelSourceType;
-		},
-	>({
+	static async requestRoom({
 		guest,
 		rid = Random.id(),
 		message,
 		roomInfo,
 		agent,
-		extraData: { customFields, ...extraData } = {} as E,
+		extraData: { customFields, ...extraData } = {},
 	}: {
 		guest: ILivechatVisitor;
 		rid?: string;
 		message?: string;
-		roomInfo: {
-			source?: IOmnichannelRoom['source'];
-			[key: string]: unknown;
-		};
+		roomInfo: IOmnichannelRoomInfo;
 		agent?: SelectedAgent;
-		extraData?: E;
+		extraData?: IOmnichannelRoomExtraData;
 	}) {
 		logger.debug(`Requesting a room for guest ${guest._id}`);
 		check(
@@ -222,7 +212,7 @@ export class QueueManager {
 			}
 		}
 
-		const name = (roomInfo?.fname as string) || guest.name || guest.username;
+		const name = guest.name || guest.username;
 
 		const room = await createLivechatRoom(rid, name, { ...guest, ...(department && { department }) }, roomInfo, {
 			...extraData,
@@ -341,7 +331,6 @@ export class QueueManager {
 			return;
 		}
 
-		logger.debug(`Notifying ${await onlineAgents.count()} agents of new inquiry`);
 		const notificationUserName = v && (v.name || v.username);
 
 		for await (const agent of onlineAgents) {

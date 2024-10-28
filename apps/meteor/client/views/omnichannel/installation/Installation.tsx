@@ -1,7 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import RawText from '../../../components/RawText';
@@ -10,7 +11,7 @@ import Wrapper from './Wrapper';
 
 // TODO: use `CodeSnippet` Component
 const Installation = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setting = useSetting('Site_Url') as string;
 	const siteUrl = setting?.replace(/\/$/, '');
 
