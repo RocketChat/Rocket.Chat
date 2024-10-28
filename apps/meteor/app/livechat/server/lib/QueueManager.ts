@@ -121,6 +121,10 @@ export class QueueManager {
 			return LivechatInquiryStatus.QUEUED;
 		}
 
+		if (settings.get('Livechat_waiting_queue')) {
+			return LivechatInquiryStatus.QUEUED;
+		}
+
 		if (RoutingManager.getConfig()?.autoAssignAgent) {
 			return LivechatInquiryStatus.READY;
 		}
@@ -132,39 +136,17 @@ export class QueueManager {
 		return LivechatInquiryStatus.READY;
 	}
 
-	static async notifyQueuedInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
+	static async queueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
+		if (inquiry.status === 'ready') {
+			logger.debug({ msg: 'Inquiry is ready. Delegating', inquiry, defaultAgent });
+			return RoutingManager.delegateInquiry(inquiry, defaultAgent, undefined, room);
+		}
+
 		await callbacks.run('livechat.afterInquiryQueued', inquiry);
 
 		void callbacks.run('livechat.chatQueued', room);
 
 		await this.dispatchInquiryQueued(inquiry, room, defaultAgent);
-	}
-
-	static async queueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
-		if (!(await Omnichannel.isWithinMACLimit(room))) {
-			logger.error({ msg: 'MAC limit reached, not routing inquiry', inquiry });
-			// We'll queue these inquiries so when new license is applied, they just start rolling again
-			// Minimizing disruption
-			await saveQueueInquiry(inquiry);
-			await this.notifyQueuedInquiry(inquiry, room, defaultAgent);
-			return;
-		}
-
-		const dbInquiry = await callbacks.run('livechat.beforeRouteChat', inquiry, defaultAgent);
-
-		if (!dbInquiry) {
-			throw new Error('inquiry-not-found');
-		}
-
-		if (dbInquiry.status === 'ready') {
-			logger.debug({ msg: 'Inquiry is ready. Delegating', inquiry, defaultAgent });
-			return RoutingManager.delegateInquiry(dbInquiry, defaultAgent, undefined, room);
-		}
-
-		if (dbInquiry.status === 'queued') {
-			logger.debug(`Inquiry with id ${inquiry._id} is queued. Notifying`);
-			await this.notifyQueuedInquiry(inquiry, room, defaultAgent);
-		}
 	}
 
 	static async requestRoom({

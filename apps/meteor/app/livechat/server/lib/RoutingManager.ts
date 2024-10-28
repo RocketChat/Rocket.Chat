@@ -57,7 +57,7 @@ type Routing = {
 		room: IOmnichannelRoom,
 	): Promise<IOmnichannelRoom | null | void>;
 	transferRoom(room: IOmnichannelRoom, guest: ILivechatVisitor, transferData: TransferData): Promise<boolean>;
-	delegateAgent(agent: SelectedAgent | undefined | null, inquiry: ILivechatInquiryRecord): Promise<SelectedAgent | null | undefined>;
+	delegateAgent(agent: SelectedAgent | undefined, inquiry: ILivechatInquiryRecord): Promise<SelectedAgent | null | undefined>;
 	removeAllRoomSubscriptions(room: Pick<IOmnichannelRoom, '_id'>, ignoreUser?: { _id: string }): Promise<void>;
 
 	assignAgent(inquiry: InquiryWithAgentInfo, room: IOmnichannelRoom, agent: SelectedAgent): Promise<InquiryWithAgentInfo>;
