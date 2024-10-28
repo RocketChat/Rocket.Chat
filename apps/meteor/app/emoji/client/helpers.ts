@@ -156,7 +156,7 @@ export const updateRecent = (recentList: string[]) => {
 	});
 };
 
-export const replaceEmojiInRecent = (oldEmoji: string, newEmoji: string) => {
+export const replaceEmojiInRecent = ({ oldEmoji, newEmoji }: { oldEmoji: string; newEmoji: string }) => {
 	const recentPkgList: string[] = emoji.packages.base.emojisByCategory.recent;
 	const pos = recentPkgList.indexOf(oldEmoji);
 

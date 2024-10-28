@@ -96,7 +96,7 @@ export const updateEmojiCustom = (emojiData: IEmoji) => {
 	}
 
 	if (previousExists) {
-		replaceEmojiInRecent(emojiData.previousName, emojiData.name);
+		replaceEmojiInRecent({ oldEmoji: emojiData.previousName, newEmoji: emojiData.name });
 	}
 };
 

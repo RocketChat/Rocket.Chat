@@ -36,7 +36,7 @@ describe('Emoji Client Helpers', () => {
 	describe('replaceEmojiInRecent', () => {
 		it('should replace an existing emoji with a new one in recent emojis', () => {
 			emoji.packages.base.emojisByCategory.recent = ['emoji1', 'emoji2', 'emoji3'];
-			replaceEmojiInRecent('emoji2', 'emoji4');
+			replaceEmojiInRecent({ oldEmoji: 'emoji2', newEmoji: 'emoji4' });
 			expect(emoji.packages.base.emojisByCategory.recent).to.not.include('emoji2');
 			expect(emoji.packages.base.emojisByCategory.recent).to.include('emoji4');
 			expect(emoji.packages.base.emojisByCategory.recent).to.deep.equal(['emoji1', 'emoji4', 'emoji3']);
@@ -44,7 +44,7 @@ describe('Emoji Client Helpers', () => {
 
 		it('should do nothing if the emoji to replace is not in the recent list', () => {
 			emoji.packages.base.emojisByCategory.recent = ['emoji1', 'emoji2'];
-			replaceEmojiInRecent('emoji3', 'emoji4');
+			replaceEmojiInRecent({ oldEmoji: 'emoji3', newEmoji: 'emoji4' });
 			expect(emoji.packages.base.emojisByCategory.recent).to.deep.equal(['emoji1', 'emoji2']);
 		});
 	});
