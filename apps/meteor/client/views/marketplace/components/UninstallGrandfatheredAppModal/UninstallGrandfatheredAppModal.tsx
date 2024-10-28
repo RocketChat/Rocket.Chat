@@ -3,11 +3,11 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
-import type { MarketplaceRouteContext } from '../../hooks/useAppsCountQuery';
+import type { MarketplaceContext } from '../../hooks/useMarketplaceContext';
 import { usePrivateAppsEnabled } from '../../hooks/usePrivateAppsEnabled';
 
 type UninstallGrandfatheredAppModalProps = {
-	context: MarketplaceRouteContext;
+	context: MarketplaceContext;
 	limit: number;
 	appName: string;
 	handleUninstall: () => void;

@@ -1,14 +1,9 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQueryClient, useQuery } from '@tanstack/react-query';
-import { useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
-export type MarketplaceRouteContext = 'private' | 'explore' | 'installed' | 'premium' | 'requested' | 'details';
+import type { MarketplaceContext } from './useMarketplaceContext';
 
-export function isMarketplaceRouteContext(context: string): context is MarketplaceRouteContext {
-	return ['private', 'explore', 'installed', 'premium', 'requested'].includes(context);
-}
-
-export const useAppsCountQuery = (context: MarketplaceRouteContext) => {
+export const useAppsCountQuery = (context: MarketplaceContext) => {
 	const getAppsCount = useEndpoint('GET', '/apps/count');
 
 	return useQuery(
@@ -24,16 +19,8 @@ export const useAppsCountQuery = (context: MarketplaceRouteContext) => {
 				hasUnlimitedApps,
 				enabled: numberOfEnabledApps,
 				limit: enabledAppsLimit,
-				// tooltip,
 			};
 		},
 		{ staleTime: 10_000 },
 	);
-};
-
-export const useInvalidateAppsCountQueryCallback = () => {
-	const queryClient = useQueryClient();
-	return useCallback(() => {
-		queryClient.invalidateQueries(['apps/count']);
-	}, [queryClient]);
 };

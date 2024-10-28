@@ -2,7 +2,7 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Tag, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRouteParameter, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,7 @@ import { appButtonProps, appMultiStatusProps } from '../../../helpers';
 import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstallationHandler';
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
 import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
+import { useMarketplaceContext } from '../../../hooks/useMarketplaceContext';
 
 type AppStatusProps = {
 	app: App;
@@ -32,7 +33,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const [isAppPurchased, setPurchased] = useSafely(useState(!!app?.isPurchased));
 	const setModal = useSetModal();
 	const isAdminUser = usePermission('manage-apps');
-	const context = useRouteParameter('context');
+	const context = useMarketplaceContext();
 
 	const { price, purchaseType, pricingPlans } = app;
 

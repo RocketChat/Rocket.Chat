@@ -1,9 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
-import { useController, useFormContext } from 'react-hook-form';
+import { useController, useForm, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../components/FilterByText';
@@ -13,7 +12,8 @@ import RadioDropDown from '../components/RadioDropDown/RadioDropDown';
 import type { CategoryDropDownGroups, CategoryDropdownItem, selectedCategoriesList } from '../definitions/CategoryDropdownDefinitions';
 import type { RadioDropDownGroup, RadioDropDownItem } from '../definitions/RadioDropDownDefinitions';
 import { useAppsOrchestrator } from '../hooks/useAppsOrchestrator';
-import type { AppsContext, PurchaseType, SortingMethod, Status } from '../hooks/useFilteredApps';
+import type { PurchaseType, SortingMethod, Status } from '../hooks/useFilteredAppsQuery';
+import { useMarketplaceContext } from '../hooks/useMarketplaceContext';
 
 export type AppFilters = {
 	text: string;
@@ -23,11 +23,24 @@ export type AppFilters = {
 	sortingMethod: SortingMethod;
 };
 
-type AppsFiltersProps = {
-	context: AppsContext;
+export const useSearchFiltersForm = () => {
+	const context = useMarketplaceContext();
+
+	return useForm<AppFilters>({
+		defaultValues: {
+			text: '',
+			purchaseType: 'all',
+			status: 'all',
+			categories: [],
+			sortingMethod: context === 'requested' ? 'urf' : 'mru',
+		},
+	});
 };
 
-const AppsFilters = ({ context }: AppsFiltersProps): ReactElement => {
+export const useSearchFiltersFormContext = () => useFormContext<AppFilters>();
+
+const SearchFiltersForm = () => {
+	const context = useMarketplaceContext();
 	const { control } = useFormContext<AppFilters>();
 	const { field: textField } = useController({ control, name: 'text' });
 	const { field: purchaseTypeField } = useController({ control, name: 'purchaseType' });
@@ -217,4 +230,4 @@ const AppsFilters = ({ context }: AppsFiltersProps): ReactElement => {
 	);
 };
 
-export default AppsFilters;
+export default SearchFiltersForm;

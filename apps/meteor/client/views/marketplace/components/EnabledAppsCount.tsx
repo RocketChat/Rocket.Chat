@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericResourceUsage } from '../../../components/GenericResourceUsage';
+import type { MarketplaceContext } from '../hooks/useMarketplaceContext';
 
 const EnabledAppsCount = ({
 	limit,
@@ -12,7 +13,7 @@ const EnabledAppsCount = ({
 }: {
 	limit: number;
 	enabled: number;
-	context: 'private' | 'explore' | 'installed' | 'premium' | 'requested';
+	context: MarketplaceContext;
 	tooltip?: string;
 }): ReactElement | null => {
 	const { t } = useTranslation();

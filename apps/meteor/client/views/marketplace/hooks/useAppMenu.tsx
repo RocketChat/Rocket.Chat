@@ -1,23 +1,15 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import {
-	useSetModal,
-	useEndpoint,
-	useTranslation,
-	useRouteParameter,
-	useToastMessageDispatch,
-	usePermission,
-	useRouter,
-} from '@rocket.chat/ui-contexts';
+import { useSetModal, useEndpoint, useTranslation, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactNode } from 'react';
 import React, { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
 
 import { useAppInstallationHandler } from './useAppInstallationHandler';
-import type { MarketplaceRouteContext } from './useAppsCountQuery';
 import { useAppsCountQuery } from './useAppsCountQuery';
 import { useMarketplaceActions } from './useMarketplaceActions';
+import { useMarketplaceContext } from './useMarketplaceContext';
 import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
 import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
 import WarningModal from '../../../components/WarningModal';
@@ -51,8 +43,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const openIncompatibleModal = useOpenIncompatibleModal();
 
-	const context = useRouteParameter('context') as MarketplaceRouteContext;
-	const currentTab = useRouteParameter('tab');
+	const context = useMarketplaceContext();
 	const appCountQuery = useAppsCountQuery(context);
 
 	const isAdminUser = usePermission('manage-apps');
@@ -229,15 +220,6 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				const { success } = await uninstallApp();
 				if (success) {
 					dispatchToastMessage({ type: 'success', message: `${app.name} uninstalled` });
-					if (context === 'details' && currentTab !== 'details') {
-						router.navigate(
-							{
-								name: 'marketplace',
-								params: { ...router.getRouteParameters(), tab: 'details' },
-							},
-							{ replace: true },
-						);
-					}
 				}
 			} catch (error) {
 				handleAPIError(error);
@@ -292,8 +274,6 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		uninstallApp,
 		dispatchToastMessage,
 		context,
-		currentTab,
-		router,
 		handleSubscription,
 	]);
 
@@ -376,8 +356,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 			appCountQuery?.data?.enabled >= appCountQuery?.data?.limit;
 
 		const installedAppOptions = [
-			context !== 'details' &&
-				isAdminUser &&
+			isAdminUser &&
 				app.installed && {
 					id: 'viewLogs',
 					section: 0,
@@ -473,7 +452,6 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		appCountQuery?.data?.hasUnlimitedApps,
 		appCountQuery?.data?.enabled,
 		appCountQuery?.data?.limit,
-		context,
 		handleViewLogs,
 		canUpdate,
 		isAppDetailsPage,

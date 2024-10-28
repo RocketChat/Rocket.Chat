@@ -1,58 +1,38 @@
-import { useRouteParameter, useRoute, usePermission } from '@rocket.chat/ui-contexts';
-import React, { useState, useEffect } from 'react';
+import { useRouteParameter, usePermission, useRouter } from '@rocket.chat/ui-contexts';
+import React, { useEffect } from 'react';
 
 import AppDetailsPage from './AppDetailsPage';
 import AppInstallPage from './AppInstallPage';
 import AppsOrchestratorProvider from './AppsOrchestratorProvider';
 import AppsPage from './AppsPage';
 import BannerEnterpriseTrialEnded from './components/BannerEnterpriseTrialEnded';
-import PageSkeleton from '../../components/PageSkeleton';
+import { useMarketplaceContext } from './hooks/useMarketplaceContext';
 import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
 
 const AppsRoute = () => {
-	const [isLoading, setLoading] = useState(true);
-	const marketplaceRoute = useRoute('marketplace');
-
-	const context = useRouteParameter('context') || 'explore';
+	const router = useRouter();
+	const context = useMarketplaceContext();
 	const id = useRouteParameter('id');
 	const page = useRouteParameter('page');
 
-	const isAdminUser = usePermission('manage-apps');
+	const canManageApps = usePermission('manage-apps');
 	const canAccessMarketplace = usePermission('access-marketplace');
 
-	if (!page) marketplaceRoute.push({ context, page: 'list' });
-
 	useEffect(() => {
-		let mounted = true;
+		if (page) return;
 
-		const initialize = async (): Promise<void> => {
-			if (!mounted) {
-				return;
-			}
-
-			setLoading(false);
-		};
-
-		initialize();
-
-		return (): void => {
-			mounted = false;
-		};
-	}, [marketplaceRoute, context]);
+		router.navigate({ name: 'marketplace', params: { ...router.getRouteParameters(), page: 'list' } }, { replace: true });
+	}, [page, router]);
 
 	if (
 		(context === 'explore' || context === 'installed' || context === 'private' || context === 'premium') &&
 		!canAccessMarketplace &&
-		!isAdminUser
+		!canManageApps
 	) {
 		return <NotAuthorizedPage />;
 	}
 
-	if ((context === 'requested' || page === 'install') && !isAdminUser) return <NotAuthorizedPage />;
-
-	if (isLoading) {
-		return <PageSkeleton />;
-	}
+	if ((context === 'requested' || page === 'install') && !canManageApps) return <NotAuthorizedPage />;
 
 	return (
 		<AppsOrchestratorProvider>
