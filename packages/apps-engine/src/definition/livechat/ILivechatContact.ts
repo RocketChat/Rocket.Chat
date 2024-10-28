@@ -30,7 +30,6 @@ export interface ILivechatContact {
     emails?: IVisitorEmail[];
     contactManager?: string;
     unknown?: boolean;
-    hasConflict?: boolean;
     conflictingFields?: ILivechatContactConflictingField[];
     customFields?: Record<string, string | unknown>;
     channels?: ILivechatContactChannel[];

@@ -262,10 +262,6 @@ export class ContactMerger {
 						...customFieldConflicts.map(({ type, value }): ILivechatContactConflictingField => ({ field: type, value })),
 				  ];
 
-		if (allConflicts.length) {
-			dataToSet.hasConflicts = true;
-		}
-
 		// Phones, Emails and Channels are simply added to the contact's existing list
 		const dataToAdd: UpdateFilter<ILivechatContact>['$addToSet'] = {
 			...(newPhones.length ? { phones: { $each: newPhones.map((phoneNumber) => ({ phoneNumber })) } } : {}),
