@@ -129,12 +129,6 @@ function mountPreviousCursor(messages: IMessage[], type: CursorPaginationType, c
 	return null;
 }
 
-function popMessagesFromArray(messages: IMessage[], count?: number) {
-	if (count && count !== null && messages.length > count) {
-		messages.pop();
-	}
-}
-
 async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Date) {
 	const query = { $gt: lastUpdate };
 	const options: FindOptions<IMessage> = { sort: { ts: -1 } };
@@ -163,7 +157,9 @@ async function handleCursorPagination(type: CursorPaginationType, rid: IRoom['_i
 		previous: mountPreviousCursor(response, type, count, next),
 	};
 
-	popMessagesFromArray(response, count);
+	if (count && count !== null && response.length > count) {
+		response.pop();
+	}
 
 	return {
 		[type.toLowerCase()]: response,
