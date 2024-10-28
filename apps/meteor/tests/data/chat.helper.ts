@@ -22,11 +22,24 @@ export const sendSimpleMessage = ({
 		rid: roomId,
 		text,
 	};
+
 	if (tmid) {
 		message.tmid = tmid;
 	}
 
 	return request.post(api('chat.sendMessage')).set(credentials).send({ message });
+};
+
+export const sendMessage = ({ message }: { message: { rid: IRoom['_id']; msg: string } & Partial<Omit<IMessage, 'rid' | 'msg'>> }) => {
+	return request.post(api('chat.sendMessage')).set(credentials).send({ message });
+};
+
+export const starMessage = ({ messageId }: { messageId: IMessage['_id'] }) => {
+	return request.post(api('chat.starMessage')).set(credentials).send({ messageId });
+};
+
+export const pinMessage = ({ messageId }: { messageId: IMessage['_id'] }) => {
+	return request.post(api('chat.pinMessage')).set(credentials).send({ messageId });
 };
 
 export const deleteMessage = ({ roomId, msgId }: { roomId: IRoom['_id']; msgId: IMessage['_id'] }) => {
