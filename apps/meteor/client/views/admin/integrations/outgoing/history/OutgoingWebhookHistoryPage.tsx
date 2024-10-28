@@ -5,7 +5,7 @@ import type { ComponentProps } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
 import { sdk } from '../../../../../../app/utils/client/lib/SDKClient';
-import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
+import CustomScrollbars from '../../../../../components/CustomScrollbars';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import { Page, PageHeader, PageContent } from '../../../../../components/Page';
 import HistoryContent from './HistoryContent';

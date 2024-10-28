@@ -14,7 +14,7 @@ import {
 	ContextualbarContent,
 	ContextualbarEmptyContent,
 } from '../../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../../components/CustomScrollbars';
+import CustomScrollbars from '../../../../../components/CustomScrollbars';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
 import VideoConfListItem from './VideoConfListItem';
 
@@ -69,24 +69,25 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 				)}
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 					{videoConfs.length > 0 && (
-						<Virtuoso
-							style={{
-								height: blockSize,
-								width: inlineSize,
-							}}
-							totalCount={total}
-							endReached={
-								loading
-									? (): void => undefined
-									: (start) => {
-											loadMoreItems(start, Math.min(50, total - start));
-									  }
-							}
-							overscan={25}
-							data={videoConfs}
-							components={{ Scroller: VirtuosoScrollbars }}
-							itemContent={(_index, data): ReactElement => <VideoConfListItem videoConfData={data} reload={reload} />}
-						/>
+						<CustomScrollbars virtualized>
+							<Virtuoso
+								style={{
+									height: blockSize,
+									width: inlineSize,
+								}}
+								totalCount={total}
+								endReached={
+									loading
+										? (): void => undefined
+										: (start) => {
+												loadMoreItems(start, Math.min(50, total - start));
+										  }
+								}
+								overscan={25}
+								data={videoConfs}
+								itemContent={(_index, data): ReactElement => <VideoConfListItem videoConfData={data} reload={reload} />}
+							/>
+						</CustomScrollbars>
 					)}
 				</Box>
 			</ContextualbarContent>

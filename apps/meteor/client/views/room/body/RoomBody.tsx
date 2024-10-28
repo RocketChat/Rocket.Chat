@@ -7,7 +7,7 @@ import React, { memo, useCallback, useMemo, useRef } from 'react';
 
 import { RoomRoles } from '../../../../app/models/client';
 import { isTruthy } from '../../../../lib/isTruthy';
-import { CustomScrollbars } from '../../../components/CustomScrollbars';
+import CustomScrollbars from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import Announcement from '../Announcement';

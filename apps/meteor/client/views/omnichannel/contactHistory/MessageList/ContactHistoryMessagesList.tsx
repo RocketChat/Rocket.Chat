@@ -13,7 +13,7 @@ import {
 	ContextualbarContent,
 	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import CustomScrollbars from '../../../../components/CustomScrollbars';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';
@@ -89,25 +89,26 @@ const ContactHistoryMessagesList = ({
 				{phase !== AsyncStatePhase.LOADING && totalItemCount === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 					{!error && totalItemCount > 0 && history.length > 0 && (
-						<Virtuoso
-							totalCount={totalItemCount}
-							endReached={
-								phase === AsyncStatePhase.LOADING
-									? (): void => undefined
-									: (start): unknown => loadMoreItems(start, Math.min(50, totalItemCount - start))
-							}
-							overscan={25}
-							data={messages}
-							components={{ Scroller: VirtuosoScrollbars }}
-							itemContent={(index, data): ReactElement => {
-								const lastMessage = messages[index - 1];
-								const isSequential = isMessageSequential(data, lastMessage, messageGroupingPeriod);
-								const isNewDay = isMessageNewDay(data, lastMessage);
-								return (
-									<ContactHistoryMessage message={data} sequential={isSequential} isNewDay={isNewDay} showUserAvatar={showUserAvatar} />
-								);
-							}}
-						/>
+						<CustomScrollbars virtualized>
+							<Virtuoso
+								totalCount={totalItemCount}
+								endReached={
+									phase === AsyncStatePhase.LOADING
+										? (): void => undefined
+										: (start): unknown => loadMoreItems(start, Math.min(50, totalItemCount - start))
+								}
+								overscan={25}
+								data={messages}
+								itemContent={(index, data): ReactElement => {
+									const lastMessage = messages[index - 1];
+									const isSequential = isMessageSequential(data, lastMessage, messageGroupingPeriod);
+									const isNewDay = isMessageNewDay(data, lastMessage);
+									return (
+										<ContactHistoryMessage message={data} sequential={isSequential} isNewDay={isNewDay} showUserAvatar={showUserAvatar} />
+									);
+								}}
+							/>
+						</CustomScrollbars>
 					)}
 				</Box>
 			</ContextualbarContent>

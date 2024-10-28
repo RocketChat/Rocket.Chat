@@ -4,7 +4,7 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
+import CustomScrollbars from '../../../components/CustomScrollbars';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import { useOpenedRoom, useSecondLevelOpenedRoom } from '../../../lib/RoomManager';
 import RoomSidepanelListWrapper from './RoomSidepanelListWrapper';
@@ -50,14 +50,16 @@ const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 	return (
 		<Sidepanel>
 			<Box pb={8} h='full'>
-				<Virtuoso
-					totalCount={result.data.length}
-					data={result.data}
-					components={{ Item: SidepanelListItem, List: RoomSidepanelListWrapper, Scroller: VirtuosoScrollbars }}
-					itemContent={(_, data) => (
-						<RoomSidepanelItem openedRoom={openedRoom} room={data} parentRid={parentRid} viewMode={sidebarViewMode} />
-					)}
-				/>
+				<CustomScrollbars>
+					<Virtuoso
+						totalCount={result.data.length}
+						data={result.data}
+						components={{ Item: SidepanelListItem, List: RoomSidepanelListWrapper }}
+						itemContent={(_, data) => (
+							<RoomSidepanelItem openedRoom={openedRoom} room={data} parentRid={parentRid} viewMode={sidebarViewMode} />
+						)}
+					/>
+				</CustomScrollbars>
 			</Box>
 		</Sidepanel>
 	);

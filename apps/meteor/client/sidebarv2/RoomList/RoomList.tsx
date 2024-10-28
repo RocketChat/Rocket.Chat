@@ -5,7 +5,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso } from 'react-virtuoso';
 
-import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
+import CustomScrollbars from '../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
@@ -48,21 +48,23 @@ const RoomList = () => {
 
 	return (
 		<Box position='relative' display='flex' overflow='hidden' height='full' flexGrow={1} flexShrink={1} flexBasis='auto' ref={ref}>
-			<GroupedVirtuoso
-				groupCounts={groupsCount}
-				groupContent={(index) => (
-					<SidebarV2CollapseGroup
-						title={t(groupsList[index])}
-						onClick={() => handleClick(groupsList[index])}
-						onKeyDown={(e) => handleKeyDown(e, groupsList[index])}
-						expanded={!collapsedGroups.includes(groupsList[index])}
-					/>
-				)}
-				{...(roomList.length > 0 && {
-					itemContent: (index) => roomList[index] && <RoomListRow data={itemData} item={roomList[index]} />,
-				})}
-				components={{ Item: RoomListRowWrapper, List: RoomListWrapper, Scroller: VirtuosoScrollbars }}
-			/>
+			<CustomScrollbars virtualized>
+				<GroupedVirtuoso
+					groupCounts={groupsCount}
+					groupContent={(index) => (
+						<SidebarV2CollapseGroup
+							title={t(groupsList[index])}
+							onClick={() => handleClick(groupsList[index])}
+							onKeyDown={(e) => handleKeyDown(e, groupsList[index])}
+							expanded={!collapsedGroups.includes(groupsList[index])}
+						/>
+					)}
+					{...(roomList.length > 0 && {
+						itemContent: (index) => roomList[index] && <RoomListRow data={itemData} item={roomList[index]} />,
+					})}
+					components={{ Item: RoomListRowWrapper, List: RoomListWrapper }}
+				/>
+			</CustomScrollbars>
 		</Box>
 	);
 };

@@ -14,7 +14,7 @@ import {
 	ContextualbarInnerContent,
 	ContextualbarFooter,
 } from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import CustomScrollbars from '../../../../components/CustomScrollbars';
 import { useRoomToolbox } from '../../../../views/room/contexts/RoomToolboxContext';
 import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
@@ -92,26 +92,25 @@ const CannedResponseList = ({
 				{itemCount === 0 && <ContextualbarEmptyContent title={t('No_Canned_Responses')} />}
 				{itemCount > 0 && cannedItems.length > 0 && (
 					<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-						<Virtuoso
-							style={{ width: inlineSize }}
-							totalCount={itemCount}
-							endReached={loading ? undefined : (start): void => loadMoreItems(start, Math.min(25, itemCount - start))}
-							overscan={25}
-							data={cannedItems}
-							components={{
-								Scroller: VirtuosoScrollbars,
-							}}
-							itemContent={(_index, data): ReactElement => (
-								<Item
-									data={data}
-									allowUse={!isRoomOverMacLimit}
-									onClickItem={(): void => {
-										onClickItem(data);
-									}}
-									onClickUse={onClickUse}
-								/>
-							)}
-						/>
+						<CustomScrollbars virtualized>
+							<Virtuoso
+								style={{ width: inlineSize }}
+								totalCount={itemCount}
+								endReached={loading ? undefined : (start): void => loadMoreItems(start, Math.min(25, itemCount - start))}
+								overscan={25}
+								data={cannedItems}
+								itemContent={(_index, data): ReactElement => (
+									<Item
+										data={data}
+										allowUse={!isRoomOverMacLimit}
+										onClickItem={(): void => {
+											onClickItem(data);
+										}}
+										onClickUse={onClickUse}
+									/>
+								)}
+							/>
+						</CustomScrollbars>
 					</Box>
 				)}
 			</ContextualbarContent>

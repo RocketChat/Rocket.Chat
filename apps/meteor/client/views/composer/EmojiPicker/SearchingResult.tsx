@@ -6,7 +6,7 @@ import type { VirtuosoGridHandle } from 'react-virtuoso';
 import { VirtuosoGrid } from 'react-virtuoso';
 
 import type { EmojiItem } from '../../../../app/emoji/client';
-import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
+import CustomScrollbars from '../../../components/CustomScrollbars';
 import EmojiElement from './EmojiElement';
 import SearchingResultWrapper from './SearchingResultWrapper';
 
@@ -29,18 +29,19 @@ const SearchingResult = ({ searchResults, handleSelectEmoji }: SearchingResultPr
 	}
 
 	return (
-		<VirtuosoGrid
-			ref={ref}
-			totalCount={searchResults.length}
-			components={{
-				Scroller: VirtuosoScrollbars,
-				List: SearchingResultWrapper,
-			}}
-			itemContent={(index) => {
-				const { emoji, image } = searchResults[index] || {};
-				return <EmojiElement emoji={emoji} image={image} onClick={handleSelectEmoji} />;
-			}}
-		/>
+		<CustomScrollbars virtualized>
+			<VirtuosoGrid
+				ref={ref}
+				totalCount={searchResults.length}
+				components={{
+					List: SearchingResultWrapper,
+				}}
+				itemContent={(index) => {
+					const { emoji, image } = searchResults[index] || {};
+					return <EmojiElement emoji={emoji} image={image} onClick={handleSelectEmoji} />;
+				}}
+			/>
+		</CustomScrollbars>
 	);
 };
 

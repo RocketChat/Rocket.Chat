@@ -14,7 +14,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarSkeleton,
 } from '../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
+import CustomScrollbars from '../../../components/CustomScrollbars';
 import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
 import { useMutationOutlookCalendarSync, useOutlookCalendarListForToday } from '../hooks/useOutlookCalendarList';
@@ -100,17 +100,18 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 						)}
 						{calendarListResult.isSuccess && calendarListResult.data.length > 0 && (
 							<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-								<Virtuoso
-									style={{
-										height: blockSize,
-										width: inlineSize,
-									}}
-									totalCount={total}
-									overscan={25}
-									data={calendarEvents}
-									components={{ Scroller: VirtuosoScrollbars }}
-									itemContent={(_index, calendarData): ReactElement => <OutlookEventItem {...calendarData} />}
-								/>
+								<CustomScrollbars virtualized>
+									<Virtuoso
+										style={{
+											height: blockSize,
+											width: inlineSize,
+										}}
+										totalCount={total}
+										overscan={25}
+										data={calendarEvents}
+										itemContent={(_index, calendarData): ReactElement => <OutlookEventItem {...calendarData} />}
+									/>
+								</CustomScrollbars>
 							</Box>
 						)}
 					</ContextualbarContent>

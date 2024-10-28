@@ -4,7 +4,7 @@ import type { MouseEventHandler, ReactElement } from 'react';
 import React, { useMemo, useRef } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
+import CustomScrollbars from '../../components/CustomScrollbars';
 import RoomListWrapper from '../RoomList/RoomListWrapper';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
@@ -65,14 +65,16 @@ const SearchList = ({ filterText, onEscSearch, showRecentList }: SearchListProps
 			onClick={handleClick}
 		>
 			{showRecentList && <SidebarV2GroupTitle title={t('Recent')} />}
-			<Virtuoso
-				style={{ height: '100%', width: '100%' }}
-				totalCount={items.length}
-				data={items}
-				components={{ List: RoomListWrapper, Scroller: VirtuosoScrollbars }}
-				computeItemKey={(_, room) => room._id}
-				itemContent={(_, data): ReactElement => <Row data={itemData} item={data} />}
-			/>
+			<CustomScrollbars virtualized>
+				<Virtuoso
+					style={{ height: '100%', width: '100%' }}
+					totalCount={items.length}
+					data={items}
+					components={{ List: RoomListWrapper }}
+					computeItemKey={(_, room) => room._id}
+					itemContent={(_, data): ReactElement => <Row data={itemData} item={data} />}
+				/>
+			</CustomScrollbars>
 		</Box>
 	);
 };

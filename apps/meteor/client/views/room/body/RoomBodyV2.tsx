@@ -6,7 +6,7 @@ import type { MouseEventHandler, ReactElement } from 'react';
 import React, { memo, useCallback, useMemo, useRef } from 'react';
 
 import { isTruthy } from '../../../../lib/isTruthy';
-import { CustomScrollbars } from '../../../components/CustomScrollbars';
+import CustomScrollbars from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';

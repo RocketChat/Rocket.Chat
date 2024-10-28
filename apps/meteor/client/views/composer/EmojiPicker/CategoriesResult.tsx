@@ -6,7 +6,7 @@ import type { VirtuosoHandle } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 
 import type { EmojiCategoryPosition, EmojiByCategory } from '../../../../app/emoji/client';
-import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
+import CustomScrollbars from '../../../components/CustomScrollbars';
 import EmojiCategoryRow from './EmojiCategoryRow';
 
 type CategoriesResultProps = {
@@ -34,34 +34,35 @@ const CategoriesResult = forwardRef<VirtuosoHandle, CategoriesResultProps>(funct
 			`}
 			height='full'
 		>
-			<Virtuoso
-				ref={ref}
-				totalCount={emojiListByCategory.length}
-				data={emojiListByCategory}
-				onScroll={handleScroll}
-				components={{ Scroller: VirtuosoScrollbars }}
-				isScrolling={(isScrolling: boolean) => {
-					if (!wrapper.current) {
-						return;
-					}
+			<CustomScrollbars>
+				<Virtuoso
+					ref={ref}
+					totalCount={emojiListByCategory.length}
+					data={emojiListByCategory}
+					onScroll={handleScroll}
+					isScrolling={(isScrolling: boolean) => {
+						if (!wrapper.current) {
+							return;
+						}
 
-					if (isScrolling) {
-						wrapper.current.classList.add('pointer-none');
-					} else {
-						wrapper.current.classList.remove('pointer-none');
-					}
-				}}
-				itemContent={(_, data) => (
-					<EmojiCategoryRow
-						categoryKey={data.key}
-						categoriesPosition={categoriesPosition}
-						customItemsLimit={customItemsLimit}
-						handleLoadMore={handleLoadMore}
-						handleSelectEmoji={handleSelectEmoji}
-						{...data}
-					/>
-				)}
-			/>
+						if (isScrolling) {
+							wrapper.current.classList.add('pointer-none');
+						} else {
+							wrapper.current.classList.remove('pointer-none');
+						}
+					}}
+					itemContent={(_, data) => (
+						<EmojiCategoryRow
+							categoryKey={data.key}
+							categoriesPosition={categoriesPosition}
+							customItemsLimit={customItemsLimit}
+							handleLoadMore={handleLoadMore}
+							handleSelectEmoji={handleSelectEmoji}
+							{...data}
+						/>
+					)}
+				/>
+			</CustomScrollbars>
 		</Box>
 	);
 });

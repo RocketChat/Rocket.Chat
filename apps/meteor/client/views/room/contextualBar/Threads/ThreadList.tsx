@@ -15,7 +15,7 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarSection,
 } from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import CustomScrollbars from '../../../../components/CustomScrollbars';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
@@ -152,32 +152,33 @@ const ThreadList = () => {
 
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
 					{!error && itemCount > 0 && items.length > 0 && (
-						<Virtuoso
-							style={{
-								height: blockSize,
-								width: inlineSize,
-							}}
-							totalCount={itemCount}
-							endReached={
-								phase === AsyncStatePhase.LOADING
-									? (): void => undefined
-									: (start): void => {
-											loadMoreItems(start, Math.min(50, itemCount - start));
-									  }
-							}
-							overscan={25}
-							data={items}
-							components={{ Scroller: VirtuosoScrollbars }}
-							itemContent={(_index, data: IMessage): ReactElement => (
-								<ThreadListItem
-									thread={data}
-									unread={subscription?.tunread ?? []}
-									unreadUser={subscription?.tunreadUser ?? []}
-									unreadGroup={subscription?.tunreadGroup ?? []}
-									onClick={handleThreadClick}
-								/>
-							)}
-						/>
+						<CustomScrollbars virtualized>
+							<Virtuoso
+								style={{
+									height: blockSize,
+									width: inlineSize,
+								}}
+								totalCount={itemCount}
+								endReached={
+									phase === AsyncStatePhase.LOADING
+										? (): void => undefined
+										: (start): void => {
+												loadMoreItems(start, Math.min(50, itemCount - start));
+										  }
+								}
+								overscan={25}
+								data={items}
+								itemContent={(_index, data: IMessage): ReactElement => (
+									<ThreadListItem
+										thread={data}
+										unread={subscription?.tunread ?? []}
+										unreadUser={subscription?.tunreadUser ?? []}
+										unreadGroup={subscription?.tunreadGroup ?? []}
+										onClick={handleThreadClick}
+									/>
+								)}
+							/>
+						</CustomScrollbars>
 					)}
 				</Box>
 			</ContextualbarContent>

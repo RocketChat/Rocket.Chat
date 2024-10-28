@@ -6,7 +6,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
-import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
+import CustomScrollbars from '../../../components/CustomScrollbars';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import FederatedRoomListEmptyPlaceholder from './FederatedRoomListEmptyPlaceholder';
 import FederatedRoomListItem from './FederatedRoomListItem';
@@ -60,21 +60,22 @@ const FederatedRoomList = ({ serverName, roomName, count }: FederatedRoomListPro
 	const flattenedData = data?.pages.flatMap((page) => page.rooms);
 	return (
 		<Box is='ul' overflow='hidden' height='356px' flexGrow={1} flexShrink={0} mi={-24}>
-			<Virtuoso
-				data={flattenedData || []}
-				computeItemKey={(index, room) => room?.id || index}
-				overscan={4}
-				components={{
-					// eslint-disable-next-line react/no-multi-comp
-					Footer: () => (isFetchingNextPage ? <Throbber /> : null),
-					Scroller: VirtuosoScrollbars,
-					EmptyPlaceholder: FederatedRoomListEmptyPlaceholder,
-				}}
-				endReached={isLoading || isFetchingNextPage ? () => undefined : () => fetchNextPage()}
-				itemContent={(_, room) => (
-					<FederatedRoomListItem onClickJoin={() => onClickJoin(room)} {...room} disabled={isLoadingMutation} key={room.id} />
-				)}
-			/>
+			<CustomScrollbars virtualized>
+				<Virtuoso
+					data={flattenedData || []}
+					computeItemKey={(index, room) => room?.id || index}
+					overscan={4}
+					components={{
+						// eslint-disable-next-line react/no-multi-comp
+						Footer: () => (isFetchingNextPage ? <Throbber /> : null),
+						EmptyPlaceholder: FederatedRoomListEmptyPlaceholder,
+					}}
+					endReached={isLoading || isFetchingNextPage ? () => undefined : () => fetchNextPage()}
+					itemContent={(_, room) => (
+						<FederatedRoomListItem onClickJoin={() => onClickJoin(room)} {...room} disabled={isLoadingMutation} key={room.id} />
+					)}
+				/>
+			</CustomScrollbars>
 		</Box>
 	);
 };

@@ -17,7 +17,7 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarSection,
 } from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import CustomScrollbars from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import RoomMembersRow from './RoomMembersRow';
 
@@ -129,20 +129,22 @@ const RoomMembers = ({
 						</Box>
 
 						<Box w='full' h='full' overflow='hidden' flexShrink={1}>
-							<Virtuoso
-								style={{
-									height: '100%',
-									width: '100%',
-								}}
-								totalCount={total}
-								overscan={50}
-								data={members}
-								// eslint-disable-next-line react/no-multi-comp
-								components={{ Scroller: VirtuosoScrollbars, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
-								itemContent={(index, data): ReactElement => (
-									<RowComponent useRealName={useRealName} data={itemData} user={data} index={index} reload={reload} />
-								)}
-							/>
+							<CustomScrollbars virtualized>
+								<Virtuoso
+									style={{
+										height: '100%',
+										width: '100%',
+									}}
+									totalCount={total}
+									overscan={50}
+									data={members}
+									// eslint-disable-next-line react/no-multi-comp
+									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
+									itemContent={(index, data): ReactElement => (
+										<RowComponent useRealName={useRealName} data={itemData} user={data} index={index} reload={reload} />
+									)}
+								/>
+							</CustomScrollbars>
 						</Box>
 					</>
 				)}

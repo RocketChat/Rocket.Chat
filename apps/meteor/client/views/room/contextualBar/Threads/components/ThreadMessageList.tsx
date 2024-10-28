@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../lib/isTruthy';
-import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
+import CustomScrollbars from '../../../../../components/CustomScrollbars';
 import { BubbleDate } from '../../../BubbleDate';
 import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
@@ -74,13 +74,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	return (
 		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
 			<BubbleDate ref={bubbleRef} {...bubbleDate} />
-			<CustomScrollbars
-				ref={scrollRef}
-				onScroll={(args) => {
-					handleScroll(args);
-				}}
-				style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}
-			>
+			<CustomScrollbars ref={scrollRef} onScroll={handleScroll} style={{ scrollBehavior: 'smooth', overflowX: 'hidden' }}>
 				<Box
 					is='ul'
 					className={[listStyle, 'thread']}
