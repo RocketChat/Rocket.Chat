@@ -12,21 +12,21 @@ import {
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useSearchFiltersFormContext } from './SearchFiltersForm';
+type NoMarketplaceOrInstalledAppMatchesEmptyStateProps = {
+	searchText: string;
+};
 
-const NoMarketplaceOrInstalledAppMatchesEmptyState = () => {
+const NoMarketplaceOrInstalledAppMatchesEmptyState = ({ searchText }: NoMarketplaceOrInstalledAppMatchesEmptyStateProps) => {
 	const { t } = useTranslation();
-	const { watch } = useSearchFiltersFormContext();
-	const text = watch('text');
 
 	return (
 		<Box mbs={20}>
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('No_app_matches')}</StatesTitle>
-				{text && (
+				{searchText && (
 					<StatesSubtitle>
-						{t('No_marketplace_matches_for')}: <strong>"{text}"</strong>
+						{t('No_marketplace_matches_for')}: <strong>"{searchText}"</strong>
 					</StatesSubtitle>
 				)}
 				<StatesSuggestion>

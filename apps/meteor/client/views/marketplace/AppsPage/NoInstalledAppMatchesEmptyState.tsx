@@ -13,12 +13,12 @@ import { useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useSearchFiltersFormContext } from './SearchFiltersForm';
+type NoInstalledAppMatchesEmptyStateprops = {
+	searchText: string;
+};
 
-const NoInstalledAppMatchesEmptyState = () => {
+const NoInstalledAppMatchesEmptyState = ({ searchText }: NoInstalledAppMatchesEmptyStateprops) => {
 	const { t } = useTranslation();
-	const { watch } = useSearchFiltersFormContext();
-	const text = watch('text');
 
 	const router = useRouter();
 
@@ -37,10 +37,10 @@ const NoInstalledAppMatchesEmptyState = () => {
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('No_installed_app_matches')}</StatesTitle>
-				{text && (
+				{searchText && (
 					<StatesSubtitle>
 						<span>
-							{t('No_app_matches_for')} <strong>"{text}"</strong>
+							{t('No_app_matches_for')} <strong>"{searchText}"</strong>
 						</span>
 					</StatesSubtitle>
 				)}

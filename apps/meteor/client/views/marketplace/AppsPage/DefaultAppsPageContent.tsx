@@ -11,7 +11,7 @@ import { useMarketplaceContext } from '../hooks/useMarketplaceContext';
 import FeaturedAppsSections from './FeaturedAppsSections';
 import { useSearchFiltersFormContext } from './SearchFiltersForm';
 
-type AppsPageContentBodyProps = {
+type DefaultAppsPageContentProps = {
 	appsResult: PaginatedResult<{
 		items: App[];
 		shouldShowSearchText: boolean;
@@ -26,14 +26,14 @@ type AppsPageContentBodyProps = {
 	showingResultsLabel: (context: { count: number; current: number; itemsPerPage: 25 | 50 | 100 }) => string;
 };
 
-const AppsPageContentBody = ({
+const DefaultAppsPageContent = ({
 	appsResult,
 	itemsPerPage,
 	current,
 	onSetItemsPerPage,
 	onSetCurrent,
 	...paginationProps
-}: AppsPageContentBodyProps) => {
+}: DefaultAppsPageContentProps) => {
 	const { formState } = useSearchFiltersFormContext();
 	const context = useMarketplaceContext();
 	const { t } = useTranslation();
@@ -67,4 +67,4 @@ const AppsPageContentBody = ({
 	);
 };
 
-export default AppsPageContentBody;
+export default DefaultAppsPageContent;

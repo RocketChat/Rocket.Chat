@@ -1,4 +1,3 @@
-import { useSearchFiltersFormContext } from '../AppsPage/SearchFiltersForm';
 import { filterAppsByCategories } from '../helpers/filterAppsByCategories';
 import { filterAppsByDisabled } from '../helpers/filterAppsByDisabled';
 import { filterAppsByEnabled } from '../helpers/filterAppsByEnabled';
@@ -68,15 +67,26 @@ const comparatorBySortingMethod: Record<SortingMethod, (apps: App[]) => App[]> =
 		apps.sort((firstApp, secondApp) => sortAppsByClosestOrFarthestModificationDate(secondApp.modifiedAt, firstApp.modifiedAt)),
 };
 
-export const useFilteredAppsQuery = ({ offset, count }: { offset: number; count: number }) => {
-	const context = useMarketplaceContext();
-	const { watch } = useSearchFiltersFormContext();
+type UseFilteredAppsQueryOptions = {
+	text: string;
+	purchaseType: PurchaseType;
+	status: Status;
+	categories: string[];
+	sortingMethod: SortingMethod;
+	offset: number;
+	count: number;
+};
 
-	const text = watch('text');
-	const purchaseType = watch('purchaseType');
-	const status = watch('status');
-	const categories = watch('categories');
-	const sortingMethod = watch('sortingMethod');
+export const useFilteredAppsQuery = ({
+	text,
+	purchaseType,
+	status,
+	categories,
+	sortingMethod,
+	offset,
+	count,
+}: UseFilteredAppsQueryOptions) => {
+	const context = useMarketplaceContext();
 
 	return useMarketplaceQuery({
 		select: (data) => {

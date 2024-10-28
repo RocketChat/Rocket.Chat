@@ -37,7 +37,7 @@ const AppsRoute = () => {
 	return (
 		<AppsOrchestratorProvider>
 			<BannerEnterpriseTrialEnded />
-			{(page === 'list' && <AppsPage />) ||
+			{(page === 'list' && <AppsPage key={context} />) ||
 				(id && page === 'info' && <AppDetailsPage id={id} />) ||
 				(page === 'install' && <AppInstallPage />)}
 		</AppsOrchestratorProvider>

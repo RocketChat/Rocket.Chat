@@ -11,32 +11,32 @@ export const {
 	subscribeToSidebarItems: subscribeToMarketplaceSidebarItems,
 } = createSidebarItems([
 	{
-		href: '/marketplace/explore',
+		href: '/marketplace/explore/list',
 		icon: 'compass',
 		i18nLabel: 'Explore',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-marketplace', 'manage-apps']),
 	},
 	{
-		href: '/marketplace/premium',
+		href: '/marketplace/premium/list',
 		icon: 'lightning',
 		i18nLabel: 'Premium',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-marketplace', 'manage-apps']),
 	},
 	{
-		href: '/marketplace/installed',
+		href: '/marketplace/installed/list',
 		icon: 'circle-arrow-down',
 		i18nLabel: 'Installed',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-marketplace', 'manage-apps']),
 	},
 	{
-		href: '/marketplace/requested',
+		href: '/marketplace/requested/list',
 		icon: 'cube',
 		i18nLabel: 'Requested',
 		badge: () => <MarketplaceRequestBadge />,
 		permissionGranted: (): boolean => hasPermission('manage-apps'),
 	},
 	{
-		href: '/marketplace/private',
+		href: '/marketplace/private/list',
 		icon: 'lock',
 		i18nLabel: 'Private_Apps',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['access-marketplace', 'manage-apps']),
