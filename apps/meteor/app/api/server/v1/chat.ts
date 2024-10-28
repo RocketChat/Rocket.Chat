@@ -7,6 +7,7 @@ import {
 	isChatUpdateProps,
 	isChatGetThreadsListProps,
 	isChatDeleteProps,
+	isChatSyncMessagesProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
@@ -73,7 +74,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.syncMessages',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatSyncMessagesProps },
 	{
 		async get() {
 			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams;
