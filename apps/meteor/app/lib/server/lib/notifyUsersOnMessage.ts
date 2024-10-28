@@ -2,25 +2,16 @@ import type { IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
+import { messageContainsHighlight } from '../functions/notifications/messageContainsHighlight';
 import {
 	notifyOnSubscriptionChanged,
 	notifyOnSubscriptionChangedByRoomIdAndUserId,
 	notifyOnSubscriptionChangedByRoomIdAndUserIds,
 } from './notifyListener';
-
-function messageContainsHighlight(message: IMessage, highlights: string[]): boolean {
-	if (!highlights || highlights.length === 0) return false;
-
-	return highlights.some((highlight: string) => {
-		const regexp = new RegExp(escapeRegExp(highlight), 'i');
-		return regexp.test(message.msg);
-	});
-}
 
 export async function getMentions(message: IMessage): Promise<{ toAll: boolean; toHere: boolean; mentionIds: string[] }> {
 	const {
