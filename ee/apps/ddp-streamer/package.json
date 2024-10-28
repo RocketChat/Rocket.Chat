@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/ddp-streamer",
 	"private": true,
-	"version": "0.3.9-rc.3",
+	"version": "0.3.9-rc.4",
 	"description": "Rocket.Chat DDP-Streamer service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -36,7 +36,7 @@
 		"moleculer": "^0.14.34",
 		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
 		"nats": "^2.4.0",
-		"pino": "^8.15.0",
+		"pino": "^8.21.0",
 		"polka": "^0.5.2",
 		"sharp": "^0.32.6",
 		"underscore": "^1.13.7",
