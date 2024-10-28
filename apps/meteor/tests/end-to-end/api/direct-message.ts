@@ -375,7 +375,7 @@ describe('[Direct Messages]', () => {
 		let testUserCredentials: Credentials;
 
 		before(async () => {
-			testUser = await createUser({ joinDefaultChannels: false });
+			testUser = await createUser({ joinDefaultChannels: false, roles: ['admin'] });
 
 			testUserCredentials = await login(testUser.username, password);
 			await setUserStatus(testUserCredentials);
