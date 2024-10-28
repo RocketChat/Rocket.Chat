@@ -32,7 +32,6 @@ jobs:
       lowercase-repo: ${{ steps.var.outputs.lowercase-repo }}
       rc-dockerfile: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
       rc-docker-tag: '${{ steps.docker.outputs.gh-docker-tag }}'
-      rc-docker-tag-debian: '${{ steps.docker.outputs.gh-docker-tag }}.debian'
       node-version: ${{ steps.var.outputs.node-version }}
       deno-version: ${{ steps.var.outputs.deno-version }}
       official-platform: 'alpine'
@@ -343,7 +342,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ['alpine', 'debian']
+        platform: ['alpine']
 
     steps:
       - uses: actions/checkout@v4
@@ -379,7 +378,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ['alpine', 'debian']
+        platform: ['alpine']
 
     steps:
       - uses: actions/checkout@v4
@@ -391,7 +390,7 @@ jobs:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           platform: ${{ matrix.platform }}
-          build-containers: ${{ matrix.platform == 'debian' && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
+          build-containers: ${{ matrix.platform == needs.release-versions.outputs.official-platform && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Rename official Docker tag to GitHub Container Registry
@@ -400,7 +399,7 @@ jobs:
           IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}"
 
           echo "Push Docker image: ${IMAGE_NAME_BASE}"
-          docker tag ${IMAGE_NAME_BASE}.official $IMAGE_NAME_BASE
+          docker tag ${IMAGE_NAME_BASE}.${{matrix.platform}} $IMAGE_NAME_BASE
           docker push $IMAGE_NAME_BASE
 
   checks:
@@ -663,7 +662,7 @@ jobs:
 
       - name: Build Docker image
         id: build-docker-image-preview
-        uses: ./.github/actions/build-docker-image
+        uses: ./.github/actions/build-docker-image-preview
         with:
           root-dir: /tmp/build
           docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}

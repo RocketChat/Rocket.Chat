@@ -77,8 +77,8 @@ jobs:
   test:
     runs-on: ubuntu-20.04
     env:
-      RC_DOCKERFILE: ${{ inputs.rc-dockerfile }}.${{ matrix.mongodb-version == '7.0' && 'debian' || 'alpine' }}
-      RC_DOCKER_TAG: ${{ inputs.rc-docker-tag }}-${{ matrix.mongodb-version == '7.0' && 'debian' || 'alpine' }}
+      RC_DOCKERFILE: ${{ inputs.rc-dockerfile }}.${{ (matrix.mongodb-version == '7.0' && 'debian' && false) || 'alpine' }}
+      RC_DOCKER_TAG: ${{ inputs.rc-docker-tag }}-${{ (matrix.mongodb-version == '7.0' && 'debian' && false) || 'alpine' }}
 
     strategy:
       fail-fast: false
@@ -86,7 +86,7 @@ jobs:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
 
-    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'true' && ' [no watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }}) - ${{ matrix.mongodb-version == '7.0' && 'Debian' || 'Alpine (Official)' }}
+    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'true' && ' [no watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }}) - ${{ (matrix.mongodb-version == '7.0' && 'Debian' && false) || 'Alpine (Official)' }}
 
     steps:
       - name: Collect Workflow Telemetry
