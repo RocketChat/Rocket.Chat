@@ -132,8 +132,15 @@ export class MockedAppRootBuilder {
 
 	private audioOutputDevices: Device[] = [];
 
+	private latency = 0;
+
 	wrap(wrapper: (children: ReactNode) => ReactNode): this {
 		this.wrappers.push(wrapper);
+		return this;
+	}
+
+	withLatency(ms: number) {
+		this.latency = ms;
 		return this;
 	}
 
@@ -153,7 +160,13 @@ export class MockedAppRootBuilder {
 			params: OperationParams<TMethod, TPathPattern>;
 		}): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
 			if (args.method === String(method) && args.pathPattern === String(pathPattern)) {
-				return Promise.resolve(response(args.params)) as Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
+				const result = response(args.params) as Serialized<OperationResult<TMethod, TPathPattern>>;
+
+				if (this.latency > 0) {
+					return new Promise((res) => setTimeout(() => res(result), this.latency));
+				}
+
+				return Promise.resolve(result);
 			}
 
 			return innerFn(args);
