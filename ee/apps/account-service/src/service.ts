@@ -5,12 +5,12 @@ import polka from 'polka';
 
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
 
-startTracing({ service: 'account-service' });
-
 const PORT = process.env.PORT || 3033;
 
 (async () => {
-	const db = await getConnection();
+	const { db, client } = await getConnection();
+
+	startTracing({ service: 'account-service', db: client });
 
 	registerServiceModels(db, await getTrashCollection());
 
