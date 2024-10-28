@@ -234,8 +234,8 @@ describe('[Direct Messages]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count', 1);
-					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('count', 5);
+					expect(res.body).to.have.property('total', 5);
 					expect(res.body).to.have.property('ims').and.to.be.an('array');
 					const im = res.body.ims[0];
 					expect(im).to.have.property('_id');
@@ -494,10 +494,10 @@ describe('[Direct Messages]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages).to.have.lengthOf(2);
 					expect(res.body.messages[0]).to.have.nested.property('starred').that.is.an('array').and.to.have.lengthOf(1);
-					expect(res.body).to.have.property('count', 1);
-					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('count', 2);
+					expect(res.body).to.have.property('total', 2);
 				});
 		});
 
@@ -513,12 +513,12 @@ describe('[Direct Messages]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages).to.have.lengthOf(2);
 					expect(res.body.messages[0]).to.have.nested.property('pinned').that.is.an('boolean').and.to.be.true;
 					expect(res.body.messages[0]).to.have.nested.property('pinnedBy').that.is.an('object');
 					expect(res.body.messages[0].pinnedBy).to.have.property('_id', 'rocketchat.internal.admin.test');
-					expect(res.body).to.have.property('count', 1);
-					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('count', 2);
+					expect(res.body).to.have.property('total', 2);
 				});
 		});
 	});
