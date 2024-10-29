@@ -8928,10 +8928,10 @@ __metadata:
     "@rocket.chat/icons": "*"
     "@rocket.chat/prettier-config": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-avatar": 8.0.0-rc.4
-    "@rocket.chat/ui-contexts": 12.0.0-rc.4
+    "@rocket.chat/ui-avatar": 8.0.0-rc.5
+    "@rocket.chat/ui-contexts": 12.0.0-rc.5
     "@rocket.chat/ui-kit": 0.37.0-rc.0
-    "@rocket.chat/ui-video-conf": 12.0.0-rc.4
+    "@rocket.chat/ui-video-conf": 12.0.0-rc.5
     "@tanstack/react-query": "*"
     react: ~17.0.2
     react-dom: "*"
@@ -9016,8 +9016,8 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "*"
     "@rocket.chat/message-parser": 0.31.31
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-client": 12.0.0-rc.4
-    "@rocket.chat/ui-contexts": 12.0.0-rc.4
+    "@rocket.chat/ui-client": 12.0.0-rc.5
+    "@rocket.chat/ui-contexts": 12.0.0-rc.5
     katex: "*"
     react: "*"
   languageName: unknown
@@ -9556,7 +9556,7 @@ __metadata:
     he: "npm:^1.2.0"
     highlight.js: "npm:^11.10.0"
     hljs9: "npm:highlight.js@^9.18.5"
-    http-proxy-agent: "npm:^5.0.0"
+    http-proxy-agent: "npm:^7.0.2"
     human-interval: "npm:^2.0.1"
     i18next: "npm:~23.4.9"
     i18next-http-backend: "npm:^1.4.5"
@@ -10135,8 +10135,8 @@ __metadata:
     "@types/node-fetch": "npm:~2.6.11"
     "@types/proxy-from-env": "npm:^1.0.4"
     eslint: "npm:~8.45.0"
-    http-proxy-agent: "npm:^5.0.0"
-    https-proxy-agent: "npm:^5.0.1"
+    http-proxy-agent: "npm:^7.0.2"
+    https-proxy-agent: "npm:^7.0.5"
     node-fetch: "npm:2.7.0"
     proxy-from-env: "npm:^1.1.0"
     typescript: "npm:~5.6.3"
@@ -10267,7 +10267,7 @@ __metadata:
     typescript: "npm:~5.6.3"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
-    "@rocket.chat/ui-contexts": 12.0.0-rc.4
+    "@rocket.chat/ui-contexts": 12.0.0-rc.5
     react: ~17.0.2
   languageName: unknown
   linkType: soft
@@ -10317,8 +10317,8 @@ __metadata:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/ui-avatar": 8.0.0-rc.4
-    "@rocket.chat/ui-contexts": 12.0.0-rc.4
+    "@rocket.chat/ui-avatar": 8.0.0-rc.5
+    "@rocket.chat/ui-contexts": 12.0.0-rc.5
     react: "*"
     react-i18next: "*"
   languageName: unknown
@@ -10488,8 +10488,8 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-avatar": 8.0.0-rc.4
-    "@rocket.chat/ui-contexts": 12.0.0-rc.4
+    "@rocket.chat/ui-avatar": 8.0.0-rc.5
+    "@rocket.chat/ui-contexts": 12.0.0-rc.5
     react: ~17.0.2
     react-dom: ^17.0.2
   languageName: unknown
@@ -10545,9 +10545,9 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-avatar": 8.0.0-rc.4
-    "@rocket.chat/ui-client": 12.0.0-rc.4
-    "@rocket.chat/ui-contexts": 12.0.0-rc.4
+    "@rocket.chat/ui-avatar": 8.0.0-rc.5
+    "@rocket.chat/ui-client": 12.0.0-rc.5
+    "@rocket.chat/ui-contexts": 12.0.0-rc.5
     react: ~17.0.2
     react-aria: ~3.23.1
     react-dom: ^17.0.2
@@ -10634,7 +10634,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": 0.2.2
-    "@rocket.chat/ui-contexts": 12.0.0-rc.4
+    "@rocket.chat/ui-contexts": 12.0.0-rc.5
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
@@ -14680,6 +14680,15 @@ __metadata:
   dependencies:
     debug: "npm:4"
   checksum: 10/21fb903e0917e5cb16591b4d0ef6a028a54b83ac30cd1fca58dece3d4e0990512a8723f9f83130d88a41e2af8b1f7be1386fda3ea2d181bb1a62155e75e95e23
+  languageName: node
+  linkType: hard
+
+"agent-base@npm:^7.0.2, agent-base@npm:^7.1.0":
+  version: 7.1.1
+  resolution: "agent-base@npm:7.1.1"
+  dependencies:
+    debug: "npm:^4.3.4"
+  checksum: 10/c478fec8f79953f118704d007a38f2a185458853f5c45579b9669372bd0e12602e88dc2ad0233077831504f7cd6fcc8251c383375bba5eaaf563b102938bda26
   languageName: node
   linkType: hard
 
@@ -23957,6 +23966,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"http-proxy-agent@npm:^7.0.2":
+  version: 7.0.2
+  resolution: "http-proxy-agent@npm:7.0.2"
+  dependencies:
+    agent-base: "npm:^7.1.0"
+    debug: "npm:^4.3.4"
+  checksum: 10/d062acfa0cb82beeb558f1043c6ba770ea892b5fb7b28654dbc70ea2aeea55226dd34c02a294f6c1ca179a5aa483c4ea641846821b182edbd9cc5d89b54c6848
+  languageName: node
+  linkType: hard
+
 "http-proxy-middleware@npm:^2.0.3":
   version: 2.0.6
   resolution: "http-proxy-middleware@npm:2.0.6"
@@ -24018,6 +24037,16 @@ __metadata:
     agent-base: "npm:6"
     debug: "npm:4"
   checksum: 10/f0dce7bdcac5e8eaa0be3c7368bb8836ed010fb5b6349ffb412b172a203efe8f807d9a6681319105ea1b6901e1972c7b5ea899672a7b9aad58309f766dcbe0df
+  languageName: node
+  linkType: hard
+
+"https-proxy-agent@npm:^7.0.5":
+  version: 7.0.5
+  resolution: "https-proxy-agent@npm:7.0.5"
+  dependencies:
+    agent-base: "npm:^7.0.2"
+    debug: "npm:4"
+  checksum: 10/6679d46159ab3f9a5509ee80c3a3fc83fba3a920a5e18d32176c3327852c3c00ad640c0c4210a8fd70ea3c4a6d3a1b375bf01942516e7df80e2646bdc77658ab
   languageName: node
   linkType: hard
 
