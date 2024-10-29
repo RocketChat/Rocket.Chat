@@ -9509,7 +9509,7 @@ __metadata:
     use-sync-external-store: "npm:^1.2.2"
     uuid: "npm:^11.0.2"
     webdav: "npm:^4.11.4"
-    xml-crypto: "npm:~3.1.0"
+    xml-crypto: "npm:~6.0.0"
     xml-encryption: "npm:~3.0.2"
     xml2js: "npm:~0.6.2"
     yaqrcode: "npm:^0.2.1"
@@ -14268,10 +14268,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xmldom/xmldom@npm:0.8.7":
-  version: 0.8.7
-  resolution: "@xmldom/xmldom@npm:0.8.7"
-  checksum: 10/612c12518f25c2c06c1505ea0acca535a6f1293cae594e6329b18b112b720fca7fceeadb65ea203faa081933306a5b0f0967c3c728c77c4b68eccfa0d5537d3c
+"@xmldom/is-dom-node@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@xmldom/is-dom-node@npm:1.0.1"
+  checksum: 10/45683a6a192e4eff0f5189d4e3ef5272fcf8e3458f598f99614810490a8163c9a7ebe4ecaf241286fb74fcd762610b46c062ad3c7fddaa6eafa9a9f1537e338a
   languageName: node
   linkType: hard
 
@@ -38793,13 +38793,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xml-crypto@npm:~3.1.0":
-  version: 3.1.0
-  resolution: "xml-crypto@npm:3.1.0"
+"xml-crypto@npm:~6.0.0":
+  version: 6.0.0
+  resolution: "xml-crypto@npm:6.0.0"
   dependencies:
-    "@xmldom/xmldom": "npm:0.8.7"
-    xpath: "npm:0.0.32"
-  checksum: 10/1cabdf63f20ab730a8094b1f3b40b3731c5f36e153ba7a55bcc3b9ccd328bacadeeed42ae59011c6700c43032bb6e1664f790fb45656ee10c29cdb80b97cab16
+    "@xmldom/is-dom-node": "npm:^1.0.1"
+    "@xmldom/xmldom": "npm:^0.8.10"
+    xpath: "npm:^0.0.33"
+  checksum: 10/bc8f634618e8c30844546cf7a19d3c80634f8134118a2d2b9b76f0bb094b745c53ad94214cd3577fba93327d5d992c7570903e4463ce078d9699e45008246400
   languageName: node
   linkType: hard
 
@@ -38877,6 +38878,13 @@ __metadata:
   version: 0.0.32
   resolution: "xpath@npm:0.0.32"
   checksum: 10/9d8be7adde4500e9ee96db963838269021f89ef1ad222fdfd41b7266336e851a38416b4a710c194dcf9eb35cf58ad11e023e5951e919151b76ffcd6eb3b2cbf4
+  languageName: node
+  linkType: hard
+
+"xpath@npm:^0.0.33":
+  version: 0.0.33
+  resolution: "xpath@npm:0.0.33"
+  checksum: 10/09c539661cafc0d75bb48d13fee7ce6e7593d88f4387c401a3b15d46d543e81f46680be5c6ecf868c11f6090ee67ea78e0c327c4e0ffceb2969308a2d1e238bb
   languageName: node
   linkType: hard
 

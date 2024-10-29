@@ -437,7 +437,7 @@
 		"use-sync-external-store": "^1.2.2",
 		"uuid": "^11.0.2",
 		"webdav": "^4.11.4",
-		"xml-crypto": "~3.1.0",
+		"xml-crypto": "~6.0.0",
 		"xml-encryption": "~3.0.2",
 		"xml2js": "~0.6.2",
 		"yaqrcode": "^0.2.1"
