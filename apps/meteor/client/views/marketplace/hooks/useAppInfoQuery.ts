@@ -64,7 +64,7 @@ export const useAppInfoQuery = (appId: App['id']) => {
 							marketplace: 'true',
 							update: 'true',
 							appVersion: appId,
-					  })
+						})
 							.then(({ app }) => {
 								appResult.tosLink = app.tosLink;
 								appResult.privacyLink = app.privacyLink;
