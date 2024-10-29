@@ -79,7 +79,6 @@
 		"rimraf": "^6.0.1",
 		"sass": "~1.80.4",
 		"sass-loader": "~16.0.2",
-		"serve": "^11.3.2",
 		"storybook": "^8.3.6",
 		"style-loader": "^1.2.1",
 		"stylelint": "^14.9.1",
