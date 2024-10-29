@@ -7,7 +7,10 @@ import { expect } from '../utils/test';
 export class OmnichannelLiveChat {
 	readonly page: Page;
 
-	constructor(page: Page, private readonly api: { get(url: string): Promise<APIResponse> }) {
+	constructor(
+		page: Page,
+		private readonly api: { get(url: string): Promise<APIResponse> },
+	) {
 		this.page = page;
 	}
 

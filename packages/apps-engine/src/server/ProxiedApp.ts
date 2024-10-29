@@ -15,7 +15,11 @@ export class ProxiedApp {
 
     private latestLicenseValidationResult: AppLicenseValidationResult;
 
-    constructor(private readonly manager: AppManager, private storageItem: IAppStorageItem, private readonly appRuntime: DenoRuntimeSubprocessController) {
+    constructor(
+        private readonly manager: AppManager,
+        private storageItem: IAppStorageItem,
+        private readonly appRuntime: DenoRuntimeSubprocessController,
+    ) {
         this.previousStatus = storageItem.status;
     }
 

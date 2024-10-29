@@ -43,7 +43,7 @@ export async function configureEmailInboxes(): Promise<void> {
 								tlsOptions: {
 									rejectUnauthorized: false,
 								},
-						  }
+							}
 						: {}),
 				},
 				{

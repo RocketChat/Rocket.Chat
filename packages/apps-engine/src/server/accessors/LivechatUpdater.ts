@@ -4,7 +4,10 @@ import type { IUser } from '../../definition/users';
 import type { AppBridges } from '../bridges';
 
 export class LivechatUpdater implements ILivechatUpdater {
-    constructor(private readonly bridges: AppBridges, private readonly appId: string) {}
+    constructor(
+        private readonly bridges: AppBridges,
+        private readonly appId: string,
+    ) {}
 
     public transferVisitor(visitor: IVisitor, transferData: ILivechatTransferData): Promise<boolean> {
         return this.bridges.getLivechatBridge().doTransferVisitor(visitor, transferData, this.appId);

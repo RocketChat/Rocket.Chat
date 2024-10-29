@@ -86,7 +86,7 @@ const EditableSettingsProvider = ({ children, query = defaultQuery }: EditableSe
 											? { section: query.section }
 											: {
 													$or: [{ section: { $exists: false } }, { section: '' }],
-											  })),
+												})),
 								},
 								{
 									...('tab' in query &&
@@ -94,7 +94,7 @@ const EditableSettingsProvider = ({ children, query = defaultQuery }: EditableSe
 											? { tab: query.tab }
 											: {
 													$or: [{ tab: { $exists: false } }, { tab: '' }],
-											  })),
+												})),
 								},
 							],
 						},
@@ -124,7 +124,7 @@ const EditableSettingsProvider = ({ children, query = defaultQuery }: EditableSe
 										? { tab }
 										: {
 												$or: [{ tab: { $exists: false } }, { tab: '' }],
-										  }),
+											}),
 								},
 								{
 									fields: {

@@ -17,10 +17,13 @@ const handleFeaturePreviewEnableQuery = (item: FeaturePreviewProps, _: any, feat
 
 const groupFeaturePreview = (features: FeaturePreviewProps[]) =>
 	Object.entries(
-		features.reduce((result, currentValue) => {
-			(result[currentValue.group] = result[currentValue.group] || []).push(currentValue);
-			return result;
-		}, {} as Record<FeaturePreviewProps['group'], FeaturePreviewProps[]>),
+		features.reduce(
+			(result, currentValue) => {
+				(result[currentValue.group] = result[currentValue.group] || []).push(currentValue);
+				return result;
+			},
+			{} as Record<FeaturePreviewProps['group'], FeaturePreviewProps[]>,
+		),
 	);
 
 export const useFeaturePreviewEnableQuery = (features: FeaturePreviewProps[]) => {

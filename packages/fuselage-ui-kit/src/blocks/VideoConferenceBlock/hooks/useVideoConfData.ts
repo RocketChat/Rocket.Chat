@@ -16,6 +16,6 @@ export const useVideoConfData = ({ callId }: { callId: string }) => {
 
         return 'always';
       },
-    }
+    },
   );
 };

@@ -31,15 +31,15 @@ test.each([
             plain(', '),
             bold([plain('formatting')]),
           ],
-          true
+          true,
         ),
         task(
           [
             plain(
-              'list syntax required (any unordered or ordered list supported)'
+              'list syntax required (any unordered or ordered list supported)',
             ),
           ],
-          true
+          true,
         ),
       ]),
     ],

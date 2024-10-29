@@ -155,7 +155,7 @@ API.v1.addRoute(
 				: {
 						twoFactorCode: userData.typedPassword,
 						twoFactorMethod: 'password',
-				  };
+					};
 
 			await Meteor.callAsync('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions);
 
@@ -512,7 +512,7 @@ API.v1.addRoute(
 							{
 								$limit: count,
 							},
-					  ]
+						]
 					: [];
 
 			const result = await Users.col
