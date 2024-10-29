@@ -36,9 +36,7 @@ const ContactInfoDetails = ({ emails, phones, createdAt, customFieldEntries, con
 					</Field>
 				)}
 				{customFieldEntries.length > 0 && <Divider mi={-24} />}
-				{customFieldEntries?.map(([key, value]) => (
-					<CustomField key={key} id={key} value={value} />
-				))}
+				{customFieldEntries?.map(([key, value]) => <CustomField key={key} id={key} value={value} />)}
 			</Margins>
 		</ContextualbarScrollableContent>
 	);

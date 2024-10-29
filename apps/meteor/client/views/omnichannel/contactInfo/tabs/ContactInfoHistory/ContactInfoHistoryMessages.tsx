@@ -110,7 +110,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 									? (): void => undefined
 									: (start): void => {
 											loadMoreItems(start, Math.min(50, totalItemCount - start));
-									  }
+										}
 							}
 							overscan={25}
 							data={messages}

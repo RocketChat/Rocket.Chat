@@ -19,10 +19,13 @@ const ChatsProvider = ({ children }: ChatsProviderProps) => {
 			setFiltersQuery((prevState) => {
 				const customFields = Object.keys(prevState).filter((item) => !Object.keys(initialValues).includes(item));
 
-				const initialCustomFields = customFields.reduce((acc, cv) => {
-					acc[cv] = '';
-					return acc;
-				}, {} as { [key: string]: string });
+				const initialCustomFields = customFields.reduce(
+					(acc, cv) => {
+						acc[cv] = '';
+						return acc;
+					},
+					{} as { [key: string]: string },
+				);
 
 				return { ...initialValues, ...initialCustomFields };
 			}),

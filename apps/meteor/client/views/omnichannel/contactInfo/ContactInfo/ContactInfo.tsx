@@ -49,7 +49,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 	const customFieldEntries = canViewCustomFields
 		? Object.entries((userCustomFields ?? {}) as unknown as Record<string, string>).filter(
 				([key, value]) => checkIsVisibleAndScopeVisitor(key) && value,
-		  )
+			)
 		: [];
 
 	return (

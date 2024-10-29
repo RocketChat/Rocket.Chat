@@ -26,10 +26,13 @@ export const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 	const { data: departmentData } = useQuery(['getDepartmentDataForFilter', department], () => getDepartment({}));
 	const { data: agentData } = useQuery(['getAgentDataForFilter', servedBy], () => getAgent());
 
-	const displayCustomFields = Object.entries(customFields).reduce((acc, [key, value]) => {
-		acc[key] = value ? `${key}: ${value}` : undefined;
-		return acc;
-	}, {} as { [key: string]: string | undefined });
+	const displayCustomFields = Object.entries(customFields).reduce(
+		(acc, [key, value]) => {
+			acc[key] = value ? `${key}: ${value}` : undefined;
+			return acc;
+		},
+		{} as { [key: string]: string | undefined },
+	);
 
 	return {
 		from: from !== '' ? `${t('From')}: ${formatDate(from)}` : undefined,
