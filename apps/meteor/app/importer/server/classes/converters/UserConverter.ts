@@ -377,7 +377,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 										enabled: true,
 										changedAt: new Date(),
 									},
-							  }
+								}
 							: {}),
 					},
 				} as IUser;

@@ -19,7 +19,7 @@ const TeamAutocomplete = ({ value, onChange, ...props }: TeamAutocompleteProps) 
 				? data?.teams.map(({ name, teamId, _id, avatarETag, t }) => ({
 						value: teamId as string,
 						label: { name, avatarETag, type: t, _id },
-				  }))
+					}))
 				: [],
 		[data, isSuccess],
 	);

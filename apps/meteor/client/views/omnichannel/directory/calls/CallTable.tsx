@@ -124,9 +124,7 @@ const CallTable = () => {
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{data?.rooms.map((room) => (
-								<CallTableRow key={room._id} room={room} onRowClick={onRowClick} />
-							))}
+							{data?.rooms.map((room) => <CallTableRow key={room._id} room={room} onRowClick={onRowClick} />)}
 						</GenericTableBody>
 					</GenericTable>
 					<Pagination

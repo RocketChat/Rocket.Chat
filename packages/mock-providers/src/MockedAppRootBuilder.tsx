@@ -418,7 +418,7 @@ export class MockedAppRootBuilder {
 								name: new Intl.DisplayNames([key], { type: 'language' }).of(key) ?? key,
 								ogName: new Intl.DisplayNames([key], { type: 'language' }).of(key) ?? key,
 								key,
-						  }))
+							}))
 						: []),
 				],
 				loadLanguage: async (language) => {

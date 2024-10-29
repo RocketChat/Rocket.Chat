@@ -61,7 +61,7 @@ const VideoConferenceBlock = ({
         value: block.blockId || '',
         viewId,
       },
-      e
+      e,
     );
   };
 
@@ -74,7 +74,7 @@ const VideoConferenceBlock = ({
         value: rid || '',
         viewId,
       },
-      e
+      e,
     );
   };
 
@@ -87,7 +87,7 @@ const VideoConferenceBlock = ({
         value: rid,
         viewId,
       },
-      e
+      e,
     );
   };
 

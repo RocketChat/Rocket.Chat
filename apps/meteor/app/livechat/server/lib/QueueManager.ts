@@ -340,7 +340,6 @@ export class QueueManager {
 			return;
 		}
 
-		logger.debug(`Notifying ${await onlineAgents.count()} agents of new inquiry`);
 		const notificationUserName = v && (v.name || v.username);
 
 		for await (const agent of onlineAgents) {

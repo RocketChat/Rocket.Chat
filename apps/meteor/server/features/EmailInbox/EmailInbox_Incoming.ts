@@ -152,7 +152,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 					wrapTails: ')',
 				},
 				skipHtmlDecoding: false,
-		  }).result
+			}).result
 		: email.text || '';
 
 	const rid = room?._id ?? Random.id();

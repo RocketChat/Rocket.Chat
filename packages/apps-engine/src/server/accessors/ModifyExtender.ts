@@ -7,7 +7,10 @@ import { RoomExtender } from './RoomExtender';
 import { VideoConferenceExtender } from './VideoConferenceExtend';
 
 export class ModifyExtender implements IModifyExtender {
-    constructor(private readonly bridges: AppBridges, private readonly appId: string) {}
+    constructor(
+        private readonly bridges: AppBridges,
+        private readonly appId: string,
+    ) {}
 
     public async extendMessage(messageId: string, updater: IUser): Promise<IMessageExtender> {
         const msg = await this.bridges.getMessageBridge().doGetById(messageId, this.appId);

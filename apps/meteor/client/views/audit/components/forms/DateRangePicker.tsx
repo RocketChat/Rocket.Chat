@@ -167,7 +167,7 @@ const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps): R
 					label: t('Previous_month'),
 					action: () => dispatch('last-month'),
 				},
-			} as const),
+			}) as const,
 		[dispatch, t],
 	);
 

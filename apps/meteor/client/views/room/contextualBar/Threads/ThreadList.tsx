@@ -163,7 +163,7 @@ const ThreadList = () => {
 									? (): void => undefined
 									: (start): void => {
 											loadMoreItems(start, Math.min(50, itemCount - start));
-									  }
+										}
 							}
 							overscan={25}
 							data={items}

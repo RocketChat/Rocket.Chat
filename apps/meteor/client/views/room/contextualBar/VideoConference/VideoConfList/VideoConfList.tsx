@@ -80,7 +80,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 									? (): void => undefined
 									: (start) => {
 											loadMoreItems(start, Math.min(50, total - start));
-									  }
+										}
 							}
 							overscan={25}
 							data={videoConfs}

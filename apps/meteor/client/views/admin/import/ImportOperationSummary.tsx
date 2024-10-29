@@ -91,7 +91,7 @@ function ImportOperationSummary({
 				role: 'link',
 				action: true,
 				onClick: handleClick,
-		  }
+			}
 		: {};
 
 	return (

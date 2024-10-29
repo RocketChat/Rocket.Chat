@@ -20,7 +20,6 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 		{ token, sourceFilter }: { token: string; sourceFilter?: Filter<ILivechatVisitor> },
 		options?: FindOptions<ILivechatVisitor>,
 	): Promise<ILivechatVisitor | null>;
-	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): FindCursor<ILivechatVisitor>;
 	findByNameRegexWithExceptionsAndConditions<P extends Document = ILivechatVisitor>(
 		searchTerm: string,
 		exceptions: string[],
@@ -103,4 +102,5 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	): Promise<UpdateResult | Document | boolean>;
 	setLastChatById(_id: string, lastChat: Required<ILivechatVisitor['lastChat']>): Promise<UpdateResult>;
 	setSourceById(_id: string, source: ILivechatVisitor['source']): Promise<UpdateResult>;
+	countVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): Promise<number>;
 }

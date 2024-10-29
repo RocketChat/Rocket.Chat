@@ -132,7 +132,7 @@ class LivechatClass {
 			Livechat.logger.debug(`Fetching online bot agents for department ${department}`);
 			const botAgents = await Livechat.getBotAgents(department);
 			if (botAgents) {
-				const onlineBots = await botAgents.count();
+				const onlineBots = await Livechat.countBotAgents(department);
 				this.logger.debug(`Found ${onlineBots} online`);
 				if (onlineBots > 0) {
 					return true;
@@ -500,6 +500,14 @@ class LivechatClass {
 		}
 
 		return Users.findBotAgents();
+	}
+
+	private async countBotAgents(department?: string) {
+		if (department) {
+			return LivechatDepartmentAgents.countBotsForDepartment(department);
+		}
+
+		return Users.countBotAgents();
 	}
 
 	private async resolveChatTags(

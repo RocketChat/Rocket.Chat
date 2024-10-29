@@ -57,8 +57,8 @@ const PreviewBlock = ({
               surfaceRenderer.renderTextObject(
                 title,
                 0,
-                UiKit.BlockContext.NONE
-              )
+                UiKit.BlockContext.NONE,
+              ),
             )}
           </MessageGenericPreviewTitle>
         ) : null}
@@ -68,8 +68,8 @@ const PreviewBlock = ({
               surfaceRenderer.renderTextObject(
                 description,
                 0,
-                UiKit.BlockContext.NONE
-              )
+                UiKit.BlockContext.NONE,
+              ),
             )}
           </MessageGenericPreviewDescription>
         ) : null}
