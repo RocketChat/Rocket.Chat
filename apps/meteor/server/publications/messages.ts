@@ -72,7 +72,7 @@ export function mountCursorFromMessage(message: IMessage & { _deletedAt?: Date }
 	throw new Meteor.Error('error-cursor-not-found', 'Cursor not found', { method: 'messages/get' });
 }
 
-export function mountNextCursor(messages: IMessage[], type: CursorPaginationType, next?: string, previous?: string): string | null {
+export function mountNextCursor(messages: IMessage[], type: CursorPaginationType, _next?: string, previous?: string): string | null {
 	// if messages length is greater than 0, it means that we might have more messages
 	// and we shall return a cursor pointing to the most recent message from the current batch
 
