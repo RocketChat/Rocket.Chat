@@ -4437,7 +4437,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/core@npm:^29.6.4, @jest/core@npm:^29.7.0":
+"@jest/core@npm:^29.7.0":
   version: 29.7.0
   resolution: "@jest/core@npm:29.7.0"
   dependencies:
@@ -10072,7 +10072,7 @@ __metadata:
     "@opentelemetry/sdk-node": "npm:^0.54.0"
     "@types/jest": "npm:~29.5.14"
     eslint: "npm:~8.45.0"
-    jest: "npm:~29.6.4"
+    jest: "npm:~29.7.0"
     ts-jest: "npm:~29.2.5"
     typescript: "npm:~5.3.3"
   languageName: unknown
@@ -25342,7 +25342,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-cli@npm:^29.6.4, jest-cli@npm:^29.7.0":
+"jest-cli@npm:^29.7.0":
   version: 29.7.0
   resolution: "jest-cli@npm:29.7.0"
   dependencies:
@@ -25814,25 +25814,6 @@ __metadata:
   bin:
     jest: bin/jest.js
   checksum: 10/97023d78446098c586faaa467fbf2c6b07ff06e2c85a19e3926adb5b0effe9ac60c4913ae03e2719f9c01ae8ffd8d92f6b262cedb9555ceeb5d19263d8c6362a
-  languageName: node
-  linkType: hard
-
-"jest@npm:~29.6.4":
-  version: 29.6.4
-  resolution: "jest@npm:29.6.4"
-  dependencies:
-    "@jest/core": "npm:^29.6.4"
-    "@jest/types": "npm:^29.6.3"
-    import-local: "npm:^3.0.2"
-    jest-cli: "npm:^29.6.4"
-  peerDependencies:
-    node-notifier: ^8.0.1 || ^9.0.0 || ^10.0.0
-  peerDependenciesMeta:
-    node-notifier:
-      optional: true
-  bin:
-    jest: bin/jest.js
-  checksum: 10/d747e293bd63f583e7978ac0693ab7a019812fa44b9bf3b3fe20e75e8a343bcd8251d292326d73151dc0b8a2b5a974d878b3aa9ffb146dfa7980553f64a35b43
   languageName: node
   linkType: hard
 
