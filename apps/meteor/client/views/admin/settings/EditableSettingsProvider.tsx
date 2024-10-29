@@ -14,13 +14,15 @@ import type { EditableSetting, EditableSettingsContextValue } from '../EditableS
 import { EditableSettingsContext } from '../EditableSettingsContext';
 
 const defaultQuery: SettingsContextQuery = {};
+const defaultOmit: Array<ISetting['_id']> = [];
 
 type EditableSettingsProviderProps = {
 	children?: ReactNode;
 	query?: SettingsContextQuery;
+	omit?: Array<ISetting['_id']>;
 };
 
-const EditableSettingsProvider = ({ children, query = defaultQuery }: EditableSettingsProviderProps) => {
+const EditableSettingsProvider = ({ children, query = defaultQuery, omit = defaultOmit }: EditableSettingsProviderProps) => {
 	const settingsCollectionRef = useRef<Mongo.Collection<EditableSetting>>(null) as MutableRefObject<Mongo.Collection<EditableSetting>>;
 	const persistedSettings = useSettings(query);
 
@@ -39,7 +41,13 @@ const EditableSettingsProvider = ({ children, query = defaultQuery }: EditableSe
 		for (const { _id, ...fields } of persistedSettings) {
 			settingsCollection.upsert(_id, { $set: { ...fields }, $unset: { changed: true } });
 		}
-	}, [getSettingsCollection, persistedSettings]);
+		// TODO: Remove option to omit settings from admin pages manually
+		// This is a very wacky workaround due to lack of support to omit settings from the
+		// admin settings page while keeping them public.
+		if (omit.length > 0) {
+			settingsCollection.remove({ _id: { $in: omit } });
+		}
+	}, [getSettingsCollection, persistedSettings, omit]);
 
 	const queryEditableSetting = useMemo(() => {
 		const validateSettingQueries = (
