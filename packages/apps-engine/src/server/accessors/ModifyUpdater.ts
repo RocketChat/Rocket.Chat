@@ -17,7 +17,10 @@ export class ModifyUpdater implements IModifyUpdater {
 
     private messageUpdater: IMessageUpdater;
 
-    constructor(private readonly bridges: AppBridges, private readonly appId: string) {
+    constructor(
+        private readonly bridges: AppBridges,
+        private readonly appId: string,
+    ) {
         this.livechatUpdater = new LivechatUpdater(this.bridges, this.appId);
         this.userUpdater = new UserUpdater(this.bridges, this.appId);
     }

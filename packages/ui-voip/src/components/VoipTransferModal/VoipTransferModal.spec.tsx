@@ -2,7 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import VoipTransferModal from '.';
+import VoipTransferModal from './VoipTransferModal';
 
 it('should be able to select transfer target', async () => {
 	const confirmFn = jest.fn();
@@ -57,19 +57,19 @@ it('should be able to select transfer target', async () => {
 
 	expect(hangUpAnTransferButton).toBeDisabled();
 
-	screen.getByLabelText('Transfer_to').focus();
 	await act(async () => {
+		await userEvent.type(screen.getByRole('textbox', { name: 'Transfer_to' }), 'Jane Doe');
 		const userOption = await screen.findByRole('option', { name: 'Jane Doe' });
 		await userEvent.click(userOption);
 	});
 
 	expect(hangUpAnTransferButton).toBeEnabled();
-	hangUpAnTransferButton.click();
+	await userEvent.click(hangUpAnTransferButton);
 
 	expect(confirmFn).toHaveBeenCalledWith({ extension: '1011', name: 'Jane Doe' });
 });
 
-it('should call onCancel when Cancel is clicked', () => {
+it('should call onCancel when Cancel is clicked', async () => {
 	const confirmFn = jest.fn();
 	const cancelFn = jest.fn();
 	render(<VoipTransferModal extension='1000' onConfirm={confirmFn} onCancel={cancelFn} />, {
@@ -77,12 +77,12 @@ it('should call onCancel when Cancel is clicked', () => {
 		legacyRoot: true,
 	});
 
-	screen.getByText('Cancel').click();
+	await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
 	expect(cancelFn).toHaveBeenCalled();
 });
 
-it('should call onCancel when X is clicked', () => {
+it('should call onCancel when X is clicked', async () => {
 	const confirmFn = jest.fn();
 	const cancelFn = jest.fn();
 	render(<VoipTransferModal extension='1000' onConfirm={confirmFn} onCancel={cancelFn} />, {
@@ -90,7 +90,7 @@ it('should call onCancel when X is clicked', () => {
 		legacyRoot: true,
 	});
 
-	screen.getByLabelText('Close').click();
+	await userEvent.click(screen.getByRole('button', { name: 'Close' }));
 
 	expect(cancelFn).toHaveBeenCalled();
 });

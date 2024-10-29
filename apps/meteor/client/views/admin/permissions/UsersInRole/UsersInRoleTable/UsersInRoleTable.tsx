@@ -102,9 +102,7 @@ const UsersInRoleTable = ({ rid, roleId, roleName, description }: UsersInRoleTab
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{users?.map((user) => (
-								<UsersInRoleTableRow onRemove={handleRemove} key={user?._id} user={user} />
-							))}
+							{users?.map((user) => <UsersInRoleTableRow onRemove={handleRemove} key={user?._id} user={user} />)}
 						</GenericTableBody>
 					</GenericTable>
 					<Pagination

@@ -126,7 +126,7 @@ const PruneMessagesWithData = (): ReactElement => {
 			? ` ${t('if_they_are_from', {
 					postProcess: 'sprintf',
 					sprintf: [users.map((element) => element).join(', ')],
-			  })}`
+				})}`
 			: '';
 		const filesOrMessages = attached ? t('files') : t('messages');
 

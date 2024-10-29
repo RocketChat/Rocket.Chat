@@ -20,21 +20,25 @@ function mapConflicts(
 	contact: Serialized<ILivechatContact>,
 	metadata: CustomFieldMetadata[],
 ): Record<string, { name: string; label: string; values: string[] }> {
-	const conflicts = contact.conflictingFields?.reduce((acc, current) => {
-		const fieldName = current.field === 'manager' ? 'contactManager' : current.field.replace('customFields.', '');
+	const conflicts = contact.conflictingFields?.reduce(
+		(acc, current) => {
+			const fieldName = current.field === 'manager' ? 'contactManager' : current.field.replace('customFields.', '');
 
-		if (acc[fieldName]) {
-			acc[fieldName].values.push(current.value);
-		} else {
-			acc[fieldName] = {
-				name: fieldName,
-				label:
-					(current.field.startsWith('customFields.') && metadata.find(({ name }) => name === fieldName)?.label) || fieldNameMap[fieldName],
-				values: [current.value],
-			};
-		}
-		return acc;
-	}, {} as Record<string, { name: string; label: string; values: string[] }>);
+			if (acc[fieldName]) {
+				acc[fieldName].values.push(current.value);
+			} else {
+				acc[fieldName] = {
+					name: fieldName,
+					label:
+						(current.field.startsWith('customFields.') && metadata.find(({ name }) => name === fieldName)?.label) ||
+						fieldNameMap[fieldName],
+					values: [current.value],
+				};
+			}
+			return acc;
+		},
+		{} as Record<string, { name: string; label: string; values: string[] }>,
+	);
 
 	if (conflicts?.name?.values.length && contact.name) {
 		conflicts.name.values.push(contact.name);

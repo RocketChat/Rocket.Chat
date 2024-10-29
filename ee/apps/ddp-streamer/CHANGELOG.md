@@ -1,5 +1,52 @@
 # @rocket.chat/ddp-streamer
 
+## 0.3.9-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [d1e14a0a85, bf05700542, 1bdfd201b1, 2bc9692de0]:</summary>
+
+  - @rocket.chat/rest-typings@7.0.0-rc.5
+  - @rocket.chat/core-services@0.7.1-rc.5
+  - @rocket.chat/network-broker@0.1.1-rc.5
+  - @rocket.chat/core-typings@7.0.0-rc.5
+  - @rocket.chat/model-typings@1.0.0-rc.5
+  - @rocket.chat/models@1.0.0-rc.5
+  - @rocket.chat/instance-status@0.1.9-rc.5
+  </details>
+
+## 0.3.9-rc.4
+
+### Patch Changes
+
+- ([#33770](https://github.com/RocketChat/Rocket.Chat/pull/33770)) Fixes page loading during reconnections
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.4
+  - @rocket.chat/rest-typings@7.0.0-rc.4
+  - @rocket.chat/core-services@0.7.1-rc.4
+  - @rocket.chat/model-typings@1.0.0-rc.4
+  - @rocket.chat/network-broker@0.1.1-rc.4
+  - @rocket.chat/models@1.0.0-rc.4
+  - @rocket.chat/instance-status@0.1.9-rc.4
+  </details>
+
+## 0.3.9-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.3
+  - @rocket.chat/rest-typings@7.0.0-rc.3
+  - @rocket.chat/core-services@0.7.1-rc.3
+  - @rocket.chat/model-typings@1.0.0-rc.3
+  - @rocket.chat/network-broker@0.1.1-rc.3
+  - @rocket.chat/models@1.0.0-rc.3
+  - @rocket.chat/instance-status@0.1.9-rc.3
+  </details>
+
 ## 0.3.9-rc.2
 
 ### Patch Changes

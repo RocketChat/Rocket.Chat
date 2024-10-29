@@ -1,9 +1,9 @@
 {
 	"name": "@rocket.chat/api-client",
-	"version": "0.2.9-rc.2",
+	"version": "0.2.9-rc.5",
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
-		"@types/jest": "~29.5.13",
+		"@types/jest": "~29.5.14",
 		"@types/strict-uri-encode": "^2.0.2",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",

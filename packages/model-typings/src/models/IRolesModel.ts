@@ -1,5 +1,5 @@
 import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
-import type { FindCursor, FindOptions } from 'mongodb';
+import type { FindCursor, FindOptions, CountDocumentsOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -62,4 +62,6 @@ export interface IRolesModel extends IBaseModel<IRole> {
 
 	canAddUserToRole(uid: IUser['_id'], roleId: IRole['_id'], scope?: IRoom['_id']): Promise<boolean>;
 	countUsersInRole(roleId: IRole['_id'], scope?: IRoom['_id']): Promise<number>;
+	countByScope(scope: IRole['scope'], options?: CountDocumentsOptions): Promise<number>;
+	countCustomRoles(options?: CountDocumentsOptions): Promise<number>;
 }

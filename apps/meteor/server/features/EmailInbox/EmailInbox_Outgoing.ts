@@ -71,7 +71,7 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 				? {
 						name: inbox.config.senderInfo,
 						address: inbox.config.email,
-				  }
+					}
 				: inbox.config.email,
 			...mail,
 		})

@@ -74,7 +74,7 @@ const SettingsProvider = ({ children, privileged = false }: SettingsProviderProp
 									? { section: query.section }
 									: {
 											$or: [{ section: { $exists: false } }, { section: undefined }],
-									  })),
+										})),
 						},
 						{
 							sort: {

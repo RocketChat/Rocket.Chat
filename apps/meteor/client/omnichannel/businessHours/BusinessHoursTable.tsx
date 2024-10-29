@@ -66,9 +66,7 @@ const BusinessHoursTable = () => {
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{data?.businessHours.map((businessHour) => (
-								<BusinessHoursRow key={businessHour._id} {...businessHour} />
-							))}
+							{data?.businessHours.map((businessHour) => <BusinessHoursRow key={businessHour._id} {...businessHour} />)}
 						</GenericTableBody>
 					</GenericTable>
 					<Pagination

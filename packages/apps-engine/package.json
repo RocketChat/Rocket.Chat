@@ -102,7 +102,7 @@
         "lodash.clonedeep": "^4.5.0",
         "semver": "^7.6.3",
         "stack-trace": "0.0.10",
-        "uuid": "~8.3.2"
+        "uuid": "~10.0.0"
     },
     "nyc": {
         "include": [

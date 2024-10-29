@@ -112,11 +112,7 @@ const ChatsTable = () => {
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>
-							{data?.rooms.map((room) => (
-								<ChatsTableRow key={room._id} {...room} />
-							))}
-						</GenericTableBody>
+						<GenericTableBody>{data?.rooms.map((room) => <ChatsTableRow key={room._id} {...room} />)}</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider

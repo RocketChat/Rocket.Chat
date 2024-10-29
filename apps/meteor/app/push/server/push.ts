@@ -484,14 +484,14 @@ class PushClass {
 						apn: {
 							...pick(options.apn, 'category'),
 						},
-				  }
+					}
 				: {}),
 			...(this.hasGcmOptions(options)
 				? {
 						gcm: {
 							...pick(options.gcm, 'image', 'style'),
 						},
-				  }
+					}
 				: {}),
 		};
 

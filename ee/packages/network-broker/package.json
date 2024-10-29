@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/network-broker",
-	"version": "0.1.1-rc.2",
+	"version": "0.1.1-rc.5",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
@@ -34,6 +34,6 @@
 		"@rocket.chat/core-services": "workspace:^",
 		"ejson": "^2.2.3",
 		"moleculer": "^0.14.34",
-		"pino": "^8.15.0"
+		"pino": "^8.21.0"
 	}
 }

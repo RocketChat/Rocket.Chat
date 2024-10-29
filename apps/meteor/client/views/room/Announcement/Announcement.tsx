@@ -35,7 +35,7 @@ const Announcement = ({ announcement, announcementDetails }: AnnouncementProps) 
 							<MarkdownText content={announcement} parseEmoji />
 						</Box>
 					</GenericModal>,
-			  );
+				);
 	};
 
 	return announcement ? (

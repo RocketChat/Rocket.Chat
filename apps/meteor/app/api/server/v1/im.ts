@@ -378,7 +378,9 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { room } = await findDirectMessageRoom(this.queryParams, this.userId);
+			const { roomId, username, mentionIds, starredIds, pinned } = this.queryParams;
+
+			const { room } = await findDirectMessageRoom({ ...(roomId ? { roomId } : { username }) }, this.userId);
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
 			if (!canAccess) {
@@ -388,7 +390,16 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
-			const ourQuery = { rid: room._id, ...query };
+			const parseIds = (ids: string | undefined, field: string) =>
+				typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
+
+			const ourQuery = {
+				rid: room._id,
+				...query,
+				...parseIds(mentionIds, 'mentions._id'),
+				...parseIds(starredIds, 'starred._id'),
+				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
+			};
 			const sortObj = { ts: sort?.ts ?? -1 };
 
 			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {

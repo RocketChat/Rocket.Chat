@@ -37,7 +37,7 @@ const warnFields =
 	process.env.NODE_ENV !== 'production' || process.env.SHOW_WARNINGS === 'true'
 		? (...rest: any): void => {
 				console.warn(...rest, new Error().stack);
-		  }
+			}
 		: new Function();
 
 type ModelOptions = {
@@ -70,7 +70,12 @@ export abstract class BaseRaw<
 	 * @param trash Trash collection instance
 	 * @param options Model options
 	 */
-	constructor(private db: Db, protected name: string, protected trash?: Collection<TDeleted>, private options?: ModelOptions) {
+	constructor(
+		private db: Db,
+		protected name: string,
+		protected trash?: Collection<TDeleted>,
+		private options?: ModelOptions,
+	) {
 		this.collectionName = options?.collectionNameResolver ? options.collectionNameResolver(name) : getCollectionName(name);
 
 		this.col = this.db.collection(this.collectionName, options?.collection || {});

@@ -1,5 +1,132 @@
 # @rocket.chat/meteor
 
+## 7.0.0-rc.5
+
+### Major Changes
+
+- ([#33038](https://github.com/RocketChat/Rocket.Chat/pull/33038)) Remove support of filtering by agent's username on the following endpoint:
+
+  - `/v1/livechat/rooms`
+
+  The performance of the endpoint was improved when filtering by:
+
+  - Agent
+  - Deparment
+  - Open chats
+
+- ([#33802](https://github.com/RocketChat/Rocket.Chat/pull/33802)) Changes groups messages listing endpoint by moving query params from the 'query' attribute to standard query parameters.
+
+- ([#33801](https://github.com/RocketChat/Rocket.Chat/pull/33801)) Changes channels messages listing endpoint by moving query params from the 'query' attribute to standard query parameters.
+
+- ([#33787](https://github.com/RocketChat/Rocket.Chat/pull/33787)) Changes settings public listing endpoint by moving query params from the 'query' attribute to standard query parameters.
+
+- ([#33807](https://github.com/RocketChat/Rocket.Chat/pull/33807)) Changes ims and dms messages listing endpoint by moving query params from the 'query' attribute to standard query parameters.
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies [d1e14a0a85, bf05700542, 1bdfd201b1, 2bc9692de0]:</summary>
+
+  - @rocket.chat/rest-typings@7.0.0-rc.5
+  - @rocket.chat/omnichannel-services@0.3.6-rc.5
+  - @rocket.chat/presence@0.2.9-rc.5
+  - @rocket.chat/api-client@0.2.9-rc.5
+  - @rocket.chat/core-services@0.7.1-rc.5
+  - @rocket.chat/ui-contexts@12.0.0-rc.5
+  - @rocket.chat/network-broker@0.1.1-rc.5
+  - @rocket.chat/ui-theming@0.4.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@12.0.0-rc.5
+  - @rocket.chat/gazzodown@12.0.0-rc.5
+  - @rocket.chat/ui-avatar@8.0.0-rc.5
+  - @rocket.chat/ui-client@12.0.0-rc.5
+  - @rocket.chat/ui-video-conf@12.0.0-rc.5
+  - @rocket.chat/ui-voip@2.0.0-rc.5
+  - @rocket.chat/web-ui-registration@12.0.0-rc.5
+  - @rocket.chat/core-typings@7.0.0-rc.5
+  - @rocket.chat/license@1.0.0-rc.5
+  - @rocket.chat/pdf-worker@0.2.6-rc.5
+  - @rocket.chat/apps@0.2.0-rc.5
+  - @rocket.chat/cron@0.1.9-rc.5
+  - @rocket.chat/freeswitch@1.0.0-rc.5
+  - @rocket.chat/model-typings@1.0.0-rc.5
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@1.0.0-rc.5
+  - @rocket.chat/instance-status@0.1.9-rc.5
+  </details>
+
+## 7.0.0-rc.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#33770](https://github.com/RocketChat/Rocket.Chat/pull/33770)) Fixes page loading during reconnections
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.4
+  - @rocket.chat/rest-typings@7.0.0-rc.4
+  - @rocket.chat/license@1.0.0-rc.4
+  - @rocket.chat/omnichannel-services@0.3.6-rc.4
+  - @rocket.chat/pdf-worker@0.2.6-rc.4
+  - @rocket.chat/presence@0.2.9-rc.4
+  - @rocket.chat/api-client@0.2.9-rc.4
+  - @rocket.chat/apps@0.2.0-rc.4
+  - @rocket.chat/core-services@0.7.1-rc.4
+  - @rocket.chat/cron@0.1.9-rc.4
+  - @rocket.chat/freeswitch@1.0.0-rc.4
+  - @rocket.chat/fuselage-ui-kit@12.0.0-rc.4
+  - @rocket.chat/gazzodown@12.0.0-rc.4
+  - @rocket.chat/model-typings@1.0.0-rc.4
+  - @rocket.chat/ui-contexts@12.0.0-rc.4
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.1-rc.4
+  - @rocket.chat/models@1.0.0-rc.4
+  - @rocket.chat/ui-theming@0.4.0-rc.0
+  - @rocket.chat/ui-avatar@8.0.0-rc.4
+  - @rocket.chat/ui-client@12.0.0-rc.4
+  - @rocket.chat/ui-video-conf@12.0.0-rc.4
+  - @rocket.chat/ui-voip@2.0.0-rc.4
+  - @rocket.chat/web-ui-registration@12.0.0-rc.4
+  - @rocket.chat/instance-status@0.1.9-rc.4
+  </details>
+
+## 7.0.0-rc.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.3
+  - @rocket.chat/rest-typings@7.0.0-rc.3
+  - @rocket.chat/license@1.0.0-rc.3
+  - @rocket.chat/omnichannel-services@0.3.6-rc.3
+  - @rocket.chat/pdf-worker@0.2.6-rc.3
+  - @rocket.chat/presence@0.2.9-rc.3
+  - @rocket.chat/api-client@0.2.9-rc.3
+  - @rocket.chat/apps@0.2.0-rc.3
+  - @rocket.chat/core-services@0.7.1-rc.3
+  - @rocket.chat/cron@0.1.9-rc.3
+  - @rocket.chat/freeswitch@1.0.0-rc.3
+  - @rocket.chat/fuselage-ui-kit@12.0.0-rc.3
+  - @rocket.chat/gazzodown@12.0.0-rc.3
+  - @rocket.chat/model-typings@1.0.0-rc.3
+  - @rocket.chat/ui-contexts@12.0.0-rc.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.1-rc.3
+  - @rocket.chat/models@1.0.0-rc.3
+  - @rocket.chat/ui-theming@0.4.0-rc.0
+  - @rocket.chat/ui-avatar@8.0.0-rc.3
+  - @rocket.chat/ui-client@12.0.0-rc.3
+  - @rocket.chat/ui-video-conf@12.0.0-rc.3
+  - @rocket.chat/ui-voip@2.0.0-rc.3
+  - @rocket.chat/web-ui-registration@12.0.0-rc.3
+  - @rocket.chat/instance-status@0.1.9-rc.3
+  </details>
+
 ## 7.0.0-rc.2
 
 ### Patch Changes

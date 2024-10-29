@@ -1449,6 +1449,17 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query);
 	}
 
+	countOnlineUserFromList(userList, isLivechatEnabledWhenAgentIdle) {
+		// TODO: Create class Agent
+		const username = {
+			$in: [].concat(userList),
+		};
+
+		const query = queryStatusAgentOnline({ username }, isLivechatEnabledWhenAgentIdle);
+
+		return this.countDocuments(query);
+	}
+
 	findOneOnlineAgentByUserList(userList, options, isLivechatEnabledWhenAgentIdle) {
 		// TODO:: Create class Agent
 		const username = {
@@ -1478,6 +1489,22 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.find(query);
+	}
+
+	countBotAgents(usernameList) {
+		// TODO:: Create class Agent
+		const query = {
+			roles: {
+				$all: ['bot', 'livechat-agent'],
+			},
+			...(usernameList && {
+				username: {
+					$in: [].concat(usernameList),
+				},
+			}),
+		};
+
+		return this.countDocuments(query);
 	}
 
 	removeAllRoomsByUserId(_id) {
@@ -2725,12 +2752,12 @@ export class UsersRaw extends BaseRaw {
 						$set: {
 							bio,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							bio: 1,
 						},
-				  }),
+					}),
 		};
 		return this.updateOne({ _id }, update);
 	}
@@ -2742,12 +2769,12 @@ export class UsersRaw extends BaseRaw {
 						$set: {
 							nickname,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							nickname: 1,
 						},
-				  }),
+					}),
 		};
 		return this.updateOne({ _id }, update);
 	}

@@ -85,23 +85,23 @@ export const SectionWithPlainText = createStory(payloads.sectionWithPlainText);
 export const SectionWithMrkdwn = createStory(payloads.sectionWithMrkdwn);
 
 export const SectionWithTextFields = createStory(
-  payloads.sectionWithTextFields
+  payloads.sectionWithTextFields,
 );
 
 export const SectionWithButtonAccessory = createStory(
-  payloads.sectionWithButtonAccessory
+  payloads.sectionWithButtonAccessory,
 );
 
 export const SectionWithImageAccessory = createStory(
-  payloads.sectionWithImageAccessory
+  payloads.sectionWithImageAccessory,
 );
 
 export const SectionWithOverflowMenuAccessory = createStory(
-  payloads.sectionWithOverflowMenuAccessory
+  payloads.sectionWithOverflowMenuAccessory,
 );
 
 export const SectionWithDatePickerAccessory = createStory(
-  payloads.sectionWithDatePickerAccessory
+  payloads.sectionWithDatePickerAccessory,
 );
 
 export const ImageWithTitle = createStory(payloads.imageWithTitle);
@@ -109,25 +109,25 @@ export const ImageWithTitle = createStory(payloads.imageWithTitle);
 export const ImageWithoutTitle = createStory(payloads.imageWithoutTitle);
 
 export const ActionsWithAllSelects = createStory(
-  payloads.actionsWithAllSelects
+  payloads.actionsWithAllSelects,
 );
 
 export const ActionsWithFilteredConversationsSelect = createStory(
-  payloads.actionsWithFilteredConversationsSelect
+  payloads.actionsWithFilteredConversationsSelect,
 );
 
 export const ActionsWithInitializedSelects = createStory(
-  payloads.actionsWithInitializedSelects
+  payloads.actionsWithInitializedSelects,
 );
 
 export const ActionsWithButton = createStory(payloads.actionsWithButton);
 
 export const ActionsWithButtonAsLink = createStory(
-  payloads.actionsWithButtonAsLink
+  payloads.actionsWithButtonAsLink,
 );
 
 export const ActionsWithDatePicker = createStory(
-  payloads.actionsWithDatePicker
+  payloads.actionsWithDatePicker,
 );
 
 export const ContextWithPlainText = createStory(payloads.contextWithPlainText);
@@ -135,12 +135,12 @@ export const ContextWithPlainText = createStory(payloads.contextWithPlainText);
 export const ContextWithMrkdwn = createStory(payloads.contextWithMrkdwn);
 
 export const ContextWithTextAndImages = createStory(
-  payloads.contextWithTextAndImages
+  payloads.contextWithTextAndImages,
 );
 
 export const Conditional = createStory(payloads.conditional);
 
 export const Preview = createStory(payloads.preview);
 export const PreviewWithExternalUrl = createStory(
-  payloads.previewWithExternalUrl
+  payloads.previewWithExternalUrl,
 );

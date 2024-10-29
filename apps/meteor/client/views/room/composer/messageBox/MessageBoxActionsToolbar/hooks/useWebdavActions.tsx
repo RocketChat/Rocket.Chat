@@ -42,7 +42,7 @@ export const useWebdavActions = (): GenericMenuItemProps[] => {
 					content: account.name,
 					icon: 'cloud-plus' as const,
 					onClick: () => handleOpenWebdav(account),
-			  }))
+				}))
 			: []),
 	];
 };

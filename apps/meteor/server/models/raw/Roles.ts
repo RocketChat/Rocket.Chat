@@ -1,7 +1,7 @@
 import type { IRole, IRoom, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IRolesModel } from '@rocket.chat/model-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
-import type { Collection, FindCursor, Db, Filter, FindOptions, Document } from 'mongodb';
+import type { Collection, FindCursor, Db, Filter, FindOptions, Document, CountDocumentsOptions } from 'mongodb';
 
 import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
 import { BaseRaw } from './BaseRaw';
@@ -184,12 +184,28 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		return this.find(query, options || {});
 	}
 
+	countByScope(scope: IRole['scope'], options?: CountDocumentsOptions): Promise<number> {
+		const query = {
+			scope,
+		};
+
+		return this.countDocuments(query, options);
+	}
+
 	findCustomRoles(options?: FindOptions<IRole>): FindCursor<IRole> {
 		const query: Filter<IRole> = {
 			protected: false,
 		};
 
 		return this.find(query, options || {});
+	}
+
+	countCustomRoles(options?: CountDocumentsOptions): Promise<number> {
+		const query: Filter<IRole> = {
+			protected: false,
+		};
+
+		return this.countDocuments(query, options || {});
 	}
 
 	async updateById(

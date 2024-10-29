@@ -5,7 +5,6 @@ import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { PageContent } from '../../../components/Page';
 import { useAppsResult } from '../../../contexts/hooks/useAppsResult';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import MarketplaceHeader from '../components/MarketplaceHeader';
@@ -225,7 +224,7 @@ const AppsPageContent = (): ReactElement => {
 	};
 
 	return (
-		<PageContent>
+		<>
 			<MarketplaceHeader unsupportedVersion={unsupportedVersion} title={t(`Apps_context_${context}`)} />
 			<AppsFilters
 				text={text}
@@ -258,7 +257,7 @@ const AppsPageContent = (): ReactElement => {
 			)}
 			{getEmptyState()}
 			{appsResult.phase === AsyncStatePhase.REJECTED && !unsupportedVersion && <AppsPageConnectionError onButtonClick={reload} />}
-		</PageContent>
+		</>
 	);
 };
 

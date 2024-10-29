@@ -51,7 +51,7 @@ export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 						icon: 'ban' as const,
 						onClick: ignoreUserAction,
 						type: 'management' as UserInfoActionType,
-				  }
+					}
 				: undefined,
 		[ignoreUserAction, isIgnored, ownUserId, roomCanIgnore, t, uid],
 	);

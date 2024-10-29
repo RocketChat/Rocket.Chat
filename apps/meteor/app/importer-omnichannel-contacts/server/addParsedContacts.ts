@@ -7,13 +7,16 @@ export async function addParsedContacts(this: ImportDataConverter, parsedContact
 	let addedContacts = 0;
 
 	for await (const parsedData of parsedContacts) {
-		const contactData = parsedData.reduce((acc, value, index) => {
-			const columnName = columnNames && index < columnNames.length ? columnNames[index] : `column${index}`;
-			return {
-				...acc,
-				[columnName]: value,
-			};
-		}, {} as Record<string, string>);
+		const contactData = parsedData.reduce(
+			(acc, value, index) => {
+				const columnName = columnNames && index < columnNames.length ? columnNames[index] : `column${index}`;
+				return {
+					...acc,
+					[columnName]: value,
+				};
+			},
+			{} as Record<string, string>,
+		);
 
 		if (!contactData.emails && !contactData.phones && !contactData.name) {
 			continue;
