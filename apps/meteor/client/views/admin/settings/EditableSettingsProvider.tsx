@@ -41,6 +41,9 @@ const EditableSettingsProvider = ({ children, query = defaultQuery, omit = defau
 		for (const { _id, ...fields } of persistedSettings) {
 			settingsCollection.upsert(_id, { $set: { ...fields }, $unset: { changed: true } });
 		}
+		// TODO: Remove option to omit settings from admin pages manually
+		// This is a very wacky workaround due to lack of support to omit settings from the
+		// admin settings page while keeping them public.
 		if (omit.length > 0) {
 			settingsCollection.remove({ _id: { $in: omit } });
 		}
