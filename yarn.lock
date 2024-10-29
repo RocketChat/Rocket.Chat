@@ -9382,7 +9382,7 @@ __metadata:
     eslint-plugin-testing-library: "npm:~6.2.2"
     eslint-plugin-you-dont-need-lodash-underscore: "npm:~6.12.0"
     eventemitter3: "npm:^5.0.1"
-    exif-be-gone: "npm:^1.3.2"
+    exif-be-gone: "npm:^1.5.1"
     expiry-map: "npm:^2.0.0"
     express: "npm:^4.21.1"
     express-rate-limit: "npm:^5.5.1"
@@ -13388,15 +13388,6 @@ __metadata:
   version: 2.0.1
   resolution: "@types/stack-utils@npm:2.0.1"
   checksum: 10/205fdbe3326b7046d7eaf5e494d8084f2659086a266f3f9cf00bccc549c8e36e407f88168ad4383c8b07099957ad669f75f2532ed4bc70be2b037330f7bae019
-  languageName: node
-  linkType: hard
-
-"@types/stream-buffers@npm:^3.0.3":
-  version: 3.0.4
-  resolution: "@types/stream-buffers@npm:3.0.4"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10/5b432b2bf963d612747b79ac317562888236d6a9ea14414fb055c24e7be9643b5e3c7b7470841fa82802aa1c1c0d752a4ba935bbc0cfb12de6b89f7e1dadee92
   languageName: node
   linkType: hard
 
@@ -21161,14 +21152,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"exif-be-gone@npm:^1.3.2":
-  version: 1.3.2
-  resolution: "exif-be-gone@npm:1.3.2"
-  dependencies:
-    "@types/stream-buffers": "npm:^3.0.3"
+"exif-be-gone@npm:^1.5.1":
+  version: 1.5.1
+  resolution: "exif-be-gone@npm:1.5.1"
   bin:
     exif-be-gone: cli.js
-  checksum: 10/b1344c438c434215234bd2c31d5663dc6a9b4fe04f1d13943b68f19072bd44138d7e19e0d2ffbf43792b6471054c07c538ef6be6357228ec34130a48f0174818
+  checksum: 10/0b45fa4d34a08be379f19c5e3bcfdd3cdd9ce1cc728a8664ffff65d9eb9bb639c7727e38f6ec1b330f030cc5f90baa2d1b171c1bb85abb981e16e19f03818f2c
   languageName: node
   linkType: hard
 
