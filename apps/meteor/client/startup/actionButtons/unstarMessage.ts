@@ -18,9 +18,10 @@ Meteor.startup(() => {
 			try {
 				await sdk.rest.post('/v1/chat.unStarMessage', { messageId: message._id });
 				starMessage(message, false);
-				queryClient.invalidateQueries(['rooms', message.rid, 'starred-messages']);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				queryClient.invalidateQueries(['rooms', message.rid, 'starred-messages']);
 			}
 		},
 		condition({ message, subscription, user }) {

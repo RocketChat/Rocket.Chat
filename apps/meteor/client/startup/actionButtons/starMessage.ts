@@ -19,11 +19,12 @@ Meteor.startup(() => {
 			try {
 				await sdk.rest.post('/v1/chat.starMessage', { messageId: message._id });
 				starMessage(message, true);
-				queryClient.invalidateQueries(['rooms', message.rid, 'starred-messages']);
 			} catch (error) {
 				if (error) {
 					dispatchToastMessage({ type: 'error', message: error });
 				}
+			} finally {
+				queryClient.invalidateQueries(['rooms', message.rid, 'starred-messages']);
 			}
 		},
 		condition({ message, subscription, user, room }) {
