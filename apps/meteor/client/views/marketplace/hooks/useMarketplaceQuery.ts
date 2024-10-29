@@ -3,9 +3,11 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
+import { exhaustiveCheck } from '../../../../lib/utils/exhaustiveCheck';
 import { MarketplaceUnsupportedVersionError } from '../lib/MarketplaceUnsupportedVersionError';
 import { storeQueryFunction } from '../lib/storeQueryFunction';
 import { useAppsOrchestrator } from './useAppsOrchestrator';
+import { useMarketplaceContext } from './useMarketplaceContext';
 
 type QueryData = {
 	marketplace: App[];
@@ -20,7 +22,7 @@ type UseMarketplaceQueryOptions<TData = QueryData> = Omit<
 		TData,
 		readonly [
 			'marketplace',
-			'apps-stored',
+			'apps',
 			{
 				readonly canManageApps: boolean;
 			},
@@ -37,7 +39,7 @@ export const useMarketplaceQuery = <TData = QueryData>(options?: UseMarketplaceQ
 	const orchestrator = useAppsOrchestrator();
 
 	return useQuery({
-		queryKey: ['marketplace', 'apps-stored', { canManageApps }] as const,
+		queryKey: ['marketplace', 'apps', { canManageApps }] as const,
 		queryFn: async () => {
 			const [appsFromMarketplace, installedApps] = await Promise.all([
 				orchestrator.getAppsFromMarketplace(canManageApps),
@@ -65,5 +67,37 @@ export const useMarketplaceQuery = <TData = QueryData>(options?: UseMarketplaceQ
 		keepPreviousData: true,
 		staleTime: Infinity,
 		...options,
+	});
+};
+
+type UseMarketplaceQueryWithContextOptions<TData = App[]> = Omit<UseMarketplaceQueryOptions<TData>, 'select'> & {
+	select?: (data: App[]) => TData;
+};
+
+export const useMarketplaceQueryWithContext = <TData = App[]>({
+	select = (data: App[]) => data as TData,
+	...options
+}: UseMarketplaceQueryWithContextOptions<TData> = {}) => {
+	const context = useMarketplaceContext();
+
+	return useMarketplaceQuery({
+		...options,
+		select: (data) => {
+			switch (context) {
+				case 'premium':
+				case 'explore':
+				case 'requested':
+					return select(data.marketplace);
+
+				case 'private':
+					return select(data.private);
+
+				case 'installed':
+					return select(data.installed);
+
+				default:
+					return exhaustiveCheck(context);
+			}
+		},
 	});
 };

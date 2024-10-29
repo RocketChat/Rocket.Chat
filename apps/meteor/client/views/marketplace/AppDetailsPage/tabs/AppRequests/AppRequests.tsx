@@ -1,54 +1,66 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ReactElement, SetStateAction } from 'react';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppRequestItem from './AppRequestItem';
 import AppRequestsLoading from './AppRequestsLoading';
-import { useAppRequests } from '../../../hooks/useAppRequests';
+import { useAppRequestsQuery } from '../../../hooks/useAppRequestsQuery';
+import { usePaginationState } from '../../../hooks/usePaginationState';
 
-type itemsPerPage = 25 | 50 | 100;
-
-const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean }): ReactElement => {
-	const [limit, setLimit] = useState<itemsPerPage>(25);
-	const [offset, setOffset] = useState<number>(0);
-
-	const paginatedAppRequests = useAppRequests(id, limit, offset);
-	const { t } = useTranslation();
-
-	const onSetItemsPerPage = (itemsPerPageOption: SetStateAction<itemsPerPage>) => setLimit(itemsPerPageOption);
-	const onSetCurrent = (currentItemsOption: SetStateAction<number>) => setOffset(currentItemsOption);
-
+const useMarkAppRequestsAsSeenMutation = () => {
 	const markSeen = useEndpoint('POST', '/apps/app-request/markAsSeen');
-	const markAppRequestsAsSeen = useMutation({
-		mutationKey: ['mark-app-requests-as-seen'],
-		mutationFn: (unseenRequests: Array<string>) => markSeen({ unseenRequests }),
-		retry: false,
-	});
-
 	const queryClient = useQueryClient();
 
-	useEffect(() => {
-		return () => {
-			if (isAdminUser && paginatedAppRequests.isSuccess) {
-				const unseenRequests = paginatedAppRequests.data.data?.filter(({ seen }) => !seen).map(({ id }) => id) ?? [];
-
-				if (unseenRequests.length) {
-					markAppRequestsAsSeen.mutate(unseenRequests, {
-						onSuccess: () => {
-							queryClient.refetchQueries({ queryKey: ['app-requests-stats'] });
-							queryClient.invalidateQueries(['marketplace']);
-						},
-					});
-				}
+	return useMutation({
+		mutationFn: async (unseenRequests: string[]) => {
+			if (unseenRequests.length === 0) {
+				return;
 			}
-		};
-	}, [isAdminUser, paginatedAppRequests.isSuccess, paginatedAppRequests.data, markAppRequestsAsSeen, queryClient]);
 
-	if (paginatedAppRequests.isLoading) {
+			return markSeen({ unseenRequests });
+		},
+		retry: false,
+		onSuccess: () => {
+			queryClient.refetchQueries({ queryKey: ['app-requests-stats'] });
+			queryClient.invalidateQueries(['marketplace']);
+		},
+	});
+};
+
+type AppRequestsProps = {
+	appId: App['id'];
+};
+
+const AppRequests = ({ appId }: AppRequestsProps) => {
+	const canManageApps = usePermission('manage-apps');
+
+	const { current, itemsPerPage, onSetCurrent, onSetItemsPerPage } = usePaginationState();
+
+	const { isLoading, isSuccess, data } = useAppRequestsQuery(appId, { limit: itemsPerPage, offset: current });
+	const { t } = useTranslation();
+
+	const { mutate } = useMarkAppRequestsAsSeenMutation();
+
+	useEffect(() => {
+		if (!canManageApps || !isSuccess) {
+			return;
+		}
+
+		const unseenRequests = data.data.filter(({ seen }) => !seen).map(({ id }) => id);
+
+		const timeout = setTimeout(() => {
+			mutate(unseenRequests);
+		}, 1000);
+
+		return () => {
+			clearTimeout(timeout);
+		};
+	}, [canManageApps, data?.data, isSuccess, mutate]);
+
+	if (isLoading) {
 		return (
 			<Box w='full' maxWidth='x608' marginInline='auto' pbs={36}>
 				<AppRequestsLoading />
@@ -56,37 +68,45 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 		);
 	}
 
-	return (
-		<Box h='full' display='flex' flexDirection='column'>
-			<Box w='full' maxWidth='x608' marginInline='auto' pbs={36} flexGrow='1'>
-				{paginatedAppRequests.isSuccess && paginatedAppRequests.data.data?.length ? (
-					paginatedAppRequests.data.data.map((request) => (
-						<AppRequestItem
-							key={request.id}
-							seen={request.seen}
-							name={request.requester.name}
-							createdDate={request.createdDate}
-							message={request.message}
-							username={request.requester.username}
-						/>
-					))
-				) : (
+	if (!isSuccess || !data.data.length) {
+		return (
+			<Box h='full' display='flex' flexDirection='column'>
+				<Box w='full' maxWidth='x608' marginInline='auto' pbs={36} flexGrow='1'>
 					<States>
 						<StatesTitle>{t('No_requests')}</StatesTitle>
 						<StatesSubtitle>{t('App_requests_by_workspace')}</StatesSubtitle>
 					</States>
-				)}
+				</Box>
 			</Box>
-			{paginatedAppRequests.isSuccess && paginatedAppRequests.data.data?.length && (
-				<Pagination
-					divider
-					count={paginatedAppRequests.data.meta.total}
-					itemsPerPage={paginatedAppRequests.data.meta.limit}
-					current={paginatedAppRequests.data.meta.offset}
-					onSetItemsPerPage={onSetItemsPerPage}
-					onSetCurrent={onSetCurrent}
-				/>
-			)}
+		);
+	}
+
+	return (
+		<Box h='full' display='flex' flexDirection='column'>
+			<Box w='full' maxWidth='x608' marginInline='auto' pbs={36} flexGrow='1'>
+				{data.data.map((request) => (
+					<AppRequestItem
+						key={request.id}
+						seen={request.seen}
+						name={request.requester.name}
+						createdDate={request.createdDate}
+						message={request.message}
+						username={request.requester.username}
+					/>
+				))}
+			</Box>
+			<Pagination
+				divider
+				count={data.meta.total}
+				itemsPerPage={itemsPerPage}
+				current={current}
+				onSetItemsPerPage={onSetItemsPerPage}
+				onSetCurrent={onSetCurrent}
+				itemsPerPageLabel={() => t('Items_per_page:')}
+				showingResultsLabel={({ count, current, itemsPerPage }) =>
+					t('Showing_results_of', { postProcess: 'sprintf', sprintf: [current + 1, Math.min(current + itemsPerPage, count), count] })
+				}
+			/>
 		</Box>
 	);
 };

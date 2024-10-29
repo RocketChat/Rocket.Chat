@@ -1,17 +1,21 @@
+import type { App } from '@rocket.chat/core-typings';
 import { Accordion, Box } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItem from './AppLogsItem';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import AccordionLoading from '../../../components/AccordionLoading';
-import { useLogs } from '../../../hooks/useLogs';
+import { useAppLogsQuery } from '../../../hooks/useAppLogsQuery';
 
-const AppLogs = ({ id }: { id: string }): ReactElement => {
+type AppLogsProps = {
+	appId: App['id'];
+};
+
+const AppLogs = ({ appId }: AppLogsProps) => {
 	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
-	const { data, isSuccess, isError, isLoading } = useLogs(id);
+	const { data, isSuccess, isError, isLoading } = useAppLogsQuery(appId);
 
 	return (
 		<>
@@ -23,7 +27,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 			)}
 			{isSuccess && (
 				<Accordion width='100%' alignSelf='center'>
-					{data?.logs?.map((log) => (
+					{data.map((log) => (
 						<AppLogsItem
 							key={log._createdAt}
 							title={`${formatDateAndTime(log._createdAt)}: "${log.method}" (${log.totalTime}ms)`}

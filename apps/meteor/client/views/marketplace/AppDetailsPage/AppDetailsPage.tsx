@@ -1,123 +1,80 @@
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import type { App } from '@rocket.chat/core-typings';
+import type { App, SettingValue } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { useMemo, useCallback } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useTranslation, usePermission, useRouter } from '@rocket.chat/ui-contexts';
+import React from 'react';
+import { FormProvider } from 'react-hook-form';
 
 import AppDetailsPageHeader from './AppDetailsPageHeader';
-import AppDetailsPageLoading from './AppDetailsPageLoading';
 import AppDetailsPageTabs from './AppDetailsPageTabs';
+import { useSaveAppSettingsMutation } from '../hooks/useSaveAppSettingsMutation';
 import AppDetails from './tabs/AppDetails';
 import AppLogs from './tabs/AppLogs';
 import AppReleases from './tabs/AppReleases';
+import { useAppSettingsForm } from '../hooks/useAppSettingsForm';
 import AppRequests from './tabs/AppRequests/AppRequests';
-import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import { handleAPIError } from '../helpers/handleAPIError';
-import { useAppInfo } from '../hooks/useAppInfo';
+import { useAppDetailsPageTab } from '../hooks/useAppDetailsPageTab';
+import { useAppQuery } from '../hooks/useAppQuery';
 import { useMarketplaceContext } from '../hooks/useMarketplaceContext';
 import AppSecurity from './tabs/AppSecurity/AppSecurity';
 import AppSettings from './tabs/AppSettings';
 
-const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
+type AppDetailsPageProps = {
+	id: App['id'];
+};
+
+const AppDetailsPage = ({ id: appId }: AppDetailsPageProps) => {
 	const t = useTranslation();
 	const router = useRouter();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const isAdminUser = usePermission('manage-apps');
+	const canManageApps = usePermission('manage-apps');
 
-	const tab = useRouteParameter('tab');
+	const tab = useAppDetailsPageTab();
 	const context = useMarketplaceContext();
-	const appData = useAppInfo(id, context || '');
 
-	const handleReturn = useMutableCallback((): void => {
-		if (!context) {
-			return;
-		}
-
+	const handleBackButtonClick = useEffectEvent(() => {
 		router.navigate({
 			name: 'marketplace',
 			params: { context, page: 'list' },
 		});
 	});
 
-	const { installed, settings, privacyPolicySummary, permissions, tosLink, privacyLink, name } = appData || {};
-	const isSecurityVisible = Boolean(privacyPolicySummary || permissions || tosLink || privacyLink);
+	const { data: app } = useAppQuery(appId);
 
-	const saveAppSettings = useCallback(
-		async (data) => {
-			try {
-				await AppClientOrchestratorInstance.setAppSettings(
-					id,
-					(Object.values(settings || {}) as ISetting[]).map((setting) => ({
-						...setting,
-						value: data[setting.id],
-					})),
-				);
+	const settingsForm = useAppSettingsForm();
+	const { handleSubmit, reset, formState } = settingsForm;
 
-				dispatchToastMessage({ type: 'success', message: `${name} settings saved succesfully` });
-			} catch (e: any) {
-				handleAPIError(e);
-			}
-		},
-		[dispatchToastMessage, id, name, settings],
-	);
+	const saveAppSettingsMutation = useSaveAppSettingsMutation(appId);
 
-	const reducedSettings = useMemo(() => {
-		return Object.values(settings || {}).reduce((ret, { id, value, packageValue }) => ({ ...ret, [id]: value ?? packageValue }), {});
-	}, [settings]);
-
-	const methods = useForm({ values: reducedSettings });
-	const {
-		handleSubmit,
-		reset,
-		formState: { isDirty, isSubmitting, isSubmitted },
-	} = methods;
+	const saveAppSettings = useEffectEvent(async (data: Record<string, SettingValue>) => {
+		await saveAppSettingsMutation.mutateAsync(data);
+		reset(data);
+	});
 
 	return (
 		<Page flexDirection='column' h='full'>
-			<PageHeader title={t('App_Info')} onClickBack={handleReturn} />
+			<PageHeader title={t('App_Info')} onClickBack={handleBackButtonClick} />
 			<PageScrollableContentWithShadow pi={24} pbs={24} pbe={0} h='full'>
 				<Box w='full' alignSelf='center' h='full' display='flex' flexDirection='column'>
-					{!appData && <AppDetailsPageLoading />}
-					{appData && (
-						<>
-							<AppDetailsPageHeader app={appData} />
-							<AppDetailsPageTabs
-								context={context || ''}
-								installed={installed}
-								isSecurityVisible={isSecurityVisible}
-								settings={settings}
-								tab={tab}
-							/>
-							{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
-							{tab === 'requests' && <AppRequests id={id} isAdminUser={isAdminUser} />}
-							{tab === 'security' && isSecurityVisible && (
-								<AppSecurity
-									privacyPolicySummary={privacyPolicySummary}
-									appPermissions={permissions}
-									tosLink={tosLink}
-									privacyLink={privacyLink}
-								/>
-							)}
-							{tab === 'releases' && <AppReleases id={id} />}
-							{Boolean(tab === 'settings' && settings && Object.values(settings).length) && (
-								<FormProvider {...methods}>
-									<AppSettings settings={settings || {}} />
-								</FormProvider>
-							)}
-							{tab === 'logs' && <AppLogs id={id} />}
-						</>
+					<AppDetailsPageHeader appId={appId} />
+					<AppDetailsPageTabs appId={appId} />
+					{tab === 'details' && <AppDetails appId={appId} />}
+					{tab === 'requests' && <AppRequests appId={appId} />}
+					{tab === 'security' && <AppSecurity appId={appId} />}
+					{tab === 'releases' && <AppReleases appId={appId} />}
+					{tab === 'settings' && (
+						<FormProvider {...settingsForm}>
+							<AppSettings appId={appId} />
+						</FormProvider>
 					)}
+					{tab === 'logs' && <AppLogs appId={appId} />}
 				</Box>
 			</PageScrollableContentWithShadow>
-			<PageFooter isDirty={isDirty}>
+			<PageFooter isDirty={formState.isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset()}>{t('Cancel')}</Button>
-					{installed && isAdminUser && (
-						<Button primary loading={isSubmitting || isSubmitted} onClick={handleSubmit(saveAppSettings)}>
+					{canManageApps && app?.installed && (
+						<Button primary loading={formState.isSubmitting} onClick={handleSubmit(saveAppSettings)}>
 							{t('Save_changes')}
 						</Button>
 					)}

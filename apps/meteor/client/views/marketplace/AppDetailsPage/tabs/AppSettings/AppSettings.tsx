@@ -1,11 +1,19 @@
+import type { App } from '@rocket.chat/core-typings';
 import { Box, FieldGroup } from '@rocket.chat/fuselage';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppSetting from './AppSetting';
-import type { ISettings } from '../../../../../apps/@types/IOrchestrator';
+import { useAppSettingsQuery } from '../../../hooks/useAppSettingsQuery';
 
-const AppSettings = ({ settings }: { settings: ISettings }) => {
+type AppSettingsProps = {
+	appId: App['id'];
+};
+
+const AppSettings = ({ appId }: AppSettingsProps) => {
+	const { isSuccess, data } = useAppSettingsQuery(appId, {
+		select: (data) => Object.values(data),
+	});
 	const { t } = useTranslation();
 
 	return (
@@ -14,11 +22,13 @@ const AppSettings = ({ settings }: { settings: ISettings }) => {
 				<Box fontScale='h4' mb={12}>
 					{t('Settings')}
 				</Box>
-				<FieldGroup>
-					{Object.values(settings).map((field) => (
-						<AppSetting key={field.id} {...field} />
-					))}
-				</FieldGroup>
+				{isSuccess && (
+					<FieldGroup>
+						{data.map((field) => (
+							<AppSetting key={field.id} appId={appId} {...field} />
+						))}
+					</FieldGroup>
+				)}
 			</Box>
 		</>
 	);

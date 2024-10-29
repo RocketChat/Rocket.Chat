@@ -1,94 +1,96 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Tag } from '@rocket.chat/fuselage';
+import { Box, Skeleton, Tag } from '@rocket.chat/fuselage';
 import { AppAvatar } from '@rocket.chat/ui-avatar';
 import moment from 'moment';
-import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
-import { appIncompatibleStatusProps } from '../helpers';
+import { useAppBundledInQuery } from '../hooks/useAppBundledInQuery';
+import { useAppInfoQuery } from '../hooks/useAppInfoQuery';
+import { useAppQuery } from '../hooks/useAppQuery';
 import AppStatus from './tabs/AppStatus';
 
-const versioni18nKey = (app: App): string => {
-	const { version, marketplaceVersion, installed } = app;
-
-	return installed ? version : marketplaceVersion;
+type AppDetailsPageHeaderProps = {
+	appId: App['id'];
 };
 
-const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
+const AppDetailsPageHeader = ({ appId }: AppDetailsPageHeaderProps) => {
 	const { t } = useTranslation();
-	const {
-		iconFileData,
-		name,
-		author,
-		iconFileContent,
-		installed,
-		modifiedAt,
-		bundledIn,
-		versionIncompatible,
-		isSubscribed,
-		shortDescription,
-	} = app;
+	const { isLoading: isAppInfoLoading, data: appInfo } = useAppInfoQuery(appId);
+	const { isLoading, isError, data } = useAppQuery(appId);
+	const { data: bundledIn } = useAppBundledInQuery(appId);
 
-	const lastUpdated = modifiedAt && moment(modifiedAt).fromNow();
-	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
+	if (isLoading || isError) {
+		return (
+			<Box display='flex' flexDirection='row' mbe={20} w='full'>
+				<Skeleton variant='rect' w='x120' h='x120' mie={32} />
+				<Box display='flex' flexDirection='column' justifyContent='space-between' flexGrow={1}>
+					<Skeleton variant='rect' w='full' h='x32' />
+					<Skeleton variant='rect' w='full' h='x32' />
+					<Skeleton variant='rect' w='full' h='x32' />
+				</Box>
+			</Box>
+		);
+	}
 
 	return (
 		<Box color='default' display='flex' flexDirection='row' mbe={20} w='full'>
 			<Box mie={32}>
-				<AppAvatar size='x124' iconFileContent={iconFileContent} iconFileData={iconFileData} />
+				<AppAvatar size='x124' iconFileContent={data.iconFileContent} iconFileData={data.iconFileData} />
 			</Box>
 			<Box display='flex' flexDirection='column'>
 				<Box display='flex' flexDirection='row' alignItems='center' mbe={8}>
 					<Box fontScale='h1' mie={8}>
-						{name}
+						{data.name}
 					</Box>
 					{bundledIn && Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
 				</Box>
 
-				{shortDescription && (
+				{data.shortDescription && (
 					<Box fontScale='p1' mbe={16}>
-						{shortDescription}
+						{data.shortDescription}
 					</Box>
 				)}
 
 				<Box display='flex' flexDirection='row' alignItems='center' mbe={16}>
-					<AppStatus app={app} installed={installed} isAppDetailsPage />
-					{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage />}
+					{isAppInfoLoading && <Skeleton variant='rect' width={120} height={28} />}
+					{appInfo && (
+						<>
+							<AppStatus app={appInfo} installed={data.installed} isAppDetailsPage />
+							{(data.installed || data.isSubscribed) && <AppMenu app={appInfo} isAppDetailsPage />}
+						</>
+					)}
 				</Box>
 				<Box fontScale='c1' display='flex' flexDirection='row' color='hint' alignItems='center'>
-					{author?.name}
+					{data.author.name}
 					<Box mi={16} color='disabled'>
 						|
 					</Box>
-					<Box>{t('Version_version', { version: versioni18nKey(app) })}</Box>
-					{lastUpdated && (
+					<Box>{t('Version_version', { version: data.installed ? data.version : data.marketplaceVersion })}</Box>
+					{data.modifiedAt && (
 						<>
 							<Box mi={16} color='disabled'>
 								|
 							</Box>
 							<Box>
 								{t('Marketplace_app_last_updated', {
-									lastUpdated,
+									lastUpdated: moment(data.modifiedAt).fromNow(),
 								})}
 							</Box>
 						</>
 					)}
 
-					{versionIncompatible && (
+					{data.versionIncompatible && (
 						<>
 							<Box mi={16} color='disabled'>
 								|
 							</Box>
 
 							<Box>
-								<Tag
-									title={incompatibleStatus?.tooltipText}
-									variant={incompatibleStatus?.label === 'Disabled' ? 'secondary-danger' : 'secondary'}
-								>
-									{incompatibleStatus?.label}
+								<Tag title={t('App_version_incompatible_tooltip')} variant='secondary'>
+									{t('Incompatible')}
 								</Tag>
 							</Box>
 						</>

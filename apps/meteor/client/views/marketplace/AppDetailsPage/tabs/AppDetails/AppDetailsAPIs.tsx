@@ -1,27 +1,34 @@
-import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
+import type { App } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import React, { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { apiCurlGetter } from '../../../helpers/apiCurlGetter';
+import { useAppAPIsQuery } from '../../../hooks/useAppAPIsQuery';
 
 type AppDetailsAPIsProps = {
-	apis: IApiEndpointMetadata[];
+	appId: App['id'];
 };
 
-const AppDetailsAPIs = ({ apis }: AppDetailsAPIsProps) => {
+const AppDetailsAPIs = ({ appId }: AppDetailsAPIsProps) => {
 	const { t } = useTranslation();
 	const absoluteUrl = useAbsoluteUrl();
 	const getApiCurl = apiCurlGetter(absoluteUrl);
 
+	const { isSuccess, data } = useAppAPIsQuery(appId);
+
+	if (!isSuccess || !data) {
+		return null;
+	}
+
 	return (
-		<>
+		<Box is='section'>
 			<Box display='flex' flexDirection='column'>
 				<Box fontScale='h4' mb={12}>
 					{t('APIs')}
 				</Box>
-				{apis.map((api) => (
+				{data.map((api) => (
 					<Box key={api.path} mb={8}>
 						<Box fontScale='p2m'>
 							{api.methods.join(' | ').toUpperCase()} {api.path}
@@ -45,7 +52,7 @@ const AppDetailsAPIs = ({ apis }: AppDetailsAPIsProps) => {
 					</Box>
 				))}
 			</Box>
-		</>
+		</Box>
 	);
 };
 

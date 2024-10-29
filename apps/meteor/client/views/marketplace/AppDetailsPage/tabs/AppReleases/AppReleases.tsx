@@ -1,41 +1,29 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Accordion } from '@rocket.chat/fuselage';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 import AppReleasesItem from './AppReleasesItem';
 import AccordionLoading from '../../../components/AccordionLoading';
+import { useAppVersionsQuery } from '../../../hooks/useAppVersionsQuery';
 
-const AppReleases = ({ id }: { id: App['id'] }): ReactElement => {
-	const getVersions = useEndpoint('GET', '/apps/:id/versions', { id });
-	const dispatchToastMessage = useToastMessageDispatch();
-	const { t } = useTranslation();
+type AppReleasesProps = {
+	appId: App['id'];
+};
 
-	const { data, isLoading, isFetched } = useQuery(
-		['apps', id, 'versions'],
-		async () => {
-			const { apps } = await getVersions();
-
-			if (apps.length === 0) {
-				throw new Error(t('No_results_found'));
-			}
-			return apps;
-		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
-		},
-	);
+const AppReleases = ({ appId }: AppReleasesProps) => {
+	const { isLoading, isSuccess, data } = useAppVersionsQuery(appId);
 
 	return (
 		<>
 			<Accordion width='100%' alignSelf='center'>
 				{isLoading && <AccordionLoading />}
-				{isFetched && <>{data?.map((release) => <AppReleasesItem release={release} key={release.version} />)}</>}
+				{isSuccess && (
+					<>
+						{data.map((release) => (
+							<AppReleasesItem release={release} key={release.version} />
+						))}
+					</>
+				)}
 			</Accordion>
 		</>
 	);
