@@ -56,9 +56,12 @@ export function tracerSpan<F extends (span?: Span) => ReturnType<F>>(
 						message: err.message,
 					});
 				});
+				result.finally(() => span.end());
 
 				return result;
 			}
+
+			span.end();
 			return result;
 		} catch (err: any) {
 			span.recordException(err);
@@ -66,9 +69,8 @@ export function tracerSpan<F extends (span?: Span) => ReturnType<F>>(
 				code: SpanStatusCode.ERROR,
 				message: err.message,
 			});
-			throw err;
-		} finally {
 			span.end();
+			throw err;
 		}
 	};
 
