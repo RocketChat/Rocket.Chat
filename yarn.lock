@@ -8757,7 +8757,7 @@ __metadata:
     pino: "npm:^8.21.0"
     pino-pretty: "npm:^7.6.1"
     polka: "npm:^0.5.2"
-    sharp: "npm:^0.32.6"
+    sharp: "npm:^0.33.5"
     ts-node: "npm:^10.9.2"
     typescript: "npm:~5.6.3"
     underscore: "npm:^1.13.7"
@@ -8928,10 +8928,10 @@ __metadata:
     "@rocket.chat/icons": "*"
     "@rocket.chat/prettier-config": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-avatar": 8.0.0-rc.4
-    "@rocket.chat/ui-contexts": 12.0.0-rc.4
+    "@rocket.chat/ui-avatar": 8.0.0-rc.5
+    "@rocket.chat/ui-contexts": 12.0.0-rc.5
     "@rocket.chat/ui-kit": 0.37.0-rc.0
-    "@rocket.chat/ui-video-conf": 12.0.0-rc.4
+    "@rocket.chat/ui-video-conf": 12.0.0-rc.5
     "@tanstack/react-query": "*"
     react: ~17.0.2
     react-dom: "*"
@@ -9016,8 +9016,8 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "*"
     "@rocket.chat/message-parser": 0.31.31
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-client": 12.0.0-rc.4
-    "@rocket.chat/ui-contexts": 12.0.0-rc.4
+    "@rocket.chat/ui-client": 12.0.0-rc.5
+    "@rocket.chat/ui-contexts": 12.0.0-rc.5
     katex: "*"
     react: "*"
   languageName: unknown
@@ -10267,7 +10267,7 @@ __metadata:
     typescript: "npm:~5.6.3"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
-    "@rocket.chat/ui-contexts": 12.0.0-rc.4
+    "@rocket.chat/ui-contexts": 12.0.0-rc.5
     react: ~17.0.2
   languageName: unknown
   linkType: soft
@@ -10317,8 +10317,8 @@ __metadata:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/ui-avatar": 8.0.0-rc.4
-    "@rocket.chat/ui-contexts": 12.0.0-rc.4
+    "@rocket.chat/ui-avatar": 8.0.0-rc.5
+    "@rocket.chat/ui-contexts": 12.0.0-rc.5
     react: "*"
     react-i18next: "*"
   languageName: unknown
@@ -10488,8 +10488,8 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-avatar": 8.0.0-rc.4
-    "@rocket.chat/ui-contexts": 12.0.0-rc.4
+    "@rocket.chat/ui-avatar": 8.0.0-rc.5
+    "@rocket.chat/ui-contexts": 12.0.0-rc.5
     react: ~17.0.2
     react-dom: ^17.0.2
   languageName: unknown
@@ -10545,9 +10545,9 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-avatar": 8.0.0-rc.4
-    "@rocket.chat/ui-client": 12.0.0-rc.4
-    "@rocket.chat/ui-contexts": 12.0.0-rc.4
+    "@rocket.chat/ui-avatar": 8.0.0-rc.5
+    "@rocket.chat/ui-client": 12.0.0-rc.5
+    "@rocket.chat/ui-contexts": 12.0.0-rc.5
     react: ~17.0.2
     react-aria: ~3.23.1
     react-dom: ^17.0.2
@@ -10634,7 +10634,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": 0.2.2
-    "@rocket.chat/ui-contexts": 12.0.0-rc.4
+    "@rocket.chat/ui-contexts": 12.0.0-rc.5
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
@@ -19555,7 +19555,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"detect-libc@npm:^2.0.2, detect-libc@npm:^2.0.3":
+"detect-libc@npm:^2.0.3":
   version: 2.0.3
   resolution: "detect-libc@npm:2.0.3"
   checksum: 10/b4ea018d623e077bd395f168a9e81db77370dde36a5b01d067f2ad7989924a81d31cb547ff764acb2aa25d50bb7fdde0b0a93bec02212b0cb430621623246d39
@@ -29163,15 +29163,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-addon-api@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "node-addon-api@npm:6.1.0"
-  dependencies:
-    node-gyp: "npm:latest"
-  checksum: 10/8eea1d4d965930a177a0508695beb0d89b4c1d80bf330646a035357a1e8fc31e0d09686e2374996e96e757b947a7ece319f98ede3146683f162597c0bcb4df90
-  languageName: node
-  linkType: hard
-
 "node-addon-api@npm:^7.0.0":
   version: 7.1.1
   resolution: "node-addon-api@npm:7.1.1"
@@ -34609,23 +34600,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sharp@npm:^0.32.6":
-  version: 0.32.6
-  resolution: "sharp@npm:0.32.6"
-  dependencies:
-    color: "npm:^4.2.3"
-    detect-libc: "npm:^2.0.2"
-    node-addon-api: "npm:^6.1.0"
-    node-gyp: "npm:latest"
-    prebuild-install: "npm:^7.1.1"
-    semver: "npm:^7.5.4"
-    simple-get: "npm:^4.0.1"
-    tar-fs: "npm:^3.0.4"
-    tunnel-agent: "npm:^0.6.0"
-  checksum: 10/f0e4a86881e590f86b05ea463229f62cd29afc2dca08b3f597889f872f118c2c456f382bf2c3e90e934b7a1d30f109cf5ed584cf5a23e79d6b6403a8dc0ebe32
-  languageName: node
-  linkType: hard
-
 "sharp@npm:^0.33.5":
   version: 0.33.5
   resolution: "sharp@npm:0.33.5"
@@ -34814,7 +34788,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"simple-get@npm:^4.0.0, simple-get@npm:^4.0.1":
+"simple-get@npm:^4.0.0":
   version: 4.0.1
   resolution: "simple-get@npm:4.0.1"
   dependencies:
@@ -36338,7 +36312,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar-fs@npm:^3.0.4, tar-fs@npm:^3.0.5":
+"tar-fs@npm:^3.0.5":
   version: 3.0.6
   resolution: "tar-fs@npm:3.0.6"
   dependencies:
