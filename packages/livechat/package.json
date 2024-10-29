@@ -61,7 +61,6 @@
 		"file-loader": "^6.2.0",
 		"gh-release": "^3.5.0",
 		"html-webpack-plugin": "^5.5.3",
-		"husky": "^4.3.8",
 		"if-env": "^1.0.4",
 		"image-webpack-loader": "~8.1.0",
 		"lorem-ipsum": "^2.0.8",
