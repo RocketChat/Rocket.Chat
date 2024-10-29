@@ -1,6 +1,7 @@
 import { Button } from '@rocket.chat/fuselage';
-import { useRouteParameter, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
@@ -9,7 +10,7 @@ import EditCustomFields from './EditCustomFields';
 import EditCustomFieldsWithData from './EditCustomFieldsWithData';
 
 const CustomFieldsPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 
 	const context = useRouteParameter('context');

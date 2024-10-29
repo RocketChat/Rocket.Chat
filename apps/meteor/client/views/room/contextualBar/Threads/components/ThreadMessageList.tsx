@@ -1,10 +1,11 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns';
 import type { ReactElement } from 'react';
 import React, { Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../lib/isTruthy';
@@ -49,7 +50,7 @@ type ThreadMessageListProps = {
 };
 
 const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { innerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
 
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);

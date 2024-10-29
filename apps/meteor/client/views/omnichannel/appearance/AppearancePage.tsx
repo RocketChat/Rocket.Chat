@@ -1,9 +1,10 @@
 import type { ISetting, Serialized } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 import AppearanceForm from './AppearanceForm';
@@ -40,7 +41,7 @@ const reduceAppearance = (settings: Serialized<ISetting>[]): AppearanceSettings 
 	}, {});
 
 const AppearancePage = ({ settings }: { settings: Serialized<ISetting>[] }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const saveAction = useEndpoint('POST', '/v1/livechat/appearance');

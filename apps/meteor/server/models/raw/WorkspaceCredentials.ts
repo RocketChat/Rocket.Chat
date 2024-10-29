@@ -10,29 +10,13 @@ export class WorkspaceCredentialsRaw extends BaseRaw<IWorkspaceCredentials> impl
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [{ key: { scopes: 1, expirationDate: 1, accessToken: 1 }, unique: true }];
+		return [{ key: { scope: 1, expirationDate: 1, accessToken: 1 }, unique: true }];
 	}
 
 	getCredentialByScope(scope = ''): Promise<IWorkspaceCredentials | null> {
-		const query: Filter<IWorkspaceCredentials> = {
-			scopes: {
-				$all: [scope],
-				$size: 1,
-			},
-		};
+		const query: Filter<IWorkspaceCredentials> = { scope };
 
 		return this.findOne(query);
-	}
-
-	unsetCredentialByScope(scope = ''): Promise<DeleteResult> {
-		const query: Filter<IWorkspaceCredentials> = {
-			scopes: {
-				$all: [scope],
-				$size: 1,
-			},
-		};
-
-		return this.deleteOne(query);
 	}
 
 	updateCredentialByScope({
@@ -46,18 +30,13 @@ export class WorkspaceCredentialsRaw extends BaseRaw<IWorkspaceCredentials> impl
 	}): Promise<UpdateResult> {
 		const record = {
 			$set: {
-				scopes: [scope],
+				scope,
 				accessToken,
 				expirationDate,
 			},
 		};
 
-		const query: Filter<IWorkspaceCredentials> = {
-			scopes: {
-				$all: [scope],
-				$size: 1,
-			},
-		};
+		const query: Filter<IWorkspaceCredentials> = { scope };
 
 		return this.updateOne(query, record, { upsert: true });
 	}

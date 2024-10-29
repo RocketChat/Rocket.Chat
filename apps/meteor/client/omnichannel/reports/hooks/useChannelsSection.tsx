@@ -1,8 +1,10 @@
 import { capitalize } from '@rocket.chat/string-helpers';
-import type { TranslationContextValue, TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import type { TFunction } from 'i18next';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
@@ -21,7 +23,7 @@ const TYPE_LABEL: Record<string, TranslationKey> = {
 	'api': 'Custom_Integration',
 };
 
-const formatItem = (item: { label: string; value: number }, total: number, t: TranslationContextValue['translate']): DataItem => {
+const formatItem = (item: { label: string; value: number }, total: number, t: TFunction): DataItem => {
 	const percentage = total > 0 ? round((item.value / total) * 100) : 0;
 	const label = `${t(TYPE_LABEL[item.label]) || capitalize(item.label)}`;
 	return {
@@ -32,12 +34,12 @@ const formatItem = (item: { label: string; value: number }, total: number, t: Tr
 	};
 };
 
-const formatChartData = (data: { label: string; value: number }[] | undefined = [], total = 0, t: TranslationContextValue['translate']) => {
+const formatChartData = (data: { label: string; value: number }[] | undefined = [], total = 0, t: TFunction) => {
 	return data.map((item) => formatItem(item, total, t));
 };
 
 export const useChannelsSection = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [period, periodSelectorProps] = usePeriodSelectorStorage('reports-channels-period', PERIOD_OPTIONS);
 	const getConversationsBySource = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-source');
 

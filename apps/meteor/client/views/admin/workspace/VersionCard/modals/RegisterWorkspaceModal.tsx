@@ -1,7 +1,8 @@
 import { Box, Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import useFeatureBullets from '../hooks/useFeatureBullets';
 import RegisterWorkspaceSetupModal from './RegisterWorkspaceSetupModal';
@@ -17,7 +18,7 @@ const documentationLink = 'https://go.rocket.chat/i/register-info-collected';
 const RegisterWorkspaceModal = ({ onClose, onStatusChange, ...props }: RegisterWorkspaceModalProps) => {
 	const setModal = useSetModal();
 	const bulletFeatures = useFeatureBullets();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const handleTokenModal = (): void => {
 		const handleModalClose = (): void => setModal(null);

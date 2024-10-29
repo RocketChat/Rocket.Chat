@@ -22,7 +22,6 @@ import { ObjectId } from 'mongodb';
 import { notifyOnSettingChanged } from '../../../app/lib/server/lib/notifyListener';
 import { BaseRaw } from './BaseRaw';
 
-const emptySourceFilter = { source: { $exists: false } };
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements ILivechatVisitorsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatVisitor>>) {
 		super(db, 'livechat_visitor', trash);
@@ -50,38 +49,12 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query);
 	}
 
-	findOneVisitorByPhoneAndSource(
-		phone: string,
-		sourceFilter: Filter<ILivechatVisitor>,
-		options?: FindOptions<ILivechatVisitor>,
-	): Promise<ILivechatVisitor | null> {
-		const query = {
-			'phone.phoneNumber': phone,
-			...(sourceFilter ? { $or: [sourceFilter, emptySourceFilter] } : emptySourceFilter),
-		};
-
-		return this.findOne(query, options);
-	}
-
 	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null> {
 		const query = {
 			'visitorEmails.address': String(emailAddress).toLowerCase(),
 		};
 
 		return this.findOne(query);
-	}
-
-	findOneGuestByEmailAddressAndSource(
-		emailAddress: string,
-		sourceFilter: Filter<ILivechatVisitor>,
-		options?: FindOptions<ILivechatVisitor>,
-	): Promise<ILivechatVisitor | null> {
-		const query = {
-			'visitorEmails.address': emailAddress.toLowerCase(),
-			...(sourceFilter ? { $or: [sourceFilter, emptySourceFilter] } : emptySourceFilter),
-		};
-
-		return this.findOne(query, options);
 	}
 
 	/**
@@ -96,15 +69,10 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.find(query, options);
 	}
 
-	findEnabledBySource(
-		sourceFilter: Filter<ILivechatVisitor>,
-		query: Filter<ILivechatVisitor>,
-		options?: FindOptions<ILivechatVisitor>,
-	): FindCursor<ILivechatVisitor> {
+	findEnabled(query: Filter<ILivechatVisitor>, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor> {
 		return this.find(
 			{
 				...query,
-				$or: [sourceFilter, emptySourceFilter],
 				disabled: { $ne: true },
 			},
 			options,
@@ -115,19 +83,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		const query = {
 			_id,
 			disabled: { $ne: true },
-		};
-
-		return this.findOne<T>(query, options);
-	}
-
-	findOneEnabledByIdAndSource<T extends Document = ILivechatVisitor>(
-		{ _id, sourceFilter }: { _id: string; sourceFilter: Filter<ILivechatVisitor> },
-		options?: FindOptions<ILivechatVisitor>,
-	): Promise<T | null> {
-		const query = {
-			_id,
-			disabled: { $ne: true },
-			...(sourceFilter ? { $or: [sourceFilter, emptySourceFilter] } : emptySourceFilter),
 		};
 
 		return this.findOne<T>(query, options);
@@ -150,19 +105,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query, options);
 	}
 
-	getVisitorByTokenAndSource(
-		{ token, sourceFilter }: { token: string; sourceFilter?: Filter<ILivechatVisitor> },
-		options: FindOptions<ILivechatVisitor>,
-	): Promise<ILivechatVisitor | null> {
-		const query = {
-			token,
-			...(sourceFilter ? { $or: [sourceFilter, emptySourceFilter] } : emptySourceFilter),
-		};
-
-		return this.findOne(query, options);
-	}
-
-	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): FindCursor<ILivechatVisitor> {
+	countVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): Promise<number> {
 		const query = {
 			disabled: { $ne: true },
 			_updatedAt: {
@@ -172,7 +115,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			...(department && department !== 'undefined' && { department }),
 		};
 
-		return this.find(query, { projection: { _id: 1 } });
+		return this.countDocuments(query);
 	}
 
 	async getNextVisitorUsername(): Promise<string> {
@@ -523,17 +466,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{
 				$set: {
 					lastChat,
-				},
-			},
-		);
-	}
-
-	setSourceById(_id: string, source: Required<ILivechatVisitor['source']>): Promise<UpdateResult> {
-		return this.updateOne(
-			{ _id },
-			{
-				$set: {
-					source,
 				},
 			},
 		);

@@ -100,7 +100,7 @@ const ModerationConsoleTable = () => {
 
 	return (
 		<>
-			<ModerationFilter setText={setText} setDateRange={setDateRange} />
+			<ModerationFilter text={text} setText={setText} setDateRange={setDateRange} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-composer",
-	"version": "0.3.0",
+	"version": "0.4.0-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -38,7 +38,7 @@
 		"eslint-plugin-storybook": "^0.9.0",
 		"react": "~17.0.2",
 		"react-dom": "~17.0.2",
-		"storybook": "^8.3.5",
+		"storybook": "^8.3.6",
 		"typescript": "~5.6.3"
 	},
 	"peerDependencies": {

@@ -401,7 +401,7 @@
   "Agent_Without_Extensions": "Agent Without Extensions",
   "Agents": "Agents",
   "Agree": "Agree",
-  "AI_Actions": "AI Actions",
+  "AI_Actions": "AI actions",
   "AirGapped_Restriction_Warning": "**Your air-gapped workspace will enter read-only mode in {{remainingDays}} days.** \n Users will still be able to access rooms and read existing messages but will be unable to send new messages. \n Reconnect it to the internet or [upgrade to a premium license](https://go.rocket.chat/i/air-gapped) to prevent this.",
   "Airgapped_workspace_warning": "This air-gapped workspace will enter read-only mode in {{remainingDays}} days. <2>Connect it to internet or upgrade to a premium plan to prevent this.</1>",
   "Airgapped_workspace_restriction": "This air-gapped workspace is in read-only mode. <2>Connect it to internet or upgraded to a premium plan to restore full functionality.</1>",
