@@ -42,7 +42,10 @@ export class ModifyCreator implements IModifyCreator {
 
     private contactCreator: ContactCreator;
 
-    constructor(private readonly bridges: AppBridges, private readonly appId: string) {
+    constructor(
+        private readonly bridges: AppBridges,
+        private readonly appId: string,
+    ) {
         this.livechatCreator = new LivechatCreator(bridges, appId);
         this.uploadCreator = new UploadCreator(bridges, appId);
         this.emailCreator = new EmailCreator(bridges, appId);
