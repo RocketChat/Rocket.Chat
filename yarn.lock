@@ -13391,6 +13391,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/stream-buffers@npm:^3.0.7":
+  version: 3.0.7
+  resolution: "@types/stream-buffers@npm:3.0.7"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10/b5cf12f69ba866035207e2313bd795166c30ca18329b8c07a96ec5e30d702a0c23b12fa789c7ebc3a08091ea01eca8db84203c93b6823e7477df016a49540f84
+  languageName: node
+  linkType: hard
+
 "@types/strict-uri-encode@npm:^2.0.2":
   version: 2.0.2
   resolution: "@types/strict-uri-encode@npm:2.0.2"
@@ -33327,6 +33336,7 @@ __metadata:
     "@changesets/cli": "npm:^2.27.9"
     "@types/chart.js": "npm:^2.9.41"
     "@types/js-yaml": "npm:^4.0.9"
+    "@types/stream-buffers": "npm:^3.0.7"
     node-gyp: "npm:^9.4.1"
     ts-node: "npm:^10.9.2"
     turbo: "npm:^2.2.3"
