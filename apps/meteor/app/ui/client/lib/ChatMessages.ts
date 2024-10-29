@@ -24,7 +24,7 @@ type DeepWritable<T> = T extends (...args: any) => any
 	? T
 	: {
 			-readonly [P in keyof T]: DeepWritable<T[P]>;
-	  };
+		};
 
 export class ChatMessages implements ChatAPI {
 	public uid: string | null;

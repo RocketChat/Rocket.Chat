@@ -20,7 +20,7 @@ export const normalizeMessageFileUpload = async (message: Omit<IMessage, '_updat
 				? getURL(`${FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`).substring(1)}${jwt ? `?token=${jwt}` : ''}`, {
 						cdn: false,
 						full: true,
-				  })
+					})
 				: '',
 			type: file.type,
 			size: file.size,

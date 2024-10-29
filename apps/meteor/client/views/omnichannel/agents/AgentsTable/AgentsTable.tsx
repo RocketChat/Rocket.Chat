@@ -98,9 +98,7 @@ const AgentsTable = () => {
 					<GenericTable aria-busy={isLoading} data-qa-id='agents-table'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody data-qa='GenericTableAgentInfoBody'>
-							{data?.users.map((user) => (
-								<AgentsTableRow key={user._id} user={user} mediaQuery={mediaQuery} />
-							))}
+							{data?.users.map((user) => <AgentsTableRow key={user._id} user={user} mediaQuery={mediaQuery} />)}
 						</GenericTableBody>
 					</GenericTable>
 					<Pagination

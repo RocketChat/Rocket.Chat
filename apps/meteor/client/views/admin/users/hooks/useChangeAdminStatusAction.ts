@@ -26,6 +26,6 @@ export const useChangeAdminStatusAction = (userId: IUser['_id'], isAdmin: boolea
 				icon: 'key',
 				label: isAdmin ? t('Remove_Admin') : t('Make_Admin'),
 				action: changeAdminStatus,
-		  }
+			}
 		: undefined;
 };

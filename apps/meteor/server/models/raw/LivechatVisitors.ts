@@ -197,7 +197,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 							{
 								'phone.phoneNumber': emailOrPhone,
 							},
-					  ]
+						]
 					: []),
 				...(nameOrUsername
 					? [
@@ -207,7 +207,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 							{
 								username: nameOrUsername,
 							},
-					  ]
+						]
 					: []),
 				...allowedCustomFields.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })),
 			],

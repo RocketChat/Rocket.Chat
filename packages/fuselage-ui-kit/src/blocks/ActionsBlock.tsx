@@ -17,7 +17,7 @@ const ActionsBlock = ({
   const surfaceType = useSurfaceType();
 
   const [showMoreVisible, setShowMoreVisible] = useState(
-    () => block.elements.length > 5 && surfaceType !== 'banner'
+    () => block.elements.length > 5 && surfaceType !== 'banner',
   );
 
   const handleShowMoreClick = useCallback(() => {
@@ -31,9 +31,9 @@ const ActionsBlock = ({
           ...element,
           appId: element.appId ?? block.appId,
           blockId: element.blockId ?? block.blockId,
-        })
+        }),
       ),
-    [block.appId, block.blockId, block.elements, showMoreVisible]
+    [block.appId, block.blockId, block.elements, showMoreVisible],
   );
 
   return (
@@ -47,7 +47,7 @@ const ActionsBlock = ({
             {surfaceRenderer.renderTextObject(
               { type: 'plain_text', text: 'Show more...' },
               0,
-              UiKit.BlockContext.NONE
+              UiKit.BlockContext.NONE,
             )}
           </Button>
         </Box>
