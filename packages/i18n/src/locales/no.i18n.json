@@ -542,8 +542,6 @@
   "Private_Apps_Count_Enabled_other": "{{count}} private apper aktivert",
   "Apps_Count_Enabled_tooltip": "Community-arbeidsområder kan aktivere opptil {{number}} {{context}} apper",
   "Apps_disabled_when_Premium_trial_ended": "Apper som ble deaktivert da Premium-prøveperioden avsluttet",
-  "Apps_disabled_when_Premium_trial_ended_description": "Community-arbeidsområder kan ha opptil 5 markedsplassapper og 3 private apper aktivert. Be arbeidsområdeadministratoren din om å reaktivere apper.",
-  "Apps_disabled_when_Premium_trial_ended_description_admin": "Community-arbeidsområder kan ha opptil 5 markedsplassapper og 3 private apper aktivert. Aktiver appene du trenger på nytt.",
   "Apps_Engine_Version": "Versjon av Apps Engine",
   "Apps_Error_private_app_install_disabled": "Installasjon og oppdateringer av private apper er deaktivert for dette arbeidsområdet",
   "Apps_Essential_Alert": "Denne appen er viktig for følgende hendelser:",
