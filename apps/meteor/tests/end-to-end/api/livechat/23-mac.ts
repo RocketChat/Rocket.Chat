@@ -1,6 +1,6 @@
 import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, beforeEach, afterEach, after, describe, it } from 'mocha';
+import { before, afterEach, after, describe, it } from 'mocha';
 import moment from 'moment';
 
 import { api, getCredentials, request, credentials } from '../../../data/api-data';
@@ -27,19 +27,15 @@ describe('MAC', () => {
 	describe('MAC rooms', () => {
 		let visitor: ILivechatVisitor;
 		let multipleContactsVisitor: ILivechatVisitor;
-		let room: IOmnichannelRoom | undefined;
+		let room: IOmnichannelRoom;
 
-		beforeEach(() => {
-			room = undefined;
-		});
-
-		afterEach(() => Promise.all([deleteVisitor(visitor.token), room && closeOmnichannelRoom(room._id)]));
+		afterEach(() => Promise.all([deleteVisitor(visitor.token), closeOmnichannelRoom(room._id)]));
 
 		after(() => deleteVisitor(multipleContactsVisitor.token));
 
 		it('Should create an innactive room and contact by default', async () => {
 			visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
+			room = await createLivechatRoom(visitor.token);
 
 			expect(room).to.be.an('object');
 			expect(room.v.activity).to.be.undefined;
@@ -47,7 +43,7 @@ describe('MAC', () => {
 
 		it('Should create an innactive contact by default', async () => {
 			visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
+			room = await createLivechatRoom(visitor.token);
 
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.v.contactId });
 			expect(res.body.contact.channels[0].visitorId).to.be.equal(visitor._id);
@@ -99,14 +95,14 @@ describe('MAC', () => {
 		});
 
 		it('should mark room as active when it comes from same contact on same period, even without agent interaction', async () => {
-			const room = await createLivechatRoom(multipleContactsVisitor.token);
+			room = await createLivechatRoom(multipleContactsVisitor.token);
 
 			expect(room).to.have.nested.property('v.activity').and.to.be.an('array');
 			expect(room.v.activity?.includes(moment.utc().format('YYYY-MM'))).to.be.true;
 		});
 
 		it('should mark an inquiry as active when it comes from same contact on same period, even without agent interaction', async () => {
-			const room = await createLivechatRoom(multipleContactsVisitor.token);
+			room = await createLivechatRoom(multipleContactsVisitor.token);
 			const inquiry = await fetchInquiry(room._id);
 
 			expect(inquiry).to.have.nested.property('v.activity').and.to.be.an('array');
