@@ -36,11 +36,11 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-function extractTimestampFromCursor(cursor: string): Date {
+export function extractTimestampFromCursor(cursor: string): Date {
 	return new Date(parseInt(cursor, 10));
 }
 
-function mountCursorQuery({ next, previous, count }: { next?: string; previous?: string; count: number }): {
+export function mountCursorQuery({ next, previous, count }: { next?: string; previous?: string; count: number }): {
 	query: { $gt: Date } | { $lt: Date };
 	options: FindOptions<IMessage>;
 } {
@@ -60,7 +60,7 @@ function mountCursorQuery({ next, previous, count }: { next?: string; previous?:
 	return { query: { $gt: new Date(0) }, options };
 }
 
-function mountCursorFromMessage(message: IMessage & { _deletedAt?: Date }, type: 'UPDATED' | 'DELETED'): string {
+export function mountCursorFromMessage(message: IMessage & { _deletedAt?: Date }, type: 'UPDATED' | 'DELETED'): string {
 	if (type === 'UPDATED') {
 		return `${message._updatedAt.getTime()}`;
 	}
@@ -72,11 +72,7 @@ function mountCursorFromMessage(message: IMessage & { _deletedAt?: Date }, type:
 	throw new Meteor.Error('error-cursor-not-found', 'Cursor not found', { method: 'messages/get' });
 }
 
-function mountNextCursor(messages: IMessage[], type: CursorPaginationType, next?: string, previous?: string): string | null {
-	if (next) {
-		messages.reverse();
-	}
-
+export function mountNextCursor(messages: IMessage[], type: CursorPaginationType, next?: string, previous?: string): string | null {
 	// if messages length is greater than 0, it means that we might have more messages
 	// and we shall return a cursor pointing to the most recent message from the current batch
 
@@ -95,7 +91,7 @@ function mountNextCursor(messages: IMessage[], type: CursorPaginationType, next?
 	return null;
 }
 
-function mountPreviousCursor(messages: IMessage[], type: CursorPaginationType, count?: number, next?: string): string | null {
+export function mountPreviousCursor(messages: IMessage[], type: CursorPaginationType, count?: number, next?: string): string | null {
 	// if count is null, we don't have to return a cursor
 	// because we are going to return all the messages
 	if (count === null) {
@@ -129,7 +125,7 @@ function mountPreviousCursor(messages: IMessage[], type: CursorPaginationType, c
 	return null;
 }
 
-async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Date) {
+export async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Date) {
 	const query = { $gt: lastUpdate };
 	const options: FindOptions<IMessage> = { sort: { ts: -1 } };
 
@@ -144,7 +140,13 @@ async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Date) {
 	};
 }
 
-async function handleCursorPagination(type: CursorPaginationType, rid: IRoom['_id'], count: number, next?: string, previous?: string) {
+export async function handleCursorPagination(
+	type: CursorPaginationType,
+	rid: IRoom['_id'],
+	count: number,
+	next?: string,
+	previous?: string,
+) {
 	const { query, options } = mountCursorQuery({ next, previous, count });
 
 	const response =
