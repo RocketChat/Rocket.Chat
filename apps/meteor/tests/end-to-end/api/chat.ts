@@ -2963,7 +2963,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-roomId-param-not-provided');
+					expect(res.body.errorType).to.be.equal('invalid-params');
 				})
 				.end(done);
 		});
@@ -3019,7 +3019,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-type-param-not-supported');
+					expect(res.body.errorType).to.be.equal('invalid-params');
 				})
 				.end(done);
 		});
@@ -3129,7 +3129,12 @@ describe('[Chat]', () => {
 			const response = await request
 				.get(api('chat.syncMessages'))
 				.set(credentials)
-				.query({ roomId: testChannel._id, next: new Date(lastUpdate).getTime().toString(), type: 'UPDATED', count: 2 });
+				.query({
+					roomId: testChannel._id,
+					next: new Date(lastUpdate).getTime().toString(),
+					type: 'UPDATED',
+					count: 2,
+				});
 
 			expect(response.body.result.updated).to.have.lengthOf(2);
 			expect(response.body.result.updated[0]._id).to.be.equal(thirdMessage.body.message._id);

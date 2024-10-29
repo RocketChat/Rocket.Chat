@@ -45,7 +45,7 @@ export function mountCursorQuery({ next, previous, count }: { next?: string; pre
 	options: FindOptions<IMessage>;
 } {
 	const options: FindOptions<IMessage> = {
-		...(!next && { sort: { ts: -1 } }),
+		sort: { ts: -1 },
 		...(next || previous ? { limit: count + 1 } : {}),
 	};
 

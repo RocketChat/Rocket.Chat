@@ -634,6 +634,11 @@ const ChatSyncMessagesSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		type: {
+			type: 'string',
+			enum: ['UPDATED', 'DELETED'],
+			nullable: true,
+		},
 	},
 	required: ['roomId'],
 	additionalProperties: false,
