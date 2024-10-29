@@ -1264,30 +1264,6 @@ describe('LIVECHAT - rooms', () => {
 				.expect(200);
 		});
 
-		it("should set visitor's source as API after uploading a file", async () => {
-			await updateSetting('FileUpload_Enabled', true);
-			await updateSetting('Livechat_fileupload_enabled', true);
-			visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			await request
-				.post(api(`livechat/upload/${room._id}`))
-				.set(credentials)
-				.set('x-visitor-token', visitor.token)
-				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			const { body } = await request
-				.get(api('livechat/visitors.info'))
-				.query({ visitorId: visitor._id })
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-			expect(body).to.have.property('visitor').and.to.be.an('object');
-			expect(body.visitor).to.have.property('source').and.to.be.an('object');
-			expect(body.visitor.source).to.have.property('type', 'api');
-		});
-
 		it('should allow visitor to download file', async () => {
 			visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
@@ -1678,33 +1654,6 @@ describe('LIVECHAT - rooms', () => {
 			expect(body.messages[1]).to.have.property('msg', 'Hello 2');
 			expect(body.messages[1]).to.have.property('ts');
 			expect(body.messages[1]).to.have.property('username', visitor.username);
-			await deleteVisitor(visitor.token);
-		});
-
-		it("should set visitor's source as API after creating messages in a room", async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			await sendMessage(room._id, 'Hello', visitor.token);
-
-			const { body } = await request
-				.post(api('livechat/messages'))
-				.set(credentials)
-				.send({ visitor: { token: visitor.token }, messages: [{ msg: 'Hello' }, { msg: 'Hello 2' }] })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-			expect(body).to.have.property('success', true);
-			expect(body).to.have.property('messages').of.length(2);
-
-			const { body: getVisitorResponse } = await request
-				.get(api('livechat/visitors.info'))
-				.query({ visitorId: visitor._id })
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(getVisitorResponse).to.have.property('visitor').and.to.be.an('object');
-			expect(getVisitorResponse.visitor).to.have.property('source').and.to.be.an('object');
-			expect(getVisitorResponse.visitor.source).to.have.property('type', 'api');
 			await deleteVisitor(visitor.token);
 		});
 	});
