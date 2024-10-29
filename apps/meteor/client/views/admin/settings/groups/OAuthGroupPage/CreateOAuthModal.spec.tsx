@@ -5,49 +5,47 @@ import React from 'react';
 
 import CreateOAuthModal from './CreateOAuthModal';
 
-describe('', () => {
-	it('should call onCancel when Cancel is clicked', async () => {
-		const onConfirm = jest.fn();
-		const onClose = jest.fn();
+it('should call onClose when Cancel is clicked', async () => {
+	const onConfirm = jest.fn();
+	const onClose = jest.fn();
 
-		render(<CreateOAuthModal onConfirm={onConfirm} onClose={onClose} />, {
-			wrapper: mockAppRoot().build(),
-			legacyRoot: true,
-		});
-
-		await userEvent.click(screen.getByText('Cancel'));
-
-		expect(onClose).toHaveBeenCalled();
+	render(<CreateOAuthModal onConfirm={onConfirm} onClose={onClose} />, {
+		wrapper: mockAppRoot().build(),
+		legacyRoot: true,
 	});
 
-	it('should call onCancel when X is clicked', async () => {
-		const onConfirm = jest.fn();
-		const onClose = jest.fn();
+	await userEvent.click(screen.getByText('Cancel'));
 
-		render(<CreateOAuthModal onConfirm={onConfirm} onClose={onClose} />, {
-			wrapper: mockAppRoot().build(),
-			legacyRoot: true,
-		});
+	expect(onClose).toHaveBeenCalled();
+});
 
-		await userEvent.click(screen.getByLabelText('Close'));
+it('should call onClose when X is clicked', async () => {
+	const onConfirm = jest.fn();
+	const onClose = jest.fn();
 
-		expect(onClose).toHaveBeenCalled();
+	render(<CreateOAuthModal onConfirm={onConfirm} onClose={onClose} />, {
+		wrapper: mockAppRoot().build(),
+		legacyRoot: true,
 	});
 
-	it('should call onConfirm when Add button is clicked', async () => {
-		const onConfirm = jest.fn();
-		const onClose = jest.fn();
+	await userEvent.click(screen.getByLabelText('Close'));
 
-		render(<CreateOAuthModal onConfirm={onConfirm} onClose={onClose} />, {
-			wrapper: mockAppRoot().build(),
-			legacyRoot: true,
-		});
+	expect(onClose).toHaveBeenCalled();
+});
 
-		const custoOAuthNameInput = screen.getByLabelText('Custom_OAuth_name');
-		await userEvent.type(custoOAuthNameInput, 'Test');
+it('should call onConfirm when Add button is clicked', async () => {
+	const onConfirm = jest.fn();
+	const onClose = jest.fn();
 
-		await userEvent.click(screen.getByText('Add'));
-
-		await waitFor(() => expect(onConfirm).toHaveBeenCalled());
+	render(<CreateOAuthModal onConfirm={onConfirm} onClose={onClose} />, {
+		wrapper: mockAppRoot().build(),
+		legacyRoot: true,
 	});
+
+	const custoOAuthNameInput = screen.getByLabelText('Custom_OAuth_name');
+	await userEvent.type(custoOAuthNameInput, 'Test');
+
+	await userEvent.click(screen.getByText('Add'));
+
+	await waitFor(() => expect(onConfirm).toHaveBeenCalled());
 });
