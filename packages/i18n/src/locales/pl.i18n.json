@@ -519,8 +519,6 @@
   "Apps_context_explore": "Poznaj",
   "Apps_context_installed": "Zainstalowana",
   "Apps_context_premium": "Enterprise",
-  "Apps_disabled_when_Premium_trial_ended_description": "Przestrzenie robocze w wersji Community mogą mieć włączonych maksymalnie 5 aplikacji Marketplace i 3 aplikacje prywatne. Poproś administratora obszaru roboczego o ponowne włączenie aplikacji.",
-  "Apps_disabled_when_Premium_trial_ended_description_admin": "Przestrzenie robocze w wersji Community mogą mieć włączonych maksymalnie 5 aplikacji Marketplace i 3 aplikacje prywatne. Włącz ponownie wymagane aplikacje.",
   "Apps_Engine_Version": "Wersja silnika aplikacji",
   "Apps_Essential_Alert": "Ta aplikacja jest niezbędna dla następujących zdarzeń:",
   "Apps_Essential_Disclaimer": "Zdarzenia wymienione powyżej zostaną zakłócone, jeśli ta aplikacja jest wyłączona. Jeśli chcesz, aby Rocket.Chat działał bez tej aplikacji, musisz ją odinstalować",

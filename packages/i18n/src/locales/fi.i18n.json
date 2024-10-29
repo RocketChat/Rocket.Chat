@@ -512,8 +512,6 @@
   "Private_Apps_Count_Enabled_one": "{{count}} yksityistä sovellusta käytössä",
   "Private_Apps_Count_Enabled_other": "{{count}} yksityistä sovellusta käytössä",
   "Apps_Count_Enabled_tooltip": "Yhteisöversion työtiloissa voi ottaa käyttöön enintään {{number}} {{context}}sovellusta",
-  "Apps_disabled_when_Premium_trial_ended_description": "Yhteisöversion työtiloissa voi olla käytössä enintään 5 markkinapaikkasovellusta ja 3 yksityistä sovellusta. Pyydä työtilan järjestelmänvalvojaa ottamaan sovelluksia käyttöön uudelleen.",
-  "Apps_disabled_when_Premium_trial_ended_description_admin": "Yhteisöversion työtiloissa voi olla käytössä enintään 5 markkinapaikkasovellusta ja 3 yksityistä sovellusta. Ota tarvitsemasi sovellukset käyttöön uudelleen.",
   "Apps_Engine_Version": "Sovellusmoottorin versio",
   "Apps_Essential_Alert": "Tämä sovellus on välttämätön seuraavissa tapahtumissa:",
   "Apps_Essential_Disclaimer": "Edellä mainitut tapahtumat keskeytyvät, jos sovellus poistetaan käytöstä. Jos haluat Rocket.Chatin toimivan ilman tämän sovelluksen toimintoja, sinun on poistettava sovellus",
