@@ -9501,7 +9501,7 @@ __metadata:
     twilio: "npm:^3.76.1"
     twit: "npm:^2.2.11"
     typescript: "npm:~5.6.3"
-    typia: "npm:~6.9.0"
+    typia: "npm:~6.11.3"
     ua-parser-js: "npm:^1.0.39"
     underscore: "npm:^1.13.7"
     universal-perf-hooks: "npm:^1.0.1"
@@ -10236,7 +10236,7 @@ __metadata:
     ts-node: "npm:~10.9.2"
     ts-patch: "npm:~3.2.1"
     typescript: "npm:~5.6.3"
-    typia: "npm:~6.9.0"
+    typia: "npm:~6.11.3"
   peerDependencies:
     "@rocket.chat/icons": "*"
   languageName: unknown
@@ -10464,10 +10464,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@samchon/openapi@npm:^0.4.6":
-  version: 0.4.9
-  resolution: "@samchon/openapi@npm:0.4.9"
-  checksum: 10/0cbcf04697086c2b380a3723a86c9628c9f651a30b631058e59fbb48cf2e1116dd5b58b980f0902bf3bce518ec85bea149e20d922071421d258ff7564cf93fde
+"@samchon/openapi@npm:^1.1.1":
+  version: 1.1.2
+  resolution: "@samchon/openapi@npm:1.1.2"
+  checksum: 10/ceb4ec85286dbafaa6988e52be77c8da18128cac36cf47d7b8db8ab086aa64d96782754b38cb739527a0b7add2d31174bae27f6deee55c3d0835df9fae50e0f3
   languageName: node
   linkType: hard
 
@@ -37128,37 +37128,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typia@npm:6.9.0":
-  version: 6.9.0
-  resolution: "typia@npm:6.9.0"
+"typia@npm:~6.11.3":
+  version: 6.11.3
+  resolution: "typia@npm:6.11.3"
   dependencies:
-    "@samchon/openapi": "npm:^0.4.6"
+    "@samchon/openapi": "npm:^1.1.1"
     commander: "npm:^10.0.0"
     comment-json: "npm:^4.2.3"
     inquirer: "npm:^8.2.5"
+    package-manager-detector: "npm:^0.2.0"
     randexp: "npm:^0.5.3"
   peerDependencies:
-    typescript: ">=4.8.0 <5.6.0"
+    typescript: ">=4.8.0 <5.7.0"
   bin:
     typia: lib/executable/typia.js
-  checksum: 10/bda96d6ef73115e9bcd753eef6553c2bca881539f380d4f67b58b26683ebc99a8938d96537a0fff07c564530f9aca53bcd332fb76da6adb57b75d274a2cd28e5
-  languageName: node
-  linkType: hard
-
-"typia@patch:typia@npm%3A6.9.0#./.yarn/patches/typia-npm-6.9.0-2fd4d85f25.patch::locator=rocket.chat%40workspace%3A.":
-  version: 6.9.0
-  resolution: "typia@patch:typia@npm%3A6.9.0#./.yarn/patches/typia-npm-6.9.0-2fd4d85f25.patch::version=6.9.0&hash=71fcee&locator=rocket.chat%40workspace%3A."
-  dependencies:
-    "@samchon/openapi": "npm:^0.4.6"
-    commander: "npm:^10.0.0"
-    comment-json: "npm:^4.2.3"
-    inquirer: "npm:^8.2.5"
-    randexp: "npm:^0.5.3"
-  peerDependencies:
-    typescript: ">=4.8.0 <5.6.0"
-  bin:
-    typia: lib/executable/typia.js
-  checksum: 10/4c6db611e1bd939235f7b8da0d2c6ee14796404bef639c34be4b81b32b800f6d7a610599eea3a4c51c9caa3f997cace76d964436e0bc2115bad65bb7edd71fa5
+  checksum: 10/bb2cb38bb4ca5bee01882a3b1e772b1609fd60de9c00560257976af5e83d756b705a65b3f3d265da991c0bdb544333d6be77224fd8aa670de801c4793e8451f5
   languageName: node
   linkType: hard
 
