@@ -644,42 +644,10 @@ jobs:
 
           aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
-  build-docker-preview:
-    name: 🚢 Build Docker Image (preview)
-    runs-on: ubuntu-20.04
-    needs: [build, checks, release-versions]
-    if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Restore build
-        uses: actions/download-artifact@v4
-        with:
-          name: build
-          path: /tmp/build
-
-      - name: Unpack build
-        run: |
-          cd /tmp/build
-          tar xzf Rocket.Chat.tar.gz
-          rm Rocket.Chat.tar.gz
-
-      - name: Build Docker image
-        id: build-docker-image-preview
-        uses: ./.github/actions/build-docker-image-preview
-        with:
-          root-dir: /tmp/build
-          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          release: preview
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          deno-version: ${{ needs.release-versions.outputs.deno-version }}
-
   docker-image-publish:
     name: 🚀 Publish Docker Image (main)
     runs-on: ubuntu-20.04
-    needs: [deploy, build-docker-preview, release-versions]
+    needs: [deploy, release-versions]
 
     strategy:
       matrix:
