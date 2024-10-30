@@ -29,7 +29,7 @@
 		"colorette": "^1.4.0",
 		"ejson": "^2.2.3",
 		"event-loop-stats": "^1.4.1",
-		"eventemitter3": "^4.0.7",
+		"eventemitter3": "^5.0.1",
 		"gc-stats": "^1.4.1",
 		"jaeger-client": "^3.19.0",
 		"mem": "^8.1.1",
@@ -40,7 +40,7 @@
 		"polka": "^0.5.2",
 		"sharp": "^0.33.5",
 		"underscore": "^1.13.7",
-		"uuid": "^10.0.0",
+		"uuid": "^11.0.2",
 		"ws": "^8.18.0"
 	},
 	"devDependencies": {
