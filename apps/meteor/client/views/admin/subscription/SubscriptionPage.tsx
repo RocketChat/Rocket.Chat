@@ -70,7 +70,7 @@ const SubscriptionPage = () => {
 	const macLimit = getKeyLimit('monthlyActiveContacts');
 	const seatsLimit = getKeyLimit('activeUsers');
 
-	const cancelSubscriptionModal = useCancelSubscriptionModal();
+	const { isLoading: isCancelSubscriptionLoading, open: openCancelSubscriptionModal } = useCancelSubscriptionModal();
 
 	const handleSyncLicenseUpdate = useCallback(() => {
 		syncLicenseUpdate.mutate(undefined, {
@@ -177,7 +177,7 @@ const SubscriptionPage = () => {
 							</Grid>
 							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise}>
 								{Boolean(licensesData?.license?.information.cancellable) && (
-									<Button loading={cancelSubscriptionModal.isLoading} secondary danger onClick={cancelSubscriptionModal.open}>
+									<Button loading={isCancelSubscriptionLoading} secondary danger onClick={openCancelSubscriptionModal}>
 										{t('Cancel_subscription')}
 									</Button>
 								)}
