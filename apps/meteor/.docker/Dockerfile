@@ -25,6 +25,8 @@ RUN set -x \
     && rm -rf npm/node_modules/sharp \
     && npm install sharp@0.32.6 \
     && mv node_modules/sharp npm/node_modules/sharp \
+    && cd /app/bundle/programs/server/npm/node_modules/@vector-im/matrix-bot-sdk \
+    && npm install \
     # End hack for sharp
     # # Start hack for isolated-vm...
     # && rm -rf npm/node_modules/isolated-vm \
@@ -35,6 +37,10 @@ RUN set -x \
     && npm rebuild bcrypt --build-from-source \
     && npm cache clear --force \
     && apk del .fetch-deps
+
+# TODO: remove hack once upstream builds are fixed
+COPY matrix-sdk-crypto.linux-x64-musl.node /app/bundle/programs/server/npm/node_modules/@matrix-org/matrix-sdk-crypto-nodejs
+COPY matrix-sdk-crypto.linux-x64-musl.node /app/bundle/programs/server/npm/node_modules/@vector-im/matrix-bot-sdk/node_modules/@matrix-org/matrix-sdk-crypto-nodejs
 
 VOLUME /app/uploads
 
