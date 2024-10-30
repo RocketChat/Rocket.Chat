@@ -79,7 +79,7 @@ export const useStatusItems = (): GenericMenuItemProps[] => {
 							</Box>
 						),
 					},
-			  ]
+				]
 			: []),
 		...(statuses ?? []),
 		{ id: 'custom-status', icon: 'emoji', content: t('Custom_Status'), onClick: handleCustomStatus, disabled: presenceDisabled },

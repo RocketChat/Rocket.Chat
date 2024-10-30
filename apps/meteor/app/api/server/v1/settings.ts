@@ -7,7 +7,12 @@ import type {
 } from '@rocket.chat/core-typings';
 import { isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Settings } from '@rocket.chat/models';
-import { isSettingsUpdatePropDefault, isSettingsUpdatePropsActions, isSettingsUpdatePropsColor } from '@rocket.chat/rest-typings';
+import {
+	isSettingsUpdatePropDefault,
+	isSettingsUpdatePropsActions,
+	isSettingsUpdatePropsColor,
+	isSettingsPublicWithPaginationProps,
+} from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
@@ -44,14 +49,18 @@ async function fetchSettings(
 // settings endpoints
 API.v1.addRoute(
 	'settings.public',
-	{ authRequired: false },
+	{ authRequired: false, validateParams: isSettingsPublicWithPaginationProps },
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
+			const { _id } = this.queryParams;
+
+			const parsedQueryId = typeof _id === 'string' && _id ? { _id: { $in: _id.split(',').map((id) => id.trim()) } } : {};
 
 			const ourQuery = {
 				...query,
+				...parsedQueryId,
 				hidden: { $ne: true },
 				public: true,
 			};

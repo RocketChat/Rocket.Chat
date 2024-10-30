@@ -384,7 +384,7 @@ export const FileUpload = {
 					? {
 							width,
 							height,
-					  }
+						}
 					: undefined,
 		};
 

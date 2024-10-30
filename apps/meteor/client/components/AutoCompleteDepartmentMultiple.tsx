@@ -63,7 +63,7 @@ const AutoCompleteDepartmentMultiple = ({
 								return;
 							}
 							return loadMoreDepartments(start, Math.min(50, departmentsTotal));
-					  }
+						}
 			}
 			renderItem={({ label, ...props }) => (
 				<CheckOption

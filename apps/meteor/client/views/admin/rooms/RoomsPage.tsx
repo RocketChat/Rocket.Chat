@@ -1,6 +1,7 @@
-import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
@@ -8,7 +9,7 @@ import EditRoomWithData from './EditRoomWithData';
 import RoomsTable from './RoomsTable';
 
 const RoomsPage = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const id = useRouteParameter('id');
 	const context = useRouteParameter('context');

@@ -1,14 +1,15 @@
 import { Button, Modal, Box } from '@rocket.chat/fuselage';
 import { useOutsideClick } from '@rocket.chat/fuselage-hooks';
-import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../../../views/admin/subscription/hooks/useCheckoutUrl';
 
 const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const ref = useRef<HTMLDivElement>(null);
 

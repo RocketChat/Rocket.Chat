@@ -2,7 +2,7 @@ import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 import { isPOSTLivechatPageVisitedParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
-import { Livechat } from '../../lib/LivechatTyped';
+import { savePageHistory } from '../../lib/tracking';
 
 API.v1.addRoute(
 	'livechat/page.visited',
@@ -11,7 +11,7 @@ API.v1.addRoute(
 		async post() {
 			const { token, rid, pageInfo } = this.bodyParams;
 
-			const message = await Livechat.savePageHistory(token, rid, pageInfo);
+			const message = await savePageHistory(token, rid, pageInfo);
 			if (!message) {
 				return API.v1.success();
 			}

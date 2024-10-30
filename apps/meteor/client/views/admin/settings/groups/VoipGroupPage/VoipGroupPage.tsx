@@ -1,8 +1,9 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Tabs, Box, Accordion } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import { PageScrollableContentWithShadow } from '../../../../../components/Page';
@@ -16,7 +17,7 @@ type VoipGroupPageProps = ISetting & {
 };
 
 function VoipGroupPage({ _id, onClickBack, ...group }: VoipGroupPageProps) {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const voipEnabled = useSetting('VoIP_Enabled');
 
 	const tabs = ['Settings', 'Extensions'];

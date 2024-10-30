@@ -73,7 +73,11 @@ export class Client extends EventEmitter {
 
 	public userToken?: string;
 
-	constructor(public ws: WebSocket, public meteorClient = false, req: IncomingMessage) {
+	constructor(
+		public ws: WebSocket,
+		public meteorClient = false,
+		req: IncomingMessage,
+	) {
 		super();
 
 		this.connection = {

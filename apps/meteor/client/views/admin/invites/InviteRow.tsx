@@ -1,9 +1,10 @@
 import type { IInvite } from '@rocket.chat/core-typings';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MouseEvent } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
@@ -25,7 +26,7 @@ type InviteRowProps = Omit<IInvite, 'createdAt' | 'expires' | '_updatedAt'> & {
 };
 
 const InviteRow = ({ _id, createdAt, expires, uses, maxUses, onRemove }: InviteRowProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const removeInvite = useEndpoint('DELETE', '/v1/removeInvite/:_id', { _id });
 

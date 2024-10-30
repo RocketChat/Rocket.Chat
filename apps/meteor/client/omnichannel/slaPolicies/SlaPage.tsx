@@ -1,7 +1,8 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRouteParameter, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRoute } from '@rocket.chat/ui-contexts';
 import React, { useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
 	Contextualbar,
@@ -16,7 +17,7 @@ import SlaNew from './SlaNew';
 import SlaTable from './SlaTable';
 
 const SlaPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const reload = useRef(() => null);
 
 	const slaPoliciesRoute = useRoute('omnichannel-sla-policies');

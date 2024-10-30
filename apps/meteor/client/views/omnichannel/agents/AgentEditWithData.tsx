@@ -1,15 +1,16 @@
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { FormSkeleton } from '../../../components/Skeleton';
 import AgentEdit from './AgentEdit';
 
 const AgentEditWithData = ({ uid }: { uid: ILivechatAgent['_id'] }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const getAvailableDepartments = useEndpoint('GET', '/v1/livechat/department');
 	const getAgentById = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: uid });

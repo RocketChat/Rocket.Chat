@@ -210,7 +210,7 @@ jobs:
           path: |
             ~/.cache/ms-playwright
           # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
-          key: playwright-1.40.1
+          key: playwright-1.48.2
 
       - name: Install Playwright
         if: inputs.type == 'ui' && steps.cache-playwright.outputs.cache-hit != 'true'
@@ -305,7 +305,11 @@ jobs:
           include-hidden-files: true
 
       - name: Show server logs if E2E test failed
-        if: failure()
+        if: failure() && inputs.release == 'ee'
+        run: docker compose -f docker-compose-ci.yml logs
+
+      - name: Show server logs if E2E test failed
+        if: failure() && inputs.release != 'ee'
         run: docker compose -f docker-compose-ci.yml logs rocketchat
 
       - name: Extract e2e:ee:coverage

@@ -1,7 +1,8 @@
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch, useUserId, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUserId, useMethod } from '@rocket.chat/ui-contexts';
 import type { ReactElement, RefObject } from 'react';
 import React, { useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';
 import GenericNoResults from '../../../../components/GenericNoResults';
@@ -20,7 +21,7 @@ import AccountTokensRow from './AccountTokensRow';
 import AddToken from './AddToken';
 
 const AccountTokensTable = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const userId = useUserId();

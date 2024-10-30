@@ -1,15 +1,16 @@
 import type { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { Button, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
-import { useEndpoint, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
 import EditBusinessHours from './EditBusinessHours';
 
 const EditBusinessHoursWidthData = ({ id, type }: { id?: ILivechatBusinessHour['_id']; type: LivechatBusinessHourTypes }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const getBusinessHour = useEndpoint('GET', '/v1/livechat/business-hour');
 
