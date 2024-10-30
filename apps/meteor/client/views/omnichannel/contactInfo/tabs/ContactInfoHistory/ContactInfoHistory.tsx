@@ -1,3 +1,4 @@
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { Box, Margins, Throbber, States, StatesIcon, StatesTitle, Select } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
@@ -7,6 +8,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import { ContextualbarContent, ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../../components/CustomScrollbars';
+import { useOmnichannelSourceName } from '../../../hooks/useOmnichannelSourceName';
 import ContactInfoHistoryItem from './ContactInfoHistoryItem';
 
 type ContactInfoHistoryProps = {
@@ -16,22 +18,29 @@ type ContactInfoHistoryProps = {
 
 const ContactInfoHistory = ({ contactId, setChatId }: ContactInfoHistoryProps) => {
 	const t = useTranslation();
-
-	const historyFilterOptions: [string, string][] = [
-		['all', t('All')],
-		['widget', t('Livechat')],
-		['email', t('Email')],
-		['sms', t('SMS')],
-		['app', t('Apps')],
-		['api', t('API')],
-		['other', t('Other')],
-	];
-
 	const [type, setType] = useLocalStorage<string>('contact-history-type', 'all');
+	const getSourceName = useOmnichannelSourceName();
 
 	const getContactHistory = useEndpoint('GET', '/v1/omnichannel/contacts.history');
 	const { data, isLoading, isError } = useQuery(['getContactHistory', contactId, type], () =>
 		getContactHistory({ contactId, source: type === 'all' ? undefined : type }),
+	);
+
+	const historyFilterOptions: [string, string][] = Object.values(OmnichannelSourceType).reduce(
+		(acc, cv) => {
+			let sourceName;
+			const hasSourceType = data?.history.find((item) => {
+				sourceName = getSourceName(item.source);
+				return item.source.type === cv;
+			});
+
+			if (hasSourceType && sourceName) {
+				acc.push([cv, sourceName]);
+			}
+
+			return acc;
+		},
+		[['all', t('All')]],
 	);
 
 	return (
@@ -47,7 +56,12 @@ const ContactInfoHistory = ({ contactId, setChatId }: ContactInfoHistoryProps) =
 			>
 				<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 					<Margins inline={4}>
-						<Select value={type} onChange={(value) => setType(value as string)} placeholder={t('Filter')} options={historyFilterOptions} />
+						<Select
+							value={type}
+							onChange={(value) => setType(value as string)}
+							placeholder={t('Filter')}
+							options={historyFilterOptions || []}
+						/>
 					</Margins>
 				</Box>
 			</Box>

@@ -15,7 +15,7 @@ type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel>;
 
 const ContactInfoChannelsItem = ({ visitorId, details, blocked, lastChat }: ContactInfoChannelsItemProps) => {
 	const t = useTranslation();
-	const sourceName = useOmnichannelSourceName(details);
+	const getSourceName = useOmnichannelSourceName();
 	const getTimeFromNow = useTimeFromNow(true);
 
 	const [showButton, setShowButton] = useState(false);
@@ -57,7 +57,7 @@ const ContactInfoChannelsItem = ({ visitorId, details, blocked, lastChat }: Cont
 				{details && <OmnichannelRoomIcon source={details} size='x18' placement='default' />}
 				{details && (
 					<Box mi={4} fontScale='p2b'>
-						{sourceName} {blocked && `(${t('Blocked')})`}
+						{getSourceName(details)} {blocked && `(${t('Blocked')})`}
 					</Box>
 				)}
 				{lastChat && (

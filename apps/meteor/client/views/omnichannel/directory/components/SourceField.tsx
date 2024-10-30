@@ -15,7 +15,7 @@ type SourceFieldProps = {
 
 const SourceField = ({ room }: SourceFieldProps) => {
 	const { t } = useTranslation();
-	const sourceName = useOmnichannelSourceName(room.source);
+	const getSourceName = useOmnichannelSourceName();
 
 	const defaultTypesVisitorData: {
 		widget: string | undefined;
@@ -40,7 +40,7 @@ const SourceField = ({ room }: SourceFieldProps) => {
 				<Box display='flex' alignItems='center'>
 					<OmnichannelRoomIcon source={room.source} status={room.v.status} size='x24' />
 					<Label mi={8} mbe='0'>
-						{sourceName}
+						{getSourceName(room.source)}
 					</Label>
 					{defaultTypesVisitorData[room.source.type]}
 				</Box>

@@ -31,7 +31,7 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 	const setModal = useSetModal();
 	const preventPropagation = usePreventPropagation();
 	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
-	const sourceName = useOmnichannelSourceName(source);
+	const getSourceName = useOmnichannelSourceName();
 
 	const customClass = css`
 		&:hover {
@@ -48,7 +48,7 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 		<Box
 			tabIndex={0}
 			role='listitem'
-			aria-label={sourceName}
+			aria-label={getSourceName(source)}
 			borderBlockEndWidth={1}
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
@@ -64,7 +64,7 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 					{source && <OmnichannelRoomIcon source={source} size='x18' placement='default' />}
 					{source && (
 						<Box mi={4} fontScale='p2b'>
-							{sourceName}
+							{getSourceName(source)}
 						</Box>
 					)}
 					{lastMessage && (
