@@ -88,7 +88,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		setLoading(true);
 
 		if (isAdminUser && appAddon && !workspaceHasAddon) {
-			return setModal(<AddonRequiredModal actionType='install' onDismiss={cancelAction} onInstallAnyway={appInstallationHandler} />);
+			const actionType = button?.action === 'update' ? 'update' : 'install';
+			return setModal(<AddonRequiredModal actionType={actionType} onDismiss={cancelAction} onInstallAnyway={appInstallationHandler} />);
 		}
 
 		appInstallationHandler();
