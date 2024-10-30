@@ -15,6 +15,7 @@ import {
 	closeOmnichannelRoom,
 	deleteVisitor,
 } from '../../../data/livechat/rooms';
+import { updatePermission } from '../../../data/permissions.helper';
 
 describe('MAC', () => {
 	before((done) => getCredentials(done));
@@ -28,6 +29,8 @@ describe('MAC', () => {
 		let visitor: ILivechatVisitor;
 		let multipleContactsVisitor: ILivechatVisitor;
 		let room: IOmnichannelRoom;
+
+		before(() => updatePermission('close-others-livechat-room', ['livechat-manager', 'livechat-monitor', 'admin']));
 
 		afterEach(() => Promise.all([deleteVisitor(visitor.token), closeOmnichannelRoom(room._id)]));
 
