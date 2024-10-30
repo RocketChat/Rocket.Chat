@@ -93,7 +93,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		}
 
 		appInstallationHandler();
-	}, [appAddon, appInstallationHandler, cancelAction, isAdminUser, setLoading, setModal, workspaceHasAddon]);
+	}, [button?.action, appAddon, appInstallationHandler, cancelAction, isAdminUser, setLoading, setModal, workspaceHasAddon]);
 
 	// @TODO we should refactor this to not use the label to determine the variant
 	const getStatusVariant = (status: appStatusSpanResponseProps) => {
