@@ -63,7 +63,7 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 											return;
 										}
 										loadMoreDepartments(start, Math.min(50, departmentsTotal));
-								  }
+									}
 						}
 						renderItem={({ label, ...props }) => (
 							<CheckOption

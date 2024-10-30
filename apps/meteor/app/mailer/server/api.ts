@@ -44,7 +44,7 @@ export const replace = (str: string, data: { [key: string]: unknown } = {}): str
 			? {
 					fname: strLeft(String(data.name), ' '),
 					lname: strRightBack(String(data.name), ' '),
-			  }
+				}
 			: {}),
 		...data,
 	};

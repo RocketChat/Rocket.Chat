@@ -91,7 +91,7 @@ const setRoomConfig = ({ roomId, favorite, isDefault }: { roomId: IRoom['_id']; 
 				? {
 						defaultValue: true,
 						favorite: false,
-				  }
+					}
 				: undefined,
 		});
 };

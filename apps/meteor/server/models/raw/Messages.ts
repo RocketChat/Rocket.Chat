@@ -37,7 +37,7 @@ type DeepWritable<T> = T extends (...args: any) => any
 	? T
 	: {
 			-readonly [P in keyof T]: DeepWritable<T[P]>;
-	  };
+		};
 
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {

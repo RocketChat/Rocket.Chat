@@ -56,7 +56,7 @@ const VoipFooter = ({
 		callerState === 'IN_CALL' || callerState === 'ON_HOLD'
 			? css`
 					cursor: pointer;
-			  `
+				`
 			: '';
 
 	const handleHold = (e: MouseEvent<HTMLButtonElement>): void => {

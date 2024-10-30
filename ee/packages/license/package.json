@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/license",
-	"version": "1.0.0-rc.4",
+	"version": "1.0.0-rc.5",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
@@ -32,6 +32,6 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/jwt": "workspace:^",
 		"@rocket.chat/logger": "workspace:^",
-		"bcrypt": "^5.0.1"
+		"bcrypt": "^5.1.1"
 	}
 }
