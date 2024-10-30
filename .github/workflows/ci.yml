@@ -361,7 +361,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Make sure matrix bindings load
-        if: ${{ matrix.platform == 'alpine' }}
+        if: ${{ matrix.platform == 'official' }}
         run: |
           docker run --rm -w /app/bundle/programs/server/npm/node_modules/matrix-appservice-bridge ghcr.io/rocketchat/rocket.chat:$RC_DOCKER_TAG -e 'require(".")'
 
