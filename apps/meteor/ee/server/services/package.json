@@ -44,7 +44,7 @@
 		"pino": "^8.21.0",
 		"sodium-native": "^3.3.0",
 		"sodium-plus": "^0.9.0",
-		"uuid": "^10.0.0",
+		"uuid": "^11.0.2",
 		"ws": "^8.18.0"
 	},
 	"devDependencies": {
