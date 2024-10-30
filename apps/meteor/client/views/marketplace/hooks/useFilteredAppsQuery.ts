@@ -35,7 +35,7 @@ const filterByContext: Record<MarketplaceContext, (apps: App[]) => App[]> = {
 	explore: fallback,
 	installed: fallback,
 	private: fallback,
-	premium: (apps: App[]) => apps.filter(({ categories }) => categories.includes('Premium')),
+	premium: (apps: App[]) => apps.filter(({ categories }) => categories?.includes('Premium') ?? false),
 	requested: (apps: App[]) => apps.filter(({ appRequestStats, installed }) => Boolean(appRequestStats) && !installed),
 };
 

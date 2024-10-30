@@ -91,7 +91,7 @@ export type App = {
 		raw: string;
 		rendered: string;
 	};
-	categories: string[];
+	categories: string[] | null;
 	version: string;
 	versionIncompatible?: boolean;
 	addon?: ExternalModuleName;
