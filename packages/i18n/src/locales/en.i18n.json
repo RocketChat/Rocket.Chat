@@ -3942,6 +3942,7 @@
   "no-active-video-conf-provider": "**Conference call not enabled**: A workspace admin needs to enable the conference call feature first.",
   "No_available_agents_to_transfer": "No available agents to transfer",
   "No_app_matches": "No app matches",
+  "No_app_label_provided": "No app label provided",
   "No_app_matches_for": "No app matches for",
   "No_apps_installed": "No Apps Installed",
   "No_Canned_Responses": "No Canned Responses",

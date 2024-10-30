@@ -7,13 +7,13 @@ import { ContextualbarEmptyContent, ContextualbarScrollableContent } from '../..
 import ContactInfoChannelsItem from './ContactInfoChannelsItem';
 
 type ContactInfoChannelsProps = {
-	channels: Serialized<ILivechatContactChannel>[];
+	channels?: Serialized<ILivechatContactChannel>[];
 };
 
 const ContactInfoChannels = ({ channels }: ContactInfoChannelsProps) => {
 	const t = useTranslation();
 
-	if (channels.length === 0) {
+	if (!channels || channels.length === 0) {
 		return <ContextualbarEmptyContent icon='balloon' title={t('No_channels_yet')} subtitle={t('No_channels_yet_description')} />;
 	}
 
@@ -23,9 +23,11 @@ const ContactInfoChannels = ({ channels }: ContactInfoChannelsProps) => {
 				{t('Last_contacts')}
 			</Box>
 			<ContextualbarScrollableContent p={0}>
-				{channels.map((channel) => (
-					<ContactInfoChannelsItem key={channel.visitorId} {...channel} />
-				))}
+				<Box>
+					{channels.map((channel) => (
+						<ContactInfoChannelsItem key={channel.visitorId} {...channel} />
+					))}
+				</Box>
 			</ContextualbarScrollableContent>
 		</>
 	);
