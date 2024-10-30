@@ -9183,7 +9183,7 @@ __metadata:
     mini-css-extract-plugin: "npm:~1.6.2"
     mitt: "npm:^2.1.0"
     npm-run-all: "npm:^4.1.5"
-    path-to-regexp: "npm:^6.3.0"
+    path-to-regexp: "npm:^8.0.0"
     postcss-css-variables: "npm:^0.17.0"
     postcss-dir-pseudo-class: "npm:^5.0.0"
     postcss-flexbugs-fixes: "npm:^4.2.1"
@@ -9607,7 +9607,7 @@ __metadata:
     object-path: "npm:^0.11.8"
     outdent: "npm:~0.8.0"
     path: "npm:^0.12.7"
-    path-to-regexp: "npm:^6.3.0"
+    path-to-regexp: "npm:^8.0.0"
     pdfjs-dist: "npm:^2.16.105"
     pino: "npm:^8.21.0"
     pino-pretty: "npm:^7.6.1"
@@ -30614,14 +30614,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:^6.3.0":
-  version: 6.3.0
-  resolution: "path-to-regexp@npm:6.3.0"
-  checksum: 10/6822f686f01556d99538b350722ef761541ec0ce95ca40ce4c29e20a5b492fe8361961f57993c71b2418de12e604478dcf7c430de34b2c31a688363a7a944d9c
-  languageName: node
-  linkType: hard
-
-"path-to-regexp@npm:^8.1.0":
+"path-to-regexp@npm:^8.0.0, path-to-regexp@npm:^8.1.0":
   version: 8.2.0
   resolution: "path-to-regexp@npm:8.2.0"
   checksum: 10/23378276a172b8ba5f5fb824475d1818ca5ccee7bbdb4674701616470f23a14e536c1db11da9c9e6d82b82c556a817bbf4eee6e41b9ed20090ef9427cbb38e13

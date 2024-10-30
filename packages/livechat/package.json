@@ -113,7 +113,7 @@
 		"markdown-it": "^14.1.0",
 		"mem": "^8.1.1",
 		"mitt": "^2.1.0",
-		"path-to-regexp": "^6.3.0",
+		"path-to-regexp": "^8.0.0",
 		"preact": "~10.24.3",
 		"preact-router": "^3.2.1",
 		"query-string": "^7.1.3",

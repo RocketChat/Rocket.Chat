@@ -393,7 +393,7 @@
 		"oauth2-server": "3.1.1",
 		"object-path": "^0.11.8",
 		"path": "^0.12.7",
-		"path-to-regexp": "^6.3.0",
+		"path-to-regexp": "^8.0.0",
 		"pdfjs-dist": "^2.16.105",
 		"pino": "^8.21.0",
 		"postis": "^2.2.0",
