@@ -62,7 +62,7 @@ describe('MAC', () => {
 
 		it('should mark contact as active when agent sends a message', async () => {
 			multipleContactsVisitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
+			const room = await createLivechatRoom(multipleContactsVisitor.token);
 
 			await sendAgentMessage(room._id);
 
