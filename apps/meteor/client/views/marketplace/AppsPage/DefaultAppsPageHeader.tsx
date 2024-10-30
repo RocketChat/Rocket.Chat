@@ -74,7 +74,6 @@ const DefaultAppsPageHeader = () => {
 							{t('Enable_unlimited_apps')}
 						</Button>
 					)}
-					<UpdateRocketChatButton />
 				</ButtonGroup>
 			)}
 		</PageHeader>
