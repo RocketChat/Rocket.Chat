@@ -138,7 +138,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 			if (actionType === 'enable' && isAdminUser && app.installedAddon && !workspaceHasInstalledAddon) {
 				return missingAddonHandler(actionType);
 			}
-			if (isAdminUser && app.addon && !workspaceHasMarketplaceAddon) {
+
+			if (actionType !== 'enable' && isAdminUser && app.addon && !workspaceHasMarketplaceAddon) {
 				return missingAddonHandler(actionType);
 			}
 
