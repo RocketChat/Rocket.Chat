@@ -67,7 +67,7 @@ describe('MAC', () => {
 			await sendAgentMessage(room._id);
 
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.v.contactId });
-			expect(res.body.contact.channels[0].visitorId).to.be.equal(visitor._id);
+			expect(res.body.contact.channels[0].visitorId).to.be.equal(multipleContactsVisitor._id);
 			expect(res.body.contact).to.have.property('activity').that.is.an('array').with.lengthOf(1);
 			expect(res.body.contact.activity[0]).to.equal(moment.utc().format('YYYY-MM'));
 		});
