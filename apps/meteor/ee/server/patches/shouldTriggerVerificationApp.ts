@@ -1,6 +1,7 @@
-import type { IOmnichannelSource, ILivechatContact } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { type IOmnichannelSource, type ILivechatContact } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
-import { LivechatContacts } from '@rocket.chat/models';
+import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
 
 import { shouldTriggerVerificationApp } from '../../../app/livechat/server/lib/contacts/shouldTriggerVerificationApp';
 import { settings } from '../../../app/settings/server';
@@ -13,12 +14,21 @@ import { settings } from '../../../app/settings/server';
  */
 type AvailableLivechatRequireContactVerificationSetting = 'never' | 'once' | 'always';
 
-const runShouldTriggerVerificationApp = async (
+export const runShouldTriggerVerificationApp = async (
 	_next: any,
-	contactId: ILivechatContact['_id'],
+	roomId: IOmnichannelRoom['_id'],
 	source: IOmnichannelSource,
 ): Promise<boolean> => {
-	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'unknown' | 'channels'>>(contactId, {
+	const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, 'v'>>(roomId, { projection: { v: 1 } });
+	if (!room) {
+		return false;
+	}
+
+	if (!room.v.contactId) {
+		return false;
+	}
+
+	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'unknown' | 'channels'>>(room.v.contactId, {
 		projection: {
 			_id: 1,
 			unknown: 1,

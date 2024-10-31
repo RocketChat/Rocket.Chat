@@ -1,6 +1,6 @@
-import type { ILivechatContact, IOmnichannelSource } from '@rocket.chat/core-typings';
+import type { ILivechatContact, IOmnichannelRoom, IOmnichannelSource } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
-import { LivechatContacts } from '@rocket.chat/models';
+import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
 
 import { isAgentAvailableToTakeContactInquiry } from '../../../app/livechat/server/lib/contacts/isAgentAvailableToTakeContactInquiry';
 import { settings } from '../../../app/settings/server';
@@ -8,11 +8,17 @@ import { settings } from '../../../app/settings/server';
 // If the contact is unknown and the setting to block unknown contacts is on, we must not allow the agent to take this inquiry
 // if the contact is not verified in this channel and the block unverified contacts setting is on, we should not allow the inquiry to be taken
 // otherwise, the contact is allowed to be taken
-const runIsAgentAvailableToTakeContactInquiry = async (
+export const runIsAgentAvailableToTakeContactInquiry = async (
 	_next: any,
 	source: IOmnichannelSource,
-	contactId: ILivechatContact['_id'] | null,
+	roomId: IOmnichannelRoom['_id'],
 ): Promise<{ error: string; value: false } | { value: true }> => {
+	const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, 'v'>>(roomId, { projection: { v: 1 } });
+	if (!room) {
+		return { value: false, error: 'error-invalid-room' };
+	}
+
+	const { contactId } = room.v;
 	if (!contactId) {
 		return { value: false, error: 'error-invalid-contact' };
 	}

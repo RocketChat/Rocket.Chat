@@ -7,7 +7,6 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { settings } from '../../../settings/server';
 import { RoutingManager } from '../lib/RoutingManager';
 import { isAgentAvailableToTakeContactInquiry } from '../lib/contacts/isAgentAvailableToTakeContactInquiry';
-import { migrateVisitorIfMissingContact } from '../lib/contacts/migrateVisitorIfMissingContact';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -56,8 +55,7 @@ export const takeInquiry = async (
 		throw new Meteor.Error('error-mac-limit-reached');
 	}
 
-	const contactId = await migrateVisitorIfMissingContact(inquiry.v._id, room.source);
-	const isAgentAvailableToTakeContactInquiryResult = await isAgentAvailableToTakeContactInquiry(room.source, contactId);
+	const isAgentAvailableToTakeContactInquiryResult = await isAgentAvailableToTakeContactInquiry(room.source, room._id);
 	if (!isAgentAvailableToTakeContactInquiryResult.value) {
 		throw new Meteor.Error(isAgentAvailableToTakeContactInquiryResult.error);
 	}

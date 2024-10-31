@@ -249,7 +249,7 @@ export class QueueManager {
 		}
 
 		let newRoom;
-		if (inquiry.v.contactId && (await shouldTriggerVerificationApp(inquiry.v.contactId, room.source))) {
+		if (await shouldTriggerVerificationApp(room._id, room.source)) {
 			newRoom = await LivechatRooms.findOneById(rid);
 			await LivechatContacts.updateContactChannel(inquiry.v._id, { verified: false });
 		} else {

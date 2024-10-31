@@ -39,7 +39,6 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	status: LivechatInquiryStatus;
 	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'phone' | 'activity'> & {
 		lastMessageTs?: Date;
-		contactId?: string;
 	};
 	t: 'l';
 
