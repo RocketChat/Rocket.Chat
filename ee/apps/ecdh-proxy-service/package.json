@@ -1,9 +1,12 @@
 {
-	"name": "rocketchat-services",
+	"name": "@rocket.chat/ecdh-proxy-service",
 	"private": true,
 	"version": "2.0.0-rc.5",
-	"description": "Rocket.Chat Authorization service",
-	"main": "index.js",
+	"description": "Rocket.Chat ECDH proxy service",
+	"main": "dist/service.js",
+	"files": [
+		"/dist"
+	],
 	"scripts": {
 		"typecheck": "tsc --noEmit --skipLibCheck",
 		"build": "tsc",

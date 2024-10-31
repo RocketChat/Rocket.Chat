@@ -39,6 +39,7 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
-		"@rocket.chat/ui-kit": "workspace:~"
+		"@rocket.chat/ui-kit": "workspace:~",
+		"sodium-plus": "^0.9.0"
 	}
 }

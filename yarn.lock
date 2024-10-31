@@ -8489,6 +8489,7 @@ __metadata:
     jest: "npm:~29.7.0"
     mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
     prettier: "npm:~3.3.3"
+    sodium-plus: "npm:^0.9.0"
     typescript: "npm:~5.6.3"
   languageName: unknown
   linkType: soft
@@ -8609,6 +8610,55 @@ __metadata:
     ts-node: "npm:^10.9.2"
     typescript: "npm:~5.6.3"
     underscore: "npm:^1.13.7"
+    uuid: "npm:^11.0.2"
+    ws: "npm:^8.18.0"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/ecdh-proxy-service@workspace:ee/apps/ecdh-proxy-service":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ecdh-proxy-service@workspace:ee/apps/ecdh-proxy-service"
+  dependencies:
+    "@rocket.chat/apps-engine": "workspace:^"
+    "@rocket.chat/core-services": "workspace:^"
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/emitter": "npm:~0.31.25"
+    "@rocket.chat/icons": "npm:~0.38.0"
+    "@rocket.chat/message-parser": "workspace:^"
+    "@rocket.chat/model-typings": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/network-broker": "workspace:^"
+    "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/string-helpers": "npm:~0.31.25"
+    "@rocket.chat/ui-kit": "workspace:~"
+    "@types/cookie": "npm:^0.5.4"
+    "@types/cookie-parser": "npm:^1.4.7"
+    "@types/ejson": "npm:^2.2.2"
+    "@types/express": "npm:^4.17.21"
+    "@types/fibers": "npm:^3.1.4"
+    "@types/node": "npm:~20.16.12"
+    "@types/ws": "npm:^8.5.12"
+    ajv: "npm:^8.17.1"
+    bcrypt: "npm:^5.1.1"
+    body-parser: "npm:^1.20.3"
+    colorette: "npm:^2.0.20"
+    cookie: "npm:^0.5.0"
+    cookie-parser: "npm:^1.4.7"
+    ejson: "npm:^2.2.3"
+    eventemitter3: "npm:^5.0.1"
+    express: "npm:^4.21.1"
+    jaeger-client: "npm:^3.19.0"
+    mem: "npm:^8.1.1"
+    moleculer: "npm:^0.14.34"
+    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
+    nats: "npm:^2.28.2"
+    npm-run-all: "npm:^4.1.5"
+    pino: "npm:^8.21.0"
+    pino-pretty: "npm:^7.6.1"
+    sodium-native: "npm:^3.3.0"
+    sodium-plus: "npm:^0.9.0"
+    ts-node: "npm:^10.9.2"
+    typescript: "npm:~5.6.3"
     uuid: "npm:^11.0.2"
     ws: "npm:^8.18.0"
   languageName: unknown
@@ -26765,6 +26815,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.escape@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "lodash.escape@npm:4.0.1"
+  checksum: 10/ba1effab9aea7e20ee69b26cbfeb41c73da2eb4d2ab1c261aaf53dd0902ce1afc2f0b34fb24bc69c1d2dd201c332e1d1eb696092fc844a2c5c8e7ccd1ca32014
+  languageName: node
+  linkType: hard
+
 "lodash.flatten@npm:^4.4.0":
   version: 4.4.0
   resolution: "lodash.flatten@npm:4.4.0"
@@ -33342,55 +33399,6 @@ __metadata:
     node-gyp: "npm:^9.4.1"
     ts-node: "npm:^10.9.2"
     turbo: "npm:^2.2.3"
-  languageName: unknown
-  linkType: soft
-
-"rocketchat-services@workspace:apps/meteor/ee/server/services":
-  version: 0.0.0-use.local
-  resolution: "rocketchat-services@workspace:apps/meteor/ee/server/services"
-  dependencies:
-    "@rocket.chat/apps-engine": "workspace:^"
-    "@rocket.chat/core-services": "workspace:^"
-    "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/emitter": "npm:~0.31.25"
-    "@rocket.chat/icons": "npm:~0.38.0"
-    "@rocket.chat/message-parser": "workspace:^"
-    "@rocket.chat/model-typings": "workspace:^"
-    "@rocket.chat/models": "workspace:^"
-    "@rocket.chat/network-broker": "workspace:^"
-    "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/string-helpers": "npm:~0.31.25"
-    "@rocket.chat/ui-kit": "workspace:~"
-    "@types/cookie": "npm:^0.5.4"
-    "@types/cookie-parser": "npm:^1.4.7"
-    "@types/ejson": "npm:^2.2.2"
-    "@types/express": "npm:^4.17.21"
-    "@types/fibers": "npm:^3.1.4"
-    "@types/node": "npm:~20.16.12"
-    "@types/ws": "npm:^8.5.12"
-    ajv: "npm:^8.17.1"
-    bcrypt: "npm:^5.1.1"
-    body-parser: "npm:^1.20.3"
-    colorette: "npm:^2.0.20"
-    cookie: "npm:^0.5.0"
-    cookie-parser: "npm:^1.4.7"
-    ejson: "npm:^2.2.3"
-    eventemitter3: "npm:^5.0.1"
-    express: "npm:^4.21.1"
-    jaeger-client: "npm:^3.19.0"
-    mem: "npm:^8.1.1"
-    moleculer: "npm:^0.14.34"
-    mongodb: "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
-    nats: "npm:^2.28.2"
-    npm-run-all: "npm:^4.1.5"
-    pino: "npm:^8.21.0"
-    pino-pretty: "npm:^7.6.1"
-    sodium-native: "npm:^3.3.0"
-    sodium-plus: "npm:^0.9.0"
-    ts-node: "npm:^10.9.2"
-    typescript: "npm:~5.6.3"
-    uuid: "npm:^11.0.2"
-    ws: "npm:^8.18.0"
   languageName: unknown
   linkType: soft
 

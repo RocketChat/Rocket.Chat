@@ -10,7 +10,7 @@ import express from 'express';
 import mem from 'mem';
 import WebSocket from 'ws';
 
-import { ServerSession } from '../../../../app/ecdh/server/ServerSession';
+import { ServerSession } from './ServerSession';
 
 const app = express();
 app.use(cookieParser());

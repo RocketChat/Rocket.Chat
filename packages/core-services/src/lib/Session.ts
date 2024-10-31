@@ -13,19 +13,22 @@ export class Session {
 	// Encoding before the encryption to keep unicode chars
 	protected readonly stringFormatRawData: BufferEncoding = 'base64';
 
-	protected decryptKey: CryptographyKey;
+	protected decryptKey?: CryptographyKey;
 
-	protected encryptKey: CryptographyKey;
+	protected encryptKey?: CryptographyKey;
 
-	protected secretKey: X25519SecretKey;
+	protected secretKey?: X25519SecretKey;
 
-	public publicKey: X25519PublicKey;
+	public publicKey?: X25519PublicKey;
 
 	async sodium(): Promise<SodiumPlus> {
 		return sodium || SodiumPlus.auto();
 	}
 
 	get publicKeyString(): string {
+		if (!this.publicKey) {
+			throw new Error('empty-public-key');
+		}
 		return this.publicKey.toString(this.stringFormatKey);
 	}
 
@@ -34,6 +37,9 @@ export class Session {
 	}
 
 	async encryptToBuffer(plaintext: string | Buffer): Promise<Buffer> {
+		if (!this.encryptKey) {
+			throw new Error('empty-encrypt-key');
+		}
 		const sodium = await this.sodium();
 		const nonce = await sodium.randombytes_buf(24);
 
@@ -48,6 +54,10 @@ export class Session {
 	}
 
 	async decryptToBuffer(data: string | Buffer): Promise<Buffer> {
+		if (!this.decryptKey) {
+			throw new Error('empty-decrypt-key');
+		}
+
 		const sodium = await this.sodium();
 		const buffer = Buffer.from(Buffer.isBuffer(data) ? data.toString() : data, this.stringFormatEncryptedData);
 

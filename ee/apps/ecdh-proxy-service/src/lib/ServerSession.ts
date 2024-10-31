@@ -1,4 +1,4 @@
-import { Session } from '../../../../app/ecdh/Session';
+import { Session } from '@rocket.chat/core-services';
 
 export class ServerSession extends Session {
 	async init(clientPublic: string): Promise<void> {

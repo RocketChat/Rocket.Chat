@@ -61,6 +61,8 @@ export { IBroker, IBrokerNode, BaseMetricOptions, IServiceMetrics } from './type
 
 export { IServiceContext, ServiceClass, IServiceClass, ServiceClassInternal } from './types/ServiceClass';
 
+export { Session } from './lib/Session';
+
 export {
 	IFederationService,
 	IFederationServiceEE,
