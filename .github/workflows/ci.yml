@@ -335,7 +335,7 @@ jobs:
 
     env:
       RC_DOCKERFILE: ${{ needs.release-versions.outputs.rc-dockerfile }}.${{ matrix.platform }}
-      RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}-${{ matrix.platform }}
+      RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}.${{ matrix.platform }}
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
@@ -371,7 +371,7 @@ jobs:
 
     env:
       RC_DOCKERFILE: ${{ needs.release-versions.outputs.rc-dockerfile }}.${{ matrix.platform }}
-      RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}-${{ matrix.platform }}
+      RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}.${{ matrix.platform }}
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
@@ -399,11 +399,11 @@ jobs:
           IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}"
 
           echo "Push Docker image: ${IMAGE_NAME_BASE}"
-          docker tag ${IMAGE_NAME_BASE}-${{matrix.platform}} $IMAGE_NAME_BASE
+          docker tag ${IMAGE_NAME_BASE}.${{matrix.platform}} $IMAGE_NAME_BASE
           docker push $IMAGE_NAME_BASE
 
           echo "Push Docker image: ${IMAGE_NAME_BASE}.official"
-          docker tag ${IMAGE_NAME_BASE}-${{matrix.platform}} ${IMAGE_NAME_BASE}.official
+          docker tag ${IMAGE_NAME_BASE}.${{matrix.platform}} ${IMAGE_NAME_BASE}.official
           docker push ${IMAGE_NAME_BASE}.official
 
   checks:
@@ -652,8 +652,7 @@ jobs:
     strategy:
       matrix:
         # this is currently a mix of variants and different images
-        release: ['alpine', 'preview', 'debian']
-
+        release: ['alpine']
     env:
       IMAGE_NAME: 'rocketchat/rocket.chat'
 
