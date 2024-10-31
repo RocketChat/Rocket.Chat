@@ -1,5 +1,4 @@
 ---
-'@rocket.chat/mock-providers': minor
 '@rocket.chat/i18n': minor
 '@rocket.chat/meteor': minor
 ---
