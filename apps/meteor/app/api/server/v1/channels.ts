@@ -279,15 +279,25 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { roomId } = this.queryParams;
+			const { roomId, mentionIds, starredIds, pinned } = this.queryParams;
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
+
 			const findResult = await findChannelByIdOrName({
 				params: { roomId },
 				checkedArchived: false,
 			});
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
 
-			const ourQuery = { ...query, rid: findResult._id };
+			const parseIds = (ids: string | undefined, field: string) =>
+				typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
+
+			const ourQuery = {
+				...query,
+				rid: findResult._id,
+				...parseIds(mentionIds, 'mentions._id'),
+				...parseIds(starredIds, 'starred._id'),
+				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
+			};
 
 			// Special check for the permissions
 			if (
@@ -297,7 +307,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { cursor, totalCount } = await Messages.findPaginated(ourQuery, {
+			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,

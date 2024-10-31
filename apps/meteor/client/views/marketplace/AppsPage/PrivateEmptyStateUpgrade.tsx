@@ -20,7 +20,7 @@ const PrivateEmptyStateUpgrade = () => {
 			<StatesSubtitle>{t('Private_apps_upgrade_empty_state_description')}</StatesSubtitle>
 			<StatesActions>
 				{isAdmin && (
-					<UpgradeButton primary icon={undefined} target='private-apps-header' action='upgrade'>
+					<UpgradeButton primary target='private-apps-header' action='upgrade'>
 						{t('Upgrade')}
 					</UpgradeButton>
 				)}

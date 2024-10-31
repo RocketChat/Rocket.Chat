@@ -361,7 +361,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Make sure matrix bindings load
-        if: ${{ matrix.platform == 'alpine' }}
+        if: ${{ matrix.platform == 'official' }}
         run: |
           docker run --rm -w /app/bundle/programs/server/npm/node_modules/matrix-appservice-bridge ghcr.io/rocketchat/rocket.chat:$RC_DOCKER_TAG -e 'require(".")'
 
@@ -737,7 +737,7 @@ jobs:
           DOCKER_TAG=$GITHUB_REF_NAME
 
           # append the variant name to docker tag
-          if [[ '${{ matrix.release }}' = 'debian'] ]]; then
+          if [[ '${{ matrix.release }}' = 'debian' ]]; then
             DOCKER_TAG="${DOCKER_TAG}-${{ matrix.release }}"
           fi;
 
@@ -777,7 +777,7 @@ jobs:
           TAG_SHA="${{ steps.gh-docker.outputs.gh-docker-tag-sha }}"
 
           # append the variant name to docker tag
-          if [[ '${{ matrix.release }}' = 'debian'] ]]; then
+          if [[ '${{ matrix.release }}' = 'debian' ]]; then
             TAG_SHA="${TAG_SHA}-${{ matrix.release }}"
           fi;
 
