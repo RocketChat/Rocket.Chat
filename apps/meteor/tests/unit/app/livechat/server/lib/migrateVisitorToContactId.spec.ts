@@ -85,6 +85,7 @@ describe('migrateVisitorToContactId', () => {
 		expect(await migrateVisitorToContactId(visitor, source)).to.be.equal('contact1');
 		expect(mergeVisitorIntoContact.getCall(0)).to.not.be.null;
 		expect(mergeVisitorIntoContact.getCall(0).args[0]).to.be.deep.equal(visitor);
-		expect(mergeVisitorIntoContact.getCall(0).args[1]).to.be.deep.equal(contact);
+		expect(mergeVisitorIntoContact.getCall(0).args[1]).to.be.deep.equal(source);
+		expect(mergeVisitorIntoContact.getCall(0).args[2]).to.be.deep.equal(contact);
 	});
 });

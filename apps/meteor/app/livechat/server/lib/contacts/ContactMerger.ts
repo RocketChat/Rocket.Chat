@@ -260,7 +260,7 @@ export class ContactMerger {
 						...newNames.map((name): ILivechatContactConflictingField => ({ field: 'name', value: name })),
 						...newManagers.map((manager): ILivechatContactConflictingField => ({ field: 'manager', value: manager as string })),
 						...customFieldConflicts.map(({ type, value }): ILivechatContactConflictingField => ({ field: type, value })),
-					];
+				  ];
 
 		// Phones, Emails and Channels are simply added to the contact's existing list
 		const dataToAdd: UpdateFilter<ILivechatContact>['$addToSet'] = {
@@ -280,8 +280,12 @@ export class ContactMerger {
 		}
 	}
 
-	public static async mergeVisitorIntoContact(visitor: ILivechatVisitor, contact: ILivechatContact): Promise<void> {
-		const fields = await ContactMerger.getAllFieldsFromVisitor(visitor);
+	public static async mergeVisitorIntoContact(
+		visitor: ILivechatVisitor,
+		source: IOmnichannelSource,
+		contact: ILivechatContact,
+	): Promise<void> {
+		const fields = await ContactMerger.getAllFieldsFromVisitor(visitor, source);
 
 		await ContactMerger.mergeFieldsIntoContact(fields, contact, contact.unknown ? 'overwrite' : 'conflict');
 	}

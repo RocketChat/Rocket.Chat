@@ -29,7 +29,7 @@ export async function migrateVisitorToContactId(
 
 	// There is already an existing contact with no linked visitors and matching this visitor's phone or email, so let's use it
 	Livechat.logger.debug(`Adding channel to existing contact ${existingContact._id}`);
-	await ContactMerger.mergeVisitorIntoContact(visitor, existingContact);
+	await ContactMerger.mergeVisitorIntoContact(visitor, visitorSource, existingContact);
 
 	// Update all existing rooms of that visitor to add the contactId to them
 	await LivechatRooms.setContactIdByVisitorIdOrToken(existingContact._id, visitor._id, visitor.token);
