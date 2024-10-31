@@ -45,12 +45,6 @@ const DefaultAppsPageHeader = () => {
 		return (
 			<PageHeader title={t(`Apps_context_${context}`)}>
 				<GenericResourceUsageSkeleton mi={16} />
-
-				{canManageApps && (
-					<ButtonGroup wrap align='end'>
-						<UpdateRocketChatButton />
-					</ButtonGroup>
-				)}
 			</PageHeader>
 		);
 	}
