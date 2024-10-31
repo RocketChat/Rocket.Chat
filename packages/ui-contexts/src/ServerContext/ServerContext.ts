@@ -1,12 +1,5 @@
 import type { IServerInfo, Serialized } from '@rocket.chat/core-typings';
-import type {
-	ServerMethodName,
-	ServerMethodParameters,
-	ServerMethodReturn,
-	StreamKeys,
-	StreamNames,
-	StreamerCallbackArgs,
-} from '@rocket.chat/ddp-client';
+import type { ServerMethods, StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ddp-client';
 import type { Method, OperationParams, OperationResult, PathFor, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import { createContext } from 'react';
 
@@ -19,10 +12,10 @@ export type UploadResult = {
 export type ServerContextValue = {
 	info?: IServerInfo;
 	absoluteUrl: (path: string) => string;
-	callMethod?: <MethodName extends ServerMethodName>(
-		methodName: MethodName,
-		...args: ServerMethodParameters<MethodName>
-	) => Promise<ServerMethodReturn<MethodName>>;
+	callMethod?: <T extends keyof ServerMethods>(
+		methodName: T,
+		...args: Parameters<ServerMethods[T]>
+	) => Promise<ReturnType<ServerMethods[T]>>;
 	callEndpoint: <TMethod extends Method, TPathPattern extends PathPattern>(args: {
 		method: TMethod;
 		pathPattern: TPathPattern;

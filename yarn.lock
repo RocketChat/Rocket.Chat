@@ -9587,6 +9587,7 @@ __metadata:
     "@types/use-sync-external-store": "npm:^0.0.6"
     eslint: "npm:~8.45.0"
     i18next: "npm:~23.4.9"
+    path-to-regexp: "npm:~8.2.0"
     react: "npm:~17.0.2"
     react-i18next: "npm:~13.2.2"
     typescript: "npm:~5.6.3"
@@ -29828,7 +29829,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:^8.1.0":
+"path-to-regexp@npm:^8.1.0, path-to-regexp@npm:~8.2.0":
   version: 8.2.0
   resolution: "path-to-regexp@npm:8.2.0"
   checksum: 10/23378276a172b8ba5f5fb824475d1818ca5ccee7bbdb4674701616470f23a14e536c1db11da9c9e6d82b82c556a817bbf4eee6e41b9ed20090ef9427cbb38e13

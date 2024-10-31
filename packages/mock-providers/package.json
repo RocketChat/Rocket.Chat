@@ -7,11 +7,14 @@
 		"@rocket.chat/i18n": "workspace:~",
 		"@storybook/react": "^8.4.1",
 		"i18next": "~23.4.9",
+		"path-to-regexp": "~8.2.0",
 		"react-i18next": "~13.2.2",
 		"use-sync-external-store": "~1.2.2"
 	},
 	"devDependencies": {
+		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/ddp-client": "workspace:~",
+		"@rocket.chat/rest-typings": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:*",
 		"@tanstack/react-query": "^4.36.1",
 		"@types/use-sync-external-store": "^0.0.6",
@@ -20,6 +23,8 @@
 		"typescript": "~5.6.3"
 	},
 	"peerDependencies": {
+		"@rocket.chat/core-typings": "workspace:~",
+		"@rocket.chat/rest-typings": "workspace:~",
 		"@tanstack/react-query": "*",
 		"react": "*"
 	},

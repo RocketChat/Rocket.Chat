@@ -1,5 +1,5 @@
 import type { ISetting, IUser, Serialized, SettingValue } from '@rocket.chat/core-typings';
-import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
@@ -14,17 +14,20 @@ import {
 	UserContext,
 	ActionManagerContext,
 	ModalContext,
+	SDKContext,
 } from '@rocket.chat/ui-contexts';
 import type { Decorator } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createInstance } from 'i18next';
 import type { ObjectId } from 'mongodb';
+import { compile } from 'path-to-regexp';
 import type { ContextType, JSXElementConstructor, ReactNode } from 'react';
 import React, { useEffect, useReducer } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { MockedDeviceContext } from './MockedDeviceContext';
+import { MockedSDKClient } from './sdk';
 
 type Mutable<T> = {
 	-readonly [P in keyof T]: T[P];
@@ -50,17 +53,36 @@ export class MockedAppRootBuilder {
 		callEndpoint: <TMethod extends Method, TPathPattern extends PathPattern>({
 			method,
 			pathPattern,
+			keys,
+			params,
 		}: {
 			method: TMethod;
 			pathPattern: TPathPattern;
 			keys: UrlParams<TPathPattern>;
 			params: OperationParams<TMethod, TPathPattern>;
 		}): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
-			throw new Error(`not implemented (method: ${method}, pathPattern: ${pathPattern})`);
+			const compiledPath = compile(pathPattern, { encode: encodeURIComponent })(keys);
+
+			switch (method) {
+				case 'GET':
+					return this.sdk.rest.get(compiledPath as any, params as any) as any;
+
+				case 'POST':
+					return this.sdk.rest.post(compiledPath as any, params as any) as any;
+
+				case 'PUT':
+					return this.sdk.rest.put(compiledPath as any, params as never) as never;
+
+				case 'DELETE':
+					return this.sdk.rest.delete(compiledPath as any, params as any) as any;
+
+				default:
+					throw new Error('Invalid HTTP method');
+			}
 		},
 		getStream: () => () => () => undefined,
 		uploadToEndpoint: () => Promise.reject(new Error('not implemented')),
-		callMethod: () => Promise.reject(new Error('not implemented')),
+		callMethod: (method, ...args) => this.sdk.call(method, ...args),
 		info: undefined,
 	};
 
@@ -128,6 +150,8 @@ export class MockedAppRootBuilder {
 		},
 	};
 
+	private sdk = new MockedSDKClient();
+
 	private events = new Emitter<MockedAppRootEvents>();
 
 	private audioInputDevices: Device[] = [];
@@ -146,45 +170,13 @@ export class MockedAppRootBuilder {
 			params: OperationParams<TMethod, TPathPattern>,
 		) => Serialized<OperationResult<TMethod, TPathPattern>> | Promise<Serialized<OperationResult<TMethod, TPathPattern>>>,
 	): this {
-		const innerFn = this.server.callEndpoint;
-
-		const outerFn = <TMethod extends Method, TPathPattern extends PathPattern>(args: {
-			method: TMethod;
-			pathPattern: TPathPattern;
-			keys: UrlParams<TPathPattern>;
-			params: OperationParams<TMethod, TPathPattern>;
-		}): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
-			if (args.method === String(method) && args.pathPattern === String(pathPattern)) {
-				return Promise.resolve(response(args.params)) as Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
-			}
-
-			return innerFn(args);
-		};
-
-		this.server.callEndpoint = outerFn;
+		this.sdk.rest.mockEndpoint(method, pathPattern, response);
 
 		return this;
 	}
 
-	withMethod<TMethodName extends ServerMethodName>(methodName: TMethodName, response: () => ServerMethodReturn<TMethodName>): this {
-		const innerFn = this.server.callMethod;
-
-		const outerFn = <TMethodName extends ServerMethodName>(
-			innerMethodName: TMethodName,
-			...innerArgs: ServerMethodParameters<TMethodName>
-		): Promise<ServerMethodReturn<TMethodName>> => {
-			if (innerMethodName === String(methodName)) {
-				return Promise.resolve(response()) as Promise<ServerMethodReturn<TMethodName>>;
-			}
-
-			if (!innerFn) {
-				throw new Error('not implemented');
-			}
-
-			return innerFn(innerMethodName, ...innerArgs);
-		};
-
-		this.server.callMethod = outerFn;
+	withMethod<T extends keyof ServerMethods>(methodName: T, response: ServerMethods[T]): this {
+		this.sdk.mockMethod(methodName, response);
 
 		return this;
 	}
@@ -407,7 +399,8 @@ export class MockedAppRootBuilder {
 			},
 		});
 
-		const { connectionStatus, server, router, settings, user, i18n, authorization, wrappers, audioInputDevices, audioOutputDevices } = this;
+		const { connectionStatus, server, router, settings, user, i18n, authorization, wrappers, audioInputDevices, audioOutputDevices, sdk } =
+			this;
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
 			return {
@@ -469,75 +462,77 @@ export class MockedAppRootBuilder {
 
 			return (
 				<QueryClientProvider client={queryClient}>
-					<ConnectionStatusContext.Provider value={connectionStatus}>
-						<ServerContext.Provider value={server}>
-							<RouterContext.Provider value={router}>
-								<SettingsContext.Provider value={settings}>
-									<I18nextProvider i18n={i18n}>
-										<TranslationContext.Provider value={translation}>
-											{/* <SessionProvider>
+					<SDKContext.Provider value={sdk}>
+						<ConnectionStatusContext.Provider value={connectionStatus}>
+							<ServerContext.Provider value={server}>
+								<RouterContext.Provider value={router}>
+									<SettingsContext.Provider value={settings}>
+										<I18nextProvider i18n={i18n}>
+											<TranslationContext.Provider value={translation}>
+												{/* <SessionProvider>
 												<TooltipProvider>
 														<ToastMessagesProvider>
 																<LayoutProvider>
 																		<AvatarUrlProvider>
 																				<CustomSoundProvider> */}
-											<UserContext.Provider value={user}>
-												<MockedDeviceContext
-													availableAudioInputDevices={audioInputDevices}
-													availableAudioOutputDevices={audioOutputDevices}
-												>
-													<ModalContext.Provider value={modal}>
-														<AuthorizationContext.Provider value={authorization}>
-															{/* <EmojiPickerProvider>
+												<UserContext.Provider value={user}>
+													<MockedDeviceContext
+														availableAudioInputDevices={audioInputDevices}
+														availableAudioOutputDevices={audioOutputDevices}
+													>
+														<ModalContext.Provider value={modal}>
+															<AuthorizationContext.Provider value={authorization}>
+																{/* <EmojiPickerProvider>
 																<OmnichannelRoomIconProvider>
 																		<UserPresenceProvider>*/}
-															<ActionManagerContext.Provider
-																value={{
-																	generateTriggerId: () => '',
-																	emitInteraction: () => Promise.reject(new Error('not implemented')),
-																	getInteractionPayloadByViewId: () => undefined,
-																	handleServerInteraction: () => undefined,
-																	off: () => undefined,
-																	on: () => undefined,
-																	openView: () => undefined,
-																	disposeView: () => undefined,
-																	notifyBusy: () => undefined,
-																	notifyIdle: () => undefined,
-																}}
-															>
-																{/* <VideoConfProvider>
+																<ActionManagerContext.Provider
+																	value={{
+																		generateTriggerId: () => '',
+																		emitInteraction: () => Promise.reject(new Error('not implemented')),
+																		getInteractionPayloadByViewId: () => undefined,
+																		handleServerInteraction: () => undefined,
+																		off: () => undefined,
+																		on: () => undefined,
+																		openView: () => undefined,
+																		disposeView: () => undefined,
+																		notifyBusy: () => undefined,
+																		notifyIdle: () => undefined,
+																	}}
+																>
+																	{/* <VideoConfProvider>
 																	<CallProvider>
 																		<OmnichannelProvider> */}
-																{wrappers.reduce<ReactNode>(
-																	(children, wrapper) => wrapper(children),
-																	<>
-																		{children}
-																		{modal.currentModal.component}
-																	</>,
-																)}
-																{/* 		</OmnichannelProvider>
+																	{wrappers.reduce<ReactNode>(
+																		(children, wrapper) => wrapper(children),
+																		<>
+																			{children}
+																			{modal.currentModal.component}
+																		</>,
+																	)}
+																	{/* 		</OmnichannelProvider>
 																	</CallProvider>
 																</VideoConfProvider>*/}
-															</ActionManagerContext.Provider>
-															{/* 		</UserPresenceProvider>
+																</ActionManagerContext.Provider>
+																{/* 		</UserPresenceProvider>
 																</OmnichannelRoomIconProvider>
 															</EmojiPickerProvider>*/}
-														</AuthorizationContext.Provider>
-													</ModalContext.Provider>
-												</MockedDeviceContext>
-											</UserContext.Provider>
-											{/* 					</CustomSoundProvider>
+															</AuthorizationContext.Provider>
+														</ModalContext.Provider>
+													</MockedDeviceContext>
+												</UserContext.Provider>
+												{/* 					</CustomSoundProvider>
 																</AvatarUrlProvider>
 															</LayoutProvider>
 														</ToastMessagesProvider>
 													</TooltipProvider>
 												</SessionProvider> */}
-										</TranslationContext.Provider>
-									</I18nextProvider>
-								</SettingsContext.Provider>
-							</RouterContext.Provider>
-						</ServerContext.Provider>
-					</ConnectionStatusContext.Provider>
+											</TranslationContext.Provider>
+										</I18nextProvider>
+									</SettingsContext.Provider>
+								</RouterContext.Provider>
+							</ServerContext.Provider>
+						</ConnectionStatusContext.Provider>
+					</SDKContext.Provider>
 				</QueryClientProvider>
 			);
 		};
