@@ -111,9 +111,26 @@ describe('#serveSvgAvatarInRequestedFormat()', () => {
 		expect(response.write.called).to.be.true;
 		expect(response.end.calledOnce).to.be.true;
 	});
+	it(`should default size to 200 if not provided in query`, () => {
+		const response = {
+			setHeader: sinon.spy(),
+			write: sinon.spy(),
+			end: sinon.spy(),
+		};
+		serveSvgAvatarInRequestedFormat({ req: { query: {} }, res: response, nameOrUsername: 'name' });
+
+		expect(response.setHeader.getCall(0).calledWith('Last-Modified', 'Thu, 01 Jan 2015 00:00:00 GMT')).to.be.true;
+		expect(response.setHeader.getCall(1).calledWith('Content-Type', 'image/svg+xml')).to.be.true;
+		expect(response.write.called).to.be.true;
+		expect(response.write.getCall(0).args[0]).to.include('viewBox="0 0 200 200"');
+		expect(response.end.calledOnce).to.be.true;
+	});
 });
 
 describe('#getAvatarSizeFromRequest()', () => {
+	it('should return undefined if size is not provided', () => {
+		expect(getAvatarSizeFromRequest({ query: {} })).to.equal(undefined);
+	});
 	it('should return value passed in the request if it falls in the range limit', () => {
 		expect(getAvatarSizeFromRequest({ query: { size: 100 } })).to.equal(100);
 	});

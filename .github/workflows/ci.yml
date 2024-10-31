@@ -399,11 +399,11 @@ jobs:
           IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}"
 
           echo "Push Docker image: ${IMAGE_NAME_BASE}"
-          docker tag ${IMAGE_NAME_BASE}.${{matrix.platform}} $IMAGE_NAME_BASE
+          docker tag ${IMAGE_NAME_BASE}-${{matrix.platform}} $IMAGE_NAME_BASE
           docker push $IMAGE_NAME_BASE
 
           echo "Push Docker image: ${IMAGE_NAME_BASE}.official"
-          docker tag ${IMAGE_NAME_BASE}.${{matrix.platform}} ${IMAGE_NAME_BASE}.official
+          docker tag ${IMAGE_NAME_BASE}-${{matrix.platform}} ${IMAGE_NAME_BASE}.official
           docker push ${IMAGE_NAME_BASE}.official
 
   checks:
