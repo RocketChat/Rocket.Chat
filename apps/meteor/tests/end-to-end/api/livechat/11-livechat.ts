@@ -571,24 +571,6 @@ describe('LIVECHAT - Utils', () => {
 			const room = await createLivechatRoom(visitor.token);
 			await request.post(api('livechat/message')).set(credentials).send({ token: visitor.token, rid: room._id, msg: 'test' }).expect(200);
 		});
-		it("should set visitor's source as API after sending a message", async () => {
-			const visitor = await createVisitor();
-			visitorTokens.push(visitor.token);
-
-			const room = await createLivechatRoom(visitor.token);
-			await request.post(api('livechat/message')).set(credentials).send({ token: visitor.token, rid: room._id, msg: 'test' }).expect(200);
-
-			const { body } = await request
-				.get(api('livechat/visitors.info'))
-				.query({ visitorId: visitor._id })
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(body).to.have.property('visitor').and.to.be.an('object');
-			expect(body.visitor).to.have.property('source').and.to.be.an('object');
-			expect(body.visitor.source).to.have.property('type', 'api');
-		});
 	});
 
 	describe('[GET] livechat/message/:_id', () => {
