@@ -28,7 +28,7 @@
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",
 		"event-loop-stats": "^1.4.1",
-		"eventemitter3": "^4.0.7",
+		"eventemitter3": "^5.0.1",
 		"gc-stats": "^1.4.1",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.34",
