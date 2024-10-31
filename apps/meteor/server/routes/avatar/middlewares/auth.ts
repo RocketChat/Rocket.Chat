@@ -21,7 +21,7 @@ const renderFallback = (req: IncomingMessage, res: ServerResponse) => {
 	}
 
 	res.writeHead(200, { 'Content-Type': 'image/svg+xml' });
-	res.write(renderSVGLetters(roomOrUsername, 200));
+	res.write(renderSVGLetters(roomOrUsername, 200, req as IIncomingMessage));
 	res.end();
 };
 
