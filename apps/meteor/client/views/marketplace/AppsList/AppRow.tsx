@@ -6,9 +6,9 @@ import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
 import React, { memo } from 'react';
 import semver from 'semver';
 
-import AppStatus from '../AppDetailsPage/tabs/AppStatus/AppStatus';
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
+import AppStatus from '../components/AppStatus';
 import { useMarketplaceContext } from '../hooks/useMarketplaceContext';
 import AddonChip from './AddonChip';
 

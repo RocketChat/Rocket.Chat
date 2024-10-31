@@ -7,50 +7,33 @@ import { useTranslation } from 'react-i18next';
 
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
-import { useAppBundledInQuery } from '../hooks/useAppBundledInQuery';
+import AppStatus from '../components/AppStatus';
 import { useAppInfoQuery } from '../hooks/useAppInfoQuery';
-import { useAppQuery } from '../hooks/useAppQuery';
-import AppStatus from './tabs/AppStatus';
 
 type AppDetailsPageHeaderProps = {
-	appId: App['id'];
+	app: App;
 };
 
-const AppDetailsPageHeader = ({ appId }: AppDetailsPageHeaderProps) => {
+const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 	const { t } = useTranslation();
-	const { isLoading: isAppInfoLoading, data: appInfo } = useAppInfoQuery(appId);
-	const { isLoading, isError, data } = useAppQuery(appId);
-	const { data: bundledIn } = useAppBundledInQuery(appId);
-
-	if (isLoading || isError) {
-		return (
-			<Box display='flex' flexDirection='row' mbe={20} w='full'>
-				<Skeleton variant='rect' w='x120' h='x120' mie={32} />
-				<Box display='flex' flexDirection='column' justifyContent='space-between' flexGrow={1}>
-					<Skeleton variant='rect' w='full' h='x32' />
-					<Skeleton variant='rect' w='full' h='x32' />
-					<Skeleton variant='rect' w='full' h='x32' />
-				</Box>
-			</Box>
-		);
-	}
+	const { isLoading: isAppInfoLoading, data: appInfo } = useAppInfoQuery(app.id);
 
 	return (
 		<Box color='default' display='flex' flexDirection='row' mbe={20} w='full'>
 			<Box mie={32}>
-				<AppAvatar size='x124' iconFileContent={data.iconFileContent} iconFileData={data.iconFileData} />
+				<AppAvatar size='x124' iconFileContent={app.iconFileContent} iconFileData={app.iconFileData} />
 			</Box>
 			<Box display='flex' flexDirection='column'>
 				<Box display='flex' flexDirection='row' alignItems='center' mbe={8}>
 					<Box fontScale='h1' mie={8}>
-						{data.name}
+						{app.name}
 					</Box>
-					{bundledIn && Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
+					{app.bundledIn && app.bundledIn.length > 0 && <BundleChips bundledIn={app.bundledIn} />}
 				</Box>
 
-				{data.shortDescription && (
+				{app.shortDescription && (
 					<Box fontScale='p1' mbe={16}>
-						{data.shortDescription}
+						{app.shortDescription}
 					</Box>
 				)}
 
@@ -58,31 +41,31 @@ const AppDetailsPageHeader = ({ appId }: AppDetailsPageHeaderProps) => {
 					{isAppInfoLoading && <Skeleton variant='rect' width={120} height={28} />}
 					{appInfo && (
 						<>
-							<AppStatus app={appInfo} installed={data.installed} isAppDetailsPage />
-							{(data.installed || data.isSubscribed) && <AppMenu app={appInfo} isAppDetailsPage />}
+							<AppStatus app={appInfo} installed={app.installed} isAppDetailsPage />
+							{(app.installed || app.isSubscribed) && <AppMenu app={appInfo} isAppDetailsPage />}
 						</>
 					)}
 				</Box>
 				<Box fontScale='c1' display='flex' flexDirection='row' color='hint' alignItems='center'>
-					{data.author.name}
+					{app.author.name}
 					<Box mi={16} color='disabled'>
 						|
 					</Box>
-					<Box>{t('Version_version', { version: data.installed ? data.version : data.marketplaceVersion })}</Box>
-					{data.modifiedAt && (
+					<Box>{t('Version_version', { version: app.installed ? app.version : app.marketplaceVersion })}</Box>
+					{app.modifiedAt && (
 						<>
 							<Box mi={16} color='disabled'>
 								|
 							</Box>
 							<Box>
 								{t('Marketplace_app_last_updated', {
-									lastUpdated: moment(data.modifiedAt).fromNow(),
+									lastUpdated: moment(app.modifiedAt).fromNow(),
 								})}
 							</Box>
 						</>
 					)}
 
-					{data.versionIncompatible && (
+					{app.versionIncompatible && (
 						<>
 							<Box mi={16} color='disabled'>
 								|

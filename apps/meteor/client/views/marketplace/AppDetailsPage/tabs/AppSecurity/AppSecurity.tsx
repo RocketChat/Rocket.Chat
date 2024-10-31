@@ -5,19 +5,13 @@ import { useTranslation } from 'react-i18next';
 
 import AppSecurityLabel from './AppSecurityLabel';
 import AppPermissionsList from '../../../components/AppPermissionsList';
-import { useAppQuery } from '../../../hooks/useAppQuery';
 
 type AppSecurityProps = {
-	appId: App['id'];
+	app: App;
 };
 
-const AppSecurity = ({ appId }: AppSecurityProps) => {
-	const { isSuccess, data } = useAppQuery(appId);
+const AppSecurity = ({ app }: AppSecurityProps) => {
 	const { t } = useTranslation();
-
-	if (!isSuccess) {
-		return null;
-	}
 
 	return (
 		<Box maxWidth='x640' w='full' marginInline='auto' color='default'>
@@ -26,27 +20,27 @@ const AppSecurity = ({ appId }: AppSecurityProps) => {
 					<Box is='section'>
 						<AppSecurityLabel>{t('Privacy_summary')}</AppSecurityLabel>
 						<Box is='p' lineHeight='x20'>
-							{data.privacyPolicySummary?.length && data.privacyPolicySummary}
+							{app.privacyPolicySummary?.length && app.privacyPolicySummary}
 						</Box>
 					</Box>
 
 					<Box is='section'>
 						<AppSecurityLabel>{t('Permissions')}</AppSecurityLabel>
 						<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} mis={24}>
-							<AppPermissionsList appPermissions={data.permissions} />
+							<AppPermissionsList appPermissions={app.permissions} />
 						</Box>
 					</Box>
 
 					<Box is='section'>
 						<AppSecurityLabel>{t('Policies')}</AppSecurityLabel>
 						<Box display='flex' flexDirection='column'>
-							{data.tosLink && (
-								<Box is='a' href={data.tosLink} target='_blank'>
+							{app.tosLink && (
+								<Box is='a' href={app.tosLink} target='_blank'>
 									{t('Terms_of_use')}
 								</Box>
 							)}
-							{data.privacyLink && (
-								<Box is='a' href={data.privacyLink} target='_blank'>
+							{app.privacyLink && (
+								<Box is='a' href={app.privacyLink} target='_blank'>
 									{t('Privacy_policy')}
 								</Box>
 							)}

@@ -1,34 +1,14 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppRequestItem from './AppRequestItem';
 import AppRequestsLoading from './AppRequestsLoading';
+import { useMarkAppRequestsAsSeenMutation } from './useMarkAppRequestsAsSeenMutation';
 import { useAppRequestsQuery } from '../../../hooks/useAppRequestsQuery';
 import { usePaginationState } from '../../../hooks/usePaginationState';
-
-const useMarkAppRequestsAsSeenMutation = () => {
-	const markSeen = useEndpoint('POST', '/apps/app-request/markAsSeen');
-	const queryClient = useQueryClient();
-
-	return useMutation({
-		mutationFn: async (unseenRequests: string[]) => {
-			if (unseenRequests.length === 0) {
-				return;
-			}
-
-			return markSeen({ unseenRequests });
-		},
-		retry: false,
-		onSuccess: () => {
-			queryClient.refetchQueries({ queryKey: ['app-requests-stats'] });
-			queryClient.invalidateQueries(['marketplace']);
-		},
-	});
-};
 
 type AppRequestsProps = {
 	appId: App['id'];
@@ -39,7 +19,7 @@ const AppRequests = ({ appId }: AppRequestsProps) => {
 
 	const { current, itemsPerPage, onSetCurrent, onSetItemsPerPage } = usePaginationState();
 
-	const { isLoading, isSuccess, data } = useAppRequestsQuery(appId, { limit: itemsPerPage, offset: current });
+	const { isLoading, isSuccess, data: requests } = useAppRequestsQuery(appId, { limit: itemsPerPage, offset: current });
 	const { t } = useTranslation();
 
 	const { mutate } = useMarkAppRequestsAsSeenMutation();
@@ -49,7 +29,7 @@ const AppRequests = ({ appId }: AppRequestsProps) => {
 			return;
 		}
 
-		const unseenRequests = data.data.filter(({ seen }) => !seen).map(({ id }) => id);
+		const unseenRequests = requests.data.filter(({ seen }) => !seen).map(({ id }) => id);
 
 		const timeout = setTimeout(() => {
 			mutate(unseenRequests);
@@ -58,7 +38,7 @@ const AppRequests = ({ appId }: AppRequestsProps) => {
 		return () => {
 			clearTimeout(timeout);
 		};
-	}, [canManageApps, data?.data, isSuccess, mutate]);
+	}, [canManageApps, requests?.data, isSuccess, mutate]);
 
 	if (isLoading) {
 		return (
@@ -68,7 +48,7 @@ const AppRequests = ({ appId }: AppRequestsProps) => {
 		);
 	}
 
-	if (!isSuccess || !data.data.length) {
+	if (!isSuccess || !requests.data.length) {
 		return (
 			<Box h='full' display='flex' flexDirection='column'>
 				<Box w='full' maxWidth='x608' marginInline='auto' pbs={36} flexGrow='1'>
@@ -84,7 +64,7 @@ const AppRequests = ({ appId }: AppRequestsProps) => {
 	return (
 		<Box h='full' display='flex' flexDirection='column'>
 			<Box w='full' maxWidth='x608' marginInline='auto' pbs={36} flexGrow='1'>
-				{data.data.map((request) => (
+				{requests.data.map((request) => (
 					<AppRequestItem
 						key={request.id}
 						seen={request.seen}
@@ -97,7 +77,7 @@ const AppRequests = ({ appId }: AppRequestsProps) => {
 			</Box>
 			<Pagination
 				divider
-				count={data.meta.total}
+				count={requests.meta.total}
 				itemsPerPage={itemsPerPage}
 				current={current}
 				onSetItemsPerPage={onSetItemsPerPage}

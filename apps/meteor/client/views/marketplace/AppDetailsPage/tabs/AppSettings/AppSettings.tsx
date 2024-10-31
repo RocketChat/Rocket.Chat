@@ -17,20 +17,18 @@ const AppSettings = ({ appId }: AppSettingsProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<>
-			<Box display='flex' flexDirection='column' maxWidth='x640' w='full' marginInline='auto'>
-				<Box fontScale='h4' mb={12}>
-					{t('Settings')}
-				</Box>
-				{isSuccess && (
-					<FieldGroup>
-						{data.map((field) => (
-							<AppSetting key={field.id} appId={appId} {...field} />
-						))}
-					</FieldGroup>
-				)}
+		<Box display='flex' flexDirection='column' maxWidth='x640' w='full' marginInline='auto'>
+			<Box fontScale='h4' mb={12}>
+				{t('Settings')}
 			</Box>
-		</>
+			{isSuccess && (
+				<FieldGroup>
+					{data.map((field) => (
+						<AppSetting key={field.id} appId={appId} {...field} />
+					))}
+				</FieldGroup>
+			)}
+		</Box>
 	);
 };
 

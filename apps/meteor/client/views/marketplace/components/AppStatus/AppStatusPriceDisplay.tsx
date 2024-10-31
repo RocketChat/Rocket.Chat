@@ -3,7 +3,7 @@ import { Box, Margins, Tag } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { formatPriceAndPurchaseType } from '../../../helpers/formatPriceAndPurchaseType';
+import { formatPriceAndPurchaseType } from '../../helpers/formatPriceAndPurchaseType';
 
 type AppStatusPriceDisplayProps = {
 	purchaseType: PurchaseType;

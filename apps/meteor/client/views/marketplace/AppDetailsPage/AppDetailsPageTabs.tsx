@@ -1,72 +1,58 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Tabs } from '@rocket.chat/fuselage';
-import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
+import { Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAppDetailsPageTab, type AppDetailsPageTab } from '../hooks/useAppDetailsPageTab';
-import { useAppQuery } from '../hooks/useAppQuery';
+import { useAppDetailsPageTab } from '../hooks/useAppDetailsPageTab';
 import { useAppSettingsQuery } from '../hooks/useAppSettingsQuery';
 import { useMarketplaceContext } from '../hooks/useMarketplaceContext';
 
 type AppDetailsPageTabsProps = {
-	appId: App['id'];
+	app: App;
 };
 
-const AppDetailsPageTabs = ({ appId }: AppDetailsPageTabsProps): ReactElement => {
+const AppDetailsPageTabs = ({ app }: AppDetailsPageTabsProps): ReactElement => {
 	const context = useMarketplaceContext();
-	const tab = useAppDetailsPageTab();
+	const [tab, changeTab] = useAppDetailsPageTab();
 	const canManageApps = usePermission('manage-apps');
-	const router = useRouter();
 	const { t } = useTranslation();
-	const { isLoading, data: app } = useAppQuery(appId);
-	const installed = app?.installed ?? false;
-	const hasSecurity = Boolean(app?.privacyPolicySummary || app?.permissions || app?.tosLink || app?.privacyLink);
-	const { data: hasSettings = false } = useAppSettingsQuery(appId, {
+	const hasSecurity = !!(app?.privacyPolicySummary || app?.permissions || app?.tosLink || app?.privacyLink);
+	const { data: hasSettings = false } = useAppSettingsQuery(app.id, {
 		select: (data) => Object.keys(data).length > 0,
-		enabled: installed,
+		enabled: app?.installed ?? false,
 	});
-
-	const handleTabClick = (tab: AppDetailsPageTab) => {
-		router.navigate(
-			{
-				name: 'marketplace',
-				params: { ...router.getRouteParameters(), tab },
-			},
-			{ replace: true },
-		);
-	};
 
 	return (
 		<Tabs>
-			<Tabs.Item onClick={() => handleTabClick('details')} disabled={isLoading} selected={tab === 'details'}>
+			<TabsItem onClick={() => changeTab('details')} selected={tab === 'details'}>
 				{t('Details')}
-			</Tabs.Item>
+			</TabsItem>
 			{canManageApps && context !== 'private' && (
-				<Tabs.Item onClick={() => handleTabClick('requests')} disabled={isLoading} selected={tab === 'requests'}>
+				<TabsItem onClick={() => changeTab('requests')} selected={tab === 'requests'}>
 					{t('Requests')}
-				</Tabs.Item>
+				</TabsItem>
 			)}
 			{hasSecurity && (
-				<Tabs.Item onClick={() => handleTabClick('security')} disabled={isLoading} selected={tab === 'security'}>
+				<TabsItem onClick={() => changeTab('security')} selected={tab === 'security'}>
 					{t('Security')}
-				</Tabs.Item>
+				</TabsItem>
 			)}
 			{context !== 'private' && (
-				<Tabs.Item onClick={() => handleTabClick('releases')} disabled={isLoading} selected={tab === 'releases'}>
+				<TabsItem onClick={() => changeTab('releases')} selected={tab === 'releases'}>
 					{t('Releases')}
-				</Tabs.Item>
+				</TabsItem>
 			)}
-			{canManageApps && installed && hasSettings && (
-				<Tabs.Item onClick={() => handleTabClick('settings')} disabled={isLoading} selected={tab === 'settings'}>
+			{canManageApps && app?.installed && hasSettings && (
+				<TabsItem onClick={() => changeTab('settings')} selected={tab === 'settings'}>
 					{t('Settings')}
-				</Tabs.Item>
+				</TabsItem>
 			)}
-			{canManageApps && installed && (
-				<Tabs.Item onClick={() => handleTabClick('logs')} disabled={isLoading} selected={tab === 'logs'}>
+			{canManageApps && app?.installed && (
+				<TabsItem onClick={() => changeTab('logs')} selected={tab === 'logs'}>
 					{t('Logs')}
-				</Tabs.Item>
+				</TabsItem>
 			)}
 		</Tabs>
 	);
