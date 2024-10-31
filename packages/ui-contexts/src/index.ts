@@ -16,6 +16,7 @@ export { TranslationContext, TranslationContextValue } from './TranslationContex
 export { UserContext, UserContextValue } from './UserContext';
 export { DeviceContext, Device, DeviceContextValue } from './DeviceContext';
 export { ActionManagerContext, IActionManager } from './ActionManagerContext';
+export * from './SDKContext';
 
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';

@@ -3,6 +3,7 @@
 	"version": "12.0.0",
 	"private": true,
 	"devDependencies": {
+		"@rocket.chat/api-client": "workspace:~",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/emitter": "~0.31.25",
@@ -20,8 +21,9 @@
 		"use-sync-external-store": "^1.2.2"
 	},
 	"peerDependencies": {
+		"@rocket.chat/api-client": "workspace:~",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/ddp-client": "workspace:^",
+		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/emitter": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/i18n": "workspace:~",
