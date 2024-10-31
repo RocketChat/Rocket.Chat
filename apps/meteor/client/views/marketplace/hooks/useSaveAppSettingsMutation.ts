@@ -12,6 +12,7 @@ export const useSaveAppSettingsMutation = (appId: App['id']) => {
 	const { data: app } = useAppQuery(appId);
 	const { data: settings } = useAppSettingsQuery(appId, {
 		select: (data) => Object.values(data),
+		enabled: app?.installed ?? false,
 	});
 
 	const queryClient = useQueryClient();

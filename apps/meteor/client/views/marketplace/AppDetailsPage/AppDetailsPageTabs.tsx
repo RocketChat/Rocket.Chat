@@ -25,6 +25,7 @@ const AppDetailsPageTabs = ({ appId }: AppDetailsPageTabsProps): ReactElement =>
 	const hasSecurity = Boolean(app?.privacyPolicySummary || app?.permissions || app?.tosLink || app?.privacyLink);
 	const { data: hasSettings = false } = useAppSettingsQuery(appId, {
 		select: (data) => Object.keys(data).length > 0,
+		enabled: installed,
 	});
 
 	const handleTabClick = (tab: AppDetailsPageTab) => {
