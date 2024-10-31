@@ -35,7 +35,7 @@ const RoomAnnouncement = ({ announcement, announcementDetails }: RoomAnnouncemen
 							<MarkdownText content={announcement} parseEmoji />
 						</Box>
 					</GenericModal>,
-			  );
+				);
 	};
 
 	return announcement ? (

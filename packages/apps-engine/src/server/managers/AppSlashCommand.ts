@@ -22,7 +22,10 @@ export class AppSlashCommand {
      */
     public isDisabled: boolean;
 
-    constructor(public app: ProxiedApp, public slashCommand: ISlashCommand) {
+    constructor(
+        public app: ProxiedApp,
+        public slashCommand: ISlashCommand,
+    ) {
         this.isRegistered = false;
         this.isEnabled = false;
         this.isDisabled = false;

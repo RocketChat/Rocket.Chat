@@ -67,8 +67,8 @@ export const transformMappedData = async <
 		-readonly [p in keyof MapType]: MapType[p] extends keyof DataType
 			? DataType[MapType[p]]
 			: MapType[p] extends (...args: any[]) => any
-			? Awaited<ReturnType<MapType[p]>>
-			: never;
+				? Awaited<ReturnType<MapType[p]>>
+				: never;
 	},
 	DataType extends Record<string, any>,
 	MapType extends { [p in string]: string | ((data: DataType) => Promise<unknown>) | ((data: DataType) => unknown) },

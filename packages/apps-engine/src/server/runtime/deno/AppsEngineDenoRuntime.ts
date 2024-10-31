@@ -94,7 +94,10 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     private readonly livenessManager: LivenessManager;
 
     // We need to keep the appSource around in case the Deno process needs to be restarted
-    constructor(manager: AppManager, private readonly appPackage: IParseAppPackageResult) {
+    constructor(
+        manager: AppManager,
+        private readonly appPackage: IParseAppPackageResult,
+    ) {
         super();
 
         this.debug = baseDebug.extend(appPackage.info.id);
@@ -129,7 +132,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
             // If the app doesn't request any permissions, it gets the default set of permissions, which includes "networking"
             // If the app requests specific permissions, we need to check whether it requests "networking" or not
-            if (!this.appPackage.info.permissions || this.appPackage.info.permissions.findIndex((p) => p.name === 'networking.default')) {
+            if (!this.appPackage.info.permissions || this.appPackage.info.permissions.findIndex((p) => p.name === 'networking.default') !== -1) {
                 hasNetworkingPermission = true;
             }
 
