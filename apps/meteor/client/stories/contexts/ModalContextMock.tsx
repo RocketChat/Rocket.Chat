@@ -23,7 +23,7 @@ const ModalContextMock = ({ children }: ModalContextMockProps): ReactElement => 
 							},
 						},
 						currentModal: context.currentModal,
-				  }
+					}
 				: undefined,
 		[context],
 	);

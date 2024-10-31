@@ -84,7 +84,7 @@ const ImageBlock = ({
             {surfaceRenderer.renderTextObject(
               block.title,
               0,
-              UiKit.BlockContext.NONE
+              UiKit.BlockContext.NONE,
             )}
           </Box>
         )}

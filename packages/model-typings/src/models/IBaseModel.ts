@@ -29,8 +29,8 @@ export type DefaultFields<Base> = Record<keyof Base, 1> | Record<keyof Base, 0> 
 export type ResultFields<Base, Defaults> = Defaults extends void
 	? Base
 	: Defaults[keyof Defaults] extends 1
-	? Pick<Defaults, keyof Defaults>
-	: Omit<Defaults, keyof Defaults>;
+		? Pick<Defaults, keyof Defaults>
+		: Omit<Defaults, keyof Defaults>;
 
 export type InsertionModel<T> = EnhancedOmit<OptionalId<T>, '_updatedAt'> & {
 	_updatedAt?: Date;

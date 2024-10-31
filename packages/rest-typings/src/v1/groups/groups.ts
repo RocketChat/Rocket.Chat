@@ -20,7 +20,7 @@ import type { GroupsKickProps } from './GroupsKickProps';
 import type { GroupsLeaveProps } from './GroupsLeaveProps';
 import type { GroupsListProps } from './GroupsListProps';
 import type { GroupsMembersProps } from './GroupsMembersProps';
-import type { GroupsMessageProps } from './GroupsMessageProps';
+import type { GroupsMessagesProps } from './GroupsMessagesProps';
 import type { GroupsModeratorsProps } from './GroupsModeratorsProps';
 import type { GroupsOnlineProps } from './GroupsOnlineProps';
 import type { GroupsOpenProps } from './GroupsOpenProps';
@@ -99,7 +99,7 @@ export type GroupsEndpoints = {
 		GET: (params: GroupsRolesProps) => { roles: IGetRoomRoles[] };
 	};
 	'/v1/groups.messages': {
-		GET: (params: GroupsMessageProps) => PaginatedResult<{
+		GET: (params: GroupsMessagesProps) => PaginatedResult<{
 			messages: IMessage[];
 		}>;
 	};

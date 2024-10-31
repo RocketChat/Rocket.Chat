@@ -25,7 +25,7 @@ export function getLogger({ MOLECULER_LOG_LEVEL: level, NODE_ENV: mode }: Record
 											colorize: true,
 										},
 									},
-							  }
+								}
 							: {}),
 					},
 				},

@@ -987,7 +987,7 @@ export default class SlackAdapter {
 				const rocketChannel = await this.rocket.getChannel(slackMessage);
 				const rocketUser = slackMessage.previous_message.user
 					? (await this.rocket.findUser(slackMessage.previous_message.user)) ||
-					  (await this.rocket.addUser(slackMessage.previous_message.user))
+						(await this.rocket.addUser(slackMessage.previous_message.user))
 					: null;
 
 				const rocketMsgObj = {
