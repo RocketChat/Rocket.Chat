@@ -280,8 +280,12 @@ export class ContactMerger {
 		}
 	}
 
-	public static async mergeVisitorIntoContact(visitor: ILivechatVisitor, contact: ILivechatContact): Promise<void> {
-		const fields = await ContactMerger.getAllFieldsFromVisitor(visitor);
+	public static async mergeVisitorIntoContact(
+		visitor: ILivechatVisitor,
+		source: IOmnichannelSource,
+		contact: ILivechatContact,
+	): Promise<void> {
+		const fields = await ContactMerger.getAllFieldsFromVisitor(visitor, source);
 
 		await ContactMerger.mergeFieldsIntoContact(fields, contact, contact.unknown ? 'overwrite' : 'conflict');
 	}
