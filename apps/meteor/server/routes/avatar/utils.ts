@@ -138,10 +138,10 @@ export const renderSVGLetters = (roomOrUsername: string, viewSize = 200, req?: I
 		color = '#000';
 		initials = roomOrUsername;
 	} else {
-		const settingsRegExp = req
+		const settingsRegExp = req && req.url
 			? (req.url.startsWith('/room')
-				? settings.get('UTF8_Channel_Names_Validation')
-				: settings.get('UTF8_User_Names_Validation')) as string
+					? settings.get('UTF8_Channel_Names_Validation')
+					: settings.get('UTF8_User_Names_Validation')) as string
 			: null;
 		let regExp: RegExp;
 		try {
