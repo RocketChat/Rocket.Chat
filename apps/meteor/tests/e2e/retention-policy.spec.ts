@@ -167,21 +167,20 @@ test.describe.serial('retention-policy', () => {
 				expect((await setSettingValueById(api, 'RetentionPolicy_TTL_Channels', timeUnitToMs(TIMEUNIT.days, 15))).status()).toBe(200);
 			});
 
-			test('should display the default max age in edit channel', async () => {
+			test.beforeEach(async () => {
 				await poHomeChannel.sidenav.openChat(targetChannel);
 				await poHomeChannel.tabs.btnRoomInfo.click();
 				await poHomeChannel.tabs.room.btnEdit.click();
 				await poHomeChannel.tabs.room.pruneAccordion.click();
+			});
+
+			test('should display the default max age in edit channel', async () => {
 				await poHomeChannel.tabs.room.checkboxOverrideGlobalRetention.click();
 
 				await expect(poHomeChannel.tabs.room.getMaxAgeLabel('15')).toBeVisible();
 			});
 
 			test('should display overridden retention max age value', async () => {
-				await poHomeChannel.sidenav.openChat(targetChannel);
-				await poHomeChannel.tabs.btnRoomInfo.click();
-				await poHomeChannel.tabs.room.btnEdit.click();
-				await poHomeChannel.tabs.room.pruneAccordion.click();
 				await poHomeChannel.tabs.room.checkboxOverrideGlobalRetention.click();
 				await poHomeChannel.tabs.room.inputRetentionMaxAge.fill('365');
 				await poHomeChannel.tabs.room.btnSave.click();
@@ -196,19 +195,10 @@ test.describe.serial('retention-policy', () => {
 			});
 
 			test('should ignore threads be checked accordingly with the global default value', async () => {
-				await poHomeChannel.sidenav.openChat(targetChannel);
-				await poHomeChannel.tabs.btnRoomInfo.click();
-				await poHomeChannel.tabs.room.btnEdit.click();
-				await poHomeChannel.tabs.room.pruneAccordion.click();
-
 				await expect(poHomeChannel.tabs.room.checkboxIgnoreThreads).toBeChecked({ checked: ignoreThreadsSetting });
 			});
 
 			test('should override ignore threads default value', async () => {
-				await poHomeChannel.sidenav.openChat(targetChannel);
-				await poHomeChannel.tabs.btnRoomInfo.click();
-				await poHomeChannel.tabs.room.btnEdit.click();
-				await poHomeChannel.tabs.room.pruneAccordion.click();
 				await poHomeChannel.tabs.room.checkboxIgnoreThreads.click();
 				await poHomeChannel.tabs.room.btnSave.click();
 				await poHomeChannel.dismissToast();
