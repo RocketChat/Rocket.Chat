@@ -8,6 +8,9 @@ const modelsMock = {
 		findSimilarVerifiedContacts: sinon.stub(),
 		deleteMany: sinon.stub(),
 	},
+	LivechatRooms: {
+		updateMany: sinon.stub(),
+	},
 };
 
 const contactMergerStub = {
@@ -36,9 +39,10 @@ describe('mergeContacts', () => {
 		modelsMock.LivechatContacts.findOneById.reset();
 		modelsMock.LivechatContacts.findSimilarVerifiedContacts.reset();
 		modelsMock.LivechatContacts.deleteMany.reset();
+		modelsMock.LivechatRooms.updateMany.reset();
 		contactMergerStub.getAllFieldsFromContact.reset();
 		contactMergerStub.mergeFieldsIntoContact.reset();
-		modelsMock.LivechatContacts.deleteMany.resolves({ deltedCount: 0 });
+		modelsMock.LivechatContacts.deleteMany.resolves({ deletedCount: 0 });
 	});
 
 	afterEach(() => {
@@ -98,5 +102,11 @@ describe('mergeContacts', () => {
 		expect(contactMergerStub.getAllFieldsFromContact.calledOnceWith(similarContact)).to.be.true;
 		expect(contactMergerStub.mergeFieldsIntoContact.getCall(0).args[1]).to.be.deep.equal(originalContact);
 		expect(modelsMock.LivechatContacts.deleteMany.calledOnceWith({ _id: { $in: ['differentId'] } })).to.be.true;
+		expect(
+			modelsMock.LivechatRooms.updateMany.calledOnceWith(
+				{ 'v.contactId': { $in: ['differentId'] } },
+				{ $set: { 'v.contactId': 'contactId' } },
+			),
+		).to.be.true;
 	});
 });
