@@ -124,47 +124,6 @@ describe('LIVECHAT - Integrations', () => {
 						expect(res).to.have.property('text', '<Response></Response>');
 					});
 			});
-
-			it("should set visitor's source as SMS after sending a message", async () => {
-				await updateSetting('SMS_Default_Omnichannel_Department', '');
-				await updateSetting('SMS_Service', 'twilio');
-
-				const token = `${new Date().getTime()}-test2`;
-				const phone = new Date().getTime().toString();
-				const { body: createVisitorResponse } = await request.post(api('livechat/visitor')).send({ visitor: { token, phone } });
-				expect(createVisitorResponse).to.have.property('success', true);
-				expect(createVisitorResponse).to.have.property('visitor').and.to.be.an('object');
-				expect(createVisitorResponse.visitor).to.have.property('_id');
-				const visitorId = createVisitorResponse.visitor._id;
-				visitorTokens.push(createVisitorResponse.visitor.token);
-
-				await request
-					.post(api('livechat/sms-incoming/twilio'))
-					.set(credentials)
-					.send({
-						From: phone,
-						To: '+123456789',
-						Body: 'Hello',
-					})
-					.expect('Content-Type', 'text/xml')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res).to.have.property('text', '<Response></Response>');
-					});
-
-				const { body } = await request
-					.get(api('livechat/visitors.info'))
-					.query({ visitorId })
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200);
-
-				expect(body).to.have.property('visitor').and.to.be.an('object');
-				expect(body.visitor).to.have.property('source').and.to.be.an('object');
-				expect(body.visitor.source).to.have.property('type', 'sms');
-				expect(body.visitor.source).to.have.property('alias', 'twilio');
-				expect(body.visitor.source).to.have.property('destination', '+123456789');
-			});
 		});
 	});
 

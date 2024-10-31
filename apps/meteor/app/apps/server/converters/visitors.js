@@ -1,4 +1,3 @@
-import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 
 import { transformMappedData } from './transformMappedData';
@@ -11,15 +10,6 @@ export class AppVisitorsConverter {
 
 	async convertById(id) {
 		const visitor = await LivechatVisitors.findOneEnabledById(id);
-
-		return this.convertVisitor(visitor);
-	}
-
-	async convertByIdAndSource(id, appId) {
-		const visitor = await LivechatVisitors.findOneEnabledByIdAndSource({
-			_id: id,
-			sourceFilter: { 'source.type': OmnichannelSourceType.APP, 'source.id': appId },
-		});
 
 		return this.convertVisitor(visitor);
 	}
@@ -46,7 +36,6 @@ export class AppVisitorsConverter {
 			visitorEmails: 'visitorEmails',
 			livechatData: 'livechatData',
 			status: 'status',
-			source: 'source',
 		};
 
 		return transformMappedData(visitor, map);
@@ -65,7 +54,6 @@ export class AppVisitorsConverter {
 			phone: visitor.phone,
 			livechatData: visitor.livechatData,
 			status: visitor.status || 'online',
-			source: visitor.source,
 			...(visitor.visitorEmails && { visitorEmails: visitor.visitorEmails }),
 			...(visitor.department && { department: visitor.department }),
 		};
