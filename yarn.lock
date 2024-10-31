@@ -9281,6 +9281,7 @@ __metadata:
     "@types/lodash": "npm:^4.14.200"
     "@types/lodash.clonedeep": "npm:^4.5.9"
     "@types/lodash.debounce": "npm:^4.0.9"
+    "@types/lodash.escape": "npm:^4.0.9"
     "@types/lodash.get": "npm:^4.4.9"
     "@types/mailparser": "npm:^3.4.4"
     "@types/marked": "npm:^4.0.8"
@@ -9422,6 +9423,7 @@ __metadata:
     localforage: "npm:^1.10.0"
     lodash.clonedeep: "npm:^4.5.0"
     lodash.debounce: "npm:^4.0.8"
+    lodash.escape: "npm:^4.0.1"
     lodash.get: "npm:^4.4.2"
     mailparser: "npm:^3.4.0"
     marked: "npm:^4.2.5"
@@ -12726,6 +12728,15 @@ __metadata:
   dependencies:
     "@types/lodash": "npm:*"
   checksum: 10/8183a152e01928e3b97ca773f6ae6038b8695e76493ba8bf6b743ec143948a62294fbc9d49fa4a78b52265b3ba4892ef57534e0c13d04aa0f111671b5a944feb
+  languageName: node
+  linkType: hard
+
+"@types/lodash.escape@npm:^4.0.9":
+  version: 4.0.9
+  resolution: "@types/lodash.escape@npm:4.0.9"
+  dependencies:
+    "@types/lodash": "npm:*"
+  checksum: 10/bae0be4bddefaacfb8e96afec895138643cb59d1d5d8c29fda0d61ed77468a8a2d9f913d51cd67ab08afc7a09f2602fec1a289abd9aab335821671a4b3c1245f
   languageName: node
   linkType: hard
 
