@@ -8,16 +8,20 @@ export type GetContactsParams = {
 	count: number;
 	offset: number;
 	sort: Sort;
+	unknown?: boolean;
 };
 
 export async function getContacts(params: GetContactsParams): Promise<PaginatedResult<{ contacts: ILivechatContact[] }>> {
-	const { searchText, count, offset, sort } = params;
+	const { searchText, count, offset, sort, unknown } = params;
 
-	const { cursor, totalCount } = LivechatContacts.findPaginatedContacts(searchText, {
-		limit: count,
-		skip: offset,
-		sort: sort ?? { name: 1 },
-	});
+	const { cursor, totalCount } = LivechatContacts.findPaginatedContacts(
+		{ searchText, unknown },
+		{
+			limit: count,
+			skip: offset,
+			sort: sort ?? { name: 1 },
+		},
+	);
 
 	const [contacts, total] = await Promise.all([cursor.toArray(), totalCount]);
 

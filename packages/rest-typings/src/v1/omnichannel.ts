@@ -1406,6 +1406,7 @@ export const isGETOmnichannelContactsSearchProps = ajv.compile<GETOmnichannelCon
 type GETOmnichannelContactHistoryProps = PaginatedRequest<{
 	contactId: string;
 	source?: string;
+	unknown?: boolean;
 }>;
 
 const GETOmnichannelContactHistorySchema = {
@@ -1416,6 +1417,9 @@ const GETOmnichannelContactHistorySchema = {
 		},
 		source: {
 			type: 'string',
+		},
+		unknown: {
+			type: 'boolean',
 		},
 		count: {
 			type: 'number',
