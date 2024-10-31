@@ -11,7 +11,7 @@ import { readThread } from '../functions';
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getThreadMessages(params: { tmid: IMessage['_id']; limit?: number; skip?: number }): Promise<IMessage[]>;
+		getThreadMessages(params: { tmid: IMessage['_id']; limit?: number; skip?: number }): IMessage[];
 	}
 }
 

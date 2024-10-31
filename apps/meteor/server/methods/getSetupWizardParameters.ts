@@ -8,10 +8,10 @@ import { settings } from '../../app/settings/server';
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getSetupWizardParameters(): Promise<{
+		getSetupWizardParameters(): {
 			settings: ISetting[];
 			serverAlreadyRegistered: boolean;
-		}>;
+		};
 	}
 }
 
