@@ -260,7 +260,7 @@ export class ContactMerger {
 						...newNames.map((name): ILivechatContactConflictingField => ({ field: 'name', value: name })),
 						...newManagers.map((manager): ILivechatContactConflictingField => ({ field: 'manager', value: manager as string })),
 						...customFieldConflicts.map(({ type, value }): ILivechatContactConflictingField => ({ field: type, value })),
-				  ];
+					];
 
 		// Phones, Emails and Channels are simply added to the contact's existing list
 		const dataToAdd: UpdateFilter<ILivechatContact>['$addToSet'] = {
