@@ -10,7 +10,7 @@ import { sortAppsByClosestOrFarthestModificationDate } from '../helpers/sortApps
 import type { App } from '../types';
 import type { MarketplaceContext } from './useMarketplaceContext';
 import { useMarketplaceContext } from './useMarketplaceContext';
-import { useMarketplaceQueryWithContext } from './useMarketplaceQuery';
+import { useMarketplaceQuery } from './useMarketplaceQuery';
 
 export type PurchaseType = 'all' | 'free' | 'paid' | 'premium';
 export type Status = 'all' | 'enabled' | 'disabled';
@@ -73,8 +73,26 @@ export const useFilteredAppsQuery = ({
 }: UseFilteredAppsQueryOptions) => {
 	const context = useMarketplaceContext();
 
-	return useMarketplaceQueryWithContext({
-		select: (unfiltered) => {
+	return useMarketplaceQuery({
+		select: (data) => {
+			let unfiltered: App[];
+
+			switch (context) {
+				case 'premium':
+				case 'explore':
+				case 'requested':
+					unfiltered = data.marketplace;
+					break;
+
+				case 'private':
+					unfiltered = data.private;
+					break;
+
+				case 'installed':
+					unfiltered = data.installed;
+					break;
+			}
+
 			// TODO: iterate over the apps instead of over the transforms
 			const filtered = [
 				filterByContext[context],
