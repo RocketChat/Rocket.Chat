@@ -737,7 +737,7 @@ jobs:
           DOCKER_TAG=$GITHUB_REF_NAME
 
           # append the variant name to docker tag
-          if [[ '${{ matrix.release }}' = 'debian'] ]]; then
+          if [[ '${{ matrix.release }}' = 'debian' ]]; then
             DOCKER_TAG="${DOCKER_TAG}-${{ matrix.release }}"
           fi;
 
@@ -777,7 +777,7 @@ jobs:
           TAG_SHA="${{ steps.gh-docker.outputs.gh-docker-tag-sha }}"
 
           # append the variant name to docker tag
-          if [[ '${{ matrix.release }}' = 'debian'] ]]; then
+          if [[ '${{ matrix.release }}' = 'debian' ]]; then
             TAG_SHA="${TAG_SHA}-${{ matrix.release }}"
           fi;
 
