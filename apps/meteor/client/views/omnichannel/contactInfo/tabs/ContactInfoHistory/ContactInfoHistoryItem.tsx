@@ -11,34 +11,27 @@ import {
 	MessageGenericPreviewTitle,
 } from '@rocket.chat/fuselage';
 import type { ContactSearchChatsResult } from '@rocket.chat/rest-typings';
-import { useSetModal, useTranslation, type TranslationKey } from '@rocket.chat/ui-contexts';
+import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { usePreventPropagation } from '../../../../../hooks/usePreventPropagation';
-import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
+import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
+import { useOmnichannelSourceName } from '../../../hooks/useOmnichannelSourceName';
 import AdvancedContactModal from '../../AdvancedContactModal';
 
 type ContactInfoHistoryItemProps = Serialized<ContactSearchChatsResult> & {
 	onClick: () => void;
 };
 
-const sourceTypeMap: { [key: string]: string } = {
-	widget: 'Livechat',
-	email: 'Email',
-	sms: 'SMS',
-	app: 'Apps',
-	api: 'API',
-	other: 'Other',
-};
-
-const ContactInfoHistoryItem = ({ source, lastMessage, verified, closedAt, onClick }: ContactInfoHistoryItemProps) => {
+const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: ContactInfoHistoryItemProps) => {
 	const t = useTranslation();
-	const timeAgo = useTimeAgo();
+	const getTimeFromNow = useTimeFromNow(true);
 	const setModal = useSetModal();
 	const preventPropagation = usePreventPropagation();
 	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
+	const getSourceName = useOmnichannelSourceName();
 
 	const customClass = css`
 		&:hover {
@@ -55,13 +48,13 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, closedAt, onCli
 		<Box
 			tabIndex={0}
 			role='listitem'
-			aria-label={t(sourceTypeMap[source?.type] as TranslationKey)}
+			aria-label={getSourceName(source)}
 			borderBlockEndWidth={1}
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
 			className={['rcx-box--animated', customClass]}
 			pi={24}
-			pb={8}
+			pb={12}
 			display='flex'
 			flexDirection='column'
 			onClick={onClick}
@@ -71,12 +64,12 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, closedAt, onCli
 					{source && <OmnichannelRoomIcon source={source} size='x18' placement='default' />}
 					{source && (
 						<Box mi={4} fontScale='p2b'>
-							{t(sourceTypeMap[source?.type] as TranslationKey)}
+							{getSourceName(source)}
 						</Box>
 					)}
 					{lastMessage && (
 						<Box mis={4} fontScale='c1'>
-							{timeAgo(lastMessage.ts)}
+							{getTimeFromNow(lastMessage.ts)}
 						</Box>
 					)}
 				</Box>
@@ -93,7 +86,6 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, closedAt, onCli
 					)}
 				</Box>
 			</Box>
-			<Box mbs={4}>{!closedAt ? t('Conversation_in_progress') : t('Conversation_closed_without_comment')}</Box>
 			{lastMessage?.msg.trim() && (
 				<Box width='full' mbs={8}>
 					<MessageGenericPreview>

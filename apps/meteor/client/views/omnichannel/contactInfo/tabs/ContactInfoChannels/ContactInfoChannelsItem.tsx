@@ -3,27 +3,21 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useTranslation, type TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
-import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
+import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
+import { useOmnichannelSourceName } from '../../../hooks/useOmnichannelSourceName';
 import { useBlockChannel } from './useBlockChannel';
 
 type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel>;
 
-const sourceTypeMap: { [key: string]: string } = {
-	widget: 'Livechat',
-	email: 'Email',
-	sms: 'SMS',
-	app: 'Apps',
-	api: 'API',
-	other: 'Other',
-};
-
 const ContactInfoChannelsItem = ({ visitorId, details, blocked, lastChat }: ContactInfoChannelsItemProps) => {
 	const t = useTranslation();
-	const timeAgo = useTimeAgo();
+	const getSourceName = useOmnichannelSourceName();
+	const getTimeFromNow = useTimeFromNow(true);
+
 	const [showButton, setShowButton] = useState(false);
 	const handleBlockContact = useBlockChannel({ visitorId, blocked });
 
@@ -52,7 +46,7 @@ const ContactInfoChannelsItem = ({ visitorId, details, blocked, lastChat }: Cont
 			borderBlockEndStyle='solid'
 			className={['rcx-box--animated', customClass]}
 			pi={24}
-			pb={8}
+			pb={12}
 			display='flex'
 			flexDirection='column'
 			onFocus={() => setShowButton(true)}
@@ -63,17 +57,17 @@ const ContactInfoChannelsItem = ({ visitorId, details, blocked, lastChat }: Cont
 				{details && <OmnichannelRoomIcon source={details} size='x18' placement='default' />}
 				{details && (
 					<Box mi={4} fontScale='p2b'>
-						{t(sourceTypeMap[details?.type] as TranslationKey)} {blocked && `(${t('Blocked')})`}
+						{getSourceName(details)} {blocked && `(${t('Blocked')})`}
 					</Box>
 				)}
 				{lastChat && (
 					<Box mis={4} fontScale='c1'>
-						{timeAgo(lastChat.ts)}
+						{getTimeFromNow(lastChat.ts)}
 					</Box>
 				)}
 			</Box>
 			<Box minHeight='x24' alignItems='center' mbs={4} display='flex' justifyContent='space-between'>
-				<Box>{details?.destination}</Box>
+				<Box>{details?.destination || details?.label || t('No_app_label_provided')}</Box>
 				{showButton && <GenericMenu detached title={t('Options')} sections={[{ items: menuItems }]} tiny />}
 			</Box>
 		</Box>

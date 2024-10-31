@@ -1,12 +1,17 @@
+import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { Box, Margins, Throbber, States, StatesIcon, StatesTitle, Select } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
+import type { Key } from 'react';
+import React, { useEffect } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { ContextualbarContent, ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../../components/CustomScrollbars';
+import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
+import { useOmnichannelSourceName } from '../../../hooks/useOmnichannelSourceName';
+import AdvancedContactModal from '../../AdvancedContactModal';
 import ContactInfoHistoryItem from './ContactInfoHistoryItem';
 
 type ContactInfoHistoryProps = {
@@ -14,24 +19,49 @@ type ContactInfoHistoryProps = {
 	setChatId: (chatId: string) => void;
 };
 
+const isFilterBlocked = (hasLicense: boolean, fieldValue: Key) => !hasLicense && fieldValue !== 'all';
+
 const ContactInfoHistory = ({ contactId, setChatId }: ContactInfoHistoryProps) => {
 	const t = useTranslation();
-
-	const historyFilterOptions: [string, string][] = [
-		['all', t('All')],
-		['widget', t('Livechat')],
-		['email', t('Email')],
-		['sms', t('SMS')],
-		['app', t('Apps')],
-		['api', t('API')],
-		['other', t('Other')],
-	];
-
+	const setModal = useSetModal();
 	const [type, setType] = useLocalStorage<string>('contact-history-type', 'all');
+	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
+	const getSourceName = useOmnichannelSourceName();
 
 	const getContactHistory = useEndpoint('GET', '/v1/omnichannel/contacts.history');
 	const { data, isLoading, isError } = useQuery(['getContactHistory', contactId, type], () =>
 		getContactHistory({ contactId, source: type === 'all' ? undefined : type }),
+	);
+
+	useEffect(() => {
+		if (isFilterBlocked(hasLicense, type)) {
+			setType('all');
+		}
+	}, [hasLicense, type, setType]);
+
+	const handleChangeFilter = (value: Key) => {
+		if (isFilterBlocked(hasLicense, value)) {
+			return setModal(<AdvancedContactModal onCancel={() => setModal(null)} />);
+		}
+
+		setType(value as string);
+	};
+
+	const historyFilterOptions: [string, string][] = Object.values(OmnichannelSourceType).reduce(
+		(acc, cv) => {
+			let sourceName;
+			const hasSourceType = data?.history.find((item) => {
+				sourceName = getSourceName(item.source);
+				return item.source.type === cv;
+			});
+
+			if (hasSourceType && sourceName) {
+				acc.push([cv, sourceName]);
+			}
+
+			return acc;
+		},
+		[['all', t('All')]],
 	);
 
 	return (
@@ -47,7 +77,7 @@ const ContactInfoHistory = ({ contactId, setChatId }: ContactInfoHistoryProps) =
 			>
 				<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 					<Margins inline={4}>
-						<Select value={type} onChange={(value) => setType(value as string)} placeholder={t('Filter')} options={historyFilterOptions} />
+						<Select value={type} onChange={handleChangeFilter} placeholder={t('Filter')} options={historyFilterOptions || []} />
 					</Margins>
 				</Box>
 			</Box>

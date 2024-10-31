@@ -10,7 +10,7 @@ export interface ILivechatContactChannel {
 	field?: string;
 	value?: string;
 	verifiedAt?: Date;
-	details?: IOmnichannelSource;
+	details: IOmnichannelSource;
 	lastChat?: {
 		_id: string;
 		ts: Date;
