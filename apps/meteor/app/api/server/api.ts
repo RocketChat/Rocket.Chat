@@ -723,7 +723,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 									result = API.v1.forbidden(typeof e === 'string' ? e : e.message);
 									break;
 								default:
-									result = API.v1.failure(typeof e === 'string' ? e : e.message);
+									result = API.v1.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 							}
 
 							log.http({
