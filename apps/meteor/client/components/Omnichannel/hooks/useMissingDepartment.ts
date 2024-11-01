@@ -1,5 +1,6 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import { dispatchToastMessage } from '../../../lib/toast';
 import type { DepartmentListItem } from '../Definitions/DepartmentsDefinitions';
@@ -8,6 +9,8 @@ export const useMissingDepartment = (
 	selectedDepartment: string,
 	setDepartment: (value: string) => void,
 ): DepartmentListItem | undefined => {
+	const { t } = useTranslation();
+
 	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: selectedDepartment });
 
 	const { data } = useQuery(
@@ -27,7 +30,10 @@ export const useMissingDepartment = (
 			enabled: !!selectedDepartment && selectedDepartment !== 'all',
 			onError: () => {
 				setDepartment('all');
-				dispatchToastMessage({ type: 'info', message: 'The selected department was deleted and the departments filter reseted to All' });
+				dispatchToastMessage({
+					type: 'info',
+					message: t('The_selected_department_has_been_deleted'),
+				});
 			},
 		},
 	);
