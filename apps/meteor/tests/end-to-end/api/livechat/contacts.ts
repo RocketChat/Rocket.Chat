@@ -978,6 +978,81 @@ describe('LIVECHAT - contacts', () => {
 		});
 	});
 
+	describe('[GET] omnichannel/contacts.channels', () => {
+		let contactId: string;
+		let visitor: ILivechatVisitor;
+		let room: IOmnichannelRoom;
+
+		before(async () => {
+			await updatePermission('view-livechat-contact', ['admin']);
+			visitor = await createVisitor();
+			room = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(room._id);
+			contactId = room.v.contactId as string;
+		});
+
+		after(async () => {
+			await deleteVisitor(visitor._id);
+			await restorePermissionToRoles('view-livechat-contact');
+		});
+
+		it('should be able get the channels of a contact by his id', async () => {
+			const res = await request.get(api(`omnichannel/contacts.channels`)).set(credentials).query({ contactId });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.channels).to.be.an('array');
+			expect(res.body.channels.length).to.be.equal(1);
+			expect(res.body.channels[0]).to.have.property('name', 'api');
+			expect(res.body.channels[0]).to.have.property('visitorId', visitor._id);
+			expect(res.body.channels[0]).to.have.property('verified', false);
+			expect(res.body.channels[0]).to.have.property('blocked', false);
+			expect(res.body.channels[0]).to.have.property('lastChat');
+		});
+
+		it('should return an empty array if contact does not have channels', async () => {
+			const { body } = await request
+				.post(api('omnichannel/contacts'))
+				.set(credentials)
+				.send({ name: faker.person.fullName(), emails: [faker.internet.email().toLowerCase()], phones: [faker.phone.number()] });
+			const res = await request.get(api(`omnichannel/contacts.channels`)).set(credentials).query({ contactId: body.contactId });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.channels).to.be.an('array');
+			expect(res.body.channels.length).to.be.equal(0);
+		});
+
+		it('should return an empty array if contact does not exist', async () => {
+			const res = await request.get(api(`omnichannel/contacts.channels`)).set(credentials).query({ contactId: 'invalid' });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.channels).to.be.an('array');
+			expect(res.body.channels.length).to.be.equal(0);
+		});
+
+		it("should return an error if user doesn't have 'view-livechat-contact' permission", async () => {
+			await removePermissionFromAllRoles('view-livechat-contact');
+
+			const res = await request.get(api(`omnichannel/contacts.channels`)).set(credentials).query({ contactId });
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+
+			await restorePermissionToRoles('view-livechat-contact');
+		});
+
+		it('should return an error if contactId is missing', async () => {
+			const res = await request.get(api(`omnichannel/contacts.channels`)).set(credentials);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
+			expect(res.body.error).to.be.equal("must have required property 'contactId' [invalid-params]");
+			expect(res.body.errorType).to.be.equal('invalid-params');
+		});
+	});
+
 	(IS_EE ? describe : describe.skip)('[POST] omnichannel/contacts.block', async () => {
 		let visitor: ILivechatVisitor;
 		let room: IOmnichannelRoom;
