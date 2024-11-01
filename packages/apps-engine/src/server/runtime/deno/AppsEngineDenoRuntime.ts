@@ -11,7 +11,7 @@ import type { AppBridges } from '../../bridges';
 import type { IParseAppPackageResult } from '../../compiler';
 import type { ILoggerStorageEntry } from '../../logging';
 import type { AppAccessorManager, AppApiManager } from '../../managers';
-import type { AppLogStorage } from '../../storage';
+import type { AppLogStorage, IAppStorageItem } from '../../storage';
 import { LivenessManager } from './LivenessManager';
 import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
@@ -97,6 +97,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     constructor(
         manager: AppManager,
         private readonly appPackage: IParseAppPackageResult,
+        private readonly storageItem: IAppStorageItem,
     ) {
         super();
 
@@ -251,6 +252,8 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
         this.state = 'restarting';
 
         await this.sendRequest({ method: 'app:initialize' });
+
+        await this.sendRequest({ method: 'app:setStatus', params: [this.storageItem.status] });
 
         this.state = 'ready';
     }
