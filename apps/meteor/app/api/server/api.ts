@@ -18,6 +18,7 @@ import type { PermissionsPayload } from './api.helpers';
 import { checkPermissionsForInvocation, checkPermissions, parseDeprecation } from './api.helpers';
 import type {
 	FailureResult,
+	ForbiddenResult,
 	InternalError,
 	NotFoundResult,
 	Operations,
@@ -313,6 +314,16 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		};
 	}
 
+	public forbidden<T>(msg?: T): ForbiddenResult<T> {
+		return {
+			statusCode: 403,
+			body: {
+				success: false,
+				error: msg || 'forbidden',
+			},
+		};
+	}
+
 	public tooManyRequests(msg?: string): { statusCode: number; body: Record<string, any> & { success?: boolean } } {
 		return {
 			statusCode: 429,
@@ -577,7 +588,14 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 							}
 
 							if (!this.user && !settings.get('Accounts_AllowAnonymousRead')) {
-								return api.unauthorized('You must be logged in to do this.');
+								const result = api.unauthorized('You must be logged in to do this.');
+								// compatibility with the old API
+								Object.assign(result.body, {
+									status: 'error',
+									message: 'You must be logged in to do this.',
+								});
+
+								return result;
 							}
 						}
 

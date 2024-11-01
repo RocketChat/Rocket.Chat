@@ -35,7 +35,7 @@ API.v1.addRoute(
 
 			if (this.urlParams.type === 'agent') {
 				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['transfer-livechat-guest', 'edit-omnichannel-contact']))) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 
 				const { onlyAvailable, excludeId, showIdleAgents } = this.queryParams;
@@ -55,7 +55,7 @@ API.v1.addRoute(
 			}
 			if (this.urlParams.type === 'manager') {
 				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['view-livechat-manager']))) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 
 				return API.v1.success(
