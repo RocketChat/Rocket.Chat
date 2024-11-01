@@ -17,7 +17,7 @@ type UploadResult<K> = {
 	fields: K;
 };
 
-type OptionalUploadResult<K> =
+type UploadResultWithOptionalFile<K> =
 	| UploadResult<K>
 	| ({
 			[P in keyof Omit<UploadResult<K>, 'fields'>]: undefined;
@@ -35,9 +35,9 @@ export async function getUploadFormData<
 		field?: T;
 		validate?: V;
 		sizeLimit?: number;
-		optional: true;
+		fileOptional: true;
 	},
-): Promise<OptionalUploadResult<K>>;
+): Promise<UploadResultWithOptionalFile<K>>;
 
 export async function getUploadFormData<
 	T extends string,
@@ -49,7 +49,7 @@ export async function getUploadFormData<
 		field?: T;
 		validate?: V;
 		sizeLimit?: number;
-		optional?: false | undefined;
+		fileOptional?: false | undefined;
 	},
 ): Promise<UploadResult<K>>;
 
@@ -63,9 +63,9 @@ export async function getUploadFormData<
 		field?: T;
 		validate?: V;
 		sizeLimit?: number;
-		optional?: boolean;
+		fileOptional?: boolean;
 	} = {},
-): Promise<OptionalUploadResult<K>> {
+): Promise<UploadResultWithOptionalFile<K>> {
 	const limits = {
 		files: 1,
 		...(options.sizeLimit && options.sizeLimit > -1 && { fileSize: options.sizeLimit }),
@@ -74,9 +74,9 @@ export async function getUploadFormData<
 	const bb = busboy({ headers: request.headers, defParamCharset: 'utf8', limits });
 	const fields = Object.create(null) as K;
 
-	let uploadedFile: OptionalUploadResult<K> | undefined;
+	let uploadedFile: UploadResultWithOptionalFile<K> | undefined;
 
-	let returnResult = (_value: OptionalUploadResult<K>) => {
+	let returnResult = (_value: UploadResultWithOptionalFile<K>) => {
 		// noop
 	};
 	let returnError = (_error?: Error | string | null | undefined) => {
@@ -100,7 +100,7 @@ export async function getUploadFormData<
 		if (!uploadedFile) {
 			return returnError(new MeteorError('No file or fields were uploaded'));
 		}
-		if (!('file' in uploadedFile) && !options.optional) {
+		if (!('file' in uploadedFile) && !options.fileOptional) {
 			return returnError(new MeteorError('No file uploaded'));
 		}
 		if (options.validate !== undefined && !options.validate(fields)) {
@@ -170,7 +170,7 @@ export async function getUploadFormData<
 
 	request.pipe(bb);
 
-	return new Promise<OptionalUploadResult<K>>((resolve, reject) => {
+	return new Promise<UploadResultWithOptionalFile<K>>((resolve, reject) => {
 		returnResult = resolve;
 		returnError = reject;
 	});

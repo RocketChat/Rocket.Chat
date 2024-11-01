@@ -144,7 +144,7 @@ API.v1.addRoute(
 				{
 					request: this.request,
 				},
-				{ field: 'emoji', sizeLimit: settings.get('FileUpload_MaxFileSize'), optional: true },
+				{ field: 'emoji', sizeLimit: settings.get('FileUpload_MaxFileSize'), fileOptional: true },
 			);
 
 			const { fields, fileBuffer, mimetype } = emoji;
