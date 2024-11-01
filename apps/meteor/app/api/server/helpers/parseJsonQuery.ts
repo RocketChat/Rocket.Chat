@@ -107,16 +107,8 @@ export async function parseJsonQuery(api: PartialThis): Promise<{
 		}
 	}
 
-	const allowedRoutes = [
-		'/api/v1/settings.public',
-		'/api/v1/directory',
-		'/api/v1/channels.messages',
-		'/api/v1/groups.messages',
-		'/api/v1/dm.messages',
-		'/api/v1/im.messages',
-	];
 	let query: Record<string, any> = {};
-	if (params.query && (isUnsafeQueryParamsAllowed || allowedRoutes.includes(route))) {
+	if (params.query && isUnsafeQueryParamsAllowed) {
 		apiDeprecationLogger.parameter(route, 'query', '8.0.0', response, messageGenerator);
 		try {
 			query = ejson.parse(params.query);

@@ -57,6 +57,9 @@ export class IMAPInterceptor extends EventEmitter {
 		});
 		this.retries = 0;
 		this.inboxId = id;
+		this.imap.on('error', async (err: Error) => {
+			logger.error({ msg: 'IMAP error', err });
+		});
 		void this.start();
 	}
 
@@ -88,8 +91,7 @@ export class IMAPInterceptor extends EventEmitter {
 			}
 		});
 
-		this.imap.on('error', async (err: Error) => {
-			logger.error({ msg: 'IMAP error', err });
+		this.imap.on('error', async () => {
 			this.retries++;
 			await this.reconnect();
 		});
@@ -106,6 +108,14 @@ export class IMAPInterceptor extends EventEmitter {
 	}
 
 	stop(callback = new Function()): void {
+		if (this.backoff) {
+			clearTimeout(this.backoff);
+			this.backoffDurationMS = 3000;
+		}
+		this.stopWithNoStopBackoff(callback);
+	}
+
+	private stopWithNoStopBackoff(callback = new Function()): void {
 		logger.debug('IMAP stop called');
 		this.imap.removeAllListeners();
 		this.imap.once('end', () => {
@@ -113,6 +123,9 @@ export class IMAPInterceptor extends EventEmitter {
 			callback?.();
 		});
 		this.imap.end();
+		this.imap.on('error', async (err: Error) => {
+			logger.error({ msg: 'IMAP error', err });
+		});
 	}
 
 	async reconnect(): Promise<void> {
@@ -121,26 +134,19 @@ export class IMAPInterceptor extends EventEmitter {
 			this.stop();
 			return this.selfDisable();
 		}
+
 		if (this.backoff) {
 			clearTimeout(this.backoff);
 			this.backoffDurationMS = 3000;
 		}
-		const loop = async (): Promise<void> => {
-			logger.debug(`Reconnecting to ${this.config.user}: ${this.retries}`);
-			if (this.canRetry()) {
-				this.backoffDurationMS *= 2;
-				this.backoff = setTimeout(loop, this.backoffDurationMS);
-			} else {
-				logger.info(`IMAP reconnection failed on inbox ${this.config.user}`);
-				clearTimeout(this.backoff);
-				this.stop();
-				await this.selfDisable();
-				return;
-			}
-			this.stop();
-			await this.start();
-		};
-		this.backoff = setTimeout(loop, this.backoffDurationMS);
+
+		this.backoff = setTimeout(
+			() => {
+				this.stopWithNoStopBackoff();
+				void this.start();
+			},
+			(this.backoffDurationMS += this.backoffDurationMS),
+		);
 	}
 
 	imapSearch(): Promise<number[]> {
