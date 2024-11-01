@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
-import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { router } from '../../../../client/providers/RouterProvider';
 import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client';
@@ -17,8 +16,7 @@ Meteor.startup(() => {
 			icon: 'thread',
 			label: 'Reply_in_thread',
 			context: ['message', 'message-mobile', 'federated', 'videoconf'],
-			action(e, props) {
-				const { message = messageArgs(this).msg } = props;
+			action(e, { message }) {
 				e?.stopPropagation();
 				router.navigate({
 					name: router.getRouteName()!,

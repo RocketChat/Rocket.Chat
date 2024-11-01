@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
 import { MessageAction } from '../../../app/ui-utils/client';
-import { messageArgs } from '../../lib/utils/messageArgs';
 import { setMessageJumpQueryStringParameter } from '../../lib/utils/setMessageJumpQueryStringParameter';
 
 Meteor.startup(() => {
@@ -10,8 +9,7 @@ Meteor.startup(() => {
 		icon: 'jump',
 		label: 'Jump_to_message',
 		context: ['search'],
-		async action(_, props) {
-			const { message = messageArgs(this).msg } = props;
+		async action(_, { message }) {
 			setMessageJumpQueryStringParameter(message._id);
 		},
 		order: 100,
