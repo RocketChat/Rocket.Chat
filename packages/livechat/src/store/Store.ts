@@ -1,5 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 
+import type { StoreState } from '.';
+
 function getLocalStorage() {
 	try {
 		return window.localStorage;
@@ -17,14 +19,14 @@ function getLocalStorage() {
 }
 const localStorage = getLocalStorage();
 
-type StoreStateType = Record<string, unknown>;
+type StoreStateType = StoreState;
 
 export default class Store extends Emitter {
 	private _state: StoreStateType;
 
 	private localStorageKey: string;
 
-	private dontPersist: string[];
+	private dontPersist: Array<keyof StoreStateType>;
 
 	constructor(
 		initialState: StoreStateType,
@@ -33,11 +35,10 @@ export default class Store extends Emitter {
 			dontPersist = [],
 		}: {
 			localStorageKey?: string;
-			dontPersist?: string[];
+			dontPersist?: Array<keyof StoreStateType>;
 		} = {},
 	) {
 		super();
-
 		this.localStorageKey = localStorageKey;
 		this.dontPersist = dontPersist;
 
@@ -90,7 +91,7 @@ export default class Store extends Emitter {
 		this.emit('change', [this._state, prevState, partialState]);
 	}
 
-	unsetSinglePropInStateByName(propName: string) {
+	unsetSinglePropInStateByName(propName: keyof StoreStateType) {
 		const prevState = this._state;
 		delete prevState[propName];
 		this._state = { ...prevState };
@@ -102,9 +103,11 @@ export default class Store extends Emitter {
 		const prevState = this._state;
 
 		const nonPeristable: Record<string, unknown> = {};
+
 		for (const ignoredKey of this.dontPersist) {
 			nonPeristable[ignoredKey] = prevState[ignoredKey];
 		}
+
 		this._state = { ...storedState, ...nonPeristable };
 		this.emit('change', [this._state, prevState]);
 	}
