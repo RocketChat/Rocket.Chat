@@ -163,6 +163,9 @@ export interface IMessage extends IRocketChatRecord {
 	t?: MessageTypesValues;
 	e2e?: 'pending' | 'done';
 	otrAck?: string;
+	otr?: {
+		ack: string;
+	};
 
 	urls?: MessageUrl[];
 
