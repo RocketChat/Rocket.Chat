@@ -48,6 +48,8 @@ const logger = new Logger('API');
 // TODO: MAJOR check if this is still needed
 const applyBreakingChanges = semver.gte(Info.version, '8.0.0');
 
+console.log('API version', Info.version, applyBreakingChanges);
+
 interface IAPIProperties {
 	useDefaultAuth: boolean;
 	prettyJson: boolean;
@@ -329,7 +331,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 				// TODO: MAJOR remove 'unauthorized' in favor of 'forbidden'
 				// because of reasons beyond my control we were used to send `unauthorized` to 403 cases, to avoid a breaking change we just adapted here
 				// but thanks to the semver check tests should break as soon we bump to a new version
-				error: msg || applyBreakingChanges ? 'forbidden' : 'unauthorized',
+				error: msg || (applyBreakingChanges ? 'forbidden' : 'unauthorized'),
 			},
 		};
 	}
