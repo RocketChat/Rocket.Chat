@@ -335,7 +335,7 @@ jobs:
 
     env:
       RC_DOCKERFILE: ${{ needs.release-versions.outputs.rc-dockerfile }}.${{ matrix.platform }}
-      RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}-${{ matrix.platform }}
+      RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}.${{ matrix.platform }}
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
@@ -360,7 +360,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Make sure matrix bindings load
-        if: ${{ matrix.platform == 'alpine' }}
+        if: ${{ matrix.platform == 'alpine' }} && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         run: |
           docker run --rm -w /app/bundle/programs/server/npm/node_modules/matrix-appservice-bridge ghcr.io/rocketchat/rocket.chat:$RC_DOCKER_TAG -e 'require(".")'
 
@@ -371,7 +371,7 @@ jobs:
 
     env:
       RC_DOCKERFILE: ${{ needs.release-versions.outputs.rc-dockerfile }}.${{ matrix.platform }}
-      RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}-${{ matrix.platform }}
+      RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}.${{ matrix.platform }}
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
 
@@ -652,8 +652,7 @@ jobs:
     strategy:
       matrix:
         # this is currently a mix of variants and different images
-        release: ['alpine', 'preview', 'debian']
-
+        release: ['alpine']
     env:
       IMAGE_NAME: 'rocketchat/rocket.chat'
 
