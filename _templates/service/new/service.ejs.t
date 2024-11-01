@@ -3,6 +3,7 @@ to: ee/apps/<%= name %>/src/service.ts
 ---
 import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
 import { broker } from '@rocket.chat/network-broker';
+import { startTracing } from '@rocket.chat/tracing';
 import polka from 'polka';
 
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
@@ -10,7 +11,9 @@ import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/reg
 const PORT = process.env.PORT || <%= h.random() %>;
 
 (async () => {
-	const db = await getConnection();
+	const { db } = await getConnection();
+
+	startTracing({ service: '<%= name %>', db: client });
 
 	registerServiceModels(db, await getTrashCollection());
 

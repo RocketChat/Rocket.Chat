@@ -21,7 +21,7 @@ export const useVideoConfDataStream = ({
       `${rid}/videoconf`,
       (id) =>
         id === callId &&
-        queryClient.invalidateQueries(['video-conference', callId])
+        queryClient.invalidateQueries(['video-conference', callId]),
     );
   }, [rid, callId, subscribeNotifyRoom, queryClient]);
 

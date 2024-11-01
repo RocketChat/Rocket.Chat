@@ -1,6 +1,8 @@
 import type { ISetting, ISettingColor, LoginServiceConfiguration } from '@rocket.chat/core-typings';
 
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
+import { ajv } from './Ajv';
 
 type SettingsUpdateProps = SettingsUpdatePropDefault | SettingsUpdatePropsActions | SettingsUpdatePropsColor;
 
@@ -25,9 +27,39 @@ type SettingsUpdatePropDefault = {
 
 export const isSettingsUpdatePropDefault = (props: Partial<SettingsUpdateProps>): props is SettingsUpdatePropDefault => 'value' in props;
 
+type SettingsPublicWithPaginationProps = PaginatedRequest<{ _id?: string; query?: string }>;
+
+const SettingsPublicWithPaginationSchema = {
+	type: 'object',
+	properties: {
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		_id: {
+			type: 'string',
+		},
+		query: {
+			type: 'string',
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isSettingsPublicWithPaginationProps = ajv.compile<SettingsPublicWithPaginationProps>(SettingsPublicWithPaginationSchema);
+
 export type SettingsEndpoints = {
 	'/v1/settings.public': {
-		GET: () => PaginatedResult & {
+		GET: (params: SettingsPublicWithPaginationProps) => PaginatedResult & {
 			settings: Array<ISetting>;
 		};
 	};

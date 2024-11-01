@@ -1,8 +1,9 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
-import { useRolesDescription, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRolesDescription } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
 import {
@@ -31,7 +32,7 @@ type UserInfoWithDataProps = {
 };
 
 const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const getRoles = useRolesDescription();
 
 	const {

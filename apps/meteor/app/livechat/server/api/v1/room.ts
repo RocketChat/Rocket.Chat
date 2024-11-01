@@ -1,5 +1,5 @@
 import { Omnichannel } from '@rocket.chat/core-services';
-import type { ILivechatAgent, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IOmnichannelInquiryExtraData, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, Messages } from '@rocket.chat/models';
 import {
@@ -23,8 +23,8 @@ import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
 import { closeLivechatRoom } from '../../../../lib/server/functions/closeLivechatRoom';
 import { settings as rcSettings } from '../../../../settings/server';
 import { normalizeTransferredByData } from '../../lib/Helper';
-import type { CloseRoomParams } from '../../lib/LivechatTyped';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import type { CloseRoomParams } from '../../lib/localTypes';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
@@ -80,7 +80,12 @@ API.v1.addRoute(
 					},
 				};
 
-				const newRoom = await LivechatTyped.createRoom({ visitor: guest, roomInfo, agent, extraData: extraParams });
+				const newRoom = await LivechatTyped.createRoom({
+					visitor: guest,
+					roomInfo,
+					agent,
+					extraData: extraParams as IOmnichannelInquiryExtraData,
+				});
 
 				return API.v1.success({
 					room: newRoom,

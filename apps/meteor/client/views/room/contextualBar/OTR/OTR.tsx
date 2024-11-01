@@ -53,7 +53,7 @@ const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh,
 				return (
 					<OTRStates
 						title={t('OTR_Chat_Declined_Title')}
-						description={t('OTR_Chat_Declined_Description', peerUsername || '')}
+						description={t('OTR_Chat_Declined_Description', { postProcess: 'sprintf', sprintf: [peerUsername || ''] })}
 						icon='cross'
 						onClickStart={onClickStart}
 					/>
@@ -62,7 +62,7 @@ const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh,
 				return (
 					<OTRStates
 						title={t('OTR_Chat_Timeout_Title')}
-						description={t('OTR_Chat_Timeout_Description', peerUsername || '')}
+						description={t('OTR_Chat_Timeout_Description', { postProcess: 'sprintf', sprintf: [peerUsername || ''] })}
 						icon='clock'
 						onClickStart={onClickStart}
 					/>

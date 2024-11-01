@@ -127,10 +127,13 @@ export class POP3Helper {
 
 	start() {
 		this.log('POP3 started');
-		this.running = setInterval(() => {
-			// get new emails and process
-			this.POP3 = new POP3Intercepter();
-		}, Math.max(this.frequency * 60 * 1000, 2 * 60 * 1000));
+		this.running = setInterval(
+			() => {
+				// get new emails and process
+				this.POP3 = new POP3Intercepter();
+			},
+			Math.max(this.frequency * 60 * 1000, 2 * 60 * 1000),
+		);
 	}
 
 	log(...args) {

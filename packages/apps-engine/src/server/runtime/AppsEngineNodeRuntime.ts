@@ -38,7 +38,10 @@ export class AppsEngineNodeRuntime extends AppsEngineRuntime {
         );
     }
 
-    constructor(private readonly app: App, private readonly customRequire: (mod: string) => any) {
+    constructor(
+        private readonly app: App,
+        private readonly customRequire: (mod: string) => any,
+    ) {
         super(app, customRequire);
     }
 

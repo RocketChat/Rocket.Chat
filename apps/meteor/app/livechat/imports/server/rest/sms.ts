@@ -1,12 +1,11 @@
 import { OmnichannelIntegration } from '@rocket.chat/core-services';
 import type {
 	ILivechatVisitor,
-	IOmnichannelRoom,
 	IUpload,
 	MessageAttachment,
 	ServiceData,
 	FileAttachmentProps,
-	IOmnichannelSource,
+	IOmnichannelRoomInfo,
 } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -21,8 +20,8 @@ import { FileUpload } from '../../../../file-upload/server';
 import { checkUrlForSsrf } from '../../../../lib/server/functions/checkUrlForSsrf';
 import { settings } from '../../../../settings/server';
 import { setCustomField } from '../../../server/api/lib/customFields';
-import type { ILivechatMessage } from '../../../server/lib/LivechatTyped';
 import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
+import type { ILivechatMessage } from '../../../server/lib/localTypes';
 
 const logger = new Logger('SMS');
 
@@ -56,24 +55,10 @@ const defineDepartment = async (idOrName?: string) => {
 	return department?._id;
 };
 
-const defineVisitor = async (smsNumber: string, serviceName: string, destination: string, targetDepartment?: string) => {
-	const visitorSource: IOmnichannelSource = {
-		type: OmnichannelSourceType.SMS,
-		alias: serviceName,
-	};
-
-	const visitor = await LivechatVisitors.findOneVisitorByPhoneAndSource(
-		smsNumber,
-		{
-			'source.type': visitorSource.type,
-			'source.alias': visitorSource.alias,
-		},
-		{ projection: { token: 1 } },
-	);
-	visitorSource.destination = destination;
-	let data: { token: string; source: IOmnichannelSource; department?: string } = {
+const defineVisitor = async (smsNumber: string, targetDepartment?: string) => {
+	const visitor = await LivechatVisitors.findOneVisitorByPhone(smsNumber);
+	let data: { token: string; department?: string } = {
 		token: visitor?.token || Random.id(),
-		source: visitorSource,
 	};
 
 	if (!visitor) {
@@ -132,15 +117,12 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			targetDepartment = await defineDepartment(smsDepartment);
 		}
 
-		const visitor = await defineVisitor(sms.from, service, sms.to, targetDepartment);
+		const visitor = await defineVisitor(sms.from, targetDepartment);
 		if (!visitor) {
 			return API.v1.success(SMSService.error(new Error('Invalid visitor')));
 		}
 
-		const roomInfo: {
-			source?: IOmnichannelRoom['source'];
-			[key: string]: unknown;
-		} = {
+		const roomInfo: IOmnichannelRoomInfo = {
 			sms: {
 				from: sms.to,
 			},
@@ -259,10 +241,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		const sendMessage: {
 			guest: ILivechatVisitor;
 			message: ILivechatMessage;
-			roomInfo: {
-				source?: IOmnichannelRoom['source'];
-				[key: string]: unknown;
-			};
+			roomInfo: IOmnichannelRoomInfo;
 		} = {
 			guest: visitor,
 			roomInfo,

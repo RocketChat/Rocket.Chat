@@ -28,7 +28,10 @@ export class MatrixRoomCreatedHandler extends MatrixBaseEventHandler {
 export class MatrixRoomMembershipChangedHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_MEMBERSHIP_CHANGED;
 
-	constructor(private roomService: FederationRoomServiceReceiver, private rocketSettingsAdapter: RocketChatSettingsAdapter) {
+	constructor(
+		private roomService: FederationRoomServiceReceiver,
+		private rocketSettingsAdapter: RocketChatSettingsAdapter,
+	) {
 		super();
 	}
 

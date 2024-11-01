@@ -5,7 +5,7 @@ import semver from 'semver';
 import crypto from 'crypto';
 import fs from 'fs/promises';
 import BeautyHtml from 'beauty-html';
-import { DOMParser } from 'xmldom';
+import { DOMParser } from '@xmldom/xmldom';
 import core from '@actions/core';
 import { Octokit } from '@octokit/rest';
 

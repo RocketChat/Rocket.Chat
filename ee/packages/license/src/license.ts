@@ -357,10 +357,10 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 								limits: [limit],
 							}),
 							['prevent_action'],
-					  )
+						)
 					: isBehaviorsInResult(await validateDefaultLimits.call(this, { behaviors: ['prevent_action'], limits: [limit] }), [
 							'prevent_action',
-					  ]);
+						]);
 
 				this.shouldPreventActionResults.set(limit as LicenseLimitKind, fresh);
 
@@ -434,7 +434,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 						reason: 'limit',
 						limit: action,
 					} as BehaviorWithContext,
-			  ];
+				];
 
 		if (this.consolidateBehaviorState(action, 'prevent_action', shouldPreventAction)) {
 			this.triggerBehaviorEventsToggled(eventsToEmit);

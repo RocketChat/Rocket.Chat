@@ -2,9 +2,10 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Tag, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRouteParameter, usePermission, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import semver from 'semver';
 
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
@@ -25,7 +26,7 @@ type AppStatusProps = {
 };
 
 const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: AppStatusProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [endUserRequested, setEndUserRequested] = useState(false);
 	const [loading, setLoading] = useSafely(useState(false));
 	const [isAppPurchased, setPurchased] = useSafely(useState(!!app?.isPurchased));
@@ -88,11 +89,12 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		setLoading(true);
 
 		if (isAdminUser && appAddon && !workspaceHasAddon) {
-			return setModal(<AddonRequiredModal actionType='install' onDismiss={cancelAction} onInstallAnyway={appInstallationHandler} />);
+			const actionType = button?.action === 'update' ? 'update' : 'install';
+			return setModal(<AddonRequiredModal actionType={actionType} onDismiss={cancelAction} onInstallAnyway={appInstallationHandler} />);
 		}
 
 		appInstallationHandler();
-	}, [appAddon, appInstallationHandler, cancelAction, isAdminUser, setLoading, setModal, workspaceHasAddon]);
+	}, [button?.action, appAddon, appInstallationHandler, cancelAction, isAdminUser, setLoading, setModal, workspaceHasAddon]);
 
 	// @TODO we should refactor this to not use the label to determine the variant
 	const getStatusVariant = (status: appStatusSpanResponseProps) => {
@@ -162,7 +164,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			{statuses?.map((status, index) => (
 				<Margins inlineEnd={index !== statuses.length - 1 ? 8 : undefined} key={index}>
 					<Tag data-qa-type='app-status-tag' variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
-						{handleAppRequestsNumber(status)} {t(`${status.label}` as TranslationKey)}
+						{handleAppRequestsNumber(status)} {t(status.label)}
 					</Tag>
 				</Margins>
 			))}

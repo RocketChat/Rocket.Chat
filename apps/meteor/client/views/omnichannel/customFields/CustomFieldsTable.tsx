@@ -22,8 +22,7 @@ import { useRemoveCustomField } from './useRemoveCustomField';
 const CustomFieldsTable = () => {
 	const t = useTranslation();
 	const router = useRouter();
-	const [filter, setFilter] = useState('');
-	const debouncedFilter = useDebouncedValue(filter, 500);
+	const [text, setText] = useState('');
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'_id' | 'label' | 'scope' | 'visibility'>('_id');
@@ -33,18 +32,21 @@ const CustomFieldsTable = () => {
 
 	const handleDelete = useRemoveCustomField();
 
-	const query = useMemo(
-		() => ({
-			text: debouncedFilter,
-			sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		}),
-		[debouncedFilter, itemsPerPage, current, sortBy, sortDirection],
+	const query = useDebouncedValue(
+		useMemo(
+			() => ({
+				text,
+				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
+				...(itemsPerPage && { count: itemsPerPage }),
+				...(current && { offset: current }),
+			}),
+			[text, itemsPerPage, current, sortBy, sortDirection],
+		),
+		500,
 	);
 
 	const getCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
-	const { data, isSuccess, isLoading } = useQuery(['livechat-customFields', query, debouncedFilter], async () => getCustomFields(query));
+	const { data, isSuccess, isLoading } = useQuery(['livechat-customFields', query], async () => getCustomFields(query));
 
 	const [defaultQuery] = useState(hashQueryKey([query]));
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
@@ -75,7 +77,9 @@ const CustomFieldsTable = () => {
 
 	return (
 		<>
-			{((isSuccess && data?.customFields.length > 0) || queryHasChanged) && <FilterByText onChange={setFilter} />}
+			{((isSuccess && data?.customFields.length > 0) || queryHasChanged) && (
+				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
+			)}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -99,7 +103,7 @@ const CustomFieldsTable = () => {
 
 			{isSuccess && data.customFields.length > 0 && (
 				<>
-					<GenericTable data-qa='GenericTableCustomFieldsInfoBody' aria-busy={filter !== debouncedFilter} aria-live='assertive'>
+					<GenericTable data-qa='GenericTableCustomFieldsInfoBody' aria-busy={isLoading} aria-live='assertive'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.customFields.map(({ label, _id, scope, visibility }) => (

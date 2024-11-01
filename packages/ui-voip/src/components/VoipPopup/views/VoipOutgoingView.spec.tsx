@@ -1,5 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { createMockFreeSwitchExtensionDetails, createMockVoipOutgoingSession } from '../../../tests/mocks';
 import VoipOutgoingView from './VoipOutgoingView';
@@ -27,9 +28,9 @@ it('should only enable outgoing actions', () => {
 	expect(screen.getByRole('button', { name: 'End_call' })).toBeEnabled();
 });
 
-it('should properly interact with the voice call session', () => {
+it('should properly interact with the voice call session', async () => {
 	render(<VoipOutgoingView session={outgoingSession} />, { wrapper: wrapper.build(), legacyRoot: true });
 
-	screen.getByRole('button', { name: 'End_call' }).click();
+	await userEvent.click(screen.getByRole('button', { name: 'End_call' }));
 	expect(outgoingSession.end).toHaveBeenCalled();
 });

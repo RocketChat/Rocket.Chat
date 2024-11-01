@@ -2,9 +2,10 @@ import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useSettingsDispatch, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSettingsDispatch, useSettings } from '@rocket.chat/ui-contexts';
 import type { ReactNode, FormEvent, MouseEvent } from 'react';
 import React, { useMemo, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../../components/Page';
 import type { EditableSetting } from '../../EditableSettingsContext';
@@ -31,7 +32,7 @@ const SettingsGroupPage = ({
 	tabs = undefined,
 	isCustom = false,
 }: SettingsGroupPageProps) => {
-	const t = useTranslation();
+	const { t, i18n } = useTranslation();
 	const dispatch = useSettingsDispatch();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -145,7 +146,7 @@ const SettingsGroupPage = ({
 			) : (
 				<PageScrollableContentWithShadow>
 					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
-						{i18nDescription && isTranslationKey(i18nDescription) && t.has(i18nDescription) && (
+						{i18nDescription && isTranslationKey(i18nDescription) && i18n.exists(i18nDescription) && (
 							<Box is='p' color='hint' fontScale='p2'>
 								{t(i18nDescription)}
 							</Box>
