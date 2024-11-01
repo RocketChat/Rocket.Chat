@@ -80,7 +80,11 @@ const ServerContextMock = ({
 
 		const absoluteURL: ServerContextValue['absoluteUrl'] = (path): string => {
 			logAction('absoluteUrl', path);
-			return new URL(path, baseURL).toString();
+			try {
+				return new URL(path, baseURL).toString();
+			} catch (e) {
+				return path;
+			}
 		};
 
 		const mockedEndpoints = Object.entries(callEndpoint).map(

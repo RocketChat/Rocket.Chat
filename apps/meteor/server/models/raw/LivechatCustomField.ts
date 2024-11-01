@@ -13,12 +13,12 @@ export class LivechatCustomFieldRaw extends BaseRaw<ILivechatCustomField> implem
 		return [{ key: { scope: 1 } }];
 	}
 
-	findByScope(
+	findByScope<T extends ILivechatCustomField>(
 		scope: ILivechatCustomField['scope'],
 		options?: FindOptions<ILivechatCustomField>,
 		includeHidden = true,
-	): FindCursor<ILivechatCustomField> {
-		return this.find({ scope, ...(includeHidden === true ? {} : { visibility: { $ne: 'hidden' } }) }, options);
+	): FindCursor<T> {
+		return this.find<T>({ scope, ...(includeHidden === true ? {} : { visibility: { $ne: 'hidden' } }) }, options);
 	}
 
 	findMatchingCustomFields(

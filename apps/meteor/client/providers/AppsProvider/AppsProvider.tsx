@@ -6,8 +6,7 @@ import React, { useEffect } from 'react';
 
 import { AppClientOrchestratorInstance } from '../../apps/orchestrator';
 import { AppsContext } from '../../contexts/AppsContext';
-import { useIsEnterprise } from '../../hooks/useIsEnterprise';
-import { useInvalidateLicense } from '../../hooks/useLicense';
+import { useInvalidateLicense, useLicense } from '../../hooks/useLicense';
 import type { AsyncState } from '../../lib/asyncState';
 import { AsyncStatePhase } from '../../lib/asyncState';
 import { useInvalidateAppsCountQueryCallback } from '../../views/marketplace/hooks/useAppsCountQuery';
@@ -17,15 +16,24 @@ import { storeQueryFunction } from './storeQueryFunction';
 const getAppState = (
 	loading: boolean,
 	apps: App[] | undefined,
-): Omit<
-	AsyncState<{
-		apps: App[];
-	}>,
-	'error'
-> => ({
-	phase: loading ? AsyncStatePhase.LOADING : AsyncStatePhase.RESOLVED,
-	value: { apps: apps || [] },
-});
+	error?: Error,
+): AsyncState<{
+	apps: App[];
+}> => {
+	if (error) {
+		return {
+			phase: AsyncStatePhase.REJECTED,
+			value: undefined,
+			error,
+		};
+	}
+
+	return {
+		phase: loading ? AsyncStatePhase.LOADING : AsyncStatePhase.RESOLVED,
+		value: { apps: apps || [] },
+		error,
+	};
+};
 
 type AppsProviderProps = {
 	children: ReactNode;
@@ -36,8 +44,8 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 
 	const queryClient = useQueryClient();
 
-	const { data } = useIsEnterprise();
-	const isEnterprise = !!data?.isEnterprise;
+	const { isLoading: isLicenseInformationLoading, data: { license, limits } = {} } = useLicense({ loadValues: true });
+	const isEnterprise = isLicenseInformationLoading ? undefined : !!license;
 
 	const invalidateAppsCountQuery = useInvalidateAppsCountQueryCallback();
 	const invalidateLicenseQuery = useInvalidateLicense();
@@ -66,10 +74,13 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 
 	const marketplace = useQuery(
 		['marketplace', 'apps-marketplace', isAdminUser],
-		() => {
-			const result = AppClientOrchestratorInstance.getAppsFromMarketplace(isAdminUser);
+		async () => {
+			const result = await AppClientOrchestratorInstance.getAppsFromMarketplace(isAdminUser);
 			queryClient.invalidateQueries(['marketplace', 'apps-stored']);
-			return result;
+			if (result.error && typeof result.error === 'string') {
+				throw new Error(result.error);
+			}
+			return result.apps;
 		},
 		{
 			staleTime: Infinity,
@@ -95,25 +106,34 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 		},
 	);
 
-	const store = useQuery(['marketplace', 'apps-stored', instance.data, marketplace.data], () => storeQueryFunction(marketplace, instance), {
-		enabled: marketplace.isFetched && instance.isFetched,
-		keepPreviousData: true,
-	});
+	const { isLoading: isMarketplaceDataLoading, data: marketplaceData } = useQuery(
+		['marketplace', 'apps-stored', instance.data, marketplace.data],
+		() => storeQueryFunction(marketplace, instance),
+		{
+			enabled: marketplace.isFetched && instance.isFetched,
+			keepPreviousData: true,
+		},
+	);
 
-	const [marketplaceAppsData, installedAppsData, privateAppsData] = store.data || [];
-	const { isLoading } = store;
+	const [marketplaceAppsData, installedAppsData, privateAppsData] = marketplaceData || [];
 
 	return (
 		<AppsContext.Provider
 			children={children}
 			value={{
-				installedApps: getAppState(isLoading, installedAppsData),
-				marketplaceApps: getAppState(isLoading, marketplaceAppsData),
-				privateApps: getAppState(isLoading, privateAppsData),
+				installedApps: getAppState(isMarketplaceDataLoading, installedAppsData),
+				marketplaceApps: getAppState(
+					isMarketplaceDataLoading,
+					marketplaceAppsData,
+					marketplace.error instanceof Error ? marketplace.error : undefined,
+				),
+				privateApps: getAppState(isMarketplaceDataLoading, privateAppsData),
+
 				reload: async () => {
 					await Promise.all([queryClient.invalidateQueries(['marketplace'])]);
 				},
 				orchestrator: AppClientOrchestratorInstance,
+				privateAppsEnabled: (limits?.privateApps?.max ?? 0) !== 0,
 			}}
 		/>
 	);

@@ -1,24 +1,22 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
-import { useLayout, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnabled';
 import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';
 import SidebarHeader from './header';
+import BannerSection from './sections/BannerSection';
 import OmnichannelSection from './sections/OmnichannelSection';
-import StatusDisabledSection from './sections/StatusDisabledSection';
 
+// TODO unit test airgappedbanner
 const Sidebar = () => {
 	const showOmnichannel = useOmnichannelEnabled();
 
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
 	const { sidebar } = useLayout();
-	const [bannerDismissed, setBannerDismissed] = useSessionStorage('presence_cap_notifier', false);
-	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
 
 	const sidebarLink = css`
 		a {
@@ -41,7 +39,7 @@ const Sidebar = () => {
 			data-qa-opened={sidebar.isCollapsed ? 'false' : 'true'}
 		>
 			<SidebarHeader />
-			{presenceDisabled && !bannerDismissed && <StatusDisabledSection onDismiss={() => setBannerDismissed(true)} />}
+			<BannerSection />
 			{showOmnichannel && <OmnichannelSection />}
 			<SidebarRoomList />
 			<SidebarFooter />

@@ -1,7 +1,7 @@
 import { AudioPlayer, Box, Icon } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useState, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { userAgentMIMETypeFallback } from '../../../../lib/utils/userAgentMIMETypeFallback';
 import { FilePreviewType } from './FilePreview';
@@ -38,7 +38,7 @@ type MediaPreviewProps = {
 
 const MediaPreview = ({ file, fileType }: MediaPreviewProps): ReactElement => {
 	const [loaded, url] = useFileAsDataURL(file);
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	if (!loaded) {
 		return <PreviewSkeleton />;

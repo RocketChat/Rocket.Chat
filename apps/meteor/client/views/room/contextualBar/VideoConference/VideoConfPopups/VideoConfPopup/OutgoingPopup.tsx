@@ -1,5 +1,4 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
 	VideoConfPopupContent,
@@ -14,6 +13,7 @@ import {
 } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useVideoConfCapabilities, useVideoConfPreferences } from '../../../../../../contexts/VideoConfContext';
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
@@ -25,7 +25,7 @@ type OutgoingPopupProps = {
 };
 
 const OutgoingPopup = ({ room, onClose, id }: OutgoingPopupProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const videoConfPreferences = useVideoConfPreferences();
 	const { controllersConfig } = useVideoConfControllers(videoConfPreferences);
 	const capabilities = useVideoConfCapabilities();

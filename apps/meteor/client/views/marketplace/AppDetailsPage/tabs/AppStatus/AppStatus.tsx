@@ -7,7 +7,9 @@ import type { ReactElement } from 'react';
 import React, { useCallback, useState, memo } from 'react';
 import semver from 'semver';
 
+import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
+import AddonRequiredModal from '../../../AppsList/AddonRequiredModal';
 import type { appStatusSpanResponseProps } from '../../../helpers';
 import { appButtonProps, appMultiStatusProps } from '../../../helpers';
 import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstallationHandler';
@@ -40,6 +42,9 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const { data } = useIsEnterprise();
 	const isEnterprise = data?.isEnterprise ?? false;
+
+	const appAddon = app.addon;
+	const workspaceHasAddon = useHasLicenseModule(appAddon);
 
 	const statuses = appMultiStatusProps(app, isAppDetailsPage, context || '', isEnterprise);
 
@@ -81,8 +86,14 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const handleAcquireApp = useCallback(() => {
 		setLoading(true);
+
+		if (isAdminUser && appAddon && !workspaceHasAddon) {
+			const actionType = button?.action === 'update' ? 'update' : 'install';
+			return setModal(<AddonRequiredModal actionType={actionType} onDismiss={cancelAction} onInstallAnyway={appInstallationHandler} />);
+		}
+
 		appInstallationHandler();
-	}, [appInstallationHandler, setLoading]);
+	}, [button?.action, appAddon, appInstallationHandler, cancelAction, isAdminUser, setLoading, setModal, workspaceHasAddon]);
 
 	// @TODO we should refactor this to not use the label to determine the variant
 	const getStatusVariant = (status: appStatusSpanResponseProps) => {
@@ -151,7 +162,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 			{statuses?.map((status, index) => (
 				<Margins inlineEnd={index !== statuses.length - 1 ? 8 : undefined} key={index}>
-					<Tag variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
+					<Tag data-qa-type='app-status-tag' variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
 						{handleAppRequestsNumber(status)} {t(`${status.label}` as TranslationKey)}
 					</Tag>
 				</Margins>

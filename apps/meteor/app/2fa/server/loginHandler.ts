@@ -71,11 +71,11 @@ const recreateError = (errorDoc: Error | Meteor.Error): Error | Meteor.Error => 
 	return copyTo(errorDoc, error);
 };
 
-OAuth._retrievePendingCredential = function (key, ...args): string | Error | void {
+OAuth._retrievePendingCredential = async function (key, ...args): Promise<string | Error | void> {
 	const credentialSecret = args.length > 0 && args[0] !== undefined ? args[0] : undefined;
 	check(key, String);
 
-	const pendingCredential = OAuth._pendingCredentials.findOne({
+	const pendingCredential = await OAuth._pendingCredentials.findOneAsync({
 		key,
 		credentialSecret,
 	});
@@ -95,7 +95,7 @@ OAuth._retrievePendingCredential = function (key, ...args): string | Error | voi
 	const future = new Date();
 	future.setMinutes(future.getMinutes() + 2);
 
-	OAuth._pendingCredentials.update(
+	await OAuth._pendingCredentials.updateAsync(
 		{
 			_id: pendingCredential._id,
 		},

@@ -1,5 +1,6 @@
 import { Table, TableBody } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
+import type { ComponentType } from 'react';
 import React from 'react';
 
 import ImportOperationSummary from './ImportOperationSummary';
@@ -9,7 +10,7 @@ export default {
 	title: 'Admin/Import/ImportOperationSummary',
 	component: ImportOperationSummary,
 	subcomponents: {
-		ImportOperationSummarySkeleton,
+		ImportOperationSummarySkeleton: ImportOperationSummarySkeleton as ComponentType<any>,
 	},
 	parameters: {
 		layout: 'centered',
@@ -21,8 +22,8 @@ export default {
 			</Table>
 		),
 	],
-} as ComponentMeta<typeof ImportOperationSummary>;
+} satisfies Meta<typeof ImportOperationSummary>;
 
-export const Default: ComponentStory<typeof ImportOperationSummary> = (args) => <ImportOperationSummary {...args} />;
+export const Default: StoryFn<typeof ImportOperationSummary> = (args) => <ImportOperationSummary {...args} />;
 
-export const Skeleton: ComponentStory<typeof ImportOperationSummarySkeleton> = (args) => <ImportOperationSummarySkeleton {...args} />;
+export const Skeleton: StoryFn<typeof ImportOperationSummarySkeleton> = (args) => <ImportOperationSummarySkeleton {...args} />;

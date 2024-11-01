@@ -7,12 +7,14 @@ import React from 'react';
 import UserMenuHeader from '../UserMenuHeader';
 import { useAccountItems } from './useAccountItems';
 import { useStatusItems } from './useStatusItems';
+import { useVoipItemsSection } from './useVoipItemsSection';
 
 export const useUserMenu = (user: IUser) => {
 	const t = useTranslation();
 
 	const statusItems = useStatusItems();
 	const accountItems = useAccountItems();
+	const voipItemsSection = useVoipItemsSection();
 
 	const logout = useLogout();
 	const handleLogout = useMutableCallback(() => {
@@ -35,6 +37,7 @@ export const useUserMenu = (user: IUser) => {
 			title: t('Status'),
 			items: statusItems,
 		},
+		voipItemsSection,
 		{
 			title: t('Account'),
 			items: accountItems,
@@ -42,5 +45,5 @@ export const useUserMenu = (user: IUser) => {
 		{
 			items: [logoutItem],
 		},
-	];
+	].filter((section) => section !== undefined);
 };

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ddp-client",
-	"version": "0.3.8",
+	"version": "0.3.9-rc.6",
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@types/jest": "~29.5.13",
@@ -8,8 +8,8 @@
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
 		"jest-websocket-mock": "~2.5.0",
-		"typescript": "~5.5.4",
-		"ws": "^8.13.0"
+		"typescript": "~5.6.3",
+		"ws": "^8.18.0"
 	},
 	"peerDependencies": {
 		"@rocket.chat/emitter": "*"

@@ -1,8 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { IconButton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useVoipOutboundStates } from '../../../../contexts/CallContext';
 import { useDialModal } from '../../../../hooks/useDialModal';
@@ -14,7 +14,7 @@ const rcxCallDialButton = css`
 `;
 
 export const CallDialpadButton = ({ phoneNumber }: { phoneNumber: string }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { outBoundCallsAllowed, outBoundCallsEnabledForUser } = useVoipOutboundStates();
 	const { openDialModal } = useDialModal();

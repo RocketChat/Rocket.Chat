@@ -1,9 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Button, Callout, Option, Menu } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
 	ContextualbarHeader,
@@ -31,11 +31,11 @@ import { useRetentionPolicy } from '../../../room/hooks/useRetentionPolicy';
 
 type TeamsInfoProps = {
 	room: IRoom;
-	onClickHide: () => void;
-	onClickClose: () => void;
-	onClickLeave: () => void;
-	onClickEdit: () => void;
-	onClickDelete: () => void;
+	onClickHide?: () => void;
+	onClickClose?: () => void;
+	onClickLeave?: () => void;
+	onClickEdit?: () => void;
+	onClickDelete?: () => void;
 	onClickViewChannels: () => void;
 	onClickConvertToChannel?: () => void;
 };
@@ -50,7 +50,7 @@ const TeamsInfo = ({
 	onClickViewChannels,
 	onClickConvertToChannel,
 }: TeamsInfoProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const retentionPolicy = useRetentionPolicy(room);
 

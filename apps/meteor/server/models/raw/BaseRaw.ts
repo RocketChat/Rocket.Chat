@@ -1,3 +1,4 @@
+import { traceInstanceMethods } from '@rocket.chat/core-services';
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
 import type { Updater } from '@rocket.chat/models';
@@ -73,11 +74,11 @@ export abstract class BaseRaw<
 
 		this.col = this.db.collection(this.collectionName, options?.collection || {});
 
-		void this.createIndexes().catch((e) => {
-			console.warn(`Some indexes for collection '${this.collectionName}' could not be created:\n\t${e.message}`);
-		});
+		void this.createIndexes();
 
 		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
+
+		return traceInstanceMethods(this);
 	}
 
 	private pendingIndexes: Promise<void> | undefined;
@@ -93,7 +94,9 @@ export abstract class BaseRaw<
 				await this.pendingIndexes;
 			}
 
-			this.pendingIndexes = this.col.createIndexes(indexes) as unknown as Promise<void>;
+			this.pendingIndexes = this.col.createIndexes(indexes).catch((e) => {
+				console.warn(`Some indexes for collection '${this.collectionName}' could not be created:\n\t${e.message}`);
+			}) as unknown as Promise<void>;
 
 			void this.pendingIndexes.finally(() => {
 				this.pendingIndexes = undefined;

@@ -1,6 +1,6 @@
 import { Message } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { memo, ReactElement, useContext, useMemo, KeyboardEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
@@ -11,7 +11,7 @@ type ChannelMentionElementProps = {
 const handleChannelMention = (mention: string, withSymbol: boolean | undefined): string => (withSymbol ? `#${mention}` : mention);
 
 const ChannelMentionElement = ({ mention }: ChannelMentionElementProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { resolveChannelMention, onChannelMentionClick, showMentionSymbol } = useContext(MarkupInteractionContext);
 
 	const resolved = useMemo(() => resolveChannelMention?.(mention), [mention, resolveChannelMention]);

@@ -1,7 +1,7 @@
 // import { Menu, Option } from '@rocket.chat/fuselage';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { ModerationConsoleRowProps } from './ModerationConsoleTableRow';
 import useDeactivateUserAction from './hooks/useDeactivateUserAction';
@@ -10,7 +10,7 @@ import useDismissUserAction from './hooks/useDismissUserAction';
 import useResetAvatarAction from './hooks/useResetAvatarAction';
 
 const ModerationConsoleActions = ({ report, onClick }: Omit<ModerationConsoleRowProps, 'isDesktopOrLarger'>): JSX.Element => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { userId: uid, isUserDeleted } = report;
 
 	return (

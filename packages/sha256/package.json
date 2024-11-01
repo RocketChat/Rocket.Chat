@@ -14,15 +14,15 @@
 		"test": "jest"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.22.20",
-		"@babel/preset-env": "~7.22.20",
+		"@babel/core": "~7.25.8",
+		"@babel/preset-env": "~7.25.8",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@typescript-eslint/eslint-plugin": "~5.60.1",
 		"@typescript-eslint/parser": "~5.60.1",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
-		"typescript": "~5.5.4"
+		"typescript": "~5.6.3"
 	},
 	"volta": {
 		"extends": "../../package.json"
