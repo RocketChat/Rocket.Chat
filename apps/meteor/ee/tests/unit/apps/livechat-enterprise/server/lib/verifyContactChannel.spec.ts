@@ -10,7 +10,7 @@ const modelsMock = {
 		update: sinon.stub(),
 	},
 	LivechatInquiry: {
-		findOneReadyByContactId: sinon.stub(),
+		findOneReadyByRoomId: sinon.stub(),
 		saveQueueInquiry: sinon.stub(),
 	},
 };
@@ -29,7 +29,7 @@ describe('verifyContactChannel', () => {
 	beforeEach(() => {
 		modelsMock.LivechatContacts.updateContactChannel.reset();
 		modelsMock.LivechatRooms.update.reset();
-		modelsMock.LivechatInquiry.findOneReadyByContactId.reset();
+		modelsMock.LivechatInquiry.findOneReadyByRoomId.reset();
 		mergeContactsStub.reset();
 		saveQueueInquiryStub.reset();
 	});
@@ -39,7 +39,7 @@ describe('verifyContactChannel', () => {
 	});
 
 	it('should be able to verify a contact channel', async () => {
-		modelsMock.LivechatInquiry.findOneReadyByContactId.resolves({ _id: 'inquiryId' });
+		modelsMock.LivechatInquiry.findOneReadyByRoomId.resolves({ _id: 'inquiryId' });
 		await runVerifyContactChannel(() => undefined, {
 			contactId: 'contactId',
 			field: 'field',
@@ -66,7 +66,7 @@ describe('verifyContactChannel', () => {
 		expect(saveQueueInquiryStub.calledOnceWith({ _id: 'inquiryId' })).to.be.true;
 	});
 	it('should fail if no matching inquiry is found', async () => {
-		modelsMock.LivechatInquiry.findOneReadyByContactId.resolves(undefined);
+		modelsMock.LivechatInquiry.findOneReadyByRoomId.resolves(undefined);
 		await expect(
 			runVerifyContactChannel(() => undefined, {
 				contactId: 'contactId',
