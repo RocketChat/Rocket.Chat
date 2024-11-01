@@ -30,10 +30,9 @@ const ChatsTable = () => {
 	const chatsQuery = useChatsQuery();
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
-	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'priorityWeight' | 'department.name' | 'servedBy' | 'ts' | 'lm' | 'status'>(
-		'lm',
-		'desc',
-	);
+	const { sortBy, sortDirection, setSort } = useSort<
+		'fname' | 'priorityWeight' | 'source.type' | 'verified' | 'department.name' | 'servedBy' | 'ts' | 'lm' | 'status'
+	>('lm', 'desc');
 
 	const query = useMemo(
 		() => chatsQuery(filters, [sortBy, sortDirection], current, itemsPerPage),
@@ -48,7 +47,7 @@ const ChatsTable = () => {
 	const headers = (
 		<>
 			<GenericTableHeaderCell key='fname' direction={sortDirection} active={sortBy === 'fname'} onClick={setSort} sort='fname'>
-				{t('Contact_Name')}
+				{t('Name')}
 			</GenericTableHeaderCell>
 			{isPriorityEnabled && (
 				<GenericTableHeaderCell
@@ -63,6 +62,21 @@ const ChatsTable = () => {
 				</GenericTableHeaderCell>
 			)}
 			<GenericTableHeaderCell
+				key='source.type'
+				direction={sortDirection}
+				active={sortBy === 'source.type'}
+				onClick={setSort}
+				sort='source.type'
+			>
+				{t('Channel')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='servedBy' direction={sortDirection} active={sortBy === 'servedBy'} onClick={setSort} sort='servedBy'>
+				{t('Agent')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell w='x100' direction={sortDirection} active={sortBy === 'verified'} onClick={setSort} sort='verified'>
+				{t('Verification')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell
 				key='department.name'
 				direction={sortDirection}
 				active={sortBy === 'department.name'}
@@ -70,9 +84,6 @@ const ChatsTable = () => {
 				sort='department.name'
 			>
 				{t('Department')}
-			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='servedBy' direction={sortDirection} active={sortBy === 'servedBy'} onClick={setSort} sort='servedBy'>
-				{t('Served_By')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts'>
 				{t('Started_At')}
@@ -110,7 +121,7 @@ const ChatsTable = () => {
 			)}
 			{isSuccess && data?.rooms.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable fixed={false}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>{data?.rooms.map((room) => <ChatsTableRow key={room._id} {...room} />)}</GenericTableBody>
 					</GenericTable>

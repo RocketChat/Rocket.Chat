@@ -2,7 +2,7 @@ import type { IOmnichannelSource } from '@rocket.chat/core-typings';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const useOmnichannelSourceName = () => {
+export const useOmnichannelSource = () => {
 	const { t } = useTranslation();
 
 	const getSourceName = useCallback(
@@ -23,5 +23,12 @@ export const useOmnichannelSourceName = () => {
 		[t],
 	);
 
-	return getSourceName;
+	const getSourceLabel = useCallback(
+		(source: IOmnichannelSource) => {
+			return source?.destination || source?.label || t('No_app_label_provided');
+		},
+		[t],
+	);
+
+	return { getSourceName, getSourceLabel };
 };

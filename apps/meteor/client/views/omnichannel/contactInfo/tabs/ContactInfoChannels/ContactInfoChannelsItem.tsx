@@ -8,14 +8,14 @@ import React, { useState } from 'react';
 
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
-import { useOmnichannelSourceName } from '../../../hooks/useOmnichannelSourceName';
+import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import { useBlockChannel } from './useBlockChannel';
 
 type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel>;
 
 const ContactInfoChannelsItem = ({ visitorId, details, blocked, lastChat }: ContactInfoChannelsItemProps) => {
 	const t = useTranslation();
-	const getSourceName = useOmnichannelSourceName();
+	const { getSourceLabel, getSourceName } = useOmnichannelSource();
 	const getTimeFromNow = useTimeFromNow(true);
 
 	const [showButton, setShowButton] = useState(false);
@@ -67,7 +67,7 @@ const ContactInfoChannelsItem = ({ visitorId, details, blocked, lastChat }: Cont
 				)}
 			</Box>
 			<Box minHeight='x24' alignItems='center' mbs={4} display='flex' justifyContent='space-between'>
-				<Box>{details?.destination || details?.label || t('No_app_label_provided')}</Box>
+				<Box>{getSourceLabel(details)}</Box>
 				{showButton && <GenericMenu detached title={t('Options')} sections={[{ items: menuItems }]} tiny />}
 			</Box>
 		</Box>

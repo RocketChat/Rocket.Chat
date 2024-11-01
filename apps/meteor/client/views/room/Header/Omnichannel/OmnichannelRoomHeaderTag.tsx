@@ -1,7 +1,7 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import OmnichannelVerificationBadge from '../../../omnichannel/components/OmnichannelVerificationBadge';
+import OmnichannelVerificationTag from '../../../omnichannel/components/OmnichannelVerificationTag';
 import AdvancedContactModal from '../../../omnichannel/contactInfo/AdvancedContactModal';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 
@@ -10,7 +10,7 @@ const OmnichannelRoomHeaderTag = () => {
 	const { verified } = useOmnichannelRoom();
 
 	return (
-		<OmnichannelVerificationBadge verified={verified} onClick={() => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />)} />
+		<OmnichannelVerificationTag verified={verified} onClick={() => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />)} />
 	);
 };
 

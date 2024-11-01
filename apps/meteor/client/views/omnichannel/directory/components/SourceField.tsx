@@ -7,7 +7,7 @@ import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/Omnichannel
 import Field from '../../components/Field';
 import Info from '../../components/Info';
 import Label from '../../components/Label';
-import { useOmnichannelSourceName } from '../../hooks/useOmnichannelSourceName';
+import { useOmnichannelSource } from '../../hooks/useOmnichannelSource';
 
 type SourceFieldProps = {
 	room: IOmnichannelRoom;
@@ -15,7 +15,7 @@ type SourceFieldProps = {
 
 const SourceField = ({ room }: SourceFieldProps) => {
 	const { t } = useTranslation();
-	const getSourceName = useOmnichannelSourceName();
+	const { getSourceName } = useOmnichannelSource();
 
 	const defaultTypesVisitorData: {
 		widget: string | undefined;

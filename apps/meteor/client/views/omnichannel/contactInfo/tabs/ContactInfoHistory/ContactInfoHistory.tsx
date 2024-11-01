@@ -10,7 +10,7 @@ import { Virtuoso } from 'react-virtuoso';
 import { ContextualbarContent, ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../../components/CustomScrollbars';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
-import { useOmnichannelSourceName } from '../../../hooks/useOmnichannelSourceName';
+import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import AdvancedContactModal from '../../AdvancedContactModal';
 import ContactInfoHistoryItem from './ContactInfoHistoryItem';
 
@@ -26,7 +26,7 @@ const ContactInfoHistory = ({ contactId, setChatId }: ContactInfoHistoryProps) =
 	const setModal = useSetModal();
 	const [type, setType] = useLocalStorage<string>('contact-history-type', 'all');
 	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
-	const getSourceName = useOmnichannelSourceName();
+	const { getSourceName } = useOmnichannelSource();
 
 	const getContactHistory = useEndpoint('GET', '/v1/omnichannel/contacts.history');
 	const { data, isLoading, isError } = useQuery(['getContactHistory', contactId, type], () =>
