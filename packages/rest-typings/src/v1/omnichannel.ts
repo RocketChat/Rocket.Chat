@@ -1436,7 +1436,6 @@ export const isGETOmnichannelContactHistoryProps = ajv.compile<GETOmnichannelCon
 
 type GETOmnichannelContactsChannelsProps = {
 	contactId: string;
-	source?: string;
 };
 
 const GETOmnichannelContactsChannelsSchema = {
