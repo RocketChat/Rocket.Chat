@@ -10,7 +10,7 @@ const defaultOptions: LivenessManager['options'] = {
     pingRequestTimeout: 10000,
     pingFrequencyInMS: 10000,
     consecutiveTimeoutLimit: 4,
-    maxRestarts: 3,
+    maxRestarts: Infinity,
 };
 
 /**
