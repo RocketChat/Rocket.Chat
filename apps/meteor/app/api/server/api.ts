@@ -878,7 +878,18 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 						if (!(error instanceof Meteor.Error)) {
 							return self.internalError();
 						}
-						return self.unauthorized();
+
+						const result = self.unauthorized();
+
+						if (!applyBreakingChanges) {
+							Object.assign(result.body, {
+								status: 'error',
+								error: error.error,
+								details: error.details,
+								message: error.reason || error.message,
+							});
+						}
+						return result;
 					}
 				},
 			},
