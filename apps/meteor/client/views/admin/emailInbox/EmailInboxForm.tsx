@@ -46,7 +46,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 		handleSubmit,
 		formState: { errors, isDirty },
 	} = useForm({
-		defaultValues: {
+		values: {
 			active: inboxData?.active ?? true,
 			name: inboxData?.name,
 			email: inboxData?.email,

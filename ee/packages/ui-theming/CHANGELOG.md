@@ -1,5 +1,11 @@
 # @rocket.chat/ui-theming
 
+## 0.4.0
+
+### Minor Changes
+
+- ([#33592](https://github.com/RocketChat/Rocket.Chat/pull/33592)) Adds ability to collapse/expand sidebar groups
+
 ## 0.4.0-rc.0
 
 ### Minor Changes

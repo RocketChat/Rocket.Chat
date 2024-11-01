@@ -51,16 +51,20 @@ export function tracerSpan<F extends (span?: Span) => ReturnType<F>>(
 		try {
 			const result = fn(span);
 			if (result instanceof Promise) {
-				result.catch((err) => {
-					span.recordException(err);
-					span.setStatus({
-						code: SpanStatusCode.ERROR,
-						message: err.message,
-					});
-				});
+				result
+					.catch((err) => {
+						span.recordException(err);
+						span.setStatus({
+							code: SpanStatusCode.ERROR,
+							message: err.message,
+						});
+					})
+					.finally(() => span.end());
 
 				return result;
 			}
+
+			span.end();
 			return result;
 		} catch (err: any) {
 			span.recordException(err);
@@ -68,9 +72,8 @@ export function tracerSpan<F extends (span?: Span) => ReturnType<F>>(
 				code: SpanStatusCode.ERROR,
 				message: err.message,
 			});
-			throw err;
-		} finally {
 			span.end();
+			throw err;
 		}
 	};
 

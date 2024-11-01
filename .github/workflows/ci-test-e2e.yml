@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-20.04
     env:
       RC_DOCKERFILE: ${{ inputs.rc-dockerfile }}.${{ (matrix.mongodb-version == '7.0' && 'debian' && false) || 'alpine' }}
-      RC_DOCKER_TAG: ${{ inputs.rc-docker-tag }}-${{ (matrix.mongodb-version == '7.0' && 'debian' && false) || 'alpine' }}
+      RC_DOCKER_TAG: ${{ inputs.rc-docker-tag }}.${{ (matrix.mongodb-version == '7.0' && 'debian' && false) || 'alpine' }}
 
     strategy:
       fail-fast: false
