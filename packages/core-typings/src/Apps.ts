@@ -95,6 +95,7 @@ export type App = {
 	version: string;
 	versionIncompatible?: boolean;
 	addon?: ExternalModuleName;
+	installedAddon?: ExternalModuleName;
 	price: number;
 	purchaseType: PurchaseType;
 	pricingPlans: AppPricingPlan[];

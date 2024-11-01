@@ -1,6 +1,6 @@
 import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
-import { LivechatContacts } from '@rocket.chat/models';
+import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
 
 import { ContactMerger } from '../../../app/livechat/server/lib/contacts/ContactMerger';
 import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
@@ -34,6 +34,9 @@ export const runMergeContacts = async (_next: any, contactId: string, visitorId:
 			originalContact._id
 		}`,
 	);
+
+	await LivechatRooms.updateMany({ 'v.contactId': { $in: similarContactIds } }, { $set: { 'v.contactId': contactId } });
+
 	return LivechatContacts.findOneById(contactId);
 };
 

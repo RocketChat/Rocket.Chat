@@ -47,6 +47,9 @@ export const serveAvatarFile = (file: IUpload, req: IIncomingMessage, res: Serve
 
 export const getAvatarSizeFromRequest = (req: IIncomingMessage) => {
 	const requestSize = req.query.size && parseInt(req.query.size);
+	if (!requestSize) {
+		return;
+	}
 	return Math.min(Math.max(requestSize, MIN_SVG_AVATAR_SIZE), MAX_SVG_AVATAR_SIZE);
 };
 export const serveSvgAvatarInRequestedFormat = ({
