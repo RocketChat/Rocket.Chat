@@ -322,7 +322,6 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 	}
 
 	public forbidden<T>(msg?: T): ForbiddenResult<T> {
-		Info.version;
 		return {
 			statusCode: 403,
 			body: {
@@ -712,19 +711,21 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 								responseTime: Date.now() - startTime,
 							});
 						} catch (e: any) {
-							switch (e.error) {
-								case 'error-too-many-requests':
-									result = API.v1.tooManyRequests(typeof e === 'string' ? e : e.message);
-									break;
-								case 'error-unauthorized':
-									result = API.v1.unauthorized(typeof e === 'string' ? e : e.message);
-									break;
-								case 'error-forbidden':
-									result = API.v1.forbidden(typeof e === 'string' ? e : e.message);
-									break;
-								default:
-									result = API.v1.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
-							}
+							result = ((e: any) => {
+								switch (e.error) {
+									case 'error-too-many-requests':
+										return API.v1.tooManyRequests(typeof e === 'string' ? e : e.message);
+									case 'error-unauthorized':
+										return API.v1.unauthorized(typeof e === 'string' ? e : e.message);
+									case 'error-forbidden':
+										if (applyBreakingChanges) {
+											return API.v1.forbidden(typeof e === 'string' ? e : e.message);
+										}
+										return API.v1.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+									default:
+										return API.v1.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+								}
+							})(e);
 
 							log.http({
 								err: e,
