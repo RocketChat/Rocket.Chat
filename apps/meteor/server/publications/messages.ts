@@ -212,6 +212,10 @@ Meteor.methods<ServerMethods>({
 			);
 		}
 
+		if (!type && !lastUpdate) {
+			throw new Meteor.Error('error-param-required', 'The "type" or "lastUpdate" parameters must be provided');
+		}
+
 		const hasCursorPagination = !!((next || previous) && count !== null && type);
 
 		if (!hasCursorPagination && !lastUpdate) {
@@ -227,7 +231,7 @@ Meteor.methods<ServerMethods>({
 
 		const response = lastUpdate
 			? await handleWithoutPagination(rid, lastUpdate)
-			: await handleCursorPagination(type ?? 'UPDATED', rid, count, next, previous);
+			: await handleCursorPagination(type, rid, count, next, previous);
 
 		return response;
 	},
