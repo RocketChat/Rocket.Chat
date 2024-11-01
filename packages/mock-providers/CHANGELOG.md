@@ -1,5 +1,16 @@
 # @rocket.chat/mock-providers
 
+## 0.1.4
+
+### Patch Changes
+
+- ([#33346](https://github.com/RocketChat/Rocket.Chat/pull/33346)) Implements integration with FreeSwitch to enable VoIP calls for team collaboration workspaces
+
+- <details><summary>Updated dependencies [c5b0c98803, 2806cb5d3e, 34ed9ad646, bcacbb1cee, 9bcb802fdc, f33c07ebb8, 9cf079721b, debd3ffa22, e3629e065b, 03d148524b, 4aa731d6e9, 53cc1111f8, e3dac4aab6, 5acb59bb39, 31eb47f573]:</summary>
+
+  - @rocket.chat/i18n@1.0.0
+  </details>
+
 ## 0.1.4-rc.0
 
 ### Patch Changes

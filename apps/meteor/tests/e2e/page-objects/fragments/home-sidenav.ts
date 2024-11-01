@@ -61,7 +61,7 @@ export class HomeSidenav {
 
 	// Note: this is different from openChat because queued chats are not searchable
 	getQueuedChat(name: string): Locator {
-		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first();
+		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: new RegExp(`^${name}$`) }).first();
 	}
 
 	get accountProfileOption(): Locator {
