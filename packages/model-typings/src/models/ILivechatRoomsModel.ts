@@ -5,6 +5,7 @@ import type {
 	ISetting,
 	ILivechatVisitor,
 	MACStats,
+    ILivechatContactVisitorAssociation,
 } from '@rocket.chat/core-typings';
 import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult, Filter, UpdateOptions } from 'mongodb';
 
@@ -178,6 +179,10 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		options?: FindOptions<IOmnichannelRoom>,
 		extraQuery?: Filter<IOmnichannelRoom>,
 	): FindCursor<IOmnichannelRoom>;
+	findOneOpenByContactChannelVisitor(
+		association: ILivechatContactVisitorAssociation,
+		options?: FindOptions<IOmnichannelRoom>,
+	): Promise<IOmnichannelRoom | null>;
 	findOneOpenByVisitorToken(visitorToken: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
 	findOneOpenByVisitorTokenAndDepartmentIdAndSource(
 		visitorToken: string,
@@ -265,9 +270,9 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		visitorToken: string,
 		options?: Omit<FindOptions<IOmnichannelRoom>, 'sort' | 'limit'>,
 	): Promise<T | null>;
-	setContactIdByVisitorIdOrToken(contactId: string, visitorId: string, visitorToken: string): Promise<UpdateResult | Document>;
-	findClosedRoomsByVisitorsAndSourcePaginated(params: {
-		visitorsIds: string[];
+	setContactIdByVisitorAssociation(contactId: string, visitor: ILivechatContactVisitorAssociation): Promise<UpdateResult | Document>;
+	findClosedRoomsByContactAndSourcePaginated(params: {
+		contactIds: string[];
 		source?: string;
 		options?: FindOptions;
 	}): FindPaginated<FindCursor<IOmnichannelRoom>>;

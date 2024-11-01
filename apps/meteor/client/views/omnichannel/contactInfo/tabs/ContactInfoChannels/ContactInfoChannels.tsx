@@ -25,7 +25,10 @@ const ContactInfoChannels = ({ channels }: ContactInfoChannelsProps) => {
 			<ContextualbarScrollableContent p={0}>
 				<Box>
 					{channels.map((channel) => (
-						<ContactInfoChannelsItem key={channel.visitorId} {...channel} />
+						<ContactInfoChannelsItem
+							key={`id=${channel.visitor.visitorId};type=${channel.visitor.source.type};id=${channel.visitor.source.id || ''}`}
+							{...channel}
+						/>
 					))}
 				</Box>
 			</ContextualbarScrollableContent>

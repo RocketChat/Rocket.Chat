@@ -66,6 +66,7 @@ declare module '@rocket.chat/model-typings' {
 		getConversationsWithoutTagsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number>;
 		getTotalConversationsWithoutAgentsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number>;
 		getTotalConversationsWithoutDepartmentBetweenDates(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number>;
+		replaceContactId(oldContactId: string, newContactId: string): Promise<UpdateResult | Document>;
 	}
 }
 
@@ -725,5 +726,15 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 			},
 			...extraQuery,
 		});
+	}
+
+	replaceContactId(oldContactId: string, newContactId: string): Promise<UpdateResult | Document> {
+		return this.updateMany(
+			{
+				't': 'l',
+				'v.contactId': oldContactId,
+			},
+			{ $set: { 'v.contactId': newContactId } },
+		);
 	}
 }

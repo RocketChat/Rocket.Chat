@@ -12,7 +12,6 @@ import { getVisitorNewestSource } from './getVisitorNewestSource';
 export async function migrateVisitorToContactId(
 	visitor: ILivechatVisitor,
 	source?: IOmnichannelSource,
-	useVisitorId = false,
 ): Promise<ILivechatContact['_id'] | null> {
 	// If we haven't received any source and the visitor doesn't have any room yet, then there's no need to migrate it
 	const visitorSource = source || (await getVisitorNewestSource(visitor));
@@ -24,15 +23,18 @@ export async function migrateVisitorToContactId(
 	const existingContact = await LivechatContacts.findContactMatchingVisitor(visitor);
 	if (!existingContact) {
 		Livechat.logger.debug(`Creating a new contact for existing visitor ${visitor._id}`);
-		return createContactFromVisitor(visitor, visitorSource, useVisitorId);
+		return createContactFromVisitor(visitor, visitorSource);
 	}
 
 	// There is already an existing contact with no linked visitors and matching this visitor's phone or email, so let's use it
 	Livechat.logger.debug(`Adding channel to existing contact ${existingContact._id}`);
-	await ContactMerger.mergeVisitorIntoContact(visitor, existingContact);
+	await ContactMerger.mergeVisitorIntoContact(visitor, existingContact, visitorSource);
 
-	// Update all existing rooms of that visitor to add the contactId to them
-	await LivechatRooms.setContactIdByVisitorIdOrToken(existingContact._id, visitor._id, visitor.token);
+	// Update all existing rooms matching the visitor id and source to set the contactId to them
+	await LivechatRooms.setContactIdByVisitorAssociation(existingContact._id, {
+		visitorId: visitor._id,
+		source: visitorSource,
+	});
 
 	return existingContact._id;
 }

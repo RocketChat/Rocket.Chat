@@ -2,6 +2,7 @@ import type {
 	AtLeast,
 	ILivechatContact,
 	ILivechatContactChannel,
+	ILivechatContactVisitorAssociation,
 	ILivechatVisitor,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
@@ -130,29 +131,44 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return this.findOne(query);
 	}
 
-	async findOneByVisitorId<T extends Document = ILivechatContact>(
-		visitorId: ILivechatVisitor['_id'],
+	private makeQueryForVisitor(visitor: ILivechatContactVisitorAssociation): Filter<ILivechatContact> {
+		return {
+			'channels.visitor.visitorId': visitor.visitorId,
+			'channels.visitor.source.type': visitor.source.type,
+			...(visitor.source.id ? { 'channels.visitor.source.id': visitor.source.id } : {}),
+		};
+	}
+
+	async findOneByVisitor<T extends Document = ILivechatContact>(
+		visitor: ILivechatContactVisitorAssociation,
 		options: FindOptions<ILivechatContact> = {},
 	): Promise<T | null> {
-		const query = {
-			'channels.visitorId': visitorId,
-		};
-		return this.findOne<T>(query, options);
+		return this.findOne<T>(this.makeQueryForVisitor(visitor), options);
 	}
 
 	async addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void> {
 		await this.updateOne({ _id: contactId }, { $push: { channels: channel } });
 	}
 
-	async updateLastChatById(contactId: string, visitorId: string, lastChat: ILivechatContact['lastChat']): Promise<UpdateResult> {
-		return this.updateOne({ '_id': contactId, 'channels.visitorId': visitorId }, { $set: { lastChat, 'channels.$.lastChat': lastChat } });
+	async updateLastChatById(
+		contactId: string,
+		visitor: ILivechatContactVisitorAssociation,
+		lastChat: ILivechatContact['lastChat'],
+	): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				...this.makeQueryForVisitor(visitor),
+				_id: contactId,
+			},
+			{ $set: { lastChat, 'channels.$.lastChat': lastChat } },
+		);
 	}
 
-	async isChannelBlocked(visitorId: ILivechatVisitor['_id']): Promise<boolean> {
+	async isChannelBlocked(visitor: ILivechatContactVisitorAssociation): Promise<boolean> {
 		return Boolean(
 			await this.findOne(
 				{
-					'channels.visitorId': visitorId,
+					...this.makeQueryForVisitor(visitor),
 					'channels.blocked': true,
 				},
 				{ projection: { _id: 1 } },
@@ -161,23 +177,18 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 	}
 
 	async updateContactChannel(
-		visitorId: ILivechatVisitor['_id'],
+		visitor: ILivechatContactVisitorAssociation,
 		data: Partial<ILivechatContactChannel>,
 		contactData?: Partial<Omit<ILivechatContact, 'channels'>>,
 	): Promise<UpdateResult> {
-		return this.updateOne(
-			{
-				'channels.visitorId': visitorId,
+		return this.updateOne(this.makeQueryForVisitor(visitor), {
+			$set: {
+				...contactData,
+				...(Object.fromEntries(
+					Object.keys(data).map((key) => [`channels.$.${key}`, data[key as keyof ILivechatContactChannel]]),
+				) as UpdateFilter<ILivechatContact>['$set']),
 			},
-			{
-				$set: {
-					...contactData,
-					...(Object.fromEntries(
-						Object.keys(data).map((key) => [`channels.$.${key}`, data[key as keyof ILivechatContactChannel]]),
-					) as UpdateFilter<ILivechatContact>['$set']),
-				},
-			},
-		);
+		});
 	}
 
 	async findSimilarVerifiedContacts(
@@ -194,5 +205,11 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			},
 			options,
 		).toArray();
+	}
+
+	findAllByVisitorId(visitorId: string): FindCursor<ILivechatContact> {
+		return this.find({
+			'channels.visitor.visitorId': visitorId,
+		});
 	}
 }
