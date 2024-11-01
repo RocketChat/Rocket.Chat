@@ -38,7 +38,8 @@ export type ForbiddenResult<T> = {
 	statusCode: 403;
 	body: {
 		success: false;
-		error: T | 'forbidden';
+		// TODO: MAJOR remove 'unauthorized'
+		error: T | 'forbidden' | 'unauthorized';
 	};
 };
 

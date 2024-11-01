@@ -12,6 +12,7 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import type { Request, Response } from 'meteor/rocketchat:restivus';
 import { Restivus } from 'meteor/rocketchat:restivus';
+import semver from 'semver';
 import _ from 'underscore';
 
 import type { PermissionsPayload } from './api.helpers';
@@ -37,9 +38,15 @@ import { hasPermissionAsync } from '../../authorization/server/functions/hasPerm
 import { notifyOnUserChangeAsync } from '../../lib/server/lib/notifyListener';
 import { metrics } from '../../metrics/server';
 import { settings } from '../../settings/server';
+import { Info } from '../../utils/rocketchat.info';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 
 const logger = new Logger('API');
+
+// We have some breaking changes planned to the API.
+// To avoid conflicts or missing something during the period we are adopting a 'feature flag approach'
+// TODO: MAJOR check if this is still needed
+const applyBreakingChanges = semver.gte(Info.version, '8.0.0');
 
 interface IAPIProperties {
 	useDefaultAuth: boolean;
@@ -315,11 +322,15 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 	}
 
 	public forbidden<T>(msg?: T): ForbiddenResult<T> {
+		Info.version;
 		return {
 			statusCode: 403,
 			body: {
 				success: false,
-				error: msg || 'forbidden',
+				// TODO: MAJOR remove 'unauthorized' in favor of 'forbidden'
+				// because of reasons beyond my control we were used to send `unauthorized` to 403 cases, to avoid a breaking change we just adapted here
+				// but thanks to the semver check tests should break as soon we bump to a new version
+				error: msg || applyBreakingChanges ? 'forbidden' : 'unauthorized',
 			},
 		};
 	}
@@ -590,11 +601,13 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 							if (!this.user && !settings.get('Accounts_AllowAnonymousRead')) {
 								const result = api.unauthorized('You must be logged in to do this.');
 								// compatibility with the old API
-								Object.assign(result.body, {
-									status: 'error',
-									message: 'You must be logged in to do this.',
-								});
-
+								// TODO: MAJOR
+								if (!applyBreakingChanges) {
+									Object.assign(result.body, {
+										status: 'error',
+										message: 'You must be logged in to do this.',
+									});
+								}
 								return result;
 							}
 						}
@@ -624,18 +637,27 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 									throw new Meteor.Error('invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
 								}
 							}
-							if (
-								shouldVerifyPermissions &&
-								(!this.userId ||
+							if (shouldVerifyPermissions) {
+								if (!this.userId) {
+									if (applyBreakingChanges) {
+										throw new Meteor.Error('error-unauthorized', 'You must be logged in to do this');
+									}
+									throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action');
+								}
+								if (
 									!(await checkPermissionsForInvocation(
 										this.userId,
 										_options.permissionsRequired as PermissionsPayload,
 										this.request.method,
-									)))
-							) {
-								throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
-									permissions: _options.permissionsRequired,
-								});
+									))
+								) {
+									if (applyBreakingChanges) {
+										throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action');
+									}
+									throw new Meteor.Error('error-forbidden', 'User does not have the permissions required for this action', {
+										permissions: _options.permissionsRequired,
+									});
+								}
 							}
 
 							const invocation = new DDPCommon.MethodInvocation({
@@ -690,18 +712,19 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 								responseTime: Date.now() - startTime,
 							});
 						} catch (e: any) {
-							const apiMethod: string =
-								{
-									'error-too-many-requests': 'tooManyRequests',
-									'error-unauthorized': 'unauthorized',
-								}[e.error as string] || 'failure';
-
-							result = (API.v1 as Record<string, any>)[apiMethod](
-								typeof e === 'string' ? e : e.message,
-								e.error,
-								process.env.TEST_MODE ? e.stack : undefined,
-								e,
-							);
+							switch (e.error) {
+								case 'error-too-many-requests':
+									result = API.v1.tooManyRequests(typeof e === 'string' ? e : e.message);
+									break;
+								case 'error-unauthorized':
+									result = API.v1.unauthorized(typeof e === 'string' ? e : e.message);
+									break;
+								case 'error-forbidden':
+									result = API.v1.forbidden(typeof e === 'string' ? e : e.message);
+									break;
+								default:
+									result = API.v1.failure(typeof e === 'string' ? e : e.message);
+							}
 
 							log.http({
 								err: e,
