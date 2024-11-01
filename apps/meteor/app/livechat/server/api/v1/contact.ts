@@ -161,11 +161,11 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-contact'], validateParams: isGETOmnichannelContactsSearchProps },
 	{
 		async get() {
-			const { searchText } = this.queryParams;
+			const query = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 
-			const result = await getContacts({ searchText, offset, count, sort });
+			const result = await getContacts({ ...query, offset, count, sort });
 
 			return API.v1.success(result);
 		},

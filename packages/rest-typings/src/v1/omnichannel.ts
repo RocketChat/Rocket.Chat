@@ -1379,6 +1379,7 @@ export const isGETOmnichannelContactsProps = ajv.compile<GETOmnichannelContactsP
 
 type GETOmnichannelContactsSearchProps = PaginatedRequest<{
 	searchText: string;
+	unknown?: boolean;
 }>;
 
 const GETOmnichannelContactsSearchSchema = {
@@ -1396,6 +1397,9 @@ const GETOmnichannelContactsSearchSchema = {
 		searchText: {
 			type: 'string',
 		},
+		unknown: {
+			type: 'boolean',
+		},
 	},
 	required: [],
 	additionalProperties: false,
@@ -1406,7 +1410,6 @@ export const isGETOmnichannelContactsSearchProps = ajv.compile<GETOmnichannelCon
 type GETOmnichannelContactHistoryProps = PaginatedRequest<{
 	contactId: string;
 	source?: string;
-	unknown?: boolean;
 }>;
 
 const GETOmnichannelContactHistorySchema = {
@@ -1417,9 +1420,6 @@ const GETOmnichannelContactHistorySchema = {
 		},
 		source: {
 			type: 'string',
-		},
-		unknown: {
-			type: 'boolean',
 		},
 		count: {
 			type: 'number',
