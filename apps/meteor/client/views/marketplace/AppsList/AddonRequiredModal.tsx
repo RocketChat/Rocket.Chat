@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { GET_ADDONS_LINK } from '../../admin/subscription/utils/links';
 
-export type AddonActionType = 'install' | 'enable';
+export type AddonActionType = 'install' | 'enable' | 'update';
 
 type AddonRequiredModalProps = {
 	actionType: AddonActionType;
@@ -29,7 +29,9 @@ const AddonRequiredModal = ({ actionType, onDismiss, onInstallAnyway }: AddonReq
 			<Modal.Content>{t('Add-on_required_modal_enable_content')}</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
-					{actionType === 'install' && <Button onClick={onInstallAnyway}>{t('Install_anyway')}</Button>}
+					{['install', 'update'].includes(actionType) && (
+						<Button onClick={onInstallAnyway}>{actionType === 'install' ? t('Install_anyway') : t('Update_anyway')}</Button>
+					)}
 					<Button primary onClick={() => handleOpenLink(GET_ADDONS_LINK)}>
 						{t('Contact_sales')}
 					</Button>
