@@ -110,7 +110,7 @@ process.on('unhandledRejection', (error) => {
 	console.error('Future node.js versions will automatically exit the process');
 	console.error('=================================');
 
-	if (process.env.NODE_ENV === 'development' || process.env.EXIT_UNHANDLEDPROMISEREJECTION) {
+	if (process.env.TEST_MODE || process.env.NODE_ENV === 'development' || process.env.EXIT_UNHANDLEDPROMISEREJECTION) {
 		process.exit(1);
 	}
 });
@@ -125,4 +125,8 @@ process.on('uncaughtException', async (error) => {
 	console.error('===========================');
 
 	void errorHandler.trackError(error.message, error.stack);
+
+	if (process.env.TEST_MODE || process.env.NODE_ENV === 'development' || process.env.EXIT_UNHANDLEDPROMISEREJECTION) {
+		process.exit(1);
+	}
 });

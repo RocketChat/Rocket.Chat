@@ -55,7 +55,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 	return (
 		<>
 			<ContextualbarHeader>
-				<ContextualbarIcon name='info-circled' />
+				<ContextualbarIcon name='user' />
 				<ContextualbarTitle>{t('Contact')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>

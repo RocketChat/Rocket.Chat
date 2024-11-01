@@ -18,7 +18,7 @@ import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/Omnichan
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { usePreventPropagation } from '../../../../../hooks/usePreventPropagation';
 import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
-import { useOmnichannelSourceName } from '../../../hooks/useOmnichannelSourceName';
+import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import AdvancedContactModal from '../../AdvancedContactModal';
 
 type ContactInfoHistoryItemProps = Serialized<ContactSearchChatsResult> & {
@@ -31,7 +31,7 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 	const setModal = useSetModal();
 	const preventPropagation = usePreventPropagation();
 	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
-	const getSourceName = useOmnichannelSourceName();
+	const { getSourceName } = useOmnichannelSource();
 
 	const customClass = css`
 		&:hover {

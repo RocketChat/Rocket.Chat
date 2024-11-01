@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-kit",
-	"version": "0.37.0-rc.0",
+	"version": "0.37.0",
 	"description": "Interactive UI elements for Rocket.Chat Apps",
 	"homepage": "https://rocket.chat",
 	"author": {
@@ -56,7 +56,7 @@
 		"typescript": "~5.6.3"
 	},
 	"dependencies": {
-		"typia": "~6.9.0"
+		"typia": "~6.11.3"
 	},
 	"peerDependencies": {
 		"@rocket.chat/icons": "*"
