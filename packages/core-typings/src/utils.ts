@@ -34,3 +34,11 @@ export type DeepWritable<T> = T extends (...args: any) => any
 		};
 
 export type DistributiveOmit<T, K extends keyof any> = T extends any ? Omit<T, K> : never;
+
+export type ValueOfUnion<T, K extends KeyOfEach<T>> = T extends any ? (K extends keyof T ? T[K] : undefined) : undefined;
+
+export type ValueOfOptional<T, K extends KeyOfEach<T>> = T extends undefined ? undefined : T extends object ? ValueOfUnion<T, K> : null;
+
+export type DeepPartial<T> = {
+	[P in keyof T]?: T[P] extends (infer U)[] ? DeepPartial<U>[] : T[P] extends object | undefined ? DeepPartial<T[P]> : T[P];
+};
