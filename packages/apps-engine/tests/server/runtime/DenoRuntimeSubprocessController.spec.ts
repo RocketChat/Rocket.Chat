@@ -4,14 +4,14 @@ import * as path from 'path';
 import { TestFixture, Setup, Expect, AsyncTest, SpyOn, Any, AsyncSetupFixture, Teardown } from 'alsatian';
 import type { SuccessObject } from 'jsonrpc-lite';
 
+import { AppStatus } from '../../../src/definition/AppStatus';
 import { UserStatusConnection, UserType } from '../../../src/definition/users';
 import type { AppManager } from '../../../src/server/AppManager';
 import type { IParseAppPackageResult } from '../../../src/server/compiler';
 import { AppAccessorManager, AppApiManager } from '../../../src/server/managers';
 import { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
+import type { IAppStorageItem } from '../../../src/server/storage';
 import { TestInfastructureSetup } from '../../test-data/utilities';
-import { IAppStorageItem } from '../../../src/server/storage';
-import { AppStatus } from '../../../src/definition/AppStatus';
 
 @TestFixture()
 export class DenuRuntimeSubprocessControllerTestFixture {
