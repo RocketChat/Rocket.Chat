@@ -759,6 +759,8 @@ describe('LIVECHAT - contacts', () => {
 
 	describe('[GET] omnichannel/contacts.search', () => {
 		let contactId: string;
+		let visitor: ILivechatVisitor;
+		let room: IOmnichannelRoom;
 		const contact = {
 			name: faker.person.fullName(),
 			emails: [faker.internet.email().toLowerCase()],
@@ -770,10 +772,14 @@ describe('LIVECHAT - contacts', () => {
 			await updatePermission('view-livechat-contact', ['admin']);
 			const { body } = await request.post(api('omnichannel/contacts')).set(credentials).send(contact);
 			contactId = body.contactId;
+			visitor = await createVisitor();
+			room = await createLivechatRoom(visitor.token);
 		});
 
 		after(async () => {
 			await restorePermissionToRoles('view-livechat-contact');
+			await closeOmnichannelRoom(room._id);
+			await deleteVisitor(visitor._id);
 		});
 
 		it('should be able to list all contacts', async () => {
@@ -786,6 +792,24 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.count).to.be.an('number');
 			expect(res.body.total).to.be.an('number');
 			expect(res.body.offset).to.be.an('number');
+		});
+
+		it('should return only known contacts by default', async () => {
+			const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials);
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contacts).to.be.an('array');
+			expect(res.body.contacts[0].unknown).to.be.false;
+		});
+
+		it('should be able to filter contacts by unknown field', async () => {
+			const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials).query({ unknown: true });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contacts).to.be.an('array');
+			expect(res.body.contacts[0].unknown).to.be.true;
 		});
 
 		it('should return only contacts that match the searchText using email', async () => {
