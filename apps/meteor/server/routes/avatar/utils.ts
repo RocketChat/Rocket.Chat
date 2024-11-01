@@ -124,8 +124,8 @@ export async function userCanAccessAvatar({ headers = {}, query = {} }: IIncomin
 const getFirstLetter = (name: string, regExp: RegExp) => {
 	const pattern = regExp || defaultPattern;
 	const sanitizedName = name.replace(/[&<>]/g, '');
-	return sanitizedName.replace(pattern, '').substr(0, 1).toUpperCase();
-}
+	return sanitizedName.replace(pattern, '').substring(0, 1).toUpperCase();
+};
 
 export const renderSVGLetters = (roomOrUsername: string, viewSize = 200, req?: IIncomingMessage) => {
 	let color = '';
@@ -137,8 +137,10 @@ export const renderSVGLetters = (roomOrUsername: string, viewSize = 200, req?: I
 	} else {
 		const settingsRegExp = (() => {
 			if (!req?.url) return null;
-			return req.url.startsWith('/room') ? (settings.get('UTF8_Channel_Names_Validation') as string) : (settings.get('UTF8_User_Names_Validation') as string);
-	})();
+			return req.url.startsWith('/room')
+				? (settings.get('UTF8_Channel_Names_Validation') as string)
+				: (settings.get('UTF8_User_Names_Validation') as string);
+		})();
 		let regExp: RegExp;
 		try {
 			regExp = settingsRegExp ? new RegExp(`[^${settingsRegExp}]`, 'g') : defaultPattern;
