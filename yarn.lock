@@ -9025,7 +9025,7 @@ __metadata:
     markdown-it: "npm:^14.1.0"
     mem: "npm:^8.1.1"
     mini-css-extract-plugin: "npm:~1.6.2"
-    mitt: "npm:^2.1.0"
+    mitt: "npm:^3.0.1"
     npm-run-all: "npm:^4.1.5"
     path-to-regexp: "npm:^6.3.0"
     postcss-css-variables: "npm:^0.17.0"
@@ -27960,10 +27960,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mitt@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "mitt@npm:2.1.0"
-  checksum: 10/d4087f8678ef9de18af10171ed39c14fc9282532f9104b522265e4a206f81630767bce5e3ae2405e9d863d7f6a7f3095f738c33c55c06872ed25978f1c8ea9f3
+"mitt@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "mitt@npm:3.0.1"
+  checksum: 10/287c70d8e73ffc25624261a4989c783768aed95ecb60900f051d180cf83e311e3e59865bfd6e9d029cdb149dc20ba2f128a805e9429c5c4ce33b1416c65bbd14
   languageName: node
   linkType: hard
 
