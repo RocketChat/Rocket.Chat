@@ -28,4 +28,5 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 		originalContactId: string,
 		options?: FindOptions<ILivechatContact>,
 	): Promise<ILivechatContact[]>;
+	findContactChannelsGroupedByName(contactId: string): Promise<ILivechatContactChannel[]>;
 }

@@ -5,6 +5,7 @@ import {
 	isPOSTUpdateOmnichannelContactsProps,
 	isGETOmnichannelContactsProps,
 	isGETOmnichannelContactHistoryProps,
+	isGETOmnichannelContactsChannelsProps,
 	isGETOmnichannelContactsSearchProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -184,6 +185,20 @@ API.v1.addRoute(
 			const history = await getContactHistory({ contactId, source, count, offset, sort });
 
 			return API.v1.success(history);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'omnichannel/contacts.channels',
+	{ authRequired: true, permissionsRequired: ['view-livechat-contact'], validateParams: isGETOmnichannelContactsChannelsProps },
+	{
+		async get() {
+			const { contactId } = this.queryParams;
+
+			const channels = await LivechatContacts.findContactChannelsGroupedByName(contactId);
+
+			return API.v1.success({ channels });
 		},
 	},
 );

@@ -195,4 +195,29 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			options,
 		).toArray();
 	}
+
+	async findContactChannelsGroupedByName(contactId: string): Promise<ILivechatContactChannel[]> {
+		return this.col
+			.aggregate<ILivechatContactChannel>([
+				{
+					$match: { _id: contactId },
+				},
+				{
+					$unwind: '$channels',
+				},
+				{
+					$sort: { 'channels.lastChat.ts': -1 },
+				},
+				{
+					$group: {
+						_id: '$channels.name',
+						channel: { $first: '$channels' },
+					},
+				},
+				{
+					$replaceRoot: { newRoot: '$channel' },
+				},
+			])
+			.toArray();
+	}
 }
