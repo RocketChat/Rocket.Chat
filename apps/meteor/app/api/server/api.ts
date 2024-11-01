@@ -651,9 +651,11 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 									))
 								) {
 									if (applyBreakingChanges) {
-										throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action');
+										throw new Meteor.Error('error-forbidden', 'User does not have the permissions required for this action', {
+											permissions: _options.permissionsRequired,
+										});
 									}
-									throw new Meteor.Error('error-forbidden', 'User does not have the permissions required for this action', {
+									throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
 										permissions: _options.permissionsRequired,
 									});
 								}
