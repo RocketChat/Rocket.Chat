@@ -10,14 +10,18 @@ import type { IParseAppPackageResult } from '../../../src/server/compiler';
 import { AppAccessorManager, AppApiManager } from '../../../src/server/managers';
 import { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import { TestInfastructureSetup } from '../../test-data/utilities';
+import { IAppStorageItem } from '../../../src/server/storage';
+import { AppStatus } from '../../../src/definition/AppStatus';
 
-@TestFixture('DenoRuntimeSubprocessController')
+@TestFixture()
 export class DenuRuntimeSubprocessControllerTestFixture {
     private manager: AppManager;
 
     private controller: DenoRuntimeSubprocessController;
 
     private appPackage: IParseAppPackageResult;
+
+    private appStorageItem: IAppStorageItem;
 
     @AsyncSetupFixture
     public async fixture() {
@@ -35,11 +39,16 @@ export class DenuRuntimeSubprocessControllerTestFixture {
         const appPackage = await fs.readFile(path.join(__dirname, '../../test-data/apps/hello-world-test_0.0.1.zip'));
 
         this.appPackage = await this.manager.getParser().unpackageApp(appPackage);
+
+        this.appStorageItem = {
+            id: 'hello-world-test',
+            status: AppStatus.MANUALLY_ENABLED,
+        } as IAppStorageItem;
     }
 
     @Setup
     public setup() {
-        this.controller = new DenoRuntimeSubprocessController(this.manager, this.appPackage);
+        this.controller = new DenoRuntimeSubprocessController(this.manager, this.appPackage, this.appStorageItem);
         this.controller.setupApp();
     }
 
