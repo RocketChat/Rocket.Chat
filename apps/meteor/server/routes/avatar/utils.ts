@@ -124,14 +124,7 @@ export async function userCanAccessAvatar({ headers = {}, query = {} }: IIncomin
 const getFirstLetter = (name: string, regExp: RegExp) => {
 	const pattern = regExp || defaultPattern;
 	const sanitizedName = name.replace(/[&<>]/g, '');
-<<<<<<< HEAD
 	return sanitizedName.replace(pattern, '').substr(0, 1).toUpperCase();
-=======
-	return sanitizedName
-		.replace(pattern, '')
-		.substr(0, 1)
-		.toUpperCase();
->>>>>>> 8c250943c061fc9c591225f10e7232c7d0c8e9ed
 }
 
 export const renderSVGLetters = (roomOrUsername: string, viewSize = 200, req?: IIncomingMessage) => {
@@ -142,15 +135,7 @@ export const renderSVGLetters = (roomOrUsername: string, viewSize = 200, req?: I
 		color = '#000';
 		initials = roomOrUsername;
 	} else {
-<<<<<<< HEAD
 		const settingsRegExp = req?.url ? (req.url.startsWith('/room') ? (settings.get('UTF8_Channel_Names_Validation') as string) : (settings.get('UTF8_User_Names_Validation') as string)) : null;
-=======
-		const settingsRegExp = req && req.url
-			? (req.url.startsWith('/room')
-					? settings.get('UTF8_Channel_Names_Validation')
-					: settings.get('UTF8_User_Names_Validation')) as string
-			: null;
->>>>>>> 8c250943c061fc9c591225f10e7232c7d0c8e9ed
 		let regExp: RegExp;
 		try {
 			regExp = settingsRegExp ? new RegExp(`[^${settingsRegExp}]`, 'g') : defaultPattern;
