@@ -174,7 +174,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'move-room-to-team', team.roomId))) {
-				return API.v1.unauthorized('error-no-permission-team-channel');
+				return API.v1.forbidden('error-no-permission-team-channel');
 			}
 
 			const { rooms } = this.bodyParams;
