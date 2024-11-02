@@ -1,5 +1,35 @@
 # @rocket.chat/livechat Change Log
 
+## 1.20.1
+
+### Patch Changes
+
+- ([#33229](https://github.com/RocketChat/Rocket.Chat/pull/33229)) Fixes an issue where the unread message counter in the livechat widget does not update when a visitor receives their first response from an agent while the widget is minimized.
+
+- <details><summary>Updated dependencies [687f1efd5f, 9274cf4586, debd3ffa22]:</summary>
+
+  - @rocket.chat/ui-kit@0.37.0
+  - @rocket.chat/gazzodown@12.0.0
+  </details>
+
+## 1.20.1-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@12.0.0-rc.6
+  </details>
+
+## 1.20.1-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@12.0.0-rc.5
+  </details>
+
 ## 1.20.1-rc.4
 
 ### Patch Changes

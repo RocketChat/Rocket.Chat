@@ -67,12 +67,12 @@ export const closeLivechatRoom = async (
 								requestedBy: user,
 							},
 						},
-				  }
+					}
 				: {
 						emailTranscript: {
 							sendToVisitor: false,
 						},
-				  }),
+					}),
 		}),
 	};
 

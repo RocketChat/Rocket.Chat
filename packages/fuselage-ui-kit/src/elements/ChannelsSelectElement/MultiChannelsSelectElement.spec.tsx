@@ -66,7 +66,7 @@ describe('UiKit MultiChannelsSelect Element', () => {
           surfaceRenderer={contextualBarParser}
         />
       </MockedServerContext>,
-      { legacyRoot: true }
+      { legacyRoot: true },
     );
   });
 

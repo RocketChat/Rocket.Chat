@@ -10,7 +10,10 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 
 	private logger: Logger;
 
-	constructor(private watcher: DatabaseWatcher, loggerClass: typeof Logger) {
+	constructor(
+		private watcher: DatabaseWatcher,
+		loggerClass: typeof Logger,
+	) {
 		super();
 
 		// eslint-disable-next-line new-cap

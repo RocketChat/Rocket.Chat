@@ -1,5 +1,32 @@
 # @rocket.chat/pdf-worker
 
+## 0.2.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [bcacbb1cee, b338807d76, 3ea02d3cc1, e3629e065b, 03d148524b, 81998f3450, 509143d6dd]:</summary>
+
+  - @rocket.chat/core-typings@7.0.0
+  </details>
+
+## 0.2.6-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.6
+  </details>
+
+## 0.2.6-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.5
+  </details>
+
 ## 0.2.6-rc.4
 
 ### Patch Changes

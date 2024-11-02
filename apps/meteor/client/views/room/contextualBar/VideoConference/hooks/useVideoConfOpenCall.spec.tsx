@@ -51,7 +51,7 @@ describe('without window.RocketChatDesktop set', () => {
 	});
 
 	it('should open window', async () => {
-		window.open = jest.fn(() => ({} as Window));
+		window.open = jest.fn(() => ({}) as Window);
 
 		const { result } = renderHook(() => useVideoConfOpenCall(), {
 			legacyRoot: true,

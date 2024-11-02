@@ -49,11 +49,7 @@ const AgentOverview = ({
 	return (
 		<Table style={style} fixed>
 			<TableHead>
-				<TableRow>
-					{displayData.head?.map(({ name }, i) => (
-						<TableCell key={i}>{t(name as TranslationKey)}</TableCell>
-					))}
-				</TableRow>
+				<TableRow>{displayData.head?.map(({ name }, i) => <TableCell key={i}>{t(name as TranslationKey)}</TableCell>)}</TableRow>
 			</TableHead>
 			<TableBody>
 				{displayData.data?.map(({ name, value }, i) => (
