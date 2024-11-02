@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
-export const DepartmentBusinessHours = ({ bhId }: { bhId: string | undefined }) => {
+const DepartmentBusinessHours = ({ bhId }: { bhId: string | undefined }) => {
 	const { t } = useTranslation();
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 	const getBusinessHour = useEndpoint('GET', '/v1/livechat/business-hour');

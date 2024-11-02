@@ -17,7 +17,7 @@ type PrioritiesSelectProps = {
 	onChange: (value: string) => void;
 };
 
-export const PrioritiesSelect = ({ value = '', label, options, onChange }: PrioritiesSelectProps) => {
+const PrioritiesSelect = ({ value = '', label, options, onChange }: PrioritiesSelectProps) => {
 	const { t } = useTranslation();
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 	const [sorting] = useState<Record<string, LivechatPriorityWeight>>({});

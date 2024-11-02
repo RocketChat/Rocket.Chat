@@ -4,7 +4,7 @@ import React from 'react';
 
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
-export const EeTextAreaInput = ({ label, ...props }: { label: string } & ComponentProps<typeof TextAreaInput>) => {
+const EeTextAreaInput = ({ label, ...props }: { label: string } & ComponentProps<typeof TextAreaInput>) => {
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
 	if (!hasLicense) {
