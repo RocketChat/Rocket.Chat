@@ -9,7 +9,7 @@ import { useBodyPosition } from './hooks/useBodyPosition';
 import { useRouteLock } from './hooks/useRouteLock';
 import SetupWizardProvider from './providers/SetupWizardProvider';
 
-export const SetupWizardRoute = (): ReactElement | null => {
+const SetupWizardRoute = (): ReactElement | null => {
 	const locked = useRouteLock();
 	const breakpoints = useBreakpoints();
 	const isMobile = !breakpoints.includes('md');
