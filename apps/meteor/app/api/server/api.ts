@@ -886,10 +886,10 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 								status: 'error',
 								error: error.error,
 								details: error.details,
-								message: error.message,
+								message: error.reason || error.message,
 								...(error.reason === 'User not found' && {
 									error: 'Unauthorized',
-									reason: 'Unauthorized',
+									message: error.message || 'Unauthorized',
 								}),
 							});
 						}
