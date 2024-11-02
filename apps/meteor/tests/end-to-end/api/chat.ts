@@ -2964,20 +2964,22 @@ describe('[Chat]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.errorType).to.be.equal('invalid-params');
+					expect(res.body.error).to.include(`must have required property 'roomId'`);
 				})
 				.end(done);
 		});
 
-		it('should return an error when the neither "lastUpdate", "next" or "previous" parameter is sent', (done) => {
+		it('should return an error when the neither "lastUpdate" or "type" parameter is sent', (done) => {
 			void request
 				.get(api('chat.syncMessages'))
 				.set(credentials)
-				.query({ roomId: 'invalid-room' })
+				.query({ roomId: testChannel._id })
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-param-not-provided');
+					expect(res.body.errorType).to.be.equal('error-param-required');
+					expect(res.body.error).to.include('The "type" or "lastUpdate" parameters must be provided');
 				})
 				.end(done);
 		});
@@ -2992,11 +2994,12 @@ describe('[Chat]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.errorType).to.be.equal('error-lastUpdate-param-invalid');
+					expect(res.body.error).to.include('The "lastUpdate" query parameter must be a valid date');
 				})
 				.end(done);
 		});
 
-		it('should return an error when user is not allowed to access the room', (done) => {
+		it('should return an error when user provides an invalid roomId', (done) => {
 			void request
 				.get(api('chat.syncMessages'))
 				.set(credentials)
@@ -3006,6 +3009,7 @@ describe('[Chat]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.errorType).to.be.equal('error-not-allowed');
+					expect(res.body.error).to.include('Not allowed');
 				})
 				.end(done);
 		});
@@ -3020,6 +3024,7 @@ describe('[Chat]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.errorType).to.be.equal('invalid-params');
+					expect(res.body.error).to.include('must be equal to one of the allowed values');
 				})
 				.end(done);
 		});
@@ -3037,11 +3042,13 @@ describe('[Chat]', () => {
 
 			expect(nextResponse.statusCode).to.equal(400);
 			expect(nextResponse.body).to.have.property('success', false);
-			expect(nextResponse.body.errorType).to.be.equal('error-type-param-required');
+			expect(nextResponse.body.errorType).to.be.equal('error-param-required');
+			expect(nextResponse.body.error).to.include('The "type" or "lastUpdate" parameters must be provided');
 
 			expect(previousResponse.statusCode).to.equal(400);
 			expect(previousResponse.body).to.have.property('success', false);
-			expect(previousResponse.body.errorType).to.be.equal('error-type-param-required');
+			expect(previousResponse.body.errorType).to.be.equal('error-param-required');
+			expect(previousResponse.body.error).to.include('The "type" or "lastUpdate" parameters must be provided');
 		});
 
 		it('should return an error when both "next" and "previous" are sent', (done) => {
@@ -3054,11 +3061,12 @@ describe('[Chat]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.errorType).to.be.equal('error-cursor-conflict');
+					expect(res.body.error).to.include('You cannot provide both "next" and "previous" parameters');
 				})
 				.end(done);
 		});
 
-		it('shoult return an error when both "next" or "previous" and "lastUpdate" are sent', (done) => {
+		it('should return an error when both "next" or "previous" and "lastUpdate" are sent', (done) => {
 			void request
 				.get(api('chat.syncMessages'))
 				.set(credentials)
@@ -3068,6 +3076,22 @@ describe('[Chat]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.errorType).to.be.equal('error-cursor-and-lastUpdate-conflict');
+					expect(res.body.error).to.include('The attributes "next", "previous" and "lastUpdate" cannot be used together');
+				})
+				.end(done);
+		});
+
+		it('should return an error when neither "type" or "lastUpdate" are sent', (done) => {
+			void request
+				.get(api('chat.syncMessages'))
+				.set(credentials)
+				.query({ roomId: testChannel._id })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-param-required');
+					expect(res.body.error).to.include('The "type" or "lastUpdate" parameters must be provided');
 				})
 				.end(done);
 		});

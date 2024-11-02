@@ -48,6 +48,10 @@ describe('extractTimestampFromCursor', () => {
 		expect(timestamp).to.be.an.instanceOf(Date);
 		expect(timestamp.getTime()).to.equal(parseInt(cursor, 10));
 	});
+
+	it('should handle non-date compliant string', () => {
+		expect(() => extractTimestampFromCursor('not-a-date')).to.throw(Error, 'Invalid Date');
+	});
 });
 
 describe('mountCursorQuery', () => {
@@ -104,15 +108,6 @@ describe('mountNextCursor', () => {
 		const messages = [{ _updatedAt: new Date('2024-10-01T10:00:00Z') }, { _updatedAt: new Date('2024-10-01T09:00:00Z') }];
 		const type = 'UPDATED';
 		const result = mountNextCursor(messages, type);
-		expect(result).to.equal(`${messages[0]._updatedAt.getTime()}`);
-	});
-
-	it('should reverse messages if next is provided', () => {
-		// Messages are already sorted by descending order
-		const messages = [{ _updatedAt: new Date('2024-10-01T10:00:00Z') }, { _updatedAt: new Date('2024-10-01T09:00:00Z') }];
-		const type = 'UPDATED';
-		const next = 'someCursor';
-		const result = mountNextCursor(messages, type, next);
 		expect(result).to.equal(`${messages[0]._updatedAt.getTime()}`);
 	});
 

@@ -37,7 +37,13 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 export function extractTimestampFromCursor(cursor: string): Date {
-	return new Date(parseInt(cursor, 10));
+	const timestamp = parseInt(cursor, 10);
+
+	if (isNaN(timestamp) || new Date(timestamp).toString() === 'Invalid Date') {
+		throw new Error('Invalid Date');
+	}
+
+	return new Date(timestamp);
 }
 
 export function mountCursorQuery({ next, previous, count }: { next?: string; previous?: string; count: number }): {
@@ -61,7 +67,7 @@ export function mountCursorQuery({ next, previous, count }: { next?: string; pre
 }
 
 export function mountCursorFromMessage(message: IMessage & { _deletedAt?: Date }, type: 'UPDATED' | 'DELETED'): string {
-	if (type === 'UPDATED') {
+	if (type === 'UPDATED' && message._updatedAt) {
 		return `${message._updatedAt.getTime()}`;
 	}
 
@@ -202,7 +208,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (next && previous) {
-			throw new Meteor.Error('error-cursor-conflict', 'You cannot have both "next" and "previous" parameters');
+			throw new Meteor.Error('error-cursor-conflict', 'You cannot provide both "next" and "previous" parameters');
 		}
 
 		if ((next || previous) && lastUpdate) {
@@ -210,10 +216,6 @@ Meteor.methods<ServerMethods>({
 				'error-cursor-and-lastUpdate-conflict',
 				'The attributes "next", "previous" and "lastUpdate" cannot be used together',
 			);
-		}
-
-		if (!type && !lastUpdate) {
-			throw new Meteor.Error('error-param-required', 'The "type" or "lastUpdate" parameters must be provided');
 		}
 
 		const hasCursorPagination = !!((next || previous) && count !== null && type);
@@ -229,10 +231,14 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const response = lastUpdate
-			? await handleWithoutPagination(rid, lastUpdate)
-			: await handleCursorPagination(type, rid, count, next, previous);
+		if (lastUpdate) {
+			return handleWithoutPagination(rid, lastUpdate);
+		}
 
-		return response;
+		if (!type) {
+			throw new Meteor.Error('error-param-required', 'The "type" or "lastUpdate" parameters must be provided');
+		}
+
+		return handleCursorPagination(type, rid, count, next, previous);
 	},
 });

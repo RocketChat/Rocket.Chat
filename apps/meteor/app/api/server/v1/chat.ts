@@ -80,14 +80,11 @@ API.v1.addRoute(
 			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams;
 
 			if (!roomId) {
-				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing');
+				throw new Meteor.Error('error-param-required', 'The required "roomId" query param is missing');
 			}
 
-			if (!lastUpdate && !next && !previous) {
-				throw new Meteor.Error(
-					'error-param-not-provided',
-					'You need to provide at least one of the following query parameters: "lastUpdate", "next", or "previous"',
-				);
+			if (!lastUpdate && !type) {
+				throw new Meteor.Error('error-param-required', 'The "type" or "lastUpdate" parameters must be provided');
 			}
 
 			if (lastUpdate && isNaN(Date.parse(lastUpdate))) {
