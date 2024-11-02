@@ -8,7 +8,7 @@ import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { router } from '../../../../client/providers/RouterProvider';
-import ForwardMessageModal from '../../../../client/views/room/modals/ForwardMessageModal/ForwardMessageModal';
+import ForwardMessageModal from '../../../../client/views/room/modals/ForwardMessageModal';
 import ReactionListModal from '../../../../client/views/room/modals/ReactionListModal';
 import ReportMessageModal from '../../../../client/views/room/modals/ReportMessageModal';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
