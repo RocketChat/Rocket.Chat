@@ -16,7 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-async function updateGroupKey(rid: string, uid: string, key: string, callerUserId: string) {
+export async function updateGroupKey(rid: string, uid: string, key: string, callerUserId: string) {
 	// I have a subscription to this room
 	const mySub = await Subscriptions.findOneByRoomIdAndUserId(rid, callerUserId);
 

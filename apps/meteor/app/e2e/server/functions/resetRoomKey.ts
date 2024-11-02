@@ -88,7 +88,7 @@ export async function resetRoomKey(roomId: string, userId: string, newRoomKey: s
 	}
 }
 
-function pushToLimit(
+export function pushToLimit(
 	arr: NonNullable<IRoom['usersWaitingForE2EKeys']>,
 	item: NonNullable<IRoom['usersWaitingForE2EKeys']>[number],
 	limit = 50,
@@ -107,7 +107,7 @@ async function writeAndNotify(updateOps: AnyBulkWriteOperation<ISubscription>[],
 	updateOps.length = 0;
 }
 
-function replicateMongoSlice(keyId: string, sub: ISubscription) {
+export function replicateMongoSlice(keyId: string, sub: ISubscription) {
 	if (!sub.E2EKey) {
 		return;
 	}
