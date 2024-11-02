@@ -129,4 +129,4 @@ export const methodDeprecationLogger = ((logger) => {
 	};
 })(deprecationLogger.section('METHOD'));
 
-export const streamDeprecationLogger = deprecationLogger.section('STREAM');
+// export const streamDeprecationLogger = deprecationLogger.section('STREAM');

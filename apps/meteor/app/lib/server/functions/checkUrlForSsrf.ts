@@ -21,7 +21,7 @@ const ranges: string[] = [
 	'100.100.100.200/32',
 ];
 
-export const nslookup = async (hostname: string): Promise<string> => {
+const nslookup = async (hostname: string): Promise<string> => {
 	return new Promise((resolve, reject) => {
 		lookup(hostname, (error, address) => {
 			if (error) {
@@ -33,11 +33,11 @@ export const nslookup = async (hostname: string): Promise<string> => {
 	});
 };
 
-export const ipToLong = (ip: string): number => {
+const ipToLong = (ip: string): number => {
 	return ip.split('.').reduce((acc, octet) => (acc << 8) + parseInt(octet, 10), 0) >>> 0;
 };
 
-export const isIpInRange = (ip: string, range: string): boolean => {
+const isIpInRange = (ip: string, range: string): boolean => {
 	const [rangeIp, subnet] = range.split('/');
 	const ipLong = ipToLong(ip);
 	const rangeIpLong = ipToLong(rangeIp);
@@ -45,9 +45,9 @@ export const isIpInRange = (ip: string, range: string): boolean => {
 	return (ipLong & mask) === (rangeIpLong & mask);
 };
 
-export const isIpInAnyRange = (ip: string): boolean => ranges.some((range) => isIpInRange(ip, range));
+const isIpInAnyRange = (ip: string): boolean => ranges.some((range) => isIpInRange(ip, range));
 
-export const isValidIPv4 = (ip: string): boolean => {
+const isValidIPv4 = (ip: string): boolean => {
 	const octets = ip.split('.');
 	if (octets.length !== 4) return false;
 	return octets.every((octet) => {
@@ -56,7 +56,7 @@ export const isValidIPv4 = (ip: string): boolean => {
 	});
 };
 
-export const isValidDomain = (domain: string): boolean => {
+const isValidDomain = (domain: string): boolean => {
 	const domainPattern = /^(?!-)(?!.*--)[A-Za-z0-9-]{1,63}(?<!-)\.?([A-Za-z0-9-]{2,63}\.?)*[A-Za-z]{2,63}$/;
 	if (!domainPattern.test(domain)) {
 		return false;

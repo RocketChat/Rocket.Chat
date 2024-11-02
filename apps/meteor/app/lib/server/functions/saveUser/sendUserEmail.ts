@@ -16,7 +16,7 @@ Meteor.startup(() => {
 	});
 });
 
-export async function sendUserEmail(subject: string, html: string, userData: SaveUserData): Promise<void> {
+async function sendUserEmail(subject: string, html: string, userData: SaveUserData): Promise<void> {
 	if (!userData.email) {
 		return;
 	}

@@ -3,8 +3,6 @@ import { WebAppInternals } from 'meteor/webapp';
 
 import { settings } from '../../../settings/server';
 
-export let hostname: string;
-
 settings.watch<string>(
 	'Site_Url',
 	// Needed as WebAppInternals.generateBoilerplate needs to be called in a fiber
@@ -25,7 +23,6 @@ settings.watch<string>(
 			Meteor.absoluteUrl.defaultOptions.rootUrl = value;
 		}
 
-		hostname = host.replace(/^https?:\/\//, '');
 		process.env.MOBILE_ROOT_URL = host;
 		process.env.MOBILE_DDP_URL = host;
 		if (typeof WebAppInternals !== 'undefined' && WebAppInternals.generateBoilerplate) {
