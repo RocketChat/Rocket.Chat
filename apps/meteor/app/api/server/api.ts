@@ -719,11 +719,13 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 								switch (e.error) {
 									case 'error-too-many-requests':
 										return API.v1.tooManyRequests(typeof e === 'string' ? e : e.message);
+									case 'unauthorized':
 									case 'error-unauthorized':
 										if (applyBreakingChanges) {
 											return API.v1.unauthorized(typeof e === 'string' ? e : e.message);
 										}
 										return API.v1.forbidden(typeof e === 'string' ? e : e.message);
+									case 'forbidden':
 									case 'error-forbidden':
 										if (applyBreakingChanges) {
 											return API.v1.forbidden(typeof e === 'string' ? e : e.message);
