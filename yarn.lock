@@ -8979,6 +8979,7 @@ __metadata:
     "@babel/preset-typescript": "npm:~7.26.0"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
+    "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/fuselage-hooks": "npm:^0.33.1"
     "@rocket.chat/fuselage-tokens": "npm:^0.33.2"
@@ -9025,7 +9026,6 @@ __metadata:
     markdown-it: "npm:^14.1.0"
     mem: "npm:^8.1.1"
     mini-css-extract-plugin: "npm:~1.6.2"
-    mitt: "npm:^2.1.0"
     npm-run-all: "npm:^4.1.5"
     path-to-regexp: "npm:^6.3.0"
     postcss-css-variables: "npm:^0.17.0"
@@ -27957,13 +27957,6 @@ __metadata:
     minipass: "npm:^3.0.0"
     yallist: "npm:^4.0.0"
   checksum: 10/ae0f45436fb51344dcb87938446a32fbebb540d0e191d63b35e1c773d47512e17307bf54aa88326cc6d176594d00e4423563a091f7266c2f9a6872cdc1e234d1
-  languageName: node
-  linkType: hard
-
-"mitt@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "mitt@npm:2.1.0"
-  checksum: 10/d4087f8678ef9de18af10171ed39c14fc9282532f9104b522265e4a206f81630767bce5e3ae2405e9d863d7f6a7f3095f738c33c55c06872ed25978f1c8ea9f3
   languageName: node
   linkType: hard
 

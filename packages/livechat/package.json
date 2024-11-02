@@ -96,6 +96,7 @@
 		"@rocket.chat/logo": "*"
 	},
 	"dependencies": {
+		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/gazzodown": "workspace:^",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/random": "workspace:~",
@@ -107,7 +108,6 @@
 		"i18next": "~23.4.9",
 		"markdown-it": "^14.1.0",
 		"mem": "^8.1.1",
-		"mitt": "^2.1.0",
 		"path-to-regexp": "^6.3.0",
 		"preact": "~10.24.3",
 		"preact-router": "^3.2.1",
