@@ -9,17 +9,6 @@ import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import NotificationPreferences from './NotificationPreferences';
 
-export type NotificationFormValues = {
-	turnOn: boolean;
-	muteGroupMentions: boolean;
-	showCounter: boolean;
-	showMentions: boolean;
-	desktopAlert: string;
-	desktopSound: string;
-	mobileAlert: string;
-	emailAlert: string;
-};
-
 const NotificationPreferencesWithData = (): ReactElement => {
 	const t = useTranslation();
 	const room = useRoom();

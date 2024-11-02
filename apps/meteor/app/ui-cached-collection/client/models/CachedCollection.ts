@@ -14,8 +14,6 @@ import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 import { CachedCollectionManager } from './CachedCollectionManager';
 
-export type EventType = 'notify-logged' | 'notify-all' | 'notify-user';
-
 type Name = 'rooms' | 'subscriptions' | 'permissions' | 'public-settings' | 'private-settings';
 
 const hasId = <T>(record: T): record is T & { _id: string } => typeof record === 'object' && record !== null && '_id' in record;
