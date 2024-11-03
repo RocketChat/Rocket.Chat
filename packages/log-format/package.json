@@ -23,7 +23,7 @@
 		"extends": "../../package.json"
 	},
 	"dependencies": {
-		"chalk": "^4.0.0",
+		"chalk": "^4.1.2",
 		"ejson": "^2.2.3"
 	}
 }

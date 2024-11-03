@@ -37,7 +37,7 @@
 		"@tanstack/react-query": "^4.36.1",
 		"@testing-library/react": "~16.0.1",
 		"@types/react": "~17.0.80",
-		"babel-loader": "~8.3.0",
+		"babel-loader": "~9.2.1",
 		"eslint": "~8.45.0",
 		"react": "~17.0.2",
 		"react-hook-form": "~7.45.4",

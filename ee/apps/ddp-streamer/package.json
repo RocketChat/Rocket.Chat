@@ -52,7 +52,7 @@
 		"@types/meteor": "^2.9.8",
 		"@types/node": "~20.16.15",
 		"@types/polka": "^0.5.7",
-		"@types/uuid": "^8.3.4",
+		"@types/uuid": "^10.0.0",
 		"@types/ws": "^8.5.13",
 		"eslint": "~8.45.0",
 		"pino-pretty": "^7.6.1",

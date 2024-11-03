@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@codemirror/lang-javascript": "^6.1.9",
+    "@codemirror/lang-javascript": "^6.2.2",
     "@codemirror/lang-json": "^6.0.1",
     "@lezer/highlight": "^1.2.1",
     "@rocket.chat/core-typings": "workspace:^",
@@ -23,7 +23,7 @@
     "@rocket.chat/fuselage-toastbar": "^0.33.0",
     "@rocket.chat/fuselage-tokens": "^0.33.2",
     "@rocket.chat/fuselage-ui-kit": "workspace:~",
-    "@rocket.chat/icons": "~0.38.0",
+    "@rocket.chat/icons": "~0.39.0",
     "@rocket.chat/logo": "^0.31.30",
     "@rocket.chat/styled": "~0.31.25",
     "@rocket.chat/ui-avatar": "workspace:^",
