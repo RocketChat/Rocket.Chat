@@ -14,7 +14,7 @@
   "dependencies": {
     "@codemirror/lang-javascript": "^6.1.9",
     "@codemirror/lang-json": "^6.0.1",
-    "@lezer/highlight": "^1.1.6",
+    "@lezer/highlight": "^1.2.1",
     "@rocket.chat/core-typings": "workspace:^",
     "@rocket.chat/css-in-js": "~0.31.25",
     "@rocket.chat/fuselage": "^0.59.4",
