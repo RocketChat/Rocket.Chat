@@ -8,7 +8,8 @@
     "build-preview": "tsc && vite build",
     ".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./dist ../../.preview/uikit-playground",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.1.9",
@@ -40,6 +41,7 @@
     "reactflow": "^11.11.4"
   },
   "devDependencies": {
+    "@types/lodash": "~4.17.13",
     "@types/react": "~17.0.80",
     "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-dom": "~17.0.25",
