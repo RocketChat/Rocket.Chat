@@ -40,4 +40,5 @@ export interface IVideoConfService {
 		caller: IUser['_id'],
 		params: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] },
 	): Promise<boolean>;
+	assignDiscussionToConference(callId: VideoConference['_id'], rid: IRoom['_id'] | undefined): Promise<void>;
 }

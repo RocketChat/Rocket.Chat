@@ -59,6 +59,10 @@ export class AppVideoConferenceBridge extends VideoConferenceBridge {
 		if (data.status > oldData.status) {
 			await VideoConf.setStatus(call._id, data.status);
 		}
+
+		if (data.discussionRid !== oldData.discussionRid) {
+			await VideoConf.assignDiscussionToConference(call._id, data.discussionRid);
+		}
 	}
 
 	protected async registerProvider(info: IVideoConfProvider, appId: string): Promise<void> {

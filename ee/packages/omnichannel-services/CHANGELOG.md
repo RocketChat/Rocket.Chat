@@ -1,5 +1,692 @@
 # @rocket.chat/omnichannel-services
 
+## 0.3.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [3395c8290b, 6b5b91fd14, d1e14a0a85, bcacbb1cee, b167db0b37, f4365b7dd4, d9fe5bbe0b, b338807d76, bf05700542, 1bdfd201b1, 3ea02d3cc1, e3629e065b, b19ae4dbc7, 03d148524b, 3f9c3f1f52, 81998f3450, 2bc9692de0, 50943a02e8, 509143d6dd, fa501ecb53]:</summary>
+
+  - @rocket.chat/rest-typings@7.0.0
+  - @rocket.chat/core-services@0.7.1
+  - @rocket.chat/model-typings@1.0.0
+  - @rocket.chat/core-typings@7.0.0
+  - @rocket.chat/models@1.0.0
+  - @rocket.chat/pdf-worker@0.2.6
+  </details>
+
+## 0.3.6-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.6
+  - @rocket.chat/rest-typings@7.0.0-rc.6
+  - @rocket.chat/pdf-worker@0.2.6-rc.6
+  - @rocket.chat/core-services@0.7.1-rc.6
+  - @rocket.chat/model-typings@1.0.0-rc.6
+  - @rocket.chat/models@1.0.0-rc.6
+  </details>
+
+## 0.3.6-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [d1e14a0a85, bf05700542, 1bdfd201b1, 2bc9692de0]:</summary>
+
+  - @rocket.chat/rest-typings@7.0.0-rc.5
+  - @rocket.chat/core-services@0.7.1-rc.5
+  - @rocket.chat/core-typings@7.0.0-rc.5
+  - @rocket.chat/pdf-worker@0.2.6-rc.5
+  - @rocket.chat/model-typings@1.0.0-rc.5
+  - @rocket.chat/models@1.0.0-rc.5
+  </details>
+
+## 0.3.6-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.4
+  - @rocket.chat/rest-typings@7.0.0-rc.4
+  - @rocket.chat/pdf-worker@0.2.6-rc.4
+  - @rocket.chat/core-services@0.7.1-rc.4
+  - @rocket.chat/model-typings@1.0.0-rc.4
+  - @rocket.chat/models@1.0.0-rc.4
+  </details>
+
+## 0.3.6-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.3
+  - @rocket.chat/rest-typings@7.0.0-rc.3
+  - @rocket.chat/pdf-worker@0.2.6-rc.3
+  - @rocket.chat/core-services@0.7.1-rc.3
+  - @rocket.chat/model-typings@1.0.0-rc.3
+  - @rocket.chat/models@1.0.0-rc.3
+  </details>
+
+## 0.3.6-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.2
+  - @rocket.chat/rest-typings@7.0.0-rc.2
+  - @rocket.chat/pdf-worker@0.2.6-rc.2
+  - @rocket.chat/core-services@0.7.1-rc.2
+  - @rocket.chat/model-typings@1.0.0-rc.2
+  - @rocket.chat/models@1.0.0-rc.2
+  </details>
+
+## 0.3.6-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.1
+  - @rocket.chat/rest-typings@7.0.0-rc.1
+  - @rocket.chat/pdf-worker@0.2.6-rc.1
+  - @rocket.chat/core-services@0.7.1-rc.1
+  - @rocket.chat/model-typings@1.0.0-rc.1
+  - @rocket.chat/models@1.0.0-rc.1
+  </details>
+
+## 0.3.6-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [3395c8290b, 6b5b91fd14, 7726d68374, bcacbb1cee, b167db0b37, f4365b7dd4, d9fe5bbe0b, b338807d76, 3ea02d3cc1, e3629e065b, b19ae4dbc7, 03d148524b, 3f9c3f1f52, 81998f3450, 50943a02e8, 509143d6dd, fa501ecb53]:</summary>
+
+  - @rocket.chat/rest-typings@7.0.0-rc.0
+  - @rocket.chat/core-typings@7.0.0-rc.0
+  - @rocket.chat/model-typings@1.0.0-rc.0
+  - @rocket.chat/core-services@0.7.1-rc.0
+  - @rocket.chat/models@1.0.0-rc.0
+  - @rocket.chat/pdf-worker@0.2.6-rc.0
+  </details>
+
+## 0.3.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [9a38c8e13f, 9eaefdc892, 274f4f5881, 532f08819e, 927710d778, 3a161c4310, 12d6307998]:</summary>
+
+  - @rocket.chat/model-typings@0.8.0
+  - @rocket.chat/rest-typings@6.13.0
+  - @rocket.chat/core-typings@6.13.0
+  - @rocket.chat/core-services@0.7.0
+  - @rocket.chat/models@0.3.0
+  - @rocket.chat/pdf-worker@0.2.5
+  </details>
+
+## 0.3.5-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.6
+  - @rocket.chat/rest-typings@6.13.0-rc.6
+  - @rocket.chat/pdf-worker@0.2.5-rc.6
+  - @rocket.chat/core-services@0.7.0-rc.6
+  - @rocket.chat/model-typings@0.8.0-rc.6
+  - @rocket.chat/models@0.3.0-rc.6
+  </details>
+
+## 0.3.5-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.5
+  - @rocket.chat/rest-typings@6.13.0-rc.5
+  - @rocket.chat/pdf-worker@0.2.5-rc.5
+  - @rocket.chat/core-services@0.7.0-rc.5
+  - @rocket.chat/model-typings@0.8.0-rc.5
+  - @rocket.chat/models@0.3.0-rc.5
+  </details>
+
+## 0.3.5-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.4
+  - @rocket.chat/rest-typings@6.13.0-rc.4
+  - @rocket.chat/pdf-worker@0.2.5-rc.4
+  - @rocket.chat/core-services@0.7.0-rc.4
+  - @rocket.chat/model-typings@0.8.0-rc.4
+  - @rocket.chat/models@0.3.0-rc.4
+  </details>
+
+## 0.3.5-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.3
+  - @rocket.chat/rest-typings@6.13.0-rc.3
+  - @rocket.chat/pdf-worker@0.2.5-rc.3
+  - @rocket.chat/core-services@0.7.0-rc.3
+  - @rocket.chat/model-typings@0.8.0-rc.3
+  - @rocket.chat/models@0.3.0-rc.3
+  </details>
+
+## 0.3.5-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.2
+  - @rocket.chat/rest-typings@6.13.0-rc.2
+  - @rocket.chat/pdf-worker@0.2.5-rc.2
+  - @rocket.chat/core-services@0.7.0-rc.2
+  - @rocket.chat/model-typings@0.8.0-rc.2
+  - @rocket.chat/models@0.3.0-rc.2
+  </details>
+
+## 0.3.5-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.1
+  - @rocket.chat/rest-typings@6.13.0-rc.1
+  - @rocket.chat/pdf-worker@0.2.5-rc.1
+  - @rocket.chat/core-services@0.7.0-rc.1
+  - @rocket.chat/model-typings@0.8.0-rc.1
+  - @rocket.chat/models@0.3.0-rc.1
+  </details>
+
+## 0.3.5-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [9a38c8e13f, 9eaefdc892, 274f4f5881, 532f08819e, 927710d778, 3a161c4310, 12d6307998]:</summary>
+
+  - @rocket.chat/model-typings@0.8.0-rc.0
+  - @rocket.chat/rest-typings@6.13.0-rc.0
+  - @rocket.chat/core-typings@6.13.0-rc.0
+  - @rocket.chat/core-services@0.7.0-rc.0
+  - @rocket.chat/models@0.3.0-rc.0
+  - @rocket.chat/pdf-worker@0.2.4-rc.0
+  </details>
+
+## 0.3.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.6.1
+  - @rocket.chat/core-typings@6.12.1
+  - @rocket.chat/rest-typings@6.12.1
+  - @rocket.chat/pdf-worker@0.2.4
+  - @rocket.chat/model-typings@0.7.1
+  - @rocket.chat/models@0.2.4
+  </details>
+
+## 0.3.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7f88158036, b764c415dc, 7937ff741a, a14c0678bb, 58c0efc732, e28be46db7, 58c0efc732]:</summary>
+
+  - @rocket.chat/model-typings@0.7.0
+  - @rocket.chat/rest-typings@6.12.0
+  - @rocket.chat/core-typings@6.12.0
+  - @rocket.chat/core-services@0.6.0
+  - @rocket.chat/models@0.2.3
+  - @rocket.chat/pdf-worker@0.2.3
+  </details>
+
+## 0.3.3-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.6
+  - @rocket.chat/rest-typings@6.12.0-rc.6
+  - @rocket.chat/pdf-worker@0.2.3-rc.6
+  - @rocket.chat/core-services@0.6.0-rc.6
+  - @rocket.chat/model-typings@0.7.0-rc.6
+  - @rocket.chat/models@0.2.3-rc.6
+  </details>
+
+## 0.3.3-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.5
+  - @rocket.chat/rest-typings@6.12.0-rc.5
+  - @rocket.chat/pdf-worker@0.2.3-rc.5
+  - @rocket.chat/core-services@0.6.0-rc.5
+  - @rocket.chat/model-typings@0.7.0-rc.5
+  - @rocket.chat/models@0.2.3-rc.5
+  </details>
+
+## 0.3.3-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.4
+  - @rocket.chat/rest-typings@6.12.0-rc.4
+  - @rocket.chat/pdf-worker@0.2.3-rc.4
+  - @rocket.chat/core-services@0.6.0-rc.4
+  - @rocket.chat/model-typings@0.7.0-rc.4
+  - @rocket.chat/models@0.2.3-rc.4
+  </details>
+
+## 0.3.3-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.3
+  - @rocket.chat/rest-typings@6.12.0-rc.3
+  - @rocket.chat/pdf-worker@0.2.2-rc.3
+  - @rocket.chat/core-services@0.6.0-rc.3
+  - @rocket.chat/model-typings@0.7.0-rc.3
+  - @rocket.chat/models@0.2.2-rc.3
+  </details>
+
+## 0.3.3-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.2
+  - @rocket.chat/rest-typings@6.12.0-rc.2
+  - @rocket.chat/pdf-worker@0.2.2-rc.2
+  - @rocket.chat/core-services@0.6.0-rc.2
+  - @rocket.chat/model-typings@0.7.0-rc.2
+  - @rocket.chat/models@0.2.2-rc.2
+  </details>
+
+## 0.3.3-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.1
+  - @rocket.chat/rest-typings@6.12.0-rc.1
+  - @rocket.chat/pdf-worker@0.2.2-rc.1
+  - @rocket.chat/core-services@0.6.0-rc.1
+  - @rocket.chat/model-typings@0.7.0-rc.1
+  - @rocket.chat/models@0.2.2-rc.1
+  </details>
+
+## 0.3.3-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7f88158036, b764c415dc, 7937ff741a, a14c0678bb, 58c0efc732, e28be46db7, 58c0efc732]:</summary>
+
+  - @rocket.chat/model-typings@0.7.0-rc.0
+  - @rocket.chat/rest-typings@6.12.0-rc.0
+  - @rocket.chat/core-typings@6.12.0-rc.0
+  - @rocket.chat/core-services@0.6.0-rc.0
+  - @rocket.chat/models@0.2.1-rc.0
+  - @rocket.chat/pdf-worker@0.2.1-rc.0
+  </details>
+
+## 0.3.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.2
+  - @rocket.chat/rest-typings@6.11.2
+  - @rocket.chat/pdf-worker@0.2.2
+  - @rocket.chat/core-services@0.5.2
+  - @rocket.chat/model-typings@0.6.2
+  - @rocket.chat/models@0.2.2
+  </details>
+
+## 0.3.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.1
+  - @rocket.chat/rest-typings@6.11.1
+  - @rocket.chat/pdf-worker@0.2.1
+  - @rocket.chat/core-services@0.5.1
+  - @rocket.chat/model-typings@0.6.1
+  - @rocket.chat/models@0.2.1
+  </details>
+
+## 0.3.0
+
+### Minor Changes
+
+- ([#32752](https://github.com/RocketChat/Rocket.Chat/pull/32752)) Added system messages support for Omnichannel PDF transcripts and email transcripts. Currently these transcripts don't render system messages and is shown as an empty message in PDF/email. This PR adds this support for all valid livechat system messages.
+
+  Also added a new setting under transcripts, to toggle the inclusion of system messages in email and PDF transcripts.
+
+### Patch Changes
+
+- ([#32752](https://github.com/RocketChat/Rocket.Chat/pull/32752)) Reduced time on generation of PDF transcripts. Earlier Rocket.Chat was fetching the required translations everytime a PDF transcript was requested, this process was async and was being unnecessarily being performed on every pdf transcript request. This PR improves this and now the translations are loaded at the start and kept in memory to process further pdf transcripts requests. This reduces the time of asynchronously fetching translations again and again.
+
+- <details><summary>Updated dependencies [8fc6ca8b4e, 439faa87d3, 03c8b066f9, 2d89a0c448, 439faa87d3, 24f7df4894, 03c8b066f9, 264d7d5496, b8e5887fb9]:</summary>
+
+  - @rocket.chat/tools@0.2.2
+  - @rocket.chat/model-typings@0.6.0
+  - @rocket.chat/pdf-worker@0.2.0
+  - @rocket.chat/core-services@0.5.0
+  - @rocket.chat/core-typings@6.11.0
+  - @rocket.chat/models@0.2.0
+  - @rocket.chat/rest-typings@6.11.0
+  </details>
+
+## 0.3.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.6
+  - @rocket.chat/rest-typings@6.11.0-rc.6
+  - @rocket.chat/pdf-worker@0.2.0-rc.6
+  - @rocket.chat/core-services@0.5.0-rc.6
+  - @rocket.chat/model-typings@0.6.0-rc.6
+  - @rocket.chat/models@0.2.0-rc.6
+  </details>
+
+## 0.3.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.5
+  - @rocket.chat/rest-typings@6.11.0-rc.5
+  - @rocket.chat/pdf-worker@0.2.0-rc.5
+  - @rocket.chat/core-services@0.5.0-rc.5
+  - @rocket.chat/model-typings@0.6.0-rc.5
+  - @rocket.chat/models@0.2.0-rc.5
+  </details>
+
+## 0.3.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.4
+  - @rocket.chat/rest-typings@6.11.0-rc.4
+  - @rocket.chat/pdf-worker@0.2.0-rc.4
+  - @rocket.chat/core-services@0.5.0-rc.4
+  - @rocket.chat/model-typings@0.6.0-rc.4
+  - @rocket.chat/models@0.2.0-rc.4
+  </details>
+
+## 0.3.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.3
+  - @rocket.chat/rest-typings@6.11.0-rc.3
+  - @rocket.chat/pdf-worker@0.2.0-rc.3
+  - @rocket.chat/core-services@0.5.0-rc.3
+  - @rocket.chat/model-typings@0.6.0-rc.3
+  - @rocket.chat/models@0.2.0-rc.3
+  </details>
+
+## 0.3.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.2
+  - @rocket.chat/rest-typings@6.11.0-rc.2
+  - @rocket.chat/pdf-worker@0.2.0-rc.2
+  - @rocket.chat/core-services@0.5.0-rc.2
+  - @rocket.chat/model-typings@0.6.0-rc.2
+  - @rocket.chat/models@0.2.0-rc.2
+  </details>
+
+## 0.3.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.1
+  - @rocket.chat/rest-typings@6.11.0-rc.1
+  - @rocket.chat/pdf-worker@0.2.0-rc.1
+  - @rocket.chat/core-services@0.5.0-rc.1
+  - @rocket.chat/model-typings@0.6.0-rc.1
+  - @rocket.chat/models@0.2.0-rc.1
+  </details>
+
+## 0.3.0-rc.0
+
+### Minor Changes
+
+- ([#32752](https://github.com/RocketChat/Rocket.Chat/pull/32752)) Added system messages support for Omnichannel PDF transcripts and email transcripts. Currently these transcripts don't render system messages and is shown as an empty message in PDF/email. This PR adds this support for all valid livechat system messages.
+
+  Also added a new setting under transcripts, to toggle the inclusion of system messages in email and PDF transcripts.
+
+### Patch Changes
+
+- ([#32752](https://github.com/RocketChat/Rocket.Chat/pull/32752)) Reduced time on generation of PDF transcripts. Earlier Rocket.Chat was fetching the required translations everytime a PDF transcript was requested, this process was async and was being unnecessarily being performed on every pdf transcript request. This PR improves this and now the translations are loaded at the start and kept in memory to process further pdf transcripts requests. This reduces the time of asynchronously fetching translations again and again.
+
+- <details><summary>Updated dependencies [8fc6ca8b4e, 439faa87d3, 03c8b066f9, 2d89a0c448, 439faa87d3, 24f7df4894, 03c8b066f9, 264d7d5496, b8e5887fb9]:</summary>
+
+  - @rocket.chat/tools@0.2.2-rc.0
+  - @rocket.chat/model-typings@0.6.0-rc.0
+  - @rocket.chat/pdf-worker@0.2.0-rc.0
+  - @rocket.chat/core-services@0.5.0-rc.0
+  - @rocket.chat/core-typings@6.11.0-rc.0
+  - @rocket.chat/models@0.2.0-rc.0
+  - @rocket.chat/rest-typings@6.11.0-rc.0
+  </details>
+
+## 0.2.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ca6a9d8de8, ca6a9d8de8, ca6a9d8de8, ca6a9d8de8]:</summary>
+
+  - @rocket.chat/core-services@0.4.2
+  - @rocket.chat/core-typings@6.10.2
+  - @rocket.chat/rest-typings@6.10.2
+  - @rocket.chat/pdf-worker@0.1.2
+  - @rocket.chat/model-typings@0.5.2
+  - @rocket.chat/models@0.1.2
+  </details>
+
+## 0.2.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.1
+  - @rocket.chat/rest-typings@6.10.1
+  - @rocket.chat/pdf-worker@0.1.1
+  - @rocket.chat/core-services@0.4.1
+  - @rocket.chat/model-typings@0.5.1
+  - @rocket.chat/models@0.1.1
+  </details>
+
+## 0.2.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- ([#32329](https://github.com/RocketChat/Rocket.Chat/pull/32329)) Added a new setting `Restrict files access to users who can access room` that controls file visibility. This new setting allows users that "can access a room" to also download the files that are there. This is specially important for users with livechat manager or monitor roles, or agents that have special permissions to view closed rooms, since this allows them to download files on the conversation even after the conversation is closed.
+  New setting is disabled by default and it is mutually exclusive with the setting `Restrict file access to room members` since this allows _more_ types of users to download files.
+- <details><summary>Updated dependencies [1240c874a5, eaf2f11a6c, 5f95c4ec6b, 495628bce0, f75a2cb4bb, 07c4ca0621, 4f72d62aa7, dfa49bdbb2]:</summary>
+
+  - @rocket.chat/core-typings@6.10.0
+  - @rocket.chat/model-typings@0.5.0
+  - @rocket.chat/rest-typings@6.10.0
+  - @rocket.chat/pdf-worker@0.1.0
+  - @rocket.chat/core-services@0.4.0
+  - @rocket.chat/models@0.1.0
+  </details>
+
+## 0.2.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.7
+  - @rocket.chat/rest-typings@6.10.0-rc.7
+  - @rocket.chat/pdf-worker@0.1.0-rc.7
+  - @rocket.chat/core-services@0.4.0-rc.7
+  - @rocket.chat/model-typings@0.5.0-rc.7
+  - @rocket.chat/models@0.1.0-rc.7
+  </details>
+
+## 0.2.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.6
+  - @rocket.chat/rest-typings@6.10.0-rc.6
+  - @rocket.chat/pdf-worker@0.1.0-rc.6
+  - @rocket.chat/core-services@0.4.0-rc.6
+  - @rocket.chat/model-typings@0.5.0-rc.6
+  - @rocket.chat/models@0.1.0-rc.6
+  </details>
+
+## 0.2.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.5
+  - @rocket.chat/rest-typings@6.10.0-rc.5
+  - @rocket.chat/pdf-worker@0.1.0-rc.5
+  - @rocket.chat/core-services@0.4.0-rc.5
+  - @rocket.chat/model-typings@0.5.0-rc.5
+  - @rocket.chat/models@0.1.0-rc.5
+  </details>
+
+## 0.2.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.4
+  - @rocket.chat/rest-typings@6.10.0-rc.4
+  - @rocket.chat/pdf-worker@0.1.0-rc.4
+  - @rocket.chat/core-services@0.4.0-rc.4
+  - @rocket.chat/model-typings@0.5.0-rc.4
+  - @rocket.chat/models@0.1.0-rc.4
+  </details>
+
+## 0.2.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.3
+  - @rocket.chat/rest-typings@6.10.0-rc.3
+  - @rocket.chat/pdf-worker@0.1.0-rc.3
+  - @rocket.chat/core-services@0.4.0-rc.3
+  - @rocket.chat/model-typings@0.5.0-rc.3
+  - @rocket.chat/models@0.1.0-rc.3
+  </details>
+
+## 0.2.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.2
+  - @rocket.chat/rest-typings@6.10.0-rc.2
+  - @rocket.chat/pdf-worker@0.1.0-rc.2
+  - @rocket.chat/core-services@0.4.0-rc.2
+  - @rocket.chat/model-typings@0.5.0-rc.2
+  - @rocket.chat/models@0.1.0-rc.2
+  </details>
+
+## 0.2.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.1
+  - @rocket.chat/rest-typings@6.10.0-rc.1
+  - @rocket.chat/pdf-worker@0.1.0-rc.1
+  - @rocket.chat/core-services@0.4.0-rc.1
+  - @rocket.chat/model-typings@0.5.0-rc.1
+  - @rocket.chat/models@0.1.0-rc.1
+  </details>
+
+## 0.2.0-rc.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- ([#32329](https://github.com/RocketChat/Rocket.Chat/pull/32329)) Added a new setting `Restrict files access to users who can access room` that controls file visibility. This new setting allows users that "can access a room" to also download the files that are there. This is specially important for users with livechat manager or monitor roles, or agents that have special permissions to view closed rooms, since this allows them to download files on the conversation even after the conversation is closed.
+  New setting is disabled by default and it is mutually exclusive with the setting `Restrict file access to room members` since this allows _more_ types of users to download files.
+- <details><summary>Updated dependencies [1240c874a5, eaf2f11a6c, 5f95c4ec6b, 495628bce0, f75a2cb4bb, 07c4ca0621, 4f72d62aa7, dfa49bdbb2]:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.0
+  - @rocket.chat/model-typings@0.5.0-rc.0
+  - @rocket.chat/rest-typings@6.10.0-rc.0
+  - @rocket.chat/pdf-worker@0.1.0-rc.0
+  - @rocket.chat/core-services@0.4.0-rc.0
+  - @rocket.chat/models@0.1.0-rc.0
+
+## 0.1.18
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.3
+  - @rocket.chat/rest-typings@6.9.3
+  - @rocket.chat/pdf-worker@0.0.42
+  - @rocket.chat/core-services@0.3.18
+  - @rocket.chat/model-typings@0.4.4
+  - @rocket.chat/models@0.0.42
+  </details>
+
 ## 0.1.17
 
 ### Patch Changes

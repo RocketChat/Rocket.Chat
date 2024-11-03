@@ -1,18 +1,32 @@
-import type { ReactElement, ReactNode } from 'react';
-import React, { memo, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
+import { memo } from 'react';
 import { createPortal } from 'react-dom';
 
-import { createAnchor } from '../lib/utils/createAnchor';
-import { deleteAnchor } from '../lib/utils/deleteAnchor';
+const createModalRoot = (): HTMLElement => {
+	const id = 'modal-root';
+	const existing = document.getElementById(id);
+
+	if (existing) return existing;
+
+	const newOne = document.createElement('div');
+	newOne.id = id;
+	document.body.append(newOne);
+
+	return newOne;
+};
+
+let modalRoot: HTMLElement | null = null;
 
 type ModalPortalProps = {
 	children?: ReactNode;
 };
 
-const ModalPortal = ({ children }: ModalPortalProps): ReactElement => {
-	const [modalRoot] = useState(() => createAnchor('modal-root'));
-	useEffect(() => (): void => deleteAnchor(modalRoot), [modalRoot]);
-	return <>{createPortal(children, modalRoot)}</>;
+const ModalPortal = ({ children }: ModalPortalProps) => {
+	if (!modalRoot) {
+		modalRoot = createModalRoot();
+	}
+
+	return createPortal(children, modalRoot);
 };
 
 export default memo(ModalPortal);

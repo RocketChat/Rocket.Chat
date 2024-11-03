@@ -1,6 +1,5 @@
 import { Sidebar, IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
-import type { VFC } from 'react';
 import React, { memo, useState } from 'react';
 
 type MediumProps = {
@@ -17,7 +16,7 @@ type MediumProps = {
 	menuOptions?: any;
 };
 
-const Medium: VFC<MediumProps> = ({ icon, title = '', avatar, actions, href, badges, unread, menu, ...props }) => {
+const Medium = ({ icon, title = '', avatar, actions, href, badges, unread, menu, ...props }: MediumProps) => {
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();

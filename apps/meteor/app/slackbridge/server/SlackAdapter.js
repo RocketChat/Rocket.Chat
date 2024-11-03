@@ -987,7 +987,7 @@ export default class SlackAdapter {
 				const rocketChannel = await this.rocket.getChannel(slackMessage);
 				const rocketUser = slackMessage.previous_message.user
 					? (await this.rocket.findUser(slackMessage.previous_message.user)) ||
-					  (await this.rocket.addUser(slackMessage.previous_message.user))
+						(await this.rocket.addUser(slackMessage.previous_message.user))
 					: null;
 
 				const rocketMsgObj = {
@@ -1341,7 +1341,7 @@ export default class SlackAdapter {
 					const user = (await this.rocket.findUser(member)) || (await this.rocket.addUser(member));
 					if (user) {
 						slackLogger.debug('Adding user to room', user.username, rid);
-						await addUserToRoom(rid, user, null, true);
+						await addUserToRoom(rid, user, null, { skipSystemMessage: true });
 					}
 				}
 			}

@@ -93,4 +93,8 @@ export class OmnichannelAgents {
 	findRowByName(name: string) {
 		return this.page.locator('tr', { has: this.page.locator(`td >> text="${name}"`) });
 	}
+
+	findSelectedDepartment(name: string) {
+		return this.page.locator(`role=option[name="${name}"]`);
+	}
 }

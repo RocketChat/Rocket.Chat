@@ -1,8 +1,9 @@
 import type { IRole, IRoom, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IRolesModel } from '@rocket.chat/model-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
-import type { Collection, FindCursor, Db, Filter, FindOptions, Document } from 'mongodb';
+import type { Collection, FindCursor, Db, Filter, FindOptions, Document, CountDocumentsOptions } from 'mongodb';
 
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
 import { BaseRaw } from './BaseRaw';
 
 export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
@@ -35,14 +36,15 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 				process.env.NODE_ENV === 'development' && console.warn(`[WARN] RolesRaw.addUserRoles: role: ${roleId} not found`);
 				continue;
 			}
-			switch (role.scope) {
-				case 'Subscriptions':
-					// TODO remove dependency from other models - this logic should be inside a function/service
-					await Subscriptions.addRolesByUserId(userId, [role._id], scope);
-					break;
-				case 'Users':
-				default:
-					await Users.addRolesByUserId(userId, [role._id]);
+
+			if (role.scope === 'Subscriptions' && scope) {
+				// TODO remove dependency from other models - this logic should be inside a function/service
+				const addRolesResponse = await Subscriptions.addRolesByUserId(userId, [role._id], scope);
+				if (addRolesResponse.modifiedCount) {
+					void notifyOnSubscriptionChangedByRoomIdAndUserId(scope, userId);
+				}
+			} else {
+				await Users.addRolesByUserId(userId, [role._id]);
 			}
 		}
 		return true;
@@ -88,13 +90,13 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 				continue;
 			}
 
-			switch (role.scope) {
-				case 'Subscriptions':
-					scope && (await Subscriptions.removeRolesByUserId(userId, [roleId], scope));
-					break;
-				case 'Users':
-				default:
-					await Users.removeRolesByUserId(userId, [roleId]);
+			if (role.scope === 'Subscriptions' && scope) {
+				const removeRolesResponse = await Subscriptions.removeRolesByUserId(userId, [roleId], scope);
+				if (removeRolesResponse.modifiedCount) {
+					void notifyOnSubscriptionChangedByRoomIdAndUserId(scope, userId);
+				}
+			} else {
+				await Users.removeRolesByUserId(userId, [roleId]);
 			}
 		}
 		return true;
@@ -182,12 +184,28 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		return this.find(query, options || {});
 	}
 
+	countByScope(scope: IRole['scope'], options?: CountDocumentsOptions): Promise<number> {
+		const query = {
+			scope,
+		};
+
+		return this.countDocuments(query, options);
+	}
+
 	findCustomRoles(options?: FindOptions<IRole>): FindCursor<IRole> {
 		const query: Filter<IRole> = {
 			protected: false,
 		};
 
 		return this.find(query, options || {});
+	}
+
+	countCustomRoles(options?: CountDocumentsOptions): Promise<number> {
+		const query: Filter<IRole> = {
+			protected: false,
+		};
+
+		return this.countDocuments(query, options || {});
 	}
 
 	async updateById(
@@ -249,6 +267,22 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 			case 'Users':
 			default:
 				return Users.findUsersInRoles([role._id], null, options);
+		}
+	}
+
+	async countUsersInRole(roleId: IRole['_id'], scope?: IRoom['_id']): Promise<number> {
+		const role = await this.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
+
+		if (!role) {
+			throw new Error('RolesRaw.countUsersInRole: role not found');
+		}
+
+		switch (role.scope) {
+			case 'Subscriptions':
+				return Subscriptions.countUsersInRoles([role._id], scope);
+			case 'Users':
+			default:
+				return Users.countUsersInRoles([role._id]);
 		}
 	}
 

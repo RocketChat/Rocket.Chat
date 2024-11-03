@@ -1,11 +1,10 @@
 import { useRole } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React from 'react';
 
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import FederationDashboardPage from './FederationDashboardPage';
 
-const FederationDashboardRoute: FC = () => {
+const FederationDashboardRoute = () => {
 	const authorized = useRole('admin');
 
 	if (!authorized) {

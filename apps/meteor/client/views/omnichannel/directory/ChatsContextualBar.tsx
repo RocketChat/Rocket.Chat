@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
 	Contextualbar,
@@ -17,13 +17,15 @@ import { RoomEditWithData } from './chats/contextualBar/RoomEdit';
 import { FormSkeleton } from './components';
 import { useOmnichannelRoomInfo } from './hooks/useOmnichannelRoomInfo';
 
-const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => {
+type ChatsContextualBarProps = { chatReload?: () => void };
+
+const ChatsContextualBar = ({ chatReload }: ChatsContextualBarProps) => {
 	const directoryRoute = useRoute('omnichannel-directory');
 
 	const bar = useRouteParameter('bar') || 'info';
 	const id = useRouteParameter('id') || '';
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const openInRoom = (): void => {
 		id && directoryRoute.push({ page: 'chats', id, bar: 'view' });

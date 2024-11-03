@@ -1,20 +1,18 @@
-import type { IDiscussionMessage, IUser } from '@rocket.chat/core-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { IDiscussionMessage } from '@rocket.chat/core-typings';
+import type { MouseEvent } from 'react';
 import React, { memo } from 'react';
 
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { normalizeThreadMessage } from '../../../../lib/normalizeThreadMessage';
-import DiscussionListMessage from './components/DiscussionsListItem';
+import DiscussionsListItem from './components/DiscussionsListItem';
 
 type DiscussionListRowProps = {
 	discussion: IDiscussionMessage;
 	showRealNames: boolean;
-	userId: IUser['_id'];
-	onClick: (e: unknown) => void;
+	onClick: (e: MouseEvent) => void;
 };
 
-function DiscussionListRow({ discussion, showRealNames, userId, onClick }: DiscussionListRowProps) {
-	const t = useTranslation();
+function DiscussionListRow({ discussion, showRealNames, onClick }: DiscussionListRowProps) {
 	const formatDate = useTimeAgo();
 
 	const msg = normalizeThreadMessage(discussion);
@@ -22,17 +20,16 @@ function DiscussionListRow({ discussion, showRealNames, userId, onClick }: Discu
 	const { name = discussion.u.username } = discussion.u;
 
 	return (
-		<DiscussionListMessage
-			replies={discussion.replies}
+		<DiscussionsListItem
+			_id={discussion._id}
+			emoji={discussion.emoji}
 			dcount={discussion.dcount}
 			dlm={discussion.dlm}
 			name={showRealNames ? name : discussion.u.username}
 			username={discussion.u.username}
-			following={discussion.replies?.includes(userId)}
 			data-drid={discussion.drid}
 			ts={discussion.ts}
 			msg={msg}
-			t={t}
 			formatDate={formatDate}
 			onClick={onClick}
 		/>

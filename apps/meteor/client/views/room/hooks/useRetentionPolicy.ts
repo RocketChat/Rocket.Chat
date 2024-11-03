@@ -4,7 +4,9 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import { TIMEUNIT, isValidTimespan, timeUnitToMs } from '../../../lib/convertTimeUnit';
 
 const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWithRetentionPolicy =>
-	'retention' in room && room.retention !== undefined && 'overrideGlobal' in room.retention && isValidTimespan(room.retention.maxAge);
+	'retention' in room && room.retention !== undefined;
+
+const isRetentionOverridden = (room: IRoom & { retention?: any }) => 'overrideGlobal' in room.retention && room.retention.overrideGlobal;
 
 type RetentionPolicySettings = {
 	enabled: boolean;
@@ -41,7 +43,7 @@ const isActive = (room: IRoom, { enabled, appliesToChannels, appliesToGroups, ap
 };
 
 const extractFilesOnly = (room: IRoom, { filesOnly }: RetentionPolicySettings): boolean => {
-	if (hasRetentionPolicy(room) && room.retention.overrideGlobal) {
+	if (hasRetentionPolicy(room) && isRetentionOverridden(room)) {
 		return room.retention.filesOnly;
 	}
 
@@ -49,7 +51,7 @@ const extractFilesOnly = (room: IRoom, { filesOnly }: RetentionPolicySettings): 
 };
 
 const extractExcludePinned = (room: IRoom, { doNotPrunePinned }: RetentionPolicySettings): boolean => {
-	if (hasRetentionPolicy(room) && room.retention.overrideGlobal) {
+	if (hasRetentionPolicy(room) && isRetentionOverridden(room)) {
 		return room.retention.excludePinned;
 	}
 
@@ -57,7 +59,7 @@ const extractExcludePinned = (room: IRoom, { doNotPrunePinned }: RetentionPolicy
 };
 
 const extractIgnoreThreads = (room: IRoom, { ignoreThreads }: RetentionPolicySettings): boolean => {
-	if (hasRetentionPolicy(room) && room.retention.overrideGlobal) {
+	if (hasRetentionPolicy(room) && isRetentionOverridden(room)) {
 		return room.retention.ignoreThreads;
 	}
 
@@ -65,7 +67,7 @@ const extractIgnoreThreads = (room: IRoom, { ignoreThreads }: RetentionPolicySet
 };
 
 const getMaxAge = (room: IRoom, { maxAgeChannels, maxAgeGroups, maxAgeDMs }: RetentionPolicySettings): number => {
-	if (hasRetentionPolicy(room) && room.retention.overrideGlobal) {
+	if (hasRetentionPolicy(room) && isRetentionOverridden(room) && isValidTimespan(room.retention.maxAge)) {
 		return timeUnitToMs(TIMEUNIT.days, room.retention.maxAge);
 	}
 

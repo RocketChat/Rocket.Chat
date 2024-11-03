@@ -11,11 +11,12 @@ import {
 	ToggleSwitch,
 	FieldGroup,
 } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 
@@ -26,7 +27,7 @@ type OAuthAddAppPayload = {
 };
 
 const OAuthAddApp = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
@@ -69,10 +70,10 @@ const OAuthAddApp = (): ReactElement => {
 				<Field>
 					<FieldLabel>{t('Application_Name')}</FieldLabel>
 					<FieldRow>
-						<TextInput {...register('name', { required: true })} />
+						<TextInput {...register('name', { required: t('Required_field', { field: t('Name') }) })} />
 					</FieldRow>
 					<FieldHint>{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}</FieldHint>
-					{errors?.name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
+					{errors?.name && <FieldError>{errors.name.message}</FieldError>}
 				</Field>
 				<Field>
 					<FieldLabel>{t('Redirect_URI')}</FieldLabel>
@@ -80,7 +81,7 @@ const OAuthAddApp = (): ReactElement => {
 						<TextAreaInput rows={5} {...register('redirectUri', { required: true })} />
 					</FieldRow>
 					<FieldHint>{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}</FieldHint>
-					{errors?.redirectUri && <FieldError>{t('error-the-field-is-required', { field: t('Redirect_URI') })}</FieldError>}
+					{errors?.redirectUri && <FieldError>{t('Required_field', { field: t('Redirect_URI') })}</FieldError>}
 				</Field>
 				<Field>
 					<FieldRow>

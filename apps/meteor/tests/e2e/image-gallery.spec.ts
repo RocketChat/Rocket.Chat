@@ -31,6 +31,7 @@ test.describe.serial('Image Gallery', async () => {
 	});
 
 	test.afterAll(async ({ api }) => {
+		await poHomeChannel.page.close();
 		await deleteChannel(api, targetChannel);
 		await deleteChannel(api, targetChannelLargeImage);
 	});

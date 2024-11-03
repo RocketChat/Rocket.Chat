@@ -1,5 +1,6 @@
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Logger } from '@rocket.chat/logger';
+import { tracerActiveSpan } from '@rocket.chat/tracing';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
@@ -7,6 +8,7 @@ import _ from 'underscore';
 import { getMethodArgs } from '../../../../server/lib/logger/logPayloads';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
+import { getModifiedHttpHeaders } from '../functions/getModifiedHttpHeaders';
 
 const logger = new Logger('Meteor');
 
@@ -41,7 +43,7 @@ const traceConnection = (enable, filter, prefix, name, connection, userId) => {
 		console.log(name, {
 			id: connection.id,
 			clientAddress: connection.clientAddress,
-			httpHeaders: connection.httpHeaders,
+			httpHeaders: getModifiedHttpHeaders(connection.httpHeaders),
 			userId,
 		});
 	} else {
@@ -71,9 +73,20 @@ const wrapMethods = function (name, originalHandler, methodsMap) {
 			...getMethodArgs(name, originalArgs),
 		});
 
-		const result = originalHandler.apply(this, originalArgs);
-		end();
-		return result;
+		return tracerActiveSpan(
+			`Method ${name}`,
+			{
+				attributes: {
+					method: name,
+					userId: this.userId,
+				},
+			},
+			async () => {
+				const result = await originalHandler.apply(this, originalArgs);
+				end();
+				return result;
+			},
+		);
 	};
 };
 

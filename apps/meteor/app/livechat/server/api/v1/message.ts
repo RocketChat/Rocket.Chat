@@ -98,7 +98,7 @@ API.v1.addRoute(
 				throw new Error('invalid-room');
 			}
 
-			let message = await Messages.findOneById(_id);
+			let message = await Messages.findOneByRoomIdAndMessageId(rid, _id);
 			if (!message) {
 				throw new Error('invalid-message');
 			}

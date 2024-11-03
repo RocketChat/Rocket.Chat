@@ -1,7 +1,6 @@
 import type { Dimensions } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useAttachmentDimensions } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React, { memo, useState, useMemo } from 'react';
 
 import ImageBox from './image/ImageBox';
@@ -37,7 +36,7 @@ const getDimensions = (
 	return { width, height, ratio: (height / width) * 100 };
 };
 
-const AttachmentImage: FC<AttachmentImageProps> = ({ id, previewUrl, dataSrc, loadImage = true, setLoadImage, src, ...size }) => {
+const AttachmentImage = ({ id, previewUrl, dataSrc, loadImage = true, setLoadImage, src, ...size }: AttachmentImageProps) => {
 	const limits = useAttachmentDimensions();
 
 	const [error, setError] = useState(false);
@@ -60,7 +59,7 @@ const AttachmentImage: FC<AttachmentImageProps> = ({ id, previewUrl, dataSrc, lo
 	}
 
 	if (error) {
-		return <Retry width={dimensions.width} height={dimensions.height} retry={setHasNoError} />;
+		return <Retry retry={setHasNoError} />;
 	}
 
 	return (

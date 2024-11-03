@@ -2,11 +2,10 @@ import { api } from '@rocket.chat/core-services';
 import { LivechatVisitors, ReadReceipts, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
-import { notifyOnRoomChangedById } from '../../../../app/lib/server/lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 
 // debounced function by roomId, so multiple calls within 2 seconds to same roomId runs only once
 const list = {};
@@ -70,7 +69,7 @@ export const ReadReceipt = {
 		if (isUserAlone) {
 			const result = await Messages.setAsReadById(message._id);
 			if (result.modifiedCount > 0) {
-				void broadcastMessageFromData({
+				void notifyOnMessageChange({
 					id: message._id,
 				});
 			}

@@ -1,6 +1,5 @@
 import moment from 'moment-timezone';
 
-import '@testing-library/jest-dom';
 import { invalidData, validData, newDayData, sameDayData, translationsData } from '../templates/ChatTranscript/ChatTranscript.fixtures';
 import { ChatTranscript } from './ChatTranscript';
 
@@ -59,5 +58,11 @@ describe('Strategies/ChatTranscript', () => {
 		expect(() => {
 			result.t('invalidKey');
 		}).toThrow('Translation not found for key: invalidKey');
+	});
+
+	it('should parse the system message', () => {
+		const data = { ...validData, translations: translationsData.translations };
+		const result = chatTranscript.parseTemplateData(data);
+		expect(result.messages[2]).toHaveProperty('t', 'livechat-started');
 	});
 });

@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { Message, Omnichannel } from '@rocket.chat/core-services';
+import { Message } from '@rocket.chat/core-services';
 import type {
 	ILivechatInquiryRecord,
 	ILivechatVisitor,
@@ -12,7 +12,6 @@ import type {
 	TransferData,
 } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
@@ -36,7 +35,6 @@ const logger = new Logger('RoutingManager');
 
 type Routing = {
 	methods: Record<string, IRoutingMethod>;
-	startQueue(): Promise<void>;
 	isMethodSet(): boolean;
 	registerMethod(name: string, Method: IRoutingMethodConstructor): void;
 	getMethod(): IRoutingMethod;
@@ -46,8 +44,8 @@ type Routing = {
 		inquiry: InquiryWithAgentInfo,
 		agent?: SelectedAgent | null,
 		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
+		room?: IOmnichannelRoom,
 	): Promise<(IOmnichannelRoom & { chatQueued?: boolean }) | null | void>;
-	assignAgent(inquiry: InquiryWithAgentInfo, agent: SelectedAgent): Promise<InquiryWithAgentInfo>;
 	unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string, shouldQueue?: boolean): Promise<boolean>;
 	takeInquiry(
 		inquiry: Omit<
@@ -55,25 +53,18 @@ type Routing = {
 			'estimatedInactivityCloseTimeAt' | 'message' | 't' | 'source' | 'estimatedWaitingTimeQueue' | 'priorityWeight' | '_updatedAt'
 		>,
 		agent: SelectedAgent | null,
-		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
+		options: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
+		room: IOmnichannelRoom,
 	): Promise<IOmnichannelRoom | null | void>;
 	transferRoom(room: IOmnichannelRoom, guest: ILivechatVisitor, transferData: TransferData): Promise<boolean>;
 	delegateAgent(agent: SelectedAgent | undefined, inquiry: ILivechatInquiryRecord): Promise<SelectedAgent | null | undefined>;
 	removeAllRoomSubscriptions(room: Pick<IOmnichannelRoom, '_id'>, ignoreUser?: { _id: string }): Promise<void>;
+
+	assignAgent(inquiry: InquiryWithAgentInfo, room: IOmnichannelRoom, agent: SelectedAgent): Promise<InquiryWithAgentInfo>;
 };
 
 export const RoutingManager: Routing = {
 	methods: {},
-
-	async startQueue() {
-		const shouldPreventQueueStart = await License.shouldPreventAction('monthlyActiveContacts');
-
-		if (shouldPreventQueueStart) {
-			logger.error('Monthly Active Contacts limit reached. Queue will not start');
-			return;
-		}
-		void (await Omnichannel.getQueueWorker()).shouldStart();
-	},
 
 	isMethodSet() {
 		return settings.get<string>('Livechat_Routing_Method') !== '';
@@ -101,7 +92,7 @@ export const RoutingManager: Routing = {
 		return this.getMethod().getNextAgent(department, ignoreAgentId);
 	},
 
-	async delegateInquiry(inquiry, agent, options = {}) {
+	async delegateInquiry(inquiry, agent, options = {}, room) {
 		const { department, rid } = inquiry;
 		logger.debug(`Attempting to delegate inquiry ${inquiry._id}`);
 		if (!agent || (agent.username && !(await Users.findOneOnlineAgentByUserList(agent.username)) && !(await allowAgentSkipQueue(agent)))) {
@@ -117,11 +108,15 @@ export const RoutingManager: Routing = {
 			return LivechatRooms.findOneById(rid);
 		}
 
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room');
+		}
+
 		logger.debug(`Inquiry ${inquiry._id} will be taken by agent ${agent.agentId}`);
-		return this.takeInquiry(inquiry, agent, options);
+		return this.takeInquiry(inquiry, agent, options, room);
 	},
 
-	async assignAgent(inquiry, agent) {
+	async assignAgent(inquiry: InquiryWithAgentInfo, room: IOmnichannelRoom, agent: SelectedAgent): Promise<InquiryWithAgentInfo> {
 		check(
 			agent,
 			Match.ObjectIncluding({
@@ -142,19 +137,14 @@ export const RoutingManager: Routing = {
 		await Rooms.incUsersCountById(rid, 1);
 
 		const user = await Users.findOneById(agent.agentId);
-		const room = await LivechatRooms.findOneById(rid);
 
 		if (user) {
 			await Promise.all([Message.saveSystemMessage('command', rid, 'connected', user), Message.saveSystemMessage('uj', rid, '', user)]);
 		}
 
-		if (!room) {
-			logger.debug(`Cannot assign agent to inquiry ${inquiry._id}: Room not found`);
-			throw new Meteor.Error('error-room-not-found', 'Room not found');
-		}
-
 		await dispatchAgentDelegated(rid, agent.agentId);
-		logger.debug(`Agent ${agent.agentId} assigned to inquriy ${inquiry._id}. Instances notified`);
+
+		logger.debug(`Agent ${agent.agentId} assigned to inquiry ${inquiry._id}. Instances notified`);
 
 		void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
 		return inquiry;
@@ -206,7 +196,7 @@ export const RoutingManager: Routing = {
 		return true;
 	},
 
-	async takeInquiry(inquiry, agent, options = { clientAction: false }) {
+	async takeInquiry(inquiry, agent, options = { clientAction: false }, room) {
 		check(
 			agent,
 			Match.ObjectIncluding({
@@ -227,7 +217,6 @@ export const RoutingManager: Routing = {
 		logger.debug(`Attempting to take Inquiry ${inquiry._id} [Agent ${agent.agentId}] `);
 
 		const { _id, rid } = inquiry;
-		const room = await LivechatRooms.findOneById(rid);
 		if (!room?.open) {
 			logger.debug(`Cannot take Inquiry ${inquiry._id}: Room is closed`);
 			return room;
@@ -262,10 +251,25 @@ export const RoutingManager: Routing = {
 
 		await LivechatInquiry.takeInquiry(_id);
 
-		const inq = await this.assignAgent(inquiry as InquiryWithAgentInfo, agent);
 		logger.info(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
 
-		callbacks.runAsync('livechat.afterTakeInquiry', inq, agent);
+		// assignAgent changes the room data to add the agent serving the conversation. afterTakeInquiry expects room object to be updated
+		const inq = await this.assignAgent(inquiry as InquiryWithAgentInfo, room, agent);
+		const roomAfterUpdate = await LivechatRooms.findOneById(rid);
+
+		if (!roomAfterUpdate) {
+			// This should never happen
+			throw new Error('error-room-not-found');
+		}
+
+		callbacks.runAsync(
+			'livechat.afterTakeInquiry',
+			{
+				inquiry: inq,
+				room: roomAfterUpdate,
+			},
+			agent,
+		);
 
 		void notifyOnLivechatInquiryChangedById(inquiry._id, 'updated', {
 			status: LivechatInquiryStatus.TAKEN,
@@ -275,7 +279,7 @@ export const RoutingManager: Routing = {
 			queuedAt: undefined,
 		});
 
-		return LivechatRooms.findOneById(rid);
+		return roomAfterUpdate;
 	},
 
 	async transferRoom(room, guest, transferData) {

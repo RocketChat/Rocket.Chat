@@ -1,8 +1,8 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -12,7 +12,7 @@ import { Federation } from '../../../../server/services/federation/Federation';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions/addUserToRoom';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		addUsersToRoom(data: { rid: string; users: string[] }): boolean;
@@ -98,14 +98,11 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 					return;
 				}
 				void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
-					msg: i18n.t(
-						'Username_is_already_in_here',
-						{
-							postProcess: 'sprintf',
-							sprintf: [newUser.username],
-						},
-						user?.language,
-					),
+					msg: i18n.t('Username_is_already_in_here', {
+						postProcess: 'sprintf',
+						sprintf: [newUser.username],
+						lng: user?.language,
+					}),
 				});
 			}
 		}),

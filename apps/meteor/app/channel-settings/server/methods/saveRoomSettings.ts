@@ -1,8 +1,8 @@
 import { Team } from '@rocket.chat/core-services';
 import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TEAM_TYPE, isValidSidepanel } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -21,7 +21,6 @@ import { saveRoomReadOnly } from '../functions/saveRoomReadOnly';
 import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
 import { saveRoomType } from '../functions/saveRoomType';
-import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 
 type RoomSettings = {
 	roomAvatar: string;
@@ -37,7 +36,6 @@ type RoomSettings = {
 	systemMessages: MessageTypesValues[];
 	default: boolean;
 	joinCode: string;
-	streamingOptions: NonNullable<IRoom['streamingOptions']>;
 	retentionEnabled: boolean;
 	retentionMaxAge: number;
 	retentionExcludePinned: boolean;
@@ -49,6 +47,7 @@ type RoomSettings = {
 		favorite: boolean;
 		defaultValue: boolean;
 	};
+	sidepanel?: IRoom['sidepanel'];
 };
 
 type RoomSettingsValidators = {
@@ -80,20 +79,57 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 	},
+	async sidepanel({ room, userId, value }) {
+		if (!room.teamMain) {
+			throw new Meteor.Error('error-action-not-allowed', 'Invalid room', {
+				method: 'saveRoomSettings',
+			});
+		}
+
+		if (!(await hasPermissionAsync(userId, 'edit-team', room._id))) {
+			throw new Meteor.Error('error-action-not-allowed', 'You do not have permission to change sidepanel items', {
+				method: 'saveRoomSettings',
+			});
+		}
+
+		if (!isValidSidepanel(value)) {
+			throw new Meteor.Error('error-invalid-sidepanel');
+		}
+	},
+
 	async roomType({ userId, room, value }) {
 		if (value === room.t) {
 			return;
 		}
 
-		if (value === 'c' && !(await hasPermissionAsync(userId, 'create-c'))) {
+		if (value === 'c' && !room.teamId && !(await hasPermissionAsync(userId, 'create-c'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing a private group to a public channel is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
 		}
 
-		if (value === 'p' && !(await hasPermissionAsync(userId, 'create-p'))) {
+		if (value === 'p' && !room.teamId && !(await hasPermissionAsync(userId, 'create-p'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing a public channel to a private room is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Change_Room_Type',
+			});
+		}
+
+		if (!room.teamId) {
+			return;
+		}
+		const team = await Team.getInfoById(room.teamId);
+
+		if (value === 'c' && !(await hasPermissionAsync(userId, 'create-team-channel', team?.roomId))) {
+			throw new Meteor.Error('error-action-not-allowed', `Changing a team's private group to a public channel is not allowed`, {
+				method: 'saveRoomSettings',
+				action: 'Change_Room_Type',
+			});
+		}
+
+		if (value === 'p' && !(await hasPermissionAsync(userId, 'create-team-group', team?.roomId))) {
+			throw new Meteor.Error('error-action-not-allowed', `Changing a team's public channel to a private room is not allowed`, {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
@@ -213,6 +249,11 @@ const settingSavers: RoomSettingsSavers = {
 			await saveRoomTopic(rid, value, user);
 		}
 	},
+	async sidepanel({ value, rid, room }) {
+		if (JSON.stringify(value) !== JSON.stringify(room.sidepanel)) {
+			await Rooms.setSidepanelById(rid, value);
+		}
+	},
 	async roomAnnouncement({ value, room, rid, user }) {
 		if (!value && !room.announcement) {
 			return;
@@ -247,9 +288,6 @@ const settingSavers: RoomSettingsSavers = {
 			const type = value === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE;
 			void Team.update(user._id, room.teamId, { type, updateRoom: false });
 		}
-	},
-	async streamingOptions({ value, rid }) {
-		await saveStreamingOptions(rid, value);
 	},
 	async readOnly({ value, room, rid, user }) {
 		if (value !== room.ro) {
@@ -304,7 +342,7 @@ const settingSavers: RoomSettingsSavers = {
 	},
 };
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		saveRoomSettings(rid: IRoom['_id'], settings: Partial<RoomSettings>): Promise<{ result: true; rid: IRoom['_id'] }>;
@@ -330,7 +368,6 @@ const fields: (keyof RoomSettings)[] = [
 	'systemMessages',
 	'default',
 	'joinCode',
-	'streamingOptions',
 	'retentionEnabled',
 	'retentionMaxAge',
 	'retentionExcludePinned',
@@ -339,6 +376,7 @@ const fields: (keyof RoomSettings)[] = [
 	'retentionOverrideGlobal',
 	'encrypted',
 	'favorite',
+	'sidepanel',
 ];
 
 const validate = <TRoomSetting extends keyof RoomSettings>(

@@ -8,7 +8,16 @@ import type {
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
-import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, IndexDescription, Collection, Db, FindOptions } from 'mongodb';
+import type {
+	FindCursor,
+	UpdateOptions,
+	UpdateFilter,
+	UpdateResult,
+	IndexDescription,
+	Collection,
+	Db,
+	CountDocumentsOptions,
+} from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -21,6 +30,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		return [
 			{ key: { rid: 1, createdAt: 1 }, unique: false },
 			{ key: { type: 1, status: 1 }, unique: false },
+			{ key: { discussionRid: 1 }, unique: false },
 		];
 	}
 
@@ -62,15 +72,15 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	public async countByTypeAndStatus(
 		type: VideoConference['type'],
 		status: VideoConferenceStatus,
-		options: FindOptions<VideoConference>,
+		options: CountDocumentsOptions,
 	): Promise<number> {
-		return this.find(
+		return this.countDocuments(
 			{
 				type,
 				status,
 			},
 			options,
-		).count();
+		);
 	}
 
 	public async createDirect({
@@ -180,12 +190,12 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 						$set: {
 							providerData,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							providerData: 1 as const,
 						},
-				  }),
+					}),
 		});
 	}
 
@@ -259,6 +269,27 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			{
 				$inc: {
 					anonymousUsers: 1,
+				},
+			},
+		);
+	}
+
+	public async setDiscussionRidById(callId: string, discussionRid: IRoom['_id']): Promise<void> {
+		await this.updateOne({ _id: callId }, { $set: { discussionRid } });
+	}
+
+	public async unsetDiscussionRidById(callId: string): Promise<void> {
+		await this.updateOne({ _id: callId }, { $unset: { discussionRid: true } });
+	}
+
+	public async unsetDiscussionRid(discussionRid: IRoom['_id']): Promise<void> {
+		await this.updateMany(
+			{
+				discussionRid,
+			},
+			{
+				$unset: {
+					discussionRid: 1,
 				},
 			},
 		);

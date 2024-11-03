@@ -2,6 +2,8 @@ import fs from 'fs/promises';
 
 import type { Locator, Page } from '@playwright/test';
 
+import { expect } from '../../utils/test';
+
 export class HomeContent {
 	protected readonly page: Page;
 
@@ -50,7 +52,7 @@ export class HomeContent {
 	}
 
 	get encryptedRoomHeaderIcon(): Locator {
-		return this.page.locator('.rcx-room-header button > i.rcx-icon--name-key');
+		return this.page.locator('.rcx-room-header i.rcx-icon--name-key');
 	}
 
 	get lastIgnoredUserMessage(): Locator {
@@ -82,14 +84,15 @@ export class HomeContent {
 	async sendMessage(text: string): Promise<void> {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
-		await this.page.locator('[name="msg"]').type(text);
-		await this.page.keyboard.press('Enter');
+		await this.page.locator('[name="msg"]').fill(text);
+		await this.page.locator('button[aria-label="Send"]').click();
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
-		await this.page.locator('[name="msg"]').type(text);
+		await this.page.locator('[name="msg"]').fill('');
+		await this.page.locator('[name="msg"]').fill(text);
 		await this.page.keyboard.press('Enter');
 		await this.page.keyboard.press('Enter');
 	}
@@ -339,15 +342,19 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="ToolBoxAction-phone"]');
 	}
 
-	get btnStartCall(): Locator {
+	get menuItemVideoCall(): Locator {
+		return this.page.locator('role=menuitem[name="Video call"]');
+	}
+
+	get btnStartVideoCall(): Locator {
 		return this.page.locator('#video-conf-root .rcx-button--primary.rcx-button >> text="Start call"');
 	}
 
-	get btnDeclineCall(): Locator {
+	get btnDeclineVideoCall(): Locator {
 		return this.page.locator('.rcx-button--secondary-danger.rcx-button >> text="Decline"');
 	}
 
-	ringCallText(text: string): Locator {
+	videoConfRingCallText(text: string): Locator {
 		return this.page.locator(`#video-conf-root .rcx-box.rcx-box--full >> text="${text}"`);
 	}
 
@@ -375,7 +382,19 @@ export class HomeContent {
 		return this.page.locator('div[class="swiper-slide swiper-slide-active"] img');
 	}
 
+	// TODO: use getSystemMessageByText instead
 	findSystemMessage(text: string): Locator {
 		return this.page.locator(`[data-qa-type="system-message-body"] >> text="${text}"`);
+	}
+
+	getSystemMessageByText(text: string): Locator {
+		return this.page.locator('[aria-roledescription="system message"]', { hasText: text });
+	}
+
+	async waitForChannel(): Promise<void> {
+		await this.page.locator('role=main').waitFor();
+		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
+
+		await expect(this.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
 	}
 }

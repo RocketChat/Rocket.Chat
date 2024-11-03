@@ -1,5 +1,10 @@
+import { IncomingMessage } from 'node:http';
+import { URL } from 'node:url';
+
 import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { IFederationService } from '@rocket.chat/core-services';
+import type { IFederationService, FederationConfigurationStatus } from '@rocket.chat/core-services';
+import { isRoomFederated, type IRoom } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
 import type { FederationUserServiceSender } from './application/user/sender/UserServiceSender';
@@ -12,10 +17,28 @@ import type { RocketChatNotificationAdapter } from './infrastructure/rocket-chat
 import type { RocketChatRoomAdapter } from './infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from './infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from './infrastructure/rocket-chat/adapters/User';
+import { federationServiceLogger } from './infrastructure/rocket-chat/adapters/logger';
 import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/converters/RoomSender';
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
-
 import './infrastructure/rocket-chat/well-known';
+import { throwIfFederationNotEnabledOrNotReady } from './utils';
+
+function extractError(e: unknown) {
+	if (e instanceof Error || (typeof e === 'object' && e && 'toString' in e)) {
+		if ('name' in e && e.name === 'AbortError') {
+			return 'Operation timed out';
+		}
+
+		return e.toString();
+	}
+
+	federationServiceLogger.error(e);
+
+	return 'Unknown error';
+}
+
+// for airgapped deployments, use environment variable to override a local instance of federationtester
+const federationTesterHost = process.env.FEDERATION_TESTER_HOST?.trim()?.replace(/\/$/, '') || 'https://federationtester.matrix.org';
 
 export abstract class AbstractFederationService extends ServiceClassInternal {
 	private cancelSettingsObserver: () => void;
@@ -126,7 +149,9 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 
 		if (isFederationEnabled) {
 			await this.onDisableFederation();
-			return this.onEnableFederation();
+			await this.onEnableFederation();
+			await this.verifyConfiguration();
+			return;
 		}
 
 		return this.onDisableFederation();
@@ -178,6 +203,17 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			this.internalSettingsAdapter,
 		);
 		this.internalQueueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), this.PROCESSING_CONCURRENCY);
+	}
+
+	private canOtherHomeserversFederate(): Promise<boolean> {
+		const url = new URL(`https://${this.internalSettingsAdapter.getHomeServerDomain()}`);
+
+		return new Promise((resolve, reject) =>
+			fetch(`${federationTesterHost}/api/federation-ok?server_name=${url.host}`)
+				.then((response) => response.text())
+				.then((text) => resolve(text === 'GOOD'))
+				.catch(reject),
+		);
 	}
 
 	protected getInternalSettingsAdapter(): RocketChatSettingsAdapter {
@@ -237,6 +273,78 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 
 	protected async verifyMatrixIds(matrixIds: string[]): Promise<Map<string, string>> {
 		return this.bridge.verifyInviteeIds(matrixIds);
+	}
+
+	public async configurationStatus(): Promise<FederationConfigurationStatus> {
+		const status: FederationConfigurationStatus = {
+			appservice: {
+				roundTrip: { durationMs: -1 },
+				ok: false,
+			},
+			externalReachability: {
+				ok: false,
+			},
+		};
+
+		try {
+			const pingResponse = await this.bridge.ping();
+			status.appservice.roundTrip.durationMs = pingResponse.durationMs;
+			status.appservice.ok = true;
+		} catch (error) {
+			if (error instanceof IncomingMessage) {
+				if (error.statusCode === 404) {
+					status.appservice.error = 'homeserver version must be >=1.84.x';
+				} else {
+					status.appservice.error = `received unknown status from homeserver, message: ${error.statusMessage}`;
+				}
+			} else {
+				status.appservice.error = extractError(error);
+			}
+		}
+
+		try {
+			status.externalReachability.ok = await this.canOtherHomeserversFederate();
+		} catch (error) {
+			status.externalReachability.error = extractError(error);
+		}
+
+		return status;
+	}
+
+	public async markConfigurationValid(): Promise<void> {
+		return this.internalSettingsAdapter.setConfigurationStatus('Valid');
+	}
+
+	public async markConfigurationInvalid(): Promise<void> {
+		return this.internalSettingsAdapter.setConfigurationStatus('Invalid');
+	}
+
+	public async verifyConfiguration(): Promise<void> {
+		try {
+			await this.bridge?.ping(); // throws error if fails
+
+			if (!(await this.canOtherHomeserversFederate())) {
+				throw new Error('External reachability could not be verified');
+			}
+
+			void this.markConfigurationValid();
+		} catch (error) {
+			federationServiceLogger.error(error);
+
+			void this.markConfigurationInvalid();
+		}
+	}
+
+	public async beforeCreateRoom(room: Partial<IRoom>): Promise<void> {
+		if (!isRoomFederated(room)) {
+			return;
+		}
+
+		throwIfFederationNotEnabledOrNotReady();
+	}
+
+	protected async deactivateRemoteUser(remoteUserId: string): Promise<void> {
+		return this.bridge.deactivateUser(remoteUserId);
 	}
 }
 
@@ -341,5 +449,29 @@ export class FederationService extends AbstractBaseFederationService implements 
 
 	public async created(): Promise<void> {
 		return super.created();
+	}
+
+	public async verifyConfiguration(): Promise<void> {
+		return super.verifyConfiguration();
+	}
+
+	public async markConfigurationValid(): Promise<void> {
+		return super.markConfigurationValid();
+	}
+
+	public async markConfigurationInvalid(): Promise<void> {
+		return super.markConfigurationInvalid();
+	}
+
+	public async configurationStatus(): Promise<FederationConfigurationStatus> {
+		return super.configurationStatus();
+	}
+
+	public async beforeCreateRoom(room: Partial<IRoom>): Promise<void> {
+		return super.beforeCreateRoom(room);
+	}
+
+	public async deactivateRemoteUser(userId: string): Promise<void> {
+		return super.deactivateRemoteUser(userId);
 	}
 }

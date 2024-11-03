@@ -68,6 +68,17 @@ export class RocketChatSettingsAdapter {
 		return settings.get('Federation_Matrix_enable_ephemeral_events') === true;
 	}
 
+	public isConfigurationValid(): boolean {
+		return settings.get('Federation_Matrix_configuration_status') === 'Valid';
+	}
+
+	public async setConfigurationStatus(status: 'Valid' | 'Invalid'): Promise<void> {
+		const { modifiedCount } = await Settings.updateOne({ _id: 'Federation_Matrix_configuration_status' }, { $set: { value: status } });
+		if (modifiedCount) {
+			void notifyOnSettingChangedById('Federation_Matrix_configuration_status');
+		}
+	}
+
 	public onFederationEnabledStatusChanged(
 		callback: (
 			enabled: boolean,
@@ -205,7 +216,7 @@ export class RocketChatSettingsAdapter {
 		const siteUrl = settings.get<string>('Site_Url');
 
 		await settingsRegistry.add('Federation_Matrix_id', `rocketchat_${uniqueId}`, {
-			readonly: true,
+			readonly: process.env.NODE_ENV === 'production',
 			type: 'string',
 			i18nLabel: 'Federation_Matrix_id',
 			i18nDescription: 'Federation_Matrix_id_desc',
@@ -214,7 +225,7 @@ export class RocketChatSettingsAdapter {
 		});
 
 		await settingsRegistry.add('Federation_Matrix_hs_token', homeserverToken, {
-			readonly: true,
+			readonly: process.env.NODE_ENV === 'production',
 			type: 'string',
 			i18nLabel: 'Federation_Matrix_hs_token',
 			i18nDescription: 'Federation_Matrix_hs_token_desc',
@@ -223,7 +234,7 @@ export class RocketChatSettingsAdapter {
 		});
 
 		await settingsRegistry.add('Federation_Matrix_as_token', applicationServiceToken, {
-			readonly: true,
+			readonly: process.env.NODE_ENV === 'production',
 			type: 'string',
 			i18nLabel: 'Federation_Matrix_as_token',
 			i18nDescription: 'Federation_Matrix_as_token_desc',
@@ -284,6 +295,28 @@ export class RocketChatSettingsAdapter {
 			public: true,
 			enterprise: true,
 			invalidValue: false,
+			group: 'Federation',
+			section: 'Matrix Bridge',
+		});
+
+		await settingsRegistry.add('Federation_Matrix_configuration_status', 'Invalid', {
+			readonly: true,
+			type: 'string',
+			i18nLabel: 'Federation_Matrix_configuration_status',
+			i18nDescription: 'Federation_Matrix_configuration_status_desc',
+			public: false,
+			enterprise: false,
+			invalidValue: '',
+			group: 'Federation',
+			section: 'Matrix Bridge',
+		});
+
+		await settingsRegistry.add('Federation_Matrix_check_configuration_button', 'checkFederationConfiguration', {
+			type: 'action',
+			actionText: 'Federation_Matrix_check_configuration',
+			public: false,
+			enterprise: false,
+			invalidValue: '',
 			group: 'Federation',
 			section: 'Matrix Bridge',
 		});

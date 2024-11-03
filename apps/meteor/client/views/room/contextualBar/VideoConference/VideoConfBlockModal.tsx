@@ -23,6 +23,7 @@ const VideoConfBlockModal = ({ onClose, onConfirm }: { onClose: () => void; onCo
 
 	return (
 		<GenericModal
+			open
 			icon={null}
 			variant='warning'
 			title={t('Open_call_in_new_tab')}

@@ -2,10 +2,11 @@ import type { MessageAttachment, IWebdavAccount } from '@rocket.chat/core-typing
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Modal, Box, Button, FieldGroup, Field, FieldLabel, FieldRow, FieldError, Select, Throbber } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useMethod, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMethod, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useWebDAVAccountIntegrationsQuery } from '../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
 import { getWebdavServerName } from '../../../lib/getWebdavServerName';
@@ -19,7 +20,7 @@ type SaveToWebdavModalProps = {
 };
 
 const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [isLoading, setIsLoading] = useState(false);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const uploadFileToWebdav = useMethod('uploadFileToWebdav');
@@ -30,7 +31,7 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 		control,
 		handleSubmit,
 		formState: { errors },
-	} = useForm<{ accountId: string }>();
+	} = useForm<{ accountId: string }>({ mode: 'all' });
 
 	const enabled = useSetting<boolean>('Webdav_Integration_Enabled', false);
 
@@ -98,13 +99,13 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 								<Controller
 									name='accountId'
 									control={control}
-									rules={{ required: true }}
+									rules={{ required: t('Required_field', { field: t('Select_a_webdav_server') }) }}
 									render={({ field }): ReactElement => (
 										<Select {...field} options={accountsOptions} id={accountIdField} placeholder={t('Select_an_option')} />
 									)}
 								/>
 							</FieldRow>
-							{errors.accountId && <FieldError>{t('Field_required')}</FieldError>}
+							{errors.accountId && <FieldError>{errors.accountId.message}</FieldError>}
 						</Field>
 					</FieldGroup>
 				)}

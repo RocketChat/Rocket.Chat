@@ -15,8 +15,6 @@ type VersionCardActionButtonProps =
 			label: ReactNode;
 	  };
 
-export type VersionActionButton = {};
-
 const VersionCardActionButton = (item: VersionCardActionButtonProps): ReactElement => {
 	const router = useRouter();
 

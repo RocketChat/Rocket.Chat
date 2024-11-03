@@ -1,4 +1,4 @@
-import type { ThemePreference } from '@rocket.chat/ui-theming/src/types/themes';
+import type { ThemePreference } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({

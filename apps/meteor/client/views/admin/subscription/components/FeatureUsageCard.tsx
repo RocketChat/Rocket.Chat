@@ -11,7 +11,7 @@ type FeatureUsageCardProps = {
 
 export type CardProps = {
 	title: string;
-	infoText?: string;
+	infoText?: ReactNode;
 	upgradeButton?: ReactNode;
 };
 

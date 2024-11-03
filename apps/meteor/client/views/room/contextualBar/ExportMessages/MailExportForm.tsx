@@ -17,9 +17,9 @@ import {
 	Select,
 } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useContext } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { validateEmail } from '../../../../../lib/emailValidator';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../components/Contextualbar';
@@ -36,7 +36,7 @@ type MailExportFormProps = {
 };
 
 const MailExportForm = ({ formId, rid, onCancel, exportOptions }: MailExportFormProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formFocus = useAutoFocus<HTMLFormElement>();
 
 	const {
@@ -163,7 +163,7 @@ const MailExportForm = ({ formId, rid, onCancel, exportOptions }: MailExportForm
 													return undefined;
 												}
 
-												return t('Mail_Message_Invalid_emails', additionalEmails);
+												return t('Mail_Message_Invalid_emails', { postProcess: 'sprintf', sprintf: [additionalEmails] });
 											},
 											validateToUsers: (additionalEmails) => {
 												if (additionalEmails !== '' || toUsers?.length > 0) {

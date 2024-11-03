@@ -1,9 +1,11 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import { HeaderToolbar, useDocumentTitle } from '@rocket.chat/ui-client';
-import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, ComponentProps, ReactNode } from 'react';
+import { useDocumentTitle } from '@rocket.chat/ui-client';
+import { useLayout } from '@rocket.chat/ui-contexts';
+import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import React, { useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { HeaderToolbar } from '../Header';
 import SidebarToggler from '../SidebarToggler';
 import PageContext from './PageContext';
 
@@ -11,10 +13,10 @@ type PageHeaderProps = {
 	title: ReactNode;
 	onClickBack?: () => void;
 	borderBlockEndColor?: string;
-} & Omit<ComponentProps<typeof Box>, 'title'>;
+} & Omit<ComponentPropsWithoutRef<typeof Box>, 'title'>;
 
-const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickBack, borderBlockEndColor, ...props }) => {
-	const t = useTranslation();
+const PageHeader = ({ children = undefined, title, onClickBack, borderBlockEndColor, ...props }: PageHeaderProps) => {
+	const { t } = useTranslation();
 	const [border] = useContext(PageContext);
 	const { isMobile } = useLayout();
 
@@ -25,7 +27,7 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 			is='header'
 			borderBlockEndWidth='default'
 			pb={8}
-			borderBlockEndColor={borderBlockEndColor ?? border ? 'extra-light' : 'transparent'}
+			borderBlockEndColor={(borderBlockEndColor ?? border) ? 'extra-light' : 'transparent'}
 			{...props}
 		>
 			<Box

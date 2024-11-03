@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
@@ -46,12 +47,14 @@ test.describe.serial('channel-management', () => {
 	});
 
 	test('should be able to navigate on call popup with keyboard', async ({ page }) => {
+		test.skip(!IS_EE, 'Premium Only');
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.roomHeaderFavoriteBtn.focus();
 
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Space');
-		await poHomeChannel.content.btnStartCall.waitFor();
+		await page.keyboard.press('Space');
+		await poHomeChannel.content.btnStartVideoCall.waitFor();
 		await page.keyboard.press('Tab');
 
 		await expect(page.getByRole('button', { name: 'Start call' })).toBeFocused();
@@ -64,7 +67,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.members.addUser('user1');
 
 		await expect(poHomeChannel.tabs.members.memberOption('user1')).toBeVisible();
-		await expect(poHomeChannel.getSystemMessageByText('added user1')).toBeVisible();
+		await expect(poHomeChannel.content.getSystemMessageByText('added user1')).toBeVisible();
 	});
 
 	test('should edit topic of targetChannel', async ({ page }) => {
@@ -76,9 +79,9 @@ test.describe.serial('channel-management', () => {
 
 		await poHomeChannel.dismissToast();
 		await poHomeChannel.tabs.btnRoomInfo.click();
-		await expect(page.getByRole('dialog', { name: 'Channel info' })).toContainText('hello-topic-edited');
 		await expect(page.getByRole('heading', { name: 'hello-topic-edited' })).toBeVisible();
-		await expect(poHomeChannel.getSystemMessageByText('changed room topic to hello-topic-edited')).toBeVisible();
+		await expect(page.getByRole('dialog', { name: 'Channel info' })).toContainText('hello-topic-edited');
+		await expect(poHomeChannel.content.getSystemMessageByText('changed room topic to hello-topic-edited')).toBeVisible();
 	});
 
 	test('should edit announcement of targetChannel', async ({ page }) => {
@@ -91,7 +94,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.dismissToast();
 		await poHomeChannel.tabs.btnRoomInfo.click();
 		await expect(page.getByRole('dialog', { name: 'Channel info' })).toContainText('hello-announcement-edited');
-		await expect(poHomeChannel.getSystemMessageByText('changed room announcement to: hello-announcement-edited')).toBeVisible();
+		await expect(poHomeChannel.content.getSystemMessageByText('changed room announcement to: hello-announcement-edited')).toBeVisible();
 	});
 
 	test('should edit description of targetChannel', async ({ page }) => {
@@ -104,7 +107,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.dismissToast();
 		await poHomeChannel.tabs.btnRoomInfo.click();
 		await expect(page.getByRole('dialog', { name: 'Channel info' })).toContainText('hello-description-edited');
-		await expect(poHomeChannel.getSystemMessageByText('changed room description to: hello-description-edited')).toBeVisible();
+		await expect(poHomeChannel.content.getSystemMessageByText('changed room description to: hello-description-edited')).toBeVisible();
 	});
 
 	test('should edit name of targetChannel', async ({ page }) => {
@@ -122,7 +125,7 @@ test.describe.serial('channel-management', () => {
 	});
 
 	test('should truncate the room name for small screens', async ({ page }) => {
-		const hugeName = faker.string.alpha(100);
+		const hugeName = faker.string.alpha(200);
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
 		await poHomeChannel.tabs.room.btnEdit.click();
@@ -202,11 +205,11 @@ test.describe.serial('channel-management', () => {
 			await poHomeChannel.tabs.members.showAllUsers();
 			await poHomeChannel.tabs.members.muteUser('user1');
 
-			await expect(poHomeChannel.getSystemMessageByText('muted user1')).toBeVisible();
+			await expect(poHomeChannel.content.getSystemMessageByText('muted user1')).toBeVisible();
 
 			const user1Channel = new HomeChannel(user1Page);
 			await user1Page.goto(`/channel/${targetChannel}`);
-			await user1Channel.waitForChannel();
+			await user1Channel.content.waitForChannel();
 			await expect(user1Channel.readOnlyFooter).toBeVisible();
 		});
 
@@ -216,11 +219,11 @@ test.describe.serial('channel-management', () => {
 			await poHomeChannel.tabs.members.showAllUsers();
 			await poHomeChannel.tabs.members.unmuteUser('user1');
 
-			await expect(poHomeChannel.getSystemMessageByText('unmuted user1')).toBeVisible();
+			await expect(poHomeChannel.content.getSystemMessageByText('unmuted user1')).toBeVisible();
 
 			const user1Channel = new HomeChannel(user1Page);
 			await user1Page.goto(`/channel/${targetChannel}`);
-			await user1Channel.waitForChannel();
+			await user1Channel.content.waitForChannel();
 			await expect(user1Channel.composer).toBeVisible();
 		});
 
@@ -230,31 +233,36 @@ test.describe.serial('channel-management', () => {
 			await poHomeChannel.tabs.members.showAllUsers();
 			await poHomeChannel.tabs.members.setUserAsModerator('user1');
 
-			await expect(poHomeChannel.getSystemMessageByText('set user1 as moderator')).toBeVisible();
+			await expect(poHomeChannel.content.getSystemMessageByText('set user1 as moderator')).toBeVisible();
 
 			const user1Channel = new HomeChannel(user1Page);
 			await user1Page.goto(`/channel/${targetChannel}`);
-			await user1Channel.waitForChannel();
+			await user1Channel.content.waitForChannel();
 			await user1Channel.tabs.btnRoomInfo.click();
 			await expect(user1Channel.tabs.room.btnEdit).toBeVisible();
 		});
 
-		test('should set user1 as owner', async () => {
+		test('should set user1 as owner', async ({ browser }) => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.tabs.btnTabMembers.click();
 			await poHomeChannel.tabs.members.showAllUsers();
 			await poHomeChannel.tabs.members.setUserAsOwner('user1');
 
-			await expect(poHomeChannel.getSystemMessageByText('set user1 as owner')).toBeVisible();
+			await expect(poHomeChannel.content.getSystemMessageByText('set user1 as owner')).toBeVisible();
 
+			const user1Page = await browser.newPage({ storageState: Users.user1.state });
 			const user1Channel = new HomeChannel(user1Page);
 			await user1Page.goto(`/channel/${targetChannel}`);
-			await user1Channel.waitForChannel();
+			await user1Channel.content.waitForChannel();
 			await user1Channel.tabs.btnRoomInfo.click();
-			await expect(user1Channel.tabs.room.btnDelete).toBeVisible();
+
+			await user1Channel.tabs.room.btnMore.click();
+
+			await expect(user1Channel.tabs.room.optionDelete).toBeVisible();
 
 			await user1Page.close();
 		});
+
 		test('should ignore user1 messages', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.tabs.btnTabMembers.click();
@@ -266,7 +274,7 @@ test.describe.serial('channel-management', () => {
 
 			const user1Channel = new HomeChannel(user1Page);
 			await user1Page.goto(`/channel/${targetChannel}`);
-			await user1Channel.waitForChannel();
+			await user1Channel.content.waitForChannel();
 			await user1Channel.content.sendMessage('message to check ignore');
 
 			await expect(poHomeChannel.content.lastUserMessageBody).toContainText('This message was ignored');
@@ -277,7 +285,7 @@ test.describe.serial('channel-management', () => {
 
 			const user1Channel = new HomeChannel(user1Page);
 			await user1Page.goto(`/channel/${targetChannel}`);
-			await user1Channel.waitForChannel();
+			await user1Channel.content.waitForChannel();
 			await user1Channel.content.sendMessage('only message to be unignored');
 
 			await poHomeChannel.sidenav.openChat(targetChannel);
@@ -290,7 +298,7 @@ test.describe.serial('channel-management', () => {
 		test('should unignore user1 messages', async () => {
 			const user1Channel = new HomeChannel(user1Page);
 			await user1Page.goto(`/channel/${targetChannel}`);
-			await user1Channel.waitForChannel();
+			await user1Channel.content.waitForChannel();
 			await user1Channel.content.sendMessage('message before being unignored');
 
 			await poHomeChannel.sidenav.openChat(targetChannel);
@@ -315,13 +323,14 @@ test.describe.serial('channel-management', () => {
 			await poHomeChannel.sidenav.openNewByLabel('Channel');
 			await poHomeChannel.sidenav.inputChannelName.fill(channelName);
 			await poHomeChannel.sidenav.checkboxPrivateChannel.click();
+			await poHomeChannel.sidenav.advancedSettingsAccordion.click();
 			await poHomeChannel.sidenav.checkboxReadOnly.click();
 			await poHomeChannel.sidenav.btnCreate.click();
 
 			const channel = new HomeChannel(user1Page);
 
 			await user1Page.goto(`/channel/${channelName}`);
-			await channel.waitForChannel();
+			await channel.content.waitForChannel();
 			await expect(user1Page.locator('button >> text="Join"')).toBeVisible();
 		});
 	});

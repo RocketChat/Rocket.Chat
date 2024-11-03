@@ -1,8 +1,10 @@
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-declare module '@rocket.chat/ui-contexts' {
+import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
+
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'e2e.setUserPublicAndPrivateKeys'({ public_key, private_key }: { public_key: string; private_key: string; force?: boolean }): void;
@@ -36,5 +38,7 @@ Meteor.methods<ServerMethods>({
 
 		const subscribedRoomIds = await Rooms.getSubscribedRoomIdsWithoutE2EKeys(userId);
 		await Rooms.addUserIdToE2EEQueueByRoomIds(subscribedRoomIds, userId);
+
+		void notifyOnRoomChangedById(subscribedRoomIds);
 	},
 });

@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 import ReactPDF, { Font, Document, Page, StyleSheet } from '@react-pdf/renderer';
-import type { ILivechatAgent, ILivechatVisitor, IMessage, Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatVisitor, IOmnichannelSystemMessage, Serialized } from '@rocket.chat/core-typings';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import type { Root } from '@rocket.chat/message-parser';
 
@@ -14,7 +14,15 @@ export type PDFFile = { name?: string; buffer: Buffer | null; extension?: 'png' 
 
 export type Quote = { md: Root; name: string; ts: string };
 
-export type PDFMessage = Serialized<Omit<Pick<IMessage, 'msg' | 'u' | 'ts' | 'md'>, 'files'>> & {
+export type PDFMessage = Serialized<
+	Omit<
+		Pick<
+			IOmnichannelSystemMessage,
+			'msg' | 'u' | 'ts' | 'md' | 't' | 'navigation' | 'transferData' | 'requestData' | 'webRtcCallEndTs' | 'comment'
+		>,
+		'files'
+	>
+> & {
 	files?: PDFFile[];
 } & { divider?: string } & { quotes?: Quote[] };
 

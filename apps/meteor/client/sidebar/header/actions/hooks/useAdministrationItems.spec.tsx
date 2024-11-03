@@ -1,10 +1,11 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { useAdministrationItems } from './useAdministrationItems';
 
 it('should return omnichannel item if has `view-livechat-manager` permission ', async () => {
-	const { result, waitFor } = renderHook(() => useAdministrationItems(), {
+	const { result } = renderHook(() => useAdministrationItems(), {
+		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/licenses.info', () => ({
 				// @ts-expect-error this is a mock
@@ -29,7 +30,8 @@ it('should return omnichannel item if has `view-livechat-manager` permission ', 
 });
 
 it('should show administration item if has at least one admin permission', async () => {
-	const { result, waitFor } = renderHook(() => useAdministrationItems(), {
+	const { result } = renderHook(() => useAdministrationItems(), {
+		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/licenses.info', () => ({
 				// @ts-expect-error this is a mock

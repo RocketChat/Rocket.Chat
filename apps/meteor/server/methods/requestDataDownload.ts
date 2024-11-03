@@ -3,14 +3,14 @@ import { tmpdir } from 'os';
 import path, { join } from 'path';
 
 import type { IExportOperation } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { ExportOperations, UserDataFiles } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../app/settings/server';
 import * as dataExport from '../lib/dataExport';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		requestDataDownload(params: { fullExport?: boolean }): Promise<{
@@ -34,7 +34,7 @@ Meteor.methods<ServerMethods>({
 
 		const lastOperation = await ExportOperations.findLastOperationByUser(userId, fullExport);
 		const requestDay = lastOperation ? lastOperation.createdAt : new Date();
-		const pendingOperationsBeforeMyRequestCount = await ExportOperations.findAllPendingBeforeMyRequest(requestDay).count();
+		const pendingOperationsBeforeMyRequestCount = await ExportOperations.countAllPendingBeforeMyRequest(requestDay);
 
 		if (lastOperation) {
 			const yesterday = new Date();

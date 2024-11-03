@@ -1,13 +1,15 @@
-import { Message, Team } from '@rocket.chat/core-services';
-import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Apps, AppEvents } from '@rocket.chat/apps';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
+import { Message, Team, Room } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { Subscriptions, Rooms, Users, Roles } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync, getUsersInRole } from '../../app/authorization/server';
+import { canAccessRoomAsync } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
-import { notifyOnRoomChanged } from '../../app/lib/server/lib/notifyListener';
+import { notifyOnRoomChanged, notifyOnSubscriptionChanged } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { callbacks } from '../../lib/callbacks';
@@ -15,7 +17,7 @@ import { afterRemoveFromRoomCallback } from '../../lib/callbacks/afterRemoveFrom
 import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		removeUserFromRoom(data: { rid: string; username: string }): boolean;
@@ -54,6 +56,8 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 
 	const removedUser = await Users.findOneByUsernameIgnoringCase(data.username);
 
+	await Room.beforeUserRemoved(room);
+
 	if (!canKickAnyUser) {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, {
 			projection: { _id: 1 },
@@ -66,7 +70,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 	}
 
 	if (await hasRoleAsync(removedUser._id, 'owner', room._id)) {
-		const numOwners = await (await getUsersInRole('owner', room._id)).count();
+		const numOwners = await Roles.countUsersInRole('owner', room._id);
 
 		if (numOwners === 1) {
 			throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', {
@@ -75,9 +79,22 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 		}
 	}
 
+	try {
+		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserLeave, room, removedUser, fromUser);
+	} catch (error: any) {
+		if (error.name === AppsEngineException.name) {
+			throw new Meteor.Error('error-app-prevented', error.message);
+		}
+
+		throw error;
+	}
+
 	await callbacks.run('beforeRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 
-	await Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
+	const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
+	if (deletedSubscription) {
+		void notifyOnSubscriptionChanged(deletedSubscription, 'removed');
+	}
 
 	if (['c', 'p'].includes(room.t) === true) {
 		await removeUserFromRolesAsync(removedUser._id, ['moderator', 'owner'], data.rid);
@@ -98,6 +115,8 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 		void afterRemoveFromRoomCallback.run({ removedUser, userWhoRemoved: fromUser }, room);
 		void notifyOnRoomChanged(room);
 	});
+
+	await Apps.self?.triggerEvent(AppEvents.IPostRoomUserLeave, room, removedUser, fromUser);
 
 	return true;
 };

@@ -84,7 +84,7 @@ const useI18next = (lng: string): typeof i18next => {
 				loadPath: 'i18n/{{lng}}.json',
 				parse: (data: string, _lngs?: string | string[], namespaces: string | string[] = []) =>
 					extractTranslationKeys(JSON.parse(data), namespaces),
-				request: (_options, url, _payload, callback) => {
+				request: (_options: unknown, url: string, _payload: unknown, callback: (error: unknown, data: unknown) => void) => {
 					const params = url.split('/');
 
 					const lng = params[params.length - 1];
@@ -126,7 +126,9 @@ const useAutoLanguage = () => {
 	const defaultUserLanguage = browserLanguage || serverLanguage || 'en';
 
 	// if the language is supported, if not remove the region
-	const suggestedLanguage = languages.includes(defaultUserLanguage) ? defaultUserLanguage : defaultUserLanguage.split('-').shift() ?? 'en';
+	const suggestedLanguage = languages.includes(defaultUserLanguage)
+		? defaultUserLanguage
+		: (defaultUserLanguage.split('-').shift() ?? 'en');
 
 	// usually that value is set based on the user's config language
 	const [language] = useLocalStorage('userLanguage', suggestedLanguage);

@@ -22,3 +22,21 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute(
+	'federation/configuration.verify',
+	{ authRequired: true, permissionsRequired: ['view-privileged-setting'] },
+	{
+		async get() {
+			const service = License.hasValidLicense() ? FederationEE : Federation;
+
+			const status = await service.configurationStatus();
+
+			if (!status.externalReachability.ok || !status.appservice.ok) {
+				return API.v1.failure(status);
+			}
+
+			return API.v1.success(status);
+		},
+	},
+);

@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';
 import Reactions from './Reactions';
@@ -12,7 +12,7 @@ type ReactionListModalProps = {
 };
 
 const ReactionListModal = ({ reactions, onClose }: ReactionListModalProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<GenericModal variant='info' title={t('Users_reacted')} onClose={onClose} onConfirm={onClose} confirmText={t('Close')}>

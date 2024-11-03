@@ -42,6 +42,7 @@ export * from './IUserStatus';
 export * from './IUser';
 
 export * from './ee/IAuditLog';
+export * from './ee/IWorkspaceCredentials';
 
 export * from './import';
 export * from './IIncomingMessage';
@@ -96,6 +97,7 @@ export * from './ILivechatCustomField';
 export * from './IOmnichannel';
 export * from './ILivechatAgentActivity';
 export * from './ILivechatBusinessHour';
+export * from './ILivechatContact';
 export * from './ILivechatVisitor';
 export * from './ILivechatDepartmentAgents';
 export * from './ILivechatAgent';
@@ -137,4 +139,7 @@ export * from './ICustomOAuthConfig';
 export * from './IModerationReport';
 export * from './CustomFieldMetadata';
 
+export * from './RoomRouteData';
+
 export * as Cloud from './cloud';
+export * from './themes';

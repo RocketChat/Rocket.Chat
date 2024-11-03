@@ -1,6 +1,6 @@
 import { OptionColumn, OptionContent, OptionDescription, OptionInput } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export type ComposerBoxPopupSlashCommandProps = {
 	_id: string;
@@ -10,7 +10,7 @@ export type ComposerBoxPopupSlashCommandProps = {
 };
 
 function ComposerBoxPopupSlashCommand({ _id, description, params, disabled }: ComposerBoxPopupSlashCommandProps) {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<>

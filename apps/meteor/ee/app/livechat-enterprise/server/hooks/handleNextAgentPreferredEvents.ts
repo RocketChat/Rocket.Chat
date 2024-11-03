@@ -36,7 +36,7 @@ settings.watch<boolean>('Livechat_last_chatted_agent_routing', (value) => {
 
 	callbacks.add(
 		'livechat.afterTakeInquiry',
-		async (inquiry, agent) => {
+		async ({ inquiry }, agent) => {
 			if (!inquiry || !agent) {
 				return inquiry;
 			}

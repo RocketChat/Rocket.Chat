@@ -1,5 +1,5 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import type { Device, IExperimentalHTMLAudioElement, DeviceContextValue } from '@rocket.chat/ui-contexts';
+import type { Device, DeviceContextValue } from '@rocket.chat/ui-contexts';
 import { DeviceContext } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useState, useMemo } from 'react';
@@ -33,7 +33,7 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 	};
 
 	const setAudioOutputDevice = useMutableCallback(
-		({ outputDevice, HTMLAudioElement }: { outputDevice: Device; HTMLAudioElement: IExperimentalHTMLAudioElement }): void => {
+		({ outputDevice, HTMLAudioElement }: { outputDevice: Device; HTMLAudioElement: HTMLAudioElement }): void => {
 			if (!isSetSinkIdAvailable()) {
 				throw new Error('setSinkId is not available in this browser');
 			}

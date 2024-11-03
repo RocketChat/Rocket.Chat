@@ -5,7 +5,7 @@ import { Users } from '@rocket.chat/models';
 import { i18n } from '../../../server/lib/i18n';
 import { muteUserInRoom } from '../../../server/methods/muteUserInRoom';
 import { settings } from '../../settings/server';
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { slashCommands } from '../../utils/server/slashCommand';
 
 /*
  * Mute is a named function that will replace /mute commands

@@ -36,6 +36,10 @@ export class HomeFlextab {
 		return this.page.locator('[data-qa-id="ToolBoxAction-hash"]');
 	}
 
+	get btnTeamMembers(): Locator {
+		return this.page.locator('role=menuitem[name="Teams Members"]');
+	}
+
 	get kebab(): Locator {
 		return this.page.locator('role=button[name="Options"]');
 	}

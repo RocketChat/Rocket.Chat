@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { BASE_API_URL } from './config/constants';
+import { BASE_API_URL, IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import injectInitialData from './fixtures/inject-initial-data';
 import { Users, storeState, restoreState } from './fixtures/userStates';
@@ -160,6 +160,8 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.tabs.btnDisableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnDisableE2E.click({ force: true });
+		await expect(page.getByRole('dialog', { name: 'Disable encryption' })).toBeVisible();
+		await page.getByRole('button', { name: 'Disable encryption' }).click();
 		await poHomeChannel.dismissToast();
 		await page.waitForTimeout(1000);
 
@@ -171,6 +173,8 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
+		await page.getByRole('button', { name: 'Enable encryption' }).click();
 		await poHomeChannel.dismissToast();
 		await page.waitForTimeout(1000);
 
@@ -255,6 +259,8 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
+		await page.getByRole('button', { name: 'Enable encryption' }).click();
 		await page.waitForTimeout(1000);
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
@@ -263,6 +269,75 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+	});
+
+	test('expect create a encrypted private channel and mention user', async ({ page }) => {
+		const channelName = faker.string.uuid();
+
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+
+		await expect(page).toHaveURL(`/group/${channelName}`);
+
+		await poHomeChannel.dismissToast();
+
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.content.sendMessage('hello @user1');
+
+		const userMention = await page.getByRole('button', {
+			name: 'user1',
+		});
+
+		await expect(userMention).toBeVisible();
+	});
+
+	test('expect create a encrypted private channel, mention a channel and navigate to it', async ({ page }) => {
+		const channelName = faker.string.uuid();
+
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+
+		await expect(page).toHaveURL(`/group/${channelName}`);
+
+		await poHomeChannel.dismissToast();
+
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.content.sendMessage('Are you in the #general channel?');
+
+		const channelMention = await page.getByRole('button', {
+			name: 'general',
+		});
+
+		await expect(channelMention).toBeVisible();
+
+		await channelMention.click();
+
+		await expect(page).toHaveURL(`/channel/general`);
+	});
+
+	test('expect create a encrypted private channel, mention a channel and user', async ({ page }) => {
+		const channelName = faker.string.uuid();
+
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+
+		await expect(page).toHaveURL(`/group/${channelName}`);
+
+		await poHomeChannel.dismissToast();
+
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.content.sendMessage('Are you in the #general channel, @user1 ?');
+
+		const channelMention = await page.getByRole('button', {
+			name: 'general',
+		});
+
+		const userMention = await page.getByRole('button', {
+			name: 'user1',
+		});
+
+		await expect(userMention).toBeVisible();
+		await expect(channelMention).toBeVisible();
 	});
 
 	test('should encrypted field be available on edit room', async ({ page }) => {
@@ -280,6 +355,7 @@ test.describe.serial('e2e-encryption', () => {
 
 		await poHomeChannel.tabs.btnRoomInfo.click();
 		await poHomeChannel.tabs.room.btnEdit.click();
+		await poHomeChannel.tabs.room.advancedSettingsAccordion.click();
 
 		await expect(poHomeChannel.tabs.room.checkboxEncrypted).toBeVisible();
 	});
@@ -297,6 +373,8 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
+		await page.getByRole('button', { name: 'Enable encryption' }).click();
 		await page.waitForTimeout(1000);
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
@@ -342,13 +420,19 @@ test.describe.serial('e2e-encryption', () => {
 			'This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.',
 		);
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+		await poHomeChannel.content.lastUserMessage.hover();
+		await expect(page.locator('[role=toolbar][aria-label="Message actions"]')).not.toBeVisible();
 	});
 
-	test('expect placeholder text in place of encrypted file description, when E2EE is not setup', async ({ page }) => {
+	test('expect placeholder text in place of encrypted file description, when E2EE is not setup and non-encrypted files upload in disabled e2ee room', async ({
+		page,
+	}) => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
+		await poHomeChannel.sidenav.advancedSettingsAccordion.click();
 		await poHomeChannel.sidenav.checkboxEncryption.click();
 		await poHomeChannel.sidenav.btnCreate.click();
 
@@ -368,6 +452,46 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
 		await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
 
+		await test.step('disable E2EE in the room', async () => {
+			await poHomeChannel.tabs.kebab.click();
+
+			await expect(poHomeChannel.tabs.btnDisableE2E).toBeVisible();
+			await poHomeChannel.tabs.btnDisableE2E.click();
+			await expect(page.getByRole('dialog', { name: 'Disable encryption' })).toBeVisible();
+			await page.getByRole('button', { name: 'Disable encryption' }).click();
+			await poHomeChannel.dismissToast();
+			// will wait till the key icon in header goes away
+			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toHaveCount(0);
+		});
+
+		await page.reload();
+
+		await test.step('upload the file in disabled E2EE room', async () => {
+			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).not.toBeVisible();
+
+			await poHomeChannel.content.dragAndDropTxtFile();
+			await poHomeChannel.content.descriptionInput.fill('any_description');
+			await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+			await poHomeChannel.content.btnModalConfirm.click();
+
+			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).not.toBeVisible();
+
+			await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
+			await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+		});
+
+		await test.step('Enable E2EE in the room', async () => {
+			await poHomeChannel.tabs.kebab.click();
+
+			await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
+			await poHomeChannel.tabs.btnEnableE2E.click();
+			await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
+			await page.getByRole('button', { name: 'Enable encryption' }).click();
+			await poHomeChannel.dismissToast();
+			// will wait till the key icon in header appears
+			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toHaveCount(1);
+		});
+
 		// Logout to remove e2ee keys
 		await poHomeChannel.sidenav.logout();
 
@@ -380,13 +504,157 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
-		await expect(poHomeChannel.content.lastUserMessage).toContainText(
+		await expect(poHomeChannel.content.nthMessage(0)).toContainText(
 			'This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.',
 		);
-		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+		await expect(poHomeChannel.content.nthMessage(0).locator('.rcx-icon--name-key')).toBeVisible();
+	});
+
+	test.describe('File Encryption', async () => {
+		test.afterAll(async ({ api }) => {
+			expect((await api.post('/settings/FileUpload_MediaTypeWhiteList', { value: '' })).status()).toBe(200);
+			expect((await api.post('/settings/FileUpload_MediaTypeBlackList', { value: 'image/svg+xml' })).status()).toBe(200);
+		});
+
+		test('File and description encryption', async ({ page }) => {
+			await test.step('create an encrypted channel', async () => {
+				const channelName = faker.string.uuid();
+
+				await poHomeChannel.sidenav.openNewByLabel('Channel');
+				await poHomeChannel.sidenav.inputChannelName.fill(channelName);
+				await poHomeChannel.sidenav.advancedSettingsAccordion.click();
+				await poHomeChannel.sidenav.checkboxEncryption.click();
+				await poHomeChannel.sidenav.btnCreate.click();
+
+				await expect(page).toHaveURL(`/group/${channelName}`);
+
+				await poHomeChannel.dismissToast();
+
+				await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+			});
+
+			await test.step('send a file in channel', async () => {
+				await poHomeChannel.content.dragAndDropTxtFile();
+				await poHomeChannel.content.descriptionInput.fill('any_description');
+				await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+				await poHomeChannel.content.btnModalConfirm.click();
+
+				await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+				await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
+				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+			});
+		});
+
+		test('File encryption with whitelisted and blacklisted media types', async ({ page, api }) => {
+			await test.step('create an encrypted room', async () => {
+				const channelName = faker.string.uuid();
+
+				await poHomeChannel.sidenav.openNewByLabel('Channel');
+				await poHomeChannel.sidenav.inputChannelName.fill(channelName);
+				await poHomeChannel.sidenav.advancedSettingsAccordion.click();
+				await poHomeChannel.sidenav.checkboxEncryption.click();
+				await poHomeChannel.sidenav.btnCreate.click();
+
+				await expect(page).toHaveURL(`/group/${channelName}`);
+
+				await poHomeChannel.dismissToast();
+
+				await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+			});
+
+			await test.step('send a text file in channel', async () => {
+				await poHomeChannel.content.dragAndDropTxtFile();
+				await poHomeChannel.content.descriptionInput.fill('message 1');
+				await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+				await poHomeChannel.content.btnModalConfirm.click();
+
+				await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+				await expect(poHomeChannel.content.getFileDescription).toHaveText('message 1');
+				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+			});
+
+			await test.step('set whitelisted media type setting', async () => {
+				expect((await api.post('/settings/FileUpload_MediaTypeWhiteList', { value: 'text/plain' })).status()).toBe(200);
+			});
+
+			await test.step('send text file again with whitelist setting set', async () => {
+				await poHomeChannel.content.dragAndDropTxtFile();
+				await poHomeChannel.content.descriptionInput.fill('message 2');
+				await poHomeChannel.content.fileNameInput.fill('any_file2.txt');
+				await poHomeChannel.content.btnModalConfirm.click();
+
+				await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+				await expect(poHomeChannel.content.getFileDescription).toHaveText('message 2');
+				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file2.txt');
+			});
+
+			await test.step('set blacklisted media type setting to not accept application/octet-stream media type', async () => {
+				expect((await api.post('/settings/FileUpload_MediaTypeBlackList', { value: 'application/octet-stream' })).status()).toBe(200);
+			});
+
+			await test.step('send text file again with blacklisted setting set, file upload should fail', async () => {
+				await poHomeChannel.content.dragAndDropTxtFile();
+				await poHomeChannel.content.descriptionInput.fill('message 3');
+				await poHomeChannel.content.fileNameInput.fill('any_file3.txt');
+				await poHomeChannel.content.btnModalConfirm.click();
+
+				await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+				await expect(poHomeChannel.content.getFileDescription).toHaveText('message 2');
+				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file2.txt');
+			});
+		});
+
+		test.describe('File encryption setting disabled', async () => {
+			test.beforeAll(async ({ api }) => {
+				expect((await api.post('/settings/E2E_Enable_Encrypt_Files', { value: false })).status()).toBe(200);
+				expect((await api.post('/settings/FileUpload_MediaTypeBlackList', { value: 'application/octet-stream' })).status()).toBe(200);
+			});
+
+			test.afterAll(async ({ api }) => {
+				expect((await api.post('/settings/E2E_Enable_Encrypt_Files', { value: true })).status()).toBe(200);
+				expect((await api.post('/settings/FileUpload_MediaTypeBlackList', { value: 'image/svg+xml' })).status()).toBe(200);
+			});
+
+			test('Upload file without encryption in e2ee room', async ({ page }) => {
+				await test.step('create an encrypted channel', async () => {
+					const channelName = faker.string.uuid();
+
+					await poHomeChannel.sidenav.openNewByLabel('Channel');
+					await poHomeChannel.sidenav.inputChannelName.fill(channelName);
+					await poHomeChannel.sidenav.advancedSettingsAccordion.click();
+					await poHomeChannel.sidenav.checkboxEncryption.click();
+					await poHomeChannel.sidenav.btnCreate.click();
+
+					await expect(page).toHaveURL(`/group/${channelName}`);
+
+					await poHomeChannel.dismissToast();
+
+					await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+				});
+
+				await test.step('send a test encrypted message to check e2ee is working', async () => {
+					await poHomeChannel.content.sendMessage('This is an encrypted message.');
+
+					await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is an encrypted message.');
+					await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+				});
+
+				await test.step('send a text file in channel, file should not be encrypted', async () => {
+					await poHomeChannel.content.dragAndDropTxtFile();
+					await poHomeChannel.content.descriptionInput.fill('any_description');
+					await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+					await poHomeChannel.content.btnModalConfirm.click();
+
+					await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).not.toBeVisible();
+					await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
+					await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+				});
+			});
+		});
 	});
 
 	test('expect slash commands to be enabled in an e2ee room', async ({ page }) => {
+		test.skip(!IS_EE, 'Premium Only');
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
@@ -414,6 +682,7 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test.describe('un-encrypted messages not allowed in e2ee rooms', () => {
+		test.skip(!IS_EE, 'Premium Only');
 		let poHomeChannel: HomeChannel;
 
 		test.beforeEach(async ({ page }) => {
@@ -473,6 +742,8 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
+		await page.getByRole('button', { name: 'Enable encryption' }).click();
 		await page.waitForTimeout(1000);
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
@@ -524,19 +795,26 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.tabs.btnPinnedMessagesList.click();
 
 		await expect(page.getByRole('dialog', { name: 'Pinned Messages' })).toBeVisible();
-		await expect(page.getByRole('dialog', { name: 'Pinned Messages' }).locator('[data-qa-type="message"]').last()).toContainText(
-			'This message should be pinned and stared.',
-		);
+
+		const lastPinnedMessage = page.getByRole('dialog', { name: 'Pinned Messages' }).locator('[data-qa-type="message"]').last();
+		await expect(lastPinnedMessage).toContainText('This message should be pinned and stared.');
+		await lastPinnedMessage.hover();
+		await lastPinnedMessage.locator('role=button[name="More"]').waitFor();
+		await lastPinnedMessage.locator('role=button[name="More"]').click();
+		await expect(page.locator('role=menuitem[name="Copy link"]')).toHaveClass(/disabled/);
 
 		await poHomeChannel.btnContextualbarClose.click();
 
 		await poHomeChannel.tabs.kebab.click();
 		await poHomeChannel.tabs.btnStarredMessageList.click();
 
+		const lastStarredMessage = page.getByRole('dialog', { name: 'Starred Messages' }).locator('[data-qa-type="message"]').last();
 		await expect(page.getByRole('dialog', { name: 'Starred Messages' })).toBeVisible();
-		await expect(page.getByRole('dialog', { name: 'Starred Messages' }).locator('[data-qa-type="message"]').last()).toContainText(
-			'This message should be pinned and stared.',
-		);
+		await expect(lastStarredMessage).toContainText('This message should be pinned and stared.');
+		await lastStarredMessage.hover();
+		await lastStarredMessage.locator('role=button[name="More"]').waitFor();
+		await lastStarredMessage.locator('role=button[name="More"]').click();
+		await expect(page.locator('role=menuitem[name="Copy link"]')).toHaveClass(/disabled/);
 	});
 
 	test.describe('reset keys', () => {
@@ -594,14 +872,14 @@ test.describe.serial('e2ee room setup', () => {
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
 	});
 
+	test.afterEach(async ({ api }) => {
+		await api.recreateContext();
+	});
+
 	test('expect save password state on encrypted room', async ({ page }) => {
 		await page.goto('/account/security');
 		await poAccountProfile.securityE2EEncryptionSection.click();
 		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
-
-		await page.locator('role=button[name="Login"]').waitFor();
-
-		await page.reload();
 
 		await page.locator('role=button[name="Login"]').waitFor();
 
@@ -610,13 +888,13 @@ test.describe.serial('e2ee room setup', () => {
 
 		await page.goto('/home');
 
-		await page.locator('role=banner >> text="Save your encryption password"').waitFor();
 		await expect(page.locator('role=banner >> text="Save your encryption password"')).toBeVisible();
 
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
+		await poHomeChannel.sidenav.advancedSettingsAccordion.click();
 		await poHomeChannel.sidenav.checkboxEncryption.click();
 		await poHomeChannel.sidenav.btnCreate.click();
 
@@ -624,10 +902,8 @@ test.describe.serial('e2ee room setup', () => {
 
 		await poHomeChannel.dismissToast();
 
-		await poHomeChannel.content.encryptedRoomHeaderIcon.first().waitFor();
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon.first()).toBeVisible();
 
-		await page.locator('role=button[name="Save E2EE password"]').waitFor();
 		await expect(page.locator('role=button[name="Save E2EE password"]')).toBeVisible();
 
 		await poHomeChannel.tabs.btnE2EERoomSetupDisableE2E.waitFor();
@@ -661,8 +937,6 @@ test.describe.serial('e2ee room setup', () => {
 		await poHomeChannel.sidenav.logout();
 
 		await page.locator('role=button[name="Login"]').waitFor();
-		await page.reload();
-		await page.locator('role=button[name="Login"]').waitFor();
 
 		await injectInitialData();
 		await restoreState(page, Users.admin, { except: ['private_key', 'public_key'] });
@@ -671,6 +945,7 @@ test.describe.serial('e2ee room setup', () => {
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
+		await poHomeChannel.sidenav.advancedSettingsAccordion.click();
 		await poHomeChannel.sidenav.checkboxEncryption.click();
 		await poHomeChannel.sidenav.btnCreate.click();
 
@@ -718,6 +993,7 @@ test.describe.serial('e2ee room setup', () => {
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
+		await poHomeChannel.sidenav.advancedSettingsAccordion.click();
 		await poHomeChannel.sidenav.checkboxEncryption.click();
 		await poHomeChannel.sidenav.btnCreate.click();
 
@@ -781,11 +1057,11 @@ test.describe.serial('e2ee support legacy formats', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		expect((await api.post('/settings/E2E_Enable', { value: false })).status()).toBe(200);
-		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
+		await api.post('/settings/E2E_Enable', { value: false });
+		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false });
 	});
 
-	// Not testing upload since it was not implemented in the legacy format
+	//  ->>>>>>>>>>>Not testing upload since it was not implemented in the legacy format
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page, request }) => {
 		await page.goto('/home');
 

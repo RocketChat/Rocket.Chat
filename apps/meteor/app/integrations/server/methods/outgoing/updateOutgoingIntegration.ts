@@ -1,7 +1,7 @@
 import type { IIntegration, INewOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Users } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
@@ -9,7 +9,7 @@ import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyLis
 import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
 import { isScriptEngineFrozen, validateScriptEngine } from '../../lib/validateScriptEngine';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		updateOutgoingIntegration(
@@ -54,8 +54,8 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('invalid_integration', '[methods] updateOutgoingIntegration -> integration not found');
 		}
 
-		const oldScriptEngine = currentIntegration.scriptEngine ?? 'vm2';
-		const scriptEngine = integration.scriptEngine ?? oldScriptEngine;
+		const oldScriptEngine = currentIntegration.scriptEngine;
+		const scriptEngine = integration.scriptEngine ?? oldScriptEngine ?? 'isolated-vm';
 		if (
 			integration.script?.trim() &&
 			(scriptEngine !== oldScriptEngine || integration.script?.trim() !== currentIntegration.script?.trim())
@@ -91,7 +91,7 @@ Meteor.methods<ServerMethods>({
 								scriptEnabled: integration.scriptEnabled,
 								scriptEngine,
 								...(integration.scriptCompiled ? { scriptCompiled: integration.scriptCompiled } : { scriptError: integration.scriptError }),
-						  }),
+							}),
 					triggerWords: integration.triggerWords,
 					retryFailedCalls: integration.retryFailedCalls,
 					retryCount: integration.retryCount,
@@ -107,7 +107,7 @@ Meteor.methods<ServerMethods>({
 							$unset: {
 								...(integration.scriptCompiled ? { scriptError: 1 as const } : { scriptCompiled: 1 as const }),
 							},
-					  }),
+						}),
 			},
 		);
 

@@ -1,7 +1,8 @@
 import type { VoIpCallerInfo } from '@rocket.chat/core-typings';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
 	useCallActions,
@@ -18,7 +19,7 @@ import SidebarFooterDefault from '../SidebarFooterDefault';
 import { VoipFooter as VoipFooterComponent } from './VoipFooter';
 
 export const VoipFooter = (): ReactElement | null => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const callerInfo = useCallerInfo();
 	const callActions = useCallActions();
 	const dispatchEvent = useEndpoint('POST', '/v1/voip/events');

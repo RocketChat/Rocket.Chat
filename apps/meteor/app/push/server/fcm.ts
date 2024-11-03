@@ -1,6 +1,6 @@
+import { serverFetch as fetch, type ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 import EJSON from 'ejson';
-import fetch from 'node-fetch';
-import type { RequestInit, Response } from 'node-fetch';
+import type { Response } from 'node-fetch';
 
 import type { PendingPushNotification } from './definition';
 import { logger } from './logger';
@@ -65,7 +65,7 @@ type FCMError = {
  * - For 429 errors: retry after waiting for the duration set in the retry-after header. If no retry-after header is set, default to 60 seconds.
  * - For 500 errors: retry with exponential backoff.
  */
-async function fetchWithRetry(url: string, _removeToken: () => void, options: RequestInit, retries = 0): Promise<Response> {
+async function fetchWithRetry(url: string, _removeToken: () => void, options: ExtendedFetchOptions, retries = 0): Promise<Response> {
 	const MAX_RETRIES = 5;
 	const response = await fetch(url, options);
 

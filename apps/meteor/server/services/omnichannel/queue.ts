@@ -1,4 +1,3 @@
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { type InquiryWithAgentInfo, type IOmnichannelQueue } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
@@ -186,9 +185,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		queueLogger.debug(`Processing inquiry ${inquiry._id} from queue ${queue}`);
 		const { defaultAgent } = inquiry;
 
-		const roomFromDb = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'servedBy' | 'closedAt'>>(inquiry.rid, {
-			projection: { servedBy: 1, closedAt: 1 },
-		});
+		const roomFromDb = await LivechatRooms.findOneById(inquiry.rid);
 
 		// This is a precaution to avoid taking inquiries tied to rooms that no longer exist.
 		// This should never happen.
@@ -206,7 +203,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 			return this.reconciliation('closed', { roomId: inquiry.rid, inquiryId: inquiry._id });
 		}
 
-		const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent);
+		const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent, undefined, roomFromDb);
 
 		if (room?.servedBy) {
 			const {

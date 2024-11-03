@@ -1,3 +1,3 @@
 import { MongoInternals } from 'meteor/mongo';
 
-export const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
+export const { db, client } = MongoInternals.defaultRemoteCollectionDriver().mongo;

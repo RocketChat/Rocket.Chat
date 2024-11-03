@@ -1,5 +1,6 @@
-import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
 	Contextualbar,
@@ -25,7 +26,7 @@ const ContactContextualBar = () => {
 	const bar = (useRouteParameter('bar') || 'info') as BarOptions;
 	const contactId = useRouteParameter('id') || '';
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const handleContactsContextualbarCloseButtonClick = () => {
 		directoryRoute.push({ page: 'contacts' });

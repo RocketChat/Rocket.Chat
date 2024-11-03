@@ -1,6 +1,6 @@
-import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
@@ -34,22 +34,18 @@ test.describe('omnichannel-takeChat', () => {
 		await agent.poHomeChannel.sidenav.switchOmnichannelStatus('online');
 		await agent.poHomeChannel.sidenav.switchStatus('online');
 
-		await Promise.all([
-			await api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
-			await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status()).toBe(200)),
-			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }).then((res) => expect(res.status()).toBe(200)),
-		]);
-
 		await agent.page.close();
+		await Promise.all([
+			await api.delete('/livechat/users/agent/user1'),
+			await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
+			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }),
+		]);
 	});
 
 	test.beforeEach('start a new livechat chat', async ({ page, api }) => {
 		await agent.poHomeChannel.sidenav.switchStatus('online');
 
-		newVisitor = {
-			name: `${faker.person.firstName()} ${faker.string.uuid()}`,
-			email: faker.internet.email(),
-		};
+		newVisitor = createFakeVisitor();
 
 		poLiveChat = new OmnichannelLiveChat(page, api);
 
@@ -68,8 +64,6 @@ test.describe('omnichannel-takeChat', () => {
 
 		await expect(agent.poHomeChannel.content.btnTakeChat).not.toBeVisible();
 		await expect(agent.poHomeChannel.content.inputMessage).toBeVisible();
-
-		await poLiveChat.closeChat();
 	});
 
 	test('When agent is offline should not take the chat', async () => {

@@ -42,7 +42,7 @@ export const useBlockUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: I
 						content: t(isUserBlocked ? 'Unblock' : 'Block'),
 						icon: 'ban' as const,
 						onClick: toggleBlockUserAction,
-				  }
+					}
 				: undefined,
 		[isUserBlocked, ownUserId, roomCanBlock, t, toggleBlockUserAction, uid],
 	);

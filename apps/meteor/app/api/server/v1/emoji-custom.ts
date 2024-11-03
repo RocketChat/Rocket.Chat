@@ -1,30 +1,52 @@
 import { Media } from '@rocket.chat/core-services';
 import { EmojiCustom } from '@rocket.chat/models';
+import { isEmojiCustomList } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { insertOrUpdateEmoji } from '../../../emoji-custom/server/lib/insertOrUpdateEmoji';
+import { uploadEmojiCustomWithBuffer } from '../../../emoji-custom/server/lib/uploadEmojiCustom';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findEmojisCustom } from '../lib/emoji-custom';
 import { getUploadFormData } from '../lib/getUploadFormData';
 
+function validateDateParam(paramName: string, paramValue: string | undefined): Date | undefined {
+	if (!paramValue) {
+		return undefined;
+	}
+
+	const date = new Date(paramValue);
+	if (isNaN(date.getTime())) {
+		throw new Meteor.Error('error-roomId-param-invalid', `The "${paramName}" query parameter must be a valid date.`);
+	}
+
+	return date;
+}
+
 API.v1.addRoute(
 	'emoji-custom.list',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isEmojiCustomList },
 	{
 		async get() {
 			const { query } = await this.parseJsonQuery();
-			const { updatedSince } = this.queryParams;
-			if (updatedSince) {
-				const updatedSinceDate = new Date(updatedSince);
-				if (isNaN(Date.parse(updatedSince))) {
-					throw new Meteor.Error('error-roomId-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-				}
+			const { updatedSince, _updatedAt, _id } = this.queryParams;
+
+			const updatedSinceDate = validateDateParam('updatedSince', updatedSince);
+			const _updatedAtDate = validateDateParam('_updatedAt', _updatedAt);
+
+			if (updatedSinceDate) {
 				const [update, remove] = await Promise.all([
-					EmojiCustom.find({ ...query, _updatedAt: { $gt: updatedSinceDate } }).toArray(),
+					EmojiCustom.find({
+						...query,
+						...(_id ? { _id } : {}),
+						...(_updatedAtDate ? { _updatedAt: { $gt: _updatedAtDate } } : {}),
+						_updatedAt: { $gt: updatedSinceDate },
+					}).toArray(),
 					EmojiCustom.trashFindDeletedAfter(updatedSinceDate).toArray(),
 				]);
+
 				return API.v1.success({
 					emojis: {
 						update,
@@ -35,7 +57,11 @@ API.v1.addRoute(
 
 			return API.v1.success({
 				emojis: {
-					update: await EmojiCustom.find(query).toArray(),
+					update: await EmojiCustom.find({
+						...query,
+						...(_id ? { _id } : {}),
+						...(_updatedAtDate ? { _updatedAt: { $gt: _updatedAtDate } } : {}),
+					}).toArray(),
 					remove: [],
 				},
 			});
@@ -148,9 +174,19 @@ API.v1.addRoute(
 				fields.extension = emojiToUpdate.extension;
 			}
 
-			await Meteor.callAsync('insertOrUpdateEmoji', { ...fields, newFile });
+			const emojiData = {
+				name: fields.name,
+				_id: fields._id,
+				aliases: fields.aliases,
+				extension: fields.extension,
+				previousName: fields.previousName,
+				previousExtension: fields.previousExtension,
+				newFile,
+			};
+
+			await insertOrUpdateEmoji(this.userId, emojiData);
 			if (fields.newFile) {
-				await Meteor.callAsync('uploadEmojiCustom', fileBuffer, mimetype, { ...fields, newFile });
+				await uploadEmojiCustomWithBuffer(this.userId, fileBuffer, mimetype, emojiData);
 			}
 			return API.v1.success();
 		},

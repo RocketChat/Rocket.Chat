@@ -163,7 +163,7 @@ export class SAML {
 				}
 			}
 
-			const userId = Accounts.insertUserDoc({}, newUser);
+			const userId = await Accounts.insertUserDoc({}, newUser);
 			user = await Users.findOneById(userId);
 
 			if (user && userObject.channels && channelsAttributeUpdate !== true) {
@@ -198,11 +198,6 @@ export class SAML {
 			updateData.emails = emails;
 		}
 
-		// Overwrite fullname if needed
-		if (nameOverwrite === true) {
-			updateData.name = fullName;
-		}
-
 		// When updating an user, we only update the roles if we received them from the mapping
 		if (userObject.roles?.length) {
 			updateData.roles = userObject.roles;
@@ -221,8 +216,8 @@ export class SAML {
 			},
 		);
 
-		if ((username && username !== user.username) || (fullName && fullName !== user.name)) {
-			await saveUserIdentity({ _id: user._id, name: fullName || undefined, username });
+		if ((username && username !== user.username) || (nameOverwrite && fullName && fullName !== user.name)) {
+			await saveUserIdentity({ _id: user._id, name: nameOverwrite ? fullName || undefined : user.name, username });
 		}
 
 		// sending token along with the userId
@@ -272,7 +267,7 @@ export class SAML {
 				throw new Meteor.Error('Unable to process Logout Request: missing request data.');
 			}
 
-			let timeoutHandler: NodeJS.Timer | null = null;
+			let timeoutHandler: NodeJS.Timeout | undefined = undefined;
 			const redirect = (url?: string | undefined): void => {
 				if (!timeoutHandler) {
 					// If the handler is null, then we already ended the response;
@@ -280,7 +275,7 @@ export class SAML {
 				}
 
 				clearTimeout(timeoutHandler);
-				timeoutHandler = null;
+				timeoutHandler = undefined;
 
 				res.writeHead(302, {
 					Location: url || Meteor.absoluteUrl(),

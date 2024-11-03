@@ -1,11 +1,10 @@
 import type { ITeam } from '@rocket.chat/core-typings';
-import { Skeleton } from '@rocket.chat/fuselage';
-import { useUserId, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import GenericModal from '../../../../../components/GenericModal';
+import GenericModalSkeleton from '../../../../../components/GenericModal/GenericModalSkeleton';
 import LeaveTeamModal from './LeaveTeamModal/LeaveTeamModal';
 
 type LeaveTeamWithDataProps = {
@@ -15,7 +14,6 @@ type LeaveTeamWithDataProps = {
 };
 
 const LeaveTeamWithData = ({ teamId, onCancel, onConfirm }: LeaveTeamWithDataProps): ReactElement => {
-	const t = useTranslation();
 	const userId = useUserId();
 
 	if (!userId) {
@@ -26,11 +24,7 @@ const LeaveTeamWithData = ({ teamId, onCancel, onConfirm }: LeaveTeamWithDataPro
 	const { data, isLoading } = useQuery(['teams.listRoomsOfUser'], () => getRoomsOfUser({ teamId, userId }));
 
 	if (isLoading) {
-		return (
-			<GenericModal variant='warning' onClose={onCancel} onConfirm={onCancel} title={<Skeleton width='50%' />} confirmText={t('Cancel')}>
-				<Skeleton width='full' />
-			</GenericModal>
-		);
+		return <GenericModalSkeleton />;
 	}
 
 	return <LeaveTeamModal onCancel={onCancel} onConfirm={onConfirm} rooms={data?.rooms || []} />;

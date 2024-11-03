@@ -17,4 +17,7 @@ export type MessageAttachmentBase = {
 		iv: string;
 		key: JsonWebKey;
 	};
+	hashes?: {
+		sha256: string;
+	};
 };

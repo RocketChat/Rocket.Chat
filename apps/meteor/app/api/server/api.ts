@@ -3,6 +3,7 @@ import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
+import { tracerSpan } from '@rocket.chat/tracing';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
@@ -63,6 +64,7 @@ interface IAPIDefaultFieldsToExclude {
 	statusDefault: number;
 	_updatedAt: number;
 	settings: number;
+	inviteToken: number;
 }
 
 type RateLimiterOptions = {
@@ -149,6 +151,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 
 	public limitedUserFieldsToExcludeIfIsPrivilegedUser: {
 		services: number;
+		inviteToken: number;
 	};
 
 	constructor(properties: IAPIProperties) {
@@ -176,18 +179,23 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			statusDefault: 0,
 			_updatedAt: 0,
 			settings: 0,
+			inviteToken: 0,
 		};
 		this.limitedUserFieldsToExclude = this.defaultLimitedUserFieldsToExclude;
 		this.limitedUserFieldsToExcludeIfIsPrivilegedUser = {
 			services: 0,
+			inviteToken: 0,
 		};
 	}
 
 	public setLimitedCustomFields(customFields: string[]): void {
-		const nonPublicFieds = customFields.reduce((acc, customField) => {
-			acc[`customFields.${customField}`] = 0;
-			return acc;
-		}, {} as Record<string, any>);
+		const nonPublicFieds = customFields.reduce(
+			(acc, customField) => {
+				acc[`customFields.${customField}`] = 0;
+				return acc;
+			},
+			{} as Record<string, any>,
+		);
 		this.limitedUserFieldsToExclude = {
 			...this.defaultLimitedUserFieldsToExclude,
 			...nonPublicFieds,
@@ -641,8 +649,29 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 							this.queryFields = options.queryFields;
 							this.parseJsonQuery = api.parseJsonQuery.bind(this as PartialThis);
 
-							result =
-								(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success();
+							result = await tracerSpan(
+								`${this.request.method} ${this.request.url}`,
+								{
+									attributes: {
+										url: this.request.url,
+										route: this.request.route,
+										method: this.request.method,
+										userId: this.userId,
+									},
+								},
+								async (span) => {
+									if (span) {
+										this.response.setHeader('X-Trace-Id', span.spanContext().traceId);
+									}
+
+									const result =
+										(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success();
+
+									span?.setAttribute('status', result.statusCode);
+
+									return result;
+								},
+							);
 
 							log.http({
 								status: result.statusCode,
@@ -1017,6 +1046,7 @@ export const API: {
 				members?: { key: string; value?: string[] };
 				customFields?: { key: string; value?: string };
 				teams?: { key: string; value?: string[] };
+				teamId?: { key: string; value?: string };
 			}) => Promise<void>;
 			execute: (
 				userId: string,

@@ -1,0 +1,117 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders StartCall without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-11d1wak rcx-css-tzpx07"
+    >
+      <div
+        aria-label="Start Call"
+        class="rcx-css-1meucp3"
+        role="dialog"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1yt6gb3"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1bmjlil"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-127j9mz"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1rfo3kt"
+              >
+                Start Call
+              </div>
+            </div>
+            <div
+              class="rcx-button-group rcx-button-group--align-start"
+              role="group"
+            >
+              <button
+                aria-label="video"
+                aria-live="assertive"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-4pvxx3"
+                >
+                  ❲
+                </i>
+              </button>
+              <button
+                aria-label="mic"
+                aria-live="assertive"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-1rtfgno"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-127j9mz"
+            >
+              <figure
+                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+              >
+                <img
+                  alt=""
+                  class="rcx-avatar__element rcx-avatar__element--x36"
+                  src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
+                />
+              </figure>
+              <div
+                class="rcx-box rcx-box--full rcx-css-1iqy4x3"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon"
+                >
+                  
+                </i>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-rnm2z7"
+                >
+                  Room Name
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-4ka9e7"
+          >
+            <div
+              class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+              role="group"
+            >
+              <button
+                class="rcx-box rcx-box--full rcx-button--primary rcx-button  rcx-button-group__item rcx-css-1qcz93u"
+                type="button"
+              >
+                <span
+                  class="rcx-button--content"
+                >
+                  Start Call
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

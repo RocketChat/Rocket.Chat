@@ -16,7 +16,6 @@ export type CustomScrollbarsProps = {
 
 const styleDefault: CSSProperties = {
 	flexGrow: 1,
-	willChange: 'transform',
 	overflowY: 'hidden',
 };
 

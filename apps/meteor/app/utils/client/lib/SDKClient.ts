@@ -1,15 +1,13 @@
 import type { RestClientInterface } from '@rocket.chat/api-client';
-import type { SDK } from '@rocket.chat/ddp-client/src/DDPSDK';
-import type { ClientStream } from '@rocket.chat/ddp-client/src/types/ClientStream';
-import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ddp-client/src/types/streams';
+import type { SDK, ClientStream, StreamKeys, StreamNames, StreamerCallbackArgs, ServerMethods } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Accounts } from 'meteor/accounts-base';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from './RestApiClient';
 
-declare module '@rocket.chat/ddp-client/src/DDPSDK' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface SDK {
 		stream<N extends StreamNames, K extends StreamKeys<N>>(
@@ -138,6 +136,12 @@ const createStreamManager = () => {
 
 	const streams = new Map<string, StreamMapValue>();
 
+	Accounts.onLogout(() => {
+		streams.forEach((stream) => {
+			stream.unsubList.forEach((stop) => stop());
+		});
+	});
+
 	Meteor.connection._stream.on('message', (rawMsg: string) => {
 		const msg = DDPCommon.parseDDP(rawMsg);
 		if (!isChangedCollectionPayload(msg)) {
@@ -169,7 +173,6 @@ const createStreamManager = () => {
 
 		const stop = (): void => {
 			streamProxy.off(eventLiteral, proxyCallback);
-
 			// If someone is still listening, don't unsubscribe
 			if (streamProxy.has(eventLiteral)) {
 				return;
@@ -182,11 +185,15 @@ const createStreamManager = () => {
 		};
 
 		const stream = streams.get(eventLiteral) || createNewMeteorStream(name, key, args);
+
 		stream.unsubList.add(stop);
 		if (!streams.has(eventLiteral)) {
 			streams.set(eventLiteral, stream);
 		}
-		stream.error(() => stop());
+
+		stream.error(() => {
+			stream.unsubList.forEach((stop) => stop());
+		});
 
 		return {
 			id: '',

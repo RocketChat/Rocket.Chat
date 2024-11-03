@@ -8,27 +8,16 @@ import { overrideLoginMethod, type LoginCallback } from '../../lib/2fa/overrideL
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
 import { createOAuthTotpLoginMethod } from './oauth';
 
-declare module 'meteor/accounts-base' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace Accounts {
-		export const _options: {
-			restrictCreationByEmailDomain?: string | (() => string);
-			forbidClientAccountCreation?: boolean | undefined;
-		};
-	}
-}
-
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace Meteor {
 		function loginWithGoogle(
-			options?:
-				| Meteor.LoginWithExternalServiceOptions & {
-						loginUrlParameters?: {
-							include_granted_scopes?: boolean;
-							hd?: string;
-						};
-				  },
+			options?: Meteor.LoginWithExternalServiceOptions & {
+				loginUrlParameters?: {
+					include_granted_scopes?: boolean;
+					hd?: string;
+				};
+			},
 			callback?: LoginCallback,
 		): void;
 	}

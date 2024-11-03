@@ -15,7 +15,6 @@ import { settings } from '../../settings/server';
 import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
 import { Livechat as LivechatTyped } from './lib/LivechatTyped';
-import { RoutingManager } from './lib/RoutingManager';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
 import './roomAccessValidator.internalService';
 
@@ -78,16 +77,12 @@ Meteor.startup(async () => {
 		process.env.TEST_MODE === 'true'
 			? {
 					debounce: 10,
-			  }
+				}
 			: undefined,
 	);
 
-	settings.watch<string>('Livechat_Routing_Method', () => {
-		void RoutingManager.startQueue();
-	});
-
 	// Remove when accounts.onLogout is async
-	Accounts.onLogout(({ user }: { user: IUser }) => {
+	Accounts.onLogout(({ user }: { user?: IUser }) => {
 		if (!user?.roles?.includes('livechat-agent') || user?.roles?.includes('bot')) {
 			return;
 		}

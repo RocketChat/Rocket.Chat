@@ -1,5 +1,492 @@
 # @rocket.chat/livechat Change Log
 
+## 1.20.1
+
+### Patch Changes
+
+- ([#33229](https://github.com/RocketChat/Rocket.Chat/pull/33229)) Fixes an issue where the unread message counter in the livechat widget does not update when a visitor receives their first response from an agent while the widget is minimized.
+
+- <details><summary>Updated dependencies [687f1efd5f, 9274cf4586, debd3ffa22]:</summary>
+
+  - @rocket.chat/ui-kit@0.37.0
+  - @rocket.chat/gazzodown@12.0.0
+  </details>
+
+## 1.20.1-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@12.0.0-rc.6
+  </details>
+
+## 1.20.1-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@12.0.0-rc.5
+  </details>
+
+## 1.20.1-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@12.0.0-rc.4
+  </details>
+
+## 1.20.1-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@12.0.0-rc.3
+  </details>
+
+## 1.20.1-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@12.0.0-rc.2
+  </details>
+
+## 1.20.1-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@12.0.0-rc.1
+  </details>
+
+## 1.20.1-rc.0
+
+### Patch Changes
+
+- ([#33229](https://github.com/RocketChat/Rocket.Chat/pull/33229)) Fixes an issue where the unread message counter in the livechat widget does not update when a visitor receives their first response from an agent while the widget is minimized.
+
+- <details><summary>Updated dependencies [687f1efd5f, 9274cf4586, debd3ffa22]:</summary>
+
+  - @rocket.chat/ui-kit@0.37.0-rc.0
+  - @rocket.chat/gazzodown@12.0.0-rc.0
+  </details>
+
+## 1.20.0
+
+### Minor Changes
+
+- ([#33139](https://github.com/RocketChat/Rocket.Chat/pull/33139)) Added new setting `Allow visitors to finish conversations` that allows admins to decide if omnichannel visitors can close a conversation or not. This doesn't affect agent's capabilities of room closing, neither apps using the livechat bridge to close rooms.
+  However, if currently your integration relies on `livechat/room.close` endpoint for closing conversations, it's advised to use the authenticated version `livechat/room.closeByUser` of it before turning off this setting.
+
+### Patch Changes
+
+- ([#33229](https://github.com/RocketChat/Rocket.Chat/pull/33229)) Fixes an issue where the unread message counter in the livechat widget does not update when a visitor receives their first response from an agent while the widget is minimized.
+
+- <details><summary>Updated dependencies [cd0d50016e, 79c16d315a]:</summary>
+
+  - @rocket.chat/gazzodown@11.0.0
+  - @rocket.chat/message-parser@0.31.31
+  </details>
+
+## 1.20.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@11.0.0-rc.6
+  </details>
+
+## 1.20.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@11.0.0-rc.5
+  </details>
+
+## 1.20.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@11.0.0-rc.4
+  </details>
+
+## 1.20.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@11.0.0-rc.3
+  </details>
+
+## 1.20.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@11.0.0-rc.2
+  </details>
+
+## 1.20.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@11.0.0-rc.1
+  </details>
+
+## 1.20.0-rc.0
+
+### Minor Changes
+
+- ([#33139](https://github.com/RocketChat/Rocket.Chat/pull/33139)) Added new setting `Allow visitors to finish conversations` that allows admins to decide if omnichannel visitors can close a conversation or not. This doesn't affect agent's capabilities of room closing, neither apps using the livechat bridge to close rooms.
+  However, if currently your integration relies on `livechat/room.close` endpoint for closing conversations, it's advised to use the authenticated version `livechat/room.closeByUser` of it before turning off this setting.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [cd0d50016e, 79c16d315a]:</summary>
+
+  - @rocket.chat/gazzodown@11.0.0-rc.0
+  - @rocket.chat/message-parser@0.31.30-rc.0
+  </details>
+
+## 1.19.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [3cbb9f6252]:</summary>
+
+  - @rocket.chat/message-parser@0.31.30
+  - @rocket.chat/gazzodown@10.0.1
+  </details>
+
+## 1.19.3
+
+### Patch Changes
+
+- ([#32928](https://github.com/RocketChat/Rocket.Chat/pull/32928)) Fixed issue where `after-registration-triggers` would show up in a page when the user was not yet registered
+
+- <details><summary>Updated dependencies [8ea6517c4e, c11f3722df]:</summary>
+
+  - @rocket.chat/gazzodown@10.0.0
+  - @rocket.chat/ui-kit@0.36.1
+  </details>
+
+## 1.19.3-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@10.0.0-rc.6
+  </details>
+
+## 1.19.3-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@10.0.0-rc.5
+  </details>
+
+## 1.19.3-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@10.0.0-rc.4
+  </details>
+
+## 1.19.3-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@10.0.0-rc.3
+  </details>
+
+## 1.19.3-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@10.0.0-rc.2
+  </details>
+
+## 1.19.3-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@10.0.0-rc.1
+  </details>
+
+## 1.19.3-rc.0
+
+### Patch Changes
+
+- ([#32928](https://github.com/RocketChat/Rocket.Chat/pull/32928)) Fixed issue where `after-registration-triggers` would show up in a page when the user was not yet registered
+
+- <details><summary>Updated dependencies [8ea6517c4e, c11f3722df]:</summary>
+
+  - @rocket.chat/gazzodown@10.0.0-rc.0
+  - @rocket.chat/ui-kit@0.36.1-rc.0
+  </details>
+
+## 1.19.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@9.0.2
+  </details>
+
+## 1.19.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@9.0.1
+  </details>
+
+## 1.19.0
+
+### Minor Changes
+
+- ([#32498](https://github.com/RocketChat/Rocket.Chat/pull/32498)) Created a `transferChat` Livechat API endpoint for transferring chats programmatically, the endpoint has all the limitations & permissions required that transferring via UI has
+
+### Patch Changes
+
+- ([#32692](https://github.com/RocketChat/Rocket.Chat/pull/32692)) Fixed an issue that caused the widget to set the wrong department when using the setDepartment Livechat api endpoint in conjunction with a Livechat Trigger
+
+- ([#32626](https://github.com/RocketChat/Rocket.Chat/pull/32626)) livechat `setDepartment` livechat api fixes:
+  - Changing department didn't reflect on the registration form in real time
+  - Changing the department mid conversation didn't transfer the chat
+  - Depending on the state of the department, it couldn't be set as default
+- <details><summary>Updated dependencies [2d89a0c448]:</summary>
+
+  - @rocket.chat/ui-kit@0.36.0
+  - @rocket.chat/gazzodown@9.0.0
+  </details>
+
+## 1.19.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@9.0.0-rc.6
+  </details>
+
+## 1.19.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@9.0.0-rc.5
+  </details>
+
+## 1.19.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@9.0.0-rc.4
+  </details>
+
+## 1.19.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@9.0.0-rc.3
+  </details>
+
+## 1.19.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@9.0.0-rc.2
+  </details>
+
+## 1.19.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@9.0.0-rc.1
+  </details>
+
+## 1.19.0-rc.0
+
+### Minor Changes
+
+- ([#32498](https://github.com/RocketChat/Rocket.Chat/pull/32498)) Created a `transferChat` Livechat API endpoint for transferring chats programmatically, the endpoint has all the limitations & permissions required that transferring via UI has
+
+### Patch Changes
+
+- ([#32692](https://github.com/RocketChat/Rocket.Chat/pull/32692)) Fixed an issue that caused the widget to set the wrong department when using the setDepartment Livechat api endpoint in conjunction with a Livechat Trigger
+
+- ([#32626](https://github.com/RocketChat/Rocket.Chat/pull/32626)) livechat `setDepartment` livechat api fixes:
+  - Changing department didn't reflect on the registration form in real time
+  - Changing the department mid conversation didn't transfer the chat
+  - Depending on the state of the department, it couldn't be set as default
+- <details><summary>Updated dependencies [2d89a0c448]:</summary>
+
+  - @rocket.chat/ui-kit@0.36.0-rc.0
+  - @rocket.chat/gazzodown@9.0.0-rc.0
+
+## 1.18.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@8.0.2
+  </details>
+  </details>
+
+## 1.18.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@8.0.1
+  </details>
+
+## 1.18.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [a565999ae0, 59df102d0c, 4f72d62aa7]:</summary>
+
+  - @rocket.chat/ui-kit@0.35.0
+  - @rocket.chat/gazzodown@8.0.0
+  </details>
+
+## 1.18.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@8.0.0-rc.7
+  </details>
+
+## 1.18.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@8.0.0-rc.6
+  </details>
+
+## 1.18.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@8.0.0-rc.5
+  </details>
+
+## 1.18.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@8.0.0-rc.4
+  </details>
+
+## 1.18.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@8.0.0-rc.3
+  </details>
+
+## 1.18.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@8.0.0-rc.2
+  </details>
+
+## 1.18.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@8.0.0-rc.1
+  </details>
+
+## 1.18.0-rc.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [a565999ae0, 59df102d0c, 4f72d62aa7]:</summary>
+
+  - @rocket.chat/ui-kit@0.35.0-rc.0
+  - @rocket.chat/gazzodown@8.0.0-rc.0
+
+  </details>
+
+## 1.17.3
+
+### Patch Changes
+
+- ([#32683](https://github.com/RocketChat/Rocket.Chat/pull/32683) by [@dionisio-bot](https://github.com/dionisio-bot)) livechat `setDepartment` livechat api fixes:
+  - Changing department didn't reflect on the registration form in real time
+  - Changing the department mid conversation didn't transfer the chat
+  - Depending on the state of the department, it couldn't be set as default
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@7.0.3
+  </details>
+
 ## 1.17.2
 
 ### Patch Changes

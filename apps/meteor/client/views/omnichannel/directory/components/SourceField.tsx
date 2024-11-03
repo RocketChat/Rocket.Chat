@@ -1,8 +1,7 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/OmnichannelRoomIcon';
 import Field from '../../components/Field';
@@ -13,8 +12,8 @@ type SourceFieldProps = {
 	room: IOmnichannelRoom;
 };
 
-const SourceField: FC<SourceFieldProps> = ({ room }) => {
-	const t = useTranslation();
+const SourceField = ({ room }: SourceFieldProps) => {
+	const { t } = useTranslation();
 
 	const roomSource = room.source.alias || room.source.id || room.source.type;
 
@@ -57,7 +56,7 @@ const SourceField: FC<SourceFieldProps> = ({ room }) => {
 			<Label>{t('Channel')}</Label>
 			<Info>
 				<Box display='flex' alignItems='center'>
-					<OmnichannelRoomIcon room={room} size='x24' placement='default' />
+					<OmnichannelRoomIcon source={room.source} status={room.v.status} size='x24' />
 					<Label mi={8} mbe='0'>
 						{defaultTypesLabels[room.source.type] || roomSource}
 					</Label>

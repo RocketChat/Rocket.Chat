@@ -1,6 +1,6 @@
 import { isThreadMainMessage } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
-import type { VFC, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import React, { useMemo, memo } from 'react';
 
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
@@ -22,7 +22,7 @@ type MessageListProviderProps = {
 	};
 };
 
-const MessageListProvider: VFC<MessageListProviderProps> = ({ children, messageListRef, attachmentDimension }) => {
+const MessageListProvider = ({ children, messageListRef, attachmentDimension }: MessageListProviderProps) => {
 	const room = useRoom();
 
 	if (!room) {

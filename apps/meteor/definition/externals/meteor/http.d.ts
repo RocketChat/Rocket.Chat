@@ -36,16 +36,16 @@ declare module 'meteor/http' {
 			method: string,
 			url: string,
 			options?: {
-				content?: string | undefined;
-				data?: Object | undefined;
-				query?: string | undefined;
-				params?: Object | undefined;
-				auth?: string | undefined;
-				headers?: Object | undefined;
-				timeout?: number | undefined;
-				followRedirects?: boolean | undefined;
-				npmRequestOptions?: Object | undefined;
-				beforeSend?: Function | undefined;
+				content?: string;
+				data?: object;
+				query?: string;
+				params?: object;
+				auth?: string;
+				headers?: object;
+				timeout?: number;
+				followRedirects?: boolean;
+				npmRequestOptions?: object;
+				beforeSend?: (xhr: XMLHttpRequest) => void;
 			},
 			asyncCallback?: AsyncCallback,
 		): HTTP.HTTPResponse;

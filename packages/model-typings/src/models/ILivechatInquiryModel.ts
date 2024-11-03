@@ -4,7 +4,7 @@ import type {
 	LivechatInquiryStatus,
 	OmnichannelSortingMechanismSettingType,
 } from '@rocket.chat/core-typings';
-import type { FindOptions, DistinctOptions, Document, UpdateResult, DeleteResult, FindCursor } from 'mongodb';
+import type { FindOptions, DistinctOptions, Document, UpdateResult, DeleteResult, FindCursor, DeleteOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -26,7 +26,7 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 		department?: string;
 		queueSortBy: OmnichannelSortingMechanismSettingType;
 	}): Promise<(Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number })[]>;
-	removeByRoomId(rid: string): Promise<DeleteResult>;
+	removeByRoomId(rid: string, options?: DeleteOptions): Promise<DeleteResult>;
 	getQueuedInquiries(options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord>;
 	takeInquiry(inquiryId: string): Promise<void>;
 	openInquiry(inquiryId: string): Promise<UpdateResult>;

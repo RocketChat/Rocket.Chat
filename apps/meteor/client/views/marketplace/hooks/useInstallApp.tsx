@@ -1,35 +1,27 @@
 import type { App, AppPermission } from '@rocket.chat/core-typings';
-import { useRouter, useSetModal, useUpload, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useRouter, useSetModal, useUpload } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import React, { useCallback, useState } from 'react';
 
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import { useAppsReload } from '../../../contexts/hooks/useAppsReload';
-import { useExternalLink } from '../../../hooks/useExternalLink';
-import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 import AppPermissionsReviewModal from '../AppPermissionsReviewModal';
 import AppUpdateModal from '../AppUpdateModal';
-import AppInstallationModal from '../components/AppInstallModal/AppInstallModal';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { handleInstallError } from '../helpers/handleInstallError';
 import { getManifestFromZippedApp } from '../lib/getManifestFromZippedApp';
 import { useAppsCountQuery } from './useAppsCountQuery';
 
-export const useInstallApp = (file: File, url: string): { install: () => void; isInstalling: boolean } => {
+export const useInstallApp = (file: File): { install: () => void; isInstalling: boolean } => {
 	const reloadAppsList = useAppsReload();
-	const openExternalLink = useExternalLink();
 	const setModal = useSetModal();
 
 	const router = useRouter();
 
 	const appCountQuery = useAppsCountQuery('private');
-	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'marketplace-app-install', action: 'Enable_unlimited_apps' });
 
 	const uploadAppEndpoint = useUpload('/apps');
 	const uploadUpdateEndpoint = useUpload('/apps/update');
-
-	// TODO: This function should not be called in a next major version, it will be changed by an endpoint deprecation.
-	const downloadPrivateAppFromUrl = useEndpoint('POST', '/apps');
 
 	const [isInstalling, setInstalling] = useState(false);
 
@@ -102,36 +94,22 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 		await handleAppPermissionsReview(permissions, appFile);
 	};
 
-	/** @deprecated	*/
-	const getAppFile = async (): Promise<File | undefined> => {
+	const extractManifestFromAppFile = async (appFile: File) => {
 		try {
-			const { buff } = (await downloadPrivateAppFromUrl({ url, downloadOnly: true })) as { buff: { data: ArrayLike<number> } };
-
-			return new File([Uint8Array.from(buff.data)], 'app.zip', { type: 'application/zip' });
+			return getManifestFromZippedApp(appFile);
 		} catch (error) {
 			handleInstallError(error as Error);
 		}
 	};
 
-	const extractManifestFromAppFile = async (appFile: File) => {
-		const manifest = await getManifestFromZippedApp(appFile);
-		return manifest;
-	};
-
 	const install = async () => {
-		let appFile: File | undefined;
-
 		setInstalling(true);
 
 		if (!appCountQuery.data) {
 			return cancelAction();
 		}
 
-		if (!file) {
-			appFile = await getAppFile();
-		} else {
-			appFile = file;
-		}
+		const appFile = file;
 
 		if (!appFile) {
 			return cancelAction();
@@ -143,24 +121,7 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 			return cancelAction();
 		}
 
-		if (appCountQuery.data.hasUnlimitedApps) {
-			return uploadFile(appFile, manifest);
-		}
-
-		setModal(
-			<AppInstallationModal
-				context='private'
-				enabled={appCountQuery.data.enabled}
-				limit={appCountQuery.data.limit}
-				appName={manifest.name}
-				handleClose={cancelAction}
-				handleConfirm={() => uploadFile(appFile as File, manifest)}
-				handleEnableUnlimitedApps={() => {
-					openExternalLink(manageSubscriptionUrl);
-					setModal(null);
-				}}
-			/>,
-		);
+		return uploadFile(appFile, manifest);
 	};
 
 	return { install, isInstalling };

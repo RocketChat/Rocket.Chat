@@ -68,10 +68,10 @@ class JIRAReporter implements Reporter {
 		console.log(`Sending test result to JIRA: ${JSON.stringify(payload)}`);
 
 		// first search and check if there is an existing issue
-
+		// replace all ()[]- with nothing
 		const search = await fetch(
 			`${this.url}/rest/api/2/search?${new URLSearchParams({
-				jql: `project = FLAKY AND summary ~ '${payload.name}'`,
+				jql: `project = FLAKY AND summary ~ '${payload.name.replace(/[\(\)\[\]-]/g, '')}'`,
 			})}`,
 			{
 				method: 'GET',
@@ -103,6 +103,25 @@ class JIRAReporter implements Reporter {
 
 		if (existing) {
 			const { location } = test;
+
+			if (this.pr === 0) {
+				await fetch(`${this.url}/rest/api/2/issue/${existing.key}`, {
+					method: 'PUT',
+					body: JSON.stringify({
+						update: {
+							labels: [
+								{
+									add: 'flaky_Develop',
+								},
+							],
+						},
+					}),
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Basic ${this.apiKey}`,
+					},
+				});
+			}
 
 			await fetch(`${this.url}/rest/api/2/issue/${existing.key}/comment`, {
 				method: 'POST',
@@ -146,6 +165,7 @@ ${this.run_url}
 				project: {
 					key: 'FLAKY',
 				},
+				...(this.pr === 0 && { labels: ['flaky_Develop'] }),
 			},
 		};
 

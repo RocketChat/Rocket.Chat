@@ -69,4 +69,39 @@ test.describe.serial('message-composer', () => {
 
 		await expect(poHomeChannel.composer).toHaveValue(`[hello composer](${url})`);
 	});
+
+	test('should select popup item and not send the message when pressing enter', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('hello composer');
+
+		await test.step('mention popup', async () => {
+			await page.keyboard.type('hello composer @all');
+
+			await page.keyboard.press('Enter');
+
+			await expect(poHomeChannel.composer).toHaveValue('hello composer @all ');
+
+			await poHomeChannel.composer.fill('');
+		});
+
+		await test.step('emoji popup', async () => {
+			await page.keyboard.type('hello composer :flag_br');
+
+			await page.keyboard.press('Enter');
+
+			await expect(poHomeChannel.composer).toHaveValue('hello composer :flag_br: ');
+
+			await poHomeChannel.composer.fill('');
+		});
+
+		await test.step('slash command', async () => {
+			await page.keyboard.type('/gim');
+
+			await page.keyboard.press('Enter');
+
+			await expect(poHomeChannel.composer).toHaveValue('/gimme ');
+
+			await poHomeChannel.composer.fill('');
+		});
+	});
 });

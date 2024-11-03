@@ -2,7 +2,6 @@ import { Box, Flex, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useStream } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import type { FC } from 'react';
 import React, { useEffect, useState } from 'react';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
@@ -23,7 +22,7 @@ type CallPageProps = {
 	callStartTime: any;
 };
 
-const CallPage: FC<CallPageProps> = ({
+const CallPage = ({
 	roomId,
 	visitorToken,
 	visitorId,
@@ -33,7 +32,7 @@ const CallPage: FC<CallPageProps> = ({
 	visitorName,
 	agentName,
 	callStartTime,
-}) => {
+}: CallPageProps) => {
 	if (!roomId) {
 		throw new Error('Call Page - no room id');
 	}
@@ -61,35 +60,47 @@ const CallPage: FC<CallPageProps> = ({
 			if (!visitorId) {
 				throw new Error('Call Page - no visitor id');
 			}
-			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId, visitorId as any);
+			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId, visitorId);
 			const isMobileDevice = (): boolean => {
 				if (isLayoutEmbedded) {
 					setCallInIframe(true);
 				}
 				if (window.innerWidth <= 450 && window.innerHeight >= 629 && window.innerHeight <= 900) {
 					setIsLocalMobileDevice(true);
-					webrtcInstance.media = {
-						audio: true,
-						video: {
-							width: { ideal: 440 },
-							height: { ideal: 580 },
-						},
-					};
+					if (webrtcInstance)
+						webrtcInstance.media = {
+							audio: true,
+							video: {
+								width: { ideal: 440 },
+								height: { ideal: 580 },
+							},
+						};
 					return true;
 				}
 				return false;
 			};
 
-			const unsubNotifyUser = subscribeNotifyUser(`${visitorId}/${WEB_RTC_EVENTS.WEB_RTC}`, (type: any, data: any) => {
+			const unsubNotifyUser = subscribeNotifyUser(`${visitorId}/${WEB_RTC_EVENTS.WEB_RTC}`, (type, data) => {
 				if (data.room == null) {
 					return;
 				}
-				webrtcInstance.onUserStream(type, data);
+
+				switch (type) {
+					case 'candidate':
+						webrtcInstance?.onUserStream('candidate', data);
+						break;
+					case 'description':
+						webrtcInstance?.onUserStream('description', data);
+						break;
+					case 'join':
+						webrtcInstance?.onUserStream('join', data);
+						break;
+				}
 			});
 
 			const unsubNotifyRoom = subscribeNotifyRoom(`${roomId}/${WEB_RTC_EVENTS.WEB_RTC}`, (type: any, data: any) => {
 				if (type === 'callStatus' && data.callStatus === 'ended') {
-					webrtcInstance.stop();
+					webrtcInstance?.stop();
 					setStatus(data.callStatus);
 				} else if (type === 'getDeviceType') {
 					sdk.publish('notify-room', [
@@ -131,7 +142,7 @@ const CallPage: FC<CallPageProps> = ({
 			if (status === 'inProgress') {
 				sdk.publish('notify-room', [`${roomId}/${WEB_RTC_EVENTS.WEB_RTC}`, 'getDeviceType']);
 
-				webrtcInstance.startCall({
+				webrtcInstance?.startCall({
 					audio: true,
 					video: {
 						width: { ideal: 1920 },
@@ -146,10 +157,10 @@ const CallPage: FC<CallPageProps> = ({
 				if (type === 'callStatus') {
 					switch (data.callStatus) {
 						case 'ended':
-							webrtcInstance.stop();
+							webrtcInstance?.stop();
 							break;
 						case 'inProgress':
-							webrtcInstance.startCall({
+							webrtcInstance?.startCall({
 								audio: true,
 								video: {
 									width: { ideal: 1920 },
@@ -169,10 +180,10 @@ const CallPage: FC<CallPageProps> = ({
 
 	const toggleButton = (control: any): any => {
 		if (control === 'mic') {
-			WebRTC.getInstanceByRoomId(roomId, visitorToken).toggleAudio();
+			WebRTC.getInstanceByRoomId(roomId, visitorToken)?.toggleAudio();
 			return setIsMicOn(!isMicOn);
 		}
-		WebRTC.getInstanceByRoomId(roomId, visitorToken).toggleVideo();
+		WebRTC.getInstanceByRoomId(roomId, visitorToken)?.toggleVideo();
 		setIsCameraOn(!isCameraOn);
 		sdk.publish('notify-room', [
 			`${roomId}/${WEB_RTC_EVENTS.WEB_RTC}`,

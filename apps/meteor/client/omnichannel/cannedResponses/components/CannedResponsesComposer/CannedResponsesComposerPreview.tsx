@@ -1,10 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
 import React, { memo } from 'react';
 
 import MarkdownText from '../../../../components/MarkdownText';
 
-const CannedResponsesComposerPreview: FC<{ text: string }> = ({ text }) => {
+type CannedResponsesComposerPreviewProps = { text: string };
+
+const CannedResponsesComposerPreview = ({ text }: CannedResponsesComposerPreviewProps) => {
 	const textM = text.split(/\n/).join('  \n');
 
 	return (

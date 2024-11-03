@@ -1,12 +1,13 @@
 import { Box, Message } from '@rocket.chat/fuselage';
-import { useEndpoint, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ReportReason from './helpers/ReportReason';
 
 const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const getReportsByMessage = useEndpoint('GET', `/v1/moderation.reports`);
 

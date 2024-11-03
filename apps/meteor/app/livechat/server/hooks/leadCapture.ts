@@ -1,5 +1,5 @@
 import type { IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -31,12 +31,8 @@ function validateMessage(message: IMessage, room: IOmnichannelRoom) {
 }
 
 callbacks.add(
-	'afterSaveMessage',
-	async (message, room) => {
-		if (!isOmnichannelRoom(room)) {
-			return message;
-		}
-
+	'afterOmnichannelSaveMessage',
+	async (message, { room }) => {
 		if (!validateMessage(message, room)) {
 			return message;
 		}

@@ -2,6 +2,7 @@ import { Apps, AppEvents } from '@rocket.chat/apps';
 import { User } from '@rocket.chat/core-services';
 import { Roles, Settings, Users } from '@rocket.chat/models';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
+import { getLoginExpirationInDays } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -22,16 +23,28 @@ import { setAvatarFromServiceWithValidation } from '../../../lib/server/function
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
+import { getBaseUserFields } from '../../../utils/server/functions/getBaseUserFields';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
 });
+/**
+ * Accounts calls `_initServerPublications` and holds the `_defaultPublishFields`, without Object.assign its not possible
+ * to extend the projection
+ *
+ * the idea is to send all required fields to the client during login
+ * we tried `defaultFieldsSelector` , but it changes all Meteor.userAsync projections which is undesirable
+ *
+ *
+ * we are removing the status here because meteor send 'offline'
+ */
+Object.assign(Accounts._defaultPublishFields.projection, (({ status, ...rest }) => rest)(getBaseUserFields()));
 
 Meteor.startup(() => {
 	settings.watchMultiple(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], () => {
-		Accounts._options.loginExpirationInDays = settings.get('Accounts_LoginExpiration');
+		Accounts._options.loginExpirationInDays = getLoginExpirationInDays(settings.get('Accounts_LoginExpiration'));
 
 		Accounts.emailTemplates.siteName = settings.get('Site_Name');
 
@@ -261,11 +274,12 @@ const onCreateUserAsync = async function (options, user = {}) {
 
 Accounts.onCreateUser(function (...args) {
 	// Depends on meteor support for Async
-	return Promise.await(onCreateUserAsync.call(this, ...args));
+	return onCreateUserAsync.call(this, ...args);
 });
 
 const { insertUserDoc } = Accounts;
-const insertUserDocAsync = async function (options, user) {
+
+Accounts.insertUserDoc = async function (options, user) {
 	const globalRoles = new Set();
 
 	if (Match.test(options.globalRoles, [String]) && options.globalRoles.length > 0) {
@@ -306,7 +320,7 @@ const insertUserDocAsync = async function (options, user) {
 		user.roles = [];
 	}
 
-	const _id = insertUserDoc.call(Accounts, options, user);
+	const _id = await insertUserDoc.call(Accounts, options, user);
 
 	user = await Users.findOne({
 		_id,
@@ -365,11 +379,6 @@ const insertUserDocAsync = async function (options, user) {
 	}
 
 	return _id;
-};
-
-Accounts.insertUserDoc = function (...args) {
-	// Depends on meteor support for Async
-	return Promise.await(insertUserDocAsync.call(this, ...args));
 };
 
 const validateLoginAttemptAsync = async function (login) {
@@ -441,7 +450,7 @@ const validateLoginAttemptAsync = async function (login) {
 
 Accounts.validateLoginAttempt(function (...args) {
 	// Depends on meteor support for Async
-	return Promise.await(validateLoginAttemptAsync.call(this, ...args));
+	return validateLoginAttemptAsync.call(this, ...args);
 });
 
 Accounts.validateNewUser((user) => {

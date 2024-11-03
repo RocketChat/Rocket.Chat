@@ -1,7 +1,6 @@
 import { Sidebar, IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { VFC } from 'react';
 import React, { memo, useState } from 'react';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
@@ -23,7 +22,7 @@ type ExtendedProps = {
 	threadUnread?: boolean;
 };
 
-const Extended: VFC<ExtendedProps> = ({
+const Extended = ({
 	icon,
 	title = '',
 	avatar,
@@ -39,7 +38,7 @@ const Extended: VFC<ExtendedProps> = ({
 	unread,
 	selected,
 	...props
-}) => {
+}: ExtendedProps) => {
 	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 

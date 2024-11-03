@@ -8,6 +8,8 @@ services:
     build:
       dockerfile: ${RC_DOCKERFILE}
       context: /tmp/build
+      args:
+        DENO_VERSION: ${DENO_VERSION}
     image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${RC_DOCKER_TAG}
     environment:
       - TEST_MODE=true
@@ -30,6 +32,7 @@ services:
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
       traefik.http.routers.rocketchat.service: rocketchat
       traefik.http.routers.rocketchat.rule: PathPrefix(`/`)
+      traefik.http.middlewares.test-retry.retry.attempts: 4
 
   authorization-service:
     platform: linux/amd64
@@ -38,6 +41,7 @@ services:
       context: .
       args:
         SERVICE: authorization-service
+        DENO_VERSION: ${DENO_VERSION}
     image: ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${DOCKER_TAG}
     environment:
       - 'MONGO_URL=${MONGO_URL}'
@@ -72,6 +76,7 @@ services:
       context: .
       args:
         SERVICE: presence-service
+        DENO_VERSION: ${DENO_VERSION}
     image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}
@@ -162,9 +167,10 @@ services:
     image: nats:2.6-alpine
 
   traefik:
-    image: traefik:v2.8
+    image: traefik:v3.1
     command:
       - --providers.docker=true
+      - '--serverstransport.maxidleconnsperhost=-1'
     ports:
       - 3000:80
     volumes:

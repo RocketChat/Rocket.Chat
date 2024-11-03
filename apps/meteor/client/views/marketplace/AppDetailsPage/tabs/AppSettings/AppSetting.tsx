@@ -7,7 +7,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import { Utilities } from '../../../../../../ee/lib/misc/Utilities';
 import MarkdownText from '../../../../../components/MarkdownText';
-import MemoizedSetting from '../../../../admin/settings/MemoizedSetting';
+import MemoizedSetting from '../../../../admin/settings/Setting/MemoizedSetting';
 
 type AppTranslationFunction = {
 	(key: string, ...replaces: unknown[]): string;

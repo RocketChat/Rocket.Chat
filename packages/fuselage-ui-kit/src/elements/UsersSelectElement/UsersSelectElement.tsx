@@ -24,10 +24,10 @@ const UsersSelectElement = ({ block, context }: UsersSelectElementProps) => {
   const data = useUsersData({ filter: debouncedFilter });
 
   const handleChange = useCallback(
-    (value) => {
-      action({ target: { value } });
+    (value: string | string[]) => {
+      if (!Array.isArray(value)) action({ target: { value } });
     },
-    [action]
+    [action],
   );
 
   return (

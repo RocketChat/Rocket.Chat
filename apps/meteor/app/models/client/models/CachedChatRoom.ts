@@ -46,7 +46,6 @@ class CachedChatRoom extends CachedCollection<IRoom> {
 					usernames: room.usernames,
 					usersCount: room.usersCount,
 					lastMessage: room.lastMessage,
-					streamingOptions: room.streamingOptions,
 					teamId: room.teamId,
 					teamMain: room.teamMain,
 					v: (room as IOmnichannelRoom | undefined)?.v,
@@ -111,6 +110,6 @@ class CachedChatRoom extends CachedCollection<IRoom> {
 const instance = new CachedChatRoom();
 
 export {
-	/** @deprecated */
+	/** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
 	instance as CachedChatRoom,
 };

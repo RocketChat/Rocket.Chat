@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import CannedResponsesComposer from './CannedResponsesComposer';
@@ -6,7 +6,7 @@ import CannedResponsesComposer from './CannedResponsesComposer';
 export default {
 	title: 'Enterprise/Omnichannel/CannedResponsesComposer',
 	component: CannedResponsesComposer,
-} as ComponentMeta<typeof CannedResponsesComposer>;
+} satisfies Meta<typeof CannedResponsesComposer>;
 
-export const Default: ComponentStory<typeof CannedResponsesComposer> = (args) => <CannedResponsesComposer {...args} />;
+export const Default: StoryFn<typeof CannedResponsesComposer> = (args) => <CannedResponsesComposer {...args} />;
 Default.storyName = 'CannedResponsesComposer';
