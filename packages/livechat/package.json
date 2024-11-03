@@ -59,7 +59,6 @@
 		"eslint-plugin-react": "~7.32.2",
 		"eslint-plugin-react-hooks": "~4.6.2",
 		"file-loader": "^6.2.0",
-		"gh-release": "^3.5.0",
 		"html-webpack-plugin": "^5.5.3",
 		"if-env": "^1.0.4",
 		"image-webpack-loader": "~8.1.0",
