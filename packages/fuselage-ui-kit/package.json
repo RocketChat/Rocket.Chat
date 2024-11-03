@@ -55,7 +55,7 @@
 		"@rocket.chat/fuselage": "^0.59.4",
 		"@rocket.chat/fuselage-hooks": "^0.33.1",
 		"@rocket.chat/fuselage-polyfills": "~0.31.25",
-		"@rocket.chat/icons": "~0.38.0",
+		"@rocket.chat/icons": "~0.39.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/mock-providers": "workspace:^",
 		"@rocket.chat/prettier-config": "~0.31.25",
