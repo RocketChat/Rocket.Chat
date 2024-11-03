@@ -163,7 +163,7 @@ const MailExportForm = ({ formId, rid, onCancel, exportOptions }: MailExportForm
 													return undefined;
 												}
 
-												return t('Mail_Message_Invalid_emails', additionalEmails);
+												return t('Mail_Message_Invalid_emails', { postProcess: 'sprintf', sprintf: [additionalEmails] });
 											},
 											validateToUsers: (additionalEmails) => {
 												if (additionalEmails !== '' || toUsers?.length > 0) {

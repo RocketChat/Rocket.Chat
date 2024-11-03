@@ -1,9 +1,10 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Field, FieldLabel, FieldRow, FieldError, TextInput, FieldGroup, RadioButton, FieldHint, Option } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import Tags from '../../../components/Omnichannel/Tags';
@@ -12,7 +13,7 @@ import CannedResponsesComposerPreview from './CannedResponsesComposer/CannedResp
 
 // TODO: refactor Tags field to get proper validation
 const CannedResponseForm = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const hasManagerPermission = usePermission('view-all-canned-responses');
 	const hasMonitorPermission = usePermission('save-department-canned-responses');
 

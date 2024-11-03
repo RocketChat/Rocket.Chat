@@ -1,5 +1,6 @@
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
@@ -27,7 +28,7 @@ export const useDepartmentsList = (
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [itemsList, setItemsList] = useState(() => new RecordList<DepartmentListItem>());
 	const reload = useCallback(() => setItemsList(new RecordList<DepartmentListItem>()), []);
 

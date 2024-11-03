@@ -11,9 +11,9 @@ type ActionButtonProps = Pick<ComponentPropsWithoutRef<typeof IconButton>, 'clas
 const VoipActionButton = ({ disabled, label, pressed, icon, danger, success, className, onClick }: ActionButtonProps) => (
 	<IconButton
 		medium
+		secondary
 		danger={danger}
 		success={success}
-		secondary={success || danger}
 		className={className}
 		icon={<Icon name={icon} />}
 		title={label}

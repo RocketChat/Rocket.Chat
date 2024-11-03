@@ -177,7 +177,7 @@ const dontPersist = [
 	'incomingCallAlert',
 	'ongoingCall',
 	'parentUrl',
-];
+] as Array<keyof StoreState>;
 
 export const store = new Store(initialState(), { dontPersist });
 

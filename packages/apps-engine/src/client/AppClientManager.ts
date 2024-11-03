@@ -5,7 +5,10 @@ import { AppsEngineUIHost } from './AppsEngineUIHost';
 export class AppClientManager {
     private apps: Array<IAppInfo>;
 
-    constructor(private readonly appsEngineUIHost: AppsEngineUIHost, private readonly communicator?: AppServerCommunicator) {
+    constructor(
+        private readonly appsEngineUIHost: AppsEngineUIHost,
+        private readonly communicator?: AppServerCommunicator,
+    ) {
         if (!(appsEngineUIHost instanceof AppsEngineUIHost)) {
             throw new Error('The appClientUIHost must extend appClientUIHost');
         }

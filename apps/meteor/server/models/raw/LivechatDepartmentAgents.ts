@@ -267,6 +267,19 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.find(query);
 	}
 
+	async countOnlineForDepartment(departmentId: string, isLivechatEnabledWhenAgentIdle?: boolean): Promise<number> {
+		const agents = await this.findByDepartmentId(departmentId, { projection: { username: 1 } }).toArray();
+
+		if (agents.length === 0) {
+			return 0;
+		}
+
+		return Users.countOnlineUserFromList(
+			agents.map((a) => a.username),
+			isLivechatEnabledWhenAgentIdle,
+		);
+	}
+
 	async getBotsForDepartment(departmentId: string): Promise<undefined | FindCursor<ILivechatDepartmentAgents>> {
 		const agents = await this.findByDepartmentId(departmentId).toArray();
 
@@ -285,6 +298,16 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		};
 
 		return this.find(query);
+	}
+
+	async countBotsForDepartment(departmentId: string): Promise<number> {
+		const agents = await this.findByDepartmentId(departmentId, { projection: { username: 1 } }).toArray();
+
+		if (agents.length === 0) {
+			return 0;
+		}
+
+		return Users.countBotAgents(agents.map((a) => a.username));
 	}
 
 	async getNextBotForDepartment(

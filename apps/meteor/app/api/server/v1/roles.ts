@@ -165,9 +165,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-role-protected', 'Cannot delete a protected role');
 			}
 
-			const existingUsers = await Roles.findUsersInRole(role._id);
-
-			if (existingUsers && (await existingUsers.count()) > 0) {
+			if ((await Roles.countUsersInRole(role._id)) > 0) {
 				throw new Meteor.Error('error-role-in-use', "Cannot delete role because it's in use");
 			}
 
@@ -217,7 +215,7 @@ API.v1.addRoute(
 			}
 
 			if (role._id === 'admin') {
-				const adminCount = await (await Roles.findUsersInRole('admin')).count();
+				const adminCount = await Roles.countUsersInRole('admin');
 				if (adminCount === 1) {
 					throw new Meteor.Error('error-admin-required', 'You need to have at least one admin');
 				}
