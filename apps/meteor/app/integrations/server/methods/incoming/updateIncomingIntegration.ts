@@ -67,8 +67,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const oldScriptEngine = currentIntegration.scriptEngine ?? 'vm2';
-		const scriptEngine = integration.scriptEngine ?? oldScriptEngine;
+		const oldScriptEngine = currentIntegration.scriptEngine;
+		const scriptEngine = integration.scriptEngine ?? oldScriptEngine ?? 'isolated-vm';
 		if (
 			integration.script?.trim() &&
 			(scriptEngine !== oldScriptEngine || integration.script?.trim() !== currentIntegration.script?.trim())
@@ -181,7 +181,7 @@ Meteor.methods<ServerMethods>({
 								script: integration.script,
 								scriptEnabled: integration.scriptEnabled,
 								scriptEngine,
-						  }),
+							}),
 					...(typeof integration.overrideDestinationChannelEnabled !== 'undefined' && {
 						overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
 					}),

@@ -143,26 +143,9 @@ export async function findPaginatedUsersByStatus({
 	hasLoggedIn,
 	type,
 }: FindPaginatedUsersByStatusProps) {
-	const projection = {
-		name: 1,
-		username: 1,
-		emails: 1,
-		roles: 1,
-		status: 1,
-		active: 1,
-		avatarETag: 1,
-		lastLogin: 1,
-		type: 1,
-		reason: 1,
-		federated: 1,
-	};
-
 	const actualSort: Record<string, 1 | -1> = sort || { username: 1 };
 	if (sort?.status) {
 		actualSort.active = sort.status;
-	}
-	if (sort?.name) {
-		actualSort.nameInsensitive = sort.name;
 	}
 	const match: Filter<IUser & RootFilterOperators<IUser>> = {};
 	switch (status) {
@@ -183,6 +166,22 @@ export async function findPaginatedUsersByStatus({
 	}
 
 	const canSeeAllUserInfo = await hasPermissionAsync(uid, 'view-full-other-user-info');
+	const canSeeExtension = canSeeAllUserInfo || (await hasPermissionAsync(uid, 'view-user-voip-extension'));
+
+	const projection = {
+		name: 1,
+		username: 1,
+		emails: 1,
+		roles: 1,
+		status: 1,
+		active: 1,
+		avatarETag: 1,
+		lastLogin: 1,
+		type: 1,
+		reason: 1,
+		federated: 1,
+		...(canSeeExtension ? { freeSwitchExtension: 1 } : {}),
+	};
 
 	match.$or = [
 		...(canSeeAllUserInfo ? [{ 'emails.address': { $regex: escapeRegExp(searchTerm || ''), $options: 'i' } }] : []),
@@ -196,6 +195,7 @@ export async function findPaginatedUsersByStatus({
 	if (roles?.length && !roles.includes('all')) {
 		match.roles = { $in: roles };
 	}
+
 	const { cursor, totalCount } = await Users.findPaginated(
 		{
 			...match,

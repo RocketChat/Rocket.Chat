@@ -1,0 +1,147 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Loading without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1k9c77o"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1d60bfv"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-skeleton--rect rcx-skeleton rcx-css-1ad23aw"
+        />
+        <span
+          class="rcx-box rcx-box--full rcx-skeleton--text rcx-skeleton rcx-css-fuw2gp"
+        />
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithPhoneNumber without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1k9c77o"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1v88l6i"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+        >
+          <p
+            class="rcx-box rcx-box--full rcx-css-v42v30"
+            title="+554788765522"
+          >
+            +554788765522
+          </p>
+          <button
+            aria-label="Copy_phone_number"
+            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button rcx-css-1azzyc"
+            data-tooltip="Copy_phone_number"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1tg7yd0"
+            >
+              
+            </i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithTransfer without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1k9c77o"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1v88l6i"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1w6swlw"
+        >
+          From
+          : 
+          Jane Doe
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1keant8"
+          >
+            <figure
+              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
+            >
+              <img
+                aria-hidden="true"
+                class="rcx-avatar__element rcx-avatar__element--x24"
+                data-username="john.doe"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                title="john.doe"
+              />
+            </figure>
+          </div>
+          <p
+            class="rcx-box rcx-box--full rcx-css-v42v30"
+            title="John Doe"
+          >
+            John Doe
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithUsername without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1k9c77o"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1v88l6i"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1keant8"
+          >
+            <figure
+              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
+            >
+              <img
+                aria-hidden="true"
+                class="rcx-avatar__element rcx-avatar__element--x24"
+                data-username="john.doe"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                title="john.doe"
+              />
+            </figure>
+          </div>
+          <p
+            class="rcx-box rcx-box--full rcx-css-v42v30"
+            title="John Doe"
+          >
+            John Doe
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

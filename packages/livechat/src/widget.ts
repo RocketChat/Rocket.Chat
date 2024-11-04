@@ -1,6 +1,6 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
 import type { LivechatRoomEvents } from '@rocket.chat/ddp-client';
-import mitt from 'mitt';
+import { Emitter } from '@rocket.chat/emitter';
 
 import { isDefined } from './helpers/isDefined';
 import type { HooksWidgetAPI } from './lib/hooks';
@@ -79,7 +79,7 @@ export const VALID_CALLBACKS = [
 
 const VALID_SYSTEM_MESSAGES = ['uj', 'ul', 'livechat-close', 'livechat-started', 'livechat_transfer_history'];
 
-const callbacks = mitt();
+const callbacks = new Emitter();
 
 function registerCallback(eventName: string, fn: () => unknown) {
 	if (VALID_CALLBACKS.indexOf(eventName) === -1) {
@@ -98,7 +98,9 @@ function emitCallback(eventName: string, data?: unknown) {
 }
 
 function clearAllCallbacks() {
-	callbacks.all.clear();
+	callbacks.events().forEach((callback) => {
+		callbacks.off(callback, () => undefined);
+	});
 }
 
 // hooks

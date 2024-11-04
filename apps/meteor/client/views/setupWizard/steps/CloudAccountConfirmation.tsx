@@ -1,7 +1,8 @@
 import { AwaitingConfirmationPage } from '@rocket.chat/onboarding-ui';
-import { useToastMessageDispatch, useSettingSetValue, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSettingSetValue, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useCallback } from 'react';
+import { I18nextProvider, useTranslation } from 'react-i18next';
 
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
@@ -19,7 +20,7 @@ const CloudAccountConfirmation = (): ReactElement => {
 	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
 	const cloudConfirmationPoll = useEndpoint('GET', '/v1/cloud.confirmationPoll');
 	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
+	const { t, i18n } = useTranslation();
 
 	const getConfirmation = useCallback(async () => {
 		try {
@@ -46,14 +47,16 @@ const CloudAccountConfirmation = (): ReactElement => {
 	}, [getConfirmation, registrationData.interval]);
 
 	return (
-		<AwaitingConfirmationPage
-			currentStep={currentStep}
-			stepCount={maxSteps}
-			emailAddress={registrationData.cloudEmail}
-			securityCode={registrationData.user_code}
-			onResendEmailRequest={(): Promise<void> => registerServer({ email: registrationData.cloudEmail, resend: true })}
-			onChangeEmailRequest={(): void => goToStep(3)}
-		/>
+		<I18nextProvider i18n={i18n} defaultNS='onboarding'>
+			<AwaitingConfirmationPage
+				currentStep={currentStep}
+				stepCount={maxSteps}
+				emailAddress={registrationData.cloudEmail}
+				securityCode={registrationData.user_code}
+				onResendEmailRequest={(): Promise<void> => registerServer({ email: registrationData.cloudEmail, resend: true })}
+				onChangeEmailRequest={(): void => goToStep(3)}
+			/>
+		</I18nextProvider>
 	);
 };
 

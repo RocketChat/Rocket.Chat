@@ -1,8 +1,9 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
-import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import React, { useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { HeaderToolbar } from '../Header';
 import SidebarToggler from '../SidebarToggler';
@@ -15,7 +16,7 @@ type PageHeaderProps = {
 } & Omit<ComponentPropsWithoutRef<typeof Box>, 'title'>;
 
 const PageHeader = ({ children = undefined, title, onClickBack, borderBlockEndColor, ...props }: PageHeaderProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [border] = useContext(PageContext);
 	const { isMobile } = useLayout();
 
@@ -26,7 +27,7 @@ const PageHeader = ({ children = undefined, title, onClickBack, borderBlockEndCo
 			is='header'
 			borderBlockEndWidth='default'
 			pb={8}
-			borderBlockEndColor={borderBlockEndColor ?? border ? 'extra-light' : 'transparent'}
+			borderBlockEndColor={(borderBlockEndColor ?? border) ? 'extra-light' : 'transparent'}
 			{...props}
 		>
 			<Box

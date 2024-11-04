@@ -42,7 +42,7 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 								icon: 'login' as const,
 								onClick: onClickEnterRoom,
 							},
-					  ]
+						]
 					: []),
 				...(onClickEdit
 					? [
@@ -52,7 +52,7 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 								icon: 'edit' as const,
 								onClick: onClickEdit,
 							},
-					  ]
+						]
 					: []),
 				...(handleLeave
 					? [
@@ -62,7 +62,7 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 								icon: 'sign-out' as const,
 								onClick: handleLeave,
 							},
-					  ]
+						]
 					: []),
 				...(handleMoveToTeam
 					? [
@@ -72,7 +72,7 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 								icon: 'team-arrow-right' as const,
 								onClick: handleMoveToTeam,
 							},
-					  ]
+						]
 					: []),
 				...(handleConvertToTeam
 					? [
@@ -82,7 +82,7 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 								icon: 'team' as const,
 								onClick: handleConvertToTeam,
 							},
-					  ]
+						]
 					: []),
 				...(canDeleteRoom
 					? [
@@ -93,7 +93,7 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 								onClick: handleDelete,
 								variant: 'danger',
 							},
-					  ]
+						]
 					: []),
 			],
 		};

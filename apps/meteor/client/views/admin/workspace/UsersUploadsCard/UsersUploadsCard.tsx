@@ -1,9 +1,10 @@
 import type { IStats } from '@rocket.chat/core-typings';
 import { Button, Card, CardBody, CardControls } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useFormatMemorySize } from '../../../../hooks/useFormatMemorySize';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
@@ -15,7 +16,7 @@ type UsersUploadsCardProps = {
 };
 
 const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatMemorySize = useFormatMemorySize();
 
 	const router = useRouter();

@@ -30,6 +30,7 @@ import type {
 	AggregationCursor,
 	CountDocumentsOptions,
 	DeleteOptions,
+	ModifyResult,
 } from 'mongodb';
 
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
@@ -263,6 +264,17 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return Users.find<P>({ _id: { $in: users } }, options || {});
 	}
 
+	async countUsersInRoles(roles: IRole['_id'][], rid: IRoom['_id'] | undefined): Promise<number> {
+		const query = {
+			roles: { $in: roles },
+			...(rid && { rid }),
+		};
+
+		// Ideally, the count of subscriptions would be the same (or really similar) to the count in users
+		// As sub/user/room is a 1:1 relation.
+		return this.countDocuments(query);
+	}
+
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid?: IRoom['_id']): Promise<UpdateResult> {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
@@ -402,10 +414,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		options: AggregateOptions = {},
 	): Promise<SpotlightUser[]> {
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
-		const orStatement = searchFields.reduce((acc, el) => {
-			acc.push({ [el.trim()]: termRegex });
-			return acc;
-		}, [] as { [x: string]: RegExp }[]);
+		const orStatement = searchFields.reduce(
+			(acc, el) => {
+				acc.push({ [el.trim()]: termRegex });
+				return acc;
+			},
+			[] as { [x: string]: RegExp }[],
+		);
 
 		return this.col
 			.aggregate<SpotlightUser>(
@@ -579,21 +594,45 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
+	async setGroupE2EKeyAndOldRoomKeys(_id: string, key: string, oldRoomKeys?: ISubscription['oldRoomKeys']): Promise<UpdateResult> {
+		const query = { _id };
+		const update = { $set: { E2EKey: key, ...(oldRoomKeys && { oldRoomKeys }) } };
+		return this.updateOne(query, update);
+	}
+
 	async setGroupE2EKey(_id: string, key: string): Promise<UpdateResult> {
 		const query = { _id };
 		const update = { $set: { E2EKey: key } };
 		return this.updateOne(query, update);
 	}
 
-	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<UpdateResult> {
+	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<ModifyResult<ISubscription>> {
 		const query = { rid, 'u._id': uid };
 		const update = { $set: { E2ESuggestedKey: key } };
-		return this.updateOne(query, update);
+		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
 	}
 
-	unsetGroupE2ESuggestedKey(_id: string): Promise<UpdateResult | Document> {
+	setE2EKeyByUserIdAndRoomId(userId: string, rid: string, key: string): Promise<ModifyResult<ISubscription>> {
+		const query = { rid, 'u._id': userId };
+		const update = { $set: { E2EKey: key } };
+
+		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
+	}
+
+	setGroupE2ESuggestedKeyAndOldRoomKeys(
+		uid: string,
+		rid: string,
+		key: string,
+		suggestedOldRoomKeys?: ISubscription['suggestedOldRoomKeys'],
+	): Promise<ModifyResult<ISubscription>> {
+		const query = { rid, 'u._id': uid };
+		const update = { $set: { E2ESuggestedKey: key, ...(suggestedOldRoomKeys && { suggestedOldRoomKeys }) } };
+		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
+	}
+
+	unsetGroupE2ESuggestedKeyAndOldRoomKeys(_id: string): Promise<UpdateResult | Document> {
 		const query = { _id };
-		return this.updateOne(query, { $unset: { E2ESuggestedKey: 1 } });
+		return this.updateOne(query, { $unset: { E2ESuggestedKey: 1, suggestedOldRoomKeys: 1 } });
 	}
 
 	setOnHoldByRoomId(rid: string): Promise<UpdateResult> {
@@ -750,6 +789,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 					'E2EKey': {
 						$exists: false,
 					},
+					'E2ESuggestedKey': { $exists: false },
 					'u._id': {
 						$ne: excludeUserId,
 					},
@@ -898,12 +938,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 						$set: {
 							hideMentionStatus,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							hideMentionStatus: 1,
 						},
-				  };
+					};
 
 		return this.updateOne(query, update);
 	}
@@ -989,6 +1029,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				$unset: {
 					E2EKey: '',
 					E2ESuggestedKey: 1,
+					oldRoomKeys: 1,
 				},
 			},
 		);

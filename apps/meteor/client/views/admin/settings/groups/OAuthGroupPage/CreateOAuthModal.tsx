@@ -1,6 +1,8 @@
-import { TextInput, Field, FieldLabel, FieldRow, FieldError, Box } from '@rocket.chat/fuselage';
-import type { ReactElement, FormEvent, SyntheticEvent } from 'react';
-import React, { useState } from 'react';
+import { TextInput, Field, FieldLabel, FieldRow, FieldError, Box, FieldHint } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import type { ReactElement } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../../components/GenericModal';
@@ -10,43 +12,50 @@ type CreateOAuthModalProps = {
 	onClose: () => void;
 };
 
+type CreateOAuthModalFields = {
+	customOAuthName: string;
+};
+
 const CreateOAuthModal = ({ onConfirm, onClose }: CreateOAuthModalProps): ReactElement => {
-	const [text, setText] = useState<string>('');
-	const [error, setError] = useState<string>('');
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<CreateOAuthModalFields>({
+		defaultValues: {
+			customOAuthName: '',
+		},
+	});
+
 	const { t } = useTranslation();
 
-	const handleConfirm = (e: SyntheticEvent): void => {
-		e.preventDefault();
-		if (!text.length) {
-			setError(t('Required_field', { field: t('Name') }));
-			return;
-		}
-		onConfirm(text);
-	};
+	const customOAuthNameId = useUniqueId();
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleConfirm} {...props} />}
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(({ customOAuthName }) => onConfirm(customOAuthName))} {...props} />}
 			title={t('Add_custom_oauth')}
 			confirmText={t('Add')}
 			onCancel={onClose}
 			onClose={onClose}
-			onConfirm={handleConfirm}
 		>
 			<Field>
-				<FieldLabel>{t('Give_a_unique_name_for_the_custom_oauth')}</FieldLabel>
+				<FieldLabel htmlFor={customOAuthNameId}>{t('Custom_OAuth_name')}</FieldLabel>
 				<FieldRow>
 					<TextInput
-						error={error}
-						placeholder={t('Custom_oauth_unique_name')}
-						value={text}
-						onChange={(e: FormEvent<HTMLInputElement>): void => {
-							setText(e.currentTarget.value);
-							setError('');
-						}}
+						id={customOAuthNameId}
+						{...register('customOAuthName', { required: t('Required_field', { field: t('Custom_OAuth_name') }) })}
+						aria-required='true'
+						aria-describedby={`${customOAuthNameId}-error ${customOAuthNameId}-hint`}
+						aria-label={t('Custom_OAuth_name')}
 					/>
 				</FieldRow>
-				{error && <FieldError>{error}</FieldError>}
+				<FieldHint id={`${customOAuthNameId}-hint`}>{t('Custom_OAuth_name_hint')}</FieldHint>
+				{errors.customOAuthName && (
+					<FieldError aria-live='assertive' id={`${customOAuthNameId}-error`}>
+						{errors.customOAuthName.message}
+					</FieldError>
+				)}
 			</Field>
 		</GenericModal>
 	);

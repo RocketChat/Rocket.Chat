@@ -20,11 +20,17 @@ const documentRenderer = new marked.Renderer();
 const inlineRenderer = new marked.Renderer();
 const inlineWithoutBreaks = new marked.Renderer();
 
-marked.Lexer.rules.gfm = {
-	...marked.Lexer.rules.gfm,
-	strong: /^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)|^\*(?=\S)([\s\S]*?\S)\*(?!\*)/,
-	em: /^__(?=\S)([\s\S]*?\S)__(?!_)|^_(?=\S)([\s\S]*?\S)_(?!_)/,
+const walkTokens = (token: marked.Token) => {
+	const boldPattern = /^\*[^*]+\*$|^\*\*[^*]+\*\*$/;
+	const italicPattern = /^__(?=\S)([\s\S]*?\S)__(?!_)|^_(?=\S)([\s\S]*?\S)_(?!_)/;
+	if (boldPattern.test(token.raw) && token.type === 'em') {
+		token.type = 'strong' as 'em';
+	} else if (italicPattern.test(token.raw) && token.type === 'strong') {
+		token.type = 'em' as 'strong';
+	}
 };
+
+marked.use({ walkTokens });
 
 const linkMarked = (href: string | null, _title: string | null, text: string): string =>
 	`<a href="${href}" rel="nofollow noopener noreferrer">${text}</a> `;
@@ -117,7 +123,7 @@ const MarkdownText = ({
 					// We are using the old emoji parser here. This could come
 					// with additional processing use, but is the workaround available right now.
 					// Should be replaced in the future with the new parser.
-					return renderMessageEmoji({ html: markedHtml });
+					return renderMessageEmoji(markedHtml);
 				}
 
 				return markedHtml;

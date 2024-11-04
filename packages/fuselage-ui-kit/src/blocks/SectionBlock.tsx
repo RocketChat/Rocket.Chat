@@ -24,7 +24,7 @@ const SectionBlock = ({
             ...block.accessory,
           }
         : undefined,
-    [block.appId, block.blockId, block.accessory]
+    [block.appId, block.blockId, block.accessory],
   );
 
   return (
@@ -43,7 +43,7 @@ const SectionBlock = ({
             {accessoryElement
               ? surfaceRenderer.renderSectionAccessoryBlockElement(
                   accessoryElement,
-                  0
+                  0,
                 )
               : null}
           </Grid.Item>

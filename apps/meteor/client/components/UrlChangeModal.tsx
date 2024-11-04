@@ -26,7 +26,14 @@ const UrlChangeModal = ({ onConfirm, siteUrl, currentUrl, onClose }: UrlChangeMo
 					}),
 				}}
 			/>
-			<p dangerouslySetInnerHTML={{ __html: t('Do_you_want_to_change_to_s_question', currentUrl) }} />
+			<p
+				dangerouslySetInnerHTML={{
+					__html: t('Do_you_want_to_change_to_s_question', {
+						postProcess: 'sprintf',
+						sprintf: [currentUrl],
+					}),
+				}}
+			/>
 		</GenericModal>
 	);
 };

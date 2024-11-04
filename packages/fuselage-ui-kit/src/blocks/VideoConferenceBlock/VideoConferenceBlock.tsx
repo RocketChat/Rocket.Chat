@@ -1,3 +1,4 @@
+import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import {
   useGoToRoom,
   useTranslation,
@@ -60,7 +61,7 @@ const VideoConferenceBlock = ({
         value: block.blockId || '',
         viewId,
       },
-      e
+      e,
     );
   };
 
@@ -73,7 +74,7 @@ const VideoConferenceBlock = ({
         value: rid || '',
         viewId,
       },
-      e
+      e,
     );
   };
 
@@ -86,7 +87,7 @@ const VideoConferenceBlock = ({
         value: rid,
         viewId,
       },
-      e
+      e,
     );
   };
 
@@ -133,9 +134,14 @@ const VideoConferenceBlock = ({
               <VideoConfMessageButton onClick={callAgainHandler}>
                 {isUserCaller ? t('Call_again') : t('Call_back')}
               </VideoConfMessageButton>
-              <VideoConfMessageFooterText>
-                {t('Call_was_not_answered')}
-              </VideoConfMessageFooterText>
+              {[
+                VideoConferenceStatus.EXPIRED,
+                VideoConferenceStatus.DECLINED,
+              ].includes(data.status) && (
+                <VideoConfMessageFooterText>
+                  {t('Call_was_not_answered')}
+                </VideoConfMessageFooterText>
+              )}
             </>
           )}
           {data.type !== 'direct' &&
@@ -151,16 +157,21 @@ const VideoConferenceBlock = ({
                 </VideoConfMessageFooterText>
               </>
             ) : (
-              <VideoConfMessageFooterText>
-                {t('Call_was_not_answered')}
-              </VideoConfMessageFooterText>
+              [
+                VideoConferenceStatus.EXPIRED,
+                VideoConferenceStatus.DECLINED,
+              ].includes(data.status) && (
+                <VideoConfMessageFooterText>
+                  {t('Call_was_not_answered')}
+                </VideoConfMessageFooterText>
+              )
             ))}
         </VideoConfMessageFooter>
       </VideoConfMessage>
     );
   }
 
-  if (data.type === 'direct' && data.status === 0) {
+  if (data.type === 'direct' && data.status === VideoConferenceStatus.CALLING) {
     return (
       <VideoConfMessage>
         <VideoConfMessageRow>

@@ -66,7 +66,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 
 	return (
 		<>
-			<FilterByText onChange={setText} />
+			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

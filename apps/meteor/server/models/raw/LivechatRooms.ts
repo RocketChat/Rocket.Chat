@@ -10,7 +10,7 @@ import type {
 	MACStats,
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -54,6 +54,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { servedBy: 1 }, sparse: true },
 			{ key: { 'v.token': 1, 'email.thread': 1 }, sparse: true },
 			{ key: { 'v._id': 1 }, sparse: true },
+			{ key: { 'servedBy._id': 1, 'departmentId': 1, 't': 1, 'open': 1, 'ts': -1 } },
 			{ key: { t: 1, departmentId: 1, closedAt: 1 }, partialFilterExpression: { closedAt: { $exists: true } } },
 			{ key: { source: 1 }, sparse: true },
 			{ key: { departmentAncestors: 1 }, sparse: true },
@@ -755,7 +756,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const match: Document = {
 			$match: {
 				't': 'l',
-				'servedBy.username': { $exists: true },
+				'servedBy._id': { $exists: true },
 				'open': true,
 				'$or': [
 					{
@@ -789,7 +790,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const match: Document = {
 			$match: {
 				't': 'l',
-				'servedBy.username': { $exists: true },
+				'servedBy._id': { $exists: true },
 				'open': true,
 				'onHold': {
 					$exists: true,
@@ -815,7 +816,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			$match: {
 				't': 'l',
 				'open': { $exists: false },
-				'servedBy.username': { $exists: true },
+				'servedBy._id': { $exists: true },
 				'ts': { $gte: new Date(start) },
 				'closedAt': { $lte: new Date(end) },
 			},
@@ -1072,7 +1073,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				't': 'l',
 				'ts': { $gte: new Date(start), $lte: new Date(end) },
 				'responseBy.lastMessageTs': { $exists: true },
-				'servedBy.ts': { $exists: true },
+				'servedBy._id': { $exists: true },
 			},
 		};
 		const group = {
@@ -1220,6 +1221,26 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
+	findPaginatedRoomsByVisitorsIdsAndSource({
+		visitorsIds,
+		source,
+		options = {},
+	}: {
+		visitorsIds: string[];
+		source?: string;
+		options?: FindOptions;
+	}): FindPaginated<FindCursor<IOmnichannelRoom>> {
+		return this.findPaginated<IOmnichannelRoom>(
+			{
+				'v._id': { $in: visitorsIds },
+				...(source && {
+					$or: [{ 'source.type': new RegExp(escapeRegExp(source), 'i') }, { 'source.alias': new RegExp(escapeRegExp(source), 'i') }],
+				}),
+			},
+			options,
+		);
+	}
+
 	findRoomsWithCriteria({
 		agents,
 		roomName,
@@ -1256,9 +1277,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
 			...extraQuery,
-			...(agents && {
-				$or: [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }],
-			}),
+			...(agents && { 'servedBy._id': { $in: agents } }),
 			...(roomName && { fname: new RegExp(escapeRegExp(roomName), 'i') }),
 			...(departmentId && departmentId !== 'undefined' && { departmentId }),
 			...(open !== undefined && { open: { $exists: open }, onHold: { $ne: true } }),
@@ -2561,6 +2580,10 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				},
 			])
 			.toArray();
+	}
+
+	countLivechatRoomsWithDepartment(): Promise<number> {
+		return this.col.countDocuments({ departmentId: { $exists: true } });
 	}
 
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {

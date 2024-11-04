@@ -26,7 +26,6 @@ const ManagersTable = () => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
-	const debouncedText = useDebouncedValue(text, 500);
 
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address'>('name');
 
@@ -35,13 +34,12 @@ const ManagersTable = () => {
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
-				text: debouncedText,
-				fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
+				text,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: current,
 			}),
-			[debouncedText, sortBy, sortDirection, itemsPerPage, current],
+			[text, sortBy, sortDirection, itemsPerPage, current],
 		),
 		500,
 	);
@@ -80,7 +78,9 @@ const ManagersTable = () => {
 	return (
 		<>
 			<AddManager reload={refetch} />
-			{((isSuccess && data?.users.length > 0) || queryHasChanged) && <FilterByText onChange={setText} />}
+			{((isSuccess && data?.users.length > 0) || queryHasChanged) && (
+				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
+			)}
 			{isLoading && (
 				<GenericTable aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -100,7 +100,7 @@ const ManagersTable = () => {
 			)}
 			{isSuccess && data.users.length > 0 && (
 				<>
-					<GenericTable aria-busy={text !== debouncedText} aria-label={t('Managers')}>
+					<GenericTable aria-busy={isLoading} aria-label={t('Managers')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.users.map((user) => (

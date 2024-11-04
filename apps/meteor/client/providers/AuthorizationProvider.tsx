@@ -37,10 +37,13 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 			() =>
 				Roles.find()
 					.fetch()
-					.reduce((ret, obj) => {
-						ret[obj._id] = obj;
-						return ret;
-					}, {} as Record<string, IRole>),
+					.reduce(
+						(ret, obj) => {
+							ret[obj._id] = obj;
+							return ret;
+						},
+						{} as Record<string, IRole>,
+					),
 			[],
 		),
 	);

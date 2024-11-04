@@ -2,9 +2,10 @@ import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/co
 import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
 import { Box, Button, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSettingStructure, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSettingStructure } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
 import { useEditableSetting, useEditableSettingsDispatch, useIsEnterprise } from '../../EditableSettingsContext';
@@ -53,7 +54,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 		[persistedSetting, dispatch],
 	);
 
-	const t = useTranslation();
+	const { t, i18n } = useTranslation();
 
 	const [value, setValue] = useState(setting.value);
 	const [editor, setEditor] = useState(isSettingColor(setting) ? setting.editor : undefined);
@@ -95,14 +96,19 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	const { _id, disabled, readonly, type, packageValue, i18nLabel, i18nDescription, alert, invisible } = setting;
 
-	const labelText = (t.has(i18nLabel) && t(i18nLabel)) || (t.has(_id) && t(_id)) || i18nLabel || _id;
+	const labelText = (i18n.exists(i18nLabel) && t(i18nLabel)) || (i18n.exists(_id) && t(_id)) || i18nLabel || _id;
 
 	const hint = useMemo(
 		() =>
-			i18nDescription && t.has(i18nDescription) ? <MarkdownText variant='inline' preserveHtml content={t(i18nDescription)} /> : undefined,
-		[i18nDescription, t],
+			i18nDescription && i18n.exists(i18nDescription) ? (
+				<MarkdownText variant='inline' preserveHtml content={t(i18nDescription)} />
+			) : undefined,
+		[i18n, i18nDescription, t],
 	);
-	const callout = useMemo(() => alert && <span dangerouslySetInnerHTML={{ __html: t.has(alert) ? t(alert) : alert }} />, [alert, t]);
+	const callout = useMemo(
+		() => alert && <span dangerouslySetInnerHTML={{ __html: i18n.exists(alert) ? t(alert) : alert }} />,
+		[alert, i18n, t],
+	);
 
 	const shouldDisableEnterprise = setting.enterprise && !isEnterprise;
 

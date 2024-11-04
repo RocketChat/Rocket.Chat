@@ -1,5 +1,6 @@
-import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../../components/Contextualbar';
 import { useOmnichannelRoom } from '../../../../room/contexts/RoomContext';
@@ -10,7 +11,7 @@ import ContactInfo from './ContactInfo';
 const PATH = 'live';
 
 const ContactsContextualBar = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const room = useOmnichannelRoom();
 	const { closeTab } = useRoomToolbox();

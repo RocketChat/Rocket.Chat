@@ -1,6 +1,6 @@
 import type { VoIpCallerInfo } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import type { ComponentStory } from '@storybook/react';
+import type { StoryFn } from '@storybook/react';
 import React, { useState } from 'react';
 
 import VoipFooter from './VoipFooter';
@@ -22,7 +22,7 @@ const callerDefault = {
 };
 
 export default {
-	title: 'Sidebar/Footer/VoipFooter',
+	title: 'SidebarV2/Footer/VoipFooter',
 	component: VoipFooter,
 	parameters: {
 		controls: { expanded: true },
@@ -51,7 +51,7 @@ export default {
 	},
 };
 
-const VoipFooterTemplate: ComponentStory<typeof VoipFooter> = (args) => {
+const VoipFooterTemplate: StoryFn<typeof VoipFooter> = (args) => {
 	const [muted, toggleMic] = useState(false);
 	const [paused, togglePause] = useState(false);
 

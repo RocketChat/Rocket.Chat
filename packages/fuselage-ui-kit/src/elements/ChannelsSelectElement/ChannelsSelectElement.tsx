@@ -25,7 +25,7 @@ const ChannelsSelectElement = ({
     (value: string | string[]) => {
       if (!Array.isArray(value)) action({ target: { value } });
     },
-    [action]
+    [action],
   );
 
   return (
