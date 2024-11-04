@@ -4,6 +4,7 @@ import { expect, assert } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, reservedWords } from '../../data/api-data';
+import { pinMessage, sendMessage, starMessage } from '../../data/chat.helper';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -2461,9 +2462,45 @@ describe('[Channels]', () => {
 
 	describe('[/channels.messages]', () => {
 		let testChannel: IRoom;
+		let emptyChannel: IRoom;
+		let firstUser: IUser;
+		let secondUser: IUser;
+
 		before(async () => {
 			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']);
+			emptyChannel = (await createRoom({ type: 'c', name: `channels.messages.empty.test.${Date.now()}` })).body.channel;
 			testChannel = (await createRoom({ type: 'c', name: `channels.messages.test.${Date.now()}` })).body.channel;
+
+			firstUser = await createUser({ joinDefaultChannels: false });
+			secondUser = await createUser({ joinDefaultChannels: false });
+
+			const messages = [
+				{
+					rid: testChannel._id,
+					msg: `@${firstUser.username} youre being mentioned`,
+					mentions: [{ username: firstUser.username, _id: firstUser._id, name: firstUser.name }],
+				},
+				{
+					rid: testChannel._id,
+					msg: `@${secondUser.username} youre being mentioned`,
+					mentions: [{ username: secondUser.username, _id: secondUser._id, name: secondUser.name }],
+				},
+				{
+					rid: testChannel._id,
+					msg: `A simple message`,
+				},
+				{
+					rid: testChannel._id,
+					msg: `A pinned simple message`,
+				},
+			];
+
+			const [, , starredMessage, pinnedMessage] = await Promise.all(messages.map((message) => sendMessage({ message })));
+
+			await Promise.all([
+				starMessage({ messageId: starredMessage.body.message._id }),
+				pinMessage({ messageId: pinnedMessage.body.message._id }),
+			]);
 		});
 
 		after(async () => {
@@ -2476,7 +2513,7 @@ describe('[Channels]', () => {
 				.get(api('channels.messages'))
 				.set(credentials)
 				.query({
-					roomId: testChannel._id,
+					roomId: emptyChannel._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2485,6 +2522,26 @@ describe('[Channels]', () => {
 					expect(res.body).to.have.property('messages').and.to.be.an('array').that.is.empty;
 					expect(res.body).to.have.property('count', 0);
 					expect(res.body).to.have.property('total', 0);
+				});
+		});
+
+		it('should return an array of messages when inspecting a room with messages', async () => {
+			await request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array').that.has.lengthOf(5);
+					expect(res.body).to.have.property('count', 5);
+					expect(res.body).to.have.property('total', 5);
+
+					const pinnedMessage = res.body.messages.find((message: any) => message.t === 'message_pinned');
+					expect(pinnedMessage).to.not.be.undefined;
 				});
 		});
 
@@ -2501,6 +2558,89 @@ describe('[Channels]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+				});
+			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']);
+		});
+
+		it('should return messages that mention a single user', async () => {
+			await request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					mentionIds: firstUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages[0]).to.have.nested.property('mentions').that.is.an('array').and.to.have.lengthOf(1);
+					expect(res.body.messages[0].mentions[0]).to.have.property('_id', firstUser._id);
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
+				});
+		});
+
+		it('should return messages that mention multiple users', async () => {
+			await request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					mentionIds: `${firstUser._id},${secondUser._id}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(2);
+					expect(res.body).to.have.property('count', 2);
+					expect(res.body).to.have.property('total', 2);
+
+					const mentionIds = res.body.messages.map((message: any) => message.mentions[0]._id);
+					expect(mentionIds).to.include.members([firstUser._id, secondUser._id]);
+				});
+		});
+
+		it('should return messages that are starred by a specific user', async () => {
+			await request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					starredIds: 'rocketchat.internal.admin.test',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages[0]).to.have.nested.property('starred').that.is.an('array').and.to.have.lengthOf(1);
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
+				});
+		});
+
+		// Return messages that are pinned
+		it('should return messages that are pinned', async () => {
+			await request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					pinned: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages[0]).to.have.nested.property('pinned').that.is.an('boolean').and.to.be.true;
+					expect(res.body.messages[0]).to.have.nested.property('pinnedBy').that.is.an('object');
+					expect(res.body.messages[0].pinnedBy).to.have.property('_id', 'rocketchat.internal.admin.test');
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
 				});
 		});
 	});

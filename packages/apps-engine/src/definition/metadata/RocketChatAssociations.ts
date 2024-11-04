@@ -10,7 +10,10 @@ export enum RocketChatAssociationModel {
 }
 
 export class RocketChatAssociationRecord {
-    constructor(private model: RocketChatAssociationModel, private id: string) {}
+    constructor(
+        private model: RocketChatAssociationModel,
+        private id: string,
+    ) {}
 
     public getModel() {
         return this.model;

@@ -15,10 +15,10 @@ export type KeyOfEach<T> = T extends any ? keyof T : never;
 export type Jsonify<T> = T extends Date
 	? string
 	: T extends object
-	? {
-			[k in keyof T]: Jsonify<T[k]>;
-	  }
-	: T;
+		? {
+				[k in keyof T]: Jsonify<T[k]>;
+			}
+		: T;
 
 // Use AtLeast when you don't care if you receive a partial or full object, as long as the specified attributes are loaded
 // Attributes defined as optional will continue to be optional.
@@ -31,6 +31,6 @@ export type DeepWritable<T> = T extends (...args: any) => any
 	? T
 	: {
 			-readonly [P in keyof T]: DeepWritable<T[P]>;
-	  };
+		};
 
 export type DistributiveOmit<T, K extends keyof any> = T extends any ? Omit<T, K> : never;

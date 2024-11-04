@@ -12,13 +12,12 @@ declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace Meteor {
 		function loginWithGoogle(
-			options?:
-				| Meteor.LoginWithExternalServiceOptions & {
-						loginUrlParameters?: {
-							include_granted_scopes?: boolean;
-							hd?: string;
-						};
-				  },
+			options?: Meteor.LoginWithExternalServiceOptions & {
+				loginUrlParameters?: {
+					include_granted_scopes?: boolean;
+					hd?: string;
+				};
+			},
 			callback?: LoginCallback,
 		): void;
 	}

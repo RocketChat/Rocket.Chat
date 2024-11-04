@@ -29,7 +29,7 @@ export class FuselageMessageSurfaceRenderer extends FuselageSurfaceRenderer {
   video_conf(
     block: UiKit.VideoConferenceBlock,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return (
