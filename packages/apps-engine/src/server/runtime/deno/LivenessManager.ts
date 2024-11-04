@@ -65,6 +65,16 @@ export class LivenessManager {
         this.options = Object.assign({}, defaultOptions, options);
     }
 
+    public getRuntimeData() {
+        const { restartCount, pingTimeoutConsecutiveCount, restartLog } = this;
+
+        return {
+            restartCount,
+            pingTimeoutConsecutiveCount,
+            restartLog,
+        };
+    }
+
     public attach(deno: ChildProcess) {
         this.subprocess = deno;
 

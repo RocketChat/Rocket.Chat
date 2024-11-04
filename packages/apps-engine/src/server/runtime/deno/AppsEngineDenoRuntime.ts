@@ -9,7 +9,7 @@ import { AppStatus } from '../../../definition/AppStatus';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
 import type { IParseAppPackageResult } from '../../compiler';
-import type { ILoggerStorageEntry } from '../../logging';
+import { AppConsole, type ILoggerStorageEntry } from '../../logging';
 import type { AppAccessorManager, AppApiManager } from '../../managers';
 import type { AppLogStorage, IAppStorageItem } from '../../storage';
 import { LivenessManager } from './LivenessManager';
@@ -166,28 +166,38 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
         }
     }
 
-    public async killProcess(): Promise<void> {
+    /**
+     * Attempts to kill the process currently controlled by this.deno
+     *
+     * @returns boolean - if a process has been killed or not
+     */
+    public async killProcess(): Promise<boolean> {
         if (!this.deno) {
             this.debug('No child process reference');
-            return;
+            return false;
         }
 
+        let { killed } = this.deno;
+
         // This field is not populated if the process is killed by the OS
-        if (this.deno.killed) {
+        if (killed) {
             this.debug('App process was already killed');
-            return;
+            return killed;
         }
 
         // What else should we do?
         if (this.deno.kill('SIGKILL')) {
             // Let's wait until we get confirmation the process exited
             await new Promise<void>((r) => this.deno.on('exit', r));
+            killed = true;
         } else {
             this.debug('Tried killing the process but failed. Was it already dead?');
+            killed = false;
         }
 
         delete this.deno;
         this.messenger.clearReceiver();
+        return killed;
     }
 
     // Debug purposes, could be deleted later
@@ -238,21 +248,40 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
     public async restartApp() {
         this.debug('Restarting app subprocess');
+        const logger = new AppConsole('runtime:restart');
+
+        logger.info('Starting restart procedure for app subprocess...', this.livenessManager.getRuntimeData());
 
         this.state = 'restarting';
 
-        await this.killProcess();
+        try {
+            const pid = this.deno?.pid;
 
-        await this.setupApp();
+            const hasKilled = await this.killProcess();
 
-        // setupApp() changes the state to 'ready' - we'll need to workaround that for now
-        this.state = 'restarting';
+            if (hasKilled) {
+                logger.debug('Process successfully terminated', { pid });
+            } else {
+                logger.warn('Could not terminate process. Maybe it was already dead?', { pid });
+            }
 
-        await this.sendRequest({ method: 'app:initialize' });
+            await this.setupApp();
+            logger.info('New subprocess successfully spawned', { pid: this.deno.pid });
 
-        await this.sendRequest({ method: 'app:setStatus', params: [this.storageItem.status] });
+            // setupApp() changes the state to 'ready' - we'll need to workaround that for now
+            this.state = 'restarting';
 
-        this.state = 'ready';
+            await this.sendRequest({ method: 'app:initialize' });
+            await this.sendRequest({ method: 'app:setStatus', params: [this.storageItem.status] });
+
+            this.state = 'ready';
+
+            logger.info('Successfully restarted app subprocess');
+        } catch (e) {
+            logger.error("Failed to restart app's subprocess", { error: e });
+        } finally {
+            await this.logStorage.storeEntries(AppConsole.toStorageEntry(this.getAppId(), logger));
+        }
     }
 
     public getAppId(): string {
