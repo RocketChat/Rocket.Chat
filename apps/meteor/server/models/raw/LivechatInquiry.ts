@@ -123,6 +123,18 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.findOne(query, options);
 	}
 
+	findOneReadyByRoomId<T extends Document = ILivechatInquiryRecord>(
+		rid: string,
+		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
+	): Promise<T | null> {
+		const query = {
+			rid,
+			status: LivechatInquiryStatus.READY,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findIdsByVisitorToken(token: ILivechatInquiryRecord['v']['token']): FindCursor<ILivechatInquiryRecord> {
 		return this.find({ 'v.token': token }, { projection: { _id: 1 } });
 	}
@@ -406,15 +418,6 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		const query: Filter<ILivechatInquiryRecord> = {
 			'v.token': token,
 			'status': LivechatInquiryStatus.QUEUED,
-		};
-
-		return this.findOne(query);
-	}
-
-	findOneReadyByContactId(contactId: string): Promise<ILivechatInquiryRecord | null> {
-		const query: Filter<ILivechatInquiryRecord> = {
-			'v.contactId': contactId,
-			'status': LivechatInquiryStatus.READY,
 		};
 
 		return this.findOne(query);
