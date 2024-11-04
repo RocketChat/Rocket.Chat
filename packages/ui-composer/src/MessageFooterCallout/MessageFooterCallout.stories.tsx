@@ -1,10 +1,11 @@
 import type { Meta, StoryFn } from '@storybook/react';
 
-import { MessageFooterCallout, MessageFooterCalloutAction } from '.';
 import MessageComposer from '../MessageComposer/MessageComposer';
 import MessageComposerIcon from '../MessageComposer/MessageComposerIcon';
 import MessageFooterCalloutContent from './MessageFooterCalloutContent';
 import MessageFooterCalloutDivider from './MessageFooterCalloutDivider';
+import { MessageFooterCallout, MessageFooterCalloutAction } from '.';
+
 import '@rocket.chat/icons/dist/rocketchat.css';
 
 export default {

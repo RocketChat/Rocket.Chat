@@ -5,6 +5,10 @@ import { type Readable, EventEmitter } from 'stream';
 import debugFactory from 'debug';
 import * as jsonrpc from 'jsonrpc-lite';
 
+import { LivenessManager } from './LivenessManager';
+import { ProcessMessenger } from './ProcessMessenger';
+import { bundleLegacyApp } from './bundler';
+import { decoder } from './codec';
 import { AppStatus } from '../../../definition/AppStatus';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
@@ -12,10 +16,6 @@ import type { IParseAppPackageResult } from '../../compiler';
 import type { ILoggerStorageEntry } from '../../logging';
 import type { AppAccessorManager, AppApiManager } from '../../managers';
 import type { AppLogStorage } from '../../storage';
-import { LivenessManager } from './LivenessManager';
-import { ProcessMessenger } from './ProcessMessenger';
-import { bundleLegacyApp } from './bundler';
-import { decoder } from './codec';
 
 const baseDebug = debugFactory('appsEngine:runtime:deno');
 
