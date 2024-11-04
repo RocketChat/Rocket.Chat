@@ -607,14 +607,6 @@ describe('LIVECHAT - contacts', () => {
 			contactManager: agentUser?._id,
 		};
 
-		const visitor = {
-			name: faker.person.fullName(),
-			token: getRandomVisitorToken(),
-			email,
-			phone,
-			contactManager: agentUser?.username,
-		};
-
 		before(async () => {
 			await updatePermission('view-livechat-contact', ['admin']);
 			const { body } = await request
@@ -623,16 +615,11 @@ describe('LIVECHAT - contacts', () => {
 				.send({ ...contact });
 			contactId = body.contactId;
 
-			const {
-				body: { visitor: newVisitor },
-			} = await request
-				.post(api('livechat/visitor'))
-				.set(credentials)
-				.send({ ...visitor });
+			const visitor = await createVisitor(undefined, contact.name, email, phone);
 
-			const room = await createLivechatRoom(newVisitor.token);
+			const room = await createLivechatRoom(visitor.token);
 			association = {
-				visitorId: newVisitor._id,
+				visitorId: visitor._id,
 				source: {
 					type: room.source.type,
 					id: room.source.id,
