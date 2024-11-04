@@ -19,6 +19,6 @@
 		"/dist"
 	],
 	"dependencies": {
-		"cheerio": "1.0.0-rc.10"
+		"cheerio": "1.0.0"
 	}
 }
