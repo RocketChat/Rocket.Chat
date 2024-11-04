@@ -10,7 +10,10 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	upsertContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact | null>;
 	updateContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact>;
 	addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void>;
-	findPaginatedContacts(searchText?: string, options?: FindOptions): FindPaginated<FindCursor<ILivechatContact>>;
+	findPaginatedContacts(
+		search: { searchText?: string; unknown?: boolean },
+		options?: FindOptions<ILivechatContact>,
+	): FindPaginated<FindCursor<ILivechatContact>>;
 	updateLastChatById(contactId: string, visitorId: string, lastChat: ILivechatContact['lastChat']): Promise<UpdateResult>;
 	findContactMatchingVisitor(visitor: AtLeast<ILivechatVisitor, 'visitorEmails' | 'phone'>): Promise<ILivechatContact | null>;
 	findOneByVisitorId<T extends Document = ILivechatContact>(
