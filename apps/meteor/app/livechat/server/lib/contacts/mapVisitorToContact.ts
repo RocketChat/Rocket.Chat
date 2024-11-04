@@ -16,7 +16,7 @@ export async function mapVisitorToContact(visitor: ILivechatVisitor, source: IOm
 					visitorId: visitor._id,
 					source: {
 						type: source.type,
-						id: source.id,
+						...(source.id ? { id: source.id } : {}),
 					},
 				},
 				blocked: false,

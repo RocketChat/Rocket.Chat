@@ -8,6 +8,7 @@ const modelsMock = {
 	},
 	LivechatRooms: {
 		update: sinon.stub(),
+		findOneById: sinon.stub(),
 	},
 	LivechatInquiry: {
 		findOneReadyByContactId: sinon.stub(),
@@ -29,6 +30,7 @@ describe('verifyContactChannel', () => {
 	beforeEach(() => {
 		modelsMock.LivechatContacts.updateContactChannel.reset();
 		modelsMock.LivechatRooms.update.reset();
+		modelsMock.LivechatRooms.findOneById.reset();
 		modelsMock.LivechatInquiry.findOneReadyByContactId.reset();
 		mergeContactsStub.reset();
 		saveQueueInquiryStub.reset();
