@@ -674,7 +674,21 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should return 404 if contact does not exist using visitor association', async () => {
-			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ visitor: association });
+			const res = await request
+				.get(api(`omnichannel/contacts.get`))
+				.set(credentials)
+				.query({ visitor: { ...association, visitorId: 'invalidId' } });
+
+			expect(res.status).to.be.equal(404);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'Resource not found');
+		});
+
+		it('should return 404 if contact does not exist using visitor source', async () => {
+			const res = await request
+				.get(api(`omnichannel/contacts.get`))
+				.set(credentials)
+				.query({ visitor: { ...association, source: { type: 'email' } } });
 
 			expect(res.status).to.be.equal(404);
 			expect(res.body).to.have.property('success', false);
