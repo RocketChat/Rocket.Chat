@@ -20,7 +20,7 @@ import {
 	deleteVisitor,
 	getLivechatRoomInfo,
 } from '../../../data/livechat/rooms';
-import { getRandomVisitorToken, removeAgent } from '../../../data/livechat/users';
+import { removeAgent } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser, deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
