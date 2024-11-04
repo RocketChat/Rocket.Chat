@@ -6,8 +6,8 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { actionLinks } from '../../../lib/actionLinks';
 import MessageAction from './actions/MessageAction';
+import { actionLinks } from '../../../lib/actionLinks';
 
 type MessageActionOptions = {
 	icon: IconName;

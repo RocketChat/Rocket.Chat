@@ -5,10 +5,10 @@ import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 import sharp from 'sharp';
 
+import type { EmojiData } from './insertOrUpdateEmoji';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFile } from '../../../file/server';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
-import type { EmojiData } from './insertOrUpdateEmoji';
 
 const getFile = async (file: Buffer, extension: string) => {
 	if (extension !== 'svg+xml') {

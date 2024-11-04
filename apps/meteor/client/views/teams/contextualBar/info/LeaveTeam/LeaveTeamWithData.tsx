@@ -4,8 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import GenericModalSkeleton from '../../../../../components/GenericModal/GenericModalSkeleton';
 import LeaveTeamModal from './LeaveTeamModal/LeaveTeamModal';
+import GenericModalSkeleton from '../../../../../components/GenericModal/GenericModalSkeleton';
 
 type LeaveTeamWithDataProps = {
 	teamId: ITeam['_id'];

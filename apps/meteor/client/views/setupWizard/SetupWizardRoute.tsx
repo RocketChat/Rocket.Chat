@@ -3,8 +3,8 @@ import { DarkModeProvider } from '@rocket.chat/layout';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import ModalRegion from '../modal/ModalRegion';
 import SetupWizardPage from './SetupWizardPage';
+import ModalRegion from '../modal/ModalRegion';
 import { useBodyPosition } from './hooks/useBodyPosition';
 import { useRouteLock } from './hooks/useRouteLock';
 import SetupWizardProvider from './providers/SetupWizardProvider';

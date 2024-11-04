@@ -5,6 +5,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect, useCallback } from 'react';
 
+import ThreadMessageList from './ThreadMessageList';
 import { callbacks } from '../../../../../../lib/callbacks';
 import { ContextualbarContent } from '../../../../../components/Contextualbar';
 import MessageListErrorBoundary from '../../../MessageList/MessageListErrorBoundary';
@@ -16,7 +17,6 @@ import { useChat } from '../../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
 import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
 import { DateListProvider } from '../../../providers/DateListProvider';
-import ThreadMessageList from './ThreadMessageList';
 
 type ThreadChatProps = {
 	mainMessage: IThreadMainMessage;

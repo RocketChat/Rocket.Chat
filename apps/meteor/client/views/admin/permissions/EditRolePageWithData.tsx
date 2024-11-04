@@ -5,10 +5,10 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import PageSkeleton from '../../../components/PageSkeleton';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import EditRolePage from './EditRolePage';
 import { useRole } from './hooks/useRole';
+import PageSkeleton from '../../../components/PageSkeleton';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const EditRolePageWithData = ({ roleId }: { roleId?: IRole['_id'] }): ReactElement => {
 	const { t } = useTranslation();

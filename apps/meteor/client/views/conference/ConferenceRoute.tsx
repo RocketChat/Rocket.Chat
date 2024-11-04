@@ -1,8 +1,8 @@
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import AuthenticationCheck from '../root/MainLayout/AuthenticationCheck';
 import ConferencePage from './ConferencePage';
+import AuthenticationCheck from '../root/MainLayout/AuthenticationCheck';
 
 const ConferenceRoute = (): ReactElement => {
 	return (

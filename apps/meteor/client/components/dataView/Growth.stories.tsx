@@ -2,8 +2,8 @@ import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
-import { useAutoSequence } from '../../stories/hooks/useAutoSequence';
 import Growth from './Growth';
+import { useAutoSequence } from '../../stories/hooks/useAutoSequence';
 
 export default {
 	title: 'Components/Data/Growth',

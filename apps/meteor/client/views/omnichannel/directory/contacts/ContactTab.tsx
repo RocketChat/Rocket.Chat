@@ -1,8 +1,8 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
 import ContactTable from './ContactTable';
+import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
 
 const ContactTab = () => {
 	const hasAccess = usePermission('view-l-room');

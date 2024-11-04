@@ -3,8 +3,8 @@ import type { Meta, StoryFn } from '@storybook/react';
 
 import type { ChatTranscriptData } from '.';
 import { ChatTranscriptPDF } from '.';
-import { ChatTranscript } from '../../strategies/ChatTranscript';
 import { exampleData } from './ChatTranscript.fixtures';
+import { ChatTranscript } from '../../strategies/ChatTranscript';
 
 Font.register({
 	family: 'Inter',

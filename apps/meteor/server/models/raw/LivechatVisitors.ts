@@ -19,8 +19,8 @@ import type {
 } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
-import { notifyOnSettingChanged } from '../../../app/lib/server/lib/notifyListener';
 import { BaseRaw } from './BaseRaw';
+import { notifyOnSettingChanged } from '../../../app/lib/server/lib/notifyListener';
 
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements ILivechatVisitorsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatVisitor>>) {

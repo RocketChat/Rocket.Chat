@@ -6,6 +6,8 @@ import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import Item from './Item';
+import WrapCannedResponse from './WrapCannedResponse';
 import {
 	ContextualbarHeader,
 	ContextualbarTitle,
@@ -16,8 +18,6 @@ import {
 } from '../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import { useRoomToolbox } from '../../../../views/room/contexts/RoomToolboxContext';
-import Item from './Item';
-import WrapCannedResponse from './WrapCannedResponse';
 
 type CannedResponseListProps = {
 	loadMoreItems: (start: number, end: number) => void;

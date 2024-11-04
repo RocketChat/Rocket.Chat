@@ -2,11 +2,11 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
 import { useRoomConvertToTeam } from './actions/useRoomConvertToTeam';
 import { useRoomHide } from './actions/useRoomHide';
 import { useRoomLeave } from './actions/useRoomLeave';
 import { useRoomMoveToTeam } from './actions/useRoomMoveToTeam';
+import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
 
 type UseRoomActionsOptions = {
 	onClickEnterRoom?: () => void;

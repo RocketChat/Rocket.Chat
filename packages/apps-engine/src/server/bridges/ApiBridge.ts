@@ -1,8 +1,8 @@
+import { BaseBridge } from './BaseBridge';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import type { AppApi } from '../managers/AppApi';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export abstract class ApiBridge extends BaseBridge {
     public async doRegisterApi(api: AppApi, appId: string): Promise<void> {

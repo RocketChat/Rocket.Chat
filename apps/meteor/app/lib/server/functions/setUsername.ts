@@ -5,12 +5,9 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { SystemLogger } from '../../../../server/lib/logger/system';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { RateLimiter } from '../lib';
-import { notifyOnUserChange } from '../lib/notifyListener';
 import { addUserToRoom } from './addUserToRoom';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
@@ -18,6 +15,9 @@ import { joinDefaultChannels } from './joinDefaultChannels';
 import { saveUserIdentity } from './saveUserIdentity';
 import { setUserAvatar } from './setUserAvatar';
 import { validateUsername } from './validateUsername';
+import { callbacks } from '../../../../lib/callbacks';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { notifyOnUserChange } from '../lib/notifyListener';
 
 export const setUsernameWithValidation = async (userId: string, username: string, joinDefaultChannelsSilenced?: boolean): Promise<void> => {
 	if (!username) {

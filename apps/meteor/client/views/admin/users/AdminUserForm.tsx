@@ -33,6 +33,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
+import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
+import PasswordFieldSkeleton from './PasswordFieldSkeleton';
+import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { validateEmail } from '../../../../lib/emailValidator';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
@@ -40,10 +44,6 @@ import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
-import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
-import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
-import PasswordFieldSkeleton from './PasswordFieldSkeleton';
-import { useSmtpQuery } from './hooks/useSmtpQuery';
 
 type AdminUserFormProps = {
 	userData?: Serialized<IUser>;

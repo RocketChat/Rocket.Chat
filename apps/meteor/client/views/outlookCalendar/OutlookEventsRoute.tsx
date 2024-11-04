@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
-import { useRoomToolbox } from '../room/contexts/RoomToolboxContext';
 import OutlookEventsList from './OutlookEventsList';
 import OutlookSettingsList from './OutlookSettingsList';
+import { useRoomToolbox } from '../room/contexts/RoomToolboxContext';
 
 type OutlookCalendarRoutes = 'list' | 'settings';
 

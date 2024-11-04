@@ -4,11 +4,11 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
+import AppsUsageCardSection from './AppsUsageCardSection';
 import { PRICING_LINK } from '../../../utils/links';
 import type { CardProps } from '../../FeatureUsageCard';
 import FeatureUsageCard from '../../FeatureUsageCard';
 import UpgradeButton from '../../UpgradeButton';
-import AppsUsageCardSection from './AppsUsageCardSection';
 
 // Magic numbers
 const marketplaceAppsMaxCountFallback = 5;

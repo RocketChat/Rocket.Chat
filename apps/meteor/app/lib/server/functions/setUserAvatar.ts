@@ -5,12 +5,12 @@ import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 
+import { checkUrlForSsrf } from './checkUrlForSsrf';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { FileUpload } from '../../../file-upload/server';
 import { RocketChatFile } from '../../../file/server';
+import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { checkUrlForSsrf } from './checkUrlForSsrf';
 
 export const setAvatarFromServiceWithValidation = async (
 	userId: string,

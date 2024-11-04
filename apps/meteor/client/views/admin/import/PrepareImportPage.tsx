@@ -5,6 +5,11 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, useMemo } from 'react';
 
+import type { ChannelDescriptor } from './ChannelDescriptor';
+import PrepareChannels from './PrepareChannels';
+import PrepareUsers from './PrepareUsers';
+import type { UserDescriptor } from './UserDescriptor';
+import { useErrorHandler } from './useErrorHandler';
 import {
 	ProgressStep,
 	ImportWaitingStates,
@@ -15,11 +20,6 @@ import {
 } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import type { ChannelDescriptor } from './ChannelDescriptor';
-import PrepareChannels from './PrepareChannels';
-import PrepareUsers from './PrepareUsers';
-import type { UserDescriptor } from './UserDescriptor';
-import { useErrorHandler } from './useErrorHandler';
 
 const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U) =>
 	new Promise<U>((resolve, reject) => {
