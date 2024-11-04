@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/stream-hub-service",
 	"private": true,
-	"version": "0.4.9-rc.5",
+	"version": "0.4.9",
 	"description": "Rocket.Chat Stream Hub service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -24,7 +24,7 @@
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~20.16.12",
+		"@types/node": "~20.16.15",
 		"ejson": "^2.2.3",
 		"event-loop-stats": "^1.4.1",
 		"eventemitter3": "^5.0.1",

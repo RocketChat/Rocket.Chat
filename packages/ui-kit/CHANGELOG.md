@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.37.0
+
+### Minor Changes
+
+- ([#33528](https://github.com/RocketChat/Rocket.Chat/pull/33528)) Adds `accessory` properties to `CalloutBlock`
+
+- ([#33066](https://github.com/RocketChat/Rocket.Chat/pull/33066)) Introduces new property `category` for Rocket.Chat Apps to register UI action buttons. This property is used to group buttons in the UI.
+
 ## 0.37.0-rc.0
 
 ### Minor Changes

@@ -28,7 +28,9 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 		screenshots,
 		apis,
 		documentationUrl: documentation,
-		addon: appAddon,
+		addon,
+		installedAddon,
+		installed,
 	} = app;
 
 	const isMarkdown = detailedDescription && Object.keys(detailedDescription).length !== 0 && detailedDescription.rendered;
@@ -37,6 +39,8 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 	const normalizedHomepageUrl = homepage ? normalizeUrl(homepage) : undefined;
 	const normalizedSupportUrl = support ? normalizeUrl(support) : undefined;
 	const normalizedDocumentationUrl = documentation ? normalizeUrl(documentation) : undefined;
+
+	const appAddon = installed ? installedAddon : addon;
 
 	const workspaceHasAddon = useHasLicenseModule(appAddon);
 

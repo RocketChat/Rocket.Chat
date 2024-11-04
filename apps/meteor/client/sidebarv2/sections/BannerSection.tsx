@@ -11,7 +11,7 @@ const BannerSection = () => {
 	const isAdmin = useRole('admin');
 
 	const [bannerDismissed, setBannerDismissed] = useSessionStorage('presence_cap_notifier', false);
-	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 
 	if ((isWarning || isRestricted) && isAdmin) {
 		return <AirGappedRestrictionBanner isRestricted={isRestricted} remainingDays={remainingDays} />;
