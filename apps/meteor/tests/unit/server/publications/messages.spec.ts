@@ -5,7 +5,11 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const mockMeteorError = class extends Error {
-	constructor(public error: string, public reason: string, public details: any) {
+	constructor(
+		public error: string,
+		public reason: string,
+		public details: any,
+	) {
 		super(reason);
 		this.name = 'Meteor.Error';
 	}

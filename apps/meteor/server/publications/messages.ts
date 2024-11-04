@@ -158,7 +158,7 @@ export async function handleCursorPagination(
 	const response =
 		type === 'UPDATED'
 			? await Messages.findForUpdates(rid, query, options).toArray()
-			: (await Messages.trashFind({ rid, _deletedAt: query }, { projection: { _id: 1, _deletedAt: 1 }, ...options })!.toArray()) ?? [];
+			: ((await Messages.trashFind({ rid, _deletedAt: query }, { projection: { _id: 1, _deletedAt: 1 }, ...options })!.toArray()) ?? []);
 
 	const cursor = {
 		next: mountNextCursor(response, type, next, previous),
