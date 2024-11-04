@@ -83,6 +83,6 @@ describe('migrateVisitorToContactId', () => {
 		createContactFromVisitor.resolves('contactCreated');
 
 		expect(await migrateVisitorToContactId(visitor, source)).to.be.equal('contact1');
-		expect(mergeVisitorIntoContact.calledOnceWith(visitor, source, contact)).to.be.true;
+		expect(mergeVisitorIntoContact.calledOnceWith(visitor, contact, source)).to.be.true;
 	});
 });
