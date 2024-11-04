@@ -64,7 +64,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const firstUnreadMessageId = useFirstUnreadMessageId();
-	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
+	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
 
 	const { messageListRef } = useMessageListNavigation();
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, messageListRef);

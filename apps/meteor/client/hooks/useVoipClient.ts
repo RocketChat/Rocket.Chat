@@ -23,7 +23,7 @@ const isSignedResponse = (data: any): data is { result: string } => typeof data?
 // Currently we only support the websocket connection and the SIP proxy connection being from the same host,
 // we need to add a new setting for SIP proxy if we want to support different hosts for them.
 export const useVoipClient = (): UseVoipClientResult => {
-	const settingVoipEnabled = Boolean(useSetting('VoIP_Enabled'));
+	const settingVoipEnabled = useSetting('VoIP_Enabled', false);
 
 	const [voipConnectorEnabled, setVoipConnectorEnabled] = useSafely(useState(true));
 

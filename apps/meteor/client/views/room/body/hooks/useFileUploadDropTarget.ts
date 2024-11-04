@@ -29,7 +29,7 @@ export const useFileUploadDropTarget = (): readonly [
 
 	const t = useTranslation();
 
-	const fileUploadEnabled = useSetting<boolean>('FileUpload_Enabled');
+	const fileUploadEnabled = useSetting('FileUpload_Enabled', true);
 	const user = useUser();
 	const fileUploadAllowedForUser = useReactiveValue(
 		useCallback(() => !roomCoordinator.readOnly(room._id, { username: user?.username }), [room._id, user?.username]),
