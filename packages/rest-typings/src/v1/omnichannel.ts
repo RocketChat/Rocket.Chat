@@ -1390,6 +1390,7 @@ export const isGETOmnichannelContactsProps = ajv.compile<GETOmnichannelContactsP
 
 type GETOmnichannelContactsSearchProps = PaginatedRequest<{
 	searchText: string;
+	unknown?: boolean;
 }>;
 
 const GETOmnichannelContactsSearchSchema = {
@@ -1406,6 +1407,9 @@ const GETOmnichannelContactsSearchSchema = {
 		},
 		searchText: {
 			type: 'string',
+		},
+		unknown: {
+			type: 'boolean',
 		},
 	},
 	required: [],

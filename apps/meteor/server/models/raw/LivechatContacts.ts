@@ -80,7 +80,11 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return updatedValue.value as ILivechatContact;
 	}
 
-	findPaginatedContacts(searchText?: string, options?: FindOptions): FindPaginated<FindCursor<ILivechatContact>> {
+	findPaginatedContacts(
+		search: { searchText?: string; unknown?: boolean },
+		options?: FindOptions,
+	): FindPaginated<FindCursor<ILivechatContact>> {
+		const { searchText, unknown = false } = search;
 		const searchRegex = escapeRegExp(searchText || '');
 		const match: Filter<ILivechatContact & RootFilterOperators<ILivechatContact>> = {
 			$or: [
@@ -88,6 +92,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 				{ 'emails.address': { $regex: searchRegex, $options: 'i' } },
 				{ 'phones.phoneNumber': { $regex: searchRegex, $options: 'i' } },
 			],
+			unknown,
 		};
 
 		return this.findPaginated(
