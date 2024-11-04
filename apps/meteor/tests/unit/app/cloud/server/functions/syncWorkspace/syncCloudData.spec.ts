@@ -31,7 +31,7 @@ describe('SyncCloudData', () => {
 		mockedFetchWorkspaceSyncPayload.reset();
 	});
 
-	it('should save cloudSyncAnnouncement on Cloud_Sync_Announcement_Payload when present', async () => {
+	it('should save cloudSyncAnnouncement payload on Cloud_Sync_Announcement_Payload setting when present', async () => {
 		const workspaceSyncPayloadResponse = {
 			workspaceId: 'workspaceId',
 			publicKey: 'publicKey',
@@ -78,5 +78,22 @@ describe('SyncCloudData', () => {
 				JSON.stringify(workspaceSyncPayloadResponse.cloudSyncAnnouncement),
 			),
 		).to.be.true;
+	});
+
+	it('Should ignore the setting update if cloudSyncAnnouncement is not present', async () => {
+		const workspaceSyncPayloadResponse = {
+			workspaceId: 'workspaceId',
+			publicKey: 'publicKey',
+			license: {},
+			removeLicense: false,
+		};
+
+		mockedFetchWorkspaceSyncPayload.resolves(workspaceSyncPayloadResponse);
+
+		await syncCloudData();
+
+		expect(mockedFetchWorkspaceSyncPayload.calledOnce).to.be.true;
+
+		expect(models.Settings.updateValueById.notCalled).to.be.true;
 	});
 });
