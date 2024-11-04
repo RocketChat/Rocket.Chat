@@ -111,26 +111,26 @@ const UsersTableRow = ({
 			}),
 			...(isNotPendingDeactivatedNorFederated &&
 				changeAdminStatusAction && {
-				makeAdmin: {
-					label: { label: changeAdminStatusAction.label, icon: changeAdminStatusAction.icon },
-					action: changeAdminStatusAction.action,
-				},
-			}),
+					makeAdmin: {
+						label: { label: changeAdminStatusAction.label, icon: changeAdminStatusAction.icon },
+						action: changeAdminStatusAction.action,
+					},
+				}),
 			...(isNotPendingDeactivatedNorFederated &&
 				resetE2EKeyAction && {
-				resetE2EKey: { label: { label: resetE2EKeyAction.label, icon: resetE2EKeyAction.icon }, action: resetE2EKeyAction.action },
-			}),
+					resetE2EKey: { label: { label: resetE2EKeyAction.label, icon: resetE2EKeyAction.icon }, action: resetE2EKeyAction.action },
+				}),
 			...(isNotPendingDeactivatedNorFederated &&
 				resetTOTPAction && {
-				resetTOTP: { label: { label: resetTOTPAction.label, icon: resetTOTPAction.icon }, action: resetTOTPAction.action },
-			}),
+					resetTOTP: { label: { label: resetTOTPAction.label, icon: resetTOTPAction.icon }, action: resetTOTPAction.action },
+				}),
 			...(changeUserStatusAction &&
 				!isFederatedUser && {
-				changeActiveStatus: {
-					label: { label: changeUserStatusAction.label, icon: changeUserStatusAction.icon },
-					action: changeUserStatusAction.action,
-				},
-			}),
+					changeActiveStatus: {
+						label: { label: changeUserStatusAction.label, icon: changeUserStatusAction.icon },
+						action: changeUserStatusAction.action,
+					},
+				}),
 			...(deleteUserAction && {
 				delete: { label: { label: deleteUserAction.label, icon: deleteUserAction.icon }, action: deleteUserAction.action },
 			}),
