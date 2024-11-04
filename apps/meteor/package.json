@@ -109,7 +109,7 @@
 		"@types/gravatar": "^1.8.6",
 		"@types/he": "^1.1.2",
 		"@types/i18next-sprintf-postprocessor": "^0.2.3",
-		"@types/imap": "^0.8.40",
+		"@types/imap": "^0.8.42",
 		"@types/jest": "~29.5.14",
 		"@types/jsdom": "^16.2.15",
 		"@types/jsdom-global": "^3.0.7",

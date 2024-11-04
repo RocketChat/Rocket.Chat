@@ -9262,7 +9262,7 @@ __metadata:
     "@types/gravatar": "npm:^1.8.6"
     "@types/he": "npm:^1.1.2"
     "@types/i18next-sprintf-postprocessor": "npm:^0.2.3"
-    "@types/imap": "npm:^0.8.40"
+    "@types/imap": "npm:^0.8.42"
     "@types/jest": "npm:~29.5.14"
     "@types/jsdom": "npm:^16.2.15"
     "@types/jsdom-global": "npm:^3.0.7"
@@ -12438,12 +12438,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/imap@npm:^0.8.40":
-  version: 0.8.40
-  resolution: "@types/imap@npm:0.8.40"
+"@types/imap@npm:^0.8.42":
+  version: 0.8.42
+  resolution: "@types/imap@npm:0.8.42"
   dependencies:
     "@types/node": "npm:*"
-  checksum: 10/7ba0ae94909fb6a0f52b462799e88271903bca193fcfed545401fb2e5376f7905643cc90f02d2e9207c667f368032d2344d133e6fe9e9af23e0dae00f5402849
+  checksum: 10/26057e06ece6482314e1517969fe6b43693b00898c2b11b39edb95de6abac3ed3a388144602197f4c64d986989d42a8b767223e445b22afc90d42d31480c65d8
   languageName: node
   linkType: hard
 
