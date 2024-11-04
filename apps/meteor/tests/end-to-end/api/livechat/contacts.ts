@@ -1,5 +1,11 @@
 import { faker } from '@faker-js/faker';
-import type { ILivechatAgent, ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type {
+	ILivechatAgent,
+	ILivechatVisitor,
+	IOmnichannelRoom,
+	IUser,
+	ILivechatContactVisitorAssociation,
+} from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 
@@ -14,7 +20,7 @@ import {
 	deleteVisitor,
 	getLivechatRoomInfo,
 } from '../../../data/livechat/rooms';
-import { removeAgent } from '../../../data/livechat/users';
+import { getRandomVisitorToken, removeAgent } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser, deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -589,6 +595,8 @@ describe('LIVECHAT - contacts', () => {
 
 	describe('[GET] omnichannel/contacts.get', () => {
 		let contactId: string;
+		let association: ILivechatContactVisitorAssociation;
+
 		const email = faker.internet.email().toLowerCase();
 		const phone = faker.phone.number();
 
@@ -599,6 +607,14 @@ describe('LIVECHAT - contacts', () => {
 			contactManager: agentUser?._id,
 		};
 
+		const visitor = {
+			name: faker.person.fullName(),
+			token: getRandomVisitorToken(),
+			email,
+			phone,
+			contactManager: agentUser?.username,
+		};
+
 		before(async () => {
 			await updatePermission('view-livechat-contact', ['admin']);
 			const { body } = await request
@@ -606,6 +622,22 @@ describe('LIVECHAT - contacts', () => {
 				.set(credentials)
 				.send({ ...contact });
 			contactId = body.contactId;
+
+			const {
+				body: { visitor: newVisitor },
+			} = await request
+				.post(api('livechat/visitor'))
+				.set(credentials)
+				.send({ ...visitor });
+
+			const room = await createLivechatRoom(newVisitor.token);
+			association = {
+				visitorId: newVisitor._id,
+				source: {
+					type: room.source.type,
+					id: room.source.id,
+				},
+			};
 		});
 
 		after(async () => {
@@ -629,25 +661,8 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.contact.contactManager).to.be.equal(contact.contactManager);
 		});
 
-		it('should be able get a contact by phone', async () => {
-			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ phone });
-
-			expect(res.status).to.be.equal(200);
-			expect(res.body).to.have.property('success', true);
-			expect(res.body.contact).to.have.property('createdAt');
-			expect(res.body.contact._id).to.be.equal(contactId);
-			expect(res.body.contact.name).to.be.equal(contact.name);
-			expect(res.body.contact.emails).to.be.deep.equal([
-				{
-					address: contact.emails[0],
-				},
-			]);
-			expect(res.body.contact.phones).to.be.deep.equal([{ phoneNumber: contact.phones[0] }]);
-			expect(res.body.contact.contactManager).to.be.equal(contact.contactManager);
-		});
-
-		it('should be able get a contact by email', async () => {
-			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ email });
+		it('should be able get a contact by visitor association', async () => {
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ visitor: association });
 
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
@@ -671,16 +686,8 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body).to.have.property('error', 'Resource not found');
 		});
 
-		it('should return 404 if contact does not exist using email', async () => {
-			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ email: 'invalid' });
-
-			expect(res.status).to.be.equal(404);
-			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'Resource not found');
-		});
-
-		it('should return 404 if contact does not exist using phone', async () => {
-			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ phone: 'invalid' });
+		it('should return 404 if contact does not exist using visitor association', async () => {
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ visitor: association });
 
 			expect(res.status).to.be.equal(404);
 			expect(res.body).to.have.property('success', false);
@@ -698,19 +705,19 @@ describe('LIVECHAT - contacts', () => {
 			await restorePermissionToRoles('view-livechat-contact');
 		});
 
-		it('should return an error if contactId, email or phone is missing', async () => {
+		it('should return an error if contactId and visitor association is missing', async () => {
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error');
 			expect(res.body.error).to.be.equal(
-				"must have required property 'email'\n must have required property 'phone'\n must have required property 'contactId'\n must match exactly one schema in oneOf [invalid-params]",
+				"must have required property 'visitor'\n must have required property 'contactId'\n must match exactly one schema in oneOf [invalid-params]",
 			);
 			expect(res.body.errorType).to.be.equal('invalid-params');
 		});
 
 		it('should return an error if more than one field is provided', async () => {
-			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId, phone, email });
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId, visitor: association });
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error');
