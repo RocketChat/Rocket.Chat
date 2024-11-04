@@ -6,7 +6,6 @@ import { MessageAction } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { queryClient } from '../../lib/queryClient';
 import { dispatchToastMessage } from '../../lib/toast';
-import { messageArgs } from '../../lib/utils/messageArgs';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
@@ -15,8 +14,7 @@ Meteor.startup(() => {
 		label: 'Unpin',
 		type: 'interaction',
 		context: ['pinned', 'message', 'message-mobile', 'threads', 'direct', 'videoconf', 'videoconf-threads'],
-		async action(_, props) {
-			const { message = messageArgs(this).msg } = props;
+		async action(_, { message }) {
 			message.pinned = false;
 			try {
 				await sdk.call('unpinMessage', message);

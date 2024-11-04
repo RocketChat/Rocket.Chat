@@ -47,7 +47,7 @@ const ComposerOmnichannelCallout = () => {
 					<Button onClick={() => navigate(`/live/${_id}/contact-profile/edit`)} small>
 						{t('Add_contact')}
 					</Button>
-					<Button danger small onClick={handleBlock}>
+					<Button danger secondary small onClick={handleBlock}>
 						{currentChannel?.blocked ? t('Unblock') : t('Block')}
 					</Button>
 				</ButtonGroup>

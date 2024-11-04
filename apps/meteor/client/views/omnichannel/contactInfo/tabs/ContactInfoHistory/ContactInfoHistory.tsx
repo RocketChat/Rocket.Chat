@@ -77,7 +77,13 @@ const ContactInfoHistory = ({ contactId, setChatId }: ContactInfoHistoryProps) =
 			>
 				<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
 					<Margins inline={4}>
-						<Select value={type} onChange={handleChangeFilter} placeholder={t('Filter')} options={historyFilterOptions || []} />
+						<Select
+							value={type}
+							onChange={handleChangeFilter}
+							placeholder={t('Filter')}
+							options={historyFilterOptions}
+							disabled={data?.history.length === 0}
+						/>
 					</Margins>
 				</Box>
 			</Box>

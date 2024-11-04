@@ -4,6 +4,7 @@ import {
 	isPOSTUpdateOmnichannelContactsProps,
 	isGETOmnichannelContactsProps,
 	isGETOmnichannelContactHistoryProps,
+	isGETOmnichannelContactsChannelsProps,
 	isGETOmnichannelContactsSearchProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -14,6 +15,7 @@ import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { createContact } from '../../lib/contacts/createContact';
 import { getContactByChannel } from '../../lib/contacts/getContactByChannel';
+import { getContactChannelsGrouped } from '../../lib/contacts/getContactChannelsGrouped';
 import { getContactHistory } from '../../lib/contacts/getContactHistory';
 import { getContacts } from '../../lib/contacts/getContacts';
 import { registerContact } from '../../lib/contacts/registerContact';
@@ -171,6 +173,20 @@ API.v1.addRoute(
 			const history = await getContactHistory({ contactId, source, count, offset, sort });
 
 			return API.v1.success(history);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'omnichannel/contacts.channels',
+	{ authRequired: true, permissionsRequired: ['view-livechat-contact'], validateParams: isGETOmnichannelContactsChannelsProps },
+	{
+		async get() {
+			const { contactId } = this.queryParams;
+
+			const channels = await getContactChannelsGrouped(contactId);
+
+			return API.v1.success({ channels });
 		},
 	},
 );

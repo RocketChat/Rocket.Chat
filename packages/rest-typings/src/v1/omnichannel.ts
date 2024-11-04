@@ -30,6 +30,7 @@ import type {
 	ILivechatTriggerActionResponse,
 	ILivechatContact,
 	ILivechatContactVisitorAssociation,
+	ILivechatContactChannel,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
@@ -1447,6 +1448,23 @@ const GETOmnichannelContactHistorySchema = {
 };
 
 export const isGETOmnichannelContactHistoryProps = ajv.compile<GETOmnichannelContactHistoryProps>(GETOmnichannelContactHistorySchema);
+
+type GETOmnichannelContactsChannelsProps = {
+	contactId: string;
+};
+
+const GETOmnichannelContactsChannelsSchema = {
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+		},
+	},
+	required: ['contactId'],
+	additionalProperties: false,
+};
+
+export const isGETOmnichannelContactsChannelsProps = ajv.compile<GETOmnichannelContactsChannelsProps>(GETOmnichannelContactsChannelsSchema);
 
 type GETOmnichannelContactProps = { contactId: string };
 
@@ -3848,6 +3866,9 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/omnichannel/contacts.history': {
 		GET: (params: GETOmnichannelContactHistoryProps) => PaginatedResult<{ history: ContactSearchChatsResult[] }>;
+	};
+	'/v1/omnichannel/contacts.channels': {
+		GET: (params: GETOmnichannelContactsChannelsProps) => { channels: ILivechatContactChannel[] | null };
 	};
 	'/v1/omnichannel/contact.search': {
 		GET: (params: GETOmnichannelContactSearchProps) => { contact: ILivechatVisitor | null };
