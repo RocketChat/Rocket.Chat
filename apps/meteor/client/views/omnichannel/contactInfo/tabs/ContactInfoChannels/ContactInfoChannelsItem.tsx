@@ -19,7 +19,7 @@ const ContactInfoChannelsItem = ({ visitor, details, blocked, lastChat }: Contac
 	const getTimeFromNow = useTimeFromNow(true);
 
 	const [showButton, setShowButton] = useState(false);
-	const handleBlockContact = useBlockChannel({ visitor, blocked });
+	const handleBlockContact = useBlockChannel({ association: visitor, blocked });
 
 	const customClass = css`
 		&:hover,

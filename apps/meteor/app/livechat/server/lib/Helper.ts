@@ -13,7 +13,6 @@ import type {
 	TransferByData,
 	ILivechatAgent,
 	ILivechatDepartment,
-	IOmnichannelSource,
 	IOmnichannelRoomInfo,
 	IOmnichannelInquiryExtraData,
 	IOmnichannelRoomExtraData,

@@ -5,7 +5,7 @@ import type {
 	ISetting,
 	ILivechatVisitor,
 	MACStats,
-    ILivechatContactVisitorAssociation,
+	ILivechatContactVisitorAssociation,
 } from '@rocket.chat/core-typings';
 import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult, Filter, UpdateOptions } from 'mongodb';
 
