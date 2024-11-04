@@ -6,7 +6,6 @@ import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { queryClient } from '../../lib/queryClient';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../lib/toast';
-import { messageArgs } from '../../lib/utils/messageArgs';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
@@ -15,9 +14,7 @@ Meteor.startup(() => {
 		label: 'Star',
 		type: 'interaction',
 		context: ['starred', 'message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
-		async action(_, props) {
-			const { message = messageArgs(this).msg } = props;
-
+		async action(_, { message }) {
 			try {
 				await sdk.call('starMessage', { ...message, starred: true });
 				queryClient.invalidateQueries(['rooms', message.rid, 'starred-messages']);

@@ -1,14 +1,15 @@
 {
   "name": "@rocket.chat/uikit-playground",
   "private": true,
-  "version": "0.6.0-rc.5",
+  "version": "0.6.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build-preview": "tsc && vite build",
     ".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./dist ../../.preview/uikit-playground",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.1.9",
@@ -16,11 +17,11 @@
     "@lezer/highlight": "^1.1.6",
     "@rocket.chat/core-typings": "workspace:^",
     "@rocket.chat/css-in-js": "~0.31.25",
-    "@rocket.chat/fuselage": "^0.59.3",
+    "@rocket.chat/fuselage": "^0.59.4",
     "@rocket.chat/fuselage-hooks": "^0.33.1",
     "@rocket.chat/fuselage-polyfills": "~0.31.25",
     "@rocket.chat/fuselage-toastbar": "^0.33.0",
-    "@rocket.chat/fuselage-tokens": "^0.33.1",
+    "@rocket.chat/fuselage-tokens": "^0.33.2",
     "@rocket.chat/fuselage-ui-kit": "workspace:~",
     "@rocket.chat/icons": "~0.38.0",
     "@rocket.chat/logo": "^0.31.30",
@@ -40,6 +41,7 @@
     "reactflow": "^11.11.4"
   },
   "devDependencies": {
+    "@types/lodash": "~4.17.13",
     "@types/react": "~17.0.80",
     "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-dom": "~17.0.25",
