@@ -32,7 +32,7 @@ export const useMissingDepartment = (
 				setDepartment('all');
 				dispatchToastMessage({
 					type: 'info',
-					message: t('The_selected_department_has_been_deleted'),
+					message: t('The_selected_department_no_longer_exists'),
 				});
 			},
 		},
