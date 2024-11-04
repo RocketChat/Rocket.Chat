@@ -6,15 +6,15 @@ export const useOmnichannelSource = () => {
 	const { t } = useTranslation();
 
 	const getSourceName = useCallback(
-		(source: IOmnichannelSource) => {
+		(source: IOmnichannelSource, allowAlias = true) => {
 			const roomSource = source.alias || source.id || source.type;
 
 			const defaultTypesLabels: { [key: string]: string } = {
 				widget: t('Livechat'),
 				email: t('Email'),
 				sms: t('SMS'),
-				app: source.alias || t('Custom_Integration'),
-				api: source.alias || t('Custom_Integration'),
+				app: (allowAlias && source.alias) || t('Custom_APP'),
+				api: (allowAlias && source.alias) || t('Custom_API'),
 				other: t('Custom_Integration'),
 			};
 

@@ -1524,6 +1524,8 @@
   "Current_Status": "Current Status",
   "Currently_we_dont_support_joining_servers_with_this_many_people": "Currently we don't support joining servers with this many people",
   "Custom": "Custom",
+  "Custom_API": "Custom (API)",
+  "Custom_APP": "Custom (APP)",
   "Custom CSS": "Custom CSS",
   "Custom_agent": "Custom agent",
   "Custom_dates": "Custom Dates",
