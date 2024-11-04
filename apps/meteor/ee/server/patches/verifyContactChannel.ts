@@ -41,7 +41,7 @@ export const runVerifyContactChannel = async (
 
 	await LivechatRooms.update({ _id: roomId }, { $set: { verified: true } });
 
-	const mergeContactsResult = await mergeContacts(contactId, { visitorId, source: room.source});
+	const mergeContactsResult = await mergeContacts(contactId, { visitorId, source: room.source });
 
 	const inquiry = await LivechatInquiry.findOneReadyByContactId(contactId);
 	if (!inquiry) {
