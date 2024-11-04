@@ -10,7 +10,10 @@ import { UIHelper } from '../misc/UIHelper';
 export class UIController implements IUIController {
     private readonly uiInteractionBridge: UiInteractionBridge;
 
-    constructor(private readonly appId: string, bridges: AppBridges) {
+    constructor(
+        private readonly appId: string,
+        bridges: AppBridges,
+    ) {
         this.uiInteractionBridge = bridges.getUiInteractionBridge();
     }
 

@@ -18,12 +18,6 @@ on:
       rc-docker-tag:
         required: true
         type: string
-      rc-dockerfile-debian:
-        required: true
-        type: string
-      rc-docker-tag-debian:
-        required: true
-        type: string
       gh-docker-tag:
         required: true
         type: string
@@ -83,8 +77,8 @@ jobs:
   test:
     runs-on: ubuntu-20.04
     env:
-      RC_DOCKERFILE: ${{ matrix.mongodb-version == '7.0' && inputs.rc-dockerfile-debian || inputs.rc-dockerfile }}
-      RC_DOCKER_TAG: ${{ matrix.mongodb-version == '7.0' && inputs.rc-docker-tag-debian || inputs.rc-docker-tag }}
+      RC_DOCKERFILE: ${{ inputs.rc-dockerfile }}.${{ (matrix.mongodb-version == '7.0' && 'debian' && false) || 'alpine' }}
+      RC_DOCKER_TAG: ${{ inputs.rc-docker-tag }}.${{ (matrix.mongodb-version == '7.0' && 'debian' && false) || 'alpine' }}
 
     strategy:
       fail-fast: false
@@ -92,7 +86,7 @@ jobs:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
 
-    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'true' && ' [no watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }}) - ${{ matrix.mongodb-version == '7.0' && 'Debian' || 'Alpine (Official)' }}
+    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'true' && ' [no watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }}) - ${{ (matrix.mongodb-version == '7.0' && 'Debian' && false) || 'Alpine (Official)' }}
 
     steps:
       - name: Collect Workflow Telemetry
@@ -210,7 +204,7 @@ jobs:
           path: |
             ~/.cache/ms-playwright
           # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
-          key: playwright-1.40.1
+          key: playwright-1.48.2
 
       - name: Install Playwright
         if: inputs.type == 'ui' && steps.cache-playwright.outputs.cache-hit != 'true'

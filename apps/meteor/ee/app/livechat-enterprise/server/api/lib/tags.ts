@@ -104,7 +104,7 @@ export async function findTags({
 								...(filteredDepartmentIds.length ? [{ departments: { $in: filteredDepartmentIds } }] : []),
 							],
 						},
-				  ]
+					]
 				: []),
 		],
 	};

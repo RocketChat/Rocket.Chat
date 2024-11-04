@@ -37,6 +37,6 @@ export const useResetTOTPAction = (userId: IUser['_id']): Action | undefined => 
 				icon: 'key',
 				label: t('Reset_TOTP'),
 				action: confirmResetTOTP,
-		  }
+			}
 		: undefined;
 };

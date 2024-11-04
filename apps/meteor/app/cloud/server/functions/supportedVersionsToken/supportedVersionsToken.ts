@@ -34,7 +34,7 @@ export const wrapPromise = <T>(
 	  }
 > =>
 	promise
-		.then((result) => ({ success: true, result } as const))
+		.then((result) => ({ success: true, result }) as const)
 		.catch((error) => ({
 			success: false,
 			error,

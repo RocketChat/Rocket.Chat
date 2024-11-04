@@ -4,7 +4,10 @@ import type { IUser } from '../../definition/users';
 import type { ModerationBridge } from '../bridges';
 
 export class ModerationModify implements IModerationModify {
-    constructor(private moderationBridge: ModerationBridge, appId: string) {}
+    constructor(
+        private moderationBridge: ModerationBridge,
+        appId: string,
+    ) {}
 
     public report(messageId: string, description: string, userId: string, appId: string): Promise<void> {
         return this.moderationBridge.doReport(messageId, description, userId, appId);

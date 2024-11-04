@@ -189,10 +189,13 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 	}
 
 	public setLimitedCustomFields(customFields: string[]): void {
-		const nonPublicFieds = customFields.reduce((acc, customField) => {
-			acc[`customFields.${customField}`] = 0;
-			return acc;
-		}, {} as Record<string, any>);
+		const nonPublicFieds = customFields.reduce(
+			(acc, customField) => {
+				acc[`customFields.${customField}`] = 0;
+				return acc;
+			},
+			{} as Record<string, any>,
+		);
 		this.limitedUserFieldsToExclude = {
 			...this.defaultLimitedUserFieldsToExclude,
 			...nonPublicFieds,

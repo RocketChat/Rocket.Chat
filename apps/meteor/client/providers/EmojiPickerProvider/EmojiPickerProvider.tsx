@@ -57,7 +57,7 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 										list: createEmojiList(category.key, null, recentEmojis, setRecentEmojis),
 										limit: category.key === CUSTOM_CATEGORY ? limit | customItemsLimit : null,
 									},
-							  }
+								}
 							: category,
 					),
 			);
