@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/omnichannel-services",
-	"version": "0.3.6-rc.4",
+	"version": "0.3.6",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
@@ -21,14 +21,14 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"@rocket.chat/tools": "workspace:^",
-		"@types/node": "~20.16.12",
+		"@types/node": "~20.16.15",
 		"date-fns": "^2.30.0",
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",
-		"eventemitter3": "^4.0.7",
+		"eventemitter3": "^5.0.1",
 		"mem": "^8.1.1",
 		"moment-timezone": "^0.5.46",
-		"mongo-message-queue": "^1.0.0",
+		"mongo-message-queue": "^1.1.0",
 		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
 		"pino": "^8.21.0"
 	},

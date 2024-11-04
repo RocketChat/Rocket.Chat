@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/authorization-service",
 	"private": true,
-	"version": "0.4.9-rc.4",
+	"version": "0.4.9",
 	"description": "Rocket.Chat Authorization service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -24,15 +24,15 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~20.16.12",
+		"@types/node": "~20.16.15",
 		"ejson": "^2.2.3",
 		"event-loop-stats": "^1.4.1",
-		"eventemitter3": "^4.0.7",
+		"eventemitter3": "^5.0.1",
 		"gc-stats": "^1.4.1",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.34",
 		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
-		"nats": "^2.4.0",
+		"nats": "^2.28.2",
 		"pino": "^8.21.0",
 		"polka": "^0.5.2"
 	},

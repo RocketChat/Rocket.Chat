@@ -5,7 +5,10 @@ import type { IUploadDetails } from '../../definition/uploads/IUploadDetails';
 import type { AppBridges } from '../bridges';
 
 export class UploadCreator implements IUploadCreator {
-    constructor(private readonly bridges: AppBridges, private readonly appId: string) {}
+    constructor(
+        private readonly bridges: AppBridges,
+        private readonly appId: string,
+    ) {}
 
     public async uploadBuffer(buffer: Buffer, descriptor: IUploadDescriptor): Promise<IUpload> {
         if (!descriptor.hasOwnProperty('user') && !descriptor.visitorToken) {

@@ -35,7 +35,7 @@ const PreferencesMyDataSection = () => {
 						const text = result.url
 							? t('UserDataDownload_CompletedRequestExistedWithLink_Text', {
 									download_link: result.url,
-							  })
+								})
 							: t('UserDataDownload_CompletedRequestExisted_Text');
 
 						setModal(

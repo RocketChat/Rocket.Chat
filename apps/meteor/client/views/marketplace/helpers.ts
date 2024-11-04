@@ -186,21 +186,21 @@ export const appStatusSpanProps = (
 				? {
 						label: 'Enabled*',
 						tooltipText: t('Grandfathered_app'),
-				  }
+					}
 				: {
 						label: 'Enabled',
-				  };
+					};
 		}
 
 		return migrated && !isEnterprise
 			? {
 					label: 'Disabled*',
 					tooltipText: t('Grandfathered_app'),
-			  }
+				}
 			: {
 					type: 'warning',
 					label: 'Disabled',
-			  };
+				};
 	}
 
 	const isFailed = status && appErroredStatuses.includes(status);

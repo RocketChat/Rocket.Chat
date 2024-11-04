@@ -69,6 +69,6 @@ export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, 
 				icon: 'trash',
 				label: t('Delete'),
 				action: confirmDeleteUser,
-		  }
+			}
 		: undefined;
 };

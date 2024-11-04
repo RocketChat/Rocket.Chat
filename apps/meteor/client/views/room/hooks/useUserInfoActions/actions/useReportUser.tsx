@@ -48,7 +48,7 @@ export const useReportUser = (user: Pick<IUser, '_id' | 'username' | 'name'>): U
 					onClick: action,
 					type: 'moderation' as const,
 					variant: 'danger' as const,
-			  }
+				}
 			: undefined;
 	}, [ownUserId, uid, t, setModal, username, reportUserMutation.mutate, displayName]);
 

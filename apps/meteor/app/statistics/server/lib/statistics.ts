@@ -326,8 +326,7 @@ export const statistics = {
 			room: IRoom,
 		) {
 			return num + (room.prid ? room.msgs : 0);
-		},
-		0);
+		}, 0);
 		statistics.totalPrivateGroupMessages =
 			(await privateGroups.reduce(function _countPrivateGroupMessages(num: number, room: IRoom) {
 				return num + room.msgs;

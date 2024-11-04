@@ -97,7 +97,7 @@ export const useRemoveUserAction = (
 						onClick: removeUserOptionAction,
 						type: 'moderation' as const,
 						variant: 'danger' as const,
-				  }
+					}
 				: undefined,
 		[room, roomCanRemove, userCanRemove, removeUserOptionAction, t],
 	);

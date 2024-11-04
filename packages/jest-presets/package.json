@@ -13,21 +13,21 @@
 		"/server"
 	],
 	"dependencies": {
-		"@swc/core": "~1.7.39",
-		"@swc/jest": "~0.2.36",
+		"@swc/core": "~1.7.42",
+		"@swc/jest": "~0.2.37",
 		"@testing-library/jest-dom": "~6.4.8",
 		"@types/jest-axe": "~3.5.9",
 		"identity-obj-proxy": "~3.0.0",
 		"jest-axe": "~9.0.0",
 		"jest-environment-jsdom": "~29.7.0",
 		"jest-environment-node": "~29.7.0",
-		"uuid": "~9.0.1"
+		"uuid": "~11.0.2"
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:~",
 		"@types/identity-obj-proxy": "^3.0.2",
 		"@types/jest": "~29.5.14",
-		"@types/uuid": "^9.0.8",
+		"@types/uuid": "^10.0.0",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
 		"typescript": "~5.6.3"

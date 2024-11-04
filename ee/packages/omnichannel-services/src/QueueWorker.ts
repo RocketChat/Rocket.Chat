@@ -19,7 +19,10 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 
 	private queueStarted = false;
 
-	constructor(private readonly db: Db, loggerClass: typeof Logger) {
+	constructor(
+		private readonly db: Db,
+		loggerClass: typeof Logger,
+	) {
 		super();
 
 		// eslint-disable-next-line new-cap

@@ -91,12 +91,12 @@ function ChatInfoDirectory({ id, route = undefined, room }: ChatInfoDirectoryPro
 						tab: 'room-info',
 						context: 'edit',
 						id,
-				  }
+					}
 				: {
 						page: 'chats',
 						id,
 						bar: 'edit',
-				  },
+					},
 		);
 	});
 
