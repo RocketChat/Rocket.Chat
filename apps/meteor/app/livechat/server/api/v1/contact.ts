@@ -16,6 +16,7 @@ import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { createContact } from '../../lib/contacts/createContact';
 import { getContact } from '../../lib/contacts/getContact';
+import { getContactChannels } from '../../lib/contacts/getContactChannels';
 import { getContactHistory } from '../../lib/contacts/getContactHistory';
 import { getContacts } from '../../lib/contacts/getContacts';
 import { registerContact } from '../../lib/contacts/registerContact';
@@ -196,7 +197,7 @@ API.v1.addRoute(
 		async get() {
 			const { contactId } = this.queryParams;
 
-			const channels = await LivechatContacts.findContactChannelsGroupedByName(contactId);
+			const channels = await getContactChannels(contactId);
 
 			return API.v1.success({ channels });
 		},
