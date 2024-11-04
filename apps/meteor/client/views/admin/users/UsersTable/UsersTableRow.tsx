@@ -42,9 +42,27 @@ const UsersTableRow = ({
 }: UsersTableRowProps): ReactElement => {
 	const { t } = useTranslation();
 
-	const { _id, emails, username = '', name = '', roles, status, active, avatarETag, lastLogin, type, freeSwitchExtension } = user;
+	const {
+		_id,
+		emails,
+		username = '',
+		name = '',
+		roles,
+		status,
+		active,
+		avatarETag,
+		lastLogin,
+		type,
+		freeSwitchExtension,
+		federated,
+	} = user;
+
 	const registrationStatusText = useMemo(() => {
 		const usersExcludedFromPending = ['bot', 'app'];
+
+		if (federated) {
+			return t('Federated');
+		}
 
 		if (!lastLogin && !usersExcludedFromPending.includes(type)) {
 			return t('Pending');
@@ -57,7 +75,7 @@ const UsersTableRow = ({
 		if (!active && lastLogin) {
 			return t('Deactivated');
 		}
-	}, [active, lastLogin, t, type]);
+	}, [active, lastLogin, t, type, federated]);
 
 	const roleNames = (roles || [])
 		.map((roleId) => (Roles.findOne(roleId, { fields: { name: 1 } }) as IRole | undefined)?.name)
@@ -93,26 +111,26 @@ const UsersTableRow = ({
 			}),
 			...(isNotPendingDeactivatedNorFederated &&
 				changeAdminStatusAction && {
-					makeAdmin: {
-						label: { label: changeAdminStatusAction.label, icon: changeAdminStatusAction.icon },
-						action: changeAdminStatusAction.action,
-					},
-				}),
+				makeAdmin: {
+					label: { label: changeAdminStatusAction.label, icon: changeAdminStatusAction.icon },
+					action: changeAdminStatusAction.action,
+				},
+			}),
 			...(isNotPendingDeactivatedNorFederated &&
 				resetE2EKeyAction && {
-					resetE2EKey: { label: { label: resetE2EKeyAction.label, icon: resetE2EKeyAction.icon }, action: resetE2EKeyAction.action },
-				}),
+				resetE2EKey: { label: { label: resetE2EKeyAction.label, icon: resetE2EKeyAction.icon }, action: resetE2EKeyAction.action },
+			}),
 			...(isNotPendingDeactivatedNorFederated &&
 				resetTOTPAction && {
-					resetTOTP: { label: { label: resetTOTPAction.label, icon: resetTOTPAction.icon }, action: resetTOTPAction.action },
-				}),
+				resetTOTP: { label: { label: resetTOTPAction.label, icon: resetTOTPAction.icon }, action: resetTOTPAction.action },
+			}),
 			...(changeUserStatusAction &&
 				!isFederatedUser && {
-					changeActiveStatus: {
-						label: { label: changeUserStatusAction.label, icon: changeUserStatusAction.icon },
-						action: changeUserStatusAction.action,
-					},
-				}),
+				changeActiveStatus: {
+					label: { label: changeUserStatusAction.label, icon: changeUserStatusAction.icon },
+					action: changeUserStatusAction.action,
+				},
+			}),
 			...(deleteUserAction && {
 				delete: { label: { label: deleteUserAction.label, icon: deleteUserAction.icon }, action: deleteUserAction.action },
 			}),
