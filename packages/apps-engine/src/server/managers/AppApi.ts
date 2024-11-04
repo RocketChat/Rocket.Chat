@@ -17,7 +17,11 @@ export class AppApi {
 
     public readonly implementedMethods: Array<string>;
 
-    constructor(public app: ProxiedApp, public api: IApi, public endpoint: IApiEndpoint) {
+    constructor(
+        public app: ProxiedApp,
+        public api: IApi,
+        public endpoint: IApiEndpoint,
+    ) {
         this.appId = app.getID();
 
         switch (this.api.visibility) {

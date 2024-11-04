@@ -17,11 +17,11 @@
 		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts"
 	},
 	"devDependencies": {
-		"@changesets/cli": "^2.26.2",
+		"@changesets/cli": "^2.27.9",
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
 		"ts-node": "^10.9.2",
-		"turbo": "^2.1.3"
+		"turbo": "^2.2.3"
 	},
 	"workspaces": [
 		"apps/*",
@@ -68,6 +68,7 @@
 		"mongodb@npm:^4.3.1": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
 	},
 	"dependencies": {
-		"node-gyp": "^9.4.1"
+		"@types/stream-buffers": "^3.0.7",
+		"node-gyp": "^10.2.0"
 	}
 }

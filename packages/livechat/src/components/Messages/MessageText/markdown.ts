@@ -74,7 +74,6 @@ md.use((md) => {
 			state.delimiters.push({
 				marker,
 				length: 0,
-				jump: i,
 				token: state.tokens.length - 1,
 				end: -1,
 				open: scanned.can_open,

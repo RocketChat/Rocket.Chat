@@ -194,7 +194,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 				? {
 						enabled: true,
 						queue,
-				  }
+					}
 				: { enabled: false },
 			showOmnichannelQueueLink: showOmnichannelQueueLink && !!agentAvailable,
 			livechatPriorities,

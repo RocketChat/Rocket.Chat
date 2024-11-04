@@ -37,7 +37,7 @@ export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid
 						icon: 'shield-alt' as const,
 						onClick: changeLeaderAction,
 						type: 'privileges' as UserInfoActionType,
-				  }
+					}
 				: undefined,
 		[isLeader, roomCanSetLeader, t, userCanSetLeader, changeLeaderAction],
 	);

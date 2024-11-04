@@ -25,7 +25,7 @@ export const useMessageOrigins = ({ period }: UseMessageOriginsOptions) => {
 						...response,
 						start,
 						end,
-				  }
+					}
 				: undefined;
 		},
 		{

@@ -295,7 +295,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 							const item = slashCommands.commands[command];
 							return {
 								_id: command,
-								params: item.params && i18n.exists(item.params) ? t(item.params) : item.params ?? '',
+								params: item.params && i18n.exists(item.params) ? t(item.params) : (item.params ?? ''),
 								description: item.description && i18n.exists(item.description) ? t(item.description) : item.description,
 								permission: item.permission,
 								...(encrypted && { disabled: encrypted }),

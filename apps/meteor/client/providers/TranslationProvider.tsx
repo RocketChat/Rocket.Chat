@@ -126,7 +126,9 @@ const useAutoLanguage = () => {
 	const defaultUserLanguage = browserLanguage || serverLanguage || 'en';
 
 	// if the language is supported, if not remove the region
-	const suggestedLanguage = languages.includes(defaultUserLanguage) ? defaultUserLanguage : defaultUserLanguage.split('-').shift() ?? 'en';
+	const suggestedLanguage = languages.includes(defaultUserLanguage)
+		? defaultUserLanguage
+		: (defaultUserLanguage.split('-').shift() ?? 'en');
 
 	// usually that value is set based on the user's config language
 	const [language] = useLocalStorage('userLanguage', suggestedLanguage);

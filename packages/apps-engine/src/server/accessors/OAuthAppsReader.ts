@@ -3,7 +3,10 @@ import type { IOAuthAppsReader } from '../../definition/accessors/IOAuthAppsRead
 import type { OAuthAppsBridge } from '../bridges/OAuthAppsBridge';
 
 export class OAuthAppsReader implements IOAuthAppsReader {
-    constructor(private readonly oauthAppsBridge: OAuthAppsBridge, private readonly appId: string) {}
+    constructor(
+        private readonly oauthAppsBridge: OAuthAppsBridge,
+        private readonly appId: string,
+    ) {}
 
     public async getOAuthAppById(id: string): Promise<IOAuthApp> {
         return this.oauthAppsBridge.doGetByid(id, this.appId);

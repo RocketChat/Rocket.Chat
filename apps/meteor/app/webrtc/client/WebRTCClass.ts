@@ -257,7 +257,11 @@ class WebRTCClass {
 
 	media: MediaStreamConstraints;
 
-	constructor(public selfId: string, public room: string, public autoAccept = false) {
+	constructor(
+		public selfId: string,
+		public room: string,
+		public autoAccept = false,
+	) {
 		this.config = {
 			iceServers: [],
 		};

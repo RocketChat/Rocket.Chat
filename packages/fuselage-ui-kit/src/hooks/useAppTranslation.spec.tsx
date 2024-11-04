@@ -107,7 +107,7 @@ describe('with suspense', () => {
     });
 
     await waitFor(() =>
-      expect(result.current).toBe('jumped over the lazy dog')
+      expect(result.current).toBe('jumped over the lazy dog'),
     );
   });
 
