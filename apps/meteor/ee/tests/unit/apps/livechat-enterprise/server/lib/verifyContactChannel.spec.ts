@@ -98,18 +98,8 @@ describe('verifyContactChannel', () => {
 		).to.be.rejectedWith('error-invalid-room');
 
 		expect(modelsMock.LivechatContacts.updateContactChannel.notCalled).to.be.true;
-		expect(modelsMock.LivechatRooms.update.calledOnceWith({ _id: 'roomId' }, { $set: { verified: true } })).to.be.true;
-		expect(
-			mergeContactsStub.calledOnceWith(
-				'contactId',
-				sinon.match({
-					visitorId: 'visitorId',
-					source: sinon.match({
-						type: 'sms',
-					}),
-				}),
-			),
-		).to.be.true;
+		expect(modelsMock.LivechatRooms.update.notCalled).to.be.true;
+		expect(mergeContactsStub.notCalled).to.be.true;
 		expect(saveQueueInquiryStub.notCalled).to.be.true;
 	});
 
