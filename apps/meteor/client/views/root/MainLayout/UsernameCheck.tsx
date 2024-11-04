@@ -11,7 +11,7 @@ const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
 	const userId = useUserId();
 	const { data: userData, isLoading } = useUserInfoQuery({ userId: userId || '' });
 
-	const allowAnonymousRead = useSetting<boolean>('Accounts_AllowAnonymousRead') ?? false;
+	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', false);
 
 	const shouldRegisterUsername = useReactiveValue(
 		useCallback(() => {
