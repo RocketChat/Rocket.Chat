@@ -898,14 +898,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.open',
-	{ authRequired: true, isRoomsOpenProps },
+	{ authRequired: true, validateParams: isRoomsOpenProps },
 	{
 		async post() {
 			const { roomId } = this.bodyParams;
-
-			if (!roomId) {
-				return API.v1.failure('Room not found');
-			}
 
 			await openRoom(this.userId, roomId);
 
