@@ -17,6 +17,8 @@ const FALLBACK_LAST_MODIFIED = 'Thu, 01 Jan 2015 00:00:00 GMT';
 
 const cookie = new Cookies();
 
+const defaultPattern = /[^A-Za-z0-9]/g;
+
 export const MAX_SVG_AVATAR_SIZE = 1024;
 export const MIN_SVG_AVATAR_SIZE = 16;
 
@@ -63,7 +65,7 @@ export const serveSvgAvatarInRequestedFormat = ({
 	res: ServerResponse;
 }) => {
 	const size = getAvatarSizeFromRequest(req);
-	const avatar = renderSVGLetters(nameOrUsername, size);
+	const avatar = renderSVGLetters(nameOrUsername, size, req);
 	res.setHeader('Last-Modified', FALLBACK_LAST_MODIFIED);
 
 	const { format } = req.query;
