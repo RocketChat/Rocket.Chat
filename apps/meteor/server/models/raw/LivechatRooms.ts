@@ -2008,20 +2008,15 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find(query, options);
 	}
 
-	async findNewestByVisitorIdOrToken<T extends Document = IOmnichannelRoom>(
-		visitorId: string,
-		visitorToken: string,
+	async findNewestByContactVisitorAssociation<T extends Document = IOmnichannelRoom>(
+		association: ILivechatContactVisitorAssociation,
 		options: Omit<FindOptions<IOmnichannelRoom>, 'sort' | 'limit'> = {},
 	): Promise<T | null> {
 		const query: Filter<IOmnichannelRoom> = {
-			$or: [
-				{
-					'v._id': visitorId,
-				},
-				{
-					'v.token': visitorToken,
-				},
-			],
+			't': 'l',
+			'v._id': association.visitorId,
+			'source.type': association.source.type,
+			...(association.source.id ? { 'source.id': association.source.id } : {}),
 		};
 
 		return this.findOne<T>(query, {

@@ -8,11 +8,11 @@ const modelsMock = {
 	},
 	LivechatRooms: {
 		setContactIdByVisitorAssociation: sinon.stub(),
+		findNewestByContactVisitorAssociation: sinon.stub(),
 	},
 };
 
 const createContactFromVisitor = sinon.stub();
-const getVisitorNewestSource = sinon.stub();
 const mergeVisitorIntoContact = sinon.stub();
 
 const { migrateVisitorToContactId } = proxyquire
@@ -20,9 +20,6 @@ const { migrateVisitorToContactId } = proxyquire
 	.load('../../../../../../app/livechat/server/lib/contacts/migrateVisitorToContactId', {
 		'./createContactFromVisitor': {
 			createContactFromVisitor,
-		},
-		'./getVisitorNewestSource': {
-			getVisitorNewestSource,
 		},
 		'./ContactMerger': {
 			ContactMerger: {
@@ -43,14 +40,13 @@ describe('migrateVisitorToContactId', () => {
 	beforeEach(() => {
 		modelsMock.LivechatContacts.findContactMatchingVisitor.reset();
 		modelsMock.LivechatRooms.setContactIdByVisitorAssociation.reset();
+		modelsMock.LivechatRooms.findNewestByContactVisitorAssociation.reset();
 		createContactFromVisitor.reset();
-		getVisitorNewestSource.reset();
 		mergeVisitorIntoContact.reset();
 	});
 
 	it('should not create a contact if there is no source for the visitor', async () => {
 		expect(await migrateVisitorToContactId({ _id: 'visitor1' })).to.be.null;
-		expect(getVisitorNewestSource.getCall(0)).to.not.be.null;
 	});
 
 	it('should attempt to create a new contact if there is no free existing contact matching the visitor data', async () => {
@@ -58,21 +54,6 @@ describe('migrateVisitorToContactId', () => {
 		createContactFromVisitor.resolves('contactCreated');
 
 		expect(await migrateVisitorToContactId({ _id: 'visitor1' }, { type: 'other' })).to.be.equal('contactCreated');
-		expect(getVisitorNewestSource.getCall(0)).to.be.null;
-	});
-
-	it('should load the source from existing visitor rooms if none is provided', async () => {
-		modelsMock.LivechatContacts.findContactMatchingVisitor.resolves(undefined);
-		const source = { type: 'sms' };
-		getVisitorNewestSource.resolves(source);
-		createContactFromVisitor.resolves('contactCreated');
-
-		const visitor = { _id: 'visitor1' };
-
-		expect(await migrateVisitorToContactId(visitor)).to.be.equal('contactCreated');
-		expect(getVisitorNewestSource.getCall(0)).to.not.be.null;
-		expect(createContactFromVisitor.getCall(0).args[0]).to.be.deep.equal(visitor);
-		expect(createContactFromVisitor.getCall(0).args[1]).to.be.deep.equal(source);
 	});
 
 	it('should not attempt to create a new contact if one is found for the visitor', async () => {

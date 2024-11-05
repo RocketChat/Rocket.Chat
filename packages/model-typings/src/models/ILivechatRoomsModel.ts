@@ -265,9 +265,8 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	getVisitorActiveForPeriodUpdateQuery(period: string, updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 	getMACStatisticsForPeriod(period: string): Promise<MACStats[]>;
 	getMACStatisticsBetweenDates(start: Date, end: Date): Promise<MACStats[]>;
-	findNewestByVisitorIdOrToken<T extends Document = IOmnichannelRoom>(
-		visitorId: string,
-		visitorToken: string,
+	findNewestByContactVisitorAssociation<T extends Document = IOmnichannelRoom>(
+		association: ILivechatContactVisitorAssociation,
 		options?: Omit<FindOptions<IOmnichannelRoom>, 'sort' | 'limit'>,
 	): Promise<T | null>;
 	setContactIdByVisitorAssociation(contactId: string, visitor: ILivechatContactVisitorAssociation): Promise<UpdateResult | Document>;
