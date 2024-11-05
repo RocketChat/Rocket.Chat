@@ -56,9 +56,6 @@ describe('verifyContactChannel', () => {
 					field: 'field',
 					value: 'value',
 				}),
-				sinon.match({
-					unknown: false,
-				}),
 			),
 		).to.be.true;
 		expect(modelsMock.LivechatRooms.update.calledOnceWith({ _id: 'roomId' }, { $set: { verified: true } })).to.be.true;
@@ -84,9 +81,6 @@ describe('verifyContactChannel', () => {
 					verified: true,
 					field: 'field',
 					value: 'value',
-				}),
-				sinon.match({
-					unknown: false,
 				}),
 			),
 		).to.be.true;
