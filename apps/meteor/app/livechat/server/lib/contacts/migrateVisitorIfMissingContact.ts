@@ -2,7 +2,7 @@ import type { ILivechatVisitor, IOmnichannelSource, ILivechatContact } from '@ro
 import { LivechatVisitors } from '@rocket.chat/models';
 
 import { Livechat } from '../LivechatTyped';
-import { getContactIdByVisitorId } from './getContactIdByVisitorId';
+import { getContactIdByVisitor } from './getContactIdByVisitor';
 import { migrateVisitorToContactId } from './migrateVisitorToContactId';
 
 export async function migrateVisitorIfMissingContact(
@@ -10,8 +10,8 @@ export async function migrateVisitorIfMissingContact(
 	source: IOmnichannelSource,
 ): Promise<ILivechatContact['_id'] | null> {
 	Livechat.logger.debug(`Detecting visitor's contact ID`);
-	// Check if there is any contact already linking to this visitorId
-	const contactId = await getContactIdByVisitorId(visitorId);
+	// Check if there is any contact already linking to this visitorId and source
+	const contactId = await getContactIdByVisitor({ visitorId, source });
 	if (contactId) {
 		return contactId;
 	}
@@ -21,5 +21,5 @@ export async function migrateVisitorIfMissingContact(
 		throw new Error('Failed to migrate visitor data into Contact information: visitor not found.');
 	}
 
-	return migrateVisitorToContactId(visitor, source);
+	return migrateVisitorToContactId(visitor, source, false);
 }

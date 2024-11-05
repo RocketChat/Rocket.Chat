@@ -13,7 +13,6 @@ import type {
 	TransferByData,
 	ILivechatAgent,
 	ILivechatDepartment,
-	IOmnichannelSource,
 	IOmnichannelRoomInfo,
 	IOmnichannelInquiryExtraData,
 	IOmnichannelRoomExtraData,
@@ -51,7 +50,6 @@ import { settings } from '../../../settings/server';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
-import { getContactIdByVisitorId } from './contacts/getContactIdByVisitorId';
 import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissingContact';
 import { getOnlineAgents } from './getOnlineAgents';
 
@@ -70,7 +68,7 @@ export const createLivechatRoom = async (
 	rid: string,
 	name: string,
 	guest: ILivechatVisitor,
-	roomInfo: IOmnichannelRoomInfo = {},
+	roomInfo: IOmnichannelRoomInfo = { source: { type: OmnichannelSourceType.OTHER } },
 	extraData?: IOmnichannelRoomExtraData,
 ) => {
 	check(rid, String);
@@ -95,10 +93,7 @@ export const createLivechatRoom = async (
 		visitor: { _id, username, departmentId, status, activity },
 	});
 
-	const contactId = await migrateVisitorIfMissingContact(
-		_id,
-		(extraRoomInfo.source || roomInfo.source || { type: OmnichannelSourceType.OTHER }) as IOmnichannelSource,
-	);
+	const contactId = await migrateVisitorIfMissingContact(_id, extraRoomInfo.source || roomInfo.source);
 
 	// TODO: Solve `u` missing issue
 	const room: InsertionModel<IOmnichannelRoom> = {
@@ -194,8 +189,6 @@ export const createLivechatInquiry = async ({
 		visitor: { _id, username, department, status, activity },
 	});
 
-	const contactId = await getContactIdByVisitorId(_id);
-
 	const result = await LivechatInquiry.findOneAndUpdate(
 		{
 			rid,
@@ -210,7 +203,6 @@ export const createLivechatInquiry = async ({
 				token,
 				status,
 				...(activity?.length && { activity }),
-				contactId,
 			},
 			t: 'l',
 			priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,

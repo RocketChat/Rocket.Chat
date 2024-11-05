@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { isSameChannel } from '../../../../../app/livechat/lib/isSameChannel';
 import { useBlockChannel } from '../../../omnichannel/contactInfo/tabs/ContactInfoChannels/useBlockChannel';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 
@@ -22,14 +23,16 @@ const ComposerOmnichannelCallout = () => {
 	const {
 		_id,
 		v: { _id: visitorId, contactId },
+		source,
 	} = room;
 
 	const getContactById = useEndpoint('GET', '/v1/omnichannel/contacts.get');
 	const { data } = useQuery(['getContactById', contactId], () => getContactById({ contactId }));
 
-	const currentChannel = data?.contact?.channels?.find((channel) => channel.visitorId === visitorId);
+	const association = { visitorId, source };
+	const currentChannel = data?.contact?.channels?.find((channel) => isSameChannel(channel.visitor, association));
 
-	const handleBlock = useBlockChannel({ blocked: currentChannel?.blocked || false, visitorId });
+	const handleBlock = useBlockChannel({ blocked: currentChannel?.blocked || false, association });
 
 	if (!data?.contact?.unknown) {
 		return null;

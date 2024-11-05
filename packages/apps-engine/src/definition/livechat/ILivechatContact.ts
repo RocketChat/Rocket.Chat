@@ -1,16 +1,24 @@
-import type { IOmnichannelSource } from './ILivechatRoom';
+import type { IOmnichannelSource, OmnichannelSourceType } from './ILivechatRoom';
 import type { IVisitorEmail } from './IVisitorEmail';
 import type { IVisitorPhone } from './IVisitorPhone';
+
+export interface ILivechatContactVisitorAssociation {
+    visitorId: string;
+    source: {
+        type: OmnichannelSourceType;
+        id?: IOmnichannelSource['id'];
+    };
+}
 
 export interface ILivechatContactChannel {
     name: string;
     verified: boolean;
-    visitorId: string;
+    visitor: ILivechatContactVisitorAssociation;
     blocked: boolean;
     field?: string;
     value?: string;
     verifiedAt?: Date;
-    details?: IOmnichannelSource;
+    details: IOmnichannelSource;
     lastChat?: {
         _id: string;
         ts: Date;

@@ -8,6 +8,7 @@ import type {
 	IOmnichannelServiceLevelAgreements,
 	ReportResult,
 	MACStats,
+	ILivechatContactVisitorAssociation,
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatRoomsModel } from '@rocket.chat/model-typings';
@@ -1221,18 +1222,18 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	findClosedRoomsByVisitorsAndSourcePaginated({
-		visitorsIds,
+	findClosedRoomsByContactAndSourcePaginated({
+		contactId,
 		source,
 		options = {},
 	}: {
-		visitorsIds: string[];
+		contactId: string;
 		source?: string;
 		options?: FindOptions;
 	}): FindPaginated<FindCursor<IOmnichannelRoom>> {
 		return this.findPaginated<IOmnichannelRoom>(
 			{
-				'v._id': { $in: visitorsIds },
+				'v.contactId': contactId,
 				'closedAt': { $exists: true },
 				...(source && {
 					$or: [{ 'source.type': new RegExp(escapeRegExp(source), 'i') }, { 'source.alias': new RegExp(escapeRegExp(source), 'i') }],
@@ -1922,6 +1923,21 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find(query, options);
 	}
 
+	findOneOpenByContactChannelVisitor(
+		association: ILivechatContactVisitorAssociation,
+		options: FindOptions<IOmnichannelRoom> = {},
+	): Promise<IOmnichannelRoom | null> {
+		const query: Filter<IOmnichannelRoom> = {
+			't': 'l',
+			'open': true,
+			'v._id': association.visitorId,
+			'source.type': association.source.type,
+			...(association.source.id ? { 'source.id': association.source.id } : {}),
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneOpenByVisitorToken(visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
@@ -1992,20 +2008,15 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find(query, options);
 	}
 
-	async findNewestByVisitorIdOrToken<T extends Document = IOmnichannelRoom>(
-		visitorId: string,
-		visitorToken: string,
+	async findNewestByContactVisitorAssociation<T extends Document = IOmnichannelRoom>(
+		association: ILivechatContactVisitorAssociation,
 		options: Omit<FindOptions<IOmnichannelRoom>, 'sort' | 'limit'> = {},
 	): Promise<T | null> {
 		const query: Filter<IOmnichannelRoom> = {
-			$or: [
-				{
-					'v._id': visitorId,
-				},
-				{
-					'v.token': visitorToken,
-				},
-			],
+			't': 'l',
+			'v._id': association.visitorId,
+			'source.type': association.source.type,
+			...(association.source.id ? { 'source.id': association.source.id } : {}),
 		};
 
 		return this.findOne<T>(query, {
@@ -2750,14 +2761,19 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		throw new Error('Method not implemented.');
 	}
 
-	setContactIdByVisitorIdOrToken(contactId: string, visitorId: string, visitorToken: string): Promise<UpdateResult | Document> {
+	setContactIdByVisitorAssociation(contactId: string, visitor: ILivechatContactVisitorAssociation): Promise<UpdateResult | Document> {
 		return this.updateMany(
 			{
 				't': 'l',
-				'$or': [{ 'v._id': visitorId }, { 'v.token': visitorToken }],
-				'v.contactId': { $exists: false },
+				'v._id': visitor.visitorId,
+				'source.type': visitor.source.type,
+				...(visitor.source.id ? { 'source.id': visitor.source.id } : {}),
 			},
 			{ $set: { 'v.contactId': contactId } },
 		);
+	}
+
+	replaceContactId(_oldContactId: string, _newContactId: string): Promise<UpdateResult | Document> {
+		throw new Error('Method not implemented.');
 	}
 }

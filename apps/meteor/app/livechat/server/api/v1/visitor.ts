@@ -8,7 +8,6 @@ import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
-import { addContactIdToVisitor } from '../lib/visitors';
 
 API.v1.addRoute(
 	'livechat/visitor',
@@ -145,7 +144,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 			throw new Meteor.Error('invalid-token');
 		}
 
-		return API.v1.success({ visitor: await addContactIdToVisitor(visitor) });
+		return API.v1.success({ visitor });
 	},
 	async delete() {
 		check(this.urlParams, {

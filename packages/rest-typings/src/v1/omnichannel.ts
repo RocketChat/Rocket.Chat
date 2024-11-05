@@ -29,22 +29,18 @@ import type {
 	SMSProviderResponse,
 	ILivechatTriggerActionResponse,
 	ILivechatContact,
+	ILivechatContactVisitorAssociation,
 	ILivechatContactChannel,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 import type { WithId } from 'mongodb';
 
 import type { Deprecated } from '../helpers/Deprecated';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
+import { ajv } from './Ajv';
 
 type booleanString = 'true' | 'false';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
 
 type LivechatVisitorsInfo = {
 	visitorId: string;
@@ -1339,38 +1335,51 @@ const POSTUpdateOmnichannelContactsSchema = {
 
 export const isPOSTUpdateOmnichannelContactsProps = ajv.compile<POSTUpdateOmnichannelContactsProps>(POSTUpdateOmnichannelContactsSchema);
 
-type GETOmnichannelContactsProps = { contactId?: string; email?: string; phone?: string };
+type GETOmnichannelContactsProps = { contactId?: string; visitor?: ILivechatContactVisitorAssociation };
+
+export const ContactVisitorAssociationSchema = {
+	type: 'object',
+	properties: {
+		visitorId: {
+			type: 'string',
+		},
+		source: {
+			type: 'object',
+			properties: {
+				type: {
+					type: 'string',
+				},
+				id: {
+					type: 'string',
+				},
+			},
+			required: ['type'],
+		},
+	},
+	nullable: false,
+	required: ['visitorId', 'source'],
+};
 
 const GETOmnichannelContactsSchema = {
 	oneOf: [
 		{
 			type: 'object',
 			properties: {
-				email: {
-					type: 'string',
-				},
-			},
-			required: ['email'],
-			additionalProperties: false,
-		},
-		{
-			type: 'object',
-			properties: {
-				phone: {
-					type: 'string',
-				},
-			},
-			required: ['phone'],
-			additionalProperties: false,
-		},
-		{
-			type: 'object',
-			properties: {
 				contactId: {
 					type: 'string',
+					nullable: false,
+					isNotEmpty: true,
 				},
 			},
 			required: ['contactId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				visitor: ContactVisitorAssociationSchema,
+			},
+			required: ['visitor'],
 			additionalProperties: false,
 		},
 	],
@@ -3751,7 +3760,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/visitor/:token': {
-		GET: (params?: LivechatVisitorTokenGet) => { visitor: ILivechatVisitor & { contactId?: string } };
+		GET: (params?: LivechatVisitorTokenGet) => { visitor: ILivechatVisitor };
 		DELETE: (params: LivechatVisitorTokenDelete) => {
 			visitor: { _id: string; ts: string };
 		};

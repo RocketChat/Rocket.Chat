@@ -249,9 +249,9 @@ export class QueueManager {
 		}
 
 		let newRoom;
-		if (inquiry.v.contactId && (await shouldTriggerVerificationApp(inquiry.v.contactId, room.source))) {
+		if (room.v.contactId && (await shouldTriggerVerificationApp(room.v.contactId, room.source))) {
 			newRoom = await LivechatRooms.findOneById(rid);
-			await LivechatContacts.updateContactChannel(inquiry.v._id, { verified: false });
+			await LivechatContacts.updateContactChannel({ visitorId: room.v._id, source: room.source }, { verified: false });
 		} else {
 			newRoom = (await this.queueInquiry(inquiry, room, defaultAgent)) ?? (await LivechatRooms.findOneById(rid));
 		}
