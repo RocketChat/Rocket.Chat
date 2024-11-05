@@ -1,3 +1,4 @@
+import type { ILivechatContactVisitorAssociation } from '@rocket.chat/core-typings';
 import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
@@ -6,7 +7,7 @@ import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import AdvancedContactModal from '../../AdvancedContactModal';
 import BlockChannelModal from './BlockChannelModal';
 
-export const useBlockChannel = ({ blocked, visitorId }: { blocked: boolean; visitorId: string }) => {
+export const useBlockChannel = ({ blocked, association }: { blocked: boolean; association: ILivechatContactVisitorAssociation }) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -18,7 +19,7 @@ export const useBlockChannel = ({ blocked, visitorId }: { blocked: boolean; visi
 
 	const handleUnblock = async () => {
 		try {
-			await unblockContact({ visitorId });
+			await unblockContact({ visitor: association });
 			dispatchToastMessage({ type: 'success', message: t('Contact_unblocked') });
 			queryClient.invalidateQueries(['getContactById']);
 		} catch (error) {
@@ -33,7 +34,7 @@ export const useBlockChannel = ({ blocked, visitorId }: { blocked: boolean; visi
 
 		const blockAction = async () => {
 			try {
-				await blockContact({ visitorId });
+				await blockContact({ visitor: association });
 				dispatchToastMessage({ type: 'success', message: t('Contact_blocked') });
 				queryClient.invalidateQueries(['getContactById']);
 			} catch (error) {

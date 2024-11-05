@@ -36,7 +36,12 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 			channels: [
 				{
 					name: 'widget',
-					visitorId: 'visitor1',
+					visitor: {
+						visitorId: 'visitor1',
+						source: {
+							type: OmnichannelSourceType.WIDGET,
+						},
+					},
 					blocked: false,
 					verified: false,
 					details: {
@@ -65,7 +70,12 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 			channels: [
 				{
 					name: 'sms',
-					visitorId: 'visitor1',
+					visitor: {
+						visitorId: 'visitor1',
+						source: {
+							type: OmnichannelSourceType.SMS,
+						},
+					},
 					blocked: false,
 					verified: false,
 					details: {

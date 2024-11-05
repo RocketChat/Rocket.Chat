@@ -1,4 +1,4 @@
-import type { ILivechatContact, ILivechatContactChannel, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatContact, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
 import type { PaginatedResult, VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
 import type { FindOptions, Sort } from 'mongodb';
@@ -16,20 +16,14 @@ export async function getContactHistory(
 ): Promise<PaginatedResult<{ history: VisitorSearchChatsResult[] }>> {
 	const { contactId, source, count, offset, sort } = params;
 
-	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, 'channels'>>(contactId, { projection: { channels: 1 } });
+	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id'>>(contactId, { projection: { _id: 1 } });
 
 	if (!contact) {
 		throw new Error('error-contact-not-found');
 	}
 
-	const visitorsIds = new Set(contact.channels?.map((channel: ILivechatContactChannel) => channel.visitorId));
-
-	if (!visitorsIds?.size) {
-		return { history: [], count: 0, offset, total: 0 };
-	}
-
 	const options: FindOptions<IOmnichannelRoom> = {
-		sort: sort || { ts: -1 },
+		sort: sort || { closedAt: -1 },
 		skip: offset,
 		limit: count,
 		projection: {
@@ -48,8 +42,8 @@ export async function getContactHistory(
 		},
 	};
 
-	const { totalCount, cursor } = LivechatRooms.findClosedRoomsByVisitorsAndSourcePaginated({
-		visitorsIds: Array.from(visitorsIds),
+	const { totalCount, cursor } = LivechatRooms.findClosedRoomsByContactAndSourcePaginated({
+		contactId: contact._id,
 		source,
 		options,
 	});

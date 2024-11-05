@@ -1,5 +1,5 @@
-import type { ILivechatContact, IVisitor } from '../livechat';
+import type { ILivechatContact } from '../livechat';
 
 export interface IContactRead {
-    getByVisitorId(visitorId: IVisitor['id']): Promise<ILivechatContact | null>;
+    getById(contactId: ILivechatContact['_id']): Promise<ILivechatContact | null>;
 }

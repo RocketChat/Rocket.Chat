@@ -1,4 +1,4 @@
-import type { ILivechatContact, IVisitor } from '../../../src/definition/livechat';
+import type { ILivechatContact } from '../../../src/definition/livechat';
 import { ContactBridge } from '../../../src/server/bridges';
 
 export class TestContactBridge extends ContactBridge {
@@ -6,7 +6,7 @@ export class TestContactBridge extends ContactBridge {
         throw new Error('Method not implemented.');
     }
 
-    protected getByVisitorId(id: IVisitor['id']): Promise<ILivechatContact> {
+    protected getById(id: ILivechatContact['_id']): Promise<ILivechatContact> {
         throw new Error('Method not implemented.');
     }
 

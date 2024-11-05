@@ -372,7 +372,7 @@ export const isOmnichannelSourceFromApp = (source: IOmnichannelSource): source i
 	return source?.type === OmnichannelSourceType.APP;
 };
 
-export type IOmnichannelRoomInfo = Pick<Partial<IOmnichannelRoom>, 'source' | 'sms' | 'email'>;
+export type IOmnichannelRoomInfo = Pick<Partial<IOmnichannelRoom>, 'sms' | 'email'> & Pick<IOmnichannelRoom, 'source'>;
 
 export type IOmnichannelRoomExtraData = Pick<Partial<IOmnichannelRoom>, 'customFields' | 'source'> & { sla?: string };
 

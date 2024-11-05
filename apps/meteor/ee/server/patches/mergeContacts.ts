@@ -1,18 +1,23 @@
-import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/core-typings';
+import type { ILivechatContact, ILivechatContactChannel, ILivechatContactVisitorAssociation } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
 
+import { isSameChannel } from '../../../app/livechat/lib/isSameChannel';
 import { ContactMerger } from '../../../app/livechat/server/lib/contacts/ContactMerger';
 import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
 import { logger } from '../../app/livechat-enterprise/server/lib/logger';
 
-export const runMergeContacts = async (_next: any, contactId: string, visitorId: string): Promise<ILivechatContact | null> => {
+export const runMergeContacts = async (
+	_next: any,
+	contactId: string,
+	visitor: ILivechatContactVisitorAssociation,
+): Promise<ILivechatContact | null> => {
 	const originalContact = await LivechatContacts.findOneById(contactId);
 	if (!originalContact) {
 		throw new Error('error-invalid-contact');
 	}
 
-	const channel = originalContact.channels?.find((channel: ILivechatContactChannel) => channel.visitorId === visitorId);
+	const channel = originalContact.channels?.find((channel: ILivechatContactChannel) => isSameChannel(channel.visitor, visitor));
 	if (!channel) {
 		throw new Error('error-invalid-channel');
 	}

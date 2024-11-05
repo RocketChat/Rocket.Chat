@@ -1,4 +1,4 @@
-import type { ILivechatContact } from '@rocket.chat/core-typings';
+import type { ILivechatContact, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
@@ -18,22 +18,27 @@ export const runVerifyContactChannel = async (
 ): Promise<ILivechatContact | null> => {
 	const { contactId, field, value, visitorId, roomId } = params;
 
+	const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'source'>>(roomId, { projection: { source: 1 } });
+	if (!room) {
+		throw new Error('error-invalid-room');
+	}
+
 	await LivechatContacts.updateContactChannel(
-		visitorId,
+		{
+			visitorId,
+			source: room.source,
+		},
 		{
 			verified: true,
 			verifiedAt: new Date(),
 			field,
 			value: value.toLowerCase(),
 		},
-		{
-			unknown: false,
-		},
 	);
 
 	await LivechatRooms.update({ _id: roomId }, { $set: { verified: true } });
 
-	const mergeContactsResult = await mergeContacts(contactId, visitorId);
+	const mergeContactsResult = await mergeContacts(contactId, { visitorId, source: room.source });
 
 	const inquiry = await LivechatInquiry.findOneReadyByRoomId(roomId);
 	if (!inquiry) {

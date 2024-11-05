@@ -42,7 +42,7 @@ function DiscussionsList({
 	onChangeFilter,
 }: DiscussionsListProps) {
 	const { t } = useTranslation();
-	const showRealNames = useSetting<boolean>('UI_Use_Real_Name') || false;
+	const showRealNames = useSetting('UI_Use_Real_Name', false);
 	const inputRef = useAutoFocus(true);
 
 	const onClick = useCallback((e) => {

@@ -16,6 +16,7 @@ import {
 	AppUploadsConverter,
 	AppVisitorsConverter,
 	AppRolesConverter,
+	AppContactsConverter,
 } from '../../../app/apps/server/converters';
 import { AppThreadsConverter } from '../../../app/apps/server/converters/threads';
 import { settings } from '../../../app/settings/server';
@@ -63,6 +64,7 @@ export class AppServerOrchestrator {
 		this._converters.set('settings', new AppSettingsConverter(this));
 		this._converters.set('users', new AppUsersConverter(this));
 		this._converters.set('visitors', new AppVisitorsConverter(this));
+		this._converters.set('contacts', new AppContactsConverter(this));
 		this._converters.set('departments', new AppDepartmentsConverter(this));
 		this._converters.set('uploads', new AppUploadsConverter(this));
 		this._converters.set('videoConferences', new AppVideoConferencesConverter());

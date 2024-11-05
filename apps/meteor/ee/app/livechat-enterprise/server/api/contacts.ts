@@ -1,3 +1,5 @@
+import type { ILivechatContactVisitorAssociation } from '@rocket.chat/core-typings';
+import { ContactVisitorAssociationSchema } from '@rocket.chat/rest-typings';
 import Ajv from 'ajv';
 
 import { API } from '../../../../../app/api/server';
@@ -9,17 +11,15 @@ const ajv = new Ajv({
 });
 
 type blockContactProps = {
-	visitorId: string;
+	visitor: ILivechatContactVisitorAssociation;
 };
 
 const blockContactSchema = {
 	type: 'object',
 	properties: {
-		visitorId: {
-			type: 'string',
-		},
+		visitor: ContactVisitorAssociationSchema,
 	},
-	required: ['visitorId'],
+	required: ['visitor'],
 	additionalProperties: false,
 };
 
@@ -47,16 +47,16 @@ API.v1.addRoute(
 	{
 		async post() {
 			ensureSingleContactLicense();
-			const { visitorId } = this.bodyParams;
+			const { visitor } = this.bodyParams;
 			const { user } = this;
 
 			await changeContactBlockStatus({
-				visitorId,
+				visitor,
 				block: true,
 			});
-			logger.info(`Visitor with id ${visitorId} blocked by user with id ${user._id}`);
+			logger.info(`Visitor with id ${visitor.visitorId} blocked by user with id ${user._id}`);
 
-			await closeBlockedRoom(visitorId, user);
+			await closeBlockedRoom(visitor, user);
 
 			return API.v1.success();
 		},
@@ -73,14 +73,14 @@ API.v1.addRoute(
 	{
 		async post() {
 			ensureSingleContactLicense();
-			const { visitorId } = this.bodyParams;
+			const { visitor } = this.bodyParams;
 			const { user } = this;
 
 			await changeContactBlockStatus({
-				visitorId,
+				visitor,
 				block: false,
 			});
-			logger.info(`Visitor with id ${visitorId} unblocked by user with id ${user._id}`);
+			logger.info(`Visitor with id ${visitor.visitorId} unblocked by user with id ${user._id}`);
 
 			return API.v1.success();
 		},

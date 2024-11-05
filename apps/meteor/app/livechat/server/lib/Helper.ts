@@ -13,7 +13,6 @@ import type {
 	TransferByData,
 	ILivechatAgent,
 	ILivechatDepartment,
-	IOmnichannelSource,
 	IOmnichannelRoomInfo,
 	IOmnichannelInquiryExtraData,
 	IOmnichannelRoomExtraData,
@@ -69,7 +68,7 @@ export const createLivechatRoom = async (
 	rid: string,
 	name: string,
 	guest: ILivechatVisitor,
-	roomInfo: IOmnichannelRoomInfo = {},
+	roomInfo: IOmnichannelRoomInfo = { source: { type: OmnichannelSourceType.OTHER } },
 	extraData?: IOmnichannelRoomExtraData,
 ) => {
 	check(rid, String);
@@ -94,10 +93,7 @@ export const createLivechatRoom = async (
 		visitor: { _id, username, departmentId, status, activity },
 	});
 
-	const contactId = await migrateVisitorIfMissingContact(
-		_id,
-		(extraRoomInfo.source || roomInfo.source || { type: OmnichannelSourceType.OTHER }) as IOmnichannelSource,
-	);
+	const contactId = await migrateVisitorIfMissingContact(_id, extraRoomInfo.source || roomInfo.source);
 
 	// TODO: Solve `u` missing issue
 	const room: InsertionModel<IOmnichannelRoom> = {
