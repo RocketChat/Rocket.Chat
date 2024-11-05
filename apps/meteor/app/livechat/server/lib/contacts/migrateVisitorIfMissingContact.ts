@@ -21,5 +21,5 @@ export async function migrateVisitorIfMissingContact(
 		throw new Error('Failed to migrate visitor data into Contact information: visitor not found.');
 	}
 
-	return migrateVisitorToContactId(visitor, source);
+	return migrateVisitorToContactId(visitor, source, false);
 }

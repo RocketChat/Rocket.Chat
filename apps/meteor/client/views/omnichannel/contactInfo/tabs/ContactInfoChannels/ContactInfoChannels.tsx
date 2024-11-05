@@ -46,12 +46,7 @@ const ContactInfoChannels = ({ contactId }: ContactInfoChannelsProps) => {
 							overscan={25}
 							data={data?.channels}
 							components={{ Scroller: VirtuosoScrollbars }}
-							itemContent={(_, data) => (
-								<ContactInfoChannelsItem
-									key={`id=${data.visitor.visitorId};type=${data.visitor.source.type};id=${data.visitor.source.id || ''}`}
-									{...data}
-								/>
-							)}
+							itemContent={(index, data) => <ContactInfoChannelsItem key={index} {...data} />}
 						/>
 					</Box>
 				</>

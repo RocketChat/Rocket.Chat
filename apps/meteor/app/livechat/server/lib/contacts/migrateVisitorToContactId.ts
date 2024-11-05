@@ -11,16 +11,20 @@ import { createContactFromVisitor } from './createContactFromVisitor';
 export async function migrateVisitorToContactId(
 	visitor: ILivechatVisitor,
 	source: IOmnichannelSource,
+	requireRoom = true,
 ): Promise<ILivechatContact['_id'] | null> {
-	// Do not migrate the visitor with this source if they have no rooms matching it
-	const anyRoom = await LivechatRooms.findNewestByContactVisitorAssociation<Pick<IOmnichannelRoom, '_id'>>(
-		{ visitorId: visitor._id, source },
-		{
-			projection: { _id: 1 },
-		},
-	);
-	if (!anyRoom) {
-		return null;
+	if (requireRoom) {
+		// Do not migrate the visitor with this source if they have no rooms matching it
+		const anyRoom = await LivechatRooms.findNewestByContactVisitorAssociation<Pick<IOmnichannelRoom, '_id'>>(
+			{ visitorId: visitor._id, source },
+			{
+				projection: { _id: 1 },
+			},
+		);
+
+		if (!anyRoom) {
+			return null;
+		}
 	}
 
 	// Search for any contact that is not yet associated with any visitor and that have the same email or phone number as this visitor.

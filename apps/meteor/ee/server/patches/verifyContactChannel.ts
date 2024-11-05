@@ -34,9 +34,6 @@ export const runVerifyContactChannel = async (
 			field,
 			value: value.toLowerCase(),
 		},
-		{
-			unknown: false,
-		},
 	);
 
 	await LivechatRooms.update({ _id: roomId }, { $set: { verified: true } });

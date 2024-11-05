@@ -33,19 +33,14 @@ import type {
 	ILivechatContactChannel,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 import type { WithId } from 'mongodb';
 
 import type { Deprecated } from '../helpers/Deprecated';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
+import { ajv } from './Ajv';
 
 type booleanString = 'true' | 'false';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
 
 type LivechatVisitorsInfo = {
 	visitorId: string;
@@ -1361,6 +1356,7 @@ export const ContactVisitorAssociationSchema = {
 			required: ['type'],
 		},
 	},
+	nullable: false,
 	required: ['visitorId', 'source'],
 };
 
@@ -1371,6 +1367,8 @@ const GETOmnichannelContactsSchema = {
 			properties: {
 				contactId: {
 					type: 'string',
+					nullable: false,
+					isNotEmpty: true,
 				},
 			},
 			required: ['contactId'],

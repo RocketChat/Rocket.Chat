@@ -134,6 +134,11 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { contactId, visitor } = this.queryParams;
+
+			if (!contactId && !visitor) {
+				return API.v1.notFound();
+			}
+
 			const contact = await (contactId ? LivechatContacts.findOneById(contactId) : getContactByChannel(visitor));
 
 			if (!contact) {
