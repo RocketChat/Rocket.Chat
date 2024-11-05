@@ -13,8 +13,8 @@ import {
 	InfoPanelText,
 	InfoPanelTitle,
 } from '.';
-import { createFakeRoom } from '../../../tests/mocks/data';
 import RetentionPolicyCallout from './RetentionPolicyCallout';
+import { createFakeRoom } from '../../../tests/mocks/data';
 
 export default {
 	title: 'Info Panel/InfoPanel',

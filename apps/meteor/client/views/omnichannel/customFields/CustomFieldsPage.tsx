@@ -3,11 +3,11 @@ import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ContextualbarDialog } from '../../../components/Contextualbar';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import CustomFieldsTable from './CustomFieldsTable';
 import EditCustomFields from './EditCustomFields';
 import EditCustomFieldsWithData from './EditCustomFieldsWithData';
+import { ContextualbarDialog } from '../../../components/Contextualbar';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const CustomFieldsPage = () => {
 	const { t } = useTranslation();

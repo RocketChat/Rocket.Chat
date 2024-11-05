@@ -4,12 +4,12 @@ import { useRoute, useRouteParameter, useSearchParameter } from '@rocket.chat/ui
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Contextualbar } from '../../../components/Contextualbar';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import Call from './calls/Call';
 import { VoipInfo } from './calls/contextualBar/VoipInfo';
 import { FormSkeleton } from './components/FormSkeleton';
+import { Contextualbar } from '../../../components/Contextualbar';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../hooks/useEndpointData';
 
 const CallsContextualBarDirectory = () => {
 	const directoryRoute = useRoute('omnichannel-directory');

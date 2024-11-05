@@ -64,8 +64,6 @@ API.v1.addRoute(
 		async post() {
 			const { token } = this.bodyParams;
 			// eslint-disable-next-line react-hooks/rules-of-hooks
-
-			// eslint-disable-next-line react-hooks/rules-of-hooks
 			return API.v1.success(await useInviteToken(this.userId, token));
 		},
 	},

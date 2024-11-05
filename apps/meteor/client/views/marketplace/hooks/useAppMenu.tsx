@@ -14,6 +14,12 @@ import type { MouseEvent, ReactNode } from 'react';
 import React, { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
 
+import { useAppInstallationHandler } from './useAppInstallationHandler';
+import type { MarketplaceRouteContext } from './useAppsCountQuery';
+import { useAppsCountQuery } from './useAppsCountQuery';
+import { useMarketplaceActions } from './useMarketplaceActions';
+import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
+import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
 import WarningModal from '../../../components/WarningModal';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
@@ -25,12 +31,6 @@ import type { Actions } from '../helpers';
 import { appEnabledStatuses, appButtonProps } from '../helpers';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { warnEnableDisableApp } from '../helpers/warnEnableDisableApp';
-import { useAppInstallationHandler } from './useAppInstallationHandler';
-import type { MarketplaceRouteContext } from './useAppsCountQuery';
-import { useAppsCountQuery } from './useAppsCountQuery';
-import { useMarketplaceActions } from './useMarketplaceActions';
-import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
-import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
 
 export type AppMenuOption = {
 	id: string;

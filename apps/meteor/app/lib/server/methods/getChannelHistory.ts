@@ -64,6 +64,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// Verify oldest is a date if it exists
+		// eslint-disable-next-line you-dont-need-lodash-underscore/is-date
 		if (oldest !== undefined && !_.isDate(oldest)) {
 			throw new Meteor.Error('error-invalid-date', 'Invalid date', { method: 'getChannelHistory' });
 		}

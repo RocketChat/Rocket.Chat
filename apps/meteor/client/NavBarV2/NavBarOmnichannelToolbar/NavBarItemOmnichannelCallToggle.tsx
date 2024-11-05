@@ -1,10 +1,10 @@
 import type { ComponentPropsWithoutRef } from 'react';
 import React from 'react';
 
-import { useIsCallReady, useIsCallError } from '../../contexts/CallContext';
 import NavBarItemOmnichannelCallToggleError from './NavBarItemOmnichannelCallToggleError';
 import NavBarItemOmnichannelCallToggleLoading from './NavBarItemOmnichannelCallToggleLoading';
 import NavBarItemOmnichannelCallToggleReady from './NavBarItemOmnichannelCallToggleReady';
+import { useIsCallReady, useIsCallError } from '../../contexts/CallContext';
 
 type NavBarItemOmnichannelCallToggleProps = ComponentPropsWithoutRef<
 	typeof NavBarItemOmnichannelCallToggleError | typeof NavBarItemOmnichannelCallToggleLoading | typeof NavBarItemOmnichannelCallToggleReady

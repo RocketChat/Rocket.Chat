@@ -6,9 +6,9 @@ import { sendAt } from 'cron';
 import intlFormat from 'date-fns/intlFormat';
 import { useEffect, useState } from 'react';
 
+import { useFormattedRelativeTime } from './useFormattedRelativeTime';
 import { getCronAdvancedTimerFromPrecisionSetting } from '../../lib/getCronAdvancedTimerFromPrecisionSetting';
 import { useRetentionPolicy } from '../views/room/hooks/useRetentionPolicy';
-import { useFormattedRelativeTime } from './useFormattedRelativeTime';
 
 const getMessage = ({ filesOnly, excludePinned }: { filesOnly: boolean; excludePinned: boolean }): TranslationKey => {
 	if (filesOnly) {

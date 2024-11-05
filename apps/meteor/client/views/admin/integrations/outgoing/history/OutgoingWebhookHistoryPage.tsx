@@ -4,11 +4,11 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
+import HistoryContent from './HistoryContent';
 import { sdk } from '../../../../../../app/utils/client/lib/SDKClient';
 import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import { Page, PageHeader, PageContent } from '../../../../../components/Page';
-import HistoryContent from './HistoryContent';
 
 const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 	const dispatchToastMessage = useToastMessageDispatch();

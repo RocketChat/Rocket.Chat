@@ -5,6 +5,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import OutlookEventItem from './OutlookEventItem';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -19,7 +20,6 @@ import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
 import { useMutationOutlookCalendarSync, useOutlookCalendarListForToday } from '../hooks/useOutlookCalendarList';
 import { NotOnDesktopError } from '../lib/NotOnDesktopError';
-import OutlookEventItem from './OutlookEventItem';
 
 type OutlookEventsListProps = {
 	onClose: () => void;

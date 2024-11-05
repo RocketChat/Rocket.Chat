@@ -2,13 +2,13 @@ import type { IEditedMessage, IMessage, IRoom, ISubscription } from '@rocket.cha
 import { Random } from '@rocket.chat/random';
 import moment from 'moment';
 
+import type { DataAPI } from './ChatAPI';
 import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
 import { Messages, ChatRoom, ChatSubscription } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
 import { MessageTypes } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { prependReplies } from '../utils/prependReplies';
-import type { DataAPI } from './ChatAPI';
 
 export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage['_id'] | undefined }): DataAPI => {
 	const composeMessage = async (

@@ -12,9 +12,9 @@ import {
 } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
+import { useConfirmOwnerChanges } from './useConfirmOwnerChanges';
 import GenericModal from '../../../../components/GenericModal';
 import type { Action } from '../../../hooks/useActionSpread';
-import { useConfirmOwnerChanges } from './useConfirmOwnerChanges';
 
 export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, onReload: () => void): Action | undefined => {
 	const t = useTranslation();

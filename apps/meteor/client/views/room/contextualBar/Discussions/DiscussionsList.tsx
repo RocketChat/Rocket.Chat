@@ -7,6 +7,7 @@ import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import DiscussionsListRow from './DiscussionsListRow';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -18,7 +19,6 @@ import {
 } from '../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
-import DiscussionsListRow from './DiscussionsListRow';
 
 type DiscussionsListProps = {
 	total: number;

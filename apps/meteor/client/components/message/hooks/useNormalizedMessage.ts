@@ -11,12 +11,12 @@ import type { Options } from '@rocket.chat/message-parser';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
+import { useSubscriptionFromMessageQuery } from './useSubscriptionFromMessageQuery';
 import type { MessageWithMdEnforced } from '../../../lib/parseMessageTextToAstMarkdown';
 import { parseMessageTextToAstMarkdown } from '../../../lib/parseMessageTextToAstMarkdown';
 import { useAutoLinkDomains } from '../../../views/room/MessageList/hooks/useAutoLinkDomains';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
 import { useKatex } from '../../../views/room/MessageList/hooks/useKatex';
-import { useSubscriptionFromMessageQuery } from './useSubscriptionFromMessageQuery';
 
 const normalizeAttachments = (attachments: MessageAttachment[], name?: string, type?: string): MessageAttachment[] => {
 	if (name) {

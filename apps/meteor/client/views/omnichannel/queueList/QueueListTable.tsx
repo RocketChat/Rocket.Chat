@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 
+import { QueueListFilter } from './QueueListFilter';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -19,7 +20,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import { QueueListFilter } from './QueueListFilter';
 
 const QueueListTable = (): ReactElement => {
 	const t = useTranslation();

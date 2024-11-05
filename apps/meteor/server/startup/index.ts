@@ -8,8 +8,8 @@ import './presenceTroubleshoot';
 import '../hooks';
 import '../lib/rooms/roomTypes';
 import '../lib/settingsRegenerator';
-import { isRunningMs } from '../lib/isRunningMs';
 import { performMigrationProcedure } from './migrations';
+import { isRunningMs } from '../lib/isRunningMs';
 
 export const startup = async () => {
 	await performMigrationProcedure();

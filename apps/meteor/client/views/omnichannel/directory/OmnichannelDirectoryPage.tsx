@@ -3,14 +3,14 @@ import { useRouteParameter, usePermission, useTranslation, useRouter } from '@ro
 import type { ReactElement } from 'react';
 import React, { useEffect, useCallback } from 'react';
 
-import { ContextualbarDialog } from '../../../components/Contextualbar';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
-import { queryClient } from '../../../lib/queryClient';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import ContextualBar from './ContextualBar';
 import CallTab from './calls/CallTab';
 import ChatTab from './chats/ChatTab';
 import ContactTab from './contacts/ContactTab';
+import { ContextualbarDialog } from '../../../components/Contextualbar';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
+import { queryClient } from '../../../lib/queryClient';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const DEFAULT_TAB = 'contacts';
 

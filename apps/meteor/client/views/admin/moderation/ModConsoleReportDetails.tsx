@@ -3,9 +3,9 @@ import { Tabs, TabsItem, ContextualbarHeader, ContextualbarTitle } from '@rocket
 import { useTranslation, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
-import { Contextualbar, ContextualbarClose, ContextualbarDialog } from '../../../components/Contextualbar';
 import UserMessages from './UserMessages';
 import UserReportInfo from './UserReports/UserReportInfo';
+import { Contextualbar, ContextualbarClose, ContextualbarDialog } from '../../../components/Contextualbar';
 
 type ModConsoleReportDetailsProps = {
 	userId: IUser['_id'];

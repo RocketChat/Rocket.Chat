@@ -2,9 +2,9 @@ import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useRole, useSetting } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { useAirGappedRestriction } from '../../hooks/useAirGappedRestriction';
 import AirGappedRestrictionBanner from './AirGappedRestrictionBanner/AirGappedRestrictionBanner';
 import StatusDisabledBanner from './StatusDisabledBanner';
+import { useAirGappedRestriction } from '../../hooks/useAirGappedRestriction';
 
 const BannerSection = () => {
 	const [isRestricted, isWarning, remainingDays] = useAirGappedRestriction();

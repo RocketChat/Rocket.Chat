@@ -3,8 +3,8 @@ import { Margins } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import RoomForewordUsernameListItem from './RoomForewordUsernameListItem';
+import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 
 type RoomForewordUsernameListProps = { usernames: Array<NonNullable<IUser['username']>> };
 

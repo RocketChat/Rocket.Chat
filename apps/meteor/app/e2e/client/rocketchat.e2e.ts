@@ -10,22 +10,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import * as banners from '../../../client/lib/banners';
-import type { LegacyBannerPayload } from '../../../client/lib/banners';
-import { imperativeModal } from '../../../client/lib/imperativeModal';
-import { dispatchToastMessage } from '../../../client/lib/toast';
-import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
-import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
-import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
-import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
-import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
-import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
-import { isTruthy } from '../../../lib/isTruthy';
-import { ChatRoom, Subscriptions, Messages } from '../../models/client';
-import { settings } from '../../settings/client';
-import { getUserAvatarURL } from '../../utils/client';
-import { sdk } from '../../utils/client/lib/SDKClient';
-import { t } from '../../utils/lib/i18n';
 import { E2EEState } from './E2EEState';
 import {
 	toString,
@@ -43,6 +27,22 @@ import {
 } from './helper';
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
+import * as banners from '../../../client/lib/banners';
+import type { LegacyBannerPayload } from '../../../client/lib/banners';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+import { dispatchToastMessage } from '../../../client/lib/toast';
+import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
+import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
+import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
+import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
+import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
+import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
+import { isTruthy } from '../../../lib/isTruthy';
+import { ChatRoom, Subscriptions, Messages } from '../../models/client';
+import { settings } from '../../settings/client';
+import { getUserAvatarURL } from '../../utils/client';
+import { sdk } from '../../utils/client/lib/SDKClient';
+import { t } from '../../utils/lib/i18n';
 
 import './events';
 

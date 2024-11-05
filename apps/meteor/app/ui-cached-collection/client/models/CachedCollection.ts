@@ -6,13 +6,13 @@ import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 
+import { CachedCollectionManager } from './CachedCollectionManager';
 import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 import { baseURI } from '../../../../client/lib/baseURI';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import { sdk } from '../../../utils/client/lib/SDKClient';
-import { CachedCollectionManager } from './CachedCollectionManager';
 
 export type EventType = 'notify-logged' | 'notify-all' | 'notify-user';
 

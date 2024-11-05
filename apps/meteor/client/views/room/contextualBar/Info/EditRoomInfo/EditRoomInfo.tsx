@@ -32,6 +32,8 @@ import type { ChangeEvent } from 'react';
 import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { useEditRoomInitialValues } from './useEditRoomInitialValues';
+import { useEditRoomPermissions } from './useEditRoomPermissions';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
 import {
 	ContextualbarHeader,
@@ -47,8 +49,6 @@ import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { getDirtyFields } from '../../../../../lib/getDirtyFields';
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
-import { useEditRoomInitialValues } from './useEditRoomInitialValues';
-import { useEditRoomPermissions } from './useEditRoomPermissions';
 
 type EditRoomInfoProps = {
 	room: IRoomWithRetentionPolicy;

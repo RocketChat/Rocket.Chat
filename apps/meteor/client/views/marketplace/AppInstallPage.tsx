@@ -4,9 +4,9 @@ import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { useInstallApp } from './hooks/useInstallApp';
 import { Page, PageHeader, PageScrollableContent } from '../../components/Page';
 import { useSingleFileInput } from '../../hooks/useSingleFileInput';
-import { useInstallApp } from './hooks/useInstallApp';
 
 const AppInstallPage = () => {
 	const t = useTranslation();

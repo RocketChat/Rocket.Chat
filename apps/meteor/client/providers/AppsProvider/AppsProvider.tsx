@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import React, { useEffect } from 'react';
 
+import { storeQueryFunction } from './storeQueryFunction';
 import { AppClientOrchestratorInstance } from '../../apps/orchestrator';
 import { AppsContext } from '../../contexts/AppsContext';
 import { useInvalidateLicense, useLicense } from '../../hooks/useLicense';
@@ -11,7 +12,6 @@ import type { AsyncState } from '../../lib/asyncState';
 import { AsyncStatePhase } from '../../lib/asyncState';
 import { useInvalidateAppsCountQueryCallback } from '../../views/marketplace/hooks/useAppsCountQuery';
 import type { App } from '../../views/marketplace/types';
-import { storeQueryFunction } from './storeQueryFunction';
 
 const getAppState = (
 	loading: boolean,

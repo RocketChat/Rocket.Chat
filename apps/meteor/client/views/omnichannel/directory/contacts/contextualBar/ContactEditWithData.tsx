@@ -2,10 +2,10 @@ import { Box, ContextualbarContent } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ContactNewEdit from './ContactNewEdit';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { FormSkeleton } from '../../components/FormSkeleton';
-import ContactNewEdit from './ContactNewEdit';
 
 type ContactEditWithDataProps = {
 	id: string;

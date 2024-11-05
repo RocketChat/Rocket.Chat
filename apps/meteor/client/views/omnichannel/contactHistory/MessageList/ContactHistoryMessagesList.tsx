@@ -4,6 +4,8 @@ import type { ChangeEvent, Dispatch, ReactElement, SetStateAction } from 'react'
 import React, { useMemo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import ContactHistoryMessage from './ContactHistoryMessage';
+import { useHistoryMessageList } from './useHistoryMessageList';
 import {
 	ContextualbarHeader,
 	ContextualbarAction,
@@ -18,8 +20,6 @@ import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';
 import { isMessageSequential } from '../../../room/MessageList/lib/isMessageSequential';
-import ContactHistoryMessage from './ContactHistoryMessage';
-import { useHistoryMessageList } from './useHistoryMessageList';
 
 const ContactHistoryMessagesList = ({
 	chatId,

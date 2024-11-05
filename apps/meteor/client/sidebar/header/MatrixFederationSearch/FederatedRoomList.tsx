@@ -6,11 +6,11 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
-import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
-import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import FederatedRoomListEmptyPlaceholder from './FederatedRoomListEmptyPlaceholder';
 import FederatedRoomListItem from './FederatedRoomListItem';
 import { useInfiniteFederationSearchPublicRooms } from './useInfiniteFederationSearchPublicRooms';
+import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
+import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
 type FederatedRoomListProps = {
 	serverName: string;

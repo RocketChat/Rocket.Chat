@@ -6,12 +6,12 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useActiveUsers } from './useActiveUsers';
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import CounterSet from '../../../../components/dataView/CounterSet';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import LegendSymbol from '../dataView/LegendSymbol';
-import { useActiveUsers } from './useActiveUsers';
 
 type ActiveUsersSectionProps = {
 	timezone: 'utc' | 'local';

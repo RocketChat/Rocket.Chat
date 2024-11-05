@@ -6,6 +6,8 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { InfoField } from './InfoField';
+import { VoipInfoCallButton } from './VoipInfoCallButton';
 import {
 	ContextualbarIcon,
 	ContextualbarHeader,
@@ -20,8 +22,6 @@ import { useIsCallReady } from '../../../../../contexts/CallContext';
 import { parseOutboundPhoneNumber } from '../../../../../lib/voip/parseOutboundPhoneNumber';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import AgentField from '../../components/AgentField';
-import { InfoField } from './InfoField';
-import { VoipInfoCallButton } from './VoipInfoCallButton';
 
 type VoipInfoPropsType = {
 	room: IVoipRoom;

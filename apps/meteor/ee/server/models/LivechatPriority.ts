@@ -1,6 +1,6 @@
 import { registerModel } from '@rocket.chat/models';
 
-import { db } from '../../../server/database/utils';
 import { LivechatPriorityRaw } from './raw/LivechatPriority';
+import { db } from '../../../server/database/utils';
 
 registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));
