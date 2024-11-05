@@ -90,12 +90,12 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 						tab: 'room-info',
 						context: 'edit',
 						id,
-				  }
+					}
 				: {
 						page: 'chats',
 						id,
 						bar: 'edit',
-				  },
+					},
 		);
 	});
 

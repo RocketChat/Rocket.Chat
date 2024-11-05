@@ -17,7 +17,7 @@ type VoipClientResult = {
 
 export const useVoipClient = ({ enabled = true, autoRegister = true }: VoipClientParams = {}): VoipClientResult => {
 	const { _id: userId } = useUser() || {};
-	const isVoipEnabled = useSetting<boolean>('VoIP_TeamCollab_Enabled');
+	const isVoipEnabled = useSetting('VoIP_TeamCollab_Enabled', false);
 	const voipClientRef = useRef<VoipClient | null>(null);
 
 	const getRegistrationInfo = useEndpoint('GET', '/v1/voip-freeswitch.extension.getRegistrationInfoByUserId');

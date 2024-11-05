@@ -562,18 +562,14 @@ export type StreamKeys<S extends StreamNames> = StreamerEvents[S][number]['key']
 
 export type StreamerConfigs<N extends StreamNames> = StreamerEvents[N][number];
 
-export type StreamerConfig<N extends StreamNames, K extends StreamKeys<N>> = StreamerConfigs<N> extends infer U
-	? U extends any
-		? { key: K; args: any } extends U
-			? U
-			: never
-		: never
-	: never;
+export type StreamerConfig<N extends StreamNames, K extends StreamKeys<N>> =
+	StreamerConfigs<N> extends infer U ? (U extends any ? ({ key: K; args: any } extends U ? U : never) : never) : never;
 
-export type StreamerCallbackArgs<N extends StreamNames, K extends StreamKeys<N>> = StreamerConfig<N, K> extends {
-	args: any;
-}
-	? StreamerConfig<N, K>['args']
-	: never;
+export type StreamerCallbackArgs<N extends StreamNames, K extends StreamKeys<N>> =
+	StreamerConfig<N, K> extends {
+		args: any;
+	}
+		? StreamerConfig<N, K>['args']
+		: never;
 
 export type StreamerCallback<N extends StreamNames, K extends StreamKeys<N>> = (...args: StreamerCallbackArgs<N, K>) => void;

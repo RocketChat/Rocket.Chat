@@ -16,7 +16,7 @@ inputs:
   platform:
     required: false
     description: 'Platform'
-    type: string
+    default: 'alpine'
   build-containers:
     required: false
     description: 'Containers to build along with Rocket.Chat'
@@ -84,7 +84,7 @@ runs:
     - run: yarn build
       if: inputs.setup == 'true'
       shell: bash
-    - if: ${{ inputs.platform == 'official' }}
+    - if: ${{ inputs.platform == 'alpine' }}
       uses: actions/cache@v3
       with:
         path: /tmp/build/matrix-sdk-crypto.linux-x64-musl.node

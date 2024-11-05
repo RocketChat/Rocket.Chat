@@ -190,12 +190,12 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 						$set: {
 							providerData,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							providerData: 1 as const,
 						},
-				  }),
+					}),
 		});
 	}
 

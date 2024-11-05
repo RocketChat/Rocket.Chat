@@ -14,7 +14,7 @@ const getElementValueFromState = (
       }
     | undefined
   >,
-  initialValue: string | number | string[] | undefined
+  initialValue: string | number | string[] | undefined,
 ) => {
   return (
     (values &&
@@ -24,7 +24,7 @@ const getElementValueFromState = (
 };
 
 type UiKitState<
-  TElement extends UiKit.ActionableElement = UiKit.ActionableElement
+  TElement extends UiKit.ActionableElement = UiKit.ActionableElement,
 > = {
   loading: boolean;
   setLoading: (loading: boolean) => void;
@@ -34,15 +34,15 @@ type UiKitState<
 
 export const useUiKitState = <TElement extends UiKit.ActionableElement>(
   element: TElement,
-  context: UiKit.BlockContext
+  context: UiKit.BlockContext,
 ): [
   state: UiKitState<TElement>,
   action: (
     pseudoEvent?:
       | Event
       | { target: EventTarget }
-      | { target: { value: UiKit.ActionOf<TElement> } }
-  ) => Promise<void>
+      | { target: { value: UiKit.ActionOf<TElement> } },
+  ) => Promise<void>,
 ] => {
   const { blockId, actionId, appId, dispatchActionConfig } = element;
   const {
@@ -59,7 +59,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
   const _value = getElementValueFromState(actionId, values, initialValue);
   const error = Array.isArray(errors)
     ? errors.find((error) =>
-        Object.keys(error).find((key) => key === actionId)
+        Object.keys(error).find((key) => key === actionId),
       )?.[actionId]
     : errors?.[actionId];
 
@@ -91,7 +91,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 
     await updateState?.(
       { blockId, appId, actionId, value: elValue, viewId },
-      e
+      e,
     );
     await action(
       {
@@ -101,7 +101,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
         value: elValue,
         viewId,
       },
-      e
+      e,
     );
     setLoading(false);
   });
@@ -126,7 +126,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
         viewId,
         dispatchActionConfig,
       },
-      e
+      e,
     );
   });
 
@@ -145,13 +145,13 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
         value,
         viewId,
       },
-      e
+      e,
     );
   });
 
   const result: UiKitState = useMemo(
     () => ({ loading, setLoading, error, value }),
-    [loading, setLoading, error, value]
+    [loading, setLoading, error, value],
   );
 
   if (
@@ -165,7 +165,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
   if (
     (context &&
       [UiKit.BlockContext.SECTION, UiKit.BlockContext.ACTION].includes(
-        context
+        context,
       )) ||
     (Array.isArray(element?.dispatchActionConfig) &&
       element.dispatchActionConfig.includes('on_item_selected'))

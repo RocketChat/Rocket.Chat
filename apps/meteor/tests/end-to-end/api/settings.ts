@@ -31,9 +31,56 @@ describe('[Settings]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('settings');
-					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('success').and.to.be.true;
+					expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(5);
+					expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(5);
+				})
+				.end(done);
+		});
+		it('should return public settings even requested with _id param', (done) => {
+			void request
+				.get(api('settings.public'))
+				.query({
+					_id: 'Site_Url',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success').and.to.be.true;
+					expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(1);
+					expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(1);
+				})
+				.end(done);
+		});
+		it('should return public settings even requested with _id param as an array', (done) => {
+			void request
+				.get(api('settings.public'))
+				.query({
+					_id: 'Site_Url,LDAP_Enable',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success').and.to.be.true;
+					expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(2);
+					expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(2);
+				})
+				.end(done);
+		});
+		it('should return an empty response when requesting public settings with a broken _id param', (done) => {
+			void request
+				.get(api('settings.public'))
+				.query({
+					_id: 10,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success').and.to.be.true;
+					expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.be.empty;
+					expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(0);
+					expect(res.body).to.have.property('offset').and.to.be.a('number').and.to.equal(0);
+					expect(res.body).to.have.property('total').and.to.be.a('number').and.to.equal(0);
 				})
 				.end(done);
 		});

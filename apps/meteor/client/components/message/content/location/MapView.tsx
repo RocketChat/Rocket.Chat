@@ -11,7 +11,7 @@ type MapViewProps = {
 };
 
 const MapView = ({ latitude, longitude }: MapViewProps) => {
-	const googleMapsApiKey = useSetting<string>('MapView_GMapsAPIKey');
+	const googleMapsApiKey = useSetting('MapView_GMapsAPIKey', '');
 
 	const linkUrl = `https://maps.google.com/maps?daddr=${latitude},${longitude}`;
 

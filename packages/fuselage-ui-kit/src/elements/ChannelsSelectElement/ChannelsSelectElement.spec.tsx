@@ -69,7 +69,7 @@ describe('UiKit ChannelsSelect Element', () => {
       </MockedServerContext>,
       {
         legacyRoot: true,
-      }
+      },
     );
   });
 

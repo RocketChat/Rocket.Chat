@@ -1,6 +1,6 @@
 {
     "name": "@rocket.chat/apps-engine",
-    "version": "1.47.0-rc.0",
+    "version": "1.47.0",
     "description": "The engine code for the Rocket.Chat Apps which manages, runs, translates, coordinates and all of that.",
     "main": "index",
     "typings": "index",
@@ -69,14 +69,14 @@
     "devDependencies": {
         "@rocket.chat/eslint-config": "workspace:~",
         "@rocket.chat/ui-kit": "workspace:~",
-        "@types/adm-zip": "^0.5.0",
+        "@types/adm-zip": "^0.5.6",
         "@types/debug": "^4.1.12",
-        "@types/lodash.clonedeep": "^4.5.7",
-        "@types/nedb": "^1.8.12",
-        "@types/node": "~20.16.12",
-        "@types/semver": "^5.5.0",
+        "@types/lodash.clonedeep": "^4.5.9",
+        "@types/nedb": "^1.8.16",
+        "@types/node": "~20.16.15",
+        "@types/semver": "^7.5.8",
         "@types/stack-trace": "0.0.29",
-        "@types/uuid": "~8.3.4",
+        "@types/uuid": "~10.0.0",
         "@typescript-eslint/eslint-plugin": "~5.60.1",
         "@typescript-eslint/parser": "~5.60.1",
         "alsatian": "^2.4.0",
@@ -89,7 +89,7 @@
         "tap-bark": "^1.0.0",
         "ts-node": "^6.2.0",
         "typedoc": "~0.24.8",
-        "typescript": "~5.1.6",
+        "typescript": "~5.6.3",
         "uglify-es": "^3.3.10"
     },
     "dependencies": {
@@ -102,7 +102,7 @@
         "lodash.clonedeep": "^4.5.0",
         "semver": "^7.6.3",
         "stack-trace": "0.0.10",
-        "uuid": "~8.3.2"
+        "uuid": "~11.0.2"
     },
     "nyc": {
         "include": [

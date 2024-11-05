@@ -204,7 +204,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 								...(discussion ? [{ prid: { $exists: true } }] : []),
 								...(teams ? [{ teamMain: { $exists: true } }] : []),
 							],
-					  }
+						}
 					: {},
 			],
 			...(!discussion ? { prid: { $exists: false } } : {}),
@@ -771,7 +771,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 											$in: roomIds,
 										},
 									},
-							  ]
+								]
 							: []),
 					],
 				},
@@ -787,7 +787,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 									},
 								],
 							},
-					  ]
+						]
 					: []),
 			],
 		};
@@ -1153,12 +1153,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 						$set: {
 							sysMes: systemMessages,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							sysMes: '',
 						},
-				  };
+					};
 
 		return this.updateOne(query, update);
 	}
@@ -1331,7 +1331,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				includeFederatedRooms
 					? {
 							$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
-					  }
+						}
 					: { $or: [{ federated: { $exists: false } }, { federated: false }], name },
 			],
 		};
@@ -1388,7 +1388,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 								{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }, nameCondition] },
 								{ federated: true, fname: name },
 							],
-					  }
+						}
 					: { $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }, nameCondition] },
 			],
 		};
