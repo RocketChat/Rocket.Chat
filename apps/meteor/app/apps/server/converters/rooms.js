@@ -1,5 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { LivechatVisitors, Rooms, LivechatDepartment, Users } from '@rocket.chat/models';
+import { LivechatVisitors, Rooms, LivechatDepartment, Users, LivechatContacts } from '@rocket.chat/models';
 
 import { transformMappedData } from './transformMappedData';
 
@@ -49,6 +49,13 @@ export class AppRoomsConverter {
 				...(lastMessageTs && { lastMessageTs }),
 				...(phone && { phone }),
 			};
+		}
+
+		if (v && room.contact?._id) {
+			const contact = await LivechatContacts.findOneById(room.contact._id, { projection: { _id: 1 } });
+			if (contact) {
+				v.contactId = contact._id;
+			}
 		}
 
 		let departmentId;
@@ -179,6 +186,15 @@ export class AppRoomsConverter {
 				}
 
 				return this.orch.getConverters().get('visitors').convertById(v._id);
+			},
+			contact: (room) => {
+				const { v } = room;
+
+				if (!v?.contactId) {
+					return undefined;
+				}
+
+				return this.orch.getConverters().get('contacts').convertById(v.contactId);
 			},
 			// Note: room.v is not just visitor, it also contains channel related visitor data
 			// so we need to pass this data to the converter
