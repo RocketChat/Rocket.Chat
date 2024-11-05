@@ -24,7 +24,7 @@ const UserStatusMenu = ({
 }: UserStatusMenuProps): ReactElement => {
 	const { t } = useTranslation();
 	const [status, setStatus] = useState(initialStatus);
-	const allowInvisibleStatus = useSetting('Accounts_AllowInvisibleStatusOption') as boolean;
+	const allowInvisibleStatus = useSetting('Accounts_AllowInvisibleStatusOption', true);
 
 	const options = useMemo(() => {
 		const renderOption = (status: UserStatusType, label: string): ReactElement => (

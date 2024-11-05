@@ -1,10 +1,11 @@
+import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { Box, Margins, Throbber, States, StatesIcon, StatesTitle, Select } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { Key } from 'react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { ContextualbarContent, ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
@@ -15,13 +16,13 @@ import AdvancedContactModal from '../../AdvancedContactModal';
 import ContactInfoHistoryItem from './ContactInfoHistoryItem';
 
 type ContactInfoHistoryProps = {
-	contactId: string;
+	contact: Serialized<ILivechatContact>;
 	setChatId: (chatId: string) => void;
 };
 
 const isFilterBlocked = (hasLicense: boolean, fieldValue: Key) => !hasLicense && fieldValue !== 'all';
 
-const ContactInfoHistory = ({ contactId, setChatId }: ContactInfoHistoryProps) => {
+const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const [type, setType] = useLocalStorage<string>('contact-history-type', 'all');
@@ -29,8 +30,8 @@ const ContactInfoHistory = ({ contactId, setChatId }: ContactInfoHistoryProps) =
 	const { getSourceName } = useOmnichannelSource();
 
 	const getContactHistory = useEndpoint('GET', '/v1/omnichannel/contacts.history');
-	const { data, isLoading, isError } = useQuery(['getContactHistory', contactId, type], () =>
-		getContactHistory({ contactId, source: type === 'all' ? undefined : type }),
+	const { data, isLoading, isError } = useQuery(['getContactHistory', contact._id, type], () =>
+		getContactHistory({ contactId: contact._id, source: type === 'all' ? undefined : type }),
 	);
 
 	useEffect(() => {
@@ -47,21 +48,25 @@ const ContactInfoHistory = ({ contactId, setChatId }: ContactInfoHistoryProps) =
 		setType(value as string);
 	};
 
-	const historyFilterOptions: [string, string][] = Object.values(OmnichannelSourceType).reduce(
-		(acc, cv) => {
-			let sourceName;
-			const hasSourceType = data?.history.find((item) => {
-				sourceName = getSourceName(item.source);
-				return item.source.type === cv;
-			});
+	const historyFilterOptions: [string, string][] = useMemo(
+		() =>
+			Object.values(OmnichannelSourceType).reduce(
+				(acc, cv) => {
+					let sourceName;
+					const hasSourceType = contact.channels?.find((item) => {
+						sourceName = getSourceName(item.details, false);
+						return item.details.type === cv;
+					});
 
-			if (hasSourceType && sourceName) {
-				acc.push([cv, sourceName]);
-			}
+					if (hasSourceType && sourceName) {
+						acc.push([cv, sourceName]);
+					}
 
-			return acc;
-		},
-		[['all', t('All')]],
+					return acc;
+				},
+				[['all', t('All')]],
+			),
+		[contact.channels, getSourceName, t],
 	);
 
 	return (
@@ -82,7 +87,7 @@ const ContactInfoHistory = ({ contactId, setChatId }: ContactInfoHistoryProps) =
 							onChange={handleChangeFilter}
 							placeholder={t('Filter')}
 							options={historyFilterOptions}
-							disabled={data?.history.length === 0}
+							disabled={type === 'all' && data?.history.length === 0}
 						/>
 					</Margins>
 				</Box>

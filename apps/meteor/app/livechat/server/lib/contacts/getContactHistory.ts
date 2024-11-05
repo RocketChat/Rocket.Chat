@@ -23,7 +23,7 @@ export async function getContactHistory(
 	}
 
 	const options: FindOptions<IOmnichannelRoom> = {
-		sort: sort || { ts: -1 },
+		sort: sort || { closedAt: -1 },
 		skip: offset,
 		limit: count,
 		projection: {
