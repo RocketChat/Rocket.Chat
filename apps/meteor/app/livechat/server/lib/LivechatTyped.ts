@@ -16,6 +16,8 @@ import type {
 	UserStatus,
 	IOmnichannelRoomInfo,
 	IOmnichannelRoomExtraData,
+	IOmnichannelSource,
+	ILivechatContactVisitorAssociation,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -332,6 +334,16 @@ class LivechatClass {
 		return { room: newRoom, closedBy: closeData.closedBy, removedInquiry: inquiry };
 	}
 
+	private makeVisitorAssociation(visitorId: string, roomInfo: IOmnichannelSource): ILivechatContactVisitorAssociation {
+		return {
+			visitorId,
+			source: {
+				type: roomInfo.type,
+				id: roomInfo.id,
+			},
+		};
+	}
+
 	async createRoom({
 		visitor,
 		message,
@@ -363,7 +375,7 @@ class LivechatClass {
 			}
 		}
 
-		if (await LivechatContacts.isChannelBlocked(visitor._id)) {
+		if (await LivechatContacts.isChannelBlocked(this.makeVisitorAssociation(visitor._id, roomInfo.source))) {
 			throw new Error('error-contact-channel-blocked');
 		}
 
@@ -399,7 +411,7 @@ class LivechatClass {
 		Livechat.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
 		const room = await LivechatRooms.findOneById(message.rid);
 
-		if (room?.v._id && (await LivechatContacts.isChannelBlocked(room?.v._id))) {
+		if (room?.v._id && (await LivechatContacts.isChannelBlocked(this.makeVisitorAssociation(room.v._id, room.source)))) {
 			throw new Error('error-contact-channel-blocked');
 		}
 

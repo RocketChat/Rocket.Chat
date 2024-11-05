@@ -76,7 +76,6 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
 	const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
-	const getContact = useEndpoint('GET', '/v1/omnichannel/contacts.get');
 	const createContact = useEndpoint('POST', '/v1/omnichannel/contacts');
 	const updateContact = useEndpoint('POST', '/v1/omnichannel/contacts.update');
 
@@ -128,24 +127,14 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 			return t('error-invalid-email-address');
 		}
 
-		try {
-			const { contact } = await getContact({ email: emailValue });
-			return (!contact || contact._id === contactData?._id) && !isDuplicated ? true : t('Email_already_exists');
-		} catch (error) {
-			return !isDuplicated ? true : t('Email_already_exists');
-		}
+		return !isDuplicated ? true : t('Email_already_exists');
 	};
 
 	const validatePhone = async (phoneValue: string) => {
 		const currentPhones = phones.map(({ phoneNumber }) => phoneNumber);
 		const isDuplicated = currentPhones.filter((phone) => phone === phoneValue).length > 1;
 
-		try {
-			const { contact } = await getContact({ phone: phoneValue });
-			return (!contact || contact._id === contactData?._id) && !isDuplicated ? true : t('Phone_already_exists');
-		} catch (error) {
-			return !isDuplicated ? true : t('Phone_already_exists');
-		}
+		return !isDuplicated ? true : t('Phone_already_exists');
 	};
 
 	const validateName = (v: string): string | boolean => (!v.trim() ? t('Required_field', { field: t('Name') }) : true);

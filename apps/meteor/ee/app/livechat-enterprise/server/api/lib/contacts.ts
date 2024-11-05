@@ -1,12 +1,12 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, ILivechatContactVisitorAssociation } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
 
 import { Livechat } from '../../../../../../app/livechat/server/lib/LivechatTyped';
 import { i18n } from '../../../../../../server/lib/i18n';
 
-export async function changeContactBlockStatus({ block, visitorId }: { visitorId: string; block: boolean }) {
-	const result = await LivechatContacts.updateContactChannel(visitorId, { blocked: block });
+export async function changeContactBlockStatus({ block, visitor }: { visitor: ILivechatContactVisitorAssociation; block: boolean }) {
+	const result = await LivechatContacts.updateContactChannel(visitor, { blocked: block });
 
 	if (!result.modifiedCount) {
 		throw new Error('error-contact-not-found');
@@ -19,14 +19,14 @@ export function ensureSingleContactLicense() {
 	}
 }
 
-export async function closeBlockedRoom(visitorId: string, user: IUser) {
-	const visitor = await LivechatVisitors.findOneById(visitorId);
+export async function closeBlockedRoom(association: ILivechatContactVisitorAssociation, user: IUser) {
+	const visitor = await LivechatVisitors.findOneById(association.visitorId);
 
 	if (!visitor) {
 		throw new Error('error-visitor-not-found');
 	}
 
-	const room = await LivechatRooms.findOneOpenByVisitorToken(visitor.token);
+	const room = await LivechatRooms.findOneOpenByContactChannelVisitor(association);
 
 	if (!room) {
 		return;

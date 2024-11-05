@@ -12,7 +12,13 @@ export async function mapVisitorToContact(visitor: ILivechatVisitor, source: IOm
 		channels: [
 			{
 				name: source.label || source.type.toString(),
-				visitorId: visitor._id,
+				visitor: {
+					visitorId: visitor._id,
+					source: {
+						type: source.type,
+						...(source.id ? { id: source.id } : {}),
+					},
+				},
 				blocked: false,
 				verified: false,
 				details: source,

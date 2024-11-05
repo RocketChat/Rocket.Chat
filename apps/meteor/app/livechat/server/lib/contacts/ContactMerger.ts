@@ -10,6 +10,7 @@ import type {
 import { LivechatContacts } from '@rocket.chat/models';
 import type { UpdateFilter } from 'mongodb';
 
+import { isSameChannel } from '../../../lib/isSameChannel';
 import { getContactManagerIdByUsername } from './getContactManagerIdByUsername';
 
 type ManagerValue = { id: string } | { username: string };
@@ -61,17 +62,13 @@ export class ContactMerger {
 		return id1 === id2;
 	}
 
-	private isSameChannel(channel1: ILivechatContactChannel, channel2: ILivechatContactChannel): boolean {
-		return channel1.visitorId === channel2.visitorId;
-	}
-
 	private isSameField(field1: FieldAndValue, field2: FieldAndValue): boolean {
 		if (field1.type === 'manager' && field2.type === 'manager') {
 			return this.isSameManager(field1.value, field2.value);
 		}
 
 		if (field1.type === 'channel' && field2.type === 'channel') {
-			return this.isSameChannel(field1.value, field2.value);
+			return isSameChannel(field1.value.visitor, field2.value.visitor);
 		}
 
 		if (field1.type !== field2.type) {
@@ -154,7 +151,13 @@ export class ContactMerger {
 				type: 'channel',
 				value: {
 					name: source.label || source.type.toString(),
-					visitorId: visitor._id,
+					visitor: {
+						visitorId: visitor._id,
+						source: {
+							type: source.type,
+							id: source.id,
+						},
+					},
 					blocked: false,
 					verified: false,
 					details: source,
@@ -282,8 +285,8 @@ export class ContactMerger {
 
 	public static async mergeVisitorIntoContact(
 		visitor: ILivechatVisitor,
-		source: IOmnichannelSource,
 		contact: ILivechatContact,
+		source?: IOmnichannelSource,
 	): Promise<void> {
 		const fields = await ContactMerger.getAllFieldsFromVisitor(visitor, source);
 

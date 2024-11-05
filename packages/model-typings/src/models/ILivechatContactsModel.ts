@@ -1,4 +1,10 @@
-import type { AtLeast, ILivechatContact, ILivechatContactChannel, ILivechatVisitor } from '@rocket.chat/core-typings';
+import type {
+	AtLeast,
+	ILivechatContact,
+	ILivechatContactChannel,
+	ILivechatContactVisitorAssociation,
+	ILivechatVisitor,
+} from '@rocket.chat/core-typings';
 import type { Document, FindCursor, FindOptions, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
@@ -14,15 +20,19 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 		search: { searchText?: string; unknown?: boolean },
 		options?: FindOptions<ILivechatContact>,
 	): FindPaginated<FindCursor<ILivechatContact>>;
-	updateLastChatById(contactId: string, visitorId: string, lastChat: ILivechatContact['lastChat']): Promise<UpdateResult>;
+	updateLastChatById(
+		contactId: string,
+		visitor: ILivechatContactVisitorAssociation,
+		lastChat: ILivechatContact['lastChat'],
+	): Promise<UpdateResult>;
 	findContactMatchingVisitor(visitor: AtLeast<ILivechatVisitor, 'visitorEmails' | 'phone'>): Promise<ILivechatContact | null>;
-	findOneByVisitorId<T extends Document = ILivechatContact>(
-		visitorId: ILivechatVisitor['_id'],
+	findOneByVisitor<T extends Document = ILivechatContact>(
+		visitor: ILivechatContactVisitorAssociation,
 		options?: FindOptions<ILivechatContact>,
 	): Promise<T | null>;
-	isChannelBlocked(visitorId: ILivechatVisitor['_id']): Promise<boolean>;
+	isChannelBlocked(visitor: ILivechatContactVisitorAssociation): Promise<boolean>;
 	updateContactChannel(
-		visitorId: ILivechatVisitor['_id'],
+		visitor: ILivechatContactVisitorAssociation,
 		data: Partial<ILivechatContactChannel>,
 		contactData?: Partial<Omit<ILivechatContact, 'channels'>>,
 	): Promise<UpdateResult>;
@@ -31,4 +41,5 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 		originalContactId: string,
 		options?: FindOptions<ILivechatContact>,
 	): Promise<ILivechatContact[]>;
+	findAllByVisitorId(visitorId: string): FindCursor<ILivechatContact>;
 }

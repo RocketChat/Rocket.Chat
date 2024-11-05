@@ -13,13 +13,13 @@ import { useBlockChannel } from './useBlockChannel';
 
 type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel>;
 
-const ContactInfoChannelsItem = ({ visitorId, details, blocked, lastChat }: ContactInfoChannelsItemProps) => {
+const ContactInfoChannelsItem = ({ visitor, details, blocked, lastChat }: ContactInfoChannelsItemProps) => {
 	const t = useTranslation();
 	const { getSourceLabel, getSourceName } = useOmnichannelSource();
 	const getTimeFromNow = useTimeFromNow(true);
 
 	const [showButton, setShowButton] = useState(false);
-	const handleBlockContact = useBlockChannel({ visitorId, blocked });
+	const handleBlockContact = useBlockChannel({ association: visitor, blocked });
 
 	const customClass = css`
 		&:hover,

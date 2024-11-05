@@ -1,4 +1,3 @@
-import type { IVisitor } from '../../definition/livechat';
 import type { ILivechatContact } from '../../definition/livechat/ILivechatContact';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
@@ -14,9 +13,9 @@ export type VerifyContactChannelParams = {
 };
 
 export abstract class ContactBridge extends BaseBridge {
-    public async doGetByVisitorId(visitorId: IVisitor['id'], appId: string): Promise<ILivechatContact | null> {
+    public async doGetById(contactId: ILivechatContact['_id'], appId: string): Promise<ILivechatContact | undefined> {
         if (this.hasReadPermission(appId)) {
-            return this.getByVisitorId(visitorId, appId);
+            return this.getById(contactId, appId);
         }
     }
 
@@ -32,7 +31,7 @@ export abstract class ContactBridge extends BaseBridge {
         }
     }
 
-    protected abstract getByVisitorId(visitorId: IVisitor['id'], appId: string): Promise<ILivechatContact | null>;
+    protected abstract getById(contactId: ILivechatContact['_id'], appId: string): Promise<ILivechatContact | undefined>;
 
     protected abstract verifyContact(verifyContactChannelParams: VerifyContactChannelParams, appId: string): Promise<void>;
 

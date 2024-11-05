@@ -19,18 +19,29 @@ export const runVerifyContactChannel = async (
 ): Promise<ILivechatContact | null> => {
 	const { contactId, field, value, visitorId, roomId } = params;
 
-	await LivechatContacts.updateContactChannel(visitorId, {
-		verified: true,
-		verifiedAt: new Date(),
-		field,
-		value: value.toLowerCase(),
-	});
+	const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'source'>>(roomId, { projection: { source: 1 } });
+	if (!room) {
+		throw new Error('error-invalid-room');
+	}
+
+	await LivechatContacts.updateContactChannel(
+		{
+			visitorId,
+			source: room.source,
+		},
+		{
+			verified: true,
+			verifiedAt: new Date(),
+			field,
+			value: value.toLowerCase(),
+		},
+	);
 
 	const { value: room } = await LivechatRooms.findOneAndUpdate({ _id: roomId }, { $set: { verified: true } });
 
 	Livechat.notifyRoomUpdated(room as IOmnichannelRoom);
 
-	const mergeContactsResult = await mergeContacts(contactId, visitorId);
+	const mergeContactsResult = await mergeContacts(contactId, { visitorId, source: room.source });
 
 	const inquiry = await LivechatInquiry.findOneReadyByContactId(contactId);
 	if (!inquiry) {
