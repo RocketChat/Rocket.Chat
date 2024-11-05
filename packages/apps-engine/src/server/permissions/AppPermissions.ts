@@ -55,6 +55,7 @@ export const AppPermissions = {
     contact: {
         read: { name: 'contact.read' },
         write: { name: 'contact.write' },
+        provider: { name: 'contact.provider' },
     },
     threads: {
         read: { name: 'threads.read' },

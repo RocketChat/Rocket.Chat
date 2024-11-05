@@ -1,3 +1,4 @@
+import type { IContactVerificationAppProvider } from '../../definition/contacts/IContactVerificationAppProvider';
 import type { IVisitor } from '../../definition/livechat';
 import type { ILivechatContact } from '../../definition/livechat/ILivechatContact';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
@@ -32,11 +33,27 @@ export abstract class ContactBridge extends BaseBridge {
         }
     }
 
+    public async doRegisterProvider(info: IContactVerificationAppProvider, appId: string): Promise<void> {
+        if (this.hasProviderPermission(appId)) {
+            return this.registerProvider(info, appId);
+        }
+    }
+
+    public async doUnregisterProvider(info: IContactVerificationAppProvider): Promise<void> {
+        if (this.hasProviderPermission(info.name)) {
+            return this.unregisterProvider(info);
+        }
+    }
+
     protected abstract getByVisitorId(visitorId: IVisitor['id'], appId: string): Promise<ILivechatContact | null>;
 
     protected abstract verifyContact(verifyContactChannelParams: VerifyContactChannelParams, appId: string): Promise<void>;
 
     protected abstract addContactEmail(contactId: ILivechatContact['_id'], email: string, appId: string): Promise<ILivechatContact>;
+
+    protected abstract registerProvider(info: IContactVerificationAppProvider, appId: string): Promise<void>;
+
+    protected abstract unregisterProvider(info: IContactVerificationAppProvider): Promise<void>;
 
     private hasReadPermission(appId: string): boolean {
         if (AppPermissionManager.hasPermission(appId, AppPermissions.contact.read)) {
@@ -62,6 +79,21 @@ export abstract class ContactBridge extends BaseBridge {
             new PermissionDeniedError({
                 appId,
                 missingPermissions: [AppPermissions.contact.write],
+            }),
+        );
+
+        return false;
+    }
+
+    private hasProviderPermission(appId: string): boolean {
+        if (AppPermissionManager.hasPermission(appId, AppPermissions.contact.provider)) {
+            return true;
+        }
+
+        AppPermissionManager.notifyAboutError(
+            new PermissionDeniedError({
+                appId,
+                missingPermissions: [AppPermissions.contact.provider],
             }),
         );
 
