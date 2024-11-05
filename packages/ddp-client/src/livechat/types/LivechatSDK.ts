@@ -11,7 +11,9 @@ export type LivechatRoomEvents<T> =
 				? A['status']
 				: A extends { type: T; visitor: unknown }
 					? A['visitor']
-					: never
+					: A extends { type: T; room: unknown }
+						? A['room']
+						: never
 		: never;
 
 export interface LivechatStream {
@@ -30,6 +32,7 @@ export interface LivechatStream {
 	onAgentStatusChange(rid: string, cb: (args: LivechatRoomEvents<'agentStatus'>) => void): () => void;
 	onQueuePositionChange(rid: string, cb: (args: LivechatRoomEvents<'queueData' | 'agentData'>) => void): () => void;
 	onVisitorChange(rid: string, cb: (data: LivechatRoomEvents<'visitorData'>) => void): () => void;
+	onRoomChange(rid: string, cb: (data: LivechatRoomEvents<'roomUpdated'>) => void): () => void;
 }
 
 export interface LivechatEndpoints {

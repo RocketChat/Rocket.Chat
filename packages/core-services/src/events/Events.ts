@@ -34,6 +34,7 @@ import type {
 	ICustomUserStatus,
 	IWebdavAccount,
 	IOTRMessage,
+	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
@@ -279,7 +280,8 @@ export type EventSignatures = {
 			| { type: 'agentStatus'; status: string }
 			| { type: 'queueData'; data: { [k: string]: unknown } | undefined }
 			| { type: 'agentData'; data: ILivechatAgent | undefined | { hiddenInfo: boolean } }
-			| { type: 'visitorData'; visitor: ILivechatVisitor },
+			| { type: 'visitorData'; visitor: ILivechatVisitor }
+			| { type: 'roomUpdated'; room: IOmnichannelRoom },
 	): void;
 
 	// Send all events from here

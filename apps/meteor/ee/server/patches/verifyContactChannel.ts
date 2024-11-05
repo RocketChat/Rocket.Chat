@@ -1,7 +1,8 @@
-import type { ILivechatContact } from '@rocket.chat/core-typings';
+import type { ILivechatContact, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
+import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
 import { saveQueueInquiry } from '../../../app/livechat/server/lib/QueueManager';
 import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
 import { verifyContactChannel } from '../../../app/livechat/server/lib/contacts/verifyContactChannel';
@@ -25,7 +26,9 @@ export const runVerifyContactChannel = async (
 		value: value.toLowerCase(),
 	});
 
-	await LivechatRooms.update({ _id: roomId }, { $set: { verified: true } });
+	const { value: room } = await LivechatRooms.findOneAndUpdate({ _id: roomId }, { $set: { verified: true } });
+
+	Livechat.notifyRoomUpdated(room as IOmnichannelRoom);
 
 	const mergeContactsResult = await mergeContacts(contactId, visitorId);
 

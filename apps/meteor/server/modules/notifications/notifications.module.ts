@@ -377,6 +377,11 @@ export class NotificationsModule {
 			if (room.t === 'l' && extraData?.visitorToken && room.v.token === extraData.visitorToken) {
 				return true;
 			}
+
+			if (extraData.type === 'roomUpdated' && room.t === 'l' && extraData?.room?._id === roomId) {
+				return true;
+			}
+
 			return false;
 		});
 

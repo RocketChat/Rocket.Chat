@@ -110,6 +110,14 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		}).stop;
 	}
 
+	onRoomChange(rid: string, cb: (data: LivechatRoomEvents<'roomUpdated'>) => void): () => void {
+		return this.stream('livechat-room', [rid, { token: this.token, visitorToken: this.token }], (data) => {
+			if (data.type === 'roomUpdated') {
+				cb(data.room);
+			}
+		}).stop;
+	}
+
 	notifyVisitorActivity(rid: string, username: string, activity: string[]) {
 		return this.client.callAsync('stream-notify-room', `${rid}/user-activity`, username, activity, { token: this.token });
 	}

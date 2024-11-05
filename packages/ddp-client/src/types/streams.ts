@@ -391,6 +391,10 @@ export interface StreamerEvents {
 				| {
 						type: 'visitorData';
 						visitor: unknown;
+				  }
+				| {
+						type: 'roomUpdated';
+						room: IOmnichannelRoom;
 				  },
 			];
 		},

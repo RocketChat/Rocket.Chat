@@ -677,6 +677,13 @@ class LivechatClass {
 		});
 	}
 
+	notifyRoomUpdated(room: IOmnichannelRoom) {
+		void api.broadcast('omnichannel.room', room._id, {
+			type: 'roomUpdated',
+			room,
+		});
+	}
+
 	async changeRoomVisitor(userId: string, room: IOmnichannelRoom, visitor: ILivechatVisitor) {
 		const user = await Users.findOneById(userId, { projection: { _id: 1 } });
 		if (!user) {
