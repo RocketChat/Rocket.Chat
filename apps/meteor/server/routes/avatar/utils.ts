@@ -16,6 +16,8 @@ const FALLBACK_LAST_MODIFIED = 'Thu, 01 Jan 2015 00:00:00 GMT';
 
 const cookie = new Cookies();
 
+const defaultPattern = /[^A-Za-z0-9]/g;
+
 export const MAX_SVG_AVATAR_SIZE = 1024;
 export const MIN_SVG_AVATAR_SIZE = 16;
 
@@ -62,7 +64,7 @@ export const serveSvgAvatarInRequestedFormat = ({
 	res: ServerResponse;
 }) => {
 	const size = getAvatarSizeFromRequest(req);
-	const avatar = renderSVGLetters(nameOrUsername, size);
+	const avatar = renderSVGLetters(nameOrUsername, size, req);
 	res.setHeader('Last-Modified', FALLBACK_LAST_MODIFIED);
 
 	const { format } = req.query;
@@ -119,27 +121,39 @@ export async function userCanAccessAvatar({ headers = {}, query = {} }: IIncomin
 	return isAuthenticated;
 }
 
-const getFirstLetter = (name: string) =>
-	name
-		.replace(/[^A-Za-z0-9]/g, '')
-		.substr(0, 1)
-		.toUpperCase();
+const getFirstLetter = (name: string, regExp: RegExp) => {
+	const pattern = regExp || defaultPattern;
+	const sanitizedName = name.replace(/[&<>]/g, '');
+	return sanitizedName.replace(pattern, '').substring(0, 1).toUpperCase();
+};
 
-export const renderSVGLetters = (username: string, viewSize = 200) => {
+export const renderSVGLetters = (roomOrUsername: string, viewSize = 200, req?: IIncomingMessage) => {
 	let color = '';
 	let initials = '';
 
-	if (username === '?') {
+	if (roomOrUsername === '?') {
 		color = '#000';
-		initials = username;
+		initials = roomOrUsername;
 	} else {
-		color = getAvatarColor(username);
-		initials = getFirstLetter(username);
+		const settingsRegExp = (() => {
+			if (!req?.url) return null;
+			return req.url.startsWith('/room')
+				? (settings.get('UTF8_Channel_Names_Validation') as string)
+				: (settings.get('UTF8_User_Names_Validation') as string);
+		})();
+		let regExp: RegExp;
+		try {
+			regExp = settingsRegExp ? new RegExp(`[^${settingsRegExp}]`, 'g') : defaultPattern;
+		} catch (e) {
+			regExp = defaultPattern;
+		}
+		color = getAvatarColor(roomOrUsername);
+		initials = getFirstLetter(roomOrUsername, regExp);
 	}
 
 	const fontSize = viewSize / 1.6;
 
-	return `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 ${viewSize} ${viewSize}\">\n<rect width=\"100%\" height=\"100%\" fill=\"${color}\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"'Helvetica', 'Arial', 'Lucida Grande', 'sans-serif'\" font-size="${fontSize}">\n${initials}\n</text>\n</svg>`;
+	return `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 ${viewSize} ${viewSize}\">\n<rect width=\"100%\" height=\"100%\" fill=\"${color}\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"'Helvetica', 'Arial Unicode MS', 'Noto Sans', 'Segoe UI', 'Lucida Grande', 'sans-serif'\" font-size="${fontSize}">\n${initials}\n</text>\n</svg>`;
 };
 
 const getCacheTime = (cacheTime: number) => cacheTime || settings.get('Accounts_AvatarCacheTime');
