@@ -51,15 +51,19 @@ describe('migrateVisitorToContactId', () => {
 
 	it('should attempt to create a new contact if there is no free existing contact matching the visitor data', async () => {
 		modelsMock.LivechatContacts.findContactMatchingVisitor.resolves(undefined);
+		const visitor = { _id: 'visitor1' };
+		const source = { type: 'other' };
+		modelsMock.LivechatRooms.findNewestByContactVisitorAssociation.resolves({ _id: 'room1', v: { _id: visitor._id }, source });
 		createContactFromVisitor.resolves('contactCreated');
 
-		expect(await migrateVisitorToContactId({ _id: 'visitor1' }, { type: 'other' })).to.be.equal('contactCreated');
+		expect(await migrateVisitorToContactId({ _id: 'visitor1' }, source)).to.be.equal('contactCreated');
 	});
 
 	it('should not attempt to create a new contact if one is found for the visitor', async () => {
 		const visitor = { _id: 'visitor1' };
 		const contact = { _id: 'contact1' };
 		const source = { type: 'sms' };
+		modelsMock.LivechatRooms.findNewestByContactVisitorAssociation.resolves({ _id: 'room1', v: { _id: visitor._id }, source });
 		modelsMock.LivechatContacts.findContactMatchingVisitor.resolves(contact);
 		createContactFromVisitor.resolves('contactCreated');
 
