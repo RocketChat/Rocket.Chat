@@ -1,4 +1,4 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -44,7 +44,10 @@ export const useUnreadDisplay = ({
 	groupMentions,
 	hideMentionStatus,
 	hideUnreadStatus,
-}: ISubscription & IRoom) => {
+}: Pick<
+	SubscriptionWithRoom,
+	'alert' | 'userMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'groupMentions' | 'hideMentionStatus' | 'hideUnreadStatus'
+>) => {
 	const { t } = useTranslation();
 
 	return useMemo(() => {
