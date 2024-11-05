@@ -5,10 +5,10 @@ import type {
 	ILivechatDepartment,
 	IOmnichannelRoomInfo,
 	IOmnichannelRoomExtraData,
-	type ILivechatInquiryRecord,
-	type ILivechatVisitor,
-	type IOmnichannelRoom,
-	type SelectedAgent,
+	ILivechatInquiryRecord,
+	ILivechatVisitor,
+	IOmnichannelRoom,
+	SelectedAgent,
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';

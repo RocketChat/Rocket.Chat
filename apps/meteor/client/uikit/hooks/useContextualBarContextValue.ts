@@ -2,7 +2,7 @@ import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { useMemo } from 'react';
-import type { Dispatch, type ContextType } from 'react';
+import type { Dispatch, ContextType } from 'react';
 
 import { useUiKitActionManager } from './useUiKitActionManager';
 

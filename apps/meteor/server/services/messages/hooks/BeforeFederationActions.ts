@@ -1,5 +1,5 @@
 import { isMessageFromMatrixFederation, isRoomFederated } from '@rocket.chat/core-typings';
-import type { AtLeast, type IMessage, type IRoom } from '@rocket.chat/core-typings';
+import type { AtLeast, IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import { isFederationEnabled, isFederationReady } from '../../federation/utils';
 

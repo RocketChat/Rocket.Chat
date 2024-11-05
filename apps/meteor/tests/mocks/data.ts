@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from '@rocket.chat/apps-engine/client/definition';
 import { AppSubscriptionStatus } from '@rocket.chat/core-typings';
-import type { LicenseInfo, type App, type IMessage, type IRoom, type ISubscription, type IUser } from '@rocket.chat/core-typings';
+import type { LicenseInfo, App, IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
 import type { MessageWithMdEnforced } from '../../client/lib/parseMessageTextToAstMarkdown';
