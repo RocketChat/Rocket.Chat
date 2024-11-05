@@ -52,6 +52,18 @@ const COMMAND_PONG = '_zPONG';
 
 export const JSONRPC_METHOD_NOT_FOUND = -32601;
 
+export function getRuntimeTimeout() {
+    const defaultTimeout = 30000;
+    const envValue = isFinite(process.env.APPS_ENGINE_RUNTIME_TIMEOUT as any) ? Number(process.env.APPS_ENGINE_RUNTIME_TIMEOUT) : defaultTimeout;
+
+    if (envValue < 0) {
+        console.log('Environment variable APPS_ENGINE_RUNTIME_TIMEOUT has a negative value, ignoring...');
+        return defaultTimeout;
+    }
+
+    return envValue;
+}
+
 export function isValidOrigin(accessor: string): accessor is (typeof ALLOWED_ACCESSOR_METHODS)[number] {
     return ALLOWED_ACCESSOR_METHODS.includes(accessor as any);
 }
@@ -78,7 +90,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     private readonly debug: debug.Debugger;
 
     private readonly options = {
-        timeout: 10000,
+        timeout: getRuntimeTimeout(),
     };
 
     private readonly accessors: AppAccessorManager;
@@ -94,7 +106,10 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     private readonly livenessManager: LivenessManager;
 
     // We need to keep the appSource around in case the Deno process needs to be restarted
-    constructor(manager: AppManager, private readonly appPackage: IParseAppPackageResult) {
+    constructor(
+        manager: AppManager,
+        private readonly appPackage: IParseAppPackageResult,
+    ) {
         super();
 
         this.debug = baseDebug.extend(appPackage.info.id);
@@ -125,23 +140,20 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
             // process must be able to read in order to include files that use NPM packages
             const parentNodeModulesDir = path.dirname(path.join(appsEngineDir, '..'));
 
-            let hasNetworkingPermission = false;
-
-            // If the app doesn't request any permissions, it gets the default set of permissions, which includes "networking"
-            // If the app requests specific permissions, we need to check whether it requests "networking" or not
-            if (!this.appPackage.info.permissions || this.appPackage.info.permissions.findIndex((p) => p.name === 'networking.default')) {
-                hasNetworkingPermission = true;
-            }
-
             const options = [
                 'run',
-                hasNetworkingPermission ? '--allow-net' : '',
                 `--allow-read=${appsEngineDir},${parentNodeModulesDir}`,
                 `--allow-env=${ALLOWED_ENVIRONMENT_VARIABLES.join(',')}`,
                 denoWrapperPath,
                 '--subprocess',
                 this.appPackage.info.id,
             ];
+
+            // If the app doesn't request any permissions, it gets the default set of permissions, which includes "networking"
+            // If the app requests specific permissions, we need to check whether it requests "networking" or not
+            if (!this.appPackage.info.permissions || this.appPackage.info.permissions.findIndex((p) => p.name === 'networking.default') !== -1) {
+                options.splice(1, 0, '--allow-net');
+            }
 
             const environment = {
                 env: {

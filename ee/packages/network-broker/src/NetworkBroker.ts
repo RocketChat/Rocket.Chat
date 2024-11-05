@@ -95,10 +95,10 @@ export class NetworkBroker implements IBroker {
 					? (ctx: Context): void => {
 							// internal events params are not an array
 							instance.emit(eventName, ctx.params as Parameters<EventSignatures[typeof eventName]>);
-					  }
+						}
 					: (ctx: Context): void => {
 							instance.emit(eventName, ...(ctx.params as Parameters<EventSignatures[typeof eventName]>));
-					  };
+						};
 				return map;
 			}, {}),
 		};

@@ -1197,9 +1197,10 @@ describe('[Chat]', () => {
 					.expect(statusCode)
 					.expect(testCb);
 
-				await (customFields
-					? request.post(api(`rooms.upload/${testChannel._id}`)).field('customFields', JSON.stringify(customFields))
-					: request.post(api(`rooms.upload/${testChannel._id}`))
+				await (
+					customFields
+						? request.post(api(`rooms.upload/${testChannel._id}`)).field('customFields', JSON.stringify(customFields))
+						: request.post(api(`rooms.upload/${testChannel._id}`))
 				)
 					.set(credentials)
 					.attach('file', imgURL)

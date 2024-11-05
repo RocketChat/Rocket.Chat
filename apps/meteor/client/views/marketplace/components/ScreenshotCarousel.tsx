@@ -30,11 +30,11 @@ const ScreenshotCarousel = ({
 						opacity: '1',
 						transitionDuration: '1s',
 						transform: 'scale(1.08)',
-				  }
+					}
 				: {
 						opacity: '0',
 						transitionDuration: '1s ease',
-				  };
+					};
 
 			return (
 				<Box style={screenshotWrapperStyle} key={currentScreenshot.id}>

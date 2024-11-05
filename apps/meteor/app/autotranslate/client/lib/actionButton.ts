@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
-import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import {
 	hasTranslationLanguageInAttachments,
 	hasTranslationLanguageInMessage,
@@ -25,8 +24,7 @@ Meteor.startup(() => {
 				label: 'Translate',
 				context: ['message', 'message-mobile', 'threads'],
 				type: 'interaction',
-				action(_, props) {
-					const { message = messageArgs(this).msg } = props;
+				action(_, { message }) {
 					const language = AutoTranslate.getLanguage(message.rid);
 					if (!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)) {
 						(AutoTranslate.messageIdsToWait as any)[message._id] = true;
@@ -61,7 +59,7 @@ Meteor.startup(() => {
 				context: ['message', 'message-mobile', 'threads'],
 				type: 'interaction',
 				action(_, props) {
-					const { message = messageArgs(this).msg } = props;
+					const { message } = props;
 					const language = AutoTranslate.getLanguage(message.rid);
 					if (!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)) {
 						(AutoTranslate.messageIdsToWait as any)[message._id] = true;

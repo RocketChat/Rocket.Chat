@@ -134,11 +134,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>
-							{data.rooms?.map((room) => (
-								<RoomRow key={room._id} room={room} />
-							))}
-						</GenericTableBody>
+						<GenericTableBody>{data.rooms?.map((room) => <RoomRow key={room._id} room={room} />)}</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider

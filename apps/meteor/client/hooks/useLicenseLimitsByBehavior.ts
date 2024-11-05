@@ -25,10 +25,10 @@ export const useLicenseLimitsByBehavior = () => {
 		.map((key) => {
 			const rule = license.limits[key]
 				?.filter((limit) => validateWarnLimit(limit.max, limits[key].value ?? 0, limit.behavior))
-				.reduce<{ max: number; behavior: LicenseBehavior } | null>(
-					(maxLimit, currentLimit) => (!maxLimit || currentLimit.max > maxLimit.max ? currentLimit : maxLimit),
-					null,
-				);
+				.reduce<{
+					max: number;
+					behavior: LicenseBehavior;
+				} | null>((maxLimit, currentLimit) => (!maxLimit || currentLimit.max > maxLimit.max ? currentLimit : maxLimit), null);
 
 			if (!rule) {
 				return undefined;

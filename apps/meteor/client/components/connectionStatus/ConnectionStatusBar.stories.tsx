@@ -14,8 +14,9 @@ export default {
 	},
 } satisfies Meta<typeof ConnectionStatusBar>;
 
-const stateDecorator = (value: ContextType<typeof ConnectionStatusContext>) => (fn: () => ReactElement) =>
-	<ConnectionStatusContext.Provider value={value}>{fn()}</ConnectionStatusContext.Provider>;
+const stateDecorator = (value: ContextType<typeof ConnectionStatusContext>) => (fn: () => ReactElement) => (
+	<ConnectionStatusContext.Provider value={value}>{fn()}</ConnectionStatusContext.Provider>
+);
 
 const Template: StoryFn<typeof ConnectionStatusBar> = () => <ConnectionStatusBar />;
 

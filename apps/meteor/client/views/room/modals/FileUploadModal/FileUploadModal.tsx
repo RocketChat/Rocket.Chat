@@ -34,8 +34,8 @@ const FileUploadModal = ({
 
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const maxFileSize = useSetting('FileUpload_MaxFileSize') as number;
-	const maxMsgSize = useSetting('Message_MaxAllowedSize') as number;
+	const maxMsgSize = useSetting('Message_MaxAllowedSize', 5000);
+	const maxFileSize = useSetting('FileUpload_MaxFileSize', 104857600);
 
 	const isDescriptionValid = (description: string) =>
 		description.length >= maxMsgSize ? t('Cannot_upload_file_character_limit', { count: maxMsgSize }) : true;

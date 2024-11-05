@@ -13,10 +13,10 @@ const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): Re
 
 	const { data } = useIsEnterprise();
 	const isAdmin = useRole('admin');
-	const customContentBody = useSetting<string>('Layout_Home_Body');
+	const customContentBody = useSetting('Layout_Home_Body', '');
 	const isCustomContentBodyEmpty = customContentBody === '';
-	const isCustomContentVisible = useSetting<boolean>('Layout_Home_Custom_Block_Visible');
-	const isCustomContentOnly = useSetting<boolean>('Layout_Custom_Body_Only');
+	const isCustomContentVisible = useSetting('Layout_Home_Custom_Block_Visible', false);
+	const isCustomContentOnly = useSetting('Layout_Custom_Body_Only', false);
 
 	const setCustomContentVisible = useSettingSetValue('Layout_Home_Custom_Block_Visible');
 	const setCustomContentOnly = useSettingSetValue('Layout_Custom_Body_Only');

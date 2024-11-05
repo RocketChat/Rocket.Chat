@@ -95,7 +95,7 @@ test.each([
     [
       paragraph([
         link(
-          'https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351'
+          'https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351',
         ),
       ]),
     ],
@@ -106,7 +106,7 @@ test.each([
       paragraph([
         link(
           'https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351',
-          [plain('Test')]
+          [plain('Test')],
         ),
       ]),
     ],
@@ -117,7 +117,7 @@ test.each([
       paragraph([
         link(
           'https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351',
-          [plain('title')]
+          [plain('title')],
         ),
       ]),
     ],
@@ -128,7 +128,7 @@ test.each([
       paragraph([
         link(
           'https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351',
-          [bold([plain('title')])]
+          [bold([plain('title')])],
         ),
       ]),
     ],
@@ -139,7 +139,7 @@ test.each([
       paragraph([
         link(
           'https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351',
-          [strike([plain('title')])]
+          [strike([plain('title')])],
         ),
       ]),
     ],
@@ -150,7 +150,7 @@ test.each([
       paragraph([
         link(
           'https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351',
-          [italic([plain('title')])]
+          [italic([plain('title')])],
         ),
       ]),
     ],
@@ -161,7 +161,7 @@ test.each([
       paragraph([
         link(
           'https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351',
-          [italic([bold([strike([plain('title')])])])]
+          [italic([bold([strike([plain('title')])])])],
         ),
       ]),
     ],
@@ -172,7 +172,7 @@ test.each([
       paragraph([
         link(
           'https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351?query=test12-34',
-          [plain('title')]
+          [plain('title')],
         ),
       ]),
     ],
@@ -183,7 +183,7 @@ test.each([
       paragraph([
         link(
           'https://desk.rocket.chat/support/rocketchat/ShowHomePage.do?query=test12-34#Cases/dv/413244000073043351',
-          [plain('title')]
+          [plain('title')],
         ),
       ]),
     ],
@@ -194,7 +194,7 @@ test.each([
       paragraph([
         link(
           'https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351?query=test12-34&query2=abc123',
-          [plain('title')]
+          [plain('title')],
         ),
       ]),
     ],
@@ -205,7 +205,7 @@ test.each([
       paragraph([
         link(
           'https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases?query=test12-34&query2=abcd!e/dv/413244000073043351',
-          [plain('title')]
+          [plain('title')],
         ),
       ]),
     ],
@@ -216,7 +216,7 @@ test.each([
       paragraph([
         link(
           'https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351?query=test12-34&query2=abcd!~-._%2B+',
-          [plain('title')]
+          [plain('title')],
         ),
       ]),
     ],
@@ -267,7 +267,7 @@ test.each([
       paragraph([
         link(
           'https://github.com/RocketChat/Rocket.Chat/pull/26751/files#diff-c87b108ecf1ede549f8ede68eca840fbb330180b927df0b8a0b4df5d06cbd89b',
-          [plain('Github link with hash')]
+          [plain('Github link with hash')],
         ),
       ]),
     ],
@@ -278,7 +278,7 @@ test.each([
       paragraph([
         link(
           'https://github.com/RocketChat/Rocket.Chat/pull/26751/files#diff',
-          [plain('Github link with hash')]
+          [plain('Github link with hash')],
         ),
       ]),
     ],
@@ -309,7 +309,7 @@ test.each([
       paragraph([
         link(
           'https://www.google.com/url?rct=j&sa=t&url=https://ga.de/freizeit/region-erleben/bonn-und-region-tipps-fuers-wochenende-flohmarkt-rheinaue-weltkindertag-stadtfest_aid-53876987&ct=ga&cd=CAIyHDQ0NzEyYWE3MDA1MGNhNTQ6Y29tOmRlOkRFOlI&usg=AOvVaw3ySYrO9lM0iNSnk43gPVwZ',
-          [plain('Google complex Link')]
+          [plain('Google complex Link')],
         ),
       ]),
     ],
@@ -414,7 +414,7 @@ Text after line break`,
       paragraph([
         link(
           'notes://Server/C3257116002CAD60/0/CCAF6BE2824A1F49432588D2001FA73E',
-          [plain('notes link')]
+          [plain('notes link')],
         ),
       ]),
     ],
@@ -433,7 +433,7 @@ Text after line break`,
       paragraph([
         link(
           'https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351',
-          [plain('Test with '), bold([plain('bold')]), plain(' element')]
+          [plain('Test with '), bold([plain('bold')]), plain(' element')],
         ),
       ]),
     ],
@@ -444,7 +444,7 @@ Text after line break`,
       paragraph([
         link(
           'https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351',
-          [plain('Test with '), bold([plain('bold')]), plain(' element')]
+          [plain('Test with '), bold([plain('bold')]), plain(' element')],
         ),
       ]),
     ],
@@ -455,7 +455,7 @@ Text after line break`,
       paragraph([
         link(
           'https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351',
-          [plain('Test with '), italic([plain('italic')]), plain(' element')]
+          [plain('Test with '), italic([plain('italic')]), plain(' element')],
         ),
       ]),
     ],
@@ -466,7 +466,7 @@ Text after line break`,
       paragraph([
         link(
           'https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351',
-          [plain('Test with '), strike([plain('strike')]), plain(' element')]
+          [plain('Test with '), strike([plain('strike')]), plain(' element')],
         ),
       ]),
     ],
@@ -481,7 +481,7 @@ Text after line break`,
             plain('Test with '),
             italic([bold([strike([plain('title')])])]),
             plain(' element'),
-          ]
+          ],
         ),
       ]),
     ],
@@ -505,7 +505,7 @@ Text after line break`,
         plain('the '),
         link(
           'https://developer.rocket.chat/reference/api/rest-api/endpoints/core-endpoints/chat-endpoints/postmessage',
-          [plain('audio_url and video_url for post message attachments')]
+          [plain('audio_url and video_url for post message attachments')],
         ),
       ]),
     ],
@@ -555,7 +555,7 @@ Text after line break`,
       paragraph([
         link(
           'https://github.com/RocketChat/Rocket.Chat/releases/tag/6.0.0-rc.3',
-          [plain('here')]
+          [plain('here')],
         ),
       ]),
     ],

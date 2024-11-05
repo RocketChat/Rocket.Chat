@@ -20,7 +20,7 @@ const ContextBlock = ({
         appId: block.appId,
         blockId: block.blockId,
       })),
-    [block.appId, block.blockId, block.elements]
+    [block.appId, block.blockId, block.elements],
   );
 
   return (
