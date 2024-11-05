@@ -43,7 +43,7 @@ export async function getContactHistory(
 	};
 
 	const { totalCount, cursor } = LivechatRooms.findClosedRoomsByContactAndSourcePaginated({
-		contactIds: [contact._id],
+		contactId: contact._id,
 		source,
 		options,
 	});

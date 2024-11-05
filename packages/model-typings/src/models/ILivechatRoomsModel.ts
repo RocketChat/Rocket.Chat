@@ -271,7 +271,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	): Promise<T | null>;
 	setContactIdByVisitorAssociation(contactId: string, visitor: ILivechatContactVisitorAssociation): Promise<UpdateResult | Document>;
 	findClosedRoomsByContactAndSourcePaginated(params: {
-		contactIds: string[];
+		contactId: string;
 		source?: string;
 		options?: FindOptions;
 	}): FindPaginated<FindCursor<IOmnichannelRoom>>;

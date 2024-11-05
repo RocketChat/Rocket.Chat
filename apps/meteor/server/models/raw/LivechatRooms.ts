@@ -1223,17 +1223,17 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	findClosedRoomsByContactAndSourcePaginated({
-		contactIds,
+		contactId,
 		source,
 		options = {},
 	}: {
-		contactIds: string[];
+		contactId: string;
 		source?: string;
 		options?: FindOptions;
 	}): FindPaginated<FindCursor<IOmnichannelRoom>> {
 		return this.findPaginated<IOmnichannelRoom>(
 			{
-				'v.contactId': { $in: contactIds },
+				'v.contactId': contactId,
 				'closedAt': { $exists: true },
 				...(source && {
 					$or: [{ 'source.type': new RegExp(escapeRegExp(source), 'i') }, { 'source.alias': new RegExp(escapeRegExp(source), 'i') }],
