@@ -12,7 +12,8 @@ Meteor.methods({
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateOTRAck' });
 		}
-
+		
+		// this check is important to prevent message forgery
 		check(ack, String);
 		check(message, {
 			_id: String,
