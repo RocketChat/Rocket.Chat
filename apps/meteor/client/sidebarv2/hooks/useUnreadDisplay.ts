@@ -1,6 +1,39 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { TFunction } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
+const getUnreadTitle = (
+	{
+		mentions,
+		threads,
+		groupMentions,
+		total,
+	}: {
+		mentions: number;
+		threads: number;
+		groupMentions: number;
+		total: number;
+	},
+	t: TFunction,
+) => {
+	const title = [] as string[];
+	if (mentions) {
+		title.push(t('mentions_counter', { count: mentions }));
+	}
+	if (threads) {
+		title.push(t('threads_counter', { count: threads }));
+	}
+	if (groupMentions) {
+		title.push(t('group_mentions_counter', { count: groupMentions }));
+	}
+	const count = total - mentions - groupMentions - threads;
+	if (count > 0) {
+		title.push(t('unread_messages_counter', { count }));
+	}
+
+	return title.join(', ');
+};
 
 export const useUnreadDisplay = ({
 	alert,
@@ -8,49 +41,31 @@ export const useUnreadDisplay = ({
 	unread,
 	tunread,
 	tunreadUser,
-	groupMentions: groupMentionsProp,
+	groupMentions,
 	hideMentionStatus,
 	hideUnreadStatus,
 }: ISubscription & IRoom) => {
 	const { t } = useTranslation();
 
-	const unreadCount = useMemo(() => {
-		return {
+	return useMemo(() => {
+		const unreadCount = {
 			mentions: userMentions + (tunreadUser?.length || 0),
 			threads: tunread?.length || 0,
-			groupMentions: groupMentionsProp,
+			groupMentions,
 			total: unread + (tunread?.length || 0),
 		};
-	}, [groupMentionsProp, tunread?.length, tunreadUser?.length, unread, userMentions]);
 
-	const { groupMentions, mentions, threads, total } = unreadCount;
+		const unreadTitle = getUnreadTitle(unreadCount, t);
 
-	const unreadTitle = useMemo(() => {
-		const title = [] as string[];
-		if (mentions) {
-			title.push(t('mentions_counter', { count: mentions }));
-		}
-		if (threads) {
-			title.push(t('threads_counter', { count: threads }));
-		}
-		if (groupMentions) {
-			title.push(t('group_mentions_counter', { count: groupMentions }));
-		}
-		const count = total - mentions - groupMentions - threads;
-		if (count > 0) {
-			title.push(t('unread_messages_counter', { count }));
-		}
-		return title.join(', ');
-	}, [groupMentions, mentions, t, threads, total]);
+		const unreadVariant: 'primary' | 'warning' | 'danger' | 'secondary' =
+			(unreadCount.mentions && 'danger') || (unreadCount.threads && 'primary') || (unreadCount.groupMentions && 'warning') || 'secondary';
 
-	const unreadVariant = useMemo(
-		() => (mentions && 'danger') || (threads && 'primary') || (groupMentions && 'warning') || 'secondary',
-		[groupMentions, mentions, threads],
-	) as 'danger' | 'primary' | 'warning' | 'secondary';
+		const showUnread =
+			(!hideUnreadStatus || (!hideMentionStatus && (Boolean(unreadCount.mentions) || Boolean(unreadCount.groupMentions)))) &&
+			Boolean(unreadCount.total);
 
-	const showUnread = (!hideUnreadStatus || (!hideMentionStatus && (Boolean(mentions) || Boolean(groupMentions)))) && Boolean(total);
+		const highlightUnread = Boolean(!hideUnreadStatus && (alert || unread));
 
-	const highlightUnread = Boolean(!hideUnreadStatus && (alert || unread));
-
-	return { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread };
+		return { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread };
+	}, [alert, groupMentions, hideMentionStatus, hideUnreadStatus, t, tunread?.length, tunreadUser?.length, unread, userMentions]);
 };
