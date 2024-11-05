@@ -1,5 +1,6 @@
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
@@ -7,7 +8,7 @@ import { RecordList } from '../../../lib/lists/RecordList';
 import type { DepartmentListItem } from '../Definitions/DepartmentsDefinitions';
 import { normalizeDepartments } from '../utils/normalizeDepartments';
 
-type DepartmentsListOptions = {
+export type DepartmentsListOptions = {
 	filter: string;
 	departmentId?: string;
 	onlyMyDepartments?: boolean;
@@ -16,7 +17,8 @@ type DepartmentsListOptions = {
 	excludeDepartmentId?: string;
 	enabled?: boolean;
 	showArchived?: boolean;
-	selectedDepartment?: DepartmentListItem | undefined;
+	selectedDepartment?: string;
+	onChange?: (value: string) => void;
 };
 
 export const useDepartmentsList = (
@@ -27,11 +29,14 @@ export const useDepartmentsList = (
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
-	const t = useTranslation();
+	const { t } = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
+
 	const [itemsList, setItemsList] = useState(() => new RecordList<DepartmentListItem>());
 	const reload = useCallback(() => setItemsList(new RecordList<DepartmentListItem>()), []);
 
 	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
+	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: options.selectedDepartment ?? '' });
 
 	useComponentDidUpdate(() => {
 		options && reload();
@@ -65,40 +70,14 @@ export const useDepartmentsList = (
 					}),
 				);
 
-			options.haveAll &&
-				items.unshift({
-					_id: '',
-					label: t('All'),
-					value: 'all',
-				});
-
-			options.haveNone &&
-				items.unshift({
-					_id: '',
-					label: t('None'),
-					value: '',
-				});
-
-			const normalizedItems = await normalizeDepartments(items, options.selectedDepartment);
+			const normalizedItems = await normalizeDepartments(items, options, getDepartment, dispatchToastMessage, t);
 
 			return {
 				items: normalizedItems,
 				itemCount: options.departmentId ? total - 1 : total,
 			};
 		},
-		[
-			getDepartments,
-			options.onlyMyDepartments,
-			options.filter,
-			options.excludeDepartmentId,
-			options.enabled,
-			options.showArchived,
-			options.selectedDepartment,
-			options.haveAll,
-			options.haveNone,
-			options.departmentId,
-			t,
-		],
+		[dispatchToastMessage, getDepartment, getDepartments, options, t],
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);

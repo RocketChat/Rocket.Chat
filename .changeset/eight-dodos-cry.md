@@ -1,6 +1,6 @@
 ---
 "@rocket.chat/meteor": minor
-"@rocket.chat/i18n": patch
+"@rocket.chat/i18n": minor
 ---
 
 Implements a fallback to handle cases where a department is deleted while still selected in the current chats Department filter 
