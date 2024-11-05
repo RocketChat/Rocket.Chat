@@ -1,22 +1,25 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { act, screen, renderHook } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactElement } from 'react';
 import React, { Suspense } from 'react';
 
-import ModalProviderWithRegion from '../../providers/ModalProvider/ModalProviderWithRegion';
 import GenericModal from './GenericModal';
+import ModalProviderWithRegion from '../../providers/ModalProvider/ModalProviderWithRegion';
 
 const renderModal = (modalElement: ReactElement) => {
 	const {
 		result: { current: setModal },
 	} = renderHook(() => useSetModal(), {
 		legacyRoot: true,
-		wrapper: ({ children }) => (
-			<Suspense fallback={null}>
-				<ModalProviderWithRegion>{children}</ModalProviderWithRegion>
-			</Suspense>
-		),
+		wrapper: mockAppRoot()
+			.wrap((children) => (
+				<Suspense fallback={null}>
+					<ModalProviderWithRegion>{children}</ModalProviderWithRegion>
+				</Suspense>
+			))
+			.build(),
 	});
 
 	act(() => {
