@@ -18,8 +18,6 @@ test.describe('OC - Livechat - Queue Management', () => {
 	let poLiveChat: OmnichannelLiveChat;
 
 	const waitingQueueMessage = 'This is a message from Waiting Queue';
-	const queuePosition1 = 'Your spot is #1';
-	const queuePosition2 = 'Your spot is #2';
 
 	test.beforeAll(async ({ api, browser }) => {
 		await Promise.all([
@@ -85,7 +83,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			});
 
 			await test.step('expect to be on spot #1', async () => {
-				await expect(poLiveChat.page.locator(`div[role='alert'] >> text=${queuePosition1}`)).toBeVisible();
+				await expect(poLiveChat.queuePosition(1)).toBeVisible();
 			});
 
 			await test.step('should start secondary livechat session', async () => {
@@ -97,7 +95,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			});
 
 			await test.step('should start secondary livechat on spot #2', async () => {
-				await expect(poLiveChat2.page.locator(`div[role='alert'] >> text=${queuePosition2}`)).toBeVisible();
+				await expect(poLiveChat2.queuePosition(2)).toBeVisible();
 			});
 
 			await test.step('should start the queue by making the agent available again', async () => {
@@ -105,15 +103,15 @@ test.describe('OC - Livechat - Queue Management', () => {
 			});
 
 			await test.step('user1 should get assigned to the first chat', async () => {
-				await expect(poLiveChat.page.locator(`div[role='alert'] >> text=${queuePosition1}`)).not.toBeVisible();
+				await expect(poLiveChat.queuePosition(1)).not.toBeVisible();
 			});
 
 			await test.step('secondary session should be on position #1', async () => {
-				await expect(poLiveChat2.page.locator(`div[role='alert'] >> text=${queuePosition1}`)).toBeVisible();
+				await expect(poLiveChat2.queuePosition(1)).toBeVisible();
 			});
 
 			await test.step('secondary session should be taken by user1', async () => {
-				await expect(poLiveChat2.page.locator(`div[role='alert'] >> text=${queuePosition1}`)).not.toBeVisible();
+				await expect(poLiveChat2.queuePosition(1)).not.toBeVisible();
 			});
 		});
 	});
