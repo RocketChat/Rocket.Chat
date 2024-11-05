@@ -1,5 +1,5 @@
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
-import type { AtLeast, type ILivechatDepartment, type ILivechatBusinessHour } from '@rocket.chat/core-typings';
+import type { AtLeast, ILivechatDepartment, ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 import moment from 'moment';
 
