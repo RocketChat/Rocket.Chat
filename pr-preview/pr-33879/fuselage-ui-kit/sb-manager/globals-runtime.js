@@ -40267,7 +40267,7 @@ We();
 var dM = I(Hn(), 1), on = I(cM(), 1);
 
 // src/manager-api/version.ts
-var pM = "8.4.1";
+var pM = "8.4.2";
 
 // src/manager-api/modules/versions.ts
 var { VERSIONCHECK: r0e } = H, fM = (0, dM.default)(1)(() => {
