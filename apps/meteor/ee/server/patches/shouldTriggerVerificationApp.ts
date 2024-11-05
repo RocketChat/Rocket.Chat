@@ -1,8 +1,9 @@
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { type IOmnichannelSource, type ILivechatContact } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
 
+import { isVerifiedChannelInSource } from '../../../app/livechat/server/lib/contacts/isVerifiedChannelInSource';
 import { shouldTriggerVerificationApp } from '../../../app/livechat/server/lib/contacts/shouldTriggerVerificationApp';
 import { settings } from '../../../app/settings/server';
 
@@ -16,6 +17,7 @@ type AvailableLivechatRequireContactVerificationSetting = 'never' | 'once' | 'al
 
 export const runShouldTriggerVerificationApp = async (
 	_next: any,
+	visitorId: ILivechatVisitor['_id'],
 	roomId: IOmnichannelRoom['_id'],
 	source: IOmnichannelSource,
 ): Promise<boolean> => {
@@ -48,7 +50,7 @@ export const runShouldTriggerVerificationApp = async (
 	}
 
 	const verificationRequirement = settings.get<AvailableLivechatRequireContactVerificationSetting>('Livechat_Require_Contact_Verification');
-	const isContactVerified = (contact.channels?.filter((channel) => channel.verified && channel.name === source.type) || []).length > 0;
+	const isContactVerified = (contact.channels?.filter((channel) => isVerifiedChannelInSource(channel, visitorId, source)) || []).length > 0;
 
 	// If the contact has never been verified and it needs to be verified at least once, trigger the app
 	if (!isContactVerified && verificationRequirement === 'once') {

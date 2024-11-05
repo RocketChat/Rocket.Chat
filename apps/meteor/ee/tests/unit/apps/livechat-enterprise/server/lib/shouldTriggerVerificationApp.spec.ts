@@ -35,7 +35,7 @@ describe('shouldTriggerVerificationApp', () => {
 
 	it('should not trigger a verification app if the room is not found', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves(undefined);
-		const result = await runShouldTriggerVerificationApp(() => undefined, 'rid', {});
+		const result = await runShouldTriggerVerificationApp(() => undefined, 'visitorId', 'rid', {});
 
 		expect(modelsMock.LivechatRooms.findOneById.calledOnceWith('rid', sinon.match({ projection: { v: 1 } }))).to.be.true;
 		expect(result).to.be.false;
@@ -43,7 +43,7 @@ describe('shouldTriggerVerificationApp', () => {
 
 	it('should not trigger a verification app if the rooms visitor does not have a contact', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ v: { contactId: undefined } });
-		const result = await runShouldTriggerVerificationApp(() => undefined, 'rid', {});
+		const result = await runShouldTriggerVerificationApp(() => undefined, 'visitorId', 'rid', {});
 		expect(result).to.be.false;
 	});
 
@@ -51,7 +51,7 @@ describe('shouldTriggerVerificationApp', () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ v: { contactId: 'contactId' } });
 		modelsMock.LivechatContacts.findOneById.resolves(undefined);
 
-		const result = await runShouldTriggerVerificationApp(() => undefined, 'rid', {});
+		const result = await runShouldTriggerVerificationApp(() => undefined, 'visitorId', 'rid', {});
 		expect(
 			modelsMock.LivechatContacts.findOneById.calledOnceWith('contactId', sinon.match({ projection: { _id: 1, unknown: 1, channels: 1 } })),
 		).to.be.true;
@@ -63,7 +63,7 @@ describe('shouldTriggerVerificationApp', () => {
 		modelsMock.LivechatContacts.findOneById.resolves({ _id: 'contactId' });
 		settingsMock.get.returns('');
 
-		const result = await runShouldTriggerVerificationApp(() => undefined, 'contactId', {});
+		const result = await runShouldTriggerVerificationApp(() => undefined, 'visitorId', 'contactId', {});
 		expect(result).to.be.false;
 		expect(settingsMock.get.calledOnceWith('Livechat_Contact_Verification_App')).to.be.true;
 	});
@@ -74,7 +74,7 @@ describe('shouldTriggerVerificationApp', () => {
 		settingsMock.get.withArgs('Livechat_Contact_Verification_App').returns('verificationApp');
 		settingsMock.get.withArgs('Livechat_Require_Contact_Verification').returns('never');
 
-		const result = await runShouldTriggerVerificationApp(() => undefined, 'contactId', 'other');
+		const result = await runShouldTriggerVerificationApp(() => undefined, 'visitorId', 'contactId', 'other');
 		expect(result).to.be.false;
 	});
 
@@ -84,17 +84,20 @@ describe('shouldTriggerVerificationApp', () => {
 		settingsMock.get.withArgs('Livechat_Contact_Verification_App').returns('verificationApp');
 		settingsMock.get.withArgs('Livechat_Require_Contact_Verification').returns('once');
 
-		const result = await runShouldTriggerVerificationApp(() => undefined, 'contactId', 'other');
+		const result = await runShouldTriggerVerificationApp(() => undefined, 'visitorId', 'contactId', 'other');
 		expect(result).to.be.true;
 	});
 
 	it('should trigger a verification app if there is a verified contact and Livechat_Require_Contact_Verification is always', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ v: { contactId: 'contactId' } });
-		modelsMock.LivechatContacts.findOneById.resolves({ _id: 'contactId', channels: [{ verified: true, name: 'other' }] });
+		modelsMock.LivechatContacts.findOneById.resolves({
+			_id: 'contactId',
+			channels: [{ verified: true, visitor: { source: { visitorId: 'visitorId', type: 'other' } } }],
+		});
 		settingsMock.get.withArgs('Livechat_Contact_Verification_App').returns('verificationApp');
 		settingsMock.get.withArgs('Livechat_Require_Contact_Verification').returns('always');
 
-		const result = await runShouldTriggerVerificationApp(() => undefined, 'contactId', { type: 'other' });
+		const result = await runShouldTriggerVerificationApp(() => undefined, 'visitorId', 'contactId', { type: 'other' });
 		expect(result).to.be.true;
 	});
 });

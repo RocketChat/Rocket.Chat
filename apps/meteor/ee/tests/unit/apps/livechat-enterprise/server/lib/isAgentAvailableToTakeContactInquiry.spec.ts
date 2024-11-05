@@ -37,7 +37,7 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 
 	it('should return false if the room is not found', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves(undefined);
-		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, {}, 'rid');
+		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', {}, 'rid');
 
 		expect(value).to.be.false;
 		expect(error).to.eq('error-invalid-room');
@@ -46,7 +46,7 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 
 	it("should return false if there is no contactId in the room's visitor", async () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ v: { contactId: undefined } });
-		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, {}, 'rid');
+		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', {}, 'rid');
 		expect(value).to.be.false;
 		expect(error).to.eq('error-invalid-contact');
 	});
@@ -54,7 +54,7 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 	it('should return false if the contact is not found', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ v: { contactId: 'contactId' } });
 		modelsMock.LivechatContacts.findOneById.resolves(undefined);
-		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, {}, 'rid');
+		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', {}, 'rid');
 
 		expect(value).to.be.false;
 		expect(error).to.eq('error-invalid-contact');
@@ -67,7 +67,7 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ v: { contactId: 'contactId' } });
 		modelsMock.LivechatContacts.findOneById.resolves({ unknown: true });
 		settingsMock.get.withArgs('Livechat_Block_Unknown_Contacts').returns(true);
-		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, {}, 'rid');
+		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', {}, 'rid');
 		expect(value).to.be.false;
 		expect(error).to.eq('error-unknown-contact');
 	});
@@ -77,13 +77,13 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 		modelsMock.LivechatContacts.findOneById.resolves({
 			unknown: false,
 			channels: [
-				{ verified: false, name: 'channelName' },
-				{ verified: true, name: 'othername' },
+				{ verified: false, visitor: { source: { type: 'channelName' }, visitorId: 'visitorId' } },
+				{ verified: true, visitor: { source: { type: 'othername' }, visitorId: 'visitorId' } },
 			],
 		});
 		settingsMock.get.withArgs('Livechat_Block_Unknown_Contacts').returns(true);
 		settingsMock.get.withArgs('Livechat_Block_Unverified_Contacts').returns(true);
-		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, { type: 'channelName' }, 'rid');
+		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', { type: 'channelName' }, 'rid');
 		expect(value).to.be.false;
 		expect(error).to.eq('error-unverified-contact');
 	});
@@ -93,13 +93,13 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 		modelsMock.LivechatContacts.findOneById.resolves({
 			unknown: false,
 			channels: [
-				{ verified: true, name: 'channelName' },
-				{ verified: false, name: 'othername' },
+				{ verified: true, visitor: { source: { type: 'channelName' }, visitorId: 'visitorId' } },
+				{ verified: false, visitor: { source: { type: 'othername' }, visitorId: 'visitorId' } },
 			],
 		});
 		settingsMock.get.withArgs('Livechat_Block_Unknown_Contacts').returns(true);
 		settingsMock.get.withArgs('Livechat_Block_Unverified_Contacts').returns(true);
-		const { value } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, { type: 'channelName' }, 'rid');
+		const { value } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', { type: 'channelName' }, 'rid');
 		expect(value).to.be.true;
 	});
 });
