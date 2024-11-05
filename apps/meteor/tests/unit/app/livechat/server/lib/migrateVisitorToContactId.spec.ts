@@ -7,7 +7,7 @@ const modelsMock = {
 		findContactMatchingVisitor: sinon.stub(),
 	},
 	LivechatRooms: {
-		setContactIdByVisitorAssociation: sinon.stub(),
+		setContactByVisitorAssociation: sinon.stub(),
 		findNewestByContactVisitorAssociation: sinon.stub(),
 	},
 };
@@ -39,7 +39,7 @@ const { migrateVisitorToContactId } = proxyquire
 describe('migrateVisitorToContactId', () => {
 	beforeEach(() => {
 		modelsMock.LivechatContacts.findContactMatchingVisitor.reset();
-		modelsMock.LivechatRooms.setContactIdByVisitorAssociation.reset();
+		modelsMock.LivechatRooms.setContactByVisitorAssociation.reset();
 		modelsMock.LivechatRooms.findNewestByContactVisitorAssociation.reset();
 		createContactFromVisitor.reset();
 		mergeVisitorIntoContact.reset();

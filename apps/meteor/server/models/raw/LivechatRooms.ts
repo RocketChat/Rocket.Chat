@@ -9,6 +9,8 @@ import type {
 	ReportResult,
 	MACStats,
 	ILivechatContactVisitorAssociation,
+	ILivechatContact,
+	AtLeast,
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatRoomsModel } from '@rocket.chat/model-typings';
@@ -2761,19 +2763,47 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		throw new Error('Method not implemented.');
 	}
 
-	setContactIdByVisitorAssociation(contactId: string, visitor: ILivechatContactVisitorAssociation): Promise<UpdateResult | Document> {
+	setContactByVisitorAssociation(
+		association: ILivechatContactVisitorAssociation,
+		contact: Pick<AtLeast<ILivechatContact, '_id'>, '_id' | 'name'>,
+	): Promise<UpdateResult | Document> {
 		return this.updateMany(
 			{
 				't': 'l',
-				'v._id': visitor.visitorId,
-				'source.type': visitor.source.type,
-				...(visitor.source.id ? { 'source.id': visitor.source.id } : {}),
+				'v._id': association.visitorId,
+				'source.type': association.source.type,
+				...(association.source.id ? { 'source.id': association.source.id } : {}),
 			},
-			{ $set: { 'v.contactId': contactId } },
+			{
+				$set: {
+					'v.contactId': contact._id,
+					...(contact.name ? { fname: contact.name } : {}),
+				},
+			},
 		);
 	}
 
-	replaceContactId(_oldContactId: string, _newContactId: string): Promise<UpdateResult | Document> {
-		throw new Error('Method not implemented.');
+	updateContactDataByContactId(
+		oldContactId: ILivechatContact['_id'],
+		contact: Partial<Pick<ILivechatContact, '_id' | 'name'>>,
+	): Promise<UpdateResult | Document> {
+		const update = {
+			...(contact._id ? { 'v.contactId': contact._id } : {}),
+			...(contact.name ? { fname: contact.name } : {}),
+		};
+
+		if (!Object.keys(update).length) {
+			throw new Error('error-invalid-operation');
+		}
+
+		return this.updateMany(
+			{
+				't': 'l',
+				'v.contactId': oldContactId,
+			},
+			{
+				$set: update,
+			},
+		);
 	}
 }

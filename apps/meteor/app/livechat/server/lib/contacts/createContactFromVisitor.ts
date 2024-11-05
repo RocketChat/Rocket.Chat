@@ -13,10 +13,16 @@ export async function createContactFromVisitor(
 
 	const contactId = await createContact(contactData, useVisitorId ? visitor._id : undefined);
 
-	await LivechatRooms.setContactIdByVisitorAssociation(contactId, {
-		visitorId: visitor._id,
-		source: { type: source.type, ...(source.id ? { id: source.id } : {}) },
-	});
+	await LivechatRooms.setContactByVisitorAssociation(
+		{
+			visitorId: visitor._id,
+			source: { type: source.type, ...(source.id ? { id: source.id } : {}) },
+		},
+		{
+			_id: contactId,
+			name: contactData.name,
+		},
+	);
 
 	return contactId;
 }
