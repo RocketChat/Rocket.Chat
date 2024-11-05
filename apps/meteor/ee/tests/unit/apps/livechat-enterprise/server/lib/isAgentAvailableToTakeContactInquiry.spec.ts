@@ -6,9 +6,6 @@ const modelsMock = {
 	LivechatContacts: {
 		findOneById: sinon.stub(),
 	},
-	LivechatRooms: {
-		findOneById: sinon.stub(),
-	},
 };
 
 const settingsMock = {
@@ -27,7 +24,6 @@ const { runIsAgentAvailableToTakeContactInquiry } = proxyquire
 describe('isAgentAvailableToTakeContactInquiry', () => {
 	beforeEach(() => {
 		modelsMock.LivechatContacts.findOneById.reset();
-		modelsMock.LivechatRooms.findOneById.reset();
 		settingsMock.get.reset();
 	});
 
@@ -35,24 +31,7 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 		sinon.restore();
 	});
 
-	it('should return false if the room is not found', async () => {
-		modelsMock.LivechatRooms.findOneById.resolves(undefined);
-		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', {}, 'rid');
-
-		expect(value).to.be.false;
-		expect(error).to.eq('error-invalid-room');
-		expect(modelsMock.LivechatRooms.findOneById.calledOnceWith('rid', sinon.match({ projection: { v: 1 } })));
-	});
-
-	it("should return false if there is no contactId in the room's visitor", async () => {
-		modelsMock.LivechatRooms.findOneById.resolves({ v: { contactId: undefined } });
-		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', {}, 'rid');
-		expect(value).to.be.false;
-		expect(error).to.eq('error-invalid-contact');
-	});
-
 	it('should return false if the contact is not found', async () => {
-		modelsMock.LivechatRooms.findOneById.resolves({ v: { contactId: 'contactId' } });
 		modelsMock.LivechatContacts.findOneById.resolves(undefined);
 		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', {}, 'rid');
 
@@ -64,7 +43,6 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 	});
 
 	it('should return false if the contact is unknown and Livechat_Block_Unknown_Contacts is true', async () => {
-		modelsMock.LivechatRooms.findOneById.resolves({ v: { contactId: 'contactId' } });
 		modelsMock.LivechatContacts.findOneById.resolves({ unknown: true });
 		settingsMock.get.withArgs('Livechat_Block_Unknown_Contacts').returns(true);
 		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', {}, 'rid');
@@ -73,7 +51,6 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 	});
 
 	it('should return false if the contact is not verified and Livechat_Block_Unverified_Contacts is true', async () => {
-		modelsMock.LivechatRooms.findOneById.resolves({ v: { contactId: 'contactId' } });
 		modelsMock.LivechatContacts.findOneById.resolves({
 			unknown: false,
 			channels: [
@@ -89,7 +66,6 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 	});
 
 	it('should return true if the contact has the verified channel', async () => {
-		modelsMock.LivechatRooms.findOneById.resolves({ v: { contactId: 'contactId' } });
 		modelsMock.LivechatContacts.findOneById.resolves({
 			unknown: false,
 			channels: [

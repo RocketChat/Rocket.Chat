@@ -55,9 +55,15 @@ export const takeInquiry = async (
 		throw new Meteor.Error('error-mac-limit-reached');
 	}
 
-	const isAgentAvailableToTakeContactInquiryResult = await isAgentAvailableToTakeContactInquiry(inquiry.v._id, room.source, room._id);
-	if (!isAgentAvailableToTakeContactInquiryResult.value) {
-		throw new Meteor.Error(isAgentAvailableToTakeContactInquiryResult.error);
+	if (room.v.contactId) {
+		const isAgentAvailableToTakeContactInquiryResult = await isAgentAvailableToTakeContactInquiry(
+			inquiry.v._id,
+			room.source,
+			room.v.contactId,
+		);
+		if (!isAgentAvailableToTakeContactInquiryResult.value) {
+			throw new Meteor.Error(isAgentAvailableToTakeContactInquiryResult.error);
+		}
 	}
 
 	const agent = {

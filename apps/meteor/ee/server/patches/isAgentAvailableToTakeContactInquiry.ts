@@ -1,6 +1,6 @@
-import type { ILivechatContact, ILivechatVisitor, IOmnichannelRoom, IOmnichannelSource } from '@rocket.chat/core-typings';
+import type { ILivechatContact, ILivechatVisitor, IOmnichannelSource } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
-import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
+import { LivechatContacts } from '@rocket.chat/models';
 
 import { isAgentAvailableToTakeContactInquiry } from '../../../app/livechat/server/lib/contacts/isAgentAvailableToTakeContactInquiry';
 import { isVerifiedChannelInSource } from '../../../app/livechat/server/lib/contacts/isVerifiedChannelInSource';
@@ -13,18 +13,8 @@ export const runIsAgentAvailableToTakeContactInquiry = async (
 	_next: any,
 	visitorId: ILivechatVisitor['_id'],
 	source: IOmnichannelSource,
-	roomId: IOmnichannelRoom['_id'],
+	contactId: ILivechatContact['_id'],
 ): Promise<{ error: string; value: false } | { value: true }> => {
-	const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, 'v'>>(roomId, { projection: { v: 1 } });
-	if (!room) {
-		return { value: false, error: 'error-invalid-room' };
-	}
-
-	const { contactId } = room.v;
-	if (!contactId) {
-		return { value: false, error: 'error-invalid-contact' };
-	}
-
 	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'unknown' | 'channels'>>(contactId, {
 		projection: {
 			_id: 1,
