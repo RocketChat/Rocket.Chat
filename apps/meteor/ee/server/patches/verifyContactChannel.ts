@@ -18,18 +18,12 @@ export const runVerifyContactChannel = async (
 ): Promise<ILivechatContact | null> => {
 	const { contactId, field, value, visitorId, roomId } = params;
 
-	await LivechatContacts.updateContactChannel(
-		visitorId,
-		{
-			verified: true,
-			verifiedAt: new Date(),
-			field,
-			value: value.toLowerCase(),
-		},
-		{
-			unknown: false,
-		},
-	);
+	await LivechatContacts.updateContactChannel(visitorId, {
+		verified: true,
+		verifiedAt: new Date(),
+		field,
+		value: value.toLowerCase(),
+	});
 
 	await LivechatRooms.update({ _id: roomId }, { $set: { verified: true } });
 
