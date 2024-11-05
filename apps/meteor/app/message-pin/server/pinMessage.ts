@@ -46,7 +46,6 @@ declare module '@rocket.chat/ddp-client' {
 Meteor.methods<ServerMethods>({
 	async pinMessage(message, pinnedAt) {
 		check(message._id, String);
-		check(message.rid, String);
 
 		const userId = Meteor.userId();
 		if (!userId) {
@@ -62,17 +61,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const room = await Rooms.findOneById(message.rid);
-		if (!room) {
-			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
-		}
-
-		if (!(await canAccessRoomAsync(room, { _id: userId }))) {
-			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
-		}
-
 		let originalMessage = await Messages.findOneById(message._id);
-		if (!originalMessage) {
+		if (!originalMessage?.rid) {
 			throw new Meteor.Error('error-invalid-message', 'Message you are pinning was not found', {
 				method: 'pinMessage',
 				action: 'Message_pinning',
@@ -84,6 +74,15 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (!(await hasPermissionAsync(userId, 'pin-message', originalMessage.rid))) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
+		}
+
+		const room = await Rooms.findOneById(originalMessage.rid);
+		if (!room) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
+		}
+
+		if (!(await canAccessRoomAsync(room, { _id: userId }))) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 		}
 
