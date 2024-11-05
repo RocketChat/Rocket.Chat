@@ -37,9 +37,9 @@ export const runVerifyContactChannel = async (
 		},
 	);
 
-	const { value: room } = await LivechatRooms.findOneAndUpdate({ _id: roomId }, { $set: { verified: true } });
+	const { value: updatedChannel } = await LivechatRooms.findOneAndUpdate({ _id: roomId }, { $set: { verified: true } });
 
-	Livechat.notifyRoomUpdated(room as IOmnichannelRoom);
+	Livechat.notifyRoomUpdated(updatedChannel as IOmnichannelRoom);
 
 	const mergeContactsResult = await mergeContacts(contactId, { visitorId, source: room.source });
 
