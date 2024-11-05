@@ -19,7 +19,7 @@ const blockContactSchema = {
 	properties: {
 		visitor: ContactVisitorAssociationSchema,
 	},
-	required: ['visitorId', 'source'],
+	required: ['visitor'],
 	additionalProperties: false,
 };
 
