@@ -64,7 +64,7 @@ const RoomBody = (): ReactElement => {
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useRoomMessages();
 
-	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead') as boolean | undefined;
+	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', false);
 
 	const canPreviewChannelRoom = usePermission('preview-c-room');
 
@@ -86,7 +86,7 @@ const RoomBody = (): ReactElement => {
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
-	const useRealName = useSetting('UI_Use_Real_Name') as boolean;
+	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
 
