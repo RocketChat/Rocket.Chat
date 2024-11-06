@@ -11,7 +11,7 @@ test.describe('OC - Livechat - Cross Tab Communication', () => {
 
 	let poHomeOmnichannel: HomeOmnichannel;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
-	
+
 	test.beforeAll(async ({ browser, api }) => {
 		agent = await createAgent(api, 'user1');
 
