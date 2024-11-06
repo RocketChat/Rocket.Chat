@@ -161,6 +161,7 @@ describe('miscellaneous', () => {
 					'autoImageLoad',
 					'emailNotificationMode',
 					'unreadAlert',
+					'masterVolume',
 					'notificationsSoundVolume',
 					'omnichannelTranscriptEmail',
 					IS_EE ? 'omnichannelTranscriptPDF' : false,

@@ -35,6 +35,7 @@ export type AccountPreferencesData = {
 	sidebarViewMode?: string;
 	sidebarDisplayAvatar?: boolean;
 	sidebarGroupByType?: boolean;
+	masterVolume?: number;
 	notificationsSoundVolume?: number;
 };
 
@@ -70,7 +71,9 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 	const newRoomNotification = useUserPreference<string>('newRoomNotification');
 	const newMessageNotification = useUserPreference<string>('newMessageNotification');
 	const muteFocusedConversations = useUserPreference<boolean>('muteFocusedConversations');
-	const notificationsSoundVolume = useUserPreference<number>('notificationsSoundVolume');
+
+	const masterVolume = useUserPreference<number>('masterVolume', 100);
+	const notificationsSoundVolume = useUserPreference<number>('notificationsSoundVolume', 100);
 
 	return {
 		language,
@@ -99,6 +102,7 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 		newRoomNotification,
 		newMessageNotification,
 		muteFocusedConversations,
+		masterVolume,
 		notificationsSoundVolume,
 	};
 };

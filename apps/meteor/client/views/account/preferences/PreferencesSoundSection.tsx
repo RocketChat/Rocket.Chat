@@ -12,11 +12,12 @@ const PreferencesSoundSection = () => {
 	const customSound = useCustomSound();
 	const soundsList: SelectOption[] = customSound?.getList()?.map((value) => [value._id, value.name]) || [];
 	const { control, watch } = useFormContext();
-	const { newMessageNotification, notificationsSoundVolume } = watch();
+	const { newMessageNotification, notificationsSoundVolume = 100, masterVolume = 100, ringingSoundVolume = 100 } = watch();
 
 	const newRoomNotificationId = useUniqueId();
 	const newMessageNotificationId = useUniqueId();
 	const muteFocusedConversationsId = useUniqueId();
+	const masterVolumeId = useUniqueId();
 	const notificationsSoundVolumeId = useUniqueId();
 
 	return (
@@ -75,6 +76,33 @@ const PreferencesSoundSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
+					<FieldLabel htmlFor={masterVolumeId}>{t('Master_Volume')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							name='masterVolume'
+							control={control}
+							render={({ field: { onChange, value, ref } }) => (
+								<Box
+									id={masterVolumeId}
+									ref={ref}
+									is='input'
+									flexGrow={1}
+									type='range'
+									min='0'
+									max='100'
+									value={value}
+									onChange={(e: ChangeEvent<HTMLInputElement>) => {
+										onChange(Math.max(0, Math.min(Number(e.currentTarget.value), 100)));
+									}}
+								/>
+							)}
+						/>
+						<Tooltip placement='right' mis={8}>
+							{masterVolume}
+						</Tooltip>
+					</FieldRow>
+				</Field>
+				<Field>
 					<FieldLabel htmlFor={notificationsSoundVolumeId}>{t('Notifications_Sound_Volume')}</FieldLabel>
 					<FieldRow>
 						<Controller
@@ -91,7 +119,8 @@ const PreferencesSoundSection = () => {
 									max='100'
 									value={value}
 									onChange={(e: ChangeEvent<HTMLInputElement>) => {
-										customSound.play(newMessageNotification, { volume: notificationsSoundVolume / 100 });
+										const soundVolume = (notificationsSoundVolume * masterVolume) / 100;
+										customSound.play(newMessageNotification, { volume: soundVolume / 100 });
 										onChange(Math.max(0, Math.min(Number(e.currentTarget.value), 100)));
 									}}
 								/>

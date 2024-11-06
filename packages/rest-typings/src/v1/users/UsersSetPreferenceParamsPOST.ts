@@ -19,6 +19,7 @@ export type UsersSetPreferencesParamsPOST = {
 		autoImageLoad?: boolean;
 		emailNotificationMode?: string;
 		unreadAlert?: boolean;
+		masterVolume?: number;
 		notificationsSoundVolume?: number;
 		desktopNotifications?: string;
 		pushNotifications?: string;
@@ -108,6 +109,10 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				unreadAlert: {
 					type: 'boolean',
+					nullable: true,
+				},
+				masterVolume: {
+					type: 'number',
 					nullable: true,
 				},
 				notificationsSoundVolume: {
