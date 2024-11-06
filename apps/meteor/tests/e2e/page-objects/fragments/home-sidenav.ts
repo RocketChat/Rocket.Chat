@@ -207,11 +207,26 @@ export class HomeSidenav {
 		return this.sidebar.getByRole('list', { name: 'Channels' });
 	}
 
+	get firstCollapser(): Locator {
+		return this.channelsList.getByRole('button').first();
+	}
+
+	get firstChannelFromList(): Locator {
+		return this.channelsList.getByRole('listitem').first();
+	}
+
+	async markItemAsUnread(item: Locator): Promise<void> {
+		await item.hover();
+		await item.focus();
+		await item.locator('.rcx-sidebar-item__menu').click();
+		await this.page.getByRole('option', { name: 'Mark Unread' }).click();
+	}
+
 	getCollapseGroupByName(name: string): Locator {
 		return this.channelsList.getByRole('button', { name, exact: true });
 	}
 
-	get firstCollapser(): Locator {
-		return this.channelsList.getByRole('button').first();
+	getItemUnreadBadge(item: Locator): Locator {
+		return item.getByRole('status', { name: 'unread' });
 	}
 }

@@ -138,5 +138,18 @@ test.describe.serial('feature preview', () => {
 			const isExpandedAfterReload = await collapser.getAttribute('aria-expanded');
 			expect(isExpanded).toEqual(isExpandedAfterReload);
 		});
+
+		test('should show unread badge on collapser when group is collapsed and has unread items', async ({ page }) => {
+			await page.goto('/home');
+
+			const item = poHomeChannel.sidenav.firstChannelFromList;
+			await item.click();
+			await poHomeChannel.content.sendMessage('hello world');
+
+			const collapser = poHomeChannel.sidenav.firstCollapser;
+			await collapser.click();
+
+			await expect(poHomeChannel.sidenav.getItemUnreadBadge(collapser)).toBeVisible();
+		});
 	});
 });

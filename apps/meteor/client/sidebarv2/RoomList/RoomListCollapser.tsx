@@ -32,7 +32,7 @@ const RoomListCollapser = ({
 			expanded={!collapsedGroups.includes(groupTitle)}
 			badge={
 				showUnread ? (
-					<Badge variant={unreadVariant} title={unreadTitle}>
+					<Badge variant={unreadVariant} title={unreadTitle} aria-label={unreadTitle} role='status'>
 						{unreadCount.total}
 					</Badge>
 				) : undefined
