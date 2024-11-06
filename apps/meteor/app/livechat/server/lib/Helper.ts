@@ -91,8 +91,12 @@ export const createLivechatRoom = async (
 
 	const activity =
 		guest.activity ||
-		(await LivechatContacts.findOneByVisitorId<Pick<ILivechatContact, '_id' | 'activity'>>(guest._id, { projection: { activity: 1 } }))
-			?.activity;
+		(
+			await LivechatContacts.findOneByVisitor<Pick<ILivechatContact, '_id' | 'activity'>>(
+				{ visitorId: guest._id, source: roomInfo.source },
+				{ projection: { activity: 1 } },
+			)
+		)?.activity;
 	logger.debug({
 		msg: `Creating livechat room for visitor ${_id}`,
 		visitor: { _id, username, departmentId, status, activity },
@@ -202,7 +206,10 @@ export const createLivechatInquiry = async ({
 	const extraInquiryInfo = await callbacks.run('livechat.beforeInquiry', extraData);
 
 	const { _id, username, token, department, status = UserStatus.ONLINE } = guest;
-	const activity = guest.activity || (await LivechatContacts.findOneByVisitorId(guest._id, { projection: { activity: 1 } }))?.activity;
+	const inquirySource = extraData?.source || { type: OmnichannelSourceType.OTHER };
+	const activity =
+		guest.activity ||
+		(await LivechatContacts.findOneByVisitor({ visitorId: guest._id, source: inquirySource }, { projection: { activity: 1 } }))?.activity;
 
 	const ts = new Date();
 
