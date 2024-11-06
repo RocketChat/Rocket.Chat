@@ -7,7 +7,7 @@ const modelsMock = {
 		updateContactChannel: sinon.stub(),
 	},
 	LivechatRooms: {
-		update: sinon.stub(),
+		findOneAndUpdate: sinon.stub(),
 		findOneById: sinon.stub(),
 	},
 	LivechatInquiry: {
@@ -22,6 +22,7 @@ const saveQueueInquiryStub = sinon.stub();
 const { runVerifyContactChannel } = proxyquire.noCallThru().load('../../../../../../server/patches/verifyContactChannel', {
 	'../../../app/livechat/server/lib/contacts/mergeContacts': { mergeContacts: mergeContactsStub },
 	'../../../app/livechat/server/lib/contacts/verifyContactChannel': { verifyContactChannel: { patch: sinon.stub() } },
+	'../../../app/livechat/server/lib/LivechatTyped': { Livechat: { notifyRoomUpdated: sinon.stub() } },
 	'../../../app/livechat/server/lib/QueueManager': { saveQueueInquiry: saveQueueInquiryStub },
 	'@rocket.chat/models': modelsMock,
 });
@@ -29,7 +30,7 @@ const { runVerifyContactChannel } = proxyquire.noCallThru().load('../../../../..
 describe('verifyContactChannel', () => {
 	beforeEach(() => {
 		modelsMock.LivechatContacts.updateContactChannel.reset();
-		modelsMock.LivechatRooms.update.reset();
+		modelsMock.LivechatRooms.findOneAndUpdate.reset();
 		modelsMock.LivechatRooms.findOneById.reset();
 		modelsMock.LivechatInquiry.findOneReadyByContactId.reset();
 		mergeContactsStub.reset();
@@ -43,6 +44,7 @@ describe('verifyContactChannel', () => {
 	it('should be able to verify a contact channel', async () => {
 		modelsMock.LivechatInquiry.findOneReadyByContactId.resolves({ _id: 'inquiryId' });
 		modelsMock.LivechatRooms.findOneById.resolves({ _id: 'roomId', source: { type: 'sms' } });
+		modelsMock.LivechatRooms.findOneAndUpdate.resolves({ value: { _id: 'roomId', source: { type: 'sms' }, verified: true } });
 
 		await runVerifyContactChannel(() => undefined, {
 			contactId: 'contactId',
@@ -67,7 +69,7 @@ describe('verifyContactChannel', () => {
 				}),
 			),
 		).to.be.true;
-		expect(modelsMock.LivechatRooms.update.calledOnceWith({ _id: 'roomId' }, { $set: { verified: true } })).to.be.true;
+		expect(modelsMock.LivechatRooms.findOneAndUpdate.calledOnceWith({ _id: 'roomId' }, { $set: { verified: true } })).to.be.true;
 		expect(
 			mergeContactsStub.calledOnceWith(
 				'contactId',
@@ -95,7 +97,7 @@ describe('verifyContactChannel', () => {
 		).to.be.rejectedWith('error-invalid-room');
 
 		expect(modelsMock.LivechatContacts.updateContactChannel.notCalled).to.be.true;
-		expect(modelsMock.LivechatRooms.update.notCalled).to.be.true;
+		expect(modelsMock.LivechatRooms.findOneAndUpdate.notCalled).to.be.true;
 		expect(mergeContactsStub.notCalled).to.be.true;
 		expect(saveQueueInquiryStub.notCalled).to.be.true;
 	});
@@ -103,6 +105,7 @@ describe('verifyContactChannel', () => {
 	it('should fail if no matching inquiry is found', async () => {
 		modelsMock.LivechatInquiry.findOneReadyByContactId.resolves(undefined);
 		modelsMock.LivechatRooms.findOneById.resolves({ _id: 'roomId', source: { type: 'sms' } });
+		modelsMock.LivechatRooms.findOneAndUpdate.resolves({ value: { _id: 'roomId', source: { type: 'sms' }, verified: true } });
 		await expect(
 			runVerifyContactChannel(() => undefined, {
 				contactId: 'contactId',
@@ -128,7 +131,7 @@ describe('verifyContactChannel', () => {
 				}),
 			),
 		).to.be.true;
-		expect(modelsMock.LivechatRooms.update.calledOnceWith({ _id: 'roomId' }, { $set: { verified: true } })).to.be.true;
+		expect(modelsMock.LivechatRooms.findOneAndUpdate.calledOnceWith({ _id: 'roomId' }, { $set: { verified: true } })).to.be.true;
 		expect(
 			mergeContactsStub.calledOnceWith(
 				'contactId',
