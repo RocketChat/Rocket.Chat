@@ -280,4 +280,20 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			{ allowDiskUse: true, readPreference: readSecondaryPreferred() },
 		);
 	}
+
+	countTotalAmountOfConflicts(): AggregationCursor<{ totalConflicts: number }> {
+		return this.col.aggregate<{ totalConflicts: number }>(
+			[
+				{
+					$group: {
+						_id: null,
+						totalConflicts: {
+							$sum: { $size: { $cond: [{ $isArray: '$conflictingFields' }, '$conflictingFields', []] } },
+						},
+					},
+				},
+			],
+			{ allowDiskUse: true, readPreference: readSecondaryPreferred() },
+		);
+	}
 }

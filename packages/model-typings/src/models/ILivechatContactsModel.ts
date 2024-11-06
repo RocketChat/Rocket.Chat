@@ -54,4 +54,5 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	findAllByVisitorId(visitorId: string): FindCursor<ILivechatContact>;
 	addEmail(contactId: string, email: string): Promise<ILivechatContact | null>;
 	findAverageAmountOfChannels(): AggregationCursor<{ avgChannelsPerContact: number }>;
+	countTotalAmountOfConflicts(): AggregationCursor<{ totalConflicts: number }>;
 }

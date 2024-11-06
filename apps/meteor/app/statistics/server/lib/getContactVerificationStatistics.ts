@@ -7,6 +7,7 @@ export async function getContactVerificationStatistics(): Promise<IStats['contac
 	const [
 		totalContacts,
 		totalUnknownContacts,
+		[{ totalConflicts }],
 		totalBlockedContacts,
 		totalFullyBlockedContacts,
 		totalVerifiedContacts,
@@ -15,6 +16,7 @@ export async function getContactVerificationStatistics(): Promise<IStats['contac
 	] = await Promise.all([
 		LivechatContacts.countDocuments({}),
 		LivechatContacts.countDocuments({ unknown: true }),
+		LivechatContacts.countTotalAmountOfConflicts().toArray(),
 		LivechatContacts.countDocuments({ 'channels.blocked': true }),
 		LivechatContacts.countDocuments({
 			'channels.blocked': true,
@@ -29,6 +31,7 @@ export async function getContactVerificationStatistics(): Promise<IStats['contac
 		totalContacts,
 		totalUnknownContacts,
 		totalMergedContacts: settings.get('Merged_Contacts_Count'),
+		totalConflicts,
 		totalResolvedConflicts: settings.get('Resolved_Conflicts_Count'),
 		totalBlockedContacts,
 		totalPartiallyBlockedContacts: totalBlockedContacts - totalFullyBlockedContacts,

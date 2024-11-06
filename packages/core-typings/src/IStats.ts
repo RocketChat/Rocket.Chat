@@ -241,6 +241,7 @@ export interface IStats {
 		totalContacts: number;
 		totalUnknownContacts: number;
 		totalMergedContacts: number;
+		totalConflicts: number;
 		totalResolvedConflicts: number;
 		totalBlockedContacts: number;
 		totalPartiallyBlockedContacts: number;
