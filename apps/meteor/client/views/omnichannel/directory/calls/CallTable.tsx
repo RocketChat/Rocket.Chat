@@ -11,7 +11,7 @@ import {
 	GenericTableBody,
 	GenericTableHeader,
 	GenericTableHeaderCell,
-	GenericTableLoadingRow,
+	GenericTableLoadingTable,
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
@@ -105,7 +105,7 @@ const CallTable = () => {
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingRow cols={7} />
+						<GenericTableLoadingTable headerCells={headers.props.children.filter(Boolean).length} />
 					</GenericTableBody>
 				</GenericTable>
 			)}
