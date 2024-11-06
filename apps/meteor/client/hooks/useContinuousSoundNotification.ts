@@ -3,6 +3,7 @@ import { useSetting, useUserPreference, useUserSubscriptions } from '@rocket.cha
 import { useEffect } from 'react';
 
 import { CustomSounds } from '../../app/custom-sounds/client/lib/CustomSounds';
+import { useUserSoundPreferences } from './useUserSoundPreferences';
 
 const query = { t: 'l', ls: { $exists: false }, open: true };
 export const useContinuousSoundNotification = () => {
@@ -11,11 +12,9 @@ export const useContinuousSoundNotification = () => {
 	const playNewRoomSoundContinuously = useSetting('Livechat_continuous_sound_notification_new_livechat_room');
 
 	const newRoomNotification = useUserPreference<string>('newRoomNotification');
-	const audioVolume = useUserPreference<number>('notificationsSoundVolume');
+	const { notificationsSoundVolume } = useUserSoundPreferences();
 
 	const continuousCustomSoundId = newRoomNotification && `${newRoomNotification}-continuous`;
-
-	const volume = audioVolume !== undefined ? Number((audioVolume / 100).toPrecision(2)) : 1;
 
 	useEffect(() => {
 		let audio: ICustomSound;
@@ -46,8 +45,8 @@ export const useContinuousSoundNotification = () => {
 		}
 
 		CustomSounds.play(continuousCustomSoundId, {
-			volume,
+			volume: notificationsSoundVolume,
 			loop: true,
 		});
-	}, [continuousCustomSoundId, playNewRoomSoundContinuously, userSubscriptions, volume]);
+	}, [continuousCustomSoundId, playNewRoomSoundContinuously, userSubscriptions, notificationsSoundVolume]);
 };
