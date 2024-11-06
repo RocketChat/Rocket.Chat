@@ -2,6 +2,7 @@ import { RoomType } from '../rooms';
 import type { IRoom } from '../rooms/IRoom';
 import type { IUser } from '../users';
 import type { IDepartment } from './IDepartment';
+import type { ILivechatContact } from './ILivechatContact';
 import type { IVisitor } from './IVisitor';
 
 export enum OmnichannelSourceType {
@@ -68,6 +69,7 @@ export interface ILivechatRoom extends IRoom {
     isOpen: boolean;
     closedAt?: Date;
     source?: OmnichannelSource;
+    contact?: ILivechatContact;
 }
 
 export const isLivechatRoom = (room: IRoom): room is ILivechatRoom => {

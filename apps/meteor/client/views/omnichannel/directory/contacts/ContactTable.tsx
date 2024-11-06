@@ -10,27 +10,25 @@ import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeader,
-	GenericTableCell,
 	GenericTableBody,
-	GenericTableRow,
 	GenericTableHeaderCell,
-	GenericTableLoadingRow,
+	GenericTableLoadingTable,
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { useIsCallReady } from '../../../../contexts/CallContext';
-import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { parseOutboundPhoneNumber } from '../../../../lib/voip/parseOutboundPhoneNumber';
-import { CallDialpadButton } from '../components/CallDialpadButton';
+import ContactTableRow from './ContactTableRow';
 import { useCurrentContacts } from './hooks/useCurrentContacts';
 
 function ContactTable() {
 	const { t } = useTranslation();
 
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
-	const { sortBy, sortDirection, setSort } = useSort<'name' | 'phone' | 'visitorEmails.address' | 'lastChat.ts'>('name');
-	const isCallReady = useIsCallReady();
 	const [term, setTerm] = useState('');
+	const directoryRoute = useRoute('omnichannel-directory');
+	const isCallReady = useIsCallReady();
+
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
+	const { sortBy, sortDirection, setSort } = useSort<'name' | 'channels.lastChat.ts' | 'contactManager.username' | 'lastChat.ts'>('name');
 
 	const query = useDebouncedValue(
 		useMemo(
@@ -45,23 +43,11 @@ function ContactTable() {
 		500,
 	);
 
-	const directoryRoute = useRoute('omnichannel-directory');
-	const formatDate = useFormatDate();
-
 	const onButtonNewClick = useEffectEvent(() =>
 		directoryRoute.push({
 			tab: 'contacts',
 			context: 'new',
 		}),
-	);
-
-	const onRowClick = useEffectEvent(
-		(id) => (): void =>
-			directoryRoute.push({
-				id,
-				tab: 'contacts',
-				context: 'details',
-			}),
 	);
 
 	const { data, isLoading, isError, isSuccess, refetch } = useCurrentContacts(query);
@@ -74,17 +60,23 @@ function ContactTable() {
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='phone' direction={sortDirection} active={sortBy === 'phone'} onClick={setSort} sort='phone'>
-				{t('Phone')}
+			<GenericTableHeaderCell
+				key='lastChannel'
+				direction={sortDirection}
+				active={sortBy === 'channels.lastChat.ts'}
+				onClick={setSort}
+				sort='channels.lastChat.ts'
+			>
+				{t('Last_channel')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell
-				key='email'
+				key='contactManager'
 				direction={sortDirection}
-				active={sortBy === 'visitorEmails.address'}
+				active={sortBy === 'contactManager.username'}
 				onClick={setSort}
-				sort='visitorEmails.address'
+				sort='contactManager.username'
 			>
-				{t('Email')}
+				{t('Contact_Manager')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell
 				key='lastchat'
@@ -95,7 +87,7 @@ function ContactTable() {
 			>
 				{t('Last_Chat')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='call' width={44} />
+			{isCallReady && <GenericTableHeaderCell key='call' width={44} />}
 		</>
 	);
 
@@ -112,7 +104,7 @@ function ContactTable() {
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingRow cols={6} />
+						<GenericTableLoadingTable headerCells={headers.props.children.filter(Boolean).length} />
 					</GenericTableBody>
 				</GenericTable>
 			)}
@@ -132,35 +124,7 @@ function ContactTable() {
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>
-							{data?.contacts.map(({ _id, name, emails, phones, lastChat }) => {
-								const phoneNumber = phones?.length && phones[0].phoneNumber;
-								const visitorEmail = emails?.length && emails[0].address;
-
-								return (
-									<GenericTableRow
-										action
-										key={_id}
-										tabIndex={0}
-										role='link'
-										height='40px'
-										qa-user-id={_id}
-										rcx-show-call-button-on-hover
-										onClick={onRowClick(_id)}
-									>
-										<GenericTableCell withTruncatedText>{name}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{phoneNumber ? parseOutboundPhoneNumber(phoneNumber) : undefined}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{visitorEmail || undefined}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{lastChat && formatDate(lastChat.ts)}</GenericTableCell>
-										{isCallReady && phoneNumber && (
-											<GenericTableCell>
-												<CallDialpadButton phoneNumber={phoneNumber} />
-											</GenericTableCell>
-										)}
-									</GenericTableRow>
-								);
-							})}
-						</GenericTableBody>
+						<GenericTableBody>{data?.contacts.map((contact) => <ContactTableRow key={contact._id} {...contact} />)}</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider
