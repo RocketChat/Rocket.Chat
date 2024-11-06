@@ -165,7 +165,7 @@ function SideBarItemTemplateWithData({
 		<Margins inlineStart={8}>
 			{showBadge && isUnread && (
 				<Badge role='status' {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant} title={badgeTitle}>
-					{unread + tunread?.length}
+					<span aria-hidden>{unread + tunread?.length}</span>
 				</Badge>
 			)}
 			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
