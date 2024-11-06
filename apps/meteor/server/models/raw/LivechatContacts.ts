@@ -241,14 +241,13 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return updatedContact.value;
 	}
 
-	async isContactActiveOnPeriod(visitorId: string, period: string): Promise<boolean> {
+	isContactActiveOnPeriod(visitorId: string, period: string): Promise<number> {
 		const query = {
 			'channels.visitorId': visitorId,
 			'activity': period,
 		};
 
-		const foundActiveContact = (await this.countDocuments(query)) > 0;
-		return foundActiveContact;
+		return this.countDocuments(query);
 	}
 
 	markContactActiveForPeriod(visitorId: string, period: string): Promise<UpdateResult> {

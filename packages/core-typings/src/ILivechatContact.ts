@@ -30,9 +30,6 @@ export interface ILivechatContactConflictingField {
 	value: string;
 }
 
-// Expected string format is YYYY-MM
-type YearMonthString = string;
-
 export interface ILivechatContact extends IRocketChatRecord {
 	name: string;
 	phones?: IVisitorPhone[];
@@ -48,5 +45,7 @@ export interface ILivechatContact extends IRocketChatRecord {
 		ts: Date;
 	};
 	importIds?: string[];
-	activity?: YearMonthString[];
+
+	// Expected string format is YYYY-MM
+	activity?: string[];
 }
