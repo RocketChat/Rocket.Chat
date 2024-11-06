@@ -73,7 +73,6 @@ export const createLivechatRoom = async (
 	extraData?: IOmnichannelRoomExtraData,
 ) => {
 	check(rid, String);
-	check(name, String);
 	check(
 		guest,
 		Match.ObjectIncluding({
