@@ -237,4 +237,19 @@ export interface IStats {
 	webRTCEnabledForOmnichannel: boolean;
 	omnichannelWebRTCCalls: number;
 	statsToken?: string;
+	contactVerification: {
+		totalContacts: number;
+		totalUnknownContacts: number;
+		totalMergedContacts: number;
+		totalResolvedConflicts: number;
+		totalBlockedContacts: number;
+		totalPartiallyBlockedContacts: number;
+		totalFullyBlockedContacts: number;
+		totalVerifiedContacts: number;
+		avgChannelsPerContact: number;
+		totalContactsWithoutChannels: number;
+		totalImportedContacts: number;
+		totalUpsellViews: number;
+		totalUpsellClicks: number;
+	};
 }

@@ -5,7 +5,16 @@ import type {
 	ILivechatContactVisitorAssociation,
 	ILivechatVisitor,
 } from '@rocket.chat/core-typings';
-import type { Document, FindCursor, FindOneAndUpdateOptions, FindOptions, UpdateFilter, UpdateOptions, UpdateResult } from 'mongodb';
+import type {
+	AggregationCursor,
+	Document,
+	FindCursor,
+	FindOneAndUpdateOptions,
+	FindOptions,
+	UpdateFilter,
+	UpdateOptions,
+	UpdateResult,
+} from 'mongodb';
 
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 
@@ -44,4 +53,5 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	): Promise<ILivechatContact[]>;
 	findAllByVisitorId(visitorId: string): FindCursor<ILivechatContact>;
 	addEmail(contactId: string, email: string): Promise<ILivechatContact | null>;
+	findAverageAmountOfChannels(): AggregationCursor<{ avgChannelsPerContact: number }>;
 }

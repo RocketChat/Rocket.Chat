@@ -1,9 +1,10 @@
 import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/core-typings';
-import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
+import { LivechatContacts, LivechatRooms, Settings } from '@rocket.chat/models';
 
 import { getAllowedCustomFields } from './getAllowedCustomFields';
 import { validateContactManager } from './validateContactManager';
 import { validateCustomFields } from './validateCustomFields';
+import { notifyOnSettingChanged } from '../../../../lib/server/lib/notifyListener';
 
 export type UpdateContactParams = {
 	contactId: string;
@@ -19,8 +20,8 @@ export type UpdateContactParams = {
 export async function updateContact(params: UpdateContactParams): Promise<ILivechatContact> {
 	const { contactId, name, emails, phones, customFields: receivedCustomFields, contactManager, channels, wipeConflicts } = params;
 
-	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name'>>(contactId, {
-		projection: { _id: 1, name: 1 },
+	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name' | 'conflictingFields'>>(contactId, {
+		projection: { _id: 1, name: 1, conflictingFields: 1 },
 	});
 
 	if (!contact) {
@@ -29,6 +30,15 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 
 	if (contactManager) {
 		await validateContactManager(contactManager);
+	}
+
+	if (wipeConflicts && contact.conflictingFields?.length) {
+		const { value } = await Settings.incrementValueById('Resolved_Conflicts_Count', contact.conflictingFields.length, {
+			returnDocument: 'after',
+		});
+		if (value) {
+			void notifyOnSettingChanged(value);
+		}
 	}
 
 	const customFields = receivedCustomFields && validateCustomFields(await getAllowedCustomFields(), receivedCustomFields);

@@ -21,8 +21,10 @@ import type {
 	UpdateFilter,
 	UpdateOptions,
 	FindOneAndUpdateOptions,
+	AggregationCursor,
 } from 'mongodb';
 
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements ILivechatContactsModel {
@@ -74,6 +76,19 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 					preRegistration: 1,
 				},
 				sparse: true,
+				unique: false,
+			},
+			{
+				key: { channels: 1 },
+				unique: false,
+			},
+			{
+				key: { 'channels.blocked': 1 },
+				partialFilterExpression: { 'channels.blocked': { $exists: true } },
+				unique: false,
+			},
+			{
+				key: { unknown: 1 },
 				unique: false,
 			},
 		];
@@ -248,5 +263,21 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		const updatedContact = await this.findOneAndUpdate({ _id: contactId }, { $addToSet: { emails: { address: email } } });
 
 		return updatedContact.value;
+	}
+
+	findAverageAmountOfChannels(): AggregationCursor<{ avgChannelsPerContact: number }> {
+		return this.col.aggregate<{ avgChannelsPerContact: number }>(
+			[
+				{
+					$group: {
+						_id: null,
+						avgChannelsPerContact: {
+							$avg: { $size: { $cond: [{ $isArray: '$channels' }, '$channels', []] } },
+						},
+					},
+				},
+			],
+			{ allowDiskUse: true, readPreference: readSecondaryPreferred() },
+		);
 	}
 }
