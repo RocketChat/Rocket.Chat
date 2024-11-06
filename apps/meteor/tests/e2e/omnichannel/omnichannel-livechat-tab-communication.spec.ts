@@ -11,6 +11,7 @@ test.describe('OC - Livechat - Cross Tab Communication', () => {
 
 	let poHomeOmnichannel: HomeOmnichannel;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
+	
 	test.beforeAll(async ({ browser, api }) => {
 		agent = await createAgent(api, 'user1');
 
@@ -19,9 +20,7 @@ test.describe('OC - Livechat - Cross Tab Communication', () => {
 	});
 
 	test.beforeEach(async ({ browser, api }) => {
-		const context = await browser.newContext({
-			reducedMotion: 'reduce',
-		});
+		const context = await browser.newContext({ reducedMotion: 'reduce' });
 		const p1 = await context.newPage();
 		const p2 = await context.newPage();
 
