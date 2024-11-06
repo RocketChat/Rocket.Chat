@@ -241,20 +241,16 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return updatedContact.value;
 	}
 
-	isContactActiveOnPeriod(visitorId: string, period: string): Promise<number> {
+	isContactActiveOnPeriod(visitor: ILivechatContactVisitorAssociation, period: string): Promise<number> {
 		const query = {
-			'channels.visitorId': visitorId,
-			'activity': period,
+			...this.makeQueryForVisitor(visitor),
+			activity: period,
 		};
 
 		return this.countDocuments(query);
 	}
 
-	markContactActiveForPeriod(visitorId: string, period: string): Promise<UpdateResult> {
-		const query = {
-			'channels.visitorId': visitorId,
-		};
-
+	markContactActiveForPeriod(visitor: ILivechatContactVisitorAssociation, period: string): Promise<UpdateResult> {
 		const update = {
 			$push: {
 				activity: {
@@ -264,7 +260,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			},
 		};
 
-		return this.updateOne(query, update);
+		return this.updateOne(this.makeQueryForVisitor(visitor), update);
 	}
 
 	countContactsOnPeriod(period: string): Promise<number> {

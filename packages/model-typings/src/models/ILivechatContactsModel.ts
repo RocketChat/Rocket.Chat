@@ -44,7 +44,7 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	): Promise<ILivechatContact[]>;
 	findAllByVisitorId(visitorId: string): FindCursor<ILivechatContact>;
 	addEmail(contactId: string, email: string): Promise<ILivechatContact | null>;
-	isContactActiveOnPeriod(visitorId: string, period: string): Promise<number>;
-	markContactActiveForPeriod(visitorId: string, period: string): Promise<UpdateResult>;
+	isContactActiveOnPeriod(visitor: ILivechatContactVisitorAssociation, period: string): Promise<number>;
+	markContactActiveForPeriod(visitor: ILivechatContactVisitorAssociation, period: string): Promise<UpdateResult>;
 	countContactsOnPeriod(period: string): Promise<number>;
 }

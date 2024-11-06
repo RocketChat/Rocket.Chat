@@ -17,11 +17,11 @@ export async function markRoomResponded(
 	}
 
 	const monthYear = moment().format('YYYY-MM');
-	const isContactActive = await LivechatContacts.isContactActiveOnPeriod(room.v._id, monthYear);
+	const isContactActive = await LivechatContacts.isContactActiveOnPeriod({ visitorId: room.v._id, source: room.source }, monthYear);
 
 	// Case: agent answers & visitor is not active, we mark visitor as active
 	if (!isContactActive) {
-		await LivechatContacts.markContactActiveForPeriod(room.v._id, monthYear);
+		await LivechatContacts.markContactActiveForPeriod({ visitorId: room.v._id, source: room.source }, monthYear);
 	}
 
 	if (!room.v?.activity?.includes(monthYear)) {
