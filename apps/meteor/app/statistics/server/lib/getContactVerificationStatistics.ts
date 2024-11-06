@@ -7,11 +7,11 @@ export async function getContactVerificationStatistics(): Promise<IStats['contac
 	const [
 		totalContacts,
 		totalUnknownContacts,
-		[{ totalConflicts }],
+		[{ totalConflicts = 0 }],
 		totalBlockedContacts,
 		totalFullyBlockedContacts,
 		totalVerifiedContacts,
-		[{ avgChannelsPerContact }],
+		[{ avgChannelsPerContact = 0 }],
 		totalContactsWithoutChannels,
 	] = await Promise.all([
 		LivechatContacts.countDocuments({}),
