@@ -51,10 +51,6 @@ export async function pinMessage(originalMessage: IMessage, userId: string, pinn
 		});
 	}
 
-	if (originalMessage.pinned) {
-		return originalMessage;
-	}
-
 	if (!(await hasPermissionAsync(userId, 'pin-message', originalMessage.rid))) {
 		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 	}
@@ -66,6 +62,10 @@ export async function pinMessage(originalMessage: IMessage, userId: string, pinn
 
 	if (!(await canAccessRoomAsync(room, { _id: userId }))) {
 		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
+	}
+
+	if (originalMessage.pinned) {
+		return originalMessage;
 	}
 
 	const me = await Users.findOneById(userId);
