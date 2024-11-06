@@ -79,7 +79,7 @@ describe('#userAvatarById()', () => {
 
 	it(`should call external provider`, async () => {
 		const userId = 'xvf5Tr34';
-		const request = { url: '/' + userId };
+		const request = { url: `/${userId}` };
 
 		const pipe = sinon.spy();
 		const mockResponseHeaders = new Headers();
@@ -135,7 +135,7 @@ describe('#userAvatarById()', () => {
 		mocks.findOneById.returns(null);
 
 		const userId = 'awdasdaw';
-		const request = { url: '/' + userId, headers: {} };
+		const request = { url: `/${userId}`, headers: {} };
 
 		await userAvatarById(request, response, next);
 		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
@@ -146,7 +146,7 @@ describe('#userAvatarById()', () => {
 
 	it(`should fallback to SVG if no avatar found`, async () => {
 		const userId = '2apso9283';
-		const request = { url: '/' + userId, headers: {} };
+		const request = { url: `/${userId}`, headers: {} };
 
 		mocks.findOneById.returns({ username: 'jon' });
 		mocks.utils.wasFallbackModified.returns(true);
@@ -160,7 +160,7 @@ describe('#userAvatarById()', () => {
 
 	it(`should fallback to SVG with user name if UI_Use_Name_Avatar is true`, async () => {
 		const userId = '2apso9283';
-		const request = { url: '/' + userId, headers: {} };
+		const request = { url: `/${userId}`, headers: {} };
 
 		mocks.findOneById.returns({ username: 'jon', name: 'Doe' });
 		mocks.utils.wasFallbackModified.returns(true);

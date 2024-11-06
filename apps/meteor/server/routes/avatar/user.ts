@@ -1,5 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 
+import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IIncomingMessage } from '@rocket.chat/core-typings';
 import { Avatars, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -7,7 +8,6 @@ import type { NextFunction } from 'connect';
 
 import { settings } from '../../../app/settings/server';
 import { serveSvgAvatarInRequestedFormat, wasFallbackModified, setCacheAndDispositionHeaders, serveAvatarFile } from './utils';
-import { IUser } from '@rocket.chat/apps-engine/definition/users';
 
 const handleExternalProvider = async (externalProviderUrl: string, username: string, res: ServerResponse): Promise<void> => {
 	const response = await fetch(externalProviderUrl.replace('{username}', username));
