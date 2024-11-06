@@ -161,13 +161,7 @@ function SideBarItemTemplateWithData({
 	const badges = (
 		<Margins inlineStart={8}>
 			{showBadge && isUnread && (
-				<Badge
-					role='status'
-					{...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)}
-					variant={variant}
-					title={badgeTitle}
-					aria-label={badgeTitle}
-				>
+				<Badge role='status' {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant} title={badgeTitle}>
 					{unread + tunread?.length}
 				</Badge>
 			)}

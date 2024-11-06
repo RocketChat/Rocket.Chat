@@ -123,7 +123,7 @@ const SidebarItemTemplateWithData = ({
 	const badges = (
 		<>
 			{showUnread && (
-				<SidebarV2ItemBadge variant={unreadVariant} title={unreadTitle} role='status' aria-label={unreadTitle}>
+				<SidebarV2ItemBadge variant={unreadVariant} title={unreadTitle} role='status'>
 					{unreadCount.total}
 				</SidebarV2ItemBadge>
 			)}

@@ -29,7 +29,7 @@ export const useItemData = (
 		() => (
 			<>
 				{showUnread && (
-					<SidebarItemBadge variant={unreadVariant} title={unreadTitle} role='status' aria-label={unreadTitle}>
+					<SidebarItemBadge variant={unreadVariant} title={unreadTitle} role='status'>
 						{unreadCount.total}
 					</SidebarItemBadge>
 				)}
