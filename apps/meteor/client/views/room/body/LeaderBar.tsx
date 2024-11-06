@@ -2,10 +2,10 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
 import type { AriaButtonProps } from 'react-aria';
+import { useTranslation } from 'react-i18next';
 
 import { isTruthy } from '../../../../lib/isTruthy';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
@@ -23,7 +23,7 @@ type LeaderBarProps = {
  * @deprecated on newNavigation feature. Remove after full migration.
  */
 const LeaderBar = ({ _id, name, username, visible, onAvatarClick, triggerProps }: LeaderBarProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const chatNowLink = useMemo(() => roomCoordinator.getRouteLink('d', { name: username }) || undefined, [username]);
 

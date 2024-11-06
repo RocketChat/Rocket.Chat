@@ -352,6 +352,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			...(userData.importIds?.length && { importIds: userData.importIds }),
 			...(!!userData.customFields && { customFields: userData.customFields }),
 			...(userData.deleted !== undefined && { active: !userData.deleted }),
+			...(userData.voipExtension !== undefined && { freeSwitchExtension: userData.voipExtension }),
 		};
 	}
 
@@ -375,7 +376,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 										enabled: true,
 										changedAt: new Date(),
 									},
-							  }
+								}
 							: {}),
 					},
 				} as IUser;

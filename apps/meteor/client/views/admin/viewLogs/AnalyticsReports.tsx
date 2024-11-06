@@ -1,11 +1,11 @@
 import { Box, Icon, Skeleton, Scrollable } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useStatistics } from '../../hooks/useStatistics';
 
 const AnalyticsReports = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { data, isLoading, isSuccess, isError } = useStatistics();
 

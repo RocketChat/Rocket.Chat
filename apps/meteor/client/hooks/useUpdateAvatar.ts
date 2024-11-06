@@ -1,6 +1,7 @@
 import type { AvatarObject, AvatarServiceObject, AvatarReset, AvatarUrlObj, IUser } from '@rocket.chat/core-typings';
-import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useEndpointAction } from './useEndpointAction';
 import { useEndpointUpload } from './useEndpointUpload';
@@ -15,7 +16,7 @@ export const useUpdateAvatar = (
 	avatarObj: AvatarObject,
 	userId: IUser['_id'],
 ): (() => Promise<{ success: boolean } | null | undefined>) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const avatarUrl = isAvatarUrl(avatarObj) ? avatarObj.avatarUrl : '';
 
 	const successMessage = t('Avatar_changed_successfully');

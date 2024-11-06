@@ -3,7 +3,7 @@ import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } fro
 import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
-import type { Device, ModalContextValue, TranslationKey } from '@rocket.chat/ui-contexts';
+import type { Device, ModalContextValue, SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	AuthorizationContext,
 	ConnectionStatusContext,
@@ -15,7 +15,7 @@ import {
 	ActionManagerContext,
 	ModalContext,
 } from '@rocket.chat/ui-contexts';
-import type { DecoratorFn } from '@storybook/react';
+import type { Decorator } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createInstance } from 'i18next';
 import type { ObjectId } from 'mongodb';
@@ -92,10 +92,12 @@ export class MockedAppRootBuilder {
 		queryPreference: () => [() => () => undefined, () => undefined],
 		queryRoom: () => [() => () => undefined, () => undefined],
 		querySubscription: () => [() => () => undefined, () => undefined],
-		querySubscriptions: () => [() => () => undefined, () => []],
+		querySubscriptions: () => [() => () => undefined, () => this.subscriptions], // apply query and option
 		user: null,
 		userId: null,
 	};
+
+	private subscriptions: SubscriptionWithRoom[] = [];
 
 	private modal: ModalContextValue = {
 		currentModal: { component: null },
@@ -239,7 +241,7 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	withJohnDoe(): this {
+	withJohnDoe(overrides: Partial<IUser> = {}): this {
 		this.user.userId = 'john.doe';
 
 		this.user.user = {
@@ -251,6 +253,7 @@ export class MockedAppRootBuilder {
 			_updatedAt: new Date(),
 			roles: ['admin'],
 			type: 'user',
+			...overrides,
 		};
 
 		return this;
@@ -266,6 +269,12 @@ export class MockedAppRootBuilder {
 	withUser(user: IUser): this {
 		this.user.userId = user._id;
 		this.user.user = user;
+
+		return this;
+	}
+
+	withSubscriptions(subscriptions: SubscriptionWithRoom[]): this {
+		this.subscriptions = subscriptions;
 
 		return this;
 	}
@@ -417,7 +426,7 @@ export class MockedAppRootBuilder {
 								name: new Intl.DisplayNames([key], { type: 'language' }).of(key) ?? key,
 								ogName: new Intl.DisplayNames([key], { type: 'language' }).of(key) ?? key,
 								key,
-						  }))
+							}))
 						: []),
 				],
 				loadLanguage: async (language) => {
@@ -534,7 +543,7 @@ export class MockedAppRootBuilder {
 		};
 	}
 
-	buildStoryDecorator(): DecoratorFn {
+	buildStoryDecorator(): Decorator {
 		const WrapperComponent = this.build();
 
 		// eslint-disable-next-line react/display-name, react/no-multi-comp

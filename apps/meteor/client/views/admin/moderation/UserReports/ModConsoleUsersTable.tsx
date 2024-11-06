@@ -2,7 +2,7 @@ import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitl
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericNoResults from '../../../../components/GenericNoResults';
@@ -35,16 +35,20 @@ const ModConsoleUsersTable = () => {
 	});
 	const { start, end } = dateRange;
 
-	const debouncedText = useDebouncedValue(text, 500);
-
-	const query = {
-		selector: debouncedText,
-		sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-		count: itemsPerPage,
-		offset: current,
-		latest: end ? `${new Date(end).toISOString().slice(0, 10)}T23:59:59.999Z` : undefined,
-		oldest: start ? `${new Date(start).toISOString().slice(0, 10)}T00:00:00.000Z` : undefined,
-	};
+	const query = useDebouncedValue(
+		useMemo(
+			() => ({
+				selector: text,
+				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
+				count: itemsPerPage,
+				offset: current,
+				latest: end ? `${new Date(end).toISOString().slice(0, 10)}T23:59:59.999Z` : undefined,
+				oldest: start ? `${new Date(start).toISOString().slice(0, 10)}T00:00:00.000Z` : undefined,
+			}),
+			[current, end, itemsPerPage, sortBy, sortDirection, start, text],
+		),
+		500,
+	);
 
 	const getReports = useEndpoint('GET', '/v1/moderation.userReports');
 
@@ -98,8 +102,7 @@ const ModConsoleUsersTable = () => {
 
 	return (
 		<>
-			<ModerationFilter setText={setText} setDateRange={setDateRange} />
-
+			<ModerationFilter text={text} setText={setText} setDateRange={setDateRange} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

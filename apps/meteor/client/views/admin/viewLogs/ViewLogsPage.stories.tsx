@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import type { ReactElement, ReactNode } from 'react';
 import React from 'react';
 
@@ -18,7 +18,7 @@ export default {
 			</div>
 		),
 	],
-} as ComponentMeta<typeof ViewLogsPage>;
+} satisfies Meta<typeof ViewLogsPage>;
 
-export const Default: ComponentStory<typeof ViewLogsPage> = () => <ViewLogsPage />;
+export const Default: StoryFn<typeof ViewLogsPage> = () => <ViewLogsPage />;
 Default.storyName = 'ViewLogsPage';

@@ -1,8 +1,9 @@
 import type { IOmnichannelGenericRoom, IVisitor } from '@rocket.chat/core-typings';
 import { Avatar, Box } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { UserStatus } from '../../../../components/UserStatus';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -18,7 +19,7 @@ type ContactFieldProps = {
 };
 
 const ContactField = ({ contact, room }: ContactFieldProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { status } = contact;
 	const { fname, t: type } = room;
 	const avatarUrl = roomCoordinator.getRoomDirectives(type).getAvatarPath(room) || '';

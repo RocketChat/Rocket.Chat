@@ -1,8 +1,9 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import { useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMethod } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, ReactNode } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import CounterSet from '../../../components/dataView/CounterSet';
 
@@ -41,7 +42,7 @@ const useOverviewData = (): [eventCount: ReactNode, userCount: ReactNode, server
 };
 
 function OverviewSection(): ReactElement {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [eventCount, userCount, serverCount] = useOverviewData();
 

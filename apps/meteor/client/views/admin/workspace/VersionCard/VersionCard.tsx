@@ -116,11 +116,11 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 							danger: true,
 							icon: 'warning',
 							label: t('Plan_limits_reached'),
-					  }
+						}
 					: {
 							icon: 'check',
 							label: t('Operating_withing_plan_limits'),
-					  },
+						},
 				(isAirgapped || !versions) && {
 					icon: 'warning',
 					label: (
@@ -157,12 +157,12 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 					? {
 							icon: 'check',
 							label: t('Workspace_registered'),
-					  }
+						}
 					: {
 							danger: true,
 							icon: 'warning',
 							label: t('Workspace_not_registered'),
-					  },
+						},
 			].filter(Boolean) as VersionActionItem[]
 		).sort((a) => (a.danger ? -1 : 1));
 	}, [isOverLimits, t, isAirgapped, versions, versionStatus?.label, versionStatus?.expiration, formatDate, isRegistered]);

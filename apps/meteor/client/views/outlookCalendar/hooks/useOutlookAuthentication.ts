@@ -1,5 +1,6 @@
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import { NotOnDesktopError } from '../lib/NotOnDesktopError';
 
@@ -38,7 +39,7 @@ export const useOutlookAuthenticationMutation = () => {
 };
 
 export const useOutlookAuthenticationMutationLogout = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const mutation = useOutlookAuthenticationMutation();
 	return useMutation({

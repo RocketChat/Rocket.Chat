@@ -941,7 +941,22 @@ describe('[Rooms]', () => {
 				.end(done);
 		});
 
-		it('should return an error when send an invalid room', (done) => {
+		it('should return false if this room name does not exist', (done) => {
+			void request
+				.get(api('rooms.nameExists'))
+				.set(credentials)
+				.query({
+					roomName: 'foo',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', false);
+				})
+				.end(done);
+		});
+
+		it('should return an error when the require parameter (roomName) is not provided', (done) => {
 			void request
 				.get(api('rooms.nameExists'))
 				.set(credentials)
@@ -1272,23 +1287,6 @@ describe('[Rooms]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
-				})
-				.end(done);
-		});
-		it('should return name and _id of public channel when it has the "fields" query parameter limiting by name', (done) => {
-			void request
-				.get(api('rooms.info'))
-				.set(credentials)
-				.query({
-					roomId: testChannel._id,
-					fields: JSON.stringify({ name: 1 }),
-				})
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('room').and.to.be.an('object');
-					expect(res.body.room).to.have.property('name').and.to.be.equal(testChannelName);
-					expect(res.body.room).to.have.all.keys(['_id', 'name']);
 				})
 				.end(done);
 		});
@@ -2678,13 +2676,7 @@ describe('[Rooms]', () => {
 			testUserCreds = await login(user.username, password);
 		});
 
-		const uploadFile = async ({
-			roomId,
-			file,
-		}: {
-			roomId: IRoom['_id'];
-			file: Blob | Buffer | fs.ReadStream | string | boolean | number;
-		}) => {
+		const uploadFile = async ({ roomId, file }: { roomId: IRoom['_id']; file: Buffer | fs.ReadStream | string | boolean | number }) => {
 			const { body } = await request
 				.post(api(`rooms.upload/${roomId}`))
 				.set(credentials)

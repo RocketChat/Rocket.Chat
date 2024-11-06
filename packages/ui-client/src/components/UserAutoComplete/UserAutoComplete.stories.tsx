@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import UserAutoComplete from '.';
 
@@ -8,7 +8,7 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} as ComponentMeta<typeof UserAutoComplete>;
+} satisfies Meta<typeof UserAutoComplete>;
 
-export const Default: ComponentStory<typeof UserAutoComplete> = (args) => <UserAutoComplete {...args} />;
+export const Default: StoryFn<typeof UserAutoComplete> = (args) => <UserAutoComplete {...args} />;
 Default.storyName = 'UserAutoComplete';

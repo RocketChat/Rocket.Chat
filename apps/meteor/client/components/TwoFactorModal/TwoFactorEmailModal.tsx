@@ -1,8 +1,9 @@
 import { Box, FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, Button } from '@rocket.chat/fuselage';
 import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, SyntheticEvent } from 'react';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../GenericModal';
 import type { OnConfirm } from './TwoFactorModal';
@@ -17,7 +18,7 @@ type TwoFactorEmailModalProps = {
 
 const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttempt }: TwoFactorEmailModalProps): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [code, setCode] = useState<string>('');
 	const ref = useAutoFocus<HTMLInputElement>();
 

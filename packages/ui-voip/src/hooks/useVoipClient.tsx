@@ -6,6 +6,7 @@ import VoipClient from '../lib/VoipClient';
 import { useWebRtcServers } from './useWebRtcServers';
 
 type VoipClientParams = {
+	enabled?: boolean;
 	autoRegister?: boolean;
 };
 
@@ -14,9 +15,9 @@ type VoipClientResult = {
 	error: Error | null;
 };
 
-export const useVoipClient = ({ autoRegister = true }: VoipClientParams): VoipClientResult => {
+export const useVoipClient = ({ enabled = true, autoRegister = true }: VoipClientParams = {}): VoipClientResult => {
 	const { _id: userId } = useUser() || {};
-	const isVoipEnabled = useSetting<boolean>('VoIP_TeamCollab_Enabled');
+	const isVoipEnabled = useSetting('VoIP_TeamCollab_Enabled', false);
 	const voipClientRef = useRef<VoipClient | null>(null);
 
 	const getRegistrationInfo = useEndpoint('GET', '/v1/voip-freeswitch.extension.getRegistrationInfoByUserId');
@@ -71,7 +72,7 @@ export const useVoipClient = ({ autoRegister = true }: VoipClientParams): VoipCl
 		},
 		{
 			initialData: null,
-			enabled: isVoipEnabled,
+			enabled,
 		},
 	);
 

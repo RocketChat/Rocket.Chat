@@ -15,7 +15,10 @@ import React, { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
 
 import WarningModal from '../../../components/WarningModal';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import type { AddonActionType } from '../AppsList/AddonRequiredModal';
+import AddonRequiredModal from '../AppsList/AddonRequiredModal';
 import IframeModal from '../IframeModal';
 import UninstallGrandfatheredAppModal from '../components/UninstallGrandfatheredAppModal/UninstallGrandfatheredAppModal';
 import type { Actions } from '../helpers';
@@ -55,6 +58,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const isAdminUser = usePermission('manage-apps');
 	const { data } = useIsEnterprise();
 	const isEnterpriseLicense = !!data?.isEnterprise;
+
+	const workspaceHasMarketplaceAddon = useHasLicenseModule(app.addon);
+	const workspaceHasInstalledAddon = useHasLicenseModule(app.installedAddon);
 
 	const [isLoading, setLoading] = useState(false);
 	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
@@ -118,10 +124,34 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		setIsPurchased: setPurchased,
 	});
 
+	// TODO: There is no necessity of all these callbacks being out of the above useMemo.
+	// My propose here is to refactor the hook to make it clearer and with less unnecessary caching.
+	const missingAddonHandler = useCallback(
+		(actionType: AddonActionType) => {
+			setModal(<AddonRequiredModal actionType={actionType} onDismiss={closeModal} onInstallAnyway={appInstallationHandler} />);
+		},
+		[appInstallationHandler, closeModal, setModal],
+	);
+
+	const handleAddon = useCallback(
+		(actionType: AddonActionType, callback: () => void) => {
+			if (actionType === 'enable' && isAdminUser && app.installedAddon && !workspaceHasInstalledAddon) {
+				return missingAddonHandler(actionType);
+			}
+
+			if (actionType !== 'enable' && isAdminUser && app.addon && !workspaceHasMarketplaceAddon) {
+				return missingAddonHandler(actionType);
+			}
+
+			callback();
+		},
+		[app.addon, app.installedAddon, isAdminUser, missingAddonHandler, workspaceHasInstalledAddon, workspaceHasMarketplaceAddon],
+	);
+
 	const handleAcquireApp = useCallback(() => {
 		setLoading(true);
-		appInstallationHandler();
-	}, [appInstallationHandler, setLoading]);
+		handleAddon('install', appInstallationHandler);
+	}, [appInstallationHandler, handleAddon]);
 
 	const handleSubscription = useCallback(async () => {
 		if (app?.versionIncompatible && !isSubscribed) {
@@ -181,14 +211,16 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		);
 	}, [app.name, closeModal, setAppStatus, setModal, t]);
 
-	const handleEnable = useCallback(async () => {
-		try {
-			const { status } = await setAppStatus({ status: AppStatus.MANUALLY_ENABLED });
-			warnEnableDisableApp(app.name, status, 'enable');
-		} catch (error) {
-			handleAPIError(error);
-		}
-	}, [app.name, setAppStatus]);
+	const handleEnable = useCallback(() => {
+		handleAddon('enable', async () => {
+			try {
+				const { status } = await setAppStatus({ status: AppStatus.MANUALLY_ENABLED });
+				warnEnableDisableApp(app.name, status, 'enable');
+			} catch (error) {
+				handleAPIError(error);
+			}
+		});
+	}, [app.name, handleAddon, setAppStatus]);
 
 	const handleUninstall = useCallback(() => {
 		const uninstall = async () => {
@@ -297,8 +329,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 			return;
 		}
 
-		openPermissionModal();
-	}, [app, openPermissionModal, openIncompatibleModal, closeModal]);
+		handleAddon('update', openPermissionModal);
+	}, [app, handleAddon, openPermissionModal, openIncompatibleModal, closeModal]);
 
 	const canUpdate = app.installed && app.version && app.marketplaceVersion && semver.lt(app.version, app.marketplaceVersion);
 
@@ -340,7 +372,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		const doesItReachedTheLimit =
 			!app.migrated &&
 			!appCountQuery?.data?.hasUnlimitedApps &&
-			!!appCountQuery?.data?.enabled &&
+			appCountQuery?.data?.enabled !== undefined &&
 			appCountQuery?.data?.enabled >= appCountQuery?.data?.limit;
 
 		const installedAppOptions = [

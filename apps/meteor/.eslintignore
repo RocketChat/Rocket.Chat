@@ -9,6 +9,7 @@
 !/.mocharc.js
 !/.mocharc.*.js
 !/.scripts/
-#!/.storybook/
+!/.storybook/
 !/client/.eslintrc.js
 !/ee/client/.eslintrc.js
+/storybook-static/

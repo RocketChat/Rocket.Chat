@@ -52,7 +52,7 @@ export class HomeContent {
 	}
 
 	get encryptedRoomHeaderIcon(): Locator {
-		return this.page.locator('.rcx-room-header button > i.rcx-icon--name-key');
+		return this.page.locator('.rcx-room-header i.rcx-icon--name-key');
 	}
 
 	get lastIgnoredUserMessage(): Locator {
@@ -85,7 +85,7 @@ export class HomeContent {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
 		await this.page.locator('[name="msg"]').fill(text);
-		await this.page.getByLabel('Send').click();
+		await this.page.locator('button[aria-label="Send"]').click();
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {

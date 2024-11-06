@@ -2,9 +2,9 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, Dispatch, SetStateAction, SyntheticEvent } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import {
@@ -54,7 +54,7 @@ const TeamsChannels = ({
 	onClickView,
 	reload,
 }: TeamsChannelsProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const inputRef = useAutoFocus<HTMLInputElement>(true);
 
 	const options: SelectOption[] = useMemo(

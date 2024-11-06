@@ -147,12 +147,12 @@ const AdminUsersPage = (): ReactElement => {
 					<UsersTable
 						filteredUsersQueryResult={filteredUsersQueryResult}
 						setUserFilters={setUserFilters}
-						onReload={handleReload}
 						paginationData={paginationData}
 						sortData={sortData}
 						tab={tab}
 						isSeatsCapExceeded={isSeatsCapExceeded}
 						roleData={data}
+						onReload={handleReload}
 					/>
 				</PageContent>
 			</Page>

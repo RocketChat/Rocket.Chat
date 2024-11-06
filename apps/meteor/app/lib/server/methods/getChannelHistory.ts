@@ -89,7 +89,7 @@ Meteor.methods<ServerMethods>({
 						options,
 						showThreadMessages,
 						inclusive,
-				  ).toArray()
+					).toArray()
 				: await Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 						rid,
 						oldest,
@@ -98,7 +98,7 @@ Meteor.methods<ServerMethods>({
 						options,
 						showThreadMessages,
 						inclusive,
-				  ).toArray();
+					).toArray();
 
 		const messages = await normalizeMessagesForUser(records, fromUserId);
 
