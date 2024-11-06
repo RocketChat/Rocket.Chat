@@ -39,10 +39,13 @@ export async function migrateVisitorToContactId(
 	await ContactMerger.mergeVisitorIntoContact(visitor, existingContact, source);
 
 	// Update all existing rooms matching the visitor id and source to set the contactId to them
-	await LivechatRooms.setContactIdByVisitorAssociation(existingContact._id, {
-		visitorId: visitor._id,
-		source,
-	});
+	await LivechatRooms.setContactByVisitorAssociation(
+		{
+			visitorId: visitor._id,
+			source,
+		},
+		existingContact,
+	);
 
 	return existingContact._id;
 }
