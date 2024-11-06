@@ -31,7 +31,7 @@ import type {
 	ILivechatContact,
 	ILivechatContactVisitorAssociation,
 	ILivechatContactChannel,
-    IUser,
+	IUser,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import type { WithId } from 'mongodb';
