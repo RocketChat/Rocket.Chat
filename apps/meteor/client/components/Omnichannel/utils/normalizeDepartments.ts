@@ -1,17 +1,27 @@
 import type { EndpointFunction, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { QueryClient } from '@tanstack/react-query';
 import type { useTranslation } from 'react-i18next';
 
-import { queryClient } from '../../../lib/queryClient';
 import type { DepartmentListItem } from '../Definitions/DepartmentsDefinitions';
 import type { DepartmentsListOptions } from '../hooks/useDepartmentsList';
 
-export const normalizeDepartments = async (
-	departments: DepartmentListItem[],
-	options: DepartmentsListOptions,
-	getDepartment: EndpointFunction<'GET', '/v1/livechat/department/:_id'>,
-	dispatchToastMessage: ReturnType<typeof useToastMessageDispatch>,
-	t: ReturnType<typeof useTranslation>['t'],
-): Promise<DepartmentListItem[]> => {
+type normalizeDepartmentsProps = {
+	departments: DepartmentListItem[];
+	options: DepartmentsListOptions;
+	getDepartment: EndpointFunction<'GET', '/v1/livechat/department/:_id'>;
+	dispatchToastMessage: ReturnType<typeof useToastMessageDispatch>;
+	t: ReturnType<typeof useTranslation>['t'];
+	queryClient: QueryClient;
+};
+
+export const normalizeDepartments = async ({
+	departments,
+	options,
+	getDepartment,
+	dispatchToastMessage,
+	t,
+	queryClient,
+}: normalizeDepartmentsProps): Promise<DepartmentListItem[]> => {
 	const { haveAll, haveNone, selectedDepartment, onChange: setDepartment } = options;
 	const departmentsList = [...departments];
 
@@ -38,7 +48,7 @@ export const normalizeDepartments = async (
 	}
 
 	try {
-		const data = await queryClient.fetchQuery(['/v1/livechat/department/:_id', selectedDepartment], async () => getDepartment({}));
+		const data = await queryClient.ensureQueryData(['/v1/livechat/department/:_id', selectedDepartment], async () => getDepartment({}));
 		if (!!setDepartment && !data?.department) {
 			setDepartment('all');
 			dispatchToastMessage({

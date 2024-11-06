@@ -1,4 +1,5 @@
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -31,6 +32,7 @@ export const useDepartmentsList = (
 } => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const queryClient = useQueryClient();
 
 	const [itemsList, setItemsList] = useState(() => new RecordList<DepartmentListItem>());
 	const reload = useCallback(() => setItemsList(new RecordList<DepartmentListItem>()), []);
@@ -70,14 +72,21 @@ export const useDepartmentsList = (
 					}),
 				);
 
-			const normalizedItems = await normalizeDepartments(items, options, getDepartment, dispatchToastMessage, t);
+			const normalizedItems = await normalizeDepartments({
+				departments: items,
+				options,
+				getDepartment,
+				dispatchToastMessage,
+				t,
+				queryClient,
+			});
 
 			return {
 				items: normalizedItems,
 				itemCount: options.departmentId ? total - 1 : total,
 			};
 		},
-		[dispatchToastMessage, getDepartment, getDepartments, options, t],
+		[dispatchToastMessage, getDepartment, getDepartments, options, queryClient, t],
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);
