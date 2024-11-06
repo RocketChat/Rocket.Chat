@@ -45,7 +45,7 @@ describe('MAC', () => {
 			const room = await createLivechatRoom(visitor.token);
 
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.v.contactId });
-			expect(res.body.contact.channels[0].visitorId).to.be.equal(visitor._id);
+			expect(res.body.contact.channels[0].visitor.visitorId).to.be.equal(visitor._id);
 			expect(res.body.contact).not.to.have.property('activity');
 		});
 
@@ -67,7 +67,7 @@ describe('MAC', () => {
 			await sendAgentMessage(room._id);
 
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.v.contactId });
-			expect(res.body.contact.channels[0].visitorId).to.be.equal(multipleContactsVisitor._id);
+			expect(res.body.contact.channels[0].visitor.visitorId).to.be.equal(multipleContactsVisitor._id);
 			expect(res.body.contact).to.have.property('activity').that.is.an('array').with.lengthOf(1);
 			expect(res.body.contact.activity[0]).to.equal(moment.utc().format('YYYY-MM'));
 		});
@@ -89,7 +89,7 @@ describe('MAC', () => {
 			await sendAgentMessage(room._id);
 
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.v.contactId });
-			expect(res.body.contact.channels[0].visitorId).to.be.equal(multipleContactsVisitor._id);
+			expect(res.body.contact.channels[0].visitor.visitorId).to.be.equal(multipleContactsVisitor._id);
 			expect(res.body.contact).to.have.property('activity').that.is.an('array').with.lengthOf(1);
 			expect(res.body.contact.activity[0]).to.equal(moment.utc().format('YYYY-MM'));
 			await closeOmnichannelRoom(room._id);
@@ -124,7 +124,7 @@ describe('MAC', () => {
 			expect(res.body).to.have.nested.property('contact').and.to.be.an('object');
 			expect(res.body.contact.channels).to.be.an('array').with.lengthOf(1);
 			expect(res.body.contact.channels[0].name).to.be.equal('api');
-			expect(res.body.contact.channels[0].visitorId).to.be.equal(visitor._id);
+			expect(res.body.contact.channels[0].visitor.visitorId).to.be.equal(visitor._id);
 
 			expect(res.body.contact).to.have.nested.property('activity').and.to.be.an('array').with.lengthOf(1);
 			expect(res.body.contact.activity[0]).to.equal(moment.utc().format('YYYY-MM'));
