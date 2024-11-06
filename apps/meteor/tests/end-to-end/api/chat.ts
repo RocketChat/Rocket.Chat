@@ -2296,7 +2296,7 @@ describe('[Chat]', () => {
 			Promise.all([updateSetting('Message_AllowPinning', true), updatePermission('pin-message', ['owner', 'moderator', 'admin'])]),
 		);
 
-		descrube('no permissions', () => {
+		describe('no permissions', () => {
 			before(() => updatePermission('pin-message', []));
 			after(() => updatePermission('pin-message', ['owner', 'moderator', 'admin']));
 

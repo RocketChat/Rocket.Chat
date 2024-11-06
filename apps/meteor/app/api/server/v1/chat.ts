@@ -21,6 +21,7 @@ import { processWebhookMessage } from '../../../lib/server/functions/processWebh
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage';
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
+import { pinMessage } from '../../../message-pin/server/pinMessage';
 import { OEmbed } from '../../../oembed/server/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { settings } from '../../../settings/server';
@@ -29,7 +30,6 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
-import { pinMessage } from '../../../message-pin/server/pinMessage';
 
 API.v1.addRoute(
 	'chat.delete',
