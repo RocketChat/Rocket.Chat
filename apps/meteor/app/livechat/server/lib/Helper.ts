@@ -88,20 +88,6 @@ export const createLivechatRoom = async (
 	const extraRoomInfo = await callbacks.run('livechat.beforeRoom', roomInfo, extraData);
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
-
-	const activity =
-		guest.activity ||
-		(
-			await LivechatContacts.findOneByVisitor<Pick<ILivechatContact, '_id' | 'activity'>>(
-				{ visitorId: guest._id, source: roomInfo.source },
-				{ projection: { activity: 1 } },
-			)
-		)?.activity;
-	logger.debug({
-		msg: `Creating livechat room for visitor ${_id}`,
-		visitor: { _id, username, departmentId, status, activity },
-	});
-
 	const source = extraRoomInfo.source || roomInfo.source;
 
 	if (settings.get<string>('Livechat_Require_Contact_Verification') === 'always') {
@@ -111,13 +97,19 @@ export const createLivechatRoom = async (
 	const contactId = await migrateVisitorIfMissingContact(_id, source);
 	const contact =
 		contactId &&
-		(await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name' | 'channels'>>(contactId, {
-			projection: { name: 1, channels: 1 },
+		(await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name' | 'channels' | 'activity'>>(contactId, {
+			projection: { name: 1, channels: 1, activity: 1 },
 		}));
 	if (!contact) {
 		throw new Error('error-invalid-contact');
 	}
 	const verified = Boolean(contact.channels.some((channel) => isVerifiedChannelInSource(channel, _id, source)));
+
+	const activity = guest.activity || contact.activity;
+	logger.debug({
+		msg: `Creating livechat room for visitor ${_id}`,
+		visitor: { _id, username, departmentId, status, activity },
+	});
 
 	// TODO: Solve `u` missing issue
 	const room: InsertionModel<IOmnichannelRoom> = {
