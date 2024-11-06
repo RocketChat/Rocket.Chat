@@ -20,6 +20,128 @@ const initialDepartmentsListMock = Array.from(Array(25)).map((_, index) => {
 	};
 });
 
+const initialDepartmentsToOption = Array.from(Array(25)).map((_, index) => {
+	return {
+		_id: `${index}`,
+		label: `test_department_${index}`,
+		value: `${index}`,
+	};
+});
+
+const getDepartmentByIdCallback = jest.fn();
+
+it('should add all option to departments list if haveAll is true', async () => {
+	const allOption = {
+		_id: '',
+		label: 'All',
+		value: 'all',
+	};
+
+	const { result } = renderHook(
+		() =>
+			useDepartmentsList({
+				filter: '',
+				haveAll: true,
+			}),
+		{
+			legacyRoot: true,
+			wrapper: mockAppRoot()
+				.withEndpoint('GET', '/v1/livechat/department', () => ({
+					count: 25,
+					offset: 0,
+					total: 25,
+					departments: initialDepartmentsListMock,
+				}))
+				.build(),
+		},
+	);
+
+	await waitFor(() => expect(result.current.itemsList.items).toContainEqual(allOption));
+	await waitFor(() => expect(result.current.itemsList.items.length).toEqual(26));
+});
+
+it('should add none option to departments list if haveNone is true', async () => {
+	const noneOption = {
+		_id: '',
+		label: 'None',
+		value: '',
+	};
+
+	const { result } = renderHook(
+		() =>
+			useDepartmentsList({
+				filter: '',
+				haveNone: true,
+			}),
+		{
+			legacyRoot: true,
+			wrapper: mockAppRoot()
+				.withEndpoint('GET', '/v1/livechat/department', () => ({
+					count: 25,
+					offset: 0,
+					total: 25,
+					departments: initialDepartmentsListMock,
+				}))
+				.build(),
+		},
+	);
+
+	await waitFor(() => expect(result.current.itemsList.items).toContainEqual(noneOption));
+	await waitFor(() => expect(result.current.itemsList.items.length).toEqual(26));
+});
+
+it('should not fetch and add departments list when no department is selected', async () => {
+	const { result } = renderHook(
+		() =>
+			useDepartmentsList({
+				filter: '',
+			}),
+		{
+			legacyRoot: true,
+			wrapper: mockAppRoot()
+				.withEndpoint('GET', '/v1/livechat/department', () => ({
+					count: 25,
+					offset: 0,
+					total: 25,
+					departments: initialDepartmentsListMock,
+				}))
+				.withEndpoint('GET', `/v1/livechat/department/:_id`, getDepartmentByIdCallback)
+				.build(),
+		},
+	);
+
+	expect(getDepartmentByIdCallback).not.toHaveBeenCalled();
+	await waitFor(() => expect(result.current.itemsList.items).toEqual(initialDepartmentsToOption));
+	await waitFor(() => expect(result.current.itemsList.items.length).toEqual(25));
+});
+
+it('should not fetch and add departments list when all is selected', async () => {
+	const { result } = renderHook(
+		() =>
+			useDepartmentsList({
+				filter: '',
+				onlyMyDepartments: true,
+				showArchived: true,
+			}),
+		{
+			legacyRoot: true,
+			wrapper: mockAppRoot()
+				.withEndpoint('GET', '/v1/livechat/department', () => ({
+					count: 25,
+					offset: 0,
+					total: 25,
+					departments: initialDepartmentsListMock,
+				}))
+				.withEndpoint('GET', `/v1/livechat/department/:_id`, getDepartmentByIdCallback)
+				.build(),
+		},
+	);
+
+	expect(getDepartmentByIdCallback).not.toHaveBeenCalled();
+	await waitFor(() => expect(result.current.itemsList.items).toEqual(initialDepartmentsToOption));
+	await waitFor(() => expect(result.current.itemsList.items.length).toEqual(25));
+});
+
 it('should not fetch and add selected department if it is already in the departments list on first fetch', async () => {
 	const selectedDepartmentMappedToOption = {
 		_id: '5',
@@ -27,15 +149,10 @@ it('should not fetch and add selected department if it is already in the departm
 		value: '5',
 	};
 
-	const getDepartmentByIdCallback = jest.fn();
-
 	const { result } = renderHook(
 		() =>
 			useDepartmentsList({
 				filter: '',
-				onlyMyDepartments: true,
-				haveAll: true,
-				showArchived: true,
 				selectedDepartment: selectedDepartmentMappedToOption._id,
 			}),
 		{
@@ -54,8 +171,7 @@ it('should not fetch and add selected department if it is already in the departm
 
 	expect(getDepartmentByIdCallback).not.toHaveBeenCalled();
 	await waitFor(() => expect(result.current.itemsList.items).toContainEqual(selectedDepartmentMappedToOption));
-	// The expected length is 26 because the hook will add the 'All' item on run time
-	await waitFor(() => expect(result.current.itemsList.items.length).toBe(26));
+	await waitFor(() => expect(result.current.itemsList.items.length).toEqual(25));
 });
 
 it('should fetch and add selected department if it is not part of departments list on first fetch', async () => {
@@ -84,9 +200,6 @@ it('should fetch and add selected department if it is not part of departments li
 		() =>
 			useDepartmentsList({
 				filter: '',
-				onlyMyDepartments: true,
-				haveAll: true,
-				showArchived: true,
 				selectedDepartment: missingDepartmentMappedToOption._id,
 			}),
 		{
@@ -106,6 +219,5 @@ it('should fetch and add selected department if it is not part of departments li
 	);
 
 	await waitFor(() => expect(result.current.itemsList.items).toContainEqual(missingDepartmentMappedToOption));
-	// The expected length is 27 because the hook will add the 'All' item and the missing department on run time
-	await waitFor(() => expect(result.current.itemsList.items.length).toBe(27));
+	await waitFor(() => expect(result.current.itemsList.items.length).toBe(26));
 });
