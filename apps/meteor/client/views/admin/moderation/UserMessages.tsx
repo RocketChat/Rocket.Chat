@@ -21,18 +21,18 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 		isLoading,
 		isSuccess,
 		isError,
-	} = useQuery(
-		['moderation', 'msgReports', 'fetchDetails', { userId }],
-		async () => {
+	} = useQuery({
+		queryKey: ['moderation', 'msgReports', 'fetchDetails', { userId }],
+
+		queryFn: async () => {
 			const messages = await getUserMessages({ userId });
 			return messages;
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
 		},
-	);
+	});
 
 	const handleChange = useMutableCallback(() => {
 		reloadUserMessages();

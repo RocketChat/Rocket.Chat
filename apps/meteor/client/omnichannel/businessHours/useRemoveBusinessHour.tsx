@@ -18,7 +18,9 @@ export const useRemoveBusinessHour = () => {
 			try {
 				await removeBusinessHour(_id, type);
 				dispatchToastMessage({ type: 'success', message: t('Business_Hour_Removed') });
-				queryClient.invalidateQueries(['livechat-getBusinessHours']);
+				queryClient.invalidateQueries({
+					queryKey: ['livechat-getBusinessHours'],
+				});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

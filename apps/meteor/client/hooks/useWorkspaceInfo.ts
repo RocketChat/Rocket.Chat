@@ -64,6 +64,9 @@ export const useWorkspaceInfo = ({ refreshStatistics }: { refreshStatistics?: bo
 export const useRefreshStatistics = () => {
 	const queryClient = useQueryClient();
 	return useMutation({
-		mutationFn: () => queryClient.invalidateQueries(['info', 'statistics']),
+		mutationFn: () =>
+			queryClient.invalidateQueries({
+				queryKey: ['info', 'statistics'],
+			}),
 	});
 };

@@ -13,7 +13,10 @@ const CannedResponseEditWithData = ({ cannedResponseId }: { cannedResponseId: IO
 	const { t } = useTranslation();
 
 	const getCannedResponseById = useEndpoint('GET', '/v1/canned-responses/:_id', { _id: cannedResponseId });
-	const { data, isLoading, isError } = useQuery(['getCannedResponseById', cannedResponseId], async () => getCannedResponseById());
+	const { data, isLoading, isError } = useQuery({
+		queryKey: ['getCannedResponseById', cannedResponseId],
+		queryFn: async () => getCannedResponseById(),
+	});
 
 	if (isLoading) {
 		return <FormSkeleton />;

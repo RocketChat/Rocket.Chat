@@ -30,9 +30,13 @@ const RemoveExtensionModal = ({ name, extension, username, onClose }: RemoveExte
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Extension_removed') });
 
-			queryClient.invalidateQueries(['users.list']);
+			queryClient.invalidateQueries({
+				queryKey: ['users.list'],
+			});
 			if (loggedUser?.username === username) {
-				queryClient.invalidateQueries(['voip-client']);
+				queryClient.invalidateQueries({
+					queryKey: ['voip-client'],
+				});
 			}
 
 			onClose();

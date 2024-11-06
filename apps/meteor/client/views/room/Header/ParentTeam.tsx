@@ -29,12 +29,17 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 		data: teamInfoData,
 		isLoading: teamInfoLoading,
 		isError: teamInfoError,
-	} = useQuery(['teamId', teamId], async () => teamsInfoEndpoint({ teamId }), {
+	} = useQuery({
+		queryKey: ['teamId', teamId],
+		queryFn: async () => teamsInfoEndpoint({ teamId }),
 		keepPreviousData: true,
 		retry: (_, error) => (error as APIErrorResult)?.error === 'unauthorized' && false,
 	});
 
-	const { data: userTeams, isLoading: userTeamsLoading } = useQuery(['userId', userId], async () => userTeamsListEndpoint({ userId }));
+	const { data: userTeams, isLoading: userTeamsLoading } = useQuery({
+		queryKey: ['userId', userId],
+		queryFn: async () => userTeamsListEndpoint({ userId }),
+	});
 
 	const userBelongsToTeam = userTeams?.teams?.find((team) => team._id === teamId) || false;
 	const isTeamPublic = teamInfoData?.teamInfo.type === TEAM_TYPE.PUBLIC;

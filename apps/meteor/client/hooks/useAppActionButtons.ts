@@ -25,7 +25,10 @@ export const useAppActionButtons = <TContext extends `${UIActionButtonContext}`>
 
 	const getActionButtons = useEndpoint('GET', '/apps/actionButtons');
 
-	const result = useQuery(['apps', 'actionButtons'], () => getActionButtons(), {
+	const result = useQuery({
+		queryKey: ['apps', 'actionButtons'],
+		queryFn: () => getActionButtons(),
+
 		...(context && {
 			select: (data) =>
 				data.filter(
@@ -36,12 +39,15 @@ export const useAppActionButtons = <TContext extends `${UIActionButtonContext}`>
 					} => button.context === context,
 				),
 		}),
+
 		staleTime: Infinity,
 	});
 
 	const invalidate = useDebouncedCallback(
 		() => {
-			queryClient.invalidateQueries(['apps', 'actionButtons']);
+			queryClient.invalidateQueries({
+				queryKey: ['apps', 'actionButtons'],
+			});
 		},
 		100,
 		[],

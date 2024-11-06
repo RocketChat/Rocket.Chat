@@ -18,7 +18,9 @@ export const useRemoveCustomField = () => {
 			try {
 				await removeCustomField(id);
 				dispatchToastMessage({ type: 'success', message: t('Custom_Field_Removed') });
-				queryClient.invalidateQueries(['livechat-customFields']);
+				queryClient.invalidateQueries({
+					queryKey: ['livechat-customFields'],
+				});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

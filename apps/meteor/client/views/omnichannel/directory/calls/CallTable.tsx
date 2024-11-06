@@ -53,7 +53,10 @@ const CallTable = () => {
 	});
 
 	const getVoipRooms = useEndpoint('GET', '/v1/voip/rooms');
-	const { data, isSuccess, isLoading } = useQuery(['voip-rooms', query], async () => getVoipRooms(query));
+	const { data, isSuccess, isLoading } = useQuery({
+		queryKey: ['voip-rooms', query],
+		queryFn: async () => getVoipRooms(query),
+	});
 
 	const [defaultQuery] = useState(hashQueryKey([query]));
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);

@@ -46,14 +46,19 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 	const canEditContact = usePermission('edit-omnichannel-contact');
 
 	const getCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
-	const { data: { customFields } = {} } = useQuery(['/v1/livechat/custom-fields'], () => getCustomFields());
+	const { data: { customFields } = {} } = useQuery({
+		queryKey: ['/v1/livechat/custom-fields'],
+		queryFn: () => getCustomFields(),
+	});
 
 	const getContact = useEndpoint('GET', '/v1/omnichannel/contact');
 	const {
 		data: { contact } = {},
 		isInitialLoading,
 		isError,
-	} = useQuery(['/v1/omnichannel/contact', contactId], () => getContact({ contactId }), {
+	} = useQuery({
+		queryKey: ['/v1/omnichannel/contact', contactId],
+		queryFn: () => getContact({ contactId }),
 		enabled: canViewCustomFields && !!contactId,
 	});
 

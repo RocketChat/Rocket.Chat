@@ -24,18 +24,18 @@ const InvitesPage = (): ReactElement => {
 
 	const getInvites = useEndpoint('GET', '/v1/listInvites');
 
-	const { data, isLoading, refetch, isSuccess, isError } = useQuery(
-		['invites'],
-		async () => {
+	const { data, isLoading, refetch, isSuccess, isError } = useQuery({
+		queryKey: ['invites'],
+
+		queryFn: async () => {
 			const invites = await getInvites();
 			return invites;
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
 		},
-	);
+	});
 
 	const onRemove = (removeInvite: () => Promise<boolean>): void => {
 		const confirmRemove = async (): Promise<void> => {

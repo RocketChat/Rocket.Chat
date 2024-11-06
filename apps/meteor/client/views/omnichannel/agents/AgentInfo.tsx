@@ -27,7 +27,9 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const getAgentById = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: uid });
-	const { data, isLoading, isError } = useQuery(['livechat-getAgentInfoById', uid], async () => getAgentById(), {
+	const { data, isLoading, isError } = useQuery({
+		queryKey: ['livechat-getAgentInfoById', uid],
+		queryFn: async () => getAgentById(),
 		refetchOnWindowFocus: false,
 	});
 

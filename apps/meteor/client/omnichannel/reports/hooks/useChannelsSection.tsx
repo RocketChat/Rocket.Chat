@@ -49,19 +49,19 @@ export const useChannelsSection = () => {
 		isLoading,
 		isError,
 		isSuccess,
-	} = useQuery(
-		['omnichannel-reports', 'conversations-by-source', period],
-		async () => {
+	} = useQuery({
+		queryKey: ['omnichannel-reports', 'conversations-by-source', period],
+
+		queryFn: async () => {
 			const { start, end } = getPeriodRange(period);
 			const response = await getConversationsBySource({ start: start.toISOString(), end: end.toISOString() });
 			const data = formatChartData(response.data, response.total, t);
 			const displayData: DataItem[] = getTop<DataItem>(5, data, (value) => formatItem({ label: t('Others'), value }, response.total, t));
 			return { ...response, data: displayData, rawData: data };
 		},
-		{
-			refetchInterval: 5 * 60 * 1000,
-		},
-	);
+
+		refetchInterval: 5 * 60 * 1000,
+	});
 
 	const title = t('Conversations_by_channel');
 	const subtitle = t('__count__conversations__period__', {

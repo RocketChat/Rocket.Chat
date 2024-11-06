@@ -11,9 +11,11 @@ const VisitorAutoComplete = ({ value, onChange, ...props }: VisitorAutoCompleteP
 
 	const performVisitorSearch = useEndpoint('GET', '/v1/livechat/visitors.autocomplete');
 
-	const visitorAutocompleteQueryResult = useQuery(['audit', 'visitors', filter], () =>
-		performVisitorSearch({ selector: JSON.stringify({ term: filter ?? '' }) }),
-	);
+	const visitorAutocompleteQueryResult = useQuery({
+		queryKey: ['audit', 'visitors', filter],
+
+		queryFn: () => performVisitorSearch({ selector: JSON.stringify({ term: filter ?? '' }) }),
+	});
 
 	const options = useMemo(
 		() => visitorAutocompleteQueryResult.data?.items.map((user) => ({ value: user._id, label: user.name ?? user.username })) ?? [],

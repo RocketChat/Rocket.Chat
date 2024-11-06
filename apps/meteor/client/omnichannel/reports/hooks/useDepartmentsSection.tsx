@@ -26,17 +26,17 @@ export const useDepartmentsSection = () => {
 		isError,
 		isSuccess,
 		refetch,
-	} = useQuery(
-		['omnichannel-reports', 'conversations-by-department', period],
-		async () => {
+	} = useQuery({
+		queryKey: ['omnichannel-reports', 'conversations-by-department', period],
+
+		queryFn: async () => {
 			const { start, end } = getPeriodRange(period);
 			const response = await getConversationsByDepartment({ start: start.toISOString(), end: end.toISOString() });
 			return { ...response, data: formatChartData(response.data) };
 		},
-		{
-			refetchInterval: 5 * 60 * 1000,
-		},
-	);
+
+		refetchInterval: 5 * 60 * 1000,
+	});
 
 	const title = t('Conversations_by_department');
 	const subtitleTotals = t('__departments__departments_and__count__conversations__period__', {

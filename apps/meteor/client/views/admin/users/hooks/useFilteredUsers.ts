@@ -53,7 +53,10 @@ const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData
 	}, [current, itemsPerPage, prevSearchTerm, searchTerm, selectedRoles, setCurrent, sortBy, sortDirection, tab]);
 	const getUsers = useEndpoint('GET', '/v1/users.listByStatus');
 	const dispatchToastMessage = useToastMessageDispatch();
-	const usersListQueryResult = useQuery(['users.list', payload, tab], async () => getUsers(payload), {
+	const usersListQueryResult = useQuery({
+		queryKey: ['users.list', payload, tab],
+		queryFn: async () => getUsers(payload),
+
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},

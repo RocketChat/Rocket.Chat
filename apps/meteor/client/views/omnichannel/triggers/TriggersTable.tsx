@@ -29,7 +29,10 @@ const TriggersTable = () => {
 	const query = useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]);
 
 	const getTriggers = useEndpoint('GET', '/v1/livechat/triggers');
-	const { data, refetch, isSuccess, isLoading, isError } = useQuery(['livechat-triggers', query], async () => getTriggers(query));
+	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
+		queryKey: ['livechat-triggers', query],
+		queryFn: async () => getTriggers(query),
+	});
 
 	const [defaultQuery] = useState(hashQueryKey([query]));
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);

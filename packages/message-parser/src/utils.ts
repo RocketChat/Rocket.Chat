@@ -22,7 +22,10 @@ import type {
 const generate =
   <Type extends keyof Types>(type: Type) =>
   (value: Types[Type]['value']): Types[Type] =>
-    ({ type, value }) as any;
+    ({
+      type,
+      value,
+    }) as any;
 
 export const paragraph = generate('PARAGRAPH');
 

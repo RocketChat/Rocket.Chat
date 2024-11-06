@@ -21,7 +21,9 @@ const RoomAutoCompleteMultiple = ({ value, onChange, ...props }: RoomAutoComplet
 	const filterDebounced = useDebouncedValue(filter, 300);
 	const autocomplete = useEndpoint('GET', '/v1/rooms.autocomplete.channelAndPrivate');
 
-	const result = useQuery(['rooms.autocomplete.channelAndPrivate', filterDebounced], () => autocomplete(generateQuery(filterDebounced)), {
+	const result = useQuery({
+		queryKey: ['rooms.autocomplete.channelAndPrivate', filterDebounced],
+		queryFn: () => autocomplete(generateQuery(filterDebounced)),
 		keepPreviousData: true,
 	});
 

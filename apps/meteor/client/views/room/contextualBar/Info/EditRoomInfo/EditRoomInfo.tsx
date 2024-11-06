@@ -196,7 +196,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						}),
 				});
 
-				await query.invalidateQueries(['/v1/rooms.info', room._id]);
+				await query.invalidateQueries({
+					queryKey: ['/v1/rooms.info', room._id],
+				});
 				dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
 				onClickClose();
 			} catch (error) {

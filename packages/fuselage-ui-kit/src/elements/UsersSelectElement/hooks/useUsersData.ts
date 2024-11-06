@@ -10,9 +10,10 @@ type useUsersDataProps = {
 export const useUsersData = ({ filter }: useUsersDataProps) => {
   const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
 
-  const { data } = useQuery(
-    ['users.autoComplete', filter],
-    async () => {
+  const { data } = useQuery({
+    queryKey: ['users.autoComplete', filter],
+
+    queryFn: async () => {
       const users = await getUsers({
         selector: JSON.stringify({ term: filter }),
       });
@@ -25,8 +26,9 @@ export const useUsersData = ({ filter }: useUsersDataProps) => {
 
       return options || [];
     },
-    { keepPreviousData: true },
-  );
+
+    keepPreviousData: true,
+  });
 
   return data;
 };

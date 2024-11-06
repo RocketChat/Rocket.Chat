@@ -19,9 +19,10 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { data, isLoading, refetch } = useQuery(
-		['custom-sounds', _id],
-		async () => {
+	const { data, isLoading, refetch } = useQuery({
+		queryKey: ['custom-sounds', _id],
+
+		queryFn: async () => {
 			const { sounds } = await getSounds({ query: JSON.stringify({ _id }) });
 
 			if (sounds.length === 0) {
@@ -29,12 +30,11 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 			}
 			return sounds[0];
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
 		},
-	);
+	});
 
 	if (isLoading) {
 		return <FormSkeleton pi={20} />;

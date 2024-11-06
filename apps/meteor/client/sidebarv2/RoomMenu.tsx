@@ -176,7 +176,9 @@ const RoomMenu = ({
 
 	const handleToggleRead = useEffectEvent(async () => {
 		try {
-			queryClient.invalidateQueries(['sidebar/search/spotlight']);
+			queryClient.invalidateQueries({
+				queryKey: ['sidebar/search/spotlight'],
+			});
 
 			if (isUnread) {
 				await readMessages({ rid, readThreads: true });

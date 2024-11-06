@@ -400,11 +400,6 @@ export class MockedAppRootBuilder {
 				queries: { retry: false },
 				mutations: { retry: false },
 			},
-			logger: {
-				log: console.log,
-				warn: console.warn,
-				error: () => undefined,
-			},
 		});
 
 		const { connectionStatus, server, router, settings, user, i18n, authorization, wrappers, audioInputDevices, audioOutputDevices } = this;

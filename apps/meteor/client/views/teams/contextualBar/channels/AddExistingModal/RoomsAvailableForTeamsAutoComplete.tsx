@@ -16,11 +16,11 @@ const RoomsAvailableForTeamsAutoComplete = ({ value, onChange, ...props }: Rooms
 
 	const roomsAvailableForTeamsAutoCompleteEndpoint = useEndpoint('GET', '/v1/rooms.autocomplete.availableForTeams');
 
-	const { data } = useQuery(
-		['roomsAvailableForTeamsAutoComplete', debouncedFilter],
-		async () => roomsAvailableForTeamsAutoCompleteEndpoint({ name: debouncedFilter }),
-		{ keepPreviousData: true },
-	);
+	const { data } = useQuery({
+		queryKey: ['roomsAvailableForTeamsAutoComplete', debouncedFilter],
+		queryFn: async () => roomsAvailableForTeamsAutoCompleteEndpoint({ name: debouncedFilter }),
+		keepPreviousData: true,
+	});
 
 	const options = useMemo(() => {
 		if (!data) {

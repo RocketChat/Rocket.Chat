@@ -42,7 +42,10 @@ const EmailInboxTable = (): ReactElement => {
 		...(current && { offset: current }),
 	};
 
-	const result = useQuery(['email-list', query], () => endpoint(query));
+	const result = useQuery({
+		queryKey: ['email-list', query],
+		queryFn: () => endpoint(query),
+	});
 
 	const headers = useMemo(
 		() => [

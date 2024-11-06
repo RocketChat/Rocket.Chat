@@ -15,9 +15,10 @@ export const useValidateInviteQuery = (userId: string | null, token: string | un
 
 	const handleValidateInviteToken = useEndpoint('POST', '/v1/validateInviteToken');
 
-	return useQuery(
-		['invite', token],
-		async () => {
+	return useQuery({
+		queryKey: ['invite', token],
+
+		queryFn: async () => {
 			if (!token) {
 				return false;
 			}
@@ -31,24 +32,23 @@ export const useValidateInviteQuery = (userId: string | null, token: string | un
 				return false;
 			}
 		},
-		{
-			onSuccess: async (valid) => {
-				if (!token) {
-					return;
-				}
 
-				if (registrationForm !== 'Disabled') {
-					setLoginDefaultState('invite-register');
-				} else {
-					setLoginDefaultState('login');
-				}
+		onSuccess: async (valid) => {
+			if (!token) {
+				return;
+			}
 
-				if (!valid || !userId) {
-					return;
-				}
+			if (registrationForm !== 'Disabled') {
+				setLoginDefaultState('invite-register');
+			} else {
+				setLoginDefaultState('login');
+			}
 
-				return getInviteRoomMutation(token);
-			},
+			if (!valid || !userId) {
+				return;
+			}
+
+			return getInviteRoomMutation(token);
 		},
-	);
+	});
 };

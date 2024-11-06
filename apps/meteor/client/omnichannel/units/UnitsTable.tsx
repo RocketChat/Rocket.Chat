@@ -42,7 +42,10 @@ const UnitsTable = () => {
 	);
 
 	const getUnits = useEndpoint('GET', '/v1/livechat/units');
-	const { isSuccess, isLoading, data } = useQuery(['livechat-units', query], async () => getUnits(query));
+	const { isSuccess, isLoading, data } = useQuery({
+		queryKey: ['livechat-units', query],
+		queryFn: async () => getUnits(query),
+	});
 
 	const [defaultQuery] = useState(hashQueryKey([query]));
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);

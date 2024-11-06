@@ -51,7 +51,9 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 		500,
 	);
 
-	const { data, isSuccess, isLoading } = useQuery(['livechat-departments', query, archived], async () => getDepartments(query), {
+	const { data, isSuccess, isLoading } = useQuery({
+		queryKey: ['livechat-departments', query, archived],
+		queryFn: async () => getDepartments(query),
 		keepPreviousData: true,
 	});
 

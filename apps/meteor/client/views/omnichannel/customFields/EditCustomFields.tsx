@@ -70,7 +70,9 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 			});
 
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			queryClient.invalidateQueries(['livechat-customFields']);
+			queryClient.invalidateQueries({
+				queryKey: ['livechat-customFields'],
+			});
 			router.navigate('/omnichannel/customfields');
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

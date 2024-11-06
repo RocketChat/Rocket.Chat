@@ -147,22 +147,27 @@ const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps): R
 					label: t('Today'),
 					action: () => dispatch('today'),
 				},
+
 				yesterday: {
 					label: t('Yesterday'),
 					action: () => dispatch('yesterday'),
 				},
+
 				thisWeek: {
 					label: t('This_week'),
 					action: () => dispatch('this-week'),
 				},
+
 				previousWeek: {
 					label: t('Previous_week'),
 					action: () => dispatch('last-week'),
 				},
+
 				thisMonth: {
 					label: t('This_month'),
 					action: () => dispatch('this-month'),
 				},
+
 				lastMonth: {
 					label: t('Previous_month'),
 					action: () => dispatch('last-month'),

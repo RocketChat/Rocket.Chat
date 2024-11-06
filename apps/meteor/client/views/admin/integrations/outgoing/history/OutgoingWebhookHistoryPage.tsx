@@ -42,11 +42,14 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 	type HistoryData = Awaited<ReturnType<typeof fetchHistory>>;
 
 	const { data, isLoading, refetch } = useQuery(
-		queryKey,
-		async () => {
-			const result = fetchHistory(query);
-			setMounted(true);
-			return result;
+		{
+			queryKey,
+
+			queryFn: async () => {
+				const result = fetchHistory(query);
+				setMounted(true);
+				return result;
+			},
 		},
 		{
 			cacheTime: 99999,

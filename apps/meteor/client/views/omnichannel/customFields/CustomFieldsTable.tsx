@@ -46,7 +46,10 @@ const CustomFieldsTable = () => {
 	);
 
 	const getCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
-	const { data, isSuccess, isLoading } = useQuery(['livechat-customFields', query], async () => getCustomFields(query));
+	const { data, isSuccess, isLoading } = useQuery({
+		queryKey: ['livechat-customFields', query],
+		queryFn: async () => getCustomFields(query),
+	});
 
 	const [defaultQuery] = useState(hashQueryKey([query]));
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);

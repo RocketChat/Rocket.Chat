@@ -52,13 +52,11 @@ const ModConsoleUsersTable = () => {
 
 	const getReports = useEndpoint('GET', '/v1/moderation.userReports');
 
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery(
-		['moderation', 'userReports', 'fetchAll', query],
-		() => getReports(query),
-		{
-			keepPreviousData: true,
-		},
-	);
+	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
+		queryKey: ['moderation', 'userReports', 'fetchAll', query],
+		queryFn: () => getReports(query),
+		keepPreviousData: true,
+	});
 
 	const handleClick = useMutableCallback((id): void => {
 		router.navigate({

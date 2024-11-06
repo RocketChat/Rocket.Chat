@@ -35,7 +35,10 @@ const VoipExtensionsPage = () => {
 	);
 
 	const getExtensions = useEndpoint('GET', '/v1/omnichannel/extensions');
-	const { data, isSuccess, isLoading, refetch } = useQuery(['omnichannel-extensions', query], async () => getExtensions(query));
+	const { data, isSuccess, isLoading, refetch } = useQuery({
+		queryKey: ['omnichannel-extensions', query],
+		queryFn: async () => getExtensions(query),
+	});
 
 	const headers = (
 		<>

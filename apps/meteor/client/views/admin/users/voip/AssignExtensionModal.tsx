@@ -46,14 +46,12 @@ const AssignExtensionModal = ({ defaultExtension, defaultUsername, onClose }: As
 	const selectedUsername = useWatch({ control, name: 'username' });
 	const selectedExtension = useWatch({ control, name: 'extension' });
 
-	const { data: availableExtensions = [], isLoading } = useQuery(
-		['/v1/voip-freeswitch.extension.list', selectedUsername],
-		() => getAvailableExtensions({ type: 'available' as const, username: selectedUsername }),
-		{
-			select: (data) => data.extensions || [],
-			enabled: !!selectedUsername,
-		},
-	);
+	const { data: availableExtensions = [], isLoading } = useQuery({
+		queryKey: ['/v1/voip-freeswitch.extension.list', selectedUsername],
+		queryFn: () => getAvailableExtensions({ type: 'available' as const, username: selectedUsername }),
+		select: (data) => data.extensions || [],
+		enabled: !!selectedUsername,
+	});
 
 	const extensionOptions = useMemo<[string, string][]>(
 		() => availableExtensions.map(({ extension }) => [extension, extension]),
@@ -64,9 +62,13 @@ const AssignExtensionModal = ({ defaultExtension, defaultUsername, onClose }: As
 		mutationFn: async ({ username, extension }: FormValue) => {
 			await assignUser({ username, extension });
 
-			queryClient.invalidateQueries(['users.list']);
+			queryClient.invalidateQueries({
+				queryKey: ['users.list'],
+			});
 			if (loggedUser?.username === username) {
-				queryClient.invalidateQueries(['voip-client']);
+				queryClient.invalidateQueries({
+					queryKey: ['voip-client'],
+				});
 			}
 
 			onClose();

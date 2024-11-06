@@ -35,9 +35,11 @@ const BusinessHoursTable = () => {
 	);
 
 	const getBusinessHours = useEndpoint('GET', '/v1/livechat/business-hours');
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery(['livechat-getBusinessHours', query], async () =>
-		getBusinessHours(query),
-	);
+	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
+		queryKey: ['livechat-getBusinessHours', query],
+
+		queryFn: async () => getBusinessHours(query),
+	});
 
 	const headers = (
 		<>

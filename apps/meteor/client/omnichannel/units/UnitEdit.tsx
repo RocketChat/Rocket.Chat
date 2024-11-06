@@ -138,7 +138,9 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 		try {
 			await saveUnit(_id as unknown as string, { name, visibility }, monitorsData, departmentsData);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			queryClient.invalidateQueries(['livechat-units']);
+			queryClient.invalidateQueries({
+				queryKey: ['livechat-units'],
+			});
 			router.navigate('/omnichannel/units');
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

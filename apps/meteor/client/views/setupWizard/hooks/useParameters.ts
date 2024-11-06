@@ -11,10 +11,16 @@ type SetupWizardParameters = {
 export const useParameters = (): Exclude<UseQueryResult<SetupWizardParameters, Error>, { data: undefined }> => {
 	const getSetupWizardParameters = useMethod('getSetupWizardParameters');
 
-	return useQuery(['setupWizard/parameters'], getSetupWizardParameters, {
-		initialData: {
-			settings: [],
-			serverAlreadyRegistered: false,
+	return useQuery(
+		{
+			queryKey: ['setupWizard/parameters'],
+			...getSetupWizardParameters,
 		},
-	}) as Exclude<UseQueryResult<SetupWizardParameters, Error>, { data: undefined }>;
+		{
+			initialData: {
+				settings: [],
+				serverAlreadyRegistered: false,
+			},
+		},
+	) as Exclude<UseQueryResult<SetupWizardParameters, Error>, { data: undefined }>;
 };

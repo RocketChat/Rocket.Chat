@@ -4,10 +4,14 @@ import { useQuery } from '@tanstack/react-query';
 export const useCheckRegistrationSecret = (hash?: string) => {
 	const checkRegistrationSecretURL = useMethod('checkRegistrationSecretURL');
 
-	return useQuery(['secretURL', hash], async () => {
-		if (!hash) {
-			return false;
-		}
-		return checkRegistrationSecretURL(hash);
+	return useQuery({
+		queryKey: ['secretURL', hash],
+
+		queryFn: async () => {
+			if (!hash) {
+				return false;
+			}
+			return checkRegistrationSecretURL(hash);
+		},
 	});
 };

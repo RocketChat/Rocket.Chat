@@ -14,11 +14,14 @@ export const ComposerOmnichannelInquiry = (): ReactElement => {
 	const agentAvailable = useOmnichannelAgentAvailable();
 	const room = useOmnichannelRoom();
 	const getInquire = useEndpoint('GET', `/v1/livechat/inquiries.getOne`);
-	const result = useQuery(['inquire', room._id], () =>
-		getInquire({
-			roomId: room._id,
-		}),
-	);
+	const result = useQuery({
+		queryKey: ['inquire', room._id],
+
+		queryFn: () =>
+			getInquire({
+				roomId: room._id,
+			}),
+	});
 
 	const takeInquiry = useMethod('livechat:takeInquiry');
 

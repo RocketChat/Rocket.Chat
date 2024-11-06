@@ -29,18 +29,18 @@ const AuditLogTable = (): ReactElement => {
 
 	const getAudits = useMethod('auditGetAuditions');
 
-	const { data, isLoading, isSuccess } = useQuery(
-		['audits', dateRange],
-		async () => {
+	const { data, isLoading, isSuccess } = useQuery({
+		queryKey: ['audits', dateRange],
+
+		queryFn: async () => {
 			const { start, end } = dateRange;
 			return getAudits({ startDate: start ?? new Date(0), endDate: end ?? new Date() });
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
 		},
-	);
+	});
 
 	const headers = (
 		<>

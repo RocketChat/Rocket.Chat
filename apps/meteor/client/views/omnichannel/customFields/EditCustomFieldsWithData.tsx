@@ -12,7 +12,9 @@ const EditCustomFieldsWithData = ({ customFieldId }: { customFieldId: ILivechatC
 	const { t } = useTranslation();
 
 	const getCustomFieldById = useEndpoint('GET', '/v1/livechat/custom-fields/:_id', { _id: customFieldId });
-	const { data, isLoading, isError } = useQuery(['livechat-getCustomFieldsById', customFieldId], async () => getCustomFieldById(), {
+	const { data, isLoading, isError } = useQuery({
+		queryKey: ['livechat-getCustomFieldsById', customFieldId],
+		queryFn: async () => getCustomFieldById(),
 		refetchOnWindowFocus: false,
 	});
 

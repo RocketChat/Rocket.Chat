@@ -48,9 +48,10 @@ export const useSearchItems = (filterText: string): UseQueryResult<(ISubscriptio
 
 	const getSpotlight = useMethod('spotlight');
 
-	return useQuery(
-		['sidebar/search/spotlight', name, usernamesFromClient, type, localRooms.map(({ _id, name }) => _id + name)],
-		async () => {
+	return useQuery({
+		queryKey: ['sidebar/search/spotlight', name, usernamesFromClient, type, localRooms.map(({ _id, name }) => _id + name)],
+
+		queryFn: async () => {
 			if (localRooms.length === LIMIT) {
 				return localRooms;
 			}
@@ -105,10 +106,9 @@ export const useSearchItems = (filterText: string): UseQueryResult<(ISubscriptio
 			const exact = resultsFromServer?.filter((item) => [item.name, item.fname].includes(name));
 			return Array.from(new Set([...exact, ...localRooms, ...resultsFromServer]));
 		},
-		{
-			staleTime: 60_000,
-			keepPreviousData: true,
-			placeholderData: localRooms,
-		},
-	);
+
+		staleTime: 60_000,
+		keepPreviousData: true,
+		placeholderData: localRooms,
+	});
 };

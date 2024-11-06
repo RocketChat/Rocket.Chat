@@ -14,9 +14,10 @@ type UseChannelsListOptions = {
 export const useChannelsList = ({ period, offset, count }: UseChannelsListOptions) => {
 	const getChannelsList = useEndpoint('GET', '/v1/engagement-dashboard/channels/list');
 
-	return useQuery(
-		['admin/engagement-dashboard/channels/list', { period, offset, count }],
-		async () => {
+	return useQuery({
+		queryKey: ['admin/engagement-dashboard/channels/list', { period, offset, count }],
+
+		queryFn: async () => {
 			const { start, end } = getPeriodRange(period);
 
 			const response = await getChannelsList({
@@ -35,10 +36,9 @@ export const useChannelsList = ({ period, offset, count }: UseChannelsListOption
 					}
 				: undefined;
 		},
-		{
-			keepPreviousData: true,
-			refetchInterval: 5 * 60 * 1000,
-			useErrorBoundary: true,
-		},
-	);
+
+		keepPreviousData: true,
+		refetchInterval: 5 * 60 * 1000,
+		useErrorBoundary: true,
+	});
 };

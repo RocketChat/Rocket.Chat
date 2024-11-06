@@ -21,7 +21,9 @@ export const useRemoveAgent = (uid: ILivechatAgent['_id']) => {
 				await deleteAction();
 				dispatchToastMessage({ type: 'success', message: t('Agent_removed') });
 				router.navigate('/omnichannel/agents');
-				queryClient.invalidateQueries(['livechat-agents']);
+				queryClient.invalidateQueries({
+					queryKey: ['livechat-agents'],
+				});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

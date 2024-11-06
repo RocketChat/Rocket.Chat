@@ -55,7 +55,9 @@ const CannedResponseEdit = ({ cannedResponseData }: CannedResponseEditProps) => 
 					message: t(cannedResponseData?._id ? 'Canned_Response_Updated' : 'Canned_Response_Created'),
 				});
 				router.navigate('/omnichannel/canned-responses');
-				queryClient.invalidateQueries(['getCannedResponses']);
+				queryClient.invalidateQueries({
+					queryKey: ['getCannedResponses'],
+				});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}

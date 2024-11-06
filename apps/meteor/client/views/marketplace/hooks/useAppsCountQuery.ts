@@ -11,9 +11,10 @@ export function isMarketplaceRouteContext(context: string): context is Marketpla
 export const useAppsCountQuery = (context: MarketplaceRouteContext) => {
 	const getAppsCount = useEndpoint('GET', '/apps/count');
 
-	return useQuery(
-		['apps/count', context],
-		async () => {
+	return useQuery({
+		queryKey: ['apps/count', context],
+
+		queryFn: async () => {
 			const data = await getAppsCount();
 
 			const numberOfEnabledApps = context === 'private' ? data.totalPrivateEnabled : data.totalMarketplaceEnabled;
@@ -27,13 +28,16 @@ export const useAppsCountQuery = (context: MarketplaceRouteContext) => {
 				// tooltip,
 			};
 		},
-		{ staleTime: 10_000 },
-	);
+
+		staleTime: 10_000,
+	});
 };
 
 export const useInvalidateAppsCountQueryCallback = () => {
 	const queryClient = useQueryClient();
 	return useCallback(() => {
-		queryClient.invalidateQueries(['apps/count']);
+		queryClient.invalidateQueries({
+			queryKey: ['apps/count'],
+		});
 	}, [queryClient]);
 };

@@ -42,7 +42,10 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 				setModal(null);
 
 				await resetPriorities();
-				await queryClient.invalidateQueries(['/v1/livechat/priorities'], { exact: true });
+				await queryClient.invalidateQueries({
+					queryKey: ['/v1/livechat/priorities'],
+					exact: true,
+				});
 
 				prioritiesRoute.push({});
 				dispatchToastMessage({ type: 'success', message: t('Priorities_restored') });
@@ -66,10 +69,15 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 
 	const onSavePriority = async ({ reset, ...payload }: PriorityFormData): Promise<void> => {
 		await savePriority(reset ? { reset } : payload);
-		await queryClient.invalidateQueries(['/v1/livechat/priorities']);
+		await queryClient.invalidateQueries({
+			queryKey: ['/v1/livechat/priorities'],
+		});
 
 		dispatchToastMessage({ type: 'success', message: t('Priority_saved') });
-		await queryClient.invalidateQueries(['/v1/livechat/priorities'], { exact: true });
+		await queryClient.invalidateQueries({
+			queryKey: ['/v1/livechat/priorities'],
+			exact: true,
+		});
 		prioritiesRoute.push({});
 	};
 

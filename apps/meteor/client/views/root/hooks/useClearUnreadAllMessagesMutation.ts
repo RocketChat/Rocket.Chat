@@ -7,29 +7,33 @@ import { ChatSubscription } from '../../../../app/models/client';
 export const useClearUnreadAllMessagesMutation = (options?: Omit<UseMutationOptions<void, unknown, void, unknown>, 'mutationFn'>) => {
 	const readSubscription = useEndpoint('POST', '/v1/subscriptions.read');
 
-	return useMutation(async () => {
-		const promises = ChatSubscription.find(
-			{
-				open: true,
-			},
-			{
-				fields: {
-					unread: 1,
-					alert: 1,
-					rid: 1,
-					t: 1,
-					name: 1,
-					ls: 1,
+	return useMutation({
+		mutationFn: async () => {
+			const promises = ChatSubscription.find(
+				{
+					open: true,
 				},
-			},
-		).map((subscription) => {
-			if (subscription.alert || subscription.unread > 0) {
-				return readSubscription({ rid: subscription.rid, readThreads: true });
-			}
+				{
+					fields: {
+						unread: 1,
+						alert: 1,
+						rid: 1,
+						t: 1,
+						name: 1,
+						ls: 1,
+					},
+				},
+			).map((subscription) => {
+				if (subscription.alert || subscription.unread > 0) {
+					return readSubscription({ rid: subscription.rid, readThreads: true });
+				}
 
-			return Promise.resolve();
-		});
+				return Promise.resolve();
+			});
 
-		await Promise.all(promises);
-	}, options);
+			await Promise.all(promises);
+		},
+
+		...options,
+	});
 };

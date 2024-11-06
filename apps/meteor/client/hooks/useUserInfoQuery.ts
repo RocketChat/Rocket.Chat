@@ -10,5 +10,9 @@ type UserInfoQueryOptions = {
 // a hook using tanstack useQuery and useEndpoint that fetches user information from the `users.info` endpoint
 export const useUserInfoQuery = (params: UsersInfoParamsGet, options: UserInfoQueryOptions = { keepPreviousData: true }) => {
 	const getUserInfo = useEndpoint('GET', '/v1/users.info');
-	return useQuery(['users.info', params], () => getUserInfo({ ...params }), options);
+	return useQuery({
+		queryKey: ['users.info', params],
+		queryFn: () => getUserInfo({ ...params }),
+		...options,
+	});
 };

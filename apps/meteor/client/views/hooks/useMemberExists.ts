@@ -6,5 +6,8 @@ type UseMemberExistsProps = { roomId: string; username: string };
 export const useMemberExists = ({ roomId, username }: UseMemberExistsProps) => {
 	const checkMember = useEndpoint('GET', '/v1/rooms.isMember');
 
-	return useQuery(['rooms/isMember', roomId, username], () => checkMember({ roomId, username }));
+	return useQuery({
+		queryKey: ['rooms/isMember', roomId, username],
+		queryFn: () => checkMember({ roomId, username }),
+	});
 };

@@ -37,7 +37,10 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 		isSuccess,
 		isError,
 		dataUpdatedAt,
-	} = useQuery(['moderation', 'userReports', 'fetchDetails', userId], async () => getUserReports({ userId }));
+	} = useQuery({
+		queryKey: ['moderation', 'userReports', 'fetchDetails', userId],
+		queryFn: async () => getUserReports({ userId }),
+	});
 
 	const userProfile = useMemo(() => {
 		if (!report?.user) {

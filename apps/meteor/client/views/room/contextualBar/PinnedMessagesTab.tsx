@@ -15,19 +15,23 @@ const PinnedMessagesTab = (): ReactElement => {
 
 	const room = useRoom();
 
-	const pinnedMessagesQueryResult = useQuery(['rooms', room._id, 'pinned-messages'] as const, async () => {
-		const messages: IMessage[] = [];
+	const pinnedMessagesQueryResult = useQuery({
+		queryKey: ['rooms', room._id, 'pinned-messages'] as const,
 
-		for (
-			let offset = 0, result = await getPinnedMessages({ roomId: room._id, offset: 0 });
-			result.count > 0;
-			// eslint-disable-next-line no-await-in-loop
-			offset += result.count, result = await getPinnedMessages({ roomId: room._id, offset })
-		) {
-			messages.push(...result.messages.map(mapMessageFromApi));
-		}
+		queryFn: async () => {
+			const messages: IMessage[] = [];
 
-		return Promise.all(messages.map(onClientMessageReceived));
+			for (
+				let offset = 0, result = await getPinnedMessages({ roomId: room._id, offset: 0 });
+				result.count > 0;
+				// eslint-disable-next-line no-await-in-loop
+				offset += result.count, result = await getPinnedMessages({ roomId: room._id, offset })
+			) {
+				messages.push(...result.messages.map(mapMessageFromApi));
+			}
+
+			return Promise.all(messages.map(onClientMessageReceived));
+		},
 	});
 
 	const { t } = useTranslation();

@@ -23,7 +23,9 @@ export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { 
 	const teamsInfoEndpoint = useEndpoint('GET', '/v1/teams.info');
 
 	const teamId = room.teamId || '';
-	const { data: teamInfoData } = useQuery(['teamId', teamId], async () => teamsInfoEndpoint({ teamId }), {
+	const { data: teamInfoData } = useQuery({
+		queryKey: ['teamId', teamId],
+		queryFn: async () => teamsInfoEndpoint({ teamId }),
 		keepPreviousData: true,
 		retry: false,
 		enabled: room.teamId !== '',

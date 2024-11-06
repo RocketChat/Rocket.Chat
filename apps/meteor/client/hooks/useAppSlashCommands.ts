@@ -13,7 +13,9 @@ export const useAppSlashCommands = () => {
 
 	const invalidate = useDebouncedCallback(
 		() => {
-			queryClient.invalidateQueries(['apps', 'slashCommands']);
+			queryClient.invalidateQueries({
+				queryKey: ['apps', 'slashCommands'],
+			});
 		},
 		100,
 		[],
@@ -35,10 +37,9 @@ export const useAppSlashCommands = () => {
 
 	const getSlashCommands = useEndpoint('GET', '/v1/commands.list');
 
-	useQuery(['apps', 'slashCommands'], () => getSlashCommands(), {
+	useQuery({
+		queryKey: ['apps', 'slashCommands'],
+		queryFn: () => getSlashCommands(),
 		enabled: !!uid,
-		onSuccess(data) {
-			data.commands.forEach((command) => slashCommands.add(command));
-		},
 	});
 };

@@ -20,7 +20,9 @@ export const useRemoveTag = () => {
 				await removeTag(tagId);
 				dispatchToastMessage({ type: 'success', message: t('Tag_removed') });
 				router.navigate('/omnichannel/tags');
-				queryClient.invalidateQueries(['livechat-tags']);
+				queryClient.invalidateQueries({
+					queryKey: ['livechat-tags'],
+				});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

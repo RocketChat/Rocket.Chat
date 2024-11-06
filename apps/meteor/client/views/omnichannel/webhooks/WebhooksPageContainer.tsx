@@ -21,9 +21,13 @@ const WebhooksPageContainer = () => {
 
 	const getIntegrationsSettings = useEndpoint('GET', '/v1/livechat/integrations.settings');
 
-	const { data, isLoading, isError } = useQuery(['/v1/livechat/integrations.settings'], async () => {
-		const { settings, success } = await getIntegrationsSettings();
-		return { settings: reduceSettings(settings), success };
+	const { data, isLoading, isError } = useQuery({
+		queryKey: ['/v1/livechat/integrations.settings'],
+
+		queryFn: async () => {
+			const { settings, success } = await getIntegrationsSettings();
+			return { settings: reduceSettings(settings), success };
+		},
 	});
 
 	const canViewLivechatWebhooks = usePermission('view-livechat-webhooks');

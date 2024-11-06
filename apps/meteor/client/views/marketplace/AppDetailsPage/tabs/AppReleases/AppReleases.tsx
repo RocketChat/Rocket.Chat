@@ -14,9 +14,10 @@ const AppReleases = ({ id }: { id: App['id'] }): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 
-	const { data, isLoading, isFetched } = useQuery(
-		['apps', id, 'versions'],
-		async () => {
+	const { data, isLoading, isFetched } = useQuery({
+		queryKey: ['apps', id, 'versions'],
+
+		queryFn: async () => {
 			const { apps } = await getVersions();
 
 			if (apps.length === 0) {
@@ -24,12 +25,11 @@ const AppReleases = ({ id }: { id: App['id'] }): ReactElement => {
 			}
 			return apps;
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
 		},
-	);
+	});
 
 	return (
 		<>

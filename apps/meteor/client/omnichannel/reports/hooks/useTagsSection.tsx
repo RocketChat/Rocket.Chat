@@ -34,17 +34,17 @@ export const useTagsSection = () => {
 		isLoading,
 		isError,
 		isSuccess,
-	} = useQuery(
-		['omnichannel-reports', 'conversations-by-tags', period],
-		async () => {
+	} = useQuery({
+		queryKey: ['omnichannel-reports', 'conversations-by-tags', period],
+
+		queryFn: async () => {
 			const { start, end } = getPeriodRange(period);
 			const response = await getConversationsByTags({ start: start.toISOString(), end: end.toISOString() });
 			return { ...response, data: formatChartData(response.data) };
 		},
-		{
-			refetchInterval: 5 * 60 * 1000,
-		},
-	);
+
+		refetchInterval: 5 * 60 * 1000,
+	});
 
 	const title = t('Conversations_by_tag');
 	const subtitleTotals = t('__count__tags__and__count__conversations__period__', {

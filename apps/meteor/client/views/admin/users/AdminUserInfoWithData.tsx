@@ -33,18 +33,18 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { data, isLoading, error, refetch } = useQuery(
-		['users', query, 'admin'],
-		async () => {
+	const { data, isLoading, error, refetch } = useQuery({
+		queryKey: ['users', query, 'admin'],
+
+		queryFn: async () => {
 			const usersInfo = await getUsersInfo(query);
 			return usersInfo;
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
 		},
-	);
+	});
 
 	const onChange = useMutableCallback(() => {
 		onReload();

@@ -12,10 +12,16 @@ export function useRoomQuery(
 ): UseQueryResult<IRoom | null, Error> {
 	const queryKey = ['rooms', rid] as const;
 
-	const queryResult = useQuery(queryKey, async (): Promise<IRoom | null> => ChatRoom.findOne({ _id: rid }, { reactive: false }) ?? null, {
-		staleTime: Infinity,
-		...options,
-	});
+	const queryResult = useQuery(
+		{
+			queryKey,
+			queryFn: async (): Promise<IRoom | null> => ChatRoom.findOne({ _id: rid }, { reactive: false }) ?? null,
+		},
+		{
+			staleTime: Infinity,
+			...options,
+		},
+	);
 
 	const { refetch } = queryResult;
 

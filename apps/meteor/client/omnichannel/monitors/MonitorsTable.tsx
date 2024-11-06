@@ -68,7 +68,10 @@ const MonitorsTable = () => {
 		500,
 	);
 
-	const { data, refetch, isLoading, isSuccess, isError } = useQuery(['omnichannel', 'monitors', query], () => getMonitors(query));
+	const { data, refetch, isLoading, isSuccess, isError } = useQuery({
+		queryKey: ['omnichannel', 'monitors', query],
+		queryFn: () => getMonitors(query),
+	});
 
 	const [defaultQuery] = useState(hashQueryKey([query]));
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);

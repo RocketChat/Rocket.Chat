@@ -22,18 +22,18 @@ const EditRoomWithData = ({ rid, onReload }: EditRoomWithDataProps) => {
 
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms.getRoom');
 
-	const { data, isLoading, refetch } = useQuery(
-		['rooms', rid, 'admin'],
-		async () => {
+	const { data, isLoading, refetch } = useQuery({
+		queryKey: ['rooms', rid, 'admin'],
+
+		queryFn: async () => {
 			const rooms = await getAdminRooms({ rid });
 			return rooms;
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
 		},
-	);
+	});
 
 	if (isLoading) {
 		return <ContextualbarSkeleton />;

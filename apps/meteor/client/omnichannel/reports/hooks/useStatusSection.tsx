@@ -46,17 +46,17 @@ export const useStatusSection = () => {
 		isError,
 		isSuccess,
 		refetch,
-	} = useQuery(
-		['omnichannel-reports', 'conversations-by-status', period, t],
-		async () => {
+	} = useQuery({
+		queryKey: ['omnichannel-reports', 'conversations-by-status', period, t],
+
+		queryFn: async () => {
 			const response = await getConversationsByStatus({ start: start.toISOString(), end: end.toISOString() });
 
 			return { ...response, data: formatChartData(response.data, response.total, t) };
 		},
-		{
-			refetchInterval: 5 * 60 * 1000,
-		},
-	);
+
+		refetchInterval: 5 * 60 * 1000,
+	});
 
 	const title = t('Conversations_by_status');
 	const subtitle = t('__count__conversations__period__', {

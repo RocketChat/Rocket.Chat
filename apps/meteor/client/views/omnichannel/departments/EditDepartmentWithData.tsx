@@ -18,7 +18,9 @@ type EditDepartmentWithDataProps = {
 const EditDepartmentWithData = ({ id, title }: EditDepartmentWithDataProps) => {
 	const { t } = useTranslation();
 	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: id ?? '' });
-	const { data, isInitialLoading, isError } = useQuery(['/v1/livechat/department/:_id', id], () => getDepartment(params), {
+	const { data, isInitialLoading, isError } = useQuery({
+		queryKey: ['/v1/livechat/department/:_id', id],
+		queryFn: () => getDepartment(params),
 		enabled: !!id,
 	});
 

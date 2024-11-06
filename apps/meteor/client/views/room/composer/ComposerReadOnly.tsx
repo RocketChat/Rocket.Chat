@@ -15,7 +15,9 @@ const ComposerReadOnly = (): ReactElement => {
 	const isSubscribed = useUserIsSubscribed();
 	const joinChannel = useEndpoint('POST', '/v1/channels.join');
 
-	const join = useMutation(() => joinChannel({ roomId: room._id }), {
+	const join = useMutation({
+		mutationFn: () => joinChannel({ roomId: room._id }),
+
 		onError: (error: unknown) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},

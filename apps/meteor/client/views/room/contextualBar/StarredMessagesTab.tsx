@@ -14,19 +14,23 @@ const StarredMessagesTab = () => {
 
 	const room = useRoom();
 
-	const starredMessagesQueryResult = useQuery(['rooms', room._id, 'starred-messages'] as const, async () => {
-		const messages: IMessage[] = [];
+	const starredMessagesQueryResult = useQuery({
+		queryKey: ['rooms', room._id, 'starred-messages'] as const,
 
-		for (
-			let offset = 0, result = await getStarredMessages({ roomId: room._id, offset: 0 });
-			result.count > 0;
-			// eslint-disable-next-line no-await-in-loop
-			offset += result.count, result = await getStarredMessages({ roomId: room._id, offset })
-		) {
-			messages.push(...result.messages.map(mapMessageFromApi));
-		}
+		queryFn: async () => {
+			const messages: IMessage[] = [];
 
-		return Promise.all(messages.map(onClientMessageReceived));
+			for (
+				let offset = 0, result = await getStarredMessages({ roomId: room._id, offset: 0 });
+				result.count > 0;
+				// eslint-disable-next-line no-await-in-loop
+				offset += result.count, result = await getStarredMessages({ roomId: room._id, offset })
+			) {
+				messages.push(...result.messages.map(mapMessageFromApi));
+			}
+
+			return Promise.all(messages.map(onClientMessageReceived));
+		},
 	});
 
 	const { t } = useTranslation();

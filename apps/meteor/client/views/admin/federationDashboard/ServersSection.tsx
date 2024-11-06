@@ -7,7 +7,9 @@ import React from 'react';
 function ServersSection(): ReactElement | null {
 	const getFederationServers = useMethod('federation:getServers');
 
-	const result = useQuery(['admin/federation-dashboard/servers'], async () => getFederationServers(), {
+	const result = useQuery({
+		queryKey: ['admin/federation-dashboard/servers'],
+		queryFn: async () => getFederationServers(),
 		refetchInterval: 10_000,
 	});
 

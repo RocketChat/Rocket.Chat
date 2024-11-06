@@ -11,7 +11,9 @@ import EditTrigger from './EditTrigger';
 const EditTriggerWithData = ({ triggerId }: { triggerId: ILivechatTrigger['_id'] }) => {
 	const { t } = useTranslation();
 	const getTriggersById = useEndpoint('GET', '/v1/livechat/triggers/:_id', { _id: triggerId });
-	const { data, isLoading, isError } = useQuery(['livechat-getTriggersById', triggerId], async () => getTriggersById(), {
+	const { data, isLoading, isError } = useQuery({
+		queryKey: ['livechat-getTriggersById', triggerId],
+		queryFn: async () => getTriggersById(),
 		refetchOnWindowFocus: false,
 	});
 

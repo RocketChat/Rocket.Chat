@@ -15,7 +15,10 @@ type CustomFieldProps = {
 const CustomField = ({ id, value }: CustomFieldProps) => {
 	const { t } = useTranslation();
 	const getCustomField = useEndpoint('GET', '/v1/livechat/custom-fields/:_id', { _id: id });
-	const { data, isLoading, isError } = useQuery(['/v1/livechat/custom-field', id], () => getCustomField());
+	const { data, isLoading, isError } = useQuery({
+		queryKey: ['/v1/livechat/custom-field', id],
+		queryFn: () => getCustomField(),
+	});
 
 	if (isLoading) {
 		return <FormSkeleton />;

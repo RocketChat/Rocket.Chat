@@ -27,31 +27,32 @@ const FederatedRoomList = ({ serverName, roomName, count }: FederatedRoomListPro
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { data, isLoading, isFetchingNextPage, fetchNextPage } = useInfiniteFederationSearchPublicRooms(serverName, roomName, count);
 
-	const { mutate: onClickJoin, isLoading: isLoadingMutation } = useMutation(
-		['federation/joinExternalPublicRoom'],
-		async ({ id, pageToken }: IFederationPublicRooms) =>
-			joinExternalPublicRoom({ externalRoomId: id as `!${string}:${string}`, roomName, pageToken }),
-		{
-			onSuccess: (_, data) => {
-				dispatchToastMessage({
-					type: 'success',
-					message: t('Your_request_to_join__roomName__has_been_made_it_could_take_up_to_15_minutes_to_be_processed', {
-						roomName: data.name,
-					}),
-				});
-				setModal(null);
-			},
-			onError: (error, { id }) => {
-				if (error instanceof Error && error.message === 'already-joined') {
-					setModal(null);
-					roomCoordinator.openRouteLink('c', { rid: id });
-					return;
-				}
+	const { mutate: onClickJoin, isLoading: isLoadingMutation } = useMutation({
+		mutationKey: ['federation/joinExternalPublicRoom'],
 
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+		mutationFn: async ({ id, pageToken }: IFederationPublicRooms) =>
+			joinExternalPublicRoom({ externalRoomId: id as `!${string}:${string}`, roomName, pageToken }),
+
+		onSuccess: (_, data) => {
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Your_request_to_join__roomName__has_been_made_it_could_take_up_to_15_minutes_to_be_processed', {
+					roomName: data.name,
+				}),
+			});
+			setModal(null);
 		},
-	);
+
+		onError: (error, { id }) => {
+			if (error instanceof Error && error.message === 'already-joined') {
+				setModal(null);
+				roomCoordinator.openRouteLink('c', { rid: id });
+				return;
+			}
+
+			dispatchToastMessage({ type: 'error', message: error });
+		},
+	});
 
 	if (isLoading) {
 		return <Throbber />;

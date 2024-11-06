@@ -16,11 +16,14 @@ const EditDepartmentWithAllowedForwardData = ({ data, ...props }: Omit<EditDepar
 		data: allowedToForwardData,
 		isInitialLoading,
 		isError,
-	} = useQuery(['/v1/livechat/department.listByIds', data?.department?.departmentsAllowedToForward], () =>
-		getDepartmentListByIds({
-			ids: data?.department?.departmentsAllowedToForward ?? [],
-		}),
-	);
+	} = useQuery({
+		queryKey: ['/v1/livechat/department.listByIds', data?.department?.departmentsAllowedToForward],
+
+		queryFn: () =>
+			getDepartmentListByIds({
+				ids: data?.department?.departmentsAllowedToForward ?? [],
+			}),
+	});
 
 	if (isInitialLoading) {
 		return <FormSkeleton />;

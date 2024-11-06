@@ -21,14 +21,13 @@ const VoipTransferModal = ({ extension, isLoading = false, onCancel, onConfirm }
 	const modalId = useUniqueId();
 
 	const getUserInfo = useEndpoint('GET', '/v1/users.info');
-	const { data: targetUser, isInitialLoading: isTargetInfoLoading } = useQuery(
-		['/v1/users.info', username],
-		() => getUserInfo({ username }),
-		{
-			enabled: Boolean(username),
-			select: (data) => data?.user || {},
-		},
-	);
+	const { data: targetUser, isLoading: isTargetInfoLoading } = useQuery({
+		queryKey:
+			['/v1/users.info', username],
+		queryFn: () => getUserInfo({ username }),
+		enabled: Boolean(username),
+		select: (data) => data?.user || {},
+	});
 
 	const handleConfirm = () => {
 		if (!targetUser?.freeSwitchExtension) {

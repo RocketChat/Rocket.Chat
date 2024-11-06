@@ -15,16 +15,16 @@ const EditOauthAppWithData = ({ _id, ...props }: { _id: string }): ReactElement 
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { data, isLoading, error, refetch } = useQuery(
-		['oauth-apps', _id],
-		async () => {
+	const { data, isLoading, error, refetch } = useQuery({
+		queryKey: ['oauth-apps', _id],
+
+		queryFn: async () => {
 			const oauthApps = await getOauthApps({ _id });
 			return oauthApps;
 		},
-		{
-			onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
-		},
-	);
+
+		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
+	});
 
 	const onChange = useCallback(() => {
 		refetch();

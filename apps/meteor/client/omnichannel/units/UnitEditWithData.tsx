@@ -19,17 +19,27 @@ const UnitEditWithData = ({ unitId }: { unitId: IOmnichannelBusinessUnit['_id'] 
 		data: unitData,
 		isError,
 		isLoading,
-	} = useQuery(['livechat-getUnitById', unitId], async () => getUnitById(), { refetchOnWindowFocus: false });
+	} = useQuery({
+		queryKey: ['livechat-getUnitById', unitId],
+		queryFn: async () => getUnitById(),
+		refetchOnWindowFocus: false,
+	});
 	const {
 		data: unitMonitors,
 		isError: unitMonitorsError,
 		isLoading: unitMonitorsLoading,
-	} = useQuery(['livechat-getMonitorsByUnitId', unitId], async () => getMonitorsByUnitId({ unitId }), { refetchOnWindowFocus: false });
+	} = useQuery({
+		queryKey: ['livechat-getMonitorsByUnitId', unitId],
+		queryFn: async () => getMonitorsByUnitId({ unitId }),
+		refetchOnWindowFocus: false,
+	});
 	const {
 		data: unitDepartments,
 		isError: unitDepartmentsError,
 		isLoading: unitDepartmentsLoading,
-	} = useQuery(['livechat-getDepartmentsByUnitId', unitId], async () => getDepartmentsByUnitId({ unitId }), {
+	} = useQuery({
+		queryKey: ['livechat-getDepartmentsByUnitId', unitId],
+		queryFn: async () => getDepartmentsByUnitId({ unitId }),
 		refetchOnWindowFocus: false,
 	});
 

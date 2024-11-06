@@ -18,12 +18,19 @@ type ShareLocationModalProps = {
 const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToast = useToastMessageDispatch();
-	const { data: permissionData, isLoading: permissionLoading } = useQuery(['geolocationPermission'], getGeolocationPermission);
-	const { data: positionData } = useQuery(['geolocationPosition', permissionData], async () => {
-		if (permissionLoading || permissionData === 'prompt' || permissionData === 'denied') {
-			return;
-		}
-		return getGeolocationPosition();
+	const { data: permissionData, isLoading: permissionLoading } = useQuery({
+		queryKey: ['geolocationPermission'],
+		...getGeolocationPermission,
+	});
+	const { data: positionData } = useQuery({
+		queryKey: ['geolocationPosition', permissionData],
+
+		queryFn: async () => {
+			if (permissionLoading || permissionData === 'prompt' || permissionData === 'denied') {
+				return;
+			}
+			return getGeolocationPosition();
+		},
 	});
 
 	const queryClient = useQueryClient();

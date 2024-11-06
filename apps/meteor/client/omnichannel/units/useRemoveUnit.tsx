@@ -20,7 +20,9 @@ export const useRemoveUnit = () => {
 				await removeUnit(id);
 				dispatchToastMessage({ type: 'success', message: t('Unit_removed') });
 				router.navigate('/omnichannel/units');
-				queryClient.invalidateQueries(['livechat-units']);
+				queryClient.invalidateQueries({
+					queryKey: ['livechat-units'],
+				});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

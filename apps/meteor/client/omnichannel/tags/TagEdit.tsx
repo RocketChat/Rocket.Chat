@@ -59,7 +59,9 @@ const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
 		try {
 			await saveTag(_id as unknown as string, { name, description }, departmentsId);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			queryClient.invalidateQueries(['livechat-tags']);
+			queryClient.invalidateQueries({
+				queryKey: ['livechat-tags'],
+			});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {

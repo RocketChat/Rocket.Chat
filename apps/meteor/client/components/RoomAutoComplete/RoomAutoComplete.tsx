@@ -37,13 +37,11 @@ const RoomAutoComplete = ({ value, onChange, scope = 'regular', renderRoomIcon, 
 	const filterDebounced = useDebouncedValue(filter, 300);
 	const roomsAutoCompleteEndpoint = useEndpoint('GET', ROOM_AUTOCOMPLETE_PARAMS[scope].endpoint);
 
-	const result = useQuery(
-		[ROOM_AUTOCOMPLETE_PARAMS[scope].key, filterDebounced],
-		() => roomsAutoCompleteEndpoint(generateQuery(filterDebounced)),
-		{
-			keepPreviousData: true,
-		},
-	);
+	const result = useQuery({
+		queryKey: [ROOM_AUTOCOMPLETE_PARAMS[scope].key, filterDebounced],
+		queryFn: () => roomsAutoCompleteEndpoint(generateQuery(filterDebounced)),
+		keepPreviousData: true,
+	});
 
 	const options = useMemo(
 		() =>

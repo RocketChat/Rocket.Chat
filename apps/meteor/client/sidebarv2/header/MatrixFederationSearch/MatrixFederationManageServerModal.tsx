@@ -38,11 +38,17 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 		mutate: addServer,
 		isLoading,
 		isError,
-	} = useMutation(['v1/federation/addServerByUser', serverName], () => addMatrixServer({ serverName }), {
+	} = useMutation({
+		mutationKey: ['v1/federation/addServerByUser', serverName],
+		mutationFn: () => addMatrixServer({ serverName }),
+
 		onSuccess: async () => {
-			await queryClient.invalidateQueries(['federation/listServersByUsers']);
+			await queryClient.invalidateQueries({
+				queryKey: ['federation/listServersByUsers'],
+			});
 			setModal(<MatrixFederationSearch defaultSelectedServer={serverName} onClose={onClickClose} key={serverName} />);
 		},
+
 		onError: (error) => {
 			const errorKey = getErrorKey(error);
 			if (!errorKey) {

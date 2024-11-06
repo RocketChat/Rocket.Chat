@@ -94,7 +94,9 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 
 			try {
 				await saveRoom({ guestData, roomData });
-				await queryClient.invalidateQueries(['/v1/rooms.info', room._id]);
+				await queryClient.invalidateQueries({
+					queryKey: ['/v1/rooms.info', room._id],
+				});
 
 				dispatchToastMessage({ type: 'success', message: t('Saved') });
 				reload?.();

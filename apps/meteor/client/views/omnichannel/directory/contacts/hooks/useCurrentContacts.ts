@@ -8,5 +8,8 @@ export const useCurrentContacts = (
 ): UseQueryResult<OperationResult<'GET', '/v1/livechat/visitors.search'>> => {
 	const currentContacts = useEndpoint('GET', '/v1/livechat/visitors.search');
 
-	return useQuery(['current-contacts', query], () => currentContacts(query));
+	return useQuery({
+		queryKey: ['current-contacts', query],
+		queryFn: () => currentContacts(query),
+	});
 };

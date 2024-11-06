@@ -29,11 +29,15 @@ const CloudAnnouncementsRegion = () => {
 		}
 
 		const unsubscribeFromBannerChanged = subscribeToNotifyLoggedIn('banner-changed', async () => {
-			queryClient.invalidateQueries(['cloud', 'announcements']);
+			queryClient.invalidateQueries({
+				queryKey: ['cloud', 'announcements'],
+			});
 		});
 
 		const unsubscribeBanners = subscribeToNotifyUser(`${uid}/banners`, async () => {
-			queryClient.invalidateQueries(['cloud', 'announcements']);
+			queryClient.invalidateQueries({
+				queryKey: ['cloud', 'announcements'],
+			});
 		});
 
 		return () => {

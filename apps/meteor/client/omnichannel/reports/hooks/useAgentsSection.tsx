@@ -28,9 +28,10 @@ export const useAgentsSection = () => {
 		isLoading,
 		isError,
 		isSuccess,
-	} = useQuery(
-		['omnichannel-reports', 'conversations-by-agent', period, sortBy, sortDirection],
-		async () => {
+	} = useQuery({
+		queryKey: ['omnichannel-reports', 'conversations-by-agent', period, sortBy, sortDirection],
+
+		queryFn: async () => {
 			const { start, end } = getPeriodRange(period);
 			const response = await getConversationsByAgent({
 				start: start.toISOString(),
@@ -39,10 +40,9 @@ export const useAgentsSection = () => {
 			});
 			return { ...response, data: formatChartData(response.data) };
 		},
-		{
-			refetchInterval: 5 * 60 * 1000,
-		},
-	);
+
+		refetchInterval: 5 * 60 * 1000,
+	});
 
 	const title = t('Conversations_by_agents');
 

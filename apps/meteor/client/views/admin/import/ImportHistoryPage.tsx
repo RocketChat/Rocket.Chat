@@ -23,27 +23,27 @@ function ImportHistoryPage() {
 
 	const router = useRouter();
 
-	const currentOperation = useQuery(
-		['ImportHistoryPage', 'currentOperation'],
-		async () => {
+	const currentOperation = useQuery({
+		queryKey: ['ImportHistoryPage', 'currentOperation'],
+
+		queryFn: async () => {
 			const { operation = { valid: false } } = await getCurrentImportOperation();
 			return operation;
 		},
-		{
-			onError: () => dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_Operation') }),
-		},
-	);
 
-	const latestOperations = useQuery(
-		['ImportHistoryPage', 'latestOperations'],
-		async () => {
+		onError: () => dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_Operation') }),
+	});
+
+	const latestOperations = useQuery({
+		queryKey: ['ImportHistoryPage', 'latestOperations'],
+
+		queryFn: async () => {
 			const operations = await getLatestImportOperations();
 			return operations;
 		},
-		{
-			onError: () => dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_History') }),
-		},
-	);
+
+		onError: () => dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_History') }),
+	});
 
 	const isLoading = currentOperation.isLoading || latestOperations.isLoading;
 
@@ -62,8 +62,12 @@ function ImportHistoryPage() {
 			dispatchToastMessage({ type: 'error', message: t('Failed_To_Download_Files') });
 		},
 		onSuccess: ({ count }) => {
-			queryClient.invalidateQueries(['ImportHistoryPage', 'currentOperation']);
-			queryClient.invalidateQueries(['ImportHistoryPage', 'latestOperations']);
+			queryClient.invalidateQueries({
+				queryKey: ['ImportHistoryPage', 'currentOperation'],
+			});
+			queryClient.invalidateQueries({
+				queryKey: ['ImportHistoryPage', 'latestOperations'],
+			});
 			if (!count) {
 				dispatchToastMessage({ type: 'info', message: t('No_files_left_to_download') });
 				return;
@@ -81,8 +85,12 @@ function ImportHistoryPage() {
 			dispatchToastMessage({ type: 'error', message: t('Failed_To_Download_Files') });
 		},
 		onSuccess: ({ count }) => {
-			queryClient.invalidateQueries(['ImportHistoryPage', 'currentOperation']);
-			queryClient.invalidateQueries(['ImportHistoryPage', 'latestOperations']);
+			queryClient.invalidateQueries({
+				queryKey: ['ImportHistoryPage', 'currentOperation'],
+			});
+			queryClient.invalidateQueries({
+				queryKey: ['ImportHistoryPage', 'latestOperations'],
+			});
 			if (!count) {
 				dispatchToastMessage({ type: 'info', message: t('No_files_left_to_download') });
 				return;

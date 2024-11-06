@@ -42,7 +42,10 @@ const IntegrationsTable = ({ type }: { type?: string }) => {
 	);
 
 	const getIntegrations = useEndpoint('GET', '/v1/integrations.list');
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery(['integrations', query], async () => getIntegrations(query));
+	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
+		queryKey: ['integrations', query],
+		queryFn: async () => getIntegrations(query),
+	});
 
 	const onClick = useCallback(
 		(_id, type) => () =>

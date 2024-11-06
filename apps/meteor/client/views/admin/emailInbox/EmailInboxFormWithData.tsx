@@ -11,7 +11,10 @@ import EmailInboxForm from './EmailInboxForm';
 const EmailInboxFormWithData = ({ id }: { id: IEmailInbox['_id'] }): ReactElement => {
 	const t = useTranslation();
 	const getEmailInboxById = useEndpoint('GET', '/v1/email-inbox/:_id', { _id: id });
-	const { data, isLoading, error } = useQuery(['email-inbox', id], () => getEmailInboxById());
+	const { data, isLoading, error } = useQuery({
+		queryKey: ['email-inbox', id],
+		queryFn: () => getEmailInboxById(),
+	});
 
 	if (isLoading) {
 		return <FormSkeleton />;

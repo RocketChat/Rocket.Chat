@@ -28,11 +28,11 @@ const ConnectionStatusProvider = ({ children }: { children: ComponentChildren })
 
 	const value = useMemo(
 		() =>
-			({
-				status,
-				connected: status === 'connected',
-				reconnect: () => sdk.connection.reconnect(),
-			}) as const,
+			(({
+                status,
+                connected: status === 'connected',
+                reconnect: () => sdk.connection.reconnect()
+            }) as const),
 		[status, sdk],
 	);
 

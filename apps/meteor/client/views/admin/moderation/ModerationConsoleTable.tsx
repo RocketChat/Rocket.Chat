@@ -55,10 +55,14 @@ const ModerationConsoleTable = () => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { data, isLoading, isSuccess } = useQuery(['moderation', 'msgReports', 'fetchAll', query], async () => getReports(query), {
+	const { data, isLoading, isSuccess } = useQuery({
+		queryKey: ['moderation', 'msgReports', 'fetchAll', query],
+		queryFn: async () => getReports(query),
+
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
+
 		keepPreviousData: true,
 	});
 

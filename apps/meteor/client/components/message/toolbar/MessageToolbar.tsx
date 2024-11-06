@@ -86,16 +86,20 @@ const MessageToolbar = ({
 	// TODO: move this to another place
 	useWebDAVMessageAction();
 
-	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
-		const props = { message, room, user, subscription, settings: mapSettings, chat };
+	const actionsQueryResult = useQuery({
+		queryKey: ['rooms', room._id, 'messages', message._id, 'actions'] as const,
 
-		const toolboxItems = await MessageAction.getAll(props, context, 'message');
-		const menuItems = await MessageAction.getAll(props, context, 'menu');
+		queryFn: async () => {
+			const props = { message, room, user, subscription, settings: mapSettings, chat };
 
-		return {
-			message: toolboxItems.filter((action) => !hiddenActions.includes(action.id)),
-			menu: menuItems.filter((action) => !(isLayoutEmbedded && action.id === 'reply-directly') && !hiddenActions.includes(action.id)),
-		};
+			const toolboxItems = await MessageAction.getAll(props, context, 'message');
+			const menuItems = await MessageAction.getAll(props, context, 'menu');
+
+			return {
+				message: toolboxItems.filter((action) => !hiddenActions.includes(action.id)),
+				menu: menuItems.filter((action) => !(isLayoutEmbedded && action.id === 'reply-directly') && !hiddenActions.includes(action.id)),
+			};
+		},
 	});
 
 	const toolbox = useRoomToolbox();

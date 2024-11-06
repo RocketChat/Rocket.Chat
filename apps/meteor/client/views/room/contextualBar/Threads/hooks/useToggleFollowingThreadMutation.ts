@@ -19,8 +19,8 @@ export const useToggleFollowingThreadMutation = (
 
 	const queryClient = useQueryClient();
 
-	return useMutation(
-		async ({ tmid, follow }) => {
+	return useMutation({
+		mutationFn: async ({ tmid, follow }) => {
 			if (follow) {
 				await followMessage({ mid: tmid });
 				return;
@@ -28,12 +28,14 @@ export const useToggleFollowingThreadMutation = (
 
 			await unfollowMessage({ mid: tmid });
 		},
-		{
-			...options,
-			onSuccess: async (data, variables, context) => {
-				await queryClient.invalidateQueries(['rooms', variables.rid, 'threads']);
-				return options?.onSuccess?.(data, variables, context);
-			},
+
+		...options,
+
+		onSuccess: async (data, variables, context) => {
+			await queryClient.invalidateQueries({
+				queryKey: ['rooms', variables.rid, 'threads'],
+			});
+			return options?.onSuccess?.(data, variables, context);
 		},
-	);
+	});
 };

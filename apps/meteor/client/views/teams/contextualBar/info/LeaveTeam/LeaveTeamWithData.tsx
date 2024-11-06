@@ -21,7 +21,10 @@ const LeaveTeamWithData = ({ teamId, onCancel, onConfirm }: LeaveTeamWithDataPro
 	}
 
 	const getRoomsOfUser = useEndpoint('GET', '/v1/teams.listRoomsOfUser');
-	const { data, isLoading } = useQuery(['teams.listRoomsOfUser'], () => getRoomsOfUser({ teamId, userId }));
+	const { data, isLoading } = useQuery({
+		queryKey: ['teams.listRoomsOfUser'],
+		queryFn: () => getRoomsOfUser({ teamId, userId }),
+	});
 
 	if (isLoading) {
 		return <GenericModalSkeleton />;

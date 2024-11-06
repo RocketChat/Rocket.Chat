@@ -25,7 +25,9 @@ const CustomUserStatusService = () => {
 	const result = useActiveConnections();
 	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 	const togglePresenceServiceEndpoint = useEndpoint('POST', '/v1/presence.enableBroadcast');
-	const disablePresenceService = useMutation(() => togglePresenceServiceEndpoint());
+	const disablePresenceService = useMutation({
+		mutationFn: () => togglePresenceServiceEndpoint(),
+	});
 	const { data: license, isLoading: licenseIsLoading } = useIsEnterprise();
 
 	if (result.isLoading || disablePresenceService.isLoading || licenseIsLoading) {

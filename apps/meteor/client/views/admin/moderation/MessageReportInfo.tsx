@@ -18,18 +18,18 @@ const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
 		isLoading: isLoadingReportsByMessage,
 		isSuccess: isSuccessReportsByMessage,
 		isError: isErrorReportsByMessage,
-	} = useQuery(
-		['moderation', 'msgReports', 'fetchReasons', { msgId }],
-		async () => {
+	} = useQuery({
+		queryKey: ['moderation', 'msgReports', 'fetchReasons', { msgId }],
+
+		queryFn: async () => {
 			const reports = await getReportsByMessage({ msgId });
 			return reports;
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
 		},
-	);
+	});
 
 	if (isLoadingReportsByMessage) {
 		return (

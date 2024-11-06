@@ -45,9 +45,11 @@ const ManagersTable = () => {
 	);
 
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
-	const { data, isLoading, isSuccess, refetch } = useQuery(['omnichannel', 'managers', 'livechat-manager', query], async () =>
-		getManagers(query),
-	);
+	const { data, isLoading, isSuccess, refetch } = useQuery({
+		queryKey: ['omnichannel', 'managers', 'livechat-manager', query],
+
+		queryFn: async () => getManagers(query),
+	});
 
 	const [defaultQuery] = useState(hashQueryKey([query]));
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);

@@ -16,9 +16,10 @@ const MeetRoute = () => {
 	const token = useSearchParameter('token') ?? '';
 	const getVisitorByToken = useEndpoint('GET', '/v1/livechat/visitor/:token', { token });
 
-	const { data: hasVisitor } = useQuery(
-		['meet', { token }],
-		async () => {
+	const { data: hasVisitor } = useQuery({
+		queryKey: ['meet', { token }],
+
+		queryFn: async () => {
 			if (token) {
 				const result = await getVisitorByToken();
 				if ('visitor' in result) {
@@ -34,24 +35,24 @@ const MeetRoute = () => {
 
 			return true;
 		},
-		{
-			onSuccess: (hasVisitor) => {
-				if (hasVisitor === false) {
-					router.navigate('/home');
-				}
-			},
-			onError: (error) => {
-				if (error instanceof VisitorDoesNotExistError) {
-					dispatchToastMessage({ type: 'error', message: t('core.Visitor_does_not_exist') });
-					router.navigate('/home');
-					return;
-				}
 
-				dispatchToastMessage({ type: 'error', message: error });
+		onSuccess: (hasVisitor) => {
+			if (hasVisitor === false) {
 				router.navigate('/home');
-			},
+			}
 		},
-	);
+
+		onError: (error) => {
+			if (error instanceof VisitorDoesNotExistError) {
+				dispatchToastMessage({ type: 'error', message: t('core.Visitor_does_not_exist') });
+				router.navigate('/home');
+				return;
+			}
+
+			dispatchToastMessage({ type: 'error', message: error });
+			router.navigate('/home');
+		},
+	});
 
 	if (!hasVisitor) {
 		return <PageLoading />;

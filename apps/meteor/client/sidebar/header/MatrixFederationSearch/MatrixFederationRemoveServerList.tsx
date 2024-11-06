@@ -28,11 +28,15 @@ const MatrixFederationRemoveServerList = ({ servers }: MatrixFederationRemoveSer
 
 	const queryClient = useQueryClient();
 
-	const { mutate: removeServer, isLoading: isRemovingServer } = useMutation(
-		['federation/removeServerByUser'],
-		(serverName: string) => removeMatrixServer({ serverName }),
-		{ onSuccess: () => queryClient.invalidateQueries(['federation/listServersByUsers']) },
-	);
+	const { mutate: removeServer, isLoading: isRemovingServer } = useMutation({
+		mutationKey: ['federation/removeServerByUser'],
+		mutationFn: (serverName: string) => removeMatrixServer({ serverName }),
+
+		onSuccess: () =>
+			queryClient.invalidateQueries({
+				queryKey: ['federation/listServersByUsers'],
+			}),
+	});
 
 	const t = useTranslation();
 

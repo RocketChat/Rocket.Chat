@@ -43,7 +43,10 @@ const RegisterUsername = () => {
 	const setUsername = useMethod('setUsername');
 	const saveCustomFields = useMethod('saveCustomFields');
 	const usernameSuggestion = useEndpoint('GET', '/v1/users.getUsernameSuggestion');
-	const { data, isLoading } = useQuery(['suggestion'], async () => usernameSuggestion());
+	const { data, isLoading } = useQuery({
+		queryKey: ['suggestion'],
+		queryFn: async () => usernameSuggestion(),
+	});
 
 	const {
 		register,

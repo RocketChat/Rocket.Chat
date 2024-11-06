@@ -13,7 +13,10 @@ const EditIntegrationsPageWithData = ({ integrationId }: { integrationId: IIncom
 
 	const params = useMemo(() => ({ integrationId }), [integrationId]);
 	const getIntegrations = useEndpoint('GET', '/v1/integrations.get');
-	const { data, isLoading, isError } = useQuery(['integrations', params], async () => getIntegrations(params));
+	const { data, isLoading, isError } = useQuery({
+		queryKey: ['integrations', params],
+		queryFn: async () => getIntegrations(params),
+	});
 
 	if (isLoading) {
 		return (

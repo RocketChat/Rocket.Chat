@@ -43,7 +43,10 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	);
 
 	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
-	const { data, isSuccess, isLoading, refetch } = useQuery(['/v1/livechat/sla', query], () => getSlaData(query));
+	const { data, isSuccess, isLoading, refetch } = useQuery({
+		queryKey: ['/v1/livechat/sla', query],
+		queryFn: () => getSlaData(query),
+	});
 
 	const [defaultQuery] = useState(hashQueryKey([query]));
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);

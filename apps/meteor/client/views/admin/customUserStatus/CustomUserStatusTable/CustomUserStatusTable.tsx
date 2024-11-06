@@ -48,18 +48,18 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 	const getCustomUserStatus = useEndpoint('GET', '/v1/custom-user-status.list');
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { data, isLoading, refetch, isFetched } = useQuery(
-		['custom-user-statuses', query],
-		async () => {
+	const { data, isLoading, refetch, isFetched } = useQuery({
+		queryKey: ['custom-user-statuses', query],
+
+		queryFn: async () => {
 			const { statuses } = await getCustomUserStatus(query);
 			return statuses;
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
 		},
-	);
+	});
 
 	useEffect(() => {
 		reload.current = refetch;

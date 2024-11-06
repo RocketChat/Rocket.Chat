@@ -56,7 +56,9 @@ const CannedResponsesTable = () => {
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
 
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
-	const { data, isLoading, isSuccess } = useQuery(['getCannedResponses', query], () => getCannedResponses(query), {
+	const { data, isLoading, isSuccess } = useQuery({
+		queryKey: ['getCannedResponses', query],
+		queryFn: () => getCannedResponses(query),
 		refetchOnWindowFocus: false,
 	});
 

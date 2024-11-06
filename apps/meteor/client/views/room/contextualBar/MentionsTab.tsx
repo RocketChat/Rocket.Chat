@@ -14,19 +14,23 @@ const MentionsTab = (): ReactElement => {
 
 	const room = useRoom();
 
-	const mentionedMessagesQueryResult = useQuery(['rooms', room._id, 'mentioned-messages'] as const, async () => {
-		const messages: IMessage[] = [];
+	const mentionedMessagesQueryResult = useQuery({
+		queryKey: ['rooms', room._id, 'mentioned-messages'] as const,
 
-		for (
-			let offset = 0, result = await getMentionedMessages({ roomId: room._id, offset: 0 });
-			result.count > 0;
-			// eslint-disable-next-line no-await-in-loop
-			offset += result.count, result = await getMentionedMessages({ roomId: room._id, offset })
-		) {
-			messages.push(...result.messages.map(mapMessageFromApi));
-		}
+		queryFn: async () => {
+			const messages: IMessage[] = [];
 
-		return messages;
+			for (
+				let offset = 0, result = await getMentionedMessages({ roomId: room._id, offset: 0 });
+				result.count > 0;
+				// eslint-disable-next-line no-await-in-loop
+				offset += result.count, result = await getMentionedMessages({ roomId: room._id, offset })
+			) {
+				messages.push(...result.messages.map(mapMessageFromApi));
+			}
+
+			return messages;
+		},
 	});
 
 	const { t } = useTranslation();

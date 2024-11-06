@@ -18,7 +18,9 @@ const invalidateQueryClientLicenses = (() => {
 		clearTimeout(timeout);
 		timeout = setTimeout(() => {
 			timeout = undefined;
-			queryClient.invalidateQueries(['licenses']);
+			queryClient.invalidateQueries({
+				queryKey: ['licenses'],
+			});
 		}, milliseconds);
 	};
 })();
@@ -40,7 +42,9 @@ export const useLicenseBase = <TData = LicenseDataType>({
 
 	useEffect(() => notify('license', () => invalidateQueries()), [notify, invalidateQueries]);
 
-	return useQuery(['licenses', 'getLicenses', params], () => getLicenses({ ...params }), {
+	return useQuery({
+		queryKey: ['licenses', 'getLicenses', params],
+		queryFn: () => getLicenses({ ...params }),
 		staleTime: Infinity,
 		keepPreviousData: true,
 		select,
