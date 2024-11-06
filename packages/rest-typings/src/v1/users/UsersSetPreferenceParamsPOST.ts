@@ -21,6 +21,7 @@ export type UsersSetPreferencesParamsPOST = {
 		unreadAlert?: boolean;
 		masterVolume?: number;
 		notificationsSoundVolume?: number;
+		ringingSoundVolume?: number;
 		desktopNotifications?: string;
 		pushNotifications?: string;
 		enableAutoAway?: boolean;
@@ -116,6 +117,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				notificationsSoundVolume: {
+					type: 'number',
+					nullable: true,
+				},
+				ringingSoundVolume: {
 					type: 'number',
 					nullable: true,
 				},

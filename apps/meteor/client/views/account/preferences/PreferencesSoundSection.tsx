@@ -19,6 +19,7 @@ const PreferencesSoundSection = () => {
 	const muteFocusedConversationsId = useUniqueId();
 	const masterVolumeId = useUniqueId();
 	const notificationsSoundVolumeId = useUniqueId();
+	const ringingSoundVolumeId = useUniqueId();
 
 	return (
 		<Accordion.Item title={t('Sound')}>
@@ -128,6 +129,35 @@ const PreferencesSoundSection = () => {
 						/>
 						<Tooltip placement='right' mis={8}>
 							{notificationsSoundVolume}
+						</Tooltip>
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel htmlFor={notificationsSoundVolumeId}>{t('Ringing_Sound_Volume')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							name='ringingSoundVolume'
+							control={control}
+							render={({ field: { onChange, value, ref } }) => (
+								<Box
+									id={ringingSoundVolumeId}
+									ref={ref}
+									is='input'
+									flexGrow={1}
+									type='range'
+									min='0'
+									max='100'
+									value={value}
+									onChange={(e: ChangeEvent<HTMLInputElement>) => {
+										const soundVolume = (ringingSoundVolume * masterVolume) / 100;
+										customSound.play('telephone', { volume: soundVolume / 100 });
+										onChange(Math.max(0, Math.min(Number(e.currentTarget.value), 100)));
+									}}
+								/>
+							)}
+						/>
+						<Tooltip placement='right' mis={8}>
+							{ringingSoundVolume}
 						</Tooltip>
 					</FieldRow>
 				</Field>
