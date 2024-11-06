@@ -29,6 +29,7 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
+import { pinMessage } from '../../../message-pin/server/pinMessage';
 
 API.v1.addRoute(
 	'chat.delete',
@@ -145,7 +146,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			const pinnedMessage = await Meteor.callAsync('pinMessage', msg);
+			const pinnedMessage = await pinMessage(msg, this.userId);
 
 			const [message] = await normalizeMessagesForUser([pinnedMessage], this.userId);
 

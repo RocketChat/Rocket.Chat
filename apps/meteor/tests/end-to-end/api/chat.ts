@@ -2296,6 +2296,26 @@ describe('[Chat]', () => {
 			Promise.all([updateSetting('Message_AllowPinning', true), updatePermission('pin-message', ['owner', 'moderator', 'admin'])]),
 		);
 
+		descrube('no permissions', () => {
+			before(() => updatePermission('pin-message', []));
+			after(() => updatePermission('pin-message', ['owner', 'moderator', 'admin']));
+
+			it('should return an error when user does not have permission to pin a message', async () => {
+				await request
+					.post(api('chat.pinMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					});
+			});
+		});
+
 		it('should return an error when pinMessage is not allowed in this server', (done) => {
 			void updateSetting('Message_AllowPinning', false).then(() => {
 				void request
@@ -2334,6 +2354,21 @@ describe('[Chat]', () => {
 			});
 		});
 
+		it('should return an error when messageId does not exist', async () => {
+			await request
+				.post(api('chat.pinMessage'))
+				.set(credentials)
+				.send({
+					messageId: 'test',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				});
+		});
+
 		it('should pin Message successfully', (done) => {
 			void updatePermission('pin-message', ['admin']).then(() => {
 				void request
@@ -2350,6 +2385,21 @@ describe('[Chat]', () => {
 					})
 					.end(done);
 			});
+		});
+
+		it('should return message when its already pinned', async () => {
+			await request
+				.post(api('chat.pinMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.not.have.property('error');
+				});
 		});
 	});
 
