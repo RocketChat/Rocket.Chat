@@ -5064,6 +5064,7 @@
   "Unverified": "Não verificado",
   "error-unverified-contact": "Contacto não está verificado",
   "Last_contacts": "Últimos contatos",
+  "Last_channel": "Último canal",
   "Livechat_Block_Unknown_Contacts": "Bloquear contatos desconhecidos",
   "Livechat_Block_Unknown_Contacts_Description": "Conversas de contatos não verificados não serão encaminhadas para filas de atendimento até que p contato seja verificado.",
   "Livechat_Contact_Verification_App": "App de verificação de contatos",
