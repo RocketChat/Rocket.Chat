@@ -265,30 +265,17 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return updatedContact.value;
 	}
 
-	findAverageAmountOfChannels(): AggregationCursor<{ avgChannelsPerContact: number }> {
-		return this.col.aggregate<{ avgChannelsPerContact: number }>(
-			[
-				{
-					$group: {
-						_id: null,
-						avgChannelsPerContact: {
-							$avg: { $size: { $cond: [{ $isArray: '$channels' }, '$channels', []] } },
-						},
-					},
-				},
-			],
-			{ allowDiskUse: true, readPreference: readSecondaryPreferred() },
-		);
-	}
-
-	countTotalAmountOfConflicts(): AggregationCursor<{ totalConflicts: number }> {
-		return this.col.aggregate<{ totalConflicts: number }>(
+	getStatistics(): AggregationCursor<{ totalConflicts: number; avgChannelsPerContact: number }> {
+		return this.col.aggregate<{ totalConflicts: number; avgChannelsPerContact: number }>(
 			[
 				{
 					$group: {
 						_id: null,
 						totalConflicts: {
 							$sum: { $size: { $cond: [{ $isArray: '$conflictingFields' }, '$conflictingFields', []] } },
+						},
+						avgChannelsPerContact: {
+							$avg: { $size: { $cond: [{ $isArray: '$channels' }, '$channels', []] } },
 						},
 					},
 				},

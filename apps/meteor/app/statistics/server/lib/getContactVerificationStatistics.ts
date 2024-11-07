@@ -7,23 +7,21 @@ export async function getContactVerificationStatistics(): Promise<IStats['contac
 	const [
 		totalContacts,
 		totalUnknownContacts,
-		[{ totalConflicts } = { totalConflicts: 0 }],
+		[{ totalConflicts, avgChannelsPerContact } = { totalConflicts: 0, avgChannelsPerContact: 0 }],
 		totalBlockedContacts,
 		totalFullyBlockedContacts,
 		totalVerifiedContacts,
-		[{ avgChannelsPerContact } = { avgChannelsPerContact: 0 }],
 		totalContactsWithoutChannels,
 	] = await Promise.all([
 		LivechatContacts.estimatedDocumentCount(),
 		LivechatContacts.countDocuments({ unknown: true }),
-		LivechatContacts.countTotalAmountOfConflicts().toArray(),
+		LivechatContacts.getStatistics().toArray(),
 		LivechatContacts.countDocuments({ 'channels.blocked': true }),
 		LivechatContacts.countDocuments({
 			'channels.blocked': true,
 			'channels': { $not: { $elemMatch: { $or: [{ blocked: false }, { blocked: { $exists: false } }] } } },
 		}),
 		LivechatContacts.countDocuments({ unknown: false }),
-		LivechatContacts.findAverageAmountOfChannels().toArray(),
 		LivechatContacts.countDocuments({ channels: { $in: [undefined, []] } }),
 	]);
 
