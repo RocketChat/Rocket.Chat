@@ -130,7 +130,7 @@ describe('#userAvatarById()', () => {
 		expect(response.end.calledOnce).to.be.true;
 	});
 
-	it(`should write 404 if username is not found`, async () => {
+	it(`should write 404 if userId is not found`, async () => {
 		mocks.utils.wasFallbackModified.returns(true);
 		mocks.findOneById.returns(null);
 
