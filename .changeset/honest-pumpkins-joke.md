@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-adds missing rest props in sidebar item templates
+adds missing html attributes in sidebar item templates
