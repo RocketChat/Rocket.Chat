@@ -15,7 +15,7 @@ type ContactInfoDetailsProps = {
 	emails?: string[];
 	phones?: string[];
 	createdAt: string;
-	customFieldEntries: [string, string][];
+	customFieldEntries: [string, string | unknown][];
 	contactManager?: string;
 };
 
@@ -35,8 +35,12 @@ const ContactInfoDetails = ({ emails, phones, createdAt, customFieldEntries, con
 						<Info>{formatDate(createdAt)}</Info>
 					</Field>
 				)}
-				{customFieldEntries.length > 0 && <Divider mi={-24} />}
-				{customFieldEntries?.map(([key, value]) => <CustomField key={key} id={key} value={value} />)}
+				{customFieldEntries.length > 0 && (
+					<>
+						<Divider mi={-24} />
+						{customFieldEntries?.map(([key, value]) => <CustomField key={key} id={key} value={value as string} />)}
+					</>
+				)}
 			</Margins>
 		</ContextualbarScrollableContent>
 	);

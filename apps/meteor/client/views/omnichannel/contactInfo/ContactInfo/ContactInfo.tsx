@@ -1,13 +1,13 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Callout, IconButton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation, useEndpoint, usePermission, useRouter, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useTranslation, usePermission, useRouter, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../components/Contextualbar';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useContactRoute } from '../../hooks/useContactRoute';
+import { useValidCustomFields } from '../hooks/useValidCustomFields';
 import ContactInfoChannels from '../tabs/ContactInfoChannels/ContactInfoChannels';
 import ContactInfoDetails from '../tabs/ContactInfoDetails';
 import ContactInfoHistory from '../tabs/ContactInfoHistory';
@@ -29,28 +29,14 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 
 	const formatDate = useFormatDate();
 
-	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 	const canEditContact = usePermission('edit-omnichannel-contact');
-
-	const getCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
-	const { data: { customFields } = {} } = useQuery(['/v1/livechat/custom-fields'], () => getCustomFields());
 
 	const { name, emails, phones, conflictingFields, createdAt, lastChat, contactManager, customFields: userCustomFields } = contact;
 
 	const hasConflicts = conflictingFields && conflictingFields?.length > 0;
 	const showContactHistory = (currentRouteName === 'live' || currentRouteName === 'omnichannel-directory') && lastChat;
 
-	const checkIsVisibleAndScopeVisitor = (key: string) => {
-		const field = customFields?.find(({ _id }) => _id === key);
-		return field?.visibility === 'visible' && field?.scope === 'visitor';
-	};
-
-	// Serialized does not like unknown :(
-	const customFieldEntries = canViewCustomFields
-		? Object.entries((userCustomFields ?? {}) as unknown as Record<string, string>).filter(
-				([key, value]) => checkIsVisibleAndScopeVisitor(key) && value,
-			)
-		: [];
+	const customFieldEntries = useValidCustomFields(userCustomFields);
 
 	return (
 		<>
