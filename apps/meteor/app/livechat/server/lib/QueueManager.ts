@@ -94,8 +94,7 @@ export class QueueManager {
 
 		const inquiryAgent = await RoutingManager.delegateAgent(defaultAgent, inquiry);
 		logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
-		await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
-		const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
+		const dbInquiry = await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
 
 		if (!dbInquiry) {
 			throw new Error('inquiry-not-found');
@@ -122,6 +121,10 @@ export class QueueManager {
 			return LivechatInquiryStatus.QUEUED;
 		}
 
+		if (settings.get('Livechat_waiting_queue')) {
+			return LivechatInquiryStatus.QUEUED;
+		}
+
 		if (RoutingManager.getConfig()?.autoAssignAgent) {
 			return LivechatInquiryStatus.READY;
 		}
@@ -135,6 +138,7 @@ export class QueueManager {
 
 	static async queueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
 		if (inquiry.status === 'ready') {
+			logger.debug({ msg: 'Inquiry is ready. Delegating', inquiry, defaultAgent });
 			return RoutingManager.delegateInquiry(inquiry, defaultAgent, undefined, room);
 		}
 
@@ -252,7 +256,11 @@ export class QueueManager {
 			throw new Error('room-not-found');
 		}
 
-		if (!newRoom.servedBy && settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
+		if (
+			!newRoom.servedBy &&
+			settings.get('Livechat_waiting_queue') &&
+			settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')
+		) {
 			const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
 				inquiryId: inquiry._id,
 				department,
@@ -320,6 +328,10 @@ export class QueueManager {
 	}
 
 	private static dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, agent?: SelectedAgent | null) => {
+		if (RoutingManager.getConfig()?.autoAssignAgent) {
+			return;
+		}
+
 		logger.debug(`Notifying agents of new inquiry ${inquiry._id} queued`);
 
 		const { department, rid, v } = inquiry;
