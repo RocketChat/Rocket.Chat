@@ -1,9 +1,9 @@
-import { Box } from '@rocket.chat/fuselage';
-import { useEndpoint, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 import { ContextualbarSkeleton } from '../../../../components/Contextualbar';
+import ContactInfoError from '../ContactInfoError';
 import ContactInfo from './ContactInfo';
 
 type ContactInfoWithDataProps = {
@@ -12,7 +12,6 @@ type ContactInfoWithDataProps = {
 };
 
 const ContactInfoWithData = ({ id: contactId, onClose }: ContactInfoWithDataProps) => {
-	const t = useTranslation();
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 
 	const getContact = useEndpoint('GET', '/v1/omnichannel/contacts.get');
@@ -25,7 +24,7 @@ const ContactInfoWithData = ({ id: contactId, onClose }: ContactInfoWithDataProp
 	}
 
 	if (isError || !data?.contact) {
-		return <Box mbs={16}>{t('Contact_not_found')}</Box>;
+		return <ContactInfoError onClose={onClose} />;
 	}
 
 	return <ContactInfo contact={data?.contact} onClose={onClose} />;

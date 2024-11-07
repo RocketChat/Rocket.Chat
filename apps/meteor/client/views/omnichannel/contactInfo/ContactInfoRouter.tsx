@@ -4,7 +4,8 @@ import React from 'react';
 import { useOmnichannelRoom } from '../../room/contexts/RoomContext';
 import { useRoomToolbox } from '../../room/contexts/RoomToolboxContext';
 import ContactInfo from './ContactInfo';
-import ContactEditWithData from './EditContactInfoWithData';
+import ContactInfoError from './ContactInfoError';
+import EditContactInfoWithData from './EditContactInfoWithData';
 
 const ContactInfoRouter = () => {
 	const room = useOmnichannelRoom();
@@ -17,15 +18,15 @@ const ContactInfoRouter = () => {
 		liveRoute.push({ id: room._id, tab: 'contact-profile' });
 	};
 
-	const {
-		v: { contactId },
-	} = room;
-
-	if (context === 'edit') {
-		return <ContactEditWithData id={contactId || ''} onClose={closeTab} onCancel={handleCloseEdit} />;
+	if (!room.v.contactId) {
+		return <ContactInfoError onClose={closeTab} />;
 	}
 
-	return <ContactInfo id={contactId || ''} onClose={closeTab} />;
+	if (context === 'edit' && room.v.contactId) {
+		return <EditContactInfoWithData id={room.v.contactId} onClose={closeTab} onCancel={handleCloseEdit} />;
+	}
+
+	return <ContactInfo id={room.v.contactId} onClose={closeTab} />;
 };
 
 export default ContactInfoRouter;
