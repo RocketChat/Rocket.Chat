@@ -12,63 +12,65 @@ type ChatSendMessage = {
 	previewUrls?: string[];
 };
 
-const chatSendMessageSchema = {
+const messageSchema = {
 	type: 'object',
 	properties: {
-		message: {
-			type: 'object',
-			properties: {
-				_id: {
-					type: 'string',
-					nullable: true,
-				},
-				rid: {
-					type: 'string',
-				},
-				tmid: {
-					type: 'string',
-					nullable: true,
-				},
-				msg: {
-					type: 'string',
-					nullable: true,
-				},
-				alias: {
-					type: 'string',
-					nullable: true,
-				},
-				emoji: {
-					type: 'string',
-					nullable: true,
-				},
-				tshow: {
-					type: 'boolean',
-					nullable: true,
-				},
-				avatar: {
-					type: 'string',
-					nullable: true,
-				},
-				attachments: {
-					type: 'array',
-					items: {
-						type: 'object',
-					},
-					nullable: true,
-				},
-				blocks: {
-					type: 'array',
-					items: {
-						type: 'object',
-					},
-					nullable: true,
-				},
-				customFields: {
-					type: 'object',
-					nullable: true,
-				},
-			},
+		_id: {
+			type: 'string',
+			nullable: true,
 		},
+		rid: {
+			type: 'string',
+		},
+		tmid: {
+			type: 'string',
+			nullable: true,
+		},
+		msg: {
+			type: 'string',
+			nullable: true,
+		},
+		alias: {
+			type: 'string',
+			nullable: true,
+		},
+		emoji: {
+			type: 'string',
+			nullable: true,
+		},
+		tshow: {
+			type: 'boolean',
+			nullable: true,
+		},
+		avatar: {
+			type: 'string',
+			nullable: true,
+		},
+		attachments: {
+			type: 'array',
+			items: {
+				type: 'object',
+			},
+			nullable: true,
+		},
+		blocks: {
+			type: 'array',
+			items: {
+				type: 'object',
+			},
+			nullable: true,
+		},
+		customFields: {
+			type: 'object',
+			nullable: true,
+		},
+	},
+} as const;
+
+export const chatSendMessageSchema = {
+	type: 'object',
+	properties: {
+		message: messageSchema,
 		previewUrls: {
 			type: 'array',
 			items: {
@@ -79,7 +81,7 @@ const chatSendMessageSchema = {
 	},
 	required: ['message'],
 	additionalProperties: false,
-};
+} as const;
 
 export const isChatSendMessageProps = ajv.compile<ChatSendMessage>(chatSendMessageSchema);
 
@@ -260,7 +262,7 @@ type ChatGetThreadsList = PaginatedRequest<{
 	fields?: string;
 }>;
 
-const ChatGetThreadsListSchema = {
+export const ChatGetThreadsListSchema = {
 	type: 'object',
 	properties: {
 		rid: {
@@ -298,7 +300,25 @@ const ChatGetThreadsListSchema = {
 	},
 	required: ['rid'],
 	additionalProperties: false,
+} as const;
+
+type ChatGetThreadsListResponse = {
+	threads: IMessage[];
+	total: number;
 };
+
+export const ChatGetThreadsListResponseSchema = {
+	default: {
+		type: 'object',
+		properties: {
+			threads: {
+				type: 'array',
+				items: messageSchema,
+			},
+			total: { type: 'number' },
+		},
+	},
+} as const;
 
 export const isChatGetThreadsListProps = ajv.compile<ChatGetThreadsList>(ChatGetThreadsListSchema);
 
@@ -898,10 +918,7 @@ export type ChatEndpoints = {
 		};
 	};
 	'/v1/chat.getThreadsList': {
-		GET: (params: ChatGetThreadsList) => {
-			threads: IMessage[];
-			total: number;
-		};
+		GET: (params: ChatGetThreadsList) => ChatGetThreadsListResponse;
 	};
 	'/v1/chat.syncThreadsList': {
 		GET: (params: ChatSyncThreadsList) => {

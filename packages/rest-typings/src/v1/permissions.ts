@@ -27,7 +27,7 @@ type PermissionsUpdateProps = {
 	permissions: { _id: string; roles: string[] }[];
 };
 
-const permissionUpdatePropsSchema = {
+export const bodyPermissionUpdatePropsSchema = {
 	type: 'object',
 	properties: {
 		permissions: {
@@ -49,9 +49,9 @@ const permissionUpdatePropsSchema = {
 	},
 	required: ['permissions'],
 	additionalProperties: false,
-};
+} as const;
 
-export const isBodyParamsValidPermissionUpdate = ajv.compile<PermissionsUpdateProps>(permissionUpdatePropsSchema);
+export const isBodyParamsValidPermissionUpdate = ajv.compile<PermissionsUpdateProps>(bodyPermissionUpdatePropsSchema);
 
 export type PermissionsEndpoints = {
 	'/v1/permissions.listAll': {

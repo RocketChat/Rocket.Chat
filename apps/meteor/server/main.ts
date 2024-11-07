@@ -24,6 +24,7 @@ import './lib/logger/startup';
 import '../lib/oauthRedirectUriServer';
 import './lib/pushConfig';
 import './features/EmailInbox/index';
+import './fastify';
 
 await Promise.all([configureLogLevel(), registerServices(), registerEEBroker(), startup()]);
 
