@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 
 import { createToken } from '../../../client/lib/utils/createToken';
+import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelContacts } from '../page-objects/omnichannel-contacts-list';
@@ -9,11 +10,10 @@ import { test, expect } from '../utils/test';
 
 const createContact = (generateToken = false) => ({
 	id: null,
-	name: `${faker.person.firstName()} ${faker.person.lastName()}`,
-	email: faker.internet.email().toLowerCase(),
 	phone: faker.phone.number('+############'),
 	token: generateToken ? createToken() : null,
 	customFields: {},
+	...createFakeVisitor(),
 });
 
 const NEW_CONTACT = createContact();
