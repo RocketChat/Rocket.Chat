@@ -78,4 +78,32 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 		const { value } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', { type: 'channelName' }, 'rid');
 		expect(value).to.be.true;
 	});
+
+	it('should not look at the unknown field if the setting Livechat_Block_Unknown_Contacts is false', async () => {
+		modelsMock.LivechatContacts.findOneById.resolves({
+			unknown: true,
+			channels: [
+				{ verified: true, visitor: { source: { type: 'channelName' }, visitorId: 'visitorId' } },
+				{ verified: false, visitor: { source: { type: 'othername' }, visitorId: 'visitorId' } },
+			],
+		});
+		settingsMock.get.withArgs('Livechat_Block_Unknown_Contacts').returns(false);
+		settingsMock.get.withArgs('Livechat_Block_Unverified_Contacts').returns(true);
+		const { value } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', { type: 'channelName' }, 'rid');
+		expect(value).to.be.true;
+	});
+
+	it('should not look at the verified channels if Livechat_Block_Unverified_Contacts is false', async () => {
+		modelsMock.LivechatContacts.findOneById.resolves({
+			unknown: false,
+			channels: [
+				{ verified: false, visitor: { source: { type: 'channelName' }, visitorId: 'visitorId' } },
+				{ verified: false, visitor: { source: { type: 'othername' }, visitorId: 'visitorId' } },
+			],
+		});
+		settingsMock.get.withArgs('Livechat_Block_Unknown_Contacts').returns(true);
+		settingsMock.get.withArgs('Livechat_Block_Unverified_Contacts').returns(false);
+		const { value } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', { type: 'channelName' }, 'rid');
+		expect(value).to.be.true;
+	});
 });
