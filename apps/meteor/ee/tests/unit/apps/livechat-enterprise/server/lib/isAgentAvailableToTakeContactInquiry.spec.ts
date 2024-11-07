@@ -106,4 +106,15 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 		const { value } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', { type: 'channelName' }, 'rid');
 		expect(value).to.be.true;
 	});
+
+	it('should return true if there is a contact and the settings are false', async () => {
+		modelsMock.LivechatContacts.findOneById.resolves({
+			unknown: false,
+			channels: [],
+		});
+		settingsMock.get.withArgs('Livechat_Block_Unknown_Contacts').returns(false);
+		settingsMock.get.withArgs('Livechat_Block_Unverified_Contacts').returns(false);
+		const { value } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', { type: 'channelName' }, 'rid');
+		expect(value).to.be.true;
+	});
 });
