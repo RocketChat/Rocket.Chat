@@ -17,7 +17,7 @@ const mergeHideSysMessages = (
 
 export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 	const showThreadsInMainChannel = useUserPreference<boolean>('showThreadsInMainChannel', false);
-	const hideSysMesSetting = useSetting<MessageTypesValues[]>('Hide_System_Messages') ?? [];
+	const hideSysMesSetting = useSetting<MessageTypesValues[]>('Hide_System_Messages', []);
 	const room = useRoom();
 	const hideRoomSysMes: Array<MessageTypesValues> = Array.isArray(room.sysMes) ? room.sysMes : [];
 

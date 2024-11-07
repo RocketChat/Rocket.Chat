@@ -121,7 +121,7 @@ const useI18next = (lng: string): typeof i18next => {
 };
 
 const useAutoLanguage = () => {
-	const serverLanguage = useSetting<string>('Language');
+	const serverLanguage = useSetting('Language', '');
 	const browserLanguage = normalizeLanguage(window.navigator.userLanguage ?? window.navigator.language);
 	const defaultUserLanguage = browserLanguage || serverLanguage || 'en';
 
