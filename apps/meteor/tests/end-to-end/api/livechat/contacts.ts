@@ -594,6 +594,65 @@ describe('LIVECHAT - contacts', () => {
 		});
 	});
 
+	describe('Contact Rooms', () => {
+		before(async () => {
+			await updatePermission('view-livechat-contact', ['admin']);
+		});
+
+		after(async () => {
+			await restorePermissionToRoles('view-livechat-contact');
+		});
+
+		it('should create a contact and assign it to the room', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			expect(room.v).to.have.property('contactId').that.is.a('string');
+		});
+
+		it('should create a room using the pre-created contact', async () => {
+			const email = faker.internet.email().toLowerCase();
+			const phone = faker.phone.number();
+
+			const contact = {
+				name: 'Contact Name',
+				emails: [email],
+				phones: [phone],
+				contactManager: agentUser?._id,
+			};
+
+			const { body } = await request
+				.post(api('omnichannel/contacts'))
+				.set(credentials)
+				.send({ ...contact });
+			const { contactId } = body;
+
+			const visitor = await createVisitor(undefined, 'Visitor Name', email, phone);
+
+			const room = await createLivechatRoom(visitor.token);
+
+			expect(room.v).to.have.property('contactId', contactId);
+			expect(room).to.have.property('fname', 'Contact Name');
+		});
+
+		it('should update room names when a contact name changes', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			expect(room.v).to.have.property('contactId').that.is.a('string');
+			expect(room.fname).to.not.be.equal('New Contact Name');
+
+			const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
+				contactId: room.v.contactId,
+				name: 'New Contact Name',
+			});
+
+			expect(res.status).to.be.equal(200);
+
+			const sameRoom = await createLivechatRoom(visitor.token, { rid: room._id });
+			expect(sameRoom._id).to.be.equal(room._id);
+			expect(sameRoom.fname).to.be.equal('New Contact Name');
+		});
+	});
+
 	describe('[GET] omnichannel/contacts.get', () => {
 		let contactId: string;
 		let contactId2: string;

@@ -16,6 +16,7 @@ import type {
 	IOmnichannelRoomInfo,
 	IOmnichannelInquiryExtraData,
 	IOmnichannelRoomExtraData,
+	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus, OmnichannelSourceType, DEFAULT_SLA_CONFIG, UserStatus } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
@@ -29,6 +30,7 @@ import {
 	Subscriptions,
 	Rooms,
 	Users,
+	LivechatContacts,
 } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -66,13 +68,11 @@ export const allowAgentSkipQueue = (agent: SelectedAgent) => {
 };
 export const createLivechatRoom = async (
 	rid: string,
-	name: string,
 	guest: ILivechatVisitor,
 	roomInfo: IOmnichannelRoomInfo = { source: { type: OmnichannelSourceType.OTHER } },
 	extraData?: IOmnichannelRoomExtraData,
 ) => {
 	check(rid, String);
-	check(name, String);
 	check(
 		guest,
 		Match.ObjectIncluding({
@@ -94,6 +94,11 @@ export const createLivechatRoom = async (
 	});
 
 	const contactId = await migrateVisitorIfMissingContact(_id, extraRoomInfo.source || roomInfo.source);
+	const contact =
+		contactId && (await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name'>>(contactId, { projection: { name: 1 } }));
+	if (!contact) {
+		throw new Error('error-invalid-contact');
+	}
 
 	// TODO: Solve `u` missing issue
 	const room: InsertionModel<IOmnichannelRoom> = {
@@ -101,7 +106,7 @@ export const createLivechatRoom = async (
 		msgs: 0,
 		usersCount: 1,
 		lm: newRoomAt,
-		fname: name,
+		fname: contact.name,
 		t: 'l' as const,
 		ts: newRoomAt,
 		departmentId,

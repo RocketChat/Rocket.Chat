@@ -7,6 +7,9 @@ const modelsMock = {
 		findOneById: sinon.stub(),
 		updateContact: sinon.stub(),
 	},
+	LivechatRooms: {
+		updateContactDataByContactId: sinon.stub(),
+	},
 };
 
 const { updateContact } = proxyquire.noCallThru().load('../../../../../../app/livechat/server/lib/contacts/updateContact', {
@@ -27,6 +30,7 @@ describe('updateContact', () => {
 	beforeEach(() => {
 		modelsMock.LivechatContacts.findOneById.reset();
 		modelsMock.LivechatContacts.updateContact.reset();
+		modelsMock.LivechatRooms.updateContactDataByContactId.reset();
 	});
 
 	it('should throw an error if the contact does not exist', async () => {
