@@ -14,7 +14,7 @@ export async function getContactVerificationStatistics(): Promise<IStats['contac
 		[{ avgChannelsPerContact } = { avgChannelsPerContact: 0 }],
 		totalContactsWithoutChannels,
 	] = await Promise.all([
-		LivechatContacts.estimatedDocumentCount({}),
+		LivechatContacts.estimatedDocumentCount(),
 		LivechatContacts.countDocuments({ unknown: true }),
 		LivechatContacts.countTotalAmountOfConflicts().toArray(),
 		LivechatContacts.countDocuments({ 'channels.blocked': true }),
