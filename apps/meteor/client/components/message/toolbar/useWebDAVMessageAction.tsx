@@ -7,7 +7,7 @@ import { useWebDAVAccountIntegrationsQuery } from '../../../hooks/webdav/useWebD
 import SaveToWebdavModal from '../../../views/room/webdav/SaveToWebdavModal';
 
 export const useWebDAVMessageAction = () => {
-	const enabled = useSetting<boolean>('Webdav_Integration_Enabled', false);
+	const enabled = useSetting('Webdav_Integration_Enabled', false);
 
 	const { data } = useWebDAVAccountIntegrationsQuery({ enabled });
 

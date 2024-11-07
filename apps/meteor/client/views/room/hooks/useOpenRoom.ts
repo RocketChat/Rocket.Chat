@@ -12,7 +12,7 @@ import { queryClient } from '../../../lib/queryClient';
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
-	const allowAnonymousRead = useSetting<boolean>('Accounts_AllowAnonymousRead') ?? true;
+	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', true);
 	const getRoomByTypeAndName = useMethod('getRoomByTypeAndName');
 	const createDirectMessage = useMethod('createDirectMessage');
 	const openRoom = useMethod('openRoom');

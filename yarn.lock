@@ -9246,7 +9246,7 @@ __metadata:
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
-    "@rocket.chat/mp3-encoder": "npm:0.31.25"
+    "@rocket.chat/mp3-encoder": "npm:0.24.0"
     "@rocket.chat/network-broker": "workspace:^"
     "@rocket.chat/omnichannel-services": "workspace:^"
     "@rocket.chat/onboarding-ui": "npm:~0.34.0"
@@ -9613,10 +9613,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/mp3-encoder@npm:0.31.25":
-  version: 0.31.25
-  resolution: "@rocket.chat/mp3-encoder@npm:0.31.25"
-  checksum: 10/87a2ef874d74d837c609c7c3c07bdf866cc9a752265cfa49c3b51acf6146908e0ca87670c2287c00ec1d628a61e814f4a5c3b8e8e827be437d75f0e1f0dec4e3
+"@rocket.chat/mp3-encoder@npm:0.24.0":
+  version: 0.24.0
+  resolution: "@rocket.chat/mp3-encoder@npm:0.24.0"
+  dependencies:
+    lamejs: "git+https://github.com/zhuker/lamejs.git"
+  checksum: 10/a95ff9fb8a4aef763ebf54378950c98e93ebab6cdc65ef874cd0291a941c294989929d262614aa548a084492b9d7213d33fa2b8d5e787347d42a5fda9084c61e
   languageName: node
   linkType: hard
 
@@ -26065,6 +26067,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lamejs@git+https://github.com/zhuker/lamejs.git":
+  version: 1.2.1
+  resolution: "lamejs@https://github.com/zhuker/lamejs.git#commit=582bbba6a12f981b984d8fb9e1874499fed85675"
+  dependencies:
+    use-strict: "npm:1.0.1"
+  checksum: 10/cf671c57f8ef3ca2fec188785e84c96681a74bbd41d64efbb32b65a1a9375b7d7c5f749e4f8ec24a3e7d4011d465dc33bb7c1ce05979640065b94b24d3598738
+  languageName: node
+  linkType: hard
+
 "language-subtag-registry@npm:^0.3.20":
   version: 0.3.22
   resolution: "language-subtag-registry@npm:0.3.22"
@@ -36664,6 +36675,13 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
   checksum: 10/8f08eba26d69406b61bb4b8dacdd5a92bd6aef5b53d346dfe87954f7330ee10ecabc937cc7854635155d46053828e85c10b5a5aff7a04720e6a97b9f42999bac
+  languageName: node
+  linkType: hard
+
+"use-strict@npm:1.0.1":
+  version: 1.0.1
+  resolution: "use-strict@npm:1.0.1"
+  checksum: 10/e2798c587b8dc95483ac376e1b9b13fbab179bbd498ed7bd55cba2ef72792569621ba25d9aa5df21f884a161d28624d39165070a690fc5f088bf903e097fc267
   languageName: node
   linkType: hard
 

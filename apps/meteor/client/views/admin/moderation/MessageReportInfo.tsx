@@ -11,7 +11,7 @@ const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const getReportsByMessage = useEndpoint('GET', `/v1/moderation.reports`);
 
-	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
+	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	const {
 		data: reportsByMessage,
