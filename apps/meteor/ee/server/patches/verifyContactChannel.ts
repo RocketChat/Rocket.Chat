@@ -40,7 +40,7 @@ export const runVerifyContactChannel = async (
 
 	const mergeContactsResult = await mergeContacts(contactId, { visitorId, source: room.source });
 
-	const inquiry = await LivechatInquiry.findOneReadyByContactId(contactId);
+	const inquiry = await LivechatInquiry.findOneReadyByRoomId(roomId);
 	if (!inquiry) {
 		throw new Error('error-invalid-inquiry');
 	}

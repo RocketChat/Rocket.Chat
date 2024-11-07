@@ -6,8 +6,8 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { RoutingManager } from '../lib/RoutingManager';
+import { isAgentAvailableToTakeContactInquiry } from '../lib/contacts/isAgentAvailableToTakeContactInquiry';
 import { migrateVisitorIfMissingContact } from '../lib/contacts/migrateVisitorIfMissingContact';
-import { shouldTriggerVerificationApp } from '../lib/contacts/shouldTriggerVerificationApp';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -56,9 +56,12 @@ export const takeInquiry = async (
 		throw new Meteor.Error('error-mac-limit-reached');
 	}
 
-	const contactId = await migrateVisitorIfMissingContact(inquiry.v._id, room.source);
-	if (contactId && (await shouldTriggerVerificationApp(contactId, room.source))) {
-		throw new Meteor.Error('error-unverified-contact');
+	const contactId = room.v.contactId ?? (await migrateVisitorIfMissingContact(room.v._id, room.source));
+	if (contactId) {
+		const isAgentAvailableToTakeContactInquiryResult = await isAgentAvailableToTakeContactInquiry(inquiry.v._id, room.source, contactId);
+		if (!isAgentAvailableToTakeContactInquiryResult.value) {
+			throw new Meteor.Error(isAgentAvailableToTakeContactInquiryResult.error);
+		}
 	}
 
 	const agent = {

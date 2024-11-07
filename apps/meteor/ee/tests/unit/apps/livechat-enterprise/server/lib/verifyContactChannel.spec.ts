@@ -11,7 +11,7 @@ const modelsMock = {
 		findOneById: sinon.stub(),
 	},
 	LivechatInquiry: {
-		findOneReadyByContactId: sinon.stub(),
+		findOneReadyByRoomId: sinon.stub(),
 		saveQueueInquiry: sinon.stub(),
 	},
 };
@@ -30,8 +30,8 @@ describe('verifyContactChannel', () => {
 	beforeEach(() => {
 		modelsMock.LivechatContacts.updateContactChannel.reset();
 		modelsMock.LivechatRooms.update.reset();
+		modelsMock.LivechatInquiry.findOneReadyByRoomId.reset();
 		modelsMock.LivechatRooms.findOneById.reset();
-		modelsMock.LivechatInquiry.findOneReadyByContactId.reset();
 		mergeContactsStub.reset();
 		saveQueueInquiryStub.reset();
 	});
@@ -41,9 +41,8 @@ describe('verifyContactChannel', () => {
 	});
 
 	it('should be able to verify a contact channel', async () => {
-		modelsMock.LivechatInquiry.findOneReadyByContactId.resolves({ _id: 'inquiryId' });
+		modelsMock.LivechatInquiry.findOneReadyByRoomId.resolves({ _id: 'inquiryId' });
 		modelsMock.LivechatRooms.findOneById.resolves({ _id: 'roomId', source: { type: 'sms' } });
-
 		await runVerifyContactChannel(() => undefined, {
 			contactId: 'contactId',
 			field: 'field',
@@ -82,7 +81,7 @@ describe('verifyContactChannel', () => {
 		expect(saveQueueInquiryStub.calledOnceWith({ _id: 'inquiryId' })).to.be.true;
 	});
 	it('should fail if no matching room is found', async () => {
-		modelsMock.LivechatInquiry.findOneReadyByContactId.resolves(undefined);
+		modelsMock.LivechatInquiry.findOneReadyByRoomId.resolves(undefined);
 		modelsMock.LivechatRooms.findOneById.resolves(undefined);
 		await expect(
 			runVerifyContactChannel(() => undefined, {
@@ -101,7 +100,7 @@ describe('verifyContactChannel', () => {
 	});
 
 	it('should fail if no matching inquiry is found', async () => {
-		modelsMock.LivechatInquiry.findOneReadyByContactId.resolves(undefined);
+		modelsMock.LivechatInquiry.findOneReadyByRoomId.resolves(undefined);
 		modelsMock.LivechatRooms.findOneById.resolves({ _id: 'roomId', source: { type: 'sms' } });
 		await expect(
 			runVerifyContactChannel(() => undefined, {

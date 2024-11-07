@@ -1,7 +1,9 @@
-import type { IOmnichannelSource, ILivechatContact } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor } from '@rocket.chat/core-typings';
+import { type IOmnichannelSource, type ILivechatContact } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatContacts } from '@rocket.chat/models';
 
+import { isVerifiedChannelInSource } from '../../../app/livechat/server/lib/contacts/isVerifiedChannelInSource';
 import { shouldTriggerVerificationApp } from '../../../app/livechat/server/lib/contacts/shouldTriggerVerificationApp';
 import { settings } from '../../../app/settings/server';
 
@@ -13,8 +15,9 @@ import { settings } from '../../../app/settings/server';
  */
 type AvailableLivechatRequireContactVerificationSetting = 'never' | 'once' | 'always';
 
-const runShouldTriggerVerificationApp = async (
+export const runShouldTriggerVerificationApp = async (
 	_next: any,
+	visitorId: ILivechatVisitor['_id'],
 	contactId: ILivechatContact['_id'],
 	source: IOmnichannelSource,
 ): Promise<boolean> => {
@@ -31,10 +34,6 @@ const runShouldTriggerVerificationApp = async (
 		return false;
 	}
 
-	if (contact.unknown && settings.get<boolean>('Livechat_Block_Unknown_Contacts')) {
-		return true;
-	}
-
 	// There is no configured verification app, so there is no reason to trigger a verification app, since
 	// none will be able to be assigned
 	if (settings.get<string>('Livechat_Contact_Verification_App') === '') {
@@ -42,7 +41,7 @@ const runShouldTriggerVerificationApp = async (
 	}
 
 	const verificationRequirement = settings.get<AvailableLivechatRequireContactVerificationSetting>('Livechat_Require_Contact_Verification');
-	const isContactVerified = (contact.channels?.filter((channel) => channel.verified && channel.name === source.type) || []).length > 0;
+	const isContactVerified = (contact.channels?.filter((channel) => isVerifiedChannelInSource(channel, visitorId, source)) || []).length > 0;
 
 	// If the contact has never been verified and it needs to be verified at least once, trigger the app
 	if (!isContactVerified && verificationRequirement === 'once') {
