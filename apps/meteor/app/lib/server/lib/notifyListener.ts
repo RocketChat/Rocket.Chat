@@ -96,7 +96,7 @@ export const notifyOnRoomChangedByUserDM = withDbWatcherCheck(
 	},
 );
 
-export const notifyOnPermissionChanged = withDbWatcherCheck(
+const notifyOnPermissionChanged = withDbWatcherCheck(
 	async (permission: IPermission, clientAction: ClientAction = 'updated'): Promise<void> => {
 		void api.broadcast('permission.changed', { clientAction, data: permission });
 

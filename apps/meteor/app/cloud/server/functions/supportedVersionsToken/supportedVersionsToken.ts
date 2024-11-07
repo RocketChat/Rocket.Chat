@@ -40,7 +40,7 @@ export const wrapPromise = <T>(
 			error,
 		}));
 
-export const handleResponse = async <T>(promise: Promise<Response>) => {
+const handleResponse = async <T>(promise: Promise<Response>) => {
 	return wrapPromise<T>(
 		(async () => {
 			const request = await promise;

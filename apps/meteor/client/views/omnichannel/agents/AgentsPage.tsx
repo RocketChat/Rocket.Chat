@@ -8,7 +8,7 @@ import { Page, PageHeader, PageContent } from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AgentEditWithData from './AgentEditWithData';
 import AgentInfo from './AgentInfo';
-import AgentsTable from './AgentsTable/AgentsTable';
+import AgentsTable from './AgentsTable';
 
 const AgentsPage = (): ReactElement => {
 	const { t } = useTranslation();

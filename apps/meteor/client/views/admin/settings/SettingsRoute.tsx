@@ -9,7 +9,7 @@ import SettingsPage from './SettingsPage';
 
 const omittedSettings = ['Cloud_Workspace_AirGapped_Restrictions_Remaining_Days'];
 
-export const SettingsRoute = (): ReactElement => {
+const SettingsRoute = (): ReactElement => {
 	const hasPermission = useIsPrivilegedSettingsContext();
 	const groupId = useRouteParameter('group');
 	const router = useRouter();

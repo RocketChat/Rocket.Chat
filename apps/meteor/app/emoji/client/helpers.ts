@@ -138,7 +138,7 @@ export const getEmojisBySearchTerm = (
 	return emojis;
 };
 
-export const removeFromRecent = (emoji: string, recentEmojis: string[], setRecentEmojis: (emojis: string[]) => void) => {
+const removeFromRecent = (emoji: string, recentEmojis: string[], setRecentEmojis: (emojis: string[]) => void) => {
 	const _emoji = emoji.replace(/(^:|:$)/g, '');
 	const pos = recentEmojis.indexOf(_emoji as never);
 

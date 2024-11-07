@@ -69,5 +69,3 @@ export const useVoipItemsSection = (): { items: GenericMenuItemProps[] } | undef
 		};
 	}, [isEnabled, isRegistered, isReady, tooltip, t, toggleVoip]);
 };
-
-export default useVoipItemsSection;

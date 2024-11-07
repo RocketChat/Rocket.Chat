@@ -17,7 +17,7 @@ type DepartmentForwardingProps = {
 	label: TranslationKey;
 };
 
-export const DepartmentForwarding = ({ departmentId, value = [], handler, label }: DepartmentForwardingProps) => {
+const DepartmentForwarding = ({ departmentId, value = [], handler, label }: DepartmentForwardingProps) => {
 	const { t } = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
 	const hasLicense = useHasLicenseModule('livechat-enterprise');

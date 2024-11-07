@@ -12,7 +12,7 @@ type SlaPoliciesSelectProps = {
 	onChange: (value: string) => void;
 };
 
-export const SlaPoliciesSelect = ({ value, label, options, onChange }: SlaPoliciesSelectProps) => {
+const SlaPoliciesSelect = ({ value, label, options, onChange }: SlaPoliciesSelectProps) => {
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 	const optionsSelect = useMemo<SelectOption[]>(() => options?.map((option) => [option._id, option.name]), [options]);
 

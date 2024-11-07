@@ -85,17 +85,6 @@ export async function getWorkspaceAccessTokenOrThrow(forceNew = false, scope = '
 	return token;
 }
 
-export const generateWorkspaceBearerHttpHeaderOrThrow = async (
-	forceNew = false,
-	scope = '',
-	save = true,
-): Promise<{ Authorization: string }> => {
-	const token = await getWorkspaceAccessTokenOrThrow(forceNew, scope, save);
-	return {
-		Authorization: `Bearer ${token}`,
-	};
-};
-
 export const generateWorkspaceBearerHttpHeader = async (
 	forceNew = false,
 	scope = '',

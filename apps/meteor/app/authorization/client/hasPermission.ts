@@ -92,25 +92,4 @@ export const hasAllPermission = (
 export const hasAtLeastOnePermission = (permissions: IPermission['_id'] | IPermission['_id'][], scope?: string): boolean =>
 	validatePermissions(permissions, scope, atLeastOne);
 
-export const userHasAllPermission = (
-	permissions: IPermission['_id'] | IPermission['_id'][],
-	scope?: string,
-	userId?: IUser['_id'] | null,
-): boolean => validatePermissions(permissions, scope, all, userId);
-
 export const hasPermission = hasAllPermission;
-
-/**
- * This function is used to check if the user will have the permission after something happens.
- * For example, The user is creating a new channel and he wants to set read-only config to true.
- * This is a problem, set-readonly is a permission related with the scoped permissions `owner`
- * so the user cannot set this permission to true during the channel creation, because there is no room yet to be owned and used as scope, but is possible
- * during the channel update, which is weird.
- *
- * @param permissions The permissions to check
- * @param scopedRoles The scoped roles to check to be included in the user roles
- * @returns If the user will have the permission
- */
-
-export const willHavePermission = (permissions: IPermission['_id'] | IPermission['_id'][], scopedRoles: IPermission['_id'][]): boolean =>
-	validatePermissions(permissions, undefined, all, undefined, scopedRoles);

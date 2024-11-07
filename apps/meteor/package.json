@@ -68,6 +68,7 @@
 		"@babel/eslint-parser": "~7.25.9",
 		"@babel/preset-env": "~7.26.0",
 		"@babel/preset-react": "~7.25.9",
+		"@babel/preset-typescript": "~7.26.0",
 		"@babel/register": "~7.25.9",
 		"@faker-js/faker": "~8.0.2",
 		"@playwright/test": "^1.48.2",
@@ -212,7 +213,8 @@
 		"supports-color": "~7.2.0",
 		"template-file": "^6.0.1",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.6.3"
+		"typescript": "~5.6.3",
+		"webpack": "~5.95.0"
 	},
 	"dependencies": {
 		"@babel/runtime": "~7.26.0",
@@ -242,6 +244,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/cron": "workspace:^",
 		"@rocket.chat/css-in-js": "~0.31.25",
+		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/favicon": "workspace:^",
 		"@rocket.chat/freeswitch": "workspace:^",

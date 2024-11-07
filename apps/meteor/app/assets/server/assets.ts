@@ -365,7 +365,7 @@ class RocketChatAssetsClass {
 
 export const RocketChatAssets = new RocketChatAssetsClass();
 
-export async function addAssetToSetting(asset: string, value: IRocketChatAsset, options?: Partial<ISetting>): Promise<void> {
+async function addAssetToSetting(asset: string, value: IRocketChatAsset, options?: Partial<ISetting>): Promise<void> {
 	const key = `Assets_${asset}`;
 
 	await settingsRegistry.add(

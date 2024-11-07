@@ -7,9 +7,7 @@ import _ from 'underscore';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
-import { RateLimiter } from '../lib';
 import { notifyOnUserChange } from '../lib/notifyListener';
 import { addUserToRoom } from './addUserToRoom';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
@@ -137,10 +135,3 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 
 	return user;
 };
-
-export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {
-	async 0() {
-		const userId = Meteor.userId();
-		return !userId || !(await hasPermissionAsync(userId, 'edit-other-user-info'));
-	},
-});

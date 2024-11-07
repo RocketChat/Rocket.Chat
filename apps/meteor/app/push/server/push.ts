@@ -20,7 +20,7 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type FCMCredentials = {
+type FCMCredentials = {
 	type: string;
 	project_id: string;
 	private_key_id: string;
