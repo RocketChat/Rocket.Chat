@@ -7,9 +7,9 @@ import {
 	MessageMetricsItemLabel,
 } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
@@ -35,7 +35,7 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 
 	const goToThread = useGoToThread();
 
-	const { ref, borderBoxSize } = useResizeObserver();
+	const { ref, borderBoxSize } = useResizeObserver<HTMLDivElement>();
 
 	const isSmall = (borderBoxSize.inlineSize || Infinity) < 320;
 

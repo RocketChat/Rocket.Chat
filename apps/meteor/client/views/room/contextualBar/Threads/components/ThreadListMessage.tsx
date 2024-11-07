@@ -3,7 +3,6 @@ import { Message, Box } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import Emoji from '../../../../../components/Emoji';
 import ThreadMetricsFollow from '../../../../../components/message/content/ThreadMetricsFollow';
