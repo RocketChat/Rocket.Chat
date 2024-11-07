@@ -1,4 +1,4 @@
-import type { CustomFieldMetadata, ILivechatContact, Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Badge, Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useAtLeastOnePermission, useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
@@ -6,50 +6,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import { mapLivechatContactConflicts } from '../../../../../lib/mapLivechatContactConflicts';
 import GenericModal from '../../../../components/GenericModal';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { ContactManagerInput } from '../../additionalForms';
 import { useCustomFieldsMetadata } from '../../directory/hooks/useCustomFieldsMetadata';
-
-const fieldNameMap: { [key: string]: TranslationKey } = {
-	name: 'Name',
-	contactManager: 'Contact_Manager',
-};
-
-function mapConflicts(
-	contact: Serialized<ILivechatContact>,
-	metadata: CustomFieldMetadata[],
-): Record<string, { name: string; label: string; values: string[] }> {
-	const conflicts = contact.conflictingFields?.reduce(
-		(acc, current) => {
-			const fieldName = current.field === 'manager' ? 'contactManager' : current.field.replace('customFields.', '');
-
-			if (acc[fieldName]) {
-				acc[fieldName].values.push(current.value);
-			} else {
-				acc[fieldName] = {
-					name: fieldName,
-					label:
-						(current.field.startsWith('customFields.') && metadata.find(({ name }) => name === fieldName)?.label) ||
-						fieldNameMap[fieldName],
-					values: [current.value],
-				};
-			}
-			return acc;
-		},
-		{} as Record<string, { name: string; label: string; values: string[] }>,
-	);
-
-	if (conflicts?.name?.values.length && contact.name) {
-		conflicts.name.values.push(contact.name);
-	}
-
-	if (conflicts?.contactManager?.values.length && contact.contactManager) {
-		conflicts.contactManager.values.push(contact.contactManager);
-	}
-
-	return conflicts || {};
-}
 
 type ReviewContactModalProps = {
 	contact: Serialized<ILivechatContact>;
@@ -102,7 +63,7 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 		}
 	};
 
-	const mappedConflicts = mapConflicts(contact, customFieldsMetadata);
+	const mappedConflicts = mapLivechatContactConflicts(contact, customFieldsMetadata);
 	const conflictingFields = Object.values(mappedConflicts);
 
 	return (
