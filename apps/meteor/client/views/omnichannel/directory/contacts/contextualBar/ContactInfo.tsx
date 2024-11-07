@@ -172,9 +172,9 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				{isCallReady && (
-					<ButtonGroup stretch>
+					<ButtonGroup stretch wrap>
 						<>
-							<VoipInfoCallButton phoneNumber={phoneNumber} />
+							<VoipInfoCallButton phoneNumber={phoneNumber} mi={0} />
 							{showContactHistory && <Divider width='100%' />}
 						</>
 					</ButtonGroup>
