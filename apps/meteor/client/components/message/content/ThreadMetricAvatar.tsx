@@ -17,7 +17,7 @@ const ThreadMetricAvatar = ({ userId }: { userId: string }) => {
 
 	return (
 		<MessageMetricsItemAvatarRowContent>
-			<UserAvatar size='x16' username={data.user.username} etag={data.user.avatarETag} />
+			<UserAvatar size='x16' username={data.user.username} etag={data.user.avatarETag} title={undefined} />
 		</MessageMetricsItemAvatarRowContent>
 	);
 };

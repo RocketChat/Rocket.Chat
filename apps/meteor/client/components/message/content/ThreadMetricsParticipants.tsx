@@ -16,7 +16,7 @@ const ThreadMetricsParticipants = ({ participants }: ThreadMetricsParticipantsPr
 	const participantsLabel = participantsLengthExcludingVisibleAvatars > 0 ? `+${participantsLengthExcludingVisibleAvatars}` : undefined;
 
 	return (
-		<MessageMetricsItem title={t('follower', { count: participants.length })}>
+		<MessageMetricsItem title={t('Follower', { count: participants.length })}>
 			<MessageMetricsItemAvatarRow>
 				{participants.slice(0, 2).map((uid) => (
 					<ThreadMetricAvatar userId={uid} key={uid} />
