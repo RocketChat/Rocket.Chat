@@ -1,5 +1,43 @@
 # @rocket.chat/core-services
 
+## 0.7.1
+
+### Patch Changes
+
+- ([#33346](https://github.com/RocketChat/Rocket.Chat/pull/33346)) Implements integration with FreeSwitch to enable VoIP calls for team collaboration workspaces
+
+- ([#33328](https://github.com/RocketChat/Rocket.Chat/pull/33328)) Allows authorized users to reset the encryption key for end-to-end encrypted rooms. This aims to prevent situations where all users of a room have lost the encryption key, and as such, the access to the room.
+
+- <details><summary>Updated dependencies [3395c8290b, 6b5b91fd14, d1e14a0a85, 687f1efd5f, bcacbb1cee, b167db0b37, f4365b7dd4, b338807d76, bf05700542, debd3ffa22, 1bdfd201b1, 3ea02d3cc1, e3629e065b, b19ae4dbc7, 03d148524b, 3f9c3f1f52, 81998f3450, 2bc9692de0, 50943a02e8, 509143d6dd, fa501ecb53]:</summary>
+
+  - @rocket.chat/rest-typings@7.0.0
+  - @rocket.chat/ui-kit@0.37.0
+  - @rocket.chat/core-typings@7.0.0
+  - @rocket.chat/models@1.0.0
+  </details>
+
+## 0.7.1-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.6
+  - @rocket.chat/rest-typings@7.0.0-rc.6
+  - @rocket.chat/models@1.0.0-rc.6
+  </details>
+
+## 0.7.1-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [d1e14a0a85, bf05700542, 1bdfd201b1, 2bc9692de0]:</summary>
+
+  - @rocket.chat/rest-typings@7.0.0-rc.5
+  - @rocket.chat/core-typings@7.0.0-rc.5
+  - @rocket.chat/models@1.0.0-rc.5
+  </details>
+
 ## 0.7.1-rc.4
 
 ### Patch Changes

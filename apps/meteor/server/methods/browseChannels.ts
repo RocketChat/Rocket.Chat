@@ -163,9 +163,7 @@ const getTeams = async (
 		},
 	);
 	const results = await Promise.all(
-		(
-			await cursor.toArray()
-		).map(async (room) => ({
+		(await cursor.toArray()).map(async (room) => ({
 			...room,
 			roomsCount: await getChannelsCountForTeam(room.teamId),
 		})),

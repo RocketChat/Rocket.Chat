@@ -107,7 +107,7 @@ function generateContext(username: string): IUserState {
 										name: 'private_key',
 										value: e2eeData[username]?.client.private_key,
 									},
-							  ]
+								]
 							: []),
 					],
 				},

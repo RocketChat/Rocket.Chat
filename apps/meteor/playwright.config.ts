@@ -60,7 +60,7 @@ export default {
 				environmentId: '1',
 			},
 		],
-	].filter(Boolean),
+	].filter(Boolean) as unknown as PlaywrightTestConfig['reporter'],
 	testDir: 'tests/e2e',
 	testIgnore: 'tests/e2e/federation/**',
 	workers: 1,

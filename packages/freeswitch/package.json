@@ -1,13 +1,13 @@
 {
 	"name": "@rocket.chat/freeswitch",
-	"version": "1.0.0-rc.4",
+	"version": "1.0.0",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@types/jest": "~29.5.14",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
-		"typescript": "~5.3.3"
+		"typescript": "~5.6.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

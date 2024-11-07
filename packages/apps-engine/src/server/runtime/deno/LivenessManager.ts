@@ -10,7 +10,7 @@ const defaultOptions: LivenessManager['options'] = {
     pingRequestTimeout: 10000,
     pingFrequencyInMS: 10000,
     consecutiveTimeoutLimit: 4,
-    maxRestarts: 3,
+    maxRestarts: Infinity,
 };
 
 /**
@@ -63,6 +63,16 @@ export class LivenessManager {
         this.pingAbortController = new EventEmitter();
 
         this.options = Object.assign({}, defaultOptions, options);
+    }
+
+    public getRuntimeData() {
+        const { restartCount, pingTimeoutConsecutiveCount, restartLog } = this;
+
+        return {
+            restartCount,
+            pingTimeoutConsecutiveCount,
+            restartLog,
+        };
     }
 
     public attach(deno: ChildProcess) {

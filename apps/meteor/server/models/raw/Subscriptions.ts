@@ -414,10 +414,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		options: AggregateOptions = {},
 	): Promise<SpotlightUser[]> {
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
-		const orStatement = searchFields.reduce((acc, el) => {
-			acc.push({ [el.trim()]: termRegex });
-			return acc;
-		}, [] as { [x: string]: RegExp }[]);
+		const orStatement = searchFields.reduce(
+			(acc, el) => {
+				acc.push({ [el.trim()]: termRegex });
+				return acc;
+			},
+			[] as { [x: string]: RegExp }[],
+		);
 
 		return this.col
 			.aggregate<SpotlightUser>(
@@ -935,12 +938,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 						$set: {
 							hideMentionStatus,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							hideMentionStatus: 1,
 						},
-				  };
+					};
 
 		return this.updateOne(query, update);
 	}

@@ -125,7 +125,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 						icon: 'shield-blank' as const,
 						onClick: changeModeratorAction,
 						type: 'privileges' as UserInfoActionType,
-				  }
+					}
 				: undefined,
 		[changeModeratorAction, isModerator, roomCanSetModerator, t, userCanSetModerator, room],
 	);

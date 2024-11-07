@@ -3,7 +3,7 @@
 	"version": "0.0.2",
 	"private": true,
 	"devDependencies": {
-		"@types/chalk": "^2.2.0",
+		"@types/chalk": "^2.2.4",
 		"@types/ejson": "^2.2.2",
 		"eslint": "~8.45.0",
 		"typescript": "~5.6.3"
@@ -23,7 +23,7 @@
 		"extends": "../../package.json"
 	},
 	"dependencies": {
-		"chalk": "^4.0.0",
+		"chalk": "^4.1.2",
 		"ejson": "^2.2.3"
 	}
 }

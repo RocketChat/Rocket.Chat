@@ -32,9 +32,9 @@ const AdminUserSetRandomPasswordContent = ({
 	const requirePasswordChangeId = useUniqueId();
 	const passwordVerifierId = useUniqueId();
 
-	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
-	const passwordPlaceholder = String(useSetting('Accounts_PasswordPlaceholder'));
-	const passwordConfirmationPlaceholder = String(useSetting('Accounts_ConfirmPasswordPlaceholder'));
+	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation', true);
+	const passwordPlaceholder = useSetting('Accounts_PasswordPlaceholder', '');
+	const passwordConfirmationPlaceholder = useSetting('Accounts_ConfirmPasswordPlaceholder', '');
 
 	const passwordIsValid = useValidatePassword(password);
 

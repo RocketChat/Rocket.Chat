@@ -1,5 +1,36 @@
 # @rocket.chat/core-typings
 
+## 7.0.0
+
+### Major Changes
+
+- ([#32856](https://github.com/RocketChat/Rocket.Chat/pull/32856)) Adds a new collection to store all the workspace cloud tokens to defer the race condition management to MongoDB instead of having to handle it within the settings cache.
+  Removes the Cloud_Workspace_Access_Token & Cloud_Workspace_Access_Token_Expires_At settings since they are not going to be used anymore.
+- ([#33630](https://github.com/RocketChat/Rocket.Chat/pull/33630)) Changes the payload of the startImport endpoint to decrease the amount of data it requires
+
+### Minor Changes
+
+- ([#33598](https://github.com/RocketChat/Rocket.Chat/pull/33598)) Adds a new setting to allow mapping LDAP attributes to the user's extension
+
+- ([#33433](https://github.com/RocketChat/Rocket.Chat/pull/33433)) Added support for interacting with add-ons issued in the license
+
+### Patch Changes
+
+- ([#33346](https://github.com/RocketChat/Rocket.Chat/pull/33346)) Implements integration with FreeSwitch to enable VoIP calls for team collaboration workspaces
+
+- Removed the deprecated "Compatible Sandbox" option from integration scripts and the dependencies that this sandbox mode relied on.
+
+- ([#33328](https://github.com/RocketChat/Rocket.Chat/pull/33328)) Allows authorized users to reset the encryption key for end-to-end encrypted rooms. This aims to prevent situations where all users of a room have lost the encryption key, and as such, the access to the room.
+
+- <details><summary>Updated dependencies [687f1efd5f, debd3ffa22]:</summary>
+
+  - @rocket.chat/ui-kit@0.37.0
+  </details>
+
+## 7.0.0-rc.6
+
+## 7.0.0-rc.5
+
 ## 7.0.0-rc.4
 
 ## 7.0.0-rc.3

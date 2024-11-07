@@ -1,5 +1,37 @@
 # @rocket.chat/models
 
+## 1.0.0
+
+### Major Changes
+
+- ([#32856](https://github.com/RocketChat/Rocket.Chat/pull/32856)) Adds a new collection to store all the workspace cloud tokens to defer the race condition management to MongoDB instead of having to handle it within the settings cache.
+  Removes the Cloud_Workspace_Access_Token & Cloud_Workspace_Access_Token_Expires_At settings since they are not going to be used anymore.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [bcacbb1cee, d9fe5bbe0b, b338807d76, 03d148524b]:</summary>
+
+  - @rocket.chat/model-typings@1.0.0
+  </details>
+
+## 1.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@1.0.0-rc.6
+  </details>
+
+## 1.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@1.0.0-rc.5
+  </details>
+
 ## 1.0.0-rc.4
 
 ### Patch Changes

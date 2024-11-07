@@ -5,9 +5,9 @@
 	"devDependencies": {
 		"@types/jest": "~29.5.14",
 		"eslint": "~8.45.0",
-		"jest": "~29.6.4",
-		"ts-jest": "~29.1.1",
-		"typescript": "~5.3.3"
+		"jest": "~29.7.0",
+		"ts-jest": "~29.2.5",
+		"typescript": "~5.6.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -26,7 +26,7 @@
 	},
 	"dependencies": {
 		"@opentelemetry/api": "^1.9.0",
-		"@opentelemetry/exporter-trace-otlp-grpc": "^0.53.0",
-		"@opentelemetry/sdk-node": "^0.53.0"
+		"@opentelemetry/exporter-trace-otlp-grpc": "^0.54.0",
+		"@opentelemetry/sdk-node": "^0.54.0"
 	}
 }

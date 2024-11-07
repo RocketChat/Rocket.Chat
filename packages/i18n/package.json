@@ -1,12 +1,11 @@
 {
 	"name": "@rocket.chat/i18n",
-	"version": "1.0.0-rc.0",
+	"version": "1.0.0",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
-		"tsup": "^6.7.0",
 		"typescript": "~5.6.3"
 	},
 	"scripts": {
