@@ -6,6 +6,8 @@ import type {
 	ILivechatVisitor,
 	MACStats,
 	ILivechatContactVisitorAssociation,
+	AtLeast,
+	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult, Filter, UpdateOptions } from 'mongodb';
 
@@ -269,11 +271,18 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		association: ILivechatContactVisitorAssociation,
 		options?: Omit<FindOptions<IOmnichannelRoom>, 'sort' | 'limit'>,
 	): Promise<T | null>;
-	setContactIdByVisitorAssociation(contactId: string, visitor: ILivechatContactVisitorAssociation): Promise<UpdateResult | Document>;
+	setContactByVisitorAssociation(
+		association: ILivechatContactVisitorAssociation,
+		contact: Pick<AtLeast<ILivechatContact, '_id'>, '_id' | 'name'>,
+	): Promise<UpdateResult | Document>;
 	findClosedRoomsByContactAndSourcePaginated(params: {
 		contactId: string;
 		source?: string;
 		options?: FindOptions;
 	}): FindPaginated<FindCursor<IOmnichannelRoom>>;
 	countLivechatRoomsWithDepartment(): Promise<number>;
+	updateContactDataByContactId(
+		oldContactId: ILivechatContact['_id'],
+		contact: Partial<Pick<ILivechatContact, '_id' | 'name'>>,
+	): Promise<UpdateResult | Document>;
 }

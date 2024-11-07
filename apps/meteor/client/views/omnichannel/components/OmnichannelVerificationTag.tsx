@@ -1,4 +1,4 @@
-import { Box, Icon, Tag } from '@rocket.chat/fuselage';
+import { Icon, Tag } from '@rocket.chat/fuselage';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,15 +15,13 @@ const OmnichannelVerificationTag = ({ verified, onClick }: OmnichannelVerificati
 	const isVerified = hasLicense && verified;
 
 	return (
-		<Box mis={4} withTruncatedText>
-			<Tag
-				variant={isVerified ? 'primary' : undefined}
-				onClick={!isVerified && onClick ? onClick : undefined}
-				icon={<Icon size='x12' mie={4} name={isVerified ? 'success-circle' : 'question-mark'} />}
-			>
-				{isVerified ? t('Verified') : t('Unverified')}
-			</Tag>
-		</Box>
+		<Tag
+			variant={isVerified ? 'primary' : undefined}
+			onClick={!isVerified && onClick ? onClick : undefined}
+			icon={<Icon size='x12' mie={4} name={isVerified ? 'success-circle' : 'question-mark'} />}
+		>
+			{isVerified ? t('Verified') : t('Unverified')}
+		</Tag>
 	);
 };
 

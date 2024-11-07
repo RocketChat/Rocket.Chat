@@ -31,6 +31,7 @@ import type {
 	ILivechatContact,
 	ILivechatContactVisitorAssociation,
 	ILivechatContactChannel,
+	IUser,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import type { WithId } from 'mongodb';
@@ -3571,6 +3572,10 @@ const LivechatTriggerWebhookCallParamsSchema = {
 
 export const isLivechatTriggerWebhookCallParams = ajv.compile<LivechatTriggerWebhookCallParams>(LivechatTriggerWebhookCallParamsSchema);
 
+export type ILivechatContactWithManagerData = Omit<ILivechatContact, 'contactManager'> & {
+	contactManager?: Pick<IUser, '_id' | 'name' | 'username'>;
+};
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
@@ -3860,7 +3865,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETOmnichannelContactsProps) => { contact: ILivechatContact | null };
 	};
 	'/v1/omnichannel/contacts.search': {
-		GET: (params: GETOmnichannelContactsSearchProps) => PaginatedResult<{ contacts: ILivechatContact[] }>;
+		GET: (params: GETOmnichannelContactsSearchProps) => PaginatedResult<{ contacts: ILivechatContactWithManagerData[] }>;
 	};
 	'/v1/omnichannel/contacts.history': {
 		GET: (params: GETOmnichannelContactHistoryProps) => PaginatedResult<{ history: ContactSearchChatsResult[] }>;

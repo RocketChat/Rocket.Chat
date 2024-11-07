@@ -214,9 +214,7 @@ export class QueueManager {
 			}
 		}
 
-		const name = guest.name || guest.username;
-
-		const room = await createLivechatRoom(rid, name, { ...guest, ...(department && { department }) }, roomInfo, {
+		const room = await createLivechatRoom(rid, { ...guest, ...(department && { department }) }, roomInfo, {
 			...extraData,
 			...(Boolean(customFields) && { customFields }),
 		});
@@ -229,7 +227,7 @@ export class QueueManager {
 
 		const inquiry = await createLivechatInquiry({
 			rid,
-			name,
+			name: room.fname,
 			initialStatus: await this.getInquiryStatus({ room, agent: defaultAgent }),
 			guest,
 			message,

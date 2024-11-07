@@ -1,6 +1,6 @@
-import type { ILivechatContact } from '@rocket.chat/core-typings';
-import { LivechatContacts } from '@rocket.chat/models';
-import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import { LivechatContacts, Users } from '@rocket.chat/models';
+import type { PaginatedResult, ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
 import type { Sort } from 'mongodb';
 
 export type GetContactsParams = {
@@ -11,7 +11,7 @@ export type GetContactsParams = {
 	unknown?: boolean;
 };
 
-export async function getContacts(params: GetContactsParams): Promise<PaginatedResult<{ contacts: ILivechatContact[] }>> {
+export async function getContacts(params: GetContactsParams): Promise<PaginatedResult<{ contacts: ILivechatContactWithManagerData[] }>> {
 	const { searchText, count, offset, sort, unknown } = params;
 
 	const { cursor, totalCount } = LivechatContacts.findPaginatedContacts(
@@ -23,7 +23,22 @@ export async function getContacts(params: GetContactsParams): Promise<PaginatedR
 		},
 	);
 
-	const [contacts, total] = await Promise.all([cursor.toArray(), totalCount]);
+	const [rawContacts, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+	const managerIds = [...new Set(rawContacts.map(({ contactManager }) => contactManager))];
+	const managersData = await Users.findByIds<Pick<IUser, '_id' | 'name' | 'username'>>(managerIds, {
+		projection: { name: 1, username: 1 },
+	}).toArray();
+	const mappedManagers = Object.fromEntries(managersData.map((manager) => [manager._id, manager]));
+
+	const contacts: ILivechatContactWithManagerData[] = rawContacts.map((contact) => {
+		const { contactManager, ...data } = contact;
+
+		return {
+			...data,
+			...(contactManager ? { contactManager: mappedManagers[contactManager] } : {}),
+		};
+	});
 
 	return {
 		contacts,

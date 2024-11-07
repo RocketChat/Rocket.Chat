@@ -1,5 +1,5 @@
 import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/core-typings';
-import { LivechatContacts } from '@rocket.chat/models';
+import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
 
 import { getAllowedCustomFields } from './getAllowedCustomFields';
 import { validateContactManager } from './validateContactManager';
@@ -19,7 +19,9 @@ export type UpdateContactParams = {
 export async function updateContact(params: UpdateContactParams): Promise<ILivechatContact> {
 	const { contactId, name, emails, phones, customFields: receivedCustomFields, contactManager, channels, wipeConflicts } = params;
 
-	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id'>>(contactId, { projection: { _id: 1 } });
+	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name'>>(contactId, {
+		projection: { _id: 1, name: 1 },
+	});
 
 	if (!contact) {
 		throw new Error('error-contact-not-found');
@@ -40,6 +42,11 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		customFields,
 		...(wipeConflicts && { conflictingFields: [] }),
 	});
+
+	// If the contact name changed, update the name of its existing rooms
+	if (name !== undefined && name !== contact.name) {
+		await LivechatRooms.updateContactDataByContactId(contactId, { name });
+	}
 
 	return updatedContact;
 }
