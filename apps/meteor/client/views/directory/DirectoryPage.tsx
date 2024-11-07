@@ -14,7 +14,7 @@ type TabName = 'users' | 'channels' | 'teams' | 'external';
 const DirectoryPage = (): ReactElement => {
 	const { t } = useTranslation();
 
-	const defaultTab = useSetting<TabName>('Accounts_Directory_DefaultView') ?? 'users';
+	const defaultTab = useSetting<TabName>('Accounts_Directory_DefaultView', 'users');
 	const federationEnabled = useSetting('FEDERATION_Enabled');
 	const tab = useRouteParameter('tab') as TabName | undefined;
 	const router = useRouter();

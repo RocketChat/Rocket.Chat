@@ -17,7 +17,7 @@ const OmnichannelPreferencesPage = (): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const alwaysSendEmailTranscript = useSetting<boolean>('Livechat_transcript_send_always');
+	const alwaysSendEmailTranscript = useSetting('Livechat_transcript_send_always', false);
 	const omnichannelTranscriptPDF = useUserPreference<boolean>('omnichannelTranscriptPDF') ?? false;
 	const omnichannelTranscriptEmail = useUserPreference<boolean>('omnichannelTranscriptEmail') ?? false;
 	const omnichannelHideConversationAfterClosing = useUserPreference<boolean>('omnichannelHideConversationAfterClosing') ?? true;

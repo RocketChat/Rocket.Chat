@@ -13,7 +13,7 @@ type CreateDirectMessageProps = { onClose: () => void };
 
 const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 	const t = useTranslation();
-	const directMaxUsers = useSetting<number>('DirectMesssage_maxUsers') || 1;
+	const directMaxUsers = useSetting('DirectMesssage_maxUsers', 1);
 	const membersFieldId = useUniqueId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
