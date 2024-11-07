@@ -1,11 +1,29 @@
 tasks:
   - init: |
-      nvm install $(jq -r .engines.node package.json) &&
-      curl https://install.meteor.com/ | sh &&
-      export PATH="$PATH:$HOME/.meteor" &&
+      # Install Volta
+      curl https://get.volta.sh | bash &&
+      export VOLTA_HOME="$HOME/.volta" &&
+      export PATH="$VOLTA_HOME/bin:$PATH" &&
+      volta install node@$(jq -r .engines.node package.json) &&
+      
+      # Install Meteor
+      curl https://install.meteor.com/\?release\=3.0.4 | sh &&
+      export PATH="$HOME/.meteor:$PATH" &&
+
+      # Install Deno without prompts
+      curl -fsSL https://deno.land/install.sh | sh &&
+      export DENO_INSTALL="$HOME/.deno" &&
+      export PATH="$DENO_INSTALL/bin:$PATH" &&
+      
+
+      # Install Yarn 
       yarn &&
+
+      # Set ROOT_URL for development environment
       export ROOT_URL=$(gp url 3000)
-    command: yarn build && yarn dev
+
+    # Run build and dev scripts
+    command: yarn build && yarn dsv   
 
 ports:
   - port: 3000
@@ -23,4 +41,4 @@ github:
 
 vscode:
   extensions:
-    - esbenp.prettier-vscode       
+    - esbenp.prettier-vscode
