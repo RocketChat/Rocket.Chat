@@ -37,9 +37,7 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 
 		expect(value).to.be.false;
 		expect(error).to.eq('error-invalid-contact');
-		expect(
-			modelsMock.LivechatContacts.findOneById.calledOnceWith('contactId', sinon.match({ projection: { _id: 1, unknown: 1, channels: 1 } })),
-		);
+		expect(modelsMock.LivechatContacts.findOneById.calledOnceWith('contactId', sinon.match({ projection: { unknown: 1, channels: 1 } })));
 	});
 
 	it('should return false if the contact is unknown and Livechat_Block_Unknown_Contacts is true', async () => {

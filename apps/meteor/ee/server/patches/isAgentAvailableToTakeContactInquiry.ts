@@ -17,7 +17,6 @@ export const runIsAgentAvailableToTakeContactInquiry = async (
 ): Promise<{ error: string; value: false } | { value: true }> => {
 	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'unknown' | 'channels'>>(contactId, {
 		projection: {
-			_id: 1,
 			unknown: 1,
 			channels: 1,
 		},

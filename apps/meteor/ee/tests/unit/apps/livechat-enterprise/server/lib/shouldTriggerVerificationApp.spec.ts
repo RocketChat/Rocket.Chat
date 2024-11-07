@@ -41,7 +41,7 @@ describe('shouldTriggerVerificationApp', () => {
 
 	it('should not trigger a verification app if there is no configured app', async () => {
 		modelsMock.LivechatContacts.findOneById.resolves({ _id: 'contactId' });
-		settingsMock.get.returns('');
+		settingsMock.get.withArgs('Livechat_Contact_Verification_App').returns('');
 
 		const result = await runShouldTriggerVerificationApp(() => undefined, 'visitorId', 'contactId', {});
 		expect(result).to.be.false;
