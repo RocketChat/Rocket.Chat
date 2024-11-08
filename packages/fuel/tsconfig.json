@@ -1,0 +1,14 @@
+{
+	"extends": "../../tsconfig.base.server.json",
+	"compilerOptions": {
+		"declaration": true,
+		"rootDir": "./src",
+		"outDir": "./dist",
+		"types": ["reflect-metadata", "jest", "node"],
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
+	},
+	"include": [
+		"./src/**/*"
+    ]
+}

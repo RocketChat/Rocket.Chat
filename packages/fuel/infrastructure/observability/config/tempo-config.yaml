@@ -1,0 +1,42 @@
+stream_over_http_enabled: true
+
+server:
+  http_listen_port: 3200
+
+distributor:
+  receivers:                           # this configuration will listen on all ports and protocols that tempo is capable of.
+    jaeger:                            # the receives all come from the OpenTelemetry collector.  more configuration information can
+      protocols:                       # be found there: https://github.com/open-telemetry/opentelemetry-collector/tree/main/receiver
+        thrift_http:                   #
+        grpc:                          # for a production deployment you should only enable the receivers you need!
+        thrift_binary:
+        thrift_compact:
+    otlp:
+      protocols:
+        http:
+        grpc:
+
+ingester:
+  max_block_duration: 1h               # cut the headblock when this much time passes. this is being set for demo purposes and should probably be left alone normally
+  max_block_bytes: 1_000_000
+  trace_idle_period: 10s
+
+compactor:
+  compaction:
+    block_retention: 24h                # overall Tempo trace retention. set for demo purposes
+    compaction_window: 1h
+    max_block_bytes: 100_000_000
+    compacted_block_retention: 1h
+
+storage:
+  trace:
+    backend: local                     # backend configuration to use
+    block:
+      bloom_filter_false_positive: .05
+    wal:
+      path: /var/tempo/wal
+    local:
+      path: /var/tempo/blocks
+    pool:
+      max_workers: 100
+      queue_depth: 10000

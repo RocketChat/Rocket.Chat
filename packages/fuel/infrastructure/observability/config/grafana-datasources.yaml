@@ -1,0 +1,57 @@
+apiVersion: 1
+
+datasources:
+  - name: Loki
+    type: loki
+    uid: loki
+    access: proxy
+    orgId: 1
+    url: http://loki:3100
+    basicAuth: false
+    isDefault: true
+    version: 1
+    editable: false
+    jsonData:
+      derivedFields:
+        - datasourceName: Tempo
+          matcherRegex: '"traceid":"(\w+)"'
+          name: TraceID
+          url: "$${__value.raw}"
+          datasourceUid: tempo
+  - name: Tempo
+    type: tempo
+    access: proxy
+    orgId: 1
+    url: http://tempo:3200
+    basicAuth: false
+    isDefault: false
+    version: 1
+    editable: false
+    apiVersion: 1
+    uid: tempo
+    jsonData:
+      httpMethod: GET
+      tracesToLogsV2:
+        datasourceUid: loki
+        customQuery: true
+        tags:
+          - key: "service.name"
+            value: "job"
+        filterByTraceID: true
+        filterBySpanID: true
+      nodeGraph:
+        enabled: true
+      lokiSearch:
+        datasourceUid: loki
+  - name: Prometheus
+    type: prometheus
+    uid: prometheus
+    access: proxy
+    orgId: 1
+    url: http://prometheus:9090
+    basicAuth: false
+    isDefault: false
+    version: 1
+    editable: false
+    jsonData:
+      httpMethod: GET

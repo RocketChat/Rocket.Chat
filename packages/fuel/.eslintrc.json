@@ -1,0 +1,5 @@
+{
+	"extends": ["@rocket.chat/eslint-config/server"],
+	"ignorePatterns": ["**/jest.config.ts", "**/*.spec.ts"]
+  }
+  
