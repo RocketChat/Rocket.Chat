@@ -5,13 +5,12 @@ import { isAtBottom as isAtBottomLib } from '../../../../../app/ui/client/views/
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 
 export const useListIsAtBottom = () => {
-	console.log('USE LIST IS AT BOTTOM RUN');
 	const atBottomRef = useRef(true);
 
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
 
 	const sendToBottom = useCallback(() => {
-		innerBoxRef.current?.scrollTo({ left: 30, top: innerBoxRef.current?.scrollHeight });
+		// innerBoxRef.current?.scrollTo({ left: 30, top: innerBoxRef.current?.scrollHeight });
 	}, []);
 
 	const sendToBottomIfNecessary = useCallback(() => {
@@ -41,7 +40,7 @@ export const useListIsAtBottom = () => {
 
 			const observer = new ResizeObserver(() => {
 				if (atBottomRef.current === true) {
-					node.scrollTo({ left: 30, top: node.scrollHeight });
+					// node.scrollTo({ left: 30, top: node.scrollHeight });
 				}
 			});
 

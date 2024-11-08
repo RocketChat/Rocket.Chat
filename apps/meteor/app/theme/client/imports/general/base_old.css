@@ -773,7 +773,7 @@
 	}
 
 	& ul.messages-list {
-		padding: 21px 0 10px;
+		padding: 21px 0 0;
 	}
 
 	& .editing .body {

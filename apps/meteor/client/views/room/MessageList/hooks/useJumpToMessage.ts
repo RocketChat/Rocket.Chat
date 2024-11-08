@@ -28,7 +28,7 @@ export const useJumpToMessage = (messageId: IMessage['_id']) => {
 					const scrollPosition = wrapper.scrollTop;
 					const newScrollPosition = scrollPosition + offset - SCROLL_EXTRA_OFFSET;
 
-					wrapper.scrollTo({ top: newScrollPosition, behavior: 'smooth' });
+					// wrapper.scrollTo({ top: newScrollPosition, behavior: 'smooth' });
 				}
 
 				const { msg: _, ...search } = router.getSearchParameters();
