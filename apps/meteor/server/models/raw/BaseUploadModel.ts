@@ -19,6 +19,7 @@ type T = IUpload;
 export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUploadsModel<T> {
 	protected modelIndexes(): IndexDescription[] {
 		return [
+			{ key: { userId: 1 }, sparse: true },
 			{ key: { name: 1 }, sparse: true },
 			{ key: { rid: 1 }, sparse: true },
 			{ key: { expiresAt: 1 }, sparse: true },
