@@ -57,10 +57,10 @@ test.describe('Omnichannel Contact Center', () => {
 	test.beforeAll(async ({ api }) => {
 		// Add a contact
 		const { id: _, ...data } = EXISTING_CONTACT;
-		await api.post('/omnichannel/contact', data);
+		await api.post('/omnichannel/contact', data).then((res) => expect(res.status()).toBe(200));
 
 		if (IS_EE) {
-			await api.post('/livechat/custom.field', NEW_CUSTOM_FIELD);
+			await api.post('/livechat/custom.field', NEW_CUSTOM_FIELD).then((res) => expect(res.status()).toBe(200));
 		}
 	});
 
@@ -112,24 +112,22 @@ test.describe('Omnichannel Contact Center', () => {
 		});
 
 		await test.step('input name', async () => {
-			await poContacts.newContact.inputName.type(NEW_CONTACT.name);
+			await poContacts.newContact.inputName.fill(NEW_CONTACT.name);
 		});
 
 		await test.step('validate email format', async () => {
-			await poContacts.newContact.inputEmail.type('invalidemail');
+			await poContacts.newContact.inputEmail.fill('invalidemail');
 			await expect(poContacts.newContact.errorMessage(ERROR.invalidEmail)).toBeVisible();
 		});
 
 		await test.step('input existing email', async () => {
-			await poContacts.newContact.inputEmail.selectText();
-			await poContacts.newContact.inputEmail.type(EXISTING_CONTACT.email);
+			await poContacts.newContact.inputEmail.fill(EXISTING_CONTACT.email);
 			await expect(poContacts.newContact.errorMessage(ERROR.invalidEmail)).not.toBeVisible();
 			await expect(poContacts.newContact.errorMessage(ERROR.existingEmail)).not.toBeVisible();
 		});
 
 		await test.step('input existing phone ', async () => {
-			await poContacts.newContact.inputPhone.selectText();
-			await poContacts.newContact.inputPhone.type(EXISTING_CONTACT.phone);
+			await poContacts.newContact.inputPhone.fill(EXISTING_CONTACT.phone);
 			await expect(poContacts.newContact.errorMessage(ERROR.existingPhone)).not.toBeVisible();
 		});
 
@@ -145,14 +143,12 @@ test.describe('Omnichannel Contact Center', () => {
 		});
 
 		await test.step('input phone ', async () => {
-			await poContacts.newContact.inputPhone.selectText();
-			await poContacts.newContact.inputPhone.type(NEW_CONTACT.phone);
+			await poContacts.newContact.inputPhone.fill(NEW_CONTACT.phone);
 			await expect(poContacts.newContact.errorMessage(ERROR.existingPhone)).not.toBeVisible();
 		});
 
 		await test.step('input email', async () => {
-			await poContacts.newContact.inputEmail.selectText();
-			await poContacts.newContact.inputEmail.type(NEW_CONTACT.email);
+			await poContacts.newContact.inputEmail.fill(NEW_CONTACT.email);
 			await expect(poContacts.newContact.errorMessage(ERROR.invalidEmail)).not.toBeVisible();
 			await expect(poContacts.newContact.errorMessage(ERROR.existingEmail)).not.toBeVisible();
 		});
@@ -196,37 +192,32 @@ test.describe('Omnichannel Contact Center', () => {
 		});
 
 		await test.step('validate email format', async () => {
-			await poContacts.contactInfo.inputEmail.selectText();
-			await poContacts.contactInfo.inputEmail.type('invalidemail');
+			await poContacts.contactInfo.inputEmail.fill('invalidemail');
 			await expect(poContacts.contactInfo.errorMessage(ERROR.invalidEmail)).toBeVisible();
 		});
 
 		await test.step('input existing email', async () => {
-			await poContacts.contactInfo.inputEmail.selectText();
-			await poContacts.contactInfo.inputEmail.type(EXISTING_CONTACT.email);
+			await poContacts.contactInfo.inputEmail.fill(EXISTING_CONTACT.email);
 			await expect(poContacts.contactInfo.errorMessage(ERROR.invalidEmail)).not.toBeVisible();
 			await expect(poContacts.contactInfo.errorMessage(ERROR.existingEmail)).not.toBeVisible();
 			await expect(poContacts.contactInfo.btnSave).toBeEnabled();
 		});
 
 		await test.step('input existing phone ', async () => {
-			await poContacts.contactInfo.inputPhone.selectText();
-			await poContacts.contactInfo.inputPhone.type(EXISTING_CONTACT.phone);
+			await poContacts.contactInfo.inputPhone.fill(EXISTING_CONTACT.phone);
 			await expect(poContacts.contactInfo.errorMessage(ERROR.existingPhone)).not.toBeVisible();
 			await expect(poContacts.contactInfo.btnSave).toBeEnabled();
 		});
 
 		await test.step('validate name is required', async () => {
-			await poContacts.contactInfo.inputName.selectText();
-			await poContacts.contactInfo.inputName.type(' ');
+			await poContacts.contactInfo.inputName.fill(' ');
 			await expect(poContacts.contactInfo.errorMessage(ERROR.nameRequired)).toBeVisible();
 
 			await expect(poContacts.contactInfo.btnSave).not.toBeEnabled();
 		});
 
 		await test.step('edit name', async () => {
-			await poContacts.contactInfo.inputName.selectText();
-			await poContacts.contactInfo.inputName.type(EDIT_CONTACT.name);
+			await poContacts.contactInfo.inputName.fill(EDIT_CONTACT.name);
 		});
 
 		await test.step('run async validations ', async () => {
@@ -241,14 +232,12 @@ test.describe('Omnichannel Contact Center', () => {
 		});
 
 		await test.step('input phone ', async () => {
-			await poContacts.newContact.inputPhone.selectText();
-			await poContacts.newContact.inputPhone.type(EDIT_CONTACT.phone);
+			await poContacts.newContact.inputPhone.fill(EDIT_CONTACT.phone);
 			await expect(poContacts.newContact.errorMessage(ERROR.existingPhone)).not.toBeVisible();
 		});
 
 		await test.step('input email', async () => {
-			await poContacts.newContact.inputEmail.selectText();
-			await poContacts.newContact.inputEmail.type(EDIT_CONTACT.email);
+			await poContacts.newContact.inputEmail.fill(EDIT_CONTACT.email);
 			await expect(poContacts.newContact.errorMessage(ERROR.invalidEmail)).not.toBeVisible();
 			await expect(poContacts.newContact.errorMessage(ERROR.existingEmail)).not.toBeVisible();
 		});
@@ -257,8 +246,7 @@ test.describe('Omnichannel Contact Center', () => {
 			await poContacts.contactInfo.btnSave.click();
 			await expect(poContacts.toastSuccess).toBeVisible();
 
-			await poContacts.inputSearch.selectText();
-			await poContacts.inputSearch.type(EDIT_CONTACT.name);
+			await poContacts.inputSearch.fill(EDIT_CONTACT.name);
 			await expect(poContacts.findRowByName(EDIT_CONTACT.name)).toBeVisible();
 		});
 	});
