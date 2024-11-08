@@ -124,7 +124,7 @@ const SidebarItemTemplateWithData = ({
 	const badges = (
 		<>
 			{showUnread && (
-				<SidebarV2ItemBadge variant={unreadVariant} title={unreadTitle} role='status'>
+				<SidebarV2ItemBadge variant={unreadVariant} title={unreadTitle} role='status' aria-label={`${unreadTitle} from ${title}`}>
 					<span aria-hidden>{unreadCount.total}</span>
 				</SidebarV2ItemBadge>
 			)}
@@ -144,7 +144,7 @@ const SidebarItemTemplateWithData = ({
 			onClick={(): void => {
 				!selected && sidebar.toggle();
 			}}
-			aria-label={title}
+			aria-label={showUnread ? `${unreadTitle} from ${title}` : title}
 			title={title}
 			time={lastMessage?.ts}
 			subtitle={subtitle}
