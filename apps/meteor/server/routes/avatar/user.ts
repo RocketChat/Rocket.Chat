@@ -93,7 +93,7 @@ export const userAvatarById = async function (request: IncomingMessage, res: Ser
 
 	const externalProviderUrl = settings.get<string>('Accounts_AvatarExternalProviderUrl');
 	if (externalProviderUrl) {
-		const user = await Users.findOneById<Pick<IUser, 'name' | 'username'>>(requestUserId, { projection: { username: 1, name: 1 } });
+		const user = await Users.findOneById<Pick<IUser, 'username'>>(requestUserId, { projection: { username: 1 } });
 
 		if (!user?.username) {
 			res.writeHead(404);
