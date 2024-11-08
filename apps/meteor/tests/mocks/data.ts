@@ -272,6 +272,6 @@ function pullNextVisitorName() {
 export function createFakeVisitor() {
 	return {
 		name: pullNextVisitorName(),
-		email: faker.internet.email(),
+		email: faker.internet.email().toLowerCase(),
 	} as const;
 }
