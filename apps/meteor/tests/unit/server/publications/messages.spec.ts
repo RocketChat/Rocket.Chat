@@ -74,7 +74,19 @@ describe('mountCursorQuery', () => {
 	it('should return a query with $gt and sort when neither next nor previous is provided', () => {
 		const result = mountCursorQuery({ count: 10 });
 		expect(result.query).to.deep.equal({ $gt: new Date(0) });
-		expect(result.options).to.deep.equal({ sort: { ts: -1 } });
+		expect(result.options).to.deep.equal({ sort: { _updatedAt: 1 } });
+	});
+
+	it('should return a query with $gt and ascending sort when next is provided', () => {
+		const result = mountCursorQuery({ next: mockDate.toString(), count: 10 });
+		expect(result.query).to.deep.equal({ $gt: new Date(mockDate) });
+		expect(result.options).to.deep.equal({ sort: { _updatedAt: 1 }, limit: 10 });
+	});
+
+	it('should return a query with $gt and descending sort when previous is provided', () => {
+		const result = mountCursorQuery({ previous: mockDate.toString(), count: 10 });
+		expect(result.query).to.deep.equal({ $lt: new Date(mockDate) });
+		expect(result.options).to.deep.equal({ sort: { _updatedAt: -1 }, limit: 10 });
 	});
 });
 
@@ -108,11 +120,11 @@ describe('mountCursorFromMessage', () => {
 
 describe('mountNextCursor', () => {
 	it('should return a cursor for the most recent message when messages are present', () => {
-		// Messages are already sorted by descending order
-		const messages = [{ _updatedAt: new Date('2024-10-01T10:00:00Z') }, { _updatedAt: new Date('2024-10-01T09:00:00Z') }];
+		// Messages are already sorted by ascending order
+		const messages = [{ _updatedAt: new Date('2024-10-01T09:00:00Z') }, { _updatedAt: new Date('2024-10-01T10:00:00Z') }];
 		const type = 'UPDATED';
 		const result = mountNextCursor(messages, type);
-		expect(result).to.equal(`${messages[0]._updatedAt.getTime()}`);
+		expect(result).to.equal(`${messages[1]._updatedAt.getTime()}`);
 	});
 
 	it('should return null if no messages and no previous cursor', () => {
@@ -122,12 +134,12 @@ describe('mountNextCursor', () => {
 		expect(result).to.equal(null);
 	});
 
-	it('should return decremented previous cursor if no messages and previous is provided', () => {
+	it('should return previous cursor in case of no messages and previous cursor is provided', () => {
 		const messages: IMessage[] = [];
 		const type = 'UPDATED';
 		const previous = '1000';
 		const result = mountNextCursor(messages, type, undefined, previous);
-		expect(result).to.equal('999');
+		expect(result).to.equal(previous);
 	});
 });
 
@@ -143,38 +155,26 @@ describe('mountPreviousCursor', () => {
 		_updatedAt: new Date(timestamp),
 	});
 
-	it('should return null if count is null', () => {
+	it('should return null if count, next and previous are not provided', () => {
 		const result = mountPreviousCursor([], 'UPDATED', null);
 		expect(result).to.be.null;
 	});
 
-	it('should return next + 1 if messages length is 0 and next is provided', () => {
+	it('should return next if messages length is 0 and next is provided', () => {
 		const result = mountPreviousCursor([], 'UPDATED', 10, '1000');
-		expect(result).to.equal('1001');
+		expect(result).to.equal('1000');
 	});
 
-	it('should return next - 1 if messages length is equal to count and next is provided', () => {
+	it('should return next if messages length is equal to count and next is provided', () => {
 		const messages = [mockMessage(1000), mockMessage(2000)];
 		const result = mountPreviousCursor(messages, 'UPDATED', 2, '1000');
-		expect(result).to.equal('999');
+		expect(result).to.equal('1000');
 	});
 
 	it('should return null if messages length is less or equal to count', () => {
 		const messages = [mockMessage(1000)];
 		const result = mountPreviousCursor(messages, 'UPDATED', 2);
-		expect(result).to.be.null;
-	});
-
-	it('should return a cursor if messages length is greater than count', () => {
-		const messages = [mockMessage(1000), mockMessage(2000), mockMessage(3000)];
-		const result = mountPreviousCursor(messages, 'UPDATED', 2);
-		expect(result).to.equal('2000');
-	});
-
-	it('should return null if messages length is greater than count but count is not provided', () => {
-		const messages = [mockMessage(1000), mockMessage(2000), mockMessage(3000)];
-		const result = mountPreviousCursor(messages, 'UPDATED');
-		expect(result).to.be.null;
+		expect(result).to.equal('1000');
 	});
 });
 
@@ -262,20 +262,5 @@ describe('handleCursorPagination', () => {
 
 		expect(result.updated).to.deep.equal([]);
 		expect(result.cursor).to.deep.equal({ next: null, previous: null });
-	});
-
-	it('should pop the last message if response length exceeds count', async () => {
-		const rid = 'roomId';
-		const count = 1;
-		const messages = [
-			{ _id: 'msg1', _updatedAt: new Date() },
-			{ _id: 'msg2', _updatedAt: new Date() },
-		];
-		messagesMock.findForUpdates.returns({ toArray: sinon.stub().resolves(messages) });
-
-		const result = await handleCursorPagination('UPDATED', rid, count);
-
-		expect(result.updated).to.have.lengthOf(count);
-		expect(result.updated).to.not.include(messages[1]);
 	});
 });
