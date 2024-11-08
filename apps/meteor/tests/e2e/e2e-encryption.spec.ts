@@ -122,6 +122,8 @@ test.describe.serial('e2e-encryption initial setup', () => {
 test.describe.serial('e2e-encryption', () => {
 	let poHomeChannel: HomeChannel;
 
+	test.use({ storageState: Users.userE2EE.state });
+
 	test.beforeEach(async ({ page, api }) => {
 		const statusCode = (await api.post('/settings/E2E_Enable', { value: true })).status();
 
@@ -368,7 +370,7 @@ test.describe.serial('e2e-encryption', () => {
 		await page.keyboard.press('Enter');
 		await poHomeChannel.sidenav.btnCreate.click();
 
-		await expect(page).toHaveURL(`/direct/rocketchat.internal.admin.testuser2`);
+		await expect(page).toHaveURL(`/direct/user2${Users.userE2EE.data.username}`);
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
