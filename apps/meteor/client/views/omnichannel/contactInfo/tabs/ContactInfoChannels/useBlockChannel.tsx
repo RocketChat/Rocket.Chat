@@ -1,7 +1,7 @@
 import type { ILivechatContactVisitorAssociation } from '@rocket.chat/core-typings';
 import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import AdvancedContactModal from '../../AdvancedContactModal';
@@ -17,7 +17,7 @@ export const useBlockChannel = ({ blocked, association }: { blocked: boolean; as
 	const blockContact = useEndpoint('POST', '/v1/omnichannel/contacts.block');
 	const unblockContact = useEndpoint('POST', '/v1/omnichannel/contacts.unblock');
 
-	const handleUnblock = async () => {
+	const handleUnblock = useCallback(async () => {
 		try {
 			await unblockContact({ visitor: association });
 			dispatchToastMessage({ type: 'success', message: t('Contact_unblocked') });
@@ -25,9 +25,9 @@ export const useBlockChannel = ({ blocked, association }: { blocked: boolean; as
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	};
+	}, [association, dispatchToastMessage, queryClient, t, unblockContact]);
 
-	const handleBlock = () => {
+	const handleBlock = useCallback(() => {
 		if (!hasLicense) {
 			return setModal(<AdvancedContactModal onCancel={() => setModal(null)} />);
 		}
@@ -45,7 +45,7 @@ export const useBlockChannel = ({ blocked, association }: { blocked: boolean; as
 		};
 
 		setModal(<BlockChannelModal onCancel={() => setModal(null)} onConfirm={blockAction} />);
-	};
+	}, [association, blockContact, dispatchToastMessage, hasLicense, queryClient, setModal, t]);
 
 	return blocked ? handleUnblock : handleBlock;
 };
