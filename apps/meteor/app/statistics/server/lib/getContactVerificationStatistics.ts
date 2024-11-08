@@ -14,15 +14,12 @@ export async function getContactVerificationStatistics(): Promise<IStats['contac
 		totalContactsWithoutChannels,
 	] = await Promise.all([
 		LivechatContacts.estimatedDocumentCount(),
-		LivechatContacts.countDocuments({ unknown: true }),
+		LivechatContacts.countUnknown(),
 		LivechatContacts.getStatistics().toArray(),
-		LivechatContacts.countDocuments({ 'channels.blocked': true }),
-		LivechatContacts.countDocuments({
-			'channels.blocked': true,
-			'channels': { $not: { $elemMatch: { $or: [{ blocked: false }, { blocked: { $exists: false } }] } } },
-		}),
-		LivechatContacts.countDocuments({ unknown: false }),
-		LivechatContacts.countDocuments({ channels: { $in: [undefined, []] } }),
+		LivechatContacts.countBlocked(),
+		LivechatContacts.countFullyBlocked(),
+		LivechatContacts.countVerified(),
+		LivechatContacts.countContactsWithoutChannels(),
 	]);
 
 	return {

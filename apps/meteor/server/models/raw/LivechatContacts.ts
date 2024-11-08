@@ -265,6 +265,29 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return updatedContact.value;
 	}
 
+	countUnknown(): Promise<number> {
+		return this.countDocuments({ unknown: true });
+	}
+
+	countBlocked(): Promise<number> {
+		return this.countDocuments({ 'channels.blocked': true });
+	}
+
+	countFullyBlocked(): Promise<number> {
+		return this.countDocuments({
+			'channels.blocked': true,
+			'channels': { $not: { $elemMatch: { $or: [{ blocked: false }, { blocked: { $exists: false } }] } } },
+		});
+	}
+
+	countVerified(): Promise<number> {
+		return this.countDocuments({ unknown: false });
+	}
+
+	countContactsWithoutChannels(): Promise<number> {
+		return this.countDocuments({ channels: { $in: [undefined, []] } });
+	}
+
 	getStatistics(): AggregationCursor<{ totalConflicts: number; avgChannelsPerContact: number }> {
 		return this.col.aggregate<{ totalConflicts: number; avgChannelsPerContact: number }>(
 			[
