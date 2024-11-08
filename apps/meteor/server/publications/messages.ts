@@ -51,8 +51,8 @@ export function mountCursorQuery({ next, previous, count }: { next?: string; pre
 	options: FindOptions<IMessage>;
 } {
 	const options: FindOptions<IMessage> = {
-		sort: { ts: -1 },
-		...(next || previous ? { limit: count + 1 } : {}),
+		sort: { _updatedAt: 1 },
+		...(next || previous ? { limit: count } : {}),
 	};
 
 	if (next) {
@@ -60,7 +60,7 @@ export function mountCursorQuery({ next, previous, count }: { next?: string; pre
 	}
 
 	if (previous) {
-		return { query: { $lt: extractTimestampFromCursor(previous) }, options };
+		return { query: { $lt: extractTimestampFromCursor(previous) }, options: { ...options, sort: { _updatedAt: -1 } } };
 	}
 
 	return { query: { $gt: new Date(0) }, options };
@@ -78,57 +78,20 @@ export function mountCursorFromMessage(message: IMessage & { _deletedAt?: Date }
 	throw new Meteor.Error('error-cursor-not-found', 'Cursor not found', { method: 'messages/get' });
 }
 
-export function mountNextCursor(messages: IMessage[], type: CursorPaginationType, _next?: string, previous?: string): string | null {
-	// if messages length is greater than 0, it means that we might have more messages
-	// and we shall return a cursor pointing to the most recent message from the current batch
+export function mountNextCursor(messages: IMessage[], type: CursorPaginationType, next?: string, previous?: string): string | null {
+	if (messages.length > 0) {
+		return mountCursorFromMessage(messages[messages.length - 1], type);
+	}
 
-	// since we are already sorted by descending order on database query
-	// it's not performant to enumerate the existence of a next cursor
-	// so we can just return the timestamp from the most recent message
-	// and the client will move forward in the messages
+	return next ?? previous ?? null;
+}
+
+export function mountPreviousCursor(messages: IMessage[], type: CursorPaginationType, next?: string, previous?: string): string | null {
 	if (messages.length > 0) {
 		return mountCursorFromMessage(messages[0], type);
 	}
 
-	if (messages.length === 0 && previous) {
-		return `${parseInt(previous, 10) - 1}`;
-	}
-
-	return null;
-}
-
-export function mountPreviousCursor(messages: IMessage[], type: CursorPaginationType, count?: number, next?: string): string | null {
-	// if count is null, we don't have to return a cursor
-	// because we are going to return all the messages
-	if (count === null) {
-		return null;
-	}
-
-	// if messages length is 0 and next is provided, it means we reached the end of the messages
-	// and we shall return a cursor that inverts the current query
-	if (messages.length === 0 && next) {
-		return `${parseInt(next, 10) + 1}`;
-	}
-
-	// if messages length is equal to count and next is provided, it means we reached the end of the messages
-	// and we shall return a cursor that inverts the current query
-	if (messages.length === count && next) {
-		return `${parseInt(next, 10) - 1}`;
-	}
-
-	// if messages length is less or equal to count, it means we are at the end of the messages
-	// and we shall not return a cursor
-	if (count && messages.length <= count) {
-		return null;
-	}
-
-	// if messages length is greater than count, it means we are not at the end of the messages
-	// and we shall return a cursor
-	if (count && messages.length > count) {
-		return mountCursorFromMessage(messages[messages.length - 2], type);
-	}
-
-	return null;
+	return previous ?? next ?? null;
 }
 
 export async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Date) {
@@ -162,12 +125,8 @@ export async function handleCursorPagination(
 
 	const cursor = {
 		next: mountNextCursor(response, type, next, previous),
-		previous: mountPreviousCursor(response, type, count, next),
+		previous: mountPreviousCursor(response, type, next, previous),
 	};
-
-	if (count && count !== null && response.length > count) {
-		response.pop();
-	}
 
 	return {
 		[type.toLowerCase()]: response,
