@@ -1,9 +1,10 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, SetStateAction } from 'react';
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useAppsReload } from '../../../../../contexts/hooks/useAppsReload';
 import { queryClient } from '../../../../../lib/queryClient';
@@ -18,7 +19,7 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 	const [offset, setOffset] = useState<number>(0);
 
 	const paginatedAppRequests = useAppRequests(id, limit, offset);
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const onSetItemsPerPage = (itemsPerPageOption: SetStateAction<itemsPerPage>) => setLimit(itemsPerPageOption);
 	const onSetCurrent = (currentItemsOption: SetStateAction<number>) => setOffset(currentItemsOption);

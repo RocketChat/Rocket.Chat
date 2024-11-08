@@ -5,7 +5,6 @@ import { MessageAction } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { queryClient } from '../../lib/queryClient';
 import { dispatchToastMessage } from '../../lib/toast';
-import { messageArgs } from '../../lib/utils/messageArgs';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
@@ -14,9 +13,7 @@ Meteor.startup(() => {
 		label: 'Unstar_Message',
 		type: 'interaction',
 		context: ['starred', 'message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
-		async action(_, props) {
-			const { message = messageArgs(this).msg } = props;
-
+		async action(_, { message }) {
 			try {
 				await sdk.call('starMessage', { ...message, starred: false });
 				queryClient.invalidateQueries(['rooms', message.rid, 'starred-messages']);

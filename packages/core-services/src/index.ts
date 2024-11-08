@@ -1,4 +1,4 @@
-import { proxify, proxifyWithWait } from './lib/proxify';
+import { proxify } from './lib/proxify';
 import type { IAccount, ILoginResult } from './types/IAccount';
 import type { IAnalyticsService } from './types/IAnalyticsService';
 import { IApiService } from './types/IApiService';
@@ -47,9 +47,11 @@ import type { UiKitCoreAppPayload, IUiKitCoreApp, IUiKitCoreAppService } from '.
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
 import type { IUserService } from './types/IUserService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
+import type { IVoipFreeSwitchService } from './types/IVoipFreeSwitchService';
 import type { IVoipService } from './types/IVoipService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
+export { traceInstanceMethods } from './lib/asyncMethodCallContext';
 export { MeteorError, isMeteorError } from './MeteorError';
 export { api } from './api';
 export { EventSignatures } from './events/Events';
@@ -74,6 +76,8 @@ export {
 	ChartDataResult,
 	AnalyticsOverviewDataResult,
 } from './types/IOmnichannelAnalyticsService';
+
+export { getConnection, getTrashCollection } from './lib/mongo';
 
 export {
 	AutoUpdateRecord,
@@ -117,9 +121,10 @@ export {
 	IUiKitCoreAppService,
 	IVideoConfService,
 	IVoipService,
+	IVoipFreeSwitchService,
 	NPSCreatePayload,
 	NPSVotePayload,
-	proxifyWithWait,
+	proxify,
 	ResizeResult,
 	RoomAccessValidator,
 	TelemetryEvents,
@@ -150,41 +155,42 @@ export const dbWatchersDisabled =
 	(process.env.NODE_ENV !== 'production' && !['no', 'false'].includes(disabledEnvVar));
 
 // TODO think in a way to not have to pass the service name to proxify here as well
-export const Authorization = proxifyWithWait<IAuthorization>('authorization');
-export const Apps = proxifyWithWait<IAppsEngineService>('apps-engine');
-export const Presence = proxifyWithWait<IPresence>('presence');
-export const Account = proxifyWithWait<IAccount>('accounts');
-export const License = proxifyWithWait<ILicense>('license');
-export const MeteorService = proxifyWithWait<IMeteor>('meteor');
-export const Banner = proxifyWithWait<IBannerService>('banner');
-export const UiKitCoreApp = proxifyWithWait<IUiKitCoreAppService>('uikit-core-app');
-export const NPS = proxifyWithWait<INPSService>('nps');
-export const Team = proxifyWithWait<ITeamService>('team');
-export const MessageReads = proxifyWithWait<IMessageReadsService>('message-reads');
-export const Room = proxifyWithWait<IRoomService>('room');
-export const Media = proxifyWithWait<IMediaService>('media');
-export const VoipAsterisk = proxifyWithWait<IVoipService>('voip-asterisk');
-export const LivechatVoip = proxifyWithWait<IOmnichannelVoipService>('omnichannel-voip');
-export const Analytics = proxifyWithWait<IAnalyticsService>('analytics');
-export const LDAP = proxifyWithWait<ILDAPService>('ldap');
-export const SAUMonitor = proxifyWithWait<ISAUMonitorService>('sau-monitor');
-export const DeviceManagement = proxifyWithWait<IDeviceManagementService>('device-management');
-export const VideoConf = proxifyWithWait<IVideoConfService>('video-conference');
-export const Upload = proxifyWithWait<IUploadService>('upload');
-export const Calendar = proxifyWithWait<ICalendarService>('calendar');
-export const QueueWorker = proxifyWithWait<IQueueWorkerService>('queue-worker');
-export const OmnichannelTranscript = proxifyWithWait<IOmnichannelTranscriptService>('omnichannel-transcript');
-export const Message = proxifyWithWait<IMessageService>('message');
-export const Translation = proxifyWithWait<ITranslationService>('translation');
-export const Settings = proxifyWithWait<ISettingsService>('settings');
-export const OmnichannelIntegration = proxifyWithWait<IOmnichannelIntegrationService>('omnichannel-integration');
-export const Federation = proxifyWithWait<IFederationService>('federation');
-export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-enterprise');
-export const Omnichannel = proxifyWithWait<IOmnichannelService>('omnichannel');
-export const OmnichannelEEService = proxifyWithWait<IOmnichannelEEService>('omnichannel-ee');
-export const Import = proxifyWithWait<IImportService>('import');
-export const OmnichannelAnalytics = proxifyWithWait<IOmnichannelAnalyticsService>('omnichannel-analytics');
-export const User = proxifyWithWait<IUserService>('user');
+export const Authorization = proxify<IAuthorization>('authorization');
+export const Apps = proxify<IAppsEngineService>('apps-engine');
+export const Presence = proxify<IPresence>('presence');
+export const Account = proxify<IAccount>('accounts');
+export const License = proxify<ILicense>('license');
+export const MeteorService = proxify<IMeteor>('meteor');
+export const Banner = proxify<IBannerService>('banner');
+export const UiKitCoreApp = proxify<IUiKitCoreAppService>('uikit-core-app');
+export const NPS = proxify<INPSService>('nps');
+export const Team = proxify<ITeamService>('team');
+export const MessageReads = proxify<IMessageReadsService>('message-reads');
+export const Room = proxify<IRoomService>('room');
+export const Media = proxify<IMediaService>('media');
+export const VoipAsterisk = proxify<IVoipService>('voip-asterisk');
+export const VoipFreeSwitch = proxify<IVoipFreeSwitchService>('voip-freeswitch');
+export const LivechatVoip = proxify<IOmnichannelVoipService>('omnichannel-voip');
+export const Analytics = proxify<IAnalyticsService>('analytics');
+export const LDAP = proxify<ILDAPService>('ldap');
+export const SAUMonitor = proxify<ISAUMonitorService>('sau-monitor');
+export const DeviceManagement = proxify<IDeviceManagementService>('device-management');
+export const VideoConf = proxify<IVideoConfService>('video-conference');
+export const Upload = proxify<IUploadService>('upload');
+export const Calendar = proxify<ICalendarService>('calendar');
+export const QueueWorker = proxify<IQueueWorkerService>('queue-worker');
+export const OmnichannelTranscript = proxify<IOmnichannelTranscriptService>('omnichannel-transcript');
+export const Message = proxify<IMessageService>('message');
+export const Translation = proxify<ITranslationService>('translation');
+export const Settings = proxify<ISettingsService>('settings');
+export const OmnichannelIntegration = proxify<IOmnichannelIntegrationService>('omnichannel-integration');
+export const Federation = proxify<IFederationService>('federation');
+export const FederationEE = proxify<IFederationServiceEE>('federation-enterprise');
+export const Omnichannel = proxify<IOmnichannelService>('omnichannel');
+export const OmnichannelEEService = proxify<IOmnichannelEEService>('omnichannel-ee');
+export const Import = proxify<IImportService>('import');
+export const OmnichannelAnalytics = proxify<IOmnichannelAnalyticsService>('omnichannel-analytics');
+export const User = proxify<IUserService>('user');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

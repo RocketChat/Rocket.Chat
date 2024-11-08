@@ -1,4 +1,4 @@
-import { Box, FieldGroup, Field, FieldLabel, FieldRow, FieldError, TextAreaInput } from '@rocket.chat/fuselage';
+import { Box, FieldGroup, Field, FieldLabel, FieldRow, FieldError, TextAreaInput, FieldDescription } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps } from 'react';
@@ -45,27 +45,32 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 			onCancel={onClose}
 			confirmText={t('Report')}
 		>
+			<Box mbe={16} display='flex' alignItems='center'>
+				<UserAvatar username={username} />
+				<Box mis={8} fontScale='p2b'>
+					{displayName}
+				</Box>
+			</Box>
 			<FieldGroup>
 				<Field>
-					<FieldLabel htmlFor={reasonForReportId}>
-						<Box mbe='x12' display='flex' alignItems='center'>
-							<UserAvatar username={username} />
-							<Box mis='x12' fontScale='p1' fontWeight='700'>
-								{displayName}
-							</Box>
-						</Box>
-					</FieldLabel>
+					<FieldLabel htmlFor={reasonForReportId}>{t('Report_reason')}</FieldLabel>
+					<FieldDescription id={`${reasonForReportId}-description`}>{t('Let_moderators_know_what_the_issue_is')}</FieldDescription>
 					<FieldRow>
 						<TextAreaInput
+							id={reasonForReportId}
 							rows={3}
-							placeholder={t('Why_do_you_want_to_report_question_mark')}
 							{...register('reasonForReport', { required: t('Required_field', { field: t('Reason_for_report') }) })}
 							width='full'
-							mbe='x4'
-							aria-label={t('Reason_for_report')}
+							mbe={4}
+							aria-required='true'
+							aria-describedby={`${reasonForReportId}-description ${reasonForReportId}-error`}
 						/>
 					</FieldRow>
-					{errors.reasonForReport && <FieldError>{errors.reasonForReport.message}</FieldError>}
+					{errors.reasonForReport && (
+						<FieldError aria-live='assertive' id={`${reasonForReportId}-error`}>
+							{errors.reasonForReport.message}
+						</FieldError>
+					)}
 				</Field>
 			</FieldGroup>
 		</GenericModal>

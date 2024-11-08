@@ -1,13 +1,12 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Omnichannel } from '@rocket.chat/core-services';
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IOmnichannelRoomInfo, IOmnichannelRoomExtraData } from '@rocket.chat/core-typings';
 import {
 	LivechatInquiryStatus,
 	type ILivechatInquiryRecord,
 	type ILivechatVisitor,
 	type IOmnichannelRoom,
 	type SelectedAgent,
-	type OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
@@ -28,6 +27,7 @@ import { i18n } from '../../../utils/lib/i18n';
 import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
 import { Livechat } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
+import { getOnlineAgents } from './getOnlineAgents';
 import { getInquirySortMechanismSetting } from './settings';
 
 const logger = new Logger('QueueManager');
@@ -94,8 +94,7 @@ export class QueueManager {
 
 		const inquiryAgent = await RoutingManager.delegateAgent(defaultAgent, inquiry);
 		logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
-		await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
-		const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
+		const dbInquiry = await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
 
 		if (!dbInquiry) {
 			throw new Error('inquiry-not-found');
@@ -122,6 +121,10 @@ export class QueueManager {
 			return LivechatInquiryStatus.QUEUED;
 		}
 
+		if (settings.get('Livechat_waiting_queue')) {
+			return LivechatInquiryStatus.QUEUED;
+		}
+
 		if (RoutingManager.getConfig()?.autoAssignAgent) {
 			return LivechatInquiryStatus.READY;
 		}
@@ -135,6 +138,7 @@ export class QueueManager {
 
 	static async queueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
 		if (inquiry.status === 'ready') {
+			logger.debug({ msg: 'Inquiry is ready. Delegating', inquiry, defaultAgent });
 			return RoutingManager.delegateInquiry(inquiry, defaultAgent, undefined, room);
 		}
 
@@ -145,29 +149,20 @@ export class QueueManager {
 		await this.dispatchInquiryQueued(inquiry, room, defaultAgent);
 	}
 
-	static async requestRoom<
-		E extends Record<string, unknown> & {
-			sla?: string;
-			customFields?: Record<string, unknown>;
-			source?: OmnichannelSourceType;
-		},
-	>({
+	static async requestRoom({
 		guest,
 		rid = Random.id(),
 		message,
 		roomInfo,
 		agent,
-		extraData: { customFields, ...extraData } = {} as E,
+		extraData: { customFields, ...extraData } = {},
 	}: {
 		guest: ILivechatVisitor;
 		rid?: string;
 		message?: string;
-		roomInfo: {
-			source?: IOmnichannelRoom['source'];
-			[key: string]: unknown;
-		};
+		roomInfo: IOmnichannelRoomInfo;
 		agent?: SelectedAgent;
-		extraData?: E;
+		extraData?: IOmnichannelRoomExtraData;
 	}) {
 		logger.debug(`Requesting a room for guest ${guest._id}`);
 		check(
@@ -221,7 +216,7 @@ export class QueueManager {
 			}
 		}
 
-		const name = (roomInfo?.fname as string) || guest.name || guest.username;
+		const name = guest.name || guest.username;
 
 		const room = await createLivechatRoom(rid, name, { ...guest, ...(department && { department }) }, roomInfo, {
 			...extraData,
@@ -261,7 +256,11 @@ export class QueueManager {
 			throw new Error('room-not-found');
 		}
 
-		if (!newRoom.servedBy && settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
+		if (
+			!newRoom.servedBy &&
+			settings.get('Livechat_waiting_queue') &&
+			settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')
+		) {
 			const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
 				inquiryId: inquiry._id,
 				department,
@@ -329,18 +328,21 @@ export class QueueManager {
 	}
 
 	private static dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, agent?: SelectedAgent | null) => {
+		if (RoutingManager.getConfig()?.autoAssignAgent) {
+			return;
+		}
+
 		logger.debug(`Notifying agents of new inquiry ${inquiry._id} queued`);
 
 		const { department, rid, v } = inquiry;
 		// Alert only the online agents of the queued request
-		const onlineAgents = await Livechat.getOnlineAgents(department, agent);
+		const onlineAgents = await getOnlineAgents(department, agent);
 
 		if (!onlineAgents) {
 			logger.debug('Cannot notify agents of queued inquiry. No online agents found');
 			return;
 		}
 
-		logger.debug(`Notifying ${await onlineAgents.count()} agents of new inquiry`);
 		const notificationUserName = v && (v.name || v.username);
 
 		for await (const agent of onlineAgents) {

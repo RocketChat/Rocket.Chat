@@ -5,7 +5,7 @@
 	"private": true,
 	"devDependencies": {
 		"eslint": "~8.45.0",
-		"typescript": "~5.5.4"
+		"typescript": "~5.6.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -19,6 +19,6 @@
 		"/dist"
 	],
 	"dependencies": {
-		"cheerio": "1.0.0-rc.10"
+		"cheerio": "1.0.0"
 	}
 }

@@ -11,11 +11,12 @@ import {
 	isTeamsDeleteProps,
 	isTeamsLeaveProps,
 	isTeamsUpdateProps,
+	isTeamsListChildrenProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
+import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
@@ -44,13 +45,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.listAll',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-all-teams'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-all-teams'))) {
-				return API.v1.unauthorized();
-			}
-
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const { records, total } = await Team.listAll({ offset, count });
@@ -67,13 +64,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.create',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['create-team'] },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'create-team'))) {
-				return API.v1.unauthorized();
-			}
-
 			check(
 				this.bodyParams,
 				Match.ObjectIncluding({
@@ -143,7 +136,7 @@ API.v1.addRoute(
 
 			if (rooms.length) {
 				for await (const room of rooms) {
-					await Meteor.callAsync('eraseRoom', room);
+					await eraseRoom(room, this.userId);
 				}
 			}
 
@@ -180,7 +173,7 @@ API.v1.addRoute(
 				return API.v1.failure('team-does-not-exist');
 			}
 
-			if (!(await hasPermissionAsync(this.userId, 'add-team-channel', team.roomId))) {
+			if (!(await hasPermissionAsync(this.userId, 'move-room-to-team', team.roomId))) {
 				return API.v1.unauthorized('error-no-permission-team-channel');
 			}
 
@@ -290,10 +283,7 @@ API.v1.addRoute(
 
 			const allowPrivateTeam: boolean = await hasPermissionAsync(this.userId, 'view-all-teams', team.roomId);
 
-			let getAllRooms = false;
-			if (await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId)) {
-				getAllRooms = true;
-			}
+			const getAllRooms = await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId);
 
 			const listFilter = {
 				name: filter ?? undefined,
@@ -371,6 +361,44 @@ API.v1.addRoute(
 				count: records.length,
 				offset: 0,
 			});
+		},
+	},
+);
+
+const getTeamByIdOrNameOrParentRoom = async (
+	params: { teamId: string } | { teamName: string } | { roomId: string },
+): Promise<Pick<ITeam, 'type' | 'roomId' | '_id'> | null> => {
+	if ('teamId' in params && params.teamId) {
+		return Team.getOneById<ITeam>(params.teamId, { projection: { type: 1, roomId: 1 } });
+	}
+	if ('teamName' in params && params.teamName) {
+		return Team.getOneByName(params.teamName, { projection: { type: 1, roomId: 1 } });
+	}
+	if ('roomId' in params && params.roomId) {
+		return Team.getOneByRoomId(params.roomId, { projection: { type: 1, roomId: 1 } });
+	}
+	return null;
+};
+
+// This should accept a teamId, filter (search by name on rooms collection) and sort/pagination
+// should return a list of rooms/discussions from the team. the discussions will only be returned from the main room
+API.v1.addRoute(
+	'teams.listChildren',
+	{ authRequired: true, validateParams: isTeamsListChildrenProps },
+	{
+		async get() {
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+			const { filter, type } = this.queryParams;
+
+			const team = await getTeamByIdOrNameOrParentRoom(this.queryParams);
+			if (!team) {
+				return API.v1.notFound();
+			}
+
+			const data = await Team.listChildren(this.userId, team, filter, type, sort, offset, count);
+
+			return API.v1.success({ ...data, offset, count });
 		},
 	},
 );
@@ -624,7 +652,7 @@ API.v1.addRoute(
 			// If we got a list of rooms to delete along with the team, remove them first
 			if (rooms.length) {
 				for await (const room of rooms) {
-					await Meteor.callAsync('eraseRoom', room);
+					await eraseRoom(room, this.userId);
 				}
 			}
 
@@ -632,7 +660,7 @@ API.v1.addRoute(
 			await Team.unsetTeamIdOfRooms(this.userId, team._id);
 
 			// Remove the team's main room
-			await Meteor.callAsync('eraseRoom', team.roomId);
+			await eraseRoom(team.roomId, this.userId);
 
 			// Delete all team memberships
 			await Team.removeAllMembersFromTeam(team._id);

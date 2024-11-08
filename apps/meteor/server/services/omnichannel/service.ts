@@ -37,6 +37,10 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 			void (enabled && RoutingManager.isMethodSet() ? this.queueWorker.shouldStart() : this.queueWorker.stop());
 		});
 
+		settings.watch<string>('Livechat_Routing_Method', async () => {
+			this.queueWorker.shouldStart();
+		});
+
 		License.onLimitReached('monthlyActiveContacts', async (): Promise<void> => {
 			this.queueWorker.isRunning() && (await this.queueWorker.stop());
 		});
@@ -50,10 +54,6 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 		License.onInvalidateLicense(async (): Promise<void> => {
 			this.queueWorker.isRunning() && (await this.queueWorker.shouldStart());
 		});
-	}
-
-	getQueueWorker(): IOmnichannelQueue {
-		return this.queueWorker;
 	}
 
 	async isWithinMACLimit(room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean> {

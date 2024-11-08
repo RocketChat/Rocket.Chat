@@ -51,7 +51,7 @@ const RoomAutoComplete = ({ value, onChange, scope = 'regular', renderRoomIcon, 
 				? result.data.items.map(({ name, fname, _id, avatarETag, t, encrypted }) => ({
 						value: _id,
 						label: { name: fname || name, avatarETag, type: t, encrypted },
-				  }))
+					}))
 				: [],
 		[result.data?.items, result.isSuccess],
 	);

@@ -214,8 +214,22 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		return deleteAllowed && onTimeForDelete;
 	};
 
-	const deleteMessage = async (mid: IMessage['_id']): Promise<void> => {
-		await sdk.call('deleteMessage', { _id: mid });
+	const deleteMessage = async (msgIdOrMsg: IMessage | IMessage['_id']): Promise<void> => {
+		let msgId: string;
+		let roomId: string;
+		if (typeof msgIdOrMsg === 'string') {
+			msgId = msgIdOrMsg;
+			const msg = await findMessageByID(msgId);
+			if (!msg) {
+				throw new Error('Message not found');
+			}
+			roomId = msg.rid;
+		} else {
+			msgId = msgIdOrMsg._id;
+			roomId = msgIdOrMsg.rid;
+		}
+
+		await sdk.rest.post('/v1/chat.delete', { msgId, roomId });
 	};
 
 	const drafts = new Map<IMessage['_id'] | undefined, string>();

@@ -52,7 +52,7 @@ export class HomeContent {
 	}
 
 	get encryptedRoomHeaderIcon(): Locator {
-		return this.page.locator('.rcx-room-header button > i.rcx-icon--name-key');
+		return this.page.locator('.rcx-room-header i.rcx-icon--name-key');
 	}
 
 	get lastIgnoredUserMessage(): Locator {
@@ -85,7 +85,7 @@ export class HomeContent {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
 		await this.page.locator('[name="msg"]').fill(text);
-		await this.page.keyboard.press('Enter');
+		await this.page.locator('button[aria-label="Send"]').click();
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
@@ -342,15 +342,19 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="ToolBoxAction-phone"]');
 	}
 
-	get btnStartCall(): Locator {
+	get menuItemVideoCall(): Locator {
+		return this.page.locator('role=menuitem[name="Video call"]');
+	}
+
+	get btnStartVideoCall(): Locator {
 		return this.page.locator('#video-conf-root .rcx-button--primary.rcx-button >> text="Start call"');
 	}
 
-	get btnDeclineCall(): Locator {
+	get btnDeclineVideoCall(): Locator {
 		return this.page.locator('.rcx-button--secondary-danger.rcx-button >> text="Decline"');
 	}
 
-	ringCallText(text: string): Locator {
+	videoConfRingCallText(text: string): Locator {
 		return this.page.locator(`#video-conf-root .rcx-box.rcx-box--full >> text="${text}"`);
 	}
 

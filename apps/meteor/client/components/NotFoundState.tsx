@@ -1,7 +1,8 @@
 import { Box, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type NotFoundProps = {
 	title: string;
@@ -9,7 +10,7 @@ type NotFoundProps = {
 };
 
 const NotFoundState = ({ title, subtitle }: NotFoundProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 
 	const handleGoHomeClick = () => {

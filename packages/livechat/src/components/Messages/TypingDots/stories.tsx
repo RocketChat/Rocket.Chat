@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { TypingDots } from '.';
@@ -11,7 +11,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof TypingDots>>;
 
-const Template: Story<ComponentProps<typeof TypingDots>> = (args) => <TypingDots {...args} />;
+const Template: StoryFn<ComponentProps<typeof TypingDots>> = (args) => <TypingDots {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

@@ -25,6 +25,8 @@ import type {
 	UpdateFilter,
 	UpdateOptions,
 	UpdateResult,
+	ModifyResult,
+	CountDocumentsOptions,
 } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -202,7 +204,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 								...(discussion ? [{ prid: { $exists: true } }] : []),
 								...(teams ? [{ teamMain: { $exists: true } }] : []),
 							],
-					  }
+						}
 					: {},
 			],
 			...(!discussion ? { prid: { $exists: false } } : {}),
@@ -221,6 +223,17 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		};
 
 		return this.find(query, options);
+	}
+
+	countByTeamId(teamId: ITeam['_id']): Promise<number> {
+		const query: Filter<IRoom> = {
+			teamId,
+			teamMain: {
+				$exists: false,
+			},
+		};
+
+		return this.countDocuments(query);
 	}
 
 	findPaginatedByTeamIdContainingNameAndDefault(
@@ -305,7 +318,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				},
 			],
 			prid: { $exists: false },
-			$and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }],
+			$and: [{ federated: { $ne: true } }, { archived: { $ne: true } }],
 		};
 
 		return this.find(query, options);
@@ -642,6 +655,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
+	countByBroadcast(options?: CountDocumentsOptions): Promise<number> {
+		return this.countDocuments(
+			{
+				broadcast: true,
+			},
+			options,
+		);
+	}
+
 	setAsFederated(roomId: IRoom['_id']): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { federated: true } });
 	}
@@ -683,6 +705,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
+	countByE2E(options?: CountDocumentsOptions): Promise<number> {
+		return this.countDocuments(
+			{
+				encrypted: true,
+			},
+			options,
+		);
+	}
+
 	findE2ERoomById(roomId: IRoom['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		return this.findOne(
 			{
@@ -695,6 +726,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findRoomsInsideTeams(autoJoin = false): FindCursor<IRoom> {
 		return this.find({
+			teamId: { $exists: true },
+			teamMain: { $exists: false },
+			...(autoJoin && { teamDefault: true }),
+		});
+	}
+
+	countRoomsInsideTeams(autoJoin = false): Promise<number> {
+		return this.countDocuments({
 			teamId: { $exists: true },
 			teamMain: { $exists: false },
 			...(autoJoin && { teamDefault: true }),
@@ -732,7 +771,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 											$in: roomIds,
 										},
 									},
-							  ]
+								]
 							: []),
 					],
 				},
@@ -748,7 +787,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 									},
 								],
 							},
-					  ]
+						]
 					: []),
 			],
 		};
@@ -1114,12 +1153,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 						$set: {
 							sysMes: systemMessages,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							sysMes: '',
 						},
-				  };
+					};
 
 		return this.updateOne(query, update);
 	}
@@ -1292,7 +1331,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				includeFederatedRooms
 					? {
 							$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
-					  }
+						}
 					: { $or: [{ federated: { $exists: false } }, { federated: false }], name },
 			],
 		};
@@ -1349,7 +1388,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 								{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }, nameCondition] },
 								{ federated: true, fname: name },
 							],
-					  }
+						}
 					: { $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }, nameCondition] },
 			],
 		};
@@ -1444,6 +1483,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
+	countGroupDMsByUids(uids: NonNullable<IRoom['uids']>): Promise<number> {
+		return this.countDocuments({
+			usersCount: { $gt: 2 },
+			uids: { $in: uids },
+		});
+	}
+
 	find1On1ByUserId(userId: IRoom['_id'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		return this.find(
 			{
@@ -1456,6 +1502,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findByCreatedOTR(): FindCursor<IRoom> {
 		return this.find({ createdOTR: true });
+	}
+
+	countByCreatedOTR(options?: CountDocumentsOptions): Promise<number> {
+		return this.countDocuments({ createdOTR: true }, options);
 	}
 
 	findByUsernamesOrUids(uids: IRoom['u']['_id'][], usernames: IRoom['u']['username'][]): FindCursor<IRoom> {
@@ -2062,5 +2112,98 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		};
 
 		return this.updateMany(query, update);
+	}
+
+	findChildrenOfTeam(
+		teamId: string,
+		teamRoomId: string,
+		userId: string,
+		filter?: string,
+		type?: 'channels' | 'discussions',
+		options?: FindOptions<IRoom>,
+	): AggregationCursor<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }> {
+		const nameFilter = filter ? new RegExp(escapeRegExp(filter), 'i') : undefined;
+		return this.col.aggregate<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }>([
+			{
+				$match: {
+					$and: [
+						{
+							$or: [
+								...(!type || type === 'channels' ? [{ teamId }] : []),
+								...(!type || type === 'discussions' ? [{ prid: teamRoomId }] : []),
+							],
+						},
+						...(nameFilter ? [{ $or: [{ fname: nameFilter }, { name: nameFilter }] }] : []),
+					],
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_subscription',
+					let: {
+						roomId: '$_id',
+					},
+					pipeline: [
+						{
+							$match: {
+								$and: [
+									{
+										$expr: {
+											$eq: ['$rid', '$$roomId'],
+										},
+									},
+									{
+										$expr: {
+											$eq: ['$u._id', userId],
+										},
+									},
+									{
+										$expr: {
+											$ne: ['$t', 'c'],
+										},
+									},
+								],
+							},
+						},
+						{
+							$project: { _id: 1 },
+						},
+					],
+					as: 'subscription',
+				},
+			},
+			{
+				$match: {
+					$or: [
+						{ t: 'c' },
+						{
+							$expr: {
+								$ne: [{ $size: '$subscription' }, 0],
+							},
+						},
+					],
+				},
+			},
+			{ $project: { subscription: 0 } },
+			{ $sort: options?.sort || { ts: 1 } },
+			{
+				$facet: {
+					totalCount: [{ $count: 'count' }],
+					paginatedResults: [{ $skip: options?.skip || 0 }, { $limit: options?.limit || 50 }],
+				},
+			},
+		]);
+	}
+
+	resetRoomKeyAndSetE2EEQueueByRoomId(
+		roomId: string,
+		e2eKeyId: string,
+		e2eQueue?: IRoom['usersWaitingForE2EKeys'],
+	): Promise<ModifyResult<IRoom>> {
+		return this.findOneAndUpdate(
+			{ _id: roomId },
+			{ $set: { e2eKeyId, ...(Array.isArray(e2eQueue) && { usersWaitingForE2EKeys: e2eQueue }) } },
+			{ returnDocument: 'after' },
+		);
 	}
 }

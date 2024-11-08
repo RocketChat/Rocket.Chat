@@ -243,7 +243,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 						$regex: selector,
 						$options: 'i',
 					},
-			  }
+				}
 			: {};
 
 		const params = {

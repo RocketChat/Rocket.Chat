@@ -16,7 +16,7 @@ type PeriodSelectorProps<TPeriod extends Period['key']> = {
 const PeriodSelector = <TPeriod extends Period['key']>({ periods, value, name, onChange }: PeriodSelectorProps<TPeriod>): ReactElement => {
 	const { t } = useTranslation();
 
-	const options = useMemo<[string, string][]>(() => periods.map((period) => [period, t(getPeriod(period).label)]), [periods, t]);
+	const options = useMemo<[string, string][]>(() => periods.map((period) => [period, t(...getPeriod(period).label)]), [periods, t]);
 
 	return (
 		<Select

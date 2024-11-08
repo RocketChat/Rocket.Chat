@@ -37,6 +37,7 @@ export const subscriptionFields = {
 	ignored: 1,
 	E2EKey: 1,
 	E2ESuggestedKey: 1,
+	oldRoomKeys: 1,
 	tunread: 1,
 	tunreadGroup: 1,
 	tunreadUser: 1,
@@ -74,6 +75,7 @@ export const roomFields = {
 	avatarETag: 1,
 	usersCount: 1,
 	msgs: 1,
+	sidepanel: 1,
 
 	// @TODO create an API to register this fields based on room type
 	tags: 1,

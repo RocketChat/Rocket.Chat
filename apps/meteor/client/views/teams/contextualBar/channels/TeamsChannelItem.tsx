@@ -13,8 +13,9 @@ import {
 } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
-import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -28,15 +29,17 @@ type TeamsChannelItemProps = {
 };
 
 const TeamsChannelItem = ({ room, mainRoom, onClickView, reload }: TeamsChannelItemProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const rid = room._id;
 	const type = room.t;
 
 	const [showButton, setShowButton] = useState();
 
-	const canRemoveTeamChannel = usePermission('remove-team-channel', rid);
-	const canEditTeamChannel = usePermission('edit-team-channel', rid);
-	const canDeleteTeamChannel = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
+	const canRemoveTeamChannel = usePermission('remove-team-channel', mainRoom._id);
+	const canEditTeamChannel = usePermission('edit-team-channel', mainRoom._id);
+	const canDeleteChannel = usePermission(`delete-${type}`, rid);
+	const canDeleteTeamChannel = usePermission(`delete-team-${type === 'c' ? 'channel' : 'group'}`, mainRoom._id);
+	const canDelete = canDeleteChannel && canDeleteTeamChannel;
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
 	const handleMenuEvent = {
@@ -67,7 +70,7 @@ const TeamsChannelItem = ({ room, mainRoom, onClickView, reload }: TeamsChannelI
 					)}
 				</Box>
 			</OptionContent>
-			{(canRemoveTeamChannel || canEditTeamChannel || canDeleteTeamChannel) && (
+			{(canRemoveTeamChannel || canEditTeamChannel || canDelete) && (
 				<OptionMenu onClick={onClick}>
 					{showButton ? <TeamsChannelItemMenu room={room} mainRoom={mainRoom} reload={reload} /> : <IconButton tiny icon='kebab' />}
 				</OptionMenu>

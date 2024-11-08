@@ -9,7 +9,7 @@ import RoomForewordUsernameListItem from './RoomForewordUsernameListItem';
 type RoomForewordUsernameListProps = { usernames: Array<NonNullable<IUser['username']>> };
 
 const RoomForewordUsernameList = ({ usernames }: RoomForewordUsernameListProps) => {
-	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
+	const useRealName = useSetting('UI_Use_Real_Name', false);
 	return (
 		<Margins inline={4}>
 			{usernames.map((username) => (

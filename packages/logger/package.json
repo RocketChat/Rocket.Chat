@@ -4,7 +4,7 @@
 	"private": true,
 	"devDependencies": {
 		"eslint": "~8.45.0",
-		"typescript": "~5.5.4"
+		"typescript": "~5.6.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -19,6 +19,6 @@
 	],
 	"dependencies": {
 		"@rocket.chat/emitter": "~0.31.25",
-		"pino": "^8.15.0"
+		"pino": "^8.21.0"
 	}
 }

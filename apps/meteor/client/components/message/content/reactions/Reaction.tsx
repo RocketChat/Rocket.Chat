@@ -1,7 +1,8 @@
 import { MessageReaction as MessageReactionTemplate, MessageReactionEmoji, MessageReactionCounter } from '@rocket.chat/fuselage';
-import { useTooltipClose, useTooltipOpen, useTranslation } from '@rocket.chat/ui-contexts';
+import { useTooltipClose, useTooltipOpen } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { useRef, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 import { MessageListContext } from '../../list/MessageListContext';
@@ -17,7 +18,7 @@ type ReactionProps = {
 } & ComponentProps<typeof MessageReactionTemplate>;
 
 const Reaction = ({ hasReacted, counter, name, names, messageId, ...props }: ReactionProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const ref = useRef<HTMLDivElement>(null);
 	const openTooltip = useTooltipOpen();
 	const closeTooltip = useTooltipClose();

@@ -18,7 +18,7 @@ export type ThreadsListOptions = {
 			uid: IUser['_id'];
 	  }
 	| {
-			type: 'all';
+			type: undefined;
 	  }
 );
 

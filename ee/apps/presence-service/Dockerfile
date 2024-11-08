@@ -1,4 +1,4 @@
-FROM node:14.21.3-alpine
+FROM node:20.18.0-alpine3.20
 
 ARG SERVICE
 
@@ -12,6 +12,10 @@ COPY ./packages/agenda/dist packages/agenda/dist
 
 COPY ./packages/core-services/package.json packages/core-services/package.json
 COPY ./packages/core-services/dist packages/core-services/dist
+
+COPY ./packages/apps-engine/package.json packages/apps-engine/package.json
+COPY ./packages/apps-engine/client packages/apps-engine/client
+COPY ./packages/apps-engine/definition packages/apps-engine/definition
 
 COPY ./packages/core-typings/package.json packages/core-typings/package.json
 COPY ./packages/core-typings/dist packages/core-typings/dist
@@ -40,8 +44,14 @@ COPY ./packages/logger/dist packages/logger/dist
 
 COPY ./packages/server-cloud-communication/ packages/server-cloud-communication/
 
+COPY ./ee/packages/network-broker/package.json ee/packages/network-broker/package.json
+COPY ./ee/packages/network-broker/dist ee/packages/network-broker/dist
+
 COPY ./ee/packages/license/package.json packages/license/package.json
 COPY ./ee/packages/license/dist packages/license/dist
+
+COPY ./packages/tracing/package.json packages/tracing/package.json
+COPY ./packages/tracing/dist packages/tracing/dist
 
 COPY ./packages/ui-kit/package.json packages/ui-kit/package.json
 COPY ./packages/ui-kit/dist packages/ui-kit/dist
@@ -62,7 +72,7 @@ ENV NODE_ENV=production \
 WORKDIR /app/ee/apps/${SERVICE}
 
 RUN apk update && \
-    apk --no-cache --virtual build-dependencies add g++ python3 make && \
+    apk --no-cache --virtual build-dependencies add g++ python3 make py3-setuptools && \
     yarn workspaces focus --production && \
     rm -rf /var/cache/apk/* && \
     apk del build-dependencies

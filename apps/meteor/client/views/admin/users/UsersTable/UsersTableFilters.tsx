@@ -52,7 +52,7 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 						id: role._id,
 						text: role.description || role.name || role._id,
 						checked: false,
-				  }))
+					}))
 				: []),
 		],
 		[roleData],

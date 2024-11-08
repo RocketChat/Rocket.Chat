@@ -13,6 +13,7 @@ import {
 	useTranslation,
 	useEndpoint,
 } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
 
@@ -100,6 +101,8 @@ const RoomMenu = ({
 	const isOmnichannelRoom = type === 'l';
 	const prioritiesMenu = useOmnichannelPrioritiesMenu(rid);
 
+	const queryClient = useQueryClient();
+
 	const canLeave = ((): boolean => {
 		if (type === 'c' && !canLeaveChannel) {
 			return false;
@@ -173,17 +176,22 @@ const RoomMenu = ({
 
 	const handleToggleRead = useMutableCallback(async () => {
 		try {
+			queryClient.invalidateQueries(['sidebar/search/spotlight']);
+
 			if (isUnread) {
 				await readMessages({ rid, readThreads: true });
 				return;
 			}
-			await unreadMessages(undefined, rid);
+
 			if (subscription == null) {
 				return;
 			}
+
 			LegacyRoomManager.close(subscription.t + subscription.name);
 
 			router.navigate('/home');
+
+			await unreadMessages(undefined, rid);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -207,7 +215,7 @@ const RoomMenu = ({
 								label: { label: t('Hide'), icon: 'eye-off' },
 								action: handleHide,
 							},
-					  }),
+						}),
 				toggleRead: {
 					label: { label: isUnread ? t('Mark_read') : t('Mark_unread'), icon: 'flag' },
 					action: handleToggleRead,
@@ -221,7 +229,7 @@ const RoomMenu = ({
 								},
 								action: handleToggleFavorite,
 							},
-					  }
+						}
 					: {}),
 				...(canLeave && {
 					leaveRoom: {

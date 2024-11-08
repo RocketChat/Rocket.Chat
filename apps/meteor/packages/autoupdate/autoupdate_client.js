@@ -42,7 +42,7 @@ export const Autoupdate = {};
 const clientVersions = (Autoupdate._clientVersions = // Used by a self-test and hot-module-replacement
 	new ClientVersions());
 
-Meteor.connection.registerStore('meteor_autoupdate_clientVersions', clientVersions.createStore());
+Meteor.connection.registerStoreClient('meteor_autoupdate_clientVersions', clientVersions.createStore());
 
 Autoupdate.newClientAvailable = function () {
 	return clientVersions.newClientAvailable(clientArch, ['versionRefreshable', 'versionNonRefreshable'], autoupdateVersions);

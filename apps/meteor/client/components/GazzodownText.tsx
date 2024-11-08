@@ -54,7 +54,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
 	const useEmoji = Boolean(useUserPreference('useEmojis'));
-	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
+	const useRealName = useSetting('UI_Use_Real_Name', false);
 	const ownUserId = useUserId();
 	const showMentionSymbol = Boolean(useUserPreference<boolean>('mentionsWithSymbol'));
 

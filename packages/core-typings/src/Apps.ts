@@ -1,5 +1,7 @@
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
+import type { ExternalModuleName } from './license';
+
 export type AppScreenshot = {
 	id: string;
 	appId: string;
@@ -92,6 +94,8 @@ export type App = {
 	categories: string[];
 	version: string;
 	versionIncompatible?: boolean;
+	addon?: ExternalModuleName;
+	installedAddon?: ExternalModuleName;
 	price: number;
 	purchaseType: PurchaseType;
 	pricingPlans: AppPricingPlan[];

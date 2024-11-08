@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeSidenav, HomeFlextab } from './fragments';
+import { HomeContent, HomeSidenav, HomeFlextab, Navbar } from './fragments';
 
 export class HomeChannel {
 	public readonly page: Page;
@@ -9,12 +9,15 @@ export class HomeChannel {
 
 	readonly sidenav: HomeSidenav;
 
+	readonly navbar: Navbar;
+
 	readonly tabs: HomeFlextab;
 
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeContent(page);
 		this.sidenav = new HomeSidenav(page);
+		this.navbar = new Navbar(page);
 		this.tabs = new HomeFlextab(page);
 	}
 
@@ -58,5 +61,9 @@ export class HomeChannel {
 
 	get roomHeaderToolbar(): Locator {
 		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]');
+	}
+
+	get markUnread(): Locator {
+		return this.page.locator('role=menuitem[name="Mark Unread"]');
 	}
 }

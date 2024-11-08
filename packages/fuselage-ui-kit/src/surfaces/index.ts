@@ -16,10 +16,10 @@ export const contextualBarParser = new ContextualBarSurfaceRenderer();
 export const UiKitBanner = createSurfaceRenderer(BannerSurface, bannerParser);
 export const UiKitMessage = createSurfaceRenderer(
   MessageSurface,
-  messageParser
+  messageParser,
 );
 export const UiKitModal = createSurfaceRenderer(ModalSurface, modalParser);
 export const UiKitContextualBar = createSurfaceRenderer(
   ContextualBarSurface,
-  contextualBarParser
+  contextualBarParser,
 );

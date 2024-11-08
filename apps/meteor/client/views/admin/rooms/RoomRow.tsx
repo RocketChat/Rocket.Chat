@@ -3,8 +3,9 @@ import type { IRoom, RoomAdminFieldsType, Serialized } from '@rocket.chat/core-t
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
-import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
 import { useFormatDate } from '../../../hooks/useFormatDate';
@@ -21,7 +22,7 @@ const getRoomDisplayName = (room: Pick<Serialized<IRoom>, RoomAdminFieldsType>):
 	room.t === 'd' ? room.usernames?.join(' x ') : roomCoordinator.getRoomName(room.t, room as IRoom);
 
 const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 	const router = useRouter();
 	const formatDate = useFormatDate();
