@@ -138,11 +138,9 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 
 	private makeQueryForVisitor(visitor: ILivechatContactVisitorAssociation): Filter<ILivechatContact> {
 		return {
-			channels: {
-				'visitor.visitorId': visitor.visitorId,
-				'visitor.source.type': visitor.source.type,
-				...(visitor.source.id ? { 'visitor.source.id': visitor.source.id } : {}),
-			},
+			'channels.visitor.visitorId': visitor.visitorId,
+			'channels.visitor.source.type': visitor.source.type,
+			...(visitor.source.id ? { 'channels.visitor.source.id': visitor.source.id } : {}),
 		};
 	}
 
@@ -177,8 +175,10 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 				{
 					channels: {
 						$elemMatch: {
-							...this.makeQueryForVisitor(visitor).channels,
-							blocked: true,
+							'visitor.visitorId': visitor.visitorId,
+							'visitor.source.type': visitor.source.type,
+							'blocked': true,
+							...(visitor.source.id ? { 'visitor.source.id': visitor.source.id } : {}),
 						},
 					},
 				},
