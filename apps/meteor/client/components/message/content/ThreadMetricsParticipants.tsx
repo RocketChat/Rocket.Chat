@@ -1,9 +1,14 @@
-import { MessageMetricsItem, MessageMetricsItemLabel, MessageMetricsItemAvatarRow, MessageMetricsItemIcon } from '@rocket.chat/fuselage';
+import {
+	MessageMetricsItem,
+	MessageMetricsItemLabel,
+	MessageMetricsItemAvatarRow,
+	MessageMetricsItemIcon,
+	MessageMetricsItemAvatarRowContent,
+} from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
-
-import ThreadMetricAvatar from './ThreadMetricAvatar';
 
 type ThreadMetricsParticipantsProps = {
 	participants: Array<string>;
@@ -29,7 +34,9 @@ const ThreadMetricsParticipants = ({ participants }: ThreadMetricsParticipantsPr
 				<>
 					<MessageMetricsItemAvatarRow>
 						{participants.slice(0, 2).map((uid) => (
-							<ThreadMetricAvatar userId={uid} key={uid} />
+							<MessageMetricsItemAvatarRowContent key={uid}>
+								<UserAvatar size='x16' userId={uid} />
+							</MessageMetricsItemAvatarRowContent>
 						))}
 					</MessageMetricsItemAvatarRow>
 					{participantsLabel && <MessageMetricsItemLabel>{participantsLabel}</MessageMetricsItemLabel>}
