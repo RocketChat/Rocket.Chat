@@ -5,7 +5,7 @@ import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
 import { isSameChannel } from '../../../app/livechat/lib/isSameChannel';
 import { ContactMerger } from '../../../app/livechat/server/lib/contacts/ContactMerger';
 import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
-import { logger } from '../../app/livechat-enterprise/server/lib/logger';
+import { contactLogger as logger } from '../../app/livechat-enterprise/server/lib/logger';
 
 export const runMergeContacts = async (
 	_next: any,
@@ -21,12 +21,15 @@ export const runMergeContacts = async (
 	if (!channel) {
 		throw new Error('error-invalid-channel');
 	}
+	logger.debug(`Getting similar contacts for contact ${contactId}`);
 	const similarContacts: ILivechatContact[] = await LivechatContacts.findSimilarVerifiedContacts(channel, contactId);
 
 	if (!similarContacts.length) {
+		logger.debug(`No similar contacts found for contact ${contactId}`);
 		return originalContact;
 	}
 
+	logger.debug(`Start merging contact data for contact ${contactId}`);
 	for await (const similarContact of similarContacts) {
 		const fields = await ContactMerger.getAllFieldsFromContact(similarContact);
 		await ContactMerger.mergeFieldsIntoContact(fields, originalContact);
@@ -40,6 +43,7 @@ export const runMergeContacts = async (
 		}`,
 	);
 
+	logger.debug(`Updating rooms with contact id ${contactId}`);
 	await LivechatRooms.updateMany({ 'v.contactId': { $in: similarContactIds } }, { $set: { 'v.contactId': contactId } });
 
 	return LivechatContacts.findOneById(contactId);

@@ -5,6 +5,7 @@ import { LivechatContacts, LivechatInquiry, LivechatRooms } from '@rocket.chat/m
 import { saveQueueInquiry } from '../../../app/livechat/server/lib/QueueManager';
 import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
 import { verifyContactChannel } from '../../../app/livechat/server/lib/contacts/verifyContactChannel';
+import { contactLogger as logger } from '../../app/livechat-enterprise/server/lib/logger';
 
 export const runVerifyContactChannel = async (
 	_next: any,
@@ -23,6 +24,8 @@ export const runVerifyContactChannel = async (
 		throw new Error('error-invalid-room');
 	}
 
+	logger.debug(`Start verifying contact channel for visitor ${visitorId} and room ${roomId}`);
+
 	await LivechatContacts.updateContactChannel(
 		{
 			visitorId,
@@ -38,15 +41,22 @@ export const runVerifyContactChannel = async (
 
 	await LivechatRooms.update({ _id: roomId }, { $set: { verified: true } });
 
+	logger.debug(`Merging contacts for visitor ${visitorId} and room ${roomId}`);
+
 	const mergeContactsResult = await mergeContacts(contactId, { visitorId, source: room.source });
 
+	logger.debug(`Finding inquiry for room ${roomId}`);
 	const inquiry = await LivechatInquiry.findOneReadyByRoomId(roomId);
 	if (!inquiry) {
 		throw new Error('error-invalid-inquiry');
 	}
 
+	logger.debug(`Saving inquiry for room ${roomId}`);
 	await saveQueueInquiry(inquiry);
 
+	logger.debug(
+		`Contact channel for contact ${contactId}, visitor ${visitorId} and room ${roomId} has been verified and merged successfully`,
+	);
 	return mergeContactsResult;
 };
 
