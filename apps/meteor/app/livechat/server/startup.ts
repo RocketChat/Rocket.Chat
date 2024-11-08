@@ -77,7 +77,7 @@ Meteor.startup(async () => {
 		process.env.TEST_MODE === 'true'
 			? {
 					debounce: 10,
-			  }
+				}
 			: undefined,
 	);
 

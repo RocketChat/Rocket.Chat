@@ -11,7 +11,7 @@ type CMSPageProps = {
 
 const CMSPage = ({ page }: CMSPageProps): ReactElement => {
 	const t = useTranslation();
-	const pageContent = useSetting(page) as string;
+	const pageContent = useSetting(page, '');
 
 	const customLogo = useAssetWithDarkModePath('logo');
 	const customBackground = useAssetWithDarkModePath('background');

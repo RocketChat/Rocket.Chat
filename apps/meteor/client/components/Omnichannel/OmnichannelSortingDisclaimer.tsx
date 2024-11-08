@@ -8,7 +8,7 @@ import { useOmnichannelEnterpriseEnabled } from '../../hooks/omnichannel/useOmni
 export const useOmnichannelSortingDisclaimer = () => {
 	const isOmnichannelEnabled = useOmnichannelEnterpriseEnabled();
 
-	const sortingMechanism = useSetting<OmniSortingType>('Omnichannel_sorting_mechanism') || OmniSortingType.Timestamp;
+	const sortingMechanism = useSetting<OmniSortingType>('Omnichannel_sorting_mechanism', OmniSortingType.Timestamp);
 
 	const [{ [sortingMechanism]: type }] = useState({
 		[OmniSortingType.Priority]: 'Priorities',

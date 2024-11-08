@@ -44,7 +44,7 @@ const Thread = ({ tmid }: ThreadProps) => {
 	const [expanded, setExpanded] = useLocalStorage('expand-threads', false);
 
 	const uid = useUserId();
-	const following = uid ? mainMessageQueryResult.data?.replies?.includes(uid) ?? false : false;
+	const following = uid ? (mainMessageQueryResult.data?.replies?.includes(uid) ?? false) : false;
 	const toggleFollowingMutation = useToggleFollowingThreadMutation({
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -90,7 +90,7 @@ const Thread = ({ tmid }: ThreadProps) => {
 									@media (min-width: 780px) and (max-width: 1135px) {
 										max-width: calc(100% - var(--sidebar-width)) !important;
 									}
-							  `
+								`
 							: undefined
 					}
 					position={expanded ? 'fixed' : 'absolute'}

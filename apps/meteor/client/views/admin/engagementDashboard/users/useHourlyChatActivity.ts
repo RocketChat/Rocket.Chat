@@ -24,7 +24,7 @@ export const useHourlyChatActivity = ({ displacement, utc }: UseHourlyChatActivi
 				? {
 						...response,
 						day,
-				  }
+					}
 				: undefined;
 		},
 		{

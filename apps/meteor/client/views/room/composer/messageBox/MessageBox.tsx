@@ -108,8 +108,8 @@ const MessageBox = ({
 	const chat = useChat();
 	const room = useRoom();
 	const t = useTranslation();
-	const e2eEnabled = useSetting<boolean>('E2E_Enable');
-	const unencryptedMessagesAllowed = useSetting<boolean>('E2E_Allow_Unencrypted_Messages');
+	const e2eEnabled = useSetting('E2E_Enable', false);
+	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 

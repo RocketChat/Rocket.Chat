@@ -13,7 +13,7 @@ type UserMenuHeaderProps = { user: IUser };
 
 const UserMenuHeader = ({ user }: UserMenuHeaderProps) => {
 	const { t } = useTranslation();
-	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 	const displayName = useUserDisplayName(user);
 
 	return (

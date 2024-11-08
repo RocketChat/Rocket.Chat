@@ -2,7 +2,10 @@ import type { IEnvironmentalVariableRead } from '../../definition/accessors';
 import type { EnvironmentalVariableBridge } from '../bridges';
 
 export class EnvironmentalVariableRead implements IEnvironmentalVariableRead {
-    constructor(private readonly bridge: EnvironmentalVariableBridge, private readonly appId: string) {}
+    constructor(
+        private readonly bridge: EnvironmentalVariableBridge,
+        private readonly appId: string,
+    ) {}
 
     public getValueByName(envVarName: string): Promise<string> {
         return this.bridge.doGetValueByName(envVarName, this.appId);

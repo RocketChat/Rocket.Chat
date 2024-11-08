@@ -22,7 +22,7 @@ export const MessageList = function MessageList({ rid, messageListRef }: Message
 	const messages = useMessages({ rid });
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
-	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
+	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 
 	return (

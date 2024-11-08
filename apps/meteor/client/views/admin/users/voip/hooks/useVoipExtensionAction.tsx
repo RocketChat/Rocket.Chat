@@ -32,6 +32,6 @@ export const useVoipExtensionAction = ({ name, username, extension, enabled }: V
 				icon: extension ? 'phone-disabled' : 'phone',
 				label: extension ? t('Unassign_extension') : t('Assign_extension'),
 				action: handleExtensionAssignment,
-		  }
+			}
 		: undefined;
 };

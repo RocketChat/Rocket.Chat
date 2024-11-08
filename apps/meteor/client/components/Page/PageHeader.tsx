@@ -27,7 +27,7 @@ const PageHeader = ({ children = undefined, title, onClickBack, borderBlockEndCo
 			is='header'
 			borderBlockEndWidth='default'
 			pb={8}
-			borderBlockEndColor={borderBlockEndColor ?? border ? 'extra-light' : 'transparent'}
+			borderBlockEndColor={(borderBlockEndColor ?? border) ? 'extra-light' : 'transparent'}
 			{...props}
 		>
 			<Box

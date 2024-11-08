@@ -39,7 +39,10 @@ export class Modify implements IModify {
 
     private moderation: ModerationModify;
 
-    constructor(private readonly bridges: AppBridges, private readonly appId: string) {
+    constructor(
+        private readonly bridges: AppBridges,
+        private readonly appId: string,
+    ) {
         this.creator = new ModifyCreator(this.bridges, this.appId);
         this.deleter = new ModifyDeleter(this.bridges, this.appId);
         this.updater = new ModifyUpdater(this.bridges, this.appId);

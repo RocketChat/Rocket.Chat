@@ -65,7 +65,7 @@ export const useNormalizedMessage = <TMessage extends IMessage>(message: TMessag
 	const customDomains = useAutoLinkDomains();
 	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
 	const autoTranslateOptions = useAutoTranslate(subscription);
-	const showColors = useSetting<boolean>('HexColorPreview_Enabled');
+	const showColors = useSetting('HexColorPreview_Enabled', true);
 
 	return useMemo(() => {
 		const parseOptions: Options = {

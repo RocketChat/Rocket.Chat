@@ -47,7 +47,6 @@ export type MessageActionConfig = {
 	group?: MessageActionGroup | MessageActionGroup[];
 	context?: MessageActionContext[];
 	action: (
-		this: any,
 		e: Pick<Event, 'preventDefault' | 'stopPropagation' | 'currentTarget'> | undefined,
 		{
 			message,
