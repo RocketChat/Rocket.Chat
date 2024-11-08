@@ -81,7 +81,7 @@ describe('Apps - Video Conferences', () => {
 			}
 
 			await updateSetting('VideoConf_Enable_Persistent_Chat', false);
-			await updateSetting('VideoConf_Persistent_Chat_Discussion_Name', 'Conference Call Chat History');
+			await updateSetting('VideoConf_Persistent_Chat_Discussion_Name', '[date] - Video Call Persisted Chat');
 		});
 
 		describe('[/video-conference.capabilities]', () => {
@@ -577,7 +577,8 @@ describe('Apps - Video Conferences', () => {
 							expect(res.body.room)
 								.to.have.a.property('fname')
 								.that.is.a('string')
-								.that.satisfies((msg: string) => msg.startsWith('Chat History'));
+								.that.satisfies((msg: string) => !msg.startsWith('Chat History'))
+								.that.satisfies((msg: string) => msg.includes('Chat History'));
 						});
 				});
 			});
