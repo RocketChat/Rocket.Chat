@@ -1,5 +1,6 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { Badge, SidebarV2CollapseGroup } from '@rocket.chat/fuselage';
+import type { HTMLAttributes } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +12,7 @@ type RoomListCollapserProps = {
 	handleClick: (groupName: string) => void;
 	handleKeyDown: (e: React.KeyboardEvent<HTMLElement>, groupName: string) => void;
 	unreadCount: Pick<ISubscription, 'userMentions' | 'groupMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'tunreadGroup'>;
-};
+} & HTMLAttributes<HTMLElement>;
 const RoomListCollapser = ({
 	groupTitle,
 	unreadCount: unreadGroupCount,
