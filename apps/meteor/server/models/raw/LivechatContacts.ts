@@ -19,6 +19,7 @@ import type {
 	IndexDescription,
 	UpdateResult,
 	UpdateFilter,
+	UpdateOptions,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -191,15 +192,20 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		visitor: ILivechatContactVisitorAssociation,
 		data: Partial<ILivechatContactChannel>,
 		contactData?: Partial<Omit<ILivechatContact, 'channels'>>,
+		options: UpdateOptions = {},
 	): Promise<UpdateResult> {
-		return this.updateOne(this.makeQueryForVisitor(visitor), {
-			$set: {
-				...contactData,
-				...(Object.fromEntries(
-					Object.keys(data).map((key) => [`channels.$.${key}`, data[key as keyof ILivechatContactChannel]]),
-				) as UpdateFilter<ILivechatContact>['$set']),
+		return this.updateOne(
+			this.makeQueryForVisitor(visitor),
+			{
+				$set: {
+					...contactData,
+					...(Object.fromEntries(
+						Object.keys(data).map((key) => [`channels.$.${key}`, data[key as keyof ILivechatContactChannel]]),
+					) as UpdateFilter<ILivechatContact>['$set']),
+				},
 			},
-		});
+			options,
+		);
 	}
 
 	async findSimilarVerifiedContacts(

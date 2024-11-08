@@ -5,6 +5,7 @@ import { LivechatContacts, LivechatInquiry, LivechatRooms } from '@rocket.chat/m
 import { saveQueueInquiry } from '../../../app/livechat/server/lib/QueueManager';
 import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
 import { verifyContactChannel } from '../../../app/livechat/server/lib/contacts/verifyContactChannel';
+import { client } from '../../../server/database/utils';
 
 export const runVerifyContactChannel = async (
 	_next: any,
@@ -23,23 +24,43 @@ export const runVerifyContactChannel = async (
 		throw new Error('error-invalid-room');
 	}
 
-	await LivechatContacts.updateContactChannel(
-		{
-			visitorId,
-			source: room.source,
-		},
-		{
-			verified: true,
-			verifiedAt: new Date(),
-			field,
-			value: value.toLowerCase(),
-		},
-	);
+	const session = client.startSession();
+	let result = null;
+	try {
+		session.startTransaction();
+		await LivechatContacts.updateContactChannel(
+			{
+				visitorId,
+				source: room.source,
+			},
+			{
+				verified: true,
+				verifiedAt: new Date(),
+				field,
+				value: value.toLowerCase(),
+			},
+			{},
+			{ session },
+		);
 
-	await LivechatRooms.update({ _id: roomId }, { $set: { verified: true } });
+		await LivechatRooms.update({ _id: roomId }, { $set: { verified: true } }, { session });
 
-	const mergeContactsResult = await mergeContacts(contactId, { visitorId, source: room.source });
+		const mergeContactsResult = await mergeContacts(contactId, { visitorId, source: room.source }, session);
 
+		await session.commitTransaction();
+
+		result = mergeContactsResult;
+	} catch (error) {
+		console.log(error);
+		await session.abortTransaction();
+		await session.endSession();
+		return null;
+	}
+
+	await session.endSession();
+
+	// Note: We should have a transaction here to ensure that the inquiry is saved only if the contact is successfully verified
+	// but the current implementation uses events, so I am not sure how to procced;
 	const inquiry = await LivechatInquiry.findOneReadyByRoomId(roomId);
 	if (!inquiry) {
 		throw new Error('error-invalid-inquiry');
@@ -47,7 +68,7 @@ export const runVerifyContactChannel = async (
 
 	await saveQueueInquiry(inquiry);
 
-	return mergeContactsResult;
+	return result;
 };
 
 verifyContactChannel.patch(runVerifyContactChannel, () => License.hasModule('contact-id-verification'));

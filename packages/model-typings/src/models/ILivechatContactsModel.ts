@@ -5,7 +5,7 @@ import type {
 	ILivechatContactVisitorAssociation,
 	ILivechatVisitor,
 } from '@rocket.chat/core-typings';
-import type { Document, FindCursor, FindOptions, UpdateResult } from 'mongodb';
+import type { Document, FindCursor, FindOptions, UpdateOptions, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 
@@ -35,6 +35,7 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 		visitor: ILivechatContactVisitorAssociation,
 		data: Partial<ILivechatContactChannel>,
 		contactData?: Partial<Omit<ILivechatContact, 'channels'>>,
+		optionsL?: UpdateOptions,
 	): Promise<UpdateResult>;
 	findSimilarVerifiedContacts(
 		channel: Pick<ILivechatContactChannel, 'field' | 'value'>,
