@@ -166,7 +166,7 @@ jobs:
           HARDENED_MODE: '1'
 
       - name: Cache vite
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./node_modules/.vite
           key: vite-local-cache-${{ runner.OS }}-${{ hashFiles('package.json') }}
