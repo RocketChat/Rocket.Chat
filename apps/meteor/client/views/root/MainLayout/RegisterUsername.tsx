@@ -30,7 +30,7 @@ const RegisterUsername = () => {
 	const uid = useUserId();
 	const logout = useLogout();
 	const formLabelId = useUniqueId();
-	const hideLogo = useSetting<boolean>('Layout_Login_Hide_Logo');
+	const hideLogo = useSetting('Layout_Login_Hide_Logo', false);
 	const customLogo = useAssetWithDarkModePath('logo');
 	const customBackground = useAssetWithDarkModePath('background');
 	const dispatchToastMessage = useToastMessageDispatch();

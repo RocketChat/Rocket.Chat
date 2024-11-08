@@ -106,8 +106,8 @@ jobs:
           sudo sysctl -p
 
       - name: Login to GitHub Container Registry
-        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        uses: docker/login-action@v2
+        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
@@ -137,10 +137,12 @@ jobs:
         with:
           name: turbo-build
           path: .turbo/cache
+
       - run: yarn build
+
       # if we are testing a PR from a fork, we need to build the docker image at this point
       - uses: ./.github/actions/build-docker
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        if: github.event_name == 'pull_request' && (github.event.pull_request.head.repo.full_name != github.repository || github.actor == 'dependabot[bot]')
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -198,7 +200,7 @@ jobs:
 
       - name: Cache Playwright binaries
         if: inputs.type == 'ui'
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-playwright
         with:
           path: |
@@ -232,6 +234,7 @@ jobs:
 
       - name: Remove unused Docker images
         run: docker system prune -af
+
       - name: E2E Test API
         if: inputs.type == 'api'
         working-directory: ./apps/meteor

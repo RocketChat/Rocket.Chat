@@ -1,6 +1,7 @@
 import { IconButton, SidebarV2Item, SidebarV2ItemAvatarWrapper, SidebarV2ItemMenu, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
 import { useEffectEvent, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
+import type { HTMLAttributes } from 'react';
 import React, { memo, useState } from 'react';
 
 type MediumProps = {
@@ -15,9 +16,9 @@ type MediumProps = {
 	badges?: React.ReactNode;
 	selected?: boolean;
 	menuOptions?: any;
-};
+} & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const Medium = ({ icon, title, avatar, actions, href, badges, unread, menu, selected }: MediumProps) => {
+const Medium = ({ icon, title, avatar, actions, href, badges, unread, menu, selected, ...props }: MediumProps) => {
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
@@ -30,7 +31,7 @@ const Medium = ({ icon, title, avatar, actions, href, badges, unread, menu, sele
 	};
 
 	return (
-		<SidebarV2Item href={href} selected={selected}>
+		<SidebarV2Item href={href} selected={selected} {...props}>
 			<SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>
 			{icon && icon}
 			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>

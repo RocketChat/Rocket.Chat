@@ -30,7 +30,7 @@ const FileUploadModal = ({
 	const [description, setDescription] = useState<string>(fileDescription || '');
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const maxFileSize = useSetting('FileUpload_MaxFileSize') as number;
+	const maxFileSize = useSetting('FileUpload_MaxFileSize', 104857600);
 
 	const ref = useAutoFocus<HTMLInputElement>();
 
