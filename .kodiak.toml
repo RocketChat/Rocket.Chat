@@ -15,4 +15,4 @@ include_coauthors=true
 
 [merge.automerge_dependencies]
 versions = ["minor", "patch"]
-usernames = ["dependabot"]
+usernames = ["dependabot[bot]"]
