@@ -1,22 +1,13 @@
-import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { mockAppRoot, MockedRouterContext } from '@rocket.chat/mock-providers';
-import type { UsersInfoParamsGet } from '@rocket.chat/rest-typings';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import React from 'react';
 
-import { createFakeUser } from '../../../../tests/mocks/data';
 import ThreadMetrics from './ThreadMetrics';
 import ThreadMetricsFollow from './ThreadMetricsFollow';
 import ThreadMetricsParticipants from './ThreadMetricsParticipants';
 
-const usersInfoMock = (params: UsersInfoParamsGet) => {
-	if (!('userId' in params)) {
-		throw new Error('missing userId - usersInfoMock - ThreadMetrics.spec');
-	}
-	return { user: createFakeUser({ _id: params.userId, username: params.userId }) as unknown as Serialized<IUser> };
-};
 const toggleFollowMock =
 	(done: jest.DoneCallback | (() => undefined)) =>
 	({ mid }: { mid: string }) => {
@@ -51,8 +42,8 @@ const mockedTranslations = [
 	'en',
 	'core',
 	{
-		follower_one: 'follower',
-		follower_other: 'followers',
+		Follower_one: 'follower',
+		Follower_other: 'followers',
 		__count__replies__date__: '{{count}} replies {{date}}',
 		__count__replies: '{{count}} replies',
 	},
@@ -99,7 +90,6 @@ describe('Thread Metrics', () => {
 							'/v1/chat.unfollowMessage',
 							toggleFollowMock(() => undefined),
 						)
-						.withEndpoint('GET', '/v1/users.info', usersInfoMock)
 						.withUserPreference('clockMode', 1)
 						.withSetting('Message_TimeFormat', 'LT')
 						.withTranslations(...mockedTranslations)
@@ -114,10 +104,8 @@ describe('Thread Metrics', () => {
 			const badge = screen.getByTitle('Unread');
 			expect(badge).toBeVisible();
 
-			expect(await screen.findByTitle('followers')).toBeVisible();
-			expect(await screen.findByTitle('user1')).toBeVisible();
-			expect(await screen.findByTitle('user2')).toBeVisible();
-			expect(await screen.findByText('+1')).toBeVisible();
+			expect(screen.getByTitle('followers')).toBeVisible();
+			expect(screen.getByText('3')).toBeVisible();
 
 			const replyButton = screen.getByText('View_thread');
 			expect(replyButton).toBeVisible();
@@ -160,7 +148,6 @@ describe('Thread Metrics', () => {
 							'/v1/chat.unfollowMessage',
 							toggleFollowMock(() => undefined),
 						)
-						.withEndpoint('GET', '/v1/users.info', usersInfoMock)
 						.withUserPreference('clockMode', 1)
 						.withSetting('Message_TimeFormat', 'LT')
 						.withTranslations(...mockedTranslations)
@@ -174,10 +161,8 @@ describe('Thread Metrics', () => {
 			const badge = screen.getByTitle('Unread');
 			expect(badge).toBeVisible();
 
-			expect(await screen.findByTitle('followers')).toBeVisible();
-			expect(await screen.findByTitle('user1')).toBeVisible();
-			expect(await screen.findByTitle('user2')).toBeVisible();
-			expect(await screen.findByText('+1')).toBeVisible();
+			expect(screen.getByTitle('followers')).toBeVisible();
+			expect(screen.getByText('3')).toBeVisible();
 
 			const replyButton = screen.getByText('View_thread');
 			expect(replyButton).toBeVisible();
@@ -247,54 +232,95 @@ describe('Thread Metrics', () => {
 		});
 	});
 	describe('ThreadMetricsParticipants', () => {
-		it('should render 1 avatars', async () => {
+		it('should render 1 avatars', () => {
 			render(<ThreadMetricsParticipants participants={['user1']} />, {
 				wrapper: mockAppRoot()
-					.withEndpoint('GET', '/v1/users.info', usersInfoMock)
+					.withUserPreference('displayAvatars', true)
 					.withTranslations(...mockedTranslations)
 					.build(),
 				legacyRoot: true,
 			});
-			expect(await screen.findByTitle('follower')).toBeVisible();
-			expect(await screen.findByTitle('user1')).toBeVisible();
+			expect(screen.getByTitle('follower')).toBeVisible();
+			const avatars = screen.getAllByRole('figure');
+			expect(avatars.length).toBe(1);
+			expect(avatars.pop()).toBeVisible();
 		});
-		it('should render 2 avatars', async () => {
+		it('should render 2 avatars', () => {
 			render(<ThreadMetricsParticipants participants={['user1', 'user2']} />, {
 				wrapper: mockAppRoot()
-					.withEndpoint('GET', '/v1/users.info', usersInfoMock)
+					.withUserPreference('displayAvatars', true)
 					.withTranslations(...mockedTranslations)
 					.build(),
 				legacyRoot: true,
 			});
-			expect(await screen.findByTitle('followers')).toBeVisible();
-			expect(await screen.findByTitle('user1')).toBeVisible();
-			expect(await screen.findByTitle('user2')).toBeVisible();
+			expect(screen.getByTitle('followers')).toBeVisible();
+			const avatars = screen.getAllByRole('figure');
+			expect(avatars.length).toBe(2);
+			avatars.forEach((avatar) => expect(avatar).toBeVisible());
 		});
-		it('should render 2 avatars and "+1" text', async () => {
+		it('should render 2 avatars and "+1" text', () => {
 			render(<ThreadMetricsParticipants participants={['user1', 'user2', 'user3']} />, {
 				wrapper: mockAppRoot()
-					.withEndpoint('GET', '/v1/users.info', usersInfoMock)
+					.withUserPreference('displayAvatars', true)
 					.withTranslations(...mockedTranslations)
 					.build(),
 				legacyRoot: true,
 			});
-			expect(await screen.findByTitle('followers')).toBeVisible();
-			expect(await screen.findByTitle('user1')).toBeVisible();
-			expect(await screen.findByTitle('user2')).toBeVisible();
-			expect(await screen.findByText('+1')).toBeVisible();
+			expect(screen.getByTitle('followers')).toBeVisible();
+			const avatars = screen.getAllByRole('figure');
+			expect(avatars.length).toBe(2);
+			avatars.forEach((avatar) => expect(avatar).toBeVisible());
+			expect(screen.getByText('+1')).toBeVisible();
 		});
-		it('should render 2 avatars and "+5" text', async () => {
+		it('should render 2 avatars and "+5" text', () => {
 			render(<ThreadMetricsParticipants participants={['user1', 'user2', 'user3', 'user4', 'user5', 'user6', 'user7']} />, {
 				wrapper: mockAppRoot()
-					.withEndpoint('GET', '/v1/users.info', usersInfoMock)
+					.withUserPreference('displayAvatars', true)
 					.withTranslations(...mockedTranslations)
 					.build(),
 				legacyRoot: true,
 			});
-			expect(await screen.findByTitle('followers')).toBeVisible();
-			expect(await screen.findByTitle('user1')).toBeVisible();
-			expect(await screen.findByTitle('user2')).toBeVisible();
-			expect(await screen.findByText('+5')).toBeVisible();
+			expect(screen.getByTitle('followers')).toBeVisible();
+
+			const avatars = screen.getAllByRole('figure');
+			expect(avatars.length).toBe(2);
+			avatars.forEach((avatar) => expect(avatar).toBeVisible());
+
+			expect(screen.getByText('+5')).toBeVisible();
+		});
+
+		it('should render user icon and 1 follower', () => {
+			render(<ThreadMetricsParticipants participants={['user1']} />, {
+				wrapper: mockAppRoot()
+					.withUserPreference('displayAvatars', false)
+					.withTranslations(...mockedTranslations)
+					.build(),
+				legacyRoot: true,
+			});
+			const follower = screen.getByTitle('follower');
+			expect(follower).toBeVisible();
+
+			// eslint-disable-next-line testing-library/no-node-access
+			expect(follower.querySelector('.rcx-icon--name-user')).toBeVisible();
+
+			expect(screen.getByText('1')).toBeVisible();
+		});
+
+		it('should render user icon and 5 followers', () => {
+			render(<ThreadMetricsParticipants participants={['user1', 'user2', 'user3', 'user4', 'user5']} />, {
+				wrapper: mockAppRoot()
+					.withUserPreference('displayAvatars', false)
+					.withTranslations(...mockedTranslations)
+					.build(),
+				legacyRoot: true,
+			});
+			const follower = screen.getByTitle('followers');
+			expect(follower).toBeVisible();
+
+			// eslint-disable-next-line testing-library/no-node-access
+			expect(follower.querySelector('.rcx-icon--name-user')).toBeVisible();
+
+			expect(screen.getByText('5')).toBeVisible();
 		});
 	});
 });
