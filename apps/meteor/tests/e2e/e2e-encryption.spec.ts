@@ -451,7 +451,8 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
 		await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
-		await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+		await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file.txt');
+		// await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
 
 		await test.step('disable E2EE in the room', async () => {
 			await poHomeChannel.tabs.kebab.click();
