@@ -443,9 +443,10 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
 		await poHomeChannel.content.dragAndDropTxtFile();
-		await poHomeChannel.content.descriptionInput.fill('any_description');
-		await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
-		await poHomeChannel.content.btnModalConfirm.click();
+		await poHomeChannel.content.sendMessage('any_description');
+		// await poHomeChannel.content.descriptionInput.fill('any_description');
+		// await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+		// await poHomeChannel.content.btnModalConfirm.click();
 
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
