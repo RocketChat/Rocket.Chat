@@ -22,7 +22,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/fuselage-tokens": "^0.33.2",
 		"emoji-assets": "^7.0.1",
-		"emoji-toolkit": "^7.0.1",
+		"emoji-toolkit": "^9.0.1",
 		"moment": "^2.29.4",
 		"moment-timezone": "^0.5.46",
 		"react": "~18.3.1"
