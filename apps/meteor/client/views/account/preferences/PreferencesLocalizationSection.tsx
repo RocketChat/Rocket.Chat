@@ -16,7 +16,7 @@ const PreferencesLocalizationSection = () => {
 		const mapOptions: SelectOption[] = languages.map(({ key, name }) => {
 			// Add a space to the name of the default language to bring it to the top
 			const displayName = key === '' && name === 'Default' ? ' Default' : name;
-			return[key, displayName];
+			return [key, displayName];
 		});
 		mapOptions.sort(([, a], [, b]) => a.localeCompare(b));
 		return mapOptions;
