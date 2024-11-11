@@ -72,9 +72,9 @@ export const runVerifyContactChannel = async (
 		await session.endSession();
 	}
 
-	// Note: we are not using the session here since we are using the changes to allow for transactions in the
+	// Note: we are not using the session here since allowing the transactional flow to be used inside the
 	//       saveQueueInquiry function would require a lot of changes across the codebase, so if we fail here we
-	//       will not be able to rollback the transaction, but that is not a big deal since the contact will be properly
+	//       will not be able to rollback the transaction. That is not a big deal since the contact will be properly
 	//       merged and the inquiry will be saved in the queue (will need to be taken manually by an agent though).
 	const inquiry = await LivechatInquiry.findOneReadyByRoomId(roomId);
 	if (!inquiry) {
