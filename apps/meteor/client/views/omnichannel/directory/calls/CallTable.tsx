@@ -1,7 +1,7 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
-import { useQuery, hashQueryKey } from '@tanstack/react-query';
+import { useQuery, hashKey } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
@@ -58,8 +58,8 @@ const CallTable = () => {
 		queryFn: async () => getVoipRooms(query),
 	});
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const headers = (
 		<>

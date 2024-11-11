@@ -12,7 +12,7 @@ export const useRoomInfoEndpoint = (rid: IRoom['_id']): UseQueryResult<Operation
 	return useQuery({
 		queryKey: ['/v1/rooms.info', rid],
 		queryFn: () => getRoomInfo({ roomId: rid }),
-		cacheTime: minutesToMilliseconds(15),
+		gcTime: minutesToMilliseconds(15),
 		staleTime: minutesToMilliseconds(5),
 
 		retry: (count, error: Meteor.Error) => {

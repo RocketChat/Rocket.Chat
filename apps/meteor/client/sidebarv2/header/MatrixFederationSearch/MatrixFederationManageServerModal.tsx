@@ -36,7 +36,7 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 
 	const {
 		mutate: addServer,
-		isLoading,
+		isPending,
 		isError,
 	} = useMutation({
 		mutationKey: ['v1/federation/addServerByUser', serverName],
@@ -59,7 +59,7 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 		},
 	});
 
-	const { data, isLoading: isLoadingServerList } = useMatrixServerList();
+	const { data, isPending: isLoadingServerList } = useMatrixServerList();
 
 	return (
 		<Modal maxHeight='x600'>
@@ -72,7 +72,7 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 					<FieldLabel>{t('Server_name')}</FieldLabel>
 					<FieldRow>
 						<TextInput
-							disabled={isLoading}
+							disabled={isPending}
 							value={serverName}
 							onChange={(e: FormEvent<HTMLInputElement>) => {
 								setServerName(e.currentTarget.value);
@@ -82,7 +82,7 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 							}}
 							mie={4}
 						/>
-						<Button onClick={() => addServer()} primary loading={isLoading}>
+						<Button onClick={() => addServer()} primary loading={isPending}>
 							{t('Add')}
 						</Button>
 					</FieldRow>

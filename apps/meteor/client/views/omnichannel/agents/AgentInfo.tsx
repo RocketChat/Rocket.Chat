@@ -27,7 +27,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const getAgentById = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: uid });
-	const { data, isLoading, isError } = useQuery({
+	const { data, isPending, isError } = useQuery({
 		queryKey: ['livechat-getAgentInfoById', uid],
 		queryFn: async () => getAgentById(),
 		refetchOnWindowFocus: false,
@@ -35,7 +35,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 
 	const handleDelete = useRemoveAgent(uid);
 
-	if (isLoading) {
+	if (isPending) {
 		return <ContextualbarSkeleton />;
 	}
 

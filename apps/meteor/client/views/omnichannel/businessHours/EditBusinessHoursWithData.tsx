@@ -14,13 +14,13 @@ const EditBusinessHoursWidthData = ({ id, type }: { id?: ILivechatBusinessHour['
 	const router = useRouter();
 	const getBusinessHour = useEndpoint('GET', '/v1/livechat/business-hour');
 
-	const { data, isLoading, isError, refetch } = useQuery({
+	const { data, isPending, isError, refetch } = useQuery({
 		queryKey: ['livechat-getBusinessHourById', id, type],
 		queryFn: async () => getBusinessHour({ _id: id, type }),
 		refetchOnWindowFocus: false,
 	});
 
-	if (isLoading) {
+	if (isPending) {
 		return <PageSkeleton />;
 	}
 

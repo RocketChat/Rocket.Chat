@@ -21,7 +21,7 @@ const WebhooksPageContainer = () => {
 
 	const getIntegrationsSettings = useEndpoint('GET', '/v1/livechat/integrations.settings');
 
-	const { data, isLoading, isError } = useQuery({
+	const { data, isPending, isError } = useQuery({
 		queryKey: ['/v1/livechat/integrations.settings'],
 
 		queryFn: async () => {
@@ -36,7 +36,7 @@ const WebhooksPageContainer = () => {
 		return <NotAuthorizedPage />;
 	}
 
-	if (isLoading) {
+	if (isPending) {
 		return <PageSkeleton />;
 	}
 

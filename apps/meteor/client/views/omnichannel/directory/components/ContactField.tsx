@@ -25,13 +25,13 @@ const ContactField = ({ contact, room }: ContactFieldProps) => {
 	const avatarUrl = roomCoordinator.getRoomDirectives(type).getAvatarPath(room) || '';
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
-	const { data, isLoading, isError } = useQuery({
+	const { data, isPending, isError } = useQuery({
 		queryKey: ['/v1/livechat/visitors.info', contact._id],
 
 		queryFn: () => getVisitorInfo({ visitorId: contact._id }),
 	});
 
-	if (isLoading) {
+	if (isPending) {
 		return <FormSkeleton />;
 	}
 

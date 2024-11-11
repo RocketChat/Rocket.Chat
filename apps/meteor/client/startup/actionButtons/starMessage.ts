@@ -17,7 +17,7 @@ Meteor.startup(() => {
 		async action(_, { message }) {
 			try {
 				await sdk.call('starMessage', { ...message, starred: true });
-				queryClient.invalidateQueries(['rooms', message.rid, 'starred-messages']);
+				queryClient.invalidateQueries({ queryKey: ['rooms', message.rid, 'starred-messages'] });
 			} catch (error) {
 				if (error) {
 					dispatchToastMessage({ type: 'error', message: error });

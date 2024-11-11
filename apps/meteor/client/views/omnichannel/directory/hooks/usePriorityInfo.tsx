@@ -15,7 +15,7 @@ export const usePriorityInfo = (priorityId: string) => {
 	return useQuery({
 		queryKey: ['/v1/livechat/priorities', priorityId],
 		queryFn: () => getPriority() as Promise<ILivechatClientPriority>,
-		cacheTime: 0,
+		gcTime: 0,
 		enabled,
 	});
 };

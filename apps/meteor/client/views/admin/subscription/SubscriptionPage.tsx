@@ -48,13 +48,13 @@ const SubscriptionPage = () => {
 	const router = useRouter();
 	const { data: enterpriseData } = useIsEnterprise();
 	const { isRegistered } = useRegistrationStatus();
-	const { data: licensesData, isLoading: isLicenseLoading } = useLicense({ loadValues: true });
+	const { data: licensesData, isPending: isLicenseLoading } = useLicense({ loadValues: true });
 	const syncLicenseUpdate = useWorkspaceSync();
 	const invalidateLicenseQuery = useInvalidateLicense();
 
 	const subscriptionSuccess = useSearchParameter('subscriptionSuccess');
 
-	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isLoading, 10000);
+	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isPending, 10000);
 
 	const { license, limits, activeModules = [] } = licensesData || {};
 	const { isEnterprise = true } = enterpriseData || {};
@@ -102,7 +102,7 @@ const SubscriptionPage = () => {
 			<PageHeader title={t('Subscription')}>
 				<ButtonGroup>
 					{isRegistered && (
-						<Button loading={syncLicenseUpdate.isLoading} icon='reload' onClick={() => handleSyncLicenseUpdate()}>
+						<Button loading={syncLicenseUpdate.isPending} icon='reload' onClick={() => handleSyncLicenseUpdate()}>
 							{t('Sync_license_update')}
 						</Button>
 					)}
@@ -112,7 +112,7 @@ const SubscriptionPage = () => {
 				</ButtonGroup>
 			</PageHeader>
 			<PageScrollableContentWithShadow p={16}>
-				{(showSubscriptionCallout || syncLicenseUpdate.isLoading) && (
+				{(showSubscriptionCallout || syncLicenseUpdate.isPending) && (
 					<Callout type='info' title={t('Sync_license_update_Callout_Title')} m={8}>
 						{t('Sync_license_update_Callout')}
 					</Callout>
@@ -177,7 +177,7 @@ const SubscriptionPage = () => {
 							</Grid>
 							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise}>
 								{Boolean(licensesData?.license?.information.cancellable) && (
-									<Button loading={removeLicense.isLoading} secondary danger onClick={() => removeLicense.mutate()}>
+									<Button loading={removeLicense.isPending} secondary danger onClick={() => removeLicense.mutate()}>
 										{t('Cancel_subscription')}
 									</Button>
 								)}

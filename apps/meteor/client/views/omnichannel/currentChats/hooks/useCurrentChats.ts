@@ -16,6 +16,6 @@ export const useCurrentChats = (query: GETLivechatRoomsParams): UseQueryResult<O
 		// TODO: Update this to use an stream of room changes instead of polling
 		refetchOnWindowFocus: false,
 
-		cacheTime: 0,
+		gcTime: 0,
 	});
 };

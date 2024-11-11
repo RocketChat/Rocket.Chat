@@ -29,7 +29,7 @@ const AuditLogTable = (): ReactElement => {
 
 	const getAudits = useMethod('auditGetAuditions');
 
-	const { data, isLoading, isSuccess } = useQuery({
+	const { data, isPending, isSuccess } = useQuery({
 		queryKey: ['audits', dateRange],
 
 		queryFn: async () => {
@@ -60,7 +60,7 @@ const AuditLogTable = (): ReactElement => {
 					<DateRangePicker display='flex' flexGrow={1} value={dateRange} onChange={setDateRange} />
 				</FieldRow>
 			</Field>
-			{isLoading && (
+			{isPending && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

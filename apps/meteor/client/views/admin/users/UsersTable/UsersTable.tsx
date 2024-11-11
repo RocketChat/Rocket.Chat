@@ -52,7 +52,7 @@ const UsersTable = ({
 	const isMobile = !breakpoints.includes('xl');
 	const isLaptop = !breakpoints.includes('xxl');
 
-	const { data, isLoading, isError, isSuccess } = filteredUsersQueryResult;
+	const { data, isPending, isError, isSuccess } = filteredUsersQueryResult;
 
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = paginationData;
 	const { sortBy, sortDirection, setSort } = sortData;
@@ -136,7 +136,7 @@ const UsersTable = ({
 		<>
 			<UsersTableFilters roleData={roleData} setUsersFilters={setUserFilters} />
 
-			{isLoading && (
+			{isPending && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

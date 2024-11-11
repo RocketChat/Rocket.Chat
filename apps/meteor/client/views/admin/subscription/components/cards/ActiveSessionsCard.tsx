@@ -32,7 +32,7 @@ const ActiveSessionsCard = (): ReactElement => {
 		infoText: t('ActiveSessions_InfoText'),
 	};
 
-	if (result.isLoading || result.isError) {
+	if (result.isPending || result.isError) {
 		return (
 			<FeatureUsageCard card={card}>
 				<Skeleton variant='rect' width='x112' height='x112' />

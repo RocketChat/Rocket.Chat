@@ -39,13 +39,13 @@ const ChatsContextualBar = ({ chatReload }: ChatsContextualBarProps) => {
 		id && directoryRoute.push({ page: 'chats', id, bar: 'info' });
 	};
 
-	const { data: room, isLoading, isError, refetch: reloadInfo } = useOmnichannelRoomInfo(id);
+	const { data: room, isPending, isError, refetch: reloadInfo } = useOmnichannelRoomInfo(id);
 
 	if (bar === 'view' && id) {
 		return <Chat rid={id} />;
 	}
 
-	if (isLoading) {
+	if (isPending) {
 		return (
 			<Box pi={24}>
 				<FormSkeleton />

@@ -81,7 +81,7 @@ const ChannelsTable = () => {
 
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
 	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'channels');
-	const { data, isFetched, isLoading, isError, refetch } = useQuery({
+	const { data, isFetched, isPending, isError, refetch } = useQuery({
 		queryKey: ['getDirectoryData', query],
 		queryFn: () => getDirectoryData(query),
 	});
@@ -98,7 +98,7 @@ const ChannelsTable = () => {
 	return (
 		<>
 			<FilterByText placeholder={t('Search_Channels')} value={text} onChange={(event) => setText(event.target.value)} />
-			{isLoading && (
+			{isPending && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

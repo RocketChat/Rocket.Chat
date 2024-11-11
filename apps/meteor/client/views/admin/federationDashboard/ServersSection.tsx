@@ -13,7 +13,7 @@ function ServersSection(): ReactElement | null {
 		refetchInterval: 10_000,
 	});
 
-	if (result.isLoading) {
+	if (result.isPending) {
 		return <Throbber alignItems='center' />;
 	}
 

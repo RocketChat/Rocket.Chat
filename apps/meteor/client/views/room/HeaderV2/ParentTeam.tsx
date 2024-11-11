@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 import { HeaderTag, HeaderTagIcon, HeaderTagSkeleton } from '../../../components/Header';
@@ -35,8 +35,8 @@ const ParentTeam = ({ room }: ParentTeamProps) => {
 	} = useQuery({
 		queryKey: ['teamId', teamId],
 		queryFn: async () => teamsInfoEndpoint({ teamId }),
-		keepPreviousData: true,
-		retry: (_, error) => (error as APIErrorResult)?.error === 'unauthorized' && false,
+		placeholderData: keepPreviousData,
+		retry: (_, error: APIErrorResult) => error?.error === 'unauthorized' && false,
 	});
 
 	const { data: userTeams, isLoading: userTeamsLoading } = useQuery({

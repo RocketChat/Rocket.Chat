@@ -22,7 +22,7 @@ Meteor.startup(() => {
 				message.pinned = true;
 				try {
 					await sdk.call('pinMessage', message);
-					queryClient.invalidateQueries(['rooms', message.rid, 'pinned-messages']);
+					queryClient.invalidateQueries({ queryKey: ['rooms', message.rid, 'pinned-messages'] });
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
 				}

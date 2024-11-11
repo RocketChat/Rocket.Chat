@@ -35,7 +35,7 @@ const VoipExtensionsPage = () => {
 	);
 
 	const getExtensions = useEndpoint('GET', '/v1/omnichannel/extensions');
-	const { data, isSuccess, isLoading, refetch } = useQuery({
+	const { data, isSuccess, isPending, refetch } = useQuery({
 		queryKey: ['omnichannel-extensions', query],
 		queryFn: async () => getExtensions(query),
 	});
@@ -70,7 +70,7 @@ const VoipExtensionsPage = () => {
 					</Button>
 				</Box>
 			</Box>
-			{isLoading && (
+			{isPending && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

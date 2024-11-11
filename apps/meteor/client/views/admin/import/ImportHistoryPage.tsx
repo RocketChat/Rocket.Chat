@@ -45,7 +45,7 @@ function ImportHistoryPage() {
 		onError: () => dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_History') }),
 	});
 
-	const isLoading = currentOperation.isLoading || latestOperations.isLoading;
+	const isLoading = currentOperation.isPending || latestOperations.isPending;
 
 	const hasAnySuccessfulImport = useMemo(() => {
 		return latestOperations.isSuccess && latestOperations.data.some(({ status }) => status === ProgressStep.DONE);
@@ -112,8 +112,8 @@ function ImportHistoryPage() {
 					</Button>
 					{hasAnySuccessfulImport && (
 						<Button
-							loading={downloadPendingFilesResult.isLoading}
-							disabled={downloadPendingAvatarsResult.isLoading}
+							loading={downloadPendingFilesResult.isPending}
+							disabled={downloadPendingAvatarsResult.isPending}
 							onClick={() => downloadPendingFilesResult.mutate()}
 						>
 							{t('Download_Pending_Files')}
@@ -121,8 +121,8 @@ function ImportHistoryPage() {
 					)}
 					{hasAnySuccessfulImport && (
 						<Button
-							loading={downloadPendingAvatarsResult.isLoading}
-							disabled={downloadPendingFilesResult.isLoading}
+							loading={downloadPendingAvatarsResult.isPending}
+							disabled={downloadPendingFilesResult.isPending}
 							onClick={() => downloadPendingAvatarsResult.mutate()}
 						>
 							{t('Download_Pending_Avatars')}

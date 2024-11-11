@@ -16,7 +16,7 @@ const useOverviewData = (): [eventCount: ReactNode, userCount: ReactNode, server
 		refetchInterval: 10_000,
 	});
 
-	if (result.isLoading) {
+	if (result.isPending) {
 		return [
 			<Skeleton key='event-count' variant='text' />,
 			<Skeleton key='user-count' variant='text' />,

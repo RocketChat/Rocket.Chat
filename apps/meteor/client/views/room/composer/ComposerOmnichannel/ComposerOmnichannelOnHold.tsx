@@ -17,7 +17,7 @@ export const ComposerOmnichannelOnHold = (): ReactElement => {
 		<MessageFooterCallout>
 			<MessageFooterCalloutContent>{t('chat_on_hold_due_to_inactivity')}</MessageFooterCalloutContent>
 			<MessageFooterCalloutAction
-				disabled={resumeChatOnHoldMutation.isLoading}
+				disabled={resumeChatOnHoldMutation.isPending}
 				onClick={(): void => resumeChatOnHoldMutation.mutate(room._id)}
 			>
 				{t('Resume')}

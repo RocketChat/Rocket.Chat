@@ -160,8 +160,8 @@ const ImportProgressPage = function ImportProgressPage() {
 			<PageScrollableContentWithShadow>
 				<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
 					<Margins block={24}>
-						{currentOperation.isLoading && <Throbber justifyContent='center' />}
-						{progress.fetchStatus !== 'idle' && progress.isLoading && <Throbber justifyContent='center' />}
+						{currentOperation.isPending && <Throbber justifyContent='center' />}
+						{progress.fetchStatus !== 'idle' && progress.isPending && <Throbber justifyContent='center' />}
 
 						{(currentOperation.isError || progress.isError) && <Box is='p'>{t('Failed_To_Load_Import_Data')}</Box>}
 						{progress.isSuccess && (

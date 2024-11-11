@@ -16,7 +16,7 @@ const NewDepartment = ({ id }: NewDepartmentProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const getDepartmentCreationAvailable = useEndpoint('GET', '/v1/livechat/department/isDepartmentCreationAvailable');
-	const { data, isLoading, isError } = useQuery({
+	const { data, isPending, isError } = useQuery({
 		queryKey: ['getDepartments'],
 		queryFn: () => getDepartmentCreationAvailable(),
 
@@ -31,7 +31,7 @@ const NewDepartment = ({ id }: NewDepartmentProps) => {
 		return <Callout type='danger'>{t('Unavailable')}</Callout>;
 	}
 
-	if (!data || isLoading || !data.isDepartmentCreationAvailable) {
+	if (!data || isPending || !data.isDepartmentCreationAvailable) {
 		return <PageSkeleton />;
 	}
 

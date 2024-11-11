@@ -50,7 +50,7 @@ const RemoveChatButton = ({ _id }: RemoveChatButtonProps) => {
 
 	return (
 		<GenericTableCell maxHeight='x36' fontScale='p2' color='hint' withTruncatedText data-qa='current-chats-cell-delete'>
-			<IconButton small icon='trash' title={t('Remove')} disabled={removeCurrentChatMutation.isLoading} onClick={handleDelete} />
+			<IconButton small icon='trash' title={t('Remove')} disabled={removeCurrentChatMutation.isPending} onClick={handleDelete} />
 		</GenericTableCell>
 	);
 };

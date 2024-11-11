@@ -25,7 +25,7 @@ export const useAgentsSection = () => {
 	const {
 		data: { data, total = 0, unspecified = 0 } = { data: [], total: 0 },
 		refetch,
-		isLoading,
+		isPending,
 		isError,
 		isSuccess,
 	} = useQuery({
@@ -65,7 +65,7 @@ export const useAgentsSection = () => {
 			emptyStateSubtitle,
 			data,
 			total,
-			isLoading,
+			isPending,
 			isError,
 			isDataFound: isSuccess && data.length > 0,
 			periodSelectorProps,
@@ -82,7 +82,7 @@ export const useAgentsSection = () => {
 			emptyStateSubtitle,
 			data,
 			total,
-			isLoading,
+			isPending,
 			isError,
 			isSuccess,
 			periodSelectorProps,

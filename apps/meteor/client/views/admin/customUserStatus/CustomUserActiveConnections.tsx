@@ -9,7 +9,7 @@ const CustomUserActiveConnections = () => {
 
 	const result = useActiveConnections();
 
-	if (result.isLoading || result.isError) {
+	if (result.isPending || result.isError) {
 		return <GenericResourceUsageSkeleton title={t('Active_connections')} />;
 	}
 

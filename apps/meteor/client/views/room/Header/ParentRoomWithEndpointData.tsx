@@ -11,9 +11,9 @@ type ParentRoomWithEndpointDataProps = {
 };
 
 const ParentRoomWithEndpointData = ({ rid }: ParentRoomWithEndpointDataProps): ReactElement | null => {
-	const { data, isLoading, isError } = useRoomInfoEndpoint(rid);
+	const { data, isPending, isError } = useRoomInfoEndpoint(rid);
 
-	if (isLoading) {
+	if (isPending) {
 		return <HeaderTagSkeleton />;
 	}
 

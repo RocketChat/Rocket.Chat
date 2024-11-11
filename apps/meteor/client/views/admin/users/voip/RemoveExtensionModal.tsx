@@ -73,7 +73,7 @@ const RemoveExtensionModal = ({ name, extension, username, onClose }: RemoveExte
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button danger onClick={() => handleRemoveExtension.mutate(username)} loading={handleRemoveExtension.isLoading}>
+					<Button danger onClick={() => handleRemoveExtension.mutate(username)} loading={handleRemoveExtension.isPending}>
 						{t('Remove')}
 					</Button>
 				</Modal.FooterControllers>

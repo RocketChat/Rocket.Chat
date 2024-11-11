@@ -2,7 +2,7 @@ import type { Serialized } from '@rocket.chat/core-typings';
 import type { OperationResult } from '@rocket.chat/rest-typings';
 import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import type { QueryClient, UseQueryResult } from '@tanstack/react-query';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 type LicenseDataType = Serialized<Awaited<OperationResult<'GET', '/v1/licenses.info'>>>;
@@ -46,7 +46,7 @@ export const useLicenseBase = <TData = LicenseDataType>({
 		queryKey: ['licenses', 'getLicenses', params],
 		queryFn: () => getLicenses({ ...params }),
 		staleTime: Infinity,
-		keepPreviousData: true,
+		placeholderData: keepPreviousData,
 		select,
 		enabled: !!uid,
 	});

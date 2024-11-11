@@ -6,7 +6,7 @@ import { useAppRequestStats } from '../hooks/useAppRequestStats';
 const MarketplaceRequestBadge = () => {
 	const requestStatsResult = useAppRequestStats();
 
-	if (requestStatsResult.isLoading)
+	if (requestStatsResult.isPending)
 		return requestStatsResult.fetchStatus !== 'idle' ? <Skeleton variant='circle' height='x16' width='x16' /> : null;
 
 	if (requestStatsResult.isError) return null;

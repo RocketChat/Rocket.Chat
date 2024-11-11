@@ -15,7 +15,7 @@ const EditOauthAppWithData = ({ _id, ...props }: { _id: string }): ReactElement 
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { data, isLoading, error, refetch } = useQuery({
+	const { data, isPending, error, refetch } = useQuery({
 		queryKey: ['oauth-apps', _id],
 
 		queryFn: async () => {
@@ -30,7 +30,7 @@ const EditOauthAppWithData = ({ _id, ...props }: { _id: string }): ReactElement 
 		refetch();
 	}, [refetch]);
 
-	if (isLoading) {
+	if (isPending) {
 		return <FormSkeleton pi={20} />;
 	}
 

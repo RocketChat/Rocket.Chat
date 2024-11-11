@@ -15,7 +15,7 @@ import {
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAutoComplete } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useMethod, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
-import { useMutation, useQuery, hashQueryKey } from '@tanstack/react-query';
+import { useMutation, useQuery, hashKey } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../components/FilterByText';
@@ -68,19 +68,19 @@ const MonitorsTable = () => {
 		500,
 	);
 
-	const { data, refetch, isLoading, isSuccess, isError } = useQuery({
+	const { data, refetch, isPending, isSuccess, isError } = useQuery({
 		queryKey: ['omnichannel', 'monitors', query],
 		queryFn: () => getMonitors(query),
 	});
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const addMutation = useMutation({
 		mutationFn: async (username: string) => {
 			await addMonitor(username);
 
-			await queryClient.invalidateQueries(['omnichannel', 'monitors']);
+			await queryClient.invalidateQueries({ queryKey: ['omnichannel', 'monitors'] });
 		},
 		onSuccess: () => {
 			setUsername('');
@@ -103,7 +103,7 @@ const MonitorsTable = () => {
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
-			queryClient.invalidateQueries(['omnichannel', 'monitors']);
+			queryClient.invalidateQueries({ queryKey: ['omnichannel', 'monitors'] });
 			setModal();
 		};
 
@@ -141,7 +141,7 @@ const MonitorsTable = () => {
 					<FieldLabel>{t('Username')}</FieldLabel>
 					<FieldRow>
 						<UserAutoComplete name='monitor' value={username} onChange={setUsername as () => void} />
-						<Button primary disabled={!username} loading={addMutation.isLoading} onClick={() => handleAdd()} mis={8}>
+						<Button primary disabled={!username} loading={addMutation.isPending} onClick={() => handleAdd()} mis={8}>
 							{t('Add_monitor')}
 						</Button>
 					</FieldRow>
@@ -150,7 +150,7 @@ const MonitorsTable = () => {
 			{((isSuccess && data?.monitors.length > 0) || queryHasChanged) && (
 				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
-			{isLoading && (
+			{isPending && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
@@ -170,7 +170,7 @@ const MonitorsTable = () => {
 			)}
 			{isSuccess && data.monitors.length > 0 && (
 				<>
-					<GenericTable aria-busy={isLoading} aria-live='assertive' data-qa-id='manage-monitors-table'>
+					<GenericTable aria-busy={isPending} aria-live='assertive' data-qa-id='manage-monitors-table'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.monitors?.map((monitor) => (

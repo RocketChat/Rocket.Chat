@@ -4,7 +4,8 @@ import { useMutation } from '@tanstack/react-query';
 export const useSendTelemetryMutation = () => {
 	const sendTelemetry = useEndpoint('POST', '/v1/statistics.telemetry');
 
-	return useMutation(sendTelemetry, {
+	return useMutation({
+		mutationFn: sendTelemetry,
 		onError: (error) => {
 			console.warn(error);
 		},

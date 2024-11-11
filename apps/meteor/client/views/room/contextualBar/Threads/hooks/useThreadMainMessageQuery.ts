@@ -105,7 +105,7 @@ export const useThreadMainMessageQuery = (
 			}
 
 			const debouncedInvalidate = withDebouncing({ wait: 10000 })(() => {
-				queryClient.invalidateQueries(queryKey, { exact: true });
+				queryClient.invalidateQueries({ queryKey, exact: true });
 			});
 
 			unsubscribeRef.current =
@@ -118,7 +118,7 @@ export const useThreadMainMessageQuery = (
 					},
 					onDelete: () => {
 						onDelete?.();
-						queryClient.invalidateQueries(queryKey, { exact: true });
+						queryClient.invalidateQueries({ queryKey, exact: true });
 					},
 				});
 

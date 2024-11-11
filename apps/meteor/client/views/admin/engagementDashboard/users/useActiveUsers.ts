@@ -30,6 +30,6 @@ export const useActiveUsers = ({ utc }: UseActiveUsersOptions) => {
 		},
 
 		refetchInterval: 5 * 60 * 1000,
-		useErrorBoundary: true,
+		throwOnError: true,
 	});
 };

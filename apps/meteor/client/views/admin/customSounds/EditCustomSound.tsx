@@ -19,7 +19,7 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { data, isLoading, refetch } = useQuery({
+	const { data, isPending, refetch } = useQuery({
 		queryKey: ['custom-sounds', _id],
 
 		queryFn: async () => {
@@ -36,7 +36,7 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 		},
 	});
 
-	if (isLoading) {
+	if (isPending) {
 		return <FormSkeleton pi={20} />;
 	}
 

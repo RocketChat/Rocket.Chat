@@ -5,14 +5,13 @@ const tenMinutes = 10 * 60 * 1000;
 
 export const useInfiniteFederationSearchPublicRooms = (serverName: string, roomName?: string, count?: number) => {
 	const fetchRoomList = useEndpoint('GET', '/v1/federation/searchPublicRooms');
-	return useInfiniteQuery(
-		['federation/searchPublicRooms', serverName, roomName, count],
-		async ({ pageParam }) => fetchRoomList({ serverName, roomName, count, pageToken: pageParam }),
-		{
-			getNextPageParam: (lastPage) => lastPage.nextPageToken,
-			useErrorBoundary: true,
-			staleTime: tenMinutes,
-			cacheTime: tenMinutes,
-		},
-	);
+	return useInfiniteQuery({
+		queryKey: ['federation/searchPublicRooms', serverName, roomName, count],
+		queryFn: async ({ pageParam }) => fetchRoomList({ serverName, roomName, count, pageToken: pageParam }),
+		getNextPageParam: (lastPage) => lastPage.nextPageToken,
+		initialPageParam: '',
+		throwOnError: true,
+		staleTime: tenMinutes,
+		gcTime: tenMinutes,
+	});
 };

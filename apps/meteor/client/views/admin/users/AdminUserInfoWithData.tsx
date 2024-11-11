@@ -33,7 +33,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { data, isLoading, error, refetch } = useQuery({
+	const { data, isPending, error, refetch } = useQuery({
 		queryKey: ['users', query, 'admin'],
 
 		queryFn: async () => {
@@ -97,7 +97,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 		};
 	}, [approveManuallyUsers, data, getRoles]);
 
-	if (isLoading) {
+	if (isPending) {
 		return (
 			<ContextualbarContent>
 				<FormSkeleton />

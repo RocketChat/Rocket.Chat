@@ -22,12 +22,12 @@ const CloseChatModalData = ({
 	) => Promise<void>;
 }) => {
 	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: departmentId });
-	const { data, isLoading } = useQuery({
+	const { data, isPending } = useQuery({
 		queryKey: ['/v1/livechat/department/:_id', departmentId],
 		queryFn: () => getDepartment({}),
 	});
 
-	if (isLoading) {
+	if (isPending) {
 		return <FormSkeleton />;
 	}
 

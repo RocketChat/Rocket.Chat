@@ -6,7 +6,7 @@ export const useMatrixServerList = () => {
 	return useQuery({
 		queryKey: ['federation/listServersByUsers'],
 		queryFn: async () => fetchServerList(),
-		useErrorBoundary: true,
+		throwOnError: true,
 		staleTime: Infinity,
 	});
 };

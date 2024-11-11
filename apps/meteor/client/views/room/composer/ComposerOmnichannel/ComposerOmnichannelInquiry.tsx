@@ -50,11 +50,11 @@ export const ComposerOmnichannelInquiry = (): ReactElement => {
 	}, [agentAvailable, t, user?.status]);
 
 	return (
-		<MessageFooterCallout aria-busy={result.isLoading}>
+		<MessageFooterCallout aria-busy={result.isPending}>
 			<MessageFooterCalloutContent>{t('you_are_in_preview_mode_of_incoming_livechat')}</MessageFooterCalloutContent>
 			<MessageFooterCalloutAction
 				{...(title && { title })}
-				disabled={result.isLoading || user?.status === 'offline' || !agentAvailable}
+				disabled={result.isPending || user?.status === 'offline' || !agentAvailable}
 				onClick={handleTakeInquiry}
 			>
 				{t('Take_it')}

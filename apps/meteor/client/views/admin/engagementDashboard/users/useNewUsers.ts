@@ -28,6 +28,6 @@ export const useNewUsers = ({ period, utc }: { period: Period['key']; utc: boole
 		},
 
 		refetchInterval: 5 * 60 * 1000,
-		useErrorBoundary: true,
+		throwOnError: true,
 	});
 };

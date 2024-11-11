@@ -12,24 +12,20 @@ export function useRoomQuery(
 ): UseQueryResult<IRoom | null, Error> {
 	const queryKey = ['rooms', rid] as const;
 
-	const queryResult = useQuery(
-		{
-			queryKey,
-			queryFn: async (): Promise<IRoom | null> => ChatRoom.findOne({ _id: rid }, { reactive: false }) ?? null,
-		},
-		{
-			staleTime: Infinity,
-			...options,
-		},
-	);
+	const queryResult = useQuery({
+		queryKey,
+		queryFn: async (): Promise<IRoom | null> => ChatRoom.findOne({ _id: rid }, { reactive: false }) ?? null,
+		staleTime: Infinity,
+		...options,
+	});
 
 	const { refetch } = queryResult;
 
 	useEffect(() => {
 		const liveQueryHandle = ChatRoom.find({ _id: rid }).observe({
-			added: () => queueMicrotask(() => refetch({ exact: false })),
-			changed: () => queueMicrotask(() => refetch({ exact: false })),
-			removed: () => queueMicrotask(() => refetch({ exact: false })),
+			added: () => queueMicrotask(() => refetch()),
+			changed: () => queueMicrotask(() => refetch()),
+			removed: () => queueMicrotask(() => refetch()),
 		});
 
 		return () => {

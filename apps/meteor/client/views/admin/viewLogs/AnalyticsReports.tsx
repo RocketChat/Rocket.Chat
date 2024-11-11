@@ -7,7 +7,7 @@ import { useStatistics } from '../../hooks/useStatistics';
 const AnalyticsReports = () => {
 	const { t } = useTranslation();
 
-	const { data, isLoading, isSuccess, isError } = useStatistics();
+	const { data, isPending, isSuccess, isError } = useStatistics();
 
 	return (
 		<Box display='flex' flexDirection='column' overflow='hidden' height='100%'>
@@ -27,7 +27,7 @@ const AnalyticsReports = () => {
 				<Box mbe={8} padding={8} bg='neutral' borderRadius={4} height='100%'>
 					{isSuccess && <pre>{JSON.stringify(data, null, '\t')}</pre>}
 					{isError && t('Something_went_wrong_try_again_later')}
-					{isLoading && Array.from({ length: 10 }).map((_, index) => <Skeleton key={index} />)}
+					{isPending && Array.from({ length: 10 }).map((_, index) => <Skeleton key={index} />)}
 					<></>
 				</Box>
 			</Scrollable>

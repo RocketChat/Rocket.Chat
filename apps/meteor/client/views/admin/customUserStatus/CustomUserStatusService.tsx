@@ -28,9 +28,9 @@ const CustomUserStatusService = () => {
 	const disablePresenceService = useMutation({
 		mutationFn: () => togglePresenceServiceEndpoint(),
 	});
-	const { data: license, isLoading: licenseIsLoading } = useIsEnterprise();
+	const { data: license, isPending: licenseIsLoading } = useIsEnterprise();
 
-	if (result.isLoading || disablePresenceService.isLoading || licenseIsLoading) {
+	if (result.isPending || disablePresenceService.isPending || licenseIsLoading) {
 		return (
 			<Box pi={16} pb={8}>
 				<Skeleton />
@@ -62,7 +62,7 @@ const CustomUserStatusService = () => {
 					<Box display='flex' justifyContent='space-between' mb={16}>
 						<Box fontScale='p1'>{t('Service_status')}</Box>
 						<ToggleSwitch
-							disabled={disablePresenceService.isLoading || !presenceDisabled || percentage === 100}
+							disabled={disablePresenceService.isPending || !presenceDisabled || percentage === 100}
 							checked={!presenceDisabled}
 							onChange={() => disablePresenceService.mutate()}
 						/>

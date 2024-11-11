@@ -1,5 +1,5 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import type { Period } from '../../../../components/dashboards/periods';
 import { getPeriodRange } from '../../../../components/dashboards/periods';
@@ -37,8 +37,8 @@ export const useChannelsList = ({ period, offset, count }: UseChannelsListOption
 				: undefined;
 		},
 
-		keepPreviousData: true,
+		placeholderData: keepPreviousData,
 		refetchInterval: 5 * 60 * 1000,
-		useErrorBoundary: true,
+		throwOnError: true,
 	});
 };

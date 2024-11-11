@@ -13,13 +13,13 @@ const TagEditWithData = ({ tagId }: { tagId: ILivechatTag['_id'] }) => {
 	const { t } = useTranslation();
 
 	const getTagById = useEndpoint('GET', '/v1/livechat/tags/:tagId', { tagId });
-	const { data, isLoading, isError } = useQuery({
+	const { data, isPending, isError } = useQuery({
 		queryKey: ['livechat-getTagById', tagId],
 		queryFn: async () => getTagById(),
 		refetchOnWindowFocus: false,
 	});
 
-	if (isLoading) {
+	if (isPending) {
 		return <ContextualbarSkeleton />;
 	}
 

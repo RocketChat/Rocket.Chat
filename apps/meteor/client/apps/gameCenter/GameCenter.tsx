@@ -36,7 +36,7 @@ const GameCenter = (): ReactElement => {
 					handleClose={handleClose}
 					handleOpenGame={setOpenedGame}
 					games={result.data}
-					isLoading={result.isLoading}
+					isLoading={result.isPending}
 				/>
 			)}
 

@@ -13,12 +13,12 @@ const EditIntegrationsPageWithData = ({ integrationId }: { integrationId: IIncom
 
 	const params = useMemo(() => ({ integrationId }), [integrationId]);
 	const getIntegrations = useEndpoint('GET', '/v1/integrations.get');
-	const { data, isLoading, isError } = useQuery({
+	const { data, isPending, isError } = useQuery({
 		queryKey: ['integrations', params],
 		queryFn: async () => getIntegrations(params),
 	});
 
-	if (isLoading) {
+	if (isPending) {
 		return (
 			<Box w='full' p={24}>
 				<Skeleton mbe={4} />

@@ -31,7 +31,7 @@ export const useTagsSection = () => {
 	const {
 		data: { data, total = 0, unspecified = 0 } = { data: [], total: 0 },
 		refetch,
-		isLoading,
+		isPending,
 		isError,
 		isSuccess,
 	} = useQuery({
@@ -70,10 +70,10 @@ export const useTagsSection = () => {
 			periodSelectorProps,
 			downloadProps,
 			isError,
-			isLoading,
+			isPending,
 			isDataFound: isSuccess && data.length > 0,
 			onRetry: refetch,
 		}),
-		[title, subtitle, emptyStateSubtitle, data, total, isError, isLoading, isSuccess, periodSelectorProps, period, downloadProps, refetch],
+		[title, subtitle, emptyStateSubtitle, data, total, isError, isPending, isSuccess, periodSelectorProps, period, downloadProps, refetch],
 	);
 };

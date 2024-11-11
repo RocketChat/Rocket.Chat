@@ -24,7 +24,7 @@ const InvitesPage = (): ReactElement => {
 
 	const getInvites = useEndpoint('GET', '/v1/listInvites');
 
-	const { data, isLoading, refetch, isSuccess, isError } = useQuery({
+	const { data, isPending, refetch, isSuccess, isError } = useQuery({
 		queryKey: ['invites'],
 
 		queryFn: async () => {
@@ -91,7 +91,7 @@ const InvitesPage = (): ReactElement => {
 			<PageHeader title={t('Invites')} />
 			<PageContent>
 				<>
-					{isLoading && (
+					{isPending && (
 						<GenericTable>
 							<GenericTableHeader>{headers}</GenericTableHeader>
 							<GenericTableBody>
@@ -103,7 +103,7 @@ const InvitesPage = (): ReactElement => {
 						<GenericTable>
 							<GenericTableHeader>{headers}</GenericTableHeader>
 							<GenericTableBody>
-								{isLoading && <GenericTableLoadingTable headerCells={notSmall ? 4 : 1} />}
+								{isPending && <GenericTableLoadingTable headerCells={notSmall ? 4 : 1} />}
 								{data.map((invite) => (
 									<InviteRow key={invite._id} {...invite} onRemove={onRemove} />
 								))}

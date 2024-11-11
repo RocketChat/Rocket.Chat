@@ -42,7 +42,7 @@ export const useStatusSection = () => {
 
 	const {
 		data: { data, total } = { data: [], total: 0 },
-		isLoading,
+		isPending,
 		isError,
 		isSuccess,
 		refetch,
@@ -78,11 +78,11 @@ export const useStatusSection = () => {
 			period,
 			periodSelectorProps,
 			downloadProps,
-			isLoading,
+			isPending,
 			isError,
 			isDataFound: isSuccess && data.length > 0,
 			onRetry: refetch,
 		}),
-		[title, subtitle, emptyStateSubtitle, data, total, period, periodSelectorProps, downloadProps, isLoading, isError, isSuccess, refetch],
+		[title, subtitle, emptyStateSubtitle, data, total, period, periodSelectorProps, downloadProps, isPending, isError, isSuccess, refetch],
 	);
 };

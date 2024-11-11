@@ -1,7 +1,7 @@
 import { Pagination, IconButton } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashQueryKey } from '@tanstack/react-query';
+import { useQuery, hashKey } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -42,13 +42,13 @@ const UnitsTable = () => {
 	);
 
 	const getUnits = useEndpoint('GET', '/v1/livechat/units');
-	const { isSuccess, isLoading, data } = useQuery({
+	const { isSuccess, isPending, data } = useQuery({
 		queryKey: ['livechat-units', query],
 		queryFn: async () => getUnits(query),
 	});
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/units/new'));
 	const onRowClick = useMutableCallback((id) => () => router.navigate(`/omnichannel/units/edit/${id}`));
@@ -77,7 +77,7 @@ const UnitsTable = () => {
 			{((isSuccess && data?.units.length > 0) || queryHasChanged) && (
 				<FilterByText value={filter} onChange={(event) => setFilter(event.target.value)} />
 			)}
-			{isLoading && (
+			{isPending && (
 				<GenericTable aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
@@ -99,7 +99,7 @@ const UnitsTable = () => {
 			)}
 			{isSuccess && data?.units.length > 0 && (
 				<>
-					<GenericTable aria-busy={isLoading}>
+					<GenericTable aria-busy={isPending}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.units.map(({ _id, name, visibility }) => (

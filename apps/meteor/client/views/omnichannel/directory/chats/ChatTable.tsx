@@ -1,7 +1,7 @@
 import { Tag, Box, Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
-import { hashQueryKey } from '@tanstack/react-query';
+import { hashKey } from '@tanstack/react-query';
 import moment from 'moment';
 import React, { useState, useMemo, useCallback } from 'react';
 
@@ -90,10 +90,10 @@ const ChatTable = () => {
 		</>
 	);
 
-	const { data, isLoading, isSuccess, isError, refetch } = useCurrentChats(query);
+	const { data, isPending, isSuccess, isError, refetch } = useCurrentChats(query);
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const renderRow = useCallback(
 		({ _id, fname, ts, closedAt, department, tags }) => (
@@ -137,7 +137,7 @@ const ChatTable = () => {
 			{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && (
 				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
-			{isLoading && (
+			{isPending && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

@@ -1,5 +1,5 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 type useChannelsDataProps = {
   filter: string;
@@ -33,7 +33,7 @@ export const useChannelsData = ({ filter }: useChannelsDataProps) => {
       return options || [];
     },
 
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   });
 
   return data;

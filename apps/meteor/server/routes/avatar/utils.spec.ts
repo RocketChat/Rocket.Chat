@@ -171,7 +171,7 @@ describe('#setCacheAndDispositionHeaders', () => {
 	it('should set the Cache-Control header based on the query cacheTime', () => {
 		const request = {
 			query: {
-				cacheTime: 100,
+				gcTime: 100,
 			},
 		};
 

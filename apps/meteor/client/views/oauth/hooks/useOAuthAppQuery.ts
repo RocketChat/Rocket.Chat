@@ -11,23 +11,21 @@ type UseOAuthAppQueryOptions = Omit<
 export const useOAuthAppQuery = (clientId: string | undefined, options?: UseOAuthAppQueryOptions) => {
 	const getOAuthApp = useEndpoint('GET', '/v1/oauth-apps.get');
 
-	return useQuery(
-		{
-			queryKey: ['oauth-app', { clientId }] as const,
+	return useQuery({
+		queryKey: ['oauth-app', { clientId }] as const,
 
-			queryFn: async () => {
-				if (!clientId) {
-					throw new Error('Invalid OAuth client');
-				}
+		queryFn: async () => {
+			if (!clientId) {
+				throw new Error('Invalid OAuth client');
+			}
 
-				const { oauthApp } = await getOAuthApp({ clientId });
-				return {
-					...oauthApp,
-					_createdAt: new Date(oauthApp._createdAt),
-					_updatedAt: new Date(oauthApp._updatedAt),
-				};
-			},
+			const { oauthApp } = await getOAuthApp({ clientId });
+			return {
+				...oauthApp,
+				_createdAt: new Date(oauthApp._createdAt),
+				_updatedAt: new Date(oauthApp._updatedAt),
+			};
 		},
-		options,
-	);
+		...options,
+	});
 };

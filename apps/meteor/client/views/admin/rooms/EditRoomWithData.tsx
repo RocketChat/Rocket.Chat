@@ -22,7 +22,7 @@ const EditRoomWithData = ({ rid, onReload }: EditRoomWithDataProps) => {
 
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms.getRoom');
 
-	const { data, isLoading, refetch } = useQuery({
+	const { data, isPending, refetch } = useQuery({
 		queryKey: ['rooms', rid, 'admin'],
 
 		queryFn: async () => {
@@ -35,7 +35,7 @@ const EditRoomWithData = ({ rid, onReload }: EditRoomWithDataProps) => {
 		},
 	});
 
-	if (isLoading) {
+	if (isPending) {
 		return <ContextualbarSkeleton />;
 	}
 

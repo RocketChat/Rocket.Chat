@@ -2,7 +2,7 @@ import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRouter, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,7 +26,7 @@ export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { 
 	const { data: teamInfoData } = useQuery({
 		queryKey: ['teamId', teamId],
 		queryFn: async () => teamsInfoEndpoint({ teamId }),
-		keepPreviousData: true,
+		placeholderData: keepPreviousData,
 		retry: false,
 		enabled: room.teamId !== '',
 	});
@@ -74,7 +74,7 @@ export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { 
 		},
 	});
 
-	const isDeleting = deleteTeamMutation.isLoading || deleteRoomMutation.isLoading;
+	const isDeleting = deleteTeamMutation.isPending || deleteRoomMutation.isPending;
 
 	const handleDelete = useMutableCallback(() => {
 		const handleDeleteTeam = async (roomsToRemove: IRoom['_id'][]) => {

@@ -45,7 +45,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 	const formatDate = useFormatDate();
 
-	const { data: licenseData, isLoading, refetch: refetchLicense } = useLicense({ loadValues: true });
+	const { data: licenseData, isPending, refetch: refetchLicense } = useLicense({ loadValues: true });
 	const { isRegistered } = useRegistrationStatus();
 
 	const { license, limits } = licenseData || {};
@@ -167,7 +167,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 		).sort((a) => (a.danger ? -1 : 1));
 	}, [isOverLimits, t, isAirgapped, versions, versionStatus?.label, versionStatus?.expiration, formatDate, isRegistered]);
 
-	if (isLoading && !licenseData) {
+	if (isPending && !licenseData) {
 		return (
 			<Card style={{ ...cardBackground }}>
 				<VersionCardSkeleton />

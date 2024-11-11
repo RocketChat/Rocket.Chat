@@ -3,7 +3,7 @@ import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useMemo, useState } from 'react';
 
@@ -40,7 +40,7 @@ const RoomAutoComplete = ({ value, onChange, scope = 'regular', renderRoomIcon, 
 	const result = useQuery({
 		queryKey: [ROOM_AUTOCOMPLETE_PARAMS[scope].key, filterDebounced],
 		queryFn: () => roomsAutoCompleteEndpoint(generateQuery(filterDebounced)),
-		keepPreviousData: true,
+		placeholderData: keepPreviousData,
 	});
 
 	const options = useMemo(

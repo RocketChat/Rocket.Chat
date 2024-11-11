@@ -1,7 +1,7 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashQueryKey } from '@tanstack/react-query';
+import { useQuery, hashKey } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
@@ -43,13 +43,13 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	);
 
 	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
-	const { data, isSuccess, isLoading, refetch } = useQuery({
+	const { data, isSuccess, isPending, refetch } = useQuery({
 		queryKey: ['/v1/livechat/sla', query],
 		queryFn: () => getSlaData(query),
 	});
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	useEffect(() => {
 		reload.current = refetch;
@@ -92,7 +92,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			{((isSuccess && data?.sla.length > 0) || queryHasChanged) && (
 				<FilterByText value={filter} onChange={(event) => setFilter(event.target.value)} />
 			)}
-			{isLoading && (
+			{isPending && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

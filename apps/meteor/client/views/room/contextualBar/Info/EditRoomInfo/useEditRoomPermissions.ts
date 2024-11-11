@@ -1,6 +1,6 @@
 import type { IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { usePermission, useAtLeastOnePermission, useRole, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { E2EEState } from '../../../../../../app/e2e/client/E2EEState';
@@ -23,7 +23,7 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 	const { data: teamInfoData } = useQuery({
 		queryKey: ['teamId', teamId],
 		queryFn: async () => teamsInfoEndpoint({ teamId }),
-		keepPreviousData: true,
+		placeholderData: keepPreviousData,
 		retry: false,
 		enabled: room.teamId !== '',
 	});

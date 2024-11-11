@@ -11,13 +11,13 @@ const TagEditWithDepartmentData = ({ tagData }: { tagData: ILivechatTag }) => {
 	const t = useTranslation();
 
 	const getDepartmentsById = useEndpoint('GET', '/v1/livechat/department.listByIds');
-	const { data, isLoading, isError } = useQuery({
+	const { data, isPending, isError } = useQuery({
 		queryKey: ['livechat-getDepartmentsById', tagData.departments],
 		queryFn: async () => getDepartmentsById({ ids: tagData.departments }),
 		refetchOnWindowFocus: false,
 	});
 
-	if (isLoading) {
+	if (isPending) {
 		return <ContextualbarSkeleton />;
 	}
 

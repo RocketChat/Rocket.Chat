@@ -18,7 +18,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 	const {
 		data: report,
 		refetch: reloadUserMessages,
-		isLoading,
+		isPending,
 		isSuccess,
 		isError,
 	} = useQuery({
@@ -41,7 +41,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 	return (
 		<>
 			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
-				{isLoading && <Message>{t('Loading')}</Message>}
+				{isPending && <Message>{t('Loading')}</Message>}
 				{isSuccess && (
 					<Box padding={24}>
 						{report.messages.length > 0 && (

@@ -1,6 +1,6 @@
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useStream } from '@rocket.chat/ui-contexts';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import React, { useEffect } from 'react';
 
@@ -89,7 +89,7 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 		},
 
 		staleTime: Infinity,
-		keepPreviousData: true,
+		placeholderData: keepPreviousData,
 
 		onSettled: () =>
 			queryClient.invalidateQueries({
@@ -123,7 +123,7 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 		queryKey: ['marketplace', 'apps-stored', instance.data, marketplace.data],
 		queryFn: () => storeQueryFunction(marketplace, instance),
 		enabled: marketplace.isFetched && instance.isFetched,
-		keepPreviousData: true,
+		placeholderData: keepPreviousData,
 	});
 
 	const [marketplaceAppsData, installedAppsData, privateAppsData] = marketplaceData || [];

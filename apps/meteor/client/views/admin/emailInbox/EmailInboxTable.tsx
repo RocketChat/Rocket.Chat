@@ -65,7 +65,7 @@ const EmailInboxTable = (): ReactElement => {
 
 	return (
 		<>
-			{result.isLoading && (
+			{result.isPending && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

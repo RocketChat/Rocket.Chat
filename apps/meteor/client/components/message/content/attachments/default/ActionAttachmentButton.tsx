@@ -29,7 +29,7 @@ const ActionAttachmentButton = ({ children, processingType, msg, mid }: ActionAt
 			small
 			value={msg}
 			id={mid}
-			disabled={performActionMutation.isLoading}
+			disabled={performActionMutation.isPending}
 			onClick={(event): void => {
 				event.preventDefault();
 

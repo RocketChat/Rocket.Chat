@@ -1,7 +1,7 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashQueryKey } from '@tanstack/react-query';
+import { useQuery, hashKey } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 
 import GenericError from '../../../components/GenericError';
@@ -29,13 +29,13 @@ const TriggersTable = () => {
 	const query = useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]);
 
 	const getTriggers = useEndpoint('GET', '/v1/livechat/triggers');
-	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
+	const { data, refetch, isSuccess, isPending, isError } = useQuery({
 		queryKey: ['livechat-triggers', query],
 		queryFn: async () => getTriggers(query),
 	});
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const headers = (
 		<>
@@ -48,7 +48,7 @@ const TriggersTable = () => {
 
 	return (
 		<>
-			{isLoading && (
+			{isPending && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

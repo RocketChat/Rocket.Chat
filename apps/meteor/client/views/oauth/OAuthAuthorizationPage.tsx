@@ -21,7 +21,7 @@ const OAuthAuthorizationPage = () => {
 		return <RegistrationPageRouter />;
 	}
 
-	if (oauthAppQuery.isLoading) {
+	if (oauthAppQuery.isPending) {
 		return <PageLoading />;
 	}
 

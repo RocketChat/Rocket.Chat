@@ -1,5 +1,5 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import type { UserAutoCompleteOptionType } from '../UsersSelectElement';
 
@@ -27,7 +27,7 @@ export const useUsersData = ({ filter }: useUsersDataProps) => {
       return options || [];
     },
 
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   });
 
   return data;

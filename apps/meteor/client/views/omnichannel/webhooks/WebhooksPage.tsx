@@ -156,10 +156,10 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 					</Button>
 					<Button
 						onClick={() => testWebhook.mutateAsync()}
-						disabled={canTest || testWebhook.isLoading}
+						disabled={canTest || testWebhook.isPending}
 						title={canTest ? t('Webhook_URL_not_set') : ''}
 					>
-						{testWebhook.isLoading ? t('Sending') : t('Send_Test')}
+						{testWebhook.isPending ? t('Sending') : t('Send_Test')}
 					</Button>
 					<Button primary onClick={handleSubmit(handleSave)} loading={isSubmitting} disabled={!isDirty}>
 						{t('Save')}

@@ -48,7 +48,7 @@ const UsersInRoleTable = ({ rid, roleId, roleName, description }: UsersInRoleTab
 		[itemsPerPage, current, rid, roleId],
 	);
 
-	const { data, isLoading, isSuccess, refetch, isError } = useQuery({
+	const { data, isPending, isSuccess, refetch, isError } = useQuery({
 		queryKey: ['getUsersInRole', roleId, query],
 
 		queryFn: async () => getUsersInRoleEndpoint(query),
@@ -93,7 +93,7 @@ const UsersInRoleTable = ({ rid, roleId, roleName, description }: UsersInRoleTab
 
 	return (
 		<>
-			{isLoading && (
+			{isPending && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

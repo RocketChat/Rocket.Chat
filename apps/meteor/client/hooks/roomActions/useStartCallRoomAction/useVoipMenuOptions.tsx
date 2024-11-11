@@ -22,12 +22,12 @@ const useVoipMenuOptions = () => {
 	const members = useMemo(() => uids.filter((uid) => uid !== ownUserId), [uids, ownUserId]);
 	const remoteUserId = members[0];
 
-	const { data: { user: remoteUser } = {}, isLoading } = useUserInfoQuery({ userId: remoteUserId }, { enabled: Boolean(remoteUserId) });
+	const { data: { user: remoteUser } = {}, isPending } = useUserInfoQuery({ userId: remoteUserId }, { enabled: Boolean(remoteUserId) });
 
 	const isRemoteRegistered = !!remoteUser?.freeSwitchExtension;
 	const isDM = members.length === 1;
 
-	const disabled = isMicPermissionDenied || !isDM || !isRemoteRegistered || !isRegistered || isInCall || isLoading;
+	const disabled = isMicPermissionDenied || !isDM || !isRemoteRegistered || !isRegistered || isInCall || isPending;
 
 	const title = useMemo(() => {
 		if (isMicPermissionDenied) {

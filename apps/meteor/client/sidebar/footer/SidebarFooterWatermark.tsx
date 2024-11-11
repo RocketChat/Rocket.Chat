@@ -22,7 +22,7 @@ export const SidebarFooterWatermark = (): ReactElement | null => {
 
 	const license = response.data;
 
-	if (license.activeModules.includes('hide-watermark') && !license.trial) {
+	if (license?.activeModules.includes('hide-watermark') && !license.trial) {
 		return null;
 	}
 

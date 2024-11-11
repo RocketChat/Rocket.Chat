@@ -14,7 +14,7 @@ const AppReleases = ({ id }: { id: App['id'] }): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 
-	const { data, isLoading, isFetched } = useQuery({
+	const { data, isPending, isFetched } = useQuery({
 		queryKey: ['apps', id, 'versions'],
 
 		queryFn: async () => {
@@ -34,7 +34,7 @@ const AppReleases = ({ id }: { id: App['id'] }): ReactElement => {
 	return (
 		<>
 			<Accordion width='100%' alignSelf='center'>
-				{isLoading && <AccordionLoading />}
+				{isPending && <AccordionLoading />}
 				{isFetched && <>{data?.map((release) => <AppReleasesItem release={release} key={release.version} />)}</>}
 			</Accordion>
 		</>

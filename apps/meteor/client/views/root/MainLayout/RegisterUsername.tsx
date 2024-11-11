@@ -73,7 +73,7 @@ const RegisterUsername = () => {
 		},
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Username_has_been_updated') });
-			queryClient.invalidateQueries(['users.info']);
+			queryClient.invalidateQueries({ queryKey: ['users.info'] });
 		},
 		onError: (error: any, { username }) => {
 			if ([error.error, error.errorType].includes('error-blocked-username')) {

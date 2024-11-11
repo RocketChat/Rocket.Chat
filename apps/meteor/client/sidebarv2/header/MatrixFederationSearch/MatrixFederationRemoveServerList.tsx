@@ -28,7 +28,7 @@ const MatrixFederationRemoveServerList = ({ servers }: MatrixFederationRemoveSer
 
 	const queryClient = useQueryClient();
 
-	const { mutate: removeServer, isLoading: isRemovingServer } = useMutation({
+	const { mutate: removeServer, isPending: isRemovingServer } = useMutation({
 		mutationKey: ['federation/removeServerByUser'],
 		mutationFn: (serverName: string) => removeMatrixServer({ serverName }),
 

@@ -13,17 +13,14 @@ export const useRegistrationStatus = (): useRegistrationStatusReturnType => {
 
 	const queryResult = useQuery({
 		queryKey: ['getRegistrationStatus'],
-
 		queryFn: () => {
 			if (!canViewregistrationStatus) {
 				throw new Error('unauthorized api call');
 			}
 			return getRegistrationStatus();
 		},
-
-		keepPreviousData: true,
 		staleTime: Infinity,
 	});
 
-	return { isRegistered: !queryResult.isLoading && queryResult.data?.registrationStatus?.workspaceRegistered, ...queryResult };
+	return { isRegistered: !queryResult.isPending && queryResult.data?.registrationStatus?.workspaceRegistered, ...queryResult };
 };

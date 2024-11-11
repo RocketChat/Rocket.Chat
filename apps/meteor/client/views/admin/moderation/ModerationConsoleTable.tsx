@@ -1,7 +1,7 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -55,7 +55,7 @@ const ModerationConsoleTable = () => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { data, isLoading, isSuccess } = useQuery({
+	const { data, isPending, isSuccess } = useQuery({
 		queryKey: ['moderation', 'msgReports', 'fetchAll', query],
 		queryFn: async () => getReports(query),
 
@@ -63,7 +63,7 @@ const ModerationConsoleTable = () => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 
-		keepPreviousData: true,
+		placeholderData: keepPreviousData,
 	});
 
 	const handleClick = useMutableCallback((id): void => {
@@ -105,10 +105,10 @@ const ModerationConsoleTable = () => {
 	return (
 		<>
 			<ModerationFilter text={text} setText={setText} setDateRange={setDateRange} />
-			{isLoading && (
+			{isPending && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
-					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={6} />}</GenericTableBody>
+					<GenericTableBody>{isPending && <GenericTableLoadingTable headerCells={6} />}</GenericTableBody>
 				</GenericTable>
 			)}
 			{isSuccess && data.reports.length > 0 && (

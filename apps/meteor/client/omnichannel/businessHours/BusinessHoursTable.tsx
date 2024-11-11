@@ -35,7 +35,7 @@ const BusinessHoursTable = () => {
 	);
 
 	const getBusinessHours = useEndpoint('GET', '/v1/livechat/business-hours');
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
+	const { data, isPending, isSuccess, isError, refetch } = useQuery({
 		queryKey: ['livechat-getBusinessHours', query],
 
 		queryFn: async () => getBusinessHours(query),
@@ -54,7 +54,7 @@ const BusinessHoursTable = () => {
 	return (
 		<>
 			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
-			{isLoading && (
+			{isPending && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

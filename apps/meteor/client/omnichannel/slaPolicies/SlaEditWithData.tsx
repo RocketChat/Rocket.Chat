@@ -15,13 +15,13 @@ type SlaEditProps = {
 
 function SlaEditWithData({ slaId, reload }: SlaEditProps): ReactElement {
 	const getSLA = useEndpoint('GET', `/v1/livechat/sla/:slaId`, { slaId });
-	const { data, isLoading, isError } = useQuery({
+	const { data, isPending, isError } = useQuery({
 		queryKey: ['/v1/livechat/sla', slaId],
 		queryFn: () => getSLA(),
 	});
 	const { t } = useTranslation();
 
-	if (isLoading) {
+	if (isPending) {
 		return <FormSkeleton />;
 	}
 

@@ -1,7 +1,7 @@
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box, Button } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRoute } from '@rocket.chat/ui-contexts';
-import { hashQueryKey } from '@tanstack/react-query';
+import { hashKey } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -65,10 +65,10 @@ function ContactTable(): ReactElement {
 			}),
 	);
 
-	const { data, isLoading, isError, isSuccess, refetch } = useCurrentContacts(query);
+	const { data, isPending, isError, isSuccess, refetch } = useCurrentContacts(query);
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const headers = (
 		<>
@@ -112,7 +112,7 @@ function ContactTable(): ReactElement {
 					</Button>
 				</FilterByText>
 			)}
-			{isLoading && (
+			{isPending && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

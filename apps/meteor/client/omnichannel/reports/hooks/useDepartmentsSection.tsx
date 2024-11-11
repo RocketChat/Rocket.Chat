@@ -22,7 +22,7 @@ export const useDepartmentsSection = () => {
 
 	const {
 		data: { data, total = 0, unspecified = 0 } = { data: [], total: 0 },
-		isLoading,
+		isPending,
 		isError,
 		isSuccess,
 		refetch,
@@ -58,7 +58,7 @@ export const useDepartmentsSection = () => {
 			emptyStateSubtitle,
 			data,
 			total,
-			isLoading,
+			isPending,
 			isError,
 			isDataFound: isSuccess && data.length > 0,
 			periodSelectorProps,
@@ -66,6 +66,6 @@ export const useDepartmentsSection = () => {
 			downloadProps,
 			onRetry: refetch,
 		}),
-		[title, subtitle, emptyStateSubtitle, data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps, refetch],
+		[title, subtitle, emptyStateSubtitle, data, total, isPending, isError, isSuccess, periodSelectorProps, period, downloadProps, refetch],
 	);
 };

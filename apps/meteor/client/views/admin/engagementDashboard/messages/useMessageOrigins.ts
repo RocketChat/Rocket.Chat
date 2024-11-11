@@ -31,6 +31,6 @@ export const useMessageOrigins = ({ period }: UseMessageOriginsOptions) => {
 		},
 
 		refetchInterval: 5 * 60 * 1000,
-		useErrorBoundary: true,
+		throwOnError: true,
 	});
 };

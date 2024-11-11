@@ -42,7 +42,7 @@ const IntegrationsTable = ({ type }: { type?: string }) => {
 	);
 
 	const getIntegrations = useEndpoint('GET', '/v1/integrations.list');
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
+	const { data, isPending, isSuccess, isError, refetch } = useQuery({
 		queryKey: ['integrations', query],
 		queryFn: async () => getIntegrations(query),
 	});
@@ -101,7 +101,7 @@ const IntegrationsTable = ({ type }: { type?: string }) => {
 	return (
 		<>
 			<FilterByText placeholder={t('Search_Integrations')} value={text} onChange={(event) => setText(event.target.value)} />
-			{isLoading && (
+			{isPending && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

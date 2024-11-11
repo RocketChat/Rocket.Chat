@@ -30,7 +30,7 @@ export const useAppActionButtons = <TContext extends `${UIActionButtonContext}`>
 		queryFn: () => getActionButtons(),
 
 		...(context && {
-			select: (data) =>
+			select: (data: IUIActionButton[]) =>
 				data.filter(
 					(
 						button,
@@ -116,7 +116,7 @@ export const useMessageboxAppsActionButtons = () => {
 	return {
 		...result,
 		data,
-	} as UseQueryResult<MessageBoxAction[]>;
+	} as unknown as UseQueryResult<MessageBoxAction[]>;
 };
 
 export const useUserDropdownAppsActionButtons = () => {
@@ -164,7 +164,7 @@ export const useUserDropdownAppsActionButtons = () => {
 	return {
 		...result,
 		data,
-	} as UseQueryResult<GenericMenuItemProps[]>;
+	} as unknown as UseQueryResult<GenericMenuItemProps[]>;
 };
 
 export const useMessageActionAppsActionButtons = (context?: MessageActionContext, category?: string) => {
@@ -222,5 +222,5 @@ export const useMessageActionAppsActionButtons = (context?: MessageActionContext
 	return {
 		...result,
 		data,
-	} as UseQueryResult<MessageActionConfig[]>;
+	} as unknown as UseQueryResult<MessageActionConfig[]>;
 };

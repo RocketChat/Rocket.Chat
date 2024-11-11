@@ -13,14 +13,14 @@ type DepartmentFieldProps = {
 
 const DepartmentField = ({ departmentId }: DepartmentFieldProps) => {
 	const { t } = useTranslation();
-	const { data, isLoading, isError } = useDepartmentInfo(departmentId);
+	const { data, isPending, isError } = useDepartmentInfo(departmentId);
 
 	return (
 		<Field>
 			<Label>{t('Department')}</Label>
-			{isLoading && <Skeleton />}
+			{isPending && <Skeleton />}
 			{isError && <Box color='danger'>{t('Something_went_wrong')}</Box>}
-			{!isLoading && !isError && <Info>{data?.department?.name || t('Department_not_found')}</Info>}
+			{!isPending && !isError && <Info>{data?.department?.name || t('Department_not_found')}</Info>}
 		</Field>
 	);
 };

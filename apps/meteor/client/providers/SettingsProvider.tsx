@@ -93,7 +93,7 @@ const SettingsProvider = ({ children, privileged = false }: SettingsProviderProp
 		changes.forEach((val) => {
 			switch (val._id) {
 				case 'Enterprise_License':
-					queryClient.invalidateQueries(['licenses']);
+					queryClient.invalidateQueries({ queryKey: ['licenses'] });
 					break;
 
 				default:

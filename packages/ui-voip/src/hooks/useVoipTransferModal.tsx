@@ -40,12 +40,12 @@ export const useVoipTransferModal = ({ session }: UseVoipTransferParams) => {
 		setModal(
 			<VoipTransferModal
 				extension={session.contact.id}
-				isLoading={handleTransfer.isLoading}
+				isLoading={handleTransfer.isPending}
 				onCancel={() => setModal(null)}
 				onConfirm={handleTransfer.mutate}
 			/>,
 		);
-	}, [handleTransfer.isLoading, handleTransfer.mutate, session, setModal]);
+	}, [handleTransfer.isPending, handleTransfer.mutate, session, setModal]);
 
 	return { startTransfer, cancelTransfer: close };
 };

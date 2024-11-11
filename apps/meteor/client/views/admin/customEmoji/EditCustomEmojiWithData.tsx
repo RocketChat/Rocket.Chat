@@ -19,7 +19,7 @@ const EditCustomEmojiWithData = ({ _id, onChange, close, ...props }: EditCustomE
 
 	const getEmojis = useEndpoint('GET', '/v1/emoji-custom.list');
 
-	const { data, isLoading, error, refetch } = useQuery({
+	const { data, isPending, error, refetch } = useQuery({
 		queryKey: ['custom-emojis', query],
 
 		queryFn: async () => {
@@ -28,7 +28,7 @@ const EditCustomEmojiWithData = ({ _id, onChange, close, ...props }: EditCustomE
 		},
 	});
 
-	if (isLoading) {
+	if (isPending) {
 		return <FormSkeleton pi={20} />;
 	}
 

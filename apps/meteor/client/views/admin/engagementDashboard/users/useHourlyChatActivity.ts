@@ -30,6 +30,6 @@ export const useHourlyChatActivity = ({ displacement, utc }: UseHourlyChatActivi
 		},
 
 		refetchInterval: 5 * 60 * 1000,
-		useErrorBoundary: true,
+		throwOnError: true,
 	});
 };

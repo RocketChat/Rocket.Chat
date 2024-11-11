@@ -11,31 +11,30 @@ export const useReactiveQuery = <TQueryFnData, TData = TQueryFnData, TQueryKey e
 ): UseQueryResult<TData, Error> => {
 	const queryClient = useQueryClient();
 
-	return useQuery(
-		{
-			queryKey,
+	return useQuery({
+		queryKey,
 
-			queryFn: (): Promise<TQueryFnData> =>
-				new Promise((resolve, reject) => {
-					queueMicrotask(() => {
-						Tracker.autorun((c) => {
-							const data = reactiveQueryFn();
+		queryFn: (): Promise<TQueryFnData> =>
+			new Promise((resolve, reject) => {
+				queueMicrotask(() => {
+					Tracker.autorun((c) => {
+						const data = reactiveQueryFn();
 
-							if (c.firstRun) {
-								if (data === undefined) {
-									reject(new Error('Reactive query returned undefined'));
-								} else {
-									resolve(data);
-								}
-								return;
+						if (c.firstRun) {
+							if (data === undefined) {
+								reject(new Error('Reactive query returned undefined'));
+							} else {
+								resolve(data);
 							}
+							return;
+						}
 
-							queryClient.invalidateQueries(queryKey, { exact: true });
-							c.stop();
-						});
+						queryClient.invalidateQueries({ queryKey, exact: true });
+						c.stop();
 					});
-				}),
-		},
-		{ staleTime: Infinity, ...options },
-	);
+				});
+			}),
+		staleTime: Infinity,
+		...options,
+	});
 };

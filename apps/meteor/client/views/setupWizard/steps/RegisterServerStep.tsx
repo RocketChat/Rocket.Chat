@@ -44,7 +44,7 @@ const RegisterServerStep = (): ReactElement => {
 
 	const {
 		data: offline,
-		isLoading,
+		isPending,
 		isError,
 	} = useQuery({
 		queryKey: ['setupWizard/registerIntent'],
@@ -55,7 +55,7 @@ const RegisterServerStep = (): ReactElement => {
 
 	const { mutate } = useMutation({
 		mutationKey: ['setupWizard/confirmOfflineRegistration'],
-		mutationFn: async (token) => registerManually({ cloudBlob: token }),
+		mutationFn: async (token: string) => registerManually({ cloudBlob: token }),
 
 		onSuccess: () => {
 			invalidateLicenseQuery(100);
@@ -92,7 +92,7 @@ const RegisterServerStep = (): ReactElement => {
 				stepCount={maxSteps}
 				onSubmit={handleRegister}
 				currentStep={currentStep}
-				offline={isError || (!isLoading && offline)}
+				offline={isError || (!isPending && offline)}
 			/>
 		</I18nextProvider>
 	);

@@ -88,7 +88,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 					{isRoomFederated(room) ? (
 						<Button
 							primary
-							disabled={addClickHandler.isLoading}
+							disabled={addClickHandler.isPending}
 							onClick={() =>
 								addClickHandler.mutate({
 									users: getValues('users'),

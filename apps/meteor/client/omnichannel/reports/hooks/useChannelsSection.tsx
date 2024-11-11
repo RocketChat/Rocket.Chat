@@ -46,7 +46,7 @@ export const useChannelsSection = () => {
 	const {
 		data: { data, rawData, total } = { data: [], rawData: [], total: 0 },
 		refetch,
-		isLoading,
+		isPending,
 		isError,
 		isSuccess,
 	} = useQuery({
@@ -80,7 +80,7 @@ export const useChannelsSection = () => {
 			emptyStateSubtitle,
 			data,
 			total,
-			isLoading,
+			isPending,
 			isError,
 			isDataFound: isSuccess && data.length > 0,
 			periodSelectorProps,
@@ -88,6 +88,6 @@ export const useChannelsSection = () => {
 			downloadProps,
 			onRetry: refetch,
 		}),
-		[title, subtitle, emptyStateSubtitle, data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps, refetch],
+		[title, subtitle, emptyStateSubtitle, data, total, isPending, isError, isSuccess, periodSelectorProps, period, downloadProps, refetch],
 	);
 };

@@ -16,7 +16,7 @@ const AgentEditWithData = ({ uid }: { uid: ILivechatAgent['_id'] }): ReactElemen
 	const getAgentById = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: uid });
 	const getAgentDepartments = useEndpoint('GET', '/v1/livechat/agents/:agentId/departments', { agentId: uid });
 
-	const { data, isLoading, error } = useQuery({
+	const { data, isPending, error } = useQuery({
 		queryKey: ['livechat-getAgentById', uid],
 		queryFn: async () => getAgentById(),
 		refetchOnWindowFocus: false,
@@ -24,7 +24,7 @@ const AgentEditWithData = ({ uid }: { uid: ILivechatAgent['_id'] }): ReactElemen
 
 	const {
 		data: agentDepartments,
-		isLoading: agentDepartmentsLoading,
+		isPending: agentDepartmentsLoading,
 		error: agentsDepartmentsError,
 	} = useQuery({
 		queryKey: ['livechat-getAgentDepartments', uid],
@@ -34,14 +34,14 @@ const AgentEditWithData = ({ uid }: { uid: ILivechatAgent['_id'] }): ReactElemen
 
 	const {
 		data: availableDepartments,
-		isLoading: availableDepartmentsLoading,
+		isPending: availableDepartmentsLoading,
 		error: availableDepartmentsError,
 	} = useQuery({
 		queryKey: ['livechat-getAvailableDepartments'],
 		queryFn: async () => getAvailableDepartments({ showArchived: 'true' }),
 	});
 
-	if (isLoading || availableDepartmentsLoading || agentDepartmentsLoading || !agentDepartments || !availableDepartments) {
+	if (isPending || availableDepartmentsLoading || agentDepartmentsLoading || !agentDepartments || !availableDepartments) {
 		return <FormSkeleton />;
 	}
 
