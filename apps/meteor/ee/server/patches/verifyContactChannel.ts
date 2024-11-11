@@ -24,7 +24,7 @@ export const runVerifyContactChannel = async (
 		throw new Error('error-invalid-room');
 	}
 
-	logger.debug(`Start verifying contact channel for visitor ${visitorId} and room ${roomId}`);
+	logger.debug({ msg: 'Start verifying contact channel', contactId, visitorId, roomId });
 
 	await LivechatContacts.updateContactChannel(
 		{
@@ -41,22 +41,25 @@ export const runVerifyContactChannel = async (
 
 	await LivechatRooms.update({ _id: roomId }, { $set: { verified: true } });
 
-	logger.debug(`Merging contacts for visitor ${visitorId} and room ${roomId}`);
+	logger.debug({ msg: 'Merging contacts', contactId, visitorId, roomId });
 
 	const mergeContactsResult = await mergeContacts(contactId, { visitorId, source: room.source });
 
-	logger.debug(`Finding inquiry for room ${roomId}`);
+	logger.debug({ msg: 'Finding inquiry', roomId });
 	const inquiry = await LivechatInquiry.findOneReadyByRoomId(roomId);
 	if (!inquiry) {
 		throw new Error('error-invalid-inquiry');
 	}
 
-	logger.debug(`Saving inquiry for room ${roomId}`);
+	logger.debug({ msg: 'Saving inquiry', roomId });
 	await saveQueueInquiry(inquiry);
 
-	logger.debug(
-		`Contact channel for contact ${contactId}, visitor ${visitorId} and room ${roomId} has been verified and merged successfully`,
-	);
+	logger.debug({
+		msg: 'Contact channel has been verified and merged successfully',
+		contactId,
+		visitorId,
+		roomId,
+	});
 	return mergeContactsResult;
 };
 
