@@ -2,7 +2,7 @@ import type { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import { ChatSubscription } from './ChatSubscription';
+import { Subscriptions } from './Subscriptions';
 import { Users } from './Users';
 import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 
@@ -19,7 +19,7 @@ class RolesCollection extends Mongo.Collection<IRole> implements MinimongoCollec
 
 		switch (roleScope) {
 			case 'Subscriptions':
-				return ChatSubscription.findUsersInRoles(roleId, scope, options);
+				return Subscriptions.findUsersInRoles(roleId, scope, options);
 
 			case 'Users':
 				return Users.findUsersInRoles(roleId, scope, options);
@@ -37,7 +37,7 @@ class RolesCollection extends Mongo.Collection<IRole> implements MinimongoCollec
 
 			switch (roleScope) {
 				case 'Subscriptions':
-					return ChatSubscription.isUserInRole(userId, roleId, scope);
+					return Subscriptions.isUserInRole(userId, roleId, scope);
 
 				case 'Users':
 					return Users.isUserInRole(userId, roleId);

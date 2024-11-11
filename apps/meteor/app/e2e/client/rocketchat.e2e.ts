@@ -38,7 +38,7 @@ import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
 import { isTruthy } from '../../../lib/isTruthy';
-import { ChatRoom, Subscriptions, Messages } from '../../models/client';
+import { Rooms, Subscriptions, Messages } from '../../models/client';
 import { settings } from '../../settings/client';
 import { getUserAvatarURL } from '../../utils/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
@@ -254,7 +254,7 @@ class E2E extends Emitter {
 	}
 
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
-		const room = await waitUntilFind(() => ChatRoom.findOne({ _id: rid }));
+		const room = await waitUntilFind(() => Rooms.findOne({ _id: rid }));
 
 		if (room.t !== 'd' && room.t !== 'p') {
 			return null;
@@ -835,7 +835,7 @@ class E2E extends Emitter {
 		}
 
 		const keyDistribution = async () => {
-			const roomIds = ChatRoom.find({
+			const roomIds = Rooms.find({
 				'usersWaitingForE2EKeys': { $exists: true },
 				'usersWaitingForE2EKeys.userId': { $ne: Meteor.userId() },
 			}).map((room) => room._id);
