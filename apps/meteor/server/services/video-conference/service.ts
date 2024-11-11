@@ -1097,7 +1097,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
-		const name = settings.get<string>('VideoConf_Persistent_Chat_Discussion_Name') || i18n.t('[date] - Video Call Persisted Chat');
+		const name = settings.get<string>('VideoConf_Persistent_Chat_Discussion_Name') || i18n.t('[date] Video Call Chat');
 		let displayName;
 		const date = new Date().toISOString().substring(0, 10);
 

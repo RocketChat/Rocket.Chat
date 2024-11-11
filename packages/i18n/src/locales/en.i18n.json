@@ -5879,7 +5879,7 @@
   "VideoConf_Enable_Persistent_Chat_description": "When persistent chat is enabled, Rocket.Chat will create a discussion every time a conference call is initiated. The provider app is responsible for sending the chat messages to this discussion.",
   "VideoConf_Enable_Persistent_Chat_Alert": "Persistent Chat will not work if discussions are disabled on the workspace. It will also not work if the provider app being used do not explicitly support this feature.",
   "VideoConf_Persistent_Chat_Discussion_Name": "Persistent Chat Discussion Name",
-  "VideoConf_Persistent_Chat_Discussion_Name_Description": "You can use the tag [date] to select where the date of the disscussion will show on its name, if no tag is provided, the date will be added to the start of the name",
+  "VideoConf_Persistent_Chat_Discussion_Name_Description": "Use [date] tag to set where to include the date. Date will be added to the start if tag is not included.",
   "VideoConf_Mobile_Ringing": "Enable mobile ringing",
   "VideoConf_Mobile_Ringing_Description": "When enabled, direct calls to mobile users will ring their device as a phone call.",
   "VideoConf_Mobile_Ringing_Alert": "This feature is currently in an experimental stage and may not yet be fully supported by the mobile app. When enabled it will send additional Push Notifications to users.",
