@@ -3,8 +3,8 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
+import { onLoggedIn } from '../../../../client/lib/loggedIn';
 import { emoji, removeFromRecent, replaceEmojiInRecent } from '../../../emoji/client';
-import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 import { getURL } from '../../../utils/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
@@ -144,8 +144,8 @@ emoji.packages.emojiCustom = {
 	renderPicker: customRender,
 };
 
-Meteor.startup(() =>
-	CachedCollectionManager.onLogin(async () => {
+Meteor.startup(() => {
+	onLoggedIn(async () => {
 		try {
 			const {
 				emojis: { update: emojis },
@@ -167,5 +167,5 @@ Meteor.startup(() =>
 		} catch (e) {
 			console.error('Error getting custom emoji', e);
 		}
-	}),
-);
+	});
+});
