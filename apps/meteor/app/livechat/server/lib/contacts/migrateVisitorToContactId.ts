@@ -1,7 +1,7 @@
 import type { ILivechatVisitor, IOmnichannelSource, ILivechatContact, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
 
-import { Livechat } from '../LivechatTyped';
+import { livechatContactsLogger as logger } from '../logger';
 import { ContactMerger } from './ContactMerger';
 import { createContactFromVisitor } from './createContactFromVisitor';
 
@@ -30,12 +30,12 @@ export async function migrateVisitorToContactId(
 	// Search for any contact that is not yet associated with any visitor and that have the same email or phone number as this visitor.
 	const existingContact = await LivechatContacts.findContactMatchingVisitor(visitor);
 	if (!existingContact) {
-		Livechat.logger.debug(`Creating a new contact for existing visitor ${visitor._id}`);
+		logger.debug(`Creating a new contact for existing visitor ${visitor._id}`);
 		return createContactFromVisitor(visitor, source);
 	}
 
 	// There is already an existing contact with no linked visitors and matching this visitor's phone or email, so let's use it
-	Livechat.logger.debug(`Adding channel to existing contact ${existingContact._id}`);
+	logger.debug(`Adding channel to existing contact ${existingContact._id}`);
 	await ContactMerger.mergeVisitorIntoContact(visitor, existingContact, source);
 
 	// Update all existing rooms matching the visitor id and source to set the contactId to them

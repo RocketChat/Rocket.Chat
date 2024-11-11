@@ -27,11 +27,9 @@ const { migrateVisitorToContactId } = proxyquire
 			},
 		},
 		'@rocket.chat/models': modelsMock,
-		'../LivechatTyped': {
-			Livechat: {
-				logger: {
-					debug: sinon.stub(),
-				},
+		'../logger': {
+			livechatContactsLogger: {
+				debug: sinon.stub(),
 			},
 		},
 	});
