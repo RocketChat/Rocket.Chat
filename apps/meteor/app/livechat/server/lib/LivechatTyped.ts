@@ -363,6 +363,10 @@ class LivechatClass {
 			throw new Meteor.Error('error-omnichannel-is-disabled');
 		}
 
+		if (await LivechatContacts.isChannelBlocked(this.makeVisitorAssociation(visitor._id, roomInfo.source))) {
+			throw new Error('error-contact-channel-blocked');
+		}
+
 		const defaultAgent = await callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, visitor);
 		// if no department selected verify if there is at least one active and pick the first
 		if (!defaultAgent && !visitor.department) {
@@ -373,10 +377,6 @@ class LivechatClass {
 				Livechat.logger.debug(`Assigning ${visitor._id} to department ${department._id}`);
 				visitor.department = department._id;
 			}
-		}
-
-		if (await LivechatContacts.isChannelBlocked(this.makeVisitorAssociation(visitor._id, roomInfo.source))) {
-			throw new Error('error-contact-channel-blocked');
 		}
 
 		// delegate room creation to QueueManager
