@@ -35,7 +35,7 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 		visitor: ILivechatContactVisitorAssociation,
 		data: Partial<ILivechatContactChannel>,
 		contactData?: Partial<Omit<ILivechatContact, 'channels'>>,
-		optionsL?: UpdateOptions,
+		options?: UpdateOptions,
 	): Promise<UpdateResult>;
 	findSimilarVerifiedContacts(
 		channel: Pick<ILivechatContactChannel, 'field' | 'value'>,

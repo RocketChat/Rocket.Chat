@@ -16,6 +16,17 @@ const modelsMock = {
 	},
 };
 
+const sessionMock = {
+	startTransaction: sinon.stub(),
+	commitTransaction: sinon.stub(),
+	abortTransaction: sinon.stub(),
+	endSession: sinon.stub(),
+};
+
+const clientMock = {
+	startSession: sinon.stub().returns(sessionMock),
+};
+
 const mergeContactsStub = sinon.stub();
 const saveQueueInquiryStub = sinon.stub();
 
@@ -23,6 +34,7 @@ const { runVerifyContactChannel } = proxyquire.noCallThru().load('../../../../..
 	'../../../app/livechat/server/lib/contacts/mergeContacts': { mergeContacts: mergeContactsStub },
 	'../../../app/livechat/server/lib/contacts/verifyContactChannel': { verifyContactChannel: { patch: sinon.stub() } },
 	'../../../app/livechat/server/lib/QueueManager': { saveQueueInquiry: saveQueueInquiryStub },
+	'../../../server/database/utils': { client: clientMock },
 	'@rocket.chat/models': modelsMock,
 });
 
@@ -32,6 +44,10 @@ describe('verifyContactChannel', () => {
 		modelsMock.LivechatRooms.update.reset();
 		modelsMock.LivechatInquiry.findOneReadyByRoomId.reset();
 		modelsMock.LivechatRooms.findOneById.reset();
+		sessionMock.startTransaction.reset();
+		sessionMock.commitTransaction.reset();
+		sessionMock.abortTransaction.reset();
+		sessionMock.endSession.reset();
 		mergeContactsStub.reset();
 		saveQueueInquiryStub.reset();
 	});

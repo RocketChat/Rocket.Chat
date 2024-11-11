@@ -1,6 +1,7 @@
 import type { ILivechatContact, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
+import type { MongoError } from 'mongodb';
 
 import { saveQueueInquiry } from '../../../app/livechat/server/lib/QueueManager';
 import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
@@ -16,6 +17,7 @@ export const runVerifyContactChannel = async (
 		visitorId: string;
 		roomId: string;
 	},
+	attempts = 2,
 ): Promise<ILivechatContact | null> => {
 	const { contactId, field, value, visitorId, roomId } = params;
 
@@ -50,14 +52,25 @@ export const runVerifyContactChannel = async (
 		await session.commitTransaction();
 
 		result = mergeContactsResult;
-	} catch (error) {
-		console.log(error);
+	} catch (e) {
+		// TODO: Add logger
+		console.log(e);
 		await session.abortTransaction();
-		await session.endSession();
-		return null;
-	}
+		// Dont propagate transaction errors
+		if (
+			(e as unknown as MongoError)?.errorLabels?.includes('UnknownTransactionCommitResult') ||
+			(e as unknown as MongoError)?.errorLabels?.includes('TransientTransactionError')
+		) {
+			if (attempts > 0) {
+				// TODO: Add logger
+				return runVerifyContactChannel(_next, params, attempts - 1);
+			}
+		}
 
-	await session.endSession();
+		return null;
+	} finally {
+		await session.endSession();
+	}
 
 	// Note: We should have a transaction here to ensure that the inquiry is saved only if the contact is successfully verified
 	// but the current implementation uses events, so I am not sure how to procced;
