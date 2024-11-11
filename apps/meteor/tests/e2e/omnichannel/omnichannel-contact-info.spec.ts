@@ -4,7 +4,7 @@ import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
-import { test } from '../utils/test';
+import { expect, test } from '../utils/test';
 
 test.describe('Omnichannel contact info', () => {
 	let poLiveChat: OmnichannelLiveChat;
@@ -45,9 +45,16 @@ test.describe('Omnichannel contact info', () => {
 			await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
 		});
 
-		await test.step('Expect to be see contact information and edit', async () => {
+		await test.step('Expect to be able to see contact information and edit', async () => {
 			await agent.poHomeChannel.content.btnContactInformation.click();
 			await agent.poHomeChannel.content.btnContactEdit.click();
+		});
+
+		await test.step('Expect to update room name and subscription when updating contact name', async () => {
+			await agent.poHomeChannel.content.inputContactName.fill('Edited Contact Name');
+			await agent.poHomeChannel.content.btnSaveContact.click();
+			await expect(agent.poHomeChannel.sidenav.sidebarChannelsList.getByText('Edited Contact Name')).toBeVisible();
+			await expect(agent.poHomeChannel.content.channelHeader.getByText('Edited Contact Name')).toBeVisible();
 		});
 	});
 });

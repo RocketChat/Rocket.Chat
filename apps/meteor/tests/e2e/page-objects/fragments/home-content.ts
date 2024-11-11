@@ -214,6 +214,14 @@ export class HomeContent {
 		return this.page.getByRole('dialog').getByRole('button', { name: 'Edit', exact: true });
 	}
 
+	get btnSaveContact(): Locator {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Save', exact: true });
+	}
+
+	get inputContactName(): Locator {
+		return this.page.getByRole('dialog').locator('[name=name]');
+	}
+
 	get inputModalClosingComment(): Locator {
 		return this.page.locator('#modal-root input:nth-child(1)[name="comment"]');
 	}
