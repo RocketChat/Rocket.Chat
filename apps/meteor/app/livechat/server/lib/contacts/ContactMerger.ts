@@ -280,7 +280,7 @@ export class ContactMerger {
 		};
 
 		if (Object.keys(updateData).length) {
-			await LivechatContacts.updateOne({ _id: contact._id }, updateData, { session });
+			await LivechatContacts.updateById(contact._id, updateData, { session });
 		}
 	}
 

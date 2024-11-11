@@ -20,6 +20,7 @@ import type {
 	UpdateResult,
 	UpdateFilter,
 	UpdateOptions,
+	FindOneAndUpdateOptions,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -72,13 +73,17 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return result.value;
 	}
 
-	async updateContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact> {
+	async updateContact(contactId: string, data: Partial<ILivechatContact>, options?: FindOneAndUpdateOptions): Promise<ILivechatContact> {
 		const updatedValue = await this.findOneAndUpdate(
 			{ _id: contactId },
 			{ $set: { ...data, unknown: false } },
-			{ returnDocument: 'after' },
+			{ returnDocument: 'after', ...options },
 		);
 		return updatedValue.value as ILivechatContact;
+	}
+
+	updateById(contactId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<Document | UpdateResult> {
+		return this.updateOne({ _id: contactId }, update, options);
 	}
 
 	findPaginatedContacts(

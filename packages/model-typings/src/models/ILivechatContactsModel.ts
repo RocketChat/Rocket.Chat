@@ -5,7 +5,7 @@ import type {
 	ILivechatContactVisitorAssociation,
 	ILivechatVisitor,
 } from '@rocket.chat/core-typings';
-import type { Document, FindCursor, FindOptions, UpdateOptions, UpdateResult } from 'mongodb';
+import type { Document, FindCursor, FindOneAndUpdateOptions, FindOptions, UpdateFilter, UpdateOptions, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 
@@ -14,7 +14,8 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 		data: InsertionModel<Omit<ILivechatContact, 'createdAt'>> & { createdAt?: ILivechatContact['createdAt'] },
 	): Promise<ILivechatContact['_id']>;
 	upsertContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact | null>;
-	updateContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact>;
+	updateContact(contactId: string, data: Partial<ILivechatContact>, options?: FindOneAndUpdateOptions): Promise<ILivechatContact>;
+	updateById(contactId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<Document | UpdateResult>;
 	addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void>;
 	findPaginatedContacts(
 		search: { searchText?: string; unknown?: boolean },

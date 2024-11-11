@@ -59,6 +59,7 @@ describe('verifyContactChannel', () => {
 	it('should be able to verify a contact channel', async () => {
 		modelsMock.LivechatInquiry.findOneReadyByRoomId.resolves({ _id: 'inquiryId' });
 		modelsMock.LivechatRooms.findOneById.resolves({ _id: 'roomId', source: { type: 'sms' } });
+		mergeContactsStub.resolves({ _id: 'contactId' });
 		await runVerifyContactChannel(() => undefined, {
 			contactId: 'contactId',
 			field: 'field',
@@ -118,6 +119,7 @@ describe('verifyContactChannel', () => {
 	it('should fail if no matching inquiry is found', async () => {
 		modelsMock.LivechatInquiry.findOneReadyByRoomId.resolves(undefined);
 		modelsMock.LivechatRooms.findOneById.resolves({ _id: 'roomId', source: { type: 'sms' } });
+		mergeContactsStub.resolves({ _id: 'contactId' });
 		await expect(
 			runVerifyContactChannel(() => undefined, {
 				contactId: 'contactId',

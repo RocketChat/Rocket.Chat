@@ -8,28 +8,23 @@ import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeCo
 import { verifyContactChannel } from '../../../app/livechat/server/lib/contacts/verifyContactChannel';
 import { client } from '../../../server/database/utils';
 
-export const runVerifyContactChannel = async (
-	_next: any,
-	params: {
-		contactId: string;
-		field: string;
-		value: string;
-		visitorId: string;
-		roomId: string;
-	},
+type VerifyContactChannelParams = {
+	contactId: string;
+	field: string;
+	value: string;
+	visitorId: string;
+	roomId: string;
+};
+
+async function _verifyContactChannel(
+	params: VerifyContactChannelParams,
+	room: Pick<IOmnichannelRoom, '_id' | 'source'>,
 	attempts = 2,
-): Promise<ILivechatContact | null> => {
+): Promise<ILivechatContact | null> {
 	const { contactId, field, value, visitorId, roomId } = params;
 
-	const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'source'>>(roomId, { projection: { source: 1 } });
-	if (!room) {
-		throw new Error('error-invalid-room');
-	}
-
 	const session = client.startSession();
-	let result = null;
 	try {
-		session.startTransaction();
 		await LivechatContacts.updateContactChannel(
 			{
 				visitorId,
@@ -51,7 +46,7 @@ export const runVerifyContactChannel = async (
 
 		await session.commitTransaction();
 
-		result = mergeContactsResult;
+		return mergeContactsResult;
 	} catch (e) {
 		// TODO: Add logger
 		console.log(e);
@@ -63,13 +58,36 @@ export const runVerifyContactChannel = async (
 		) {
 			if (attempts > 0) {
 				// TODO: Add logger
-				return runVerifyContactChannel(_next, params, attempts - 1);
+				return _verifyContactChannel(params, room, attempts - 1);
 			}
 		}
 
 		return null;
 	} finally {
 		await session.endSession();
+	}
+}
+
+export const runVerifyContactChannel = async (
+	_next: any,
+	params: {
+		contactId: string;
+		field: string;
+		value: string;
+		visitorId: string;
+		roomId: string;
+	},
+): Promise<ILivechatContact | null> => {
+	const { roomId } = params;
+
+	const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'source'>>(roomId, { projection: { source: 1 } });
+	if (!room) {
+		throw new Error('error-invalid-room');
+	}
+
+	const result = await _verifyContactChannel(params, room);
+	if (!result) {
+		return null;
 	}
 
 	// Note: we are not using the session here since allowing the transactional flow to be used inside the
@@ -78,6 +96,8 @@ export const runVerifyContactChannel = async (
 	//       merged and the inquiry will be saved in the queue (will need to be taken manually by an agent though).
 	const inquiry = await LivechatInquiry.findOneReadyByRoomId(roomId);
 	if (!inquiry) {
+		// Note: if this happens, something is really wrong with the queue, so we should throw an error to avoid
+		//       carrying on a weird state.
 		throw new Error('error-invalid-inquiry');
 	}
 
