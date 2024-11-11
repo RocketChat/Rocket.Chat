@@ -66,8 +66,7 @@ async function _verifyContactChannel(
 		}
 
 		logger.error({ msg: 'Error verifying contact channel', contactId, visitorId, roomId, error: e });
-
-		return null;
+		throw e;
 	} finally {
 		await session.endSession();
 	}
@@ -91,10 +90,6 @@ export const runVerifyContactChannel = async (
 	}
 
 	const result = await _verifyContactChannel(params, room);
-	if (!result) {
-		logger.debug({ msg: 'Contact channel could not be verified', roomId });
-		return null;
-	}
 
 	logger.debug({ msg: 'Finding inquiry', roomId });
 
