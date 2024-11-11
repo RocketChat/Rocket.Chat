@@ -26,6 +26,7 @@ async function _verifyContactChannel(
 
 	const session = client.startSession();
 	try {
+		session.startTransaction();
 		logger.debug({ msg: 'Start verifying contact channel', contactId, visitorId, roomId });
 
 		await LivechatContacts.updateContactChannel(
@@ -52,7 +53,6 @@ async function _verifyContactChannel(
 
 		return mergeContactsResult;
 	} catch (e) {
-		logger.error({ msg: 'Error verifying contact channel', contactId, visitorId, roomId, error: e });
 		await session.abortTransaction();
 		// Dont propagate transaction errors
 		if (
@@ -64,6 +64,8 @@ async function _verifyContactChannel(
 				return _verifyContactChannel(params, room, attempts - 1);
 			}
 		}
+
+		logger.error({ msg: 'Error verifying contact channel', contactId, visitorId, roomId, error: e });
 
 		return null;
 	} finally {
