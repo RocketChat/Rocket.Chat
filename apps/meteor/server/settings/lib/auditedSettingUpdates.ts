@@ -1,7 +1,7 @@
 import type { IAuditServerAppActor, IAuditServerSystemActor, IAuditServerUserActor, ISetting } from '@rocket.chat/core-typings';
 import { ServerEvents } from '@rocket.chat/models';
 
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../../app/settings/server/cached';
 
 export const updateAuditedByUser =
 	<T extends ISetting['value'], F extends (_id: ISetting['_id'], value: T, ...args: any[]) => any>(
