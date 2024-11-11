@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.31.27
+
+### Patch Changes
+
+- ([#33929](https://github.com/RocketChat/Rocket.Chat/pull/33929)) Fixes an issue that would cause apps to appear disabled after a subprocess restart
+
+- ([#33929](https://github.com/RocketChat/Rocket.Chat/pull/33929)) Fixed a problem in the deno runtime controller where it would not handle undefined child process references correctly
+
 ## 0.31.26
 
 ### Patch Changes

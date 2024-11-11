@@ -1,5 +1,23 @@
 # @rocket.chat/omnichannel-transcript
 
+## 0.4.7
+
+### Patch Changes
+
+- ([#33929](https://github.com/RocketChat/Rocket.Chat/pull/33929)) Fixes an issue that would cause apps to appear disabled after a subprocess restart
+
+- ([#33929](https://github.com/RocketChat/Rocket.Chat/pull/33929)) Fixed a problem in the deno runtime controller where it would not handle undefined child process references correctly
+
+- <details><summary>Updated dependencies [6fd8fd0bf6, 6fd8fd0bf6]:</summary>
+
+  - @rocket.chat/omnichannel-services@0.2.7
+  - @rocket.chat/pdf-worker@0.1.7
+  - @rocket.chat/core-services@0.4.7
+  - @rocket.chat/model-typings@0.5.7
+  - @rocket.chat/core-typings@6.10.7
+  - @rocket.chat/models@0.1.7
+  </details>
+
 ## 0.4.6
 
 ### Patch Changes

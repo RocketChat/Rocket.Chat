@@ -1,5 +1,44 @@
 # @rocket.chat/meteor
 
+## 6.10.7
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#33929](https://github.com/RocketChat/Rocket.Chat/pull/33929)) Fixes an issue that would cause apps to appear disabled after a subprocess restart
+
+- ([#33929](https://github.com/RocketChat/Rocket.Chat/pull/33929)) Fixed a problem in the deno runtime controller where it would not handle undefined child process references correctly
+
+- <details><summary>Updated dependencies [6fd8fd0bf6, 6fd8fd0bf6]:</summary>
+
+  - @rocket.chat/omnichannel-services@0.2.7
+  - @rocket.chat/web-ui-registration@8.0.7
+  - @rocket.chat/fuselage-ui-kit@8.0.7
+  - @rocket.chat/instance-status@0.1.7
+  - @rocket.chat/message-parser@0.31.31
+  - @rocket.chat/api-client@0.2.7
+  - @rocket.chat/pdf-worker@0.1.7
+  - @rocket.chat/core-services@0.4.7
+  - @rocket.chat/model-typings@0.5.7
+  - @rocket.chat/ui-video-conf@8.0.7
+  - @rocket.chat/core-typings@6.10.7
+  - @rocket.chat/rest-typings@6.10.7
+  - @rocket.chat/presence@0.2.7
+  - @rocket.chat/ui-contexts@8.0.7
+  - @rocket.chat/license@0.2.7
+  - @rocket.chat/gazzodown@8.0.7
+  - @rocket.chat/ui-avatar@4.0.7
+  - @rocket.chat/ui-client@8.0.7
+  - @rocket.chat/models@0.1.7
+  - @rocket.chat/apps@0.1.7
+  - @rocket.chat/cron@0.1.7
+  - @rocket.chat/ui-theming@0.2.0
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
 ## 6.10.6
 
 ### Patch Changes
