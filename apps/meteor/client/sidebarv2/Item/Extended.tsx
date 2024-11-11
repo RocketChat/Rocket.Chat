@@ -11,6 +11,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useEffectEvent, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
+import type { HTMLAttributes } from 'react';
 import React, { memo, useState } from 'react';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
@@ -30,7 +31,7 @@ type ExtendedProps = {
 	menuOptions?: any;
 	titleIcon?: React.ReactNode;
 	threadUnread?: boolean;
-};
+} & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const Extended = ({
 	icon,
@@ -47,6 +48,7 @@ const Extended = ({
 	threadUnread: _threadUnread,
 	unread,
 	selected,
+	...props
 }: ExtendedProps) => {
 	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
@@ -61,7 +63,7 @@ const Extended = ({
 	};
 
 	return (
-		<SidebarV2Item href={href} selected={selected}>
+		<SidebarV2Item href={href} selected={selected} {...props}>
 			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 
 			<SidebarV2ItemCol>
