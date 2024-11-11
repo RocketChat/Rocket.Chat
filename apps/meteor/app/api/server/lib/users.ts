@@ -185,7 +185,7 @@ export async function findPaginatedUsersByStatus({
 
 	if (searchTerm?.trim()) {
 		match.$or = [
-			...(canSeeAllUserInfo ? [{ 'emails.address': { $regex: `^${escapeRegExp(searchTerm || '')}` } }] : []),
+			...(canSeeAllUserInfo ? [{ 'emails.address': { $regex: escapeRegExp(searchTerm || ''), $options: 'i' } }] : []),
 			{
 				username: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
 			},
