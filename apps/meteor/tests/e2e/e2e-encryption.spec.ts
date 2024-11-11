@@ -486,7 +486,16 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(page).toHaveURL(`/direct/user2${Users.userE2EE.data.username}`);
 
+		await poHomeChannel.tabs.kebab.click({ force: true });
+		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
+		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
+		await page.getByRole('button', { name: 'Enable encryption' }).click();
+		await page.waitForTimeout(1000);
+
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.dismissToast();
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableOTR).toBeVisible();
