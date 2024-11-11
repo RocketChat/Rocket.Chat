@@ -1,5 +1,4 @@
 import type { StreamNames } from '@rocket.chat/ddp-client';
-import { Emitter } from '@rocket.chat/emitter';
 import localforage from 'localforage';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -37,34 +36,30 @@ const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: Con
 	'_updatedAt' in record &&
 	!((record as unknown as { _updatedAt: unknown })._updatedAt instanceof Date);
 
-localforage.config({
-	name: baseURI,
-});
+localforage.config({ name: baseURI });
 
-export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<{ changed: T; removed: T }> {
+export class CachedCollection<T extends { _id: string }, U = T> {
 	private static MAX_CACHE_TIME = 60 * 60 * 24 * 30;
 
 	public collection: MinimongoCollection<T>;
 
 	public ready = new ReactiveVar(false);
 
-	public name: Name;
+	protected name: Name;
 
-	public eventType: StreamNames;
+	protected eventType: StreamNames;
 
-	public version = 18;
+	protected version = 18;
 
-	public userRelated: boolean;
+	protected userRelated: boolean;
 
-	public updatedAt = new Date(0);
+	protected updatedAt = new Date(0);
 
-	public log: (...args: any[]) => void;
+	protected log: (...args: any[]) => void;
 
-	public timer: ReturnType<typeof setTimeout>;
+	private timer: ReturnType<typeof setTimeout>;
 
 	constructor({ name, eventType = 'notify-user', userRelated = true }: { name: Name; eventType?: StreamNames; userRelated?: boolean }) {
-		super();
-
 		this.collection = new Mongo.Collection(null) as MinimongoCollection<T>;
 
 		this.name = name;
@@ -189,7 +184,6 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 
 			const { _id } = newRecord;
 			this.collection.upsert({ _id } as Mongo.Selector<T>, newRecord);
-			this.emit('changed', newRecord as any); // TODO: investigate why this is needed
 
 			if (hasUpdatedAt(newRecord) && newRecord._updatedAt > this.updatedAt) {
 				this.updatedAt = newRecord._updatedAt;
@@ -303,7 +297,6 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
-						this.emit(action, newRecord as any); // TODO: investigate why this is needed
 					},
 					timestamp: actionTime.getTime(),
 				});
@@ -328,7 +321,6 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
-						this.emit(action, newRecord as any); // TODO: investigate why this is needed
 					},
 					timestamp: actionTime.getTime(),
 				});
