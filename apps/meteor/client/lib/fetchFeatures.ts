@@ -1,9 +1,4 @@
 import { sdk } from '../../app/utils/client/lib/SDKClient';
-import { CachedCollectionManager } from './cachedCollections';
+import { whenLoggedIn } from './loggedIn';
 
-export const fetchFeatures = (): Promise<string[]> =>
-	new Promise((resolve, reject) => {
-		CachedCollectionManager.onLogin(() => {
-			sdk.call('license:getModules').then(resolve, reject);
-		});
-	});
+export const fetchFeatures = (): Promise<string[]> => whenLoggedIn().then(() => sdk.call('license:getModules'));

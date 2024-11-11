@@ -22,7 +22,7 @@ import {
 	extractTranslationNamespaces,
 } from '../../app/utils/lib/i18n';
 import { AppClientOrchestratorInstance } from '../apps/orchestrator';
-import { CachedCollectionManager } from '../lib/cachedCollections';
+import { onLoggedIn } from '../lib/loggedIn';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
 
 i18n.use(I18NextHttpBackend).use(initReactI18next);
@@ -198,14 +198,14 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 			});
 	}, [language, loadLocale, availableLanguages]);
 
-	useEffect(() => {
-		const cb = () => {
-			AppClientOrchestratorInstance.getAppClientManager().initialize();
-			AppClientOrchestratorInstance.load();
-		};
-		CachedCollectionManager.onLogin(cb);
-		return () => CachedCollectionManager.off('login', cb);
-	}, []);
+	useEffect(
+		() =>
+			onLoggedIn(() => {
+				AppClientOrchestratorInstance.getAppClientManager().initialize();
+				AppClientOrchestratorInstance.load();
+			}),
+		[],
+	);
 
 	return (
 		<I18nextProvider i18n={i18nextInstance}>

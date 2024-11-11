@@ -5,12 +5,14 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { isTruthy } from '../../../lib/isTruthy';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 import type { MinimongoCollection } from '../../definitions/MinimongoCollection';
 import { baseURI } from '../baseURI';
+import { onLoggedIn } from '../loggedIn';
 import { getConfig } from '../utils/getConfig';
 import { CachedCollectionManager } from './CachedCollectionManager';
 
@@ -80,7 +82,7 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 			return;
 		}
 
-		CachedCollectionManager.onLogin(() => {
+		onLoggedIn(() => {
 			void this.init();
 		});
 		Accounts.onLogout(() => {
@@ -353,10 +355,22 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 
 		this.ready.set(true);
 
-		CachedCollectionManager.onReconnect(() => {
-			this.trySync();
+		this.reconnectionComputation?.stop();
+		let wentOffline = Tracker.nonreactive(() => Meteor.status().status === 'offline');
+		this.reconnectionComputation = Tracker.autorun(() => {
+			const { status } = Meteor.status();
+
+			if (status === 'offline') {
+				wentOffline = true;
+			}
+
+			if (status === 'connected' && wentOffline) {
+				this.trySync();
+			}
 		});
 
 		return this.setupListener();
 	}
+
+	private reconnectionComputation: Tracker.Computation | undefined;
 }
