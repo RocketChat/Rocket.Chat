@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import type { Credentials } from '@rocket.chat/api-client';
 import type {
 	ILivechatAgent,
 	ILivechatVisitor,
@@ -19,8 +20,9 @@ import {
 	createVisitor,
 	deleteVisitor,
 	getLivechatRoomInfo,
+	startANewLivechatRoomAndTakeIt,
 } from '../../../data/livechat/rooms';
-import { removeAgent } from '../../../data/livechat/users';
+import { createAnOnlineAgent, removeAgent } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser, deleteUser } from '../../../data/users.helper';
 import { expectInvalidParams } from '../../../data/validation.helper';
@@ -595,12 +597,16 @@ describe('LIVECHAT - contacts', () => {
 	});
 
 	describe('Contact Rooms', () => {
+		let agent: { credentials: Credentials; user: IUser & { username: string } };
+
 		before(async () => {
 			await updatePermission('view-livechat-contact', ['admin']);
+			agent = await createAnOnlineAgent();
 		});
 
 		after(async () => {
 			await restorePermissionToRoles('view-livechat-contact');
+			await deleteUser(agent.user);
 		});
 
 		it('should create a contact and assign it to the room', async () => {
@@ -650,6 +656,39 @@ describe('LIVECHAT - contacts', () => {
 			const sameRoom = await createLivechatRoom(visitor.token, { rid: room._id });
 			expect(sameRoom._id).to.be.equal(room._id);
 			expect(sameRoom.fname).to.be.equal('New Contact Name');
+		});
+
+		it('should update room subscriptions when a contact name changes', async () => {
+			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			const { room, visitor } = response;
+			const newName = faker.person.fullName();
+
+			expect(room.v).to.have.property('contactId').that.is.a('string');
+			expect(room.fname).to.be.equal(visitor.name);
+
+			const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
+				contactId: room.v.contactId,
+				name: newName,
+			});
+
+			expect(res.status).to.be.equal(200);
+
+			const sameRoom = await createLivechatRoom(visitor.token, { rid: room._id });
+			expect(sameRoom._id).to.be.equal(room._id);
+			expect(sameRoom.fname).to.be.equal(newName);
+
+			const subscriptionResponse = await request
+				.get(api('subscriptions.getOne'))
+				.set(agent.credentials)
+				.query({ roomId: room._id })
+				.expect('Content-Type', 'application/json');
+			const { subscription } = subscriptionResponse.body;
+			expect(subscription).to.have.property('v').that.is.an('object');
+			expect(subscription.v).to.have.property('_id', visitor._id);
+			expect(subscription).to.have.property('name', newName);
+			expect(subscription).to.have.property('fname', newName);
+			expect(subscription).to.have.property('lowerCaseName', newName.toLowerCase());
+			expect(subscription).to.have.property('lowerCaseFName', newName.toLowerCase());
 		});
 	});
 
