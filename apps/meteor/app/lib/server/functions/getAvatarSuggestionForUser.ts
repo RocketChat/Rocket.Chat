@@ -53,7 +53,7 @@ const avatarProviders = {
 	},
 
 	twitter(user: IUser) {
-		if (user.services?.twitter?._image_url_https && settings.get('Accounts_OAuth_Twitter')) {
+		if (user.services?.twitter?.profile_image_url_https && settings.get('Accounts_OAuth_Twitter')) {
 			return {
 				service: 'twitter',
 				url: user.services.twitter.profile_image_url_https.replace(/_normal|_bigger/, ''),
