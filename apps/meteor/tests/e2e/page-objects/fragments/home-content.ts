@@ -85,7 +85,7 @@ export class HomeContent {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
 		await this.page.locator('[name="msg"]').fill(text);
-		await this.page.locator('button[aria-label="Send"]').click();
+		await this.page.getByRole('button', { name: 'Send', exact: true }).click();
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
