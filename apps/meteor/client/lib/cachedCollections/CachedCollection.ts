@@ -77,9 +77,14 @@ export class CachedCollection<T extends { _id: string }, U = T> {
 			return;
 		}
 
+		if (process.env.NODE_ENV === 'test') {
+			return;
+		}
+
 		onLoggedIn(() => {
 			void this.init();
 		});
+
 		Accounts.onLogout(() => {
 			this.ready.set(false);
 		});
