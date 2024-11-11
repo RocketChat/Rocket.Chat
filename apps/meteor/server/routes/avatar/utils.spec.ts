@@ -9,8 +9,14 @@ class CookiesMock {
 
 const DOMPurifyMock = {
 	sanitize: (input: string) => {
-		const sanitized = input.replace(/<[^>]+(on\w+|javascript:)[^>]*>/gi, '').replace(/<[^>]+>/g, '');
-		return sanitized;
+		return input
+			.replace(/<script[^>]*>([\S\s]*?)<\/script>/gi, '')
+			.replace(/<[^>]+>/g, '')
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#039;');
 	},
 };
 
