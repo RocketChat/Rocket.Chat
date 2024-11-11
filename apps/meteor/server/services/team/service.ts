@@ -33,7 +33,7 @@ import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { checkUsernameAvailability } from '../../../app/lib/server/functions/checkUsernameAvailability';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
-import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedByRoomIdAndUserId, notifyOnRoomChangedById } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
 
 export class TeamService extends ServiceClassInternal implements ITeamService {
@@ -130,6 +130,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			if (room.id) {
 				await Message.saveSystemMessage('user-converted-to-team', roomId, team.name, createdBy);
 			}
+
+			void notifyOnRoomChangedById(roomId, 'inserted');
 
 			return {
 				_id: teamId,
