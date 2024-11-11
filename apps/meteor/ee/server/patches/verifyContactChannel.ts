@@ -72,8 +72,10 @@ export const runVerifyContactChannel = async (
 		await session.endSession();
 	}
 
-	// Note: We should have a transaction here to ensure that the inquiry is saved only if the contact is successfully verified
-	// but the current implementation uses events, so I am not sure how to procced;
+	// Note: we are not using the session here since we are using the changes to allow for transactions in the
+	//       saveQueueInquiry function would require a lot of changes across the codebase, so if we fail here we
+	//       will not be able to rollback the transaction, but that is not a big deal since the contact will be properly
+	//       merged and the inquiry will be saved in the queue (will need to be taken manually by an agent though).
 	const inquiry = await LivechatInquiry.findOneReadyByRoomId(roomId);
 	if (!inquiry) {
 		throw new Error('error-invalid-inquiry');
