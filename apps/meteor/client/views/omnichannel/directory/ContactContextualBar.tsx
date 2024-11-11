@@ -17,16 +17,16 @@ const ContactContextualBar = () => {
 
 	const handleCancel = () => contactId && directoryRoute.push({ tab: 'contacts', context: 'details', id: contactId });
 
-	if (!contactId) {
-		return <ContactInfoError onClose={handleClose} />;
-	}
-
 	if (context === 'edit' && contactId) {
 		return <EditContactInfoWithData id={contactId} onClose={handleClose} onCancel={handleCancel} />;
 	}
 
-	if (context === 'new') {
+	if (context === 'new' && !contactId) {
 		return <EditContactInfo onClose={handleClose} onCancel={handleClose} />;
+	}
+
+	if (!contactId) {
+		return <ContactInfoError onClose={handleClose} />;
 	}
 
 	return <ContactInfo id={contactId} onClose={handleClose} />;
