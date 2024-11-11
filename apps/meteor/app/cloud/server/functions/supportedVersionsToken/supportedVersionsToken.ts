@@ -66,6 +66,7 @@ const cacheValueInSettings = <T extends SettingValue>(
 		SystemLogger.debug(`Resetting cached value ${key} in settings`);
 		const value = await fn();
 
+		// TODO: audit
 		(await Settings.updateValueById(key, value)).modifiedCount && void notifyOnSettingChangedById(key);
 
 		return value;
