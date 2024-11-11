@@ -21,9 +21,11 @@ import type {
 	IMessage,
 	SettingValue,
 	MessageTypesValues,
+	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 import {
 	Rooms,
+	LivechatRooms,
 	Permissions,
 	Settings,
 	PbxEvents,
@@ -81,6 +83,18 @@ export const notifyOnRoomChangedByUsernamesOrUids = withDbWatcherCheck(
 		clientAction: ClientAction = 'updated',
 	): Promise<void> => {
 		const items = Rooms.findByUsernamesOrUids(uids, usernames);
+		for await (const item of items) {
+			void api.broadcast('watch.rooms', { clientAction, room: item });
+		}
+	},
+);
+
+export const notifyOnRoomChangedByContactId = withDbWatcherCheck(
+	async <T extends IOmnichannelRoom>(
+		contactId: Exclude<T['v']['contactId'], undefined>,
+		clientAction: ClientAction = 'updated',
+	): Promise<void> => {
+		const items = LivechatRooms.findByContactId(contactId);
 		for await (const item of items) {
 			void api.broadcast('watch.rooms', { clientAction, room: item });
 		}
@@ -546,6 +560,19 @@ export const notifyOnSubscriptionChangedByUserIdAndRoomType = withDbWatcherCheck
 		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
 	): Promise<void> => {
 		const cursor = Subscriptions.findByUserIdAndRoomType(uid, t, { projection: subscriptionFields });
+
+		void cursor.forEach((subscription) => {
+			void api.broadcast('watch.subscriptions', { clientAction, subscription });
+		});
+	},
+);
+
+export const notifyOnSubscriptionChangedByVisitorIds = withDbWatcherCheck(
+	async (
+		visitorIds: Exclude<ISubscription['v'], undefined>['_id'][],
+		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+	): Promise<void> => {
+		const cursor = Subscriptions.findByVisitorIds(visitorIds, { projection: subscriptionFields });
 
 		void cursor.forEach((subscription) => {
 			void api.broadcast('watch.subscriptions', { clientAction, subscription });

@@ -1,6 +1,7 @@
 import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/core-typings';
-import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
+import { LivechatContacts, LivechatRooms, Subscriptions } from '@rocket.chat/models';
 
+import { notifyOnSubscriptionChangedByVisitorIds, notifyOnRoomChangedByContactId } from '../../../../lib/server/lib/notifyListener';
 import { getAllowedCustomFields } from './getAllowedCustomFields';
 import { validateContactManager } from './validateContactManager';
 import { validateCustomFields } from './validateCustomFields';
@@ -43,9 +44,16 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		...(wipeConflicts && { conflictingFields: [] }),
 	});
 
-	// If the contact name changed, update the name of its existing rooms
+	// If the contact name changed, update the name of its existing rooms and subscriptions
 	if (name !== undefined && name !== contact.name) {
 		await LivechatRooms.updateContactDataByContactId(contactId, { name });
+		void notifyOnRoomChangedByContactId(contactId);
+
+		const visitorIds = updatedContact.channels?.map((channel) => channel.visitor.visitorId);
+		if (visitorIds?.length) {
+			await Subscriptions.updateNameAndFnameByVisitorIds(visitorIds, name);
+			void notifyOnSubscriptionChangedByVisitorIds(visitorIds);
+		}
 	}
 
 	return updatedContact;
