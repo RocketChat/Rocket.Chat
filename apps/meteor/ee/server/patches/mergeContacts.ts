@@ -6,7 +6,7 @@ import type { ClientSession } from 'mongodb';
 import { isSameChannel } from '../../../app/livechat/lib/isSameChannel';
 import { ContactMerger } from '../../../app/livechat/server/lib/contacts/ContactMerger';
 import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
-import { logger } from '../../app/livechat-enterprise/server/lib/logger';
+import { contactLogger as logger } from '../../app/livechat-enterprise/server/lib/logger';
 
 export const runMergeContacts = async (
 	_next: any,
@@ -23,12 +23,17 @@ export const runMergeContacts = async (
 	if (!channel) {
 		throw new Error('error-invalid-channel');
 	}
+
+	logger.debug({ msg: 'Getting similar contacts', contactId });
+
 	const similarContacts: ILivechatContact[] = await LivechatContacts.findSimilarVerifiedContacts(channel, contactId, { session });
 
 	if (!similarContacts.length) {
+		logger.debug({ msg: 'No similar contacts found', contactId });
 		return originalContact;
 	}
 
+	logger.debug({ msg: `Found ${similarContacts.length} contacts to merge`, contactId });
 	for await (const similarContact of similarContacts) {
 		const fields = ContactMerger.getAllFieldsFromContact(similarContact);
 		await ContactMerger.mergeFieldsIntoContact(fields, originalContact, undefined, session);
@@ -36,12 +41,13 @@ export const runMergeContacts = async (
 
 	const similarContactIds = similarContacts.map((c) => c._id);
 	const { deletedCount } = await LivechatContacts.deleteMany({ _id: { $in: similarContactIds } }, { session });
-	logger.info(
-		`${deletedCount} contacts (ids: ${JSON.stringify(similarContactIds)}) have been deleted and merged with contact with id ${
-			originalContact._id
-		}`,
-	);
+	logger.info({
+		msg: `${deletedCount} contacts have been deleted and merged`,
+		deletedContactIds: similarContactIds,
+		contactId,
+	});
 
+	logger.debug({ msg: 'Updating rooms with new contact id', contactId });
 	await LivechatRooms.updateMany({ 'v.contactId': { $in: similarContactIds } }, { $set: { 'v.contactId': contactId } }, { session });
 
 	return LivechatContacts.findOneById(contactId, { session });

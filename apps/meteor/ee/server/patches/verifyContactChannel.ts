@@ -7,6 +7,7 @@ import { saveQueueInquiry } from '../../../app/livechat/server/lib/QueueManager'
 import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
 import { verifyContactChannel } from '../../../app/livechat/server/lib/contacts/verifyContactChannel';
 import { client } from '../../../server/database/utils';
+import { contactLogger as logger } from '../../app/livechat-enterprise/server/lib/logger';
 
 type VerifyContactChannelParams = {
 	contactId: string;
@@ -25,6 +26,8 @@ async function _verifyContactChannel(
 
 	const session = client.startSession();
 	try {
+		logger.debug({ msg: 'Start verifying contact channel', contactId, visitorId, roomId });
+
 		await LivechatContacts.updateContactChannel(
 			{
 				visitorId,
@@ -41,6 +44,7 @@ async function _verifyContactChannel(
 		);
 
 		await LivechatRooms.update({ _id: roomId }, { $set: { verified: true } }, { session });
+		logger.debug({ msg: 'Merging contacts', contactId, visitorId, roomId });
 
 		const mergeContactsResult = await mergeContacts(contactId, { visitorId, source: room.source }, session);
 
@@ -78,7 +82,7 @@ export const runVerifyContactChannel = async (
 		roomId: string;
 	},
 ): Promise<ILivechatContact | null> => {
-	const { roomId } = params;
+	const { roomId, contactId, visitorId } = params;
 
 	const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'source'>>(roomId, { projection: { source: 1 } });
 	if (!room) {
@@ -94,6 +98,7 @@ export const runVerifyContactChannel = async (
 	//       saveQueueInquiry function would require a lot of changes across the codebase, so if we fail here we
 	//       will not be able to rollback the transaction. That is not a big deal since the contact will be properly
 	//       merged and the inquiry will be saved in the queue (will need to be taken manually by an agent though).
+	logger.debug({ msg: 'Finding inquiry', roomId });
 	const inquiry = await LivechatInquiry.findOneReadyByRoomId(roomId);
 	if (!inquiry) {
 		// Note: if this happens, something is really wrong with the queue, so we should throw an error to avoid
@@ -101,7 +106,15 @@ export const runVerifyContactChannel = async (
 		throw new Error('error-invalid-inquiry');
 	}
 
+	logger.debug({ msg: 'Saving inquiry', roomId });
 	await saveQueueInquiry(inquiry);
+
+	logger.debug({
+		msg: 'Contact channel has been verified and merged successfully',
+		contactId,
+		visitorId,
+		roomId,
+	});
 
 	return result;
 };
