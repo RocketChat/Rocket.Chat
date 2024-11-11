@@ -21,12 +21,6 @@ class CachedCollectionManager extends Emitter<{ reconnect: void; login: string |
 		this._syncEnabled = false;
 		this.logged = false;
 
-		const { _unstoreLoginToken } = Accounts;
-		Accounts._unstoreLoginToken = (...args) => {
-			_unstoreLoginToken.apply(Accounts, args);
-			this.clearAllCacheOnLogout();
-		};
-
 		Tracker.autorun(() => {
 			const [WAITING_FIRST_CONNECTION, WAITING_FIRST_DISCONNECTION, LISTENING_RECONNECTIONS] = [0, 1, 2];
 			this.step = this.step || WAITING_FIRST_CONNECTION;
