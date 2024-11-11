@@ -5,6 +5,7 @@ import type { IIncomingMessage, IUpload } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
 import DOMPurify from 'dompurify';
+import DOMPurify from 'dompurify';
 import { Cookies } from 'meteor/ostrio:cookies';
 import sharp from 'sharp';
 import { throttle } from 'underscore';
@@ -16,8 +17,6 @@ import { getAvatarColor } from '../../../app/utils/lib/getAvatarColor';
 const FALLBACK_LAST_MODIFIED = 'Thu, 01 Jan 2015 00:00:00 GMT';
 
 const cookie = new Cookies();
-
-const defaultPattern = /[^A-Za-z0-9]/g;
 
 export const MAX_SVG_AVATAR_SIZE = 1024;
 export const MIN_SVG_AVATAR_SIZE = 16;
@@ -65,7 +64,7 @@ export const serveSvgAvatarInRequestedFormat = ({
 	res: ServerResponse;
 }) => {
 	const size = getAvatarSizeFromRequest(req);
-	const avatar = renderSVGLetters(nameOrUsername, size, req);
+	const avatar = renderSVGLetters(nameOrUsername, size);
 	res.setHeader('Last-Modified', FALLBACK_LAST_MODIFIED);
 
 	const { format } = req.query;
@@ -141,7 +140,7 @@ export const renderSVGLetters = (name: string, viewSize = 200) => {
 
 	const fontSize = viewSize / 1.6;
 
-	return `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 ${viewSize} ${viewSize}\">\n<rect width=\"100%\" height=\"100%\" fill=\"${color}\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"'Helvetica', 'Arial Unicode MS', 'Noto Sans', 'Segoe UI', 'Lucida Grande', 'sans-serif'\" font-size="${fontSize}">\n${initials}\n</text>\n</svg>`;
+	return `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 ${viewSize} ${viewSize}\">\n<rect width=\"100%\" height=\"100%\" fill=\"${color}\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"'Helvetica', 'Arial', 'Lucida Grande', 'sans-serif'\" font-size="${fontSize}">\n${initials}\n</text>\n</svg>`;
 };
 
 const getCacheTime = (cacheTime: number) => cacheTime || settings.get('Accounts_AvatarCacheTime');
