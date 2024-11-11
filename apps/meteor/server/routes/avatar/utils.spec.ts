@@ -8,7 +8,9 @@ class CookiesMock {
 }
 
 const DOMPurifyMock = {
-	sanitize: (input: string) => input,
+	sanitize: (input: string) => {
+		return input.replace(/<[^>]+>/g, '');
+	},
 };
 
 const mocks = {
