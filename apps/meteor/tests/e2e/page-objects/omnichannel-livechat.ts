@@ -7,7 +7,10 @@ import { expect } from '../utils/test';
 export class OmnichannelLiveChat {
 	readonly page: Page;
 
-	constructor(page: Page, private readonly api: { get(url: string): Promise<APIResponse> }) {
+	constructor(
+		page: Page,
+		private readonly api: { get(url: string): Promise<APIResponse> },
+	) {
 		this.page = page;
 	}
 
@@ -219,5 +222,9 @@ export class OmnichannelLiveChat {
 		await this.fileUploadTarget.dispatchEvent('dragenter', { dataTransfer });
 
 		await this.fileUploadTarget.dispatchEvent('drop', { dataTransfer });
+	}
+
+	queuePosition(position: number): Locator {
+		return this.page.locator(`div[role='alert'] >> text=Your spot is #${position}`);
 	}
 }

@@ -23,20 +23,22 @@ import { useRemoveUnit } from './useRemoveUnit';
 const UnitsTable = () => {
 	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
-	const debouncedFilter = useDebouncedValue(filter, 500);
 	const router = useRouter();
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'visibility'>('name');
 
-	const query = useMemo(
-		() => ({
-			text: debouncedFilter,
-			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		}),
-		[debouncedFilter, itemsPerPage, current, sortBy, sortDirection],
+	const query = useDebouncedValue(
+		useMemo(
+			() => ({
+				text: filter,
+				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
+				...(itemsPerPage && { count: itemsPerPage }),
+				...(current && { offset: current }),
+			}),
+			[filter, itemsPerPage, current, sortBy, sortDirection],
+		),
+		500,
 	);
 
 	const getUnits = useEndpoint('GET', '/v1/livechat/units');
@@ -69,7 +71,9 @@ const UnitsTable = () => {
 
 	return (
 		<>
-			{((isSuccess && data?.units.length > 0) || queryHasChanged) && <FilterByText onChange={setFilter} />}
+			{((isSuccess && data?.units.length > 0) || queryHasChanged) && (
+				<FilterByText value={filter} onChange={(event) => setFilter(event.target.value)} />
+			)}
 			{isLoading && (
 				<GenericTable aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -92,7 +96,7 @@ const UnitsTable = () => {
 			)}
 			{isSuccess && data?.units.length > 0 && (
 				<>
-					<GenericTable aria-busy={filter !== debouncedFilter}>
+					<GenericTable aria-busy={isLoading}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.units.map(({ _id, name, visibility }) => (

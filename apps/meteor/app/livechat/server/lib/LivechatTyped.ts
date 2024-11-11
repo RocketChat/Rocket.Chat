@@ -15,6 +15,8 @@ import type {
 	ILivechatInquiryRecord,
 	ILivechatContact,
 	ILivechatContactChannel,
+	IOmnichannelRoomInfo,
+	IOmnichannelRoomExtraData,
 } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType, ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -130,7 +132,7 @@ class LivechatClass {
 			Livechat.logger.debug(`Fetching online bot agents for department ${department}`);
 			const botAgents = await Livechat.getBotAgents(department);
 			if (botAgents) {
-				const onlineBots = await botAgents.count();
+				const onlineBots = await Livechat.countBotAgents(department);
 				this.logger.debug(`Found ${onlineBots} online`);
 				if (onlineBots > 0) {
 					return true;
@@ -341,12 +343,9 @@ class LivechatClass {
 		visitor: ILivechatVisitor;
 		message?: string;
 		rid?: string;
-		roomInfo: {
-			source?: IOmnichannelRoom['source'];
-			[key: string]: unknown;
-		};
+		roomInfo: IOmnichannelRoomInfo;
 		agent?: SelectedAgent;
-		extraData?: Record<string, unknown>;
+		extraData?: IOmnichannelRoomExtraData;
 	}) {
 		if (!settings.get('Livechat_enabled')) {
 			throw new Meteor.Error('error-omnichannel-is-disabled');
@@ -432,21 +431,12 @@ class LivechatClass {
 		return room;
 	}
 
-	async getRoom<
-		E extends Record<string, unknown> & {
-			sla?: string;
-			customFields?: Record<string, unknown>;
-			source?: OmnichannelSourceType;
-		},
-	>(
+	async getRoom(
 		guest: ILivechatVisitor,
 		message: Pick<IMessage, 'rid' | 'msg' | 'token'>,
-		roomInfo: {
-			source?: IOmnichannelRoom['source'];
-			[key: string]: unknown;
-		},
+		roomInfo: IOmnichannelRoomInfo,
 		agent?: SelectedAgent,
-		extraData?: E,
+		extraData?: IOmnichannelRoomExtraData,
 	) {
 		if (!settings.get('Livechat_enabled')) {
 			throw new Meteor.Error('error-omnichannel-is-disabled');
@@ -640,6 +630,14 @@ class LivechatClass {
 		}
 
 		return Users.findBotAgents();
+	}
+
+	private async countBotAgents(department?: string) {
+		if (department) {
+			return LivechatDepartmentAgents.countBotsForDepartment(department);
+		}
+
+		return Users.countBotAgents();
 	}
 
 	private async resolveChatTags(
@@ -987,10 +985,7 @@ class LivechatClass {
 	}: {
 		guest: ILivechatVisitor;
 		message: ILivechatMessage;
-		roomInfo: {
-			source?: IOmnichannelRoom['source'];
-			[key: string]: unknown;
-		};
+		roomInfo: IOmnichannelRoomInfo;
 		agent?: SelectedAgent;
 	}) {
 		const { room, newRoom } = await this.getRoom(guest, message, roomInfo, agent);

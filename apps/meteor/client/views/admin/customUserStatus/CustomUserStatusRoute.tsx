@@ -25,7 +25,7 @@ const CustomUserStatusRoute = (): ReactElement => {
 	const id = useRouteParameter('id');
 	const canManageUserStatus = usePermission('manage-user-status');
 	const { data: license } = useIsEnterprise();
-	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 
 	useEffect(() => {
 		presenceDisabled && route.push({ context: 'presence-service' });

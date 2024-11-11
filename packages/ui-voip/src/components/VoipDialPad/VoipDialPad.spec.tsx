@@ -1,75 +1,79 @@
+/* eslint-disable no-await-in-loop */
+import { installPointerEvent, triggerLongPress } from '@react-spectrum/test-utils';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import DialPad from './VoipDialPad';
 
-describe('VoipDialPad', () => {
-	beforeEach(() => {
-		jest.useFakeTimers();
-	});
+const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
-	afterEach(() => {
-		jest.clearAllTimers();
-	});
+installPointerEvent();
 
-	it('should not be editable by default', () => {
-		render(<DialPad value='' onChange={jest.fn()} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
+beforeEach(() => {
+	jest.useFakeTimers();
+});
 
-		expect(screen.getByLabelText('Phone_number')).toHaveAttribute('readOnly');
-	});
+afterEach(() => {
+	jest.clearAllTimers();
+});
 
-	it('should enable input when editable', () => {
-		render(<DialPad editable value='' onChange={jest.fn()} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
+it('should not be editable by default', async () => {
+	render(<DialPad value='' onChange={jest.fn()} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
 
-		expect(screen.getByLabelText('Phone_number')).not.toHaveAttribute('readOnly');
-	});
+	expect(screen.getByLabelText('Phone_number')).toHaveAttribute('readOnly');
+});
 
-	it('should disable backspace button when input is empty', () => {
-		render(<DialPad editable value='' onChange={jest.fn()} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
+it('should enable input when editable', async () => {
+	render(<DialPad editable value='' onChange={jest.fn()} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
 
-		expect(screen.getByTestId('dial-paid-input-backspace')).toBeDisabled();
-	});
+	expect(screen.getByLabelText('Phone_number')).not.toHaveAttribute('readOnly');
+});
 
-	it('should enable backspace button when input has value', () => {
-		render(<DialPad editable value='123' onChange={jest.fn()} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
+it('should disable backspace button when input is empty', async () => {
+	render(<DialPad editable value='' onChange={jest.fn()} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
 
-		expect(screen.getByTestId('dial-paid-input-backspace')).toBeEnabled();
-	});
+	expect(screen.getByTestId('dial-paid-input-backspace')).toBeDisabled();
+});
 
-	it('should remove last character when backspace is clicked', () => {
-		const fn = jest.fn();
-		render(<DialPad editable value='123' onChange={fn} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
+it('should enable backspace button when input has value', async () => {
+	render(<DialPad editable value='123' onChange={jest.fn()} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
 
-		expect(screen.getByLabelText('Phone_number')).toHaveValue('123');
+	expect(screen.getByTestId('dial-paid-input-backspace')).toBeEnabled();
+});
 
-		screen.getByTestId('dial-paid-input-backspace').click();
+it('should remove last character when backspace is clicked', async () => {
+	const fn = jest.fn();
+	render(<DialPad editable value='123' onChange={fn} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
 
-		expect(fn).toHaveBeenCalledWith('12');
-	});
+	expect(screen.getByLabelText('Phone_number')).toHaveValue('123');
 
-	it('should call onChange when number is clicked', () => {
-		const fn = jest.fn();
-		render(<DialPad editable value='123' onChange={fn} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
+	await user.click(screen.getByTestId('dial-paid-input-backspace'));
 
-		['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].forEach((digit) => {
-			screen.getByTestId(`dial-pad-button-${digit}`).click();
-			expect(fn).toHaveBeenCalledWith(`123${digit}`, digit);
-		});
-	});
+	expect(fn).toHaveBeenCalledWith('12');
+});
 
-	xit('should call onChange with + when 0 pressed and held', () => {
-		const fn = jest.fn();
-		render(<DialPad editable longPress value='123' onChange={fn} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
+it('should call onChange when number is clicked', async () => {
+	const fn = jest.fn();
+	render(<DialPad editable value='123' onChange={fn} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
 
-		const button = screen.getByTestId('dial-pad-button-0');
+	for (const digit of ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']) {
+		await user.click(screen.getByTestId(`dial-pad-button-${digit}`));
+		expect(fn).toHaveBeenCalledWith(`123${digit}`, digit);
+	}
+});
 
-		button.click();
-		expect(fn).toHaveBeenCalledWith('1230', '0');
+it('should call onChange with + when 0 pressed and held', async () => {
+	const fn = jest.fn();
+	render(<DialPad editable longPress value='123' onChange={fn} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
 
-		fireEvent.pointerDown(button);
-		jest.runOnlyPendingTimers();
-		fireEvent.pointerUp(button);
+	const button = screen.getByTestId('dial-pad-button-0');
 
-		expect(fn).toHaveBeenCalledWith('123+', '+');
-	});
+	await user.click(button);
+
+	expect(fn).toHaveBeenCalledWith('1230', '0');
+
+	await triggerLongPress({ element: button, advanceTimer: (time = 800) => jest.advanceTimersByTime(time) });
+
+	expect(fn).toHaveBeenCalledWith('123+', '+');
 });

@@ -11,10 +11,10 @@ import { useMediaPermissions } from '../../hooks/useMediaPermissions';
 const audioRecorder = new AudioRecorder();
 
 export const useAudioMessageAction = (disabled: boolean, isMicrophoneDenied: boolean): GenericMenuItemProps => {
-	const isFileUploadEnabled = useSetting('FileUpload_Enabled') as boolean;
-	const isAudioRecorderEnabled = useSetting('Message_AudioRecorderEnabled') as boolean;
-	const fileUploadMediaTypeBlackList = useSetting('FileUpload_MediaTypeBlackList') as string;
-	const fileUploadMediaTypeWhiteList = useSetting('FileUpload_MediaTypeWhiteList') as string;
+	const isFileUploadEnabled = useSetting('FileUpload_Enabled', true);
+	const isAudioRecorderEnabled = useSetting('Message_AudioRecorderEnabled', true);
+	const fileUploadMediaTypeBlackList = useSetting('FileUpload_MediaTypeBlackList', '');
+	const fileUploadMediaTypeWhiteList = useSetting('FileUpload_MediaTypeWhiteList', '');
 	const [isPermissionDenied] = useMediaPermissions('microphone');
 
 	const isAllowed = useMemo(

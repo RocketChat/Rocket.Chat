@@ -194,7 +194,7 @@ export const useQuickActions = (): {
 									sendToVisitor: preferences?.omnichannelTranscriptEmail,
 									requestData,
 								},
-						  }
+							}
 						: { transcriptEmail: { sendToVisitor: false } }),
 				});
 				LivechatInquiry.remove({ rid });

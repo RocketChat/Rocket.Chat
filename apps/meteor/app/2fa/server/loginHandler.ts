@@ -95,7 +95,7 @@ OAuth._retrievePendingCredential = async function (key, ...args): Promise<string
 	const future = new Date();
 	future.setMinutes(future.getMinutes() + 2);
 
-	OAuth._pendingCredentials.update(
+	await OAuth._pendingCredentials.updateAsync(
 		{
 			_id: pendingCredential._id,
 		},

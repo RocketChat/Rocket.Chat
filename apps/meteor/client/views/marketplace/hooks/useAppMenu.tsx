@@ -59,8 +59,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const { data } = useIsEnterprise();
 	const isEnterpriseLicense = !!data?.isEnterprise;
 
-	const appAddon = app.addon;
-	const workspaceHasAddon = useHasLicenseModule(appAddon);
+	const workspaceHasMarketplaceAddon = useHasLicenseModule(app.addon);
+	const workspaceHasInstalledAddon = useHasLicenseModule(app.installedAddon);
 
 	const [isLoading, setLoading] = useState(false);
 	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
@@ -135,13 +135,17 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	const handleAddon = useCallback(
 		(actionType: AddonActionType, callback: () => void) => {
-			if (isAdminUser && appAddon && !workspaceHasAddon) {
+			if (actionType === 'enable' && isAdminUser && app.installedAddon && !workspaceHasInstalledAddon) {
+				return missingAddonHandler(actionType);
+			}
+
+			if (actionType !== 'enable' && isAdminUser && app.addon && !workspaceHasMarketplaceAddon) {
 				return missingAddonHandler(actionType);
 			}
 
 			callback();
 		},
-		[appAddon, isAdminUser, missingAddonHandler, workspaceHasAddon],
+		[app.addon, app.installedAddon, isAdminUser, missingAddonHandler, workspaceHasInstalledAddon, workspaceHasMarketplaceAddon],
 	);
 
 	const handleAcquireApp = useCallback(() => {
@@ -325,8 +329,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 			return;
 		}
 
-		openPermissionModal();
-	}, [app, openPermissionModal, openIncompatibleModal, closeModal]);
+		handleAddon('update', openPermissionModal);
+	}, [app, handleAddon, openPermissionModal, openIncompatibleModal, closeModal]);
 
 	const canUpdate = app.installed && app.version && app.marketplaceVersion && semver.lt(app.version, app.marketplaceVersion);
 

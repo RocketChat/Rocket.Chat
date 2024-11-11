@@ -71,7 +71,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 
 	return (
 		<>
-			<FilterByText onChange={setText} />
+			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			{data.length === 0 && <GenericNoResult />}
 			{data && data.length > 0 && (
 				<>
@@ -92,9 +92,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 						</GenericTableHeader>
 						<GenericTableBody>
 							{isLoading && <GenericTableLoadingTable headerCells={2} />}
-							{data?.map((status) => (
-								<CustomUserStatusRow key={status._id} status={status} onClick={onClick} />
-							))}
+							{data?.map((status) => <CustomUserStatusRow key={status._id} status={status} onClick={onClick} />)}
 						</GenericTableBody>
 					</GenericTable>
 					{isFetched && (

@@ -4,7 +4,6 @@ import { Tracker } from 'meteor/tracker';
 import { settings } from '../../app/settings/client';
 import { MessageAction } from '../../app/ui-utils/client';
 import { imperativeModal } from '../lib/imperativeModal';
-import { messageArgs } from '../lib/utils/messageArgs';
 import ReadReceiptsModal from '../views/room/modals/ReadReceiptsModal';
 
 Meteor.startup(() => {
@@ -21,8 +20,7 @@ Meteor.startup(() => {
 			label: 'Read_Receipts',
 			context: ['starred', 'message', 'message-mobile', 'threads', 'videoconf', 'videoconf-threads'],
 			type: 'duplication',
-			action(_, props) {
-				const { message = messageArgs(this).msg } = props;
+			action(_, { message }) {
 				imperativeModal.open({
 					component: ReadReceiptsModal,
 					props: { messageId: message._id, onClose: imperativeModal.close },

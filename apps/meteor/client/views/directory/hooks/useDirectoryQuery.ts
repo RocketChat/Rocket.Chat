@@ -1,3 +1,4 @@
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useMemo } from 'react';
 
 export function useDirectoryQuery(
@@ -6,15 +7,18 @@ export function useDirectoryQuery(
 	type: string,
 	workspace = 'local',
 ): { sort: string; offset?: number | undefined; count?: number; query?: string; text?: string; type?: string; workspace?: string } {
-	return useMemo(
-		() => ({
-			text,
-			type,
-			workspace,
-			sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		}),
-		[itemsPerPage, current, column, direction, type, workspace, text],
+	return useDebouncedValue(
+		useMemo(
+			() => ({
+				text,
+				type,
+				workspace,
+				sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
+				...(itemsPerPage && { count: itemsPerPage }),
+				...(current && { offset: current }),
+			}),
+			[itemsPerPage, current, column, direction, type, workspace, text],
+		),
+		500,
 	);
 }

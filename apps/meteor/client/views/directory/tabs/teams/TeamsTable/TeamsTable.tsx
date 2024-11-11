@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
-import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
@@ -21,11 +21,8 @@ import TeamsTableRow from './TeamsTableRow';
 
 const TeamsTable = () => {
 	const t = useTranslation();
-
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
-
 	const [text, setText] = useState('');
-	const debouncedText = useDebouncedValue(text, 500);
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'usersCount' | 'lastMessage' | 'createdAt'>('name');
@@ -59,7 +56,7 @@ const TeamsTable = () => {
 	const groupsRoute = useRoute('group');
 
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
-	const query = useDirectoryQuery({ text: debouncedText, current, itemsPerPage }, [sortBy, sortDirection], 'teams');
+	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'teams');
 	const { data, isFetched, isLoading, isError, refetch } = useQuery(['getDirectoryData', query], () => getDirectoryData(query));
 
 	const onClick = useMemo(
@@ -73,7 +70,7 @@ const TeamsTable = () => {
 
 	return (
 		<>
-			<FilterByText placeholder={t('Teams_Search_teams')} onChange={setText} />
+			<FilterByText placeholder={t('Teams_Search_teams')} value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

@@ -27,7 +27,7 @@ export const MessageList = function MessageList({ rid, messageListRef }: Message
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const store = RoomManager.getStore(rid);
 	const state = React.useRef<StateSnapshot | undefined>(store?.state);
-	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
+	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 	const virtuosoRef: any = useRef(null);
 

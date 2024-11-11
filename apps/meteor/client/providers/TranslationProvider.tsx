@@ -121,12 +121,14 @@ const useI18next = (lng: string): typeof i18next => {
 };
 
 const useAutoLanguage = () => {
-	const serverLanguage = useSetting<string>('Language');
+	const serverLanguage = useSetting('Language', '');
 	const browserLanguage = normalizeLanguage(window.navigator.userLanguage ?? window.navigator.language);
 	const defaultUserLanguage = browserLanguage || serverLanguage || 'en';
 
 	// if the language is supported, if not remove the region
-	const suggestedLanguage = languages.includes(defaultUserLanguage) ? defaultUserLanguage : defaultUserLanguage.split('-').shift() ?? 'en';
+	const suggestedLanguage = languages.includes(defaultUserLanguage)
+		? defaultUserLanguage
+		: (defaultUserLanguage.split('-').shift() ?? 'en');
 
 	// usually that value is set based on the user's config language
 	const [language] = useLocalStorage('userLanguage', suggestedLanguage);
