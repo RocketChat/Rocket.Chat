@@ -42,4 +42,5 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 		options?: FindOptions<ILivechatContact>,
 	): Promise<ILivechatContact[]>;
 	findAllByVisitorId(visitorId: string): FindCursor<ILivechatContact>;
+	addEmail(contactId: string, email: string): Promise<ILivechatContact | null>;
 }
