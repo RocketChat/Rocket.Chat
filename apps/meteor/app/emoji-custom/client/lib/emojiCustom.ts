@@ -3,8 +3,8 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
+import { CachedCollectionManager } from '../../../../client/lib/cachedCollections';
 import { emoji, removeFromRecent, replaceEmojiInRecent } from '../../../emoji/client';
-import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 import { getURL } from '../../../utils/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 

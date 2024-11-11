@@ -1,5 +1,5 @@
-import { CachedCollectionManager } from '../../app/ui-cached-collection/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { CachedCollectionManager } from './cachedCollections';
 
 export const fetchFeatures = (): Promise<string[]> =>
 	new Promise((resolve, reject) => {

@@ -11,7 +11,6 @@ import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useMemo } from 'react';
 import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
 
-import { CachedCollectionManager } from '../../app/ui-cached-collection/client';
 import { getURL } from '../../app/utils/client';
 import {
 	i18n,
@@ -23,6 +22,7 @@ import {
 	extractTranslationNamespaces,
 } from '../../app/utils/lib/i18n';
 import { AppClientOrchestratorInstance } from '../apps/orchestrator';
+import { CachedCollectionManager } from '../lib/cachedCollections';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
 
 i18n.use(I18NextHttpBackend).use(initReactI18next);

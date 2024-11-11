@@ -4,9 +4,9 @@ import React, { useEffect } from 'react';
 
 import { CachedChatSubscription } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
-import { CachedCollectionManager } from '../../../../app/ui-cached-collection/client';
 import { mainReady } from '../../../../app/ui-utils/client';
 import { useReactiveVar } from '../../../hooks/useReactiveVar';
+import { CachedCollectionManager } from '../../../lib/cachedCollections';
 import { isSyncReady } from '../../../lib/userData';
 import PageLoading from '../PageLoading';
 

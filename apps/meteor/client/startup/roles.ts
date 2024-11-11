@@ -3,8 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { Roles } from '../../app/models/client';
-import { CachedCollectionManager } from '../../app/ui-cached-collection/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { CachedCollectionManager } from '../lib/cachedCollections';
 
 Meteor.startup(() => {
 	CachedCollectionManager.onLogin(async () => {
