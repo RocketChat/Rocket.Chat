@@ -3,7 +3,7 @@ import { Badge, Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, Field
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useAtLeastOnePermission, useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { mapLivechatContactConflicts } from '../../../../../lib/mapLivechatContactConflicts';
@@ -63,8 +63,10 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 		}
 	};
 
-	const mappedConflicts = mapLivechatContactConflicts(contact, customFieldsMetadata);
-	const conflictingFields = Object.values(mappedConflicts);
+	const conflictingFields = useMemo(() => {
+		const mappedConflicts = mapLivechatContactConflicts(contact, customFieldsMetadata);
+		return Object.values(mappedConflicts);
+	}, [contact, customFieldsMetadata]);
 
 	return (
 		<GenericModal
