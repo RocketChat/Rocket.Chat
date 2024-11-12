@@ -1,3 +1,4 @@
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { ILivechatContact, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
@@ -90,15 +91,19 @@ export const runVerifyContactChannel = async (
 	//       saveQueueInquiry function would require a lot of changes across the codebase, so if we fail here we
 	//       will not be able to rollback the transaction. That is not a big deal since the contact will be properly
 	//       merged and the inquiry will be saved in the queue (will need to be taken manually by an agent though).
-	const inquiry = await LivechatInquiry.findOneReadyByRoomId(roomId);
+	const inquiry = await LivechatInquiry.findOneByRoomId(roomId);
 	if (!inquiry) {
 		// Note: if this happens, something is really wrong with the queue, so we should throw an error to avoid
 		//       carrying on a weird state.
 		throw new Error('error-invalid-inquiry');
 	}
 
-	logger.debug({ msg: 'Saving inquiry', roomId });
-	await saveQueueInquiry(inquiry);
+	// If the inquiry is ready, it means it was not taken by an agent yet, so we should add it to the queue
+	// again to be taken by an agent.
+	if (inquiry.status === LivechatInquiryStatus.READY) {
+		logger.debug({ msg: 'Saving inquiry', roomId });
+		await saveQueueInquiry(inquiry);
+	}
 
 	logger.debug({
 		msg: 'Contact channel has been verified and merged successfully',
