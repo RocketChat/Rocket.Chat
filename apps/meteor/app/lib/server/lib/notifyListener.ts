@@ -94,10 +94,11 @@ export const notifyOnRoomChangedByContactId = withDbWatcherCheck(
 		contactId: Exclude<T['v']['contactId'], undefined>,
 		clientAction: ClientAction = 'updated',
 	): Promise<void> => {
-		const items = LivechatRooms.findOpenByContactId(contactId);
-		for await (const item of items) {
-			void api.broadcast('watch.rooms', { clientAction, room: item });
-		}
+		const cursor = LivechatRooms.findOpenByContactId(contactId);
+
+		void cursor.forEach((room) => {
+			void api.broadcast('watch.rooms', { clientAction, room });
+		});
 	},
 );
 
