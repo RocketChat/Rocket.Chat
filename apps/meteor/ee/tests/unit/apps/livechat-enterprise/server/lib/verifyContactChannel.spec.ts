@@ -160,4 +160,23 @@ describe('verifyContactChannel', () => {
 		).to.be.true;
 		expect(saveQueueInquiryStub.notCalled).to.be.true;
 	});
+
+	it('should abort transaction if an error occurs', async () => {
+		modelsMock.LivechatInquiry.findOneReadyByRoomId.resolves({ _id: 'inquiryId' });
+		modelsMock.LivechatRooms.findOneById.resolves({ _id: 'roomId', source: { type: 'sms' } });
+		mergeContactsStub.rejects();
+		await expect(
+			runVerifyContactChannel(() => undefined, {
+				contactId: 'contactId',
+				field: 'field',
+				value: 'value',
+				visitorId: 'visitorId',
+				roomId: 'roomId',
+			}),
+		).to.be.rejected;
+
+		expect(sessionMock.abortTransaction.calledOnce).to.be.true;
+		expect(sessionMock.commitTransaction.notCalled).to.be.true;
+		expect(sessionMock.endSession.calledOnce).to.be.true;
+	});
 });
