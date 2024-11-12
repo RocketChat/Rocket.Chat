@@ -52,7 +52,7 @@ const AssignAgentModal = ({ existingExtension, closeModal, reload }: AssignAgent
 						</FieldRow>
 					</Field>
 					<Field>
-						<FieldLabel>{t('Free_Extension_Numbers')}</FieldLabel>
+						<FieldLabel>{t('Available_extensions')}</FieldLabel>
 						<FieldRow>
 							<Select
 								disabled={state === AsyncStatePhase.LOADING || agent === ''}

@@ -94,7 +94,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const queryClient = useQueryClient();
 
 	const customFieldsMetadata = useAccountsCustomFields();
-	const defaultRoles = useSetting<string>('Accounts_Registration_Users_Default_Roles') || '';
+	const defaultRoles = useSetting('Accounts_Registration_Users_Default_Roles', '');
 	const isVerificationNeeded = useSetting('Accounts_EmailVerification');
 	const defaultUserRoles = parseCSV(defaultRoles);
 

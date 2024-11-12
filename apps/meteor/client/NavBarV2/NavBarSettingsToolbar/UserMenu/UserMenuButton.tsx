@@ -20,7 +20,7 @@ const UserMenuButton = forwardRef(function UserMenuButton(props: UserMenuButtonP
 	const user = useUser();
 
 	const { status = !user ? 'online' : 'offline', username, avatarETag } = user || anon;
-	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 
 	return (
 		<IconButton
