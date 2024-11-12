@@ -48,7 +48,7 @@ export const runMergeContacts = async (
 	});
 
 	logger.debug({ msg: 'Updating rooms with new contact id', contactId });
-	await LivechatRooms.updateMany({ 'v.contactId': { $in: similarContactIds } }, { $set: { 'v.contactId': contactId } }, { session });
+	await LivechatRooms.updateMergedContactIds(similarContactIds, contactId, { session });
 
 	return LivechatContacts.findOneById(contactId, { session });
 };
