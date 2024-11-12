@@ -1,7 +1,6 @@
 import type { IEmoji } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
-import { Session } from 'meteor/session';
 
 import { onLoggedIn } from '../../../../client/lib/loggedIn';
 import { emoji, removeFromRecent, replaceEmojiInRecent } from '../../../emoji/client';
@@ -19,15 +18,11 @@ const isSetNotNull = (fn: () => unknown) => {
 };
 
 const getEmojiUrlFromName = (name: string, extension: string, etag?: string) => {
-	if (name == null) {
+	if (!name) {
 		return;
 	}
 
-	const key = `emoji_random_${name}` as const;
-
-	const random = (Session as unknown as { keys: Record<string, any> }).keys[key] ?? 0;
-
-	return getURL(`/emoji-custom/${encodeURIComponent(name)}.${extension}?_dc=${random}${etag ? `&etag=${etag}` : ''}`);
+	return getURL(`/emoji-custom/${encodeURIComponent(name)}.${extension}${etag ? `?etag=${etag}` : ''}`);
 };
 
 export const deleteEmojiCustom = (emojiData: IEmoji) => {
