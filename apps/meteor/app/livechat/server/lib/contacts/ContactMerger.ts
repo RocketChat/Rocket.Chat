@@ -33,6 +33,13 @@ export type FieldAndValue =
 
 type ConflictHandlingMode = 'conflict' | 'overwrite' | 'ignore';
 
+type MergeFieldsIntoContactParams = {
+	fields: FieldAndValue[];
+	contact: ILivechatContact;
+	conflictHandlingMode?: ConflictHandlingMode;
+	session?: ClientSession;
+};
+
 export class ContactMerger {
 	private managerList = new Map<IUser['username'], IUser['_id'] | undefined>();
 
@@ -172,12 +179,12 @@ export class ContactMerger {
 		return fields.filter((field) => field.type === type).map(({ value }) => value) as ContactFields[T][];
 	}
 
-	static async mergeFieldsIntoContact(
-		fields: FieldAndValue[],
-		contact: ILivechatContact,
-		conflictHandlingMode: ConflictHandlingMode = 'conflict',
-		session?: ClientSession,
-	): Promise<void> {
+	static async mergeFieldsIntoContact({
+		fields,
+		contact,
+		conflictHandlingMode = 'conflict',
+		session,
+	}: MergeFieldsIntoContactParams): Promise<void> {
 		const existingFields = ContactMerger.getAllFieldsFromContact(contact);
 		const overwriteData = conflictHandlingMode === 'overwrite';
 
@@ -291,6 +298,10 @@ export class ContactMerger {
 	): Promise<void> {
 		const fields = await ContactMerger.getAllFieldsFromVisitor(visitor, source);
 
-		await ContactMerger.mergeFieldsIntoContact(fields, contact, contact.unknown ? 'overwrite' : 'conflict');
+		await ContactMerger.mergeFieldsIntoContact({
+			fields,
+			contact,
+			conflictHandlingMode: contact.unknown ? 'overwrite' : 'conflict',
+		});
 	}
 }

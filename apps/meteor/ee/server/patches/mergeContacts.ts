@@ -36,7 +36,7 @@ export const runMergeContacts = async (
 	logger.debug({ msg: `Found ${similarContacts.length} contacts to merge`, contactId });
 	for await (const similarContact of similarContacts) {
 		const fields = ContactMerger.getAllFieldsFromContact(similarContact);
-		await ContactMerger.mergeFieldsIntoContact(fields, originalContact, undefined, session);
+		await ContactMerger.mergeFieldsIntoContact({ fields, contact: originalContact, session });
 	}
 
 	const similarContactIds = similarContacts.map((c) => c._id);
