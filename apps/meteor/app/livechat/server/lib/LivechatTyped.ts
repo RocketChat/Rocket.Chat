@@ -38,12 +38,12 @@ import {
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { Filter, ClientSession, MongoError } from 'mongodb';
+import type { Filter, ClientSession } from 'mongodb';
 import UAParser from 'ua-parser-js';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
-import { client } from '../../../../server/database/utils';
+import { client, shouldRetryTransaction } from '../../../../server/database/utils';
 import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
@@ -165,10 +165,7 @@ class LivechatClass {
 			this.logger.error({ err: e, msg: 'Failed to close room', afterAttempts: attempts });
 			await session.abortTransaction();
 			// Dont propagate transaction errors
-			if (
-				(e as unknown as MongoError)?.errorLabels?.includes('UnknownTransactionCommitResult') ||
-				(e as unknown as MongoError)?.errorLabels?.includes('TransientTransactionError')
-			) {
+			if (shouldRetryTransaction(e)) {
 				if (attempts > 0) {
 					this.logger.debug(`Retrying close room because of transient error. Attempts left: ${attempts}`);
 					return this.closeRoom(params, attempts - 1);
