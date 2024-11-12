@@ -38,7 +38,6 @@ import { useLeaderBanner } from './hooks/useLeaderBanner';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
-import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useHandleUnread } from './hooks/useUnreadMessages';
 
 const RoomBody = (): ReactElement => {
@@ -110,8 +109,6 @@ const RoomBody = (): ReactElement => {
 		targeDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
 	} = useFileUpload();
 
-	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition(room._id);
-
 	const { messageListRef } = useMessageListNavigation();
 
 	const { handleNewMessageButtonClick, handleJumpToRecentButtonClick, handleComposerResize, hasNewMessages, newMessagesScrollRef } =
@@ -124,7 +121,6 @@ const RoomBody = (): ReactElement => {
 	const innerRef = useMergedRefs(
 		dateScrollInnerRef,
 		innerBoxRef,
-		restoreScrollPositionInnerRef,
 		isAtBottomInnerRef,
 		newMessagesScrollRef,
 		leaderBannerInnerRef,

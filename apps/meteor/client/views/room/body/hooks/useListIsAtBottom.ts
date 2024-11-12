@@ -32,25 +32,22 @@ export const useListIsAtBottom = () => {
 				return;
 			}
 
-			// Removed element resize observer due to virtualization
-			// const messageList = node.querySelector('ul');
+			console.log(node);
 
-			// if (!messageList) {
-			// 	return;
-			// }
+			const observer = new ResizeObserver(() => {
+				console.log('RESIZE');
+				if (atBottomRef.current === true) {
+					node.scrollTo({ left: 30, top: node.scrollHeight });
+				}
+			});
 
-			// const observer = new ResizeObserver(() => {
-			// 	if (atBottomRef.current === true) {
-			// 		node.scrollTo({ left: 30, top: node.scrollHeight });
-			// 	}
-			// });
-
-			// observer.observe(messageList);
+			observer.observe(node);
 
 			node.addEventListener(
 				'scroll',
 				withThrottling({ wait: 100 })(() => {
 					atBottomRef.current = isAtBottom(200);
+					// lockToBottom();
 				}),
 				{
 					passive: true,

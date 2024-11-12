@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MutableRefObject } from 'react';
-import React, { forwardRef, useCallback, useEffect, useRef } from 'react';
+import React, { forwardRef, useCallback, useRef } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import type { StateSnapshot } from 'react-virtuoso';
 
@@ -12,6 +12,7 @@ import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import { MessageListItem } from './MessageListItem';
+import { useLockOnLoadMoreMessages } from './hooks/useLockLoadScroll';
 import { useMessages } from './hooks/useMessages';
 import { isMessageSequential } from './lib/isMessageSequential';
 import MessageListProvider from './providers/MessageListProvider';
@@ -39,7 +40,7 @@ export const MessageList = forwardRef<HTMLElement, MessageListProps>(function Me
 	const isAtBottomRef: any = useRef(true);
 	const scrollerRef: any = useRef(null);
 
-	// useLockOnLoadMoreMessages(isLoadingMoreMessages, virtuosoRef, state, messages, scrollerRef);
+	useLockOnLoadMoreMessages(isLoadingMoreMessages, virtuosoRef, state, messages, scrollerRef);
 
 	const extraProps: any = {};
 
@@ -62,12 +63,6 @@ export const MessageList = forwardRef<HTMLElement, MessageListProps>(function Me
 		},
 		[ref],
 	);
-
-	useEffect(() => {
-		if (isLoadingMoreMessages) {
-			virtuosoRef?.current?.scrollToIndex({ index: 0, behavior: 'smooth' });
-		}
-	}, [isLoadingMoreMessages]);
 
 	const itemContent = useCallback(
 		(index: number, message) => {
@@ -111,7 +106,10 @@ export const MessageList = forwardRef<HTMLElement, MessageListProps>(function Me
 					totalCount={messages?.length}
 					ref={virtuosoRef}
 					scrollerRef={refSetter}
-					overscan={50}
+					increaseViewportBy={{
+						top: 1000,
+						bottom: 100,
+					}}
 					followOutput={(isAtBottom: any) => {
 						if (isAtBottom) {
 							return 'smooth';

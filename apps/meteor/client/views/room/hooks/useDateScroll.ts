@@ -130,9 +130,11 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 				};
 			})();
 
-			const fn = withThrottling({ wait: 30 })(() => {
+			const fn = withThrottling({ wait: 100 })(() => {
 				onScroll(list);
 			});
+
+			return;
 
 			node.addEventListener('scroll', fn, { passive: true });
 		},
