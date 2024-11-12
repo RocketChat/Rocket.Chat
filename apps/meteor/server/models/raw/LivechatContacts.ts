@@ -234,4 +234,10 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			'channels.visitor.visitorId': visitorId,
 		});
 	}
+
+	async addEmail(contactId: string, email: string): Promise<ILivechatContact | null> {
+		const updatedContact = await this.findOneAndUpdate({ _id: contactId }, { $push: { emails: { address: email } } });
+
+		return updatedContact.value;
+	}
 }

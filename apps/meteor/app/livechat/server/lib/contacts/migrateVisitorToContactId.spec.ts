@@ -15,26 +15,22 @@ const modelsMock = {
 const createContactFromVisitor = sinon.stub();
 const mergeVisitorIntoContact = sinon.stub();
 
-const { migrateVisitorToContactId } = proxyquire
-	.noCallThru()
-	.load('../../../../../../app/livechat/server/lib/contacts/migrateVisitorToContactId', {
-		'./createContactFromVisitor': {
-			createContactFromVisitor,
+const { migrateVisitorToContactId } = proxyquire.noCallThru().load('./migrateVisitorToContactId', {
+	'./createContactFromVisitor': {
+		createContactFromVisitor,
+	},
+	'./ContactMerger': {
+		ContactMerger: {
+			mergeVisitorIntoContact,
 		},
-		'./ContactMerger': {
-			ContactMerger: {
-				mergeVisitorIntoContact,
-			},
+	},
+	'@rocket.chat/models': modelsMock,
+	'../logger': {
+		livechatContactsLogger: {
+			debug: sinon.stub(),
 		},
-		'@rocket.chat/models': modelsMock,
-		'../LivechatTyped': {
-			Livechat: {
-				logger: {
-					debug: sinon.stub(),
-				},
-			},
-		},
-	});
+	},
+});
 
 describe('migrateVisitorToContactId', () => {
 	beforeEach(() => {

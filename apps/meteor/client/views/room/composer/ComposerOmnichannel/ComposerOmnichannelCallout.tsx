@@ -1,10 +1,11 @@
 import { Box, Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
-import { useAtLeastOnePermission, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { useAtLeastOnePermission, useEndpoint, useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { isSameChannel } from '../../../../../app/livechat/lib/isSameChannel';
+import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { useBlockChannel } from '../../../omnichannel/contactInfo/tabs/ContactInfoChannels/useBlockChannel';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 
@@ -12,7 +13,9 @@ const ComposerOmnichannelCallout = () => {
 	const { t } = useTranslation();
 	const room = useOmnichannelRoom();
 	const { navigate, buildRoutePath } = useRouter();
+	const hasLicense = useHasLicenseModule('contact-id-verification');
 	const securityPrivacyRoute = buildRoutePath('/omnichannel/security-privacy');
+	const shouldShowSecurityRoute = useSetting('Livechat_Contact_Verification_App') !== 'VerifyChat' || !hasLicense;
 
 	const canViewSecurityPrivacy = useAtLeastOnePermission([
 		'view-privileged-setting',
@@ -41,7 +44,7 @@ const ComposerOmnichannelCallout = () => {
 	return (
 		<Callout
 			mbe={16}
-			title={t('Contact_unverified_and_unknown')}
+			title={t('Contact_unknown')}
 			actions={
 				<ButtonGroup>
 					<Button onClick={() => navigate(`/live/${_id}/contact-profile/edit`)} small>
@@ -53,13 +56,17 @@ const ComposerOmnichannelCallout = () => {
 				</ButtonGroup>
 			}
 		>
-			<Trans i18nKey='Add_to_contact_or_enable_verification_description'>
-				Add to contact list manually or
-				<Box is={canViewSecurityPrivacy ? 'a' : 'span'} href={securityPrivacyRoute}>
-					enable verification
-				</Box>
-				using multi-factor authentication.
-			</Trans>
+			{shouldShowSecurityRoute ? (
+				<Trans i18nKey='Add_to_contact_and_enable_verification_description'>
+					Add to contact list manually and
+					<Box is={canViewSecurityPrivacy ? 'a' : 'span'} href={securityPrivacyRoute}>
+						enable verification
+					</Box>
+					using multi-factor authentication.
+				</Trans>
+			) : (
+				t('Add_to_contact_list_manually')
+			)}
 		</Callout>
 	);
 };

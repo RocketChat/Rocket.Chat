@@ -2,8 +2,7 @@ import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useEndpoint, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { Fragment } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
@@ -23,8 +22,9 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { ContactManagerInput } from '../additionalForms';
 import { FormSkeleton } from '../directory/components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../directory/hooks/useCustomFieldsMetadata';
-import { useContactRoute } from '../hooks/useContactRoute';
 import AdvancedContactModal from './AdvancedContactModal';
+import { useCreateContact } from './hooks/useCreateContact';
+import { useEditContact } from './hooks/useEditContact';
 
 type ContactNewEditProps = {
 	contactData?: Serialized<ILivechatContact> | null;
@@ -68,16 +68,13 @@ const validateMultipleFields = (fieldsLength: number, hasLicense: boolean) => fi
 
 const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps): ReactElement => {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const queryClient = useQueryClient();
-	const handleNavigate = useContactRoute();
 	const setModal = useSetModal();
 
 	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
 	const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
-	const createContact = useEndpoint('POST', '/v1/omnichannel/contacts');
-	const updateContact = useEndpoint('POST', '/v1/omnichannel/contacts.update');
+	const editContact = useEditContact(['current-contacts']);
+	const createContact = useCreateContact(['current-contacts']);
 
 	const handleOpenUpSellModal = () => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />);
 
@@ -150,20 +147,11 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 			contactManager,
 		};
 
-		try {
-			if (contactData) {
-				await updateContact({ contactId: contactData?._id, ...payload });
-				handleNavigate({ context: 'details', id: contactData?._id });
-			} else {
-				const { contactId } = await createContact(payload);
-				handleNavigate({ context: 'details', id: contactId });
-			}
-
-			dispatchToastMessage({ type: 'success', message: contactData ? t('Contact_has_been_updated') : t('Contact_has_been_created') });
-			await queryClient.invalidateQueries({ queryKey: ['current-contacts'] });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+		if (contactData) {
+			return editContact.mutate({ contactId: contactData?._id, ...payload });
 		}
+
+		return createContact.mutate(payload);
 	};
 
 	const nameField = useUniqueId();

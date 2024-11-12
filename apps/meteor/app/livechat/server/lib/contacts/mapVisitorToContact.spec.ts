@@ -3,11 +3,11 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-import type { CreateContactParams } from '../../../../../../app/livechat/server/lib/contacts/createContact';
+import type { CreateContactParams } from './createContact';
 
 const getContactManagerIdByUsername = sinon.stub();
 
-const { mapVisitorToContact } = proxyquire.noCallThru().load('../../../../../../app/livechat/server/lib/contacts/mapVisitorToContact', {
+const { mapVisitorToContact } = proxyquire.noCallThru().load('./mapVisitorToContact', {
 	'./getContactManagerIdByUsername': {
 		getContactManagerIdByUsername,
 	},

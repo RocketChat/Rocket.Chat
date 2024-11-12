@@ -1,9 +1,7 @@
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 
-const { isVerifiedChannelInSource } = proxyquire
-	.noCallThru()
-	.load('../../../../../../app/livechat/server/lib/contacts/isVerifiedChannelInSource', {});
+const { isVerifiedChannelInSource } = proxyquire.noCallThru().load('./isVerifiedChannelInSource', {});
 
 describe('isVerifiedChannelInSource', () => {
 	it('should return false if channel is not verified', () => {

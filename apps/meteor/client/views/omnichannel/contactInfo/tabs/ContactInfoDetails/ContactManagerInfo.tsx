@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Skeleton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -12,22 +12,25 @@ const ContactManagerInfo = ({ userId }: ContactManagerInfoProps) => {
 	const t = useTranslation();
 
 	const getContactManagerByUsername = useEndpoint('GET', '/v1/users.info');
-	const { data, isLoading } = useQuery(['getContactManagerByUserId', userId], async () => getContactManagerByUsername({ userId }));
+	const { data, isLoading, isError } = useQuery(['getContactManagerByUserId', userId], async () => getContactManagerByUsername({ userId }));
 
-	if (isLoading) {
+	if (isError) {
 		return null;
 	}
 
 	return (
 		<Box>
 			<Box mbe={4}>{t('Contact_Manager')}</Box>
-			<Box display='flex' alignItems='center'>
-				{data?.user.username && <UserAvatar size='x18' username={data.user.username} />}
-				<Box mi={8}>
-					<UserStatus status={data?.user.status} />
+			{isLoading && <Skeleton />}
+			{!isLoading && (
+				<Box display='flex' alignItems='center'>
+					{data.user.username && <UserAvatar size='x18' username={data.user.username} />}
+					<Box mi={8}>
+						<UserStatus status={data.user.status} />
+					</Box>
+					<Box fontScale='p2'>{data.user.name}</Box>
 				</Box>
-				<Box fontScale='p2'>{data?.user.name}</Box>
-			</Box>
+			)}
 		</Box>
 	);
 };

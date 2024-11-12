@@ -69,18 +69,11 @@ import { businessHourManager } from '../business-hour';
 import { parseAgentCustomFields, updateDepartmentAgents, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
-import { Visitors } from './Visitors';
+import { Visitors, type RegisterGuestType } from './Visitors';
 import { registerGuestData } from './contacts/registerGuestData';
 import { getRequiredDepartment } from './departmentsLib';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor, ILivechatMessage } from './localTypes';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
-
-export type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username'>> & {
-	id?: string;
-	connectionData?: any;
-	email?: string;
-	phone?: { number: string };
-};
 
 type AKeyOf<T> = {
 	[K in keyof T]?: T[K];
@@ -360,6 +353,10 @@ class LivechatClass {
 			throw new Meteor.Error('error-omnichannel-is-disabled');
 		}
 
+		if (await LivechatContacts.isChannelBlocked(this.makeVisitorAssociation(visitor._id, roomInfo.source))) {
+			throw new Error('error-contact-channel-blocked');
+		}
+
 		const defaultAgent = await callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, visitor);
 		// if no department selected verify if there is at least one active and pick the first
 		if (!defaultAgent && !visitor.department) {
@@ -370,10 +367,6 @@ class LivechatClass {
 				Livechat.logger.debug(`Assigning ${visitor._id} to department ${department._id}`);
 				visitor.department = department._id;
 			}
-		}
-
-		if (await LivechatContacts.isChannelBlocked(this.makeVisitorAssociation(visitor._id, roomInfo.source))) {
-			throw new Error('error-contact-channel-blocked');
 		}
 
 		// delegate room creation to QueueManager
@@ -487,10 +480,6 @@ class LivechatClass {
 				throw new Meteor.Error('error-removing-room', 'Error removing room');
 			}
 		}
-	}
-
-	isValidObject(obj: unknown): obj is Record<string, any> {
-		return typeof obj === 'object' && obj !== null;
 	}
 
 	async registerGuest(newData: RegisterGuestType): Promise<ILivechatVisitor | null> {

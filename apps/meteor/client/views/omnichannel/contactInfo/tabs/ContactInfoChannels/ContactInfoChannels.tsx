@@ -19,23 +19,33 @@ const ContactInfoChannels = ({ contactId }: ContactInfoChannelsProps) => {
 	const getContactChannels = useEndpoint('GET', '/v1/omnichannel/contacts.channels');
 	const { data, isError, isLoading } = useQuery(['getContactChannels', contactId], () => getContactChannels({ contactId }));
 
-	return (
-		<ContextualbarContent paddingInline={0}>
-			{isLoading && (
+	if (isLoading) {
+		return (
+			<ContextualbarContent paddingInline={0}>
 				<Box pi={24} pb={12}>
 					<Throbber size='x12' />
 				</Box>
-			)}
-			{isError && (
+			</ContextualbarContent>
+		);
+	}
+
+	if (isError) {
+		return (
+			<ContextualbarContent paddingInline={0}>
 				<States>
 					<StatesIcon name='warning' variation='danger' />
 					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 				</States>
-			)}
-			{data?.channels?.length === 0 && (
+			</ContextualbarContent>
+		);
+	}
+
+	return (
+		<ContextualbarContent paddingInline={0}>
+			{data.channels?.length === 0 && (
 				<ContextualbarEmptyContent icon='balloon' title={t('No_channels_yet')} subtitle={t('No_channels_yet_description')} />
 			)}
-			{!isError && data?.channels && data.channels.length > 0 && (
+			{data.channels && data.channels.length > 0 && (
 				<>
 					<Box is='span' fontScale='p2' pbs={24} pis={24} mbe={8}>
 						{t('Last_contacts')}

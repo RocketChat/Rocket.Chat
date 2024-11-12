@@ -12,7 +12,7 @@ const modelsMock = {
 	},
 };
 
-const { updateContact } = proxyquire.noCallThru().load('../../../../../../app/livechat/server/lib/contacts/updateContact', {
+const { updateContact } = proxyquire.noCallThru().load('./updateContact', {
 	'./getAllowedCustomFields': {
 		getAllowedCustomFields: sinon.stub(),
 	},

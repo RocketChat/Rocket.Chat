@@ -3,7 +3,7 @@ import { LivechatContacts } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
 
 import { validateEmail } from '../Helper';
-import type { RegisterGuestType } from '../LivechatTyped';
+import type { RegisterGuestType } from '../Visitors';
 import { ContactMerger, type FieldAndValue } from './ContactMerger';
 
 export async function registerGuestData(

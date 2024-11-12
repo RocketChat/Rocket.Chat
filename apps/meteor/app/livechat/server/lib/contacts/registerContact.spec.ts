@@ -33,7 +33,7 @@ const modelsMock = {
 	'@global': true,
 };
 
-const { registerContact } = proxyquire.noCallThru().load('../../../../../../app/livechat/server/lib/contacts/registerContact', {
+const { registerContact } = proxyquire.noCallThru().load('./registerContact', {
 	'meteor/meteor': sinon.stub(),
 	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/tools': { wrapExceptions: sinon.stub() },

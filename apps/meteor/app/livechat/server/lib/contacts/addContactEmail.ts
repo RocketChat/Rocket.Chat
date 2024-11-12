@@ -17,9 +17,7 @@ export async function addContactEmail(contactId: ILivechatContact['_id'], email:
 
 	const emails = contact.emails?.map(({ address }) => address) || [];
 	if (!emails.includes(email)) {
-		return LivechatContacts.updateContact(contactId, {
-			emails: [...emails.map((e) => ({ address: e })), { address: email }],
-		});
+		return LivechatContacts.addEmail(contactId, email) as Promise<ILivechatContact>;
 	}
 
 	return contact;
