@@ -37,7 +37,6 @@ const NativeScrollbars = forwardRef<HTMLElement, NativeScrollBarsProps>(function
 
 	useEffect(() => {
 		if (onScroll) {
-			console.log(`onScroll`);
 			const scrollBarElement = ref as MutableRefObject<HTMLElement>;
 			const handleScroll = () => {
 				if (scrollBarElement?.current) {

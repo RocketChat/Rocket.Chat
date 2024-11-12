@@ -605,12 +605,17 @@
 
 	margin: 8px 10px 0;
 
-	transition: transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease;
+	transition:
+		transform 0.4s ease,
+		visibility 0.3s ease,
+		opacity 0.3s ease;
 	transform: translateY(-10px);
 
 	opacity: 0;
 	border-radius: var(--border-radius);
-	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2), 0 2px 10px 0 rgba(0, 0, 0, 0.16);
+	box-shadow:
+		0 1px 1px 0 rgba(0, 0, 0, 0.2),
+		0 2px 10px 0 rgba(0, 0, 0, 0.16);
 
 	font-size: 1em;
 	font-weight: bold;
@@ -773,9 +778,12 @@
 	}
 
 	& ul.messages-list {
-		/* padding: 21px 0 0; */
 		overflow: hidden;
 		height: 100%;
+
+		> div > div {
+			padding: 21px 0 0;
+		}
 	}
 
 	& .editing .body {
@@ -1206,7 +1214,9 @@
 
 @media (max-width: 767px) {
 	.rc-old.main-content {
-		transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1), transform 0.1s linear;
+		transition:
+			right 0.25s cubic-bezier(0.5, 0, 0.1, 1),
+			transform 0.1s linear;
 		will-change: transform;
 	}
 }

@@ -10,7 +10,7 @@ export const useListIsAtBottom = () => {
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
 
 	const sendToBottom = useCallback(() => {
-		// innerBoxRef.current?.scrollTo({ left: 30, top: innerBoxRef.current?.scrollHeight });
+		innerBoxRef.current?.scrollTo({ left: 30, top: innerBoxRef.current?.scrollHeight });
 	}, []);
 
 	const sendToBottomIfNecessary = useCallback(() => {
@@ -32,24 +32,25 @@ export const useListIsAtBottom = () => {
 				return;
 			}
 
-			const messageList = node.querySelector('ul');
+			// Removed element resize observer due to virtualization
+			// const messageList = node.querySelector('ul');
 
-			if (!messageList) {
-				return;
-			}
+			// if (!messageList) {
+			// 	return;
+			// }
 
-			const observer = new ResizeObserver(() => {
-				if (atBottomRef.current === true) {
-					// node.scrollTo({ left: 30, top: node.scrollHeight });
-				}
-			});
+			// const observer = new ResizeObserver(() => {
+			// 	if (atBottomRef.current === true) {
+			// 		node.scrollTo({ left: 30, top: node.scrollHeight });
+			// 	}
+			// });
 
-			observer.observe(messageList);
+			// observer.observe(messageList);
 
 			node.addEventListener(
 				'scroll',
 				withThrottling({ wait: 100 })(() => {
-					atBottomRef.current = isAtBottom(100);
+					atBottomRef.current = isAtBottom(200);
 				}),
 				{
 					passive: true,

@@ -7,7 +7,6 @@ import React, { memo, useCallback, useMemo, useRef } from 'react';
 
 import { RoomRoles } from '../../../../app/models/client';
 import { isTruthy } from '../../../../lib/isTruthy';
-import { NativeScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import Announcement from '../Announcement';
@@ -210,8 +209,6 @@ const RoomBody = (): ReactElement => {
 		};
 	});
 
-	console.log({ innerRef });
-
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
@@ -282,33 +279,33 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<NativeScrollbars ref={innerRef}>
-											<ul className='messages-list' aria-label={t('Message_list')} aria-busy={isLoadingMoreMessages}>
-												<MessageList
-													rid={room._id}
-													messageListRef={innerBoxRef}
-													renderBefore={() =>
-														canPreview ? (
-															<>
-																{hasMorePreviousMessages ? (
-																	<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-																) : (
-																	<li>
-																		<RoomForeword user={user} room={room} />
-																		{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
-																	</li>
-																)}
-															</>
-														) : null
-													}
-													renderAfter={() =>
-														hasMoreNextMessages ? (
-															<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-														) : null
-													}
-												/>
-											</ul>
-										</NativeScrollbars>
+										<ul className='messages-list' aria-label={t('Message_list')} aria-busy={isLoadingMoreMessages}>
+											<MessageList
+												ref={innerRef}
+												rid={room._id}
+												messageListRef={innerBoxRef}
+												isLoadingMoreMessages={isLoadingMoreMessages}
+												renderBefore={() =>
+													canPreview ? (
+														<>
+															{hasMorePreviousMessages ? (
+																<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
+															) : (
+																<li>
+																	<RoomForeword user={user} room={room} />
+																	{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
+																</li>
+															)}
+														</>
+													) : null
+												}
+												renderAfter={() =>
+													hasMoreNextMessages ? (
+														<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
+													) : null
+												}
+											/>
+										</ul>
 									</MessageListErrorBoundary>
 								</div>
 							</div>
