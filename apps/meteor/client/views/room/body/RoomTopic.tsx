@@ -23,7 +23,7 @@ export const RoomTopic = ({ room, user }: RoomTopicProps) => {
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 	const directUserData = usePresence(directUserId);
-	const useRealName = useSetting('UI_Use_Real_Name') as boolean;
+	const useRealName = useSetting('UI_Use_Real_Name', false);
 	const router = useRouter();
 
 	const currentRoute = router.getLocationPathname();

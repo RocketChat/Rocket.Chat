@@ -51,9 +51,9 @@ const CloseChatModal = ({
 		watch,
 	} = useForm();
 
-	const commentRequired = useSetting('Livechat_request_comment_when_closing_conversation') as boolean;
-	const alwaysSendTranscript = useSetting<boolean>('Livechat_transcript_send_always');
-	const customSubject = useSetting<string>('Livechat_transcript_email_subject');
+	const commentRequired = useSetting('Livechat_request_comment_when_closing_conversation', true);
+	const alwaysSendTranscript = useSetting('Livechat_transcript_send_always', false);
+	const customSubject = useSetting('Livechat_transcript_email_subject', '');
 	const [tagRequired, setTagRequired] = useState(false);
 
 	const tags = watch('tags');

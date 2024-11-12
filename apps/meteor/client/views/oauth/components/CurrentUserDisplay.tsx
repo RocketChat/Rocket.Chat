@@ -22,7 +22,7 @@ type CurrentUserDisplayProps = {
 };
 
 const CurrentUserDisplay = ({ user }: CurrentUserDisplayProps) => {
-	const showRealNames = useSetting<boolean>('UI_Use_Real_Name');
+	const showRealNames = useSetting('UI_Use_Real_Name', false);
 	const getRoles = useRolesDescription();
 
 	const { t } = useTranslation();

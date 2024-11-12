@@ -3,8 +3,8 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
-import { emoji, updateRecent } from '../../../emoji/client';
-import { CachedCollectionManager } from '../../../ui-cached-collection/client';
+import { onLoggedIn } from '../../../../client/lib/loggedIn';
+import { emoji, removeFromRecent, replaceEmojiInRecent } from '../../../emoji/client';
 import { getURL } from '../../../utils/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
@@ -49,7 +49,8 @@ export const deleteEmojiCustom = (emojiData: IEmoji) => {
 			}
 		}
 	}
-	updateRecent(['rocket']);
+
+	removeFromRecent(emojiData.name, emoji.packages.base.emojisByCategory.recent);
 };
 
 export const updateEmojiCustom = (emojiData: IEmoji) => {
@@ -94,7 +95,9 @@ export const updateEmojiCustom = (emojiData: IEmoji) => {
 		}
 	}
 
-	updateRecent(['rocket']);
+	if (previousExists) {
+		replaceEmojiInRecent({ oldEmoji: emojiData.previousName, newEmoji: emojiData.name });
+	}
 };
 
 const customRender = (html: string) => {
@@ -142,8 +145,8 @@ emoji.packages.emojiCustom = {
 	renderPicker: customRender,
 };
 
-Meteor.startup(() =>
-	CachedCollectionManager.onLogin(async () => {
+Meteor.startup(() => {
+	onLoggedIn(async () => {
 		try {
 			const {
 				emojis: { update: emojis },
@@ -165,5 +168,5 @@ Meteor.startup(() =>
 		} catch (e) {
 			console.error('Error getting custom emoji', e);
 		}
-	}),
-);
+	});
+});
