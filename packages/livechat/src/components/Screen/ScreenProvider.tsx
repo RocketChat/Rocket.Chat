@@ -4,7 +4,9 @@ import { useCallback, useContext, useEffect, useState } from 'preact/hooks';
 import { parse } from 'query-string';
 
 import { isActiveSession } from '../../helpers/isActiveSession';
+import { loadConfig } from '../../lib/main';
 import { parentCall } from '../../lib/parentCall';
+import { loadMessages } from '../../lib/room';
 import Triggers from '../../lib/triggers';
 import { StoreContext } from '../../store';
 
@@ -109,20 +111,17 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		dispatch({ minimized: true });
 	};
 
-	const handleRestore = () => {
+	const handleRestore = async () => {
 		parentCall('restoreWindow');
-		const dispatchRestore = () => dispatch({ minimized: false, undocked: false });
-
-		const dispatchEvent = () => {
-			dispatchRestore();
-			store.off('storageSynced', dispatchEvent);
-		};
 
 		if (undocked) {
-			store.on('storageSynced', dispatchEvent);
-		} else {
-			dispatchRestore();
+			// Cross-tab communication will not work here due cross origin (usually the widget parent and the RC server will have different urls)
+			// So we manually update the widget to get the messages and actions done while undocked
+			await loadConfig();
+			await loadMessages();
 		}
+
+		dispatch({ minimized: false, undocked: false });
 
 		Triggers.callbacks?.emit('chat-opened-by-visitor');
 	};
@@ -144,7 +143,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		setPopedOut(poppedOut);
 
 		if (poppedOut) {
-			dispatch({ minimized: false });
+			dispatch({ minimized: false, undocked: true });
 		}
 	}, [dispatch]);
 
@@ -167,7 +166,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		notificationsEnabled: sound?.enabled,
 		minimized: !poppedOut && (minimized || undocked),
 		expanded: !minimized && expanded,
-		windowed: !minimized && poppedOut,
+		windowed: poppedOut,
 		livechatLogo,
 		hideWatermark,
 		sound,
