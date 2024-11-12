@@ -128,7 +128,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 	};
 
 	const handleOpenWindow = () => {
-		parentCall('openPopout');
+		parentCall('openPopout', store.token);
 		dispatch({ undocked: true, minimized: false });
 	};
 
