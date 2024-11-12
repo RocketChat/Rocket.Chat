@@ -54,8 +54,8 @@ const RoomList = () => {
 				groupContent={(index) => (
 					<RoomListCollapser
 						collapsedGroups={collapsedGroups}
-						handleClick={handleClick}
-						handleKeyDown={handleKeyDown}
+						onClick={() => handleClick(groupsList[index])}
+						onKeyDown={(e) => handleKeyDown(e, groupsList[index])}
 						groupTitle={groupsList[index]}
 						unreadCount={groupedUnreadInfo[index]}
 					/>
