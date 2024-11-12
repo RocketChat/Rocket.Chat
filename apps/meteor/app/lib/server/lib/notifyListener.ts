@@ -265,6 +265,20 @@ export const notifyOnLivechatInquiryChangedById = withDbWatcherCheck(
 	},
 );
 
+export const notifyOnLivechatInquiryChangedByVisitorIds = withDbWatcherCheck(
+	async (
+		visitorIds: ILivechatInquiryRecord['v']['_id'][],
+		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+		diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
+	): Promise<void> => {
+		const cursor = LivechatInquiry.findByVisitorIds(visitorIds);
+
+		void cursor.forEach((inquiry) => {
+			void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+		});
+	},
+);
+
 export const notifyOnLivechatInquiryChangedByRoom = withDbWatcherCheck(
 	async (
 		rid: ILivechatInquiryRecord['rid'],

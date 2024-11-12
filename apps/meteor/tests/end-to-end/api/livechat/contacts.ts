@@ -19,6 +19,7 @@ import {
 	createLivechatRoomWidget,
 	createVisitor,
 	deleteVisitor,
+	fetchInquiry,
 	getLivechatRoomInfo,
 	startANewLivechatRoomAndTakeIt,
 } from '../../../data/livechat/rooms';
@@ -689,6 +690,22 @@ describe('LIVECHAT - contacts', () => {
 			expect(subscription).to.have.property('fname', newName);
 			expect(subscription).to.have.property('lowerCaseName', newName.toLowerCase());
 			expect(subscription).to.have.property('lowerCaseFName', newName.toLowerCase());
+		});
+
+		it('should update inquiry when a contact name changes', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			expect(room.v).to.have.property('contactId').that.is.a('string');
+			expect(room.fname).to.not.be.equal('New Contact Name');
+
+			const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
+				contactId: room.v.contactId,
+				name: 'Edited Contact Name Inquiry',
+			});
+			expect(res.status).to.be.equal(200);
+
+			const roomInquiry = await fetchInquiry(room._id);
+			expect(roomInquiry).to.have.property('name', 'Edited Contact Name Inquiry');
 		});
 	});
 

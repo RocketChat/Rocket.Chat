@@ -1,7 +1,11 @@
 import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/core-typings';
-import { LivechatContacts, LivechatRooms, Subscriptions } from '@rocket.chat/models';
+import { LivechatContacts, LivechatInquiry, LivechatRooms, Subscriptions } from '@rocket.chat/models';
 
-import { notifyOnSubscriptionChangedByVisitorIds, notifyOnRoomChangedByContactId } from '../../../../lib/server/lib/notifyListener';
+import {
+	notifyOnSubscriptionChangedByVisitorIds,
+	notifyOnRoomChangedByContactId,
+	notifyOnLivechatInquiryChangedByVisitorIds,
+} from '../../../../lib/server/lib/notifyListener';
 import { getAllowedCustomFields } from './getAllowedCustomFields';
 import { validateContactManager } from './validateContactManager';
 import { validateCustomFields } from './validateCustomFields';
@@ -53,6 +57,9 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		if (visitorIds?.length) {
 			await Subscriptions.updateNameAndFnameByVisitorIds(visitorIds, name);
 			void notifyOnSubscriptionChangedByVisitorIds(visitorIds);
+
+			await LivechatInquiry.updateNameByVisitorIds(visitorIds, name);
+			void notifyOnLivechatInquiryChangedByVisitorIds(visitorIds, 'updated', { name });
 		}
 	}
 
