@@ -166,7 +166,7 @@ jobs:
           HARDENED_MODE: '1'
 
       - name: Cache vite
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./node_modules/.vite
           key: vite-local-cache-${{ runner.OS }}-${{ hashFiles('package.json') }}
@@ -190,7 +190,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [release-versions, packages-build]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: rharkor/caching-for-turbo@v1.5
         if: github.event.action != 'closed'
@@ -290,7 +290,7 @@ jobs:
     steps:
       - name: check cache for matrix-rust-sdk-crypto-nodejs
         id: matrix-rust-sdk-crypto-nodejs
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /tmp/build/matrix-sdk-crypto.linux-x64-musl.node
           key: matrix-rust-sdk-crypto-nodejs-v0.2.0-beta.1
@@ -349,7 +349,7 @@ jobs:
 
       # we only build and publish the actual docker images if not a PR from a fork
       - uses: ./.github/actions/build-docker
-        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -360,7 +360,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Make sure matrix bindings load
-        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && matrix.platform == 'alpine'
+        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && matrix.platform == 'alpine' && github.actor != 'dependabot[bot]'
         run: |
           docker run --rm -w /app/bundle/programs/server/npm/node_modules/matrix-appservice-bridge ghcr.io/rocketchat/rocket.chat:$RC_DOCKER_TAG -e 'require(".")'
 
