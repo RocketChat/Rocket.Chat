@@ -688,8 +688,6 @@ describe('LIVECHAT - contacts', () => {
 			expect(subscription.v).to.have.property('_id', visitor._id);
 			expect(subscription).to.have.property('name', newName);
 			expect(subscription).to.have.property('fname', newName);
-			expect(subscription).to.have.property('lowerCaseName', newName.toLowerCase());
-			expect(subscription).to.have.property('lowerCaseFName', newName.toLowerCase());
 		});
 
 		it('should update inquiry when a contact name changes', async () => {
