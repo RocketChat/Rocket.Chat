@@ -1,8 +1,7 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Badge, Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useAtLeastOnePermission, useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
+import { useAtLeastOnePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -11,6 +10,7 @@ import GenericModal from '../../../../components/GenericModal';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { ContactManagerInput } from '../../additionalForms';
 import { useCustomFieldsMetadata } from '../../directory/hooks/useCustomFieldsMetadata';
+import { useEditContact } from '../hooks/useEditContact';
 
 type ReviewContactModalProps = {
 	contact: Serialized<ILivechatContact>;
@@ -25,11 +25,7 @@ type HandleConflictsPayload = {
 
 const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
-
-	const updateContact = useEndpoint('POST', '/v1/omnichannel/contacts.update');
-	const queryClient = useQueryClient();
 
 	const {
 		control,
@@ -44,6 +40,8 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 		enabled: canViewCustomFields,
 	});
 
+	const editContact = useEditContact(['getContactById']);
+
 	const handleConflicts = async ({ name, contactManager, ...customField }: HandleConflictsPayload) => {
 		const payload = {
 			name,
@@ -52,15 +50,12 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 			wipeConflicts: true,
 		};
 
-		try {
-			await updateContact({ contactId: contact?._id, ...payload });
-			dispatchToastMessage({ type: 'success', message: t('Contact_has_been_updated') });
-			await queryClient.invalidateQueries(['getContactById']);
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			onCancel();
-		}
+		editContact.mutate(
+			{ contactId: contact?._id, ...payload },
+			{
+				onSettled: () => onCancel(),
+			},
+		);
 	};
 
 	const conflictingFields = useMemo(() => {
