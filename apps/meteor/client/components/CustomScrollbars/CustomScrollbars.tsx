@@ -29,6 +29,7 @@ const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function
 		(scrollbarRef) => {
 			if (ref && scrollbarRef) {
 				if (typeof ref === 'function') {
+					console.log(scrollbarRef.view ?? null);
 					ref(scrollbarRef.view ?? null);
 					return;
 				}

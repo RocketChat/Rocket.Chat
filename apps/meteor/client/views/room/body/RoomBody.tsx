@@ -7,7 +7,7 @@ import React, { memo, useCallback, useMemo, useRef } from 'react';
 
 import { RoomRoles } from '../../../../app/models/client';
 import { isTruthy } from '../../../../lib/isTruthy';
-import { CustomScrollbars } from '../../../components/CustomScrollbars';
+import { NativeScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import Announcement from '../Announcement';
@@ -73,7 +73,7 @@ const RoomBody = (): ReactElement => {
 			return true;
 		}
 
-		if (allowAnonymousRead === true) {
+		if (allowAnonymousRead) {
 			return true;
 		}
 
@@ -210,6 +210,8 @@ const RoomBody = (): ReactElement => {
 		};
 	});
 
+	console.log({ innerRef });
+
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
@@ -280,26 +282,33 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<CustomScrollbars ref={innerRef}>
+										<NativeScrollbars ref={innerRef}>
 											<ul className='messages-list' aria-label={t('Message_list')} aria-busy={isLoadingMoreMessages}>
-												{canPreview ? (
-													<>
-														{hasMorePreviousMessages ? (
+												<MessageList
+													rid={room._id}
+													messageListRef={innerBoxRef}
+													renderBefore={() =>
+														canPreview ? (
+															<>
+																{hasMorePreviousMessages ? (
+																	<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
+																) : (
+																	<li>
+																		<RoomForeword user={user} room={room} />
+																		{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
+																	</li>
+																)}
+															</>
+														) : null
+													}
+													renderAfter={() =>
+														hasMoreNextMessages ? (
 															<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-														) : (
-															<li>
-																<RoomForeword user={user} room={room} />
-																{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
-															</li>
-														)}
-													</>
-												) : null}
-												<MessageList rid={room._id} messageListRef={innerBoxRef} />
-												{hasMoreNextMessages ? (
-													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-												) : null}
+														) : null
+													}
+												/>
 											</ul>
-										</CustomScrollbars>
+										</NativeScrollbars>
 									</MessageListErrorBoundary>
 								</div>
 							</div>

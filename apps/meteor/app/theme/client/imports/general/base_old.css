@@ -773,7 +773,9 @@
 	}
 
 	& ul.messages-list {
-		padding: 21px 0 0;
+		/* padding: 21px 0 0; */
+		overflow: hidden;
+		height: 100%;
 	}
 
 	& .editing .body {
