@@ -1224,22 +1224,17 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	findClosedRoomsByContactAndSourcePaginated({
+	findClosedRoomsByContactPaginated({
 		contactId,
-		source,
 		options = {},
 	}: {
 		contactId: string;
-		source?: string;
 		options?: FindOptions;
 	}): FindPaginated<FindCursor<IOmnichannelRoom>> {
 		return this.findPaginated<IOmnichannelRoom>(
 			{
 				'v.contactId': contactId,
 				'closedAt': { $exists: true },
-				...(source && {
-					$or: [{ 'source.type': new RegExp(escapeRegExp(source), 'i') }, { 'source.alias': new RegExp(escapeRegExp(source), 'i') }],
-				}),
 			},
 			options,
 		);
@@ -2805,5 +2800,13 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				$set: update,
 			},
 		);
+	}
+
+	findClosedRoomsByContactAndSourcePaginated(_params: {
+		contactId: string;
+		source?: string;
+		options?: FindOptions;
+	}): FindPaginated<FindCursor<IOmnichannelRoom>> {
+		throw new Error('Method not implemented.');
 	}
 }

@@ -6,8 +6,9 @@ import type {
 	ReportResult,
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
-import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import type { Updater } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, Filter, AggregationCursor } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
@@ -725,5 +726,26 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 			},
 			...extraQuery,
 		});
+	}
+
+	findClosedRoomsByContactAndSourcePaginated({
+		contactId,
+		source,
+		options = {},
+	}: {
+		contactId: string;
+		source?: string;
+		options?: FindOptions;
+	}): FindPaginated<FindCursor<IOmnichannelRoom>> {
+		return this.findPaginated<IOmnichannelRoom>(
+			{
+				'v.contactId': contactId,
+				'closedAt': { $exists: true },
+				...(source && {
+					$or: [{ 'source.type': new RegExp(escapeRegExp(source), 'i') }, { 'source.alias': new RegExp(escapeRegExp(source), 'i') }],
+				}),
+			},
+			options,
+		);
 	}
 }
