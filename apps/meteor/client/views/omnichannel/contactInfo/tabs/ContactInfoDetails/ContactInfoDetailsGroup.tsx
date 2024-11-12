@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
+import { parseOutboundPhoneNumber } from '../../../../../lib/voip/parseOutboundPhoneNumber';
 import ContactInfoDetailsEntry from './ContactInfoDetailsEntry';
 
 type ContactInfoDetailsGroupProps = {
@@ -16,7 +17,12 @@ const ContactInfoDetailsGroup = ({ type, label, values }: ContactInfoDetailsGrou
 				{label}
 			</Box>
 			{values.map((value, index) => (
-				<ContactInfoDetailsEntry type={type} label={label} key={index} value={value} />
+				<ContactInfoDetailsEntry
+					key={index}
+					isPhone={type === 'phone'}
+					icon={type === 'phone' ? 'phone' : 'mail'}
+					value={type === 'phone' ? parseOutboundPhoneNumber(value) : value}
+				/>
 			))}
 		</Box>
 	);
