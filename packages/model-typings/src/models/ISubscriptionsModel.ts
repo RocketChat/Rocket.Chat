@@ -76,7 +76,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	findByUserIdAndTypes(userId: string, types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
-	findByVisitorIds(visitorIds: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findOpenByVisitorIds(visitorIds: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
 	findByRoomIdAndNotAlertOrOpenExcludingUserIds(
 		filter: {

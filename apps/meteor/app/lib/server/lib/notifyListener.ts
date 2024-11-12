@@ -94,7 +94,7 @@ export const notifyOnRoomChangedByContactId = withDbWatcherCheck(
 		contactId: Exclude<T['v']['contactId'], undefined>,
 		clientAction: ClientAction = 'updated',
 	): Promise<void> => {
-		const items = LivechatRooms.findByContactId(contactId);
+		const items = LivechatRooms.findOpenByContactId(contactId);
 		for await (const item of items) {
 			void api.broadcast('watch.rooms', { clientAction, room: item });
 		}
@@ -586,7 +586,7 @@ export const notifyOnSubscriptionChangedByVisitorIds = withDbWatcherCheck(
 		visitorIds: Exclude<ISubscription['v'], undefined>['_id'][],
 		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
 	): Promise<void> => {
-		const cursor = Subscriptions.findByVisitorIds(visitorIds, { projection: subscriptionFields });
+		const cursor = Subscriptions.findOpenByVisitorIds(visitorIds, { projection: subscriptionFields });
 
 		void cursor.forEach((subscription) => {
 			void api.broadcast('watch.subscriptions', { clientAction, subscription });
