@@ -20,7 +20,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		if (!Messages.findOneByRoomIdAndMessageId(message.rid, message._id)) {
+		if (!Messages.findOne({ _id: message._id, rid: message.rid })) {
 			dispatchToastMessage({ type: 'error', message: t('error-starring-message') });
 			return false;
 		}

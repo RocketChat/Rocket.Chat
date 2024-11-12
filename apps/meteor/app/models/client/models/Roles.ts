@@ -1,4 +1,4 @@
-import type { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRole, IUser } from '@rocket.chat/core-typings';
 import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 
@@ -11,22 +11,6 @@ class RolesCollection extends Mongo.Collection<IRole> implements MinimongoCollec
 
 	constructor() {
 		super(null);
-	}
-
-	findUsersInRole(roleId: IRole['_id'], scope: IRoom['_id'], options: any) {
-		const role = this.findOne(roleId);
-		const roleScope = role?.scope || 'Users';
-
-		switch (roleScope) {
-			case 'Subscriptions':
-				return Subscriptions.findUsersInRoles(roleId, scope, options);
-
-			case 'Users':
-				return Users.findUsersInRoles(roleId, scope, options);
-
-			default:
-				return undefined;
-		}
 	}
 
 	isUserInRoles(userId: IUser['_id'], roles: IRole['_id'][] | IRole['_id'], scope?: string, ignoreSubscriptions = false) {
