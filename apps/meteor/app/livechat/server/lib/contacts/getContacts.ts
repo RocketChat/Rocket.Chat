@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { LivechatContacts, Users } from '@rocket.chat/models';
 import type { PaginatedResult, ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
-import type { Sort } from 'mongodb';
+import type { FindCursor, Sort } from 'mongodb';
 
 export type GetContactsParams = {
 	searchText?: string;
@@ -26,10 +26,11 @@ export async function getContacts(params: GetContactsParams): Promise<PaginatedR
 	const [rawContacts, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	const managerIds = [...new Set(rawContacts.map(({ contactManager }) => contactManager))];
-	const managersData = await Users.findByIds<Pick<IUser, '_id' | 'name' | 'username'>>(managerIds, {
+	const managersCursor: FindCursor<[string, Pick<IUser, '_id' | 'name' | 'username'>]> = Users.findByIds(managerIds, {
 		projection: { name: 1, username: 1 },
-	}).toArray();
-	const mappedManagers = Object.fromEntries(managersData.map((manager) => [manager._id, manager]));
+	}).map((manager) => [manager._id, manager]);
+	const managersData = await managersCursor.toArray();
+	const mappedManagers = Object.fromEntries(managersData);
 
 	const contacts: ILivechatContactWithManagerData[] = rawContacts.map((contact) => {
 		const { contactManager, ...data } = contact;
