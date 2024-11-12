@@ -6,11 +6,13 @@ import ContactInfoHistory from './ContactInfoHistory';
 import ContactInfoHistoryMessages from './ContactInfoHistoryMessages';
 
 const ContactInfoHistoryRouter = ({ contact }: { contact: Serialized<ILivechatContact> }) => {
-	const [chatId, setChatId] = useState<string>('');
+	const [chatId, setChatId] = useState<string | undefined>();
 	const { navigate } = useRouter();
 
-	if (chatId && chatId !== '') {
-		return <ContactInfoHistoryMessages chatId={chatId} onBack={() => setChatId('')} onOpenRoom={() => navigate(`/live/${chatId}`)} />;
+	if (chatId) {
+		return (
+			<ContactInfoHistoryMessages chatId={chatId} onBack={() => setChatId(undefined)} onOpenRoom={() => navigate(`/live/${chatId}`)} />
+		);
 	}
 
 	return <ContactInfoHistory contact={contact} setChatId={setChatId} />;
