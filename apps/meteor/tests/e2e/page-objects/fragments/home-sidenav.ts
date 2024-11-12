@@ -175,7 +175,7 @@ export class HomeSidenav {
 
 	async createEncryptedChannel(name: string) {
 		await this.openNewByLabel('Channel');
-		await this.inputChannelName.type(name);
+		await this.inputChannelName.fill(name);
 		await this.advancedSettingsAccordion.click();
 		await this.checkboxEncryption.click();
 		await this.btnCreate.click();
