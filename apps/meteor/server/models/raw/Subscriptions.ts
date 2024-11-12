@@ -611,9 +611,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		const update = {
 			$set: {
 				name,
-				lowerCaseName: name.toLowerCase(),
 				fname: name,
-				lowerCaseFName: name.toLowerCase(),
 			},
 		};
 
