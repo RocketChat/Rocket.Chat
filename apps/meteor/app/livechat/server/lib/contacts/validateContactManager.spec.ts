@@ -8,11 +8,9 @@ const modelsMock = {
 	},
 };
 
-const { validateContactManager } = proxyquire
-	.noCallThru()
-	.load('../../../../../../app/livechat/server/lib/contacts/validateContactManager', {
-		'@rocket.chat/models': modelsMock,
-	});
+const { validateContactManager } = proxyquire.noCallThru().load('./validateContactManager', {
+	'@rocket.chat/models': modelsMock,
+});
 
 describe('validateContactManager', () => {
 	beforeEach(() => {
