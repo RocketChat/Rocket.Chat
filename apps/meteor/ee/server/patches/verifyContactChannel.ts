@@ -59,7 +59,7 @@ async function _verifyContactChannel(
 		}
 
 		logger.error({ msg: 'Error verifying contact channel', contactId, visitorId, roomId, error: e });
-		throw e;
+		throw new Error('error-verifying-contact-channel');
 	} finally {
 		await session.endSession();
 	}
