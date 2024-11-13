@@ -15,7 +15,7 @@ const ComposerOmnichannelCallout = () => {
 	const { navigate, buildRoutePath } = useRouter();
 	const hasLicense = useHasLicenseModule('contact-id-verification');
 	const securityPrivacyRoute = buildRoutePath('/omnichannel/security-privacy');
-	const shouldShowSecurityRoute = useSetting('Livechat_Contact_Verification_App') !== 'VerifyChat' || !hasLicense;
+	const shouldShowSecurityRoute = useSetting('Livechat_Require_Contact_Verification') !== 'never' || !hasLicense;
 
 	const canViewSecurityPrivacy = useAtLeastOnePermission([
 		'view-privileged-setting',

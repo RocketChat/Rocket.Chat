@@ -39,18 +39,8 @@ describe('shouldTriggerVerificationApp', () => {
 		expect(result).to.be.false;
 	});
 
-	it('should not trigger a verification app if there is no configured app', async () => {
-		modelsMock.LivechatContacts.findOneById.resolves({ _id: 'contactId' });
-		settingsMock.get.withArgs('Livechat_Contact_Verification_App').returns('');
-
-		const result = await runShouldTriggerVerificationApp(() => undefined, 'visitorId', 'contactId', {});
-		expect(result).to.be.false;
-		expect(settingsMock.get.calledOnceWith('Livechat_Contact_Verification_App')).to.be.true;
-	});
-
 	it('should not trigger a verification app if the Livechat_Require_Contact_Verification is never', async () => {
 		modelsMock.LivechatContacts.findOneById.resolves({ _id: 'contactId' });
-		settingsMock.get.withArgs('Livechat_Contact_Verification_App').returns('verificationApp');
 		settingsMock.get.withArgs('Livechat_Require_Contact_Verification').returns('never');
 
 		const result = await runShouldTriggerVerificationApp(() => undefined, 'visitorId', 'contactId', 'other');
@@ -59,7 +49,6 @@ describe('shouldTriggerVerificationApp', () => {
 
 	it('should trigger a verification app if there is no verified contact and Livechat_Require_Contact_Verification is once', async () => {
 		modelsMock.LivechatContacts.findOneById.resolves({ _id: 'contactId' });
-		settingsMock.get.withArgs('Livechat_Contact_Verification_App').returns('verificationApp');
 		settingsMock.get.withArgs('Livechat_Require_Contact_Verification').returns('once');
 
 		const result = await runShouldTriggerVerificationApp(() => undefined, 'visitorId', 'contactId', 'other');
@@ -71,7 +60,6 @@ describe('shouldTriggerVerificationApp', () => {
 			_id: 'contactId',
 			channels: [{ verified: true, visitor: { source: { visitorId: 'visitorId', type: 'other' } } }],
 		});
-		settingsMock.get.withArgs('Livechat_Contact_Verification_App').returns('verificationApp');
 		settingsMock.get.withArgs('Livechat_Require_Contact_Verification').returns('always');
 
 		const result = await runShouldTriggerVerificationApp(() => undefined, 'visitorId', 'contactId', { type: 'other' });
