@@ -26,7 +26,7 @@ export type ScreenContextValue = {
 	onEnableNotifications: () => unknown;
 	onDisableNotifications: () => unknown;
 	onMinimize: () => unknown;
-	onRestore: () => unknown;
+	onRestore: () => Promise<void>;
 	onOpenWindow: () => unknown;
 	onDismissAlert: () => unknown;
 	dismissNotification: () => void;
@@ -57,7 +57,7 @@ export const ScreenContext = createContext<ScreenContextValue>({
 	onEnableNotifications: () => undefined,
 	onDisableNotifications: () => undefined,
 	onMinimize: () => undefined,
-	onRestore: () => undefined,
+	onRestore: async () => undefined,
 	onOpenWindow: () => undefined,
 } as ScreenContextValue);
 
