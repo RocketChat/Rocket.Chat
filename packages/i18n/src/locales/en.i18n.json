@@ -4055,6 +4055,7 @@
   "OAuth_Description": "Configure authentication methods beyond just username and password.",
   "OAuth_Application": "OAuth Application",
   "OAuth_button_colors_alert": "Changing the color may result in non-compliance with WCAG (Web Content Accessibility Guidelines) requirements. Please ensure that the new colors meet the recommended contrast and readability standards to maintain accessibility for all users.",
+  "OAuth_Full_Access_Warning": "<strong>{{appName}}</strong> will have full, unrestricted access to your account, including the ability to perform any action on your behalf. Only proceed if you trust this application completely.",
   "Objects": "Objects",
   "Off": "Off",
   "Off_the_record_conversation": "Off-the-Record Conversation",
