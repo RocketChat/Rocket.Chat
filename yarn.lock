@@ -9505,7 +9505,7 @@ __metadata:
     playwright-qase-reporter: "npm:^1.2.2"
     postcss: "npm:~8.4.47"
     postcss-custom-properties: "npm:^11.0.0"
-    postcss-easy-import: "npm:^3.0.0"
+    postcss-easy-import: "npm:^4.0.0"
     postcss-load-config: "npm:^3.1.4"
     postcss-media-minmax: "npm:^5.0.0"
     postcss-nested: "npm:^5.0.6"
@@ -19774,22 +19774,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"elliptic@npm:^6.5.3, elliptic@npm:^6.5.5":
-  version: 6.5.7
-  resolution: "elliptic@npm:6.5.7"
-  dependencies:
-    bn.js: "npm:^4.11.9"
-    brorand: "npm:^1.1.0"
-    hash.js: "npm:^1.0.0"
-    hmac-drbg: "npm:^1.0.1"
-    inherits: "npm:^2.0.4"
-    minimalistic-assert: "npm:^1.0.1"
-    minimalistic-crypto-utils: "npm:^1.0.1"
-  checksum: 10/fbad1fad0a5cc07df83f80cc1f7a784247ef59075194d3e340eaeb2f4dd594825ee24c7e9b0cf279c9f1982efe610503bb3139737926428c4821d4fca1bcf348
-  languageName: node
-  linkType: hard
-
-"elliptic@npm:^6.6.0":
+"elliptic@npm:^6.5.3, elliptic@npm:^6.5.5, elliptic@npm:^6.6.0":
   version: 6.6.0
   resolution: "elliptic@npm:6.6.0"
   dependencies:
@@ -21896,17 +21881,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.7, follow-redirects@npm:^1.14.8, follow-redirects@npm:^1.14.9":
-  version: 1.15.4
-  resolution: "follow-redirects@npm:1.15.4"
-  peerDependenciesMeta:
-    debug:
-      optional: true
-  checksum: 10/2e8f5f259a6b02dfa8dc199e08431848a7c3beed32eb4c19945966164a52c89f07b86c3afcc32ebe4279cf0a960520e45a63013d6350309c5ec90133c5d9351a
-  languageName: node
-  linkType: hard
-
-"follow-redirects@npm:^1.15.6, follow-redirects@npm:^1.15.9":
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.7, follow-redirects@npm:^1.14.8, follow-redirects@npm:^1.14.9, follow-redirects@npm:^1.15.6, follow-redirects@npm:^1.15.9":
   version: 1.15.9
   resolution: "follow-redirects@npm:1.15.9"
   peerDependenciesMeta:
@@ -30337,19 +30312,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-easy-import@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "postcss-easy-import@npm:3.0.0"
+"postcss-easy-import@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "postcss-easy-import@npm:4.0.0"
   dependencies:
     globby: "npm:^6.1.0"
     is-glob: "npm:^4.0.0"
     lodash: "npm:^4.17.4"
     object-assign: "npm:^4.0.1"
     pify: "npm:^3.0.0"
-    postcss: "npm:^6.0.11"
-    postcss-import: "npm:^10.0.0"
+    postcss-import: "npm:^14.0.0"
     resolve: "npm:^1.1.7"
-  checksum: 10/c00e13292c0d763dfdb14c64edd04181928d005aabf265c487c90e15936f0b0a7024006d23057fd884943a70c02bde4bf7c79633f0078d021501fae440c1c9ea
+  peerDependencies:
+    postcss: ^8.4.6
+  checksum: 10/3d24becf1f714faf19868f1bc8dbc047d8b41af70f32aeb499025c188c64f06aa2d66dde77973984d579f231ff59596fc4161fd14b8949b1ee96fc18e988af11
   languageName: node
   linkType: hard
 
@@ -30371,16 +30347,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-import@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "postcss-import@npm:10.0.0"
+"postcss-import@npm:^14.0.0":
+  version: 14.1.0
+  resolution: "postcss-import@npm:14.1.0"
   dependencies:
-    object-assign: "npm:^4.0.1"
-    postcss: "npm:^6.0.1"
-    postcss-value-parser: "npm:^3.2.3"
+    postcss-value-parser: "npm:^4.0.0"
     read-cache: "npm:^1.0.0"
     resolve: "npm:^1.1.7"
-  checksum: 10/3590c888357790effef69a039226f43f2f42e5f2d8bb3bc546dc7b419ba054caff56dd99c61ba5d285f367f68d563a9b4cab02ac35020080aa8e4dee5830fa24
+  peerDependencies:
+    postcss: ^8.0.0
+  checksum: 10/434ab43145ad6beeb3cd7405596cb29920061e9d55091196e0264daf0a4e543a8cf1568c233e5a4466786749f904c03a9d51d406685055af2a14a8337d8773d5
   languageName: node
   linkType: hard
 
@@ -30873,14 +30849,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-value-parser@npm:^3.0.0, postcss-value-parser@npm:^3.2.3":
+"postcss-value-parser@npm:^3.0.0":
   version: 3.3.1
   resolution: "postcss-value-parser@npm:3.3.1"
   checksum: 10/e8bc676092ad0c4a628e8d7b06ef1844a157bcce22e489d72ac661d6d47b8e8e7c342e5e0da807056a0a2fced1372fff0f67fbfd6e06fd8509828ac6190b54ae
   languageName: node
   linkType: hard
 
-"postcss-value-parser@npm:^4.0.2, postcss-value-parser@npm:^4.1.0, postcss-value-parser@npm:^4.2.0":
+"postcss-value-parser@npm:^4.0.0, postcss-value-parser@npm:^4.0.2, postcss-value-parser@npm:^4.1.0, postcss-value-parser@npm:^4.2.0":
   version: 4.2.0
   resolution: "postcss-value-parser@npm:4.2.0"
   checksum: 10/e4e4486f33b3163a606a6ed94f9c196ab49a37a7a7163abfcd469e5f113210120d70b8dd5e33d64636f41ad52316a3725655421eb9a1094f1bcab1db2f555c62
@@ -30898,7 +30874,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^6.0.1, postcss@npm:^6.0.11, postcss@npm:^6.0.21, postcss@npm:^6.0.8":
+"postcss@npm:^6.0.21, postcss@npm:^6.0.8":
   version: 6.0.23
   resolution: "postcss@npm:6.0.23"
   dependencies:
@@ -35335,21 +35311,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar@npm:^6.0.2, tar@npm:^6.1.11, tar@npm:^6.1.2":
-  version: 6.1.11
-  resolution: "tar@npm:6.1.11"
-  dependencies:
-    chownr: "npm:^2.0.0"
-    fs-minipass: "npm:^2.0.0"
-    minipass: "npm:^3.0.0"
-    minizlib: "npm:^2.1.1"
-    mkdirp: "npm:^1.0.3"
-    yallist: "npm:^4.0.0"
-  checksum: 10/0e6789e66475922b8e0d1ee648cb26e0ede9a0635284269ca71b2d8acd507bc59ad5557032f0192f8ff22680b50cb66792b56f0240f484fe0d7d8cef81c1b959
-  languageName: node
-  linkType: hard
-
-"tar@npm:^6.2.1":
+"tar@npm:^6.0.2, tar@npm:^6.1.11, tar@npm:^6.1.2, tar@npm:^6.2.1":
   version: 6.2.1
   resolution: "tar@npm:6.2.1"
   dependencies:
