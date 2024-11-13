@@ -142,11 +142,19 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return this.findOne(query);
 	}
 
-	private makeQueryForVisitor(visitor: ILivechatContactVisitorAssociation): Filter<ILivechatContact> {
+	private makeQueryForVisitor(
+		visitor: ILivechatContactVisitorAssociation,
+		extraFilters?: Filter<Required<ILivechatContact>['channels'][number]>,
+	): Filter<ILivechatContact> {
 		return {
-			'channels.visitor.visitorId': visitor.visitorId,
-			'channels.visitor.source.type': visitor.source.type,
-			...(visitor.source.id ? { 'channels.visitor.source.id': visitor.source.id } : {}),
+			channels: {
+				$elemMatch: {
+					'visitor.visitorId': visitor.visitorId,
+					'visitor.source.type': visitor.source.type,
+					...(visitor.source.id ? { 'visitor.source.id': visitor.source.id } : {}),
+					...extraFilters,
+				},
+			},
 		};
 	}
 
@@ -176,21 +184,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 	}
 
 	async isChannelBlocked(visitor: ILivechatContactVisitorAssociation): Promise<boolean> {
-		return Boolean(
-			await this.findOne(
-				{
-					channels: {
-						$elemMatch: {
-							'visitor.visitorId': visitor.visitorId,
-							'visitor.source.type': visitor.source.type,
-							'blocked': true,
-							...(visitor.source.id ? { 'visitor.source.id': visitor.source.id } : {}),
-						},
-					},
-				},
-				{ projection: { _id: 1 } },
-			),
-		);
+		return Boolean(await this.findOne(this.makeQueryForVisitor(visitor, { blocked: true }), { projection: { _id: 1 } }));
 	}
 
 	async updateContactChannel(
@@ -220,10 +214,14 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 	): Promise<ILivechatContact[]> {
 		return this.find(
 			{
-				'channels.field': field,
-				'channels.value': value,
-				'channels.verified': true,
-				'_id': { $ne: originalContactId },
+				channels: {
+					$elemMatch: {
+						field,
+						value,
+						verified: true,
+					},
+				},
+				_id: { $ne: originalContactId },
 			},
 			options,
 		).toArray();
