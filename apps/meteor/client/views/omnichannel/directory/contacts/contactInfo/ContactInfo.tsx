@@ -1,8 +1,8 @@
 import { Box, Margins, ButtonGroup, Button, Divider } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { RouteName } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint, usePermission, useRouter } from '@rocket.chat/ui-contexts';
+import { useRoute, useTranslation, useEndpoint, usePermission, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useCallback } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
@@ -20,6 +20,7 @@ import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 import { VoipInfoCallButton } from '../../calls/contextualBar/VoipInfoCallButton';
 import { FormSkeleton } from '../../components/FormSkeleton';
+import { useContactRoute } from '../../hooks/useContactRoute';
 
 type ContactInfoProps = {
 	id: string;
@@ -27,12 +28,11 @@ type ContactInfoProps = {
 	route?: RouteName;
 };
 
-const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProps) => {
+const ContactInfo = ({ id: contactId }: ContactInfoProps) => {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
-
 	const router = useRouter();
 	const liveRoute = useRoute('live');
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const currentRouteName = useSyncExternalStore(
 		router.subscribeToRouteChange,
@@ -44,6 +44,15 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 	const canEditContact = usePermission('edit-omnichannel-contact');
+	const handleNavigate = useContactRoute();
+
+	const onEditButtonClick = useEffectEvent(() => {
+		if (!canEditContact) {
+			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });
+		}
+
+		handleNavigate({ context: 'edit' });
+	});
 
 	const getCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
 	const { data: { customFields } = {} } = useQuery(['/v1/livechat/custom-fields'], () => getCustomFields());
@@ -55,33 +64,6 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 		isError,
 	} = useQuery(['/v1/omnichannel/contact', contactId], () => getContact({ contactId }), {
 		enabled: canViewCustomFields && !!contactId,
-	});
-
-	const onEditButtonClick = useMutableCallback(() => {
-		if (!canEditContact) {
-			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });
-		}
-
-		if (route) {
-			router.navigate({
-				name: route,
-				params: {
-					tab: 'contact-profile',
-					context: 'edit',
-					id: roomId,
-				},
-			});
-			return;
-		}
-
-		router.navigate({
-			name: 'omnichannel-directory',
-			params: {
-				page: 'contacts',
-				id: contactId,
-				bar: 'edit',
-			},
-		});
 	});
 
 	if (isInitialLoading) {
