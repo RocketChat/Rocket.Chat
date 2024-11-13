@@ -472,9 +472,10 @@ test.describe.serial('e2e-encryption', () => {
 			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).not.toBeVisible();
 
 			await poHomeChannel.content.dragAndDropTxtFile();
-			await poHomeChannel.content.descriptionInput.fill('any_description');
-			await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
-			await poHomeChannel.content.btnModalConfirm.click();
+			await poHomeChannel.content.sendMessage('any_description');
+			// await poHomeChannel.content.descriptionInput.fill('any_description');
+			// await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+			// await poHomeChannel.content.btnModalConfirm.click();
 
 			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).not.toBeVisible();
 
@@ -537,13 +538,15 @@ test.describe.serial('e2e-encryption', () => {
 
 			await test.step('send a file in channel', async () => {
 				await poHomeChannel.content.dragAndDropTxtFile();
-				await poHomeChannel.content.descriptionInput.fill('any_description');
-				await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
-				await poHomeChannel.content.btnModalConfirm.click();
+				await poHomeChannel.content.sendMessage('any_description');
+				// await poHomeChannel.content.descriptionInput.fill('any_description');
+				// await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+				// await poHomeChannel.content.btnModalConfirm.click();
 
 				await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 				await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
-				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+				// await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file.txt');
 			});
 		});
 
@@ -566,13 +569,15 @@ test.describe.serial('e2e-encryption', () => {
 
 			await test.step('send a text file in channel', async () => {
 				await poHomeChannel.content.dragAndDropTxtFile();
-				await poHomeChannel.content.descriptionInput.fill('message 1');
-				await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
-				await poHomeChannel.content.btnModalConfirm.click();
+				await poHomeChannel.content.sendMessage('message 1');
+				// await poHomeChannel.content.descriptionInput.fill('message 1');
+				// await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+				// await poHomeChannel.content.btnModalConfirm.click();
 
 				await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 				await expect(poHomeChannel.content.getFileDescription).toHaveText('message 1');
-				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+				// await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file.txt');
 			});
 
 			await test.step('set whitelisted media type setting', async () => {
@@ -643,13 +648,15 @@ test.describe.serial('e2e-encryption', () => {
 
 				await test.step('send a text file in channel, file should not be encrypted', async () => {
 					await poHomeChannel.content.dragAndDropTxtFile();
-					await poHomeChannel.content.descriptionInput.fill('any_description');
-					await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
-					await poHomeChannel.content.btnModalConfirm.click();
+					await poHomeChannel.content.sendMessage('any_description');
+					// await poHomeChannel.content.descriptionInput.fill('any_description');
+					// await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+					// await poHomeChannel.content.btnModalConfirm.click();
 
 					await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).not.toBeVisible();
 					await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
-					await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+					// await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+					await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file.txt');
 				});
 			});
 		});
