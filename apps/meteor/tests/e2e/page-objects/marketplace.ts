@@ -31,6 +31,10 @@ export class Marketplace {
 		return this.page.locator('role=button[name="Upload anyway"]');
 	}
 
+	get exemptAppModalTitle(): Locator {
+		return this.page.locator('[data-qa-id="exempt-app-modal-title"]');
+	}
+
 	get lastAppRow(): Locator {
 		return this.page.locator('[data-qa-type="app-row"]').last();
 	}
