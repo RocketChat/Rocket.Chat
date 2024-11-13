@@ -19774,22 +19774,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"elliptic@npm:^6.5.3, elliptic@npm:^6.5.5":
-  version: 6.5.7
-  resolution: "elliptic@npm:6.5.7"
-  dependencies:
-    bn.js: "npm:^4.11.9"
-    brorand: "npm:^1.1.0"
-    hash.js: "npm:^1.0.0"
-    hmac-drbg: "npm:^1.0.1"
-    inherits: "npm:^2.0.4"
-    minimalistic-assert: "npm:^1.0.1"
-    minimalistic-crypto-utils: "npm:^1.0.1"
-  checksum: 10/fbad1fad0a5cc07df83f80cc1f7a784247ef59075194d3e340eaeb2f4dd594825ee24c7e9b0cf279c9f1982efe610503bb3139737926428c4821d4fca1bcf348
-  languageName: node
-  linkType: hard
-
-"elliptic@npm:^6.6.0":
+"elliptic@npm:^6.5.3, elliptic@npm:^6.5.5, elliptic@npm:^6.6.0":
   version: 6.6.0
   resolution: "elliptic@npm:6.6.0"
   dependencies:
