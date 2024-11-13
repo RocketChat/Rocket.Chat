@@ -67,7 +67,7 @@ export class OmnichannelLiveChat {
 	}
 
 	txtChatMessage(message: string): Locator {
-		return this.page.locator(`text="${message}"`);
+		return this.page.locator(`[data-qa="message-bubble"] >> text="${message}"`);
 	}
 
 	async closeChat(): Promise<void> {

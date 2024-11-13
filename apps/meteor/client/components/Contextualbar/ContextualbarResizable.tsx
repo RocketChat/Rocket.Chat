@@ -29,7 +29,7 @@ const ContextualbarResizable = ({ defaultWidth, children, ...props }: Contextual
 			minWidth={defaultWidth}
 			maxWidth='50%'
 			minHeight='100%'
-			handleStyles={{ left: { width: '3px', zIndex: '5', left: 0 } }}
+			handleStyles={{ left: { width: '3px', zIndex: 99, left: 0 } }}
 			handleComponent={{ left: <Box className={handleStyle} /> }}
 		>
 			{children}
