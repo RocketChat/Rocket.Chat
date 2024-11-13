@@ -3585,7 +3585,7 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/visitors.info': {
 		GET: (params: LivechatVisitorsInfo) => {
-			visitor: ILivechatVisitor & { contactId?: string };
+			visitor: ILivechatVisitor;
 		};
 	};
 	'/v1/livechat/room.onHold': {
