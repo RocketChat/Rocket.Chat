@@ -9505,7 +9505,7 @@ __metadata:
     playwright-qase-reporter: "npm:^1.2.2"
     postcss: "npm:~8.4.47"
     postcss-custom-properties: "npm:^11.0.0"
-    postcss-easy-import: "npm:^3.0.0"
+    postcss-easy-import: "npm:^4.0.0"
     postcss-load-config: "npm:^3.1.4"
     postcss-media-minmax: "npm:^5.0.0"
     postcss-nested: "npm:^5.0.6"
@@ -30312,19 +30312,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-easy-import@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "postcss-easy-import@npm:3.0.0"
+"postcss-easy-import@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "postcss-easy-import@npm:4.0.0"
   dependencies:
     globby: "npm:^6.1.0"
     is-glob: "npm:^4.0.0"
     lodash: "npm:^4.17.4"
     object-assign: "npm:^4.0.1"
     pify: "npm:^3.0.0"
-    postcss: "npm:^6.0.11"
-    postcss-import: "npm:^10.0.0"
+    postcss-import: "npm:^14.0.0"
     resolve: "npm:^1.1.7"
-  checksum: 10/c00e13292c0d763dfdb14c64edd04181928d005aabf265c487c90e15936f0b0a7024006d23057fd884943a70c02bde4bf7c79633f0078d021501fae440c1c9ea
+  peerDependencies:
+    postcss: ^8.4.6
+  checksum: 10/3d24becf1f714faf19868f1bc8dbc047d8b41af70f32aeb499025c188c64f06aa2d66dde77973984d579f231ff59596fc4161fd14b8949b1ee96fc18e988af11
   languageName: node
   linkType: hard
 
@@ -30346,16 +30347,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-import@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "postcss-import@npm:10.0.0"
+"postcss-import@npm:^14.0.0":
+  version: 14.1.0
+  resolution: "postcss-import@npm:14.1.0"
   dependencies:
-    object-assign: "npm:^4.0.1"
-    postcss: "npm:^6.0.1"
-    postcss-value-parser: "npm:^3.2.3"
+    postcss-value-parser: "npm:^4.0.0"
     read-cache: "npm:^1.0.0"
     resolve: "npm:^1.1.7"
-  checksum: 10/3590c888357790effef69a039226f43f2f42e5f2d8bb3bc546dc7b419ba054caff56dd99c61ba5d285f367f68d563a9b4cab02ac35020080aa8e4dee5830fa24
+  peerDependencies:
+    postcss: ^8.0.0
+  checksum: 10/434ab43145ad6beeb3cd7405596cb29920061e9d55091196e0264daf0a4e543a8cf1568c233e5a4466786749f904c03a9d51d406685055af2a14a8337d8773d5
   languageName: node
   linkType: hard
 
@@ -30848,14 +30849,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-value-parser@npm:^3.0.0, postcss-value-parser@npm:^3.2.3":
+"postcss-value-parser@npm:^3.0.0":
   version: 3.3.1
   resolution: "postcss-value-parser@npm:3.3.1"
   checksum: 10/e8bc676092ad0c4a628e8d7b06ef1844a157bcce22e489d72ac661d6d47b8e8e7c342e5e0da807056a0a2fced1372fff0f67fbfd6e06fd8509828ac6190b54ae
   languageName: node
   linkType: hard
 
-"postcss-value-parser@npm:^4.0.2, postcss-value-parser@npm:^4.1.0, postcss-value-parser@npm:^4.2.0":
+"postcss-value-parser@npm:^4.0.0, postcss-value-parser@npm:^4.0.2, postcss-value-parser@npm:^4.1.0, postcss-value-parser@npm:^4.2.0":
   version: 4.2.0
   resolution: "postcss-value-parser@npm:4.2.0"
   checksum: 10/e4e4486f33b3163a606a6ed94f9c196ab49a37a7a7163abfcd469e5f113210120d70b8dd5e33d64636f41ad52316a3725655421eb9a1094f1bcab1db2f555c62
@@ -30873,7 +30874,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^6.0.1, postcss@npm:^6.0.11, postcss@npm:^6.0.21, postcss@npm:^6.0.8":
+"postcss@npm:^6.0.21, postcss@npm:^6.0.8":
   version: 6.0.23
   resolution: "postcss@npm:6.0.23"
   dependencies:
