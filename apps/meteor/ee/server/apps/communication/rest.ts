@@ -749,7 +749,7 @@ export class AppsRestApi {
 						return API.v1.internalError('private_app_install_disabled');
 					}
 
-					const isCommunityWorkspace = License.hasValidLicense();
+					const isCommunityWorkspace = !License.hasValidLicense();
 
 					// Note: exempt apps happen when a private app was uploaded to a community workspace before
 					//       the private app restriction was enforced. We still allow the users to use their
