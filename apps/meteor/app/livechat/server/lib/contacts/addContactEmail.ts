@@ -10,14 +10,10 @@ import { LivechatContacts } from '@rocket.chat/models';
  * @returns the updated contact
  */
 export async function addContactEmail(contactId: ILivechatContact['_id'], email: string): Promise<ILivechatContact> {
-	const contact = await LivechatContacts.findOneById(contactId);
+	const contact = await LivechatContacts.addEmail(contactId, email);
+
 	if (!contact) {
 		throw new Error('error-contact-not-found');
-	}
-
-	const emails = contact.emails?.map(({ address }) => address) || [];
-	if (!emails.includes(email)) {
-		return LivechatContacts.addEmail(contactId, email) as Promise<ILivechatContact>;
 	}
 
 	return contact;

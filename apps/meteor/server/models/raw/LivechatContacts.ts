@@ -234,7 +234,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 	}
 
 	async addEmail(contactId: string, email: string): Promise<ILivechatContact | null> {
-		const updatedContact = await this.findOneAndUpdate({ _id: contactId }, { $push: { emails: { address: email } } });
+		const updatedContact = await this.findOneAndUpdate({ _id: contactId }, { $addToSet: { emails: { address: email } } });
 
 		return updatedContact.value;
 	}
