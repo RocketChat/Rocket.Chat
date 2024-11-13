@@ -1,4 +1,4 @@
-import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/core-typings';
+import type { ILivechatContactChannel } from '@rocket.chat/core-typings';
 import { LivechatContacts } from '@rocket.chat/models';
 
 import { getAllowedCustomFields } from './getAllowedCustomFields';
@@ -16,7 +16,7 @@ export type CreateContactParams = {
 	importIds?: string[];
 };
 
-export async function createContact(params: CreateContactParams, upsertId?: ILivechatContact['_id']): Promise<string> {
+export async function createContact(params: CreateContactParams): Promise<string> {
 	const { name, emails, phones, customFields: receivedCustomFields = {}, contactManager, channels, unknown, importIds } = params;
 
 	if (contactManager) {
@@ -26,7 +26,7 @@ export async function createContact(params: CreateContactParams, upsertId?: ILiv
 	const allowedCustomFields = await getAllowedCustomFields();
 	const customFields = validateCustomFields(allowedCustomFields, receivedCustomFields);
 
-	const updateData = {
+	return LivechatContacts.insertContact({
 		name,
 		emails: emails?.map((address) => ({ address })),
 		phones: phones?.map((phoneNumber) => ({ phoneNumber })),
@@ -35,13 +35,5 @@ export async function createContact(params: CreateContactParams, upsertId?: ILiv
 		customFields,
 		unknown,
 		...(importIds?.length ? { importIds } : {}),
-	} as const;
-
-	// Use upsert when doing auto-migration so that if there's multiple requests processing at the same time, they won't interfere with each other
-	if (upsertId) {
-		await LivechatContacts.upsertContact(upsertId, updateData);
-		return upsertId;
-	}
-
-	return LivechatContacts.insertContact(updateData);
+	});
 }

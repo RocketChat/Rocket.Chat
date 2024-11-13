@@ -13,6 +13,7 @@ export interface IInquiry {
 }
 
 export enum LivechatInquiryStatus {
+	VERIFYING = 'verifying',
 	QUEUED = 'queued',
 	TAKEN = 'taken',
 	READY = 'ready',

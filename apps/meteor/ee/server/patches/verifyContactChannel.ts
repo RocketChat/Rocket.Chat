@@ -3,7 +3,7 @@ import type { ILivechatContact, IOmnichannelRoom } from '@rocket.chat/core-typin
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
-import { saveQueueInquiry } from '../../../app/livechat/server/lib/QueueManager';
+import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
 import { verifyContactChannel } from '../../../app/livechat/server/lib/contacts/verifyContactChannel';
 import { client, shouldRetryTransaction } from '../../../server/database/utils';
@@ -78,7 +78,7 @@ export const runVerifyContactChannel = async (
 ): Promise<ILivechatContact | null> => {
 	const { roomId, contactId, visitorId } = params;
 
-	const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'source'>>(roomId, { projection: { source: 1 } });
+	const room = await LivechatRooms.findOneById(roomId);
 	if (!room) {
 		throw new Error('error-invalid-room');
 	}
@@ -98,11 +98,9 @@ export const runVerifyContactChannel = async (
 		throw new Error('error-invalid-inquiry');
 	}
 
-	// If the inquiry is ready, it means it was not taken by an agent yet, so we should add it to the queue
-	// again to be taken by an agent.
-	if (inquiry.status === LivechatInquiryStatus.READY) {
-		logger.debug({ msg: 'Saving inquiry', roomId });
-		await saveQueueInquiry(inquiry);
+	if (inquiry.status === LivechatInquiryStatus.VERIFYING) {
+		logger.debug({ msg: 'Verifying inquiry', roomId });
+		await QueueManager.verifyInquiry(inquiry, room);
 	}
 
 	logger.debug({

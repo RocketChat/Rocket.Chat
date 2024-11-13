@@ -4,14 +4,10 @@ import { LivechatRooms } from '@rocket.chat/models';
 import { createContact } from './createContact';
 import { mapVisitorToContact } from './mapVisitorToContact';
 
-export async function createContactFromVisitor(
-	visitor: ILivechatVisitor,
-	source: IOmnichannelSource,
-	useVisitorId = false,
-): Promise<string> {
+export async function createContactFromVisitor(visitor: ILivechatVisitor, source: IOmnichannelSource): Promise<string> {
 	const contactData = await mapVisitorToContact(visitor, source);
 
-	const contactId = await createContact(contactData, useVisitorId ? visitor._id : undefined);
+	const contactId = await createContact(contactData);
 
 	await LivechatRooms.setContactByVisitorAssociation(
 		{

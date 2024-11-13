@@ -403,6 +403,23 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
+	async setStatusById(inquiryId: string, status: LivechatInquiryStatus): Promise<ILivechatInquiryRecord> {
+		const result = await this.findOneAndUpdate(
+			{ _id: inquiryId },
+			{ $set: { status } },
+			{
+				upsert: true,
+				returnDocument: 'after',
+			},
+		);
+
+		if (!result.value) {
+			throw new Error('error-failed-to-set-inquiry-status');
+		}
+
+		return result.value;
+	}
+
 	setNameByRoomId(rid: string, name: string): Promise<UpdateResult> {
 		const query = { rid };
 
