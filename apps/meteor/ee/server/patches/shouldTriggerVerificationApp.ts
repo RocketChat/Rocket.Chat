@@ -34,12 +34,6 @@ export const runShouldTriggerVerificationApp = async (
 		return false;
 	}
 
-	// There is no configured verification app, so there is no reason to trigger a verification app, since
-	// none will be able to be assigned
-	if (settings.get<string>('Livechat_Contact_Verification_App') === '') {
-		return false;
-	}
-
 	const verificationRequirement = settings.get<AvailableLivechatRequireContactVerificationSetting>('Livechat_Require_Contact_Verification');
 	const isContactVerified = (contact.channels?.filter((channel) => isVerifiedChannelInSource(channel, visitorId, source)) || []).length > 0;
 

@@ -3353,8 +3353,6 @@
   "Livechat_Block_Unknown_Contacts_Description": "Conversations from people who are not on the contact list will not be able to be taken.",
   "Livechat_Block_Unverified_Contacts": "Block unverified contacts",
   "Livechat_Block_Unverified_Contacts_Description": "Conversations from people who are not verified will not be able to be taken.",
-  "Livechat_Contact_Verification_App": "Contact verification app",
-  "Livechat_Contact_Verification_App_Description": "Install verification app from marketplace.",
   "Livechat_Require_Contact_Verification": "Require verification on contacts.",
   "Livechat_Require_Contact_Verification_Description": "Requesting verification on all contacts is recommended to follow a zero-trust security strategy. Messages from unverified people will not appear in the queue but will still appear in contact center.",
   "Livechat_Queue": "Omnichannel Queue",

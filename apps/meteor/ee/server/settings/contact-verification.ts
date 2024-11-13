@@ -23,7 +23,7 @@ export const addSettings = async (): Promise<void> => {
 					invalidValue: false,
 				});
 
-				await this.add('Livechat_Require_Contact_Verification', 'always', {
+				await this.add('Livechat_Require_Contact_Verification', 'never', {
 					type: 'select',
 					values: [
 						{ key: 'never', i18nLabel: 'Never' },
@@ -31,12 +31,6 @@ export const addSettings = async (): Promise<void> => {
 						{ key: 'always', i18nLabel: 'On_All_Contacts' },
 					],
 					invalidValue: 'never',
-				});
-
-				await this.add('Livechat_Contact_Verification_App', '', {
-					type: 'select',
-					values: [{ key: 'VerifyChat', i18nLabel: 'VerifyChat' }],
-					invalidValue: '',
 				});
 			},
 		);
