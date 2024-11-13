@@ -35310,21 +35310,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar@npm:^6.0.2, tar@npm:^6.1.11, tar@npm:^6.1.2":
-  version: 6.1.11
-  resolution: "tar@npm:6.1.11"
-  dependencies:
-    chownr: "npm:^2.0.0"
-    fs-minipass: "npm:^2.0.0"
-    minipass: "npm:^3.0.0"
-    minizlib: "npm:^2.1.1"
-    mkdirp: "npm:^1.0.3"
-    yallist: "npm:^4.0.0"
-  checksum: 10/0e6789e66475922b8e0d1ee648cb26e0ede9a0635284269ca71b2d8acd507bc59ad5557032f0192f8ff22680b50cb66792b56f0240f484fe0d7d8cef81c1b959
-  languageName: node
-  linkType: hard
-
-"tar@npm:^6.2.1":
+"tar@npm:^6.0.2, tar@npm:^6.1.11, tar@npm:^6.1.2, tar@npm:^6.2.1":
   version: 6.2.1
   resolution: "tar@npm:6.2.1"
   dependencies:
