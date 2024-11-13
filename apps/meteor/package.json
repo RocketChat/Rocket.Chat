@@ -317,7 +317,7 @@
 		"colorette": "^2.0.20",
 		"colors": "^1.4.0",
 		"connect": "^3.7.0",
-		"cookie": "^0.5.0",
+		"cookie": "^0.7.0",
 		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.5",
 		"cron": "~1.8.2",
