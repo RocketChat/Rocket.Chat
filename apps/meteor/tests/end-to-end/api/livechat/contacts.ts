@@ -606,7 +606,7 @@ describe('LIVECHAT - contacts', () => {
 		it('should create a contact and assign it to the room', async () => {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			expect(room.v).to.have.property('contactId').that.is.a('string');
+			expect(room).to.have.property('contactId').that.is.a('string');
 		});
 
 		it('should create a room using the pre-created contact', async () => {
