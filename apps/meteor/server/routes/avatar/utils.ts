@@ -125,16 +125,16 @@ const getFirstLetter = (name: string) => {
 	return sanitizedName.substring(0, 1).toUpperCase();
 };
 
-export const renderSVGLetters = (roomOrUsername: string, viewSize = 200) => {
+export const renderSVGLetters = (name: string, viewSize = 200) => {
 	let color = '';
 	let initials = '';
 
-	if (roomOrUsername === '?') {
+	if (name === '?') {
 		color = '#000';
-		initials = roomOrUsername;
+		initials = name;
 	} else {
-		color = getAvatarColor(roomOrUsername);
-		initials = getFirstLetter(roomOrUsername);
+		color = getAvatarColor(name);
+		initials = getFirstLetter(name);
 	}
 
 	const fontSize = viewSize / 1.6;
