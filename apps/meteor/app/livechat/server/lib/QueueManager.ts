@@ -175,7 +175,6 @@ export class QueueManager {
 				department: Match.Maybe(String),
 				name: Match.Maybe(String),
 				activity: Match.Maybe([String]),
-				contactId: Match.Maybe(String),
 			}),
 		);
 
