@@ -194,7 +194,7 @@
 		"playwright-qase-reporter": "^1.2.2",
 		"postcss": "~8.4.47",
 		"postcss-custom-properties": "^11.0.0",
-		"postcss-easy-import": "^3.0.0",
+		"postcss-easy-import": "^4.0.0",
 		"postcss-load-config": "^3.1.4",
 		"postcss-media-minmax": "^5.0.0",
 		"postcss-nested": "^5.0.6",
