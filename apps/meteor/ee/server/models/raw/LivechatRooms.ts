@@ -4,12 +4,13 @@ import type {
 	IOmnichannelServiceLevelAgreements,
 	RocketChatRecordDeleted,
 	ReportResult,
+	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import type { Updater } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, Filter, AggregationCursor } from 'mongodb';
+import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, Filter, AggregationCursor, UpdateOptions } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { LivechatRoomsRaw } from '../../../../server/models/raw/LivechatRooms';
@@ -67,6 +68,11 @@ declare module '@rocket.chat/model-typings' {
 		getConversationsWithoutTagsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number>;
 		getTotalConversationsWithoutAgentsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number>;
 		getTotalConversationsWithoutDepartmentBetweenDates(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number>;
+		updateMergedContactIds(
+			contactIdsThatWereMerged: ILivechatContact['_id'][],
+			newContactId: ILivechatContact['_id'],
+			options?: UpdateOptions,
+		): Promise<UpdateResult | Document>;
 	}
 }
 
@@ -726,6 +732,14 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 			},
 			...extraQuery,
 		});
+	}
+
+	updateMergedContactIds(
+		contactIdsThatWereMerged: ILivechatContact['_id'][],
+		newContactId: ILivechatContact['_id'],
+		options?: UpdateOptions,
+	): Promise<UpdateResult | Document> {
+		return this.updateMany({ 'v.contactId': { $in: contactIdsThatWereMerged } }, { $set: { 'v.contactId': newContactId } }, options);
 	}
 
 	findClosedRoomsByContactAndSourcePaginated({

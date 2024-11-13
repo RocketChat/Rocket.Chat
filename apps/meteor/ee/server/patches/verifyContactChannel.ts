@@ -1,3 +1,4 @@
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { ILivechatContact, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
@@ -5,7 +6,65 @@ import { LivechatContacts, LivechatInquiry, LivechatRooms } from '@rocket.chat/m
 import { saveQueueInquiry } from '../../../app/livechat/server/lib/QueueManager';
 import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
 import { verifyContactChannel } from '../../../app/livechat/server/lib/contacts/verifyContactChannel';
+import { client, shouldRetryTransaction } from '../../../server/database/utils';
 import { contactLogger as logger } from '../../app/livechat-enterprise/server/lib/logger';
+
+type VerifyContactChannelParams = {
+	contactId: string;
+	field: string;
+	value: string;
+	visitorId: string;
+	roomId: string;
+};
+
+async function _verifyContactChannel(
+	params: VerifyContactChannelParams,
+	room: Pick<IOmnichannelRoom, '_id' | 'source'>,
+	attempts = 2,
+): Promise<ILivechatContact | null> {
+	const { contactId, field, value, visitorId, roomId } = params;
+
+	const session = client.startSession();
+	try {
+		session.startTransaction();
+		logger.debug({ msg: 'Start verifying contact channel', contactId, visitorId, roomId });
+
+		await LivechatContacts.updateContactChannel(
+			{
+				visitorId,
+				source: room.source,
+			},
+			{
+				verified: true,
+				verifiedAt: new Date(),
+				field,
+				value: value.toLowerCase(),
+			},
+			{},
+			{ session },
+		);
+
+		await LivechatRooms.update({ _id: roomId }, { $set: { verified: true } }, { session });
+		logger.debug({ msg: 'Merging contacts', contactId, visitorId, roomId });
+
+		const mergeContactsResult = await mergeContacts(contactId, { visitorId, source: room.source }, session);
+
+		await session.commitTransaction();
+
+		return mergeContactsResult;
+	} catch (e) {
+		await session.abortTransaction();
+		if (shouldRetryTransaction(e) && attempts > 0) {
+			logger.debug({ msg: 'Retrying to verify contact channel', contactId, visitorId, roomId });
+			return _verifyContactChannel(params, room, attempts - 1);
+		}
+
+		logger.error({ msg: 'Error verifying contact channel', contactId, visitorId, roomId, error: e });
+		throw new Error('error-verifying-contact-channel');
+	} finally {
+		await session.endSession();
+	}
+}
 
 export const runVerifyContactChannel = async (
 	_next: any,
@@ -17,42 +76,34 @@ export const runVerifyContactChannel = async (
 		roomId: string;
 	},
 ): Promise<ILivechatContact | null> => {
-	const { contactId, field, value, visitorId, roomId } = params;
+	const { roomId, contactId, visitorId } = params;
 
 	const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'source'>>(roomId, { projection: { source: 1 } });
 	if (!room) {
 		throw new Error('error-invalid-room');
 	}
 
-	logger.debug({ msg: 'Start verifying contact channel', contactId, visitorId, roomId });
-
-	await LivechatContacts.updateContactChannel(
-		{
-			visitorId,
-			source: room.source,
-		},
-		{
-			verified: true,
-			verifiedAt: new Date(),
-			field,
-			value: value.toLowerCase(),
-		},
-	);
-
-	await LivechatRooms.update({ _id: roomId }, { $set: { verified: true } });
-
-	logger.debug({ msg: 'Merging contacts', contactId, visitorId, roomId });
-
-	const mergeContactsResult = await mergeContacts(contactId, { visitorId, source: room.source });
+	const result = await _verifyContactChannel(params, room);
 
 	logger.debug({ msg: 'Finding inquiry', roomId });
-	const inquiry = await LivechatInquiry.findOneReadyByRoomId(roomId);
+
+	// Note: we are not using the session here since allowing the transactional flow to be used inside the
+	//       saveQueueInquiry function would require a lot of changes across the codebase, so if we fail here we
+	//       will not be able to rollback the transaction. That is not a big deal since the contact will be properly
+	//       merged and the inquiry will be saved in the queue (will need to be taken manually by an agent though).
+	const inquiry = await LivechatInquiry.findOneByRoomId(roomId);
 	if (!inquiry) {
+		// Note: if this happens, something is really wrong with the queue, so we should throw an error to avoid
+		//       carrying on a weird state.
 		throw new Error('error-invalid-inquiry');
 	}
 
-	logger.debug({ msg: 'Saving inquiry', roomId });
-	await saveQueueInquiry(inquiry);
+	// If the inquiry is ready, it means it was not taken by an agent yet, so we should add it to the queue
+	// again to be taken by an agent.
+	if (inquiry.status === LivechatInquiryStatus.READY) {
+		logger.debug({ msg: 'Saving inquiry', roomId });
+		await saveQueueInquiry(inquiry);
+	}
 
 	logger.debug({
 		msg: 'Contact channel has been verified and merged successfully',
@@ -60,7 +111,8 @@ export const runVerifyContactChannel = async (
 		visitorId,
 		roomId,
 	});
-	return mergeContactsResult;
+
+	return result;
 };
 
 verifyContactChannel.patch(runVerifyContactChannel, () => License.hasModule('contact-id-verification'));

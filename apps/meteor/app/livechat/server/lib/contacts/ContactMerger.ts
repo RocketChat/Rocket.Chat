@@ -8,7 +8,7 @@ import type {
 	IOmnichannelSource,
 } from '@rocket.chat/core-typings';
 import { LivechatContacts } from '@rocket.chat/models';
-import type { UpdateFilter } from 'mongodb';
+import type { ClientSession, UpdateFilter } from 'mongodb';
 
 import { isSameChannel } from '../../../lib/isSameChannel';
 import { getContactManagerIdByUsername } from './getContactManagerIdByUsername';
@@ -32,6 +32,13 @@ export type FieldAndValue =
 	| CustomFieldAndValue;
 
 type ConflictHandlingMode = 'conflict' | 'overwrite' | 'ignore';
+
+type MergeFieldsIntoContactParams = {
+	fields: FieldAndValue[];
+	contact: ILivechatContact;
+	conflictHandlingMode?: ConflictHandlingMode;
+	session?: ClientSession;
+};
 
 export class ContactMerger {
 	private managerList = new Map<IUser['username'], IUser['_id'] | undefined>();
@@ -82,7 +89,7 @@ export class ContactMerger {
 		return false;
 	}
 
-	private async loadDataForFields(...fieldLists: FieldAndValue[][]): Promise<void> {
+	private async loadDataForFields(session?: ClientSession, ...fieldLists: FieldAndValue[][]): Promise<void> {
 		for await (const fieldList of fieldLists) {
 			for await (const field of fieldList) {
 				if (field.type !== 'manager' || 'id' in field.value) {
@@ -93,13 +100,13 @@ export class ContactMerger {
 					continue;
 				}
 
-				const id = await getContactManagerIdByUsername(field.value.username);
+				const id = await getContactManagerIdByUsername(field.value.username, session);
 				this.managerList.set(field.value.username, id);
 			}
 		}
 	}
 
-	static async getAllFieldsFromContact(contact: ILivechatContact): Promise<FieldAndValue[]> {
+	static getAllFieldsFromContact(contact: ILivechatContact): FieldAndValue[] {
 		const { customFields = {}, name, contactManager } = contact;
 
 		const fields = new Set<FieldAndValue>();
@@ -172,16 +179,17 @@ export class ContactMerger {
 		return fields.filter((field) => field.type === type).map(({ value }) => value) as ContactFields[T][];
 	}
 
-	static async mergeFieldsIntoContact(
-		fields: FieldAndValue[],
-		contact: ILivechatContact,
-		conflictHandlingMode: ConflictHandlingMode = 'conflict',
-	): Promise<void> {
-		const existingFields = await ContactMerger.getAllFieldsFromContact(contact);
+	static async mergeFieldsIntoContact({
+		fields,
+		contact,
+		conflictHandlingMode = 'conflict',
+		session,
+	}: MergeFieldsIntoContactParams): Promise<void> {
+		const existingFields = ContactMerger.getAllFieldsFromContact(contact);
 		const overwriteData = conflictHandlingMode === 'overwrite';
 
 		const merger = new ContactMerger();
-		await merger.loadDataForFields(fields, existingFields);
+		await merger.loadDataForFields(session, fields, existingFields);
 
 		const newFields = fields.filter((field) => {
 			// If the field already exists with the same value, ignore it
@@ -279,7 +287,7 @@ export class ContactMerger {
 		};
 
 		if (Object.keys(updateData).length) {
-			await LivechatContacts.updateOne({ _id: contact._id }, updateData);
+			await LivechatContacts.updateById(contact._id, updateData, { session });
 		}
 	}
 
@@ -290,6 +298,10 @@ export class ContactMerger {
 	): Promise<void> {
 		const fields = await ContactMerger.getAllFieldsFromVisitor(visitor, source);
 
-		await ContactMerger.mergeFieldsIntoContact(fields, contact, contact.unknown ? 'overwrite' : 'conflict');
+		await ContactMerger.mergeFieldsIntoContact({
+			fields,
+			contact,
+			conflictHandlingMode: contact.unknown ? 'overwrite' : 'conflict',
+		});
 	}
 }

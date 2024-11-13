@@ -19,6 +19,8 @@ import type {
 	IndexDescription,
 	UpdateResult,
 	UpdateFilter,
+	UpdateOptions,
+	FindOneAndUpdateOptions,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -71,13 +73,17 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return result.value;
 	}
 
-	async updateContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact> {
+	async updateContact(contactId: string, data: Partial<ILivechatContact>, options?: FindOneAndUpdateOptions): Promise<ILivechatContact> {
 		const updatedValue = await this.findOneAndUpdate(
 			{ _id: contactId },
 			{ $set: { ...data, unknown: false } },
-			{ returnDocument: 'after' },
+			{ returnDocument: 'after', ...options },
 		);
 		return updatedValue.value as ILivechatContact;
+	}
+
+	updateById(contactId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<Document | UpdateResult> {
+		return this.updateOne({ _id: contactId }, update, options);
 	}
 
 	findPaginatedContacts(
@@ -191,15 +197,20 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		visitor: ILivechatContactVisitorAssociation,
 		data: Partial<ILivechatContactChannel>,
 		contactData?: Partial<Omit<ILivechatContact, 'channels'>>,
+		options: UpdateOptions = {},
 	): Promise<UpdateResult> {
-		return this.updateOne(this.makeQueryForVisitor(visitor), {
-			$set: {
-				...contactData,
-				...(Object.fromEntries(
-					Object.keys(data).map((key) => [`channels.$.${key}`, data[key as keyof ILivechatContactChannel]]),
-				) as UpdateFilter<ILivechatContact>['$set']),
+		return this.updateOne(
+			this.makeQueryForVisitor(visitor),
+			{
+				$set: {
+					...contactData,
+					...(Object.fromEntries(
+						Object.keys(data).map((key) => [`channels.$.${key}`, data[key as keyof ILivechatContactChannel]]),
+					) as UpdateFilter<ILivechatContact>['$set']),
+				},
 			},
-		});
+			options,
+		);
 	}
 
 	async findSimilarVerifiedContacts(

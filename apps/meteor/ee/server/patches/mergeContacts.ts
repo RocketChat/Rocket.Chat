@@ -1,6 +1,7 @@
 import type { ILivechatContact, ILivechatContactChannel, ILivechatContactVisitorAssociation } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
+import type { ClientSession } from 'mongodb';
 
 import { isSameChannel } from '../../../app/livechat/lib/isSameChannel';
 import { ContactMerger } from '../../../app/livechat/server/lib/contacts/ContactMerger';
@@ -11,8 +12,9 @@ export const runMergeContacts = async (
 	_next: any,
 	contactId: string,
 	visitor: ILivechatContactVisitorAssociation,
+	session?: ClientSession,
 ): Promise<ILivechatContact | null> => {
-	const originalContact = await LivechatContacts.findOneById(contactId);
+	const originalContact = await LivechatContacts.findOneById(contactId, { session });
 	if (!originalContact) {
 		throw new Error('error-invalid-contact');
 	}
@@ -21,8 +23,10 @@ export const runMergeContacts = async (
 	if (!channel) {
 		throw new Error('error-invalid-channel');
 	}
+
 	logger.debug({ msg: 'Getting similar contacts', contactId });
-	const similarContacts: ILivechatContact[] = await LivechatContacts.findSimilarVerifiedContacts(channel, contactId);
+
+	const similarContacts: ILivechatContact[] = await LivechatContacts.findSimilarVerifiedContacts(channel, contactId, { session });
 
 	if (!similarContacts.length) {
 		logger.debug({ msg: 'No similar contacts found', contactId });
@@ -31,12 +35,12 @@ export const runMergeContacts = async (
 
 	logger.debug({ msg: `Found ${similarContacts.length} contacts to merge`, contactId });
 	for await (const similarContact of similarContacts) {
-		const fields = await ContactMerger.getAllFieldsFromContact(similarContact);
-		await ContactMerger.mergeFieldsIntoContact(fields, originalContact);
+		const fields = ContactMerger.getAllFieldsFromContact(similarContact);
+		await ContactMerger.mergeFieldsIntoContact({ fields, contact: originalContact, session });
 	}
 
 	const similarContactIds = similarContacts.map((c) => c._id);
-	const { deletedCount } = await LivechatContacts.deleteMany({ _id: { $in: similarContactIds } });
+	const { deletedCount } = await LivechatContacts.deleteMany({ _id: { $in: similarContactIds } }, { session });
 	logger.info({
 		msg: `${deletedCount} contacts have been deleted and merged`,
 		deletedContactIds: similarContactIds,
@@ -44,9 +48,9 @@ export const runMergeContacts = async (
 	});
 
 	logger.debug({ msg: 'Updating rooms with new contact id', contactId });
-	await LivechatRooms.updateMany({ 'v.contactId': { $in: similarContactIds } }, { $set: { 'v.contactId': contactId } });
+	await LivechatRooms.updateMergedContactIds(similarContactIds, contactId, { session });
 
-	return LivechatContacts.findOneById(contactId);
+	return LivechatContacts.findOneById(contactId, { session });
 };
 
 mergeContacts.patch(runMergeContacts, () => License.hasModule('contact-id-verification'));

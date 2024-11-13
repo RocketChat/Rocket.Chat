@@ -2802,6 +2802,14 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		);
 	}
 
+	updateMergedContactIds(
+		_contactIdsThatWereMerged: ILivechatContact['_id'][],
+		_newContactId: ILivechatContact['_id'],
+		_options?: UpdateOptions,
+	): Promise<UpdateResult | Document> {
+		throw new Error('Method not implemented.');
+	}
+
 	findClosedRoomsByContactAndSourcePaginated(_params: {
 		contactId: string;
 		source?: string;
