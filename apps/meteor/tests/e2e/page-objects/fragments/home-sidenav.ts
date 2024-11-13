@@ -175,7 +175,7 @@ export class HomeSidenav {
 
 	async createEncryptedChannel(name: string) {
 		await this.openNewByLabel('Channel');
-		await this.inputChannelName.type(name);
+		await this.inputChannelName.fill(name);
 		await this.advancedSettingsAccordion.click();
 		await this.checkboxEncryption.click();
 		await this.btnCreate.click();
@@ -187,31 +187,5 @@ export class HomeSidenav {
 
 	getSearchChannelBadge(name: string): Locator {
 		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`).first().getByRole('status', { exact: true });
-	}
-
-	// New navigation selectors
-
-	get sidebar(): Locator {
-		return this.page.getByRole('navigation', { name: 'sidebar' });
-	}
-
-	get sidebarSearchSection(): Locator {
-		return this.sidebar.getByRole('search');
-	}
-
-	get btnRecent(): Locator {
-		return this.sidebarSearchSection.getByRole('button', { name: 'Recent' });
-	}
-
-	get channelsList(): Locator {
-		return this.sidebar.getByRole('list', { name: 'Channels' });
-	}
-
-	getCollapseGroupByName(name: string): Locator {
-		return this.channelsList.getByRole('button', { name, exact: true });
-	}
-
-	get firstCollapser(): Locator {
-		return this.channelsList.getByRole('button').first();
 	}
 }
