@@ -583,6 +583,47 @@ describe('Apps - Video Conferences', () => {
 				});
 			});
 
+			describe('[Persistent Chat provider with the persistent chat feature enabled and custom discussion names]', () => {
+				let discussionRid: string | undefined;
+				let chatDate: string;
+
+				before(async () => {
+					if (!process.env.IS_EE) {
+						return;
+					}
+
+					await updateSetting('VideoConf_Default_Provider', 'persistentchat');
+					await updateSetting('Discussion_enabled', true);
+					await updateSetting('VideoConf_Enable_Persistent_Chat', true);
+					await updateSetting('VideoConf_Persistent_Chat_Discussion_Name', 'Date [date] between');
+					chatDate = new Date().toISOString().substring(0, 10);
+				});
+
+				it('should have created the discussion room using the configured name', async function () {
+					if (!process.env.IS_EE) {
+						this.skip();
+						return;
+					}
+
+					await request
+						.get(api('rooms.info'))
+						.set(credentials)
+						.query({
+							roomId: discussionRid,
+						})
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('room').and.to.be.an('object');
+							expect(res.body.room).to.have.a.property('_id').equal(discussionRid);
+							expect(res.body.room)
+								.to.have.a.property('fname')
+								.that.is.a('string')
+								.that.satisfies((msg: string) => msg.includes(`Date ${chatDate} between`));
+						});
+				});
+			});
+
 			describe('[Persistent Chat provider with the persistent chat feature disabled]', () => {
 				let callId: string | undefined;
 
