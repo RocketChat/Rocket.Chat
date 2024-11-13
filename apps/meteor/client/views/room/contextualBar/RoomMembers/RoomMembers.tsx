@@ -84,7 +84,7 @@ const RoomMembers = ({
 		[loadMoreItems, members],
 	);
 
-	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
+	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	return (
 		<>
