@@ -28,12 +28,15 @@ const clientMock = {
 };
 
 const mergeContactsStub = sinon.stub();
-const saveQueueInquiryStub = sinon.stub();
+const queueManager = {
+	processNewInquiry: sinon.stub(),
+	verifyInquiry: sinon.stub(),
+};
 
 const { runVerifyContactChannel } = proxyquire.noCallThru().load('../../../../../../server/patches/verifyContactChannel', {
 	'../../../app/livechat/server/lib/contacts/mergeContacts': { mergeContacts: mergeContactsStub },
 	'../../../app/livechat/server/lib/contacts/verifyContactChannel': { verifyContactChannel: { patch: sinon.stub() } },
-	'../../../app/livechat/server/lib/QueueManager': { saveQueueInquiry: saveQueueInquiryStub },
+	'../../../app/livechat/server/lib/QueueManager': { QueueManager: queueManager },
 	'../../../server/database/utils': { client: clientMock },
 	'../../../app/livechat-enterprise/server/lib/logger': { logger: { info: sinon.stub(), debug: sinon.stub() } },
 	'@rocket.chat/models': modelsMock,
@@ -50,7 +53,8 @@ describe('verifyContactChannel', () => {
 		sessionMock.abortTransaction.reset();
 		sessionMock.endSession.reset();
 		mergeContactsStub.reset();
-		saveQueueInquiryStub.reset();
+		queueManager.processNewInquiry.reset();
+		queueManager.verifyInquiry.reset();
 	});
 
 	afterEach(() => {
@@ -58,7 +62,7 @@ describe('verifyContactChannel', () => {
 	});
 
 	it('should be able to verify a contact channel', async () => {
-		modelsMock.LivechatInquiry.findOneByRoomId.resolves({ _id: 'inquiryId', status: 'ready' });
+		modelsMock.LivechatInquiry.findOneByRoomId.resolves({ _id: 'inquiryId', status: 'verifying' });
 		modelsMock.LivechatRooms.findOneById.resolves({ _id: 'roomId', source: { type: 'sms' } });
 		mergeContactsStub.resolves({ _id: 'contactId' });
 		await runVerifyContactChannel(() => undefined, {
@@ -96,7 +100,8 @@ describe('verifyContactChannel', () => {
 				}),
 			),
 		).to.be.true;
-		expect(saveQueueInquiryStub.calledOnceWith({ _id: 'inquiryId', status: 'ready' })).to.be.true;
+		expect(queueManager.verifyInquiry.calledOnceWith({ _id: 'inquiryId', status: 'verifying' }, { _id: 'roomId', source: { type: 'sms' } }))
+			.to.be.true;
 	});
 
 	it('should not add inquiry if status is not ready', async () => {
@@ -138,7 +143,8 @@ describe('verifyContactChannel', () => {
 				}),
 			),
 		).to.be.true;
-		expect(saveQueueInquiryStub.calledOnceWith({ _id: 'inquiryId', status: 'ready' })).to.be.false;
+		expect(queueManager.verifyInquiry.calledOnceWith({ _id: 'inquiryId', status: 'ready' }, { _id: 'roomId', source: { type: 'sms' } })).to
+			.be.false;
 	});
 
 	it('should fail if no matching room is found', async () => {
@@ -157,7 +163,7 @@ describe('verifyContactChannel', () => {
 		expect(modelsMock.LivechatContacts.updateContactChannel.notCalled).to.be.true;
 		expect(modelsMock.LivechatRooms.update.notCalled).to.be.true;
 		expect(mergeContactsStub.notCalled).to.be.true;
-		expect(saveQueueInquiryStub.notCalled).to.be.true;
+		expect(queueManager.verifyInquiry.notCalled).to.be.true;
 	});
 
 	it('should fail if no matching inquiry is found', async () => {
@@ -201,7 +207,7 @@ describe('verifyContactChannel', () => {
 				}),
 			),
 		).to.be.true;
-		expect(saveQueueInquiryStub.notCalled).to.be.true;
+		expect(queueManager.verifyInquiry.notCalled).to.be.true;
 	});
 
 	it('should abort transaction if an error occurs', async () => {
