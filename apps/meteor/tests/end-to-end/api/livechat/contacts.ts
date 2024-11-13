@@ -641,7 +641,7 @@ describe('LIVECHAT - contacts', () => {
 			expect(room.fname).to.not.be.equal('New Contact Name');
 
 			const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
-				contactId: room.v.contactId,
+				contactId: room.contactId,
 				name: 'New Contact Name',
 			});
 
@@ -812,9 +812,9 @@ describe('LIVECHAT - contacts', () => {
 			it('should add a channel to a contact when creating a new room', async () => {
 				const room = await createLivechatRoom(visitor.token);
 
-				expect(room.v.contactId).to.be.a('string');
+				expect(room.contactId).to.be.a('string');
 
-				const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.v.contactId });
+				const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.contactId });
 
 				expect(res.status).to.be.equal(200);
 				expect(res.body).to.have.property('success', true);
@@ -836,7 +836,7 @@ describe('LIVECHAT - contacts', () => {
 			it('should not add a channel if visitor already has one with same type', async () => {
 				const room = await createLivechatRoom(visitor.token);
 
-				const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.v.contactId });
+				const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.contactId });
 
 				expect(res.status).to.be.equal(200);
 				expect(res.body).to.have.property('success', true);
@@ -846,7 +846,7 @@ describe('LIVECHAT - contacts', () => {
 				await closeOmnichannelRoom(room._id);
 				await request.get(api('livechat/room')).query({ token: visitor.token });
 
-				const secondResponse = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.v.contactId });
+				const secondResponse = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.contactId });
 
 				expect(secondResponse.status).to.be.equal(200);
 				expect(secondResponse.body).to.have.property('success', true);
@@ -870,11 +870,11 @@ describe('LIVECHAT - contacts', () => {
 			});
 
 			it('should have assigned a contactId to the new room', async () => {
-				expect(room.v.contactId).to.be.a('string');
+				expect(room.contactId).to.be.a('string');
 			});
 
 			it('should return the last chat', async () => {
-				const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.v.contactId });
+				const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.contactId });
 
 				expect(res.status).to.be.equal(200);
 				expect(res.body).to.have.property('success', true);
@@ -1032,7 +1032,7 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should be able to list a contact history', async () => {
-			const res = await request.get(api(`omnichannel/contacts.history`)).set(credentials).query({ contactId: room1.v.contactId });
+			const res = await request.get(api(`omnichannel/contacts.history`)).set(credentials).query({ contactId: room1.contactId });
 
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
@@ -1053,7 +1053,7 @@ describe('LIVECHAT - contacts', () => {
 			const res = await request
 				.get(api(`omnichannel/contacts.history`))
 				.set(credentials)
-				.query({ contactId: room1.v.contactId, source: 'api' });
+				.query({ contactId: room1.contactId, source: 'api' });
 
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
@@ -1103,7 +1103,7 @@ describe('LIVECHAT - contacts', () => {
 			visitor = await createVisitor();
 			room = await createLivechatRoom(visitor.token);
 			await closeOmnichannelRoom(room._id);
-			contactId = room.v.contactId as string;
+			contactId = room.contactId as string;
 		});
 
 		after(async () => {

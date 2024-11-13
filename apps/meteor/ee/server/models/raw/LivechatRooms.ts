@@ -739,7 +739,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		newContactId: ILivechatContact['_id'],
 		options?: UpdateOptions,
 	): Promise<UpdateResult | Document> {
-		return this.updateMany({ 'v.contactId': { $in: contactIdsThatWereMerged } }, { $set: { 'v.contactId': newContactId } }, options);
+		return this.updateMany({ contactId: { $in: contactIdsThatWereMerged } }, { $set: { contactId: newContactId } }, options);
 	}
 
 	findClosedRoomsByContactAndSourcePaginated({
@@ -753,8 +753,8 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 	}): FindPaginated<FindCursor<IOmnichannelRoom>> {
 		return this.findPaginated<IOmnichannelRoom>(
 			{
-				'v.contactId': contactId,
-				'closedAt': { $exists: true },
+				contactId,
+				closedAt: { $exists: true },
 				...(source && {
 					$or: [{ 'source.type': new RegExp(escapeRegExp(source), 'i') }, { 'source.alias': new RegExp(escapeRegExp(source), 'i') }],
 				}),

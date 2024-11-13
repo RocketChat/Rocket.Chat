@@ -1233,8 +1233,8 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}): FindPaginated<FindCursor<IOmnichannelRoom>> {
 		return this.findPaginated<IOmnichannelRoom>(
 			{
-				'v.contactId': contactId,
-				'closedAt': { $exists: true },
+				contactId,
+				closedAt: { $exists: true },
 			},
 			options,
 		);
@@ -2771,7 +2771,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			},
 			{
 				$set: {
-					'v.contactId': contact._id,
+					contactId: contact._id,
 					...(contact.name ? { fname: contact.name } : {}),
 				},
 			},
@@ -2783,7 +2783,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		contact: Partial<Pick<ILivechatContact, '_id' | 'name'>>,
 	): Promise<UpdateResult | Document> {
 		const update = {
-			...(contact._id ? { 'v.contactId': contact._id } : {}),
+			...(contact._id ? { contactId: contact._id } : {}),
 			...(contact.name ? { fname: contact.name } : {}),
 		};
 
@@ -2793,8 +2793,8 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 
 		return this.updateMany(
 			{
-				't': 'l',
-				'v.contactId': oldContactId,
+				t: 'l',
+				contactId: oldContactId,
 			},
 			{
 				$set: update,

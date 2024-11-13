@@ -15,7 +15,7 @@ export async function maybeMigrateLivechatRoom(room: IRoom | null, options: Find
 	}
 
 	// Already migrated
-	if (room.v.contactId) {
+	if (room.contactId) {
 		return room;
 	}
 

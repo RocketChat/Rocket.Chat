@@ -25,8 +25,9 @@ const ComposerOmnichannelCallout = () => {
 
 	const {
 		_id,
-		v: { _id: visitorId, contactId },
+		v: { _id: visitorId },
 		source,
+		contactId,
 	} = room;
 
 	const getContactById = useEndpoint('GET', '/v1/omnichannel/contacts.get');

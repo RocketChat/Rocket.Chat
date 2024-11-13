@@ -12,8 +12,9 @@ callbacks.add(
 
 		const {
 			_id,
-			v: { _id: guestId, contactId },
+			v: { _id: guestId },
 			source,
+			contactId,
 		} = room;
 
 		const lastChat = {

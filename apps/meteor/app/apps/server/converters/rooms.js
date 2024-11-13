@@ -20,76 +20,6 @@ export class AppRoomsConverter {
 		return this.convertRoom(room);
 	}
 
-	async convertVisitorToRoomV(room, visitorId, contactId) {
-		const visitor = await LivechatVisitors.findOneEnabledById(room.visitor.id);
-
-		const { lastMessageTs, phone } = room.visitorChannelInfo;
-
-		return {
-			_id: visitor._id,
-			username: visitor.username,
-			token: visitor.token,
-			status: visitor.status || 'online',
-			...(lastMessageTs && { lastMessageTs }),
-			...(phone && { phone }),
-			...(contactId && { contactId }),
-		};
-	}
-
-	async convertAppVisitorData(room) {
-		const contact = room.contact?._id && (await LivechatContacts.findOneById(room.contact._id, { projection: { _id: 1 } }));
-
-		if (room.contact?._id && !contact) {
-			throw new Error('error-invalid-contact-id');
-		}
-
-		if (room.visitor) {
-			return this.convertVisitorToRoomV(room, room.visitor.id, contact?._id);
-		}
-
-		// If a livechat room has a contact but no visitor, we try to find the visitor data from elsewhere
-		if (!room.contact?._id || room.type !== RoomType.LIVE_CHAT) {
-			return;
-		}
-
-		// If the contact only has one channel, use the visitor from it
-		if (contact.channels?.length === 1 && contact.channels[0].visitorId) {
-			return this.convertVisitorToRoomV(room, contact.channels[0].visitorId, contact._id);
-		}
-
-		// if the room already exists, we just use the visitor data from it
-		const existingRoom = await LivechatRooms.findOneById(room.id);
-		if (existingRoom?.v) {
-			return {
-				...existingRoom.v,
-				contactId: contact._id,
-			};
-		}
-
-		// If the contact has no channels or the room has no source type, there's nothing else we can do, so drop the contactId
-		if (!contact.channels?.length || !room.source?.type) {
-			return undefined;
-		}
-
-		const channel = contact.channels?.find(({ visitor }) => {
-			if (visitor.source.type !== room.source.type) {
-				return false;
-			}
-
-			if (visitor.source.id && room.source.id !== visitor.source.id) {
-				return false;
-			}
-
-			return true;
-		});
-
-		if (!channel) {
-			return undefined;
-		}
-
-		return this.convertVisitorToRoomV(room, channel.visitorId, contact._id);
-	}
-
 	async convertAppRoom(room) {
 		if (!room) {
 			return undefined;
@@ -105,7 +35,21 @@ export class AppRoomsConverter {
 			};
 		}
 
-		const v = await this.convertAppVisitorData(room);
+		let v;
+		if (room.visitor) {
+			const visitor = await LivechatVisitors.findOneEnabledById(room.visitor.id);
+
+			const { lastMessageTs, phone } = room.visitorChannelInfo;
+
+			v = {
+				_id: visitor._id,
+				username: visitor.username,
+				token: visitor.token,
+				status: visitor.status || 'online',
+				...(lastMessageTs && { lastMessageTs }),
+				...(phone && { phone }),
+			};
+		}
 
 		let departmentId;
 		if (room.department) {
@@ -129,6 +73,12 @@ export class AppRoomsConverter {
 				_id: user._id,
 				username: user.username,
 			};
+		}
+
+		let contactId;
+		if (room.contact?._id) {
+			const contact = await LivechatContacts.findOneById(room.contact._id, { projection: { _id: 1 } });
+			contactId = contact._id;
 		}
 
 		const newRoom = {
@@ -156,6 +106,7 @@ export class AppRoomsConverter {
 			customFields: room.customFields,
 			livechatData: room.livechatData,
 			prid: typeof room.parentRoom === 'undefined' ? undefined : room.parentRoom.id,
+			contactId,
 			...(room._USERNAMES && { _USERNAMES: room._USERNAMES }),
 			...(room.source && {
 				source: {
@@ -237,13 +188,13 @@ export class AppRoomsConverter {
 				return this.orch.getConverters().get('visitors').convertById(v._id);
 			},
 			contact: (room) => {
-				const { v } = room;
+				const { contactId } = room;
 
-				if (!v?.contactId) {
+				if (!contactId) {
 					return undefined;
 				}
 
-				return this.orch.getConverters().get('contacts').convertById(v.contactId);
+				return this.orch.getConverters().get('contacts').convertById(contactId);
 			},
 			// Note: room.v is not just visitor, it also contains channel related visitor data
 			// so we need to pass this data to the converter

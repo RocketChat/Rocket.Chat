@@ -56,7 +56,7 @@ export const takeInquiry = async (
 		throw new Meteor.Error('error-mac-limit-reached');
 	}
 
-	const contactId = room.v.contactId ?? (await migrateVisitorIfMissingContact(room.v._id, room.source));
+	const contactId = room.contactId ?? (await migrateVisitorIfMissingContact(room.v._id, room.source));
 	if (contactId) {
 		const isAgentAvailableToTakeContactInquiryResult = await isAgentAvailableToTakeContactInquiry(inquiry.v._id, room.source, contactId);
 		if (!isAgentAvailableToTakeContactInquiryResult.value) {

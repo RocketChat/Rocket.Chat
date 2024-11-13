@@ -18,15 +18,15 @@ const ContactInfoRouter = () => {
 		liveRoute.push({ id: room._id, tab: 'contact-profile' });
 	};
 
-	if (!room.v.contactId) {
+	if (!room.contactId) {
 		return <ContactInfoError onClose={closeTab} />;
 	}
 
-	if (context === 'edit' && room.v.contactId) {
-		return <EditContactInfoWithData id={room.v.contactId} onClose={closeTab} onCancel={handleCloseEdit} />;
+	if (context === 'edit' && room.contactId) {
+		return <EditContactInfoWithData id={room.contactId} onClose={closeTab} onCancel={handleCloseEdit} />;
 	}
 
-	return <ContactInfo id={room.v.contactId} onClose={closeTab} />;
+	return <ContactInfo id={room.contactId} onClose={closeTab} />;
 };
 
 export default ContactInfoRouter;
