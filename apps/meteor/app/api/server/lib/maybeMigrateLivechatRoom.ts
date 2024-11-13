@@ -3,6 +3,7 @@ import { Rooms } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
 import { migrateVisitorIfMissingContact } from '../../../livechat/server/lib/contacts/migrateVisitorIfMissingContact';
+import { projectionAllowsAttribute } from './projectionAllowsAttribute';
 
 /**
  * If the room is a livechat room and it doesn't yet have a contact, trigger the migration for its visitor and source
@@ -15,6 +16,11 @@ export async function maybeMigrateLivechatRoom(room: IRoom | null, options: Find
 
 	// Already migrated
 	if (room.v.contactId) {
+		return room;
+	}
+
+	// If the query options specify that contactId is not needed, then do not trigger the migration
+	if (!projectionAllowsAttribute('contactId', options)) {
 		return room;
 	}
 
