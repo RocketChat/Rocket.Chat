@@ -9529,7 +9529,7 @@ __metadata:
     react-error-boundary: "npm:^3.1.4"
     react-hook-form: "npm:~7.45.4"
     react-i18next: "npm:~13.2.2"
-    react-keyed-flatten-children: "npm:^1.3.0"
+    react-keyed-flatten-children: "npm:^3.0.2"
     react-virtuoso: "npm:^4.12.0"
     sanitize-html: "npm:^2.13.1"
     semver: "npm:^7.6.3"
@@ -16108,11 +16108,11 @@ __metadata:
   linkType: hard
 
 "braces@npm:^3.0.2, braces@npm:~3.0.2":
-  version: 3.0.2
-  resolution: "braces@npm:3.0.2"
+  version: 3.0.3
+  resolution: "braces@npm:3.0.3"
   dependencies:
-    fill-range: "npm:^7.0.1"
-  checksum: 10/966b1fb48d193b9d155f810e5efd1790962f2c4e0829f8440b8ad236ba009222c501f70185ef732fef17a4c490bb33a03b90dab0631feafbdf447da91e8165b1
+    fill-range: "npm:^7.1.1"
+  checksum: 10/fad11a0d4697a27162840b02b1fad249c1683cbc510cd5bf1a471f2f8085c046d41094308c577a50a03a579dd99d5a6b3724c4b5e8b14df2c4443844cfcda2c6
   languageName: node
   linkType: hard
 
@@ -21709,12 +21709,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fill-range@npm:^7.0.1":
-  version: 7.0.1
-  resolution: "fill-range@npm:7.0.1"
+"fill-range@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "fill-range@npm:7.1.1"
   dependencies:
     to-regex-range: "npm:^5.0.1"
-  checksum: 10/e260f7592fd196b4421504d3597cc76f4a1ca7a9488260d533b611fc3cefd61e9a9be1417cb82d3b01ad9f9c0ff2dbf258e1026d2445e26b0cf5148ff4250429
+  checksum: 10/a7095cb39e5bc32fada2aa7c7249d3f6b01bd1ce461a61b0adabacccabd9198500c6fb1f68a7c851a657e273fce2233ba869638897f3d7ed2e87a2d89b4436ea
   languageName: node
   linkType: hard
 
@@ -23450,8 +23450,8 @@ __metadata:
   linkType: hard
 
 "http-proxy-middleware@npm:^2.0.3":
-  version: 2.0.6
-  resolution: "http-proxy-middleware@npm:2.0.6"
+  version: 2.0.7
+  resolution: "http-proxy-middleware@npm:2.0.7"
   dependencies:
     "@types/http-proxy": "npm:^1.17.8"
     http-proxy: "npm:^1.18.1"
@@ -23463,7 +23463,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/express":
       optional: true
-  checksum: 10/768e7ae5a422bbf4b866b64105b4c2d1f468916b7b0e9c96750551c7732383069b411aa7753eb7b34eab113e4f77fb770122cb7fb9c8ec87d138d5ddaafda891
+  checksum: 10/4a51bf612b752ad945701995c1c029e9501c97e7224c0cf3f8bf6d48d172d6a8f2b57c20fec469534fdcac3aa8a6f332224a33c6b0d7f387aa2cfff9b67216fd
   languageName: node
   linkType: hard
 
@@ -31933,6 +31933,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-is@npm:^18.2.0":
+  version: 18.3.1
+  resolution: "react-is@npm:18.3.1"
+  checksum: 10/d5f60c87d285af24b1e1e7eaeb123ec256c3c8bdea7061ab3932e3e14685708221bf234ec50b21e10dd07f008f1b966a2730a0ce4ff67905b3872ff2042aec22
+  languageName: node
+  linkType: hard
+
 "react-keyed-flatten-children@npm:^1.3.0":
   version: 1.3.0
   resolution: "react-keyed-flatten-children@npm:1.3.0"
@@ -31941,6 +31948,17 @@ __metadata:
   peerDependencies:
     react: ">=15.0.0"
   checksum: 10/3bb042bb7cd48909491a5f92b8e7b2fb0417d69ad24bf04dbe1ed7a308cc7dfe6e3c9b5550e7b9016ee6bef61829b92e7f3a355ed1b867affd251bd518bcdd90
+  languageName: node
+  linkType: hard
+
+"react-keyed-flatten-children@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "react-keyed-flatten-children@npm:3.0.2"
+  dependencies:
+    react-is: "npm:^18.2.0"
+  peerDependencies:
+    react: ">=15.0.0"
+  checksum: 10/58b53ccc707543b3b2f3615a6efe890b1302bf38d68df9239cb4d1ca4e8d8d9c05d670039c08e77befd27b1210c61290d6308a2f8439363e6699fecb94b69ebd
   languageName: node
   linkType: hard
 
