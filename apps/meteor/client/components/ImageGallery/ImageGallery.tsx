@@ -1,4 +1,5 @@
 /* eslint-disable import/no-unresolved */
+// TO DO: ESM modules
 import type { IUpload } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, IconButton, Palette, Throbber } from '@rocket.chat/fuselage';
