@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-// TO DO: ESM modules
 import type { IUpload } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, IconButton, Palette, Throbber } from '@rocket.chat/fuselage';
@@ -7,10 +5,9 @@ import React, { useRef, useState } from 'react';
 import { FocusScope } from 'react-aria';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Navigation, Zoom, Keyboard, A11y } from 'swiper/modules';
-import type { SwiperRef } from 'swiper/swiper-react';
+import { Navigation, Zoom, Keyboard, A11y } from 'swiper/modules/index.mjs';
+import type { SwiperClass, SwiperRef } from 'swiper/swiper-react';
 import { Swiper, SwiperSlide } from 'swiper/swiper-react.mjs';
-import type SwiperClass from 'swiper/types/swiper-class.d.ts';
 
 import 'swiper/swiper.css';
 import 'swiper/modules/zoom.css';
