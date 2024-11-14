@@ -78,7 +78,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 					return incomingCall.add(room);
 				}
 
-				if (sidebarShowUnread && (room.alert || room.unread) && !room.hideUnreadStatus) {
+				if (sidebarShowUnread && (room.alert || room.unread || room.tunread) && !room.hideUnreadStatus) {
 					return unread.add(room);
 				}
 
