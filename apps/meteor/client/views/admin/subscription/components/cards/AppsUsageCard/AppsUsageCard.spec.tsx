@@ -3,8 +3,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
-import { PRICING_LINK } from '../../../utils/links';
 import AppsUsageCard from './AppsUsageCard';
+import { PRICING_LINK } from '../../../utils/links';
 
 const appRoot = mockAppRoot().withTranslations('en', 'core', {
 	Apps_InfoText_limited:

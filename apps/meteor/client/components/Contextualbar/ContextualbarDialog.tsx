@@ -5,9 +5,9 @@ import React, { useCallback, useRef } from 'react';
 import type { AriaDialogProps } from 'react-aria';
 import { FocusScope, useDialog } from 'react-aria';
 
-import { useRoomToolbox } from '../../views/room/contexts/RoomToolboxContext';
 import Contextualbar from './Contextualbar';
 import ContextualbarResizable from './ContextualbarResizable';
+import { useRoomToolbox } from '../../views/room/contexts/RoomToolboxContext';
 
 type ContextualbarDialogProps = AriaDialogProps & ComponentProps<typeof Contextualbar>;
 

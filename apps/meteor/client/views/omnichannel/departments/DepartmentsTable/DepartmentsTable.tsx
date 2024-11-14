@@ -5,6 +5,7 @@ import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts
 import { useQuery, hashQueryKey } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
 
+import DepartmentItemMenu from './DepartmentItemMenu';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
 import {
@@ -18,7 +19,6 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import DepartmentItemMenu from './DepartmentItemMenu';
 
 const DEPARTMENTS_ENDPOINTS = {
 	department: '/v1/livechat/department',

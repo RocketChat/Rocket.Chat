@@ -7,6 +7,7 @@ import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import RoomMembersRow from './RoomMembersRow';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -19,7 +20,6 @@ import {
 } from '../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
-import RoomMembersRow from './RoomMembersRow';
 
 type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'>;
 

@@ -4,9 +4,9 @@ import { Box, Icon, Skeleton, Palette } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import WebdavFilePickerGridItem from './WebdavFilePickerGridItem';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import { getNodeIconType } from '../lib/getNodeIconType';
-import WebdavFilePickerGridItem from './WebdavFilePickerGridItem';
 
 type WebdavFilePickerGridProps = {
 	webdavNodes: IWebdavNode[];

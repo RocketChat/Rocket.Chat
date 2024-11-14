@@ -3,11 +3,11 @@ import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ContextualbarDialog } from '../../../components/Contextualbar';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import EditTrigger from './EditTrigger';
 import EditTriggerWithData from './EditTriggerWithData';
 import TriggersTable from './TriggersTable';
+import { ContextualbarDialog } from '../../../components/Contextualbar';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const TriggersPage = () => {
 	const { t } = useTranslation();

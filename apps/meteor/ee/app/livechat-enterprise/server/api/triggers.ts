@@ -3,9 +3,9 @@ import { LivechatTrigger } from '@rocket.chat/models';
 import { isLivechatTriggerWebhookCallParams } from '@rocket.chat/rest-typings';
 import { isLivechatTriggerWebhookTestParams } from '@rocket.chat/rest-typings/src/v1/omnichannel';
 
+import { callTriggerExternalService } from './lib/triggers';
 import { API } from '../../../../../app/api/server';
 import { settings } from '../../../../../app/settings/server';
-import { callTriggerExternalService } from './lib/triggers';
 
 API.v1.addRoute(
 	'livechat/triggers/external-service/test',

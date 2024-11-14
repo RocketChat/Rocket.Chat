@@ -6,12 +6,12 @@ import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Page, PageHeader, PageContent } from '../../components/Page';
-import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';
 import { PrioritiesResetModal } from './PrioritiesResetModal';
 import { PrioritiesTable } from './PrioritiesTable';
 import type { PriorityFormData } from './PriorityEditForm';
 import PriorityList from './PriorityList';
+import { Page, PageHeader, PageContent } from '../../components/Page';
+import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';
 
 type PrioritiesPageProps = {
 	priorityId: string;

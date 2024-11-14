@@ -2,8 +2,8 @@ import type { RoomType } from '@rocket.chat/core-typings';
 import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
-import { Contextualbar } from '../../../../../components/Contextualbar';
 import RoomInfo from './RoomInfo';
+import { Contextualbar } from '../../../../../components/Contextualbar';
 
 export default {
 	title: 'Room/Contextual Bar/RoomInfo',

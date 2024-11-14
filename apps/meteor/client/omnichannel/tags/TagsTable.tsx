@@ -4,6 +4,7 @@ import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts
 import { useQuery, hashQueryKey } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 
+import { useRemoveTag } from './useRemoveTag';
 import FilterByText from '../../components/FilterByText';
 import GenericNoResults from '../../components/GenericNoResults';
 import {
@@ -17,7 +18,6 @@ import {
 } from '../../components/GenericTable';
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../components/GenericTable/hooks/useSort';
-import { useRemoveTag } from './useRemoveTag';
 
 const TagsTable = () => {
 	const t = useTranslation();

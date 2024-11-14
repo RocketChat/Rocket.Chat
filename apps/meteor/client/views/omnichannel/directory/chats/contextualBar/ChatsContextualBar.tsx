@@ -2,11 +2,11 @@ import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ChatInfo from './ChatInfo';
+import { RoomEditWithData } from './RoomEdit';
 import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../../components/Contextualbar';
 import { useRoom } from '../../../../room/contexts/RoomContext';
 import { useRoomToolbox } from '../../../../room/contexts/RoomToolboxContext';
-import ChatInfo from './ChatInfo';
-import { RoomEditWithData } from './RoomEdit';
 
 const PATH = 'live';
 

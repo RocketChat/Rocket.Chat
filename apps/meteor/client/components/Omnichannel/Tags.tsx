@@ -5,9 +5,9 @@ import type { ChangeEvent, ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CurrentChatTags } from '../../views/omnichannel/additionalForms';
 import { FormSkeleton } from './Skeleton';
 import { useLivechatTags } from './hooks/useLivechatTags';
+import { CurrentChatTags } from '../../views/omnichannel/additionalForms';
 
 type TagsProps = {
 	tags?: string[];

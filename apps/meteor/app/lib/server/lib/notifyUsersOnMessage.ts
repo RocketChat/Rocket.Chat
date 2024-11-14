@@ -4,14 +4,14 @@ import type { Updater } from '@rocket.chat/models';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import moment from 'moment';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { settings } from '../../../settings/server';
-import { messageContainsHighlight } from '../functions/notifications/messageContainsHighlight';
 import {
 	notifyOnSubscriptionChanged,
 	notifyOnSubscriptionChangedByRoomIdAndUserId,
 	notifyOnSubscriptionChangedByRoomIdAndUserIds,
 } from './notifyListener';
+import { callbacks } from '../../../../lib/callbacks';
+import { settings } from '../../../settings/server';
+import { messageContainsHighlight } from '../functions/notifications/messageContainsHighlight';
 
 export async function getMentions(message: IMessage): Promise<{ toAll: boolean; toHere: boolean; mentionIds: string[] }> {
 	const {

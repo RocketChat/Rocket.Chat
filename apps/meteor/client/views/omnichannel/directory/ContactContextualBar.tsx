@@ -2,6 +2,9 @@ import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ContactInfo from './contacts/contactInfo/ContactInfo';
+import EditContactInfo from './contacts/contactInfo/EditContactInfo';
+import EditContactInfoWithData from './contacts/contactInfo/EditContactInfoWithData';
 import {
 	Contextualbar,
 	ContextualbarHeader,
@@ -9,9 +12,6 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 } from '../../../components/Contextualbar';
-import ContactInfo from './contacts/contactInfo/ContactInfo';
-import EditContactInfo from './contacts/contactInfo/EditContactInfo';
-import EditContactInfoWithData from './contacts/contactInfo/EditContactInfoWithData';
 
 const HEADER_OPTIONS = {
 	new: { icon: 'user', title: 'New_contact' },

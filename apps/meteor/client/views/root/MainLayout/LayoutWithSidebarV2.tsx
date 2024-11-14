@@ -4,10 +4,10 @@ import { useLayout, useSetting, useCurrentModal, useCurrentRoutePath, useRouter 
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useRef } from 'react';
 
-import NavBar from '../../../NavBarV2';
-import Sidebar from '../../../sidebarv2';
 import AccessibilityShortcut from './AccessibilityShortcut';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
+import NavBar from '../../../NavBarV2';
+import Sidebar from '../../../sidebarv2';
 
 const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();

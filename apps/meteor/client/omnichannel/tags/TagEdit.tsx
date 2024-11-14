@@ -7,6 +7,7 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { useRemoveTag } from './useRemoveTag';
 import AutoCompleteDepartmentMultiple from '../../components/AutoCompleteDepartmentMultiple';
 import {
 	ContextualbarScrollableContent,
@@ -16,7 +17,6 @@ import {
 	ContextualbarHeader,
 	ContextualbarClose,
 } from '../../components/Contextualbar';
-import { useRemoveTag } from './useRemoveTag';
 
 type TagEditPayload = {
 	name: string;
