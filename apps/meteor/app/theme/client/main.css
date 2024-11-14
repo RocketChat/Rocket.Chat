@@ -1,4 +1,5 @@
 /* General */
+@import url('imports/general/variables.css');
 @import url('imports/general/reset.css');
 @import url('imports/general/base_old.css');
 @import url('imports/general/base.css');
