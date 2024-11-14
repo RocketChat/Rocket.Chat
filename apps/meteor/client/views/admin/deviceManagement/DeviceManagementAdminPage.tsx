@@ -3,10 +3,10 @@ import type { ReactElement } from 'react';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ContextualbarDialog } from '../../../components/Contextualbar';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import DeviceManagementAdminTable from './DeviceManagementAdminTable';
 import DeviceManagementInfo from './DeviceManagementInfo';
+import { ContextualbarDialog } from '../../../components/Contextualbar';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const DeviceManagementAdminPage = (): ReactElement => {
 	const { t } = useTranslation();

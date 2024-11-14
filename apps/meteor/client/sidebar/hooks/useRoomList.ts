@@ -3,10 +3,10 @@ import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
+import { useQueryOptions } from './useQueryOptions';
 import { useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
 import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../hooks/omnichannel/useQueuedInquiries';
-import { useQueryOptions } from './useQueryOptions';
 
 const query = { open: { $ne: false } };
 

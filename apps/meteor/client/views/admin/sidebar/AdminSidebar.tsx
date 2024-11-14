@@ -1,10 +1,10 @@
 import { useTranslation, useLayout, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
+import AdminSidebarPages from './AdminSidebarPages';
 import PlanTag from '../../../components/PlanTag';
 import Sidebar from '../../../components/Sidebar';
 import SettingsProvider from '../../../providers/SettingsProvider';
-import AdminSidebarPages from './AdminSidebarPages';
 
 const AdminSidebar = () => {
 	const t = useTranslation();

@@ -6,11 +6,11 @@ import type { ReactElement, SetStateAction } from 'react';
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import AppRequestItem from './AppRequestItem';
+import AppRequestsLoading from './AppRequestsLoading';
 import { useAppsReload } from '../../../../../contexts/hooks/useAppsReload';
 import { queryClient } from '../../../../../lib/queryClient';
 import { useAppRequests } from '../../../hooks/useAppRequests';
-import AppRequestItem from './AppRequestItem';
-import AppRequestsLoading from './AppRequestsLoading';
 
 type itemsPerPage = 25 | 50 | 100;
 

@@ -1,9 +1,9 @@
 import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
+import OTR from './OTR';
 import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
 import { Contextualbar } from '../../../../components/Contextualbar';
-import OTR from './OTR';
 
 export default {
 	title: 'Room/Contextual Bar/OTR',

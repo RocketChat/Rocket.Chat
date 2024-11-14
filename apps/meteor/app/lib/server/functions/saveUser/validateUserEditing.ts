@@ -2,9 +2,9 @@ import { MeteorError } from '@rocket.chat/core-services';
 import type { IUser, RequiredField } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
+import type { SaveUserData } from './saveUser';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../../settings/server';
-import type { SaveUserData } from './saveUser';
 
 const isEditingUserRoles = (previousRoles: IUser['roles'], newRoles?: IUser['roles']) =>
 	newRoles !== undefined &&

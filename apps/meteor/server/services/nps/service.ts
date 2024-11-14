@@ -6,9 +6,9 @@ import type { INpsVote, INps } from '@rocket.chat/core-typings';
 import { NPSStatus, INpsVoteStatus } from '@rocket.chat/core-typings';
 import { Nps, NpsVote, Settings } from '@rocket.chat/models';
 
-import { SystemLogger } from '../../lib/logger/system';
 import { getBannerForAdmins, notifyAdmins } from './notification';
 import { sendNpsResults } from './sendNpsResults';
+import { SystemLogger } from '../../lib/logger/system';
 
 export class NPSService extends ServiceClassInternal implements INPSService {
 	protected name = 'nps';

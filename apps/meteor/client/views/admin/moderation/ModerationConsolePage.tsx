@@ -2,11 +2,11 @@ import { Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useTranslation, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
-import { Page, PageHeader, PageContent } from '../../../components/Page';
-import { getPermaLink } from '../../../lib/getPermaLink';
 import ModConsoleReportDetails from './ModConsoleReportDetails';
 import ModerationConsoleTable from './ModerationConsoleTable';
 import ModConsoleUsersTable from './UserReports/ModConsoleUsersTable';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
+import { getPermaLink } from '../../../lib/getPermaLink';
 
 type TabType = 'users' | 'messages';
 
