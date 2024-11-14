@@ -5137,6 +5137,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nivo/core@npm:0.88.0":
+  version: 0.88.0
+  resolution: "@nivo/core@npm:0.88.0"
+  dependencies:
+    "@nivo/tooltip": "npm:0.88.0"
+    "@react-spring/web": "npm:9.4.5 || ^9.7.2"
+    "@types/d3-shape": "npm:^3.1.6"
+    d3-color: "npm:^3.1.0"
+    d3-format: "npm:^1.4.4"
+    d3-interpolate: "npm:^3.0.1"
+    d3-scale: "npm:^4.0.2"
+    d3-scale-chromatic: "npm:^3.0.0"
+    d3-shape: "npm:^3.2.0"
+    d3-time-format: "npm:^3.0.0"
+    lodash: "npm:^4.17.21"
+    prop-types: "npm:^15.7.2"
+  peerDependencies:
+    react: ">= 16.14.0 < 19.0.0"
+  checksum: 10/14823e5366dec93827e833d789c001124424c7b43a533a7002ac39d4de4edd55a0d7a3e07eca18df30304515b2fe4ba214d243a8abdc793e434f31cbafd85950
+  languageName: node
+  linkType: hard
+
 "@nivo/heatmap@npm:0.87.0":
   version: 0.87.0
   resolution: "@nivo/heatmap@npm:0.87.0"
@@ -5232,6 +5254,18 @@ __metadata:
   peerDependencies:
     react: ">= 16.14.0 < 19.0.0"
   checksum: 10/61c416a716b2bd17411b7b950a1e89664d9354957808f3d2c91c683af844af6216311330fb5630a77a30d950c6f86e0e85468c5356498d39c0cb499a1f42e9b7
+  languageName: node
+  linkType: hard
+
+"@nivo/tooltip@npm:0.88.0":
+  version: 0.88.0
+  resolution: "@nivo/tooltip@npm:0.88.0"
+  dependencies:
+    "@nivo/core": "npm:0.88.0"
+    "@react-spring/web": "npm:9.4.5 || ^9.7.2"
+  peerDependencies:
+    react: ">= 16.14.0 < 19.0.0"
+  checksum: 10/1e5c6d72ef47e52b379e5277b615eb893e95814251ef1338ed7a44a080b03a70388f6e92542dd64d6d6fff5df50bf670426622883c21e9b582eb31b37adb08d8
   languageName: node
   linkType: hard
 
@@ -9087,7 +9121,7 @@ __metadata:
     "@google-cloud/storage": "npm:^6.12.0"
     "@kaciras/deasync": "npm:^1.1.0"
     "@nivo/bar": "npm:0.87.0"
-    "@nivo/core": "npm:0.87.0"
+    "@nivo/core": "npm:0.88.0"
     "@nivo/heatmap": "npm:0.87.0"
     "@nivo/line": "npm:0.87.0"
     "@nivo/pie": "npm:0.87.0"
