@@ -2,10 +2,10 @@ import type { IImportMessageRecord, IMessage as IDBMessage, IImportMessage, IImp
 import { Rooms } from '@rocket.chat/models';
 import limax from 'limax';
 
-import { insertMessage } from '../../../../lib/server/functions/insertMessage';
-import type { IConversionCallbacks } from '../../definitions/IConversionCallbacks';
 import type { UserIdentification, MentionedChannel } from './ConverterCache';
 import { RecordConverter } from './RecordConverter';
+import { insertMessage } from '../../../../lib/server/functions/insertMessage';
+import type { IConversionCallbacks } from '../../definitions/IConversionCallbacks';
 
 export type MessageConversionCallbacks = IConversionCallbacks & { afterImportAllMessagesFn?: (roomIds: string[]) => Promise<void> };
 

@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
-import { createFakeSubscription } from '../../../tests/mocks/data';
 import { useUnreadDisplay } from './useUnreadDisplay';
+import { createFakeSubscription } from '../../../tests/mocks/data';
 
 const dmUnread = createFakeSubscription({
 	t: 'd',

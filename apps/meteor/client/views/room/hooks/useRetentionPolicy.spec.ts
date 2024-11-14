@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
-import { createFakeRoom } from '../../../../tests/mocks/data';
 import { useRetentionPolicy } from './useRetentionPolicy';
+import { createFakeRoom } from '../../../../tests/mocks/data';
 
 const getGlobalSettings = ({
 	enabled = false,

@@ -4,12 +4,12 @@ import type { IInstance } from '@rocket.chat/rest-typings';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import DeploymentCard from './DeploymentCard/DeploymentCard';
 import MessagesRoomsCard from './MessagesRoomsCard/MessagesRoomsCard';
 import UsersUploadsCard from './UsersUploadsCard/UsersUploadsCard';
 import VersionCard from './VersionCard/VersionCard';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 
 type WorkspaceStatusPageProps = {
 	canViewStatistics: boolean;

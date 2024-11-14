@@ -3,11 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useDefaultDownload } from './useDefaultDownload';
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { COLORS, PERIOD_OPTIONS } from '../components/constants';
 import { formatPeriodDescription } from '../utils/formatPeriodDescription';
-import { useDefaultDownload } from './useDefaultDownload';
 
 const formatChartData = (data: { label: string; value: number }[] | undefined = []) =>
 	data.map((item) => ({

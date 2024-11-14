@@ -22,13 +22,13 @@ import { useMutation } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
-import { getDirtyFields } from '../../../lib/getDirtyFields';
 import { fontSizes } from './fontSizes';
 import type { AccessibilityPreferencesData } from './hooks/useAcessibilityPreferencesValues';
 import { useAccessiblityPreferencesValues } from './hooks/useAcessibilityPreferencesValues';
 import { useCreateFontStyleElement } from './hooks/useCreateFontStyleElement';
 import { themeItems as themes } from './themeItems';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
+import { getDirtyFields } from '../../../lib/getDirtyFields';
 
 const AccessibilityPage = () => {
 	const t = useTranslation();

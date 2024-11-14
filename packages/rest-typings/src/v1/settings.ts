@@ -1,8 +1,8 @@
 import type { ISetting, ISettingColor, LoginServiceConfiguration } from '@rocket.chat/core-typings';
 
+import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
-import { ajv } from './Ajv';
 
 type SettingsUpdateProps = SettingsUpdatePropDefault | SettingsUpdatePropsActions | SettingsUpdatePropsColor;
 

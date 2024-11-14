@@ -10,7 +10,7 @@ const defaultOptions: LivenessManager['options'] = {
     pingRequestTimeout: 10000,
     pingFrequencyInMS: 10000,
     consecutiveTimeoutLimit: 4,
-    maxRestarts: 3,
+    maxRestarts: Infinity,
 };
 
 /**
@@ -63,6 +63,16 @@ export class LivenessManager {
         this.pingAbortController = new EventEmitter();
 
         this.options = Object.assign({}, defaultOptions, options);
+    }
+
+    public getRuntimeData() {
+        const { restartCount, pingTimeoutConsecutiveCount, restartLog } = this;
+
+        return {
+            restartCount,
+            pingTimeoutConsecutiveCount,
+            restartLog,
+        };
     }
 
     public attach(deno: ChildProcess) {
@@ -122,7 +132,7 @@ export class LivenessManager {
 
                 if (reason === 'timeout' && this.pingTimeoutConsecutiveCount >= this.options.consecutiveTimeoutLimit) {
                     this.debug('Subprocess failed to respond to pings %d consecutive times. Attempting restart...', this.options.consecutiveTimeoutLimit);
-                    this.restartProcess();
+                    this.restartProcess('Too many pings timed out');
                     return false;
                 }
 
@@ -154,17 +164,21 @@ export class LivenessManager {
             return;
         }
 
+        let reason: string;
+
         // Otherwise we try to restart the subprocess, if possible
         if (signal) {
             this.debug('App has been killed (%s). Attempting restart #%d...', signal, this.restartCount + 1);
+            reason = `App has been killed with signal ${signal}`;
         } else {
             this.debug('App has exited with code %d. Attempting restart #%d...', exitCode, this.restartCount + 1);
+            reason = `App has exited with code ${exitCode}`;
         }
 
-        this.restartProcess();
+        this.restartProcess(reason);
     }
 
-    private restartProcess() {
+    private restartProcess(reason: string) {
         if (this.restartCount >= this.options.maxRestarts) {
             this.debug('Limit of restarts reached (%d). Aborting restart...', this.options.maxRestarts);
             this.controller.stopApp();
@@ -174,6 +188,7 @@ export class LivenessManager {
         this.pingTimeoutConsecutiveCount = 0;
         this.restartCount++;
         this.restartLog.push({
+            reason,
             restartedAt: new Date(),
             source: 'liveness-manager',
             pid: this.subprocess.pid,

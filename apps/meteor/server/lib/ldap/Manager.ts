@@ -8,15 +8,15 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
+import { LDAPConnection } from './Connection';
+import { logger, authLogger, connLogger } from './Logger';
+import { LDAPUserConverter } from './UserConverter';
+import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 import type { UserConverterOptions } from '../../../app/importer/server/classes/converters/UserConverter';
 import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
 import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { omit } from '../../../lib/utils/omit';
-import { LDAPConnection } from './Connection';
-import { logger, authLogger, connLogger } from './Logger';
-import { LDAPUserConverter } from './UserConverter';
-import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 
 export class LDAPManager {
 	public static async login(username: string, password: string): Promise<LDAPLoginResult> {

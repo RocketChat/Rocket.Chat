@@ -15,8 +15,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { PendingAvatarImporter } from '../../../importer-pending-avatars/server/PendingAvatarImporter';
-import { PendingFileImporter } from '../../../importer-pending-files/server/PendingFileImporter';
 import { Importers } from '../../../importer/server';
 import {
 	executeUploadImportFile,
@@ -26,6 +24,8 @@ import {
 	executeStartImport,
 	executeGetLatestImportOperations,
 } from '../../../importer/server/methods';
+import { PendingAvatarImporter } from '../../../importer-pending-avatars/server/PendingAvatarImporter';
+import { PendingFileImporter } from '../../../importer-pending-files/server/PendingFileImporter';
 import { API } from '../api';
 
 API.v1.addRoute(

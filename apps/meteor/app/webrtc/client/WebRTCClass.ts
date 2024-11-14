@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
+import { ChromeScreenShare } from './screenShare';
 import GenericModal from '../../../client/components/GenericModal';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
@@ -13,7 +14,6 @@ import { settings } from '../../settings/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 import { WEB_RTC_EVENTS } from '../lib/constants';
-import { ChromeScreenShare } from './screenShare';
 
 // FIXME: there is a mix of obsolete definitions and incorrect field assignments
 

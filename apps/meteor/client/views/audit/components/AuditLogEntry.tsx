@@ -6,9 +6,9 @@ import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import AuditFiltersDisplay from './AuditFiltersDisplay';
 import { GenericTableRow, GenericTableCell } from '../../../components/GenericTable';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-import AuditFiltersDisplay from './AuditFiltersDisplay';
 
 type AuditLogEntryProps = { value: IAuditLog };
 

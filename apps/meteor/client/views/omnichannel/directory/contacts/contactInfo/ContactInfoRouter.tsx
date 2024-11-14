@@ -2,25 +2,23 @@ import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ContactInfo from './ContactInfo';
+import ContactEditWithData from './EditContactInfoWithData';
 import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../../components/Contextualbar';
 import { useOmnichannelRoom } from '../../../../room/contexts/RoomContext';
 import { useRoomToolbox } from '../../../../room/contexts/RoomToolboxContext';
-import ContactEditWithData from './ContactEditWithData';
-import ContactInfo from './ContactInfo';
 
 const PATH = 'live';
 
-const ContactsContextualBar = () => {
+const ContactInfoRouter = () => {
 	const { t } = useTranslation();
-
 	const room = useOmnichannelRoom();
 	const { closeTab } = useRoomToolbox();
 
 	const directoryRoute = useRoute(PATH);
-
 	const context = useRouteParameter('context');
 
-	const handleContactEditBarCloseButtonClick = (): void => {
+	const handleCloseEdit = (): void => {
 		directoryRoute.push({ id: room._id, tab: 'contact-profile' });
 	};
 
@@ -46,7 +44,7 @@ const ContactsContextualBar = () => {
 				<ContextualbarClose onClick={closeTab} />
 			</ContextualbarHeader>
 			{context === 'edit' ? (
-				<ContactEditWithData id={_id} close={handleContactEditBarCloseButtonClick} />
+				<ContactEditWithData id={_id} onCancel={handleCloseEdit} />
 			) : (
 				<ContactInfo id={_id} rid={room._id} route={PATH} />
 			)}
@@ -54,4 +52,4 @@ const ContactsContextualBar = () => {
 	);
 };
 
-export default ContactsContextualBar;
+export default ContactInfoRouter;

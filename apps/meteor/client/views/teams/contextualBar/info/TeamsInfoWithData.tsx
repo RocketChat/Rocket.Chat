@@ -5,6 +5,8 @@ import { useSetModal, useToastMessageDispatch, useUserId, usePermission, useMeth
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import LeaveTeam from './LeaveTeam';
+import TeamsInfo from './TeamsInfo';
 import { UiTextContext } from '../../../../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
@@ -14,8 +16,6 @@ import { useDeleteRoom } from '../../../hooks/roomActions/useDeleteRoom';
 import { useRoom } from '../../../room/contexts/RoomContext';
 import { useRoomToolbox } from '../../../room/contexts/RoomToolboxContext';
 import ConvertToChannelModal from '../../ConvertToChannelModal';
-import LeaveTeam from './LeaveTeam';
-import TeamsInfo from './TeamsInfo';
 
 type TeamsInfoWithLogicProps = {
 	openEditing: () => void;

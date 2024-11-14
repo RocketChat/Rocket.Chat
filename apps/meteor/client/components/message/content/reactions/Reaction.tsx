@@ -4,9 +4,9 @@ import type { ComponentProps, ReactElement } from 'react';
 import React, { useRef, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ReactionTooltip from './ReactionTooltip';
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 import { MessageListContext } from '../../list/MessageListContext';
-import ReactionTooltip from './ReactionTooltip';
 
 // TODO: replace it with proper usage of i18next plurals
 type ReactionProps = {

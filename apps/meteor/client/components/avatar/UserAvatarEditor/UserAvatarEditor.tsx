@@ -7,11 +7,11 @@ import type { ReactElement, ChangeEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
-import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 import { readFileAsDataURL } from './readFileAsDataURL';
+import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
+import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 
 type UserAvatarEditorProps = {
 	currentUsername: IUser['username'];

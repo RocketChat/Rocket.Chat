@@ -1,7 +1,5 @@
 import type { IRole, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { TeamsAddMembersProps } from './TeamsAddMembersProps';
 import type { TeamsConvertToChannelProps } from './TeamsConvertToChannelProps';
 import type { TeamsDeleteProps } from './TeamsDeleteProps';
@@ -11,6 +9,8 @@ import type { TeamsRemoveMemberProps } from './TeamsRemoveMemberProps';
 import type { TeamsRemoveRoomProps } from './TeamsRemoveRoomProps';
 import type { TeamsUpdateMemberProps } from './TeamsUpdateMemberProps';
 import type { TeamsUpdateProps } from './TeamsUpdateProps';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
 export * from './TeamsAddMembersProps';
 export * from './TeamsConvertToChannelProps';

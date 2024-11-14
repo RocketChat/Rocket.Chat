@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { AutoTranslate } from './autotranslate';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import {
 	hasTranslationLanguageInAttachments,
@@ -11,7 +12,6 @@ import { Messages } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client/lib/MessageAction';
 import { sdk } from '../../../utils/client/lib/SDKClient';
-import { AutoTranslate } from './autotranslate';
 
 Meteor.startup(() => {
 	AutoTranslate.init();
