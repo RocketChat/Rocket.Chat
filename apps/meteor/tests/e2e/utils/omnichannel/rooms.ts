@@ -37,6 +37,28 @@ export const updateRoom = async (api: BaseTest['api'], { roomId, visitorId, tags
 export const closeRoom = async (api: BaseTest['api'], { roomId, visitorToken }: CloseRoomParams) =>
 	api.post('/livechat/room.close', { rid: roomId, token: visitorToken });
 
+export const closeLivechatRoom = (api: BaseTest['api'], { roomId }: Pick<CloseRoomParams, 'roomId'>) => {
+	return api.post('/method.call/livechat:removeRoom', {
+		message: JSON.stringify({
+			msg: 'method',
+			id: '16',
+			method: 'livechat:removeRoom',
+			params: [roomId],
+		}),
+	});
+};
+
+export const deleteClosedRooms = (api: BaseTest['api']) => {
+	return api.post('/method.call/livechat:removeAllClosedRooms', {
+		message: JSON.stringify({
+			msg: 'method',
+			id: '94',
+			method: 'livechat:removeAllClosedRooms',
+			params: [],
+		}),
+	});
+};
+
 export const createRoom = async (api: BaseTest['api'], { visitorToken, agentId }: CreateRoomParams) => {
 	const response = await api.get('/livechat/room', {
 		token: visitorToken,
@@ -54,14 +76,7 @@ export const createRoom = async (api: BaseTest['api'], { visitorToken, agentId }
 		data: room,
 		async delete() {
 			await closeRoom(api, { roomId: room._id, visitorToken });
-			return api.post('/method.call/livechat:removeRoom', {
-				message: JSON.stringify({
-					msg: 'method',
-					id: '16',
-					method: 'livechat:removeRoom',
-					params: [room._id],
-				}),
-			});
+			return closeLivechatRoom(api, { roomId: room._id });
 		},
 	};
 };
