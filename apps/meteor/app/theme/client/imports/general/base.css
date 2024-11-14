@@ -94,8 +94,6 @@ button {
 		height: auto !important; /* 1 */
 	}
 
-	.room-container,
-	.room-container:first-child,
 	.messages-container-main,
 	.messages-container-wrapper,
 	.main-content-flex {
