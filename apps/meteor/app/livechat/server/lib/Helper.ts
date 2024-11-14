@@ -52,6 +52,7 @@ import { settings } from '../../../settings/server';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
+import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
 import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissingContact';
 import { getOnlineAgents } from './getOnlineAgents';
 
@@ -93,12 +94,22 @@ export const createLivechatRoom = async (
 		visitor: { _id, username, departmentId, status, activity },
 	});
 
-	const contactId = await migrateVisitorIfMissingContact(_id, extraRoomInfo.source || roomInfo.source);
+	const source = extraRoomInfo.source || roomInfo.source;
+
+	if (settings.get<string>('Livechat_Require_Contact_Verification') === 'always') {
+		await LivechatContacts.updateContactChannel({ visitorId: _id, source }, { verified: false });
+	}
+
+	const contactId = await migrateVisitorIfMissingContact(_id, source);
 	const contact =
-		contactId && (await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name'>>(contactId, { projection: { name: 1 } }));
+		contactId &&
+		(await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name' | 'channels'>>(contactId, {
+			projection: { name: 1, channels: 1 },
+		}));
 	if (!contact) {
 		throw new Error('error-invalid-contact');
 	}
+	const verified = Boolean(contact.channels?.some((channel) => isVerifiedChannelInSource(channel, _id, source)));
 
 	// TODO: Solve `u` missing issue
 	const room: InsertionModel<IOmnichannelRoom> = {
@@ -121,6 +132,7 @@ export const createLivechatRoom = async (
 		cl: false,
 		open: true,
 		waitingResponse: true,
+		verified,
 		// this should be overridden by extraRoomInfo when provided
 		// in case it's not provided, we'll use this "default" type
 		source: {

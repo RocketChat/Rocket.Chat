@@ -308,10 +308,6 @@ export class QueueManager {
 			void notifyOnSettingChanged(livechatSetting);
 		}
 
-		if (settings.get<string>('Livechat_Require_Contact_Verification') === 'always') {
-			await LivechatContacts.updateContactChannel({ visitorId: room.v._id, source: room.source }, { verified: false });
-		}
-
 		await this.processNewInquiry(inquiry, room, defaultAgent);
 		const newRoom = await LivechatRooms.findOneById(rid);
 
