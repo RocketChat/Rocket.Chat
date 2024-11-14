@@ -13,6 +13,16 @@ export const makeAgentAvailable = async (api: BaseTest['api'], agentId: string) 
 	});
 };
 
+export const deleteAgent = async (api: BaseTest['api'], agentId: string) => {
+	const response = await api.delete(`/livechat/users/agent/${agentId}`);
+
+	if (response.status() !== 200) {
+		throw new Error(`Failed to delete agent [http status: ${response.status()}]`);
+	}
+
+	return response;
+};
+
 export const createAgent = async (api: BaseTest['api'], username: string) => {
 	const response = await api.post('/livechat/users/agent', { username });
 
@@ -25,6 +35,6 @@ export const createAgent = async (api: BaseTest['api'], username: string) => {
 	return {
 		response,
 		data: agent,
-		delete: async () => api.delete(`/livechat/users/agent/${agent._id}`),
+		delete: () => deleteAgent(api, agent._id),
 	};
 };
