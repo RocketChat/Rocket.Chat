@@ -1,7 +1,7 @@
 import type { IconProps } from '@rocket.chat/fuselage';
 import { Box, Icon, IconButton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ContactInfoCallButton from './ContactInfoCallButton';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
@@ -14,7 +14,7 @@ type ContactInfoDetailsEntryProps = {
 };
 
 const ContactInfoDetailsEntry = ({ icon, isPhone, value }: ContactInfoDetailsEntryProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { copy } = useClipboardWithToast(value);
 
 	const isCallReady = useIsCallReady();

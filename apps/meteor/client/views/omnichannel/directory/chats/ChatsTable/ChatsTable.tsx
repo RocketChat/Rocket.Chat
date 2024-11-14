@@ -1,7 +1,8 @@
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
-import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import { hashQueryKey } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ChatFilterByText from './ChatsTableFilter';
 import ChatsTableRow from './ChatsTableRow';
@@ -21,7 +22,7 @@ import { useCurrentChats } from '../../../currentChats/hooks/useCurrentChats';
 import { useChatsContext } from '../../contexts/ChatsContext';
 
 const ChatsTable = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
 	const { filtersQuery: filters } = useChatsContext();
 

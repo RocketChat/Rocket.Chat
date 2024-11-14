@@ -1,8 +1,9 @@
 import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
 import { Tag, Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useRoute } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericTableCell, GenericTableRow } from '../../../../../components/GenericTable';
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
@@ -15,7 +16,7 @@ import RemoveChatButton from '../../../currentChats/RemoveChatButton';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 
 const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { _id, fname, tags, servedBy, ts, department, open, priorityWeight, lm, onHold, source, verified } = room;
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 	const getTimeFromNow = useTimeFromNow(true);

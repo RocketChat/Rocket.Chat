@@ -1,6 +1,7 @@
 import { Divider, Margins } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+// import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ContactInfoDetailsGroup from './ContactInfoDetailsGroup';
 import ContactManagerInfo from './ContactManagerInfo';
@@ -20,7 +21,7 @@ type ContactInfoDetailsProps = {
 };
 
 const ContactInfoDetails = ({ emails, phones, createdAt, customFieldEntries, contactManager }: ContactInfoDetailsProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDate = useFormatDate();
 
 	return (

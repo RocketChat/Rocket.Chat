@@ -11,8 +11,9 @@ import {
 	MessageGenericPreviewTitle,
 } from '@rocket.chat/fuselage';
 import type { ContactSearchChatsResult } from '@rocket.chat/rest-typings';
-import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
@@ -26,7 +27,7 @@ type ContactInfoHistoryItemProps = Serialized<ContactSearchChatsResult> & {
 };
 
 const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: ContactInfoHistoryItemProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const getTimeFromNow = useTimeFromNow(true);
 	const setModal = useSetModal();
 	const preventPropagation = usePreventPropagation();

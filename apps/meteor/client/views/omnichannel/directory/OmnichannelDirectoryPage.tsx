@@ -1,6 +1,7 @@
 import { Tabs } from '@rocket.chat/fuselage';
-import { useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ContextualBarRouter from './ContextualBarRouter';
 import CallTab from './calls/CallTab';
@@ -13,7 +14,7 @@ import { Page, PageHeader, PageContent } from '../../../components/Page';
 const DEFAULT_TAB = 'chats';
 
 const OmnichannelDirectoryPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const tab = useRouteParameter('tab');
 	const context = useRouteParameter('context');

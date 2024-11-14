@@ -2,10 +2,11 @@ import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
-import { useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { Fragment } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import AdvancedContactModal from './AdvancedContactModal';
 import { useCreateContact } from './hooks/useCreateContact';
@@ -67,7 +68,7 @@ const getInitialValues = (data: ContactNewEditProps['contactData']): ContactForm
 const validateMultipleFields = (fieldsLength: number, hasLicense: boolean) => fieldsLength >= 1 && !hasLicense;
 
 const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 
 	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;

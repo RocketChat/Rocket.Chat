@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../../components/GenericModal';
 
@@ -10,7 +10,7 @@ type BlockChannelModalProps = {
 };
 
 const BlockChannelModal = ({ onCancel, onConfirm }: BlockChannelModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<GenericModal variant='danger' icon='ban' title={t('Block_channel')} confirmText={t('Block')} onConfirm={onConfirm} onCancel={onCancel}>

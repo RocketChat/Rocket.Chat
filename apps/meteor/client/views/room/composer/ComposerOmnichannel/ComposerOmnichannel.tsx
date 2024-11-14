@@ -1,6 +1,7 @@
 import { MessageFooterCallout } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useIsRoomOverMacLimit } from '../../../../hooks/omnichannel/useIsRoomOverMacLimit';
 import { useOmnichannelRoom, useUserIsSubscribed } from '../../contexts/RoomContext';
@@ -12,7 +13,7 @@ import { ComposerOmnichannelJoin } from './ComposerOmnichannelJoin';
 import { ComposerOmnichannelOnHold } from './ComposerOmnichannelOnHold';
 
 const ComposerOmnichannel = (props: ComposerMessageProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const userId = useUserId();
 	const room = useOmnichannelRoom();
 

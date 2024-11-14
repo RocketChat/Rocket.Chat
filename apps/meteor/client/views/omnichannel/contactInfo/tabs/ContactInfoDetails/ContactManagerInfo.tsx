@@ -1,15 +1,16 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { UserStatus } from '../../../../../components/UserStatus';
 
 type ContactManagerInfoProps = { userId: string };
 
 const ContactManagerInfo = ({ userId }: ContactManagerInfoProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const getContactManagerByUsername = useEndpoint('GET', '/v1/users.info');
 	const { data, isLoading, isError } = useQuery(['getContactManagerByUserId', userId], async () => getContactManagerByUsername({ userId }));

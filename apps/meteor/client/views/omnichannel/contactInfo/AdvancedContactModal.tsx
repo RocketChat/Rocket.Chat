@@ -1,5 +1,6 @@
-import { useRole, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRole } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { getURL } from '../../../../app/utils/client/getURL';
 import GenericUpsellModal from '../../../components/GenericUpsellModal';
@@ -12,7 +13,7 @@ type AdvancedContactModalProps = {
 };
 
 const AdvancedContactModal = ({ onCancel }: AdvancedContactModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const isAdmin = useRole('admin');
 	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
 	const { shouldShowUpsell, handleManageSubscription } = useUpsellActions(hasLicense);

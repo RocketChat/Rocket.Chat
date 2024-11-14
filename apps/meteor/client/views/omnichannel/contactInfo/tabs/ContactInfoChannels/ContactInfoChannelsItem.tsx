@@ -3,8 +3,8 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useBlockChannel } from './useBlockChannel';
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
@@ -14,7 +14,7 @@ import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel>;
 
 const ContactInfoChannelsItem = ({ visitor, details, blocked, lastChat }: ContactInfoChannelsItemProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { getSourceLabel, getSourceName } = useOmnichannelSource();
 	const getTimeFromNow = useTimeFromNow(true);
 

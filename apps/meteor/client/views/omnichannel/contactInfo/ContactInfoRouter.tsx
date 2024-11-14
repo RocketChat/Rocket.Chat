@@ -14,9 +14,7 @@ const ContactInfoRouter = () => {
 	const liveRoute = useRoute('live');
 	const context = useRouteParameter('context');
 
-	const handleCloseEdit = (): void => {
-		liveRoute.push({ id: room._id, tab: 'contact-profile' });
-	};
+	const handleCloseEdit = (): void => liveRoute.push({ id: room._id, tab: 'contact-profile' });
 
 	if (!room.contactId) {
 		return <ContactInfoError onClose={closeTab} />;

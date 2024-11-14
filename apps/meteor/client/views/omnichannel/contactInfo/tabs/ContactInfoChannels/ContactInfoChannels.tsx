@@ -1,8 +1,9 @@
 import type { ILivechatContact } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, Throbber } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import ContactInfoChannelsItem from './ContactInfoChannelsItem';
@@ -14,15 +15,15 @@ type ContactInfoChannelsProps = {
 };
 
 const ContactInfoChannels = ({ contactId }: ContactInfoChannelsProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const getContactChannels = useEndpoint('GET', '/v1/omnichannel/contacts.channels');
 	const { data, isError, isLoading } = useQuery(['getContactChannels', contactId], () => getContactChannels({ contactId }));
 
 	if (isLoading) {
 		return (
-			<ContextualbarContent paddingInline={0}>
-				<Box pi={24} pb={12}>
+			<ContextualbarContent>
+				<Box pb={12}>
 					<Throbber size='x12' />
 				</Box>
 			</ContextualbarContent>

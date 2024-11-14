@@ -2,10 +2,11 @@ import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { Box, Margins, Throbber, States, StatesIcon, StatesTitle, Select } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { Key } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import ContactInfoHistoryItem from './ContactInfoHistoryItem';
@@ -23,7 +24,7 @@ type ContactInfoHistoryProps = {
 const isFilterBlocked = (hasLicense: boolean, fieldValue: Key) => !hasLicense && fieldValue !== 'all';
 
 const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const [storedType, setStoredType] = useLocalStorage<string>('contact-history-type', 'all');
 

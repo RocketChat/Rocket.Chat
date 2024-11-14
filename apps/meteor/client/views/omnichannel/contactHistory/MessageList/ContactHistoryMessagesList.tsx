@@ -13,9 +13,10 @@ import {
 	Throbber,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useTranslation, useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
+import { useSetting, useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import ContactHistoryMessage from './ContactHistoryMessage';
@@ -41,7 +42,7 @@ type ContactHistoryMessagesListProps = {
 };
 
 const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHistoryMessagesListProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [text, setText] = useState('');
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const userId = useUserId();
