@@ -4,6 +4,10 @@ import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
+import { setSettingValueById } from '../utils';
+import { createAgent, deleteAgent } from '../utils/omnichannel/agents';
+import { createManager, deleteManager } from '../utils/omnichannel/managers';
+import { deleteClosedRooms } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -15,38 +19,36 @@ test.describe('OC - Livechat Triggers - Open by Visitor', () => {
 	test.beforeAll(async ({ api, browser }) => {
 		newVisitor = createFakeVisitor();
 
-		const requests = await Promise.all([
-			api.post('/livechat/users/agent', { username: 'user1' }),
-			api.post('/livechat/users/manager', { username: 'user1' }),
-			api.post(
-				'/livechat/triggers',
+		await Promise.all([createAgent(api, 'user1'), createManager(api, 'user1')]);
 
-				{
-					name: 'open',
-					description: '',
-					enabled: true,
-					runOnce: false,
-					conditions: [
-						{
-							name: 'chat-opened-by-visitor',
-							value: '',
-						},
-					],
-					actions: [
-						{
-							name: 'send-message',
-							params: {
-								name: '',
-								msg: 'This is a trigger message open by visitor',
-								sender: 'queue',
-							},
-						},
-					],
-				},
-			),
-		]);
+		const triggerRequest = await api.post(
+			'/livechat/triggers',
 
-		requests.every((e) => expect(e.status()).toBe(200));
+			{
+				name: 'open',
+				description: '',
+				enabled: true,
+				runOnce: false,
+				conditions: [
+					{
+						name: 'chat-opened-by-visitor',
+						value: '',
+					},
+				],
+				actions: [
+					{
+						name: 'send-message',
+						params: {
+							name: '',
+							msg: 'This is a trigger message open by visitor',
+							sender: 'queue',
+						},
+					},
+				],
+			},
+		);
+
+		expect(triggerRequest.status()).toBe(200);
 
 		const { page } = await createAuxContext(browser, Users.user1, '/');
 		agent = { page, poHomeOmnichannel: new HomeOmnichannel(page) };
@@ -65,33 +67,43 @@ test.describe('OC - Livechat Triggers - Open by Visitor', () => {
 		await Promise.all(ids.map((id) => api.delete(`/livechat/triggers/${id}`)));
 
 		await Promise.all([
-			api.delete('/livechat/users/agent/user1'),
-			api.delete('/livechat/users/manager/user1'),
-			api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false }),
+			deleteClosedRooms(api),
+			deleteAgent(api, 'user1'),
+			deleteManager(api, 'user1'),
+			setSettingValueById(api, 'Livechat_clear_local_storage_when_chat_ended', false),
 		]);
 		await agent.page.close();
 	});
 
 	test('OC - Livechat Triggers - after the visitor opens the chat the trigger message should not be visible neither after a page reload', async () => {
-		await poLiveChat.openLiveChat();
+		await test.step('expect to open livechat and to the trigger message to be visible', async () => {
+			await poLiveChat.openLiveChat();
 
-		await expect(poLiveChat.txtChatMessage('This is a trigger message open by visitor')).toBeVisible();
+			await expect(poLiveChat.txtChatMessage('This is a trigger message open by visitor')).toBeVisible();
+		});
 
-		await poLiveChat.btnChatNow.click();
-		await poLiveChat.sendMessage(newVisitor, false);
+		await test.step('expect to start conversation', async () => {
+			await poLiveChat.btnChatNow.click();
+			await poLiveChat.registerVisitor(newVisitor);
 
-		await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
-		await poLiveChat.btnSendMessageToOnlineAgent.click();
+			await poLiveChat.sendMessage('this_a_test_message_from_visitor');
 
-		await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
+			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
+		});
 
-		await poLiveChat.page.reload();
+		await test.step('expect to keep history after reload', async () => {
+			await poLiveChat.page.reload();
 
-		// if the request took too long, the loadMessage cleans triggers, but if the fetch is fast enough, the trigger message will be visible
-		await poLiveChat.page.waitForRequest(/livechat\/messages.history/);
+			// if the request took too long, the loadMessage cleans triggers, but if the fetch is fast enough, the trigger message will be visible
+			await poLiveChat.page.waitForRequest(/livechat\/messages.history/);
 
-		await poLiveChat.openLiveChat();
-		await expect(poLiveChat.txtChatMessage('This is a trigger message open by visitor')).not.toBeVisible();
-		await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
+			await poLiveChat.openLiveChat();
+			await expect(poLiveChat.txtChatMessage('This is a trigger message open by visitor')).not.toBeVisible();
+			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
+		});
+
+		await test.step('expect to close livechat conversation', async () => {
+			await poLiveChat.closeChat();
+		});
 	});
 });

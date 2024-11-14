@@ -111,6 +111,8 @@ export class OmnichannelCurrentChats extends OmnichannelAdministration {
 	}
 
 	findRowByServer(name: string) {
-		return this.page.locator('tr', { has: this.page.locator(`[data-qa="current-chats-cell-servedBy"] >> text=${name}`) });
+		return this.page.locator('tr', {
+			has: this.page.locator(`[data-qa="current-chats-cell-servedBy"]`, { hasText: new RegExp(`^${name}$`) }),
+		});
 	}
 }

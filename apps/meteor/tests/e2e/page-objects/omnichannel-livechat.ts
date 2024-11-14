@@ -1,61 +1,74 @@
 import fs from 'fs/promises';
 
-import type { Page, Locator, APIResponse } from '@playwright/test';
+import { faker } from '@faker-js/faker';
+import type { Page, Locator, APIResponse, FrameLocator } from '@playwright/test';
 
-import { expect } from '../utils/test';
+import { createFakeVisitor } from '../../mocks/data';
+
+type LivechatConversationParams = {
+	visitor?: { name: string; email: string };
+	message?: string;
+	isOffline?: boolean;
+	department?: string;
+	waitForChatStart?: boolean;
+};
 
 export class OmnichannelLiveChat {
 	readonly page: Page;
 
+	readonly root: Page | FrameLocator;
+
 	constructor(
 		page: Page,
 		private readonly api: { get(url: string): Promise<APIResponse> },
+		root?: Page | FrameLocator,
 	) {
 		this.page = page;
+		this.root = root || page;
 	}
 
 	btnOpenOnlineLiveChat(label: string): Locator {
-		return this.page.locator(`role=button[name="${label}"]`);
+		return this.root.locator(`role=button[name="${label}"]`);
 	}
 
 	get btnOpenLiveChat(): Locator {
-		return this.page.locator(`[data-qa-id="chat-button"]`);
+		return this.root.locator(`[data-qa-id="chat-button"]`);
 	}
 
 	get btnNewChat(): Locator {
-		return this.page.locator(`role=button[name="New Chat"]`);
+		return this.root.locator(`role=button[name="New Chat"]`);
 	}
 
 	get btnOptions(): Locator {
-		return this.page.locator(`button >> text="Options"`);
+		return this.root.locator(`button >> text="Options"`);
 	}
 
 	get btnCloseChat(): Locator {
-		return this.page.locator(`button >> text="Finish this chat"`);
+		return this.root.locator(`button >> text="Finish this chat"`);
 	}
 
 	get btnChangeDepartment(): Locator {
-		return this.page.locator(`button >> text="Change department"`);
+		return this.root.locator(`button >> text="Change department"`);
 	}
 
 	get btnCloseChatConfirm(): Locator {
-		return this.page.locator(`button >> text="Yes"`);
+		return this.root.locator(`button >> text="Yes"`);
 	}
 
 	get txtHeaderTitle(): Locator {
-		return this.page.locator('div >> text="Chat Finished"');
+		return this.root.locator('div >> text="Chat Finished"');
 	}
 
 	get btnChatNow(): Locator {
-		return this.page.locator('[type="button"] >> text="Chat now"');
+		return this.root.locator('[type="button"] >> text="Chat now"');
 	}
 
 	get headerTitle(): Locator {
-		return this.page.locator('[data-qa="header-title"]');
+		return this.root.locator('[data-qa="header-title"]');
 	}
 
 	get txtWatermark(): Locator {
-		return this.page.locator('[data-qa="livechat-watermark"]');
+		return this.root.locator('[data-qa="livechat-watermark"]');
 	}
 
 	get imgLogo(): Locator {
@@ -63,17 +76,18 @@ export class OmnichannelLiveChat {
 	}
 
 	alertMessage(message: string): Locator {
-		return this.page.getByRole('alert').locator(`text="${message}"`);
+		return this.root.getByRole('alert').locator(`text="${message}"`);
 	}
 
 	txtChatMessage(message: string): Locator {
-		return this.page.locator(`[data-qa="message-bubble"] >> text="${message}"`);
+		return this.root.locator(`[data-qa="message-bubble"]`, { hasText: new RegExp(`^${message}$`) });
 	}
 
 	async closeChat(): Promise<void> {
 		await this.btnOptions.click();
 		await this.btnCloseChat.click();
 		await this.btnCloseChatConfirm.click();
+		await this.btnNewChat.waitFor({ state: 'visible' });
 	}
 
 	async openLiveChat(): Promise<void> {
@@ -81,114 +95,118 @@ export class OmnichannelLiveChat {
 		await this.btnOpenOnlineLiveChat(siteName).click();
 	}
 
-	// TODO: replace openLivechat with this method and create a new method for openOnlineLivechat
-	// as openLivechat only opens a chat that is in the 'online' state
-	async openAnyLiveChat(): Promise<void> {
+	async startChat(params: LivechatConversationParams = {}): Promise<{ visitor: { name: string; email: string }; message: string }> {
+		const {
+			visitor = createFakeVisitor(),
+			message = faker.lorem.sentence(),
+			isOffline = false,
+			department,
+			waitForChatStart = true,
+		} = params;
+
 		await this.btnOpenLiveChat.click();
-	}
+		await this.registerVisitor(visitor, isOffline, department);
 
-	async startNewChat(): Promise<void> {
-		await this.btnNewChat.click();
-	}
+		if (!isOffline) {
+			await this.inputComposer.fill(message);
+			await this.btnSendMessageToOnlineAgent.click();
 
-	async openAnyLiveChatAndSendMessage(params: {
-		liveChatUser: { name: string; email: string };
-		message: string;
-		isOffline?: boolean;
-		department?: string;
-	}): Promise<void> {
-		const { liveChatUser, message, isOffline, department } = params;
-		await this.openAnyLiveChat();
-		await this.sendMessage(liveChatUser, isOffline, department);
-		await this.onlineAgentMessage.fill(message);
-		await this.btnSendMessageToOnlineAgent.click();
+			if (waitForChatStart) {
+				await this.txtChatMessage(message).waitFor({ state: 'visible' });
+				await this.txtChatMessage('Chat started').waitFor({ state: 'visible' });
+			}
+		}
+
+		return { visitor, message };
 	}
 
 	unreadMessagesBadge(count: number): Locator {
 		const name = count === 1 ? `${count} unread message` : `${count} unread messages`;
 
-		return this.page.locator(`role=status[name="${name}"]`);
+		return this.root.locator(`role=status[name="${name}"]`);
 	}
 
 	get inputName(): Locator {
-		return this.page.locator('[name="name"]');
+		return this.root.locator('[name="name"]');
 	}
 
 	get inputEmail(): Locator {
-		return this.page.locator('[name="email"]');
+		return this.root.locator('[name="email"]');
 	}
 
 	get selectDepartment(): Locator {
-		return this.page.locator('[name="department"]');
+		return this.root.locator('[name="department"]');
 	}
 
 	get textAreaMessage(): Locator {
-		return this.page.locator('[name="message"]');
+		return this.root.locator('[name="message"]');
 	}
 
 	btnSendMessage(btnText: string): Locator {
-		return this.page.locator(`role=button[name="${btnText}"]`);
+		return this.root.locator(`role=button[name="${btnText}"]`);
 	}
 
 	get btnOk(): Locator {
-		return this.page.locator('role=button[name="OK"]');
+		return this.root.locator('role=button[name="OK"]');
 	}
 
 	get btnYes(): Locator {
-		return this.page.locator('role=button[name="Yes"]');
+		return this.root.locator('role=button[name="Yes"]');
 	}
 
-	get onlineAgentMessage(): Locator {
-		return this.page.locator('[contenteditable="true"]');
+	get inputComposer(): Locator {
+		return this.root.locator('[data-qa="livechat-composer"]');
 	}
 
 	get btnSendMessageToOnlineAgent(): Locator {
-		return this.page.locator('footer div div div:nth-child(3) button');
+		return this.root.locator('footer div div div:nth-child(3) button');
+	}
+
+	get btnStartChat(): Locator {
+		return this.root.locator('role=button', { hasText: 'Start chat' });
 	}
 
 	get livechatModal(): Locator {
-		return this.page.locator('[data-qa-type="modal-overlay"]');
+		return this.root.locator('[data-qa-type="modal-overlay"]');
+	}
+
+	get btnFinishOfflineMessage(): Locator {
+		return this.root.locator(`button[aria-label="OK"]`);
 	}
 
 	livechatModalText(text: string): Locator {
-		return this.page.locator(`[data-qa-type="modal-overlay"] >> text=${text}`);
+		return this.root.locator(`[data-qa-type="modal-overlay"] >> text=${text}`);
 	}
 
 	get fileUploadTarget(): Locator {
-		return this.page.locator('#files-drop-target');
+		return this.root.locator('#files-drop-target');
 	}
 
 	findUploadedFileLink(fileName: string): Locator {
-		return this.page.getByRole('link', { name: fileName });
+		return this.root.getByRole('link', { name: fileName });
 	}
 
-	public async sendMessage(liveChatUser: { name: string; email: string }, isOffline = true, department?: string): Promise<void> {
+	public async registerVisitor(visitor: { name: string; email: string }, isOffline = false, department?: string): Promise<void> {
 		const buttonLabel = isOffline ? 'Send' : 'Start chat';
-		await this.inputName.fill(liveChatUser.name);
-		await this.inputEmail.fill(liveChatUser.email);
+		await this.inputName.fill(visitor.name);
+		await this.inputEmail.fill(visitor.email);
 
 		if (department) {
 			await this.selectDepartment.selectOption({ label: department });
 		}
 
 		if (isOffline) {
-			await this.textAreaMessage.type('any_message');
+			await this.textAreaMessage.fill('any_message');
+			await this.btnSendMessage(buttonLabel).click();
+			return this.btnFinishOfflineMessage.click();
 		}
 
 		await this.btnSendMessage(buttonLabel).click();
-		await this.page.waitForSelector('[data-qa="livechat-composer"]');
+		await this.inputComposer.waitFor({ state: 'visible' });
 	}
 
-	public async sendMessageAndCloseChat(
-		liveChatUser: { name: string; email: string },
-		message = 'this_a_test_message_from_user',
-	): Promise<void> {
-		await this.openAnyLiveChat();
-		await this.sendMessage(liveChatUser, false);
-		await this.onlineAgentMessage.fill(message);
-		await this.btnSendMessageToOnlineAgent.click();
-		await expect(this.txtChatMessage(message)).toBeVisible();
-		await expect(this.page.locator('[data-qa="message-bubble"] >> text="Chat started"')).toBeVisible();
+	public async startAndCloseChat(visitor?: { name: string; email: string }, message = 'this_a_test_message_from_user'): Promise<void> {
+		await this.startChat({ visitor, message });
 		await this.closeChat();
 	}
 
@@ -225,6 +243,29 @@ export class OmnichannelLiveChat {
 	}
 
 	queuePosition(position: number): Locator {
-		return this.page.locator(`div[role='alert'] >> text=Your spot is #${position}`);
+		return this.root.locator(`div[role='alert'] >> text=Your spot is #${position}`);
+	}
+
+	imgAvatar(username: string): Locator {
+		return this.root.locator(`img[alt="${username}"]`).last();
+	}
+
+	get messageList(): Locator {
+		return this.root.locator('[data-qa="message-list"]');
+	}
+
+	get messageListBackground(): Promise<string> {
+		return this.messageList.evaluate((el) => window.getComputedStyle(el).getPropertyValue('background-color'));
+	}
+
+	async sendMessage(message: string): Promise<void> {
+		await this.inputComposer.fill(message);
+		await this.btnSendMessageToOnlineAgent.click();
+	}
+
+	messageBubbleBackground(message: string): Promise<string> {
+		return this.txtChatMessage(message)
+			.last()
+			.evaluate((el) => window.getComputedStyle(el).getPropertyValue('background-color'));
 	}
 }

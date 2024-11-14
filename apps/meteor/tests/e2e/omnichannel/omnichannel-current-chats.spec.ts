@@ -4,6 +4,7 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelCurrentChats } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { createConversation, updateRoom } from '../utils/omnichannel/rooms';
@@ -14,7 +15,7 @@ const visitorA = faker.person.firstName();
 const visitorB = faker.person.firstName();
 const visitorC = faker.person.firstName();
 
-test.skip(!IS_EE, 'OC - Current Chats > Enterprise Only');
+test.skip(!IS_EE, 'OC - Current Chats [Enterprise]');
 
 test.use({ storageState: Users.admin.state });
 
@@ -301,16 +302,21 @@ test.describe('OC - Current Chats [Manual Selection]', () => {
 		expect(agentStatus.status()).toBe(200);
 	});
 
-	test.beforeEach(async ({ page }: { page: Page }) => {
+	test.beforeEach(async ({ page, api }) => {
 		poCurrentChats = new OmnichannelCurrentChats(page);
 
 		await page.goto('/omnichannel');
+
+		queuedConversation = await createConversation(api, { visitorToken: 'visitorQueued' });
+
 		await poCurrentChats.sidenav.linkCurrentChats.click();
 	});
 
-	test('OC - Current chats - Access queued conversation', async ({ page, api }) => {
-		queuedConversation = await createConversation(api, { visitorToken: 'visitorQueued' });
+	test.afterAll(async ({ api }) => {
+		await Promise.all([setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection'), queuedConversation.delete(), agent.delete()]);
+	});
 
+	test('OC - Current chats - Access queued conversation', async ({ page }) => {
 		await test.step('expect to be able to take it', async () => {
 			const { room, visitor } = queuedConversation.data;
 			await poCurrentChats.inputGuest.fill(visitor.name);
@@ -320,15 +326,5 @@ test.describe('OC - Current Chats [Manual Selection]', () => {
 			await poCurrentChats.content.btnTakeChat.click();
 			await expect(poCurrentChats.content.btnTakeChat).not.toBeVisible();
 		});
-	});
-
-	test.afterAll(async ({ api }) => {
-		const res = await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' });
-		expect(res.status()).toBe(200);
-	});
-
-	test.afterAll(async () => {
-		await queuedConversation.delete();
-		await agent.delete();
 	});
 });

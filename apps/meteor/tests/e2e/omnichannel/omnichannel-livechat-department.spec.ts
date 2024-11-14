@@ -3,8 +3,10 @@ import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
+import { deleteClosedRooms } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -22,6 +24,7 @@ test.describe('OC - Livechat - Department Flow', () => {
 	let agents: Awaited<ReturnType<typeof createDepartment>>[];
 	let agent1: Awaited<ReturnType<typeof createAgent>>['data'];
 	let agent2: Awaited<ReturnType<typeof createAgent>>['data'];
+	let visitor: { name: string; email: string };
 
 	test.beforeAll(async ({ api }) => {
 		// Assign agents & departments
@@ -47,63 +50,47 @@ test.describe('OC - Livechat - Department Flow', () => {
 		await poLiveChat.page.goto('/livechat');
 	});
 
+	test.beforeEach(async () => {
+		visitor = createFakeVisitor();
+		await poLiveChat.startChat({ visitor, department: departmentA.name, message: 'this_a_test_message_from_user' });
+	});
+
 	test.afterEach(async ({ page }) => {
+		await poLiveChat.closeChat();
 		await poHomeOmnichannelAgent1.page.close();
 		await poHomeOmnichannelAgent2.page.close();
 		await page.close();
 	});
 
 	test.afterAll(async ({ api }) => {
-		await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status()).toBe(200);
-		await Promise.all([...agents.map((agent) => agent.delete())]);
-		await Promise.all([...departments.map((department) => department.delete())]);
-		await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status()).toBe(200);
+		await Promise.all(agents.map((agent) => agent.delete()));
+		await Promise.all(departments.map((department) => department.delete()));
+		await Promise.all([deleteClosedRooms(api), setSettingValueById(api, 'Omnichannel_enable_department_removal', true)]);
 	});
 
 	test('OC - Livechat - Chat with Department', async () => {
-		const guest = createFakeVisitor();
-
-		await test.step('expect start Chat with department', async () => {
-			await poLiveChat.openAnyLiveChat();
-			await poLiveChat.sendMessage(guest, false, departmentA.name);
-			await expect(poLiveChat.onlineAgentMessage).toBeVisible();
-			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
-			await poLiveChat.btnSendMessageToOnlineAgent.click();
-			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_user"')).toBeVisible();
-		});
-
 		await test.step('expect message to be received by department', async () => {
-			await poHomeOmnichannelAgent1.sidenav.openChat(guest.name);
+			await poHomeOmnichannelAgent1.sidenav.openChat(visitor.name);
 			await expect(poHomeOmnichannelAgent1.content.lastUserMessage).toBeVisible();
 			await expect(poHomeOmnichannelAgent1.content.lastUserMessage).toContainText('this_a_test_message_from_user');
 		});
 
 		await test.step('expect message to be sent by department', async () => {
 			await poHomeOmnichannelAgent1.content.sendMessage('this_a_test_message_from_agent');
-			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_agent"')).toBeVisible();
+			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_agent')).toBeVisible();
 		});
 	});
 
 	test('OC - Livechat - Change Department', async () => {
-		const guest = createFakeVisitor();
-		await test.step('expect start Chat with department', async () => {
-			await poLiveChat.openAnyLiveChat();
-			await poLiveChat.sendMessage(guest, false, departmentA.name);
-			await expect(poLiveChat.onlineAgentMessage).toBeVisible();
-			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
-			await poLiveChat.btnSendMessageToOnlineAgent.click();
-			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_user"')).toBeVisible();
-		});
-
 		await test.step('expect message to be received by department 1', async () => {
-			await poHomeOmnichannelAgent1.sidenav.openChat(guest.name);
+			await poHomeOmnichannelAgent1.sidenav.openChat(visitor.name);
 			await expect(poHomeOmnichannelAgent1.content.lastUserMessage).toBeVisible();
 			await expect(poHomeOmnichannelAgent1.content.lastUserMessage).toContainText('this_a_test_message_from_user');
 		});
 
 		await test.step('expect message to be sent by department 1', async () => {
 			await poHomeOmnichannelAgent1.content.sendMessage('this_a_test_message_from_agent_department_1');
-			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_agent_department_1"')).toBeVisible();
+			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_agent_department_1')).toBeVisible();
 			await poHomeOmnichannelAgent1.page.close();
 		});
 
@@ -128,25 +115,24 @@ test.describe('OC - Livechat - Department Flow', () => {
 			await poLiveChat.btnOk.click();
 
 			// Expect keep chat history
-			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_user"')).toBeVisible();
+			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_user')).toBeVisible();
 
 			// Expect user to have changed
 			await expect(await poLiveChat.headerTitle.textContent()).toEqual(agent2.username);
 
-			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user_to_department_2');
-			await poLiveChat.btnSendMessageToOnlineAgent.click();
-			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_user_to_department_2"')).toBeVisible();
+			await poLiveChat.sendMessage('this_a_test_message_from_user_to_department_2');
+			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_user_to_department_2')).toBeVisible();
 		});
 
 		await test.step('expect message to be received by department', async () => {
-			await poHomeOmnichannelAgent2.sidenav.openChat(guest.name);
+			await poHomeOmnichannelAgent2.sidenav.openChat(visitor.name);
 			await expect(poHomeOmnichannelAgent2.content.lastUserMessage).toBeVisible();
 			await expect(poHomeOmnichannelAgent2.content.lastUserMessage).toContainText('this_a_test_message_from_user_to_department_2');
 		});
 
 		await test.step('expect message to be sent by department', async () => {
 			await poHomeOmnichannelAgent2.content.sendMessage('this_a_test_message_from_agent_department_2');
-			await expect(poLiveChat.page.locator('div >> text="this_a_test_message_from_agent_department_2"')).toBeVisible();
+			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_agent_department_2')).toBeVisible();
 		});
 	});
 });

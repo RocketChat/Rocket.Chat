@@ -4,20 +4,24 @@ import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
+import { setSettingValueById } from '../utils';
+import { createAgent, deleteAgent } from '../utils/omnichannel/agents';
+import { createManager, deleteManager } from '../utils/omnichannel/managers';
+import { deleteClosedRooms } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
-test.describe('Omnichannel close inquiry', () => {
+test.describe('OC - Close Inquiry', () => {
 	let poLiveChat: OmnichannelLiveChat;
-	let newVisitor: { email: string; name: string };
+	let visitor: { email: string; name: string };
 
 	let agent: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 
 	test.beforeAll(async ({ api }) => {
-		newVisitor = createFakeVisitor();
+		visitor = createFakeVisitor();
 
-		await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }).then((res) => expect(res.status()).toBe(200));
-		await api.post('/livechat/users/manager', { username: 'user1' });
-		await api.post('/livechat/users/agent', { username: 'user1' });
+		await setSettingValueById(api, 'Livechat_Routing_Method', 'Manual_Selection');
+		await createAgent(api, 'user1');
+		await createManager(api, 'user1');
 	});
 
 	test.beforeEach(async ({ page, api, browser }) => {
@@ -33,37 +37,33 @@ test.describe('Omnichannel close inquiry', () => {
 
 	test.afterAll(async ({ api }) => {
 		await Promise.all([
-			await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status()).toBe(200)),
-			await api.delete('/livechat/users/agent/user1'),
-			await api.delete('/livechat/users/manager/user1'),
+			deleteClosedRooms(api),
+			deleteAgent(api, 'user1'),
+			deleteManager(api, 'user1'),
+			setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection'),
 		]);
 	});
 
-	test('Receiving a message from visitor', async ({ page }) => {
-		await test.step('Expect send a message as a visitor', async () => {
+	test('OC - Close Inquiry - Receiving a message from visitor', async ({ page }) => {
+		await test.step('expect send a message as a visitor', async () => {
 			await page.goto('/livechat');
-			await poLiveChat.openLiveChat();
-			await poLiveChat.sendMessage(newVisitor, false);
-			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
-			await poLiveChat.btnSendMessageToOnlineAgent.click();
+			await poLiveChat.startChat({ visitor });
 		});
 
-		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeOmnichannel.sidenav.getQueuedChat(newVisitor.name).click();
+		await test.step('expect to have 1 omnichannel assigned to agent 1', async () => {
+			await agent.poHomeOmnichannel.sidenav.getQueuedChat(visitor.name).click();
 			await expect(agent.poHomeOmnichannel.content.btnTakeChat).toBeVisible();
 		});
 
-		await test.step('Expect to be able to close an inquiry conversation', async () => {
-			await agent.poHomeOmnichannel.content.btnCloseChat.click();
-			await agent.poHomeOmnichannel.content.inputModalClosingComment.type('any_comment');
-			await agent.poHomeOmnichannel.content.btnModalConfirm.click();
+		await test.step('expect to be able to close an inquiry conversation', async () => {
+			await agent.poHomeOmnichannel.content.closeChat();
 			await expect(agent.poHomeOmnichannel.toastSuccess).toBeVisible();
 		});
 
-		await test.step('Expect to inquiry be closed when navigate back', async () => {
+		await test.step('expect to inquiry be closed when navigate back', async () => {
 			await agent.poHomeOmnichannel.sidenav.openAdministrationByLabel('Omnichannel');
 			await agent.poHomeOmnichannel.omnisidenav.linkCurrentChats.click();
-			await agent.poHomeOmnichannel.currentChats.findRowByName(newVisitor.name).click();
+			await agent.poHomeOmnichannel.currentChats.findRowByName(visitor.name).click();
 			await expect(agent.poHomeOmnichannel.content.btnTakeChat).not.toBeVisible();
 		});
 	});

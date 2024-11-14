@@ -3,6 +3,7 @@ import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
 import { createAgent } from '../utils/omnichannel/agents';
+import { deleteClosedRooms } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
 test.describe('OC - Livechat - Cross Tab Communication', () => {
@@ -36,7 +37,8 @@ test.describe('OC - Livechat - Cross Tab Communication', () => {
 		await pageLivechat2.page.close();
 	});
 
-	test.afterAll(async () => {
+	test.afterAll(async ({ api }) => {
+		await deleteClosedRooms(api);
 		await poHomeOmnichannel.page.close();
 		await agent.delete();
 	});
@@ -45,13 +47,10 @@ test.describe('OC - Livechat - Cross Tab Communication', () => {
 		const visitor = createFakeVisitor();
 
 		await test.step('expect livechat conversations to be synced', async () => {
-			await pageLivechat1.openAnyLiveChat();
-
-			await pageLivechat1.sendMessage(visitor, false);
-			await pageLivechat1.onlineAgentMessage.fill('this_a_test_message_from_user');
-			await pageLivechat1.btnSendMessageToOnlineAgent.click();
+			await pageLivechat1.startChat({ visitor, message: 'this_a_test_message_from_user' });
 
 			await expect(pageLivechat1.txtChatMessage('this_a_test_message_from_user')).toBeVisible();
+
 			await expect(pageLivechat2.txtChatMessage('this_a_test_message_from_user')).toBeVisible();
 		});
 
@@ -67,10 +66,9 @@ test.describe('OC - Livechat - Cross Tab Communication', () => {
 
 		await test.step('expect to restart a livechat conversation and tabs to be synced', async () => {
 			await expect(pageLivechat1.btnNewChat).toBeVisible();
-			await pageLivechat1.startNewChat();
+			await pageLivechat1.btnNewChat.click();
 
-			await pageLivechat1.onlineAgentMessage.fill('this_a_test_message_from_user_after_close');
-			await pageLivechat1.btnSendMessageToOnlineAgent.click();
+			await pageLivechat1.sendMessage('this_a_test_message_from_user_after_close');
 
 			await pageLivechat1.txtChatMessage('this_a_test_message_from_user').waitFor({ state: 'hidden' });
 			await pageLivechat2.txtChatMessage('this_a_test_message_from_user').waitFor({ state: 'hidden' });
@@ -83,13 +81,7 @@ test.describe('OC - Livechat - Cross Tab Communication', () => {
 		});
 
 		await test.step('expect to close livechat conversation', async () => {
-			await expect(pageLivechat1.btnOptions).toBeVisible();
-			await pageLivechat1.btnOptions.click();
-
-			await expect(pageLivechat1.btnCloseChat).toBeVisible();
-			await pageLivechat1.btnCloseChat.click();
-
-			await pageLivechat1.btnCloseChatConfirm.click();
+			await pageLivechat1.closeChat();
 		});
 	});
 });

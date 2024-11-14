@@ -1,8 +1,8 @@
-import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChatEmbedded } from '../page-objects';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
+import { deleteClosedRooms } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
 declare const window: Window & {
@@ -31,31 +31,27 @@ test.describe('OC - Livechat - Message list background', async () => {
 		}
 	});
 
-	test.beforeEach(async ({ page }) => {
-		poLiveChat = new OmnichannelLiveChatEmbedded(page);
+	test.beforeEach(async ({ page, api }) => {
+		poLiveChat = new OmnichannelLiveChatEmbedded(page, api);
 
 		await page.goto('/packages/rocketchat_livechat/assets/demo.html');
 	});
 
+	test.beforeEach(async () => {
+		await poLiveChat.startChat({ message: 'message_from_user' });
+	});
+
 	test.afterEach(async ({ page }) => {
+		await poLiveChat.closeChat();
 		await page.close();
 	});
 
-	test.afterAll(async () => {
+	test.afterAll(async ({ api }) => {
+		await deleteClosedRooms(api);
 		await agent.delete();
 	});
 
 	test('OC - Livechat - Change message list background', async ({ api, page }) => {
-		const visitor = createFakeVisitor();
-
-		await test.step('should initiate Livechat conversation', async () => {
-			await poLiveChat.openLiveChat();
-			await poLiveChat.sendMessage(visitor, false);
-			await poLiveChat.onlineAgentMessage.fill('message_from_user');
-			await poLiveChat.btnSendMessageToOnlineAgent.click();
-			await expect(poLiveChat.txtChatMessage('message_from_user')).toBeVisible();
-		});
-
 		await test.step('expect message list to have default background', async () => {
 			await expect(await poLiveChat.messageListBackground).toBe('rgba(0, 0, 0, 0)');
 		});
@@ -87,13 +83,6 @@ test.describe('OC - Livechat - Message list background', async () => {
 			await page.reload();
 			await poLiveChat.openLiveChat();
 			await expect(await poLiveChat.messageListBackground).toBe('rgba(0, 0, 0, 0)');
-		});
-
-		await test.step('should close the conversation', async () => {
-			await poLiveChat.btnOptions.click();
-			await poLiveChat.btnCloseChat.click();
-			await poLiveChat.btnCloseChatConfirm.click();
-			await expect(poLiveChat.btnNewChat).toBeVisible();
 		});
 	});
 });
