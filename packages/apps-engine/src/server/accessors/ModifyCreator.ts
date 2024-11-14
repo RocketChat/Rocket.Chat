@@ -1,3 +1,13 @@
+import { ContactCreator } from './ContactCreator';
+import { DiscussionBuilder } from './DiscussionBuilder';
+import { EmailCreator } from './EmailCreator';
+import { LivechatCreator } from './LivechatCreator';
+import { LivechatMessageBuilder } from './LivechatMessageBuilder';
+import { MessageBuilder } from './MessageBuilder';
+import { RoomBuilder } from './RoomBuilder';
+import { UploadCreator } from './UploadCreator';
+import { UserBuilder } from './UserBuilder';
+import { VideoConferenceBuilder } from './VideoConferenceBuilder';
 import type {
     IDiscussionBuilder,
     ILivechatCreator,
@@ -22,16 +32,6 @@ import { UserType } from '../../definition/users/UserType';
 import type { AppVideoConference } from '../../definition/videoConferences';
 import type { AppBridges } from '../bridges';
 import { UIHelper } from '../misc/UIHelper';
-import { ContactCreator } from './ContactCreator';
-import { DiscussionBuilder } from './DiscussionBuilder';
-import { EmailCreator } from './EmailCreator';
-import { LivechatCreator } from './LivechatCreator';
-import { LivechatMessageBuilder } from './LivechatMessageBuilder';
-import { MessageBuilder } from './MessageBuilder';
-import { RoomBuilder } from './RoomBuilder';
-import { UploadCreator } from './UploadCreator';
-import { UserBuilder } from './UserBuilder';
-import { VideoConferenceBuilder } from './VideoConferenceBuilder';
 
 export class ModifyCreator implements IModifyCreator {
     private livechatCreator: LivechatCreator;

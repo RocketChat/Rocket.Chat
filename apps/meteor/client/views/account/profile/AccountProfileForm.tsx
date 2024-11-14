@@ -27,14 +27,14 @@ import type { AllHTMLAttributes, ReactElement } from 'react';
 import React, { useCallback } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
+import type { AccountProfileFormValues } from './getProfileInitialValues';
+import { useAccountProfileSettings } from './useAccountProfileSettings';
 import { validateEmail } from '../../../../lib/emailValidator';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
-import type { AccountProfileFormValues } from './getProfileInitialValues';
-import { useAccountProfileSettings } from './useAccountProfileSettings';
 
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactElement => {
 	const t = useTranslation();

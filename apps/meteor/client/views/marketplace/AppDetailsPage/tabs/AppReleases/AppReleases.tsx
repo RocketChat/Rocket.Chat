@@ -6,8 +6,8 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import AccordionLoading from '../../../components/AccordionLoading';
 import AppReleasesItem from './AppReleasesItem';
+import AccordionLoading from '../../../components/AccordionLoading';
 
 const AppReleases = ({ id }: { id: App['id'] }): ReactElement => {
 	const getVersions = useEndpoint('GET', '/apps/:id/versions', { id });

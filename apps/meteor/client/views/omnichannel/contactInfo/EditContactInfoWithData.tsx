@@ -3,9 +3,9 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
-import { FormSkeleton } from '../directory/components/FormSkeleton';
 import ContactInfoError from './ContactInfoError';
 import EditContactInfo from './EditContactInfo';
+import { FormSkeleton } from '../directory/components/FormSkeleton';
 
 type EditContactInfoWithDataProps = {
 	id: string;

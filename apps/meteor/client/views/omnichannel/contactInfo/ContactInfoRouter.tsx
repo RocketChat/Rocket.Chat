@@ -1,11 +1,11 @@
 import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { useOmnichannelRoom } from '../../room/contexts/RoomContext';
-import { useRoomToolbox } from '../../room/contexts/RoomToolboxContext';
 import ContactInfo from './ContactInfo';
 import ContactInfoError from './ContactInfoError';
 import EditContactInfoWithData from './EditContactInfoWithData';
+import { useOmnichannelRoom } from '../../room/contexts/RoomContext';
+import { useRoomToolbox } from '../../room/contexts/RoomToolboxContext';
 
 const ContactInfoRouter = () => {
 	const room = useOmnichannelRoom();

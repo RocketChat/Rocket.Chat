@@ -2,14 +2,14 @@ import { Divider, Margins } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
+import ContactInfoDetailsGroup from './ContactInfoDetailsGroup';
+import ContactManagerInfo from './ContactManagerInfo';
 import { ContextualbarScrollableContent } from '../../../../../components/Contextualbar';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import CustomField from '../../../components/CustomField';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
-import ContactInfoDetailsGroup from './ContactInfoDetailsGroup';
-import ContactManagerInfo from './ContactManagerInfo';
 
 type ContactInfoDetailsProps = {
 	emails?: string[];

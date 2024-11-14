@@ -3,9 +3,9 @@ import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } fro
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback } from 'react';
 
+import BlockChannelModal from './BlockChannelModal';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import AdvancedContactModal from '../../AdvancedContactModal';
-import BlockChannelModal from './BlockChannelModal';
 
 export const useBlockChannel = ({ blocked, association }: { blocked: boolean; association: ILivechatContactVisitorAssociation }) => {
 	const t = useTranslation();

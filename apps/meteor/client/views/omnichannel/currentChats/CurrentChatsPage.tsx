@@ -8,6 +8,11 @@ import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
+import CustomFieldsList from './CustomFieldsList';
+import FilterByText from './FilterByText';
+import RemoveChatButton from './RemoveChatButton';
+import { useAllCustomFields } from './hooks/useAllCustomFields';
+import { useCurrentChats } from './hooks/useCurrentChats';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -25,11 +30,6 @@ import { useIsOverMacLimit } from '../../../hooks/omnichannel/useIsOverMacLimit'
 import { RoomActivityIcon } from '../../../omnichannel/components/RoomActivityIcon';
 import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
 import { PriorityIcon } from '../../../omnichannel/priorities/PriorityIcon';
-import CustomFieldsList from './CustomFieldsList';
-import FilterByText from './FilterByText';
-import RemoveChatButton from './RemoveChatButton';
-import { useAllCustomFields } from './hooks/useAllCustomFields';
-import { useCurrentChats } from './hooks/useCurrentChats';
 
 type DebouncedParams = {
 	fname: string;

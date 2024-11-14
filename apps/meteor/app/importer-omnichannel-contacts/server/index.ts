@@ -1,7 +1,7 @@
 import { License } from '@rocket.chat/license';
 
-import { Importers } from '../../importer/server';
 import { ContactImporter } from './ContactImporter';
+import { Importers } from '../../importer/server';
 
 License.onValidFeature('contact-id-verification', () => {
 	Importers.add({

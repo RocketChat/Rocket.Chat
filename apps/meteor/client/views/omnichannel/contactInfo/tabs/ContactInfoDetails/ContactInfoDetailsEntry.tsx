@@ -3,9 +3,9 @@ import { Box, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
+import ContactInfoCallButton from './ContactInfoCallButton';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
 import useClipboardWithToast from '../../../../../hooks/useClipboardWithToast';
-import ContactInfoCallButton from './ContactInfoCallButton';
 
 type ContactInfoDetailsEntryProps = {
 	icon: IconProps['name'];

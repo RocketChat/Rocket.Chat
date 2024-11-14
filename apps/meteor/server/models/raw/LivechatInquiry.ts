@@ -23,9 +23,9 @@ import type {
 	DeleteOptions,
 } from 'mongodb';
 
+import { BaseRaw } from './BaseRaw';
 import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { BaseRaw } from './BaseRaw';
 
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {

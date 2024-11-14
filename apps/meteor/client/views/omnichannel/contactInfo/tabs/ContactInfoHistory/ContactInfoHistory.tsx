@@ -8,12 +8,12 @@ import type { Key } from 'react';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import ContactInfoHistoryItem from './ContactInfoHistoryItem';
 import { ContextualbarContent, ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../../components/CustomScrollbars';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import AdvancedContactModal from '../../AdvancedContactModal';
-import ContactInfoHistoryItem from './ContactInfoHistoryItem';
 
 type ContactInfoHistoryProps = {
 	contact: Serialized<ILivechatContact>;

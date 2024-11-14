@@ -2,8 +2,8 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AccountProfilePage from './AccountProfilePage';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const AccountProfileRoute = (): ReactElement => {
 	const canViewProfile = useSetting('Accounts_AllowUserProfileChange');

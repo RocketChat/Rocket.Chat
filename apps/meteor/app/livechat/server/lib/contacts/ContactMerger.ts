@@ -10,8 +10,8 @@ import type {
 import { LivechatContacts } from '@rocket.chat/models';
 import type { ClientSession, UpdateFilter } from 'mongodb';
 
-import { isSameChannel } from '../../../lib/isSameChannel';
 import { getContactManagerIdByUsername } from './getContactManagerIdByUsername';
+import { isSameChannel } from '../../../lib/isSameChannel';
 
 type ManagerValue = { id: string } | { username: string };
 type ContactFields = {

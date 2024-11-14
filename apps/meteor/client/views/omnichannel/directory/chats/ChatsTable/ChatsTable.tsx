@@ -3,6 +3,9 @@ import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import { hashQueryKey } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
 
+import ChatFilterByText from './ChatsTableFilter';
+import ChatsTableRow from './ChatsTableRow';
+import { useChatsQuery } from './useChatsQuery';
 import GenericNoResults from '../../../../../components/GenericNoResults/GenericNoResults';
 import {
 	GenericTable,
@@ -16,9 +19,6 @@ import { useSort } from '../../../../../components/GenericTable/hooks/useSort';
 import { useOmnichannelPriorities } from '../../../../../omnichannel/hooks/useOmnichannelPriorities';
 import { useCurrentChats } from '../../../currentChats/hooks/useCurrentChats';
 import { useChatsContext } from '../../contexts/ChatsContext';
-import ChatFilterByText from './ChatsTableFilter';
-import ChatsTableRow from './ChatsTableRow';
-import { useChatsQuery } from './useChatsQuery';
 
 const ChatsTable = () => {
 	const t = useTranslation();

@@ -6,14 +6,14 @@ import { useMethod, useToastMessageDispatch, useTranslation, useSetModal } from 
 import type { ReactElement, MouseEvent } from 'react';
 import React, { useState, useEffect, useCallback } from 'react';
 
-import { fileUploadIsValidContentType } from '../../../../../app/utils/client';
-import FilterByText from '../../../../components/FilterByText';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import FileUploadModal from '../../modals/FileUploadModal';
 import FilePickerBreadcrumbs from './FilePickerBreadcrumbs';
 import WebdavFilePickerGrid from './WebdavFilePickerGrid';
 import WebdavFilePickerTable from './WebdavFilePickerTable';
 import { sortWebdavNodes } from './lib/sortWebdavNodes';
+import { fileUploadIsValidContentType } from '../../../../../app/utils/client';
+import FilterByText from '../../../../components/FilterByText';
+import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import FileUploadModal from '../../modals/FileUploadModal';
 
 export type WebdavSortOptions = 'name' | 'size' | 'dataModified';
 

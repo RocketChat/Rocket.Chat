@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { parseOutboundPhoneNumber } from '../../../../../lib/voip/parseOutboundPhoneNumber';
 import ContactInfoDetailsEntry from './ContactInfoDetailsEntry';
+import { parseOutboundPhoneNumber } from '../../../../../lib/voip/parseOutboundPhoneNumber';
 
 type ContactInfoDetailsGroupProps = {
 	type: 'phone' | 'email';

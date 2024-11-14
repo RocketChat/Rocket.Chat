@@ -5,6 +5,8 @@ import { hashQueryKey } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ContactTableRow from './ContactTableRow';
+import { useCurrentContacts } from './hooks/useCurrentContacts';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
@@ -17,8 +19,6 @@ import {
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { useIsCallReady } from '../../../../contexts/CallContext';
-import ContactTableRow from './ContactTableRow';
-import { useCurrentContacts } from './hooks/useCurrentContacts';
 
 function ContactTable() {
 	const { t } = useTranslation();

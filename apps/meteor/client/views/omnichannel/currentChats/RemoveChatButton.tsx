@@ -4,8 +4,8 @@ import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../components/GenericModal';
 import { useRemoveCurrentChatMutation } from './hooks/useRemoveCurrentChatMutation';
+import GenericModal from '../../../components/GenericModal';
 
 type RemoveChatButtonProps = { _id: string };
 

@@ -7,6 +7,9 @@ import type { ReactElement } from 'react';
 import React, { Fragment } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 
+import AdvancedContactModal from './AdvancedContactModal';
+import { useCreateContact } from './hooks/useCreateContact';
+import { useEditContact } from './hooks/useEditContact';
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { validateEmail } from '../../../../lib/emailValidator';
 import {
@@ -22,9 +25,6 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { ContactManagerInput } from '../additionalForms';
 import { FormSkeleton } from '../directory/components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../directory/hooks/useCustomFieldsMetadata';
-import AdvancedContactModal from './AdvancedContactModal';
-import { useCreateContact } from './hooks/useCreateContact';
-import { useEditContact } from './hooks/useEditContact';
 
 type ContactNewEditProps = {
 	contactData?: Serialized<ILivechatContact> | null;

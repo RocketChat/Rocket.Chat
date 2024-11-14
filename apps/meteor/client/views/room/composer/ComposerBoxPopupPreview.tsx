@@ -4,8 +4,8 @@ import { useMethod } from '@rocket.chat/ui-contexts';
 import type { ForwardedRef } from 'react';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 
-import { useChat } from '../contexts/ChatContext';
 import type { ComposerBoxPopupProps } from './ComposerBoxPopup';
+import { useChat } from '../contexts/ChatContext';
 
 type ComposerBoxPopupPreviewItem = { _id: string; type: 'image' | 'video' | 'audio' | 'text' | 'other'; value: string; sort?: number };
 

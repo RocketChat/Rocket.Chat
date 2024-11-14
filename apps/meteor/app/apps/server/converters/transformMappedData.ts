@@ -1,5 +1,3 @@
-import cloneDeep from 'lodash.clonedeep';
-
 /**
  * Transforms a `data` source object to another object,
  * essentially applying a to -> from mapping provided by
@@ -104,7 +102,7 @@ export const transformMappedData = async <
 	data: DataType,
 	map: MapType,
 ): Promise<ResultType & { _unmappedProperties_: UnmappedProperties }> => {
-	const originalData: DataType = cloneDeep(data);
+	const originalData: DataType = structuredClone(data);
 	const transformedData: Record<string, any> = {};
 
 	for await (const [to, from] of Object.entries(map)) {

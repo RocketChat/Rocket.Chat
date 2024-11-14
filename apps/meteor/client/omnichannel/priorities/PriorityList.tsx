@@ -2,6 +2,8 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import type { PriorityFormData } from './PriorityEditForm';
+import PriorityEditFormWithData from './PriorityEditFormWithData';
 import {
 	Contextualbar,
 	ContextualbarTitle,
@@ -10,8 +12,6 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarDialog,
 } from '../../components/Contextualbar';
-import type { PriorityFormData } from './PriorityEditForm';
-import PriorityEditFormWithData from './PriorityEditFormWithData';
 
 type PriorityListProps = {
 	context: 'edit';

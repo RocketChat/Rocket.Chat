@@ -1,7 +1,6 @@
 import type { IAppContactsConverter, IAppsLivechatContact } from '@rocket.chat/apps';
 import type { ILivechatContact } from '@rocket.chat/core-typings';
 import { LivechatContacts } from '@rocket.chat/models';
-import cloneDeep from 'lodash.clonedeep';
 
 import { transformMappedData } from './transformMappedData';
 
@@ -24,7 +23,7 @@ export class AppContactsConverter implements IAppContactsConverter {
 			return;
 		}
 
-		return cloneDeep(contact);
+		return structuredClone(contact);
 	}
 
 	convertAppContact(contact: undefined | null): Promise<undefined>;

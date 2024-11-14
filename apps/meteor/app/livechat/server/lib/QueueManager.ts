@@ -1,19 +1,28 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Omnichannel } from '@rocket.chat/core-services';
-import type { ILivechatDepartment, IOmnichannelRoomInfo, IOmnichannelRoomExtraData, AtLeast } from '@rocket.chat/core-typings';
-import {
-	LivechatInquiryStatus,
-	type ILivechatInquiryRecord,
-	type ILivechatVisitor,
-	type IOmnichannelRoom,
-	type SelectedAgent,
+import type {
+	ILivechatDepartment,
+	IOmnichannelRoomInfo,
+	IOmnichannelRoomExtraData,
+	AtLeast,
+	ILivechatInquiryRecord,
+	ILivechatVisitor,
+	IOmnichannelRoom,
+	SelectedAgent,
 } from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatContacts, LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
+import { Livechat } from './LivechatTyped';
+import { RoutingManager } from './RoutingManager';
+import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
+import { getOnlineAgents } from './getOnlineAgents';
+import { getInquirySortMechanismSetting } from './settings';
 import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { sendNotification } from '../../../lib/server';
@@ -24,12 +33,6 @@ import {
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
-import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
-import { Livechat } from './LivechatTyped';
-import { RoutingManager } from './RoutingManager';
-import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
-import { getOnlineAgents } from './getOnlineAgents';
-import { getInquirySortMechanismSetting } from './settings';
 
 const logger = new Logger('QueueManager');
 

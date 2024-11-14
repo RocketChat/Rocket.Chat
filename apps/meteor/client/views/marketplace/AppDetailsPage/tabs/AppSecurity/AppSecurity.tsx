@@ -4,8 +4,8 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import AppPermissionsList from '../../../components/AppPermissionsList';
 import AppSecurityLabel from './AppSecurityLabel';
+import AppPermissionsList from '../../../components/AppPermissionsList';
 
 type AppSecurityProps = {
 	privacyPolicySummary?: string;

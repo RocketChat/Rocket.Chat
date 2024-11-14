@@ -4,6 +4,7 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, usePermission, useRouter, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
+import ReviewContactModal from './ReviewContactModal';
 import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../components/Contextualbar';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useContactRoute } from '../../hooks/useContactRoute';
@@ -11,7 +12,6 @@ import { useValidCustomFields } from '../hooks/useValidCustomFields';
 import ContactInfoChannels from '../tabs/ContactInfoChannels/ContactInfoChannels';
 import ContactInfoDetails from '../tabs/ContactInfoDetails';
 import ContactInfoHistory from '../tabs/ContactInfoHistory';
-import ReviewContactModal from './ReviewContactModal';
 
 type ContactInfoProps = {
 	contact: Serialized<ILivechatContact>;

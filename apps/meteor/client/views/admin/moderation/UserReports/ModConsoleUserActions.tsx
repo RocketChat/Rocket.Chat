@@ -2,10 +2,10 @@ import { GenericMenu } from '@rocket.chat/ui-client';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import type { ModConsoleUserRowProps } from './ModConsoleUserTableRow';
 import useDeactivateUserAction from '../hooks/useDeactivateUserAction';
 import useDismissUserAction from '../hooks/useDismissUserAction';
 import useResetAvatarAction from '../hooks/useResetAvatarAction';
-import type { ModConsoleUserRowProps } from './ModConsoleUserTableRow';
 
 const ModConsoleUserActions = ({ report, onClick }: Omit<ModConsoleUserRowProps, 'isDesktopOrLarger'>) => {
 	const { t } = useTranslation();

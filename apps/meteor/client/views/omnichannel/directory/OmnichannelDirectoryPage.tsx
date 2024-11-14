@@ -2,13 +2,13 @@ import { Tabs } from '@rocket.chat/fuselage';
 import { useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useCallback } from 'react';
 
-import { ContextualbarDialog } from '../../../components/Contextualbar';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import ContextualBarRouter from './ContextualBarRouter';
 import CallTab from './calls/CallTab';
 import ChatsTab from './chats/ChatsTab';
 import ContactTab from './contacts/ContactTab';
 import ChatsProvider from './providers/ChatsProvider';
+import { ContextualbarDialog } from '../../../components/Contextualbar';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const DEFAULT_TAB = 'chats';
 

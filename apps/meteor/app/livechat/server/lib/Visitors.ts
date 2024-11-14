@@ -2,8 +2,8 @@ import { UserStatus, type ILivechatVisitor } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatDepartment, LivechatVisitors } from '@rocket.chat/models';
 
-import { settings } from '../../../settings/server';
 import { validateEmail } from './Helper';
+import { settings } from '../../../settings/server';
 
 const logger = new Logger('Livechat - Visitor');
 

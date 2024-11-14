@@ -1,8 +1,8 @@
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import ContactHistoryMessagesList from '../contactHistory/MessageList/ContactHistoryMessagesList';
 import ChatsFiltersContextualBar from './chats/ChatsFiltersContextualBar';
+import ContactHistoryMessagesList from '../contactHistory/MessageList/ContactHistoryMessagesList';
 
 const ChatsContextualBar = () => {
 	const router = useRouter();

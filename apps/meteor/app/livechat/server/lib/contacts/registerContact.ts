@@ -3,14 +3,14 @@ import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typin
 import { LivechatVisitors, Users, LivechatRooms, LivechatInquiry, Rooms, Subscriptions } from '@rocket.chat/models';
 import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
 
+import { getAllowedCustomFields } from './getAllowedCustomFields';
+import { validateCustomFields } from './validateCustomFields';
 import { callbacks } from '../../../../../lib/callbacks';
 import {
 	notifyOnRoomChangedById,
 	notifyOnSubscriptionChangedByRoomId,
 	notifyOnLivechatInquiryChangedByRoom,
 } from '../../../../lib/server/lib/notifyListener';
-import { getAllowedCustomFields } from './getAllowedCustomFields';
-import { validateCustomFields } from './validateCustomFields';
 
 type RegisterContactProps = {
 	_id?: string;

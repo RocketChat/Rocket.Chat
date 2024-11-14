@@ -3,11 +3,11 @@ import fs from 'node:fs';
 import type { IImport } from '@rocket.chat/core-typings';
 import { parse } from 'csv-parse/lib/sync';
 
+import { addParsedContacts } from './addParsedContacts';
 import { Importer, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import type { ConverterOptions } from '../../importer/server/classes/ImportDataConverter';
 import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
 import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
-import { addParsedContacts } from './addParsedContacts';
 
 export class ContactImporter extends Importer {
 	private csvParser: (csv: string) => string[][];

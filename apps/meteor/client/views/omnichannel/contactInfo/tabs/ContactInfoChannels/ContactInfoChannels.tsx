@@ -5,9 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import ContactInfoChannelsItem from './ContactInfoChannelsItem';
 import { ContextualbarContent, ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../../components/CustomScrollbars';
-import ContactInfoChannelsItem from './ContactInfoChannelsItem';
 
 type ContactInfoChannelsProps = {
 	contactId: ILivechatContact['_id'];

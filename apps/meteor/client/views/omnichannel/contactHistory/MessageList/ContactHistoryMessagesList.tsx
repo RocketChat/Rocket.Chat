@@ -18,6 +18,8 @@ import type { ChangeEvent, ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import ContactHistoryMessage from './ContactHistoryMessage';
+import { useHistoryMessageList } from './useHistoryMessageList';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -31,8 +33,6 @@ import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';
 import { isMessageSequential } from '../../../room/MessageList/lib/isMessageSequential';
-import ContactHistoryMessage from './ContactHistoryMessage';
-import { useHistoryMessageList } from './useHistoryMessageList';
 
 type ContactHistoryMessagesListProps = {
 	chatId: string;
