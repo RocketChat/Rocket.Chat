@@ -5,11 +5,11 @@ import { Subscriptions, Users, Settings, LivechatVisitors } from '@rocket.chat/m
 import { wrapExceptions } from '@rocket.chat/tools';
 import moment from 'moment';
 
+import { getAppCount } from './lib/getAppCount';
 import { syncWorkspace } from '../../../../app/cloud/server/functions/syncWorkspace';
 import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { getAppCount } from './lib/getAppCount';
 
 export const startLicense = async () => {
 	settings.watch<string>('Site_Url', (value) => {

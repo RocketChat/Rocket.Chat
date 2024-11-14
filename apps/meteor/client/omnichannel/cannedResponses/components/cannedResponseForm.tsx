@@ -6,10 +6,10 @@ import React, { useState } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
-import Tags from '../../../components/Omnichannel/Tags';
 import CannedResponsesComposer from './CannedResponsesComposer/CannedResponsesComposer';
 import CannedResponsesComposerPreview from './CannedResponsesComposer/CannedResponsesComposerPreview';
+import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
+import Tags from '../../../components/Omnichannel/Tags';
 
 // TODO: refactor Tags field to get proper validation
 const CannedResponseForm = () => {

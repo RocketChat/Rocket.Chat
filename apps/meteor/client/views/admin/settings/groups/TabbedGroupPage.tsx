@@ -4,8 +4,8 @@ import type { ReactElement } from 'react';
 import React, { memo, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
 import GenericGroupPage from './GenericGroupPage';
+import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
 
 type TabbedGroupPageProps = {
 	headerButtons?: ReactElement;

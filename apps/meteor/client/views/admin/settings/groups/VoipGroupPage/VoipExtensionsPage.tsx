@@ -4,6 +4,9 @@ import { useSetModal, useTranslation, useEndpoint } from '@rocket.chat/ui-contex
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 
+import AssignAgentButton from './AssignAgentButton';
+import AssignAgentModal from './AssignAgentModal';
+import RemoveAgentButton from './RemoveAgentButton';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -16,9 +19,6 @@ import {
 } from '../../../../../components/GenericTable';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import { PageContent } from '../../../../../components/Page';
-import AssignAgentButton from './AssignAgentButton';
-import AssignAgentModal from './AssignAgentModal';
-import RemoveAgentButton from './RemoveAgentButton';
 
 const VoipExtensionsPage = () => {
 	const t = useTranslation();

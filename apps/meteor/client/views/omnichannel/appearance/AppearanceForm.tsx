@@ -18,9 +18,9 @@ import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import FieldLabel from './AppearanceFieldLabel';
 import MarkdownText from '../../../components/MarkdownText';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
-import FieldLabel from './AppearanceFieldLabel';
 
 const AppearanceForm = () => {
 	const { t } = useTranslation();

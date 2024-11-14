@@ -1,8 +1,8 @@
+import { BaseBridge } from './BaseBridge';
 import type { IRole } from '../../definition/roles';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export abstract class RoleBridge extends BaseBridge {
     public async doGetOneByIdOrName(idOrName: IRole['id'] | IRole['name'], appId: string): Promise<IRole | null> {

@@ -5,8 +5,8 @@ import { BlockContext } from '@rocket.chat/ui-kit';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { contextualBarParser } from '../../surfaces';
 import ChannelsSelectElement from './ChannelsSelectElement';
+import { contextualBarParser } from '../../surfaces';
 import { useChannelsData } from './hooks/useChannelsData';
 
 const channelsBlock: ChannelsSelectElementType = {

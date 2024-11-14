@@ -5,9 +5,9 @@ import type { MouseEvent } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import AnnouncementComponent from './AnnouncementComponent';
 import GenericModal from '../../../components/GenericModal';
 import MarkdownText from '../../../components/MarkdownText';
-import AnnouncementComponent from './AnnouncementComponent';
 
 type AnnouncementProps = {
 	announcement: string;

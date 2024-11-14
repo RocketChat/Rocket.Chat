@@ -5,11 +5,11 @@ import type { IVideoConferenceUser } from '../../definition/videoConferences/IVi
 import type { AppManager } from '../AppManager';
 import type { VideoConferenceBridge } from '../bridges';
 import { VideoConfProviderAlreadyExistsError, VideoConfProviderNotRegisteredError } from '../errors';
-import { PermissionDeniedError } from '../errors/PermissionDeniedError';
-import { AppPermissions } from '../permissions/AppPermissions';
 import type { AppAccessorManager } from './AppAccessorManager';
 import { AppPermissionManager } from './AppPermissionManager';
 import { AppVideoConfProvider } from './AppVideoConfProvider';
+import { PermissionDeniedError } from '../errors/PermissionDeniedError';
+import { AppPermissions } from '../permissions/AppPermissions';
 
 export class AppVideoConfProviderManager {
     private readonly accessors: AppAccessorManager;
