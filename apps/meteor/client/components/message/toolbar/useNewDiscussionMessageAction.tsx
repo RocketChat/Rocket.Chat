@@ -1,19 +1,20 @@
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
+import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
+import React, { useEffect } from 'react';
 
-import CreateDiscussion from '../../../client/components/CreateDiscussion/CreateDiscussion';
-import { imperativeModal } from '../../../client/lib/imperativeModal';
-import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
-import { hasPermission } from '../../authorization/client';
-import { settings } from '../../settings/client';
-import { MessageAction } from '../../ui-utils/client';
+import { hasPermission } from '../../../../app/authorization/client';
+import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
+import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import CreateDiscussion from '../../CreateDiscussion';
 
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		if (!settings.get('Discussion_enabled')) {
+export const useNewDiscussionMessageAction = () => {
+	const enabled = useSetting('Discussion_enabled', false);
+
+	const setModal = useSetModal();
+
+	useEffect(() => {
+		if (!enabled) {
 			return MessageAction.removeButton('start-discussion');
 		}
-
 		MessageAction.addButton({
 			id: 'start-discussion',
 			icon: 'discussion',
@@ -21,15 +22,14 @@ Meteor.startup(() => {
 			type: 'communication',
 			context: ['message', 'message-mobile', 'videoconf'],
 			async action(_, { message, room }) {
-				imperativeModal.open({
-					component: CreateDiscussion,
-					props: {
-						defaultParentRoom: room?.prid || room?._id,
-						onClose: imperativeModal.close,
-						parentMessageId: message._id,
-						nameSuggestion: message?.msg?.substr(0, 140),
-					},
-				});
+				setModal(
+					<CreateDiscussion
+						defaultParentRoom={room?.prid || room?._id}
+						onClose={() => setModal(undefined)}
+						parentMessageId={message._id}
+						nameSuggestion={message?.msg?.substr(0, 140)}
+					/>,
+				);
 			},
 			condition({
 				message: {
@@ -61,5 +61,5 @@ Meteor.startup(() => {
 			order: 1,
 			group: 'menu',
 		});
-	});
-});
+	}, [enabled, setModal]);
+};

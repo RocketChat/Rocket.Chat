@@ -8,9 +8,6 @@ import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useMemo, useRef } from 'react';
 
-import MessageActionMenu from './MessageActionMenu';
-import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
-import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
@@ -21,6 +18,10 @@ import { useIsSelecting } from '../../../views/room/MessageList/contexts/Selecte
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
 import { useChat } from '../../../views/room/contexts/ChatContext';
 import { useRoomToolbox } from '../../../views/room/contexts/RoomToolboxContext';
+import MessageActionMenu from './MessageActionMenu';
+import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
+import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
+import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 
 const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
 	if (context) {
@@ -85,6 +86,7 @@ const MessageToolbar = ({
 
 	// TODO: move this to another place
 	useWebDAVMessageAction();
+	useNewDiscussionMessageAction();
 
 	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
 		const props = { message, room, user, subscription, settings: mapSettings, chat };
