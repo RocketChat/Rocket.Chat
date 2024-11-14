@@ -1,10 +1,11 @@
-import { Box, SidebarV2CollapseGroup } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso } from 'react-virtuoso';
 
+import RoomListCollapser from './RoomListCollapser';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
@@ -22,7 +23,7 @@ const RoomList = () => {
 	const isAnonymous = !useUserId();
 
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
-	const { groupsCount, groupsList, roomList } = useRoomList({ collapsedGroups });
+	const { groupsCount, groupsList, roomList, groupedUnreadInfo } = useRoomList({ collapsedGroups });
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const { ref } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });
@@ -51,11 +52,12 @@ const RoomList = () => {
 			<GroupedVirtuoso
 				groupCounts={groupsCount}
 				groupContent={(index) => (
-					<SidebarV2CollapseGroup
-						title={t(groupsList[index])}
+					<RoomListCollapser
+						collapsedGroups={collapsedGroups}
 						onClick={() => handleClick(groupsList[index])}
 						onKeyDown={(e) => handleKeyDown(e, groupsList[index])}
-						expanded={!collapsedGroups.includes(groupsList[index])}
+						groupTitle={groupsList[index]}
+						unreadCount={groupedUnreadInfo[index]}
 					/>
 				)}
 				{...(roomList.length > 0 && {

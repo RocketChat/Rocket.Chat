@@ -22,8 +22,8 @@ const DefaultHomePage = (): ReactElement => {
 	const isAdmin = useRole('admin');
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
 	const workspaceName = useSetting('Site_Name');
-	const isCustomContentBodyEmpty = useSetting('Layout_Home_Body') === '';
-	const isCustomContentVisible = Boolean(useSetting('Layout_Home_Custom_Block_Visible'));
+	const isCustomContentBodyEmpty = useSetting('Layout_Home_Body', '') === '';
+	const isCustomContentVisible = useSetting('Layout_Home_Custom_Block_Visible', false);
 
 	return (
 		<Page color='default' data-qa='page-home' data-qa-type='default' background='tint'>

@@ -17,7 +17,7 @@ export const BackButton = ({ routeName }: { routeName?: string }): ReactElement 
 					name: 'omnichannel-directory',
 					params: {
 						...router.getRouteParameters(),
-						bar: 'info',
+						context: 'info',
 					},
 				});
 				break;

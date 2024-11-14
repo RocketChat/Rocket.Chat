@@ -42,7 +42,7 @@ const ContactHistoryMessagesList = ({
 	};
 
 	const { phase, error, items: messages, itemCount: totalItemCount } = useRecordList(messageList);
-	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
+	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
 
 	return (
 		<>

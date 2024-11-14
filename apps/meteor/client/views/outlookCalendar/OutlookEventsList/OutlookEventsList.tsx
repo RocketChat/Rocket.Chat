@@ -28,7 +28,7 @@ type OutlookEventsListProps = {
 
 const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): ReactElement => {
 	const t = useTranslation();
-	const outlookUrl = useSetting<string>('Outlook_Calendar_Outlook_Url');
+	const outlookUrl = useSetting('Outlook_Calendar_Outlook_Url', '');
 	const { authEnabled, isError, error } = useOutlookAuthentication();
 
 	const hasOutlookMethods = !(isError && error instanceof NotOnDesktopError);

@@ -102,6 +102,7 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 		},
 		{
 			staleTime: Infinity,
+			refetchOnMount: 'always',
 			onSettled: () => queryClient.invalidateQueries(['marketplace', 'apps-stored']),
 		},
 	);

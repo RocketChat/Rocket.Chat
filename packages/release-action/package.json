@@ -16,7 +16,7 @@
 	"dependencies": {
 		"@actions/core": "^1.11.1",
 		"@actions/exec": "^1.1.1",
-		"@actions/github": "^5.1.1",
+		"@actions/github": "^6.0.0",
 		"@octokit/plugin-throttling": "^6.1.0",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"eslint": "~8.45.0",

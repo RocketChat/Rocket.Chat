@@ -51,7 +51,7 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, onClick }: Th
 		[toggleFollowMessage],
 	);
 
-	const showRealNames = (useSetting('UI_Use_Real_Name') as boolean | undefined) ?? false;
+	const showRealNames = useSetting('UI_Use_Real_Name', false);
 
 	const handleListItemClick = useCallback(
 		(event: MouseEvent<HTMLElement>): void => {

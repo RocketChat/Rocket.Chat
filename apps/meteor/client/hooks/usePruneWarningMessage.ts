@@ -84,12 +84,12 @@ export const usePruneWarningMessage = (room: IRoom) => {
 
 	const { maxAge, filesOnly, excludePinned } = retention;
 
-	const cronPrecision = String(useSetting('RetentionPolicy_Precision')) as CronPrecisionSetting;
+	const cronPrecision = useSetting<CronPrecisionSetting>('RetentionPolicy_Precision', '0');
 
 	const t = useTranslation();
 
-	const enableAdvancedCronTimer = Boolean(useSetting('RetentionPolicy_Advanced_Precision'));
-	const advancedCronTimer = String(useSetting('RetentionPolicy_Advanced_Precision_Cron'));
+	const enableAdvancedCronTimer = useSetting('RetentionPolicy_Advanced_Precision', false);
+	const advancedCronTimer = useSetting('RetentionPolicy_Advanced_Precision_Cron', '*/30 * * * *');
 
 	const message = getMessage({ filesOnly, excludePinned });
 

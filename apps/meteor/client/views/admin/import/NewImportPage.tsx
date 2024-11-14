@@ -30,7 +30,7 @@ function NewImportPage() {
 	const importerKey = useRouteParameter('importerKey');
 	const importer = useMemo(() => (importers || []).find(({ key }) => key === importerKey), [importerKey, importers]);
 
-	const maxFileSize = useSetting<number>('FileUpload_MaxFileSize') ?? 0;
+	const maxFileSize = useSetting('FileUpload_MaxFileSize', 0);
 
 	const router = useRouter();
 

@@ -15,8 +15,8 @@ type AuthenticationProviderProps = {
 };
 
 const AuthenticationProvider = ({ children }: AuthenticationProviderProps): ReactElement => {
-	const isLdapEnabled = useSetting<boolean>('LDAP_Enable');
-	const isCrowdEnabled = useSetting<boolean>('CROWD_Enable');
+	const isLdapEnabled = useSetting('LDAP_Enable', false);
+	const isCrowdEnabled = useSetting('CROWD_Enable', false);
 
 	const loginMethod: LoginMethods = (isLdapEnabled && 'loginWithLDAP') || (isCrowdEnabled && 'loginWithCrowd') || 'loginWithPassword';
 

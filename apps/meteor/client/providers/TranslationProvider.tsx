@@ -11,7 +11,6 @@ import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useMemo } from 'react';
 import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
 
-import { CachedCollectionManager } from '../../app/ui-cached-collection/client';
 import { getURL } from '../../app/utils/client';
 import {
 	i18n,
@@ -23,6 +22,7 @@ import {
 	extractTranslationNamespaces,
 } from '../../app/utils/lib/i18n';
 import { AppClientOrchestratorInstance } from '../apps/orchestrator';
+import { onLoggedIn } from '../lib/loggedIn';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
 
 i18n.use(I18NextHttpBackend).use(initReactI18next);
@@ -121,7 +121,7 @@ const useI18next = (lng: string): typeof i18next => {
 };
 
 const useAutoLanguage = () => {
-	const serverLanguage = useSetting<string>('Language');
+	const serverLanguage = useSetting('Language', '');
 	const browserLanguage = normalizeLanguage(window.navigator.userLanguage ?? window.navigator.language);
 	const defaultUserLanguage = browserLanguage || serverLanguage || 'en';
 
@@ -198,14 +198,14 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 			});
 	}, [language, loadLocale, availableLanguages]);
 
-	useEffect(() => {
-		const cb = () => {
-			AppClientOrchestratorInstance.getAppClientManager().initialize();
-			AppClientOrchestratorInstance.load();
-		};
-		CachedCollectionManager.onLogin(cb);
-		return () => CachedCollectionManager.off('login', cb);
-	}, []);
+	useEffect(
+		() =>
+			onLoggedIn(() => {
+				AppClientOrchestratorInstance.getAppClientManager().initialize();
+				AppClientOrchestratorInstance.load();
+			}),
+		[],
+	);
 
 	return (
 		<I18nextProvider i18n={i18nextInstance}>
