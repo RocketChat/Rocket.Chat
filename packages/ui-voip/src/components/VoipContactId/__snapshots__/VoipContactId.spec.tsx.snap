@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`VoipContactId renders Loading without crashing 1`] = `
+exports[`renders Loading without crashing 1`] = `
 <body>
   <div>
     <div
@@ -21,7 +21,7 @@ exports[`VoipContactId renders Loading without crashing 1`] = `
 </body>
 `;
 
-exports[`VoipContactId renders WithPhoneNumber without crashing 1`] = `
+exports[`renders WithPhoneNumber without crashing 1`] = `
 <body>
   <div>
     <div
@@ -59,7 +59,7 @@ exports[`VoipContactId renders WithPhoneNumber without crashing 1`] = `
 </body>
 `;
 
-exports[`VoipContactId renders WithTransfer without crashing 1`] = `
+exports[`renders WithTransfer without crashing 1`] = `
 <body>
   <div>
     <div
@@ -106,7 +106,7 @@ exports[`VoipContactId renders WithTransfer without crashing 1`] = `
 </body>
 `;
 
-exports[`VoipContactId renders WithUsername without crashing 1`] = `
+exports[`renders WithUsername without crashing 1`] = `
 <body>
   <div>
     <div

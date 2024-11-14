@@ -11,9 +11,10 @@ import {
 	FieldError,
 	IconButton,
 } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch, useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
@@ -29,11 +30,12 @@ type EditCustomEmojiProps = {
 		name: string;
 		aliases: string[];
 		extension: string;
+		etag?: string;
 	};
 };
 
 const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const absoluteUrl = useAbsoluteUrl();
@@ -50,7 +52,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 		}
 
 		if (data) {
-			return absoluteUrl(`/emoji-custom/${encodeURIComponent(data.name)}.${data.extension}`);
+			return absoluteUrl(`/emoji-custom/${encodeURIComponent(data.name)}.${data.extension}${data.etag ? `?etag=${data.etag}` : ''}`);
 		}
 
 		return null;

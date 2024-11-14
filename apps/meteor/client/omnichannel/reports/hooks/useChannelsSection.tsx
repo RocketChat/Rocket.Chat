@@ -6,13 +6,13 @@ import type { TFunction } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useDefaultDownload } from './useDefaultDownload';
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { PERIOD_OPTIONS } from '../components/constants';
 import { formatPeriodDescription } from '../utils/formatPeriodDescription';
 import { getTop } from '../utils/getTop';
 import { round } from '../utils/round';
-import { useDefaultDownload } from './useDefaultDownload';
 
 type DataItem = { label: string; value: number; id: string; rawLabel: string };
 

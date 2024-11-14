@@ -4,10 +4,10 @@ import type { AtLeast, IOmnichannelQueue, IOmnichannelRoom } from '@rocket.chat/
 import { License } from '@rocket.chat/license';
 import moment from 'moment';
 
+import { OmnichannelQueue } from './queue';
 import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../app/settings/server';
-import { OmnichannelQueue } from './queue';
 
 export class OmnichannelService extends ServiceClassInternal implements IOmnichannelService {
 	protected name = 'omnichannel';
@@ -37,6 +37,10 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 			void (enabled && RoutingManager.isMethodSet() ? this.queueWorker.shouldStart() : this.queueWorker.stop());
 		});
 
+		settings.watch<string>('Livechat_Routing_Method', async () => {
+			this.queueWorker.shouldStart();
+		});
+
 		License.onLimitReached('monthlyActiveContacts', async (): Promise<void> => {
 			this.queueWorker.isRunning() && (await this.queueWorker.stop());
 		});
@@ -50,10 +54,6 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 		License.onInvalidateLicense(async (): Promise<void> => {
 			this.queueWorker.isRunning() && (await this.queueWorker.shouldStart());
 		});
-	}
-
-	getQueueWorker(): IOmnichannelQueue {
-		return this.queueWorker;
 	}
 
 	async isWithinMACLimit(room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean> {

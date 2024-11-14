@@ -5,7 +5,7 @@ import HorizontalTemplate from './template/HorizontalTemplate';
 import VerticalTemplate from './template/VerticalTemplate';
 
 const RegisterTemplate = ({ children, ...props }: AllHTMLAttributes<HTMLElement>) => {
-	const template = useSetting<'vertical-template' | 'horizontal-template'>('Layout_Login_Template');
+	const template = useSetting<'vertical-template' | 'horizontal-template'>('Layout_Login_Template', 'horizontal-template');
 
 	return (
 		<main>

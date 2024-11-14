@@ -217,7 +217,7 @@ const RoomMenu = ({
 								label: { label: t('Hide'), icon: 'eye-off' },
 								action: handleHide,
 							},
-					  }),
+						}),
 				toggleRead: {
 					label: { label: isUnread ? t('Mark_read') : t('Mark_unread'), icon: 'flag' },
 					action: handleToggleRead,
@@ -231,7 +231,7 @@ const RoomMenu = ({
 								},
 								action: handleToggleFavorite,
 							},
-					  }
+						}
 					: {}),
 				...(canLeave && {
 					leaveRoom: {

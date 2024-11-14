@@ -3,8 +3,8 @@ import type { IAnalyticsModel, IChannelsWithNumberOfMessagesBetweenDate } from '
 import { Random } from '@rocket.chat/random';
 import type { AggregationCursor, FindCursor, Db, IndexDescription, FindOptions, UpdateResult, Document, Collection } from 'mongodb';
 
-import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel {
 	constructor(db: Db) {

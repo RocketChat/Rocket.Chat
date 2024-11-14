@@ -10,10 +10,7 @@ export const useShowingResultsLabel = (): ((...params: Props) => string) => {
 	const { t } = useTranslation();
 	return useCallback(
 		({ count, current, itemsPerPage }) =>
-			t('Showing_results_of', {
-				postProcess: 'sprintf',
-				sprintf: [current + 1, Math.min(current + itemsPerPage, count), count],
-			}),
+			t('Showing_results_of', { postProcess: 'sprintf', sprintf: [current + 1, Math.min(current + itemsPerPage, count), count] }),
 		[t],
 	);
 };

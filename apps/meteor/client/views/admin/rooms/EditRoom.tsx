@@ -14,17 +14,18 @@ import {
 	FieldError,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
+import { useEditAdminRoomPermissions } from './useEditAdminRoomPermissions';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { useArchiveRoom } from '../../hooks/roomActions/useArchiveRoom';
 import { useDeleteRoom } from '../../hooks/roomActions/useDeleteRoom';
-import { useEditAdminRoomPermissions } from './useEditAdminRoomPermissions';
 
 type EditRoomProps = {
 	room: IRoom;
@@ -63,7 +64,7 @@ const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormV
 });
 
 const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 

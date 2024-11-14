@@ -17,28 +17,28 @@ import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
 import { useResetE2EEKeyAction } from '../hooks/useResetE2EEKeyAction';
 import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
 import { useSendWelcomeEmailMutation } from '../hooks/useSendWelcomeEmailMutation';
-import { useVoipExtensionAction } from '../hooks/useVoipExtensionAction';
+import { useVoipExtensionAction } from '../voip/hooks/useVoipExtensionAction';
 
 type UsersTableRowProps = {
 	user: Serialized<DefaultUserInfo>;
-	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
+	tab: AdminUsersTab;
 	isMobile: boolean;
 	isLaptop: boolean;
 	onReload: () => void;
-	tab: AdminUsersTab;
+	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
 	isSeatsCapExceeded: boolean;
 	showVoipExtension: boolean;
 };
 
 const UsersTableRow = ({
 	user,
-	onClick,
-	onReload,
+	tab,
 	isMobile,
 	isLaptop,
-	tab,
 	isSeatsCapExceeded,
 	showVoipExtension,
+	onClick,
+	onReload,
 }: UsersTableRowProps): ReactElement => {
 	const { t } = useTranslation();
 
@@ -75,7 +75,12 @@ const UsersTableRow = ({
 	const resetTOTPAction = useResetTOTPAction(userId);
 	const resetE2EKeyAction = useResetE2EEKeyAction(userId);
 	const resendWelcomeEmail = useSendWelcomeEmailMutation();
-	const voipExtensionAction = useVoipExtensionAction({ extension: freeSwitchExtension, username, name });
+	const voipExtensionAction = useVoipExtensionAction({
+		enabled: showVoipExtension,
+		extension: freeSwitchExtension,
+		username,
+		name,
+	});
 
 	const isNotPendingDeactivatedNorFederated = tab !== 'pending' && tab !== 'deactivated' && !isFederatedUser;
 	const menuOptions = useMemo(
@@ -173,7 +178,7 @@ const UsersTableRow = ({
 				</GenericTableCell>
 			)}
 
-			{tab === 'all' && showVoipExtension && username && (
+			{tab === 'all' && showVoipExtension && (
 				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 					{freeSwitchExtension || t('Not_assigned')}
 				</GenericTableCell>

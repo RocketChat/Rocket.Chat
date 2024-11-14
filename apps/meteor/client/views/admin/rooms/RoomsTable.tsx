@@ -1,11 +1,14 @@
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject } from 'react';
 import React, { useRef, useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import RoomRow from './RoomRow';
+import RoomsTableFilters from './RoomsTableFilters';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -16,8 +19,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import RoomRow from './RoomRow';
-import RoomsTableFilters from './RoomsTableFilters';
 
 type RoomFilters = {
 	searchText: string;
@@ -27,7 +28,7 @@ type RoomFilters = {
 const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
 
 const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
 	const [roomFilters, setRoomFilters] = useState<RoomFilters>({ searchText: '', types: [] });
@@ -133,11 +134,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>
-							{data.rooms?.map((room) => (
-								<RoomRow key={room._id} room={room} />
-							))}
-						</GenericTableBody>
+						<GenericTableBody>{data.rooms?.map((room) => <RoomRow key={room._id} room={room} />)}</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider

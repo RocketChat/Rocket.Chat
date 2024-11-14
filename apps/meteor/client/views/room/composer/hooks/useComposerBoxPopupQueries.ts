@@ -2,9 +2,9 @@ import type { QueriesResults } from '@tanstack/react-query';
 import { useQueries } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
+import { useEnablePopupPreview } from './useEnablePopupPreview';
 import { slashCommands } from '../../../../../app/utils/client/slashCommand';
 import type { ComposerPopupOption } from '../../contexts/ComposerPopupContext';
-import { useEnablePopupPreview } from './useEnablePopupPreview';
 
 export const useComposerBoxPopupQueries = <T extends { _id: string; sort?: number }>(filter: unknown, popup?: ComposerPopupOption<T>) => {
 	const [counter, setCounter] = useState(0);

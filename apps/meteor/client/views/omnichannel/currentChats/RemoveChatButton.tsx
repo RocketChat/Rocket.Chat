@@ -1,11 +1,12 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { useRemoveCurrentChatMutation } from './hooks/useRemoveCurrentChatMutation';
 import GenericModal from '../../../components/GenericModal';
 import { GenericTableCell } from '../../../components/GenericTable';
-import { useRemoveCurrentChatMutation } from './hooks/useRemoveCurrentChatMutation';
 
 type RemoveChatButtonProps = { _id: string };
 
@@ -13,7 +14,7 @@ const RemoveChatButton = ({ _id }: RemoveChatButtonProps) => {
 	const removeCurrentChatMutation = useRemoveCurrentChatMutation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const handleRemoveClick = useMutableCallback(async () => {
 		removeCurrentChatMutation.mutate(_id);

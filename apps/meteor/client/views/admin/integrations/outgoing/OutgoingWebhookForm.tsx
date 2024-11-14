@@ -75,13 +75,7 @@ const OutgoingWebhookForm = () => {
 		[t],
 	);
 
-	const scriptEngineOptions: SelectOption[] = useMemo(
-		() => [
-			['vm2', t('Script_Engine_vm2')],
-			['isolated-vm', t('Script_Engine_isolated_vm')],
-		],
-		[t],
-	);
+	const scriptEngineOptions: SelectOption[] = useMemo(() => [['isolated-vm', t('Script_Engine_isolated_vm')]], [t]);
 
 	const showChannel = useMemo(() => outgoingEvents[event].use.channel, [event]);
 	const showTriggerWords = useMemo(() => outgoingEvents[event].use.triggerWords, [event]);
@@ -363,7 +357,10 @@ const OutgoingWebhookForm = () => {
 								/>
 							</FieldRow>
 							<FieldHint id={`${emojiField}-hint-1`}>{t('You_can_use_an_emoji_as_avatar')}</FieldHint>
-							<FieldHint id={`${emojiField}-hint-2`} dangerouslySetInnerHTML={{ __html: t('Example_s', ':ghost:') }} />
+							<FieldHint
+								id={`${emojiField}-hint-2`}
+								dangerouslySetInnerHTML={{ __html: t('Example_s', { postProcess: 'sprintf', sprintf: [':ghost:'] }) }}
+							/>
 						</Field>
 						<Field>
 							<FieldLabel htmlFor={tokenField} required>

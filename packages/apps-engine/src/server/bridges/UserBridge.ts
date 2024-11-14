@@ -1,8 +1,8 @@
+import { BaseBridge } from './BaseBridge';
 import type { IUser, IUserCreationOptions, UserType } from '../../definition/users';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export abstract class UserBridge extends BaseBridge {
     public async doGetById(id: string, appId: string): Promise<IUser> {
@@ -41,7 +41,7 @@ export abstract class UserBridge extends BaseBridge {
 
     public async doGetUserUnreadMessageCount(uid: string, appId: string): Promise<number> {
         if (this.hasReadPermission(appId)) {
-            return this.getUserUnreadMessageCount(uid);
+            return this.getUserUnreadMessageCount(uid, appId);
         }
     }
 
@@ -65,7 +65,7 @@ export abstract class UserBridge extends BaseBridge {
 
     protected abstract getActiveUserCount(): Promise<number>;
 
-    protected abstract getUserUnreadMessageCount(uid: string): Promise<number>;
+    protected abstract getUserUnreadMessageCount(uid: string, appId: string): Promise<number>;
 
     /**
      * Creates a user.

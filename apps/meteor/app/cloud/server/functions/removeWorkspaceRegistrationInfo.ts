@@ -1,13 +1,15 @@
-import { Settings } from '@rocket.chat/models';
+import { Settings, WorkspaceCredentials } from '@rocket.chat/models';
 
-import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 
 export async function removeWorkspaceRegistrationInfo() {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 	if (!workspaceRegistered) {
 		return true;
 	}
+
+	await WorkspaceCredentials.removeAllCredentials();
 
 	const settingsIds = [
 		'Cloud_Workspace_Id',

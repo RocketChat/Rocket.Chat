@@ -3,7 +3,11 @@ export class MeteorError extends Error {
 
 	public readonly errorType = 'Meteor.Error';
 
-	public constructor(public readonly error: string | number, public readonly reason?: string, public readonly details?: any) {
+	public constructor(
+		public readonly error: string | number,
+		public readonly reason?: string,
+		public readonly details?: any,
+	) {
 		super(`${reason ? `${reason} ` : ''}[${String(error)}]`);
 	}
 

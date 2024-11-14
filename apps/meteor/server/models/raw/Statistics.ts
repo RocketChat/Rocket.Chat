@@ -26,6 +26,22 @@ export class StatisticsRaw extends BaseRaw<IStats> implements IStatisticsModel {
 		return records?.[0];
 	}
 
+	async findLastStatsToken(): Promise<IStats['statsToken']> {
+		const records = await this.find(
+			{},
+			{
+				sort: {
+					createdAt: -1,
+				},
+				projection: {
+					statsToken: 1,
+				},
+				limit: 1,
+			},
+		).toArray();
+		return records?.[0]?.statsToken;
+	}
+
 	async findMonthlyPeakConnections() {
 		const oneMonthAgo = new Date();
 		oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);

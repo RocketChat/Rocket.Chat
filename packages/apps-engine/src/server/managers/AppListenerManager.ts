@@ -1,3 +1,4 @@
+import type { AppAccessorManager } from './AppAccessorManager';
 import type { IEmailDescriptor, IPreEmailSentContext } from '../../definition/email';
 import { EssentialAppDisabledException } from '../../definition/exceptions';
 import type { IExternalComponent } from '../../definition/externalComponent';
@@ -22,15 +23,13 @@ import type {
     IUIKitIncomingInteractionMessageContainer,
     IUIKitIncomingInteractionModalContainer,
 } from '../../definition/uikit/UIKitIncomingInteractionContainer';
-import type { IUIKitLivechatIncomingInteraction } from '../../definition/uikit/livechat';
-import { UIKitLivechatBlockInteractionContext } from '../../definition/uikit/livechat';
+import type { IUIKitLivechatBlockIncomingInteraction, IUIKitLivechatIncomingInteraction } from '../../definition/uikit/livechat';
 import type { IFileUploadContext } from '../../definition/uploads/IFileUploadContext';
 import type { IUser, IUserContext, IUserStatusContext, IUserUpdateContext } from '../../definition/users';
 import type { AppManager } from '../AppManager';
 import type { ProxiedApp } from '../ProxiedApp';
 import { Utilities } from '../misc/Utilities';
 import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/deno/AppsEngineDenoRuntime';
-import type { AppAccessorManager } from './AppAccessorManager';
 
 interface IListenerExecutor {
     [AppInterface.IPreMessageSentPrevent]: {
@@ -1016,14 +1015,17 @@ export class AppListenerManager {
 
         const app = this.manager.getOneById(appId);
 
-        const interactionContext = ((interactionType: UIKitIncomingInteractionType, interactionData: IUIKitLivechatIncomingInteraction) => {
-            const { actionId, message, visitor, room, triggerId, container } = interactionData;
+        const interactionData = ((
+            interactionType: UIKitIncomingInteractionType,
+            interaction: IUIKitLivechatIncomingInteraction,
+        ): IUIKitLivechatBlockIncomingInteraction => {
+            const { actionId, message, visitor, room, triggerId, container } = interaction;
 
             switch (interactionType) {
                 case UIKitIncomingInteractionType.BLOCK: {
-                    const { value, blockId } = interactionData.payload as { value: string; blockId: string };
+                    const { value, blockId } = interaction.payload as { value: string; blockId: string };
 
-                    return new UIKitLivechatBlockInteractionContext({
+                    return {
                         appId,
                         actionId,
                         blockId,
@@ -1033,12 +1035,12 @@ export class AppListenerManager {
                         value,
                         message,
                         container: container as IUIKitIncomingInteractionModalContainer | IUIKitIncomingInteractionMessageContainer,
-                    });
+                    };
                 }
             }
         })(type, data);
 
-        return app.call(method, interactionContext);
+        return app.call(method, interactionData);
     }
 
     // Livechat

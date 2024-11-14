@@ -3,20 +3,19 @@ import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.cha
 import type { ComponentProps } from 'react';
 import React, { forwardRef, memo } from 'react';
 
-const ContextualbarContent = forwardRef<HTMLElement, ComponentProps<typeof ContextualbarContentComponent>>(function ContextualbarContent(
-	props,
-	ref,
-) {
-	return (
-		<FeaturePreview feature='newNavigation'>
-			<FeaturePreviewOff>
-				<ContextualbarContentComponent ref={ref} {...props} />
-			</FeaturePreviewOff>
-			<FeaturePreviewOn>
-				<ContextualbarV2Content ref={ref} {...props} />
-			</FeaturePreviewOn>
-		</FeaturePreview>
-	);
-});
+const ContextualbarContent = forwardRef<HTMLElement, ComponentProps<typeof ContextualbarContentComponent>>(
+	function ContextualbarContent(props, ref) {
+		return (
+			<FeaturePreview feature='newNavigation'>
+				<FeaturePreviewOff>
+					<ContextualbarContentComponent ref={ref} {...props} />
+				</FeaturePreviewOff>
+				<FeaturePreviewOn>
+					<ContextualbarV2Content ref={ref} {...props} />
+				</FeaturePreviewOn>
+			</FeaturePreview>
+		);
+	},
+);
 
 export default memo(ContextualbarContent);

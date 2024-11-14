@@ -97,4 +97,17 @@ export class NpsVoteRaw extends BaseRaw<INpsVote> implements INpsVoteModel {
 		};
 		return this.updateMany(query, update);
 	}
+
+	countByNpsId(npsId: string): Promise<number> {
+		return this.countDocuments({ npsId });
+	}
+
+	countByNpsIdAndStatus(npsId: string, status: INpsVoteStatus): Promise<number> {
+		const query = {
+			npsId,
+			status,
+		};
+
+		return this.countDocuments(query);
+	}
 }

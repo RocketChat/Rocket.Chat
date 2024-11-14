@@ -52,7 +52,7 @@ export async function getPushData({
 			name: settings.get('Push_show_username_room') ? room.name : '',
 			messageType: message.t,
 			tmid: message.tmid,
-			...(message.t === 'e2e' && { msg: message.msg }),
+			...(message.t === 'e2e' && { msg: message.msg, content: message.content }),
 		},
 		roomName:
 			settings.get('Push_show_username_room') && roomCoordinator.getRoomDirectives(room.t).isGroupChat(room)

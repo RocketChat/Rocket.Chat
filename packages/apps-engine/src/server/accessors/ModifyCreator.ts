@@ -1,3 +1,12 @@
+import { DiscussionBuilder } from './DiscussionBuilder';
+import { EmailCreator } from './EmailCreator';
+import { LivechatCreator } from './LivechatCreator';
+import { LivechatMessageBuilder } from './LivechatMessageBuilder';
+import { MessageBuilder } from './MessageBuilder';
+import { RoomBuilder } from './RoomBuilder';
+import { UploadCreator } from './UploadCreator';
+import { UserBuilder } from './UserBuilder';
+import { VideoConferenceBuilder } from './VideoConferenceBuilder';
 import type {
     IDiscussionBuilder,
     ILivechatCreator,
@@ -21,15 +30,6 @@ import { UserType } from '../../definition/users/UserType';
 import type { AppVideoConference } from '../../definition/videoConferences';
 import type { AppBridges } from '../bridges';
 import { UIHelper } from '../misc/UIHelper';
-import { DiscussionBuilder } from './DiscussionBuilder';
-import { EmailCreator } from './EmailCreator';
-import { LivechatCreator } from './LivechatCreator';
-import { LivechatMessageBuilder } from './LivechatMessageBuilder';
-import { MessageBuilder } from './MessageBuilder';
-import { RoomBuilder } from './RoomBuilder';
-import { UploadCreator } from './UploadCreator';
-import { UserBuilder } from './UserBuilder';
-import { VideoConferenceBuilder } from './VideoConferenceBuilder';
 
 export class ModifyCreator implements IModifyCreator {
     private livechatCreator: LivechatCreator;
@@ -38,7 +38,10 @@ export class ModifyCreator implements IModifyCreator {
 
     private emailCreator: EmailCreator;
 
-    constructor(private readonly bridges: AppBridges, private readonly appId: string) {
+    constructor(
+        private readonly bridges: AppBridges,
+        private readonly appId: string,
+    ) {
         this.livechatCreator = new LivechatCreator(bridges, appId);
         this.uploadCreator = new UploadCreator(bridges, appId);
         this.emailCreator = new EmailCreator(bridges, appId);

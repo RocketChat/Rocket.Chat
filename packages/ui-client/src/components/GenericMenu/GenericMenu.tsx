@@ -1,6 +1,5 @@
 import { IconButton, MenuItem, MenuSection, MenuV2 } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactNode } from 'react';
-import { cloneElement } from 'react';
+import { cloneElement, type ComponentProps, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { GenericMenuItemProps } from './GenericMenuItem';

@@ -6,6 +6,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import FileItem from './components/FileItem';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -15,7 +16,6 @@ import {
 	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
-import FileItem from './components/FileItem';
 
 type RoomFilesProps = {
 	loading: boolean;

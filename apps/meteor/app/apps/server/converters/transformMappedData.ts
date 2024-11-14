@@ -1,5 +1,3 @@
-import cloneDeep from 'lodash.clonedeep';
-
 /**
  * Transforms a `data` source object to another object,
  * essentially applying a to -> from mapping provided by
@@ -67,8 +65,8 @@ export const transformMappedData = async <
 		-readonly [p in keyof MapType]: MapType[p] extends keyof DataType
 			? DataType[MapType[p]]
 			: MapType[p] extends (...args: any[]) => any
-			? Awaited<ReturnType<MapType[p]>>
-			: never;
+				? Awaited<ReturnType<MapType[p]>>
+				: never;
 	},
 	DataType extends Record<string, any>,
 	MapType extends { [p in string]: string | ((data: DataType) => Promise<unknown>) | ((data: DataType) => unknown) },
@@ -79,7 +77,7 @@ export const transformMappedData = async <
 	data: DataType,
 	map: MapType,
 ): Promise<ResultType & { _unmappedProperties_: UnmappedProperties }> => {
-	const originalData: DataType = cloneDeep(data);
+	const originalData: DataType = structuredClone(data);
 	const transformedData: Record<string, any> = {};
 
 	for await (const [to, from] of Object.entries(map)) {

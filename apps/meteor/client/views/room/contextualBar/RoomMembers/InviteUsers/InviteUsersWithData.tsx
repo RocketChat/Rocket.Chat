@@ -4,9 +4,9 @@ import { useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.ch
 import type { ReactElement } from 'react';
 import React, { useState, useEffect } from 'react';
 
+import InviteUsers from './InviteUsers';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
-import InviteUsers from './InviteUsers';
 
 type InviteUsersWithDataProps = {
 	rid: IRoom['_id'];

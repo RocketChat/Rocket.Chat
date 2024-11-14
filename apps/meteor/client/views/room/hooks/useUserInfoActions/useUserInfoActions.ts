@@ -5,7 +5,6 @@ import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 
-import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useAddUserAction } from './actions/useAddUserAction';
 import { useBlockUserAction } from './actions/useBlockUserAction';
 import { useChangeLeaderAction } from './actions/useChangeLeaderAction';
@@ -19,6 +18,7 @@ import { useRemoveUserAction } from './actions/useRemoveUserAction';
 import { useReportUser } from './actions/useReportUser';
 import { useVideoCallAction } from './actions/useVideoCallAction';
 import { useVoipCallAction } from './actions/useVoipCallAction';
+import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 
 export type UserInfoActionType = 'communication' | 'privileges' | 'management' | 'moderation';
 

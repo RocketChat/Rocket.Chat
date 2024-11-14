@@ -43,8 +43,8 @@ const ChatTable = () => {
 
 	const onRowClick = useMutableCallback((id) =>
 		directoryRoute.push({
-			page: 'chats',
-			bar: 'info',
+			tab: 'chats',
+			context: 'info',
 			id,
 		}),
 	);
@@ -134,7 +134,9 @@ const ChatTable = () => {
 
 	return (
 		<>
-			{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && <FilterByText onChange={setText} />}
+			{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && (
+				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
+			)}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

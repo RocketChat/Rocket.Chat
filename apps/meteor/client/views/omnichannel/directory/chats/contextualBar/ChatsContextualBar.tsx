@@ -1,11 +1,12 @@
-import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import ChatInfo from './ChatInfo';
+import { RoomEditWithData } from './RoomEdit';
 import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../../components/Contextualbar';
 import { useRoom } from '../../../../room/contexts/RoomContext';
 import { useRoomToolbox } from '../../../../room/contexts/RoomToolboxContext';
-import ChatInfo from './ChatInfo';
-import { RoomEditWithData } from './RoomEdit';
 
 const PATH = 'live';
 
@@ -15,7 +16,7 @@ const HEADER_DATA = {
 } as const;
 
 const ChatsContextualBar = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const context = useRouteParameter('context') as 'edit' | 'info' | undefined;
 	const directoryRoute = useRoute(PATH);

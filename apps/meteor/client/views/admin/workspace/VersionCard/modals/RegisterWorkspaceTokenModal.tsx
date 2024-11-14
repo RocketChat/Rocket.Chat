@@ -1,8 +1,8 @@
 import { Box, Button, ButtonGroup, Field, FieldLabel, FieldRow, FieldError, Modal, TextInput } from '@rocket.chat/fuselage';
-import { useMethod, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMethod, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import React, { useState } from 'react';
-import { Trans } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 
 import WorkspaceRegistrationModal from './RegisterWorkspaceModal';
 
@@ -13,7 +13,7 @@ type RegisterWorkspaceTokenModalProps = {
 
 const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, ...props }: RegisterWorkspaceTokenModalProps) => {
 	const setModal = useSetModal();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const connectWorkspace = useMethod('cloud:connectWorkspace');
 
@@ -50,7 +50,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, ...props }: Regi
 			dispatchToastMessage({ type: 'error', message: error });
 			setError(true);
 		} finally {
-			await (onStatusChange && onStatusChange());
+			await onStatusChange?.();
 			setProcessing(false);
 		}
 	};

@@ -1,10 +1,10 @@
+import { BaseBridge } from './BaseBridge';
 import type { IVideoConfProvider } from '../../definition/videoConfProviders';
 import type { AppVideoConference } from '../../definition/videoConferences/AppVideoConference';
 import type { VideoConference } from '../../definition/videoConferences/IVideoConference';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export abstract class VideoConferenceBridge extends BaseBridge {
     public async doGetById(callId: string, appId: string): Promise<VideoConference> {

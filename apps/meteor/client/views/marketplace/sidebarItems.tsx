@@ -1,8 +1,8 @@
 import React from 'react';
 
+import MarketplaceRequestBadge from './components/MarketplaceRequestBadge';
 import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
-import MarketplaceRequestBadge from './components/MarketplaceRequestBadge';
 
 export const {
 	registerSidebarItem: registerMarketplaceSidebarItem,

@@ -1,5 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import VoipPopupHeader from './VoipPopupHeader';
 
@@ -21,11 +22,11 @@ it('should render close button when onClose is provided', () => {
 	expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
 });
 
-it('should call onClose when close button is clicked', () => {
+it('should call onClose when close button is clicked', async () => {
 	const closeFn = jest.fn();
 	render(<VoipPopupHeader onClose={closeFn} />, { wrapper: mockAppRoot().build(), legacyRoot: true });
 
-	screen.getByRole('button', { name: 'Close' }).click();
+	await userEvent.click(screen.getByRole('button', { name: 'Close' }));
 	expect(closeFn).toHaveBeenCalled();
 });
 

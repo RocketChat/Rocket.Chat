@@ -227,7 +227,7 @@ const RoomMenu = ({
 								},
 								action: handleToggleFavorite,
 							},
-					  }
+						}
 					: {}),
 				...(canLeave && {
 					leaveRoom: {
