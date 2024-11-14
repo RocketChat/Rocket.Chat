@@ -630,14 +630,14 @@ describe('LIVECHAT - contacts', () => {
 
 			const room = await createLivechatRoom(visitor.token);
 
-			expect(room.v).to.have.property('contactId', contactId);
+			expect(room).to.have.property('contactId', contactId);
 			expect(room).to.have.property('fname', 'Contact Name');
 		});
 
 		it('should update room names when a contact name changes', async () => {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			expect(room.v).to.have.property('contactId').that.is.a('string');
+			expect(room).to.have.property('contactId').that.is.a('string');
 			expect(room.fname).to.not.be.equal('New Contact Name');
 
 			const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
