@@ -1,0 +1,1 @@
+{"code":"function module(t,a,o){let e,n;o.link(\"../math\",{pi(t){e=t},tau(t){n=t}},0),o.exportDefault({draw:function(t,a){var o=Math.sqrt(a/e);t.moveTo(o,0),t.arc(0,0,o,0,n)}})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

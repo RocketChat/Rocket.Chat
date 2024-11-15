@@ -1,0 +1,1 @@
+{"code":"function module(i,l,n){n.link(\"./lib\")}","map":"{\"version\":3,\"sources\":[\"app/tokenpass/client/index.ts\",\"<anon>\"],\"sourcesContent\":[\"import './lib';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAA,CAAA\"}"}

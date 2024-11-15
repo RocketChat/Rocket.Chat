@@ -1,0 +1,1 @@
+{"code":"function module(t,r,n){var e;n.export({ServerTransaction:function(){return s}}),n.link(\"./transaction\",{Transaction:function(t){e=t}},0);class s extends e{constructor(t,r,n,e,s){super(r,n,t.viaBranch,e,s),this._request=t,this.user=n}get request(){return this._request}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

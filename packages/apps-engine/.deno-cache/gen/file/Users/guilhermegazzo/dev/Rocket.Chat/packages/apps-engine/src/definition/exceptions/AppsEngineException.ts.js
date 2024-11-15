@@ -1,0 +1,28 @@
+/**
+ * The internal exception from the framework
+ *
+ * It's used to signal to the outside world that
+ * a _known_ exception has happened during the execution
+ * of the apps.
+ *
+ * It's the base exception for other known classes
+ * such as UserNotAllowedException, which is used
+ * to inform the host that an app identified
+ * that a user cannot perform some action, e.g.
+ * join a room
+ */ export class AppsEngineException extends Error {
+  name = 'AppsEngineException';
+  static JSONRPC_ERROR_CODE = -32070;
+  message;
+  constructor(message){
+    super();
+    this.message = message;
+  }
+  getErrorInfo() {
+    return {
+      name: this.name,
+      message: this.message
+    };
+  }
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZpbGU6Ly8vVXNlcnMvZ3VpbGhlcm1lZ2F6em8vZGV2L1JvY2tldC5DaGF0L3BhY2thZ2VzL2FwcHMtZW5naW5lL3NyYy9kZWZpbml0aW9uL2V4Y2VwdGlvbnMvQXBwc0VuZ2luZUV4Y2VwdGlvbi50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIFRoZSBpbnRlcm5hbCBleGNlcHRpb24gZnJvbSB0aGUgZnJhbWV3b3JrXG4gKlxuICogSXQncyB1c2VkIHRvIHNpZ25hbCB0byB0aGUgb3V0c2lkZSB3b3JsZCB0aGF0XG4gKiBhIF9rbm93bl8gZXhjZXB0aW9uIGhhcyBoYXBwZW5lZCBkdXJpbmcgdGhlIGV4ZWN1dGlvblxuICogb2YgdGhlIGFwcHMuXG4gKlxuICogSXQncyB0aGUgYmFzZSBleGNlcHRpb24gZm9yIG90aGVyIGtub3duIGNsYXNzZXNcbiAqIHN1Y2ggYXMgVXNlck5vdEFsbG93ZWRFeGNlcHRpb24sIHdoaWNoIGlzIHVzZWRcbiAqIHRvIGluZm9ybSB0aGUgaG9zdCB0aGF0IGFuIGFwcCBpZGVudGlmaWVkXG4gKiB0aGF0IGEgdXNlciBjYW5ub3QgcGVyZm9ybSBzb21lIGFjdGlvbiwgZS5nLlxuICogam9pbiBhIHJvb21cbiAqL1xuZXhwb3J0IGNsYXNzIEFwcHNFbmdpbmVFeGNlcHRpb24gZXh0ZW5kcyBFcnJvciB7XG4gICAgcHVibGljIG5hbWUgPSAnQXBwc0VuZ2luZUV4Y2VwdGlvbic7XG5cbiAgICBwdWJsaWMgc3RhdGljIEpTT05SUENfRVJST1JfQ09ERSA9IC0zMjA3MDtcblxuICAgIHB1YmxpYyBtZXNzYWdlOiBzdHJpbmc7XG5cbiAgICBjb25zdHJ1Y3RvcihtZXNzYWdlPzogc3RyaW5nKSB7XG4gICAgICAgIHN1cGVyKCk7XG4gICAgICAgIHRoaXMubWVzc2FnZSA9IG1lc3NhZ2U7XG4gICAgfVxuXG4gICAgcHVibGljIGdldEVycm9ySW5mbygpIHtcbiAgICAgICAgcmV0dXJuIHtcbiAgICAgICAgICAgIG5hbWU6IHRoaXMubmFtZSxcbiAgICAgICAgICAgIG1lc3NhZ2U6IHRoaXMubWVzc2FnZSxcbiAgICAgICAgfTtcbiAgICB9XG59XG4iXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7Ozs7Ozs7Ozs7OztDQVlDLEdBQ0QsT0FBTyxNQUFNLDRCQUE0QjtFQUM5QixPQUFPLHNCQUFzQjtFQUVwQyxPQUFjLHFCQUFxQixDQUFDLE1BQU07RUFFbkMsUUFBZ0I7RUFFdkIsWUFBWSxPQUFnQixDQUFFO0lBQzFCLEtBQUs7SUFDTCxJQUFJLENBQUMsT0FBTyxHQUFHO0VBQ25CO0VBRU8sZUFBZTtJQUNsQixPQUFPO01BQ0gsTUFBTSxJQUFJLENBQUMsSUFBSTtNQUNmLFNBQVMsSUFBSSxDQUFDLE9BQU87SUFDekI7RUFDSjtBQUNKIn0=

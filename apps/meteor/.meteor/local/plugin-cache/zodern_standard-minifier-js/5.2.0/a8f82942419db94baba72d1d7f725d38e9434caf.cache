@@ -1,0 +1,1 @@
+{"code":"function module(r,e,n){var i=r(\"./_compareAscending\");n.exports=function(r,e,n){for(var t=-1,c=r.criteria,a=e.criteria,o=c.length,u=n.length;++t<o;){var d=i(c[t],a[t]);if(d){if(t>=u)return d;return d*(\"desc\"==n[t]?-1:1)}}return r.index-e.index}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

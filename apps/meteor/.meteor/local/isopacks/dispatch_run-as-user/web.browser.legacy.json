@@ -1,0 +1,65 @@
+{
+  "format": "isopack-2-unibuild",
+  "declaredExports": [],
+  "uses": [
+    {
+      "package": "meteor"
+    },
+    {
+      "package": "check"
+    },
+    {
+      "package": "underscore"
+    },
+    {
+      "package": "mongo"
+    },
+    {
+      "package": "ddp"
+    },
+    {
+      "package": "minimongo"
+    }
+  ],
+  "resources": [
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/lib/pre.1.0.3.js",
+      "length": 3040,
+      "offset": 0,
+      "usesDefaultSourceProcessor": true,
+      "path": "lib/pre.1.0.3.js",
+      "hash": "f8f6d24d30e0998901e1bb1cea290b66cdc6ea46",
+      "fileOptions": {
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/lib/common.js",
+      "length": 2547,
+      "offset": 0,
+      "usesDefaultSourceProcessor": true,
+      "path": "lib/common.js",
+      "hash": "364bdf0eb32207b6efd3448d21edd4c77194fd8f",
+      "fileOptions": {
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/lib/collection.overwrites.js",
+      "length": 2671,
+      "offset": 0,
+      "usesDefaultSourceProcessor": true,
+      "path": "lib/collection.overwrites.js",
+      "hash": "405e136e84b8263bca547c2d79cec0854923073c",
+      "fileOptions": {
+        "lazy": false
+      }
+    }
+  ]
+}

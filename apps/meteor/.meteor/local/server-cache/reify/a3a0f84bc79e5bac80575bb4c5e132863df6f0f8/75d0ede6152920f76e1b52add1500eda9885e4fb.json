@@ -1,0 +1,16 @@
+"use strict";module.export({isIntegrationsHistoryProps:()=>isIntegrationsHistoryProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({ coerceTypes: true });
+const integrationsHistorySchema = {
+    type: 'object',
+    properties: {
+        id: { type: 'string', nullable: false, minLength: 1 },
+        offset: { type: 'number', nullable: true },
+        count: { type: 'number', nullable: true },
+        sort: { type: 'string', nullable: true },
+        query: { type: 'string', nullable: true },
+    },
+    required: ['id'],
+    additionalProperties: false,
+};
+const isIntegrationsHistoryProps = ajv.compile(integrationsHistorySchema);
+//# sourceMappingURL=IntegrationsHistoryProps.js.map

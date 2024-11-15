@@ -1,0 +1,1 @@
+{"code":"function module(n,o,r){r.exports={name:\"brorand\",version:\"1.1.0\",browser:{crypto:!1},main:\"index.js\"}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

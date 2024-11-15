@@ -1,0 +1,1 @@
+{"code":"function module(e,n,t){t.exports=function(e){return{name:\"Clojure REPL\",contains:[{className:\"meta.prompt\",begin:/^([\\w.-]+|\\s*#_)?=>/,starts:{end:/$/,subLanguage:\"clojure\"}}]}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

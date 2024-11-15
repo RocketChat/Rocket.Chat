@@ -1,0 +1,1 @@
+{"code":"function module(e,a,l){l.link(\"./CreateTeamModal\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/sidebar/header/CreateTeam/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './CreateTeamModal';\\n\",null],\"names\":[\"module\",\"link\",\"default\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,oBAAe,CAAAC,QAAA,SAAoB,EAAA\"}"}

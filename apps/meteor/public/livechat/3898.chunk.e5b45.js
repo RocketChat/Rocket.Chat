@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunk_rocket_chat_livechat=self.webpackChunk_rocket_chat_livechat||[]).push([[3898],{3898:function(e,t){Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e,t,r,l){return a[e]};var a={lastWeek:"eeee 'trecută la' p",yesterday:"'ieri la' p",today:"'astăzi la' p",tomorrow:"'mâine la' p",nextWeek:"eeee 'viitoare la' p",other:"P"};e.exports=t.default}}]);
+//# sourceMappingURL=3898.chunk.e5b45.js.map

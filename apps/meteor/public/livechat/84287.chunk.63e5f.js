@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunk_rocket_chat_livechat=self.webpackChunk_rocket_chat_livechat||[]).push([[84287],{84287:function(e,t){Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e,t,r,c){return a[e]};var a={lastWeek:"'પાછલા' eeee p",yesterday:"'ગઈકાલે' p",today:"'આજે' p",tomorrow:"'આવતીકાલે' p",nextWeek:"eeee p",other:"P"};e.exports=t.default}}]);
+//# sourceMappingURL=84287.chunk.63e5f.js.map

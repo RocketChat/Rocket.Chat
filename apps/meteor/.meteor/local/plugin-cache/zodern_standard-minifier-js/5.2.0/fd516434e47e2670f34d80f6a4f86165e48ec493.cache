@@ -1,0 +1,1 @@
+{"code":"function module(n,t,u){u.exportDefault(function(n){return function(t){return t.replace(/[0-9]/g,function(t){return n[+t]})}})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

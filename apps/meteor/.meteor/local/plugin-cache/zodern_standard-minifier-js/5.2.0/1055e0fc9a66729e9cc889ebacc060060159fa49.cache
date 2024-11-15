@@ -1,0 +1,1 @@
+{"code":"function module(i,n,o){o.exports={name:\"@nivo/bar\",version:\"0.84.0\",module:\"./dist/nivo-bar.es.js\",main:\"./dist/nivo-bar.cjs.js\"}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

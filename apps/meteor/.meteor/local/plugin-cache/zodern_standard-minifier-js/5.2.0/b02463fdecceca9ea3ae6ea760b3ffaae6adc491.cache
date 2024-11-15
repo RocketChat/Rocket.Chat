@@ -1,0 +1,1 @@
+{"code":"function module(e,n){let u=e(\"./types\");n.wordBoundary=()=>({type:u.POSITION,value:\"b\"}),n.nonWordBoundary=()=>({type:u.POSITION,value:\"B\"}),n.begin=()=>({type:u.POSITION,value:\"^\"}),n.end=()=>({type:u.POSITION,value:\"$\"})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

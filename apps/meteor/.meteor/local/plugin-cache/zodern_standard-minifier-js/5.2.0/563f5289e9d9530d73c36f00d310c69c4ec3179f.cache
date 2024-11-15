@@ -1,0 +1,1 @@
+{"code":"function module(e,s,a){a.exports={name:\"@rocket.chat/message-parser\",version:\"0.31.31\",main:\"messageParser.js\",module:\"dist/messageParser.mjs\"}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

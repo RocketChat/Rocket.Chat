@@ -1,0 +1,1 @@
+{"code":"function module(i,n,e){e.link(\"./lib\"),e.link(\"./emojione-sprites.css\")}","map":"{\"version\":3,\"sources\":[\"app/emoji-emojione/client/index.ts\",\"<anon>\"],\"sourcesContent\":[\"import './lib';\\nimport './emojione-sprites.css';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAA,CAAA,SAAQD,EAAAC,IAAA,CAAA\"}"}

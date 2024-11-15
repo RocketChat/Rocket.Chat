@@ -1,0 +1,1 @@
+{"code":"function module(e,a,r){r.exportDefault(function(e){e:for(var a,r=e.length,t=1,c=-1;t<r;++t)switch(e[t]){case\".\":c=a=t;break;case\"0\":0===c&&(c=t),a=t;break;default:if(!+e[t])break e;c>0&&(c=0)}return c>0?e.slice(0,c)+e.slice(a+1):e})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

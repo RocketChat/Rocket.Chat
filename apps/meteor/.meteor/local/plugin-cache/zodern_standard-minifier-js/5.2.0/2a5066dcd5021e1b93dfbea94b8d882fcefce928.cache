@@ -1,0 +1,1 @@
+{"code":"function module(t,n,a){a.link(\"d3-color\",{rgb:function(t){r=t}},0);var r,i=r(),o=Math.PI/3,h=2*Math.PI/3;a.exportDefault(function(t){var n;return t=(.5-t)*Math.PI,i.r=255*(n=Math.sin(t))*n,i.g=255*(n=Math.sin(t+o))*n,i.b=255*(n=Math.sin(t+h))*n,i+\"\"})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

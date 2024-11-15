@@ -1,0 +1,1 @@
+{"code":"function module(o,t,n){\"use strict\";var _={__proto__:null,foo:{}},r=Object;n.exports=function o(){return({__proto__:_}).foo===_.foo&&!(_ instanceof r)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

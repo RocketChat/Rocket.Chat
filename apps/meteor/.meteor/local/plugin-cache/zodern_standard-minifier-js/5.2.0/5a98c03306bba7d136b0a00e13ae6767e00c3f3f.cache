@@ -1,0 +1,1 @@
+{"code":"function module(n,s,e){e.link(\"./startup/responses\")}","map":"{\"version\":3,\"sources\":[\"app/canned-responses/client/index.ts\",\"<anon>\"],\"sourcesContent\":[\"import './startup/responses';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAA,CAAA\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(r,t,e){\"use strict\";var n=r(\"which-typed-array\");e.exports=function r(r){return!!n(r)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,41 @@
+"use strict";module.export({isPermissionsListAll:()=>isPermissionsListAll,isBodyParamsValidPermissionUpdate:()=>isBodyParamsValidPermissionUpdate},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const permissionListAllSchema = {
+    type: 'object',
+    properties: {
+        updatedSince: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isPermissionsListAll = ajv.compile(permissionListAllSchema);
+const permissionUpdatePropsSchema = {
+    type: 'object',
+    properties: {
+        permissions: {
+            type: 'array',
+            items: {
+                type: 'object',
+                properties: {
+                    _id: { type: 'string' },
+                    roles: {
+                        type: 'array',
+                        items: { type: 'string' },
+                        uniqueItems: true,
+                    },
+                },
+                additionalProperties: false,
+                required: ['_id', 'roles'],
+            },
+        },
+    },
+    required: ['permissions'],
+    additionalProperties: false,
+};
+const isBodyParamsValidPermissionUpdate = ajv.compile(permissionUpdatePropsSchema);
+//# sourceMappingURL=permissions.js.map

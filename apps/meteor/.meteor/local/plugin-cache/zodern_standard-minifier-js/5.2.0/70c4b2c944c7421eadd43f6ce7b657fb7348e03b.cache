@@ -1,0 +1,1 @@
+{"code":"function module(i,n,o){o.link(\"./topic\")}","map":"{\"version\":3,\"sources\":[\"app/slashcommands-topic/client/index.ts\",\"<anon>\"],\"sourcesContent\":[\"import './topic';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAA,CAAA\"}"}

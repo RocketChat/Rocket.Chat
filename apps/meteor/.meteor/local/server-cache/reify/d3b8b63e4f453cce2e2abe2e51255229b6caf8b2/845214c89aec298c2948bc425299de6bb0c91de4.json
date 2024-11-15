@@ -1,0 +1,37 @@
+"use strict";module.export({isEmojiCustomDelete:()=>isEmojiCustomDelete,isEmojiCustomList:()=>isEmojiCustomList},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const emojiCustomDeletePropsSchema = {
+    type: 'object',
+    properties: {
+        emojiId: {
+            type: 'string',
+        },
+    },
+    required: ['emojiId'],
+    additionalProperties: false,
+};
+const isEmojiCustomDelete = ajv.compile(emojiCustomDeletePropsSchema);
+const emojiCustomListSchema = {
+    type: 'object',
+    properties: {
+        query: {
+            type: 'string',
+        },
+        updatedSince: {
+            type: 'string',
+            nullable: true,
+        },
+        _updatedAt: {
+            type: 'string',
+        },
+        _id: {
+            type: 'string',
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isEmojiCustomList = ajv.compile(emojiCustomListSchema);
+//# sourceMappingURL=emojiCustom.js.map

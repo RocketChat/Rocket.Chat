@@ -1,0 +1,1 @@
+{"code":"function module(t,e,o){let r;o.export({isoSpecifier:()=>i}),o.link(\"./defaultLocale.js\",{utcFormat(t){r=t}},0);var i=\"%Y-%m-%dT%H:%M:%S.%LZ\",n=Date.prototype.toISOString?function(t){return t.toISOString()}:r(i);o.exportDefault(n)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

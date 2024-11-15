@@ -1,0 +1,85 @@
+{
+  "format": "isopack-2-unibuild",
+  "declaredExports": [],
+  "uses": [
+    {
+      "package": "meteor"
+    },
+    {
+      "package": "check"
+    },
+    {
+      "package": "webapp"
+    },
+    {
+      "package": "ecmascript"
+    },
+    {
+      "package": "accounts-password"
+    }
+  ],
+  "resources": [
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/lib/restivus.js",
+      "length": 6021,
+      "offset": 0,
+      "path": "lib/restivus.js",
+      "hash": "d605ed418299b5b361cccff66c656716bc8fa37e",
+      "fileOptions": {
+        "mainModule": true,
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/lib/auth.js",
+      "length": 2632,
+      "offset": 0,
+      "path": "lib/auth.js",
+      "hash": "547eb218591c295e3cd90a86ee54b98d28577c16",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/lib/iron-router-error-to-response.js",
+      "length": 1058,
+      "offset": 0,
+      "path": "lib/iron-router-error-to-response.js",
+      "hash": "5e084e4fd5febd5169d985ed83ed2bb7e0cc2222",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/lib/json-routes.js",
+      "length": 1155,
+      "offset": 0,
+      "path": "lib/json-routes.js",
+      "hash": "6bd1ea624b4a781c88441ffef34d2fd3b2338bc2",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/lib/route.js",
+      "length": 9053,
+      "offset": 0,
+      "path": "lib/route.js",
+      "hash": "81e15440d9f34d2f71b2f5c6627afefe7e1b3b56",
+      "fileOptions": {
+        "lazy": true
+      }
+    }
+  ],
+  "node_modules": "npm/node_modules"
+}

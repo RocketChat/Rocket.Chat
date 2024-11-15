@@ -1,0 +1,1 @@
+{"code":"function module(a,l,u){u.link(\"./NavBar\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/NavBarV2/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './NavBar';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,WAAS,CAAM,QAAA,SAAW,EAAA\"}"}

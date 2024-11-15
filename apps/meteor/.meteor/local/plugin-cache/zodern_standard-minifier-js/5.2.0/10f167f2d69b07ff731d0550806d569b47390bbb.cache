@@ -1,0 +1,1 @@
+{"code":"function module(e,r,n){let s,t;n.export({MessageUserAgentServer:()=>o}),n.link(\"../transactions\",{NonInviteServerTransaction(e){s=e}},0),n.link(\"./user-agent-server\",{UserAgentServer(e){t=e}},1);class o extends t{constructor(e,r,n){super(s,e,r,n)}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

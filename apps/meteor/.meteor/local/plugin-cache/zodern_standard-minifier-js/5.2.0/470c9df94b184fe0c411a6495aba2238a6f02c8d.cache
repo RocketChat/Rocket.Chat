@@ -1,0 +1,1 @@
+{"code":"function module(e,a,s){var t=e(\"./_baseIsDate\"),n=e(\"./_baseUnary\"),o=e(\"./_nodeUtil\"),i=o&&o.isDate,r=i?n(i):t;s.exports=r}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

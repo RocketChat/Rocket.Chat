@@ -1,0 +1,26 @@
+{
+  "isopack-2": {
+    "name": "dispatch:run-as-user",
+    "summary": "Adds Meteor.runAsUser(user, f) and Meteor.isRestricted()",
+    "version": "1.1.1",
+    "isTest": false,
+    "builds": [
+      {
+        "kind": "main",
+        "arch": "os",
+        "path": "os.json"
+      },
+      {
+        "kind": "main",
+        "arch": "web.browser",
+        "path": "web.browser.json"
+      },
+      {
+        "kind": "main",
+        "arch": "web.browser.legacy",
+        "path": "web.browser.legacy.json"
+      }
+    ],
+    "plugins": []
+  }
+}

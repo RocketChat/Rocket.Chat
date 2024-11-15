@@ -1,0 +1,1 @@
+{"code":"function module(e,s,o){let l=e(\"../classes/semver\");o.exports=(e,s)=>new l(e,s).major}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

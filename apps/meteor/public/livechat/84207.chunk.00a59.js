@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunk_rocket_chat_livechat=self.webpackChunk_rocket_chat_livechat||[]).push([[84207],{84207:function(e,t){Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e,t,r,c){return a[e]};var a={lastWeek:"'წინა' eeee p'-ზე'",yesterday:"'გუშინ' p'-ზე'",today:"'დღეს' p'-ზე'",tomorrow:"'ხვალ' p'-ზე'",nextWeek:"'შემდეგი' eeee p'-ზე'",other:"P"};e.exports=t.default}}]);
+//# sourceMappingURL=84207.chunk.00a59.js.map

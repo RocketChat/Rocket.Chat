@@ -1,0 +1,1 @@
+{"code":"function module(t,e,i){let o;i.export({UiKitContext:()=>a},!0),i.link(\"react\",{createContext(t){o=t}},0);let a=o({action:()=>void 0,updateState:()=>void 0,appId:\"core\",values:{}});Object.assign(a.Provider,{displayName:\"UiKitContext.Provider\"})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

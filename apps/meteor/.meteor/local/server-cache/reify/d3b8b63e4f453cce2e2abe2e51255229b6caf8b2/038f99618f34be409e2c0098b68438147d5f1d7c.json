@@ -1,0 +1,29 @@
+"use strict";module.export({isReportsByMsgIdParams:()=>isReportsByMsgIdParams},true);var ajv;module.link('../Ajv',{ajv(v){ajv=v}},0);
+const schema = {
+    type: 'object',
+    properties: {
+        msgId: {
+            type: 'string',
+            minLength: 1,
+        },
+        selector: {
+            type: 'string',
+        },
+        count: {
+            type: 'integer',
+            nullable: true,
+        },
+        offset: {
+            type: 'integer',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: ['msgId'],
+    additionalProperties: false,
+};
+const isReportsByMsgIdParams = ajv.compile(schema);
+//# sourceMappingURL=ReportsByMsgIdParams.js.map

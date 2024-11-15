@@ -1,0 +1,1 @@
+{"code":"function module(o,n,d){d.export({global:()=>e});var e=\"undefined\"!=typeof window?window:{}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

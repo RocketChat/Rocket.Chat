@@ -1,0 +1,1 @@
+{"code":"function module(t,e,r){\"use strict\";var c=t(\"get-intrinsic\")(\"%Object.getOwnPropertyDescriptor%\",!0);if(c)try{c([],\"length\")}catch(t){c=null}r.exports=c}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

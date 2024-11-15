@@ -1,0 +1,1 @@
+{"code":"function module(n,e,s){s.exports=function(n){return{contains:[{className:\"meta\",begin:/^([\\w.-]+|\\s*#_)?=>/,starts:{end:/$/,subLanguage:\"clojure\"}}]}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

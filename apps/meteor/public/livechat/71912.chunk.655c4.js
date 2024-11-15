@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunk_rocket_chat_livechat=self.webpackChunk_rocket_chat_livechat||[]).push([[71912],{71912:function(e,t){Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var a={lastWeek:"eeee 'שעבר בשעה' p",yesterday:"'אתמול בשעה' p",today:"'היום בשעה' p",tomorrow:"'מחר בשעה' p",nextWeek:"eeee 'בשעה' p",other:"P"};t.default=function(e,t,o,r){return a[e]},e.exports=t.default}}]);
+//# sourceMappingURL=71912.chunk.655c4.js.map

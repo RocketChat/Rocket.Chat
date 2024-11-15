@@ -1,0 +1,1 @@
+{"code":"function module(e,n,r){var t=/\\w*$/;r.exports=function(e){var n=new e.constructor(e.source,t.exec(e));return n.lastIndex=e.lastIndex,n}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

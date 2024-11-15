@@ -1,0 +1,1 @@
+{"code":"function module(i,n,s){s.exports={name:\"inherits-ex\",version:\"1.3.5\",browser:{\"./lib/isEmptyFunction.js\":\"./lib/isEmptyFunction-cli.js\"},main:\"./index.js\"}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

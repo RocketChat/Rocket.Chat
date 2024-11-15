@@ -1,0 +1,16 @@
+"use strict";module.export({isAutotranslateGetSupportedLanguagesParamsGET:()=>isAutotranslateGetSupportedLanguagesParamsGET},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const AutotranslateGetSupportedLanguagesParamsGETSchema = {
+    type: 'object',
+    properties: {
+        targetLanguage: {
+            type: 'string',
+        },
+    },
+    required: ['targetLanguage'],
+    additionalProperties: false,
+};
+const isAutotranslateGetSupportedLanguagesParamsGET = ajv.compile(AutotranslateGetSupportedLanguagesParamsGETSchema);
+//# sourceMappingURL=AutotranslateGetSupportedLanguagesParamsGET.js.map

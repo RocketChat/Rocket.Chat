@@ -1,0 +1,1 @@
+{"code":"function module(r,e){\"use strict\";Object.defineProperty(e,\"__esModule\",{value:!0}),e.functionalAssert=void 0;var n=r(\"../../TypeGuardError\");e.functionalAssert=function(){return{errorFactory:function(r){return new n.TypeGuardError(r)}}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

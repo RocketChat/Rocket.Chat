@@ -1,0 +1,172 @@
+/*!
+ * css-vars-ponyfill
+ * v2.4.8
+ * https://jhildenbiddle.github.io/css-vars-ponyfill/
+ * (c) 2018-2022 John Hildenbiddle <http://hildenbiddle.com>
+ * MIT license
+ */
+
+/*!
+ * get-css-data
+ * v2.1.0
+ * https://github.com/jhildenbiddle/get-css-data
+ * (c) 2018-2022 John Hildenbiddle <http://hildenbiddle.com>
+ * MIT license
+ */
+
+/**
+ * Fetches, parses, and transforms CSS custom properties from specified
+ * <style> and <link> elements into static values, then appends a new <style>
+ * element with static values to the DOM to provide CSS custom property
+ * compatibility for legacy browsers. Also provides a single interface for
+ * live updates of runtime values in both modern and legacy browsers.
+ *
+ * @preserve
+ * @param {object}   [options] Options object
+ * @param {object}   [options.rootElement=document] Root element to traverse for
+ *                   <link> and <style> nodes
+ * @param {boolean}  [options.shadowDOM=false] Determines if shadow DOM <link>
+ *                   and <style> nodes will be processed.
+ * @param {string}   [options.include="style,link[rel=stylesheet]"] CSS selector
+ *                   matching <link re="stylesheet"> and <style> nodes to
+ *                   process
+ * @param {string}   [options.exclude] CSS selector matching <link
+ *                   rel="stylehseet"> and <style> nodes to exclude from those
+ *                   matches by options.include
+ * @param {object}   [options.variables] A map of custom property name/value
+ *                   pairs. Property names can omit or include the leading
+ *                   double-hyphen (—), and values specified will override
+ *                   previous values
+ * @param {boolean}  [options.onlyLegacy=true] Determines if the ponyfill will
+ *                   only generate legacy-compatible CSS in browsers that lack
+ *                   native support (i.e., legacy browsers)
+ * @param {boolean}  [options.preserveStatic=true] Determines if CSS
+ *                   declarations that do not reference a custom property will
+ *                   be preserved in the transformed CSS
+ * @param {boolean}  [options.preserveVars=false] Determines if CSS custom
+ *                   property declarations will be preserved in the transformed
+ *                   CSS
+ * @param {boolean}  [options.silent=false] Determines if warning and error
+ *                   messages will be displayed on the console
+ * @param {boolean}  [options.updateDOM=true] Determines if the ponyfill will
+ *                   update the DOM after processing CSS custom properties
+ * @param {boolean}  [options.updateURLs=true] Determines if relative url()
+ *                   paths will be converted to absolute urls in external CSS
+ * @param {boolean}  [options.watch=false] Determines if a MutationObserver will
+ *                   be created that will execute the ponyfill when a <link> or
+ *                   <style> DOM mutation is observed
+ * @param {function} [options.onBeforeSend] Callback before XHR is sent. Passes
+ *                   1) the XHR object, 2) source node reference, and 3) the
+ *                   source URL as arguments
+ * @param {function} [options.onError] Callback after a CSS parsing error has
+ *                   occurred or an XHR request has failed. Passes 1) an error
+ *                   message, and 2) source node reference, 3) xhr, and 4 url as
+ *                   arguments.
+ * @param {function} [options.onWarning] Callback after each CSS parsing warning
+ *                   has occurred. Passes 1) a warning message as an argument.
+ * @param {function} [options.onSuccess] Callback after CSS data has been
+ *                   collected from each node and before CSS custom properties
+ *                   have been transformed. Allows modifying the CSS data before
+ *                   it is transformed by returning any string value (or false
+ *                   to skip). Passes 1) CSS text, 2) source node reference, and
+ *                   3) the source URL as arguments.
+ * @param {function} [options.onComplete] Callback after all CSS has been
+ *                   processed, legacy-compatible CSS has been generated, and
+ *                   (optionally) the DOM has been updated. Passes 1) a CSS
+ *                   string with CSS variable values resolved, 2) an array of
+ *                   output <style> node references that have been appended to
+ *                   the DOM, 3) an object containing all custom properies names
+ *                   and values, and 4) the ponyfill execution time in
+ *                   milliseconds.
+ * @param {function} [options.onFinally] Callback in modern and legacy browsers
+ *                   after the ponyfill has finished all tasks. Passes 1) a
+ *                   boolean indicating if the last ponyfill call resulted in a
+ *                   style change, 2) a boolean indicating if the current
+ *                   browser provides native support for CSS custom properties,
+ *                   and 3) the ponyfill execution time in milliseconds.
+ * @example
+ *
+ *   cssVars({
+ *     rootElement   : document,
+ *     shadowDOM     : false,
+ *     include       : 'style,link[rel="stylesheet"]',
+ *     exclude       : '',
+ *     variables     : {},
+ *     onlyLegacy    : true,
+ *     preserveStatic: true,
+ *     preserveVars  : false,
+ *     silent        : false,
+ *     updateDOM     : true,
+ *     updateURLs    : true,
+ *     watch         : false,
+ *     onBeforeSend(xhr, node, url) {},
+ *     onError(message, node, xhr, url) {},
+ *     onWarning(message) {},
+ *     onSuccess(cssText, node, url) {},
+ *     onComplete(cssText, styleNode, cssVariables, benchmark) {},
+ *     onFinally(hasChanged, hasNativeSupport, benchmark)
+ *   });
+ */
+
+/**
+ * Gets CSS data from <style> and <link> nodes (including @imports), then
+ * returns data in order processed by DOM. Allows specifying nodes to
+ * include/exclude and filtering CSS data using RegEx.
+ *
+ * @preserve
+ * @param {object}   [options] The options object
+ * @param {object}   [options.rootElement=document] Root element to traverse for
+ *                   <link> and <style> nodes.
+ * @param {string}   [options.include] CSS selector matching <link> and <style>
+ *                   nodes to include
+ * @param {string}   [options.exclude] CSS selector matching <link> and <style>
+ *                   nodes to exclude
+ * @param {object}   [options.filter] Regular expression used to filter node CSS
+ *                   data. Each block of CSS data is tested against the filter,
+ *                   and only matching data is included.
+ * @param {boolean}  [options.skipDisabled=true] Determines if disabled
+ *                   stylesheets will be skipped while collecting CSS data.
+ * @param {boolean}  [options.useCSSOM=false] Determines if CSS data will be
+ *                   collected from a stylesheet's runtime values instead of its
+ *                   text content. This is required to get accurate CSS data
+ *                   when a stylesheet has been modified using the deleteRule()
+ *                   or insertRule() methods because these modifications will
+ *                   not be reflected in the stylesheet's text content.
+ * @param {function} [options.onBeforeSend] Callback before XHR is sent. Passes
+ *                   1) the XHR object, 2) source node reference, and 3) the
+ *                   source URL as arguments.
+ * @param {function} [options.onSuccess] Callback on each CSS node read. Passes
+ *                   1) CSS text, 2) source node reference, and 3) the source
+ *                   URL as arguments.
+ * @param {function} [options.onError] Callback on each error. Passes 1) the XHR
+ *                   object for inspection, 2) soure node reference, and 3) the
+ *                   source URL that failed (either a <link> href or an @import)
+ *                   as arguments
+ * @param {function} [options.onComplete] Callback after all nodes have been
+ *                   processed. Passes 1) concatenated CSS text, 2) an array of
+ *                   CSS text in DOM order, and 3) an array of nodes in DOM
+ *                   order as arguments.
+ *
+ * @example
+ *
+ *   getCssData({
+ *     rootElement : document,
+ *     include     : 'style,link[rel="stylesheet"]',
+ *     exclude     : '[href="skip.css"]',
+ *     filter      : /red/,
+ *     skipDisabled: true,
+ *     useCSSOM    : false,
+ *     onBeforeSend(xhr, node, url) {
+ *       // ...
+ *     }
+ *     onSuccess(cssText, node, url) {
+ *       // ...
+ *     }
+ *     onError(xhr, node, url) {
+ *       // ...
+ *     },
+ *     onComplete(cssText, cssArray, nodeArray) {
+ *       // ...
+ *     }
+ *   });
+ */

@@ -1,0 +1,1 @@
+{"code":"function module(e,o){\"use strict\";Object.defineProperty(o,\"__esModule\",{value:!0}),o.UiKitComponent=void 0,o.UiKitComponent=({render:e,blocks:o})=>e(o)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

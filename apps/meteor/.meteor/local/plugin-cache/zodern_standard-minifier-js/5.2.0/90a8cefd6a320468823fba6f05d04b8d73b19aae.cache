@@ -1,0 +1,1 @@
+{"code":"function module(e,t,r){let n=/^[0-9]+$/,o=(e,t)=>{let r=n.test(e),o=n.test(t);return r&&o&&(e=+e,t=+t),e===t?0:r&&!o?-1:o&&!r?1:e<t?-1:1};r.exports={compareIdentifiers:o,rcompareIdentifiers:(e,t)=>o(t,e)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

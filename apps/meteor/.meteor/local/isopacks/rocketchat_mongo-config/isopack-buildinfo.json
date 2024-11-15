@@ -1,0 +1,272 @@
+{
+  "builtBy": "meteor/34",
+  "unibuildDependencies": {
+    "os.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config/package.js": "8152d9a940e8f72f371df98a88b3f34302002520",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config/server/index.js": "aef7a28ceaa3c3e41655c59ff9cc1bb99097de41"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config/server/index.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config",
+          "include": [
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "server/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config/server",
+          "include": [
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "index.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config/server",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config/package.js": "8152d9a940e8f72f371df98a88b3f34302002520",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config/server/index.js": "aef7a28ceaa3c3e41655c59ff9cc1bb99097de41"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config/server/index.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "server/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config/server",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "index.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config/server",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.legacy.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config/package.js": "8152d9a940e8f72f371df98a88b3f34302002520",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config/server/index.js": "aef7a28ceaa3c3e41655c59ff9cc1bb99097de41"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config/server/index.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "server/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config/server",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "index.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config/server",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    }
+  },
+  "pluginDependencies": {
+    "files": {
+      "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config/package.js": "8152d9a940e8f72f371df98a88b3f34302002520"
+    },
+    "potentiallyUnusedFiles": [],
+    "directories": []
+  },
+  "pluginProviderPackageMap": {
+    "rocketchat:mongo-config": {
+      "kind": "local",
+      "sourceRoot": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-mongo-config"
+    },
+    "meteor": {
+      "kind": "versioned",
+      "version": "2.0.1"
+    },
+    "ecmascript": {
+      "kind": "versioned",
+      "version": "0.16.9"
+    },
+    "mongo": {
+      "kind": "versioned",
+      "version": "2.0.2"
+    },
+    "email": {
+      "kind": "versioned",
+      "version": "3.1.0"
+    },
+    "http": {
+      "kind": "versioned",
+      "version": "1.4.4"
+    },
+    "modules": {
+      "kind": "versioned",
+      "version": "0.20.2"
+    },
+    "ecmascript-runtime": {
+      "kind": "versioned",
+      "version": "0.8.3"
+    },
+    "babel-runtime": {
+      "kind": "versioned",
+      "version": "1.5.2"
+    },
+    "promise": {
+      "kind": "versioned",
+      "version": "1.0.0"
+    },
+    "dynamic-import": {
+      "kind": "versioned",
+      "version": "0.7.4"
+    },
+    "ecmascript-runtime-client": {
+      "kind": "versioned",
+      "version": "0.12.2"
+    },
+    "ecmascript-runtime-server": {
+      "kind": "versioned",
+      "version": "0.11.1"
+    }
+  },
+  "includeCordovaUnibuild": false
+}

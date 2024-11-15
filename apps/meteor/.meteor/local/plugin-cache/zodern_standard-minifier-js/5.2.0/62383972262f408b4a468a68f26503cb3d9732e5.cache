@@ -1,0 +1,1 @@
+{"code":"function module(t,e,n){n.export({default:function(){return i}});function i(t=this.params.speed,e=!0,n){return this.slideTo(this.activeIndex,t,e,n)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

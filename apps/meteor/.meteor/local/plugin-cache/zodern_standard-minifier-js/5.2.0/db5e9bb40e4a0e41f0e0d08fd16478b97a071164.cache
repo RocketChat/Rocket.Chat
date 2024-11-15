@@ -1,0 +1,1 @@
+{"code":"function module(t,a,e){var n=t(\"./_baseIsMatch\"),r=t(\"./_getMatchData\"),c=t(\"./_matchesStrictComparable\");e.exports=function(t){var a=r(t);return 1==a.length&&a[0][2]?c(a[0][0],a[0][1]):function(e){return e===t||n(e,t,a)}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,51 @@
+"use strict";module.export({isDmFileProps:()=>isDmFileProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({ coerceTypes: true });
+const isDmFileProps = ajv.compile({
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                roomId: {
+                    type: 'string',
+                },
+                query: {
+                    type: 'string',
+                },
+                sort: {
+                    type: 'string',
+                },
+                count: {
+                    type: 'number',
+                },
+                offset: {
+                    type: 'number',
+                },
+            },
+            required: ['roomId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                username: {
+                    type: 'string',
+                },
+                query: {
+                    type: 'string',
+                },
+                sort: {
+                    type: 'string',
+                },
+                count: {
+                    type: 'number',
+                },
+                offset: {
+                    type: 'number',
+                },
+            },
+            required: ['username'],
+            additionalProperties: false,
+        },
+    ],
+});
+//# sourceMappingURL=DmFileProps.js.map

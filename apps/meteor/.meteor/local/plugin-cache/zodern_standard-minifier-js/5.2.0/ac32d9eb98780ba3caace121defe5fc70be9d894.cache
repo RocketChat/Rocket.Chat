@@ -1,0 +1,1 @@
+{"code":"function module(s,a,e){(a=e.exports=s(\"./lib/_stream_readable.js\")).Stream=a,a.Readable=a,a.Writable=s(\"./lib/_stream_writable.js\"),a.Duplex=s(\"./lib/_stream_duplex.js\"),a.Transform=s(\"./lib/_stream_transform.js\"),a.PassThrough=s(\"./lib/_stream_passthrough.js\")}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

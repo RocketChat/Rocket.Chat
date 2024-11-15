@@ -1,0 +1,1 @@
+[{"type":"js","data":"Package[\"core-runtime\"].queue(\"standard-minifier-css\",function () {\n\n\n/* Exports */\nreturn {\n\n}});\n","servePath":"/packages/standard-minifier-css.js"}]

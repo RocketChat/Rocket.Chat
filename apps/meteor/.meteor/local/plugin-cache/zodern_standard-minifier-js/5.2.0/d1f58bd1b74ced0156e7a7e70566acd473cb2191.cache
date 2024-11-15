@@ -1,0 +1,1 @@
+{"code":"function module(o,n,t){t.export({durationSecond:()=>u,durationMinute:()=>r,durationHour:()=>a,durationDay:()=>d,durationWeek:()=>e,durationMonth:()=>i,durationYear:()=>c},!0);let u=1e3,r=60*u,a=60*r,d=24*a,e=7*d,i=30*d,c=365*d}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

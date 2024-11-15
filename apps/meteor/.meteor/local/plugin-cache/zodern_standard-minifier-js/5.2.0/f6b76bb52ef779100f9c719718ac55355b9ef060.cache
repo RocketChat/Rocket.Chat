@@ -1,0 +1,1 @@
+{"code":"function module(a,n,r){var e=a(\"./_assignValue\"),o=a(\"./_baseAssignValue\");r.exports=function(a,n,r,i){var s=!r;r||(r={});for(var u=-1,v=n.length;++u<v;){var t=n[u],l=i?i(r[t],a[t],t,r,a):void 0;void 0===l&&(l=a[t]),s?o(r,t,l):e(r,t,l)}return r}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

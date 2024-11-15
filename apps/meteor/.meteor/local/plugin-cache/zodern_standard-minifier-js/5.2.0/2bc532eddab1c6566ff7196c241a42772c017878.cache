@@ -1,0 +1,1 @@
+{"code":"function module(t,a,i){i.export({default:function(){return n}});function n(t){this.enabled&&!this.allowClick&&(this.params.preventClicks&&t.preventDefault(),this.params.preventClicksPropagation&&this.animating&&(t.stopPropagation(),t.stopImmediatePropagation()))}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

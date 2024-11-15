@@ -1,0 +1,3 @@
+"use strict";module.export({isGroupsModeratorsProps:()=>isGroupsModeratorsProps},true);var withBaseProps;module.link('./BaseProps',{withBaseProps(v){withBaseProps=v}},0);
+const isGroupsModeratorsProps = withBaseProps;
+//# sourceMappingURL=GroupsModeratorsProps.js.map

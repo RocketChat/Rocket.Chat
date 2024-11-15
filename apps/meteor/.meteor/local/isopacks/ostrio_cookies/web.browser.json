@@ -1,0 +1,30 @@
+{
+  "format": "isopack-2-unibuild",
+  "declaredExports": [],
+  "uses": [
+    {
+      "package": "meteor"
+    },
+    {
+      "package": "ecmascript"
+    },
+    {
+      "package": "fetch"
+    }
+  ],
+  "resources": [
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser/cookies.js",
+      "length": 18318,
+      "offset": 0,
+      "path": "cookies.js",
+      "hash": "24a562203ca64bc796c3f15189b902921060aaf0",
+      "fileOptions": {
+        "mainModule": true,
+        "lazy": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+"use strict";module.export({isVideoConfInfoProps:()=>isVideoConfInfoProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const videoConfInfoPropsSchema = {
+    type: 'object',
+    properties: {
+        callId: {
+            type: 'string',
+            nullable: false,
+        },
+    },
+    required: ['callId'],
+    additionalProperties: false,
+};
+const isVideoConfInfoProps = ajv.compile(videoConfInfoPropsSchema);
+//# sourceMappingURL=VideoConfInfoProps.js.map

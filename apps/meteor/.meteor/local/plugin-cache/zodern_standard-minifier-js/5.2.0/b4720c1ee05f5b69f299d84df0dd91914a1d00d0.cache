@@ -1,0 +1,1 @@
+{"code":"function module(t,e,r){var n=t(\"./_getNative\"),c=function(){try{var t=n(Object,\"defineProperty\");return t({},\"\",{}),t}catch(t){}}();r.exports=c}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

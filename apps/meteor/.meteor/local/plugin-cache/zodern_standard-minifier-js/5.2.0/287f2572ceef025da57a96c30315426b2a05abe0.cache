@@ -1,0 +1,1 @@
+{"code":"function module(o,r,e){e.exports=function(){throw Error(\"Readable.from is not available in the browser\")}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

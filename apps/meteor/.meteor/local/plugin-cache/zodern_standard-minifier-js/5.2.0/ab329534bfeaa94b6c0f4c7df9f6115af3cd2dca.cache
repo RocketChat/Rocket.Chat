@@ -1,0 +1,1 @@
+{"code":"function module(n,o,t){var e=n(\"./_copyObject\"),c=n(\"./_getSymbolsIn\");t.exports=function(n,o){return e(n,c(n),o)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

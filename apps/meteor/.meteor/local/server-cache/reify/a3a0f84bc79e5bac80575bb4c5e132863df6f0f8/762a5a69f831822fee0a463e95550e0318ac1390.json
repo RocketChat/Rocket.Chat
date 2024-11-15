@@ -1,0 +1,36 @@
+"use strict";module.export({isChannelsJoinProps:()=>isChannelsJoinProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const channelsJoinPropsSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                roomId: {
+                    type: 'string',
+                },
+                joinCode: {
+                    type: 'string',
+                    nullable: true,
+                },
+            },
+            required: ['roomId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                roomName: {
+                    type: 'string',
+                },
+                joinCode: {
+                    type: 'string',
+                    nullable: true,
+                },
+            },
+            required: ['roomName'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isChannelsJoinProps = ajv.compile(channelsJoinPropsSchema);
+//# sourceMappingURL=ChannelsJoinProps.js.map

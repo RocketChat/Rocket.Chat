@@ -1,0 +1,1 @@
+{"code":"function module(e,l,n){let o;n.export({$any:()=>t}),n.link(\"./_clone.mjs\",{$clone(e){o=e}},0);let t=e=>o(e)}","map":"{\"version\":3,\"sources\":[\"../../src/functional/$any.ts\",\"<anon>\"],\"names\":[\"$any\",\"val\",\"$clone\"],\"mappings\":\"8FAEO,IAAMA,EAAQC,GAAkBC,EAAOD\"}"}

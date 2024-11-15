@@ -1,0 +1,1 @@
+{"code":"function module(e,t,l){let n,i;l.export({SwiperSlideContext:()=>o,useSwiperSlide:()=>r,SwiperContext:()=>u,useSwiper:()=>S},!0),l.link(\"react\",{createContext(e){n=e},useContext(e){i=e}},0);let o=n(null),r=()=>i(o),u=n(null),S=()=>i(u)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

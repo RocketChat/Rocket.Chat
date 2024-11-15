@@ -1,0 +1,1 @@
+{"code":"function module(e,o,t){let c=Object.freeze({loose:!0}),f=Object.freeze({});t.exports=e=>e?\"object\"!=typeof e?c:e:f}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(n,t,e){var o=/^(?:0|[1-9]\\d*)$/;e.exports=function(n,t){var e=typeof n;return!!(t=null==t?9007199254740991:t)&&(\"number\"==e||\"symbol\"!=e&&o.test(n))&&n>-1&&n%1==0&&n<t}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

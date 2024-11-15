@@ -1,0 +1,21 @@
+"use strict";module.export({isChannelsOnlineProps:()=>isChannelsOnlineProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const channelsOnlyPropsSchema = {
+    type: 'object',
+    properties: {
+        _id: {
+            type: 'string',
+            nullable: true,
+        },
+        query: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isChannelsOnlineProps = ajv.compile(channelsOnlyPropsSchema);
+//# sourceMappingURL=ChannelsOnlineProps.js.map

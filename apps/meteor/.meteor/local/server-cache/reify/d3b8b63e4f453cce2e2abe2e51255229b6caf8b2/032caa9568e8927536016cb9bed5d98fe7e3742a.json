@@ -1,0 +1,7 @@
+"use strict";module.link('./rooms',{"*":"*"},0);module.link('./FederationJoinExternalPublicRoomProps',{"*":"*"},1);module.link('./FederationPublicRoomsProps',{"*":"*"},2);module.link('./FederationAddServerProps',{"*":"*"},3);module.link('./FederationRemoveServerProps',{"*":"*"},4);module.link('./FederationVerifyMatrixIdProps',{"*":"*"},5);
+
+
+
+
+
+//# sourceMappingURL=index.js.map

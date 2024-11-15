@@ -1,0 +1,1 @@
+{"code":"function module(t,e,i){let l;function n(t,e,i){let n;for(;;){let o=l(t,e,i);if(o===n||0===o||!isFinite(o))return[t,e];o>0?(t=Math.floor(t/o)*o,e=Math.ceil(e/o)*o):o<0&&(t=Math.ceil(t*o)/o,e=Math.floor(e*o)/o),n=o}}i.export({default:()=>n}),i.link(\"./ticks.js\",{tickIncrement(t){l=t}},0)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

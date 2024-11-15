@@ -1,0 +1,1 @@
+{"code":"function module(e,n,o){var r,c=e(\"./_coreJsData\"),s=(r=/[^.]+$/.exec(c&&c.keys&&c.keys.IE_PROTO||\"\"))?\"Symbol(src)_1.\"+r:\"\";o.exports=function(e){return!!s&&s in e}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

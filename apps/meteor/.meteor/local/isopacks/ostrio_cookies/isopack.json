@@ -1,0 +1,26 @@
+{
+  "isopack-2": {
+    "name": "ostrio:cookies",
+    "summary": "Isomorphic bulletproof Server, Client, Browser, and Cordova cookies",
+    "version": "2.7.2",
+    "isTest": false,
+    "builds": [
+      {
+        "kind": "main",
+        "arch": "os",
+        "path": "os.json"
+      },
+      {
+        "kind": "main",
+        "arch": "web.browser",
+        "path": "web.browser.json"
+      },
+      {
+        "kind": "main",
+        "arch": "web.browser.legacy",
+        "path": "web.browser.legacy.json"
+      }
+    ],
+    "plugins": []
+  }
+}

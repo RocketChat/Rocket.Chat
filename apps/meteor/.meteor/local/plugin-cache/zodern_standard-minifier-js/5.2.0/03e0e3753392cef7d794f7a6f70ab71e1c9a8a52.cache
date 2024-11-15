@@ -1,0 +1,1 @@
+{"code":"function module(e,a){\"use strict\";Object.defineProperty(a,\"__esModule\",{value:!0}),a.normalizeLanguage=void 0,a.normalizeLanguage=e=>{let a=/([a-z]{2,3})-([a-z]{2,4})/.exec(e);return a?`${a[1]}-${a[2].toUpperCase()}`:e}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

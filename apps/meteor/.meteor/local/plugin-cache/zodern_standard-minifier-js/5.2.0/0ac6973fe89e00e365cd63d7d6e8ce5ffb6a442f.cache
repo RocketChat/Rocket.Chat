@@ -1,0 +1,1 @@
+{"code":"function module(e,a,n){n.exports=function(e){return{contains:[{className:\"meta\",begin:/^julia>/,relevance:10,starts:{end:/^(?![ ]{6})/,subLanguage:\"julia\"},aliases:[\"jldoctest\"]}]}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

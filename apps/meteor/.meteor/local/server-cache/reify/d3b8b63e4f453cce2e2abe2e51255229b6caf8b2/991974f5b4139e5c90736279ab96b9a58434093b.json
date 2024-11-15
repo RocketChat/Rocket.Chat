@@ -1,0 +1,8 @@
+"use strict";module.export({isGroupsUnarchiveProps:()=>isGroupsUnarchiveProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);var withGroupBaseProperties;module.link('./BaseProps',{withGroupBaseProperties(v){withGroupBaseProperties=v}},1);
+
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const GroupsUnarchivePropsSchema = withGroupBaseProperties();
+const isGroupsUnarchiveProps = ajv.compile(GroupsUnarchivePropsSchema);
+//# sourceMappingURL=GroupsUnarchiveProps.js.map

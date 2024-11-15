@@ -1,0 +1,1 @@
+{"code":"function module(e,n,r){var o;r.export({SessionTerminatedError:function(){return t}}),r.link(\"../../core\",{Exception:function(e){o=e}},0);class t extends o{constructor(){super(\"The session has terminated.\")}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

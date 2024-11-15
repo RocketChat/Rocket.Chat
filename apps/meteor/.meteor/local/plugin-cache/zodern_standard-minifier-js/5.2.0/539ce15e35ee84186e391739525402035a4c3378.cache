@@ -1,0 +1,1 @@
+{"code":"function module(e,i,d){d.link(\"./EmojiPickerProvider\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/providers/EmojiPickerProvider/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './EmojiPickerProvider';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,wBAAe,CAAA,QAAA,SAAwB,EAAA\"}"}

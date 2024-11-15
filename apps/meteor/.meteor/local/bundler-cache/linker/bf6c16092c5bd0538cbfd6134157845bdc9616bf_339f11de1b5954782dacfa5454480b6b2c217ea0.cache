@@ -1,0 +1,1 @@
+[{"type":"js","data":"Package[\"core-runtime\"].queue(\"ddp\",function () {/* Imports */\nvar DDP = Package['ddp-client'].DDP;\nvar DDPServer = Package['ddp-server'].DDPServer;\n\n\n\n/* Exports */\nreturn {\n  export: function () { return {\n      DDP: DDP,\n      DDPServer: DDPServer\n    };}\n}});\n","servePath":"/packages/ddp.js"}]

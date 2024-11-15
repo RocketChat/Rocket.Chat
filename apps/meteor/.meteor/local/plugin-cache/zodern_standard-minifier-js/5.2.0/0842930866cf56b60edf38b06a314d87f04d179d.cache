@@ -1,0 +1,1 @@
+{"code":"function module(e,u,l){l.link(\"./QueueListPage\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/omnichannel/queueList/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './QueueListPage';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,kBAAe,CAAA,QAAA,SAAkB,EAAA\"}"}

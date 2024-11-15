@@ -1,0 +1,1 @@
+{"code":"function module(e,n,t){let o;t.link(\"./selection/on\",{event(e){o=e}},0),t.exportDefault(function(){for(var e,n=o;e=n.sourceEvent;)n=e;return n})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

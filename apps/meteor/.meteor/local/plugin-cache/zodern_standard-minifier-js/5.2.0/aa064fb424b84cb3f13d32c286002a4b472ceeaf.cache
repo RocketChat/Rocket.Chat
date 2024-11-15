@@ -1,0 +1,1 @@
+{"code":"function module(l,e,f){f.export({default:()=>o});function o(l,e){let f,o=0,t=0,n=0;if(void 0===e)for(let e of l)null!=e&&(e=+e)>=e&&(f=e-t,t+=f/++o,n+=f*(e-t));else{let u=-1;for(let i of l)null!=(i=e(i,++u,l))&&(i=+i)>=i&&(f=i-t,t+=f/++o,n+=f*(i-t))}if(o>1)return n/(o-1)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(e,r){\"use strict\";Object.defineProperty(r,\"__esModule\",{value:!0}),r.uiKitContextualBar=void 0;var t=e(\"../../rendering/createSurfaceRenderer\");r.uiKitContextualBar=(0,t.createSurfaceRenderer)()}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

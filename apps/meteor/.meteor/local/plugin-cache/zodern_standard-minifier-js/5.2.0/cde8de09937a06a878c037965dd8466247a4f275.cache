@@ -1,0 +1,1 @@
+{"code":"function module(e,n,s){let t=e(\"../classes/range\");s.exports=(e,n,s)=>(e=new t(e,s),n=new t(n,s),e.intersects(n,s))}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

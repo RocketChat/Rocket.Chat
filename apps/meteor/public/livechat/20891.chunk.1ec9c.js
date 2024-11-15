@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunk_rocket_chat_livechat=self.webpackChunk_rocket_chat_livechat||[]).push([[20891],{20891:function(e,t){Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e,t,r,c){return a[e]};var a={lastWeek:"'上個'eeee p",yesterday:"'昨天' p",today:"'今天' p",tomorrow:"'明天' p",nextWeek:"'下個'eeee p",other:"P"};e.exports=t.default}}]);
+//# sourceMappingURL=20891.chunk.1ec9c.js.map

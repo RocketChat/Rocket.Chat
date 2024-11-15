@@ -1,0 +1,1 @@
+{"code":"function module(e,t,s){s.export({ResizeObserverDetail:()=>i});var i=function(e,t){this.activeTargets=[],this.skippedTargets=[],this.observationTargets=[],this.observer=e,this.callback=t}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

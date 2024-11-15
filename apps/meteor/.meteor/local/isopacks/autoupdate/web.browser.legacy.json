@@ -1,0 +1,69 @@
+{
+  "format": "isopack-2-unibuild",
+  "declaredExports": [
+    {
+      "name": "Autoupdate",
+      "testOnly": false
+    }
+  ],
+  "uses": [
+    {
+      "package": "meteor"
+    },
+    {
+      "package": "tracker"
+    },
+    {
+      "package": "retry"
+    },
+    {
+      "package": "reload",
+      "weak": true
+    },
+    {
+      "package": "ecmascript"
+    },
+    {
+      "package": "ddp"
+    }
+  ],
+  "resources": [
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/autoupdate_client.js",
+      "length": 6693,
+      "offset": 0,
+      "path": "autoupdate_client.js",
+      "hash": "f5c958efbaf92a89c44ea654e740ee7916ead489",
+      "fileOptions": {
+        "mainModule": true,
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/autoupdate_server.js",
+      "length": 6355,
+      "offset": 0,
+      "path": "autoupdate_server.js",
+      "hash": "8d57875f9578a5b474f44056f6c783334c314c41",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/client_versions.js",
+      "length": 2514,
+      "offset": 0,
+      "path": "client_versions.js",
+      "hash": "4b7884f8a59b7b6ecfe90128061037a77daad803",
+      "fileOptions": {
+        "lazy": true
+      }
+    }
+  ]
+}

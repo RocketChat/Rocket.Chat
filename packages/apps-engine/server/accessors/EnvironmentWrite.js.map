@@ -1,0 +1,1 @@
+{"version":3,"file":"EnvironmentWrite.js","sourceRoot":"","sources":["../../src/server/accessors/EnvironmentWrite.ts"],"names":[],"mappings":";;;AAEA,MAAa,gBAAgB;IACzB,YACqB,QAAyB,EACzB,cAAqC;QADrC,aAAQ,GAAR,QAAQ,CAAiB;QACzB,mBAAc,GAAd,cAAc,CAAuB;IACvD,CAAC;IAEG,WAAW;QACd,OAAO,IAAI,CAAC,QAAQ,CAAC;IACzB,CAAC;IAEM,iBAAiB;QACpB,OAAO,IAAI,CAAC,cAAc,CAAC;IAC/B,CAAC;CACJ;AAbD,4CAaC"}

@@ -1,0 +1,1 @@
+{"code":"function module(n,t,o){let e;o.export({renderLayoutBlock:()=>l}),o.link(\"./BlockContext\",{BlockContext(n){e=n}},0);var l=function(n){return function(t,o){var l=n[t.type];return l?l.call(n,t,e.BLOCK,o):null}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

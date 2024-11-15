@@ -1,0 +1,44 @@
+"use strict";module.export({isBannersGetNewProps:()=>isBannersGetNewProps,isBannersProps:()=>isBannersProps,isBannersDismissProps:()=>isBannersDismissProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const BannersGetNewSchema = {
+    type: 'object',
+    properties: {
+        platform: {
+            type: 'string',
+            enum: ['web', 'mobile'],
+        },
+        bid: {
+            type: 'string',
+        },
+    },
+    required: ['platform'],
+    additionalProperties: false,
+};
+const isBannersGetNewProps = ajv.compile(BannersGetNewSchema);
+const BannersSchema = {
+    type: 'object',
+    properties: {
+        platform: {
+            type: 'string',
+            enum: ['web', 'mobile'],
+        },
+    },
+    required: ['platform'],
+    additionalProperties: false,
+};
+const isBannersProps = ajv.compile(BannersSchema);
+const BannersDismissSchema = {
+    type: 'object',
+    properties: {
+        bannerId: {
+            type: 'string',
+            minLength: 1,
+        },
+    },
+    required: ['bannerId'],
+    additionalProperties: false,
+};
+const isBannersDismissProps = ajv.compile(BannersDismissSchema);
+//# sourceMappingURL=banners.js.map

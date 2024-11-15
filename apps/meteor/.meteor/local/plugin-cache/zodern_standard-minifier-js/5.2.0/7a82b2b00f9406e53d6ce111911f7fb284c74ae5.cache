@@ -1,0 +1,1 @@
+{"code":"function module(s,n,a){a.exports={name:\"@bugsnag/plugin-react\",version:\"7.19.0\",browser:\"dist/bugsnag-react.js\",main:\"dist/bugsnag-react.js\"}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

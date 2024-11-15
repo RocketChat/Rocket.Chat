@@ -1,0 +1,1 @@
+{"code":"function module(n,o,l){l.link(\"./delaunay.js\",{default:\"Delaunay\"},0),l.link(\"./voronoi.js\",{default:\"Voronoi\"},1)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

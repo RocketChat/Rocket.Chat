@@ -1,0 +1,364 @@
+{
+  "builtBy": "meteor/34",
+  "unibuildDependencies": {
+    "os.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version/package.js": "981e53ec4ab4c7fcc7c88c0715a18c77075c934c",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version/plugin/compile-version.js": "40e70bfc34ae4da7b2567d5912c7e4d39cec71f2"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version/plugin/compile-version.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version",
+          "include": [
+            "\\.info$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "plugin/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version/plugin",
+          "include": [
+            "\\.info$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "compile-version.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version/plugin",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version/package.js": "981e53ec4ab4c7fcc7c88c0715a18c77075c934c",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version/plugin/compile-version.js": "40e70bfc34ae4da7b2567d5912c7e4d39cec71f2"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version/plugin/compile-version.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version",
+          "include": [
+            "\\.info$",
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "plugin/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version/plugin",
+          "include": [
+            "\\.info$",
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "compile-version.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version/plugin",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.legacy.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version/package.js": "981e53ec4ab4c7fcc7c88c0715a18c77075c934c",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version/plugin/compile-version.js": "40e70bfc34ae4da7b2567d5912c7e4d39cec71f2"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version/plugin/compile-version.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version",
+          "include": [
+            "\\.info$",
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "plugin/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version/plugin",
+          "include": [
+            "\\.info$",
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "compile-version.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version/plugin",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    }
+  },
+  "pluginDependencies": {
+    "files": {
+      "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version/package.js": "981e53ec4ab4c7fcc7c88c0715a18c77075c934c",
+      "/Users/guilhermegazzo/.meteor/packages/modules/.0.20.2.13exatm.t7gf++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/@meteorjs/reify/lib/runtime/index.js": "5b93abd9fe91e05890ffb6f2174c8ed5e29ad59a",
+      "/Users/guilhermegazzo/.meteor/packages/react-fast-refresh/.0.2.9.1f533f9.unru++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/semver/functions/gte.js": "b9c50a385c8e3877108a001fb8548b122a155193",
+      "/Users/guilhermegazzo/.meteor/packages/react-fast-refresh/.0.2.9.1f533f9.unru++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/react-refresh/babel.js": "7f85e714eeecb4adf4a93e297bcd5c8157013955",
+      "/Users/guilhermegazzo/.meteor/packages/fetch/.0.1.5.13hy34e.qbcx++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/node-fetch/package.json": "78103f0f3ef4b327cee9e96b64d809ddba7c6fad",
+      "/Users/guilhermegazzo/.meteor/packages/fetch/.0.1.5.13hy34e.qbcx++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/node-fetch/lib/index.js": "f943798350f33c6e9cda157023fb9d9f923d499e",
+      "/Users/guilhermegazzo/.meteor/packages/inter-process-messaging/.0.1.2.cofdpf.2o8r++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/uuid/package.json": "ebada18835d4bf7a690eff570c8b12518135a41c",
+      "/Users/guilhermegazzo/.meteor/packages/inter-process-messaging/.0.1.2.cofdpf.2o8r++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/uuid/index.js": "8e8abb1384d04d1ec5745c9824eee400f77536c0",
+      "/Users/guilhermegazzo/.meteor/packages/inter-process-messaging/.0.1.2.cofdpf.2o8r++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/arson/package.json": "d19eb480ff549ba803a8fcb96913c2e9356fc2dd",
+      "/Users/guilhermegazzo/.meteor/packages/inter-process-messaging/.0.1.2.cofdpf.2o8r++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/arson/index.js": "33ff7a96f7d012c4d49ab30efde7d516182bdc7d",
+      "/Users/guilhermegazzo/.meteor/packages/ecmascript-runtime-server/.0.11.1.gk9mxf.x4mtp++os+web.browser+web.browser.legacy+web.cordova/npm/node_modules/core-js/modules/es.symbol.async-iterator.js": "dbd46259fa71c21e3df57736f926c59ee30f5357",
+      "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version/plugin/compile-version.js": "40e70bfc34ae4da7b2567d5912c7e4d39cec71f2",
+      "/Users/guilhermegazzo/.meteor/packages/core-runtime/1.0.0/os/package-registry.js": "a793907191245fff98efb5b809e600909f94f458",
+      "/Users/guilhermegazzo/.meteor/packages/core-runtime/1.0.0/os/load-js-image.js": "4c1c42c76626eff64b4801e1202e4370b2c4186d",
+      "/Users/guilhermegazzo/.meteor/packages/meteor/2.0.1/os/global.js": "3dd95fbd9353c99881ca34e04acd370f6cfc5586",
+      "/Users/guilhermegazzo/.meteor/packages/meteor/2.0.1/os/server_environment.js": "07305a504af10e5d047b25c2788ca1afdd60afa2",
+      "/Users/guilhermegazzo/.meteor/packages/meteor/2.0.1/os/helpers.js": "882828ad3dfa5e262ff09ba26257a6d720219fce",
+      "/Users/guilhermegazzo/.meteor/packages/meteor/2.0.1/os/setimmediate.js": "8e17c7d4ae3622c215d875e970ad5d8eb67217d2",
+      "/Users/guilhermegazzo/.meteor/packages/meteor/2.0.1/os/timers.js": "4bec78fea553dd47fe3055ed3e0833df0b81f21b",
+      "/Users/guilhermegazzo/.meteor/packages/meteor/2.0.1/os/errors.js": "3591b80cfa90fbabc2058d95aacaade99812546d",
+      "/Users/guilhermegazzo/.meteor/packages/meteor/2.0.1/os/asl-helpers.js": "964f8ff56a9b81f71dc1a44fd06a2aaf37ed7008",
+      "/Users/guilhermegazzo/.meteor/packages/meteor/2.0.1/os/async_helpers.js": "6f05df46274b7c42f342bc5b42d141952a3aaf3b",
+      "/Users/guilhermegazzo/.meteor/packages/meteor/2.0.1/os/startup_server.js": "b1d8eeec5db80830e3f3f32f6a6edc8df4b33adb",
+      "/Users/guilhermegazzo/.meteor/packages/meteor/2.0.1/os/debug.js": "a30161e87d3bbce91802b5912d949cf2b627e96f",
+      "/Users/guilhermegazzo/.meteor/packages/meteor/2.0.1/os/string_utils.js": "a7490b2a8276e63e4b0b0c4b91910a2a630e93bc",
+      "/Users/guilhermegazzo/.meteor/packages/meteor/2.0.1/os/test_environment.js": "71d0c20457f0f9cb361a2f5f60da5bd70901f4cd",
+      "/Users/guilhermegazzo/.meteor/packages/meteor/2.0.1/os/dynamics_nodejs.js": "feab5fe3b613beda9b2766ee09fe558dfe51fc1c",
+      "/Users/guilhermegazzo/.meteor/packages/meteor/2.0.1/os/url_server.js": "dd10d2490236d09d423cc83f0ea0f05b32586f34",
+      "/Users/guilhermegazzo/.meteor/packages/meteor/2.0.1/os/url_common.js": "721a8537c4b6310e5f19d07c4ea52f9d8c2127db",
+      "/Users/guilhermegazzo/.meteor/packages/meteor/2.0.1/os/flush-buffers-on-exit-in-windows.js": "baeed30bb3e233bc2e60bc18371890152c9da108",
+      "/Users/guilhermegazzo/.meteor/packages/meteor/2.0.1/os/emitter-promise.js": "f72d6a81e712ba783609715f9bc9cabedbff8e30",
+      "/Users/guilhermegazzo/.meteor/packages/modules-runtime/0.13.2/os/.npm/package/node_modules/install/install.js": "29694e43b96fc9f543cb0096361e75f83d557636",
+      "/Users/guilhermegazzo/.meteor/packages/modules-runtime/0.13.2/os/errors/importsErrors.js": "01c9be67be03046bc308fb27f59ea43fe1cb400c",
+      "/Users/guilhermegazzo/.meteor/packages/modules-runtime/0.13.2/os/errors/cannotFindMeteorPackage.js": "c14cc2fe88fa40d55622b69515316395f9fb435e",
+      "/Users/guilhermegazzo/.meteor/packages/modules-runtime/0.13.2/os/server.js": "14ef894c254a4a7a7095ffb1cdbd0fc3cc1dab14",
+      "/Users/guilhermegazzo/.meteor/packages/modules-runtime/0.13.2/os/profile.js": "74ddcd2a798d7cc4f7cbe1ae8c9f9007936bb19e",
+      "/Users/guilhermegazzo/.meteor/packages/modules-runtime/0.13.2/os/verifyErrors.js": "438afbd742c5a0ddaed86f3eeaae504cbc275490",
+      "/Users/guilhermegazzo/.meteor/packages/modules/0.20.2/os/server.js": "11d99298182f74afb5bb188ea219b95ef9b366a1",
+      "/Users/guilhermegazzo/.meteor/packages/modules/0.20.2/os/client.js": "1d77022dbb1b4b1627b8381e1c5ae444ddd8ab3d",
+      "/Users/guilhermegazzo/.meteor/packages/modules/0.20.2/os/css.js": "8f75bdb812965b89c93ac283ee0a21726cb5b1f7",
+      "/Users/guilhermegazzo/.meteor/packages/modules/0.20.2/os/install-packages.js": "1cba8f3703d0ceab95eec1da36d87d2a0d36d33e",
+      "/Users/guilhermegazzo/.meteor/packages/modules/0.20.2/os/legacy.js": "50b486bf5a93845206c61b19c78e3a6a6914aff5",
+      "/Users/guilhermegazzo/.meteor/packages/modules/0.20.2/os/process.js": "987a9859cda893eb3125615b22885e393a5092b9",
+      "/Users/guilhermegazzo/.meteor/packages/modules/0.20.2/os/reify.js": "41e8754efe545cd54fdc2834e21d5858f120cdb9",
+      "/Users/guilhermegazzo/.meteor/packages/modules/0.20.2/os/stubs.js": "946940234562d79a75ebb8f10757605e7996f386",
+      "/Users/guilhermegazzo/.meteor/packages/react-fast-refresh/0.2.9/os/server.js": "9c8617472702d5e929c11958d87976c08b9b6a35",
+      "/Users/guilhermegazzo/.meteor/packages/react-fast-refresh/0.2.9/os/client-runtime.js": "7582f7f0b3a6ce94a56edab3f3239d07811954c4",
+      "/Users/guilhermegazzo/.meteor/packages/react-fast-refresh/0.2.9/os/client.js": "288b8b23ef4b214ab1ca1690cc9d1c05d6a1342e",
+      "/Users/guilhermegazzo/.meteor/packages/ecmascript/0.16.9/os/ecmascript.js": "d1b82c0c9fda98945aa69ffae3142217a13fa7c3",
+      "/Users/guilhermegazzo/.meteor/packages/babel-runtime/1.5.2/os/babel-runtime.js": "cb23d057c22b7b4826675696daa2b5f409ef5f9f",
+      "/Users/guilhermegazzo/.meteor/packages/modern-browsers/0.1.11/os/modern.js": "7b9ee224a40509f48c48f472832279ef851813a2",
+      "/Users/guilhermegazzo/.meteor/packages/modern-browsers/0.1.11/os/modern-tests.js": "6c7bc22ae35881f1ccff46d455003a449b10dbb4",
+      "/Users/guilhermegazzo/.meteor/packages/promise/1.0.0/os/modern.js": "ae15b2311a67d2cab0e78ac9df88f38a72bb2106",
+      "/Users/guilhermegazzo/.meteor/packages/promise/1.0.0/os/server.js": "fc2473f5c250b83723c5e5a47cf260cdd78e2265",
+      "/Users/guilhermegazzo/.meteor/packages/promise/1.0.0/os/client.js": "8d101a402cf07762c5f0d53767fa1bbec903abea",
+      "/Users/guilhermegazzo/.meteor/packages/promise/1.0.0/os/extensions.js": "8b892725eddde797c1234eb48d9d26983d9af7d6",
+      "/Users/guilhermegazzo/.meteor/packages/promise/1.0.0/os/legacy.js": "22c9978055f32cec6e276a31412abb3a01923f71",
+      "/Users/guilhermegazzo/.meteor/packages/promise/1.0.0/os/promise-tests.js": "4e98f07a7d015dd3f08296cb003906384c9ed754",
+      "/Users/guilhermegazzo/.meteor/packages/fetch/0.1.5/os/server.js": "42bb15bd089b38c69057d8f66c4a2104edda9151",
+      "/Users/guilhermegazzo/.meteor/packages/fetch/0.1.5/os/legacy.js": "5e7d2c7ad466af6fcb722e391e7928e4022fe020",
+      "/Users/guilhermegazzo/.meteor/packages/fetch/0.1.5/os/modern.js": "516df5e63dbf9a078aef0b2ef58777631cea24bb",
+      "/Users/guilhermegazzo/.meteor/packages/fetch/0.1.5/os/tests/main.js": "405964dd8bef17cf16da6e6a7bf9668631db43a9",
+      "/Users/guilhermegazzo/.meteor/packages/inter-process-messaging/0.1.2/os/inter-process-messaging.js": "9f97de41a045992cad62b6e0ec4ebf920841a6d1",
+      "/Users/guilhermegazzo/.meteor/packages/inter-process-messaging/0.1.2/os/tests.js": "2d7cf9fef01ceaea69b316c564280f0cf32553d6",
+      "/Users/guilhermegazzo/.meteor/packages/inter-process-messaging/0.1.2/os/types.js": "851883187c3b5ed9a9ca2057aafadb3cf0b04c45",
+      "/Users/guilhermegazzo/.meteor/packages/dynamic-import/0.7.4/os/server.js": "bf57af47da109a98fc4bfaac7a9db67a65392aad",
+      "/Users/guilhermegazzo/.meteor/packages/dynamic-import/0.7.4/os/cache.js": "0368469afa83c8c92e0643cfaf0d52b1cd733cec",
+      "/Users/guilhermegazzo/.meteor/packages/dynamic-import/0.7.4/os/client.js": "6835a635498462839241258051187102584412a6",
+      "/Users/guilhermegazzo/.meteor/packages/dynamic-import/0.7.4/os/common.js": "3d4472440446fd92e4fcba378afdc250462e7fa2",
+      "/Users/guilhermegazzo/.meteor/packages/dynamic-import/0.7.4/os/dynamic-versions.js": "020f3a6df9791337f904fd2d68faf46f4167d2e9",
+      "/Users/guilhermegazzo/.meteor/packages/dynamic-import/0.7.4/os/security.js": "4343117e931e1f72a9f02749c9135e075a557157",
+      "/Users/guilhermegazzo/.meteor/packages/ecmascript-runtime-client/0.12.2/os/versions.js": "37752a2ce12accd0c3bfd0afc465b31bd04239f1",
+      "/Users/guilhermegazzo/.meteor/packages/ecmascript-runtime-client/0.12.2/os/legacy.js": "fe5b37c4311f20398ef3438d7b41e20f25e61d30",
+      "/Users/guilhermegazzo/.meteor/packages/ecmascript-runtime-client/0.12.2/os/modern.js": "4a267ceca3382709911d323e03fdd74a29dc04f8",
+      "/Users/guilhermegazzo/.meteor/packages/ecmascript-runtime-server/0.11.1/os/runtime.js": "49908bea780b1f52bb72ff4a121272a87d0c5687"
+    },
+    "potentiallyUnusedFiles": [],
+    "directories": []
+  },
+  "pluginProviderPackageMap": {
+    "ecmascript": {
+      "kind": "versioned",
+      "version": "0.16.9"
+    },
+    "meteor": {
+      "kind": "versioned",
+      "version": "2.0.1"
+    },
+    "core-runtime": {
+      "kind": "versioned",
+      "version": "1.0.0"
+    },
+    "react-fast-refresh": {
+      "kind": "versioned",
+      "version": "0.2.9"
+    },
+    "modules": {
+      "kind": "versioned",
+      "version": "0.20.2"
+    },
+    "modules-runtime": {
+      "kind": "versioned",
+      "version": "0.13.2"
+    },
+    "ecmascript-runtime": {
+      "kind": "versioned",
+      "version": "0.8.3"
+    },
+    "babel-runtime": {
+      "kind": "versioned",
+      "version": "1.5.2"
+    },
+    "promise": {
+      "kind": "versioned",
+      "version": "1.0.0"
+    },
+    "modern-browsers": {
+      "kind": "versioned",
+      "version": "0.1.11"
+    },
+    "dynamic-import": {
+      "kind": "versioned",
+      "version": "0.7.4"
+    },
+    "fetch": {
+      "kind": "versioned",
+      "version": "0.1.5"
+    },
+    "inter-process-messaging": {
+      "kind": "versioned",
+      "version": "0.1.2"
+    },
+    "ecmascript-runtime-client": {
+      "kind": "versioned",
+      "version": "0.12.2"
+    },
+    "ecmascript-runtime-server": {
+      "kind": "versioned",
+      "version": "0.11.1"
+    },
+    "rocketchat:version": {
+      "kind": "local",
+      "sourceRoot": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/rocketchat-version"
+    }
+  },
+  "includeCordovaUnibuild": false
+}

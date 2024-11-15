@@ -1,0 +1,1 @@
+{"code":"function module(n,t,e){var r=n(\"./_baseGet\");e.exports=function(n){return function(t){return r(t,n)}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

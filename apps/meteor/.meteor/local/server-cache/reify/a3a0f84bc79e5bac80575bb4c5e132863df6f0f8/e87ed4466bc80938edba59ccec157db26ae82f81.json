@@ -1,0 +1,16 @@
+"use strict";module.export({ise2eGetUsersOfRoomWithoutKeyParamsGET:()=>ise2eGetUsersOfRoomWithoutKeyParamsGET},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const e2eGetUsersOfRoomWithoutKeyParamsGETSchema = {
+    type: 'object',
+    properties: {
+        rid: {
+            type: 'string',
+        },
+    },
+    additionalProperties: false,
+    required: ['rid'],
+};
+const ise2eGetUsersOfRoomWithoutKeyParamsGET = ajv.compile(e2eGetUsersOfRoomWithoutKeyParamsGETSchema);
+//# sourceMappingURL=e2eGetUsersOfRoomWithoutKeyParamsGET.js.map

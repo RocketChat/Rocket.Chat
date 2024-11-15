@@ -1,0 +1,12 @@
+"use strict";module.export({isGroupsSetTopicProps:()=>isGroupsSetTopicProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);var withGroupBaseProperties;module.link('./BaseProps',{withGroupBaseProperties(v){withGroupBaseProperties=v}},1);
+
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const groupsSetTopicPropsSchema = withGroupBaseProperties({
+    topic: {
+        type: 'string',
+    },
+}, ['topic']);
+const isGroupsSetTopicProps = ajv.compile(groupsSetTopicPropsSchema);
+//# sourceMappingURL=GroupsSetTopicProps.js.map

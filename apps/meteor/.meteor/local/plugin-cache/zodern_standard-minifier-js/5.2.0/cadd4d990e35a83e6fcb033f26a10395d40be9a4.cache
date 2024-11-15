@@ -1,0 +1,1 @@
+{"code":"function module(e,s,a){let t;function r(e){t(this,e.target),!this.params.cssMode&&(\"auto\"===this.params.slidesPerView||this.params.autoHeight)&&this.update()}a.export({default:()=>r}),a.link(\"../../shared/process-lazy-preloader.js\",{processLazyPreloader(e){t=e}},0)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

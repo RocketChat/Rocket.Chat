@@ -1,0 +1,42 @@
+"use strict";module.export({isCloudManualRegisterProps:()=>isCloudManualRegisterProps,isCloudCreateRegistrationIntentProps:()=>isCloudCreateRegistrationIntentProps,isCloudConfirmationPollProps:()=>isCloudConfirmationPollProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const CloudManualRegisterSchema = {
+    type: 'object',
+    properties: {
+        cloudBlob: {
+            type: 'string',
+        },
+    },
+    required: ['cloudBlob'],
+    additionalProperties: false,
+};
+const isCloudManualRegisterProps = ajv.compile(CloudManualRegisterSchema);
+const CloudCreateRegistrationIntentSchema = {
+    type: 'object',
+    properties: {
+        resend: {
+            type: 'boolean',
+        },
+        email: {
+            type: 'string',
+        },
+    },
+    required: ['resend', 'email'],
+    additionalProperties: false,
+};
+const isCloudCreateRegistrationIntentProps = ajv.compile(CloudCreateRegistrationIntentSchema);
+const CloudConfirmationPollSchema = {
+    type: 'object',
+    properties: {
+        deviceCode: {
+            type: 'string',
+            minLength: 1,
+        },
+    },
+    required: ['deviceCode'],
+    additionalProperties: false,
+};
+const isCloudConfirmationPollProps = ajv.compile(CloudConfirmationPollSchema);
+//# sourceMappingURL=cloud.js.map

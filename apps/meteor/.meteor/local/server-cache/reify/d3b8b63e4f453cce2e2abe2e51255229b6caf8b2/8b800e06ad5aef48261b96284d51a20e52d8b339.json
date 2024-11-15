@@ -1,0 +1,122 @@
+"use strict";module.export({isE2eSetUserPublicAndPrivateKeysProps:()=>isE2eSetUserPublicAndPrivateKeysProps,isE2eGetUsersOfRoomWithoutKeyProps:()=>isE2eGetUsersOfRoomWithoutKeyProps,isE2eUpdateGroupKeyProps:()=>isE2eUpdateGroupKeyProps,isE2eSetRoomKeyIdProps:()=>isE2eSetRoomKeyIdProps,isE2EProvideUsersGroupKeyProps:()=>isE2EProvideUsersGroupKeyProps,isE2EFetchUsersWaitingForGroupKeyProps:()=>isE2EFetchUsersWaitingForGroupKeyProps,isE2EResetRoomKeyProps:()=>isE2EResetRoomKeyProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const E2eSetUserPublicAndPrivateKeysSchema = {
+    type: 'object',
+    properties: {
+        public_key: {
+            type: 'string',
+        },
+        private_key: {
+            type: 'string',
+        },
+    },
+    required: ['public_key', 'private_key'],
+    additionalProperties: false,
+};
+const isE2eSetUserPublicAndPrivateKeysProps = ajv.compile(E2eSetUserPublicAndPrivateKeysSchema);
+const E2eGetUsersOfRoomWithoutKeySchema = {
+    type: 'object',
+    properties: {
+        rid: {
+            type: 'string',
+        },
+    },
+    required: ['rid'],
+    additionalProperties: false,
+};
+const isE2eGetUsersOfRoomWithoutKeyProps = ajv.compile(E2eGetUsersOfRoomWithoutKeySchema);
+const E2eUpdateGroupKeySchema = {
+    type: 'object',
+    properties: {
+        uid: {
+            type: 'string',
+        },
+        rid: {
+            type: 'string',
+        },
+        key: {
+            type: 'string',
+        },
+    },
+    required: ['uid', 'rid', 'key'],
+    additionalProperties: false,
+};
+const isE2eUpdateGroupKeyProps = ajv.compile(E2eUpdateGroupKeySchema);
+const E2eSetRoomKeyIdSchema = {
+    type: 'object',
+    properties: {
+        rid: {
+            type: 'string',
+        },
+        keyID: {
+            type: 'string',
+        },
+    },
+    required: ['rid', 'keyID'],
+    additionalProperties: false,
+};
+const isE2eSetRoomKeyIdProps = ajv.compile(E2eSetRoomKeyIdSchema);
+const E2EProvideUsersGroupKeySchema = {
+    type: 'object',
+    properties: {
+        usersSuggestedGroupKeys: {
+            type: 'object',
+            additionalProperties: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    properties: {
+                        _id: { type: 'string' },
+                        key: { type: 'string' },
+                        oldKeys: {
+                            type: 'array',
+                            items: {
+                                type: 'object',
+                                properties: { e2eKeyId: { type: 'string' }, ts: { type: 'string' }, E2EKey: { type: 'string' } },
+                            },
+                        },
+                    },
+                    required: ['_id', 'key'],
+                    additionalProperties: false,
+                },
+            },
+        },
+    },
+    required: ['usersSuggestedGroupKeys'],
+    additionalProperties: false,
+};
+const isE2EProvideUsersGroupKeyProps = ajv.compile(E2EProvideUsersGroupKeySchema);
+const E2EFetchUsersWaitingForGroupKeySchema = {
+    type: 'object',
+    properties: {
+        roomIds: {
+            type: 'array',
+            items: {
+                type: 'string',
+            },
+        },
+    },
+    required: ['roomIds'],
+    additionalProperties: false,
+};
+const isE2EFetchUsersWaitingForGroupKeyProps = ajv.compile(E2EFetchUsersWaitingForGroupKeySchema);
+const E2EResetRoomKeySchema = {
+    type: 'object',
+    properties: {
+        rid: {
+            type: 'string',
+        },
+        e2eKey: {
+            type: 'string',
+        },
+        e2eKeyId: {
+            type: 'string',
+        },
+    },
+    required: ['rid', 'e2eKey', 'e2eKeyId'],
+    additionalProperties: false,
+};
+const isE2EResetRoomKeyProps = ajv.compile(E2EResetRoomKeySchema);
+//# sourceMappingURL=e2e.js.map

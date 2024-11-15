@@ -1,0 +1,1 @@
+{"code":"function module(e,t){\"use strict\";var T,n;Object.defineProperty(t,\"__esModule\",{value:!0}),t.TextObjectType=void 0,(n=T||(t.TextObjectType=T={})).PLAINTEXT=\"plain_text\",n.PLAIN_TEXT=\"plain_text\",n.MARKDOWN=\"mrkdwn\",n.MRKDWN=\"mrkdwn\"}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

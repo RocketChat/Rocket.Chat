@@ -1,0 +1,1 @@
+{"code":"function module(n,u,c){function t(n){return n*n*n}function i(n){return--n*n*n+1}function r(n){return((n*=2)<=1?n*n*n:(n-=2)*n*n+2)/2}c.export({cubicIn:()=>t,cubicOut:()=>i,cubicInOut:()=>r})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

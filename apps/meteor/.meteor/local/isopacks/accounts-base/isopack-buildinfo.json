@@ -1,0 +1,329 @@
+{
+  "builtBy": "meteor/34",
+  "unibuildDependencies": {
+    "os.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/package.js": "d7129066ca6b51209fc9d01190b13b31ceff679a",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/ddp-client/package.js": "8076d8f01961c0ceb496d1b267cf2dadd7ae1398",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts-base.d.ts": "551565727fe14079dacefdce0b7929fed77ee61b",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/server_main.js": "f2ba4a3bea19e4a6931e3663fd6ab56bcaf38806",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_client.js": "39f134692f5d887d895ba11c9a97572c8e8612f5",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_client_tests.js": "fa533b564b73dbdca021e30e6038f03d14f08189",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_common.js": "1a6b19cab4e3f0e06aa339b7e10efa477323745d",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_reconnect_tests.js": "a526579da7928973caccd4f37cb4bcee6f99e30a",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_server.js": "45e2c8094bcecd83302b0991ad697b02a592943b",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_tests.js": "e31c320204f38d2a87081d7b10972fdd7c37b471",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_tests_setup.js": "f6327678d75332efe9051b575dc802390bbacba9",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_url_tests.js": "c177b7c35e9d8f876c31ad0b55e5448463ce242d",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/client_main.js": "5886235bdf6a10083ce2e0221e42b953705bffdd",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/client_tests.js": "7af526fffaa6da06aa64ff90bef3b4dc48a4eb48",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/server_tests.js": "a75ae458c136ecef2086a4512830189a66842146"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/server_main.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_client.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_client_tests.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_common.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_reconnect_tests.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_server.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_tests.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_tests_setup.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_url_tests.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/client_main.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/client_tests.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/server_tests.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base",
+          "include": [
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "accounts_client.js",
+            "accounts_client_tests.js",
+            "accounts_common.js",
+            "accounts_reconnect_tests.js",
+            "accounts_server.js",
+            "accounts_tests.js",
+            "accounts_tests_setup.js",
+            "accounts_url_tests.js",
+            "client_main.js",
+            "client_tests.js",
+            "package.js",
+            "server_main.js",
+            "server_tests.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/package.js": "d7129066ca6b51209fc9d01190b13b31ceff679a",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/ddp-client/package.js": "8076d8f01961c0ceb496d1b267cf2dadd7ae1398",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/client_main.js": "5886235bdf6a10083ce2e0221e42b953705bffdd",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_client.js": "39f134692f5d887d895ba11c9a97572c8e8612f5",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_client_tests.js": "fa533b564b73dbdca021e30e6038f03d14f08189",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_common.js": "1a6b19cab4e3f0e06aa339b7e10efa477323745d",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_reconnect_tests.js": "a526579da7928973caccd4f37cb4bcee6f99e30a",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_server.js": "45e2c8094bcecd83302b0991ad697b02a592943b",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_tests.js": "e31c320204f38d2a87081d7b10972fdd7c37b471",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_tests_setup.js": "f6327678d75332efe9051b575dc802390bbacba9",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_url_tests.js": "c177b7c35e9d8f876c31ad0b55e5448463ce242d",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/client_tests.js": "7af526fffaa6da06aa64ff90bef3b4dc48a4eb48",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/server_main.js": "f2ba4a3bea19e4a6931e3663fd6ab56bcaf38806",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/server_tests.js": "a75ae458c136ecef2086a4512830189a66842146"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/client_main.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_client.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_client_tests.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_common.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_reconnect_tests.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_server.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_tests.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_tests_setup.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_url_tests.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/client_tests.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/server_main.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/server_tests.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "accounts_client.js",
+            "accounts_client_tests.js",
+            "accounts_common.js",
+            "accounts_reconnect_tests.js",
+            "accounts_server.js",
+            "accounts_tests.js",
+            "accounts_tests_setup.js",
+            "accounts_url_tests.js",
+            "client_main.js",
+            "client_tests.js",
+            "package.js",
+            "server_main.js",
+            "server_tests.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.legacy.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/package.js": "d7129066ca6b51209fc9d01190b13b31ceff679a",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/ddp-client/package.js": "8076d8f01961c0ceb496d1b267cf2dadd7ae1398",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/client_main.js": "5886235bdf6a10083ce2e0221e42b953705bffdd",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_client.js": "39f134692f5d887d895ba11c9a97572c8e8612f5",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_client_tests.js": "fa533b564b73dbdca021e30e6038f03d14f08189",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_common.js": "1a6b19cab4e3f0e06aa339b7e10efa477323745d",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_reconnect_tests.js": "a526579da7928973caccd4f37cb4bcee6f99e30a",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_server.js": "45e2c8094bcecd83302b0991ad697b02a592943b",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_tests.js": "e31c320204f38d2a87081d7b10972fdd7c37b471",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_tests_setup.js": "f6327678d75332efe9051b575dc802390bbacba9",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_url_tests.js": "c177b7c35e9d8f876c31ad0b55e5448463ce242d",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/client_tests.js": "7af526fffaa6da06aa64ff90bef3b4dc48a4eb48",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/server_main.js": "f2ba4a3bea19e4a6931e3663fd6ab56bcaf38806",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/server_tests.js": "a75ae458c136ecef2086a4512830189a66842146"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/client_main.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_client.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_client_tests.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_common.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_reconnect_tests.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_server.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_tests.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_tests_setup.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/accounts_url_tests.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/client_tests.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/server_main.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/server_tests.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "accounts_client.js",
+            "accounts_client_tests.js",
+            "accounts_common.js",
+            "accounts_reconnect_tests.js",
+            "accounts_server.js",
+            "accounts_tests.js",
+            "accounts_tests_setup.js",
+            "accounts_url_tests.js",
+            "client_main.js",
+            "client_tests.js",
+            "package.js",
+            "server_main.js",
+            "server_tests.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    }
+  },
+  "pluginDependencies": {
+    "files": {
+      "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base/package.js": "d7129066ca6b51209fc9d01190b13b31ceff679a"
+    },
+    "potentiallyUnusedFiles": [],
+    "directories": []
+  },
+  "pluginProviderPackageMap": {
+    "accounts-base": {
+      "kind": "local",
+      "sourceRoot": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/accounts-base"
+    },
+    "meteor": {
+      "kind": "versioned",
+      "version": "2.0.1"
+    },
+    "ecmascript": {
+      "kind": "versioned",
+      "version": "0.16.9"
+    },
+    "ddp-rate-limiter": {
+      "kind": "versioned",
+      "version": "1.2.2"
+    },
+    "check": {
+      "kind": "versioned",
+      "version": "1.4.4"
+    },
+    "random": {
+      "kind": "versioned",
+      "version": "1.2.2"
+    },
+    "ejson": {
+      "kind": "versioned",
+      "version": "1.1.4"
+    },
+    "callback-hook": {
+      "kind": "versioned",
+      "version": "1.6.0"
+    },
+    "url": {
+      "kind": "versioned",
+      "version": "1.3.4"
+    },
+    "ddp": {
+      "kind": "versioned",
+      "version": "1.4.2"
+    },
+    "mongo": {
+      "kind": "versioned",
+      "version": "2.0.2"
+    },
+    "modules": {
+      "kind": "versioned",
+      "version": "0.20.2"
+    },
+    "ecmascript-runtime": {
+      "kind": "versioned",
+      "version": "0.8.3"
+    },
+    "babel-runtime": {
+      "kind": "versioned",
+      "version": "1.5.2"
+    },
+    "promise": {
+      "kind": "versioned",
+      "version": "1.0.0"
+    },
+    "dynamic-import": {
+      "kind": "versioned",
+      "version": "0.7.4"
+    },
+    "ddp-client": {
+      "kind": "local",
+      "sourceRoot": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/ddp-client"
+    },
+    "ddp-server": {
+      "kind": "versioned",
+      "version": "3.0.2"
+    },
+    "ecmascript-runtime-client": {
+      "kind": "versioned",
+      "version": "0.12.2"
+    },
+    "ecmascript-runtime-server": {
+      "kind": "versioned",
+      "version": "0.11.1"
+    },
+    "localstorage": {
+      "kind": "versioned",
+      "version": "1.2.1"
+    },
+    "tracker": {
+      "kind": "versioned",
+      "version": "1.3.4"
+    },
+    "reactive-var": {
+      "kind": "versioned",
+      "version": "1.0.13"
+    }
+  },
+  "includeCordovaUnibuild": false
+}

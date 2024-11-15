@@ -1,0 +1,1 @@
+{"code":"function module(l,c,e){e.link(\"./color.js\",{default:\"color\",rgb:\"rgb\",hsl:\"hsl\"},0),e.link(\"./lab.js\",{default:\"lab\",hcl:\"hcl\",lch:\"lch\",gray:\"gray\"},1),e.link(\"./cubehelix.js\",{default:\"cubehelix\"},2)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

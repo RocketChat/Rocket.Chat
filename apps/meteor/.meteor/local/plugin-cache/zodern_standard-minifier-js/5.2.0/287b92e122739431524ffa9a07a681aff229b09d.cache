@@ -1,0 +1,1 @@
+{"code":"function module(o,t,e){\"use strict\";var f=\"undefined\"!=typeof Symbol&&Symbol,n=o(\"./shams\");e.exports=function o(){return\"function\"==typeof f&&\"function\"==typeof Symbol&&\"symbol\"==typeof f(\"foo\")&&\"symbol\"==typeof Symbol(\"bar\")&&n()}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

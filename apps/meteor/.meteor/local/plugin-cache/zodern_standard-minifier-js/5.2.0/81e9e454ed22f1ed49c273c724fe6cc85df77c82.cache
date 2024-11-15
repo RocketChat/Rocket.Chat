@@ -1,0 +1,1 @@
+{"code":"function module(e,d,l){l.link(\"./ReadReceiptsModal\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/room/modals/ReadReceiptsModal/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './ReadReceiptsModal';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,sBAAe,CAAA,QAAA,SAAsB,EAAA\"}"}

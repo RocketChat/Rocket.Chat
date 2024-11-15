@@ -1,0 +1,1 @@
+{"code":"function module(t,n,o){\"use strict\";var e=t(\"./implementation\");o.exports=Function.prototype.bind||e}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,32 @@
+"use strict";module.export({isStartImportParamsPOST:()=>isStartImportParamsPOST},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const RecordListSchema = {
+    type: 'object',
+    properties: {
+        all: { type: 'boolean' },
+        list: {
+            type: 'array',
+            items: { type: 'string' },
+        },
+    },
+    required: [],
+};
+const StartImportParamsPostSchema = {
+    type: 'object',
+    properties: {
+        input: {
+            type: 'object',
+            properties: {
+                users: RecordListSchema,
+                channels: RecordListSchema,
+            },
+            required: [],
+        },
+    },
+    additionalProperties: false,
+    required: ['input'],
+};
+const isStartImportParamsPOST = ajv.compile(StartImportParamsPostSchema);
+//# sourceMappingURL=StartImportParamsPOST.js.map

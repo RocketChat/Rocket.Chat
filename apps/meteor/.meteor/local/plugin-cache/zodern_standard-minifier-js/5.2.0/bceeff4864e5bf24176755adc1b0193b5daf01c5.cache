@@ -1,0 +1,1 @@
+{"code":"function module(n,t,r){let e;function u(n){for(var t,r=0,e=-1,u=n.length;++e<u;)(t=+n[e][1])&&(r+=t);return r}r.export({sum:()=>u}),r.link(\"./none.js\",{default(n){e=n}},0),r.exportDefault(function(n){var t=n.map(u);return e(n).sort(function(n,r){return t[n]-t[r]})})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

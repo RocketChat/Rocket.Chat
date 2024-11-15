@@ -1,0 +1,1 @@
+{"code":"function module(e,o,t){var f=e(\"./_root\"),p=e(\"./stubFalse\"),r=\"object\"==typeof o&&o&&!o.nodeType&&o,d=r&&\"object\"==typeof t&&t&&!t.nodeType&&t,s=d&&d.exports===r?f.Buffer:void 0,u=s?s.isBuffer:void 0;t.exports=u||p}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

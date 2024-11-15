@@ -1,0 +1,46 @@
+"use strict";module.export({isChannelsFilesListProps:()=>isChannelsFilesListProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const channelsFilesListPropsSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            type: 'string',
+            nullable: true,
+        },
+        roomName: {
+            type: 'string',
+            nullable: true,
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+        name: {
+            type: 'string',
+            nullable: true,
+        },
+        typeGroup: {
+            type: 'string',
+            nullable: true,
+        },
+        query: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+    required: [],
+    additionalProperties: false,
+};
+const isChannelsFilesListProps = ajv.compile(channelsFilesListPropsSchema);
+//# sourceMappingURL=ChannelsFilesListProps.js.map

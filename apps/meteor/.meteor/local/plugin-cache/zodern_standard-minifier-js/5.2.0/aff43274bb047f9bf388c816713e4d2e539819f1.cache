@@ -1,0 +1,1 @@
+{"code":"function module(s,t,h){h.export({default:()=>e});class e{constructor(){this._=[]}moveTo(s,t){this._.push([s,t])}closePath(){this._.push(this._[0].slice())}lineTo(s,t){this._.push([s,t])}value(){return this._.length?this._:null}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,12 @@
+"use strict";module.export({isTeamPropsWithTeamName:()=>isTeamPropsWithTeamName,isTeamPropsWithTeamId:()=>isTeamPropsWithTeamId},true);module.link('./TeamsAddMembersProps',{"*":"*"},0);module.link('./TeamsConvertToChannelProps',{"*":"*"},1);module.link('./TeamsDeleteProps',{"*":"*"},2);module.link('./TeamsLeaveProps',{"*":"*"},3);module.link('./TeamsRemoveMemberProps',{"*":"*"},4);module.link('./TeamsRemoveRoomProps',{"*":"*"},5);module.link('./TeamsUpdateMemberProps',{"*":"*"},6);module.link('./TeamsUpdateProps',{"*":"*"},7);module.link('./TeamsListChildren',{"*":"*"},8);
+
+
+
+
+
+
+
+
+const isTeamPropsWithTeamName = (props) => 'teamName' in props;
+const isTeamPropsWithTeamId = (props) => 'teamId' in props;
+//# sourceMappingURL=index.js.map

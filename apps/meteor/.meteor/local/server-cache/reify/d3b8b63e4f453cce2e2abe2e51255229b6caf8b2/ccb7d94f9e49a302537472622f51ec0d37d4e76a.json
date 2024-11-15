@@ -1,0 +1,3 @@
+"use strict";module.export({isGroupsAddLeaderProps:()=>isGroupsAddLeaderProps},true);var withUserIdProps;module.link('./BaseProps',{withUserIdProps(v){withUserIdProps=v}},0);
+const isGroupsAddLeaderProps = withUserIdProps;
+//# sourceMappingURL=GroupsAddLeaderProps.js.map

@@ -1,0 +1,1 @@
+{"code":"function module(t,p){p.publicEncrypt=t(\"./publicEncrypt\"),p.privateDecrypt=t(\"./privateDecrypt\"),p.privateEncrypt=function t(t,r){return p.publicEncrypt(t,r,!0)},p.publicDecrypt=function t(t,r){return p.privateDecrypt(t,r,!0)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

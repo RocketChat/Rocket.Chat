@@ -1,0 +1,1 @@
+{"code":"function module(e,t,n){n.exports=e(\"events\").EventEmitter}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,280 @@
+{
+  "builtBy": "meteor/34",
+  "unibuildDependencies": {
+    "os.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/package.js": "49647157d10887ca632b7c6d88e1a847bbb6f461",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/.npm/package/npm-shrinkwrap.json": "9b35a4dba6f2b71991cc7f60c4a30a273ec311f9",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client/client.js": "4f9a79a6938a2dab7d84848472059dc766e68d7f",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client/utils.js": "fdf0478d3b3390e52e98a9cc57322a2266913152"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client/client.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client/utils.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence",
+          "include": [
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "client/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client",
+          "include": [
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "client.js",
+            "utils.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/package.js": "49647157d10887ca632b7c6d88e1a847bbb6f461",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/.npm/package/npm-shrinkwrap.json": "9b35a4dba6f2b71991cc7f60c4a30a273ec311f9",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client/client.js": "4f9a79a6938a2dab7d84848472059dc766e68d7f",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client/utils.js": "fdf0478d3b3390e52e98a9cc57322a2266913152"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client/client.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client/utils.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "client/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "client.js",
+            "utils.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.legacy.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/package.js": "49647157d10887ca632b7c6d88e1a847bbb6f461",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/.npm/package/npm-shrinkwrap.json": "9b35a4dba6f2b71991cc7f60c4a30a273ec311f9",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client/client.js": "4f9a79a6938a2dab7d84848472059dc766e68d7f",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client/utils.js": "fdf0478d3b3390e52e98a9cc57322a2266913152"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client/client.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client/utils.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "client/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "client.js",
+            "utils.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/client",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    }
+  },
+  "pluginDependencies": {
+    "files": {
+      "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence/package.js": "49647157d10887ca632b7c6d88e1a847bbb6f461"
+    },
+    "potentiallyUnusedFiles": [],
+    "directories": []
+  },
+  "pluginProviderPackageMap": {
+    "rocketchat:user-presence": {
+      "kind": "local",
+      "sourceRoot": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-user-presence"
+    },
+    "meteor": {
+      "kind": "versioned",
+      "version": "2.0.1"
+    },
+    "tracker": {
+      "kind": "versioned",
+      "version": "1.3.4"
+    },
+    "check": {
+      "kind": "versioned",
+      "version": "1.4.4"
+    },
+    "ecmascript": {
+      "kind": "versioned",
+      "version": "0.16.9"
+    },
+    "modules": {
+      "kind": "versioned",
+      "version": "0.20.2"
+    },
+    "ecmascript-runtime": {
+      "kind": "versioned",
+      "version": "0.8.3"
+    },
+    "babel-runtime": {
+      "kind": "versioned",
+      "version": "1.5.2"
+    },
+    "promise": {
+      "kind": "versioned",
+      "version": "1.0.0"
+    },
+    "dynamic-import": {
+      "kind": "versioned",
+      "version": "0.7.4"
+    },
+    "ecmascript-runtime-client": {
+      "kind": "versioned",
+      "version": "0.12.2"
+    },
+    "ecmascript-runtime-server": {
+      "kind": "versioned",
+      "version": "0.11.1"
+    }
+  },
+  "includeCordovaUnibuild": false
+}

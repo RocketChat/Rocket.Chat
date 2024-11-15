@@ -1,0 +1,1 @@
+{"code":"function module(e,n,o){var i;o.export({useVoipSession:function(){return t}},!0),o.link(\"./useVoipEffect\",{useVoipEffect:function(e){i=e}},0);let t=()=>i(e=>e.getSession(),null)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(e,l,a){a.link(\"./CreateChannelModal\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/sidebar/header/CreateChannel/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './CreateChannelModal';\\n\",null],\"names\":[\"module\",\"link\",\"default\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,uBAAe,CAAAC,QAAA,SAAuB,EAAA\"}"}

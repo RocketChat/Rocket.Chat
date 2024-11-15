@@ -1,0 +1,1 @@
+{"code":"function module(a,e,n){n.exports=function(a){return{name:\"Julia REPL\",contains:[{className:\"meta.prompt\",begin:/^julia>/,relevance:10,starts:{end:/^(?![ ]{6})/,subLanguage:\"julia\"}}],aliases:[\"jldoctest\"]}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

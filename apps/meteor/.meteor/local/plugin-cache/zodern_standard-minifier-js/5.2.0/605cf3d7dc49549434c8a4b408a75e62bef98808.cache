@@ -1,0 +1,1 @@
+{"code":"function module(n,r,e){function t(n){return ArrayBuffer.isView(n)&&!(n instanceof DataView)}e.export({isNumberArray:()=>t}),e.exportDefault(function(n,r){r||(r=[]);var e,t=n?Math.min(r.length,n.length):0,i=r.slice();return function(u){for(e=0;e<t;++e)i[e]=n[e]*(1-u)+r[e]*u;return i}})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

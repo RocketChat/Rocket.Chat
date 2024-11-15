@@ -1,0 +1,1 @@
+{"code":"function module(e,t,n){let o,u;n.export({useSurfaceType:()=>c},!0),n.link(\"react\",{useContext(e){o=e}},0),n.link(\"../contexts/SurfaceContext\",{SurfaceContext(e){u=e}},1);let c=()=>o(u)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

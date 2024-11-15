@@ -1,0 +1,1 @@
+{"code":"function module(o,u,e){e.link(\"./RoomInfoRouter\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/room/contextualBar/Info/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './RoomInfoRouter';\\n\",null],\"names\":[\"module\",\"link\",\"default\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,mBAAe,CAAAC,QAAA,SAAmB,EAAA\"}"}

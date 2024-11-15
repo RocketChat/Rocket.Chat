@@ -1,0 +1,1 @@
+{"code":"function module(r,t,e){\"use strict\";var n=/[|\\\\{}()[\\]^$+*?.]/g;e.exports=function(r){if(\"string\"!=typeof r)throw TypeError(\"Expected a string\");return r.replace(n,\"\\\\$&\")}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

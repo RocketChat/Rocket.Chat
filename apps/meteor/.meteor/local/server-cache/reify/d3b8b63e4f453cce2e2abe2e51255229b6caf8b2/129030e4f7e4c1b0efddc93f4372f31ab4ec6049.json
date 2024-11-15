@@ -1,0 +1,16 @@
+"use strict";module.export({isUserLogoutParamsPOST:()=>isUserLogoutParamsPOST},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const UserLogoutParamsPostSchema = {
+    type: 'object',
+    properties: {
+        userId: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: [],
+};
+const isUserLogoutParamsPOST = ajv.compile(UserLogoutParamsPostSchema);
+//# sourceMappingURL=UserLogoutParamsPOST.js.map

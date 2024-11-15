@@ -1,0 +1,1 @@
+{"code":"function module(t,e,o){var r=t(\"./_baseMatches\"),n=t(\"./_baseMatchesProperty\"),a=t(\"./identity\"),c=t(\"./isArray\"),i=t(\"./property\");o.exports=function(t){return\"function\"==typeof t?t:null==t?a:\"object\"==typeof t?c(t)?n(t[0],t[1]):r(t):i(t)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

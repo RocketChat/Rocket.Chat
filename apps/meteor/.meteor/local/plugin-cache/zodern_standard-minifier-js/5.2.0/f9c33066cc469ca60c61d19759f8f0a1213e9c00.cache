@@ -1,0 +1,1 @@
+{"code":"function module(a,e,t){t.link(\"./LeaveTeamWithData\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/teams/contextualBar/info/LeaveTeam/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './LeaveTeamWithData';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,sBAAe,CAAA,QAAA,SAAsB,EAAA\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(t,o,n){(function(){var t;(t=Object.setPrototypeOf)||(t=function(t,o){return t.__proto__=o}),n.exports=t}).call(this)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

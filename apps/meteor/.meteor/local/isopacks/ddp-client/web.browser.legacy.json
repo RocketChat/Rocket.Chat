@@ -1,0 +1,241 @@
+{
+  "format": "isopack-2-unibuild",
+  "declaredExports": [
+    {
+      "name": "DDP",
+      "testOnly": false
+    }
+  ],
+  "uses": [
+    {
+      "package": "meteor"
+    },
+    {
+      "package": "check"
+    },
+    {
+      "package": "random"
+    },
+    {
+      "package": "ejson"
+    },
+    {
+      "package": "tracker"
+    },
+    {
+      "package": "retry"
+    },
+    {
+      "package": "id-map"
+    },
+    {
+      "package": "ecmascript"
+    },
+    {
+      "package": "callback-hook"
+    },
+    {
+      "package": "ddp-common"
+    },
+    {
+      "package": "reload"
+    },
+    {
+      "package": "socket-stream-client"
+    },
+    {
+      "package": "diff-sequence"
+    },
+    {
+      "package": "mongo-id"
+    },
+    {
+      "package": "reload",
+      "weak": true
+    }
+  ],
+  "resources": [
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/client/client.js",
+      "length": 195,
+      "offset": 0,
+      "path": "client/client.js",
+      "hash": "9edc3cd6f4b6122ce38c0abfba8d433b4f322a1c",
+      "fileOptions": {
+        "mainModule": true,
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/client/client_convenience.js",
+      "length": 2392,
+      "offset": 0,
+      "path": "client/client_convenience.js",
+      "hash": "a1719c6767e6a9ec97b23f17611054cfd16d172b",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/client/queueStubsHelpers.js",
+      "length": 6323,
+      "offset": 0,
+      "path": "client/queueStubsHelpers.js",
+      "hash": "f195b8bc7c1dfec5181d91020dda36be809d4068",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/common/MethodInvoker.js",
+      "length": 3470,
+      "offset": 0,
+      "path": "common/MethodInvoker.js",
+      "hash": "cb6e60ed802081b060bfebeee150b95e68073b90",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/common/livedata_connection.js",
+      "length": 73459,
+      "offset": 0,
+      "path": "common/livedata_connection.js",
+      "hash": "0f17f0451f4e228e4480fe2f6a8b85c97e06d39d",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/common/namespace.js",
+      "length": 3496,
+      "offset": 0,
+      "path": "common/namespace.js",
+      "hash": "6b40708957e0f01be7c70e56d6cd9dc558afc70c",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/server/server.js",
+      "length": 46,
+      "offset": 0,
+      "path": "server/server.js",
+      "hash": "afc17bedb6da1fc64f15cc2c20b1446f1f0531f9",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/test/livedata_callAsync_tests.js",
+      "length": 440,
+      "offset": 0,
+      "path": "test/livedata_callAsync_tests.js",
+      "hash": "67b8766135bda739a33732cddebc7dc5243957e3",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/test/livedata_connection_tests.js",
+      "length": 81381,
+      "offset": 0,
+      "path": "test/livedata_connection_tests.js",
+      "hash": "f94b69b403416855e3e9d9b0360742bddae36d41",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/test/livedata_test_service.js",
+      "length": 10683,
+      "offset": 0,
+      "path": "test/livedata_test_service.js",
+      "hash": "0ba04b4c0955d55544da8ca119b07561640dff41",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/test/livedata_tests.js",
+      "length": 35044,
+      "offset": 0,
+      "path": "test/livedata_tests.js",
+      "hash": "a809a84c5e2573a6b4c5bc04a44442326384d46a",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/test/random_stream_tests.js",
+      "length": 1392,
+      "offset": 0,
+      "path": "test/random_stream_tests.js",
+      "hash": "a49b9f09aaeba289ddd2a6cf80cefcd2a90d4e90",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/test/stub_stream.js",
+      "length": 1377,
+      "offset": 0,
+      "path": "test/stub_stream.js",
+      "hash": "a8c894ea5f0846f325cede04b9bbffc460614e24",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/test/async_stubs/client.js",
+      "length": 8976,
+      "offset": 0,
+      "path": "test/async_stubs/client.js",
+      "hash": "febb3e8fdf1c575583fd7e5ed9231bb4e8416eec",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/test/async_stubs/server_setup.js",
+      "length": 1282,
+      "offset": 0,
+      "path": "test/async_stubs/server_setup.js",
+      "hash": "318ae2b595cb4f9ce04b2c9d41df6d5584b32214",
+      "fileOptions": {
+        "lazy": true
+      }
+    }
+  ],
+  "node_modules": "npm/node_modules"
+}

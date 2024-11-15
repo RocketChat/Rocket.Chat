@@ -1,0 +1,1 @@
+{"code":"function module(t,e,l){let n;l.link(\"../count.js\",{default(t){n=t}},0),l.exportDefault(function(t){return Math.ceil(Math.log(n(t))/Math.LN2)+1})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

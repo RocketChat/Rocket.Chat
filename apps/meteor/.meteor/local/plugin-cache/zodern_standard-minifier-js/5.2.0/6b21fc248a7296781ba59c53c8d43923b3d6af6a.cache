@@ -1,0 +1,1 @@
+{"code":"function module(e,l,n){let r=e(\"./parse\");n.exports=(e,l)=>{let n=r(e,l);return n?n.version:null}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(n,t,r){var o;r.export({TransactionStateError:function(){return e}}),r.link(\"./exception\",{Exception:function(n){o=n}},0);class e extends o{constructor(n){super(n||\"Transaction state error.\")}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

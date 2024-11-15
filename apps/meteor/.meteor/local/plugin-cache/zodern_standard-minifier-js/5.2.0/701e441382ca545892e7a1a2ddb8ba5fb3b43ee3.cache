@@ -1,0 +1,1 @@
+{"code":"function module(n,t,e){var l=n(\"./_baseFlatten\");e.exports=function(n){return(null==n?0:n.length)?l(n,1):[]}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

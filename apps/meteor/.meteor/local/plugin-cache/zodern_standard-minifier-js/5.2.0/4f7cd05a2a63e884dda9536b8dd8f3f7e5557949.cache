@@ -1,0 +1,1 @@
+{"code":"function module(e,r,n){let a;n.export({uiKitBanner:()=>t}),n.link(\"../../rendering/createSurfaceRenderer\",{createSurfaceRenderer(e){a=e}},0);var t=a()}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

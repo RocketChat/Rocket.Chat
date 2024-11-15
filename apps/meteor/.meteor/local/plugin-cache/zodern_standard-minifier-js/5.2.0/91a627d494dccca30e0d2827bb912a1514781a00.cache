@@ -1,0 +1,1 @@
+{"code":"function module(r,t,n){var i=r(\"./isArray\"),o=r(\"./_isKey\"),e=r(\"./_stringToPath\"),s=r(\"./toString\");n.exports=function(r,t){return i(r)?r:o(r,t)?[r]:e(s(r))}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(e,t,u){u.link(\"./SettingsGroupPage\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/admin/settings/SettingsGroupPage/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './SettingsGroupPage';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,sBAAe,CAAA,QAAA,SAAsB,EAAA\"}"}

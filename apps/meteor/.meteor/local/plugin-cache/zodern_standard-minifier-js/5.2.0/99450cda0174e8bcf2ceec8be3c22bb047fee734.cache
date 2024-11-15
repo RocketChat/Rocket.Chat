@@ -1,0 +1,1 @@
+{"code":"function module(t,e,n){let i;n.link(\"../creator\",{default(t){i=t}},0),n.exportDefault(function(t){var e=\"function\"==typeof t?t:i(t);return this.select(function(){return this.appendChild(e.apply(this,arguments))})})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(t,n,c){(function(){\"use strict\";var n,r,o;o=t(\"inherits-ex\"),n=t(\"../path\"),r=function(){function t(){t.__super__.constructor.call(this)}return o(t,n),t.prototype.cwd=function(){return process.cwd()},t}(),c.exports=new r}).call(this)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

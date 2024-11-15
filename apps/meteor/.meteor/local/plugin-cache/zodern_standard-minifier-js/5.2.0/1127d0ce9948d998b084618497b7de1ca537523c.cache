@@ -1,0 +1,1 @@
+{"code":"function module(e,t,f){var r=e(\"is-typedarray\").strict;f.exports=function e(e){if(!r(e))return Buffer.from(e);var t=Buffer.from(e.buffer);return e.byteLength!==e.buffer.byteLength&&(t=t.slice(e.byteOffset,e.byteOffset+e.byteLength)),t}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

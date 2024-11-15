@@ -1,0 +1,1 @@
+{"code":"function module(n,l,t){let a;function e(n){let{ns:l,children:t,...e}=n,[o,u,i]=a(l,e);return t(o,{i18n:u,lng:u.language},i)}t.export({Translation:()=>e}),t.link(\"./useTranslation.js\",{useTranslation(n){a=n}},0)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

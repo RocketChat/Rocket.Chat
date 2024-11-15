@@ -1,0 +1,1 @@
+{"code":"function module(e,n,r){let t=e(\"../classes/range\");r.exports=(e,n)=>{try{return new t(e,n).range||\"*\"}catch(e){return null}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

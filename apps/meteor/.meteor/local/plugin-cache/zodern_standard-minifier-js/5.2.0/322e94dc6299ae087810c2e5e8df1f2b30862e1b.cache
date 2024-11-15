@@ -1,0 +1,1 @@
+{"code":"function module(E,e,I){let l;I.export({AllowedMethods:()=>C},!0),I.link(\"../messages\",{C(E){l=E}},0);let C=[l.ACK,l.BYE,l.CANCEL,l.INFO,l.INVITE,l.MESSAGE,l.NOTIFY,l.OPTIONS,l.PRACK,l.REFER,l.REGISTER,l.SUBSCRIBE]}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

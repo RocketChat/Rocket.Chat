@@ -1,0 +1,1 @@
+{"code":"function module(c,e){var r=c(\"buffer-xor\");e.encrypt=function(c,e){for(;c._cache.length<e.length;)c._cache=Buffer.concat([c._cache,(c._prev=c._cipher.encryptBlock(c._prev),c._prev)]);var n=c._cache.slice(0,e.length);return c._cache=c._cache.slice(e.length),r(e,n)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

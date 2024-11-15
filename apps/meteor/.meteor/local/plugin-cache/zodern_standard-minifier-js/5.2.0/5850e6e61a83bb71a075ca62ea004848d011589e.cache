@@ -1,0 +1,1 @@
+{"code":"function module(l,o,e){e.export({default:()=>t});function t(l,o){let e;let t=-1,f=-1;if(void 0===o)for(let o of l)++f,null!=o&&(e>o||void 0===e&&o>=o)&&(e=o,t=f);else for(let n of l)null!=(n=o(n,++f,l))&&(e>n||void 0===e&&n>=n)&&(e=n,t=f);return t}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,12 @@
+"use strict";module.export({isGroupsSetDescriptionProps:()=>isGroupsSetDescriptionProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);var withGroupBaseProperties;module.link('./BaseProps',{withGroupBaseProperties(v){withGroupBaseProperties=v}},1);
+
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const groupsSetDescriptionPropsSchema = withGroupBaseProperties({
+    description: {
+        type: 'string',
+    },
+}, ['description']);
+const isGroupsSetDescriptionProps = ajv.compile(groupsSetDescriptionPropsSchema);
+//# sourceMappingURL=GroupsSetDescriptionProps.js.map

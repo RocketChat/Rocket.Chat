@@ -1,0 +1,1 @@
+{"code":"function module(r,n,t){var o;t.export({StateTransitionError:function(){return e}}),t.link(\"../../core\",{Exception:function(r){o=r}},0);class e extends o{constructor(r){super(r||\"An error occurred during state transition.\")}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,5 @@
+"use strict";module.link('./VoipFreeSwitchExtensionAssignProps',{"*":"*"},0);module.link('./VoipFreeSwitchExtensionGetDetailsProps',{"*":"*"},1);module.link('./VoipFreeSwitchExtensionGetInfoProps',{"*":"*"},2);module.link('./VoipFreeSwitchExtensionListProps',{"*":"*"},3);
+
+
+
+//# sourceMappingURL=index.js.map

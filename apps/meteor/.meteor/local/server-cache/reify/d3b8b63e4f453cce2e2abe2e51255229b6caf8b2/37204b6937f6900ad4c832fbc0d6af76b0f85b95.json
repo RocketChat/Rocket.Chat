@@ -1,0 +1,30 @@
+"use strict";module.export({isMailerProps:()=>isMailerProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const MailerPropsSchema = {
+    type: 'object',
+    properties: {
+        from: {
+            type: 'string',
+        },
+        subject: {
+            type: 'string',
+        },
+        body: {
+            type: 'string',
+        },
+        dryrun: {
+            type: 'boolean',
+            nullable: true,
+        },
+        query: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: ['from', 'subject', 'body'],
+    additionalProperties: false,
+};
+const isMailerProps = ajv.compile(MailerPropsSchema);
+//# sourceMappingURL=MailerParamsPOST.js.map

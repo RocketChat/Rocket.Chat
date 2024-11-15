@@ -1,0 +1,1 @@
+{"code":"function module(e,t,a){var r=e(\"create-hash\"),n=e(\"safe-buffer\").Buffer;a.exports=function(e,t){for(var a,f=n.alloc(0),u=0;f.length<t;)a=function(e){var t=n.allocUnsafe(4);return t.writeUInt32BE(e,0),t}(u++),f=n.concat([f,r(\"sha1\").update(e).update(a).digest()]);return f.slice(0,t)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,31 @@
+"use strict";module.export({isSettingsUpdatePropsActions:()=>isSettingsUpdatePropsActions,isSettingsUpdatePropsColor:()=>isSettingsUpdatePropsColor,isSettingsUpdatePropDefault:()=>isSettingsUpdatePropDefault,isSettingsPublicWithPaginationProps:()=>isSettingsPublicWithPaginationProps},true);var ajv;module.link('./Ajv',{ajv(v){ajv=v}},0);
+const isSettingsUpdatePropsActions = (props) => 'execute' in props;
+const isSettingsUpdatePropsColor = (props) => 'editor' in props && 'value' in props;
+const isSettingsUpdatePropDefault = (props) => 'value' in props;
+const SettingsPublicWithPaginationSchema = {
+    type: 'object',
+    properties: {
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+        _id: {
+            type: 'string',
+        },
+        query: {
+            type: 'string',
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isSettingsPublicWithPaginationProps = ajv.compile(SettingsPublicWithPaginationSchema);
+//# sourceMappingURL=settings.js.map

@@ -1,0 +1,1 @@
+{"code":"function module(e,n,o){o.exports={name:\"@bugsnag/js\",version:\"7.20.2\",browser:\"browser/notifier.js\",main:\"node/notifier.js\"}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

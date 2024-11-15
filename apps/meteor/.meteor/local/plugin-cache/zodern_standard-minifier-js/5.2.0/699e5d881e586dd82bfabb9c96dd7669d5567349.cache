@@ -1,0 +1,1 @@
+{"code":"function module(e,n,r){let t=e(\"../classes/semver\");r.exports=(e,n,r,s,o)=>{\"string\"==typeof r&&(o=s,s=r,r=void 0);try{return new t(e instanceof t?e.version:e,r).inc(n,s,o).version}catch(e){return null}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

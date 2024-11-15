@@ -1,0 +1,12 @@
+"use strict";module.export({isGetImportFileDataParamsGET:()=>isGetImportFileDataParamsGET},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const GetImportFileDataParamsGETSchema = {
+    type: 'object',
+    properties: {},
+    additionalProperties: false,
+    required: [],
+};
+const isGetImportFileDataParamsGET = ajv.compile(GetImportFileDataParamsGETSchema);
+//# sourceMappingURL=GetImportFileDataParamsGET.js.map

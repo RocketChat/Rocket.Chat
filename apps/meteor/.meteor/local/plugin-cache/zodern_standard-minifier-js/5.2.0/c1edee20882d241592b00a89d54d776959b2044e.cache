@@ -1,0 +1,1 @@
+{"code":"function module(e){e(\"focus-within-polyfill\"),e(\"focus-visible\"),window.ResizeObserver=window.ResizeObserver||e(\"@juggle/resize-observer\").ResizeObserver,navigator.clipboard=navigator.clipboard||e(\"clipboard-polyfill\"),e(\"element-closest-polyfill\"),e(\"new-event-polyfill\")}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

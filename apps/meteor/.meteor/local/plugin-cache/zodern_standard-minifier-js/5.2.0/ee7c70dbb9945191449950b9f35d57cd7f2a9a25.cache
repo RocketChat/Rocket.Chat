@@ -1,0 +1,1 @@
+{"code":"function module(e,o,t){var a=e(\"./_getNative\")(e(\"./_root\"),\"WeakMap\");t.exports=a}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

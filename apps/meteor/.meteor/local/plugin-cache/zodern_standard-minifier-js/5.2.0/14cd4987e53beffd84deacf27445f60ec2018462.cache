@@ -1,0 +1,1 @@
+{"code":"function module(o,s,e){e.exports={name:\"cross-fetch\",version:\"3.1.5\",browser:\"dist/browser-ponyfill.js\",main:\"dist/node-ponyfill.js\"}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(r,s,t){\"use strict\";var i=r(\"./stringify\"),a=r(\"./parse\"),e=r(\"./formats\");t.exports={formats:e,parse:a,stringify:i}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

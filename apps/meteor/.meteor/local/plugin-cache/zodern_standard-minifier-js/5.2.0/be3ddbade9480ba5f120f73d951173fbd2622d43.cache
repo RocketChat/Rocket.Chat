@@ -1,0 +1,1 @@
+{"code":"function module(e,l,a){a.link(\"./AppDetailsPage\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/marketplace/AppDetailsPage/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './AppDetailsPage';\\n\",null],\"names\":[\"module\",\"link\",\"default\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,mBAAe,CAAAC,QAAA,SAAmB,EAAA\"}"}

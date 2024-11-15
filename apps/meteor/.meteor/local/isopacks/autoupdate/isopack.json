@@ -1,0 +1,26 @@
+{
+  "isopack-2": {
+    "name": "autoupdate",
+    "summary": "Update the client when new client code is available",
+    "version": "2.0.0",
+    "isTest": false,
+    "builds": [
+      {
+        "kind": "main",
+        "arch": "os",
+        "path": "os.json"
+      },
+      {
+        "kind": "main",
+        "arch": "web.browser",
+        "path": "web.browser.json"
+      },
+      {
+        "kind": "main",
+        "arch": "web.browser.legacy",
+        "path": "web.browser.legacy.json"
+      }
+    ],
+    "plugins": []
+  }
+}

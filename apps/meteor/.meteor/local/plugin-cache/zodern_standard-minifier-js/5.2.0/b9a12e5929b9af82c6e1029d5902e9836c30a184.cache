@@ -1,0 +1,1 @@
+{"code":"function module(e,i,n){n.export({isPreviewBlockWithThumb:()=>r,isPreviewBlockWithPreview:()=>t});var r=function(e){return\"thumb\"in e},t=function(e){return\"externalUrl\"in e||\"oembedUrl\"in e}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

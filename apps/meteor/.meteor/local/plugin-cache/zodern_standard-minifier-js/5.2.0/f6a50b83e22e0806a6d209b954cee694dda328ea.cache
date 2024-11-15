@@ -1,0 +1,1 @@
+{"code":"function module(e,t,u){let l,r;u.link(\"./setGrabCursor.js\",{default(e){l=e}},0),u.link(\"./unsetGrabCursor.js\",{default(e){r=e}},1),u.exportDefault({setGrabCursor:l,unsetGrabCursor:r})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(e,r,t){t.export({default:()=>n});function n(e=\"\"){return`.${e.trim().replace(/([\\.:!+\\/])/g,\"\\\\$1\").replace(/ /g,\".\")}`}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,16 @@
+"use strict";module.export({isUsersAutocompleteProps:()=>isUsersAutocompleteProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const UsersAutocompleteParamsGetSchema = {
+    type: 'object',
+    properties: {
+        selector: {
+            type: 'string',
+        },
+    },
+    required: ['selector'],
+    additionalProperties: false,
+};
+const isUsersAutocompleteProps = ajv.compile(UsersAutocompleteParamsGetSchema);
+//# sourceMappingURL=UsersAutocompleteParamsGET.js.map

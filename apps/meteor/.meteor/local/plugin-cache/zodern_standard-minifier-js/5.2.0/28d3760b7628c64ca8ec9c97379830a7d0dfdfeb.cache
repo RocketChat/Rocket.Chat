@@ -1,0 +1,1 @@
+{"code":"function module(e,t){\"use strict\";Object.defineProperty(t,\"__esModule\",{value:!0}),t.Surface=void 0;let r=e(\"react/jsx-runtime\"),u=e(\"../contexts/SurfaceContext\");t.Surface=({children:e,type:t})=>(0,r.jsx)(u.SurfaceContext.Provider,{value:t,children:e})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

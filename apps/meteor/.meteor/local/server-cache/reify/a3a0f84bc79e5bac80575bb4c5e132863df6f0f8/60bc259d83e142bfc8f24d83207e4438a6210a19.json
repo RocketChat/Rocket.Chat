@@ -1,0 +1,8 @@
+"use strict";module.export({isGroupsDeleteProps:()=>isGroupsDeleteProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);var withGroupBaseProperties;module.link('./BaseProps',{withGroupBaseProperties(v){withGroupBaseProperties=v}},1);
+
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const GroupsDeletePropsSchema = withGroupBaseProperties();
+const isGroupsDeleteProps = ajv.compile(GroupsDeletePropsSchema);
+//# sourceMappingURL=GroupsDeleteProps.js.map

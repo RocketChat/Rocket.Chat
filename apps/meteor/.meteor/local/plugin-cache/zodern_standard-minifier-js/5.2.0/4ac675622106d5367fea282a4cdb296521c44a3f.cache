@@ -1,0 +1,1 @@
+{"code":"function module(e,o,d){d.link(\"./ComposerFederation\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/room/composer/ComposerFederation/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './ComposerFederation';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,uBAAe,CAAA,QAAA,SAAuB,EAAA\"}"}

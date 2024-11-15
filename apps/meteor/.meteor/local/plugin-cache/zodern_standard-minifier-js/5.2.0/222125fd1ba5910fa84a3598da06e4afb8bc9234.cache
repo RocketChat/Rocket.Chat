@@ -1,0 +1,1 @@
+{"code":"function module(e,n,t){t.exportDefault(function(e){return e.ownerDocument&&e.ownerDocument.defaultView||e.document&&e||e.defaultView})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

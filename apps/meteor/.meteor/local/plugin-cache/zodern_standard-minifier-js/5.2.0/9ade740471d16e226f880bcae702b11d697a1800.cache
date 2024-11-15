@@ -1,0 +1,1 @@
+{"code":"function module(n,t,e){var u=n(\"./_basePick\"),l=n(\"./_flatRest\")(function(n,t){return null==n?{}:u(n,t)});e.exports=l}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

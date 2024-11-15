@@ -1,0 +1,1 @@
+{"code":"function module(l,t,u){u.link(\"./AppsList\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/marketplace/AppsList/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './AppsList';\\n\",null],\"names\":[\"module\",\"link\",\"default\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,aAAe,CAAAC,QAAA,SAAa,EAAA\"}"}

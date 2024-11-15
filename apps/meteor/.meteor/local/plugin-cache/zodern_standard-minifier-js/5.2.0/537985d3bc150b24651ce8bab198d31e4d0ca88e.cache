@@ -1,0 +1,1 @@
+{"code":"function module(e,t){\"use strict\";Object.defineProperty(t,\"__esModule\",{value:!0}),t.isTextObject=void 0;var c=e(\"./TextObjectType\");t.isTextObject=function(e){return Object.values(c.TextObjectType).includes(e.type)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

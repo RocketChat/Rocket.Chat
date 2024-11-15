@@ -1,0 +1,1 @@
+{"code":"function module(e,n,o){var i,l;o.link(\"d3-color\",{cubehelix:function(e){i=e}},0),o.link(\"d3-interpolate\",{interpolateCubehelixLong:function(e){l=e}},1),o.exportDefault(l(i(300,.5,0),i(-240,.5,1)))}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

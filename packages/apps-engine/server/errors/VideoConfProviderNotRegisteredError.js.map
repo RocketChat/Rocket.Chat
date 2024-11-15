@@ -1,0 +1,1 @@
+{"version":3,"file":"VideoConfProviderNotRegisteredError.js","sourceRoot":"","sources":["../../src/server/errors/VideoConfProviderNotRegisteredError.ts"],"names":[],"mappings":";;;AAAA,MAAa,mCAAmC;IAK5C,YAAY,YAAoB;QAJzB,SAAI,GAAG,gCAAgC,CAAC;QAK3C,IAAI,CAAC,OAAO,GAAG,kCAAkC,YAAY,oCAAoC,CAAC;IACtG,CAAC;CACJ;AARD,kFAQC"}

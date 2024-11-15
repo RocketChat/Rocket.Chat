@@ -1,0 +1,27 @@
+"use strict";module.export({isLicensesAddProps:()=>isLicensesAddProps,isLicensesInfoProps:()=>isLicensesInfoProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const licensesAddPropsSchema = {
+    type: 'object',
+    properties: {
+        license: {
+            type: 'string',
+        },
+    },
+    required: ['license'],
+    additionalProperties: false,
+};
+const isLicensesAddProps = ajv.compile(licensesAddPropsSchema);
+const licensesInfoPropsSchema = {
+    type: 'object',
+    properties: {
+        loadValues: {
+            type: 'boolean',
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isLicensesInfoProps = ajv.compile(licensesInfoPropsSchema);
+//# sourceMappingURL=licenses.js.map

@@ -1,0 +1,1 @@
+{"code":"function module(t,l,u){u.link(\"./OutlookEventsList\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/outlookCalendar/OutlookEventsList/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './OutlookEventsList';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,sBAAe,CAAA,QAAA,SAAsB,EAAA\"}"}

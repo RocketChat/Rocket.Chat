@@ -1,0 +1,1 @@
+{"code":"function module(n,t,e){var o;e.export({ContentTypeUnsupportedError:function(){return r}}),e.link(\"../../core\",{Exception:function(n){o=n}},0);class r extends o{constructor(n){super(n||\"Unsupported content type.\")}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

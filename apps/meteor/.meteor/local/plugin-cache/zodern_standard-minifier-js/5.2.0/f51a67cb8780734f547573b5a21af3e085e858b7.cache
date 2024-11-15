@@ -1,0 +1,1 @@
+{"code":"function module(o,e,t){var r=o(\"./_getNative\")(o(\"./_root\"),\"Promise\");t.exports=r}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

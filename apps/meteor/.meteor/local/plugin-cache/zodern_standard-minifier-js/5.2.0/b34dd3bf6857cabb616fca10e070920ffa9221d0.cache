@@ -1,0 +1,1 @@
+{"code":"function module(r,f,e){var t=r(\"safe-buffer\").Buffer;e.exports=function(r,f,e){if(t.isBuffer(r))return r;if(\"string\"==typeof r)return t.from(r,f);if(ArrayBuffer.isView(r))return t.from(r.buffer);throw TypeError(e+\" must be a string, a Buffer, a typed array or a DataView\")}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

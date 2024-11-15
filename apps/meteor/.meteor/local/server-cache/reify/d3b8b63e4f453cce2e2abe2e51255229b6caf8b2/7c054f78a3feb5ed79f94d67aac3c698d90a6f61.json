@@ -1,0 +1,19 @@
+"use strict";module.link('./channels',{"*":"*"},0);module.link('./ChannelsAddAllProps',{"*":"*"},1);module.link('./ChannelsArchiveProps',{"*":"*"},2);module.link('./ChannelsConvertToTeamProps',{"*":"*"},3);module.link('./ChannelsCreateProps',{"*":"*"},4);module.link('./ChannelsDeleteProps',{"*":"*"},5);module.link('./ChannelsGetAllUserMentionsByChannelProps',{"*":"*"},6);module.link('./ChannelsHistoryProps',{"*":"*"},7);module.link('./ChannelsJoinProps',{"*":"*"},8);module.link('./ChannelsKickProps',{"*":"*"},9);module.link('./ChannelsLeaveProps',{"*":"*"},10);module.link('./ChannelsMessagesProps',{"*":"*"},11);module.link('./ChannelsModeratorsProps',{"*":"*"},12);module.link('./ChannelsOpenProps',{"*":"*"},13);module.link('./ChannelsRolesProps',{"*":"*"},14);module.link('./ChannelsSetAnnouncementProps',{"*":"*"},15);module.link('./ChannelsSetReadOnlyProps',{"*":"*"},16);module.link('./ChannelsUnarchiveProps',{"*":"*"},17);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//# sourceMappingURL=index.js.map

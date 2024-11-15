@@ -1,0 +1,1 @@
+{"code":"function module(i,n,e){e.link(\"./iframe_client\")}","map":"{\"version\":3,\"sources\":[\"app/iframe-login/client/index.ts\",\"<anon>\"],\"sourcesContent\":[\"import './iframe_client';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAA,CAAA\"}"}

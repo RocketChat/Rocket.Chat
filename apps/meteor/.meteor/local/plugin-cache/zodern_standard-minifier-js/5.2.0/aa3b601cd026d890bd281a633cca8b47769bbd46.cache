@@ -1,0 +1,1 @@
+{"code":"function module(t,n,e){var u,c;e.link(\"react/jsx-runtime\",{jsx:function(t){u=t}},0),e.link(\"@rocket.chat/fuselage\",{ButtonGroup:function(t){c=t}},1),e.exportDefault(t=>u(c,Object.assign({stretch:!0},t)))}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

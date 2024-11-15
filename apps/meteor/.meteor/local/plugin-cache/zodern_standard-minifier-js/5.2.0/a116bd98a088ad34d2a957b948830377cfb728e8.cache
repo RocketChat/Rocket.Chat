@@ -1,0 +1,1 @@
+{"code":"function module(r,n,o){var e=r(\"./_Symbol\"),i=r(\"./isArguments\"),t=r(\"./isArray\"),a=e?e.isConcatSpreadable:void 0;o.exports=function(r){return t(r)||i(r)||!!(a&&r&&r[a])}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

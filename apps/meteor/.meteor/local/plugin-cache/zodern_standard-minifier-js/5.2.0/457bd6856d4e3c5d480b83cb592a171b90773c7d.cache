@@ -1,0 +1,1 @@
+{"code":"function module(n,i,l){l.link(\"./lib\"),l.link(\"./wordpress-login-button.css\")}","map":"{\"version\":3,\"sources\":[\"app/wordpress/client/index.ts\",\"<anon>\"],\"sourcesContent\":[\"import './lib';\\nimport './wordpress-login-button.css';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAA,CAAA,SAAQD,EAAAC,IAAA,CAAA\"}"}

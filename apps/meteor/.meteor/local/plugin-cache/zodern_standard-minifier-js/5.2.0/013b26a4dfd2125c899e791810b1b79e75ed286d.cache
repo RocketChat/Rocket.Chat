@@ -1,0 +1,1 @@
+{"code":"function module(t,n,e){var o=t(\"./_baseGetTag\"),c=t(\"./isObject\");e.exports=function(t){if(!c(t))return!1;var n=o(t);return\"[object Function]\"==n||\"[object GeneratorFunction]\"==n||\"[object AsyncFunction]\"==n||\"[object Proxy]\"==n}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

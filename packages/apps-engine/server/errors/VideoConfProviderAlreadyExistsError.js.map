@@ -1,0 +1,1 @@
+{"version":3,"file":"VideoConfProviderAlreadyExistsError.js","sourceRoot":"","sources":["../../src/server/errors/VideoConfProviderAlreadyExistsError.ts"],"names":[],"mappings":";;;AAAA,MAAa,mCAAmC;IAK5C,YAAY,IAAY;QAJjB,SAAI,GAAG,gCAAgC,CAAC;QAK3C,IAAI,CAAC,OAAO,GAAG,kCAAkC,IAAI,0CAA0C,CAAC;IACpG,CAAC;CACJ;AARD,kFAQC"}

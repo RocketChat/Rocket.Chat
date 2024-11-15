@@ -1,0 +1,1 @@
+{"code":"function module(t,i,n){let s;function e(t=!0,i){let{params:n}=this;this.animating=!1,n.cssMode||(this.setTransition(0),s({swiper:this,runCallbacks:t,direction:i,step:\"End\"}))}n.export({default:()=>e}),n.link(\"./transitionEmit.js\",{default(t){s=t}},0)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,16 @@
+"use strict";module.export({isUsersListTeamsProps:()=>isUsersListTeamsProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const UsersListTeamsParamsGetSchema = {
+    type: 'object',
+    properties: {
+        userId: {
+            type: 'string',
+        },
+    },
+    required: ['userId'],
+    additionalProperties: false,
+};
+const isUsersListTeamsProps = ajv.compile(UsersListTeamsParamsGetSchema);
+//# sourceMappingURL=UsersListTeamsParamsGET.js.map

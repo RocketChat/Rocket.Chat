@@ -1,0 +1,1 @@
+{"code":"function module(i,e,n){var e=n.exports=i(\"./lib/inherits\");e.directly=i(\"./lib/inheritsDirectly\"),e.is=i(\"./lib/isInheritedFrom\"),e.mixin=i(\"./lib/mixin\"),e.isMixin=i(\"./lib/isMixinedFrom\"),e.object=i(\"./lib/inheritsObject\")}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

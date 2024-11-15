@@ -1,0 +1,1 @@
+{"code":"function module(w,t,l){l.export({xhtml:()=>x});var x=\"http://www.w3.org/1999/xhtml\";l.exportDefault({svg:\"http://www.w3.org/2000/svg\",xhtml:x,xlink:\"http://www.w3.org/1999/xlink\",xml:\"http://www.w3.org/XML/1998/namespace\",xmlns:\"http://www.w3.org/2000/xmlns/\"})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

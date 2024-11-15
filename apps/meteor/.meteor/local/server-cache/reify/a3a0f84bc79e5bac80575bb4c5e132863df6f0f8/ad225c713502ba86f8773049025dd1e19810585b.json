@@ -1,0 +1,19 @@
+"use strict";module.export({isDownloadPublicImportFileParamsPOST:()=>isDownloadPublicImportFileParamsPOST},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const DownloadPublicImportFileParamsPostSchema = {
+    type: 'object',
+    properties: {
+        fileUrl: {
+            type: 'string',
+        },
+        importerKey: {
+            type: 'string',
+        },
+    },
+    additionalProperties: false,
+    required: ['fileUrl', 'importerKey'],
+};
+const isDownloadPublicImportFileParamsPOST = ajv.compile(DownloadPublicImportFileParamsPostSchema);
+//# sourceMappingURL=DownloadPublicImportFileParamsPOST.js.map

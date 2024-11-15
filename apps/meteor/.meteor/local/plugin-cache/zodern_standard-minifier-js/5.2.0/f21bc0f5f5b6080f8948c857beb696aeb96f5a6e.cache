@@ -1,0 +1,1 @@
+{"code":"function module(e,d,a){a.link(\"./Header\",{default:\"HeaderV2\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/room/HeaderV2/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default as HeaderV2 } from './Header';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,WAAW,CAAA,QAAU,UAAM,EAAA\"}"}

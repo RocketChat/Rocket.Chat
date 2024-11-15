@@ -1,0 +1,1 @@
+{"code":"function module(e,o,r){var t,O;r.export({ResizeObserverBoxOptions:()=>t}),(O=t||r.runSetters(t={},[\"ResizeObserverBoxOptions\"])).BORDER_BOX=\"border-box\",O.CONTENT_BOX=\"content-box\",O.DEVICE_PIXEL_CONTENT_BOX=\"device-pixel-content-box\"}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

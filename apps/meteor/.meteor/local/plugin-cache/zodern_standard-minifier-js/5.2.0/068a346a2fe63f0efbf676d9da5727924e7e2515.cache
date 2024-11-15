@@ -1,0 +1,1 @@
+{"code":"function module(e,t){\"use strict\";Object.defineProperty(t,\"__esModule\",{value:!0}),t.renderLayoutBlock=void 0;var o=e(\"./BlockContext\");t.renderLayoutBlock=function(e){return function(t,n){var r=e[t.type];return r?r.call(e,t,o.BlockContext.BLOCK,n):null}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

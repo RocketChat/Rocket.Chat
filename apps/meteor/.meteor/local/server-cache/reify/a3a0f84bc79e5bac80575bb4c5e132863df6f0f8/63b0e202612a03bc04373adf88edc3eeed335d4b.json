@@ -1,0 +1,19 @@
+"use strict";module.export({isVoipFreeSwitchExtensionGetDetailsProps:()=>isVoipFreeSwitchExtensionGetDetailsProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const voipFreeSwitchExtensionGetDetailsPropsSchema = {
+    type: 'object',
+    properties: {
+        extension: {
+            type: 'string',
+            nullable: false,
+        },
+        group: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: ['extension'],
+    additionalProperties: false,
+};
+const isVoipFreeSwitchExtensionGetDetailsProps = ajv.compile(voipFreeSwitchExtensionGetDetailsPropsSchema);
+//# sourceMappingURL=VoipFreeSwitchExtensionGetDetailsProps.js.map

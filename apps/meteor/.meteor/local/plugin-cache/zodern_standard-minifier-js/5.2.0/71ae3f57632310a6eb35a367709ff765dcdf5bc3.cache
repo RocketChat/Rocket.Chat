@@ -1,0 +1,1 @@
+{"code":"function module(t,n,u){u.exportDefault(function(){var t=arguments[0];return arguments[0]=this,t.apply(null,arguments),this})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

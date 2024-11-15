@@ -1,0 +1,33 @@
+"use strict";module.export({withGroupBaseProperties:()=>withGroupBaseProperties,baseSchema:()=>baseSchema,withBaseProps:()=>withBaseProps,withUserIdSchema:()=>withUserIdSchema,withUserIdProps:()=>withUserIdProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const withGroupBaseProperties = (properties = {}, required = []) => ({
+    oneOf: [
+        {
+            type: 'object',
+            properties: Object.assign({ roomId: {
+                    type: 'string',
+                } }, properties),
+            required: ['roomId'].concat(required),
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: Object.assign({ roomName: {
+                    type: 'string',
+                } }, properties),
+            required: ['roomName'].concat(required),
+            additionalProperties: false,
+        },
+    ],
+});
+const baseSchema = withGroupBaseProperties();
+const withBaseProps = ajv.compile(baseSchema);
+const withUserIdSchema = withGroupBaseProperties({
+    userId: {
+        type: 'string',
+    },
+}, ['userId']);
+const withUserIdProps = ajv.compile(withUserIdSchema);
+//# sourceMappingURL=BaseProps.js.map

@@ -1,0 +1,1 @@
+{"code":"function module(n,o,u){u.link(\"./routes\")}","map":"{\"version\":3,\"sources\":[\"client/omnichannel/index.ts\",\"<anon>\"],\"sourcesContent\":[\"import './routes';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAA,CAAA\"}"}

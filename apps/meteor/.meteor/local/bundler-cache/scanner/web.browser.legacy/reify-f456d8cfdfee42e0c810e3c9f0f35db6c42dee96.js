@@ -1,0 +1,2 @@
+"use strict";var r=Object.defineProperty;var T=Object.getOwnPropertyDescriptor;var a=Object.getOwnPropertyNames;var s=Object.prototype.hasOwnProperty;var x=(t,e)=>{for(var o in e)r(t,o,{get:e[o],enumerable:!0})},i=(t,e,o,y)=>{if(e&&typeof e=="object"||typeof e=="function")for(let n of a(e))!s.call(t,n)&&n!==o&&r(t,n,{get:()=>e[n],enumerable:!(y=T(e,n))||y.enumerable});return t};var f=t=>i(r({},"__esModule",{value:!0}),t);var d={};x(d,{Any:()=>p});module.exports=f(d);var p=class{};
+//# sourceMappingURL=react-spring_types.production.min.cjs.map

@@ -1,0 +1,1 @@
+{"code":"function module(t,r,o){var a=t(\"./_Symbol\"),e=Object.prototype,n=e.hasOwnProperty,c=e.toString,l=a?a.toStringTag:void 0;o.exports=function(t){var r=n.call(t,l),o=t[l];try{t[l]=void 0;var a=!0}catch(t){}var e=c.call(t);return a&&(r?t[l]=o:delete t[l]),e}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

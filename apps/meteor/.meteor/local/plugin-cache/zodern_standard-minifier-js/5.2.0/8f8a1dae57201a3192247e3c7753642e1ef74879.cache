@@ -1,0 +1,1 @@
+{"code":"function module(e,n,t){let s,i;t.export({RegisterUserAgentClient:()=>r}),t.link(\"../transactions\",{NonInviteClientTransaction(e){s=e}},0),t.link(\"./user-agent-client\",{UserAgentClient(e){i=e}},1);class r extends i{constructor(e,n,t){super(s,e,n,t)}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

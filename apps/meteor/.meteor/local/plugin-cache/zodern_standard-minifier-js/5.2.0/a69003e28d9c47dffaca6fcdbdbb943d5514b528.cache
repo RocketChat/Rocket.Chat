@@ -1,0 +1,1 @@
+{"code":"function module(e,t,c){let n;c.export({isTextObject:()=>u}),c.link(\"./TextObjectType\",{TextObjectType(e){n=e}},0);var u=function(e){return Object.values(n).includes(e.type)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

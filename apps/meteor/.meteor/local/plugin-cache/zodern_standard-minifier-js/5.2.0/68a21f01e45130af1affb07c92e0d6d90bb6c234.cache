@@ -1,0 +1,1 @@
+{"code":"function module(t,e,l){l.link(\"./Setting\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/admin/settings/Setting/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './Setting';\\n\",null],\"names\":[\"module\",\"link\",\"default\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,YAAe,CAAAC,QAAA,SAAY,EAAA\"}"}

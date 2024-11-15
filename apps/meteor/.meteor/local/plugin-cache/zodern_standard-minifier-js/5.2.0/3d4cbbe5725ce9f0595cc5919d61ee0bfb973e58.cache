@@ -1,0 +1,1 @@
+{"code":"function module(n,t,a){a.link(\"./autotranslate\")}","map":"{\"version\":3,\"sources\":[\"client/startup/streamMessage/index.ts\",\"<anon>\"],\"sourcesContent\":[\"import './autotranslate';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAA,CAAA\"}"}

@@ -1,0 +1,1 @@
+module.link('./swiper-react.js',{"*":"*"},0);

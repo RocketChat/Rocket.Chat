@@ -1,0 +1,1 @@
+{"code":"function module(e,t,T){var n,r;T.export({TextObjectType:()=>n}),(r=n||T.runSetters(n={},[\"TextObjectType\"])).PLAINTEXT=\"plain_text\",r.PLAIN_TEXT=\"plain_text\",r.MARKDOWN=\"mrkdwn\",r.MRKDWN=\"mrkdwn\"}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(n,u,t){function r(n){return n*n}function o(n){return n*(2-n)}function e(n){return((n*=2)<=1?n*n:--n*(2-n)+1)/2}t.export({quadIn:()=>r,quadOut:()=>o,quadInOut:()=>e})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

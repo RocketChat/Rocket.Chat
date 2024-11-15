@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunk_rocket_chat_livechat=self.webpackChunk_rocket_chat_livechat||[]).push([[69903],{69903:function(e,t){Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var a={lastWeek:"eeee 'pase nan lè' p",yesterday:"'yè nan lè' p",today:"'jodi a' p",tomorrow:"'demen nan lè' p'",nextWeek:"eeee 'pwochen nan lè' p",other:"P"};t.default=function(e,t,n,o){return a[e]},e.exports=t.default}}]);
+//# sourceMappingURL=69903.chunk.c6f0d.js.map

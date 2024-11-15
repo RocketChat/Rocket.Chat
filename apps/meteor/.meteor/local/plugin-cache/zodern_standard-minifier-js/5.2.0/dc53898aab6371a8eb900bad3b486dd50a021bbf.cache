@@ -1,0 +1,1 @@
+{"code":"function module(T,I,e){e.export({Timers:()=>E},!0);let E={T1:500,T2:4e3,T4:5e3,TIMER_B:32e3,TIMER_D:0,TIMER_F:32e3,TIMER_H:32e3,TIMER_I:0,TIMER_J:0,TIMER_K:0,TIMER_L:32e3,TIMER_M:32e3,TIMER_N:32e3,PROVISIONAL_RESPONSE_INTERVAL:6e4}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

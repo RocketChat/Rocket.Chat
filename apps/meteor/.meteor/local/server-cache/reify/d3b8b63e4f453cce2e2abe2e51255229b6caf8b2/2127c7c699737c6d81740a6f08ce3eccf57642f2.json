@@ -1,0 +1,18 @@
+"use strict";module.export({isFederationVerifyMatrixIdProps:()=>isFederationVerifyMatrixIdProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const FederationVerifyMatrixIdPropsSchema = {
+    type: 'object',
+    properties: {
+        matrixIds: {
+            type: 'array',
+            items: { type: 'string' },
+            uniqueItems: true,
+            minItems: 1,
+            maxItems: 15,
+        },
+    },
+    additionalProperties: false,
+    required: ['matrixIds'],
+};
+const isFederationVerifyMatrixIdProps = ajv.compile(FederationVerifyMatrixIdPropsSchema);
+//# sourceMappingURL=FederationVerifyMatrixIdProps.js.map

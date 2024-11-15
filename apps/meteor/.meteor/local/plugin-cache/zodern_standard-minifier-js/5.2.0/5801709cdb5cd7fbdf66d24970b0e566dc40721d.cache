@@ -1,0 +1,1 @@
+{"code":"function module(t,a,d){d.link(\"./UserAvatarEditor\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/components/avatar/UserAvatarEditor/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './UserAvatarEditor';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,qBAAe,CAAA,QAAA,SAAqB,EAAA\"}"}

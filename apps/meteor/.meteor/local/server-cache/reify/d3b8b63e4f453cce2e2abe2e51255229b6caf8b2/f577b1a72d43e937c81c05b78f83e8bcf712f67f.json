@@ -1,0 +1,26 @@
+"use strict";module.export({isFederationSearchPublicRoomsProps:()=>isFederationSearchPublicRoomsProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const federationSearchPublicRoomsPropsSchema = {
+    type: 'object',
+    properties: {
+        serverName: {
+            type: 'string',
+            nullable: true,
+        },
+        roomName: {
+            type: 'string',
+            nullable: true,
+        },
+        count: {
+            type: 'string',
+            nullable: true,
+        },
+        pageToken: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    additionalProperties: false,
+};
+const isFederationSearchPublicRoomsProps = ajv.compile(federationSearchPublicRoomsPropsSchema);
+//# sourceMappingURL=FederationPublicRoomsProps.js.map

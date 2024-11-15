@@ -1,0 +1,12 @@
+"use strict";module.export({isGetImportProgressParamsGET:()=>isGetImportProgressParamsGET},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const GetImportProgressParamsGETSchema = {
+    type: 'object',
+    properties: {},
+    additionalProperties: false,
+    required: [],
+};
+const isGetImportProgressParamsGET = ajv.compile(GetImportProgressParamsGETSchema);
+//# sourceMappingURL=GetImportProgressParamsGET.js.map

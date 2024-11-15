@@ -1,0 +1,21 @@
+"use strict";module.export({isChannelsListProps:()=>isChannelsListProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const channelsListPropsSchema = {
+    type: 'object',
+    properties: {
+        _id: {
+            type: 'string',
+            nullable: true,
+        },
+        query: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isChannelsListProps = ajv.compile(channelsListPropsSchema);
+//# sourceMappingURL=ChannelsListProps.js.map

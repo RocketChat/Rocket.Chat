@@ -1,0 +1,1 @@
+{"code":"function module(e,d,l){l.link(\"./UserProvider\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/providers/UserProvider/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './UserProvider';\\n\",null],\"names\":[\"module\",\"link\",\"default\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,iBAAe,CAAAC,QAAA,SAAiB,EAAA\"}"}

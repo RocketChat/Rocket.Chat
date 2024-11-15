@@ -1,0 +1,1 @@
+{"code":"function module(n,b){b.pbkdf2=n(\"./lib/async\"),b.pbkdf2Sync=n(\"./lib/sync\")}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

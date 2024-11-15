@@ -1,0 +1,1 @@
+{"code":"function module(e,n,t){t.export({deleteAnchor:()=>r,registerAnchor:()=>c});var o=new WeakMap,r=function(e){var n=o.get(e);n&&n()},c=function(e,n){o.set(e,n)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

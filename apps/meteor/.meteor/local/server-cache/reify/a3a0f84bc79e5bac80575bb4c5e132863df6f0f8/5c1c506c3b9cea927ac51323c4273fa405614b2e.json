@@ -1,0 +1,3 @@
+"use strict";module.export({isGroupsKickProps:()=>isGroupsKickProps},true);var withUserIdProps;module.link('./BaseProps',{withUserIdProps(v){withUserIdProps=v}},0);
+const isGroupsKickProps = withUserIdProps;
+//# sourceMappingURL=GroupsKickProps.js.map

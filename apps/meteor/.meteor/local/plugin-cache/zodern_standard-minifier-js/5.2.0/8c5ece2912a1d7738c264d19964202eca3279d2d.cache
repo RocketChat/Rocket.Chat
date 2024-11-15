@@ -1,0 +1,1 @@
+{"code":"function module(e,o,r){r.exports={name:\"fflate\",version:\"0.7.4\",browser:{\"./lib/node-worker.cjs\":\"./lib/worker.cjs\"},module:\"./esm/browser.js\",main:\"./lib/index.cjs\"}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

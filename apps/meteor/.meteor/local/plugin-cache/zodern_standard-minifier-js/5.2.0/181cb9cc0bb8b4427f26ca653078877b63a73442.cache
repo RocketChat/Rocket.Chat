@@ -1,0 +1,1 @@
+{"code":"function module(s,o,r){var e;e=global.process&&global.process.browser?\"utf-8\":global.process&&global.process.version?parseInt(process.version.split(\".\")[0].slice(1),10)>=6?\"utf-8\":\"binary\":\"utf-8\",r.exports=e}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

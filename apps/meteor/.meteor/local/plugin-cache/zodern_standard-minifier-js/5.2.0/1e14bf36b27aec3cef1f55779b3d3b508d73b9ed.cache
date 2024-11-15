@@ -1,0 +1,1 @@
+{"code":"function module(t,e,n){let u;n.link(\"./quantile.js\",{default(t){u=t}},0),n.exportDefault(function(t,e){return u(t,.5,e)})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

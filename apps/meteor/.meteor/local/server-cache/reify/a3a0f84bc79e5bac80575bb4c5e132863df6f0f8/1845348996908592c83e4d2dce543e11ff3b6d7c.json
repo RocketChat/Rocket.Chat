@@ -1,0 +1,23 @@
+"use strict";module.export({isVideoConfStartProps:()=>isVideoConfStartProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const videoConfStartPropsSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            type: 'string',
+            nullable: false,
+        },
+        title: {
+            type: 'string',
+            nullable: true,
+        },
+        allowRinging: {
+            type: 'boolean',
+            nullable: true,
+        },
+    },
+    required: ['roomId'],
+    additionalProperties: false,
+};
+const isVideoConfStartProps = ajv.compile(videoConfStartPropsSchema);
+//# sourceMappingURL=VideoConfStartProps.js.map

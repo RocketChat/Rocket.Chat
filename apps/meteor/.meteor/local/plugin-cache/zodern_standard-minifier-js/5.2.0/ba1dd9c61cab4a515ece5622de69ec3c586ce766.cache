@@ -1,0 +1,1 @@
+{"code":"function module(f,e,l){let c;l.link(\"../colors.js\",{default(f){c=f}},0),l.exportDefault(c(\"7fc97fbeaed4fdc086ffff99386cb0f0027fbf5b17666666\"))}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(t,e){\"use strict\";Object.defineProperty(e,\"__esModule\",{value:!0}),e.initReactI18next=void 0;var n=t(\"./defaults.js\"),i=t(\"./i18nInstance.js\");e.initReactI18next={type:\"3rdParty\",init(t){(0,n.setDefaults)(t.options.react),(0,i.setI18n)(t)}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

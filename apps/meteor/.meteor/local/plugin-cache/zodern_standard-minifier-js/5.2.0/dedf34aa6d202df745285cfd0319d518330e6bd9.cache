@@ -1,0 +1,1 @@
+{"code":"function module(e,i,l){\"use strict\";var t=e(\"call-bind\"),m=e(\"define-properties\"),n=e(\"./implementation\"),o=e(\"./polyfill\"),p=e(\"./shim\"),r=t(o(),Number);m(r,{getPolyfill:o,implementation:n,shim:p}),l.exports=r}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

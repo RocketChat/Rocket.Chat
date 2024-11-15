@@ -1,0 +1,1 @@
+{"code":"function module(r,n,o){o.exportDefault(function(r,n){for(var o=Array(n),t=0;t<n;++t)o[t]=r(t/(n-1));return o})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

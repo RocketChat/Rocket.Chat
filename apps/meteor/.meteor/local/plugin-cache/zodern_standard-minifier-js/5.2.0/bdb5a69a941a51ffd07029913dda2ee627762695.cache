@@ -1,0 +1,1 @@
+{"code":"function module(s,i,o){o.exports={name:\"libsodium\",version:\"0.7.10\",browser:{fs:!1},main:\"dist/modules/libsodium.js\"}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

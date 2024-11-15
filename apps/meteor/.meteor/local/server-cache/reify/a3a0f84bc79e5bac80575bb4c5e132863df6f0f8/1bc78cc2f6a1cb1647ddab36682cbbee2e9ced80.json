@@ -1,0 +1,3 @@
+"use strict";module.export({isGroupsInfoProps:()=>isGroupsInfoProps},true);var withBaseProps;module.link('./BaseProps',{withBaseProps(v){withBaseProps=v}},0);
+const isGroupsInfoProps = withBaseProps;
+//# sourceMappingURL=GroupsInfoProps.js.map

@@ -1,0 +1,1 @@
+{"code":"function module(O,C,N){var t,T;N.export({BlockContext:()=>t}),(T=t||N.runSetters(t={},[\"BlockContext\"]))[T.NONE=-1]=\"NONE\",T[T.BLOCK=0]=\"BLOCK\",T[T.SECTION=1]=\"SECTION\",T[T.ACTION=2]=\"ACTION\",T[T.FORM=3]=\"FORM\",T[T.CONTEXT=4]=\"CONTEXT\"}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

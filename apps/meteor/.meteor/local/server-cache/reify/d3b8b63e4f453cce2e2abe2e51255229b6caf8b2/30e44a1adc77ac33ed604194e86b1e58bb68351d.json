@@ -1,0 +1,12 @@
+"use strict";module.export({isGroupsSetTypeProps:()=>isGroupsSetTypeProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);var withGroupBaseProperties;module.link('./BaseProps',{withGroupBaseProperties(v){withGroupBaseProperties=v}},1);
+
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const groupsSetTypePropsSchema = withGroupBaseProperties({
+    type: {
+        type: 'string',
+    },
+}, ['type']);
+const isGroupsSetTypeProps = ajv.compile(groupsSetTypePropsSchema);
+//# sourceMappingURL=GroupsSetTypeProps.js.map

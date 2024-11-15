@@ -1,0 +1,1 @@
+{"code":"function module(o,r,t){t.export({default:()=>n});function n(o,r){var t=0,n=0;return Float64Array.from(o,void 0===r?o=>t+=+o||0:u=>t+=+r(u,n++,o)||0)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

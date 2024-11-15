@@ -1,0 +1,1 @@
+{"code":"function module(e,u,l){l.link(\"./UserMenu\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/NavBarV2/NavBarSettingsToolbar/UserMenu/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './UserMenu';\\n\",null],\"names\":[\"module\",\"link\",\"default\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,aAAe,CAAAC,QAAA,SAAa,EAAA\"}"}

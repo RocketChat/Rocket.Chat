@@ -1,0 +1,1 @@
+{"version":3,"file":"AppDetailChangesBridge.js","sourceRoot":"","sources":["../../src/server/bridges/AppDetailChangesBridge.ts"],"names":[],"mappings":";;;AAAA,6CAA0C;AAG1C;;;;;GAKG;AACH,MAAsB,sBAAuB,SAAQ,uBAAU;IACpD,qBAAqB,CAAC,KAAa,EAAE,OAAiB;QACzD,OAAO,IAAI,CAAC,mBAAmB,CAAC,KAAK,EAAE,OAAO,CAAC,CAAC;IACpD,CAAC;CAGJ;AAND,wDAMC"}

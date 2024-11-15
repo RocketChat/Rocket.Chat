@@ -1,0 +1,60 @@
+"use strict";module.export({isUsersUpdateOwnBasicInfoParamsPOST:()=>isUsersUpdateOwnBasicInfoParamsPOST},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const UsersUpdateOwnBasicInfoParamsPostSchema = {
+    type: 'object',
+    properties: {
+        data: {
+            type: 'object',
+            properties: {
+                email: {
+                    type: 'string',
+                    nullable: true,
+                },
+                name: {
+                    type: 'string',
+                    nullable: true,
+                },
+                username: {
+                    type: 'string',
+                    nullable: true,
+                },
+                nickname: {
+                    type: 'string',
+                    nullable: true,
+                },
+                bio: {
+                    type: 'string',
+                    nullable: true,
+                },
+                statusType: {
+                    type: 'string',
+                    nullable: true,
+                },
+                statusText: {
+                    type: 'string',
+                    nullable: true,
+                },
+                currentPassword: {
+                    type: 'string',
+                    nullable: true,
+                },
+                newPassword: {
+                    type: 'string',
+                    nullable: true,
+                },
+            },
+            required: [],
+            additionalProperties: false,
+        },
+        customFields: {
+            type: 'object',
+            nullable: true,
+        },
+    },
+    required: ['data'],
+    additionalProperties: false,
+};
+const isUsersUpdateOwnBasicInfoParamsPOST = ajv.compile(UsersUpdateOwnBasicInfoParamsPostSchema);
+//# sourceMappingURL=UsersUpdateOwnBasicInfoParamsPOST.js.map

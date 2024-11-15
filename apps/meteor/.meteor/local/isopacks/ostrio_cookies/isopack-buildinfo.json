@@ -1,0 +1,182 @@
+{
+  "builtBy": "meteor/34",
+  "unibuildDependencies": {
+    "os.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-cookies/package.js": "391a02ce27d543e4b96a4ea2f8c2beb986a8a70c",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-cookies/cookies.js": "24a562203ca64bc796c3f15189b902921060aaf0"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-cookies/cookies.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-cookies",
+          "include": [
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "cookies.js",
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-cookies",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-cookies/package.js": "391a02ce27d543e4b96a4ea2f8c2beb986a8a70c",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-cookies/cookies.js": "24a562203ca64bc796c3f15189b902921060aaf0"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-cookies/cookies.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-cookies",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "cookies.js",
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-cookies",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.legacy.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-cookies/package.js": "391a02ce27d543e4b96a4ea2f8c2beb986a8a70c",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-cookies/cookies.js": "24a562203ca64bc796c3f15189b902921060aaf0"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-cookies/cookies.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-cookies",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "cookies.js",
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-cookies",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    }
+  },
+  "pluginDependencies": {
+    "files": {
+      "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-cookies/package.js": "391a02ce27d543e4b96a4ea2f8c2beb986a8a70c"
+    },
+    "potentiallyUnusedFiles": [],
+    "directories": []
+  },
+  "pluginProviderPackageMap": {
+    "ostrio:cookies": {
+      "kind": "local",
+      "sourceRoot": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-cookies"
+    },
+    "meteor": {
+      "kind": "versioned",
+      "version": "2.0.1"
+    },
+    "ecmascript": {
+      "kind": "versioned",
+      "version": "0.16.9"
+    },
+    "webapp": {
+      "kind": "versioned",
+      "version": "2.0.3"
+    },
+    "modules": {
+      "kind": "versioned",
+      "version": "0.20.2"
+    },
+    "ecmascript-runtime": {
+      "kind": "versioned",
+      "version": "0.8.3"
+    },
+    "babel-runtime": {
+      "kind": "versioned",
+      "version": "1.5.2"
+    },
+    "promise": {
+      "kind": "versioned",
+      "version": "1.0.0"
+    },
+    "dynamic-import": {
+      "kind": "versioned",
+      "version": "0.7.4"
+    },
+    "ecmascript-runtime-client": {
+      "kind": "versioned",
+      "version": "0.12.2"
+    },
+    "ecmascript-runtime-server": {
+      "kind": "versioned",
+      "version": "0.11.1"
+    },
+    "fetch": {
+      "kind": "versioned",
+      "version": "0.1.5"
+    }
+  },
+  "includeCordovaUnibuild": false
+}

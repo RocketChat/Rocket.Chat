@@ -1,0 +1,13 @@
+"use strict";module.export({isDeleteOAuthAppParams:()=>isDeleteOAuthAppParams},true);var ajv;module.link('../Ajv',{ajv(v){ajv=v}},0);
+const DeleteOAuthAppParamsSchema = {
+    type: 'object',
+    properties: {
+        appId: {
+            type: 'string',
+        },
+    },
+    required: ['appId'],
+    additionalProperties: false,
+};
+const isDeleteOAuthAppParams = ajv.compile(DeleteOAuthAppParamsSchema);
+//# sourceMappingURL=DeleteOAuthAppParamsDELETE.js.map

@@ -1,0 +1,1 @@
+{"code":"function module(n,t,o){o.export({getRoundingMethod:function(){return u}});var r={ceil:Math.ceil,round:Math.round,floor:Math.floor,trunc:function n(n){return n<0?Math.ceil(n):Math.floor(n)}};function u(n){return n?r[n]:r.trunc}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

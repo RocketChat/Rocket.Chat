@@ -1,0 +1,1 @@
+{"code":"function module(e,l,n){n.link(\"./ChannelDesertionTable\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/teams/ChannelDesertionTable/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './ChannelDesertionTable';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,0BAAe,CAAA,QAAA,SAA0B,EAAA\"}"}

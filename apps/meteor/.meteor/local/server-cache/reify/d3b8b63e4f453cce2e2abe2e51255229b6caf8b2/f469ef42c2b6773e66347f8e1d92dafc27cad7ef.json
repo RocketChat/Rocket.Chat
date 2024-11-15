@@ -1,0 +1,3 @@
+"use strict";module.export({isGroupsRemoveModeratorProps:()=>isGroupsRemoveModeratorProps},true);var withUserIdProps;module.link('./BaseProps',{withUserIdProps(v){withUserIdProps=v}},0);
+const isGroupsRemoveModeratorProps = withUserIdProps;
+//# sourceMappingURL=GroupsRemoveModeratorProps.js.map

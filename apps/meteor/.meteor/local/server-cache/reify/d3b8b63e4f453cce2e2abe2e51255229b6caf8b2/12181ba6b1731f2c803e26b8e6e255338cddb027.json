@@ -1,0 +1,25 @@
+"use strict";module.export({isUserSetAvatarParamsPOST:()=>isUserSetAvatarParamsPOST},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const UserSetAvatarParamsPostSchema = {
+    type: 'object',
+    properties: {
+        avatarUrl: {
+            type: 'string',
+            nullable: true,
+        },
+        userId: {
+            type: 'string',
+            nullable: true,
+        },
+        username: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isUserSetAvatarParamsPOST = ajv.compile(UserSetAvatarParamsPostSchema);
+//# sourceMappingURL=UsersSetAvatarParamsPOST.js.map

@@ -1,0 +1,241 @@
+{
+  "builtBy": "meteor/34",
+  "unibuildDependencies": {
+    "os.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/package.js": "c6ea583117fbf54ecba07ba38899c93f98ccd6ff",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib/inject-server.js": "8821c434fb7da35158a7feb8abc191d81819c77a",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib/inject-core.js": "67b1aafa260fbd397ed81b181d24ab379e88e1ae"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib/inject-server.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib/inject-core.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial",
+          "include": [
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "lib/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib",
+          "include": [
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "inject-core.js",
+            "inject-server.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/package.js": "c6ea583117fbf54ecba07ba38899c93f98ccd6ff",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib/inject-core.js": "67b1aafa260fbd397ed81b181d24ab379e88e1ae",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib/inject-server.js": "8821c434fb7da35158a7feb8abc191d81819c77a"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib/inject-core.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib/inject-server.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "lib/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "inject-core.js",
+            "inject-server.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.legacy.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/package.js": "c6ea583117fbf54ecba07ba38899c93f98ccd6ff",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib/inject-core.js": "67b1aafa260fbd397ed81b181d24ab379e88e1ae",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib/inject-server.js": "8821c434fb7da35158a7feb8abc191d81819c77a"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib/inject-core.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib/inject-server.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "lib/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "inject-core.js",
+            "inject-server.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/lib",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    }
+  },
+  "pluginDependencies": {
+    "files": {
+      "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial/package.js": "c6ea583117fbf54ecba07ba38899c93f98ccd6ff"
+    },
+    "potentiallyUnusedFiles": [],
+    "directories": []
+  },
+  "pluginProviderPackageMap": {
+    "meteorhacks:inject-initial": {
+      "kind": "local",
+      "sourceRoot": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-inject-initial"
+    },
+    "meteor": {
+      "kind": "versioned",
+      "version": "2.0.1"
+    },
+    "routepolicy": {
+      "kind": "versioned",
+      "version": "1.1.2"
+    },
+    "webapp": {
+      "kind": "versioned",
+      "version": "2.0.3"
+    },
+    "ejson": {
+      "kind": "versioned",
+      "version": "1.1.4"
+    },
+    "underscore": {
+      "kind": "versioned",
+      "version": "1.6.4"
+    }
+  },
+  "includeCordovaUnibuild": false
+}

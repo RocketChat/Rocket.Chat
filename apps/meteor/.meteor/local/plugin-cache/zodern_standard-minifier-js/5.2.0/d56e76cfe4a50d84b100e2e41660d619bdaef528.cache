@@ -1,0 +1,1 @@
+{"code":"function module(e,r,t){let n=e(\"../classes/semver\");t.exports=(e,r,t=!1)=>{if(e instanceof n)return e;try{return new n(e,r)}catch(e){if(!t)return null;throw e}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(n,t,u){let e;function r(n){return e(1-+n)}function o(n){return 1-e(n)}function i(n){return((n*=2)<=1?e(1-n):2-e(n-1))/2}u.export({expIn:()=>r,expOut:()=>o,expInOut:()=>i}),u.link(\"./math.js\",{tpmt(n){e=n}},0)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

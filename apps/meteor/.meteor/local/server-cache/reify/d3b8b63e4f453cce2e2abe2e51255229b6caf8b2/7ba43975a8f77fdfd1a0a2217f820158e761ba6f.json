@@ -1,0 +1,16 @@
+"use strict";module.export({isFederationRemoveServerProps:()=>isFederationRemoveServerProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const FederationRemoveServerPropsSchema = {
+    type: 'object',
+    properties: {
+        serverName: {
+            type: 'string',
+        },
+    },
+    additionalProperties: false,
+    required: ['serverName'],
+};
+const isFederationRemoveServerProps = ajv.compile(FederationRemoveServerPropsSchema);
+//# sourceMappingURL=FederationRemoveServerProps.js.map

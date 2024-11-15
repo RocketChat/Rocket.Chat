@@ -1,0 +1,14 @@
+"use strict";module.export({isUsersSendWelcomeEmailProps:()=>isUsersSendWelcomeEmailProps},true);var ajv;module.link('../Ajv',{ajv(v){ajv=v}},0);
+const UsersSendWelcomeEmailParamsPostSchema = {
+    type: 'object',
+    properties: {
+        email: {
+            type: 'string',
+            format: 'basic_email',
+        },
+    },
+    required: ['email'],
+    additionalProperties: false,
+};
+const isUsersSendWelcomeEmailProps = ajv.compile(UsersSendWelcomeEmailParamsPostSchema);
+//# sourceMappingURL=UsersSendWelcomeEmailParamsPOST.js.map

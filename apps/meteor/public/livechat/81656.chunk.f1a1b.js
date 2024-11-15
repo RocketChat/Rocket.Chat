@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunk_rocket_chat_livechat=self.webpackChunk_rocket_chat_livechat||[]).push([[81656],{81656:function(e,a){Object.defineProperty(a,"__esModule",{value:!0}),a.default=function(e,a,r,i){return t[e]};var t={lastWeek:"'mu dheireadh' eeee 'aig' p",yesterday:"'an-dè aig' p",today:"'an-diugh aig' p",tomorrow:"'a-màireach aig' p",nextWeek:"eeee 'aig' p",other:"P"};e.exports=a.default}}]);
+//# sourceMappingURL=81656.chunk.f1a1b.js.map

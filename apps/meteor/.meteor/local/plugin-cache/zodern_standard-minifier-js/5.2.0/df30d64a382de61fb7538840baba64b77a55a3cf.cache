@@ -1,0 +1,1 @@
+{"code":"function module(n,e,s){var o;s.export({IncomingResponseMessage:function(){return c}}),s.link(\"./incoming-message\",{IncomingMessage:function(n){o=n}},0);class c extends o{constructor(){super()}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

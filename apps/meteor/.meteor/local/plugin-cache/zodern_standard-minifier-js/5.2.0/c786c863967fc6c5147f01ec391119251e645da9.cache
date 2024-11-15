@@ -1,0 +1,1 @@
+{"code":"function module(f,e,r){global.Buffer=global.Buffer||f(\"buffer\").Buffer,r.exports=f(\"@meteorjs/crypto-browserify\")}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

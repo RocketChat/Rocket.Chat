@@ -1,0 +1,1 @@
+{"code":"function module(n,t,u){var e;function i(n){return e({},n)}u.export({default:function(){return i}}),u.link(\"../assign/index.js\",{default:function(n){e=n}},0)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

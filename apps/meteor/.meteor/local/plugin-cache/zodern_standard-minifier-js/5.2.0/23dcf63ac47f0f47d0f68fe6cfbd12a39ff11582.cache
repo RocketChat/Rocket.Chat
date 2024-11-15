@@ -1,0 +1,1 @@
+{"code":"function module(e,t,l){let f;function n(e,t=f){let l;let n=!1;if(1===t.length){let o;for(let u of e){let e=t(u);(n?0>f(e,o):0===f(e,e))&&(l=u,o=e,n=!0)}}else for(let f of e)(n?0>t(f,l):0===t(f,f))&&(l=f,n=!0);return l}l.export({default:()=>n}),l.link(\"./ascending.js\",{default(e){f=e}},0)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(n,i,o){var t=n(\"./isPlainObject\");o.exports=function(n){return t(n)?void 0:n}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

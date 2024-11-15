@@ -1,0 +1,30 @@
+{
+  "format": "isopack-2-unibuild",
+  "declaredExports": [],
+  "uses": [
+    {
+      "package": "meteor"
+    },
+    {
+      "package": "ecmascript"
+    },
+    {
+      "package": "socket-stream-client"
+    }
+  ],
+  "resources": [
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser/client/index.js",
+      "length": 327,
+      "offset": 0,
+      "path": "client/index.js",
+      "hash": "b7466a79c65099f67ee8b0e6aa3ac66a086facd2",
+      "fileOptions": {
+        "mainModule": true,
+        "lazy": false
+      }
+    }
+  ]
+}

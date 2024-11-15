@@ -1,0 +1,1 @@
+{"code":"function module(i,n,o){o.link(\"./konchatNotifications\"),o.link(\"./notification\")}","map":"{\"version\":3,\"sources\":[\"client/startup/notifications/index.ts\",\"<anon>\"],\"sourcesContent\":[\"import './konchatNotifications';\\nimport './notification';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAA,CAAA,0BAAyBD,EAAAC,IAAA,CAAA\"}"}

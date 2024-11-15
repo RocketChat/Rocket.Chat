@@ -1,0 +1,1 @@
+{"code":"function module(t,n,e){var c,i;e.link(\"react/jsx-runtime\",{jsx:function(t){c=t}},0),e.link(\"@rocket.chat/fuselage\",{Box:function(t){i=t}},1),e.exportDefault(({children:t})=>c(i,{is:\"section\",\"data-testid\":\"vc-popup-content\",children:t}))}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

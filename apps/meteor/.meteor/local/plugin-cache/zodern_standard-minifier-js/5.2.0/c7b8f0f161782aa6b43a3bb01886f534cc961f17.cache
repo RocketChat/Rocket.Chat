@@ -1,0 +1,1 @@
+{"code":"function module(e,t,a){let s,l,o;a.export({CMSPage:()=>s,ResetPasswordPage:()=>o}),a.link(\"./CMSPage\",{default(e){s=e}},0),a.link(\"./RegistrationPageRouter\",{default(e){l=e}},1),a.link(\"./ResetPassword/ResetPasswordPage\",{default(e){o=e}},2),a.exportDefault(l)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

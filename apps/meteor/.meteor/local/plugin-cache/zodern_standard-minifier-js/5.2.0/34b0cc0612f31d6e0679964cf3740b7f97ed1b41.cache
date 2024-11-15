@@ -1,0 +1,1 @@
+{"code":"function module(e,t,n){let i,l;n.link(\"./sparse\",{default(e){i=e}},0),n.link(\"./index\",{Selection(e){l=e}},1),n.exportDefault(function(){return new l(this._exit||this._groups.map(i),this._parents)})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

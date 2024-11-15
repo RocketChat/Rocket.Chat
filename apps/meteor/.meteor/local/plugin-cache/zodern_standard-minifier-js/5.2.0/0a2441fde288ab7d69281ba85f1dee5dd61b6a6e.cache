@@ -1,0 +1,1 @@
+{"code":"function module(t,e,n){function u(t,e=o){let n;let u=[],r=!1;for(let o of t)r&&u.push(e(n,o)),n=o,r=!0;return u}function o(t,e){return[t,e]}n.export({default:()=>u,pair:()=>o})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

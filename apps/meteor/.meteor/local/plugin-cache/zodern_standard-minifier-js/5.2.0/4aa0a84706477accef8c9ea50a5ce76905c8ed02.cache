@@ -1,0 +1,1 @@
+{"code":"function module(t,e,n){n.exports=function(t){return{name:\"Plain text\",aliases:[\"text\",\"txt\"],disableAutodetect:!0}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

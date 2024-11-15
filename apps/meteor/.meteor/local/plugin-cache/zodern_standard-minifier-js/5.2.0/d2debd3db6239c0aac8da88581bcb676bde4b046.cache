@@ -1,0 +1,1 @@
+{"code":"function module(e,l,u){u.link(\"./UsersTable\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/directory/tabs/users/UsersTable/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './UsersTable';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,eAAe,CAAA,QAAA,SAAe,EAAA\"}"}

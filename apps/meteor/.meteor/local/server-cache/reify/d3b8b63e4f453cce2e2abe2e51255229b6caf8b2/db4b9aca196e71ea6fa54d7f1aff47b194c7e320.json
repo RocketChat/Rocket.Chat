@@ -1,0 +1,58 @@
+"use strict";module.export({isUseInviteTokenProps:()=>isUseInviteTokenProps,isValidateInviteTokenProps:()=>isValidateInviteTokenProps,isFindOrCreateInviteParams:()=>isFindOrCreateInviteParams,isSendInvitationEmailParams:()=>isSendInvitationEmailParams},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const UseInviteTokenPropsSchema = {
+    type: 'object',
+    properties: {
+        token: {
+            type: 'string',
+        },
+    },
+    required: ['token'],
+    additionalProperties: false,
+};
+const isUseInviteTokenProps = ajv.compile(UseInviteTokenPropsSchema);
+const ValidateInviteTokenPropsSchema = {
+    type: 'object',
+    properties: {
+        token: {
+            type: 'string',
+        },
+    },
+    required: ['token'],
+    additionalProperties: false,
+};
+const isValidateInviteTokenProps = ajv.compile(ValidateInviteTokenPropsSchema);
+const FindOrCreateInviteParamsSchema = {
+    type: 'object',
+    properties: {
+        rid: {
+            type: 'string',
+        },
+        days: {
+            type: 'integer',
+        },
+        maxUses: {
+            type: 'integer',
+        },
+    },
+    required: ['rid', 'days', 'maxUses'],
+    additionalProperties: false,
+};
+const isFindOrCreateInviteParams = ajv.compile(FindOrCreateInviteParamsSchema);
+const SendInvitationEmailParamsSchema = {
+    type: 'object',
+    properties: {
+        emails: {
+            type: 'array',
+            items: {
+                type: 'string',
+            },
+        },
+    },
+    required: ['emails'],
+    additionalProperties: false,
+};
+const isSendInvitationEmailParams = ajv.compile(SendInvitationEmailParamsSchema);
+//# sourceMappingURL=invites.js.map

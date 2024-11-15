@@ -1,0 +1,1 @@
+{"code":"function module(e,t){\"use strict\";Object.defineProperty(t,\"__esModule\",{value:!0});let c=e(\"react/jsx-runtime\"),r=e(\"@rocket.chat/fuselage\"),s=e(\"./Surface\");t.default=({children:e})=>(0,c.jsx)(s.Surface,{type:\"message\",children:(0,c.jsx)(r.Margins,{blockEnd:16,children:e})})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"Package[\"core-runtime\"].queue(\"ddp\",function(){var e=Package[\"ddp-client\"].DDP;return{export:function(){return{DDP:e}}}});","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

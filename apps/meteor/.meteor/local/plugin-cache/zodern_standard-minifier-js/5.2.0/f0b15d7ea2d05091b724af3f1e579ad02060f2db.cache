@@ -1,0 +1,1 @@
+{"code":"function module(t,e,n){\"use strict\";var i=t(\"./implementation\");n.exports=function t(){return\"function\"==typeof Object.is?Object.is:i}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

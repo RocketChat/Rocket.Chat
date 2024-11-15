@@ -1,0 +1,1 @@
+{"code":"function module(t,i){\"use strict\";Object.defineProperty(i,\"__esModule\",{value:!0}),i.$is_bigint_string=void 0,i.$is_bigint_string=function(t){try{return BigInt(t),!0}catch(t){return!1}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

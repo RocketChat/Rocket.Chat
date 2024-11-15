@@ -1,0 +1,28 @@
+"use strict";module.export({isChannelsUnarchiveProps:()=>isChannelsUnarchiveProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const channelsUnarchivePropsSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                roomId: {
+                    type: 'string',
+                },
+            },
+            required: ['roomId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                roomName: {
+                    type: 'string',
+                },
+            },
+            required: ['roomName'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isChannelsUnarchiveProps = ajv.compile(channelsUnarchivePropsSchema);
+//# sourceMappingURL=ChannelsUnarchiveProps.js.map

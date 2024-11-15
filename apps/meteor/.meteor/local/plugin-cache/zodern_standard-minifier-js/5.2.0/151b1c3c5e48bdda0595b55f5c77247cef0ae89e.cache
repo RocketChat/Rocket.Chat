@@ -1,0 +1,1 @@
+{"code":"function module(e,t,n){let o;n.export({SurfaceContext:()=>a},!0),n.link(\"react\",{createContext(e){o=e}},0);let a=o(\"message\")}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

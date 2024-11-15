@@ -1,0 +1,1 @@
+{"code":"function module(a,e,l){l.link(\"./SeatsCapUsage\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/admin/users/SeatsCapUsage/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './SeatsCapUsage';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,kBAAe,CAAA,QAAA,SAAkB,EAAA\"}"}

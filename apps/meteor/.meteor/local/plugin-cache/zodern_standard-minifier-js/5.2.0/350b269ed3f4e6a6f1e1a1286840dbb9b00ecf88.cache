@@ -1,0 +1,1 @@
+{"code":"function module(e,r,t){let s;t.export({hasActiveObservations:()=>n}),t.link(\"../utils/resizeObservers\",{resizeObservers(e){s=e}},0);var n=function(){return s.some(function(e){return e.activeTargets.length>0})}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

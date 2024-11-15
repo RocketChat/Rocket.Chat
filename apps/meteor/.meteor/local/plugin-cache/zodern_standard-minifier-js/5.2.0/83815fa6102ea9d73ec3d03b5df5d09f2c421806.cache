@@ -1,0 +1,1 @@
+{"code":"function module(n,i,l){l.link(\"./client\")}","map":"{\"version\":3,\"sources\":[\"app/slashcommands-unarchiveroom/client/index.ts\",\"<anon>\"],\"sourcesContent\":[\"import './client';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAA,CAAA\"}"}

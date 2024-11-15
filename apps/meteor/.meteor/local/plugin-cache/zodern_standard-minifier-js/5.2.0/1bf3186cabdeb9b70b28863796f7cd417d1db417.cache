@@ -1,0 +1,1 @@
+{"code":"function module(a,e,s){var n=a(\"./_baseIsMap\"),o=a(\"./_baseUnary\"),i=a(\"./_nodeUtil\"),p=i&&i.isMap,r=p?o(p):n;s.exports=r}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

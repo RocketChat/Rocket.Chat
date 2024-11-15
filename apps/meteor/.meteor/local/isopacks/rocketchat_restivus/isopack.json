@@ -1,0 +1,26 @@
+{
+  "isopack-2": {
+    "name": "rocketchat:restivus",
+    "summary": "Create authenticated REST APIs in Meteor 0.9+ via HTTP/HTTPS. Setup CRUD endpoints for Collections.",
+    "version": "1.1.0",
+    "isTest": false,
+    "builds": [
+      {
+        "kind": "main",
+        "arch": "os",
+        "path": "os.json"
+      },
+      {
+        "kind": "main",
+        "arch": "web.browser",
+        "path": "web.browser.json"
+      },
+      {
+        "kind": "main",
+        "arch": "web.browser.legacy",
+        "path": "web.browser.legacy.json"
+      }
+    ],
+    "plugins": []
+  }
+}

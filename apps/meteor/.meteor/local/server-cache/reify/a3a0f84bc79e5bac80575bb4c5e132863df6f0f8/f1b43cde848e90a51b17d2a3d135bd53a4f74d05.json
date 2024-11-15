@@ -1,0 +1,26 @@
+"use strict";module.export({isAutotranslateSaveSettingsParamsPOST:()=>isAutotranslateSaveSettingsParamsPOST},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const AutotranslateSaveSettingsParamsPostSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            type: 'string',
+        },
+        field: {
+            enum: ['autoTranslate', 'autoTranslateLanguage'],
+        },
+        value: {
+            anyOf: [{ type: 'boolean' }, { type: 'string' }],
+        },
+        defaultLanguage: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: ['roomId', 'field', 'value'],
+    additionalProperties: false,
+};
+const isAutotranslateSaveSettingsParamsPOST = ajv.compile(AutotranslateSaveSettingsParamsPostSchema);
+//# sourceMappingURL=AutotranslateSaveSettingsParamsPOST.js.map

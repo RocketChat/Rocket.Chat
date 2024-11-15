@@ -1,0 +1,1 @@
+{"code":"function module(i,n,l){l.link(\"./federation\"),l.link(\"./list\")}","map":"{\"version\":3,\"sources\":[\"client/startup/slashCommands/index.ts\",\"<anon>\"],\"sourcesContent\":[\"import './federation';\\nimport './list';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAA,CAAA,gBAAeD,EAAAC,IAAA,CAAA\"}"}

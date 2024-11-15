@@ -1,0 +1,1 @@
+{"version":3,"file":"UIExtend.js","sourceRoot":"","sources":["../../src/server/accessors/UIExtend.ts"],"names":[],"mappings":";;;AAIA,MAAa,QAAQ;IACjB,YACqB,OAA8B,EAC9B,KAAa;QADb,YAAO,GAAP,OAAO,CAAuB;QAC9B,UAAK,GAAL,KAAK,CAAQ;IAC/B,CAAC;IAEG,cAAc,CAAC,MAAiC;QACnD,IAAI,CAAC,OAAO,CAAC,oBAAoB,CAAC,IAAI,CAAC,KAAK,EAAE,MAAM,CAAC,CAAC;IAC1D,CAAC;CACJ;AATD,4BASC"}

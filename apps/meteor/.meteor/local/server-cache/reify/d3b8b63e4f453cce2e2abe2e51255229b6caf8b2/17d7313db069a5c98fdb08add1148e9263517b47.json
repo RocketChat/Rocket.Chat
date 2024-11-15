@@ -1,0 +1,15 @@
+"use strict";module.export({isUsersSendConfirmationEmailParamsPOST:()=>isUsersSendConfirmationEmailParamsPOST},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);// TO-DO: import Ajv instance instead of creating a new one
+
+const ajv = new Ajv({ coerceTypes: true });
+const UsersSendConfirmationEmailParamsPOSTSchema = {
+    type: 'object',
+    properties: {
+        email: {
+            type: 'string',
+        },
+    },
+    required: ['email'],
+    additionalProperties: false,
+};
+const isUsersSendConfirmationEmailParamsPOST = ajv.compile(UsersSendConfirmationEmailParamsPOSTSchema);
+//# sourceMappingURL=UsersSendConfirmationEmailParamsPOST.js.map

@@ -1,0 +1,18 @@
+"use strict";module.export({isModerationDeleteMsgHistoryParams:()=>isModerationDeleteMsgHistoryParams},true);var ajv;module.link('../Ajv',{ajv(v){ajv=v}},0);
+const ajvParams = {
+    type: 'object',
+    properties: {
+        userId: {
+            type: 'string',
+            nullable: false,
+            minLength: 1,
+        },
+        reason: {
+            type: 'string',
+        },
+    },
+    required: ['userId'],
+    additionalProperties: false,
+};
+const isModerationDeleteMsgHistoryParams = ajv.compile(ajvParams);
+//# sourceMappingURL=ModerationDeleteMsgHistoryParams.js.map

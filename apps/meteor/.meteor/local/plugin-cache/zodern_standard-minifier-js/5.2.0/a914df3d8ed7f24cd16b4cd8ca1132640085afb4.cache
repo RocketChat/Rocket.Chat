@@ -1,0 +1,1 @@
+{"code":"function module(t,e,o){var a=t(\"./_getNative\")(t(\"./_root\"),\"DataView\");o.exports=a}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

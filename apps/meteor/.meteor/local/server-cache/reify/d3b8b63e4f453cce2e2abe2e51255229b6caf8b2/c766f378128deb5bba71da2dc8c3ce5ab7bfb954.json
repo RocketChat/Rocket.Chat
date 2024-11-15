@@ -1,0 +1,12 @@
+"use strict";module.export({isDownloadPendingAvatarsParamsPOST:()=>isDownloadPendingAvatarsParamsPOST},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const DownloadPendingAvatarsParamsPOSTSchema = {
+    type: 'object',
+    properties: {},
+    additionalProperties: false,
+    required: [],
+};
+const isDownloadPendingAvatarsParamsPOST = ajv.compile(DownloadPendingAvatarsParamsPOSTSchema);
+//# sourceMappingURL=DownloadPendingAvatarsParamsPOST.js.map

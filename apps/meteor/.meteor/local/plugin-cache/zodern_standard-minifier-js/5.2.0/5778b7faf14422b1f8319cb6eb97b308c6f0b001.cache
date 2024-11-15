@@ -1,0 +1,1 @@
+{"code":"function module(n,t,i){i.export({default:function(){return r}});function r(){return-this.snapGrid[this.snapGrid.length-1]}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

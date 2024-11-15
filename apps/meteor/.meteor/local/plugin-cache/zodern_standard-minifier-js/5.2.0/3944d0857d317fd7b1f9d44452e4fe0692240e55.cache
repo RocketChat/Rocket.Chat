@@ -1,0 +1,1 @@
+{"code":"function module(s,t){\"use strict\";t.base=s(\"./base\"),t.short=s(\"./short\"),t.mont=s(\"./mont\"),t.edwards=s(\"./edwards\")}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

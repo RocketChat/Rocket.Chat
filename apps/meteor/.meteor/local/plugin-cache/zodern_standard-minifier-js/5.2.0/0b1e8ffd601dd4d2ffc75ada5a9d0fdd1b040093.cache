@@ -1,0 +1,1 @@
+{"code":"function module(t,e,n){n.link(\"./SettingsSection\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/admin/settings/SettingsSection/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './SettingsSection';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,oBAAe,CAAA,QAAA,SAAoB,EAAA\"}"}

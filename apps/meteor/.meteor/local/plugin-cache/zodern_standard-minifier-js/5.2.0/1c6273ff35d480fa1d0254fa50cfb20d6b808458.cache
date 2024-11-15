@@ -1,0 +1,1 @@
+{"code":"function module(f,n,o){o.exportDefault(function(f,n){if((u=f.length)>0)for(var o,t,e,l,r,u,i=0,a=f[n[0]].length;i<a;++i)for(l=r=0,o=0;o<u;++o)(e=(t=f[n[o]][i])[1]-t[0])>0?(t[0]=l,t[1]=l+=e):e<0?(t[1]=r,t[0]=r+=e):(t[0]=0,t[1]=e)})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

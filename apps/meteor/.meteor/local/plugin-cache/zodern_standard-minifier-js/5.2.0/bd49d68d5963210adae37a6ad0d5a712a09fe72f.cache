@@ -1,0 +1,1 @@
+{"code":"function module(t,o,r){function e(t,o){var r=Object.create(t.prototype);for(var e in o)r[e]=o[e];return r}r.export({extend:function(){return e}}),r.exportDefault(function(t,o,r){t.prototype=o.prototype=r,r.constructor=t})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

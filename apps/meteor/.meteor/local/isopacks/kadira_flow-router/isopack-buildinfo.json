@@ -1,0 +1,576 @@
+{
+  "builtBy": "meteor/34",
+  "unibuildDependencies": {
+    "os.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/package.js": "585681f479b3db75638b69ee2246441584b1e083",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/.npm/package/npm-shrinkwrap.json": "a990b39e9b910c1394a151286ffba6471747edcd",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/router.js": "30fd689fb163c4099547673f15b494b17d9b84a0",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/group.js": "49741d76837d49bcfd7847450fd823692b65547d",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/route.js": "34deeeab7edff983face2079afe26833682651d5",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/_init.js": "ae464367d49625c53f97b15c90c431dfdcfe91a8",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/plugins/fast_render.js": "dc231e8cf8c5cb777c7a7cf252282a200833dd9c",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/lib/router.js": "aee1516da08e8bf3d55f7767ea7f25083d360692",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/_init.js": "1e880e3d4de66fb670de7ed5072effd430c1e4a4",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/group.js": "04de7e39e2b8a445e1bddf3ba499cec9c66b283a",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/modules.js": "dcfe55fade9e31ed2cf1a5dc8cfa293e2f702691",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/route.js": "1cccce7b14143aa4b7d581752fef52ce33fab503",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/router.js": "611b5cb6224b2954a24c116ae0b16ba13f3d1433",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/triggers.js": "67d26bcea121ca49644376123aaab20768b30677"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/router.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/group.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/route.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/_init.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/plugins/fast_render.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/lib/router.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/_init.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/group.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/modules.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/route.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/router.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/triggers.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router",
+          "include": [
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "client/",
+            "lib/",
+            "server/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client",
+          "include": [
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "_init.js",
+            "group.js",
+            "modules.js",
+            "route.js",
+            "router.js",
+            "triggers.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/lib",
+          "include": [
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "router.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/lib",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server",
+          "include": [
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "_init.js",
+            "group.js",
+            "route.js",
+            "router.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "plugins/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/plugins",
+          "include": [
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "fast_render.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/plugins",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/package.js": "585681f479b3db75638b69ee2246441584b1e083",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/.npm/package/npm-shrinkwrap.json": "a990b39e9b910c1394a151286ffba6471747edcd",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/modules.js": "dcfe55fade9e31ed2cf1a5dc8cfa293e2f702691",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/triggers.js": "67d26bcea121ca49644376123aaab20768b30677",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/router.js": "611b5cb6224b2954a24c116ae0b16ba13f3d1433",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/group.js": "04de7e39e2b8a445e1bddf3ba499cec9c66b283a",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/route.js": "1cccce7b14143aa4b7d581752fef52ce33fab503",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/_init.js": "1e880e3d4de66fb670de7ed5072effd430c1e4a4",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/lib/router.js": "aee1516da08e8bf3d55f7767ea7f25083d360692",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/_init.js": "ae464367d49625c53f97b15c90c431dfdcfe91a8",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/group.js": "49741d76837d49bcfd7847450fd823692b65547d",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/route.js": "34deeeab7edff983face2079afe26833682651d5",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/router.js": "30fd689fb163c4099547673f15b494b17d9b84a0",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/plugins/fast_render.js": "dc231e8cf8c5cb777c7a7cf252282a200833dd9c"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/modules.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/triggers.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/router.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/group.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/route.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/_init.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/lib/router.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/_init.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/group.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/route.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/router.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/plugins/fast_render.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "client/",
+            "lib/",
+            "server/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "_init.js",
+            "group.js",
+            "modules.js",
+            "route.js",
+            "router.js",
+            "triggers.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/lib",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "router.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/lib",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "_init.js",
+            "group.js",
+            "route.js",
+            "router.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "plugins/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/plugins",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "fast_render.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/plugins",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.legacy.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/package.js": "585681f479b3db75638b69ee2246441584b1e083",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/.npm/package/npm-shrinkwrap.json": "a990b39e9b910c1394a151286ffba6471747edcd",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/modules.js": "dcfe55fade9e31ed2cf1a5dc8cfa293e2f702691",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/triggers.js": "67d26bcea121ca49644376123aaab20768b30677",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/router.js": "611b5cb6224b2954a24c116ae0b16ba13f3d1433",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/group.js": "04de7e39e2b8a445e1bddf3ba499cec9c66b283a",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/route.js": "1cccce7b14143aa4b7d581752fef52ce33fab503",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/_init.js": "1e880e3d4de66fb670de7ed5072effd430c1e4a4",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/lib/router.js": "aee1516da08e8bf3d55f7767ea7f25083d360692",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/_init.js": "ae464367d49625c53f97b15c90c431dfdcfe91a8",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/group.js": "49741d76837d49bcfd7847450fd823692b65547d",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/route.js": "34deeeab7edff983face2079afe26833682651d5",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/router.js": "30fd689fb163c4099547673f15b494b17d9b84a0",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/plugins/fast_render.js": "dc231e8cf8c5cb777c7a7cf252282a200833dd9c"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/modules.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/triggers.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/router.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/group.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/route.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client/_init.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/lib/router.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/_init.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/group.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/route.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/router.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/plugins/fast_render.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "client/",
+            "lib/",
+            "server/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "_init.js",
+            "group.js",
+            "modules.js",
+            "route.js",
+            "router.js",
+            "triggers.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/client",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/lib",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "router.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/lib",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "_init.js",
+            "group.js",
+            "route.js",
+            "router.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "plugins/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/plugins",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "fast_render.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/server/plugins",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    }
+  },
+  "pluginDependencies": {
+    "files": {
+      "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router/package.js": "585681f479b3db75638b69ee2246441584b1e083"
+    },
+    "potentiallyUnusedFiles": [],
+    "directories": []
+  },
+  "pluginProviderPackageMap": {
+    "kadira:flow-router": {
+      "kind": "local",
+      "sourceRoot": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/flow-router"
+    },
+    "meteor": {
+      "kind": "versioned",
+      "version": "2.0.1"
+    },
+    "underscore": {
+      "kind": "versioned",
+      "version": "1.6.4"
+    },
+    "tracker": {
+      "kind": "versioned",
+      "version": "1.3.4"
+    },
+    "reactive-dict": {
+      "kind": "versioned",
+      "version": "1.3.2"
+    },
+    "reactive-var": {
+      "kind": "versioned",
+      "version": "1.0.13"
+    },
+    "ejson": {
+      "kind": "versioned",
+      "version": "1.1.4"
+    },
+    "modules": {
+      "kind": "versioned",
+      "version": "0.20.2"
+    }
+  },
+  "includeCordovaUnibuild": false
+}

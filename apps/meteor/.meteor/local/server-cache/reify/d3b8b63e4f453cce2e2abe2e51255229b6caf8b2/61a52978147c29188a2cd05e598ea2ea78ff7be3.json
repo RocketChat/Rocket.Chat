@@ -1,0 +1,17 @@
+"use strict";module.export({isModerationReportUserPost:()=>isModerationReportUserPost},true);var ajv;module.link('../Ajv',{ajv(v){ajv=v}},0);
+const reportUserPropsSchema = {
+    type: 'object',
+    properties: {
+        userId: {
+            type: 'string',
+        },
+        description: {
+            type: 'string',
+            minLength: 1,
+        },
+    },
+    required: ['userId', 'description'],
+    additionalProperties: false,
+};
+const isModerationReportUserPost = ajv.compile(reportUserPropsSchema);
+//# sourceMappingURL=ModerationReportUserPOST.js.map

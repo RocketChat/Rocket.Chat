@@ -1,0 +1,12 @@
+"use strict";module.export({isGroupsSetEncryptedProps:()=>isGroupsSetEncryptedProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);var withGroupBaseProperties;module.link('./BaseProps',{withGroupBaseProperties(v){withGroupBaseProperties=v}},1);
+
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const groupsSetEncryptedPropsSchema = withGroupBaseProperties({
+    encrypted: {
+        type: 'boolean',
+    },
+}, ['encrypted']);
+const isGroupsSetEncryptedProps = ajv.compile(groupsSetEncryptedPropsSchema);
+//# sourceMappingURL=GroupsSetEncryptedProps.js.map

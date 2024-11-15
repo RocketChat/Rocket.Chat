@@ -1,0 +1,30 @@
+"use strict";module.export({isChannelsGetAllUserMentionsByChannelProps:()=>isChannelsGetAllUserMentionsByChannelProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({ coerceTypes: true });
+const channelsGetAllUserMentionsByChannelPropsSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            type: 'string',
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+        query: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: ['roomId'],
+    additionalProperties: false,
+};
+const isChannelsGetAllUserMentionsByChannelProps = ajv.compile(channelsGetAllUserMentionsByChannelPropsSchema);
+//# sourceMappingURL=ChannelsGetAllUserMentionsByChannelProps.js.map

@@ -1,0 +1,1 @@
+[{"type":"js","data":"Package[\"core-runtime\"].queue(\"ecmascript-runtime\",function () {\n\n\n/* Exports */\nreturn {\n\n}});\n","servePath":"/packages/ecmascript-runtime.js"}]

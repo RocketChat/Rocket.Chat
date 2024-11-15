@@ -1,0 +1,392 @@
+"use strict";module.export({isConnectorExtensionGetRegistrationInfoByUserIdProps:()=>isConnectorExtensionGetRegistrationInfoByUserIdProps,isVoipQueuesGetQueuedCallsForThisExtensionProps:()=>isVoipQueuesGetQueuedCallsForThisExtensionProps,isVoipQueuesGetMembershipSubscriptionProps:()=>isVoipQueuesGetMembershipSubscriptionProps,isOmnichannelExtensionsProps:()=>isOmnichannelExtensionsProps,isOmnichannelExtensionProps:()=>isOmnichannelExtensionProps,isOmnichannelAgentExtensionGETProps:()=>isOmnichannelAgentExtensionGETProps,isOmnichannelAgentExtensionPOSTProps:()=>isOmnichannelAgentExtensionPOSTProps,isOmnichannelAgentExtensionDELETEProps:()=>isOmnichannelAgentExtensionDELETEProps,isOmnichannelAgentsAvailableProps:()=>isOmnichannelAgentsAvailableProps,isVoipEventsProps:()=>isVoipEventsProps,isVoipRoomProps:()=>isVoipRoomProps,isVoipManagementServerCheckConnectionProps:()=>isVoipManagementServerCheckConnectionProps,isVoipCallServerCheckConnectionProps:()=>isVoipCallServerCheckConnectionProps,isVoipRoomsProps:()=>isVoipRoomsProps,isVoipRoomCloseProps:()=>isVoipRoomCloseProps},true);var VoipClientEvents;module.link('@rocket.chat/core-typings',{VoipClientEvents(v){VoipClientEvents=v}},0);var Ajv;module.link('ajv',{default(v){Ajv=v}},1);
+
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const ConnectorExtensionGetRegistrationInfoByUserIdSchema = {
+    type: 'object',
+    properties: {
+        id: {
+            type: 'string',
+        },
+    },
+    required: ['id'],
+    additionalProperties: false,
+};
+const isConnectorExtensionGetRegistrationInfoByUserIdProps = ajv.compile(ConnectorExtensionGetRegistrationInfoByUserIdSchema);
+const VoipQueuesGetQueuedCallsForThisExtensionSchema = {
+    type: 'object',
+    properties: {
+        extension: {
+            type: 'string',
+        },
+    },
+    required: ['extension'],
+    additionalProperties: false,
+};
+const isVoipQueuesGetQueuedCallsForThisExtensionProps = ajv.compile(VoipQueuesGetQueuedCallsForThisExtensionSchema);
+const VoipQueuesGetMembershipSubscriptionSchema = {
+    type: 'object',
+    properties: {
+        extension: {
+            type: 'string',
+        },
+    },
+    required: ['extension'],
+    additionalProperties: false,
+};
+const isVoipQueuesGetMembershipSubscriptionProps = ajv.compile(VoipQueuesGetMembershipSubscriptionSchema);
+const OmnichannelExtensionsSchema = {
+    type: 'object',
+    properties: {
+        status: {
+            type: 'string',
+            nullable: true,
+        },
+        agentId: {
+            type: 'string',
+            nullable: true,
+        },
+        queues: {
+            type: 'array',
+            items: {
+                type: 'string',
+            },
+            nullable: true,
+        },
+        extension: {
+            type: 'string',
+            nullable: true,
+        },
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+        query: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isOmnichannelExtensionsProps = ajv.compile(OmnichannelExtensionsSchema);
+const OmnichannelExtensionSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                userId: {
+                    type: 'string',
+                },
+                type: {
+                    type: 'string',
+                    enum: ['free', 'allocated', 'available'],
+                },
+            },
+            required: ['userId', 'type'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                username: {
+                    type: 'string',
+                },
+                type: {
+                    type: 'string',
+                    enum: ['free', 'allocated', 'available'],
+                },
+            },
+            required: ['username', 'type'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isOmnichannelExtensionProps = ajv.compile(OmnichannelExtensionSchema);
+const OmnichannelAgentExtensionGETSchema = {
+    type: 'object',
+    properties: {
+        username: {
+            type: 'string',
+        },
+    },
+    required: ['username'],
+    additionalProperties: false,
+};
+const isOmnichannelAgentExtensionGETProps = ajv.compile(OmnichannelAgentExtensionGETSchema);
+const OmnichannelAgentExtensionPOSTSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                userId: {
+                    type: 'string',
+                },
+                extension: {
+                    type: 'string',
+                },
+            },
+            required: ['userId', 'extension'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                username: {
+                    type: 'string',
+                },
+                extension: {
+                    type: 'string',
+                },
+            },
+            required: ['username', 'extension'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isOmnichannelAgentExtensionPOSTProps = ajv.compile(OmnichannelAgentExtensionPOSTSchema);
+const OmnichannelAgentExtensionDELETESchema = {
+    type: 'object',
+    properties: {
+        username: {
+            type: 'string',
+        },
+    },
+    required: ['username'],
+    additionalProperties: false,
+};
+const isOmnichannelAgentExtensionDELETEProps = ajv.compile(OmnichannelAgentExtensionDELETESchema);
+const OmnichannelAgentsAvailableSchema = {
+    type: 'object',
+    properties: {
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+        query: {
+            type: 'string',
+            nullable: true,
+        },
+        text: {
+            type: 'string',
+            nullable: true,
+        },
+        includeExtension: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isOmnichannelAgentsAvailableProps = ajv.compile(OmnichannelAgentsAvailableSchema);
+const VoipEventsSchema = {
+    type: 'object',
+    properties: {
+        event: {
+            type: 'string',
+            enum: Object.values(VoipClientEvents),
+        },
+        rid: {
+            type: 'string',
+        },
+        comment: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: ['event', 'rid'],
+    additionalProperties: false,
+};
+const isVoipEventsProps = ajv.compile(VoipEventsSchema);
+const VoipRoomSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                token: {
+                    type: 'string',
+                },
+                agentId: {
+                    type: 'string',
+                },
+                direction: {
+                    type: 'string',
+                    enum: ['inbound', 'outbound'],
+                },
+            },
+            required: ['token', 'agentId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                rid: {
+                    type: 'string',
+                },
+                token: {
+                    type: 'string',
+                },
+            },
+            required: ['rid', 'token'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isVoipRoomProps = ajv.compile(VoipRoomSchema);
+const VoipManagementServerCheckConnectionSchema = {
+    type: 'object',
+    properties: {
+        host: {
+            type: 'string',
+        },
+        port: {
+            type: 'string',
+        },
+        username: {
+            type: 'string',
+        },
+        password: {
+            type: 'string',
+        },
+    },
+    required: ['host', 'port', 'username', 'password'],
+    additionalProperties: false,
+};
+const isVoipManagementServerCheckConnectionProps = ajv.compile(VoipManagementServerCheckConnectionSchema);
+const VoipCallServerCheckConnectionSchema = {
+    type: 'object',
+    properties: {
+        websocketUrl: {
+            type: 'string',
+        },
+        host: {
+            type: 'string',
+        },
+        port: {
+            type: 'string',
+        },
+        path: {
+            type: 'string',
+        },
+    },
+    required: ['websocketUrl', 'host', 'port', 'path'],
+    additionalProperties: false,
+};
+const isVoipCallServerCheckConnectionProps = ajv.compile(VoipCallServerCheckConnectionSchema);
+const VoipRoomsSchema = {
+    type: 'object',
+    properties: {
+        agents: {
+            type: 'array',
+            items: {
+                type: 'string',
+            },
+            nullable: true,
+        },
+        open: {
+            type: 'string',
+            enum: ['true', 'false'],
+            nullable: true,
+        },
+        createdAt: {
+            type: 'string',
+            nullable: true,
+        },
+        closedAt: {
+            type: 'string',
+            nullable: true,
+        },
+        tags: {
+            type: 'array',
+            items: {
+                type: 'string',
+            },
+            nullable: true,
+        },
+        queue: {
+            type: 'string',
+            nullable: true,
+        },
+        visitorId: {
+            type: 'string',
+            nullable: true,
+        },
+        direction: {
+            type: 'string',
+            enum: ['inbound', 'outbound'],
+            nullable: true,
+        },
+        roomName: {
+            type: 'string',
+            nullable: true,
+        },
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+        query: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isVoipRoomsProps = ajv.compile(VoipRoomsSchema);
+const VoipRoomCloseSchema = {
+    type: 'object',
+    properties: {
+        rid: {
+            type: 'string',
+        },
+        token: {
+            type: 'string',
+        },
+        options: {
+            type: 'object',
+            properties: {
+                comment: {
+                    type: 'string',
+                    nullable: true,
+                },
+                tags: {
+                    type: 'array',
+                    items: {
+                        type: 'string',
+                    },
+                    nullable: true,
+                },
+            },
+        },
+    },
+    required: ['rid', 'token'],
+    additionalProperties: false,
+};
+const isVoipRoomCloseProps = ajv.compile(VoipRoomCloseSchema);
+//# sourceMappingURL=voip.js.map

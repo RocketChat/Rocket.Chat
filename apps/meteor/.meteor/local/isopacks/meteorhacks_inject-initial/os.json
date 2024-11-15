@@ -1,0 +1,54 @@
+{
+  "format": "isopack-2-unibuild",
+  "declaredExports": [
+    {
+      "name": "Inject",
+      "testOnly": false
+    }
+  ],
+  "uses": [
+    {
+      "package": "meteor"
+    },
+    {
+      "package": "routepolicy"
+    },
+    {
+      "package": "webapp"
+    },
+    {
+      "package": "ejson"
+    },
+    {
+      "package": "underscore"
+    }
+  ],
+  "resources": [
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/lib/inject-server.js",
+      "length": 4684,
+      "offset": 0,
+      "usesDefaultSourceProcessor": true,
+      "path": "lib/inject-server.js",
+      "hash": "8821c434fb7da35158a7feb8abc191d81819c77a",
+      "fileOptions": {
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "os/lib/inject-core.js",
+      "length": 1760,
+      "offset": 0,
+      "usesDefaultSourceProcessor": true,
+      "path": "lib/inject-core.js",
+      "hash": "67b1aafa260fbd397ed81b181d24ab379e88e1ae",
+      "fileOptions": {
+        "lazy": false
+      }
+    }
+  ]
+}

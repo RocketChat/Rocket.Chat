@@ -1,0 +1,1 @@
+{"code":"function module(e,t,a){var n=e(\"./_baseIsNative\"),o=e(\"./_getValue\");a.exports=function(e,t){var a=o(e,t);return n(a)?a:void 0}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

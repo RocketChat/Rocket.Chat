@@ -1,0 +1,1 @@
+{"code":"function module(t,e){\"use strict\";Object.defineProperty(e,\"__esModule\",{value:!0}),e.useLayoutContext=e.LayoutContext=void 0;var o=t(\"react\");e.LayoutContext=(0,o.createContext)({}),e.useLayoutContext=function(){return(0,o.useContext)(e.LayoutContext)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(e,r,n){n.export({freeze:()=>t});var t=function(e){return Object.freeze(e)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

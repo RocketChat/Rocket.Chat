@@ -1,0 +1,1 @@
+{"code":"function module(e,i,l){l.link(\"./simple-user\",{\"*\":\"*\"},0),l.link(\"./simple-user-delegate\",{\"*\":\"*\"},1),l.link(\"./simple-user-options\",{\"*\":\"*\"},2)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

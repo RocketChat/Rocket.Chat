@@ -1,0 +1,1 @@
+{"code":"function module(t,e,n){let i,o;n.link(\"./schedule\",{get(t){i=t},set(t){o=t}},0),n.exportDefault(function(t){var e=this._id;return arguments.length?this.each(function(t,e){if(\"function\"!=typeof e)throw Error();return function(){o(this,t).ease=e}}(e,t)):i(this.node(),e).ease})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

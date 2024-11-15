@@ -1,0 +1,21 @@
+"use strict";module.export({isLoginProps:()=>isLoginProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const loginPropsSchema = {
+    type: 'object',
+    properties: {
+        user: { type: 'object', nullable: true },
+        username: { type: 'string', nullable: true },
+        password: {
+            oneOf: [
+                { type: 'string', nullable: true },
+                { type: 'object', nullable: true },
+            ],
+        },
+        email: { type: 'string', nullable: true },
+        code: { type: 'string', nullable: true },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isLoginProps = ajv.compile(loginPropsSchema);
+//# sourceMappingURL=auth.js.map

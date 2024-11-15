@@ -1,0 +1,1 @@
+{"code":"function module(t,n,o){\"use strict\";var r=t(\"get-intrinsic\"),e=t(\"./\"),i=e(r(\"String.prototype.indexOf\"));o.exports=function t(t,n){var o=r(t,!!n);return\"function\"==typeof o&&i(t,\".prototype.\")>-1?e(o):o}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

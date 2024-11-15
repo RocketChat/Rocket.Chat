@@ -1,0 +1,18 @@
+"use strict";module.export({isReportInfoParams:()=>isReportInfoParams},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const ajvParams = {
+    type: 'object',
+    properties: {
+        reportId: {
+            type: 'string',
+            nullable: false,
+            minLength: 1,
+        },
+    },
+    required: ['reportId'],
+    additionalProperties: false,
+};
+const isReportInfoParams = ajv.compile(ajvParams);
+//# sourceMappingURL=ReportInfoParams.js.map

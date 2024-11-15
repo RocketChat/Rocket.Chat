@@ -1,0 +1,3 @@
+"use strict";module.export({isGroupsRemoveLeaderProps:()=>isGroupsRemoveLeaderProps},true);var withUserIdProps;module.link('./BaseProps',{withUserIdProps(v){withUserIdProps=v}},0);
+const isGroupsRemoveLeaderProps = withUserIdProps;
+//# sourceMappingURL=GroupsRemoveLeaderProps.js.map

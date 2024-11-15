@@ -1,0 +1,1 @@
+{"code":"function module(e,o){\"use strict\";Object.defineProperty(o,\"__esModule\",{value:!0}),o.streamToBuffer=void 0,o.streamToBuffer=e=>new Promise((o,r)=>{let t=[];e.on(\"data\",e=>t.push(e)).on(\"end\",()=>o(Buffer.concat(t))).on(\"error\",e=>r(e)).resume()})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

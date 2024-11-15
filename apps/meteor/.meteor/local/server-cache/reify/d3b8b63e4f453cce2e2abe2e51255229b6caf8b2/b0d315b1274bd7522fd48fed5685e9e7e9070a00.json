@@ -1,0 +1,78 @@
+"use strict";module.export({isUsersInfoProps:()=>isUsersInfoProps,isUsers2faSendEmailCodeProps:()=>isUsers2faSendEmailCodeProps,isUsersSetAvatarProps:()=>isUsersSetAvatarProps,isUsersResetAvatarProps:()=>isUsersResetAvatarProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);module.link('./users/UserCreateParamsPOST',{"*":"*"},1);module.link('./users/UserSetActiveStatusParamsPOST',{"*":"*"},2);module.link('./users/UserDeactivateIdleParamsPOST',{"*":"*"},3);module.link('./users/UsersInfoParamsGet',{"*":"*"},4);module.link('./users/UsersListStatusParamsGET',{"*":"*"},5);module.link('./users/UsersSendWelcomeEmailParamsPOST',{"*":"*"},6);module.link('./users/UserRegisterParamsPOST',{"*":"*"},7);module.link('./users/UserLogoutParamsPOST',{"*":"*"},8);module.link('./users/UsersListTeamsParamsGET',{"*":"*"},9);module.link('./users/UsersAutocompleteParamsGET',{"*":"*"},10);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const UsersInfoSchema = {
+    type: 'object',
+    properties: {
+        userId: {
+            type: 'string',
+            nullable: true,
+        },
+        username: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isUsersInfoProps = ajv.compile(UsersInfoSchema);
+const Users2faSendEmailCodeSchema = {
+    type: 'object',
+    properties: {
+        emailOrUsername: {
+            type: 'string',
+        },
+    },
+    required: ['emailOrUsername'],
+    additionalProperties: false,
+};
+const isUsers2faSendEmailCodeProps = ajv.compile(Users2faSendEmailCodeSchema);
+const UsersSetAvatarSchema = {
+    type: 'object',
+    properties: {
+        userId: {
+            type: 'string',
+            nullable: true,
+        },
+        username: {
+            type: 'string',
+            nullable: true,
+        },
+        avatarUrl: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isUsersSetAvatarProps = ajv.compile(UsersSetAvatarSchema);
+const UsersResetAvatarSchema = {
+    type: 'object',
+    properties: {
+        userId: {
+            type: 'string',
+            nullable: true,
+        },
+        username: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isUsersResetAvatarProps = ajv.compile(UsersResetAvatarSchema);
+
+
+
+
+
+
+
+
+
+
+//# sourceMappingURL=users.js.map

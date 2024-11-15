@@ -1,0 +1,24 @@
+"use strict";module.export({isArchiveReportProps:()=>isArchiveReportProps},true);var ajv;module.link('../Ajv',{ajv(v){ajv=v}},0);
+const archiveReportPropsSchema = {
+    type: 'object',
+    properties: {
+        userId: {
+            type: 'string',
+        },
+        msgId: {
+            type: 'string',
+        },
+        reason: {
+            type: 'string',
+            nullable: true,
+        },
+        action: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    oneOf: [{ required: ['msgId'] }, { required: ['userId'] }],
+    additionalProperties: false,
+};
+const isArchiveReportProps = ajv.compile(archiveReportPropsSchema);
+//# sourceMappingURL=ArchiveReportProps.js.map

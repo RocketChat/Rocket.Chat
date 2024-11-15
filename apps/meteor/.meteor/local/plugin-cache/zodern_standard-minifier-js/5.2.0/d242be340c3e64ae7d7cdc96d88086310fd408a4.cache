@@ -1,0 +1,1 @@
+{"code":"function module(e,n,t){var r=e(\"./constant\"),i=e(\"./_defineProperty\"),o=e(\"./identity\"),u=i?function(e,n){return i(e,\"toString\",{configurable:!0,enumerable:!1,value:r(n),writable:!0})}:o;t.exports=u}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(t,i,l){\"use strict\";(function(i){var o=t(\"./lib/poly1305\");l.exports=o}).call(this,l)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

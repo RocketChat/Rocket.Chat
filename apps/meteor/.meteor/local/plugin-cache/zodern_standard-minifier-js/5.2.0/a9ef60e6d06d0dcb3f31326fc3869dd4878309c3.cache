@@ -1,0 +1,1 @@
+{"code":"function module(l,o,a){a.link(\"./TwoFactorModal\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/components/TwoFactorModal/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './TwoFactorModal';\\n\",null],\"names\":[\"module\",\"link\",\"default\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,mBAAe,CAAAC,QAAA,SAAmB,EAAA\"}"}

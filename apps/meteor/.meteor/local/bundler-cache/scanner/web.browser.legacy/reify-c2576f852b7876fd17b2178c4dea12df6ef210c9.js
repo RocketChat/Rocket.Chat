@@ -1,0 +1,5 @@
+var _jsx,_Fragment,_jsxs;module.link("react/jsx-runtime",{jsx:function(v){_jsx=v},Fragment:function(v){_Fragment=v},jsxs:function(v){_jsxs=v}},0);var MenuItemColumn,MenuItemContent,MenuItemIcon,MenuItemInput;module.link('@rocket.chat/fuselage',{MenuItemColumn:function(v){MenuItemColumn=v},MenuItemContent:function(v){MenuItemContent=v},MenuItemIcon:function(v){MenuItemIcon=v},MenuItemInput:function(v){MenuItemInput=v}},1);
+
+const GenericMenuItem = ({ icon, content, addon, status, gap, tooltip }) => (_jsxs(_Fragment, { children: [gap && _jsx(MenuItemColumn, {}), icon && _jsx(MenuItemIcon, { name: icon }), status && _jsx(MenuItemColumn, { children: status }), content && _jsx(MenuItemContent, { title: tooltip, children: content }), addon && _jsx(MenuItemInput, { children: addon })] }));
+module.exportDefault(GenericMenuItem);
+//# sourceMappingURL=GenericMenuItem.js.map

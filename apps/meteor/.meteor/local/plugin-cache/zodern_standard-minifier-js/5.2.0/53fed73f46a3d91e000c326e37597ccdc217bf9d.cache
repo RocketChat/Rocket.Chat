@@ -1,0 +1,1 @@
+{"code":"function module(o,i,n){n.exports={name:\"@nivo/voronoi\",version:\"0.84.0\",main:\"./dist/nivo-voronoi.cjs.js\",module:\"./dist/nivo-voronoi.es.js\"}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

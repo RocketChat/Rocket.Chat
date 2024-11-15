@@ -1,0 +1,1 @@
+{"code":"function module(e,t,n){let r;n.export({calculateDepthForNode:()=>o}),n.link(\"../utils/element\",{isHidden(e){r=e}},0);var o=function(e){if(r(e))return 1/0;for(var t=0,n=e.parentNode;n;)t+=1,n=n.parentNode;return t}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

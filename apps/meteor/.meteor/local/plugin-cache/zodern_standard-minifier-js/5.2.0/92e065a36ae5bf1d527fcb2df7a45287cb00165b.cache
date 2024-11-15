@@ -1,0 +1,1 @@
+{"code":"function module(t,e,i){let o,l,n;i.link(\"react/jsx-runtime\",{jsx(t){o=t}},0),i.link(\"@rocket.chat/ui-client\",{AnchorPortal(t){l=t}},1),i.link(\"react\",{memo(t){n=t}},2),i.exportDefault(n(({children:t})=>o(l,{id:\"voip-root\",children:t})))}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

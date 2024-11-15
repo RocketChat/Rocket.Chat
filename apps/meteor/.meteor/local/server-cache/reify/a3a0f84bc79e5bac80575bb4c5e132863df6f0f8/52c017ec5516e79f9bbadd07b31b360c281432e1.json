@@ -1,0 +1,14 @@
+"use strict";module.export({isCalendarEventDeleteProps:()=>isCalendarEventDeleteProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const calendarEventDeletePropsSchema = {
+    type: 'object',
+    properties: {
+        eventId: {
+            type: 'string',
+        },
+    },
+    required: ['eventId'],
+    additionalProperties: false,
+};
+const isCalendarEventDeleteProps = ajv.compile(calendarEventDeletePropsSchema);
+//# sourceMappingURL=CalendarEventDeleteProps.js.map

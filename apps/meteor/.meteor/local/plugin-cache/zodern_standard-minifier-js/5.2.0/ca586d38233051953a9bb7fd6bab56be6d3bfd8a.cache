@@ -1,0 +1,1 @@
+{"code":"function module(e,n){\"use strict\";Object.defineProperty(n,\"__esModule\",{value:!0}),n.Translation=function(e){let{ns:n,children:a,...u}=e,[l,r,s]=(0,t.useTranslation)(n,u);return a(l,{i18n:r,lng:r.language},s)};var t=e(\"./useTranslation.js\")}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

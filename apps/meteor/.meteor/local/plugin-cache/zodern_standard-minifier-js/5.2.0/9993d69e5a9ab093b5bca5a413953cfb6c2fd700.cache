@@ -1,0 +1,1 @@
+{"code":"function module(l,u,d){d.link(\"./AppLogs\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/marketplace/AppDetailsPage/tabs/AppLogs/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './AppLogs';\\n\",null],\"names\":[\"module\",\"link\",\"default\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,YAAe,CAAAC,QAAA,SAAY,EAAA\"}"}

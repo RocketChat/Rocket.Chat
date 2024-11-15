@@ -1,0 +1,1 @@
+{"code":"function module(a,n,r){r.link(\"./grammar\",{\"*\":\"*\"},0),r.link(\"./name-addr-header\",{\"*\":\"*\"},1),r.link(\"./parameters\",{\"*\":\"*\"},2),r.link(\"./uri\",{\"*\":\"*\"},3)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

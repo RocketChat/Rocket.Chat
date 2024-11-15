@@ -1,0 +1,1 @@
+{"code":"function module(r,e,i){\"use strict\";var n=r(\"define-properties\"),t=r(\"./polyfill\");i.exports=function r(){var r=t();return n(Number,{isNaN:r},{isNaN:function e(){return Number.isNaN!==r}}),r}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

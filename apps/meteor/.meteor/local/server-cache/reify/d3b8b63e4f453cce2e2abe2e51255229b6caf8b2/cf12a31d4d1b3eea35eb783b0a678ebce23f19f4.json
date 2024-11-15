@@ -1,0 +1,18 @@
+"use strict";module.export({isIntegrationsGetProps:()=>isIntegrationsGetProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const integrationsGetSchema = {
+    type: 'object',
+    properties: {
+        integrationId: {
+            type: 'string',
+            nullable: false,
+        },
+        createdBy: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: ['integrationId'],
+};
+const isIntegrationsGetProps = ajv.compile(integrationsGetSchema);
+//# sourceMappingURL=IntegrationsGetProps.js.map

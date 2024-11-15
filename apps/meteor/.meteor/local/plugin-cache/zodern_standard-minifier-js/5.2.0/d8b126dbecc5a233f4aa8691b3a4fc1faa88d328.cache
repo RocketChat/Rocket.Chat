@@ -1,0 +1,1 @@
+{"code":"function module(t,n,r){\"use strict\";r.exports=o;var i=t(\"./_stream_transform\");function o(t){if(!(this instanceof o))return new o(t);i.call(this,t)}t(\"inherits\")(o,i),o.prototype._transform=function(t,n,r){r(null,t)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

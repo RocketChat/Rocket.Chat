@@ -1,0 +1,1 @@
+{"code":"function module(n,e,o){o.export({linear:()=>r});function r(n){return+n}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

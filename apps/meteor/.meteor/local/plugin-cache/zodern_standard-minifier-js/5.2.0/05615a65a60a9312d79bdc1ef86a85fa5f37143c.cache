@@ -1,0 +1,1 @@
+{"code":"function module(e,o,p){p.export({slice:()=>a,map:()=>t});var r=Array.prototype,a=r.slice,t=r.map}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

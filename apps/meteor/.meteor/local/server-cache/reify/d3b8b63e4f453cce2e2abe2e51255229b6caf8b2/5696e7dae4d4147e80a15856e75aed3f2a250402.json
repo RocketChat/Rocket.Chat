@@ -1,0 +1,28 @@
+"use strict";module.export({isChannelsDeleteProps:()=>isChannelsDeleteProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const channelsDeletePropsSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                roomId: {
+                    type: 'string',
+                },
+            },
+            required: ['roomId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                roomName: {
+                    type: 'string',
+                },
+            },
+            required: ['roomName'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isChannelsDeleteProps = ajv.compile(channelsDeletePropsSchema);
+//# sourceMappingURL=ChannelsDeleteProps.js.map

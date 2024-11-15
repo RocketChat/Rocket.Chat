@@ -1,0 +1,1 @@
+{"code":"function module(n,t,u){u.export({sinIn:()=>r,sinOut:()=>c,sinInOut:()=>s});var i=Math.PI,o=i/2;function r(n){return 1==+n?1:1-Math.cos(n*o)}function c(n){return Math.sin(n*o)}function s(n){return(1-Math.cos(i*n))/2}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(t,n,e){let r;e.link(\"./timer.js\",{Timer(t){r=t}},0),e.exportDefault(function(t,n,e){var u=new r;return n=null==n?0:+n,u.restart(function(e){u.stop(),t(e+n)},n,e),u})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(c,n){n.encrypt=function(c,n){return c._cipher.encryptBlock(n)},n.decrypt=function(c,n){return c._cipher.decryptBlock(n)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

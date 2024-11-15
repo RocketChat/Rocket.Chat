@@ -1,0 +1,1 @@
+{"code":"function module(e,l,n){let a;n.link(\"./namespaces\",{default(e){a=e}},0),n.exportDefault(function(e){var l=e+=\"\",n=l.indexOf(\":\");return n>=0&&\"xmlns\"!==(l=e.slice(0,n))&&(e=e.slice(n+1)),a.hasOwnProperty(l)?{space:a[l],local:e}:e})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

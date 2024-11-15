@@ -1,0 +1,1 @@
+{"code":"function module(n,t,e){var u,f;function o(n,t){return\"undefined\"==typeof window?u(n,t):f(n,t)}e.export({useIsomorphicLayoutEffect:function(){return o}}),e.link(\"react\",{useEffect:function(n){u=n},useLayoutEffect:function(n){f=n}},0)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(e,o,t){let c=e(\"./compare\");t.exports=(e,o)=>c(e,o,!0)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

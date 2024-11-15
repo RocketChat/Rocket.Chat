@@ -1,0 +1,262 @@
+{
+  "builtBy": "meteor/34",
+  "unibuildDependencies": {
+    "os.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/package.js": "506ed1f11cc52f18d8ff8cd5e8bb8f25f84a3427",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/pre.1.0.3.js": "f8f6d24d30e0998901e1bb1cea290b66cdc6ea46",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/common.js": "364bdf0eb32207b6efd3448d21edd4c77194fd8f",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/collection.overwrites.js": "405e136e84b8263bca547c2d79cec0854923073c"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/pre.1.0.3.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/common.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/collection.overwrites.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user",
+          "include": [
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "lib/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib",
+          "include": [
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "collection.overwrites.js",
+            "common.js",
+            "pre.1.0.3.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/package.js": "506ed1f11cc52f18d8ff8cd5e8bb8f25f84a3427",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/pre.1.0.3.js": "f8f6d24d30e0998901e1bb1cea290b66cdc6ea46",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/common.js": "364bdf0eb32207b6efd3448d21edd4c77194fd8f",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/collection.overwrites.js": "405e136e84b8263bca547c2d79cec0854923073c"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/pre.1.0.3.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/common.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/collection.overwrites.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "lib/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "collection.overwrites.js",
+            "common.js",
+            "pre.1.0.3.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.legacy.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/package.js": "506ed1f11cc52f18d8ff8cd5e8bb8f25f84a3427",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/pre.1.0.3.js": "f8f6d24d30e0998901e1bb1cea290b66cdc6ea46",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/common.js": "364bdf0eb32207b6efd3448d21edd4c77194fd8f",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/collection.overwrites.js": "405e136e84b8263bca547c2d79cec0854923073c"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/pre.1.0.3.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/common.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib/collection.overwrites.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "lib/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib",
+          "include": [
+            "\\.css$",
+            "\\.js$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "collection.overwrites.js",
+            "common.js",
+            "pre.1.0.3.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/lib",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    }
+  },
+  "pluginDependencies": {
+    "files": {
+      "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user/package.js": "506ed1f11cc52f18d8ff8cd5e8bb8f25f84a3427"
+    },
+    "potentiallyUnusedFiles": [],
+    "directories": []
+  },
+  "pluginProviderPackageMap": {
+    "dispatch:run-as-user": {
+      "kind": "local",
+      "sourceRoot": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-run-as-user"
+    },
+    "meteor": {
+      "kind": "versioned",
+      "version": "2.0.1"
+    },
+    "check": {
+      "kind": "versioned",
+      "version": "1.4.4"
+    },
+    "underscore": {
+      "kind": "versioned",
+      "version": "1.6.4"
+    },
+    "mongo": {
+      "kind": "versioned",
+      "version": "2.0.2"
+    },
+    "ddp": {
+      "kind": "versioned",
+      "version": "1.4.2"
+    },
+    "minimongo": {
+      "kind": "versioned",
+      "version": "2.0.1"
+    },
+    "ddp-client": {
+      "kind": "versioned",
+      "version": "3.0.2"
+    },
+    "ddp-server": {
+      "kind": "versioned",
+      "version": "3.0.2"
+    }
+  },
+  "includeCordovaUnibuild": false
+}

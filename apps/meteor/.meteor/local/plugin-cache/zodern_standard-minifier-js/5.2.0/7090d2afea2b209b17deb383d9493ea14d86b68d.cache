@@ -1,0 +1,1 @@
+{"code":"function module(n,e,u){u.exports=function(n){return{name:\"ERB\",subLanguage:\"xml\",contains:[n.COMMENT(\"<%#\",\"%>\"),{begin:\"<%[%=-]?\",end:\"[%-]?%>\",subLanguage:\"ruby\",excludeBegin:!0,excludeEnd:!0}]}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

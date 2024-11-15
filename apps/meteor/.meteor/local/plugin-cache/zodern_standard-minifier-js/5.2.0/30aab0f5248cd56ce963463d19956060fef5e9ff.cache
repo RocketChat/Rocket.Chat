@@ -1,0 +1,1 @@
+{"code":"function module(t,e,i){var n=t(\"./_nativeCreate\");i.exports=function(){this.__data__=n?n(null):{},this.size=0}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

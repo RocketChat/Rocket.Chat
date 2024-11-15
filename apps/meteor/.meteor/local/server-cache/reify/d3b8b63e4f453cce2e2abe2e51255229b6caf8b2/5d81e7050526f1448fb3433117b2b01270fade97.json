@@ -1,0 +1,4 @@
+"use strict";module.export({isSettingsUpdatePropsActions:()=>isSettingsUpdatePropsActions,isSettingsUpdatePropsColor:()=>isSettingsUpdatePropsColor,isSettingsUpdatePropDefault:()=>isSettingsUpdatePropDefault},true);const isSettingsUpdatePropsActions = (props) => 'execute' in props;
+const isSettingsUpdatePropsColor = (props) => 'editor' in props && 'value' in props;
+const isSettingsUpdatePropDefault = (props) => 'value' in props;
+//# sourceMappingURL=settings.js.map

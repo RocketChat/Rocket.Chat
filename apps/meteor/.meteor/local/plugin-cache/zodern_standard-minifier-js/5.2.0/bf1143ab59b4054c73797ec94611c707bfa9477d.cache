@@ -1,0 +1,1 @@
+{"code":"function module(e,s){\"use strict\";Object.defineProperty(s,\"__esModule\",{value:!0}),s.hasElements=void 0,s.hasElements=e=>\"elements\"in e&&Array.isArray(e.elements)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

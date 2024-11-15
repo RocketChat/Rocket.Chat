@@ -1,0 +1,1 @@
+{"code":"function module(n,t,r){let e;r.link(\"./basis.js\",{basis(n){e=n}},0),r.exportDefault(function(n){var t=n.length;return function(r){var o=Math.floor(((r%=1)<0?++r:r)*t),u=n[(o+t-1)%t],a=n[o%t],i=n[(o+1)%t],l=n[(o+2)%t];return e((r-o/t)*t,u,a,i,l)}})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

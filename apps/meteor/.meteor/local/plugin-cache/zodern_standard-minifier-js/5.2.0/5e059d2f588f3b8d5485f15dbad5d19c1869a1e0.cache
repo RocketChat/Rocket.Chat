@@ -1,0 +1,1 @@
+{"code":"function module(r,t,n){n.export({default:()=>a});function a(r,t){for(var n=0,a=t.length-1,o=t[0],u=Array(a<0?0:a);n<a;)u[n]=r(o,o=t[++n]);return function(r){var t=Math.max(0,Math.min(a-1,Math.floor(r*=a)));return u[t](r-t)}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

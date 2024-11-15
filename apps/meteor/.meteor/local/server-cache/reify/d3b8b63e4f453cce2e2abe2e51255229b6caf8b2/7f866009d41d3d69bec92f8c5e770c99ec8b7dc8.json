@@ -1,0 +1,33 @@
+"use strict";module.export({isCustomSoundsListProps:()=>isCustomSoundsListProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const CustomSoundsListSchema = {
+    type: 'object',
+    properties: {
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+        name: {
+            type: 'string',
+            nullable: true,
+        },
+        query: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isCustomSoundsListProps = ajv.compile(CustomSoundsListSchema);
+//# sourceMappingURL=customSounds.js.map

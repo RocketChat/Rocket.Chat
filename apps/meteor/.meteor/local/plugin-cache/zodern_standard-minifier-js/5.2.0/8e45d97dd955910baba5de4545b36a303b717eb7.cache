@@ -1,0 +1,1 @@
+{"code":"function module(e,t,l){let n;l.export({isVoipContextReady:()=>i,VoipContext:()=>o},!0),l.link(\"react\",{createContext(e){n=e}},0);let i=e=>e.isEnabled&&null!==e.voipClient,o=n({isEnabled:!1,voipClient:null})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(t,e,l){let n,u;l.link(\"../count.js\",{default(t){n=t}},0),l.link(\"../quantile.js\",{default(t){u=t}},1),l.exportDefault(function(t,e,l){return Math.ceil((l-e)/(2*(u(t,.75)-u(t,.25))*Math.pow(n(t),-1/3)))})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

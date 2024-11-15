@@ -1,0 +1,7 @@
+"use strict";module.export({hashLoginToken:()=>hashLoginToken});var crypto;module.link('crypto',{default(v){crypto=v}},0);
+function hashLoginToken(loginToken) {
+    const hash = crypto.createHash('sha256');
+    hash.update(loginToken);
+    return hash.digest('base64');
+}
+//# sourceMappingURL=index.js.map

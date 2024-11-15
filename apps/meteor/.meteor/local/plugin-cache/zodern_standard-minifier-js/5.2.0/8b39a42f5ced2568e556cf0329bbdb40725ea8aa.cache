@@ -1,0 +1,1 @@
+{"code":"function module(t,a,n){var r=t(\"./_isKeyable\");n.exports=function(t,a){var n=t.__data__;return r(a)?n[\"string\"==typeof a?\"string\":\"hash\"]:n.map}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

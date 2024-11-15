@@ -1,0 +1,315 @@
+{
+  "builtBy": "meteor/34",
+  "unibuildDependencies": {
+    "os.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/package.js": "3bdfbe5309f0dd3095dc0c902e51cc50046005d3",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/.npm/package/npm-shrinkwrap.json": "cc5152d03feacb0bcdfa0ab2c966673bdfcab64a",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/restivus.js": "d605ed418299b5b361cccff66c656716bc8fa37e",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/auth.js": "547eb218591c295e3cd90a86ee54b98d28577c16",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/iron-router-error-to-response.js": "5e084e4fd5febd5169d985ed83ed2bb7e0cc2222",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/json-routes.js": "6bd1ea624b4a781c88441ffef34d2fd3b2338bc2",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/route.js": "81e15440d9f34d2f71b2f5c6627afefe7e1b3b56"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/restivus.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/auth.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/iron-router-error-to-response.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/json-routes.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/route.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus",
+          "include": [
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "lib/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib",
+          "include": [
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "auth.js",
+            "iron-router-error-to-response.js",
+            "json-routes.js",
+            "restivus.js",
+            "route.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/package.js": "3bdfbe5309f0dd3095dc0c902e51cc50046005d3",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/.npm/package/npm-shrinkwrap.json": "cc5152d03feacb0bcdfa0ab2c966673bdfcab64a",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/auth.js": "547eb218591c295e3cd90a86ee54b98d28577c16",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/iron-router-error-to-response.js": "5e084e4fd5febd5169d985ed83ed2bb7e0cc2222",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/json-routes.js": "6bd1ea624b4a781c88441ffef34d2fd3b2338bc2",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/restivus.js": "d605ed418299b5b361cccff66c656716bc8fa37e",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/route.js": "81e15440d9f34d2f71b2f5c6627afefe7e1b3b56"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/auth.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/iron-router-error-to-response.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/json-routes.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/restivus.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/route.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "lib/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "auth.js",
+            "iron-router-error-to-response.js",
+            "json-routes.js",
+            "restivus.js",
+            "route.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.legacy.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/package.js": "3bdfbe5309f0dd3095dc0c902e51cc50046005d3",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/.npm/package/npm-shrinkwrap.json": "cc5152d03feacb0bcdfa0ab2c966673bdfcab64a",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/auth.js": "547eb218591c295e3cd90a86ee54b98d28577c16",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/iron-router-error-to-response.js": "5e084e4fd5febd5169d985ed83ed2bb7e0cc2222",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/json-routes.js": "6bd1ea624b4a781c88441ffef34d2fd3b2338bc2",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/restivus.js": "d605ed418299b5b361cccff66c656716bc8fa37e",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/route.js": "81e15440d9f34d2f71b2f5c6627afefe7e1b3b56"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/auth.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/iron-router-error-to-response.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/json-routes.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/restivus.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib/route.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": [
+            "lib/"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "auth.js",
+            "iron-router-error-to-response.js",
+            "json-routes.js",
+            "restivus.js",
+            "route.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/lib",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    }
+  },
+  "pluginDependencies": {
+    "files": {
+      "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus/package.js": "3bdfbe5309f0dd3095dc0c902e51cc50046005d3"
+    },
+    "potentiallyUnusedFiles": [],
+    "directories": []
+  },
+  "pluginProviderPackageMap": {
+    "rocketchat:restivus": {
+      "kind": "local",
+      "sourceRoot": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/meteor-restivus"
+    },
+    "meteor": {
+      "kind": "versioned",
+      "version": "2.0.1"
+    },
+    "check": {
+      "kind": "versioned",
+      "version": "1.4.4"
+    },
+    "webapp": {
+      "kind": "versioned",
+      "version": "2.0.3"
+    },
+    "ecmascript": {
+      "kind": "versioned",
+      "version": "0.16.9"
+    },
+    "accounts-password": {
+      "kind": "versioned",
+      "version": "3.0.2"
+    },
+    "modules": {
+      "kind": "versioned",
+      "version": "0.20.2"
+    },
+    "ecmascript-runtime": {
+      "kind": "versioned",
+      "version": "0.8.3"
+    },
+    "babel-runtime": {
+      "kind": "versioned",
+      "version": "1.5.2"
+    },
+    "promise": {
+      "kind": "versioned",
+      "version": "1.0.0"
+    },
+    "dynamic-import": {
+      "kind": "versioned",
+      "version": "0.7.4"
+    },
+    "accounts-base": {
+      "kind": "versioned",
+      "version": "3.0.3"
+    },
+    "ecmascript-runtime-client": {
+      "kind": "versioned",
+      "version": "0.12.2"
+    },
+    "ecmascript-runtime-server": {
+      "kind": "versioned",
+      "version": "0.11.1"
+    }
+  },
+  "includeCordovaUnibuild": false
+}

@@ -1,0 +1,224 @@
+{
+  "builtBy": "meteor/34",
+  "unibuildDependencies": {
+    "os.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/package.js": "9949d7b36ab8874d1a2bc69142dd5f7551b8910d",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/autoupdate_server.js": "8d57875f9578a5b474f44056f6c783334c314c41",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/autoupdate_client.js": "f5c958efbaf92a89c44ea654e740ee7916ead489",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/client_versions.js": "4b7884f8a59b7b6ecfe90128061037a77daad803"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/autoupdate_server.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/autoupdate_client.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/client_versions.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate",
+          "include": [
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "autoupdate_client.js",
+            "autoupdate_server.js",
+            "client_versions.js",
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/package.js": "9949d7b36ab8874d1a2bc69142dd5f7551b8910d",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/autoupdate_client.js": "f5c958efbaf92a89c44ea654e740ee7916ead489",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/autoupdate_server.js": "8d57875f9578a5b474f44056f6c783334c314c41",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/client_versions.js": "4b7884f8a59b7b6ecfe90128061037a77daad803"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/autoupdate_client.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/autoupdate_server.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/client_versions.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "autoupdate_client.js",
+            "autoupdate_server.js",
+            "client_versions.js",
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    },
+    "web.browser.legacy.json": {
+      "files": {
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/package.js": "9949d7b36ab8874d1a2bc69142dd5f7551b8910d",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/autoupdate_client.js": "f5c958efbaf92a89c44ea654e740ee7916ead489",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/autoupdate_server.js": "8d57875f9578a5b474f44056f6c783334c314c41",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/client_versions.js": "4b7884f8a59b7b6ecfe90128061037a77daad803"
+      },
+      "potentiallyUnusedFiles": [
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/autoupdate_client.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/autoupdate_server.js",
+        "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/client_versions.js"
+      ],
+      "directories": [
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate",
+          "include": [
+            "\\.css$",
+            "\\.js$",
+            "\\.jsx$",
+            "\\.mjs$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "names": [
+            ".meteorignore"
+          ],
+          "contents": [
+            "autoupdate_client.js",
+            "autoupdate_server.js",
+            "client_versions.js",
+            "package.js"
+          ]
+        },
+        {
+          "absPath": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate",
+          "include": [
+            "\\/$"
+          ],
+          "exclude": [
+            "^\\."
+          ],
+          "contents": []
+        }
+      ]
+    }
+  },
+  "pluginDependencies": {
+    "files": {
+      "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate/package.js": "9949d7b36ab8874d1a2bc69142dd5f7551b8910d"
+    },
+    "potentiallyUnusedFiles": [],
+    "directories": []
+  },
+  "pluginProviderPackageMap": {
+    "autoupdate": {
+      "kind": "local",
+      "sourceRoot": "/Users/guilhermegazzo/dev/Rocket.Chat/apps/meteor/packages/autoupdate"
+    },
+    "meteor": {
+      "kind": "versioned",
+      "version": "2.0.1"
+    },
+    "webapp": {
+      "kind": "versioned",
+      "version": "2.0.3"
+    },
+    "check": {
+      "kind": "versioned",
+      "version": "1.4.4"
+    },
+    "inter-process-messaging": {
+      "kind": "versioned",
+      "version": "0.1.2"
+    },
+    "ecmascript": {
+      "kind": "versioned",
+      "version": "0.16.9"
+    },
+    "ddp": {
+      "kind": "versioned",
+      "version": "1.4.2"
+    },
+    "modules": {
+      "kind": "versioned",
+      "version": "0.20.2"
+    },
+    "ecmascript-runtime": {
+      "kind": "versioned",
+      "version": "0.8.3"
+    },
+    "babel-runtime": {
+      "kind": "versioned",
+      "version": "1.5.2"
+    },
+    "promise": {
+      "kind": "versioned",
+      "version": "1.0.0"
+    },
+    "dynamic-import": {
+      "kind": "versioned",
+      "version": "0.7.4"
+    },
+    "ddp-client": {
+      "kind": "versioned",
+      "version": "3.0.2"
+    },
+    "ddp-server": {
+      "kind": "versioned",
+      "version": "3.0.2"
+    },
+    "ecmascript-runtime-client": {
+      "kind": "versioned",
+      "version": "0.12.2"
+    },
+    "ecmascript-runtime-server": {
+      "kind": "versioned",
+      "version": "0.11.1"
+    },
+    "tracker": {
+      "kind": "versioned",
+      "version": "1.3.4"
+    },
+    "retry": {
+      "kind": "versioned",
+      "version": "1.1.1"
+    }
+  },
+  "includeCordovaUnibuild": false
+}

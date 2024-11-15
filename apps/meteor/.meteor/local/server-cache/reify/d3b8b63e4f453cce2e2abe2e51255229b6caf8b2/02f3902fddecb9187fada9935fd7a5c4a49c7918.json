@@ -1,0 +1,24 @@
+"use strict";module.export({isChannelsConvertToTeamProps:()=>isChannelsConvertToTeamProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const channelsConvertToTeamPropsSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                channelId: { type: 'string' },
+            },
+            required: ['channelId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                channelName: { type: 'string' },
+            },
+            required: ['channelName'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isChannelsConvertToTeamProps = ajv.compile(channelsConvertToTeamPropsSchema);
+//# sourceMappingURL=ChannelsConvertToTeamProps.js.map

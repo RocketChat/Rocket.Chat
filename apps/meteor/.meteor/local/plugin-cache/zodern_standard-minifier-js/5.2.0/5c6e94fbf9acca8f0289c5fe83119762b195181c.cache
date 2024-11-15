@@ -1,0 +1,1 @@
+{"code":"function module(l,o,t){t.link(\"./RoomList\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/sidebarv2/RoomList/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './RoomList';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,aAAe,CAAA,QAAA,SAAa,EAAA\"}"}

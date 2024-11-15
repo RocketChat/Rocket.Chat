@@ -1,0 +1,1 @@
+{"code":"function module(e,i){\"use strict\";i.version=e(\"../package.json\").version,i.utils=e(\"./elliptic/utils\"),i.rand=e(\"brorand\"),i.curve=e(\"./elliptic/curve\"),i.curves=e(\"./elliptic/curves\"),i.ec=e(\"./elliptic/ec\"),i.eddsa=e(\"./elliptic/eddsa\")}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

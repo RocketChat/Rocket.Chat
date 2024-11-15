@@ -1,0 +1,1 @@
+{"code":"function module(e,n,t){let o,l;t.link(\"./selection/index\",{Selection(e){o=e},root(e){l=e}},0),t.exportDefault(function(e){return\"string\"==typeof e?new o([document.querySelectorAll(e)],[document.documentElement]):new o([null==e?[]:e],l)})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

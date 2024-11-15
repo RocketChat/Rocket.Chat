@@ -1,0 +1,1 @@
+{"code":"function module(s,n,g){g.exports={name:\"@bugsnag/browser\",version:\"7.20.2\",browser:{\"types/bugsnag\":\"./dist/bugsnag.js\"},main:\"dist/bugsnag.js\"}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

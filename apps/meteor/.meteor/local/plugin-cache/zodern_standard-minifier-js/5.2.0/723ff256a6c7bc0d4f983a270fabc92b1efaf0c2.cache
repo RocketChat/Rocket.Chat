@@ -1,0 +1,1 @@
+{"code":"function module(t,e,i){\"use strict\";var r=t(\"get-intrinsic\")(\"%Object.defineProperty%\",!0)||!1;if(r)try{r({},\"a\",{value:1})}catch(t){r=!1}i.exports=r}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(e,l,n){let r=e(\"../classes/semver\"),t=e(\"../classes/range\");n.exports=(e,l,n)=>{let s=null,u=null,c=null;try{c=new t(l,n)}catch(e){return null}return e.forEach(e=>{c.test(e)&&(!s||1===u.compare(e))&&(u=new r(s=e,n))}),s}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(t,n,o){o.export({tpmt:()=>e});function e(t){return(Math.pow(2,-10*t)-9765625e-10)*1.0009775171065494}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(e,t,i){\"use strict\";var r=e(\"util-ex/lib/defineProperty\"),o=e(\"mime-db\"),l=e(\"./lib/mime-type\");i.exports=l(o),r(i.exports,\"default\",i.exports)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

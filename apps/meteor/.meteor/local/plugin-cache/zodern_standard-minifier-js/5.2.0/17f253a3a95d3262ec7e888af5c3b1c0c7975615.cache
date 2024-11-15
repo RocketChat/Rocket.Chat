@@ -1,0 +1,1 @@
+{"code":"function module(i,n,e){e.exports={name:\"miller-rabin\",version:\"4.0.1\",main:\"lib/mr.js\"}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(n,t,i){var o,e;i.export({useLoginSendEmailConfirmation:function(){return u}},!0),i.link(\"@rocket.chat/ui-contexts\",{useMethod:function(n){o=n}},0),i.link(\"@tanstack/react-query\",{useMutation:function(n){e=n}},1);let u=()=>e({mutationFn:o(\"sendConfirmationEmail\")})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

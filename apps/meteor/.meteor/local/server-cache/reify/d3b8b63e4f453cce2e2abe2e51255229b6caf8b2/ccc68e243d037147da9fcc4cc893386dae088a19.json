@@ -1,0 +1,41 @@
+"use strict";module.export({isGroupsHistoryProps:()=>isGroupsHistoryProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);var withGroupBaseProperties;module.link('./BaseProps',{withGroupBaseProperties(v){withGroupBaseProperties=v}},1);
+
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const groupsHistoryPropsSchema = withGroupBaseProperties({
+    latest: {
+        type: 'string',
+        nullable: true,
+    },
+    oldest: {
+        type: 'string',
+        nullable: true,
+    },
+    inclusive: {
+        type: 'string',
+        nullable: true,
+    },
+    unreads: {
+        type: 'string',
+        nullable: true,
+    },
+    showThreadMessages: {
+        type: 'string',
+        nullable: true,
+    },
+    count: {
+        type: 'number',
+        nullable: true,
+    },
+    offset: {
+        type: 'number',
+        nullable: true,
+    },
+    sort: {
+        type: 'string',
+        nullable: true,
+    },
+});
+const isGroupsHistoryProps = ajv.compile(groupsHistoryPropsSchema);
+//# sourceMappingURL=GroupsHistoryProps.js.map

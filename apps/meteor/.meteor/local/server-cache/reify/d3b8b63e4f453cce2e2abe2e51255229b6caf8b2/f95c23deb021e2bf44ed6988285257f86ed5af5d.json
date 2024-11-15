@@ -1,0 +1,6 @@
+"use strict";module.link('./VideoConfInfoProps',{"*":"*"},0);module.link('./VideoConfListProps',{"*":"*"},1);module.link('./VideoConfStartProps',{"*":"*"},2);module.link('./VideoConfJoinProps',{"*":"*"},3);module.link('./VideoConfCancelProps',{"*":"*"},4);
+
+
+
+
+//# sourceMappingURL=index.js.map

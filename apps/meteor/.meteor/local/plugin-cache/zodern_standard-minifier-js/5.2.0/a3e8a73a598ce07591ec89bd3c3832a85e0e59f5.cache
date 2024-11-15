@@ -1,0 +1,1 @@
+{"code":"function module(o,t,e){e.export({UiKitComponent:()=>n},!0);let n=({render:o,blocks:t})=>o(t)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

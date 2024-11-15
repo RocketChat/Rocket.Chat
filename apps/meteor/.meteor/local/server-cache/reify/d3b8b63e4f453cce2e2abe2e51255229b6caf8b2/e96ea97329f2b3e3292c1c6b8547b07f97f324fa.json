@@ -1,0 +1,19 @@
+"use strict";module.export({isUserDeactivateIdleParamsPOST:()=>isUserDeactivateIdleParamsPOST},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const userDeactivateIdleSchema = {
+    type: 'object',
+    properties: {
+        daysIdle: {
+            type: 'number',
+        },
+        role: {
+            type: 'string',
+        },
+    },
+    required: ['daysIdle'],
+    additionalProperties: false,
+};
+const isUserDeactivateIdleParamsPOST = ajv.compile(userDeactivateIdleSchema);
+//# sourceMappingURL=UserDeactivateIdleParamsPOST.js.map

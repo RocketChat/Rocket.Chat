@@ -1,0 +1,46 @@
+"use strict";module.export({isTeamsDeleteProps:()=>isTeamsDeleteProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const teamsDeletePropsSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                teamId: {
+                    type: 'string',
+                },
+                roomsToRemove: {
+                    type: 'array',
+                    items: {
+                        type: 'string',
+                    },
+                    minItems: 1,
+                    uniqueItems: true,
+                    nullable: true,
+                },
+            },
+            required: ['teamId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                teamName: {
+                    type: 'string',
+                },
+                roomsToRemove: {
+                    type: 'array',
+                    items: {
+                        type: 'string',
+                    },
+                    minItems: 1,
+                    uniqueItems: true,
+                    nullable: true,
+                },
+            },
+            required: ['teamName'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isTeamsDeleteProps = ajv.compile(teamsDeletePropsSchema);
+//# sourceMappingURL=TeamsDeleteProps.js.map

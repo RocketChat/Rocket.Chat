@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[537],{"./src/i18n/de-IN.json":function(module){module.exports=JSON.parse('{"translation":{}}')}}]);

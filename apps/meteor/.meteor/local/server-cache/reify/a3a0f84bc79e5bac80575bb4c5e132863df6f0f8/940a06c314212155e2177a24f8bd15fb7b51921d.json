@@ -1,0 +1,20 @@
+"use strict";module.export({isAutotranslateTranslateMessageParamsPOST:()=>isAutotranslateTranslateMessageParamsPOST},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const AutotranslateTranslateMessageParamsPostSchema = {
+    type: 'object',
+    properties: {
+        messageId: {
+            type: 'string',
+        },
+        targetLanguage: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: ['messageId'],
+    additionalProperties: false,
+};
+const isAutotranslateTranslateMessageParamsPOST = ajv.compile(AutotranslateTranslateMessageParamsPostSchema);
+//# sourceMappingURL=AutotranslateTranslateMessageParamsPOST.js.map

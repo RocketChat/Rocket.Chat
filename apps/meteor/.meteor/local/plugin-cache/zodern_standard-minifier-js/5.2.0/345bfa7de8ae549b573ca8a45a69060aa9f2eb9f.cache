@@ -1,0 +1,1 @@
+{"code":"function module(e,t,s){s.export({Bye:()=>r});class r{constructor(e){this.incomingByeRequest=e}get request(){return this.incomingByeRequest.message}accept(e){return this.incomingByeRequest.accept(e),Promise.resolve()}reject(e){return this.incomingByeRequest.reject(e),Promise.resolve()}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

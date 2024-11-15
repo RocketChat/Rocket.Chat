@@ -1,0 +1,1 @@
+{"code":"function module(o,f,l){l.link(\"./RoomInfo\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/room/contextualBar/Info/RoomInfo/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './RoomInfo';\\n\",null],\"names\":[\"module\",\"link\",\"default\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,aAAe,CAAAC,QAAA,SAAa,EAAA\"}"}

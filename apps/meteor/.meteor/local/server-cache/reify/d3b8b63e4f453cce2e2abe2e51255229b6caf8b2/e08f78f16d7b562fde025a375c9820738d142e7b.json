@@ -1,0 +1,17 @@
+"use strict";module.export({isVideoConfListProps:()=>isVideoConfListProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const videoConfListPropsSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            type: 'string',
+            nullable: false,
+        },
+        offset: { type: 'number', nullable: true },
+        count: { type: 'number', nullable: true },
+    },
+    required: ['roomId'],
+    additionalProperties: false,
+};
+const isVideoConfListProps = ajv.compile(videoConfListPropsSchema);
+//# sourceMappingURL=VideoConfListProps.js.map

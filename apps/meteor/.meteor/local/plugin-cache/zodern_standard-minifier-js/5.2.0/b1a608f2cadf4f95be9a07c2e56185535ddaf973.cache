@@ -1,0 +1,1 @@
+{"code":"function module(e,t,n){let r,c;n.export({Surface:()=>l},!0),n.link(\"react/jsx-runtime\",{jsx(e){r=e}},0),n.link(\"../contexts/SurfaceContext\",{SurfaceContext(e){c=e}},1);let l=({children:e,type:t})=>r(c.Provider,{value:t,children:e})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

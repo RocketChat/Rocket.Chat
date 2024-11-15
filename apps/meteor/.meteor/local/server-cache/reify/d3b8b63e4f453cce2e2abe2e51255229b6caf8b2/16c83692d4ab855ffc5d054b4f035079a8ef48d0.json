@@ -1,0 +1,31 @@
+"use strict";module.export({isGetUserReportsParams:()=>isGetUserReportsParams},true);var ajv;module.link('../Ajv',{ajv(v){ajv=v}},0);
+const ajvParams = {
+    type: 'object',
+    properties: {
+        userId: {
+            type: 'string',
+            nullable: false,
+            minLength: 1,
+        },
+        selector: {
+            type: 'string',
+            nullable: true,
+        },
+        count: {
+            type: 'integer',
+            nullable: true,
+        },
+        offset: {
+            type: 'integer',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: ['userId'],
+    additionalProperties: false,
+};
+const isGetUserReportsParams = ajv.compile(ajvParams);
+//# sourceMappingURL=GetUserReportsParams.js.map

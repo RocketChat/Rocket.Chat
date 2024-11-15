@@ -1,0 +1,1 @@
+{"code":"function module(n,t,e){var i;e.export({isVoipContextReady:function(){return o},VoipContext:function(){return l}},!0),e.link(\"react\",{createContext:function(n){i=n}},0);let o=n=>n.isEnabled&&null!==n.voipClient,l=i({isEnabled:!1,voipClient:null})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

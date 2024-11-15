@@ -1,0 +1,1 @@
+{"code":"function module(e,n,t){t.export({hasElements:()=>l},!0);let l=e=>\"elements\"in e&&Array.isArray(e.elements)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

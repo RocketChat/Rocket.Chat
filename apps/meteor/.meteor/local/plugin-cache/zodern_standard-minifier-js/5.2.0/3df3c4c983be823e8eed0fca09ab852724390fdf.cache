@@ -1,0 +1,1 @@
+{"code":"function module(e,d,i){i.link(\"./SidebarRegion\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/sidebar/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './SidebarRegion';\\n\",null],\"names\":[\"module\",\"link\",\"default\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,kBAAe,CAAAC,QAAA,SAAkB,EAAA\"}"}

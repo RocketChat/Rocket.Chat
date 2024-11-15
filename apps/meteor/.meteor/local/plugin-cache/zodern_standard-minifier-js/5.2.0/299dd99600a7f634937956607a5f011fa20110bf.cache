@@ -1,0 +1,1 @@
+{"code":"function module(O,e){\"use strict\";var C,N;Object.defineProperty(e,\"__esModule\",{value:!0}),e.BlockContext=void 0,(N=C||(e.BlockContext=C={}))[N.NONE=-1]=\"NONE\",N[N.BLOCK=0]=\"BLOCK\",N[N.SECTION=1]=\"SECTION\",N[N.ACTION=2]=\"ACTION\",N[N.FORM=3]=\"FORM\",N[N.CONTEXT=4]=\"CONTEXT\"}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

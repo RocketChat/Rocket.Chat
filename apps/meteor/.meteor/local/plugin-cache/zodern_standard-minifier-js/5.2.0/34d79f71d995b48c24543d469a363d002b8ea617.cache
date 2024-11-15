@@ -1,0 +1,1 @@
+{"code":"function module(r,e){var n=r(\"safe-buffer\").Buffer;e.encrypt=function(r,e,c){for(var f=e.length,o=n.allocUnsafe(f),t=-1;++t<f;)o[t]=function(r,e,c){var f=r._cipher.encryptBlock(r._prev)[0]^e;return r._prev=n.concat([r._prev.slice(1),n.from([c?e:f])]),f}(r,e[t],c);return o}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

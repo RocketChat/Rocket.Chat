@@ -1,0 +1,1 @@
+{"code":"function module(t,n,r){var u=t(\"./createFunction\");r.exports=function(t,n,r){return\"string\"==typeof n&&(r=n,n=[]),null==r&&(r=\"return \"+t+\".__super__.constructor.apply(this, arguments);\"),u(t,n,r)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

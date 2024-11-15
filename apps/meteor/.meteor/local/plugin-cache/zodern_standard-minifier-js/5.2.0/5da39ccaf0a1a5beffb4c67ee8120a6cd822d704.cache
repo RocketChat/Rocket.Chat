@@ -1,0 +1,1 @@
+{"code":"function module(e,r,n){let t;n.export({uiKitContextualBar:()=>a}),n.link(\"../../rendering/createSurfaceRenderer\",{createSurfaceRenderer(e){t=e}},0);var a=t()}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

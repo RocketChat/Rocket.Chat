@@ -1,0 +1,1 @@
+{"code":"function module(l,i,o){o.exports={name:\"clipboard-polyfill\",version:\"3.0.3\",module:\"dist/main/clipboard-polyfill.esm.js\",main:\"dist/main/clipboard-polyfill.js\"}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

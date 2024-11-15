@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunk_rocket_chat_livechat=self.webpackChunk_rocket_chat_livechat||[]).push([[6303],{6303:function(e,t){Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e,t,a,l){return r[e]};var r={lastWeek:"'førre' eeee 'kl.' p",yesterday:"'i går kl.' p",today:"'i dag kl.' p",tomorrow:"'i morgon kl.' p",nextWeek:"EEEE 'kl.' p",other:"P"};e.exports=t.default}}]);
+//# sourceMappingURL=6303.chunk.c5cb2.js.map

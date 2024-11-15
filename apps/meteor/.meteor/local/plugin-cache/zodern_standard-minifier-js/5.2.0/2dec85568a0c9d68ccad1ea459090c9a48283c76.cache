@@ -1,0 +1,1 @@
+{"code":"function module(t,n,i){function e(){this.nextSibling&&this.parentNode.appendChild(this)}i.exportDefault(function(){return this.each(e)})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

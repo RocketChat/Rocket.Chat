@@ -1,0 +1,1 @@
+{"code":"function module(n,s){s.bignum=n(\"bn.js\"),s.define=n(\"./asn1/api\").define,s.base=n(\"./asn1/base\"),s.constants=n(\"./asn1/constants\"),s.decoders=n(\"./asn1/decoders\"),s.encoders=n(\"./asn1/encoders\")}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

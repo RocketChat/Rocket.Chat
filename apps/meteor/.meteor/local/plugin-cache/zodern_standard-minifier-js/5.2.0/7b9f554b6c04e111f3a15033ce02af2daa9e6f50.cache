@@ -1,0 +1,1 @@
+{"code":"function module(i,o,s){(function(){var o,n,t;t=i(\"./win\"),n=i(\"./posix\"),o=t.isWindows,s.exports=o?t:n,s.exports.posix=n,s.exports.win32=t}).call(this)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

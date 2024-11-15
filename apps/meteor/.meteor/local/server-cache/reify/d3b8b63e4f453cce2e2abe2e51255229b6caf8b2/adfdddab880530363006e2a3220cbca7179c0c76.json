@@ -1,0 +1,28 @@
+"use strict";module.export({isChannelsLeaveProps:()=>isChannelsLeaveProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const channelsLeavePropsSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                roomId: {
+                    type: 'string',
+                },
+            },
+            required: ['roomId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                roomName: {
+                    type: 'string',
+                },
+            },
+            required: ['roomName'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isChannelsLeaveProps = ajv.compile(channelsLeavePropsSchema);
+//# sourceMappingURL=ChannelsLeaveProps.js.map

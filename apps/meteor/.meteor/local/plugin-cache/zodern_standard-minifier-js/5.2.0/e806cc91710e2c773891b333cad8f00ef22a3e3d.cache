@@ -1,0 +1,1 @@
+{"code":"function module(l,t,a){a.link(\"./RoomFilesWithData\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/room/contextualBar/RoomFiles/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './RoomFilesWithData';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,sBAAe,CAAA,QAAA,SAAsB,EAAA\"}"}

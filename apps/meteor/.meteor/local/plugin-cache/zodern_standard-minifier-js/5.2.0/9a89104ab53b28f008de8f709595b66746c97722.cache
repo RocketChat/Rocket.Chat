@@ -1,0 +1,1 @@
+{"code":"function module(t,r,e){var o=t(\"./isEmptyFunction\"),n=t(\"./getPrototypeOf\"),u=n(Object);e.exports=function(t){for(var r=t,e=o(r),p=r.super_||n(r);e&&p&&p!==u;)p=(r=p).super_||n(r),e=o(r);return r}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

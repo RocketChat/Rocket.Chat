@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunk_rocket_chat_livechat=self.webpackChunk_rocket_chat_livechat||[]).push([[34785],{34785:function(e,t){Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e,t,a,r){return o[e]};var o={lastWeek:"'afgelopen' eeee 'om' p",yesterday:"'gisteren om' p",today:"'vandaag om' p",tomorrow:"'morgen om' p",nextWeek:"eeee 'om' p",other:"P"};e.exports=t.default}}]);
+//# sourceMappingURL=34785.chunk.6e0af.js.map

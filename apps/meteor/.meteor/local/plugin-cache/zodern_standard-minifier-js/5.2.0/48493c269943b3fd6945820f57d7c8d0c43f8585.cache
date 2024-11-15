@@ -1,0 +1,1 @@
+{"code":"function module(o,n,d){/*!\n * mime-db\n * Copyright(c) 2014 Jonathan Ong\n * Copyright(c) 2015-2022 Douglas Christopher Wilson\n * MIT Licensed\n */d.exports=o(\"./db.json\")}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

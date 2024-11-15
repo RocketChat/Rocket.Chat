@@ -1,0 +1,24 @@
+"use strict";module.export({isAssetsUnsetAssetProps:()=>isAssetsUnsetAssetProps,isAssetsSetAssetProps:()=>isAssetsSetAssetProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const assetsUnsetAssetPropsSchema = {
+    type: 'object',
+    properties: {
+        assetName: { type: 'string' },
+        refreshAllClients: { type: 'boolean', nullable: true },
+    },
+    required: ['assetName'],
+    additionalProperties: false,
+};
+const assetsSetAssetPropsSchema = {
+    type: 'object',
+    properties: {
+        assetName: { type: 'string' },
+        asset: { type: 'string' },
+        refreshAllClients: { type: 'boolean', nullable: true },
+    },
+    required: ['assetName'],
+    additionalProperties: false,
+};
+const isAssetsUnsetAssetProps = ajv.compile(assetsUnsetAssetPropsSchema);
+const isAssetsSetAssetProps = ajv.compile(assetsSetAssetPropsSchema);
+//# sourceMappingURL=assets.js.map

@@ -1,0 +1,1 @@
+{"code":"function module(t,e,o){o.export({getDefaultExportFromCjs:()=>r});function r(t){return t&&t.__esModule&&Object.prototype.hasOwnProperty.call(t,\"default\")?t.default:t}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,33 @@
+import type { ICloudWorkspaceRead, IEnvironmentRead, ILivechatRead, IMessageRead, INotifier, IPersistenceRead, IRead, IRoomRead, IUploadRead, IUserRead, IVideoConferenceRead } from '../../definition/accessors';
+import type { IOAuthAppsReader } from '../../definition/accessors/IOAuthAppsReader';
+import type { IRoleRead } from '../../definition/accessors/IRoleRead';
+import type { IThreadRead } from '../../definition/accessors/IThreadRead';
+export declare class Reader implements IRead {
+    private env;
+    private message;
+    private persist;
+    private room;
+    private user;
+    private noti;
+    private livechat;
+    private upload;
+    private cloud;
+    private videoConf;
+    private oauthApps;
+    private thread;
+    private role;
+    constructor(env: IEnvironmentRead, message: IMessageRead, persist: IPersistenceRead, room: IRoomRead, user: IUserRead, noti: INotifier, livechat: ILivechatRead, upload: IUploadRead, cloud: ICloudWorkspaceRead, videoConf: IVideoConferenceRead, oauthApps: IOAuthAppsReader, thread: IThreadRead, role: IRoleRead);
+    getEnvironmentReader(): IEnvironmentRead;
+    getThreadReader(): IThreadRead;
+    getMessageReader(): IMessageRead;
+    getPersistenceReader(): IPersistenceRead;
+    getRoomReader(): IRoomRead;
+    getUserReader(): IUserRead;
+    getNotifier(): INotifier;
+    getLivechatReader(): ILivechatRead;
+    getUploadReader(): IUploadRead;
+    getCloudWorkspaceReader(): ICloudWorkspaceRead;
+    getVideoConferenceReader(): IVideoConferenceRead;
+    getOAuthAppsReader(): IOAuthAppsReader;
+    getRoleReader(): IRoleRead;
+}

@@ -1,0 +1,1 @@
+{"code":"function module(a,t,e){e.exports=function(a){return{name:\"LDIF\",contains:[{className:\"attribute\",match:\"^dn(?=:)\",relevance:10},{className:\"attribute\",match:\"^\\\\w+(?=:)\"},{className:\"literal\",match:\"^-\"},a.HASH_COMMENT_MODE]}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

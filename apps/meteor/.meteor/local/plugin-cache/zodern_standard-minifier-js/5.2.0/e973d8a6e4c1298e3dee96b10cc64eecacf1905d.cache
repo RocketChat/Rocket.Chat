@@ -1,0 +1,1 @@
+{"code":"function module(n,u,e){e.exports=function(n){return{subLanguage:\"xml\",contains:[{begin:\"<%\",end:\"%>\",subLanguage:\"vbscript\"}]}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

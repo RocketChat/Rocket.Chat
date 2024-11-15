@@ -1,0 +1,1 @@
+{"code":"function module(s,r,e){e.exports={name:\"util\",version:\"0.12.5\",browser:{\"./support/isBuffer.js\":\"./support/isBufferBrowser.js\"},main:\"./util.js\"}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

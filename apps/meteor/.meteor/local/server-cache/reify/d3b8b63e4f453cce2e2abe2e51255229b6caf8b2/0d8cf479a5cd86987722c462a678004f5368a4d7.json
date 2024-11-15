@@ -1,0 +1,22 @@
+"use strict";module.export({ise2eUpdateGroupKeyParamsPOST:()=>ise2eUpdateGroupKeyParamsPOST},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const e2eUpdateGroupKeyParamsPOSTSchema = {
+    type: 'object',
+    properties: {
+        uid: {
+            type: 'string',
+        },
+        rid: {
+            type: 'string',
+        },
+        key: {
+            type: 'string',
+        },
+    },
+    additionalProperties: false,
+    required: ['uid', 'rid', 'key'],
+};
+const ise2eUpdateGroupKeyParamsPOST = ajv.compile(e2eUpdateGroupKeyParamsPOSTSchema);
+//# sourceMappingURL=e2eUpdateGroupKeyParamsPOST.js.map

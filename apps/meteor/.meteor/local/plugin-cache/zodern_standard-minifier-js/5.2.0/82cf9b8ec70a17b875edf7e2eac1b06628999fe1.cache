@@ -1,0 +1,1 @@
+{"code":"function module(r,n,e){var t=r(\"./eq\");e.exports=function(r,n){for(var e=r.length;e--;)if(t(r[e][0],n))return e;return -1}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

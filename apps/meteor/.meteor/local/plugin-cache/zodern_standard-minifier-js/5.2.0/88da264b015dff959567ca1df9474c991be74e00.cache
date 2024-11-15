@@ -1,0 +1,1 @@
+{"code":"function module(t,a,n){let e;n.link(\"./exponent.js\",{default(t){e=t}},0),n.exportDefault(function(t,a){return Math.max(0,3*Math.max(-8,Math.min(8,Math.floor(e(a)/3)))-e(Math.abs(t)))})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

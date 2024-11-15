@@ -1,0 +1,644 @@
+"use strict";module.export({isChatSendMessageProps:()=>isChatSendMessageProps,isChatFollowMessageProps:()=>isChatFollowMessageProps,isChatUnfollowMessageProps:()=>isChatUnfollowMessageProps,isChatGetMessageProps:()=>isChatGetMessageProps,isChatStarMessageProps:()=>isChatStarMessageProps,isChatUnstarMessageProps:()=>isChatUnstarMessageProps,isChatPinMessageProps:()=>isChatPinMessageProps,isChatUnpinMessageProps:()=>isChatUnpinMessageProps,isChatGetDiscussionsProps:()=>isChatGetDiscussionsProps,isChatReportMessageProps:()=>isChatReportMessageProps,isChatGetThreadsListProps:()=>isChatGetThreadsListProps,isChatSyncThreadsListProps:()=>isChatSyncThreadsListProps,isChatDeleteProps:()=>isChatDeleteProps,isChatReactProps:()=>isChatReactProps,isChatIgnoreUserProps:()=>isChatIgnoreUserProps,isChatSearchProps:()=>isChatSearchProps,isChatUpdateProps:()=>isChatUpdateProps,isChatGetMessageReadReceiptsProps:()=>isChatGetMessageReadReceiptsProps,isChatGetStarredMessagesProps:()=>isChatGetStarredMessagesProps,isChatGetPinnedMessagesProps:()=>isChatGetPinnedMessagesProps,isChatGetMentionedMessagesProps:()=>isChatGetMentionedMessagesProps,isChatSyncMessagesProps:()=>isChatSyncMessagesProps,isChatSyncThreadMessagesProps:()=>isChatSyncThreadMessagesProps,isChatGetThreadMessagesProps:()=>isChatGetThreadMessagesProps,isChatGetDeletedMessagesProps:()=>isChatGetDeletedMessagesProps,isChatPostMessageProps:()=>isChatPostMessageProps,isChatGetURLPreviewProps:()=>isChatGetURLPreviewProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const chatSendMessageSchema = {
+    type: 'object',
+    properties: {
+        message: {
+            type: 'object',
+            properties: {
+                _id: {
+                    type: 'string',
+                    nullable: true,
+                },
+                rid: {
+                    type: 'string',
+                },
+                tmid: {
+                    type: 'string',
+                    nullable: true,
+                },
+                msg: {
+                    type: 'string',
+                    nullable: true,
+                },
+                alias: {
+                    type: 'string',
+                    nullable: true,
+                },
+                emoji: {
+                    type: 'string',
+                    nullable: true,
+                },
+                tshow: {
+                    type: 'boolean',
+                    nullable: true,
+                },
+                avatar: {
+                    type: 'string',
+                    nullable: true,
+                },
+                attachments: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                    },
+                    nullable: true,
+                },
+                blocks: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                    },
+                    nullable: true,
+                },
+                customFields: {
+                    type: 'object',
+                    nullable: true,
+                },
+            },
+        },
+        previewUrls: {
+            type: 'array',
+            items: {
+                type: 'string',
+            },
+            nullable: true,
+        },
+    },
+    required: ['message'],
+    additionalProperties: false,
+};
+const isChatSendMessageProps = ajv.compile(chatSendMessageSchema);
+const chatFollowMessageSchema = {
+    type: 'object',
+    properties: {
+        mid: {
+            type: 'string',
+        },
+    },
+    required: ['mid'],
+    additionalProperties: false,
+};
+const isChatFollowMessageProps = ajv.compile(chatFollowMessageSchema);
+const chatUnfollowMessageSchema = {
+    type: 'object',
+    properties: {
+        mid: {
+            type: 'string',
+        },
+    },
+    required: ['mid'],
+    additionalProperties: false,
+};
+const isChatUnfollowMessageProps = ajv.compile(chatUnfollowMessageSchema);
+const ChatGetMessageSchema = {
+    type: 'object',
+    properties: {
+        msgId: {
+            type: 'string',
+        },
+    },
+    required: ['msgId'],
+    additionalProperties: false,
+};
+const isChatGetMessageProps = ajv.compile(ChatGetMessageSchema);
+const ChatStarMessageSchema = {
+    type: 'object',
+    properties: {
+        messageId: {
+            type: 'string',
+        },
+    },
+    required: ['messageId'],
+    additionalProperties: false,
+};
+const isChatStarMessageProps = ajv.compile(ChatStarMessageSchema);
+const ChatUnstarMessageSchema = {
+    type: 'object',
+    properties: {
+        messageId: {
+            type: 'string',
+        },
+    },
+    required: ['messageId'],
+    additionalProperties: false,
+};
+const isChatUnstarMessageProps = ajv.compile(ChatUnstarMessageSchema);
+const ChatPinMessageSchema = {
+    type: 'object',
+    properties: {
+        messageId: {
+            type: 'string',
+        },
+    },
+    required: ['messageId'],
+    additionalProperties: false,
+};
+const isChatPinMessageProps = ajv.compile(ChatPinMessageSchema);
+const ChatUnpinMessageSchema = {
+    type: 'object',
+    properties: {
+        messageId: {
+            type: 'string',
+        },
+    },
+    required: ['messageId'],
+    additionalProperties: false,
+};
+const isChatUnpinMessageProps = ajv.compile(ChatUnpinMessageSchema);
+const ChatGetDiscussionsSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            type: 'string',
+        },
+        text: {
+            type: 'string',
+            nullable: true,
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+    },
+    required: ['roomId'],
+    additionalProperties: false,
+};
+const isChatGetDiscussionsProps = ajv.compile(ChatGetDiscussionsSchema);
+const ChatReportMessageSchema = {
+    type: 'object',
+    properties: {
+        messageId: {
+            type: 'string',
+        },
+        description: {
+            type: 'string',
+        },
+    },
+    required: ['messageId', 'description'],
+    additionalProperties: false,
+};
+const isChatReportMessageProps = ajv.compile(ChatReportMessageSchema);
+const ChatGetThreadsListSchema = {
+    type: 'object',
+    properties: {
+        rid: {
+            type: 'string',
+        },
+        type: {
+            type: 'string',
+            enum: ['following', 'unread'],
+            nullable: true,
+        },
+        text: {
+            type: 'string',
+            nullable: true,
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+        query: {
+            type: 'string',
+            nullable: true,
+        },
+        fields: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: ['rid'],
+    additionalProperties: false,
+};
+const isChatGetThreadsListProps = ajv.compile(ChatGetThreadsListSchema);
+const ChatSyncThreadsListSchema = {
+    type: 'object',
+    properties: {
+        rid: {
+            type: 'string',
+        },
+        updatedSince: {
+            type: 'string',
+        },
+    },
+    required: ['rid', 'updatedSince'],
+    additionalProperties: false,
+};
+const isChatSyncThreadsListProps = ajv.compile(ChatSyncThreadsListSchema);
+const ChatDeleteSchema = {
+    type: 'object',
+    properties: {
+        msgId: {
+            type: 'string',
+        },
+        roomId: {
+            type: 'string',
+        },
+        asUser: {
+            type: 'boolean',
+            nullable: true,
+        },
+    },
+    required: ['msgId', 'roomId'],
+    additionalProperties: false,
+};
+const isChatDeleteProps = ajv.compile(ChatDeleteSchema);
+const ChatReactSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                emoji: {
+                    type: 'string',
+                },
+                messageId: {
+                    type: 'string',
+                },
+                shouldReact: {
+                    type: 'boolean',
+                    nullable: true,
+                },
+            },
+            required: ['emoji', 'messageId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                reaction: {
+                    type: 'string',
+                },
+                messageId: {
+                    type: 'string',
+                },
+                shouldReact: {
+                    type: 'boolean',
+                    nullable: true,
+                },
+            },
+            required: ['reaction', 'messageId'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isChatReactProps = ajv.compile(ChatReactSchema);
+const ChatIgnoreUserSchema = {
+    type: 'object',
+    properties: {
+        rid: {
+            type: 'string',
+        },
+        userId: {
+            type: 'string',
+        },
+        ignore: {
+            type: 'string',
+        },
+    },
+    required: ['rid', 'userId', 'ignore'],
+    additionalProperties: false,
+};
+const isChatIgnoreUserProps = ajv.compile(ChatIgnoreUserSchema);
+const ChatSearchSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            type: 'string',
+        },
+        searchText: {
+            type: 'string',
+        },
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+    },
+    required: ['roomId', 'searchText'],
+    additionalProperties: false,
+};
+const isChatSearchProps = ajv.compile(ChatSearchSchema);
+const ChatUpdateSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            type: 'string',
+        },
+        msgId: {
+            type: 'string',
+        },
+        text: {
+            type: 'string',
+        },
+        previewUrls: {
+            type: 'array',
+            items: {
+                type: 'string',
+            },
+            nullable: true,
+        },
+        customFields: {
+            type: 'object',
+            nullable: true,
+        },
+    },
+    required: ['roomId', 'msgId', 'text'],
+    additionalProperties: false,
+};
+const isChatUpdateProps = ajv.compile(ChatUpdateSchema);
+const ChatGetMessageReadReceiptsSchema = {
+    type: 'object',
+    properties: {
+        messageId: {
+            type: 'string',
+        },
+    },
+    required: ['messageId'],
+    additionalProperties: false,
+};
+const isChatGetMessageReadReceiptsProps = ajv.compile(ChatGetMessageReadReceiptsSchema);
+const GetStarredMessagesSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            type: 'string',
+        },
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: ['roomId'],
+    additionalProperties: false,
+};
+const isChatGetStarredMessagesProps = ajv.compile(GetStarredMessagesSchema);
+const GetPinnedMessagesSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            type: 'string',
+        },
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: ['roomId'],
+    additionalProperties: false,
+};
+const isChatGetPinnedMessagesProps = ajv.compile(GetPinnedMessagesSchema);
+const GetMentionedMessagesSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            type: 'string',
+        },
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: ['roomId'],
+    additionalProperties: false,
+};
+const isChatGetMentionedMessagesProps = ajv.compile(GetMentionedMessagesSchema);
+const ChatSyncMessagesSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            type: 'string',
+        },
+        lastUpdate: {
+            type: 'string',
+        },
+    },
+    required: ['roomId', 'lastUpdate'],
+    additionalProperties: false,
+};
+const isChatSyncMessagesProps = ajv.compile(ChatSyncMessagesSchema);
+const ChatSyncThreadMessagesSchema = {
+    type: 'object',
+    properties: {
+        tmid: {
+            type: 'string',
+        },
+        updatedSince: {
+            type: 'string',
+        },
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: ['tmid', 'updatedSince'],
+    additionalProperties: false,
+};
+const isChatSyncThreadMessagesProps = ajv.compile(ChatSyncThreadMessagesSchema);
+const ChatGetThreadMessagesSchema = {
+    type: 'object',
+    properties: {
+        tmid: {
+            type: 'string',
+        },
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: ['tmid'],
+    additionalProperties: false,
+};
+const isChatGetThreadMessagesProps = ajv.compile(ChatGetThreadMessagesSchema);
+const ChatGetDeletedMessagesSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            type: 'string',
+        },
+        since: {
+            type: 'string',
+        },
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: ['roomId', 'since'],
+    additionalProperties: false,
+};
+const isChatGetDeletedMessagesProps = ajv.compile(ChatGetDeletedMessagesSchema);
+const ChatPostMessageSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                roomId: {
+                    oneOf: [
+                        { type: 'string' },
+                        {
+                            type: 'array',
+                            items: {
+                                type: 'string',
+                            },
+                        },
+                    ],
+                },
+                text: {
+                    type: 'string',
+                    nullable: true,
+                },
+                alias: {
+                    type: 'string',
+                    nullable: true,
+                },
+                emoji: {
+                    type: 'string',
+                    nullable: true,
+                },
+                avatar: {
+                    type: 'string',
+                    nullable: true,
+                },
+                attachments: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                    },
+                    nullable: true,
+                },
+                customFields: {
+                    type: 'object',
+                    nullable: true,
+                },
+            },
+            required: ['roomId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                channel: {
+                    oneOf: [
+                        { type: 'string' },
+                        {
+                            type: 'array',
+                            items: {
+                                type: 'string',
+                            },
+                        },
+                    ],
+                },
+                text: {
+                    type: 'string',
+                    nullable: true,
+                },
+                alias: {
+                    type: 'string',
+                    nullable: true,
+                },
+                emoji: {
+                    type: 'string',
+                    nullable: true,
+                },
+                avatar: {
+                    type: 'string',
+                    nullable: true,
+                },
+                attachments: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                    },
+                    nullable: true,
+                },
+                customFields: {
+                    type: 'object',
+                    nullable: true,
+                },
+            },
+            required: ['channel'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isChatPostMessageProps = ajv.compile(ChatPostMessageSchema);
+const ChatGetURLPreviewSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            type: 'string',
+        },
+        url: {
+            type: 'string',
+        },
+    },
+    required: ['roomId', 'url'],
+    additionalProperties: false,
+};
+const isChatGetURLPreviewProps = ajv.compile(ChatGetURLPreviewSchema);
+//# sourceMappingURL=chat.js.map

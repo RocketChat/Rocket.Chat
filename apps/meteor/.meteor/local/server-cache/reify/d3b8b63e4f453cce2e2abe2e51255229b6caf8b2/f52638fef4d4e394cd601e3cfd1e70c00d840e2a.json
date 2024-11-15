@@ -1,0 +1,19 @@
+"use strict";module.export({ise2eSetRoomKeyIDParamsPOST:()=>ise2eSetRoomKeyIDParamsPOST},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const e2eSetRoomKeyIDParamsPOSTSchema = {
+    type: 'object',
+    properties: {
+        rid: {
+            type: 'string',
+        },
+        keyID: {
+            type: 'string',
+        },
+    },
+    additionalProperties: false,
+    required: ['rid', 'keyID'],
+};
+const ise2eSetRoomKeyIDParamsPOST = ajv.compile(e2eSetRoomKeyIDParamsPOSTSchema);
+//# sourceMappingURL=e2eSetRoomKeyIDParamsPOST.js.map

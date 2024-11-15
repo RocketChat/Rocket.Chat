@@ -1,0 +1,19 @@
+"use strict";module.export({isOauthAppsAddParams:()=>isOauthAppsAddParams},true);var ajv;module.link('../Ajv',{ajv(v){ajv=v}},0);
+const OauthAppsAddParamsSchema = {
+    type: 'object',
+    properties: {
+        name: {
+            type: 'string',
+        },
+        active: {
+            type: 'boolean',
+        },
+        redirectUri: {
+            type: 'string',
+        },
+    },
+    required: ['name', 'active', 'redirectUri'],
+    additionalProperties: false,
+};
+const isOauthAppsAddParams = ajv.compile(OauthAppsAddParamsSchema);
+//# sourceMappingURL=OAuthAppsAddParamsPOST.js.map

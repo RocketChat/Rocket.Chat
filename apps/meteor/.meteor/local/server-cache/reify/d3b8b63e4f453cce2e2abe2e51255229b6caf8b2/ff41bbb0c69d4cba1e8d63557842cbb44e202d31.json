@@ -1,0 +1,29 @@
+"use strict";module.export({isDmDeleteProps:()=>isDmDeleteProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const isDmDeleteProps = ajv.compile({
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                roomId: {
+                    type: 'string',
+                },
+            },
+            required: ['roomId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                username: {
+                    type: 'string',
+                },
+            },
+            required: ['username'],
+            additionalProperties: false,
+        },
+    ],
+});
+//# sourceMappingURL=DmDeleteProps.js.map

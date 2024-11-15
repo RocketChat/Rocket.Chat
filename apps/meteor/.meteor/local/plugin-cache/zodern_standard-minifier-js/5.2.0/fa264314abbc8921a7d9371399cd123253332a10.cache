@@ -1,0 +1,1 @@
+{"code":"function module(e,t,n){let l,f;function u(e,t=l){let n;if(1===t.length)return f(e,t);let u=-1,d=-1;for(let l of e)++d,(u<0?0===t(l,l):t(l,n)>0)&&(n=l,u=d);return u}n.export({default:()=>u}),n.link(\"./ascending.js\",{default(e){l=e}},0),n.link(\"./maxIndex.js\",{default(e){f=e}},1)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

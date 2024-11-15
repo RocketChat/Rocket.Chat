@@ -1,0 +1,1 @@
+{"code":"function module(t,n,e){let i,o,l;e.link(\"d3-selection\",{selection(t){i=t}},0),e.link(\"./interrupt\",{default(t){o=t}},1),e.link(\"./transition\",{default(t){l=t}},2),i.prototype.interrupt=o,i.prototype.transition=l}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

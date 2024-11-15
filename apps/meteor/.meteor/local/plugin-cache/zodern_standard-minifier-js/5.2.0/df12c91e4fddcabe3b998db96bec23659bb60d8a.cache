@@ -1,0 +1,1 @@
+{"code":"function module(e,i){\"use strict\";Object.defineProperty(i,\"__esModule\",{value:!0}),i.is=void 0;var t=e(\"./$is_between\"),n=e(\"./$stoll\");i.is=function(){return{is_between:t.$is_between,is_bigint_string:n.$is_bigint_string}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

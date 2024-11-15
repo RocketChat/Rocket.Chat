@@ -1,0 +1,1 @@
+{"code":"function module(n,i,l){l.link(\"./lib\"),l.link(\"./login-button.css\")}","map":"{\"version\":3,\"sources\":[\"app/dolphin/client/index.ts\",\"<anon>\"],\"sourcesContent\":[\"import './lib';\\nimport './login-button.css';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAA,CAAA,SAAQD,EAAAC,IAAA,CAAA\"}"}

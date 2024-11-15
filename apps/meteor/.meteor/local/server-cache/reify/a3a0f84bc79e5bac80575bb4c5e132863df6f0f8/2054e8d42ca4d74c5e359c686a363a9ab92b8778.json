@@ -1,0 +1,26 @@
+"use strict";module.export({isFederationJoinExternalPublicRoomProps:()=>isFederationJoinExternalPublicRoomProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+ajv.addFormat('matrix-room-id', (externalRoomId) => Boolean((externalRoomId === null || externalRoomId === void 0 ? void 0 : externalRoomId.charAt(0)) === '!' && (externalRoomId === null || externalRoomId === void 0 ? void 0 : externalRoomId.includes(':'))));
+const FederationJoinExternalPublicRoomPropsSchema = {
+    type: 'object',
+    properties: {
+        externalRoomId: {
+            type: 'string',
+            format: 'matrix-room-id',
+        },
+        roomName: {
+            type: 'string',
+            nullable: true,
+        },
+        pageToken: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    additionalProperties: false,
+    required: ['externalRoomId'],
+};
+const isFederationJoinExternalPublicRoomProps = ajv.compile(FederationJoinExternalPublicRoomPropsSchema);
+//# sourceMappingURL=FederationJoinExternalPublicRoomProps.js.map

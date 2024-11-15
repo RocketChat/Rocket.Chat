@@ -1,0 +1,1 @@
+{"code":"function module(t,e,n){let i,s;n.export({initReactI18next:()=>l},!0),n.link(\"./defaults.js\",{setDefaults(t){i=t}},0),n.link(\"./i18nInstance.js\",{setI18n(t){s=t}},1);let l={type:\"3rdParty\",init(t){i(t.options.react),s(t)}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

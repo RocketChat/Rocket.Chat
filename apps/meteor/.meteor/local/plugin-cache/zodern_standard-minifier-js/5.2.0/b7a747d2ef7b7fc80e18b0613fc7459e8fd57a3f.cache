@@ -1,0 +1,1 @@
+{"code":"function module(e,n,t){let u,o;t.link(\"./sourceEvent\",{default(e){u=e}},0),t.link(\"./point\",{default(e){o=e}},1),t.exportDefault(function(e){var n=u();return n.changedTouches&&(n=n.changedTouches[0]),o(e,n)})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

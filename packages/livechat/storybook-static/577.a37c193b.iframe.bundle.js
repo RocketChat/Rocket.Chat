@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[577],{"./src/i18n/ug.json":function(module){module.exports=JSON.parse('{"translation":{"conversation_finished":"سۆھبەتلىشىش ئاخىرلاشتى","send":"يوللاش","user_joined":"ئەزا ئاللىبۇرۇن قېتىلدى","user_left":"ئەزا ئاللىبۇرۇن ئايرىلدى"}}')}}]);

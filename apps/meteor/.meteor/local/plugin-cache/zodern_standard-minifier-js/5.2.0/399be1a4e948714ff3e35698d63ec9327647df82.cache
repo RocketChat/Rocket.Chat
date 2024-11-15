@@ -1,0 +1,1 @@
+{"code":"function module(n,o,i){i.exports={name:\"@nivo/annotations\",version:\"0.84.0\",main:\"./dist/nivo-annotations.cjs.js\",module:\"./dist/nivo-annotations.es.js\"}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

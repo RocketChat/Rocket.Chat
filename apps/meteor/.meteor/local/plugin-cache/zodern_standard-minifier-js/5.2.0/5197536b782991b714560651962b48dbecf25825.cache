@@ -1,0 +1,1 @@
+{"code":"function module(e,o,n){n.export({durationSecond:()=>u,durationMinute:()=>r,durationHour:()=>t,durationDay:()=>a,durationWeek:()=>d});var u=1e3,r=6e4,t=36e5,a=864e5,d=6048e5}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

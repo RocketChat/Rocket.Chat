@@ -1,0 +1,13 @@
+"use strict";module.export({isGroupsCountersProps:()=>isGroupsCountersProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);var withGroupBaseProperties;module.link('./BaseProps',{withGroupBaseProperties(v){withGroupBaseProperties=v}},1);
+
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const GroupsCountersPropsSchema = withGroupBaseProperties({
+    userId: {
+        type: 'string',
+        nullable: true,
+    },
+});
+const isGroupsCountersProps = ajv.compile(GroupsCountersPropsSchema);
+//# sourceMappingURL=GroupsCountersProps.js.map

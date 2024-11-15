@@ -1,0 +1,1 @@
+{"code":"function module(o,t,n){n.exports=function(o,t){if((\"constructor\"!==t||\"function\"!=typeof o[t])&&\"__proto__\"!=t)return o[t]}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

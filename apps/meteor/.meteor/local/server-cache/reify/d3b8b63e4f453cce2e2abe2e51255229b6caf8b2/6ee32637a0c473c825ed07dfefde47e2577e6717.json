@@ -1,0 +1,93 @@
+"use strict";module.export({isSubscriptionsGetProps:()=>isSubscriptionsGetProps,isSubscriptionsGetOneProps:()=>isSubscriptionsGetOneProps,isSubscriptionsReadProps:()=>isSubscriptionsReadProps,isSubscriptionsUnreadProps:()=>isSubscriptionsUnreadProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const SubscriptionsGetSchema = {
+    type: 'object',
+    properties: {
+        updatedSince: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isSubscriptionsGetProps = ajv.compile(SubscriptionsGetSchema);
+const SubscriptionsGetOneSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            type: 'string',
+        },
+    },
+    required: ['roomId'],
+    additionalProperties: false,
+};
+const isSubscriptionsGetOneProps = ajv.compile(SubscriptionsGetOneSchema);
+const SubscriptionsReadSchema = {
+    anyOf: [
+        {
+            type: 'object',
+            properties: {
+                rid: {
+                    type: 'string',
+                },
+                readThreads: {
+                    type: 'boolean',
+                    nullable: true,
+                },
+            },
+            required: ['rid'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                roomId: {
+                    type: 'string',
+                },
+                readThreads: {
+                    type: 'boolean',
+                    nullable: true,
+                },
+            },
+            required: ['roomId'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isSubscriptionsReadProps = ajv.compile(SubscriptionsReadSchema);
+const SubscriptionsUnreadSchema = {
+    anyOf: [
+        {
+            type: 'object',
+            properties: {
+                roomId: {
+                    type: 'string',
+                },
+            },
+            required: ['roomId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                firstUnreadMessage: {
+                    type: 'object',
+                    properties: {
+                        _id: {
+                            type: 'string',
+                        },
+                    },
+                    required: ['_id'],
+                    additionalProperties: false,
+                },
+            },
+            required: ['firstUnreadMessage'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isSubscriptionsUnreadProps = ajv.compile(SubscriptionsUnreadSchema);
+//# sourceMappingURL=subscriptionsEndpoints.js.map

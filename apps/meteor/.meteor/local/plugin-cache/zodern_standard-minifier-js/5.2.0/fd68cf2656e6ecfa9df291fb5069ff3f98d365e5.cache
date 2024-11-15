@@ -1,0 +1,1 @@
+{"code":"function module(t,i,e){e.link(\"./timer.js\",{now:\"now\",timer:\"timer\",timerFlush:\"timerFlush\"},0),e.link(\"./timeout.js\",{default:\"timeout\"},1),e.link(\"./interval.js\",{default:\"interval\"},2)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,26 @@
+"use strict";module.export({isGroupsMembersProps:()=>isGroupsMembersProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);var withGroupBaseProperties;module.link('./BaseProps',{withGroupBaseProperties(v){withGroupBaseProperties=v}},1);
+
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const GroupsMembersPropsSchema = withGroupBaseProperties({
+    offset: {
+        type: 'number',
+        nullable: true,
+    },
+    count: {
+        type: 'number',
+        nullable: true,
+    },
+    filter: {
+        type: 'string',
+        nullable: true,
+    },
+    status: {
+        type: 'array',
+        items: { type: 'string' },
+        nullable: true,
+    },
+});
+const isGroupsMembersProps = ajv.compile(GroupsMembersPropsSchema);
+//# sourceMappingURL=GroupsMembersProps.js.map

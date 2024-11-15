@@ -1,0 +1,1 @@
+{"code":"function module(t,e,o){let n,r;o.export({useSendForgotPassword:()=>s},!0),o.link(\"@rocket.chat/ui-contexts\",{useEndpoint(t){n=t}},0),o.link(\"@tanstack/react-query\",{useMutation(t){r=t}},1);let s=()=>{let t=n(\"POST\",\"/v1/users.forgotPassword\");return r({mutationFn:t})}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

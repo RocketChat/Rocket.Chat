@@ -1,0 +1,1 @@
+{"code":"function module(e,r,o){var l,n;o.export({Levels:()=>l}),(n=l||o.runSetters(l={},[\"Levels\"]))[n.error=0]=\"error\",n[n.warn=1]=\"warn\",n[n.log=2]=\"log\",n[n.debug=3]=\"debug\"}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

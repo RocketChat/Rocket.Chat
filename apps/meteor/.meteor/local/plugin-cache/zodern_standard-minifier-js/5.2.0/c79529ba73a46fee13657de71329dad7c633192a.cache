@@ -1,0 +1,1 @@
+{"code":"function module(e,i,t){let n;t.export({ResizeObserverSize:()=>l}),t.link(\"./utils/freeze\",{freeze(e){n=e}},0);var l=function(e,i){this.inlineSize=e,this.blockSize=i,n(this)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

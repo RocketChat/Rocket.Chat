@@ -1,0 +1,1 @@
+{"code":"function module(t,e,o){o.export({Exception:()=>r});class r extends Error{constructor(t){super(t),Object.setPrototypeOf(this,new.target.prototype)}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(n,t,u){u.exports=function(n){return/^function\\s*\\S*\\s*\\((.|[\\n\\r\\u2028\\u2029])*\\)\\s*{[\\s;]*}$/g.test(n.toString())}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(e,s,n){let o;n.export({SessionTerminatedError:()=>r}),n.link(\"../../core\",{Exception(e){o=e}},0);class r extends o{constructor(){super(\"The session has terminated.\")}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

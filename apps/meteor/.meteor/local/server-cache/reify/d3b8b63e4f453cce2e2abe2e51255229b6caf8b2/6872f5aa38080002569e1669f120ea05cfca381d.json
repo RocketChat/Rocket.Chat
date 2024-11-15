@@ -1,0 +1,34 @@
+"use strict";module.export({teamsRemoveRoomPropsSchema:()=>teamsRemoveRoomPropsSchema,isTeamsRemoveRoomProps:()=>isTeamsRemoveRoomProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const teamsRemoveRoomPropsSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                teamId: {
+                    type: 'string',
+                },
+                roomId: {
+                    type: 'string',
+                },
+            },
+            required: ['teamId', 'roomId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                teamName: {
+                    type: 'string',
+                },
+                roomId: {
+                    type: 'string',
+                },
+            },
+            required: ['teamName', 'roomId'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isTeamsRemoveRoomProps = ajv.compile(teamsRemoveRoomPropsSchema);
+//# sourceMappingURL=TeamsRemoveRoomProps.js.map

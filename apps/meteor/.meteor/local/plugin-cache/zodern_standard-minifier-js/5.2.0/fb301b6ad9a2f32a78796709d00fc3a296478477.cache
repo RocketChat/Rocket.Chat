@@ -1,0 +1,1 @@
+{"code":"function module(n,t,e){var i,s;e.export({MessageUserAgentClient:function(){return r}}),e.link(\"../transactions\",{NonInviteClientTransaction:function(n){i=n}},0),e.link(\"./user-agent-client\",{UserAgentClient:function(n){s=n}},1);class r extends s{constructor(n,t,e){super(i,n,t,e)}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

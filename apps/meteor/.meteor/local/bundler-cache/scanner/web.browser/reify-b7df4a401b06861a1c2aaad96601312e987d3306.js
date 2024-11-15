@@ -1,0 +1,1 @@
+module.exportDefault('ffffffff-ffff-ffff-ffff-ffffffffffff');

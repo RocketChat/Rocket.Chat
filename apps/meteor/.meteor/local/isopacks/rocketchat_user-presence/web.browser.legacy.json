@@ -1,0 +1,46 @@
+{
+  "format": "isopack-2-unibuild",
+  "declaredExports": [],
+  "uses": [
+    {
+      "package": "meteor"
+    },
+    {
+      "package": "tracker"
+    },
+    {
+      "package": "check"
+    },
+    {
+      "package": "ecmascript"
+    }
+  ],
+  "resources": [
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/client/client.js",
+      "length": 2889,
+      "offset": 0,
+      "path": "client/client.js",
+      "hash": "4f9a79a6938a2dab7d84848472059dc766e68d7f",
+      "fileOptions": {
+        "mainModule": true,
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/client/utils.js",
+      "length": 172,
+      "offset": 0,
+      "path": "client/utils.js",
+      "hash": "fdf0478d3b3390e52e98a9cc57322a2266913152",
+      "fileOptions": {
+        "lazy": true
+      }
+    }
+  ],
+  "node_modules": "npm/node_modules"
+}

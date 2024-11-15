@@ -1,0 +1,1 @@
+{"code":"function module(r,n,o){var t;o.export({TransportError:function(){return e}}),o.link(\"./exception\",{Exception:function(r){t=r}},0);class e extends t{constructor(r){super(r||\"Unspecified transport error.\")}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

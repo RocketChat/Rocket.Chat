@@ -1,0 +1,17 @@
+"use strict";module.export({isCalendarEventInfoProps:()=>isCalendarEventInfoProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const calendarEventInfoPropsSchema = {
+    type: 'object',
+    properties: {
+        id: {
+            type: 'string',
+            nullable: false,
+        },
+    },
+    required: ['id'],
+    additionalProperties: false,
+};
+const isCalendarEventInfoProps = ajv.compile(calendarEventInfoPropsSchema);
+//# sourceMappingURL=CalendarEventInfoProps.js.map

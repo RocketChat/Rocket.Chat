@@ -1,0 +1,35 @@
+"use strict";module.export({isDmCreateProps:()=>isDmCreateProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const isDmCreateProps = ajv.compile({
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                usernames: {
+                    type: 'string',
+                },
+                excludeSelf: {
+                    type: 'boolean',
+                },
+            },
+            required: ['usernames'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                username: {
+                    type: 'string',
+                },
+                excludeSelf: {
+                    type: 'boolean',
+                },
+            },
+            required: ['username'],
+            additionalProperties: false,
+        },
+    ],
+});
+//# sourceMappingURL=DmCreateProps.js.map

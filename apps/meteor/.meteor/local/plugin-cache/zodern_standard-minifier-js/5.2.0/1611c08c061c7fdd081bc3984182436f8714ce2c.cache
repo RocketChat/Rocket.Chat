@@ -1,0 +1,1 @@
+{"code":"function module(t,i,n){n.export({default:function(){return s}});function s(t,i){this.params.cssMode||(this.wrapperEl.style.transitionDuration=`${t}ms`),this.emit(\"setTransition\",t,i)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

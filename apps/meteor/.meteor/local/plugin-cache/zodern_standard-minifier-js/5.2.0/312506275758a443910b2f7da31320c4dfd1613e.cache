@@ -1,0 +1,1 @@
+{"code":"function module(r,n,t){var a=r(\"./_apply\"),o=Math.max;t.exports=function(r,n,t){return n=o(void 0===n?r.length-1:n,0),function(){for(var e=arguments,u=-1,f=o(e.length-n,0),i=Array(f);++u<f;)i[u]=e[n+u];u=-1;for(var h=Array(n+1);++u<n;)h[u]=e[u];return h[n]=t(i),a(r,this,h)}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

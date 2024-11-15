@@ -1,0 +1,1 @@
+{"code":"function module(n,e,o){var r=n(\"./_Set\"),t=n(\"./noop\"),u=n(\"./_setToArray\"),a=r&&1/u(new r([,-0]))[1]==1/0?function(n){return new r(n)}:t;o.exports=a}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

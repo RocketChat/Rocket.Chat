@@ -1,0 +1,69 @@
+"use strict";module.export({isDmMemberProps:()=>isDmMemberProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({ coerceTypes: true });
+const isDmMemberProps = ajv.compile({
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                roomId: {
+                    type: 'string',
+                },
+                status: {
+                    type: 'array',
+                    items: {
+                        type: 'string',
+                    },
+                },
+                filter: {
+                    type: 'string',
+                },
+                query: {
+                    type: 'string',
+                },
+                sort: {
+                    type: 'string',
+                },
+                count: {
+                    type: 'number',
+                },
+                offset: {
+                    type: 'number',
+                },
+            },
+            required: ['roomId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                username: {
+                    type: 'string',
+                },
+                status: {
+                    type: 'array',
+                    items: {
+                        type: 'string',
+                    },
+                },
+                filter: {
+                    type: 'string',
+                },
+                query: {
+                    type: 'string',
+                },
+                sort: {
+                    type: 'string',
+                },
+                count: {
+                    type: 'number',
+                },
+                offset: {
+                    type: 'number',
+                },
+            },
+            required: ['username'],
+            additionalProperties: false,
+        },
+    ],
+});
+//# sourceMappingURL=DmMembersProps.js.map

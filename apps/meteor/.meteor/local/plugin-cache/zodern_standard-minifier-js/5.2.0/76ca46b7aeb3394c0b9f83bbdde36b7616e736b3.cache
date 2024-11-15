@@ -1,0 +1,1 @@
+{"code":"function module(t,o,n){n.export({default:()=>e});function e(t,o){if(\"function\"!=typeof o)throw TypeError(\"test is not a function\");let n=-1;for(let e of t)if(!o(e,++n,t))return!1;return!0}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

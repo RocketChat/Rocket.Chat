@@ -1,0 +1,1 @@
+{"code":"function module(o,e,r){var n=o(\"bn.js\"),f=o(\"safe-buffer\").Buffer;r.exports=function(o,e){return f.from(o.toRed(n.mont(e.modulus)).redPow(new n(e.publicExponent)).fromRed().toArray())}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

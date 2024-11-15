@@ -1,0 +1,61 @@
+"use strict";module.export({isUsersInfoParamsGetProps:()=>isUsersInfoParamsGetProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const UsersInfoParamsGetSchema = {
+    anyOf: [
+        {
+            type: 'object',
+            properties: {
+                userId: {
+                    type: 'string',
+                },
+                includeUserRooms: {
+                    type: 'string',
+                },
+                fields: {
+                    type: 'string',
+                    nullable: true,
+                },
+            },
+            required: ['userId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                username: {
+                    type: 'string',
+                },
+                includeUserRooms: {
+                    type: 'string',
+                },
+                fields: {
+                    type: 'string',
+                    nullable: true,
+                },
+            },
+            required: ['username'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                importId: {
+                    type: 'string',
+                },
+                includeUserRooms: {
+                    type: 'string',
+                },
+                fields: {
+                    type: 'string',
+                    nullable: true,
+                },
+            },
+            required: ['importId'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isUsersInfoParamsGetProps = ajv.compile(UsersInfoParamsGetSchema);
+//# sourceMappingURL=UsersInfoParamsGet.js.map

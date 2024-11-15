@@ -1,0 +1,1 @@
+{"code":"function module(t,a,e){let l;e.link(\"./formatDecimal.js\",{formatDecimalParts(t){l=t}},0),e.exportDefault(function(t){return(t=l(Math.abs(t)))?t[1]:NaN})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

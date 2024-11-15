@@ -1,0 +1,1 @@
+{"code":"function module(f,n,e){let o;e.link(\"./none.js\",{default(f){o=f}},0),e.exportDefault(function(f,n){if((t=f.length)>0){for(var e,t,l,i=0,r=f[0].length;i<r;++i){for(l=e=0;e<t;++e)l+=f[e][i][1]||0;if(l)for(e=0;e<t;++e)f[e][i][1]/=l}o(f,n)}})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

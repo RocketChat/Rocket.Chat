@@ -1,0 +1,38 @@
+"use strict";module.export({isUserRegisterParamsPOST:()=>isUserRegisterParamsPOST},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const UserRegisterParamsPostSchema = {
+    type: 'object',
+    properties: {
+        username: {
+            type: 'string',
+        },
+        name: {
+            type: 'string',
+            nullable: true,
+        },
+        email: {
+            type: 'string',
+        },
+        pass: {
+            type: 'string',
+        },
+        secret: {
+            type: 'string',
+            nullable: true,
+        },
+        reason: {
+            type: 'string',
+            nullable: true,
+        },
+        customFields: {
+            type: 'object',
+            nullable: true,
+        },
+    },
+    required: ['username', 'email', 'pass'],
+    additionalProperties: false,
+};
+const isUserRegisterParamsPOST = ajv.compile(UserRegisterParamsPostSchema);
+//# sourceMappingURL=UserRegisterParamsPOST.js.map

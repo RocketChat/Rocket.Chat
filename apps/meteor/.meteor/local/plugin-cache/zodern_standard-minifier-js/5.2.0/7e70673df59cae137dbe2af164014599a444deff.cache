@@ -1,0 +1,1 @@
+{"code":"function module(n,t,e){var r=Object.prototype.hasOwnProperty;e.exports=function(n){var t=n.length,e=new n.constructor(t);return t&&\"string\"==typeof n[0]&&r.call(n,\"index\")&&(e.index=n.index,e.input=n.input),e}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

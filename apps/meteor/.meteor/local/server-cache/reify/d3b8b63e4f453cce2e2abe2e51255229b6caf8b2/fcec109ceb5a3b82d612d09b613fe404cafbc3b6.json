@@ -1,0 +1,26 @@
+"use strict";module.export({isChannelsSetReadOnlyProps:()=>isChannelsSetReadOnlyProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const channelsSetReadOnlyPropsSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                roomId: { type: 'string' },
+                readOnly: { type: 'boolean' },
+            },
+            required: ['roomId', 'readOnly'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                roomName: { type: 'string' },
+                readOnly: { type: 'boolean' },
+            },
+            required: ['roomName', 'readOnly'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isChannelsSetReadOnlyProps = ajv.compile(channelsSetReadOnlyPropsSchema);
+//# sourceMappingURL=ChannelsSetReadOnlyProps.js.map

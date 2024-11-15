@@ -1,0 +1,1 @@
+{"code":"function module(t,e,n){let l,u;n.link(\"../count.js\",{default(t){l=t}},0),n.link(\"../deviation.js\",{default(t){u=t}},1),n.exportDefault(function(t,e,n){return Math.ceil((n-e)/(3.5*u(t)*Math.pow(l(t),-1/3)))})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

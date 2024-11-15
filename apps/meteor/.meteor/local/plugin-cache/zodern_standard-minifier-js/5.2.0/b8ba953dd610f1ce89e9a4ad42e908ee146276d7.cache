@@ -1,0 +1,1 @@
+{"code":"function module(e,t,n){var o=e(\"./_baseGetTag\"),r=e(\"./isObjectLike\");n.exports=function(e){return\"number\"==typeof e||r(e)&&\"[object Number]\"==o(e)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

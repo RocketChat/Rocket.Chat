@@ -1,0 +1,1 @@
+{"code":"function module(e,t,n){let o,r,l,i;n.link(\"d3-color\",{color(e){o=e}},0),n.link(\"d3-interpolate\",{interpolateNumber(e){r=e},interpolateRgb(e){l=e},interpolateString(e){i=e}},1),n.exportDefault(function(e,t){var n;return(\"number\"==typeof t?r:t instanceof o?l:(n=o(t))?(t=n,l):i)(e,t)})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

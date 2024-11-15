@@ -1,0 +1,35 @@
+{
+  "format": "isopack-2-unibuild",
+  "declaredExports": [],
+  "uses": [
+    {
+      "package": "meteor"
+    },
+    {
+      "package": "ecmascript"
+    },
+    {
+      "package": "mongo"
+    },
+    {
+      "package": "email"
+    },
+    {
+      "package": "http"
+    }
+  ],
+  "resources": [
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser.legacy/server/index.js",
+      "length": 2123,
+      "offset": 0,
+      "path": "server/index.js",
+      "hash": "aef7a28ceaa3c3e41655c59ff9cc1bb99097de41",
+      "fileOptions": {
+        "lazy": true
+      }
+    }
+  ]
+}

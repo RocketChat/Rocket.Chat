@@ -1,0 +1,1 @@
+{"code":"function module(e,r,l){let t=e(\"./parse\");l.exports=(e,r)=>{let l=t(e.trim().replace(/^[=v]+/,\"\"),r);return l?l.version:null}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

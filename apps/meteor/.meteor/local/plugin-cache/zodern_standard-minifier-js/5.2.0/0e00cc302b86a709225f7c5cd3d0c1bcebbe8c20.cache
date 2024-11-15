@@ -1,0 +1,1 @@
+{"code":"function module(s,t,o){\"use strict\";var n=s(\"has-symbols/shams\");o.exports=function s(){return n()&&!!Symbol.toStringTag}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

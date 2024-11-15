@@ -1,0 +1,1 @@
+{"code":"function module(e,n){\"use strict\";Object.defineProperty(n,\"__esModule\",{value:!0}),n.$any=void 0;var o=e(\"./$clone\");n.$any=function(e){return(0,o.$clone)(e)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

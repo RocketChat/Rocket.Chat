@@ -1,0 +1,1 @@
+{"code":"function module(e,o,s){let r=\"object\"==typeof process&&process.env&&process.env.NODE_DEBUG&&/\\bsemver\\b/i.test(process.env.NODE_DEBUG)?(...e)=>console.error(\"SEMVER\",...e):()=>{};s.exports=r}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

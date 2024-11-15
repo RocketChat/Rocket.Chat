@@ -1,0 +1,34 @@
+"use strict";module.export({isChannelsSetAnnouncementProps:()=>isChannelsSetAnnouncementProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const channelsSetAnnouncementPropsSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                roomId: {
+                    type: 'string',
+                },
+                announcement: {
+                    type: 'string',
+                },
+            },
+            required: ['roomId', 'announcement'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                roomName: {
+                    type: 'string',
+                },
+                announcement: {
+                    type: 'string',
+                },
+            },
+            required: ['roomName', 'announcement'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isChannelsSetAnnouncementProps = ajv.compile(channelsSetAnnouncementPropsSchema);
+//# sourceMappingURL=ChannelsSetAnnouncementProps.js.map

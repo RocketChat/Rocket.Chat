@@ -1,0 +1,1 @@
+{"code":"function module(e,r){\"use strict\";Object.defineProperty(r,\"__esModule\",{value:!0}),r.createSurfaceRenderer=void 0;let t=e(\"react/jsx-runtime\");r.createSurfaceRenderer=(e,r)=>function n(n,c={}){return(0,t.jsx)(e,{children:r.render(n,Object.assign({engine:\"rocket.chat\"},c))})}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

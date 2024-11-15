@@ -1,0 +1,1 @@
+{"code":"function module(e,t,f){var l=e(\"./_freeGlobal\"),o=\"object\"==typeof self&&self&&self.Object===Object&&self,s=l||o||Function(\"return this\")();f.exports=s}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(e,r,n){let o;n.export({SessionDescriptionHandlerError:()=>s}),n.link(\"../../core\",{Exception(e){o=e}},0);class s extends o{constructor(e){super(e||\"Unspecified session description handler error.\")}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

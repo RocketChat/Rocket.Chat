@@ -1,0 +1,1 @@
+{"code":"function module(e,t){\"use strict\";Object.defineProperty(t,\"__esModule\",{value:!0});let a=e(\"react/jsx-runtime\"),c=e(\"@rocket.chat/fuselage\"),r=e(\"react\");t.default=(0,r.memo)(({className:e})=>(0,a.jsx)(c.Divider,{className:e,marginBlock:24}))}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

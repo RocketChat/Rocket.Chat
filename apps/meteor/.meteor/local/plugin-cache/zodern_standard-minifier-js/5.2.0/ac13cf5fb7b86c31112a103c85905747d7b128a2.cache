@@ -1,0 +1,1 @@
+{"code":"function module(n,e,u){u.link(\"./Announcement\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/room/Announcement/index.tsx\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './Announcement';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,iBAAe,CAAA,QAAA,SAAiB,EAAA\"}"}

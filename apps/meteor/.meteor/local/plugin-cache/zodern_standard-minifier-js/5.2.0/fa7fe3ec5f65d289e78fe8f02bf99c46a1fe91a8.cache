@@ -1,0 +1,1 @@
+{"code":"function module(a,t,d){d.link(\"./UserCardWithData\",{default:\"default\"},0)}","map":"{\"version\":3,\"sources\":[\"client/views/room/UserCard/index.ts\",\"<anon>\"],\"sourcesContent\":[\"export { default } from './UserCardWithData';\\n\",null],\"names\":[\"module\",\"link\",\"default\"],\"mappings\":\"uBAAAA,EAAOC,IAAE,CAAA,qBAAe,CAAAC,QAAA,SAAqB,EAAA\"}"}

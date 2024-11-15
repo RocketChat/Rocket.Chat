@@ -1,0 +1,1 @@
+{"code":"function module(i,n,t){t.link(\"./init\"),t.link(\"./methods/setReaction\")}","map":"{\"version\":3,\"sources\":[\"app/reactions/client/index.ts\",\"<anon>\"],\"sourcesContent\":[\"import './init';\\nimport './methods/setReaction';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAA,CAAA,UAASD,EAAAC,IAAA,CAAA\"}"}

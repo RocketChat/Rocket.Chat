@@ -1,0 +1,37 @@
+"use strict";module.export({isOauthAppsGetParams:()=>isOauthAppsGetParams},true);var ajv;module.link('../Ajv',{ajv(v){ajv=v}},0);
+const oauthAppsGetParamsSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                _id: {
+                    type: 'string',
+                },
+            },
+            required: ['_id'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                clientId: {
+                    type: 'string',
+                },
+            },
+            required: ['clientId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                appId: {
+                    type: 'string',
+                },
+            },
+            required: ['appId'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isOauthAppsGetParams = ajv.compile(oauthAppsGetParamsSchema);
+//# sourceMappingURL=OAuthAppsGetParamsGET.js.map

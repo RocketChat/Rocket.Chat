@@ -1,0 +1,1 @@
+{"code":"function module(e,l,t){let i,n;t.link(\"./dice\",{default(e){i=e}},0),t.link(\"./slice\",{default(e){n=e}},1),t.exportDefault(function(e,l,t,u,d){(1&e.depth?n:i)(e,l,t,u,d)})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

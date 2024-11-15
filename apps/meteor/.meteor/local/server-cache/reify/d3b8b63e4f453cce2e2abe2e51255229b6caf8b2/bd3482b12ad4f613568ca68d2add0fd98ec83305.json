@@ -1,0 +1,3 @@
+"use strict";module.export({isGroupsAddOwnerProps:()=>isGroupsAddOwnerProps},true);var withUserIdProps;module.link('./BaseProps',{withUserIdProps(v){withUserIdProps=v}},0);
+const isGroupsAddOwnerProps = withUserIdProps;
+//# sourceMappingURL=GroupsAddOwnerProps.js.map

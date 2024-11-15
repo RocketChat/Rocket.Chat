@@ -1,0 +1,1 @@
+{"code":"function module(N,e,i){\"use strict\";var r=N(\"./implementation\");i.exports=function N(){return Number.isNaN&&Number.isNaN(NaN)&&!Number.isNaN(\"a\")?Number.isNaN:r}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

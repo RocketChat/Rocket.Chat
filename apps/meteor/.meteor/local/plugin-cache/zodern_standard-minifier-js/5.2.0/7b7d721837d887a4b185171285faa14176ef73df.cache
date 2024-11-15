@@ -1,0 +1,1 @@
+{"code":"function module(t,e,n){var a=t(\"./_getMapData\");n.exports=function(t){return a(this,t).get(t)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

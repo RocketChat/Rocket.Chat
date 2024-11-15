@@ -1,0 +1,1 @@
+{"code":"function module(i,l,n){n.link(\"./lib\"),n.link(\"./gitlab-login-button.css\")}","map":"{\"version\":3,\"sources\":[\"app/gitlab/client/index.ts\",\"<anon>\"],\"sourcesContent\":[\"import './lib';\\nimport './gitlab-login-button.css';\\n\",null],\"names\":[\"module\",\"link\"],\"mappings\":\"uBAAAA,EAAOC,IAAA,CAAA,SAAQD,EAAAC,IAAA,CAAA\"}"}

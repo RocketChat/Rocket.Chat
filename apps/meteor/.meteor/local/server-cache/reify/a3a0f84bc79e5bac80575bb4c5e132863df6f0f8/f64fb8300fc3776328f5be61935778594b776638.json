@@ -1,0 +1,139 @@
+"use strict";module.export({isShieldSvgProps:()=>isShieldSvgProps,isSpotlightProps:()=>isSpotlightProps,isDirectoryProps:()=>isDirectoryProps,isMethodCallProps:()=>isMethodCallProps,isMeteorCall:()=>isMeteorCall,isMethodCallAnonProps:()=>isMethodCallAnonProps,isFingerprintProps:()=>isFingerprintProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const ShieldSvgSchema = {
+    type: 'object',
+    properties: {
+        type: {
+            type: 'string',
+            nullable: true,
+        },
+        icon: {
+            type: 'string',
+            enum: ['true', 'false'],
+            nullable: true,
+        },
+        channel: {
+            type: 'string',
+        },
+        name: {
+            type: 'string',
+        },
+    },
+    required: ['name', 'channel'],
+    additionalProperties: false,
+};
+const isShieldSvgProps = ajv.compile(ShieldSvgSchema);
+const SpotlightSchema = {
+    type: 'object',
+    properties: {
+        query: {
+            type: 'string',
+        },
+    },
+    required: ['query'],
+    additionalProperties: false,
+};
+const isSpotlightProps = ajv.compile(SpotlightSchema);
+const DirectorySchema = {
+    type: 'object',
+    properties: {
+        text: {
+            type: 'string',
+            nullable: true,
+        },
+        type: {
+            type: 'string',
+            nullable: true,
+        },
+        workspace: {
+            type: 'string',
+            nullable: true,
+        },
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+        query: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isDirectoryProps = ajv.compile(DirectorySchema);
+const MethodCallSchema = {
+    type: 'object',
+    properties: {
+        method: {
+            type: 'string',
+        },
+        params: {
+            type: 'array',
+        },
+        id: {
+            type: 'string',
+        },
+        msg: {
+            type: 'string',
+            enum: ['method'],
+        },
+    },
+    required: ['method', 'params', 'id', 'msg'],
+    additionalProperties: false,
+};
+const isMethodCallProps = ajv.compile(MethodCallSchema);
+const isMeteorCall = ajv.compile({
+    type: 'object',
+    properties: {
+        message: {
+            type: 'string',
+        },
+    },
+    required: ['message'],
+    additionalProperties: false,
+});
+const MethodCallAnonSchema = {
+    type: 'object',
+    properties: {
+        method: {
+            type: 'string',
+        },
+        params: {
+            type: 'array',
+        },
+        id: {
+            type: 'string',
+        },
+        msg: {
+            type: 'string',
+            enum: ['method'],
+        },
+    },
+    required: ['method', 'params', 'id', 'msg'],
+    additionalProperties: false,
+};
+const isMethodCallAnonProps = ajv.compile(MethodCallAnonSchema);
+const FingerprintSchema = {
+    type: 'object',
+    properties: {
+        setDeploymentAs: {
+            type: 'string',
+            enum: ['new-workspace', 'updated-configuration'],
+        },
+    },
+    required: ['setDeploymentAs'],
+    additionalProperties: false,
+};
+const isFingerprintProps = ajv.compile(FingerprintSchema);
+//# sourceMappingURL=misc.js.map

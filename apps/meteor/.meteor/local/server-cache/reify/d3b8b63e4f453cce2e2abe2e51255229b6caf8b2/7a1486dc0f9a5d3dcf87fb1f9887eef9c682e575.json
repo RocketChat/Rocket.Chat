@@ -1,0 +1,48 @@
+"use strict";module.export({isChannelsModeratorsProps:()=>isChannelsModeratorsProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const channelsModeratorsPropsSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                roomId: { type: 'string' },
+                userId: {
+                    type: 'string',
+                    nullable: true,
+                },
+                username: {
+                    type: 'string',
+                    nullable: true,
+                },
+                user: {
+                    type: 'string',
+                    nullable: true,
+                },
+            },
+            required: ['roomId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                roomName: { type: 'string' },
+                userId: {
+                    type: 'string',
+                    nullable: true,
+                },
+                username: {
+                    type: 'string',
+                    nullable: true,
+                },
+                user: {
+                    type: 'string',
+                    nullable: true,
+                },
+            },
+            required: ['roomName'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isChannelsModeratorsProps = ajv.compile(channelsModeratorsPropsSchema);
+//# sourceMappingURL=ChannelsModeratorsProps.js.map

@@ -1,0 +1,25 @@
+"use strict";module.export({isUploadImportFileParamsPOST:()=>isUploadImportFileParamsPOST},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const UploadImportFileParamsPostSchema = {
+    type: 'object',
+    properties: {
+        binaryContent: {
+            type: 'string',
+        },
+        contentType: {
+            type: 'string',
+        },
+        fileName: {
+            type: 'string',
+        },
+        importerKey: {
+            type: 'string',
+        },
+    },
+    additionalProperties: false,
+    required: ['binaryContent', 'contentType', 'fileName', 'importerKey'],
+};
+const isUploadImportFileParamsPOST = ajv.compile(UploadImportFileParamsPostSchema);
+//# sourceMappingURL=UploadImportFileParamsPOST.js.map

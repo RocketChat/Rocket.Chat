@@ -1,0 +1,1 @@
+{"code":"function module(t,e,n){let o,u;n.export({LayoutContext:()=>r,useLayoutContext:()=>a}),n.link(\"react\",{createContext(t){o=t},useContext(t){u=t}},0);var r=o({}),a=function(){return u(r)}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

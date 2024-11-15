@@ -1,0 +1,35 @@
+"use strict";module.export({isCalendarEventCreateProps:()=>isCalendarEventCreateProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const calendarEventCreatePropsSchema = {
+    type: 'object',
+    properties: {
+        startTime: {
+            type: 'string',
+            nullable: false,
+        },
+        externalId: {
+            type: 'string',
+            nullable: true,
+        },
+        subject: {
+            type: 'string',
+            nullable: false,
+        },
+        description: {
+            type: 'string',
+            nullable: false,
+        },
+        meetingUrl: {
+            type: 'string',
+            nullable: true,
+        },
+        reminderMinutesBeforeStart: {
+            type: 'number',
+            nullable: true,
+        },
+    },
+    required: ['startTime', 'subject', 'description'],
+    additionalProperties: false,
+};
+const isCalendarEventCreateProps = ajv.compile(calendarEventCreatePropsSchema);
+//# sourceMappingURL=CalendarEventCreateProps.js.map

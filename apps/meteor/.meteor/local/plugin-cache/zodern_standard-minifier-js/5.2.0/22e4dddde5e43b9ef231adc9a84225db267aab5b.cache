@@ -1,0 +1,1 @@
+{"code":"function module(n,o,r){var t;r.link(\"./color.js\",{hue:function(n){t=n}},0),r.exportDefault(function(n,o){var r=t(+n,+o);return function(n){var o=r(n);return o-360*Math.floor(o/360)}})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

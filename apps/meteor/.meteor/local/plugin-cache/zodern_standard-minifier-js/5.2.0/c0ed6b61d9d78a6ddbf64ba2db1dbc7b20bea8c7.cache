@@ -1,0 +1,1 @@
+{"code":"function module(n,t,e){var r=n(\"./_Uint8Array\");e.exports=function(n){var t=new n.constructor(n.byteLength);return new r(t).set(new r(n)),t}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

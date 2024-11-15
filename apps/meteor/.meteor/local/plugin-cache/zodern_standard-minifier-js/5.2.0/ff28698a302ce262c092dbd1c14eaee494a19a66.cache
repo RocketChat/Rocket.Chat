@@ -1,0 +1,1 @@
+{"code":"function module(e,i,S){let p,r;S.export({Swiper:()=>p,SwiperSlide:()=>r}),S.link(\"./swiper.js\",{Swiper(e){p=e}},0),S.link(\"./swiper-slide.js\",{SwiperSlide(e){r=e}},1),S.link(\"./context.js\",{useSwiperSlide:\"useSwiperSlide\",useSwiper:\"useSwiper\"},2)}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

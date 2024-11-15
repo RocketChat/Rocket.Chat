@@ -1,0 +1,1 @@
+{"code":"function module(e,r,t){var n=e(\"./_baseIsArguments\"),l=e(\"./isObjectLike\"),c=Object.prototype,o=c.hasOwnProperty,a=c.propertyIsEnumerable,u=n(function(){return arguments}())?n:function(e){return l(e)&&o.call(e,\"callee\")&&!a.call(e,\"callee\")};t.exports=u}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

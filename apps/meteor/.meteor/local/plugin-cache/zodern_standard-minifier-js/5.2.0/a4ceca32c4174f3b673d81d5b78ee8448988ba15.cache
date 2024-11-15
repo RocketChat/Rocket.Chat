@@ -1,0 +1,1 @@
+{"code":"function module(e,t,l){l.export({setPreciseInterval:()=>i},!0);let i=(e,t)=>{let l;let i=new Date().getTime(),n=()=>{e();let r=new Date().getTime(),m=t-(r-i);m<0&&(m=0),l=setTimeout(()=>{n()},m)};return n(),()=>{l&&clearTimeout(l)}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

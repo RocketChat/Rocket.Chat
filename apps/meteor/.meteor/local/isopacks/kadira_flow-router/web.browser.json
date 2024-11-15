@@ -1,0 +1,196 @@
+{
+  "format": "isopack-2-unibuild",
+  "declaredExports": [
+    {
+      "name": "FlowRouter",
+      "testOnly": false
+    }
+  ],
+  "uses": [
+    {
+      "package": "meteor"
+    },
+    {
+      "package": "underscore"
+    },
+    {
+      "package": "tracker"
+    },
+    {
+      "package": "reactive-dict"
+    },
+    {
+      "package": "reactive-var"
+    },
+    {
+      "package": "ejson"
+    },
+    {
+      "package": "modules"
+    },
+    {
+      "package": "meteorhacks:fast-render",
+      "constraint": "2.14.0",
+      "weak": true
+    }
+  ],
+  "resources": [
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser/client/modules.js",
+      "length": 44,
+      "offset": 0,
+      "usesDefaultSourceProcessor": true,
+      "path": "client/modules.js",
+      "hash": "dcfe55fade9e31ed2cf1a5dc8cfa293e2f702691",
+      "fileOptions": {
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser/client/triggers.js",
+      "length": 2915,
+      "offset": 0,
+      "usesDefaultSourceProcessor": true,
+      "path": "client/triggers.js",
+      "hash": "67d26bcea121ca49644376123aaab20768b30677",
+      "fileOptions": {
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser/client/router.js",
+      "length": 16645,
+      "offset": 0,
+      "usesDefaultSourceProcessor": true,
+      "path": "client/router.js",
+      "hash": "611b5cb6224b2954a24c116ae0b16ba13f3d1433",
+      "fileOptions": {
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser/client/group.js",
+      "length": 1596,
+      "offset": 0,
+      "usesDefaultSourceProcessor": true,
+      "path": "client/group.js",
+      "hash": "04de7e39e2b8a445e1bddf3ba499cec9c66b283a",
+      "fileOptions": {
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser/client/route.js",
+      "length": 3259,
+      "offset": 0,
+      "usesDefaultSourceProcessor": true,
+      "path": "client/route.js",
+      "hash": "1cccce7b14143aa4b7d581752fef52ce33fab503",
+      "fileOptions": {
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser/client/_init.js",
+      "length": 229,
+      "offset": 0,
+      "usesDefaultSourceProcessor": true,
+      "path": "client/_init.js",
+      "hash": "1e880e3d4de66fb670de7ed5072effd430c1e4a4",
+      "fileOptions": {
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser/lib/router.js",
+      "length": 444,
+      "offset": 0,
+      "usesDefaultSourceProcessor": true,
+      "path": "lib/router.js",
+      "hash": "aee1516da08e8bf3d55f7767ea7f25083d360692",
+      "fileOptions": {
+        "lazy": false
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser/server/_init.js",
+      "length": 107,
+      "offset": 0,
+      "usesDefaultSourceProcessor": true,
+      "path": "server/_init.js",
+      "hash": "ae464367d49625c53f97b15c90c431dfdcfe91a8",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser/server/group.js",
+      "length": 424,
+      "offset": 0,
+      "usesDefaultSourceProcessor": true,
+      "path": "server/group.js",
+      "hash": "49741d76837d49bcfd7847450fd823692b65547d",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser/server/route.js",
+      "length": 602,
+      "offset": 0,
+      "usesDefaultSourceProcessor": true,
+      "path": "server/route.js",
+      "hash": "34deeeab7edff983face2079afe26833682651d5",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser/server/router.js",
+      "length": 3008,
+      "offset": 0,
+      "usesDefaultSourceProcessor": true,
+      "path": "server/router.js",
+      "hash": "30fd689fb163c4099547673f15b494b17d9b84a0",
+      "fileOptions": {
+        "lazy": true
+      }
+    },
+    {
+      "type": "source",
+      "extension": "js",
+      "file": "web.browser/server/plugins/fast_render.js",
+      "length": 1078,
+      "offset": 0,
+      "usesDefaultSourceProcessor": true,
+      "path": "server/plugins/fast_render.js",
+      "hash": "dc231e8cf8c5cb777c7a7cf252282a200833dd9c",
+      "fileOptions": {
+        "lazy": true
+      }
+    }
+  ],
+  "node_modules": "npm/node_modules"
+}

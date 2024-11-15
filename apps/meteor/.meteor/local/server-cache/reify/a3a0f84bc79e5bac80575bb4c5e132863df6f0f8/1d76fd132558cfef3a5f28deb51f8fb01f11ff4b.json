@@ -1,0 +1,17 @@
+"use strict";module.export({isGroupsOnlineProps:()=>isGroupsOnlineProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const groupsOnlyPropsSchema = {
+    type: 'object',
+    properties: {
+        query: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isGroupsOnlineProps = ajv.compile(groupsOnlyPropsSchema);
+//# sourceMappingURL=GroupsOnlineProps.js.map

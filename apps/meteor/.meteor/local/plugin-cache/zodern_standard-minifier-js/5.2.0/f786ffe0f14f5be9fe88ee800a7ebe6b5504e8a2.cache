@@ -1,0 +1,1 @@
+{"code":"function module(n,o,r){function t(n){return null==n?null:u(n)}function u(n){if(\"function\"!=typeof n)throw Error();return n}r.export({optional:()=>t,required:()=>u})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

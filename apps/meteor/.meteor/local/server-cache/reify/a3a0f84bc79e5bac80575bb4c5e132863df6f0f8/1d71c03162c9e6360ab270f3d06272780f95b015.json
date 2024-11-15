@@ -1,0 +1,30 @@
+"use strict";module.export({isVideoConfJoinProps:()=>isVideoConfJoinProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const videoConfJoinPropsSchema = {
+    type: 'object',
+    properties: {
+        callId: {
+            type: 'string',
+            nullable: false,
+        },
+        state: {
+            type: 'object',
+            nullable: true,
+            properties: {
+                mic: {
+                    type: 'boolean',
+                    nullable: true,
+                },
+                cam: {
+                    type: 'boolean',
+                    nullable: true,
+                },
+            },
+            additionalProperties: false,
+        },
+    },
+    required: ['callId'],
+    additionalProperties: false,
+};
+const isVideoConfJoinProps = ajv.compile(videoConfJoinPropsSchema);
+//# sourceMappingURL=VideoConfJoinProps.js.map

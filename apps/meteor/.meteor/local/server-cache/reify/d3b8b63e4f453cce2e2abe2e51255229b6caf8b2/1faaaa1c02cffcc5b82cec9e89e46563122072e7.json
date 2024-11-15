@@ -1,0 +1,75 @@
+"use strict";module.export({isDmMessagesProps:()=>isDmMessagesProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({ coerceTypes: true });
+const isDmMessagesProps = ajv.compile({
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                roomId: {
+                    type: 'string',
+                },
+                mentionIds: {
+                    type: 'string',
+                },
+                starredIds: {
+                    type: 'string',
+                },
+                pinned: {
+                    type: 'string',
+                },
+                fields: {
+                    type: 'string',
+                },
+                query: {
+                    type: 'string',
+                },
+                sort: {
+                    type: 'string',
+                },
+                count: {
+                    type: 'number',
+                },
+                offset: {
+                    type: 'number',
+                },
+            },
+            required: ['roomId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                username: {
+                    type: 'string',
+                },
+                mentionIds: {
+                    type: 'string',
+                },
+                starredIds: {
+                    type: 'string',
+                },
+                pinned: {
+                    type: 'string',
+                },
+                query: {
+                    type: 'string',
+                },
+                fields: {
+                    type: 'string',
+                },
+                sort: {
+                    type: 'string',
+                },
+                count: {
+                    type: 'number',
+                },
+                offset: {
+                    type: 'number',
+                },
+            },
+            required: ['username'],
+            additionalProperties: false,
+        },
+    ],
+});
+//# sourceMappingURL=DmMessagesProps.js.map

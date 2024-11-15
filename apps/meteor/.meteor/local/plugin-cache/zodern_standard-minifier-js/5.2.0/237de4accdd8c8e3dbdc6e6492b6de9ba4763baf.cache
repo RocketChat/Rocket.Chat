@@ -1,0 +1,1 @@
+{"code":"function module(o,t,e){var a=Math.sqrt(1/3),n=2*a;e.exportDefault({draw:function(o,t){var e=Math.sqrt(t/n),l=e*a;o.moveTo(0,-e),o.lineTo(l,0),o.lineTo(0,e),o.lineTo(-l,0),o.closePath()}})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

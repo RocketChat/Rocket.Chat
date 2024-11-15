@@ -1,0 +1,16 @@
+"use strict";module.export({isFederationAddServerProps:()=>isFederationAddServerProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const FederationAddServerPropsSchema = {
+    type: 'object',
+    properties: {
+        serverName: {
+            type: 'string',
+        },
+    },
+    additionalProperties: false,
+    required: ['serverName'],
+};
+const isFederationAddServerProps = ajv.compile(FederationAddServerPropsSchema);
+//# sourceMappingURL=FederationAddServerProps.js.map

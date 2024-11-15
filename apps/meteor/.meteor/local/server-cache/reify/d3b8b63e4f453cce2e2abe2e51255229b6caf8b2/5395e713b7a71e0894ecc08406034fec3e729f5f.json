@@ -1,0 +1,8 @@
+"use strict";module.export({isGroupsRolesProps:()=>isGroupsRolesProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);var withGroupBaseProperties;module.link('./BaseProps',{withGroupBaseProperties(v){withGroupBaseProperties=v}},1);
+
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const GroupsRolesPropsSchema = withGroupBaseProperties();
+const isGroupsRolesProps = ajv.compile(GroupsRolesPropsSchema);
+//# sourceMappingURL=GroupsRolesProps.js.map

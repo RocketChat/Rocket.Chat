@@ -1,0 +1,1 @@
+{"code":"function module(t,n,o){o.exportDefault(function(t,n){return[(n=+n)*Math.cos(t-=Math.PI/2),n*Math.sin(t)]})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

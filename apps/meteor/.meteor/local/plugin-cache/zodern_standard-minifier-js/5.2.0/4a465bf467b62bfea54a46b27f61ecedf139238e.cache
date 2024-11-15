@@ -1,0 +1,1 @@
+{"code":"function module(r,e,n){n.export({createSurfaceRenderer:()=>t});var t=function(){return function(r,e){return function(n){return r.render(n,e)}}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

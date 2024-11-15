@@ -1,0 +1,25 @@
+"use strict";module.export({isGroupsFilesProps:()=>isGroupsFilesProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);var withGroupBaseProperties;module.link('./BaseProps',{withGroupBaseProperties(v){withGroupBaseProperties=v}},1);
+
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const GroupsFilesPropsSchema = withGroupBaseProperties({
+    count: {
+        type: 'number',
+        nullable: true,
+    },
+    sort: {
+        type: 'string',
+        nullable: true,
+    },
+    query: {
+        type: 'string',
+        nullable: true,
+    },
+    offset: {
+        type: 'number',
+        nullable: true,
+    },
+});
+const isGroupsFilesProps = ajv.compile(GroupsFilesPropsSchema);
+//# sourceMappingURL=GroupsFilesProps.js.map

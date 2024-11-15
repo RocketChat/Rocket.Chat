@@ -1,0 +1,34 @@
+"use strict";module.export({isChannelsKickProps:()=>isChannelsKickProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const channelsKickPropsSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                roomId: {
+                    type: 'string',
+                },
+                userId: {
+                    type: 'string',
+                },
+            },
+            required: ['roomId', 'userId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                roomName: {
+                    type: 'string',
+                },
+                userId: {
+                    type: 'string',
+                },
+            },
+            required: ['roomName', 'userId'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isChannelsKickProps = ajv.compile(channelsKickPropsSchema);
+//# sourceMappingURL=ChannelsKickProps.js.map

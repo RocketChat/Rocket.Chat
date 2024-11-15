@@ -1,0 +1,35 @@
+"use strict";module.export({isReportHistoryProps:()=>isReportHistoryProps},true);var ajv;module.link('../Ajv',{ajv(v){ajv=v}},0);
+const reportHistoryPropsSchema = {
+    type: 'object',
+    properties: {
+        latest: {
+            type: 'string',
+            format: 'date-time',
+            nullable: true,
+        },
+        oldest: {
+            type: 'string',
+            format: 'date-time',
+            nullable: true,
+        },
+        selector: {
+            type: 'string',
+            nullable: true,
+        },
+        count: {
+            type: 'integer',
+            nullable: true,
+        },
+        offset: {
+            type: 'integer',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    additionalProperties: false,
+};
+const isReportHistoryProps = ajv.compile(reportHistoryPropsSchema);
+//# sourceMappingURL=ReportHistoryProps.js.map

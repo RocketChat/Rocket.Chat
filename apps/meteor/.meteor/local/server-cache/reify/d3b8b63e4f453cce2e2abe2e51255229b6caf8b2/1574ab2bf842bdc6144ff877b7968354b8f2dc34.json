@@ -1,0 +1,12 @@
+"use strict";module.export({isImportersListParamsGET:()=>isImportersListParamsGET},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const ImportersListParamsGETSchema = {
+    type: 'object',
+    properties: {},
+    additionalProperties: false,
+    required: [],
+};
+const isImportersListParamsGET = ajv.compile(ImportersListParamsGETSchema);
+//# sourceMappingURL=ImportersListParamsGET.js.map

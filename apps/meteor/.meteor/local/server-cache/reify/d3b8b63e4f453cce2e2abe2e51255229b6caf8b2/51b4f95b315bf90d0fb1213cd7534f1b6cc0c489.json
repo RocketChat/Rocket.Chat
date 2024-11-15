@@ -1,0 +1,28 @@
+"use strict";module.export({isChannelsRolesProps:()=>isChannelsRolesProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const channelsRolesPropsSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            properties: {
+                roomId: {
+                    type: 'string',
+                },
+            },
+            required: ['roomId'],
+            additionalProperties: false,
+        },
+        {
+            type: 'object',
+            properties: {
+                roomName: {
+                    type: 'string',
+                },
+            },
+            required: ['roomName'],
+            additionalProperties: false,
+        },
+    ],
+};
+const isChannelsRolesProps = ajv.compile(channelsRolesPropsSchema);
+//# sourceMappingURL=ChannelsRolesProps.js.map

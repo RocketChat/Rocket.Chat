@@ -1,0 +1,37 @@
+"use strict";module.export({isCustomUserStatusListProps:()=>isCustomUserStatusListProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv({
+    coerceTypes: true,
+});
+const CustomUserStatusListSchema = {
+    type: 'object',
+    properties: {
+        count: {
+            type: 'number',
+            nullable: true,
+        },
+        offset: {
+            type: 'number',
+            nullable: true,
+        },
+        sort: {
+            type: 'string',
+            nullable: true,
+        },
+        name: {
+            type: 'string',
+            nullable: true,
+        },
+        _id: {
+            type: 'string',
+            nullable: true,
+        },
+        query: {
+            type: 'string',
+            nullable: true,
+        },
+    },
+    required: [],
+    additionalProperties: false,
+};
+const isCustomUserStatusListProps = ajv.compile(CustomUserStatusListSchema);
+//# sourceMappingURL=customUserStatus.js.map

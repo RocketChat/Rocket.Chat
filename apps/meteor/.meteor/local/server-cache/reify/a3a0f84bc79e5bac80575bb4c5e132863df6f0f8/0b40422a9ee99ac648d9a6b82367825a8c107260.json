@@ -1,0 +1,15 @@
+"use strict";module.export({isVideoConfCancelProps:()=>isVideoConfCancelProps},true);var Ajv;module.link('ajv',{default(v){Ajv=v}},0);
+const ajv = new Ajv();
+const videoConfCancelPropsSchema = {
+    type: 'object',
+    properties: {
+        callId: {
+            type: 'string',
+            nullable: false,
+        },
+    },
+    required: ['callId'],
+    additionalProperties: false,
+};
+const isVideoConfCancelProps = ajv.compile(videoConfCancelPropsSchema);
+//# sourceMappingURL=VideoConfCancelProps.js.map

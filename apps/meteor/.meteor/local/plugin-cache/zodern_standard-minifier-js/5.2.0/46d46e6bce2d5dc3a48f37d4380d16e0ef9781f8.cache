@@ -1,0 +1,1 @@
+{"code":"function module(n,t,u){function o(n){return n[0]}function r(n){return n[1]}u.export({x:()=>o,y:()=>r})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

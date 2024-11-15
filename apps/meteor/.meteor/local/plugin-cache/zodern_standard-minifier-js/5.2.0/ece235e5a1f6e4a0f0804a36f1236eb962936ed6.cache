@@ -1,0 +1,1 @@
+{"code":"function module(n,t,a){a.exports=function(n){return{aliases:[\"pycon\"],contains:[{className:\"meta.prompt\",starts:{end:/ |$/,starts:{end:\"$\",subLanguage:\"python\"}},variants:[{begin:/^>>>(?=[ ]|$)/},{begin:/^\\.\\.\\.(?=[ ]|$)/}]}]}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

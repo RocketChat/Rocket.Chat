@@ -1,0 +1,1 @@
+{"code":"function module(t,r,n){var c=Function.prototype.toString;n.exports=function(t){if(null!=t){try{return c.call(t)}catch(t){}try{return t+\"\"}catch(t){}}return\"\"}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

@@ -1,0 +1,1 @@
+{"code":"function module(e,n,t){let o;t.export({RequestPendingError:()=>r}),t.link(\"../../core\",{Exception(e){o=e}},0);class r extends o{constructor(e){super(e||\"Request pending.\")}}}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}

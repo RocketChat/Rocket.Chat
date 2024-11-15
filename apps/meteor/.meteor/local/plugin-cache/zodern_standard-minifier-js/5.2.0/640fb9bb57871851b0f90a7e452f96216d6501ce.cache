@@ -1,0 +1,1 @@
+{"code":"function module(t,n,i){let l,a,e;i.link(\"./setTransition.js\",{default(t){l=t}},0),i.link(\"./transitionStart.js\",{default(t){a=t}},1),i.link(\"./transitionEnd.js\",{default(t){e=t}},2),i.exportDefault({setTransition:l,transitionStart:a,transitionEnd:e})}","map":"{\"version\":3,\"sources\":[\"<anon>\"],\"names\":[],\"mappings\":\"\"}"}
