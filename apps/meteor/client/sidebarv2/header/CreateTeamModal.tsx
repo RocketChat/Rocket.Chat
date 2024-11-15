@@ -15,6 +15,7 @@ import {
 	FieldHint,
 	Accordion,
 	AccordionItem,
+	Divider,
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
@@ -296,6 +297,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 										<FieldDescription id={`${showDiscussionsId}-hint`}>{t('Show_discussions_description')}</FieldDescription>
 									</Field>
 								</FieldGroup>
+								<Divider mb={36} />
 							</FeaturePreviewOn>
 						</FeaturePreview>
 						<FieldGroup>
