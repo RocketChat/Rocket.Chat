@@ -61,7 +61,6 @@ export function serverFetch(input: string, options?: ExtendedFetchOptions, allow
 	}
 
 	return fetch(url.toString(), {
-		// @ts-expect-error - This complained when types were moved to file :/
 		signal: controller.signal,
 		...parseRequestOptions(options),
 		...(agent ? { agent } : {}),
