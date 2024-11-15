@@ -9418,7 +9418,7 @@ __metadata:
     sharp: "npm:^0.33.5"
     sinon: "npm:^19.0.2"
     sip.js: "npm:^0.21.2"
-    sodium-native: "npm:^3.4.1"
+    sodium-native: "npm:^4.3.1"
     sodium-plus: "npm:^0.9.0"
     source-map: "npm:^0.7.4"
     speakeasy: "npm:^2.0.0"
@@ -28422,7 +28422,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-gyp-build@npm:^4.3.0, node-gyp-build@npm:^4.8.0":
+"node-gyp-build@npm:^4.8.0":
   version: 4.8.2
   resolution: "node-gyp-build@npm:4.8.2"
   bin:
@@ -32990,7 +32990,7 @@ __metadata:
     npm-run-all: "npm:^4.1.5"
     pino: "npm:^8.21.0"
     pino-pretty: "npm:^7.6.1"
-    sodium-native: "npm:^3.4.1"
+    sodium-native: "npm:^4.3.1"
     sodium-plus: "npm:^0.9.0"
     ts-node: "npm:^10.9.2"
     typescript: "npm:~5.6.3"
@@ -33963,13 +33963,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sodium-native@npm:^3.4.1":
-  version: 3.4.1
-  resolution: "sodium-native@npm:3.4.1"
+"sodium-native@npm:^4.3.1":
+  version: 4.3.1
+  resolution: "sodium-native@npm:4.3.1"
   dependencies:
-    node-gyp: "npm:latest"
-    node-gyp-build: "npm:^4.3.0"
-  checksum: 10/2412341af520e6b40bdd62db8024a293506492ccabe28d6e08391829aecee2e098ad721af459efba8ca6713cdfb29467862f65fdd90ddc2fc612c6c8e2ed604f
+    node-gyp-build: "npm:^4.8.0"
+  checksum: 10/d08c7a68b458fa0dfd63a14dca1a114e855f4b857c3999e3e19e975434b3843335929d0539b03ca7f9796007f0560b629b33186e9b1fd6e7781199b32c48d23c
   languageName: node
   linkType: hard
 
