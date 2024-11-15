@@ -6,7 +6,7 @@ import { Tracker } from 'meteor/tracker';
 import { E2EEState } from '../../app/e2e/client/E2EEState';
 import { e2e } from '../../app/e2e/client/rocketchat.e2e';
 import { MentionsParser } from '../../app/mentions/lib/MentionsParser';
-import { ChatRoom } from '../../app/models/client';
+import { ChatRoom, Messages } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
@@ -76,6 +76,11 @@ Meteor.startup(() => {
 			const e2eRoom = await e2e.getInstanceByRoomId(message.rid);
 
 			if (!e2eRoom) {
+				return message;
+			}
+
+			const originalMessage = await Messages.findOneByRoomIdAndMessageId(message.rid, message._id);
+			if (originalMessage?.file) {
 				return message;
 			}
 
