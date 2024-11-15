@@ -4,8 +4,8 @@ import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
-import * as Status from '../../components/UserStatus';
 import Extended from './Extended';
+import * as Status from '../../components/UserStatus';
 
 export default {
 	title: 'Sidebar/Extended',

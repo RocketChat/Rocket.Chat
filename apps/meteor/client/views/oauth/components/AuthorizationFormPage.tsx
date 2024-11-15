@@ -7,9 +7,9 @@ import { Accounts } from 'meteor/accounts-base';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { queueMicrotask } from '../../../lib/utils/queueMicrotask';
 import CurrentUserDisplay from './CurrentUserDisplay';
 import Layout from './Layout';
+import { queueMicrotask } from '../../../lib/utils/queueMicrotask';
 
 type AuthorizationFormPageProps = {
 	oauthApp: IOAuthApps;
@@ -60,14 +60,10 @@ const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFor
 						<CurrentUserDisplay user={user} />
 
 						<p>
-							<Trans i18nKey='core.The_application_will_be_able_to' t={t}>
-								The application <strong>{{ appName: oauthApp.name }}</strong> will be able to:
+							<Trans i18nKey='core.OAuth_Full_Access_Warning' t={t}>
+								<strong>{{ appName: oauthApp.name }}</strong>
 							</Trans>
 						</p>
-
-						<ul>
-							<li>{t('core.access_your_basic_information')}</li>
-						</ul>
 					</Box>
 					<input type='hidden' name='access_token' value={token} />
 					<input type='hidden' name='client_id' value={oauthApp.clientId} />

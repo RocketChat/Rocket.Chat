@@ -17,13 +17,13 @@ import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import UserContextFooter from './UserContextFooter';
 import { ContextualbarScrollableContent } from '../../../../components/Contextualbar';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import { UserCardRole } from '../../../../components/UserCard';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import ReportReason from '../helpers/ReportReason';
 import UserColumn from '../helpers/UserColumn';
-import UserContextFooter from './UserContextFooter';
 
 const UserReportInfo = ({ userId }: { userId: string }) => {
 	const { t } = useTranslation();

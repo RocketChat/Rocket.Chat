@@ -6,10 +6,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useErrorHandler } from './useErrorHandler';
 import { ImportingStartedStates } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import { useErrorHandler } from './useErrorHandler';
 
 // TODO: review inner logic
 const ImportProgressPage = function ImportProgressPage() {

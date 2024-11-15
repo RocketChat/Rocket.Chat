@@ -5,9 +5,9 @@ import React, { forwardRef, useRef } from 'react';
 import type { VirtuosoHandle } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 
+import EmojiCategoryRow from './EmojiCategoryRow';
 import type { EmojiCategoryPosition, EmojiByCategory } from '../../../../app/emoji/client';
 import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
-import EmojiCategoryRow from './EmojiCategoryRow';
 
 type CategoriesResultProps = {
 	emojiListByCategory: EmojiByCategory[];

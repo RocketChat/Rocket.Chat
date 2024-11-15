@@ -2,13 +2,13 @@ import type { IImportChannel, IImportChannelRecord, IRoom } from '@rocket.chat/c
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import limax from 'limax';
 
+import { RecordConverter } from './RecordConverter';
 import { createDirectMessage } from '../../../../../server/methods/createDirectMessage';
 import { saveRoomSettings } from '../../../../channel-settings/server/methods/saveRoomSettings';
 import { notifyOnSubscriptionChangedByRoomId } from '../../../../lib/server/lib/notifyListener';
 import { createChannelMethod } from '../../../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../../../lib/server/methods/createPrivateGroup';
 import type { IConversionCallbacks } from '../../definitions/IConversionCallbacks';
-import { RecordConverter } from './RecordConverter';
 
 export class RoomConverter extends RecordConverter<IImportChannelRecord> {
 	public startedByUserId: string;

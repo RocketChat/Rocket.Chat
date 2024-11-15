@@ -2,10 +2,10 @@ import { useAtLeastOnePermission, useRoute, useRouteParameter } from '@rocket.ch
 import type { ReactElement, ReactNode } from 'react';
 import React, { Suspense, useEffect } from 'react';
 
+import MarketPlaceSidebar from './MarketplaceSidebar';
 import PageSkeleton from '../../components/PageSkeleton';
 import SidebarPortal from '../../sidebar/SidebarPortal';
 import NotFoundPage from '../notFound/NotFoundPage';
-import MarketPlaceSidebar from './MarketplaceSidebar';
 
 const MarketplaceRouter = ({ children }: { children?: ReactNode }): ReactElement => {
 	const currentContext = useRouteParameter('context') || 'all';

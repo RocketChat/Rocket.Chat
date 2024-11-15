@@ -3,8 +3,8 @@ import type { IRoom, ISubscription, IUser, IFederationEvent } from '@rocket.chat
 import type { IFederationRoomEventsModel } from '@rocket.chat/model-typings';
 import type { Db, DeleteResult, IndexDescription } from 'mongodb';
 
-import { contextDefinitions } from '../../../app/federation/server/lib/context';
 import { FederationEventsModel } from './FederationEvents';
+import { contextDefinitions } from '../../../app/federation/server/lib/context';
 
 const { type, contextQuery } = contextDefinitions.ROOM;
 

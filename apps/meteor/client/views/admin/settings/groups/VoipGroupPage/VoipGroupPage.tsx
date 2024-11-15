@@ -5,12 +5,12 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import VoipExtensionsPage from './VoipExtensionsPage';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import { PageScrollableContentWithShadow } from '../../../../../components/Page';
 import { useEditableSettingsGroupSections } from '../../../EditableSettingsContext';
 import SettingsGroupPage from '../../SettingsGroupPage';
 import SettingsSection from '../../SettingsSection';
-import VoipExtensionsPage from './VoipExtensionsPage';
 
 type VoipGroupPageProps = ISetting & {
 	onClickBack?: () => void;

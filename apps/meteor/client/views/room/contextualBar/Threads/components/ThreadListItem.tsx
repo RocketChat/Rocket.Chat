@@ -5,9 +5,9 @@ import { useMethod, useSetting, useToastMessageDispatch, useUserId } from '@rock
 import type { MouseEvent, ReactElement } from 'react';
 import React, { useCallback, memo } from 'react';
 
+import ThreadListMessage from './ThreadListMessage';
 import { useDecryptedMessage } from '../../../../../hooks/useDecryptedMessage';
 import { normalizeThreadMessage } from '../../../../../lib/normalizeThreadMessage';
-import ThreadListMessage from './ThreadListMessage';
 
 type ThreadListItemProps = {
 	thread: IMessage;

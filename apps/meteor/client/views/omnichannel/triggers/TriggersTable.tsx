@@ -4,6 +4,7 @@ import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts
 import { useQuery, hashQueryKey } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 
+import TriggersRow from './TriggersRow';
 import GenericError from '../../../components/GenericError';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
@@ -14,7 +15,6 @@ import {
 	GenericTableLoadingRow,
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import TriggersRow from './TriggersRow';
 
 const TriggersTable = () => {
 	const t = useTranslation();
