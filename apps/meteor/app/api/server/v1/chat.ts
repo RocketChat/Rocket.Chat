@@ -161,6 +161,21 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
+			const { text, attachments } = this.bodyParams;
+			const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
+
+			if (text && text.length > maxAllowedSize) {
+				return API.v1.failure('error-message-size-exceeded');
+			}
+
+			if (attachments && attachments.length > 0) {
+				for (const attachment of attachments) {
+					if (attachment.text && attachment.text.length > maxAllowedSize) {
+						return API.v1.failure('error-message-size-exceeded');
+					}
+				}
+			}
+
 			const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
 
 			if (!messageReturn) {
