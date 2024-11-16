@@ -3,6 +3,7 @@ import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.c
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../../server/lib/i18n';
@@ -246,6 +247,13 @@ Meteor.methods<ServerMethods>({
 	 * @param {boolean} encrypted - if the discussion's e2e encryption should be enabled.
 	 */
 	async createDiscussion({ prid, pmid, t_name: discussionName, reply, users, encrypted }: CreateDiscussionProperties) {
+		check(prid, Match.Maybe(String));
+		check(pmid, Match.Maybe(String));
+		check(reply, Match.Maybe(String));
+		check(discussionName, String);
+		check(users, [String]);
+		check(encrypted, Match.Maybe(Boolean));
+
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

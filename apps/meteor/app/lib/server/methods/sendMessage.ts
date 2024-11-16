@@ -4,7 +4,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import { Messages, Users } from '@rocket.chat/models';
 import type { TOptions } from 'i18next';
-import { check } from 'meteor/check';
+import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
@@ -123,7 +123,24 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async sendMessage(message, previewUrls) {
-		check(message, Object);
+		check(message, {
+			_id: Match.Maybe(String),
+			rid: Match.Maybe(String),
+			msg: Match.Maybe(String),
+			tmid: Match.Maybe(String),
+			tshow: Match.Maybe(Boolean),
+			ts: Match.Maybe(Date),
+			t: Match.Maybe(String),
+			otrAck: Match.Maybe(String),
+			bot: Match.Maybe(Boolean),
+			content: Match.Maybe(Object),
+			e2e: Match.Maybe(String),
+			e2eMentions: Match.Maybe(Object),
+			customFields: Match.Maybe(Object),
+			federation: Match.Maybe(Object),
+			groupable: Match.Maybe(Boolean),
+			sentByEmail: Match.Maybe(Boolean),
+		});
 
 		const uid = Meteor.userId();
 		if (!uid) {

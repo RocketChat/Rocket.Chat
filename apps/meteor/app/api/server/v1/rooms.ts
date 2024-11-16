@@ -459,9 +459,14 @@ API.v1.addRoute(
 	},
 );
 
+/*
+TO-DO: 8.0.0 should use the ajv validation
+which will change this endpoint's
+response errors.
+*/
 API.v1.addRoute(
 	'rooms.createDiscussion',
-	{ authRequired: true },
+	{ authRequired: true /* , validateParams: isRoomsCreateDiscussionProps */ },
 	{
 		async post() {
 			// eslint-disable-next-line @typescript-eslint/naming-convention
