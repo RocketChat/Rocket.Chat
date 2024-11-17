@@ -71,7 +71,12 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
 	findLivechatMessages(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage>;
-	findLivechatMessagesWithoutClosing(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage>;
+	findLivechatMessagesWithoutTypes(
+		rid: IRoom['_id'],
+		ignoredTypes: IMessage['t'][],
+		showSystemMessages: boolean,
+		options?: FindOptions<IMessage>,
+	): FindCursor<IMessage>;
 	countRoomsWithStarredMessages(options: AggregateOptions): Promise<number>;
 
 	countRoomsWithPinnedMessages(options: AggregateOptions): Promise<number>;
@@ -113,6 +118,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		roomId: IRoom['_id'],
 		types: IMessage['t'][],
 		ts: Date,
+		showSystemMessages: boolean,
 		options?: FindOptions<IMessage>,
 		showThreadMessages?: boolean,
 	): FindCursor<IMessage>;
@@ -285,4 +291,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	findThreadsByRoomId(rid: string, skip: number, limit: number): FindCursor<IMessage>;
 	decreaseReplyCountById(_id: string, inc?: number): Promise<UpdateResult>;
+	countPinned(options?: CountDocumentsOptions): Promise<number>;
+	countStarred(options?: CountDocumentsOptions): Promise<number>;
 }

@@ -8,7 +8,7 @@ export default {
 		layout: 'centered',
 	},
 	decorators: [(storyFn) => <div children={storyFn()} style={{ width: '100vw', maxWidth: 500 }} />],
-} as Meta;
+} satisfies Meta;
 
 export const Default = () =>
 	renderMessageBlocks([

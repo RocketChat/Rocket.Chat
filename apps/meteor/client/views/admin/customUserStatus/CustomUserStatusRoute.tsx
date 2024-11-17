@@ -3,6 +3,10 @@ import { useRoute, useRouteParameter, usePermission, useTranslation, useSetting 
 import type { ReactElement } from 'react';
 import React, { useCallback, useRef, useEffect } from 'react';
 
+import CustomUserActiveConnections from './CustomUserActiveConnections';
+import CustomUserStatusFormWithData from './CustomUserStatusFormWithData';
+import CustomUserStatusService from './CustomUserStatusService';
+import CustomUserStatusTable from './CustomUserStatusTable';
 import {
 	Contextualbar,
 	ContextualbarHeader,
@@ -13,10 +17,6 @@ import {
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
-import CustomUserActiveConnections from './CustomUserActiveConnections';
-import CustomUserStatusFormWithData from './CustomUserStatusFormWithData';
-import CustomUserStatusService from './CustomUserStatusService';
-import CustomUserStatusTable from './CustomUserStatusTable';
 
 const CustomUserStatusRoute = (): ReactElement => {
 	const t = useTranslation();
@@ -25,7 +25,7 @@ const CustomUserStatusRoute = (): ReactElement => {
 	const id = useRouteParameter('id');
 	const canManageUserStatus = usePermission('manage-user-status');
 	const { data: license } = useIsEnterprise();
-	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 
 	useEffect(() => {
 		presenceDisabled && route.push({ context: 'presence-service' });

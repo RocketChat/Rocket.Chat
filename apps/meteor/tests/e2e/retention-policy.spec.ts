@@ -1,10 +1,12 @@
 import { faker } from '@faker-js/faker';
+import type { Page } from '@playwright/test';
 
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetPrivateChannel, createTargetTeam, setSettingValueById } from './utils';
+import { createTargetTeam, createTargetPrivateChannel, getSettingValueById, setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
+import { timeUnitToMs, TIMEUNIT } from '../../client/lib/convertTimeUnit';
 
 test.use({ storageState: Users.admin.state });
 
@@ -30,6 +32,10 @@ test.describe.serial('retention-policy', () => {
 	});
 
 	test.describe('retention policy disabled', () => {
+		test.beforeAll(async ({ api }) => {
+			await setSettingValueById(api, 'RetentionPolicy_Enabled', false);
+		});
+
 		test('should not show prune banner in channel', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 
@@ -60,7 +66,7 @@ test.describe.serial('retention-policy', () => {
 			await setSettingValueById(api, 'RetentionPolicy_AppliesToChannels', false);
 			await setSettingValueById(api, 'RetentionPolicy_AppliesToGroups', false);
 			await setSettingValueById(api, 'RetentionPolicy_AppliesToDMs', false);
-			await setSettingValueById(api, 'RetentionPolicy_MaxAge_Channels', 30);
+			await setSettingValueById(api, 'RetentionPolicy_TTL_Channels', timeUnitToMs(TIMEUNIT.days, 30));
 		});
 
 		test('should not show prune banner even with retention policy setting enabled in any type of room', async () => {
@@ -86,28 +92,27 @@ test.describe.serial('retention-policy', () => {
 		});
 
 		test.describe('edit-room-retention-policy permission', async () => {
-			test('should not show prune section in edit channel for users without permission', async ({ browser }) => {
+			let auxContext: { page: Page; poHomeChannel: HomeChannel };
+			test.beforeEach(async ({ browser }) => {
 				const { page } = await createAuxContext(browser, Users.user1);
-				const auxContext = { page, poHomeChannel: new HomeChannel(page) };
+				auxContext = { page, poHomeChannel: new HomeChannel(page) };
 				await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
 				await auxContext.poHomeChannel.tabs.btnRoomInfo.click();
 				await auxContext.poHomeChannel.tabs.room.btnEdit.click();
-
-				await expect(poHomeChannel.tabs.room.pruneAccordion).not.toBeVisible();
+			});
+			test.afterEach(async () => {
 				await auxContext.page.close();
 			});
+			test('should not show prune section in edit channel for users without permission', async () => {
+				await expect(poHomeChannel.tabs.room.pruneAccordion).not.toBeVisible();
+			});
 
-			test('users without permission should be able to edit the channel', async ({ browser }) => {
-				const { page } = await createAuxContext(browser, Users.user1);
-				const auxContext = { page, poHomeChannel: new HomeChannel(page) };
-				await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
-				await auxContext.poHomeChannel.tabs.btnRoomInfo.click();
-				await auxContext.poHomeChannel.tabs.room.btnEdit.click();
+			test('users without permission should be able to edit the channel', async () => {
+				await auxContext.poHomeChannel.tabs.room.advancedSettingsAccordion.click();
 				await auxContext.poHomeChannel.tabs.room.checkboxReadOnly.check();
 				await auxContext.poHomeChannel.tabs.room.btnSave.click();
 
-				await expect(auxContext.poHomeChannel.getSystemMessageByText('set room to read only')).toBeVisible();
-				await auxContext.page.close();
+				await expect(auxContext.poHomeChannel.content.getSystemMessageByText('set room to read only')).toBeVisible();
 			});
 		});
 
@@ -155,25 +160,27 @@ test.describe.serial('retention-policy', () => {
 		});
 
 		test.describe('retention policy override', () => {
+			let ignoreThreadsSetting: boolean;
+
 			test.beforeAll(async ({ api }) => {
-				expect((await setSettingValueById(api, 'RetentionPolicy_MaxAge_Channels', 15)).status()).toBe(200);
+				ignoreThreadsSetting = (await getSettingValueById(api, 'RetentionPolicy_DoNotPruneThreads')) as boolean;
+				expect((await setSettingValueById(api, 'RetentionPolicy_TTL_Channels', timeUnitToMs(TIMEUNIT.days, 15))).status()).toBe(200);
 			});
 
-			test('should display the default max age in edit channel', async () => {
+			test.beforeEach(async () => {
 				await poHomeChannel.sidenav.openChat(targetChannel);
 				await poHomeChannel.tabs.btnRoomInfo.click();
 				await poHomeChannel.tabs.room.btnEdit.click();
 				await poHomeChannel.tabs.room.pruneAccordion.click();
+			});
+
+			test('should display the default max age in edit channel', async () => {
 				await poHomeChannel.tabs.room.checkboxOverrideGlobalRetention.click();
 
 				await expect(poHomeChannel.tabs.room.getMaxAgeLabel('15')).toBeVisible();
 			});
 
 			test('should display overridden retention max age value', async () => {
-				await poHomeChannel.sidenav.openChat(targetChannel);
-				await poHomeChannel.tabs.btnRoomInfo.click();
-				await poHomeChannel.tabs.room.btnEdit.click();
-				await poHomeChannel.tabs.room.pruneAccordion.click();
 				await poHomeChannel.tabs.room.checkboxOverrideGlobalRetention.click();
 				await poHomeChannel.tabs.room.inputRetentionMaxAge.fill('365');
 				await poHomeChannel.tabs.room.btnSave.click();
@@ -185,6 +192,22 @@ test.describe.serial('retention-policy', () => {
 
 				await expect(poHomeChannel.tabs.room.getMaxAgeLabel('15')).toBeVisible();
 				await expect(poHomeChannel.tabs.room.inputRetentionMaxAge).toHaveValue('365');
+			});
+
+			test('should ignore threads be checked accordingly with the global default value', async () => {
+				await expect(poHomeChannel.tabs.room.checkboxIgnoreThreads).toBeChecked({ checked: ignoreThreadsSetting });
+			});
+
+			test('should override ignore threads default value', async () => {
+				await poHomeChannel.tabs.room.checkboxIgnoreThreads.click();
+				await poHomeChannel.tabs.room.btnSave.click();
+				await poHomeChannel.dismissToast();
+
+				await poHomeChannel.tabs.btnRoomInfo.click();
+				await poHomeChannel.tabs.room.btnEdit.click();
+				await poHomeChannel.tabs.room.pruneAccordion.click();
+
+				await expect(poHomeChannel.tabs.room.checkboxIgnoreThreads).toBeChecked({ checked: !ignoreThreadsSetting });
 			});
 		});
 	});

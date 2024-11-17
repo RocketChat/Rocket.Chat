@@ -1,6 +1,18 @@
 import type { ISetting, ISettingColor, ISettingSelectOption, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, UpdateFilter, UpdateResult, Document, FindOptions } from 'mongodb';
+import type {
+	Collection,
+	FindCursor,
+	Db,
+	Filter,
+	UpdateFilter,
+	UpdateResult,
+	Document,
+	FindOptions,
+	FindOneAndUpdateOptions,
+	ModifyResult,
+	UpdateOptions,
+} from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -53,6 +65,7 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 	updateValueById(
 		_id: string,
 		value: (ISetting['value'] extends undefined ? never : ISetting['value']) | null,
+		options?: UpdateOptions,
 	): Promise<Document | UpdateResult> {
 		const query = {
 			blocked: { $ne: true },
@@ -66,7 +79,7 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 			},
 		};
 
-		return this.updateOne(query, update);
+		return this.updateOne(query, update, options);
 	}
 
 	async resetValueById(
@@ -88,17 +101,22 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 		return this.updateValueById(_id, value);
 	}
 
-	async incrementValueById(_id: ISetting['_id'], value = 1): Promise<Document | UpdateResult> {
-		return this.updateOne(
+	async incrementValueById(
+		_id: ISetting['_id'],
+		value?: ISetting['value'],
+		options?: FindOneAndUpdateOptions,
+	): Promise<ModifyResult<ISetting>> {
+		return this.findOneAndUpdate(
 			{
 				blocked: { $ne: true },
 				_id,
 			},
 			{
 				$inc: {
-					value,
+					value: value || 1,
 				},
 			} as unknown as UpdateFilter<ISetting>,
+			options,
 		);
 	}
 

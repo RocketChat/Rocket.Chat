@@ -1,19 +1,21 @@
-import { Margins, States, StatesIcon, StatesSubtitle, StatesTitle, Tabs } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Box, Callout, Margins, States, StatesIcon, StatesSubtitle, StatesTitle, Tabs } from '@rocket.chat/fuselage';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../components/Page';
-import MessageListSkeleton from '../../components/message/list/MessageListSkeleton';
-import { getErrorMessage } from '../../lib/errorHandling';
 import AuditForm from './components/AuditForm';
 import AuditResult from './components/AuditResult';
 import { useAuditMutation } from './hooks/useAuditMutation';
 import { useAuditTab } from './hooks/useAuditTab';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../components/Page';
+import MessageListSkeleton from '../../components/message/list/MessageListSkeleton';
+import { getErrorMessage } from '../../lib/errorHandling';
 
 const AuditPage = () => {
 	const [type, setType] = useAuditTab();
+	const [selectedRoom, setSelectedRoom] = useState<IRoom | undefined>();
 	const auditMutation = useAuditMutation(type);
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Page background='room'>
@@ -34,7 +36,13 @@ const AuditPage = () => {
 			</Tabs>
 			<PageScrollableContentWithShadow mb={-4}>
 				<Margins block={4}>
-					<AuditForm key={type} type={type} onSubmit={auditMutation.mutate} />
+					<AuditForm key={type} type={type} setSelectedRoom={setSelectedRoom} onSubmit={auditMutation.mutate} />
+					{selectedRoom?.encrypted && type === '' ? (
+						<Callout type='warning' icon='circle-exclamation' marginBlock='x16'>
+							<Box fontScale='p2b'>{t('Encrypted_content_cannot_be_searched_and_audited')}</Box>
+							{t('Encrypted_content_cannot_be_searched_and_audited_subtitle')}
+						</Callout>
+					) : null}
 					{auditMutation.isLoading && <MessageListSkeleton messageCount={5} />}
 					{auditMutation.isError && (
 						<States>

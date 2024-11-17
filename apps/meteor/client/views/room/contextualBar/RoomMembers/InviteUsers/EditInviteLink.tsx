@@ -1,9 +1,9 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Field, FieldLabel, FieldRow, Select, Button } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 type EditInviteLinkProps = {
 	daysAndMaxUses: { days: string; maxUses: string };
@@ -11,7 +11,7 @@ type EditInviteLinkProps = {
 };
 
 const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const {
 		handleSubmit,
 		formState: { isDirty, isSubmitting },

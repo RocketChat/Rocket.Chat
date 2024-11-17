@@ -1,18 +1,12 @@
-import {
-  AutoComplete,
-  Option,
-  Box,
-  Options,
-  Chip,
-} from '@rocket.chat/fuselage';
+import { AutoComplete, Option, Box, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useCallback, useState } from 'react';
 
+import { useChannelsData } from './hooks/useChannelsData';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
-import { useChannelsData } from './hooks/useChannelsData';
 
 type ChannelsSelectElementProps = BlockProps<UiKit.ChannelsSelectElement>;
 
@@ -28,10 +22,10 @@ const ChannelsSelectElement = ({
   const options = useChannelsData({ filter: filterDebounced });
 
   const handleChange = useCallback(
-    (value) => {
-      action({ target: { value } });
+    (value: string | string[]) => {
+      if (!Array.isArray(value)) action({ target: { value } });
     },
-    [action]
+    [action],
   );
 
   return (
@@ -59,7 +53,7 @@ const ChannelsSelectElement = ({
           label={label.name}
           avatar={
             <RoomAvatar
-              size={Options.AvatarSize}
+              size='x20'
               room={{
                 type: label.type,
                 _id: value,

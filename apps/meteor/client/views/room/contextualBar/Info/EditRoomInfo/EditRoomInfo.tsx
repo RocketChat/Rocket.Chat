@@ -1,4 +1,5 @@
-import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
+/* eslint-disable complexity */
+import type { IRoomWithRetentionPolicy, SidepanelItem } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
@@ -19,14 +20,20 @@ import {
 	ButtonGroup,
 	Box,
 	TextAreaInput,
+	AccordionItem,
+	Divider,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { useEditRoomInitialValues } from './useEditRoomInitialValues';
+import { useEditRoomPermissions } from './useEditRoomPermissions';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
 import {
 	ContextualbarHeader,
@@ -38,11 +45,10 @@ import {
 } from '../../../../../components/Contextualbar';
 import RawText from '../../../../../components/RawText';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
+import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { getDirtyFields } from '../../../../../lib/getDirtyFields';
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
-import { useEditRoomInitialValues } from './useEditRoomInitialValues';
-import { useEditRoomPermissions } from './useEditRoomPermissions';
 
 type EditRoomInfoProps = {
 	room: IRoomWithRetentionPolicy;
@@ -59,24 +65,25 @@ const title = {
 const getRetentionSetting = (roomType: IRoomWithRetentionPolicy['t']): string => {
 	switch (roomType) {
 		case 'd':
-			return 'RetentionPolicy_MaxAge_DMs';
+			return 'RetentionPolicy_TTL_DMs';
 		case 'p':
-			return 'RetentionPolicy_MaxAge_Groups';
+			return 'RetentionPolicy_TTL_Groups';
 		case 'c':
 		default:
-			return 'RetentionPolicy_MaxAge_Channels';
+			return 'RetentionPolicy_TTL_Channels';
 	}
 };
 
 const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) => {
+	const query = useQueryClient();
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isFederated = useMemo(() => isRoomFederated(room), [room]);
 	// eslint-disable-next-line no-nested-ternary
-	const roomType = 'prid' in room ? 'discussion' : room.teamId ? 'team' : 'channel';
+	const roomType = 'prid' in room ? 'discussion' : room.teamMain ? 'team' : 'channel';
 
 	const retentionPolicy = useRetentionPolicy(room);
-	const retentionMaxAgeDefault = useSetting<number>(getRetentionSetting(room.t)) ?? 30;
+	const retentionMaxAgeDefault = msToTimeUnit(TIMEUNIT.days, useSetting(getRetentionSetting(room.t), 2592000000)) ?? 30;
 	const defaultValues = useEditRoomInitialValues(room);
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
@@ -115,6 +122,8 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		retentionOverrideGlobal,
 		roomType: roomTypeP,
 		reactWhenReadOnly,
+		showChannels,
+		showDiscussions,
 	} = watch();
 
 	const {
@@ -152,15 +161,26 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 			retentionMaxAge,
 			retentionExcludePinned,
 			retentionFilesOnly,
+			retentionIgnoreThreads,
 			...formData
 		}) => {
-			const data = getDirtyFields(formData, dirtyFields);
+			const data = getDirtyFields<Partial<typeof defaultValues>>(formData, dirtyFields);
 			delete data.archived;
+			delete data.showChannels;
+			delete data.showDiscussions;
+
+			const sidepanelItems = [showChannels && 'channels', showDiscussions && 'discussions'].filter(Boolean) as [
+				SidepanelItem,
+				SidepanelItem?,
+			];
+
+			const sidepanel = sidepanelItems.length > 0 ? { items: sidepanelItems } : null;
 
 			try {
 				await saveAction({
 					rid: room._id,
 					...data,
+					...(roomType === 'team' ? { sidepanel } : null),
 					...((data.joinCode || 'joinCodeRequired' in data) && { joinCode: joinCodeRequired ? data.joinCode : '' }),
 					...((data.systemMessages || !hideSysMes) && {
 						systemMessages: hideSysMes && data.systemMessages,
@@ -172,9 +192,11 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 							retentionMaxAge,
 							retentionExcludePinned,
 							retentionFilesOnly,
+							retentionIgnoreThreads,
 						}),
 				});
 
+				await query.invalidateQueries(['/v1/rooms.info', room._id]);
 				dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
 				onClickClose();
 			} catch (error) {
@@ -218,6 +240,14 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const retentionMaxAgeField = useUniqueId();
 	const retentionExcludePinnedField = useUniqueId();
 	const retentionFilesOnlyField = useUniqueId();
+	const retentionIgnoreThreads = useUniqueId();
+	const showDiscussionsField = useUniqueId();
+	const showChannelsField = useUniqueId();
+
+	const showAdvancedSettings = canViewEncrypted || canViewReadOnly || readOnly || canViewArchived || canViewJoinCode || canViewHideSysMes;
+	const showRetentionPolicy = canEditRoomRetentionPolicy && retentionPolicy?.enabled;
+
+	const showAccordion = showAdvancedSettings || showRetentionPolicy;
 
 	return (
 		<>
@@ -245,7 +275,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 									name='roomName'
 									control={control}
 									rules={{
-										required: t('error-the-field-is-required', { field: t('Name') }),
+										required: t('Required_field', { field: t('Name') }),
 										validate: (value) => validateName(value),
 									}}
 									render={({ field }) => (
@@ -311,7 +341,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 								</FieldRow>
 							</Field>
 						)}
-
 						{canViewType && (
 							<Field>
 								<FieldRow>
@@ -340,231 +369,301 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 								</FieldRow>
 							</Field>
 						)}
-						{canViewReadOnly && (
-							<Field>
-								<FieldRow>
-									<FieldLabel htmlFor={readOnlyField}>{t('Read_only')}</FieldLabel>
-									<Controller
-										control={control}
-										name='readOnly'
-										render={({ field: { value, ...field } }) => (
-											<ToggleSwitch
-												id={readOnlyField}
-												{...field}
-												checked={value}
-												disabled={!canSetReadOnly || isFederated}
-												aria-describedby={`${readOnlyField}-hint`}
-											/>
-										)}
-									/>
-								</FieldRow>
-								<FieldHint id={`${readOnlyField}-hint`}>
-									{readOnly ? t('Read_only_field_hint_enabled', { roomType }) : t('Read_only_field_hint_disabled')}
-								</FieldHint>
-							</Field>
-						)}
-						{readOnly && (
-							<Field>
-								<FieldRow>
-									<FieldLabel htmlFor={reactWhenReadOnlyField}>{t('React_when_read_only')}</FieldLabel>
-									<Controller
-										control={control}
-										name='reactWhenReadOnly'
-										render={({ field: { value, ...field } }) => (
-											<ToggleSwitch
-												id={reactWhenReadOnlyField}
-												{...field}
-												disabled={!canSetReactWhenReadOnly}
-												checked={value}
-												aria-describedby={`${reactWhenReadOnlyField}-hint`}
-											/>
-										)}
-									/>
-								</FieldRow>
-								<FieldRow>
-									<FieldHint id={`${reactWhenReadOnlyField}-hint`}>
-										{reactWhenReadOnly ? t('Anyone_can_react_to_messages') : t('Only_authorized_users_can_react_to_messages')}
-									</FieldHint>
-								</FieldRow>
-							</Field>
-						)}
-						{canViewArchived && (
-							<Field>
-								<FieldRow>
-									<FieldLabel htmlFor={archivedField}>{t('Room_archivation_state_true')}</FieldLabel>
-									<Controller
-										control={control}
-										name='archived'
-										render={({ field: { value, ...field } }) => (
-											<ToggleSwitch
-												id={archivedField}
-												aria-describedby={`${archivedField}-hint`}
-												{...field}
-												disabled={!canArchiveOrUnarchive}
-												checked={value}
-											/>
-										)}
-									/>
-								</FieldRow>
-								{archived && (
-									<FieldRow>
-										<FieldHint id={`${archivedField}-hint`}>{t('New_messages_cannot_be_sent')}</FieldHint>
-									</FieldRow>
-								)}
-							</Field>
-						)}
-						{canViewJoinCode && (
-							<Field>
-								<FieldRow>
-									<FieldLabel htmlFor={joinCodeRequiredField}>{t('Password_to_access')}</FieldLabel>
-									<Controller
-										control={control}
-										name='joinCodeRequired'
-										render={({ field: { value, ...field } }) => (
-											<ToggleSwitch id={joinCodeRequiredField} {...field} disabled={isFederated} checked={value} />
-										)}
-									/>
-								</FieldRow>
-								{joinCodeRequired && (
-									<FieldRow>
-										<Controller
-											name='joinCode'
-											control={control}
-											render={({ field }) => <PasswordInput {...field} placeholder={t('Reset_password')} disabled={!joinCodeRequired} />}
-										/>
-									</FieldRow>
-								)}
-							</Field>
-						)}
-						{canViewHideSysMes && (
-							<Field>
-								<FieldRow>
-									<FieldLabel htmlFor={hideSysMesField}>{t('Hide_System_Messages')}</FieldLabel>
-									<Controller
-										control={control}
-										name='hideSysMes'
-										render={({ field: { value, ...field } }) => (
-											<ToggleSwitch id={hideSysMesField} {...field} checked={value} disabled={isFederated} />
-										)}
-									/>
-								</FieldRow>
-								<FieldRow>
-									<Controller
-										control={control}
-										name='systemMessages'
-										render={({ field }) => (
-											<MultiSelect
-												{...field}
-												options={sysMesOptions}
-												disabled={!hideSysMes || isFederated}
-												placeholder={t('Select_messages_to_hide')}
-											/>
-										)}
-									/>
-								</FieldRow>
-							</Field>
-						)}
 					</FieldGroup>
-					{canEditRoomRetentionPolicy && retentionPolicy?.enabled && (
+					{showAccordion && (
 						<Accordion>
-							<Accordion.Item title={t('Prune')}>
-								<FieldGroup>
-									<Field>
-										<FieldRow>
-											<FieldLabel htmlFor={retentionEnabledField}>{t('RetentionPolicyRoom_Enabled')}</FieldLabel>
-											<Controller
-												control={control}
-												name='retentionEnabled'
-												render={({ field: { value, ...field } }) => <ToggleSwitch id={retentionEnabledField} {...field} checked={value} />}
-											/>
-										</FieldRow>
-									</Field>
-									<Field>
-										<FieldRow>
-											<FieldLabel htmlFor={retentionOverrideGlobalField}>{t('RetentionPolicyRoom_OverrideGlobal')}</FieldLabel>
-											<Controller
-												control={control}
-												name='retentionOverrideGlobal'
-												render={({ field: { value, ...field } }) => (
-													<ToggleSwitch id={retentionOverrideGlobalField} {...field} disabled={!retentionEnabled} checked={value} />
-												)}
-											/>
-										</FieldRow>
-									</Field>
-									{retentionOverrideGlobal && (
-										<>
-											<Callout type='danger'>
-												<RawText>{t('RetentionPolicyRoom_ReadTheDocs')}</RawText>
-											</Callout>
+							{showAdvancedSettings && (
+								<AccordionItem title={t('Advanced_settings')}>
+									{roomType === 'team' && (
+										<FeaturePreview feature='sidepanelNavigation'>
+											<FeaturePreviewOff>{null}</FeaturePreviewOff>
+											<FeaturePreviewOn>
+												<FieldGroup>
+													<Box is='h5' fontScale='h5' color='titles-labels'>
+														{t('Navigation')}
+													</Box>
+													<Field>
+														<FieldRow>
+															<FieldLabel htmlFor={showChannelsField}>{t('Channels')}</FieldLabel>
+															<Controller
+																control={control}
+																name='showChannels'
+																render={({ field: { value, ...field } }) => (
+																	<ToggleSwitch id={showChannelsField} checked={value} {...field} />
+																)}
+															/>
+														</FieldRow>
+														<FieldRow>
+															<FieldHint id={`${showChannelsField}-hint`}>{t('Show_channels_description')}</FieldHint>
+														</FieldRow>
+													</Field>
+													<Field>
+														<FieldRow>
+															<FieldLabel htmlFor={showDiscussionsField}>{t('Discussions')}</FieldLabel>
+															<Controller
+																control={control}
+																name='showDiscussions'
+																render={({ field: { value, ...field } }) => (
+																	<ToggleSwitch id={showDiscussionsField} checked={value} {...field} />
+																)}
+															/>
+														</FieldRow>
+														<FieldRow>
+															<FieldHint id={`${showDiscussionsField}-hint`}>{t('Show_discussions_description')}</FieldHint>
+														</FieldRow>
+													</Field>
+												</FieldGroup>
+												<Divider mb={24} />
+											</FeaturePreviewOn>
+										</FeaturePreview>
+									)}
+									<FieldGroup>
+										<Box is='h5' fontScale='h5' color='titles-labels'>
+											{t('Security_and_permissions')}
+										</Box>
+										{canViewEncrypted && (
 											<Field>
-												<FieldLabel htmlFor={retentionMaxAgeField}>
-													{t('RetentionPolicyRoom_MaxAge', { max: retentionMaxAgeDefault })}
-												</FieldLabel>
+												<FieldRow>
+													<FieldLabel htmlFor={encryptedField}>{t('Encrypted')}</FieldLabel>
+													<Controller
+														control={control}
+														name='encrypted'
+														render={({ field: { value, ...field } }) => (
+															<ToggleSwitch
+																id={encryptedField}
+																aria-describedby={`${encryptedField}-hint`}
+																{...field}
+																disabled={!canToggleEncryption || isFederated}
+																checked={value}
+															/>
+														)}
+													/>
+												</FieldRow>
+												<FieldRow>
+													<FieldHint id={`${encryptedField}-hint`}>{t('Encrypted_field_hint')}</FieldHint>
+												</FieldRow>
+											</Field>
+										)}
+										{canViewReadOnly && (
+											<Field>
+												<FieldRow>
+													<FieldLabel htmlFor={readOnlyField}>{t('Read_only')}</FieldLabel>
+													<Controller
+														control={control}
+														name='readOnly'
+														render={({ field: { value, ...field } }) => (
+															<ToggleSwitch
+																id={readOnlyField}
+																{...field}
+																checked={value}
+																disabled={!canSetReadOnly || isFederated}
+																aria-describedby={`${readOnlyField}-hint`}
+															/>
+														)}
+													/>
+												</FieldRow>
+												<FieldHint id={`${readOnlyField}-hint`}>
+													{readOnly ? t('Read_only_field_hint_enabled', { roomType }) : t('Read_only_field_hint_disabled')}
+												</FieldHint>
+											</Field>
+										)}
+										{readOnly && (
+											<Field>
+												<FieldRow>
+													<FieldLabel htmlFor={reactWhenReadOnlyField}>{t('React_when_read_only')}</FieldLabel>
+													<Controller
+														control={control}
+														name='reactWhenReadOnly'
+														render={({ field: { value, ...field } }) => (
+															<ToggleSwitch
+																id={reactWhenReadOnlyField}
+																{...field}
+																disabled={!canSetReactWhenReadOnly}
+																checked={value}
+																aria-describedby={`${reactWhenReadOnlyField}-hint`}
+															/>
+														)}
+													/>
+												</FieldRow>
+												<FieldRow>
+													<FieldHint id={`${reactWhenReadOnlyField}-hint`}>
+														{reactWhenReadOnly ? t('Anyone_can_react_to_messages') : t('Only_authorized_users_can_react_to_messages')}
+													</FieldHint>
+												</FieldRow>
+											</Field>
+										)}
+										{canViewArchived && (
+											<Field>
+												<FieldRow>
+													<FieldLabel htmlFor={archivedField}>{t('Room_archivation_state_true')}</FieldLabel>
+													<Controller
+														control={control}
+														name='archived'
+														render={({ field: { value, ...field } }) => (
+															<ToggleSwitch
+																id={archivedField}
+																aria-describedby={`${archivedField}-hint`}
+																{...field}
+																disabled={!canArchiveOrUnarchive}
+																checked={value}
+															/>
+														)}
+													/>
+												</FieldRow>
+												{archived && (
+													<FieldRow>
+														<FieldHint id={`${archivedField}-hint`}>{t('New_messages_cannot_be_sent')}</FieldHint>
+													</FieldRow>
+												)}
+											</Field>
+										)}
+										{canViewJoinCode && (
+											<Field>
+												<FieldRow>
+													<FieldLabel htmlFor={joinCodeRequiredField}>{t('Password_to_access')}</FieldLabel>
+													<Controller
+														control={control}
+														name='joinCodeRequired'
+														render={({ field: { value, ...field } }) => (
+															<ToggleSwitch id={joinCodeRequiredField} {...field} disabled={isFederated} checked={value} />
+														)}
+													/>
+												</FieldRow>
+												{joinCodeRequired && (
+													<FieldRow>
+														<Controller
+															name='joinCode'
+															control={control}
+															render={({ field }) => (
+																<PasswordInput {...field} placeholder={t('Reset_password')} disabled={!joinCodeRequired} />
+															)}
+														/>
+													</FieldRow>
+												)}
+											</Field>
+										)}
+										{canViewHideSysMes && (
+											<Field>
+												<FieldRow>
+													<FieldLabel htmlFor={hideSysMesField}>{t('Hide_System_Messages')}</FieldLabel>
+													<Controller
+														control={control}
+														name='hideSysMes'
+														render={({ field: { value, ...field } }) => (
+															<ToggleSwitch id={hideSysMesField} {...field} checked={value} disabled={isFederated} />
+														)}
+													/>
+												</FieldRow>
 												<FieldRow>
 													<Controller
 														control={control}
-														name='retentionMaxAge'
-														render={({ field: { onChange, ...field } }) => (
-															<NumberInput
-																id={retentionMaxAgeField}
+														name='systemMessages'
+														render={({ field }) => (
+															<MultiSelect
 																{...field}
-																onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(Number(e.currentTarget.value))}
+																options={sysMesOptions}
+																disabled={!hideSysMes || isFederated}
+																placeholder={t('Select_messages_to_hide')}
 															/>
 														)}
 													/>
 												</FieldRow>
 											</Field>
-											<Field>
-												<FieldRow>
-													<FieldLabel htmlFor={retentionExcludePinnedField}>{t('RetentionPolicyRoom_ExcludePinned')}</FieldLabel>
-													<Controller
-														control={control}
-														name='retentionExcludePinned'
-														render={({ field: { value, ...field } }) => (
-															<ToggleSwitch id={retentionExcludePinnedField} {...field} checked={value} />
-														)}
-													/>
-												</FieldRow>
-											</Field>
-											<Field>
-												<FieldRow>
-													<FieldLabel htmlFor={retentionFilesOnlyField}>{t('RetentionPolicyRoom_FilesOnly')}</FieldLabel>
-													<Controller
-														control={control}
-														name='retentionFilesOnly'
-														render={({ field: { value, ...field } }) => (
-															<ToggleSwitch id={retentionFilesOnlyField} {...field} checked={value} />
-														)}
-													/>
-												</FieldRow>
-											</Field>
-											{canViewEncrypted && (
+										)}
+									</FieldGroup>
+								</AccordionItem>
+							)}
+							{showRetentionPolicy && (
+								<AccordionItem title={t('Prune')}>
+									<FieldGroup>
+										<Field>
+											<FieldRow>
+												<FieldLabel htmlFor={retentionEnabledField}>{t('RetentionPolicyRoom_Enabled')}</FieldLabel>
+												<Controller
+													control={control}
+													name='retentionEnabled'
+													render={({ field: { value, ...field } }) => (
+														<ToggleSwitch id={retentionEnabledField} {...field} checked={value} />
+													)}
+												/>
+											</FieldRow>
+										</Field>
+										<Field>
+											<FieldRow>
+												<FieldLabel htmlFor={retentionOverrideGlobalField}>{t('RetentionPolicyRoom_OverrideGlobal')}</FieldLabel>
+												<Controller
+													control={control}
+													name='retentionOverrideGlobal'
+													render={({ field: { value, ...field } }) => (
+														<ToggleSwitch id={retentionOverrideGlobalField} {...field} disabled={!retentionEnabled} checked={value} />
+													)}
+												/>
+											</FieldRow>
+										</Field>
+										{retentionOverrideGlobal && (
+											<>
+												<Callout type='danger'>
+													<RawText>{t('RetentionPolicyRoom_ReadTheDocs')}</RawText>
+												</Callout>
 												<Field>
+													<FieldLabel htmlFor={retentionMaxAgeField}>
+														{t('RetentionPolicyRoom_MaxAge', { max: retentionMaxAgeDefault })}
+													</FieldLabel>
 													<FieldRow>
-														<FieldLabel htmlFor={encryptedField}>{t('Encrypted')}</FieldLabel>
 														<Controller
 															control={control}
-															name='encrypted'
-															render={({ field: { value, ...field } }) => (
-																<ToggleSwitch
-																	id={encryptedField}
-																	aria-describedby={`${encryptedField}-hint`}
+															name='retentionMaxAge'
+															render={({ field: { onChange, ...field } }) => (
+																<NumberInput
+																	id={retentionMaxAgeField}
 																	{...field}
-																	disabled={!canToggleEncryption || isFederated}
-																	checked={value}
+																	onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(Number(e.currentTarget.value))}
 																/>
 															)}
 														/>
 													</FieldRow>
+												</Field>
+												<Field>
 													<FieldRow>
-														<FieldHint id={`${encryptedField}-hint`}>{t('Encrypted_field_hint')}</FieldHint>
+														<FieldLabel htmlFor={retentionExcludePinnedField}>{t('RetentionPolicyRoom_ExcludePinned')}</FieldLabel>
+														<Controller
+															control={control}
+															name='retentionExcludePinned'
+															render={({ field: { value, ...field } }) => (
+																<ToggleSwitch id={retentionExcludePinnedField} {...field} checked={value} />
+															)}
+														/>
 													</FieldRow>
 												</Field>
-											)}
-										</>
-									)}
-								</FieldGroup>
-							</Accordion.Item>
+												<Field>
+													<FieldRow>
+														<FieldLabel htmlFor={retentionFilesOnlyField}>{t('RetentionPolicyRoom_FilesOnly')}</FieldLabel>
+														<Controller
+															control={control}
+															name='retentionFilesOnly'
+															render={({ field: { value, ...field } }) => (
+																<ToggleSwitch id={retentionFilesOnlyField} {...field} checked={value} />
+															)}
+														/>
+													</FieldRow>
+												</Field>
+												<Field>
+													<FieldRow>
+														<FieldLabel htmlFor={retentionIgnoreThreads}>{t('RetentionPolicy_DoNotPruneThreads')}</FieldLabel>
+														<Controller
+															control={control}
+															name='retentionIgnoreThreads'
+															render={({ field: { value, ...field } }) => (
+																<ToggleSwitch id={retentionIgnoreThreads} {...field} checked={value} />
+															)}
+														/>
+													</FieldRow>
+												</Field>
+											</>
+										)}
+									</FieldGroup>
+								</AccordionItem>
+							)}
 						</Accordion>
 					)}
 				</form>

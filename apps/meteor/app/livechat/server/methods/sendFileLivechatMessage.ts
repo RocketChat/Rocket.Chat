@@ -5,14 +5,14 @@ import type {
 	VideoAttachmentProps,
 	IUpload,
 } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { FileUpload } from '../../../file-upload/server';
 import { sendMessageLivechat } from './sendMessageLivechat';
+import { FileUpload } from '../../../file-upload/server';
 
 interface ISendFileLivechatMessage {
 	roomId: string;
@@ -21,7 +21,7 @@ interface ISendFileLivechatMessage {
 	msgData?: { avatar?: string; emoji?: string; alias?: string; groupable?: boolean; msg?: string };
 }
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		sendFileLivechatMessage(

@@ -1,6 +1,6 @@
-import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChatEmbedded } from '../page-objects';
@@ -14,11 +14,6 @@ declare const window: Window & {
 		};
 	};
 };
-
-const createVisitor = () => ({
-	name: `${faker.person.firstName()} ${faker.string.uuid()}`,
-	email: faker.internet.email(),
-});
 
 test.use({ storageState: Users.user1.state });
 
@@ -58,7 +53,7 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 	});
 
 	test('OC - Livechat - Change bubble background color', async () => {
-		const visitor = createVisitor();
+		const visitor = createFakeVisitor();
 
 		await test.step('should initiate Livechat conversation', async () => {
 			await poLiveChat.openLiveChat();
@@ -74,8 +69,8 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 		});
 
 		await test.step('expect to have default bubble background color', async () => {
-			await expect(await poLiveChat.messageBubbleBackground('message_from_user')).toBe('rgb(193, 39, 45)');
-			await expect(await poLiveChat.messageBubbleBackground('message_from_agent')).toBe('rgb(247, 248, 250)');
+			expect(await poLiveChat.messageBubbleBackground('message_from_user')).toBe('rgb(193, 39, 45)');
+			expect(await poLiveChat.messageBubbleBackground('message_from_agent')).toBe('rgb(247, 248, 250)');
 		});
 
 		await test.step('expect to change bubble background color', async () => {
@@ -86,8 +81,8 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 				}),
 			);
 
-			await expect(await poLiveChat.messageBubbleBackground('message_from_user')).toBe('rgb(186, 218, 85)');
-			await expect(await poLiveChat.messageBubbleBackground('message_from_agent')).toBe('rgb(0, 100, 250)');
+			expect(await poLiveChat.messageBubbleBackground('message_from_user')).toBe('rgb(186, 218, 85)');
+			expect(await poLiveChat.messageBubbleBackground('message_from_agent')).toBe('rgb(0, 100, 250)');
 		});
 
 		await test.step('expect to reset bubble background color to defaults', async () => {
@@ -95,8 +90,8 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 				window.RocketChat.livechat.setTheme({ guestBubbleBackgroundColor: undefined, agentBubbleBackgroundColor: undefined }),
 			);
 
-			await expect(await poLiveChat.messageBubbleBackground('message_from_user')).toBe('rgb(193, 39, 45)');
-			await expect(await poLiveChat.messageBubbleBackground('message_from_agent')).toBe('rgb(247, 248, 250)');
+			expect(await poLiveChat.messageBubbleBackground('message_from_user')).toBe('rgb(193, 39, 45)');
+			expect(await poLiveChat.messageBubbleBackground('message_from_agent')).toBe('rgb(247, 248, 250)');
 		});
 
 		await test.step('should close the conversation', async () => {

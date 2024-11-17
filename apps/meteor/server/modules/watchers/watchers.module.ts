@@ -37,9 +37,9 @@ import {
 	LivechatPriority,
 } from '@rocket.chat/models';
 
+import { getMessageToBroadcast } from '../../../app/lib/server/lib/notifyListener';
 import { subscriptionFields, roomFields } from '../../../lib/publishFields';
 import type { DatabaseWatcher } from '../../database/DatabaseWatcher';
-import { getMessageToBroadcast } from './lib/messages';
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 
@@ -133,6 +133,7 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 							| 'ignored'
 							| 'E2EKey'
 							| 'E2ESuggestedKey'
+							| 'oldRoomKeys'
 							| 'tunread'
 							| 'tunreadGroup'
 							| 'tunreadUser'

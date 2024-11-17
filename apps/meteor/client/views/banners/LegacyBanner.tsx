@@ -1,5 +1,4 @@
 import { Banner, Icon } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
 import React, { useCallback, useEffect } from 'react';
 
 import type { LegacyBannerPayload } from '../../lib/banners';
@@ -9,7 +8,7 @@ type LegacyBannerProps = {
 	config: LegacyBannerPayload;
 };
 
-const LegacyBanner: FC<LegacyBannerProps> = ({ config }) => {
+const LegacyBanner = ({ config }: LegacyBannerProps) => {
 	const { closable = true, title, text, html, icon, modifiers } = config;
 
 	const inline = !modifiers?.includes('large');

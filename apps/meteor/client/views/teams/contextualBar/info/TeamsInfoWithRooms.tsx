@@ -1,8 +1,8 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
-import EditChannelWithData from '../../../room/contextualBar/Info/EditRoomInfo';
 import TeamsInfoWithData from './TeamsInfoWithData';
+import EditChannelWithData from '../../../room/contextualBar/Info/EditRoomInfo';
 
 const TeamsInfoWithRooms = () => {
 	const [editing, setEditing] = useState(false);
@@ -12,7 +12,7 @@ const TeamsInfoWithRooms = () => {
 		return <EditChannelWithData onClickBack={onClickBack} />;
 	}
 
-	return <TeamsInfoWithData openEditing={setEditing} />;
+	return <TeamsInfoWithData openEditing={() => setEditing(true)} />;
 };
 
 export default TeamsInfoWithRooms;

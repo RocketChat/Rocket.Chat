@@ -7,6 +7,7 @@ import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import RoomMembersRow from './RoomMembersRow';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -15,12 +16,12 @@ import {
 	ContextualbarContent,
 	ContextualbarFooter,
 	ContextualbarEmptyContent,
+	ContextualbarSection,
 } from '../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
-import RoomMembersRow from './RoomMembersRow';
 
-type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status'>;
+type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'>;
 
 type RoomMembersProps = {
 	rid: IRoom['_id'];
@@ -83,7 +84,7 @@ const RoomMembers = ({
 		[loadMoreItems, members],
 	);
 
-	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
+	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	return (
 		<>
@@ -92,20 +93,19 @@ const RoomMembers = ({
 				<ContextualbarTitle>{isTeam ? t('Teams_members') : t('Members')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-			<ContextualbarContent p={12}>
-				<Box display='flex' flexDirection='row' p={12} flexShrink={0}>
-					<TextInput
-						placeholder={t('Search_by_username')}
-						value={text}
-						ref={inputRef}
-						onChange={setText}
-						addon={<Icon name='magnifier' size='x20' />}
-					/>
-					<Box w='x144' mis={8}>
-						<Select onChange={(value): void => setType(value as 'online' | 'all')} value={type} options={options} />
-					</Box>
+			<ContextualbarSection>
+				<TextInput
+					placeholder={t('Search_by_username')}
+					value={text}
+					ref={inputRef}
+					onChange={setText}
+					addon={<Icon name='magnifier' size='x20' />}
+				/>
+				<Box w='x144' mis={8}>
+					<Select onChange={(value): void => setType(value as 'online' | 'all')} value={type} options={options} />
 				</Box>
-
+			</ContextualbarSection>
+			<ContextualbarContent p={12}>
 				{loading && (
 					<Box pi={24} pb={12}>
 						<Throbber size='x12' />

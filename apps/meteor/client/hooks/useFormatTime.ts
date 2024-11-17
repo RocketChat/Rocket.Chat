@@ -6,7 +6,7 @@ const dayFormat = ['h:mm A', 'H:mm'] as const;
 
 export const useFormatTime = (): ((input: moment.MomentInput) => string) => {
 	const clockMode = useUserPreference<1 | 2>('clockMode');
-	const format = useSetting('Message_TimeFormat') as string;
+	const format = useSetting('Message_TimeFormat', 'LT');
 	const sameDay = clockMode !== undefined ? dayFormat[clockMode - 1] : format;
 
 	return useCallback(

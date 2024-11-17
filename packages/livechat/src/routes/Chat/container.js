@@ -84,6 +84,14 @@ class ChatContainer extends Component {
 			return user;
 		}
 
+		const {
+			iframe: { defaultDepartment },
+		} = store.state;
+
+		if (!guest?.department && defaultDepartment) {
+			guest.department = defaultDepartment;
+		}
+
 		const visitor = { token, ...guest };
 		const { visitor: newUser } = await Livechat.grantVisitor({ visitor });
 		await dispatch({ user: newUser });
@@ -235,9 +243,11 @@ class ChatContainer extends Component {
 
 		await dispatch({ loading: true });
 		try {
-			if (rid) {
-				await Livechat.closeChat({ rid });
+			if (!rid) {
+				throw new Error('error-room-not-found');
 			}
+
+			await Livechat.closeChat({ rid });
 		} catch (error) {
 			console.error(error);
 			const alert = { id: createToken(), children: i18n.t('error_closing_chat'), error: true, timeout: 0 };
@@ -280,8 +290,8 @@ class ChatContainer extends Component {
 	};
 
 	canFinishChat = () => {
-		const { room, connecting } = this.props;
-		return room !== undefined || connecting;
+		const { room, connecting, visitorsCanCloseChat } = this.props;
+		return visitorsCanCloseChat && (room?._id !== undefined || connecting);
 	};
 
 	canRemoveUserData = () => {

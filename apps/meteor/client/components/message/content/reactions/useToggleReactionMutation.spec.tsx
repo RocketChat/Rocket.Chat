@@ -1,20 +1,19 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { useToggleReactionMutation } from './useToggleReactionMutation';
 
 it('should be call rest `POST /v1/chat.react` method', async () => {
 	const fn = jest.fn();
 
-	const { result, waitFor } = renderHook(() => useToggleReactionMutation(), {
+	const { result } = renderHook(() => useToggleReactionMutation(), {
+		legacyRoot: true,
 		wrapper: mockAppRoot().withEndpoint('POST', '/v1/chat.react', fn).withJohnDoe().build(),
 	});
 
-	await act(async () => {
-		await result.current.mutateAsync({ mid: 'MID', reaction: 'smile' });
-	});
+	result.current.mutate({ mid: 'MID', reaction: 'smile' });
 
-	await waitFor(() => result.current.isLoading === false);
+	await waitFor(() => expect(result.current.status).toBe('success'));
 
 	expect(fn).toHaveBeenCalledWith({
 		messageId: 'MID',
@@ -26,15 +25,14 @@ it('should not work for non-logged in users', async () => {
 	const fn = jest.fn();
 
 	const { result } = renderHook(() => useToggleReactionMutation(), {
+		legacyRoot: true,
 		wrapper: mockAppRoot().withEndpoint('POST', '/v1/chat.react', fn).build(),
 	});
 
-	await act(async () => {
-		expect(result.current.mutateAsync({ mid: 'MID', reaction: 'smile' })).rejects.toThrowError();
-	});
+	result.current.mutate({ mid: 'MID', reaction: 'smile' });
+
+	await waitFor(() => expect(result.current.status).toBe('error'));
 
 	expect(fn).not.toHaveBeenCalled();
-
-	expect(result.current.status).toBe('error');
 	expect(result.current.error).toEqual(new Error('Not logged in'));
 });

@@ -1,6 +1,6 @@
 import { api } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { CustomSounds } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -20,7 +20,7 @@ export type ICustomSoundData = {
 	random?: number;
 };
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		insertOrUpdateSound(soundData: ICustomSoundData): Promise<string>;

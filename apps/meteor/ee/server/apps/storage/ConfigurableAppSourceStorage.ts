@@ -11,7 +11,10 @@ export class ConfigurableAppSourceStorage extends AppSourceStorage {
 
 	private storage: AppSourceStorage;
 
-	constructor(readonly storageType: string, filesystemStoragePath: string) {
+	constructor(
+		readonly storageType: string,
+		filesystemStoragePath: string,
+	) {
 		super();
 
 		this.filesystem = new AppFileSystemSourceStorage();

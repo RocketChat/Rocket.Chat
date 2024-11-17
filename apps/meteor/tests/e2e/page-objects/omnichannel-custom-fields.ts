@@ -33,7 +33,7 @@ export class OmnichannelCustomFields {
 	}
 
 	get inputSearch(): Locator {
-		return this.page.locator('[placeholder="Search"]');
+		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	firstRowInTable(filedName: string) {

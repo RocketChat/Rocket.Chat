@@ -1,7 +1,7 @@
 import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Roles, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Babel } from 'meteor/babel-compiler';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
@@ -12,7 +12,7 @@ import { isScriptEngineFrozen, validateScriptEngine } from '../../lib/validateSc
 
 const validChannelChars = ['@', '#'];
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		updateIncomingIntegration(
@@ -67,8 +67,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const oldScriptEngine = currentIntegration.scriptEngine ?? 'vm2';
-		const scriptEngine = integration.scriptEngine ?? oldScriptEngine;
+		const oldScriptEngine = currentIntegration.scriptEngine;
+		const scriptEngine = integration.scriptEngine ?? oldScriptEngine ?? 'isolated-vm';
 		if (
 			integration.script?.trim() &&
 			(scriptEngine !== oldScriptEngine || integration.script?.trim() !== currentIntegration.script?.trim())
@@ -181,7 +181,7 @@ Meteor.methods<ServerMethods>({
 								script: integration.script,
 								scriptEnabled: integration.scriptEnabled,
 								scriptEngine,
-						  }),
+							}),
 					...(typeof integration.overrideDestinationChannelEnabled !== 'undefined' && {
 						overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
 					}),

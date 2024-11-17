@@ -8,6 +8,9 @@ import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useMemo, useRef } from 'react';
 
+import MessageActionMenu from './MessageActionMenu';
+import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
+import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
@@ -18,8 +21,6 @@ import { useIsSelecting } from '../../../views/room/MessageList/contexts/Selecte
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
 import { useChat } from '../../../views/room/contexts/ChatContext';
 import { useRoomToolbox } from '../../../views/room/contexts/RoomToolboxContext';
-import MessageActionMenu from './MessageActionMenu';
-import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 
 const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
 	if (context) {
@@ -78,6 +79,8 @@ const MessageToolbar = ({
 
 	const actionButtonApps = useMessageActionAppsActionButtons(context);
 
+	const starsAction = useMessageActionAppsActionButtons(context, 'ai');
+
 	const { messageToolbox: hiddenActions } = useLayoutHiddenActions();
 
 	// TODO: move this to another place
@@ -135,6 +138,19 @@ const MessageToolbar = ({
 						disabled={action?.disabled?.({ message, room, user, subscription, settings: mapSettings, chat, context })}
 					/>
 				))}
+			{starsAction.data && starsAction.data.length > 0 && (
+				<MessageToolbarStarsActionMenu
+					options={starsAction.data.map((action) => ({
+						...action,
+						action: (e) => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
+					}))}
+					onChangeMenuVisibility={onChangeMenuVisibility}
+					data-qa-type='message-action-stars-menu-options'
+					context={{ message, room, user, subscription, settings: mapSettings, chat, context }}
+					isMessageEncrypted={isE2EEMessage(message)}
+				/>
+			)}
+
 			{actionsQueryResult.isSuccess && actionsQueryResult.data.menu.length > 0 && (
 				<MessageActionMenu
 					options={[...actionsQueryResult.data?.menu, ...(actionButtonApps.data ?? [])].filter(Boolean).map((action) => ({

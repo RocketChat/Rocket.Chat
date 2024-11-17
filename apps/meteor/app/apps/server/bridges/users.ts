@@ -11,6 +11,7 @@ import { deleteUser } from '../../../lib/server/functions/deleteUser';
 import { getUserCreatedByApp } from '../../../lib/server/functions/getUserCreatedByApp';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
+import { notifyOnUserChange, notifyOnUserChangeById } from '../../../lib/server/lib/notifyListener';
 
 export class AppUserBridge extends UserBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
@@ -97,6 +98,8 @@ export class AppUserBridge extends UserBridge {
 				throw new Error('Creating normal users is currently not supported');
 		}
 
+		void notifyOnUserChangeById({ clientAction: 'inserted', id: user._id });
+
 		return user._id;
 	}
 
@@ -136,6 +139,8 @@ export class AppUserBridge extends UserBridge {
 		}
 
 		await Users.updateOne({ _id: user.id }, { $set: fields as any });
+
+		void notifyOnUserChange({ clientAction: 'updated', id: user.id, diff: fields });
 
 		return true;
 	}

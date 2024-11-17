@@ -1,14 +1,8 @@
 {
 	"extends": "../../tsconfig.base.client.json",
   "compilerOptions": {
-		"module": "CommonJS",
-    "rootDirs": ["./src", "./.storybook"],
-    "outDir": "./dist",
-    "allowJs": false,
     "noImplicitReturns": true,
     "noImplicitThis": true,
-		"jsx": "react-jsx"
   },
-	"include": ["src", ".storybook/**/*"],
-  "exclude": ["node_modules", "dist", "src/**/*.stories.tsx"]
+	"include": ["src", ".storybook/**/*", "jest.config.ts"]
 }

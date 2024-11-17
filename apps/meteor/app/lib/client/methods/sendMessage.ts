@@ -1,5 +1,5 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
@@ -43,7 +43,7 @@ Meteor.methods<ServerMethods>({
 
 		await onClientMessageReceived(message as IMessage).then((message) => {
 			ChatMessage.insert(message);
-			return callbacks.run('afterSaveMessage', message, room);
+			return callbacks.run('afterSaveMessage', message, { room });
 		});
 	},
 });

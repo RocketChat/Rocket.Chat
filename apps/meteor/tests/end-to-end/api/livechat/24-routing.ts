@@ -1,3 +1,4 @@
+import type { Credentials } from '@rocket.chat/api-client';
 import { UserStatus, type ILivechatDepartment, type IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
@@ -14,7 +15,6 @@ import {
 } from '../../../data/livechat/rooms';
 import { sleep } from '../../../data/livechat/utils';
 import { updateSetting } from '../../../data/permissions.helper';
-import type { IUserCredentialsHeader } from '../../../data/user';
 import { password } from '../../../data/user';
 import { createUser, deleteUser, login, setUserActiveStatus, setUserStatus } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -31,8 +31,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 		});
 
-		let testUser: { user: IUser; credentials: IUserCredentialsHeader };
-		let testUser2: { user: IUser; credentials: IUserCredentialsHeader };
+		let testUser: { user: IUser; credentials: Credentials };
+		let testUser2: { user: IUser; credentials: Credentials };
 		let testDepartment: ILivechatDepartment;
 
 		before(async () => {
@@ -96,7 +96,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await makeAgentUnavailable(testUser.credentials);
 
 			const visitor = await createVisitor(testDepartment._id);
-			const { body } = await request.get(api(`livechat/room?token=${visitor.token}`)).expect(400);
+			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token }).expect(400);
 			expect(body.error).to.be.equal('Sorry, no online agents [no-agent-online]');
 		});
 		it('should accept a conversation but not route to anyone when Livechat_accept_chats_with_no_agents is true', async () => {
@@ -153,8 +153,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await updateSetting('Livechat_Routing_Method', 'Load_Balancing');
 		});
 
-		let testUser: { user: IUser; credentials: IUserCredentialsHeader };
-		let testUser2: { user: IUser; credentials: IUserCredentialsHeader };
+		let testUser: { user: IUser; credentials: Credentials };
+		let testUser2: { user: IUser; credentials: Credentials };
 		let testDepartment: ILivechatDepartment;
 
 		before(async () => {
@@ -242,8 +242,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await updateSetting('Livechat_Routing_Method', 'Load_Rotation');
 		});
 
-		let testUser: { user: IUser; credentials: IUserCredentialsHeader };
-		let testUser2: { user: IUser; credentials: IUserCredentialsHeader };
+		let testUser: { user: IUser; credentials: Credentials };
+		let testUser2: { user: IUser; credentials: Credentials };
 		let testDepartment: ILivechatDepartment;
 
 		before(async () => {

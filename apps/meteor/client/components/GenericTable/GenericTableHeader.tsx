@@ -1,10 +1,12 @@
 import { TableHead } from '@rocket.chat/fuselage';
-import type { FC, ComponentProps } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import React from 'react';
 
 import { GenericTableRow } from './GenericTableRow';
 
-export const GenericTableHeader: FC<ComponentProps<typeof TableHead>> = ({ children, ...props }) => (
+type GenericTableHeaderProps = ComponentPropsWithoutRef<typeof TableHead>;
+
+export const GenericTableHeader = ({ children, ...props }: GenericTableHeaderProps) => (
 	<TableHead {...props}>
 		<GenericTableRow>{children}</GenericTableRow>
 	</TableHead>

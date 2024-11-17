@@ -20,6 +20,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { useRemoveUnit } from './useRemoveUnit';
 import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
@@ -32,7 +33,6 @@ import { useRecordList } from '../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useDepartmentsByUnitsList } from '../../views/hooks/useDepartmentsByUnitsList';
 import { useMonitorsList } from '../../views/hooks/useMonitorsList';
-import { useRemoveUnit } from './useRemoveUnit';
 
 type UnitEditProps = {
 	unitData?: Serialized<IOmnichannelBusinessUnit>;
@@ -168,7 +168,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 								<Controller
 									name='name'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Name')) }}
+									rules={{ required: t('Required_field', { field: t('Name') }) }}
 									render={({ field }) => (
 										<TextInput
 											id={nameField}
@@ -195,7 +195,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 								<Controller
 									name='visibility'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Visibility')) }}
+									rules={{ required: t('Required_field', { field: t('Visibility') }) }}
 									render={({ field }) => (
 										<Select
 											id={visibilityField}
@@ -220,7 +220,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 								<Controller
 									name='departments'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Departments')) }}
+									rules={{ required: t('Required_field', { field: t('Departments') }) }}
 									render={({ field: { name, value, onChange, onBlur } }) => (
 										<PaginatedMultiSelectFiltered
 											id={departmentsField}
@@ -228,7 +228,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 											value={value}
 											onChange={onChange}
 											onBlur={onBlur}
-											withTitle={false}
+											withTitle
 											filter={departmentsFilter}
 											setFilter={setDepartmentsFilter}
 											options={departmentsOptions}
@@ -267,7 +267,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 								<Controller
 									name='monitors'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Monitors')) }}
+									rules={{ required: t('Required_field', { field: t('Monitors') }) }}
 									render={({ field: { name, value, onChange, onBlur } }) => (
 										<PaginatedMultiSelectFiltered
 											id={monitorsField}

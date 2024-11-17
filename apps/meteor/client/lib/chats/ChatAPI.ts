@@ -1,10 +1,10 @@
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
 
-import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
-import type { Subscribable } from '../../definitions/Subscribable';
 import type { Upload } from './Upload';
 import type { ReadStateManager } from './readStateManager';
+import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import type { Subscribable } from '../../definitions/Subscribable';
 
 export type ComposerAPI = {
 	release(): void;
@@ -79,7 +79,7 @@ export type DataAPI = {
 	canUpdateMessage(message: IMessage): Promise<boolean>;
 	updateMessage(message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>, previewUrls?: string[]): Promise<void>;
 	canDeleteMessage(message: IMessage): Promise<boolean>;
-	deleteMessage(mid: IMessage['_id']): Promise<void>;
+	deleteMessage(msgIdOrMsg: IMessage | IMessage['_id']): Promise<void>;
 	getDraft(mid: IMessage['_id'] | undefined): Promise<string | undefined>;
 	discardDraft(mid: IMessage['_id'] | undefined): Promise<void>;
 	saveDraft(mid: IMessage['_id'] | undefined, text: string): Promise<void>;
@@ -100,7 +100,12 @@ export type UploadsAPI = {
 	subscribe(callback: () => void): () => void;
 	wipeFailedOnes(): void;
 	cancel(id: Upload['id']): void;
-	send(file: File, { description, msg }: { description?: string; msg?: string }): Promise<void>;
+	send(
+		file: File,
+		{ description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] },
+		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
+		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
+	): Promise<void>;
 };
 
 export type ChatAPI = {

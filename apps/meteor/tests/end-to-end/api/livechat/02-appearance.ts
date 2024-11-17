@@ -7,9 +7,7 @@ import { sleep } from '../../../data/livechat/utils';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe('LIVECHAT - appearance', function () {
-	this.retries(0);
-
+describe('LIVECHAT - appearance', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {

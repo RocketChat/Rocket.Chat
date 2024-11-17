@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import { isUserFederated, type IUser } from '@rocket.chat/core-typings';
 import {
 	Integrations,
 	FederationServers,
@@ -12,18 +12,24 @@ import {
 	ReadReceipts,
 	LivechatUnitMonitors,
 	ModerationReports,
+	MatrixBridgedUser,
 } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { i18n } from '../../../../server/lib/i18n';
-import { FileUpload } from '../../../file-upload/server';
-import { settings } from '../../../settings/server';
-import { notifyOnRoomChangedById, notifyOnIntegrationChangedByUserId, notifyOnLivechatDepartmentAgentChanged } from '../lib/notifyListener';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { updateGroupDMsName } from './updateGroupDMsName';
+import { callbacks } from '../../../../lib/callbacks';
+import { i18n } from '../../../../server/lib/i18n';
+import { FileUpload } from '../../../file-upload/server';
+import { settings } from '../../../settings/server';
+import {
+	notifyOnRoomChangedById,
+	notifyOnIntegrationChangedByUserId,
+	notifyOnLivechatDepartmentAgentChanged,
+	notifyOnUserChange,
+} from '../lib/notifyListener';
 
 export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<void> {
 	if (userId === 'rocket.cat') {
@@ -39,6 +45,19 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 	if (!user) {
 		return;
+	}
+
+	if (isUserFederated(user)) {
+		throw new Meteor.Error('error-not-allowed', 'Deleting federated, external user is not allowed', {
+			method: 'deleteUser',
+		});
+	}
+
+	const remoteUser = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userId);
+	if (remoteUser) {
+		throw new Meteor.Error('error-not-allowed', 'User participated in federation, this user can only be deactivated permanently', {
+			method: 'deleteUser',
+		});
 	}
 
 	const subscribedRooms = await getSubscribedRoomsForUserWithDetails(userId);
@@ -93,7 +112,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		const rids = subscribedRooms.map((room) => room.rid);
 		void notifyOnRoomChangedById(rids);
 
-		await Subscriptions.removeByUserId(userId); // Remove user subscriptions
+		await Subscriptions.removeByUserId(userId);
 
 		// Remove user as livechat agent
 		if (user.roles.includes('livechat-agent')) {
@@ -155,6 +174,8 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 	// Refresh the servers list
 	await FederationServers.refreshServers();
+
+	void notifyOnUserChange({ clientAction: 'removed', id: user._id });
 
 	await callbacks.run('afterDeleteUser', user);
 }

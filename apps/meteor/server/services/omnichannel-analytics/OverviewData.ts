@@ -97,7 +97,7 @@ export class OverviewData {
 
 		const date = {
 			gte: moment.tz(from, timezone).startOf('day').utc(),
-			lt: moment.tz(to, timezone).endOf('day').utc(),
+			lte: moment.tz(to, timezone).endOf('day').utc(),
 		};
 
 		// @ts-expect-error - Check extraquery usage on this func
@@ -181,7 +181,7 @@ export class OverviewData {
 
 		const date = {
 			gte: from.toDate(),
-			lt: to.add(1, 'days').toDate(),
+			lte: to.toDate(),
 		};
 
 		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics }) => {

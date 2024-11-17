@@ -1,14 +1,15 @@
-import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { ContextualbarDialog } from '../../../components/Contextualbar';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import DeviceManagementAdminTable from './DeviceManagementAdminTable';
 import DeviceManagementInfo from './DeviceManagementInfo';
+import { ContextualbarDialog } from '../../../components/Contextualbar';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const DeviceManagementAdminPage = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const context = useRouteParameter('context');
 	const deviceId = useRouteParameter('id');
 

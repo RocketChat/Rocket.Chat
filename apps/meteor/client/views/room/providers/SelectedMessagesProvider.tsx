@@ -1,5 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
-import type { FC } from 'react';
+import type { ReactNode } from 'react';
 import React, { useMemo } from 'react';
 
 import { SelectedMessageContext } from '../MessageList/contexts/SelectedMessagesContext';
@@ -63,7 +63,11 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 	}
 })();
 
-export const SelectedMessagesProvider: FC = ({ children }) => {
+type SelectedMessagesProviderProps = {
+	children?: ReactNode;
+};
+
+export const SelectedMessagesProvider = ({ children }: SelectedMessagesProviderProps) => {
 	const value = useMemo(
 		() => ({
 			selectedMessageStore,

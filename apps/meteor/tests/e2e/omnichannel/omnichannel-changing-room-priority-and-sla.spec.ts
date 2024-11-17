@@ -1,6 +1,6 @@
-import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { createFakeVisitor } from '../../mocks/data';
 import { ADMIN_CREDENTIALS, IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
@@ -30,13 +30,13 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 
 	test.beforeAll(async ({ api, browser }) => {
 		let statusCode = (await api.post('/livechat/users/agent', { username: ADMIN_CREDENTIALS.username })).status();
-		await expect(statusCode).toBe(200);
+		expect(statusCode).toBe(200);
 
 		statusCode = (await api.post('/livechat/users/manager', { username: ADMIN_CREDENTIALS.username })).status();
-		await expect(statusCode).toBe(200);
+		expect(statusCode).toBe(200);
 
 		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' })).status();
-		await expect(statusCode).toBe(200);
+		expect(statusCode).toBe(200);
 
 		const { page } = await createAuxContext(browser, Users.admin);
 		agent = { page, poHomeChannel: new HomeChannel(page) };
@@ -45,23 +45,17 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		let statusCode = (await api.delete(`/livechat/users/agent/${ADMIN_CREDENTIALS.username}`)).status();
-		await expect(statusCode).toBe(200);
-
-		statusCode = (await api.delete(`/livechat/users/manager/${ADMIN_CREDENTIALS.username}`)).status();
-		await expect(statusCode).toBe(200);
-
-		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' })).status();
-		await expect(statusCode).toBe(200);
-
 		await agent.page.close();
+
+		await Promise.all([
+			api.delete(`/livechat/users/agent/${ADMIN_CREDENTIALS.username}`),
+			api.delete(`/livechat/users/manager/${ADMIN_CREDENTIALS.username}`),
+			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
+		]);
 	});
 
 	test('expect to initiate a new livechat conversation', async ({ page, api }) => {
-		newVisitor = {
-			name: faker.person.firstName(),
-			email: faker.internet.email(),
-		};
+		newVisitor = createFakeVisitor();
 		poLiveChat = new OmnichannelLiveChat(page, api);
 		await page.goto('/livechat');
 		await poLiveChat.openLiveChat();

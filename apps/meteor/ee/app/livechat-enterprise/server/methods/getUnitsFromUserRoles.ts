@@ -1,5 +1,5 @@
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatUnit, LivechatDepartmentAgents } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 
@@ -32,7 +32,7 @@ export const getUnitsFromUser = async (user: string): Promise<string[] | undefin
 	return unitsAndDepartments;
 };
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'livechat:getUnitsFromUser'(): Promise<string[] | undefined>;

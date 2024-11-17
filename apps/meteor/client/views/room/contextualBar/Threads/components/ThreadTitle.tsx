@@ -9,7 +9,7 @@ type ThreadTitleProps = {
 };
 
 const ThreadTitle = ({ mainMessage }: ThreadTitleProps) => {
-	const innerHTML = useMemo(() => ({ __html: normalizeThreadTitle(mainMessage) }), [mainMessage]);
+	const innerHTML = useMemo(() => ({ __html: normalizeThreadTitle(mainMessage) ?? '' }), [mainMessage]);
 	return <ContextualbarTitle dangerouslySetInnerHTML={innerHTML} />;
 };
 

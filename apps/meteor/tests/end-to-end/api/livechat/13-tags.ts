@@ -12,9 +12,7 @@ import { password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('[EE] Livechat - Tags', function () {
-	this.retries(0);
-
+(IS_EE ? describe : describe.skip)('[EE] Livechat - Tags', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
@@ -68,7 +66,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 
 		after(async () => {
-			await deleteUser(monitor);
+			await deleteUser(monitor.user);
 		});
 
 		it('should throw unauthorized error when the user does not have the necessary permission', async () => {

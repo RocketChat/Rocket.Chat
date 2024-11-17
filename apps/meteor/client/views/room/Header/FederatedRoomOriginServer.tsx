@@ -1,7 +1,7 @@
-import { HeaderTag, HeaderTagIcon } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
+import { HeaderTag, HeaderTagIcon } from '../../../components/Header';
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
 
 type FederatedRoomProps = {

@@ -5,6 +5,8 @@ import { Logger } from '@rocket.chat/logger';
 import { AppLogs, Apps as AppsModel, AppsPersistence } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
+import { AppRealLogStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 import { RealAppBridges } from '../../../app/apps/server/bridges';
 import {
 	AppMessagesConverter,
@@ -20,8 +22,6 @@ import {
 import { AppThreadsConverter } from '../../../app/apps/server/converters/threads';
 import { settings } from '../../../app/settings/server';
 import { canEnableApp } from '../../app/license/server/canEnableApp';
-import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
-import { AppRealLogStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
@@ -174,21 +174,16 @@ export class AppServerOrchestrator {
 		// Before enabling each app we verify if there is still room for it
 		const apps = await this.getManager().get();
 
-		/* eslint-disable no-await-in-loop */
 		// This needs to happen sequentially to keep track of app limits
-		for (const app of apps) {
-			const canEnable = await canEnableApp(app.getStorageItem());
+		for await (const app of apps) {
+			try {
+				await canEnableApp(app.getStorageItem());
 
-			if (!canEnable) {
-				this._rocketchatLogger.warn(`App "${app.getInfo().name}" can't be enabled due to CE limits.`);
-				// We need to continue as the limits are applied depending on the app installation source
-				// i.e. if one limit is hit, we can't break the loop as the following apps might still be valid
-				continue;
+				await this.getManager().loadOne(app.getID(), true);
+			} catch (error) {
+				this._rocketchatLogger.warn(`App "${app.getInfo().name}" could not be enabled: `, error.message);
 			}
-
-			await this.getManager().loadOne(app.getID());
 		}
-		/* eslint-enable no-await-in-loop */
 
 		await this.getBridges().getSchedulerBridge().startScheduler();
 
@@ -197,8 +192,15 @@ export class AppServerOrchestrator {
 		this._rocketchatLogger.info(`Loaded the Apps Framework and loaded a total of ${appCount} Apps!`);
 	}
 
-	async disableApps() {
-		const apps = await this.getManager().get();
+	async migratePrivateApps() {
+		const apps = await this.getManager().get({ installationSource: 'private' });
+
+		await Promise.all(apps.map((app) => this.getManager().migrate(app.getID())));
+		await Promise.all(apps.map((app) => this.getNotifier().appUpdated(app.getID())));
+	}
+
+	async disableMarketplaceApps() {
+		const apps = await this.getManager().get({ installationSource: 'marketplace' });
 
 		await Promise.all(apps.map((app) => this.getManager().disable(app.getID())));
 	}

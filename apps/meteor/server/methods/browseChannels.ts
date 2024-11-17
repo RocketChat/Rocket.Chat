@@ -1,8 +1,8 @@
 import { Team } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import mem from 'mem';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
@@ -116,7 +116,7 @@ const getChannelsAndGroups = async (
 	};
 };
 
-const getChannelsCountForTeam = mem((teamId) => Rooms.findByTeamId(teamId, { projection: { _id: 1 } }).count(), {
+const getChannelsCountForTeam = mem((teamId) => Rooms.countByTeamId(teamId), {
 	maxAge: 2000,
 });
 
@@ -163,9 +163,7 @@ const getTeams = async (
 		},
 	);
 	const results = await Promise.all(
-		(
-			await cursor.toArray()
-		).map(async (room) => ({
+		(await cursor.toArray()).map(async (room) => ({
 			...room,
 			roomsCount: await getChannelsCountForTeam(room.teamId),
 		})),
@@ -308,7 +306,7 @@ const getUsers = async (
 	};
 };
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		browseChannels: (params: {

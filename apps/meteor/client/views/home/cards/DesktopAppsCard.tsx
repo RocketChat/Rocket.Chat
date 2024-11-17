@@ -1,7 +1,7 @@
 import type { Card } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 import { useExternalLink } from '../../../hooks/useExternalLink';
@@ -11,7 +11,7 @@ const LINUX_APP_URL = 'https://go.rocket.chat/i/hp-desktop-app-linux';
 const MAC_APP_URL = 'https://go.rocket.chat/i/hp-desktop-app-mac';
 
 const DesktopAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const handleOpenLink = useExternalLink();
 
 	return (

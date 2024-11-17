@@ -1,7 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
 	VideoConfPopupContent,
@@ -16,11 +15,12 @@ import {
 } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 import { useVideoConfSetPreferences } from '../../../../../../contexts/VideoConfContext';
 import { AsyncStatePhase } from '../../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../../hooks/useEndpointData';
-import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 
 type IncomingPopupProps = {
 	id: string;
@@ -32,7 +32,7 @@ type IncomingPopupProps = {
 };
 
 const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: IncomingPopupProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 	const setPreferences = useVideoConfSetPreferences();
 

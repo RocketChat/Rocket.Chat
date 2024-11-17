@@ -24,7 +24,7 @@ export class OmnichannelTags extends OmnichannelAdministration {
 	}
 
 	get inputSearch(): Locator {
-		return this.page.locator('[placeholder="Search"]');
+		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	get confirmDeleteModal(): Locator {
@@ -44,11 +44,11 @@ export class OmnichannelTags extends OmnichannelAdministration {
 	}
 
 	btnDeleteByName(name: string): Locator {
-		return this.page.locator(`role=link[name="${name} Remove"] >> role=button`);
+		return this.page.getByRole('link', { name }).getByRole('button');
 	}
 
 	findRowByName(name: string): Locator {
-		return this.page.locator(`tr:has-text("${name}")`);
+		return this.page.getByRole('link', { name });
 	}
 
 	get inputDepartments(): Locator {

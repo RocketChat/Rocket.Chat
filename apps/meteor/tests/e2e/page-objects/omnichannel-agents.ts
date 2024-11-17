@@ -23,7 +23,7 @@ export class OmnichannelAgents {
 	}
 
 	get inputSearch(): Locator {
-		return this.page.locator('[placeholder="Search"]');
+		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	get btnAdd(): Locator {
@@ -92,5 +92,9 @@ export class OmnichannelAgents {
 
 	findRowByName(name: string) {
 		return this.page.locator('tr', { has: this.page.locator(`td >> text="${name}"`) });
+	}
+
+	findSelectedDepartment(name: string) {
+		return this.page.locator(`role=option[name="${name}"]`);
 	}
 }

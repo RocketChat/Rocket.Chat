@@ -1,11 +1,12 @@
 import { isTeamRoom, type IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { HeaderTitle, HeaderTitleButton, useDocumentTitle } from '@rocket.chat/ui-client';
+import { useDocumentTitle } from '@rocket.chat/ui-client';
 import type { KeyboardEvent, ReactElement } from 'react';
 import React from 'react';
 
-import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 import HeaderIconWithRoom from './HeaderIconWithRoom';
+import { HeaderTitle, HeaderTitleButton } from '../../../components/Header';
+import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 
 const RoomTitle = ({ room }: { room: IRoom }): ReactElement => {
 	useDocumentTitle(room.name, false);

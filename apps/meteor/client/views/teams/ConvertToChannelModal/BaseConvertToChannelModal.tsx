@@ -1,6 +1,5 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import type { FC } from 'react';
 import React, { useState, useCallback } from 'react';
 
 import FirstStep from './ModalSteps/FirstStep';
@@ -14,18 +13,18 @@ const STEPS = {
 type BaseConvertToChannelModalProps = {
 	onClose: () => void;
 	onCancel: () => void;
-	onConfirm: () => Serialized<IRoom>[];
+	onConfirm: (deletedRooms: { [key: string]: Serialized<IRoom> }) => void;
 	currentStep?: string;
 	rooms?: (Serialized<IRoom> & { isLastOwner?: boolean })[];
 };
 
-const BaseConvertToChannelModal: FC<BaseConvertToChannelModalProps> = ({
+const BaseConvertToChannelModal = ({
 	onClose,
 	onCancel,
 	onConfirm,
 	rooms,
 	currentStep = rooms?.length === 0 ? STEPS.CONFIRM_CONVERT : STEPS.LIST_ROOMS,
-}) => {
+}: BaseConvertToChannelModalProps) => {
 	const [step, setStep] = useState(currentStep);
 	const [selectedRooms, setSelectedRooms] = useState<{ [key: string]: Serialized<IRoom> }>({});
 

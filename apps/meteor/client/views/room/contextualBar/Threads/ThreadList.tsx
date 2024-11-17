@@ -1,11 +1,13 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Box, Icon, TextInput, Select, Margins, Callout, Throbber } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
-import type { FormEvent, ReactElement, VFC } from 'react';
+import type { FormEvent, ReactElement } from 'react';
 import React, { useMemo, useState, useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import ThreadListItem from './components/ThreadListItem';
+import { useThreadsList } from './hooks/useThreadsList';
 import {
 	ContextualbarClose,
 	ContextualbarContent,
@@ -13,6 +15,7 @@ import {
 	ContextualbarIcon,
 	ContextualbarTitle,
 	ContextualbarEmptyContent,
+	ContextualbarSection,
 } from '../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
@@ -21,12 +24,10 @@ import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import { useGoToThread } from '../../hooks/useGoToThread';
-import ThreadListItem from './components/ThreadListItem';
-import { useThreadsList } from './hooks/useThreadsList';
 
 type ThreadType = 'all' | 'following' | 'unread';
 
-const ThreadList: VFC = () => {
+const ThreadList = () => {
 	const t = useTranslation();
 
 	const { closeTab } = useRoomToolbox();
@@ -82,7 +83,6 @@ const ThreadList: VFC = () => {
 				return {
 					rid,
 					text,
-					type: 'all',
 				};
 			}
 			switch (type) {
@@ -123,33 +123,19 @@ const ThreadList: VFC = () => {
 				<ContextualbarTitle>{t('Threads')}</ContextualbarTitle>
 				<ContextualbarClose onClick={handleTabBarCloseButtonClick} />
 			</ContextualbarHeader>
-
-			<ContextualbarContent paddingInline={0}>
-				<Box
-					display='flex'
-					flexDirection='row'
-					p={24}
-					borderBlockEndWidth={2}
-					borderBlockEndStyle='solid'
-					borderBlockEndColor='extra-light'
-					flexShrink={0}
-				>
-					<Box display='flex' flexDirection='row' flexGrow={1} mi={-4}>
-						<Margins inline={4}>
-							<TextInput
-								placeholder={t('Search_Messages')}
-								addon={<Icon name='magnifier' size='x20' />}
-								ref={autoFocusRef}
-								value={searchText}
-								onChange={handleSearchTextChange}
-							/>
-							<Box w='x144'>
-								<Select options={typeOptions} value={type} onChange={(value) => handleTypeChange(String(value))} />
-							</Box>
-						</Margins>
-					</Box>
+			<ContextualbarSection>
+				<TextInput
+					placeholder={t('Search_Messages')}
+					addon={<Icon name='magnifier' size='x20' />}
+					ref={autoFocusRef}
+					value={searchText}
+					onChange={handleSearchTextChange}
+				/>
+				<Box w='x144' mis={8}>
+					<Select options={typeOptions} value={type} onChange={(value) => handleTypeChange(String(value))} />
 				</Box>
-
+			</ContextualbarSection>
+			<ContextualbarContent paddingInline={0}>
 				{phase === AsyncStatePhase.LOADING && (
 					<Box pi={24} pb={12}>
 						<Throbber size='x12' />
@@ -177,7 +163,7 @@ const ThreadList: VFC = () => {
 									? (): void => undefined
 									: (start): void => {
 											loadMoreItems(start, Math.min(50, itemCount - start));
-									  }
+										}
 							}
 							overscan={25}
 							data={items}

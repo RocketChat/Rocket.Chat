@@ -35,6 +35,10 @@ export class OmnichannelCurrentChats extends OmnichannelAdministration {
 		return this.page.locator('[data-qa="autocomplete-department"] input');
 	}
 
+	get inputDepartmentValue(): Locator {
+		return this.page.locator('[data-qa="autocomplete-department"] span');
+	}
+
 	get inputTags(): Locator {
 		return this.page.locator('[data-qa="current-chats-tags"] [role="listbox"]');
 	}

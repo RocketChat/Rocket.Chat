@@ -5,6 +5,11 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, useMemo } from 'react';
 
+import type { ChannelDescriptor } from './ChannelDescriptor';
+import PrepareChannels from './PrepareChannels';
+import PrepareUsers from './PrepareUsers';
+import type { UserDescriptor } from './UserDescriptor';
+import { useErrorHandler } from './useErrorHandler';
 import {
 	ProgressStep,
 	ImportWaitingStates,
@@ -15,11 +20,6 @@ import {
 } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import type { ChannelDescriptor } from './ChannelDescriptor';
-import PrepareChannels from './PrepareChannels';
-import PrepareUsers from './PrepareUsers';
-import type { UserDescriptor } from './UserDescriptor';
-import { useErrorHandler } from './useErrorHandler';
 
 const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U) =>
 	new Promise<U>((resolve, reject) => {
@@ -151,10 +151,19 @@ function PrepareImportPage() {
 		setImporting(true);
 
 		try {
+			const usersToImport = users.filter(({ do_import }) => do_import).map(({ user_id }) => user_id);
+			const channelsToImport = channels.filter(({ do_import }) => do_import).map(({ channel_id }) => channel_id);
+
 			await startImport({
 				input: {
-					users: users.map((user) => ({ is_bot: false, is_email_taken: false, ...user })),
-					channels: channels.map((channel) => ({ is_private: false, is_direct: false, ...channel })),
+					users: {
+						all: users.length > 0 && usersToImport.length === users.length,
+						list: (usersToImport.length !== users.length && usersToImport) || undefined,
+					},
+					channels: {
+						all: channels.length > 0 && channelsToImport.length === channels.length,
+						list: (channelsToImport.length !== channels.length && channelsToImport) || undefined,
+					},
 				},
 			});
 			router.navigate('/admin/import/progress');

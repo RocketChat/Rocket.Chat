@@ -7,9 +7,7 @@ import { createTrigger, fetchTriggers } from '../../../data/livechat/triggers';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe('LIVECHAT - triggers', function () {
-	this.retries(0);
-
+describe('LIVECHAT - triggers', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {

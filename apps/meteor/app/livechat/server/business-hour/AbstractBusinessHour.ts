@@ -5,6 +5,7 @@ import moment from 'moment-timezone';
 import type { UpdateFilter } from 'mongodb';
 
 import type { IWorkHoursCronJobsWrapper } from '../../../../server/models/raw/LivechatBusinessHours';
+import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 
 export interface IBusinessHourBehavior {
 	findHoursToCreateJobs(): Promise<IWorkHoursCronJobsWrapper[]>;
@@ -49,7 +50,7 @@ export abstract class AbstractBusinessHourBehavior {
 	}
 
 	async changeAgentActiveStatus(agentId: string, status: ILivechatAgentStatus): Promise<any> {
-		return this.UsersRepository.setLivechatStatusIf(
+		const result = await this.UsersRepository.setLivechatStatusIf(
 			agentId,
 			status,
 			// Why this works: statusDefault is the property set when a user manually changes their status
@@ -57,6 +58,16 @@ export abstract class AbstractBusinessHourBehavior {
 			{ livechatStatusSystemModified: true, statusDefault: { $ne: 'offline' } },
 			{ livechatStatusSystemModified: true },
 		);
+
+		if (result.modifiedCount > 0) {
+			void notifyOnUserChange({
+				clientAction: 'updated',
+				id: agentId,
+				diff: { statusLivechat: 'available', livechatStatusSystemModified: true },
+			});
+		}
+
+		return result;
 	}
 }
 

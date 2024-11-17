@@ -29,15 +29,15 @@ import type {
 	ModifyResult,
 } from 'mongodb';
 
+import { BaseRaw } from './BaseRaw';
 import { otrSystemMessages } from '../../../app/otr/lib/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { BaseRaw } from './BaseRaw';
 
 type DeepWritable<T> = T extends (...args: any) => any
 	? T
 	: {
 			-readonly [P in keyof T]: DeepWritable<T[P]>;
-	  };
+		};
 
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
@@ -364,6 +364,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		roomId: IRoom['_id'],
 		types: IMessage['t'][],
 		ts: Date,
+		showSystemMessages: boolean,
 		options?: FindOptions<IMessage>,
 		showThreadMessages = true,
 	): FindCursor<IMessage> {
@@ -387,6 +388,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		if (types.length > 0) {
 			query.t = { $nin: types };
+		}
+
+		if (!showSystemMessages) {
+			query.t = { $exists: false };
 		}
 
 		return this.find(query, options);
@@ -424,14 +429,25 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findLivechatMessagesWithoutClosing(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
-		return this.find(
-			{
-				rid,
-				t: { $exists: false },
-			},
-			options,
-		);
+	findLivechatMessagesWithoutTypes(
+		rid: IRoom['_id'],
+		ignoredTypes: IMessage['t'][],
+		showSystemMessages: boolean,
+		options?: FindOptions<IMessage>,
+	): FindCursor<IMessage> {
+		const query: Filter<IMessage> = {
+			rid,
+		};
+
+		if (ignoredTypes.length > 0) {
+			query.t = { $nin: ignoredTypes };
+		}
+
+		if (!showSystemMessages) {
+			query.t = { $exists: false };
+		}
+
+		return this.find(query, options);
 	}
 
 	async setBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void> {
@@ -523,6 +539,16 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
+	countPinned(options?: CountDocumentsOptions): Promise<number> {
+		const query: Filter<IMessage> = {
+			t: { $ne: 'rm' as MessageTypesValues },
+			_hidden: { $ne: true },
+			pinned: true,
+		};
+
+		return this.countDocuments(query, options);
+	}
+
 	findPaginatedPinnedByRoom(roomId: IMessage['rid'], options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
 		const query: Filter<IMessage> = {
 			t: { $ne: 'rm' },
@@ -541,6 +567,15 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 
 		return this.find(query, options);
+	}
+
+	countStarred(options?: CountDocumentsOptions): Promise<number> {
+		const query: Filter<IMessage> = {
+			'_hidden': { $ne: true },
+			'starred._id': { $exists: true },
+		};
+
+		return this.countDocuments(query, options);
 	}
 
 	async setFederationReactionEventId(username: string, _id: string, reaction: string, federationEventId: string): Promise<void> {

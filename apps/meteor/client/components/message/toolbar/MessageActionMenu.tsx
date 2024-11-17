@@ -1,11 +1,10 @@
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import type { MouseEvent, ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { MessageActionConditionProps, MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
-import GenericMenu from '../../GenericMenu/GenericMenu';
-import type { GenericMenuItemProps } from '../../GenericMenu/GenericMenuItem';
 
 type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order' | 'action'> & {
 	action: (e?: MouseEvent<HTMLElement>) => void;
@@ -25,7 +24,7 @@ type MessageActionMenuProps = {
 };
 
 const MessageActionMenu = ({ options, onChangeMenuVisibility, context, isMessageEncrypted }: MessageActionMenuProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const id = useUniqueId();
 	const groupOptions = options
 		.map((option) => ({
@@ -39,18 +38,21 @@ const MessageActionMenu = ({ options, onChangeMenuVisibility, context, isMessage
 			...(option.disabled &&
 				option?.disabled?.(context) && { tooltip: t('Action_not_available_encrypted_content', { action: t(option.label) }) }),
 		}))
-		.reduce((acc, option) => {
-			const group = option.type ? option.type : '';
-			const section = acc.find((section: { id: string }) => section.id === group);
-			if (section) {
-				section.items.push(option);
-				return acc;
-			}
-			const newSection = { id: group, title: group === 'apps' ? t('Apps') : '', items: [option] };
-			acc.push(newSection);
+		.reduce(
+			(acc, option) => {
+				const group = option.type ? option.type : '';
+				const section = acc.find((section: { id: string }) => section.id === group);
+				if (section) {
+					section.items.push(option);
+					return acc;
+				}
+				const newSection = { id: group, title: group === 'apps' ? t('Apps') : '', items: [option] };
+				acc.push(newSection);
 
-			return acc;
-		}, [] as unknown as MessageActionSection[])
+				return acc;
+			},
+			[] as unknown as MessageActionSection[],
+		)
 		.map((section) => {
 			if (section.id !== 'apps') {
 				return section;

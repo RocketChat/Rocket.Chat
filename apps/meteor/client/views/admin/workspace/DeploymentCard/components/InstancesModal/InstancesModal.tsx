@@ -1,12 +1,12 @@
 import { Accordion } from '@rocket.chat/fuselage';
 import type { IInstance } from '@rocket.chat/rest-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../../../components/GenericModal';
-import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
 import DescriptionList from './DescriptionList';
 import DescriptionListEntry from './DescriptionListEntry';
+import GenericModal from '../../../../../../components/GenericModal';
+import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
 
 type InstancesModalProps = {
 	instances: IInstance[];
@@ -14,7 +14,7 @@ type InstancesModalProps = {
 };
 
 const InstancesModal = ({ instances = [], onClose }: InstancesModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 
 	return (

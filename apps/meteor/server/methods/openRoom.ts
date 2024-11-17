@@ -1,10 +1,12 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-declare module '@rocket.chat/ui-contexts' {
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../app/lib/server/lib/notifyListener';
+
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		openRoom(rid: IRoom['_id']): Promise<number>;
@@ -23,6 +25,12 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return (await Subscriptions.openByRoomIdAndUserId(rid, uid)).modifiedCount;
+		const openByRoomResponse = await Subscriptions.openByRoomIdAndUserId(rid, uid);
+
+		if (openByRoomResponse.modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, uid);
+		}
+
+		return openByRoomResponse.modifiedCount;
 	},
 });

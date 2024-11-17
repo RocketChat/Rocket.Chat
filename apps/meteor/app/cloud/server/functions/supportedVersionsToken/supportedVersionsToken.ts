@@ -6,6 +6,7 @@ import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { SystemLogger } from '../../../../../server/lib/logger/system';
+import { notifyOnSettingChangedById } from '../../../../lib/server/lib/notifyListener';
 import { settings } from '../../../../settings/server';
 import { supportedVersions as supportedVersionsFromBuild } from '../../../../utils/rocketchat-supported-versions.info';
 import { buildVersionUpdateMessage } from '../../../../version-check/server/functions/buildVersionUpdateMessage';
@@ -33,7 +34,7 @@ export const wrapPromise = <T>(
 	  }
 > =>
 	promise
-		.then((result) => ({ success: true, result } as const))
+		.then((result) => ({ success: true, result }) as const)
 		.catch((error) => ({
 			success: false,
 			error,
@@ -65,7 +66,7 @@ const cacheValueInSettings = <T extends SettingValue>(
 		SystemLogger.debug(`Resetting cached value ${key} in settings`);
 		const value = await fn();
 
-		await Settings.updateValueById(key, value);
+		(await Settings.updateValueById(key, value)).modifiedCount && void notifyOnSettingChangedById(key);
 
 		return value;
 	};

@@ -10,7 +10,7 @@ type UserFixture = IUser & {
 };
 
 export function createUserFixture(user: IUserState): UserFixture {
-	const { username, hashedToken, loginExpire } = user.data;
+	const { username, hashedToken, loginExpire, e2e } = user.data;
 
 	return {
 		_id: `${username}`,
@@ -48,5 +48,6 @@ export function createUserFixture(user: IUserState): UserFixture {
 		createdAt: new Date(),
 		_updatedAt: new Date(),
 		__rooms: ['GENERAL'],
+		e2e,
 	};
 }

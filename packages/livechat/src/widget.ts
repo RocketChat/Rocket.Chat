@@ -1,6 +1,6 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
-import type { LivechatRoomEvents } from '@rocket.chat/ddp-client/dist/livechat/types/LivechatSDK';
-import mitt from 'mitt';
+import type { LivechatRoomEvents } from '@rocket.chat/ddp-client';
+import { Emitter } from '@rocket.chat/emitter';
 
 import { isDefined } from './helpers/isDefined';
 import type { HooksWidgetAPI } from './lib/hooks';
@@ -79,7 +79,7 @@ export const VALID_CALLBACKS = [
 
 const VALID_SYSTEM_MESSAGES = ['uj', 'ul', 'livechat-close', 'livechat-started', 'livechat_transfer_history'];
 
-const callbacks = mitt();
+const callbacks = new Emitter();
 
 function registerCallback(eventName: string, fn: () => unknown) {
 	if (VALID_CALLBACKS.indexOf(eventName) === -1) {
@@ -98,7 +98,9 @@ function emitCallback(eventName: string, data?: unknown) {
 }
 
 function clearAllCallbacks() {
-	callbacks.all.clear();
+	callbacks.events().forEach((callback) => {
+		callbacks.off(callback, () => undefined);
+	});
 }
 
 // hooks
@@ -368,6 +370,10 @@ function setParentUrl(url: string) {
 	callHook('setParentUrl', url);
 }
 
+function transferChat(department: string) {
+	callHook('transferChat', department);
+}
+
 function setGuestMetadata(metadata: StoreState['iframe']['guestMetadata']) {
 	if (typeof metadata !== 'object') {
 		throw new Error('Invalid metadata');
@@ -550,6 +556,7 @@ const livechatWidgetAPI = {
 	setGuestMetadata,
 	clearAllCallbacks,
 	setHiddenSystemMessages,
+	transferChat,
 
 	// callbacks
 	onChatMaximized(fn: () => void) {

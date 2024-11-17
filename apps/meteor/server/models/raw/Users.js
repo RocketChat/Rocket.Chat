@@ -66,6 +66,7 @@ export class UsersRaw extends BaseRaw {
 			{ key: { openBusinessHours: 1 }, sparse: true },
 			{ key: { statusLivechat: 1 }, sparse: true },
 			{ key: { extension: 1 }, sparse: true, unique: true },
+			{ key: { freeSwitchExtension: 1 }, sparse: true, unique: true },
 			{ key: { language: 1 }, sparse: true },
 			{ key: { 'active': 1, 'services.email2fa.enabled': 1 }, sparse: true }, // used by statistics
 			{ key: { 'active': 1, 'services.totp.enabled': 1 }, sparse: true }, // used by statistics
@@ -132,6 +133,16 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.find(query, options);
+	}
+
+	countUsersInRoles(roles) {
+		roles = [].concat(roles);
+
+		const query = {
+			roles: { $in: roles },
+		};
+
+		return this.countDocuments(query);
 	}
 
 	findPaginatedUsersInRoles(roles, options) {
@@ -713,8 +724,10 @@ export class UsersRaw extends BaseRaw {
 						$nin: exceptions,
 					},
 				},
+				{
+					...conditions,
+				},
 			],
-			...conditions,
 		};
 
 		return this.find(query, options);
@@ -968,9 +981,9 @@ export class UsersRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	makeAgentsWithinBusinessHourAvailable(agentIds) {
+	findOnlineButNotAvailableAgents(userIds) {
 		const query = {
-			...(agentIds && { _id: { $in: agentIds } }),
+			...(userIds && { _id: { $in: userIds } }),
 			roles: 'livechat-agent',
 			// Exclude away users
 			status: 'online',
@@ -978,13 +991,7 @@ export class UsersRaw extends BaseRaw {
 			statusLivechat: 'not-available',
 		};
 
-		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
-		};
-
-		return this.updateMany(query, update);
+		return this.find(query);
 	}
 
 	removeBusinessHourByAgentIds(agentIds = [], businessHourId) {
@@ -1044,24 +1051,21 @@ export class UsersRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	updateLivechatStatusBasedOnBusinessHours(userIds = []) {
-		const query = {
-			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
-			$and: [{ roles: 'livechat-agent' }, { roles: { $ne: 'bot' } }],
-			// exclude deactivated users
-			active: true,
-			// Avoid unnecessary updates
-			statusLivechat: 'available',
-			...(Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } }),
-		};
-
-		const update = {
-			$set: {
-				statusLivechat: 'not-available',
+	findAgentsAvailableWithoutBusinessHours(userIds = []) {
+		return this.find(
+			{
+				$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
+				$and: [{ roles: 'livechat-agent' }, { roles: { $ne: 'bot' } }],
+				// exclude deactivated users
+				active: true,
+				// Avoid unnecessary updates
+				statusLivechat: 'available',
+				...(Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } }),
 			},
-		};
-
-		return this.updateMany(query, update);
+			{
+				projection: { openBusinessHours: 1 },
+			},
+		);
 	}
 
 	setLivechatStatusActiveBasedOnBusinessHours(userId) {
@@ -1348,7 +1352,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	removeRoomByRoomId(rid) {
+	removeRoomByRoomId(rid, options) {
 		return this.updateMany(
 			{
 				__rooms: rid,
@@ -1356,6 +1360,7 @@ export class UsersRaw extends BaseRaw {
 			{
 				$pull: { __rooms: rid },
 			},
+			options,
 		);
 	}
 
@@ -1444,6 +1449,17 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query);
 	}
 
+	countOnlineUserFromList(userList, isLivechatEnabledWhenAgentIdle) {
+		// TODO: Create class Agent
+		const username = {
+			$in: [].concat(userList),
+		};
+
+		const query = queryStatusAgentOnline({ username }, isLivechatEnabledWhenAgentIdle);
+
+		return this.countDocuments(query);
+	}
+
 	findOneOnlineAgentByUserList(userList, options, isLivechatEnabledWhenAgentIdle) {
 		// TODO:: Create class Agent
 		const username = {
@@ -1473,6 +1489,22 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.find(query);
+	}
+
+	countBotAgents(usernameList) {
+		// TODO:: Create class Agent
+		const query = {
+			roles: {
+				$all: ['bot', 'livechat-agent'],
+			},
+			...(usernameList && {
+				username: {
+					$in: [].concat(usernameList),
+				},
+			}),
+		};
+
+		return this.countDocuments(query);
 	}
 
 	removeAllRoomsByUserId(_id) {
@@ -2440,6 +2472,34 @@ export class UsersRaw extends BaseRaw {
 		});
 	}
 
+	findOneByFreeSwitchExtension(freeSwitchExtension, options = {}) {
+		return this.findOne(
+			{
+				freeSwitchExtension,
+			},
+			options,
+		);
+	}
+
+	findAssignedFreeSwitchExtensions() {
+		return this.findUsersWithAssignedFreeSwitchExtensions({
+			projection: {
+				freeSwitchExtension: 1,
+			},
+		}).map(({ freeSwitchExtension }) => freeSwitchExtension);
+	}
+
+	findUsersWithAssignedFreeSwitchExtensions(options = {}) {
+		return this.find(
+			{
+				freeSwitchExtension: {
+					$exists: 1,
+				},
+			},
+			options,
+		);
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
@@ -2692,12 +2752,12 @@ export class UsersRaw extends BaseRaw {
 						$set: {
 							bio,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							bio: 1,
 						},
-				  }),
+					}),
 		};
 		return this.updateOne({ _id }, update);
 	}
@@ -2709,12 +2769,12 @@ export class UsersRaw extends BaseRaw {
 						$set: {
 							nickname,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							nickname: 1,
 						},
-				  }),
+					}),
 		};
 		return this.updateOne({ _id }, update);
 	}
@@ -2913,6 +2973,17 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
+	async setFreeSwitchExtension(_id, extension) {
+		return this.updateOne(
+			{
+				_id,
+			},
+			{
+				...(extension ? { $set: { freeSwitchExtension: extension } } : { $unset: { freeSwitchExtension: 1 } }),
+			},
+		);
+	}
+
 	// INSERT
 	create(data) {
 		const user = {
@@ -3040,6 +3111,16 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	countAllUsersWithPendingAvatar() {
+		const query = {
+			_pendingAvatarUrl: {
+				$exists: true,
+			},
+		};
+
+		return this.countDocuments(query);
+	}
+
 	updateCustomFieldsById(userId, customFields) {
 		return this.updateOne(
 			{ _id: userId },
@@ -3073,5 +3154,18 @@ export class UsersRaw extends BaseRaw {
 
 	countByRole(role) {
 		return this.col.countDocuments({ roles: role });
+	}
+
+	updateLivechatStatusByAgentIds(userIds, status) {
+		return this.updateMany(
+			{
+				_id: { $in: userIds },
+			},
+			{
+				$set: {
+					statusLivechat: status,
+				},
+			},
+		);
 	}
 }

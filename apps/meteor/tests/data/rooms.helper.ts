@@ -1,8 +1,7 @@
+import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { api, credentials, request } from './api-data';
-import type { IUser } from '@rocket.chat/core-typings';
 
-type Credentials = { 'X-Auth-Token'?: string; 'X-User-Id'?: string };
+import { api, credentials, request } from './api-data';
 
 type CreateRoomParams = {
 	name?: IRoom['name'];
@@ -38,7 +37,8 @@ export const createRoom = ({
 		 * is handled separately here.
 		 */
 		return request
-			.get(api(`voip/room?token=${token}&agentId=${agentId}&direction=${voipCallDirection}`))
+			.get(api('voip/room'))
+			.query({ token, agentId, direction: voipCallDirection })
 			.set(customCredentials || credentials)
 			.send();
 	}
@@ -51,7 +51,7 @@ export const createRoom = ({
 		c: 'channels.create',
 		p: 'groups.create',
 		d: 'im.create',
-	};
+	} as const;
 	const params = type === 'd' ? { username } : { name };
 
 	// Safe assertion because we already checked the type is not 'v'
@@ -68,13 +68,8 @@ export const createRoom = ({
 		});
 };
 
-export const asyncCreateRoom = ({ name, type, username, members = [] }: Pick<CreateRoomParams, 'name' | 'type' | 'username' | 'members'>) =>
-	new Promise((resolve) => {
-		createRoom({ name, type, username, members }).end(resolve);
-	});
-
 type ActionType = 'delete' | 'close' | 'addOwner' | 'removeOwner';
-type ActionRoomParams = {
+export type ActionRoomParams = {
 	action: ActionType;
 	type: Exclude<IRoom['t'], 'v' | 'l'>;
 	roomId: IRoom['_id'];
@@ -82,7 +77,7 @@ type ActionRoomParams = {
 	extraData?: Record<string, any>;
 };
 
-function actionRoom({ action, type, roomId, overrideCredentials = credentials, extraData = {} }: ActionRoomParams) {
+export function actionRoom({ action, type, roomId, overrideCredentials = credentials, extraData = {} }: ActionRoomParams) {
 	if (!type) {
 		throw new Error(`"type" is required in "${action}Room" test helper`);
 	}
@@ -93,10 +88,15 @@ function actionRoom({ action, type, roomId, overrideCredentials = credentials, e
 		c: 'channels',
 		p: 'groups',
 		d: 'im',
-	};
+	} as const;
+
+	const path = `${endpoints[type]}.${action}` as const;
+
+	if (path === 'im.addOwner' || path === 'im.removeOwner') throw new Error(`invalid path ("${path}")`);
+
 	return new Promise((resolve) => {
-		request
-			.post(api(`${endpoints[type]}.${action}`))
+		void request
+			.post(api(path))
 			.set(overrideCredentials)
 			.send({
 				roomId,
@@ -108,60 +108,3 @@ function actionRoom({ action, type, roomId, overrideCredentials = credentials, e
 
 export const deleteRoom = ({ type, roomId }: { type: ActionRoomParams['type']; roomId: IRoom['_id'] }) =>
 	actionRoom({ action: 'delete', type, roomId, overrideCredentials: credentials });
-
-export const closeRoom = ({ type, roomId }: { type: ActionRoomParams['type']; roomId: IRoom['_id'] }) =>
-	actionRoom({ action: 'close', type, roomId });
-
-export const joinChannel = ({ overrideCredentials = credentials, roomId }: { overrideCredentials: Credentials; roomId: IRoom['_id'] }) =>
-	request.post(api('channels.join')).set(overrideCredentials).send({
-		roomId,
-	});
-
-export const inviteToChannel = ({
-	overrideCredentials = credentials,
-	roomId,
-	userId,
-}: {
-	overrideCredentials: Credentials;
-	roomId: IRoom['_id'];
-	userId: IUser['_id'];
-}) =>
-	request.post(api('channels.invite')).set(overrideCredentials).send({
-		userId,
-		roomId,
-	});
-
-export const addRoomOwner = ({ type, roomId, userId }: { type: ActionRoomParams['type']; roomId: IRoom['_id']; userId: IUser['_id'] }) =>
-	actionRoom({ action: 'addOwner', type, roomId, extraData: { userId } });
-
-export const removeRoomOwner = ({ type, roomId, userId }: { type: ActionRoomParams['type']; roomId: IRoom['_id']; userId: IUser['_id'] }) =>
-	actionRoom({ action: 'removeOwner', type, roomId, extraData: { userId } });
-
-export const getChannelRoles = async ({
-	roomId,
-	overrideCredentials = credentials,
-}: {
-	roomId: IRoom['_id'];
-	overrideCredentials: Credentials;
-}) =>
-	(
-		await request.get(api('channels.roles')).set(overrideCredentials).query({
-			roomId,
-		})
-	).body.roles;
-
-export const setRoomConfig = ({ roomId, favorite, isDefault }: { roomId: IRoom['_id']; favorite: boolean; isDefault: boolean }) => {
-	return request
-		.post(api('rooms.saveRoomSettings'))
-		.set(credentials)
-		.send({
-			rid: roomId,
-			default: isDefault,
-			favorite: favorite
-				? {
-						defaultValue: true,
-						favorite: false,
-				  }
-				: undefined,
-		});
-};

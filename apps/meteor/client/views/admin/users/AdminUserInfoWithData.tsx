@@ -1,4 +1,3 @@
-import { isUserFederated } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -7,21 +6,23 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
+import AdminUserInfoActions from './AdminUserInfoActions';
+import type { AdminUsersTab } from './AdminUsersPage';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { ContextualbarContent } from '../../../components/Contextualbar';
 import { FormSkeleton } from '../../../components/Skeleton';
 import { UserCardRole } from '../../../components/UserCard';
-import UserInfo from '../../../components/UserInfo';
+import { UserInfo } from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
-import AdminUserInfoActions from './AdminUserInfoActions';
 
 type AdminUserInfoWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
+	tab: AdminUsersTab;
 };
 
-const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): ReactElement => {
+const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProps): ReactElement => {
 	const t = useTranslation();
 	const getRoles = useRolesDescription();
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
@@ -69,6 +70,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 			lastLogin,
 			nickname,
 			canViewAllInfo,
+			reason,
 		} = data.user;
 
 		return {
@@ -91,6 +93,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 			status: <UserStatus status={status} />,
 			statusText,
 			nickname,
+			reason,
 		};
 	}, [approveManuallyUsers, data, getRoles]);
 
@@ -119,9 +122,10 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 					isAdmin={data?.user.roles?.includes('admin')}
 					userId={data?.user._id}
 					username={user.username}
-					isFederatedUser={isUserFederated(data?.user as unknown as IUser)}
+					isFederatedUser={!!data.user.federated}
 					onChange={onChange}
 					onReload={onReload}
+					tab={tab}
 				/>
 			}
 		/>

@@ -1,4 +1,4 @@
-import type { ILivechatVisitor, ISetting, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatVisitorsModel } from '@rocket.chat/model-typings';
 import { Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -14,9 +14,13 @@ import type {
 	IndexDescription,
 	DeleteResult,
 	UpdateFilter,
+	ModifyResult,
+	FindOneAndUpdateOptions,
 } from 'mongodb';
+import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { notifyOnSettingChanged } from '../../../app/lib/server/lib/notifyListener';
 
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements ILivechatVisitorsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatVisitor>>) {
@@ -101,7 +105,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query, options);
 	}
 
-	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): FindCursor<ILivechatVisitor> {
+	countVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): Promise<number> {
 		const query = {
 			disabled: { $ne: true },
 			_updatedAt: {
@@ -111,27 +115,18 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			...(department && department !== 'undefined' && { department }),
 		};
 
-		return this.find(query, { projection: { _id: 1 } });
+		return this.countDocuments(query);
 	}
 
 	async getNextVisitorUsername(): Promise<string> {
-		const query = {
-			_id: 'Livechat_guest_count',
-		};
-
-		const update: UpdateFilter<ISetting> = {
-			$inc: {
-				// @ts-expect-error looks like the typings of ISetting.value conflict with this type of update
-				value: 1,
-			},
-		};
-
 		// TODO remove dependency from another model - this logic should be inside a service/function
-		const livechatCount = await Settings.findOneAndUpdate(query, update, { returnDocument: 'after' });
+		const livechatCount = await Settings.incrementValueById('Livechat_guest_count', 1, { returnDocument: 'after' });
 
 		if (!livechatCount.value) {
 			throw new Error("Can't find Livechat_guest_count setting");
 		}
+
+		void notifyOnSettingChanged(livechatCount.value);
 
 		return `guest-${livechatCount.value.value}`;
 	}
@@ -202,7 +197,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 							{
 								'phone.phoneNumber': emailOrPhone,
 							},
-					  ]
+						]
 					: []),
 				...(nameOrUsername
 					? [
@@ -212,7 +207,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 							{
 								username: nameOrUsername,
 							},
-					  ]
+						]
 					: []),
 				...allowedCustomFields.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })),
 			],
@@ -288,6 +283,22 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 
 	updateById(_id: string, update: UpdateFilter<ILivechatVisitor>): Promise<Document | UpdateResult> {
 		return this.updateOne({ _id }, update);
+	}
+
+	async updateOneByIdOrToken(
+		update: Partial<ILivechatVisitor>,
+		options?: FindOneAndUpdateOptions,
+	): Promise<ModifyResult<ILivechatVisitor>> {
+		let query: Filter<ILivechatVisitor> = {};
+
+		if (update._id) {
+			query = { _id: update._id };
+		} else if (update.token) {
+			query = { token: update.token };
+			update._id = new ObjectId().toHexString();
+		}
+
+		return this.findOneAndUpdate(query, { $set: update }, options);
 	}
 
 	saveGuestById(
@@ -447,6 +458,17 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.countDocuments({
 			activity: period,
 		});
+	}
+
+	setLastChatById(_id: string, lastChat: Required<ILivechatVisitor['lastChat']>): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id },
+			{
+				$set: {
+					lastChat,
+				},
+			},
+		);
 	}
 }
 

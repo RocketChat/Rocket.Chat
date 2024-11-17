@@ -1,26 +1,38 @@
 import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useRouter, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useSetModal, useToastMessageDispatch, useRouter, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../components/GenericModal';
 import DeleteTeamModal from '../../teams/contextualBar/info/DeleteTeam';
 
 export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { reload }: { reload?: () => void } = {}) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const hasPermissionToDelete = usePermission(`delete-${room.t}`, room._id);
-	const canDeleteRoom = isRoomFederated(room) ? false : hasPermissionToDelete;
 	// eslint-disable-next-line no-nested-ternary
 	const roomType = 'prid' in room ? 'discussion' : room.teamId && room.teamMain ? 'team' : 'channel';
 	const isAdminRoute = router.getRouteName() === 'admin-rooms';
 
 	const deleteRoomEndpoint = useEndpoint('POST', '/v1/rooms.delete');
 	const deleteTeamEndpoint = useEndpoint('POST', '/v1/teams.delete');
+	const teamsInfoEndpoint = useEndpoint('GET', '/v1/teams.info');
+
+	const teamId = room.teamId || '';
+	const { data: teamInfoData } = useQuery(['teamId', teamId], async () => teamsInfoEndpoint({ teamId }), {
+		keepPreviousData: true,
+		retry: false,
+		enabled: room.teamId !== '',
+	});
+
+	const hasPermissionToDeleteRoom = usePermission(`delete-${room.t}`, room._id);
+	const hasPermissionToDeleteTeamRoom = usePermission(`delete-team-${room.t === 'c' ? 'channel' : 'group'}`, teamInfoData?.teamInfo.roomId);
+	const isTeamRoom = room.teamId;
+	const canDeleteRoom = isRoomFederated(room) ? false : hasPermissionToDeleteRoom && (!isTeamRoom || hasPermissionToDeleteTeamRoom);
 
 	const deleteRoomMutation = useMutation({
 		mutationFn: deleteRoomEndpoint,

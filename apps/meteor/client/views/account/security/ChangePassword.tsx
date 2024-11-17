@@ -1,17 +1,18 @@
 import { Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, Icon, PasswordInput } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
-import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes } from 'react';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useAllowPasswordChange } from './useAllowPasswordChange';
 
 type PasswordFieldValues = { password: string; confirmationPassword: string };
 
 const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const passwordId = useUniqueId();
@@ -53,13 +54,13 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 							control={control}
 							name='password'
 							rules={{
+								required: t('Required_field', { field: t('New_password') }),
 								validate: () => (password?.length && !passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
 							}}
-							render={({ field: { onChange, value } }) => (
+							render={({ field }) => (
 								<PasswordInput
+									{...field}
 									id={passwordId}
-									onChange={onChange}
-									value={value}
 									error={errors.password?.message}
 									flexGrow={1}
 									addon={<Icon name='key' size='x20' />}
@@ -84,12 +85,14 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 						<Controller
 							control={control}
 							name='confirmationPassword'
-							rules={{ validate: (confirmationPassword) => (password !== confirmationPassword ? t('Passwords_do_not_match') : true) }}
-							render={({ field: { onChange, value } }) => (
+							rules={{
+								required: t('Required_field', { field: t('Confirm_password') }),
+								validate: (confirmationPassword) => (password !== confirmationPassword ? t('Passwords_do_not_match') : true),
+							}}
+							render={({ field }) => (
 								<PasswordInput
+									{...field}
 									id={confirmPasswordId}
-									onChange={onChange}
-									value={value}
 									error={errors.confirmationPassword?.message}
 									flexGrow={1}
 									addon={<Icon name='key' size='x20' />}

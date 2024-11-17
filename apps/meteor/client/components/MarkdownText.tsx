@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import { isExternal, getBaseURI } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import dompurify from 'dompurify';
 import { marked } from 'marked';
-import type { ComponentProps, FC } from 'react';
+import type { ComponentProps } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { renderMessageEmoji } from '../lib/utils/renderMessageEmoji';
 
@@ -20,11 +20,17 @@ const documentRenderer = new marked.Renderer();
 const inlineRenderer = new marked.Renderer();
 const inlineWithoutBreaks = new marked.Renderer();
 
-marked.Lexer.rules.gfm = {
-	...marked.Lexer.rules.gfm,
-	strong: /^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)|^\*(?=\S)([\s\S]*?\S)\*(?!\*)/,
-	em: /^__(?=\S)([\s\S]*?\S)__(?!_)|^_(?=\S)([\s\S]*?\S)_(?!_)/,
+const walkTokens = (token: marked.Token) => {
+	const boldPattern = /^\*[^*]+\*$|^\*\*[^*]+\*\*$/;
+	const italicPattern = /^__(?=\S)([\s\S]*?\S)__(?!_)|^_(?=\S)([\s\S]*?\S)_(?!_)/;
+	if (boldPattern.test(token.raw) && token.type === 'em') {
+		token.type = 'strong' as 'em';
+	} else if (italicPattern.test(token.raw) && token.type === 'strong') {
+		token.type = 'em' as 'strong';
+	}
 };
+
+marked.use({ walkTokens });
 
 const linkMarked = (href: string | null, _title: string | null, text: string): string =>
 	`<a href="${href}" rel="nofollow noopener noreferrer">${text}</a> `;
@@ -78,16 +84,18 @@ const getRegexp = (schemeSetting: string): RegExp => {
 	return new RegExp(`^(${schemes}):`, 'gim');
 };
 
-const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
+type MarkdownTextProps = Partial<MarkdownTextParams>;
+
+const MarkdownText = ({
 	content,
 	variant = 'document',
 	withTruncatedText = false,
 	preserveHtml = false,
 	parseEmoji = false,
 	...props
-}) => {
+}: MarkdownTextProps) => {
 	const sanitizer = dompurify.sanitize;
-	const t = useTranslation();
+	const { t } = useTranslation();
 	let markedOptions: marked.MarkedOptions;
 
 	const schemes = 'http,https,notes,ftp,ftps,tel,mailto,sms,cid';
@@ -115,7 +123,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 					// We are using the old emoji parser here. This could come
 					// with additional processing use, but is the workaround available right now.
 					// Should be replaced in the future with the new parser.
-					return renderMessageEmoji({ html: markedHtml });
+					return renderMessageEmoji(markedHtml);
 				}
 
 				return markedHtml;
@@ -124,7 +132,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 
 		// Add a hook to make all external links open a new window
 		dompurify.addHook('afterSanitizeAttributes', (node) => {
-			if ('target' in node) {
+			if (isElement(node) && 'target' in node) {
 				const href = node.getAttribute('href') || '';
 
 				node.setAttribute('title', `${t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
@@ -148,5 +156,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 		/>
 	) : null;
 };
+
+const isElement = (node: Node): node is Element => node.nodeType === Node.ELEMENT_NODE;
 
 export default MarkdownText;

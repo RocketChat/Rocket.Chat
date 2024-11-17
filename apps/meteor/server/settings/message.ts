@@ -32,7 +32,7 @@ export const createMessageSettings = () =>
 				],
 			});
 
-			await this.add('Message_Attachments_Strip_Exif', false, {
+			await this.add('Message_Attachments_Strip_Exif', true, {
 				type: 'boolean',
 				public: true,
 				i18nDescription: 'Message_Attachments_Strip_ExifDescription',

@@ -1,14 +1,17 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { expect } from '../utils/test';
-import { HomeContent, HomeSidenav, HomeFlextab } from './fragments';
+import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidebar } from './fragments';
 
 export class HomeChannel {
-	private readonly page: Page;
+	public readonly page: Page;
 
 	readonly content: HomeContent;
 
 	readonly sidenav: HomeSidenav;
+
+	readonly sidebar: Sidebar;
+
+	readonly navbar: Navbar;
 
 	readonly tabs: HomeFlextab;
 
@@ -16,6 +19,8 @@ export class HomeChannel {
 		this.page = page;
 		this.content = new HomeContent(page);
 		this.sidenav = new HomeSidenav(page);
+		this.sidebar = new Sidebar(page);
+		this.navbar = new Navbar(page);
 		this.tabs = new HomeFlextab(page);
 	}
 
@@ -25,14 +30,6 @@ export class HomeChannel {
 
 	get btnContextualbarClose(): Locator {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
-	}
-
-	async waitForChannel(): Promise<void> {
-		await this.page.locator('role=main').waitFor();
-		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
-
-		await expect(this.page.locator('role=main >> .rcx-skeleton')).toHaveCount(0);
-		await expect(this.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
 	}
 
 	async dismissToast() {
@@ -69,7 +66,7 @@ export class HomeChannel {
 		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]');
 	}
 
-	getSystemMessageByText(text: string): Locator {
-		return this.page.locator('[aria-roledescription="system message"]', { hasText: text });
+	get markUnread(): Locator {
+		return this.page.locator('role=menuitem[name="Mark Unread"]');
 	}
 }

@@ -1,13 +1,14 @@
-import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useUser } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import * as banners from '../../../lib/banners';
 import { useDismissUserBannerMutation } from './useDismissUserBannerMutation';
+import * as banners from '../../../lib/banners';
 
 export const useUserBanners = () => {
 	const user = useUser();
 
-	const t = useTranslation();
+	const { t, i18n } = useTranslation();
 	const { mutate: dismissUserBanner } = useDismissUserBannerMutation();
 
 	useEffect(() => {
@@ -25,8 +26,8 @@ export const useUserBanners = () => {
 
 		banners.open({
 			id: firstBanner.id,
-			title: t.has(firstBanner.title) ? t(firstBanner.title) : firstBanner.title,
-			text: t.has(firstBanner.text) ? t(firstBanner.text, firstBanner.textArguments) : firstBanner.text,
+			title: i18n.exists(firstBanner.title) ? t(firstBanner.title) : firstBanner.title,
+			text: i18n.exists(firstBanner.text) ? t(firstBanner.text, firstBanner.textArguments) : firstBanner.text,
 			modifiers: firstBanner.modifiers,
 			action() {
 				if (firstBanner.link) {
@@ -37,5 +38,5 @@ export const useUserBanners = () => {
 				dismissUserBanner({ id: firstBanner.id });
 			},
 		});
-	}, [dismissUserBanner, t, user?.banners]);
+	}, [dismissUserBanner, i18n, t, user?.banners]);
 };

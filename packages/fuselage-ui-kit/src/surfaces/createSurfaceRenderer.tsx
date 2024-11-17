@@ -1,16 +1,16 @@
 import type * as UiKit from '@rocket.chat/ui-kit';
-import type { ComponentType, ReactElement } from 'react';
+import type { ComponentType, ReactElement, ReactNode } from 'react';
 
 export const createSurfaceRenderer = <
-  S extends UiKit.SurfaceRenderer<ReactElement>
+  S extends UiKit.SurfaceRenderer<ReactElement>,
 >(
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  SurfaceComponent: ComponentType,
-  surfaceRenderer: S
+  SurfaceComponent: ComponentType<{ children: ReactNode }>,
+  surfaceRenderer: S,
 ) =>
   function Surface(
     blocks: readonly UiKit.LayoutBlock[],
-    conditions: UiKit.Conditions = {}
+    conditions: UiKit.Conditions = {},
   ): ReactElement {
     return (
       <SurfaceComponent>

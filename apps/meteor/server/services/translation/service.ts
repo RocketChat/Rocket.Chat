@@ -17,8 +17,8 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 	}
 
 	// Use translateText when you already know the language, or want to translate to a predefined language
-	translateText(text: string, targetLanguage: string): Promise<string> {
-		return Promise.resolve(i18n.t(text, { lng: targetLanguage }));
+	translateText(text: string, targetLanguage: string, args?: Record<string, string>): Promise<string> {
+		return Promise.resolve(i18n.t(text, { lng: targetLanguage, ...args }));
 	}
 
 	// Use translate when you want to translate to the user's language, or server's as a fallback
@@ -28,9 +28,18 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 		return this.translateText(text, language);
 	}
 
-	async translateToServerLanguage(text: string): Promise<string> {
+	async translateToServerLanguage(text: string, args?: Record<string, string>): Promise<string> {
 		const language = await this.getServerLanguageCached();
 
-		return this.translateText(text, language);
+		return this.translateText(text, language, args);
+	}
+
+	async translateMultipleToServerLanguage(keys: string[]): Promise<Array<{ key: string; value: string }>> {
+		const language = await this.getServerLanguageCached();
+
+		return keys.map((key) => ({
+			key,
+			value: i18n.t(key, { lng: language, fallbackLng: 'en' }),
+		}));
 	}
 }

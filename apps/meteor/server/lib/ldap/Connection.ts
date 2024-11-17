@@ -8,10 +8,10 @@ import type {
 } from '@rocket.chat/core-typings';
 import ldapjs from 'ldapjs';
 
-import { settings } from '../../../app/settings/server';
-import { ensureArray } from '../../../lib/utils/arrayUtils';
 import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
+import { settings } from '../../../app/settings/server';
+import { ensureArray } from '../../../lib/utils/arrayUtils';
 
 interface ILDAPEntryCallback<T> {
 	(entry: ldapjs.SearchEntry): T | undefined;
@@ -660,12 +660,8 @@ export class LDAPConnection {
 		this.client._updateIdle(override);
 	}
 
-	protected async maybeBindDN(): Promise<void> {
-		if (this.usingAuthentication) {
-			return;
-		}
-
-		if (!this.options.authentication) {
+	protected async maybeBindDN({ forceBindAuthenticationUser = false } = {}): Promise<void> {
+		if (!forceBindAuthenticationUser && (this.usingAuthentication || !this.options.authentication)) {
 			return;
 		}
 
@@ -690,6 +686,10 @@ export class LDAPConnection {
 
 	protected async runBeforeSearch(_searchOptions: ldapjs.SearchOptions): Promise<void> {
 		return this.maybeBindDN();
+	}
+
+	public async bindAuthenticationUser(): Promise<void> {
+		return this.maybeBindDN({ forceBindAuthenticationUser: true });
 	}
 
 	/*

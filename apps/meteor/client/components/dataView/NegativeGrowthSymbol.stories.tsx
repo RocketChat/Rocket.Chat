@@ -1,9 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
-import { useAutoSequence } from '../../stories/hooks/useAutoSequence';
 import NegativeGrowthSymbol from './NegativeGrowthSymbol';
+import { useAutoSequence } from '../../stories/hooks/useAutoSequence';
 
 export default {
 	title: 'Components/Data/NegativeGrowthSymbol',
@@ -19,9 +19,9 @@ export default {
 			return <Box color={color}>{fn()}</Box>;
 		},
 	],
-} as ComponentMeta<typeof NegativeGrowthSymbol>;
+} satisfies Meta<typeof NegativeGrowthSymbol>;
 
-const Template: ComponentStory<typeof NegativeGrowthSymbol> = (args) => <NegativeGrowthSymbol {...args} />;
+const Template: StoryFn<typeof NegativeGrowthSymbol> = (args) => <NegativeGrowthSymbol {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'NegativeGrowthSymbol';

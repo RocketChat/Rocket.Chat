@@ -56,6 +56,8 @@ export interface IStats {
 	totalDirectMessages: number;
 	totalDiscussionsMessages: number;
 	totalLivechatMessages: number;
+	totalLivechatRoomsWithPriority: number;
+	totalLivechatRoomsWithDepartment: number;
 	totalTriggers: number;
 	totalMessages: number;
 	federatedServers: number;
@@ -177,7 +179,6 @@ export interface IStats {
 	dashboardCount: number;
 	joinJitsiButton: number;
 	totalBroadcastRooms: number;
-	totalRoomsWithActiveLivestream: number;
 	totalTriggeredEmails: number;
 	totalRoomsWithStarred: number;
 	totalRoomsWithPinned: number;

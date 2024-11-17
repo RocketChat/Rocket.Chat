@@ -1,16 +1,16 @@
 import { Throbber, Box } from '@rocket.chat/fuselage';
 import type { IFederationPublicRooms } from '@rocket.chat/rest-typings';
-import { useSetModal, useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { VFC } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
-import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
-import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import FederatedRoomListEmptyPlaceholder from './FederatedRoomListEmptyPlaceholder';
 import FederatedRoomListItem from './FederatedRoomListItem';
 import { useInfiniteFederationSearchPublicRooms } from './useInfiniteFederationSearchPublicRooms';
+import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
+import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
 type FederatedRoomListProps = {
 	serverName: string;
@@ -19,19 +19,18 @@ type FederatedRoomListProps = {
 	count?: number;
 };
 
-const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, count }) => {
+const FederatedRoomList = ({ serverName, roomName, count }: FederatedRoomListProps) => {
 	const joinExternalPublicRoom = useEndpoint('POST', '/v1/federation/joinExternalPublicRoom');
 
 	const setModal = useSetModal();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { data, isLoading, isFetchingNextPage, fetchNextPage } = useInfiniteFederationSearchPublicRooms(serverName, roomName, count);
 
 	const { mutate: onClickJoin, isLoading: isLoadingMutation } = useMutation(
 		['federation/joinExternalPublicRoom'],
-		async ({ id, pageToken }: IFederationPublicRooms) => {
-			return joinExternalPublicRoom({ externalRoomId: id as `!${string}:${string}`, roomName, pageToken });
-		},
+		async ({ id, pageToken }: IFederationPublicRooms) =>
+			joinExternalPublicRoom({ externalRoomId: id as `!${string}:${string}`, roomName, pageToken }),
 		{
 			onSuccess: (_, data) => {
 				dispatchToastMessage({

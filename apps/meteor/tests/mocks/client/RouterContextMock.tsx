@@ -115,6 +115,7 @@ const RouterContextMock = ({
 					defineRoutes: () => () => undefined,
 					getRoutes: () => [],
 					subscribeToRoutesChange: () => () => undefined,
+					getRoomRoute: () => ({ path: '/' }),
 				};
 			}, [currentPath, navigate])}
 		>

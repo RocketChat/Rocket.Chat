@@ -1,13 +1,14 @@
-import type {
-	IOmnichannelAgent,
-	OmichannelRoutingConfig,
+import {
+	type IOmnichannelAgent,
+	type OmichannelRoutingConfig,
 	OmnichannelSortingMechanismSettingType,
-	ILivechatInquiryRecord,
+	type ILivechatInquiryRecord,
+	LivechatInquiryStatus,
 } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useUser, useSetting, usePermission, useMethod, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { FC } from 'react';
+import type { ReactNode } from 'react';
 import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
 
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
@@ -36,12 +37,19 @@ const emptyContextValue: OmnichannelContextValue = {
 	},
 };
 
-const OmnichannelProvider: FC = ({ children }) => {
-	const omniChannelEnabled = useSetting('Livechat_enabled') as boolean;
-	const omnichannelRouting = useSetting('Livechat_Routing_Method');
-	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link') as boolean;
-	const omnichannelPoolMaxIncoming = useSetting<number>('Livechat_guest_pool_max_number_incoming_livechats_displayed') ?? 0;
-	const omnichannelSortingMechanism = useSetting('Omnichannel_sorting_mechanism') as OmnichannelSortingMechanismSettingType;
+type OmnichannelProviderProps = {
+	children?: ReactNode;
+};
+
+const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
+	const omniChannelEnabled = useSetting('Livechat_enabled', true);
+	const omnichannelRouting = useSetting('Livechat_Routing_Method', 'Auto_Selection');
+	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link', false);
+	const omnichannelPoolMaxIncoming = useSetting('Livechat_guest_pool_max_number_incoming_livechats_displayed', 0);
+	const omnichannelSortingMechanism = useSetting<OmnichannelSortingMechanismSettingType>(
+		'Omnichannel_sorting_mechanism',
+		OmnichannelSortingMechanismSettingType.Timestamp,
+	);
 
 	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
 	const hasAccess = usePermission('view-l-room');
@@ -133,7 +141,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 			}
 
 			return LivechatInquiry.find(
-				{ status: 'queued' },
+				{ status: LivechatInquiryStatus.QUEUED },
 				{
 					sort: getOmniChatSortQuery(omnichannelSortingMechanism),
 					limit: omnichannelPoolMaxIncoming,
@@ -186,7 +194,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				? {
 						enabled: true,
 						queue,
-				  }
+					}
 				: { enabled: false },
 			showOmnichannelQueueLink: showOmnichannelQueueLink && !!agentAvailable,
 			livechatPriorities,

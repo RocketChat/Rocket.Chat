@@ -19,14 +19,14 @@ type ActionParams = {
 type UiKitContextValue = {
   action: (
     state: ActionParams,
-    event: Parameters<React.MouseEventHandler<HTMLElement>>[0]
+    event: Parameters<React.MouseEventHandler<HTMLElement>>[0],
   ) => Promise<void> | void;
   updateState?: (
     state: ActionParams,
-    event: Parameters<React.MouseEventHandler<HTMLElement>>[0]
+    event: Parameters<React.MouseEventHandler<HTMLElement>>[0],
   ) => Promise<void> | void;
   appId?: string;
-  errors?: Record<string, string>;
+  errors?: { [field: string]: string }[] | { [field: string]: string };
   values: Record<ActionId, { value: unknown } | undefined>;
   viewId?: string;
   rid?: string;
@@ -38,3 +38,5 @@ export const UiKitContext = createContext<UiKitContextValue>({
   appId: 'core',
   values: {},
 });
+
+Object.assign(UiKitContext.Provider, { displayName: 'UiKitContext.Provider' });

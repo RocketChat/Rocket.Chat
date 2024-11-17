@@ -1,9 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Button, Callout, Throbber } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import OTREstablished from './components/OTREstablished';
+import OTRStates from './components/OTRStates';
 import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
 import {
 	ContextualbarHeader,
@@ -13,8 +15,6 @@ import {
 	ContextualbarScrollableContent,
 } from '../../../../components/Contextualbar';
 import { useRoom } from '../../contexts/RoomContext';
-import OTREstablished from './components/OTREstablished';
-import OTRStates from './components/OTRStates';
 
 type OTRProps = {
 	isOnline: boolean;
@@ -27,7 +27,7 @@ type OTRProps = {
 };
 
 const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh, otrState, peerUsername }: OTRProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const room = useRoom();
 
 	const renderOTRState = (): ReactElement => {
@@ -53,7 +53,7 @@ const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh,
 				return (
 					<OTRStates
 						title={t('OTR_Chat_Declined_Title')}
-						description={t('OTR_Chat_Declined_Description', peerUsername || '')}
+						description={t('OTR_Chat_Declined_Description', { postProcess: 'sprintf', sprintf: [peerUsername || ''] })}
 						icon='cross'
 						onClickStart={onClickStart}
 					/>
@@ -62,7 +62,7 @@ const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh,
 				return (
 					<OTRStates
 						title={t('OTR_Chat_Timeout_Title')}
-						description={t('OTR_Chat_Timeout_Description', peerUsername || '')}
+						description={t('OTR_Chat_Timeout_Description', { postProcess: 'sprintf', sprintf: [peerUsername || ''] })}
 						icon='clock'
 						onClickStart={onClickStart}
 					/>

@@ -1,10 +1,12 @@
-import type { IMessage, MessageReport } from '@rocket.chat/core-typings';
-import { isE2EEMessage } from '@rocket.chat/core-typings';
+import type { IMessage, MessageReport, MessageAttachment } from '@rocket.chat/core-typings';
+import { isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Message, MessageName, MessageToolbarItem, MessageToolbarWrapper, MessageUsername } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import ReportReasonCollapsible from './ReportReasonCollapsible';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import Attachments from '../../../../components/message/content/Attachments';
 import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';
@@ -15,7 +17,6 @@ import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
 import MessageReportInfo from '../MessageReportInfo';
 import useDeleteMessage from '../hooks/useDeleteMessage';
 import { useDismissMessageAction } from '../hooks/useDismissMessageAction';
-import ReportReasonCollapsible from './ReportReasonCollapsible';
 
 const ContextMessage = ({
 	message,
@@ -30,7 +31,7 @@ const ContextMessage = ({
 	onRedirect: (id: IMessage['_id']) => void;
 	onChange: () => void;
 }): JSX.Element => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const isEncryptedMessage = isE2EEMessage(message);
 
@@ -40,12 +41,16 @@ const ContextMessage = ({
 	const formatDateAndTime = useFormatDateAndTime();
 	const formatTime = useFormatTime();
 	const formatDate = useFormatDate();
-	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
+	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	const name = message.u.name || '';
 	const username = message.u.username || '';
 
 	const displayName = useUserDisplayName({ name, username });
+
+	const quotes = message?.attachments?.filter(isQuoteAttachment) || [];
+
+	const attachments = message?.attachments?.filter((attachment: MessageAttachment) => !isQuoteAttachment(attachment)) || [];
 
 	return (
 		<>
@@ -65,6 +70,7 @@ const ContextMessage = ({
 						<Message.Role>{room.name || room.fname || 'DM'}</Message.Role>
 					</Message.Header>
 					<Message.Body>
+						{!!quotes?.length && <Attachments attachments={quotes} />}
 						{!message.blocks?.length && !!message.md?.length ? (
 							<>
 								{(!isEncryptedMessage || message.e2e === 'done') && (
@@ -76,8 +82,8 @@ const ContextMessage = ({
 							message.msg
 						)}
 
+						{!!attachments && <Attachments id={message.files?.[0]?._id} attachments={attachments} />}
 						{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
-						{message.attachments?.length > 0 && <Attachments id={message.files?.[0]._id} attachments={message.attachments} />}
 					</Message.Body>
 					<ReportReasonCollapsible>
 						<MessageReportInfo msgId={message._id} />

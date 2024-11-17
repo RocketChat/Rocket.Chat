@@ -7,6 +7,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+import type { Updater } from '@rocket.chat/models';
 import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, Filter, AggregationCursor } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
@@ -20,6 +21,7 @@ declare module '@rocket.chat/model-typings' {
 		unsetPredictedVisitorAbandonmentByRoomId(rid: string): Promise<UpdateResult>;
 		findAbandonedOpenRooms(date: Date, extraQuery?: Filter<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
 		setPredictedVisitorAbandonmentByRoomId(roomId: string, date: Date): Promise<UpdateResult>;
+		getPredictedVisitorAbandonmentByRoomIdUpdateQuery(date: Date, roomUpdater: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 		unsetAllPredictedVisitorAbandonment(): Promise<void>;
 		setOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
 		unsetOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
@@ -207,6 +209,13 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 				},
 			},
 		);
+	}
+
+	getPredictedVisitorAbandonmentByRoomIdUpdateQuery(
+		date: Date,
+		roomUpdater: Updater<IOmnichannelRoom> = this.getUpdater(),
+	): Updater<IOmnichannelRoom> {
+		return roomUpdater.set('omnichannel.predictedVisitorAbandonmentAt', date);
 	}
 
 	setPredictedVisitorAbandonmentByRoomId(rid: string, willBeAbandonedAt: Date): Promise<UpdateResult> {

@@ -1,24 +1,10 @@
 import { faker } from '@faker-js/faker';
-import { ModalContext } from '@rocket.chat/ui-contexts';
-import { renderHook } from '@testing-library/react-hooks';
-import React from 'react';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { screen, act, renderHook } from '@testing-library/react';
 
 import { useVideoConfOpenCall } from './useVideoConfOpenCall';
 
 describe('with window.RocketChatDesktop set', () => {
-	const wrapper: React.FC = ({ children }) => (
-		<ModalContext.Provider
-			children={children}
-			value={{
-				modal: {
-					setModal: () => {
-						return null;
-					},
-				},
-				currentModal: { component: null },
-			}}
-		/>
-	);
 	beforeEach(() => {
 		window.RocketChatDesktop = {
 			openInternalVideoChatWindow: jest.fn(),
@@ -30,20 +16,26 @@ describe('with window.RocketChatDesktop set', () => {
 	});
 
 	it('should pass to videoConfOpenCall the url', async () => {
-		const { result } = renderHook(() => useVideoConfOpenCall(), { wrapper });
+		const { result } = renderHook(() => useVideoConfOpenCall(), { legacyRoot: true, wrapper: mockAppRoot().build() });
+
 		const url = faker.internet.url();
 
-		result.current(url);
+		act(() => {
+			result.current(url);
+		});
 
 		expect(window.RocketChatDesktop?.openInternalVideoChatWindow).toHaveBeenCalledWith(url, { providerName: undefined });
 	});
 
 	it('should pass to videoConfOpenCall the url and the providerName', async () => {
-		const { result } = renderHook(() => useVideoConfOpenCall(), { wrapper });
+		const { result } = renderHook(() => useVideoConfOpenCall(), { legacyRoot: true, wrapper: mockAppRoot().build() });
+
 		const url = faker.internet.url();
 		const providerName = faker.lorem.word();
 
-		result.current(url, providerName);
+		act(() => {
+			result.current(url, providerName);
+		});
 
 		expect(window.RocketChatDesktop?.openInternalVideoChatWindow).toHaveBeenCalledWith(url, {
 			providerName,
@@ -51,42 +43,45 @@ describe('with window.RocketChatDesktop set', () => {
 	});
 });
 
-describe('with window.RocketChatDesktop unset', () => {
-	const setModal = jest.fn();
-	const wrapper: React.FC = ({ children }) => (
-		<ModalContext.Provider
-			children={children}
-			value={{
-				modal: {
-					setModal,
-				},
-				currentModal: { component: null },
-			}}
-		/>
-	);
+describe('without window.RocketChatDesktop set', () => {
+	const previousWindowOpen = window.open;
 
-	it('should open window', async () => {
-		const { result } = renderHook(() => useVideoConfOpenCall(), { wrapper });
-		const url = faker.internet.url();
-
-		window.open = jest.fn();
-
-		result.current(url);
-
-		expect(window.open).toHaveBeenCalledWith(url);
-		expect(setModal).not.toBeCalled();
+	afterAll(() => {
+		window.open = previousWindowOpen;
 	});
 
-	it('should NOT open window AND open modal', async () => {
-		const { result } = renderHook(() => useVideoConfOpenCall(), { wrapper });
+	it('should open window', async () => {
+		window.open = jest.fn(() => ({}) as Window);
+
+		const { result } = renderHook(() => useVideoConfOpenCall(), {
+			legacyRoot: true,
+			wrapper: mockAppRoot().build(),
+		});
+
 		const url = faker.internet.url();
-
-		window.open = jest.fn(() => null);
-
-		result.current(url);
+		act(() => {
+			result.current(url);
+		});
 
 		expect(window.open).toHaveBeenCalledWith(url);
-		expect(window.open).toReturnWith(null);
-		expect(setModal).toBeCalled();
+		expect(screen.queryByRole('dialog', { name: 'Open_call_in_new_tab' })).not.toBeInTheDocument();
+	});
+
+	it('should NOT open window, AND open modal instead', async () => {
+		window.open = jest.fn(() => null);
+
+		const { result } = renderHook(() => useVideoConfOpenCall(), {
+			legacyRoot: true,
+			wrapper: mockAppRoot().build(),
+		});
+
+		const url = faker.internet.url();
+		act(() => {
+			result.current(url);
+		});
+
+		expect(window.open).toHaveBeenCalledWith(url);
+		expect(window.open).toHaveReturnedWith(null);
+		expect(await screen.findByRole('dialog', { name: 'Open_call_in_new_tab' })).toBeInTheDocument();
 	});
 });

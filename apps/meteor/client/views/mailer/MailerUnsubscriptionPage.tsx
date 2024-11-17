@@ -1,8 +1,8 @@
 import { Box, Callout, Throbber } from '@rocket.chat/fuselage';
 import { HeroLayout } from '@rocket.chat/layout';
-import { useToastMessageDispatch, useRouteParameter, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import { useToastMessageDispatch, useRouteParameter, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { AsyncState } from '../../hooks/useAsyncState';
 import { AsyncStatePhase, useAsyncState } from '../../hooks/useAsyncState';
@@ -36,10 +36,10 @@ const useMailerUnsubscriptionState = (): AsyncState<boolean> => {
 	return unsubscribedState;
 };
 
-const MailerUnsubscriptionPage: FC = () => {
+const MailerUnsubscriptionPage = () => {
 	const { phase, error } = useMailerUnsubscriptionState();
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<HeroLayout>

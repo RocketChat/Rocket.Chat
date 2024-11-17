@@ -7,7 +7,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
@@ -32,9 +32,7 @@ import {
 import { IS_EE } from '../../../e2e/config/constants';
 import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 
-(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Priorities & SLAs', function () {
-	this.retries(0);
-
+(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Priorities & SLAs', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
@@ -42,7 +40,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 	});
 
-	this.afterAll(async () => {
+	after(async () => {
 		await addPermissions({
 			'manage-livechat-priorities': ['admin', 'livechat-manager'],
 			'manage-livechat-sla': ['admin', 'livechat-manager'],
