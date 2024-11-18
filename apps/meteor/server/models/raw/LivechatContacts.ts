@@ -50,6 +50,14 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 				partialFilterExpression: { phones: { $exists: true } },
 				unique: false,
 			},
+			{
+				key: {
+					'channels.visitor.visitorId': 1,
+					'channels.visitor.source.type': 1,
+					'channels.visitor.source.id': 1,
+				},
+				unique: false,
+			},
 		];
 	}
 
@@ -62,15 +70,6 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		});
 
 		return result.insertedId;
-	}
-
-	async upsertContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact | null> {
-		const result = await this.findOneAndUpdate(
-			{ _id: contactId },
-			{ $set: data, $setOnInsert: { createdAt: new Date() } },
-			{ upsert: true },
-		);
-		return result.value;
 	}
 
 	async updateContact(contactId: string, data: Partial<ILivechatContact>, options?: FindOneAndUpdateOptions): Promise<ILivechatContact> {

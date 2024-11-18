@@ -8,11 +8,15 @@ import { createContactFromVisitor } from './createContactFromVisitor';
 /**
 	This function assumes you already ensured that the visitor is not yet linked to any contact
 **/
-export async function migrateVisitorToContactId(
-	visitor: ILivechatVisitor,
-	source: IOmnichannelSource,
+export async function migrateVisitorToContactId({
+	visitor,
+	source,
 	requireRoom = true,
-): Promise<ILivechatContact['_id'] | null> {
+}: {
+	visitor: ILivechatVisitor;
+	source: IOmnichannelSource;
+	requireRoom?: boolean;
+}): Promise<ILivechatContact['_id'] | null> {
 	if (requireRoom) {
 		// Do not migrate the visitor with this source if they have no rooms matching it
 		const anyRoom = await LivechatRooms.findNewestByContactVisitorAssociation<Pick<IOmnichannelRoom, '_id'>>(

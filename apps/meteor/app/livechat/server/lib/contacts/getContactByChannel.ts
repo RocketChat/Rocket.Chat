@@ -18,7 +18,7 @@ export async function getContactByChannel(association: ILivechatContactVisitorAs
 		return null;
 	}
 
-	const newContactId = await migrateVisitorToContactId(visitor, association.source);
+	const newContactId = await migrateVisitorToContactId({ visitor, source: association.source });
 
 	// If no contact was created by the migration, this visitor doesn't need a contact yet, so let's return null
 	if (!newContactId) {

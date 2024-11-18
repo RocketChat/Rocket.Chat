@@ -50,7 +50,7 @@ export const Visitors = {
 
 		const livechatVisitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 
-		if (livechatVisitor?.department !== department && department) {
+		if (department && livechatVisitor?.department !== department) {
 			logger.debug(`Attempt to find a department with id/name ${department}`);
 			const dep = await LivechatDepartment.findOneByIdOrName(department, { projection: { _id: 1 } });
 			if (!dep) {

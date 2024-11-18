@@ -42,7 +42,7 @@ describe('migrateVisitorToContactId', () => {
 	});
 
 	it('should not create a contact if there is no source for the visitor', async () => {
-		expect(await migrateVisitorToContactId({ _id: 'visitor1' })).to.be.null;
+		expect(await migrateVisitorToContactId({ visitor: { _id: 'visitor1' } })).to.be.null;
 	});
 
 	it('should attempt to create a new contact if there is no free existing contact matching the visitor data', async () => {
@@ -52,7 +52,7 @@ describe('migrateVisitorToContactId', () => {
 		modelsMock.LivechatRooms.findNewestByContactVisitorAssociation.resolves({ _id: 'room1', v: { _id: visitor._id }, source });
 		createContactFromVisitor.resolves('contactCreated');
 
-		expect(await migrateVisitorToContactId({ _id: 'visitor1' }, source)).to.be.equal('contactCreated');
+		expect(await migrateVisitorToContactId({ visitor: { _id: 'visitor1' }, source })).to.be.equal('contactCreated');
 	});
 
 	it('should not attempt to create a new contact if one is found for the visitor', async () => {
@@ -63,7 +63,7 @@ describe('migrateVisitorToContactId', () => {
 		modelsMock.LivechatContacts.findContactMatchingVisitor.resolves(contact);
 		createContactFromVisitor.resolves('contactCreated');
 
-		expect(await migrateVisitorToContactId(visitor, source)).to.be.equal('contact1');
+		expect(await migrateVisitorToContactId({ visitor, source })).to.be.equal('contact1');
 		expect(mergeVisitorIntoContact.calledOnceWith(visitor, contact, source)).to.be.true;
 	});
 });
