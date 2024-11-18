@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
-import { ChatMessage, ChatSubscription } from '../../app/models/client';
+import { Messages, Subscriptions } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 
 Meteor.methods<ServerMethods>({
@@ -17,7 +17,7 @@ Meteor.methods<ServerMethods>({
 				method: 'pinMessage',
 			});
 		}
-		if (!ChatSubscription.findOne({ rid: message.rid })) {
+		if (!Subscriptions.findOne({ rid: message.rid })) {
 			throw new Meteor.Error('error-pinning-message', 'Pinning messages is not allowed', {
 				method: 'pinMessage',
 			});
@@ -28,7 +28,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		ChatMessage.update(
+		Messages.update(
 			{
 				_id: message._id,
 				rid: message.rid,
@@ -40,7 +40,7 @@ Meteor.methods<ServerMethods>({
 			},
 		);
 
-		const msg = ChatMessage.findOne({ _id: message._id });
+		const msg = Messages.findOne({ _id: message._id });
 
 		if (!msg) {
 			throw new Meteor.Error('error-pinning-message', 'Error pinning message', {
