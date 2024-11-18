@@ -29,7 +29,7 @@ const DateListProvider = ({ children }: { children: React.ReactNode }) => {
 
 			if (!ref) return;
 			remove = addToList(ref);
-			addToList(ref);
+			// addToList(ref);
 		};
 	};
 

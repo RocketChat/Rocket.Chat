@@ -130,7 +130,7 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 				};
 			})();
 
-			const fn = withThrottling({ wait: 100 })(() => {
+			const fn = withThrottling({ wait: 30 })(() => {
 				onScroll(list);
 			});
 

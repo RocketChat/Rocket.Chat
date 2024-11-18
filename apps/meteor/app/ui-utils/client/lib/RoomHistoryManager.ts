@@ -166,7 +166,8 @@ class RoomHistoryManagerClass extends Emitter {
 			room.oldestTs = messages[messages.length - 1].ts;
 		}
 
-		const wrapper = await waitForElement('.messages-box .wrapper .messages-list');
+		// const wrapper = await waitForElement('.messages-box .wrapper .messages-list');
+		const wrapper = await waitForElement('.messages-box .wrapper .rc-scrollbars-view');
 
 		if (wrapper) {
 			previousHeight = wrapper.scrollHeight;

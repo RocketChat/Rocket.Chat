@@ -151,10 +151,6 @@ button {
 	}
 }
 
-.rc-scrollbars-native {
-	overflow-y: hidden !important;
-
-}
 
 .gallery-item {
 	max-width: 100%;

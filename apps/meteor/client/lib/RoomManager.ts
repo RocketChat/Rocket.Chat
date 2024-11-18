@@ -4,6 +4,7 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { RoomHistoryManager } from '../../app/ui-utils/client/lib/RoomHistoryManager';
 import { getConfig } from './utils/getConfig';
+import { StateSnapshot } from 'react-virtuoso';
 
 const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));
 
@@ -18,7 +19,7 @@ class RoomStore extends Emitter<{
 
 	atBottom = true;
 
-	state?: any;
+	state?: StateSnapshot;
 
 	constructor(readonly rid: string) {
 		super();
@@ -26,7 +27,7 @@ class RoomStore extends Emitter<{
 		debug && this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));
 	}
 
-	update({ scroll, lastTime, atBottom, state }: { scroll?: number; lastTime?: Date; atBottom?: boolean; state?: any }): void {
+	update({ scroll, lastTime, atBottom, state }: { scroll?: number; lastTime?: Date; atBottom?: boolean; state?: StateSnapshot }): void {
 		if (scroll !== undefined) {
 			this.scroll = scroll;
 		}

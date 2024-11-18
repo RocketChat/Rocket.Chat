@@ -3,7 +3,7 @@ import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import type { RefObject } from 'react';
 import { useCallback } from 'react';
 
-import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
+// import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { RoomManager } from '../../../../lib/RoomManager';
 
@@ -14,16 +14,18 @@ export function useRestoreScrollPosition(roomId: IRoom['_id']) {
 				return;
 			}
 			const store = RoomManager.getStore(roomId);
-
+			console.log({ store });
 			if (store?.scroll && !store.atBottom) {
-				node.scrollTo({
-					left: 30,
-					top: store.scroll,
-				});
+				// console.log('SCROLLING TO', store.scroll);
+				// node.scrollTo({
+				// 	left: 30,
+				// 	top: store.scroll,
+				// });
 			} else {
-				node.scrollTo({
-					top: node.scrollHeight,
-				});
+				// console.log('SCROLLING TO BOTTOM?');
+				// node.scrollTo({
+				// 	top: node.scrollHeight,
+				// });
 			}
 		},
 		[roomId],
@@ -35,10 +37,12 @@ export function useRestoreScrollPosition(roomId: IRoom['_id']) {
 				return;
 			}
 
-			const store = RoomManager.getStore(roomId);
+			// const store = RoomManager.getStore(roomId);
 
-			const handleWrapperScroll = withThrottling({ wait: 100 })(() => {
-				store?.update({ scroll: node.scrollTop, atBottom: isAtBottom(node, 50) });
+			// STORE UPDATE SCROLL POSITION
+			const handleWrapperScroll = withThrottling({ wait: 10 })(() => {
+				// console.log('SETTING NODE TO', node.scrollTop);
+				// store?.update({ scroll: node.scrollTop, atBottom: isAtBottom(node, 50) });
 			});
 
 			node.addEventListener('scroll', handleWrapperScroll, {

@@ -7,6 +7,7 @@ import React, { memo, useCallback, useMemo, useRef } from 'react';
 
 import { RoomRoles } from '../../../../app/models/client';
 import { isTruthy } from '../../../../lib/isTruthy';
+import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import Announcement from '../Announcement';
@@ -38,6 +39,7 @@ import { useLeaderBanner } from './hooks/useLeaderBanner';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
+import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useHandleUnread } from './hooks/useUnreadMessages';
 
 const RoomBody = (): ReactElement => {
@@ -53,7 +55,9 @@ const RoomBody = (): ReactElement => {
 	const toolbox = useRoomToolbox();
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
+
 	const retentionPolicy = useRetentionPolicy(room);
+
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
@@ -71,7 +75,7 @@ const RoomBody = (): ReactElement => {
 			return true;
 		}
 
-		if (allowAnonymousRead) {
+		if (allowAnonymousRead === true) {
 			return true;
 		}
 
@@ -109,6 +113,8 @@ const RoomBody = (): ReactElement => {
 		targeDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
 	} = useFileUpload();
 
+	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition(room._id);
+
 	const { messageListRef } = useMessageListNavigation();
 
 	const { handleNewMessageButtonClick, handleJumpToRecentButtonClick, handleComposerResize, hasNewMessages, newMessagesScrollRef } =
@@ -121,11 +127,13 @@ const RoomBody = (): ReactElement => {
 	const innerRef = useMergedRefs(
 		dateScrollInnerRef,
 		innerBoxRef,
+		restoreScrollPositionInnerRef,
 		isAtBottomInnerRef,
 		newMessagesScrollRef,
 		leaderBannerInnerRef,
 		unreadBarInnerRef,
 		getMoreInnerRef,
+
 		messageListRef,
 	);
 
@@ -275,33 +283,26 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<ul className='messages-list' aria-label={t('Message_list')} aria-busy={isLoadingMoreMessages}>
-											<MessageList
-												ref={innerRef}
-												rid={room._id}
-												messageListRef={innerBoxRef}
-												isLoadingMoreMessages={isLoadingMoreMessages}
-												renderBefore={() =>
-													canPreview ? (
-														<>
-															{hasMorePreviousMessages ? (
-																<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-															) : (
-																<li>
-																	<RoomForeword user={user} room={room} />
-																	{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
-																</li>
-															)}
-														</>
-													) : null
-												}
-												renderAfter={() =>
-													hasMoreNextMessages ? (
-														<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-													) : null
-												}
-											/>
-										</ul>
+										<CustomScrollbars ref={innerRef}>
+											<ul className='messages-list' aria-label={t('Message_list')} aria-busy={isLoadingMoreMessages}>
+												{canPreview ? (
+													<>
+														{hasMorePreviousMessages ? (
+															<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
+														) : (
+															<li>
+																<RoomForeword user={user} room={room} />
+																{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
+															</li>
+														)}
+													</>
+												) : null}
+												<MessageList rid={room._id} messageListRef={innerBoxRef} />
+												{hasMoreNextMessages ? (
+													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
+												) : null}
+											</ul>
+										</CustomScrollbars>
 									</MessageListErrorBoundary>
 								</div>
 							</div>
