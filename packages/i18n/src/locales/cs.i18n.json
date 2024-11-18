@@ -2622,7 +2622,6 @@
   "Notifications_Max_Room_Members_Description": "Pokud počet uživatelů v místnosti překročí zadané číslo, notifikace všech (@all) nebude povolena. Uživatelé si toto nastavení mohou individuálně změnit. (0 možnost zakáže)",
   "Notifications_Muted_Description": "Pokud ztišíte všechno, neuvidíte zvýrazněné místnosti s novými zprávami, krom zmínek. Ztišení notifikací přetěží nastavení notifikací v jednotlivých místnostech.",
   "Notifications_Preferences": "Nastavení upozornění",
-  "Notifications_Sound_Volume": "Hlasitost zvuku notifikace",
   "Notify_active_in_this_room": "Notifikovat aktivní uživatele v místnosti",
   "Notify_all_in_this_room": "Oznámit všem v této místnosti",
   "Num_Agents": "# Operátorů",

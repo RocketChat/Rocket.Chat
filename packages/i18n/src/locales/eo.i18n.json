@@ -1806,7 +1806,6 @@
   "Notifications_Max_Room_Members_Description": "Max nombro da membroj en ĉambro kiam sciigoj por ĉiuj mesaĝoj malŝaltas. Uzantoj ankoraŭ povas ŝanĝi laŭ ĉambro por ricevi ĉiujn sciigojn individue. (0 malŝalti)",
   "Notifications_Muted_Description": "Se vi elektas munti ĉion, vi ne vidos la ĉambron reliefigi en la listo kiam estas novaj mesaĝoj, krom mencioj. Mutaj sciigoj forĵetos sciigajn agordojn.",
   "Notifications_Preferences": "Agordoj de sciigoj",
-  "Notifications_Sound_Volume": "Sciigoj sono volumo",
   "Notify_active_in_this_room": "Avizu aktivajn uzantojn en ĉi tiu ĉambro",
   "Notify_all_in_this_room": "Avizu ĉion en ĉi tiu ĉambro",
   "Num_Agents": "# Agentoj",

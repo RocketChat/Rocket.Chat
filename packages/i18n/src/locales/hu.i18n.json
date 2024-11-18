@@ -3405,7 +3405,6 @@
   "Notifications_Max_Room_Members_Description": "A szobában lévő tagok legnagyobb száma, amikor az összes üzenet értesítései letiltásra kerülnek. A felhasználók továbbra is megváltoztathatják a szobánkénti beállítást, hogy az összes értesítést egyénileg kapják meg (0 a letiltáshoz).",
   "Notifications_Muted_Description": "Ha úgy dönt, hogy mindent elnémít, akkor nem fogja látni a szoba kiemelését a listában, amikor új üzenetek érkeznek, kivéve az említéseket. Az értesítések némítása felülírja az értesítések beállításait.",
   "Notifications_Preferences": "Értesítések beállításai",
-  "Notifications_Sound_Volume": "Értesítések hangereje",
   "Notify_active_in_this_room": "Aktív felhasználók értesítése ebben a szobában",
   "Notify_all_in_this_room": "Mindenki értesítése ebben a szobában",
   "NPS_survey_enabled": "Ügyfél-elégedettségi felmérés engedélyezése",
