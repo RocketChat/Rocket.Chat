@@ -7,10 +7,10 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import PruneMessages from './PruneMessages';
 import GenericModal from '../../../../components/GenericModal';
 import { useRoom } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
-import PruneMessages from './PruneMessages';
 
 const getTimeZoneOffset = (): string => {
 	const offset = new Date().getTimezoneOffset();

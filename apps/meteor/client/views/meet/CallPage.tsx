@@ -4,10 +4,10 @@ import { useTranslation, useStream } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 
+import OngoingCallDuration from './OngoingCallDuration';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { WebRTC } from '../../../app/webrtc/client';
 import { WEB_RTC_EVENTS } from '../../../app/webrtc/lib/constants';
-import OngoingCallDuration from './OngoingCallDuration';
 import './styles.css';
 
 type CallPageProps = {

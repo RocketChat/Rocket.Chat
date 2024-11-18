@@ -2,13 +2,13 @@ import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import type { StoryFn } from '@storybook/react';
 import React, { useState } from 'react';
 
-import type { CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
-import { useCategories } from '../../hooks/useCategories';
-import { useCategoryToggle } from '../../hooks/useCategoryToggle';
 import CategoryDropDown from './CategoryDropDown';
 import CategoryDropDownAnchor from './CategoryDropDownAnchor';
 import CategoryDropDownList from './CategoryDropDownList';
 import TagList from './TagList';
+import type { CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
+import { useCategories } from '../../hooks/useCategories';
+import { useCategoryToggle } from '../../hooks/useCategoryToggle';
 
 export default {
 	title: 'Admin/Apps/CategoryDropDown',

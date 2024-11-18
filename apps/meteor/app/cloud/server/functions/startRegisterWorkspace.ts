@@ -1,12 +1,12 @@
 import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
-import { settings } from '../../../settings/server';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
+import { settings } from '../../../settings/server';
 
 export async function startRegisterWorkspace(resend = false) {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();

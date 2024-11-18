@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ModConsoleUserTableRow from './ModConsoleUserTableRow';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -16,7 +17,6 @@ import {
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import ModerationFilter from '../helpers/ModerationFilter';
-import ModConsoleUserTableRow from './ModConsoleUserTableRow';
 
 const ModConsoleUsersTable = () => {
 	const [text, setText] = useState('');

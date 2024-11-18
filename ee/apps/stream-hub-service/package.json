@@ -30,7 +30,7 @@
 		"eventemitter3": "^5.0.1",
 		"gc-stats": "^1.4.1",
 		"mem": "^8.1.1",
-		"moleculer": "^0.14.34",
+		"moleculer": "^0.14.35",
 		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
 		"nats": "^2.28.2",
 		"pino": "^8.21.0",

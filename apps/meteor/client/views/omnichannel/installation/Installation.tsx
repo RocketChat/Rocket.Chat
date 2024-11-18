@@ -4,10 +4,10 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import Wrapper from './Wrapper';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import RawText from '../../../components/RawText';
 import TextCopy from '../../../components/TextCopy';
-import Wrapper from './Wrapper';
 
 // TODO: use `CodeSnippet` Component
 const Installation = (): ReactElement => {

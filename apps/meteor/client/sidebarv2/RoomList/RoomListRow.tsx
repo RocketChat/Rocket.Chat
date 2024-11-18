@@ -2,10 +2,10 @@ import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import type { TFunction } from 'i18next';
 import React, { memo, useMemo } from 'react';
 
+import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
 import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
-import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
 
 type RoomListRowProps = {
 	data: {
