@@ -11,7 +11,7 @@ type InternalWidgetAPI = {
 	ready: () => void;
 	minimizeWindow: () => void;
 	restoreWindow: () => void;
-	openPopout: () => void;
+	openPopout: (token?: string) => void;
 	openWidget: () => void;
 	resizeWidget: (height: number) => void;
 	removeWidget: () => void;
@@ -484,7 +484,7 @@ const api: InternalWidgetAPI = {
 		openWidget();
 	},
 
-	openPopout() {
+	openPopout(token = '') {
 		closeWidget();
 		if (!config.url) {
 			throw new Error('Config.url is not set!');
@@ -494,6 +494,14 @@ const api: InternalWidgetAPI = {
 			'livechat-popout',
 			`width=${WIDGET_OPEN_WIDTH}, height=${widgetHeight}, toolbars=no`,
 		);
+
+		const data = {
+			src: 'rocketchat',
+			fn: 'setGuestToken',
+			args: [token],
+		};
+
+		api.popup?.postMessage(data, '*');
 		api.popup?.focus();
 	},
 
