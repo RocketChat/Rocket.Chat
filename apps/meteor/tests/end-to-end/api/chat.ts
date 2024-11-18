@@ -3207,9 +3207,7 @@ describe('[Chat]', () => {
 
 			expect(response.body.result.deleted).to.have.lengthOf(0);
 			expect(response.body.result.cursor).to.have.property('next').and.to.equal(lastUpdate.getTime().toString());
-			expect(response.body.result.cursor)
-				.to.have.property('previous')
-				.and.to.equal(lastUpdate.getTime().toString());
+			expect(response.body.result.cursor).to.have.property('previous').and.to.equal(lastUpdate.getTime().toString());
 
 			const firstDeletedMessage = (await deleteMessage({ roomId: newChannel._id, msgId: firstMessage._id })).body.message;
 			const secondDeletedMessage = (await deleteMessage({ roomId: newChannel._id, msgId: secondMessage._id })).body.message;
@@ -3225,7 +3223,11 @@ describe('[Chat]', () => {
 			expect(responseAfterDelete.body.result.deleted[1]._id).to.be.equal(secondDeletedMessage._id);
 			expect(responseAfterDelete.body.result.cursor)
 				.to.have.property('next')
-				.and.to.equal(new Date(responseAfterDelete.body.result.deleted[responseAfterDelete.body.result.deleted.length - 1]._deletedAt).getTime().toString());
+				.and.to.equal(
+					new Date(responseAfterDelete.body.result.deleted[responseAfterDelete.body.result.deleted.length - 1]._deletedAt)
+						.getTime()
+						.toString(),
+				);
 			expect(responseAfterDelete.body.result.cursor)
 				.to.have.property('previous')
 				.and.to.equal(new Date(responseAfterDelete.body.result.deleted[0]._deletedAt).getTime().toString());
