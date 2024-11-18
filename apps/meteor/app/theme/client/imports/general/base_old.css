@@ -780,14 +780,14 @@
 	& ul.messages-list {
 		overflow: hidden;
 		height: 100%;
-
-		> div > div {
-			padding: 21px 0 0;
-		}
 	}
 
 	& .editing .body {
 		border-radius: var(--border-radius);
+	}
+
+	& .virtuoso-header {
+		padding-top: 20px;
 	}
 }
 

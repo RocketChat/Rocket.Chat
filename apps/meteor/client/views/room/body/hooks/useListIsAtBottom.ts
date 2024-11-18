@@ -10,7 +10,17 @@ export const useListIsAtBottom = () => {
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
 
 	const sendToBottom = useCallback(() => {
-		innerBoxRef.current?.scrollTo({ left: 30, top: innerBoxRef.current?.scrollHeight });
+		if (!innerBoxRef.current) {
+			return;
+		}
+		const scrollTo: ScrollToOptions = {
+			top: innerBoxRef.current.scrollHeight,
+			behavior: 'smooth',
+		};
+		if (!atBottomRef?.current) {
+			scrollTo.behavior = 'instant';
+		}
+		innerBoxRef.current.scrollTo(scrollTo);
 	}, []);
 
 	const sendToBottomIfNecessary = useCallback(() => {
@@ -35,7 +45,7 @@ export const useListIsAtBottom = () => {
 			console.log(node);
 
 			const observer = new ResizeObserver(() => {
-				console.log('RESIZE');
+				console.log('resize');
 				if (atBottomRef.current === true) {
 					node.scrollTo({ left: 30, top: node.scrollHeight });
 				}
@@ -47,7 +57,6 @@ export const useListIsAtBottom = () => {
 				'scroll',
 				withThrottling({ wait: 100 })(() => {
 					atBottomRef.current = isAtBottom(200);
-					// lockToBottom();
 				}),
 				{
 					passive: true,

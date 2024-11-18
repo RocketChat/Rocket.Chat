@@ -148,6 +148,7 @@ export const useHandleUnread = (
 				}
 			};
 
+			return;
 			wrapper.addEventListener(
 				'scroll',
 				withThrottling({ wait: 300 })(() => {

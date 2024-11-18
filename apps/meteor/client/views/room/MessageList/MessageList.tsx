@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MutableRefObject } from 'react';
-import React, { forwardRef, useCallback, useRef } from 'react';
+import React, { forwardRef, useCallback, useRef, useEffect } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import type { StateSnapshot } from 'react-virtuoso';
 
@@ -25,6 +25,15 @@ type MessageListProps = {
 	isLoadingMoreMessages: boolean;
 };
 
+// also memoize this component
+const ListComponent = React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, ref) => (
+	<div className='virtuoso-list' {...props} ref={ref} />
+));
+ListComponent.displayName = 'ListComponent';
+
+const MemoizedListComponent = React.memo(ListComponent);
+
+// eslint-disable-next-line react/no-multi-comp
 export const MessageList = forwardRef<HTMLElement, MessageListProps>(function MessageList(
 	{ rid, messageListRef, renderBefore, renderAfter, isLoadingMoreMessages },
 	ref,
@@ -42,11 +51,13 @@ export const MessageList = forwardRef<HTMLElement, MessageListProps>(function Me
 
 	useLockOnLoadMoreMessages(isLoadingMoreMessages, virtuosoRef, state, messages, scrollerRef);
 
-	const extraProps: any = {};
+	useEffect(() => {
+		console.log('MessageList useEffect');
+	}, [messages]);
 
-	if (!state.current) {
-		extraProps.initialTopMostItemIndex = messages.length - 1;
-	}
+	// const extraProps: any = useMemo(() => {
+	// 	return !state.current ? { initialTopMostItemIndex: messages.length - 1 } : {};
+	// }, [messages.length]);
 
 	const refSetter = useCallback(
 		(element) => {
@@ -101,22 +112,23 @@ export const MessageList = forwardRef<HTMLElement, MessageListProps>(function Me
 						Header: renderBefore,
 						Footer: renderAfter,
 						// eslint-disable-next-line react/display-name, react/no-multi-comp
-						List: React.forwardRef((props, ref) => <div className='virtuoso-list' {...props} ref={ref} />),
+						List: MemoizedListComponent,
 					}}
 					totalCount={messages?.length}
 					ref={virtuosoRef}
 					scrollerRef={refSetter}
+					computeItemKey={(index) => messages[index]._id}
 					increaseViewportBy={{
-						top: 1000,
-						bottom: 100,
+						top: 10000,
+						bottom: 10000,
 					}}
-					followOutput={(isAtBottom: any) => {
+					// overscan={100}
+					followOutput={(isAtBottom: boolean) => {
 						if (isAtBottom) {
 							return 'smooth';
 						}
 						return false;
 					}}
-					computeItemKey={(index) => messages[index]._id}
 					data={messages}
 					itemContent={itemContent}
 					isScrolling={() => {
@@ -128,16 +140,18 @@ export const MessageList = forwardRef<HTMLElement, MessageListProps>(function Me
 							}
 						});
 					}}
-					totalListHeightChanged={() => {
-						// height can change on scroll which conflicts with the bottom threshold.
-					}}
+					// totalListHeightChanged={(value) => {
+					// 	console.log(value);
+					// 	// height can change on scroll which conflicts with the bottom Main issue is the load-more strategy lock of the scroll position. It has its own method on VML, but on VC it kind of needs to be implemented by hand. I made an initial attempt using the scrollToIndex method, it works but it isn’t optimal as it can have small differences..
+					// }}
 					atBottomStateChange={(state) => {
 						isAtBottomRef.current = state;
 					}}
 					restoreStateFrom={state.current}
 					atTopThreshold={0}
 					atBottomThreshold={100}
-					{...extraProps} // there is an issue with setting initialTopMostItemIndex to null | undefined
+					style={{ height: '100%' }}
+					// {...extraProps} // there is an issue with setting initialTopMostItemIndex to null | undefined
 				/>
 			</SelectedMessagesProvider>
 		</MessageListProvider>

@@ -24,6 +24,9 @@ type ThreadMetricsProps = {
 	following: boolean;
 };
 
+// we can create a stragegy for it to load directly on the first render; but, animate on prop change
+// calling the sendtobottom strategy
+// actually not possible because it is conditionally rendered
 const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, following, lm }: ThreadMetricsProps): ReactElement => {
 	const { t } = useTranslation();
 

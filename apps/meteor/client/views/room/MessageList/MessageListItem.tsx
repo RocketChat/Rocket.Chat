@@ -21,7 +21,26 @@ type MessageListItemProps = {
 	subscription: ISubscription | undefined;
 	system: boolean;
 };
-export const MessageListItem = ({
+
+const shouldRenderMessageListItem = (prevProps: any, nextProps: any) => {
+	return (
+		prevProps.message._id === nextProps.message._id &&
+		prevProps.showUnreadDivider === nextProps.showUnreadDivider &&
+		prevProps.sequential === nextProps.sequential &&
+		prevProps.showUserAvatar === nextProps.showUserAvatar &&
+		prevProps.visible === nextProps.visible &&
+		prevProps.subscription?.tunread?.includes(prevProps.message._id) === nextProps.subscription?.tunread?.includes(nextProps.message._id) &&
+		prevProps.subscription?.tunreadUser?.includes(prevProps.message._id) ===
+			nextProps.subscription?.tunreadUser?.includes(nextProps.message._id) &&
+		prevProps.subscription?.tunreadGroup?.includes(prevProps.message._id) ===
+			nextProps.subscription?.tunreadGroup?.includes(nextProps.message._id) &&
+		prevProps.subscription?.ignored?.includes(prevProps.message.u._id) ===
+			nextProps.subscription?.ignored?.includes(nextProps.message.u._id) &&
+		prevProps.system === nextProps.system
+	);
+};
+
+export const MessageListItemComponent = ({
 	message,
 	previous,
 	showUnreadDivider,
@@ -95,3 +114,5 @@ export const MessageListItem = ({
 		</>
 	);
 };
+
+export const MessageListItem = React.memo(MessageListItemComponent, shouldRenderMessageListItem);

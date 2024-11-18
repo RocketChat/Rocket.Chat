@@ -1,22 +1,49 @@
 import { useEffect, useRef } from 'react';
 
-const getFirstMessageElementId = (itemList: any) => {
+const isElementInViewPort = (element: any) => {
+	const rect = element.getBoundingClientRect();
+	return rect.top >= 0 && rect.bottom <= window.innerHeight;
+};
+
+const getFirstMessageElementInfo = (itemList: any) => {
 	let id = null;
+	let top = 0;
 	let index = 0;
+
 	while (!id) {
-		const nextItem = itemList?.[index];
-		const firstChild = nextItem?.firstElementChild;
-		id = firstChild?.getAttribute('id');
+		const item = itemList[index];
+		const message = item.querySelector('.rcx-message');
+
+		if (!message || !isElementInViewPort(message)) {
+			// console.log(`aborting on id ${id}`);
+			continue;
+		}
+
+		id = message?.getAttribute('id');
 		if (id) {
+			console.log(message);
+			const bounds = message.getBoundingClientRect();
+			console.log({ bounds });
+			console.log('break on id');
+			console.log(id);
+			top = bounds.top;
 			break;
 		}
 		index++;
 		if (index > itemList.length) {
-			return null;
+			break;
 		}
 	}
 
-	return id;
+	console.log({
+		id,
+		top,
+	});
+
+	return {
+		id,
+		top,
+	};
 };
 
 export const useLockOnLoadMoreMessages = (
@@ -26,33 +53,26 @@ export const useLockOnLoadMoreMessages = (
 	messages: any,
 	scrollerRef: any,
 ) => {
-	const currentItemIdRef: any = useRef(null);
 	const isPositionLockedRef: any = useRef(false);
 	const currentMessagesLength: any = useRef(messages.length);
 
 	useEffect(() => {
 		if (isLoadingMoreMessages) {
-			if (!virtuosoRef?.current || isPositionLockedRef?.current === true) {
-				return;
-			}
-
-			if (currentMessagesLength.current === messages.length) {
+			if (!virtuosoRef?.current || isPositionLockedRef?.current === true || currentMessagesLength.current === messages.length) {
 				return;
 			}
 
 			currentMessagesLength.current = messages.length;
-			const listElement = scrollerRef.current.querySelector('.virtuoso-list');
-			currentItemIdRef.current = getFirstMessageElementId(listElement.children);
-
 			isPositionLockedRef.current = true;
 			return;
 		}
 
 		if (isPositionLockedRef?.current === true) {
-			console.log({ messages, id: currentItemIdRef.current });
-			const lockedItemIndex = messages.findIndex((message: any) => message._id === currentItemIdRef.current);
+			const listElements = scrollerRef.current.querySelectorAll('.virtuoso-list > div');
 
-			console.log(lockedItemIndex);
+			const firstItem = getFirstMessageElementInfo(listElements);
+
+			const lockedItemIndex = messages.findIndex((message: any) => message._id === firstItem.id);
 
 			virtuosoRef.current.scrollToIndex(lockedItemIndex);
 
