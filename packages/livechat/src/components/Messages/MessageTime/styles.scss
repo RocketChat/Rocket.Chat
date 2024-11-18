@@ -1,12 +1,11 @@
 @use 'sass:math';
+@use '../../../styles/colors';
+@use '../../../styles/variables';
 
-@import '../../../styles/colors';
-@import '../../../styles/variables';
-
-$message-time-margin: 0 math.div($default-gap, 2);
+$message-time-margin: 0 math.div(variables.$default-gap, 2);
 $message-time-font-size: 0.625rem;
 $message-time-line-height: 1rem;
-$message-time-color: $color-text-grey;
+$message-time-color: colors.$color-text-grey;
 
 .message-time {
 	position: absolute;

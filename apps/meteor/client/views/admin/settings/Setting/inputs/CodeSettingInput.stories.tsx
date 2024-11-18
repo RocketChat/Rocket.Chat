@@ -14,7 +14,7 @@ export default {
 	},
 	decorators: [
 		(fn) => (
-			<div className='rc-old'>
+			<div>
 				<Field>{fn()}</Field>
 			</div>
 		),
