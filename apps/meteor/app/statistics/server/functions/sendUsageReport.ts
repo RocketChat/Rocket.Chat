@@ -8,7 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { statistics } from '..';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
 
-async function sendStats(logger: Logger, cronStatistics: IStats) {
+async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string | undefined> {
 	try {
 		const token = await getWorkspaceAccessToken();
 		const headers = { ...(token && { Authorization: `Bearer ${token}` }) };
@@ -28,9 +28,8 @@ async function sendStats(logger: Logger, cronStatistics: IStats) {
 			await Statistics.updateOne({ _id: cronStatistics._id }, { $set: { statsToken } });
 			return statsToken;
 		}
-	} catch (error) {
-		/* error*/
-		logger.warn('Failed to send usage report');
+	} catch (err) {
+		logger.error({ msg: 'Failed to send usage report', err });
 	}
 }
 
@@ -43,10 +42,12 @@ export async function sendUsageReport(logger: Logger): Promise<string | undefine
 
 			// if the last data we have has less than 24h and was not sent to yet, send it
 			if (last.createdAt > yesterday) {
-				// if it has the confirmation token, we can skip
+				// but if it has the confirmation token, we can skip
 				if (last.statsToken) {
-					return;
+					return last.statsToken;
 				}
+
+				// if it doesn't it means the request failed, so we try sending again with the same data
 				return sendStats(logger, last);
 			}
 		}
