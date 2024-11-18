@@ -20,9 +20,10 @@ type MessageListProviderProps = {
 		width?: number;
 		height?: number;
 	};
+	virtuosoRef?: React.RefObject<any>;
 };
 
-const MessageListProvider = ({ children, messageListRef, attachmentDimension }: MessageListProviderProps) => {
+const MessageListProvider = ({ children, messageListRef, attachmentDimension, virtuosoRef }: MessageListProviderProps) => {
 	const room = useRoom();
 
 	if (!room) {
@@ -103,6 +104,7 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 						}
 				: () => (): void => undefined,
 			username,
+			virtuosoRef,
 		}),
 		[
 			username,
@@ -122,6 +124,7 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 			msgParameter,
 			messageListRef,
 			chat?.emojiPicker,
+			virtuosoRef,
 		],
 	);
 

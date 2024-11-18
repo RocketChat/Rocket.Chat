@@ -104,7 +104,7 @@ export const MessageListVirtual = forwardRef<HTMLElement, MessageListProps>(func
 	}
 
 	return (
-		<MessageListProvider messageListRef={messageListRef}>
+		<MessageListProvider messageListRef={messageListRef} virtuosoRef={virtuosoRef}>
 			<SelectedMessagesProvider>
 				<Virtuoso
 					className='virtuoso'

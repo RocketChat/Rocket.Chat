@@ -25,6 +25,7 @@ export type MessageListContextValue = {
 	jumpToMessageParam?: string;
 	username: string | undefined;
 	messageListRef?: React.RefObject<HTMLElement>;
+	virtuosoRef?: React.RefObject<any>;
 };
 
 export const MessageListContext = createContext<MessageListContextValue>({
@@ -66,3 +67,5 @@ export const useOpenEmojiPicker: MessageListContextValue['useOpenEmojiPicker'] =
 	useContext(MessageListContext).useOpenEmojiPicker(...args);
 
 export const useMessageListRef = (): MessageListContextValue['messageListRef'] => useContext(MessageListContext).messageListRef;
+
+export const useVirtuosoRef = (): MessageListContextValue['virtuosoRef'] => useContext(MessageListContext).virtuosoRef;

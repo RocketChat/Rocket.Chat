@@ -22,6 +22,7 @@ import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import RoomMessageContent from './room/RoomMessageContent';
+import { useJumpToMessageVirtual } from '/client/views/room/MessageList/hooks/useJumpToMessageVirtual';
 
 type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
@@ -60,11 +61,12 @@ const RoomMessage = ({
 
 	useCountSelected();
 
-	const messageRef = useJumpToMessage(message._id);
+	const messageRef2 = useJumpToMessageVirtual(message._id);
+	// const messageRef = useJumpToMessage(message._id);
 
 	return (
 		<Message
-			ref={messageRef}
+			ref={messageRef2}
 			id={message._id}
 			role='listitem'
 			aria-roledescription={sequential ? t('sequential_message') : t('message')}
