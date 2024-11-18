@@ -2,8 +2,8 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, renderHook, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import createDeferredMockFn from '../../../../../tests/mocks/utils/createDeferredMockFn';
 import { useCancelSubscriptionModal } from './useCancelSubscriptionModal';
+import createDeferredMockFn from '../../../../../tests/mocks/utils/createDeferredMockFn';
 
 jest.mock('../../../../hooks/useLicense', () => ({
 	...jest.requireActual('../../../../hooks/useLicense'),
