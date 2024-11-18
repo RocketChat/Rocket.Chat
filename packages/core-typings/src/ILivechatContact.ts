@@ -38,7 +38,7 @@ export interface ILivechatContact extends IRocketChatRecord {
 	unknown?: boolean;
 	conflictingFields?: ILivechatContactConflictingField[];
 	customFields?: Record<string, string | unknown>;
-	channels?: ILivechatContactChannel[];
+	channels: ILivechatContactChannel[];
 	createdAt: Date;
 	lastChat?: {
 		_id: string;

@@ -8,6 +8,7 @@ const sampleContact: Serialized<ILivechatContact> = {
 	name: 'Contact Name',
 	createdAt: '',
 	_updatedAt: '',
+	channels: [],
 };
 
 describe('Map Livechat Contact Conflicts', () => {
