@@ -46,7 +46,7 @@ Meteor.startup(() => {
 			if (isLivechatRoom) {
 				return false;
 			}
-			return hasAtLeastOnePermission('pin-message', message.rid);
+			return room.t==='d' || hasAtLeastOnePermission('pin-message', message.rid);
 		},
 		order: 2,
 		group: 'menu',
