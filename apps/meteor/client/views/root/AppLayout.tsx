@@ -8,6 +8,7 @@ import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
+import { useNotifyUser } from '../../hooks/useNotifyUser';
 import { appLayout } from '../../lib/appLayout';
 
 const AppLayout = () => {
@@ -24,6 +25,7 @@ const AppLayout = () => {
 	useAnalytics();
 	useEscapeKeyStroke();
 	useAnalyticsEventTracking();
+	useNotifyUser();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
