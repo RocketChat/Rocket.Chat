@@ -41,7 +41,7 @@ type MergeFieldsIntoContactParams = {
 };
 
 export class ContactMerger {
-	private managerList = new Map<IUser['username'], IUser['_id'] | undefined>();
+	private managerList = new Map<Required<IUser>['username'], IUser['_id'] | undefined>();
 
 	private getManagerId(manager: ManagerValue): IUser['_id'] | undefined {
 		if ('id' in manager) {
@@ -89,10 +89,14 @@ export class ContactMerger {
 		return false;
 	}
 
-	private async loadDataForFields(session?: ClientSession, ...fieldLists: FieldAndValue[][]): Promise<void> {
+	private async loadDataForFields(session: ClientSession | undefined, ...fieldLists: FieldAndValue[][]): Promise<void> {
 		for await (const fieldList of fieldLists) {
 			for await (const field of fieldList) {
 				if (field.type !== 'manager' || 'id' in field.value) {
+					continue;
+				}
+
+				if (!field.value.username) {
 					continue;
 				}
 
@@ -104,6 +108,13 @@ export class ContactMerger {
 				this.managerList.set(field.value.username, id);
 			}
 		}
+	}
+
+	static async createWithFields(session: ClientSession | undefined, ...fieldLists: FieldAndValue[][]): Promise<ContactMerger> {
+		const merger = new ContactMerger();
+		await merger.loadDataForFields(session, ...fieldLists);
+
+		return merger;
 	}
 
 	static getAllFieldsFromContact(contact: ILivechatContact): FieldAndValue[] {
@@ -123,7 +134,9 @@ export class ContactMerger {
 			fields.add({ type: 'manager', value: { id: contactManager } });
 		}
 
-		Object.keys(customFields).forEach((key) => ({ type: `customFields.${key}`, value: customFields[key] }));
+		Object.keys(customFields).forEach((key) =>
+			fields.add({ type: `customFields.${key}`, value: customFields[key] } as CustomFieldAndValue),
+		);
 
 		// If the contact already has conflicts, load their values as well
 		if (contact.conflictingFields) {
@@ -151,7 +164,9 @@ export class ContactMerger {
 		if (contactManager?.username) {
 			fields.add({ type: 'manager', value: { username: contactManager?.username } });
 		}
-		Object.keys(customFields).forEach((key) => ({ type: `customFields.${key}`, value: customFields[key] }));
+		Object.keys(customFields).forEach((key) =>
+			fields.add({ type: `customFields.${key}`, value: customFields[key] } as CustomFieldAndValue),
+		);
 
 		if (source) {
 			fields.add({
@@ -188,8 +203,7 @@ export class ContactMerger {
 		const existingFields = ContactMerger.getAllFieldsFromContact(contact);
 		const overwriteData = conflictHandlingMode === 'overwrite';
 
-		const merger = new ContactMerger();
-		await merger.loadDataForFields(session, fields, existingFields);
+		const merger = await ContactMerger.createWithFields(session, fields, existingFields);
 
 		const newFields = fields.filter((field) => {
 			// If the field already exists with the same value, ignore it

@@ -38,8 +38,8 @@ export const Visitors = {
 		const visitorDataToUpdate: Partial<ILivechatVisitor> & { userAgent?: string; ip?: string; host?: string } = {
 			token,
 			status,
-			...(phone?.number ? { phone: [{ phoneNumber: phone.number }] } : {}),
-			...(name ? { name } : {}),
+			...(phone?.number && { phone: [{ phoneNumber: phone.number }] }),
+			...(name && { name }),
 		};
 
 		if (email) {

@@ -51,22 +51,18 @@ export async function registerContact({
 		}
 	}
 
-	let visitorId;
+	const existingUserByToken = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
+	let visitorId = existingUserByToken?._id;
 
-	const user = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
-
-	if (user) {
-		visitorId = user._id;
-	} else {
+	if (!existingUserByToken) {
 		if (!username) {
 			username = await LivechatVisitors.getNextVisitorUsername();
 		}
 
-		let existingUser = null;
+		const existingUserByEmail = await LivechatVisitors.findOneGuestByEmailAddress(visitorEmail);
+		visitorId = existingUserByEmail?._id;
 
-		if (visitorEmail !== '' && (existingUser = await LivechatVisitors.findOneGuestByEmailAddress(visitorEmail))) {
-			visitorId = existingUser._id;
-		} else {
+		if (!existingUserByEmail) {
 			const userData = {
 				username,
 				ts: new Date(),
