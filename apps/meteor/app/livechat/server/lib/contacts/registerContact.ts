@@ -125,5 +125,5 @@ export async function registerContact({
 		}
 	}
 
-	return visitorId;
+	return visitorId as string;
 }
