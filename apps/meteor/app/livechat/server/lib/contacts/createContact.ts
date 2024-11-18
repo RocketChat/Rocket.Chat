@@ -16,7 +16,16 @@ export type CreateContactParams = {
 	importIds?: string[];
 };
 
-export async function createContact({ name, emails, phones, customFields: receivedCustomFields = {}, contactManager, channels, unknown, importIds }: CreateContactParams): Promise<string> {
+export async function createContact({
+	name,
+	emails,
+	phones,
+	customFields: receivedCustomFields = {},
+	contactManager,
+	channels,
+	unknown,
+	importIds,
+}: CreateContactParams): Promise<string> {
 	if (contactManager) {
 		await validateContactManager(contactManager);
 	}
