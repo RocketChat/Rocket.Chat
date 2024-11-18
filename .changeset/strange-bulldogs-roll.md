@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Sorted the list of language options by name
+Sorts the list of language options by name correctly
