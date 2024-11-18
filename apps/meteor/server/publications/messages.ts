@@ -52,7 +52,7 @@ export function mountCursorQuery({ next, previous, count }: { next?: string; pre
 } {
 	const options: FindOptions<IMessage> = {
 		sort: { _updatedAt: 1 },
-		...(next || previous ? { limit: count } : {}),
+		...(next || previous ? { limit: count + 1 } : {}),
 	};
 
 	if (next) {
@@ -78,20 +78,60 @@ export function mountCursorFromMessage(message: IMessage & { _deletedAt?: Date }
 	throw new Meteor.Error('error-cursor-not-found', 'Cursor not found', { method: 'messages/get' });
 }
 
-export function mountNextCursor(messages: IMessage[], type: CursorPaginationType, next?: string, previous?: string): string | null {
-	if (messages.length > 0) {
-		return mountCursorFromMessage(messages[messages.length - 1], type);
+export function mountNextCursor(
+	messages: IMessage[],
+	count: number,
+	type: CursorPaginationType,
+	next?: string,
+	previous?: string,
+): string | null {
+	if (messages.length === 0) {
+		return null;
 	}
 
-	return next ?? previous ?? null;
-}
-
-export function mountPreviousCursor(messages: IMessage[], type: CursorPaginationType, next?: string, previous?: string): string | null {
-	if (messages.length > 0) {
+	if (previous) {
 		return mountCursorFromMessage(messages[0], type);
 	}
 
-	return previous ?? next ?? null;
+	if (messages.length <= count && next) {
+		return null;
+	}
+
+	if (messages.length > count && next) {
+		return mountCursorFromMessage(messages[messages.length - 2], type);
+	}
+
+	return mountCursorFromMessage(messages[messages.length - 1], type);
+}
+
+export function mountPreviousCursor(
+	messages: IMessage[],
+	count: number,
+	type: CursorPaginationType,
+	next?: string,
+	previous?: string,
+): string | null {
+	if (messages.length === 0) {
+		return null;
+	}
+
+	if (messages.length <= count && next) {
+		return mountCursorFromMessage(messages[0], type);
+	}
+
+	if (messages.length > count && next) {
+		return mountCursorFromMessage(messages[0], type);
+	}
+
+	if (messages.length <= count && previous) {
+		return null;
+	}
+
+	if (messages.length > count && previous) {
+		return mountCursorFromMessage(messages[messages.length - 2], type);
+	}
+
+	return mountCursorFromMessage(messages[0], type);
 }
 
 export async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Date) {
@@ -124,9 +164,13 @@ export async function handleCursorPagination(
 			: ((await Messages.trashFind({ rid, _deletedAt: query }, { projection: { _id: 1, _deletedAt: 1 }, ...options })!.toArray()) ?? []);
 
 	const cursor = {
-		next: mountNextCursor(response, type, next, previous),
-		previous: mountPreviousCursor(response, type, next, previous),
+		next: mountNextCursor(response, count, type, next, previous),
+		previous: mountPreviousCursor(response, count, type, next, previous),
 	};
+
+	if (response.length > count) {
+		response.pop();
+	}
 
 	return {
 		[type.toLowerCase()]: response,

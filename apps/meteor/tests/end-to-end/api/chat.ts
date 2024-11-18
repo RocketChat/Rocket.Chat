@@ -3179,9 +3179,7 @@ describe('[Chat]', () => {
 
 			expect(responseWithNext.body.result.updated).to.have.lengthOf(1);
 			expect(responseWithNext.body.result.updated[0]._id).to.be.equal(thirdMessage.body.message._id);
-			expect(responseWithNext.body.result.cursor)
-				.to.have.property('next')
-				.and.to.equal(new Date(thirdMessage.body.message._updatedAt).getTime().toString());
+			expect(responseWithNext.body.result.cursor).to.have.property('next').and.to.be.null;
 			expect(responseWithNext.body.result.cursor)
 				.to.have.property('previous')
 				.and.to.equal(new Date(thirdMessage.body.message._updatedAt).getTime().toString());
@@ -3206,8 +3204,8 @@ describe('[Chat]', () => {
 				.query({ roomId: newChannel._id, next: lastUpdate.getTime().toString(), type: 'DELETED', count: 2 });
 
 			expect(response.body.result.deleted).to.have.lengthOf(0);
-			expect(response.body.result.cursor).to.have.property('next').and.to.equal(lastUpdate.getTime().toString());
-			expect(response.body.result.cursor).to.have.property('previous').and.to.equal(lastUpdate.getTime().toString());
+			expect(response.body.result.cursor).to.have.property('next').and.to.be.null;
+			expect(response.body.result.cursor).to.have.property('previous').and.to.be.null;
 
 			const firstDeletedMessage = (await deleteMessage({ roomId: newChannel._id, msgId: firstMessage._id })).body.message;
 			const secondDeletedMessage = (await deleteMessage({ roomId: newChannel._id, msgId: secondMessage._id })).body.message;
@@ -3239,9 +3237,7 @@ describe('[Chat]', () => {
 
 			expect(responseAfterDeleteWithPrevious.body.result.deleted).to.have.lengthOf(1);
 			expect(responseAfterDeleteWithPrevious.body.result.deleted[0]._id).to.be.equal(thirdDeletedMessage._id);
-			expect(responseAfterDeleteWithPrevious.body.result.cursor)
-				.to.have.property('next')
-				.and.to.equal(new Date(responseAfterDeleteWithPrevious.body.result.deleted[0]._deletedAt).getTime().toString());
+			expect(responseAfterDeleteWithPrevious.body.result.cursor).to.have.property('next').and.to.be.null;
 			expect(responseAfterDeleteWithPrevious.body.result.cursor)
 				.to.have.property('previous')
 				.and.to.equal(new Date(responseAfterDeleteWithPrevious.body.result.deleted[0]._deletedAt).getTime().toString());
