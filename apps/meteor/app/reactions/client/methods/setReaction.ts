@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { emoji } from '../../../emoji/client';
-import { Messages, ChatRoom, Subscriptions } from '../../../models/client';
+import { Messages, Rooms, Subscriptions } from '../../../models/client';
 
 Meteor.methods<ServerMethods>({
 	async setReaction(reaction, messageId) {
@@ -23,7 +23,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		const room: IRoom | undefined = ChatRoom.findOne({ _id: message.rid });
+		const room: IRoom | undefined = Rooms.findOne({ _id: message.rid });
 		if (!room) {
 			return false;
 		}

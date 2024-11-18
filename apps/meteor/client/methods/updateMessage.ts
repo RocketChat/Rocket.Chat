@@ -5,7 +5,7 @@ import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
 import { hasAtLeastOnePermission, hasPermission } from '../../app/authorization/client';
-import { ChatMessage } from '../../app/models/client';
+import { Messages } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { t } from '../../app/utils/lib/i18n';
 import { dispatchToastMessage } from '../lib/toast';
@@ -17,7 +17,7 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 
-		const originalMessage = ChatMessage.findOne(message._id);
+		const originalMessage = Messages.findOne(message._id);
 
 		if (!originalMessage) {
 			return;
@@ -85,7 +85,7 @@ Meteor.methods<ServerMethods>({
 					originalMessage.attachments[0].description = message.msg;
 				}
 			}
-			ChatMessage.update(
+			Messages.update(
 				{
 					'_id': message._id,
 					'u._id': uid,
