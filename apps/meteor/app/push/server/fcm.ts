@@ -86,8 +86,6 @@ async function fetchWithRetry(url: string, _removeToken: () => void, options: Ex
 	const retryAfter = response.headers.get('retry-after');
 	const retryAfterSeconds = retryAfter ? parseInt(retryAfter, 10) : 60;
 
-	// This could happen if the sender ID has been changed (which happens when we change from legacy to new FCM).
-	// The same approach is used here: https://github.com/thingsboard/thingsboard/pull/10679
 	if (response.status === 404 || response.status === SENDER_ID_MISMATCH_ERROR_CODE) {
 		_removeToken();
 		return response;
