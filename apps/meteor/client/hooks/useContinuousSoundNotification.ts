@@ -2,8 +2,8 @@ import type { ICustomSound } from '@rocket.chat/core-typings';
 import { useSetting, useUserPreference, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { CustomSounds } from '../../app/custom-sounds/client/lib/CustomSounds';
 import { useUserSoundPreferences } from './useUserSoundPreferences';
+import { CustomSounds } from '../../app/custom-sounds/client/lib/CustomSounds';
 
 const query = { t: 'l', ls: { $exists: false }, open: true };
 export const useContinuousSoundNotification = () => {
