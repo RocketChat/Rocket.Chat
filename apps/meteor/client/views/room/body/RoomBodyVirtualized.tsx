@@ -11,7 +11,7 @@ import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import Announcement from '../Announcement';
 import { BubbleDate } from '../BubbleDate';
-import { MessageList } from '../MessageList';
+import { MessageListVirtual } from '../MessageList';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import ComposerContainer from '../composer/ComposerContainer';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
@@ -275,8 +275,12 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<ul className='messages-list' aria-label={t('Message_list')} aria-busy={isLoadingMoreMessages}>
-											<MessageList
+										<ul
+											className='messages-list messages-list-virtual rc-scrollbars-view'
+											aria-label={t('Message_list')}
+											aria-busy={isLoadingMoreMessages}
+										>
+											<MessageListVirtual
 												ref={innerRef}
 												rid={room._id}
 												messageListRef={innerBoxRef}

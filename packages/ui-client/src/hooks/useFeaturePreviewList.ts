@@ -5,6 +5,7 @@ export type FeaturesAvailable =
 	| 'navigationBar'
 	| 'enable-timestamp-message-parser'
 	| 'contextualbarResizable'
+	| 'virtualizedRoomList'
 	| 'newNavigation'
 	| 'sidepanelNavigation';
 
@@ -80,6 +81,14 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 			name: 'newNavigation',
 			value: true,
 		},
+	},
+	{
+		name: 'virtualizedRoomList',
+		i18n: 'Sidepanel_navigation',
+		description: 'Sidepanel_navigation_description',
+		group: 'Message',
+		value: false,
+		enabled: true,
 	},
 ];
 

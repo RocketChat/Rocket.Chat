@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MutableRefObject } from 'react';
-import React, { forwardRef, useCallback, useRef, useEffect } from 'react';
+import React, { forwardRef, useCallback, useRef, useEffect, useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import type { StateSnapshot } from 'react-virtuoso';
 
@@ -11,7 +11,7 @@ import { RoomManager } from '../../../lib/RoomManager';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
-import { MessageListItem } from './MessageListItem';
+import { MessageListItemVirtual } from './MessageListItemVirtual';
 import { useLockOnLoadMoreMessages } from './hooks/useLockLoadScroll';
 import { useMessages } from './hooks/useMessages';
 import { isMessageSequential } from './lib/isMessageSequential';
@@ -34,7 +34,7 @@ ListComponent.displayName = 'ListComponent';
 const MemoizedListComponent = React.memo(ListComponent);
 
 // eslint-disable-next-line react/no-multi-comp
-export const MessageList = forwardRef<HTMLElement, MessageListProps>(function MessageList(
+export const MessageListVirtual = forwardRef<HTMLElement, MessageListProps>(function MessageListVirtual(
 	{ rid, messageListRef, renderBefore, renderAfter, isLoadingMoreMessages },
 	ref,
 ) {
@@ -55,9 +55,9 @@ export const MessageList = forwardRef<HTMLElement, MessageListProps>(function Me
 		console.log('MessageList useEffect');
 	}, [messages]);
 
-	// const extraProps: any = useMemo(() => {
-	// 	return !state.current ? { initialTopMostItemIndex: messages.length - 1 } : {};
-	// }, [messages.length]);
+	const extraProps: any = useMemo(() => {
+		return !state.current ? { initialTopMostItemIndex: messages.length - 1 } : {};
+	}, [messages.length]);
 
 	const refSetter = useCallback(
 		(element) => {
@@ -84,7 +84,7 @@ export const MessageList = forwardRef<HTMLElement, MessageListProps>(function Me
 			const visible = !isThreadMessage(message) && !system;
 
 			return (
-				<MessageListItem
+				<MessageListItemVirtual
 					message={message}
 					previous={previous}
 					showUnreadDivider={showUnreadDivider}
@@ -122,7 +122,6 @@ export const MessageList = forwardRef<HTMLElement, MessageListProps>(function Me
 						top: 10000,
 						bottom: 10000,
 					}}
-					// overscan={100}
 					followOutput={(isAtBottom: boolean) => {
 						if (isAtBottom) {
 							return 'smooth';
@@ -151,7 +150,7 @@ export const MessageList = forwardRef<HTMLElement, MessageListProps>(function Me
 					atTopThreshold={0}
 					atBottomThreshold={100}
 					style={{ height: '100%' }}
-					// {...extraProps} // there is an issue with setting initialTopMostItemIndex to null | undefined
+					{...extraProps} // there is an issue with setting initialTopMostItemIndex to null | undefined
 				/>
 			</SelectedMessagesProvider>
 		</MessageListProvider>

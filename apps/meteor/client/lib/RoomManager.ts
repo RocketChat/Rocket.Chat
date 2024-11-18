@@ -1,10 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import type { StateSnapshot } from 'react-virtuoso';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { RoomHistoryManager } from '../../app/ui-utils/client/lib/RoomHistoryManager';
 import { getConfig } from './utils/getConfig';
-import { StateSnapshot } from 'react-virtuoso';
 
 const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));
 
@@ -40,7 +40,7 @@ class RoomStore extends Emitter<{
 		if (scroll || lastTime) {
 			this.emit('changed');
 		}
-		if (state) {
+		if (state !== undefined) {
 			this.state = state;
 		}
 	}

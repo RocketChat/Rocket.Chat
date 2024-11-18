@@ -19,6 +19,7 @@ import RoomLayout from './layout/RoomLayout';
 import ChatProvider from './providers/ChatProvider';
 import { DateListProvider } from './providers/DateListProvider';
 import { SelectedMessagesProvider } from './providers/SelectedMessagesProvider';
+import RoomBodyVirtualized from './body/RoomBodyVirtualized';
 
 const UiKitContextualBar = lazy(() => import('./contextualBar/uikit/UiKitContextualBar'));
 
@@ -65,7 +66,14 @@ const Room = (): ReactElement => {
 												<RoomBodyV2 />
 											</FeaturePreviewOn>
 											<FeaturePreviewOff>
-												<RoomBody />
+												<FeaturePreview feature='virtualizedRoomList'>
+													<FeaturePreviewOn>
+														<RoomBodyVirtualized />
+													</FeaturePreviewOn>
+													<FeaturePreviewOff>
+														<RoomBody />
+													</FeaturePreviewOff>
+												</FeaturePreview>
 											</FeaturePreviewOff>
 										</FeaturePreview>
 									</>

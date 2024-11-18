@@ -784,6 +784,7 @@
 	& ul.messages-list-virtual {
 		overflow: hidden;
 		height: 100%;
+		padding: 0;
 	}
 
 	& .editing .body {

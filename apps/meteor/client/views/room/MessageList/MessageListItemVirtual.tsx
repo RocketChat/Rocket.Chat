@@ -115,4 +115,4 @@ export const MessageListItemComponent = ({
 	);
 };
 
-export const MessageListItem = React.memo(MessageListItemComponent, shouldRenderMessageListItem);
+export const MessageListItemVirtual = React.memo(MessageListItemComponent, shouldRenderMessageListItem);
