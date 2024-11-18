@@ -58,12 +58,6 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 				},
 				unique: false,
 			},
-			{
-				key: {
-					channels: 1,
-				},
-				unique: false,
-			},
 		];
 	}
 
