@@ -1097,8 +1097,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
-		const name = settings.get<string>('VideoConf_Persistent_Chat_Discussion_Name') || i18n.t('Conference Call Chat History');
-		const displayName = `${name} - ${new Date().toISOString().substring(0, 10)}`;
+		const name = settings.get<string>('VideoConf_Persistent_Chat_Discussion_Name') || i18n.t('[date] Video Call Chat');
+		let displayName;
+		const date = new Date().toISOString().substring(0, 10);
+
+		if (name.includes('[date]')) {
+			displayName = name.replace('[date]', date);
+		} else {
+			displayName = `${date} ${name}`;
+		}
 
 		await this.createDiscussionForConference(displayName, call, createdBy);
 	}
