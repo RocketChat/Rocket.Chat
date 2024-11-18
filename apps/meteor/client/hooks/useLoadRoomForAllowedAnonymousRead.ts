@@ -8,7 +8,7 @@ export const useLoadRoomForAllowedAnonymousRead = () => {
 	const accountsAllowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 
 	useEffect(() => {
-		if (userId && accountsAllowAnonymousRead === true) {
+		if (!userId && accountsAllowAnonymousRead === true) {
 			CachedChatRoom.init();
 			CachedChatSubscription.ready.set(true);
 		}
