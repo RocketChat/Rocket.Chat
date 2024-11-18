@@ -1,7 +1,7 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
-import { ChatSubscription } from '../../app/models/client';
+import { Subscriptions } from '../../app/models/client';
 
 Meteor.methods<ServerMethods>({
 	async openRoom(rid) {
@@ -11,7 +11,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return ChatSubscription.update(
+		return Subscriptions.update(
 			{
 				rid,
 				'u._id': Meteor.userId(),
