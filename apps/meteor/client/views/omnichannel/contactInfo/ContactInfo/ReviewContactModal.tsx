@@ -43,11 +43,11 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 
 	const editContact = useEditContact(['getContactById']);
 
-	const handleConflicts = async ({ name, contactManager, ...customField }: HandleConflictsPayload) => {
+	const handleConflicts = async ({ name, contactManager, ...customFields }: HandleConflictsPayload) => {
 		const payload = {
 			name,
 			contactManager,
-			customFields: { ...customField },
+			...(customFields && { ...customFields }),
 			wipeConflicts: true,
 		};
 
