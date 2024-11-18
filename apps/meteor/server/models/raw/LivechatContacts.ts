@@ -6,7 +6,7 @@ import type {
 	ILivechatVisitor,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import type { FindPaginated, ILivechatContactsModel, InsertionModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, ILivechatContactsModel, InsertionModel, Updater } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	Document,
@@ -185,24 +185,28 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return Boolean(await this.findOne(this.makeQueryForVisitor(visitor, { blocked: true }), { projection: { _id: 1 } }));
 	}
 
-	async updateContactChannel(
+	setBlockedUpdateQuery(blocked: boolean, contactUpdater: Updater<ILivechatContact>): Updater<ILivechatContact> {
+		return contactUpdater.set('channels.$.blocked', blocked);
+	}
+
+	setVerifiedUpdateQuery(verified: boolean, contactUpdater: Updater<ILivechatContact>): Updater<ILivechatContact> {
+		if (verified) {
+			contactUpdater.set('channels.$.verifiedAt', new Date());
+		}
+		return contactUpdater.set('channels.$.verified', verified);
+	}
+
+	setFieldAndValueUpdateQuery(field: string, value: string, contactUpdater: Updater<ILivechatContact>): Updater<ILivechatContact> {
+		contactUpdater.set('channels.$.field', field);
+		return contactUpdater.set('channels.$.value', value);
+	}
+
+	updateFromUpdaterByAssociation(
 		visitor: ILivechatContactVisitorAssociation,
-		data: Partial<ILivechatContactChannel>,
-		contactData?: Partial<Omit<ILivechatContact, 'channels'>>,
+		contactUpdater: Updater<ILivechatContact>,
 		options: UpdateOptions = {},
 	): Promise<UpdateResult> {
-		return this.updateOne(
-			this.makeQueryForVisitor(visitor),
-			{
-				$set: {
-					...contactData,
-					...(Object.fromEntries(
-						Object.keys(data).map((key) => [`channels.$.${key}`, data[key as keyof ILivechatContactChannel]]),
-					) as UpdateFilter<ILivechatContact>['$set']),
-				},
-			},
-			options,
-		);
+		return this.updateFromUpdater(this.makeQueryForVisitor(visitor), contactUpdater, options);
 	}
 
 	async findSimilarVerifiedContacts(
