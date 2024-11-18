@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { ChatMessage } from '../../app/models/client';
+import { Messages } from '../../app/models/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { onLoggedIn } from '../lib/loggedIn';
 
@@ -13,13 +13,13 @@ Meteor.startup(() => {
 			msg.u = msg.u || { username: 'rocket.cat' };
 			msg.private = true;
 
-			return ChatMessage.upsert({ _id: msg._id }, msg);
+			return Messages.upsert({ _id: msg._id }, msg);
 		});
 	});
 
 	onLoggedIn(() => {
 		return sdk.stream('notify-user', [`${Meteor.userId()}/subscriptions-changed`], (_action, sub) => {
-			ChatMessage.update(
+			Messages.update(
 				{
 					rid: sub.rid,
 					...('ignored' in sub && sub.ignored ? { 'u._id': { $nin: sub.ignored } } : { ignored: { $exists: true } }),
@@ -28,7 +28,7 @@ Meteor.startup(() => {
 				{ multi: true },
 			);
 			if ('ignored' in sub && sub.ignored) {
-				ChatMessage.update(
+				Messages.update(
 					{ 'rid': sub.rid, 't': { $ne: 'command' }, 'u._id': { $in: sub.ignored } },
 					{ $set: { ignored: true } },
 					{ multi: true },

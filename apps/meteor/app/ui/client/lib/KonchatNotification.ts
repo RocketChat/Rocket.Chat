@@ -10,7 +10,7 @@ import { router } from '../../../../client/providers/RouterProvider';
 import { stripTags } from '../../../../lib/utils/stringUtils';
 import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
 import { e2e } from '../../../e2e/client';
-import { ChatSubscription } from '../../../models/client';
+import { Subscriptions } from '../../../models/client';
 import { getUserPreference } from '../../../utils/client';
 import { getUserAvatarURL } from '../../../utils/client/getUserAvatarURL';
 import { sdk } from '../../../utils/client/lib/SDKClient';
@@ -182,7 +182,7 @@ class KonchatNotification {
 			return;
 		}
 
-		const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
+		const sub = Subscriptions.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
 
 		if (!sub || sub.audioNotificationValue === 'none') {
 			return;

@@ -9,7 +9,7 @@ import { ChromeScreenShare } from './screenShare';
 import GenericModal from '../../../client/components/GenericModal';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
-import { ChatSubscription } from '../../models/client';
+import { Subscriptions } from '../../models/client';
 import { settings } from '../../settings/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
@@ -827,7 +827,7 @@ class WebRTCClass {
 		if (user?.username) {
 			fromUsername = user.username;
 		}
-		const subscription = ChatSubscription.findOne({
+		const subscription = Subscriptions.findOne({
 			rid: data.room,
 		})!;
 
@@ -1037,7 +1037,7 @@ const WebRTC = new (class {
 	getInstanceByRoomId(rid: IRoom['_id'], visitorId: string | null = null) {
 		let enabled = false;
 		if (!visitorId) {
-			const subscription = ChatSubscription.findOne({ rid });
+			const subscription = Subscriptions.findOne({ rid });
 			if (!subscription) {
 				return;
 			}

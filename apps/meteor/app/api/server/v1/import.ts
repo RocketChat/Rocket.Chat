@@ -33,6 +33,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isUploadImportFileParamsPOST,
+		permissionsRequired: ['run-import'],
 	},
 	{
 		async post() {
