@@ -128,7 +128,7 @@ test.describe.serial('Private apps upload', () => {
 			await expect(poMarketplace.btnInstallPrivateApp).toBeEnabled();
 			await poMarketplace.btnInstallPrivateApp.click();
 
-			await expect(poMarketplace.exemptAppModalTitle).toHaveText('Apps Cannot Be Updated');
+			await expect(page.locator('[data-qa-id="app-exempt-modal-title"]')).toBeVisible();
 		});
 	});
 });

@@ -30,7 +30,7 @@ const AppExemptModal = ({ cancel, appName }: AppExemptModalProps) => {
 		<Modal>
 			<Modal.Header>
 				<Modal.HeaderText>
-					<Modal.Title>{t('Apps_Cannot_Be_Updated')}</Modal.Title>
+					<Modal.Title data-qa-type='app-exempt-modal-title'>{t('Apps_Cannot_Be_Updated')}</Modal.Title>
 				</Modal.HeaderText>
 				<Modal.Close aria-label={t('Close')} onClick={handleCancelButton} />
 			</Modal.Header>
