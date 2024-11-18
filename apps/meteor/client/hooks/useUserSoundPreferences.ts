@@ -7,11 +7,11 @@ const relativeVolume = (volume: number, masterVolume: number) => {
 export const useUserSoundPreferences = () => {
 	const masterVolume = useUserPreference<number>('masterVolume', 100) || 100;
 	const notificationsSoundVolume = useUserPreference<number>('notificationsSoundVolume', 100) || 100;
-	const ringingSoundVolume = useUserPreference<number>('notificationsSoundVolume', 100) || 100;
+	const voipRingerVolume = useUserPreference<number>('voipRingerVolume', 100) || 100;
 
 	return {
 		masterVolume,
 		notificationsSoundVolume: relativeVolume(notificationsSoundVolume, masterVolume),
-		ringingSoundVolume: relativeVolume(ringingSoundVolume, masterVolume),
+		voipRingerVolume: relativeVolume(voipRingerVolume, masterVolume),
 	};
 };
