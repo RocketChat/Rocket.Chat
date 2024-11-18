@@ -3,12 +3,12 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { AppsTokens } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { i18n } from './i18n';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { RateLimiter } from '../../app/lib/server/lib';
 import { Push } from '../../app/push/server';
 import { settings } from '../../app/settings/server';
-import { i18n } from './i18n';
 
 export const executePushTest = async (userId: IUser['_id'], username: IUser['username']): Promise<number> => {
 	const tokens = await AppsTokens.countTokensByUserId(userId);

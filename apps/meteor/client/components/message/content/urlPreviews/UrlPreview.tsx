@@ -4,9 +4,9 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useCollapse } from '../../hooks/useCollapse';
 import type { UrlPreviewMetadata } from './UrlPreviewMetadata';
 import UrlPreviewResolver from './UrlPreviewResolver';
+import { useCollapse } from '../../hooks/useCollapse';
 
 const UrlPreview = (props: UrlPreviewMetadata): ReactElement => {
 	const autoLoadMedia = useAttachmentAutoLoadEmbedMedia();

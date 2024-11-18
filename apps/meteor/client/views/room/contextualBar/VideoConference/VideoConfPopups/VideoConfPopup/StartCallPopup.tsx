@@ -16,9 +16,9 @@ import type { KeyboardEvent, ReactElement } from 'react';
 import React, { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 import { useVideoConfSetPreferences, useVideoConfCapabilities, useVideoConfPreferences } from '../../../../../../contexts/VideoConfContext';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
-import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 
 type StartCallPopupProps = {
 	id: string;

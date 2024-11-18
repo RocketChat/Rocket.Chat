@@ -5,9 +5,9 @@ import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ReadReceiptRow from './ReadReceiptRow';
 import GenericModal from '../../../../components/GenericModal';
 import GenericModalSkeleton from '../../../../components/GenericModal/GenericModalSkeleton';
-import ReadReceiptRow from './ReadReceiptRow';
 
 type ReadReceiptsModalProps = {
 	messageId: IMessage['_id'];
@@ -41,7 +41,7 @@ const ReadReceiptsModal = ({ messageId, onClose }: ReadReceiptsModalProps): Reac
 			{readReceipts.length > 0 && (
 				<div role='list'>
 					{readReceipts.map((receipt) => (
-						<ReadReceiptRow {...receipt} key={receipt._id} />
+						<ReadReceiptRow key={receipt._id} {...receipt} />
 					))}
 				</div>
 			)}

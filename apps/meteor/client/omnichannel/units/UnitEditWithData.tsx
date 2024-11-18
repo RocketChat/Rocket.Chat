@@ -5,8 +5,8 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ContextualbarSkeleton } from '../../components/Contextualbar';
 import UnitEdit from './UnitEdit';
+import { ContextualbarSkeleton } from '../../components/Contextualbar';
 
 const UnitEditWithData = ({ unitId }: { unitId: IOmnichannelBusinessUnit['_id'] }) => {
 	const { t } = useTranslation();

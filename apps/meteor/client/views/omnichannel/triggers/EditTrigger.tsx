@@ -7,6 +7,8 @@ import React, { useMemo } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { ConditionForm } from './ConditionForm';
+import { ActionForm } from './actions/ActionForm';
 import {
 	ContextualbarScrollableContent,
 	ContextualbarTitle,
@@ -15,8 +17,6 @@ import {
 	ContextualbarHeader,
 	ContextualbarClose,
 } from '../../../components/Contextualbar';
-import { ConditionForm } from './ConditionForm';
-import { ActionForm } from './actions/ActionForm';
 
 export type TriggersPayload = {
 	name: string;

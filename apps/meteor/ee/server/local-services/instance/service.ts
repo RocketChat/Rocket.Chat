@@ -7,10 +7,10 @@ import EJSON from 'ejson';
 import type { BrokerNode } from 'moleculer';
 import { ServiceBroker, Transporters, Serializers } from 'moleculer';
 
-import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
-import type { IInstanceService } from '../../sdk/types/IInstanceService';
 import { getLogger } from './getLogger';
 import { getTransporter } from './getTransporter';
+import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
+import type { IInstanceService } from '../../sdk/types/IInstanceService';
 
 const hostIP = process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() : 'localhost';
 

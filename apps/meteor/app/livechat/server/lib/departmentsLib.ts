@@ -2,14 +2,14 @@ import type { LivechatDepartmentDTO, ILivechatDepartment, ILivechatDepartmentAge
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { updateDepartmentAgents } from './Helper';
+import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
+import { livechatLogger } from './logger';
 import { callbacks } from '../../../../lib/callbacks';
 import {
 	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
 	notifyOnLivechatDepartmentAgentChanged,
 } from '../../../lib/server/lib/notifyListener';
-import { updateDepartmentAgents } from './Helper';
-import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
-import { livechatLogger } from './logger';
 /**
  * @param {string|null} _id - The department id
  * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData

@@ -6,6 +6,7 @@ import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
 import React, { memo, useMemo } from 'react';
 
+import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
@@ -13,7 +14,6 @@ import { useOmnichannelPriorities } from '../../omnichannel/hooks/useOmnichannel
 import RoomMenu from '../RoomMenu';
 import { OmnichannelBadges } from '../badges/OmnichannelBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
-import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
 const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
 	if (!lastMessage) {

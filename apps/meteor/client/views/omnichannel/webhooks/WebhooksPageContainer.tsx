@@ -5,10 +5,10 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import WebhooksPage from './WebhooksPage';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
-import WebhooksPage from './WebhooksPage';
 
 const reduceSettings = (settings: Serialized<ISetting>[]) =>
 	settings.reduce<Record<string, SettingValue>>((acc, { _id, value }) => {

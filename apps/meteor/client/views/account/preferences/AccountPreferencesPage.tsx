@@ -6,8 +6,6 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
-import { getDirtyFields } from '../../../lib/getDirtyFields';
 import PreferencesGlobalSection from './PreferencesGlobalSection';
 import PreferencesHighlightsSection from './PreferencesHighlightsSection';
 import PreferencesLocalizationSection from './PreferencesLocalizationSection';
@@ -18,6 +16,8 @@ import PreferencesSoundSection from './PreferencesSoundSection';
 import PreferencesUserPresenceSection from './PreferencesUserPresenceSection';
 import type { AccountPreferencesData } from './useAccountPreferencesValues';
 import { useAccountPreferencesValues } from './useAccountPreferencesValues';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
+import { getDirtyFields } from '../../../lib/getDirtyFields';
 
 const AccountPreferencesPage = (): ReactElement => {
 	const t = useTranslation();

@@ -3,10 +3,10 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import DepartmentsTableV2 from './DepartmentsTable';
 import EditDepartmentWithData from './EditDepartmentWithData';
 import NewDepartment from './NewDepartment';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const DepartmentsPage = () => {
 	const t = useTranslation();
