@@ -3,6 +3,7 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
+import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
 import { appLayout } from '../../lib/appLayout';
 import DocumentTitleWrapper from './DocumentTitleWrapper';
 import PageLoading from './PageLoading';
@@ -24,6 +25,7 @@ const AppLayout = () => {
 	useAnalytics();
 	useEscapeKeyStroke();
 	useAnalyticsEventTracking();
+	useLoadRoomForAllowedAnonymousRead();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
