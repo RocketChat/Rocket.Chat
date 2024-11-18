@@ -22,7 +22,7 @@ export async function createContact({
 	phones,
 	customFields: receivedCustomFields = {},
 	contactManager,
-	channels,
+	channels = [],
 	unknown,
 	importIds,
 }: CreateContactParams): Promise<string> {

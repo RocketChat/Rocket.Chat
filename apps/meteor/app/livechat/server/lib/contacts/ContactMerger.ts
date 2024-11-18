@@ -124,7 +124,7 @@ export class ContactMerger {
 
 		contact.emails?.forEach(({ address: value }) => fields.add({ type: 'email', value }));
 		contact.phones?.forEach(({ phoneNumber: value }) => fields.add({ type: 'phone', value }));
-		contact.channels?.forEach((value) => fields.add({ type: 'channel', value }));
+		contact.channels.forEach((value) => fields.add({ type: 'channel', value }));
 
 		if (name) {
 			fields.add({ type: 'name', value: name });

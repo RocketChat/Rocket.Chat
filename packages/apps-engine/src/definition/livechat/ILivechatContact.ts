@@ -40,7 +40,7 @@ export interface ILivechatContact {
     unknown?: boolean;
     conflictingFields?: ILivechatContactConflictingField[];
     customFields?: Record<string, string | unknown>;
-    channels?: ILivechatContactChannel[];
+    channels: ILivechatContactChannel[];
     createdAt: Date;
     lastChat?: {
         _id: string;

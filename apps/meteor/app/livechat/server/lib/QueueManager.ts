@@ -209,7 +209,7 @@ export class QueueManager {
 			return false;
 		}
 
-		return Boolean(contact.channels?.some((channel) => isVerifiedChannelInSource(channel, room.v._id, room.source)));
+		return Boolean(contact.channels.some((channel) => isVerifiedChannelInSource(channel, room.v._id, room.source)));
 	}
 
 	static async requestRoom({

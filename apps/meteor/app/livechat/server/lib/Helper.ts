@@ -109,7 +109,7 @@ export const createLivechatRoom = async (
 	if (!contact) {
 		throw new Error('error-invalid-contact');
 	}
-	const verified = Boolean(contact.channels?.some((channel) => isVerifiedChannelInSource(channel, _id, source)));
+	const verified = Boolean(contact.channels.some((channel) => isVerifiedChannelInSource(channel, _id, source)));
 
 	// TODO: Solve `u` missing issue
 	const room: InsertionModel<IOmnichannelRoom> = {

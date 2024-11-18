@@ -19,7 +19,7 @@ export const runMergeContacts = async (
 		throw new Error('error-invalid-contact');
 	}
 
-	const channel = originalContact.channels?.find((channel: ILivechatContactChannel) => isSameChannel(channel.visitor, visitor));
+	const channel = originalContact.channels.find((channel: ILivechatContactChannel) => isSameChannel(channel.visitor, visitor));
 	if (!channel) {
 		throw new Error('error-invalid-channel');
 	}

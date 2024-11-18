@@ -30,7 +30,7 @@ export const runIsAgentAvailableToTakeContactInquiry = async (
 		return { value: false, error: 'error-unknown-contact' };
 	}
 
-	const isContactVerified = (contact.channels?.filter((channel) => isVerifiedChannelInSource(channel, visitorId, source)) || []).length > 0;
+	const isContactVerified = (contact.channels.filter((channel) => isVerifiedChannelInSource(channel, visitorId, source)) || []).length > 0;
 	if (!isContactVerified && settings.get<boolean>('Livechat_Block_Unverified_Contacts')) {
 		return { value: false, error: 'error-unverified-contact' };
 	}
