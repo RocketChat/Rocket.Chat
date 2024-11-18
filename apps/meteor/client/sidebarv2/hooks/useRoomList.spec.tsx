@@ -293,3 +293,21 @@ it('should add to unread group when has thread unread, even if alert is false', 
 	const unreadGroup = result.current.roomList.splice(0, result.current.groupsCount[0]);
 	expect(unreadGroup.find((room) => room.name === fakeRoom.name)).toBeDefined();
 });
+
+it('should not add room to unread group if thread unread is an empty array', async () => {
+	const fakeRoom = {
+		...createFakeSubscription({ ...emptyUnread, tunread: [] }),
+	} as unknown as SubscriptionWithRoom;
+
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		legacyRoot: true,
+		wrapper: getWrapperSettings({
+			sidebarGroupByType: true,
+			sidebarShowUnread: true,
+			fakeRoom,
+		}).build(),
+	});
+
+	const unreadGroup = result.current.roomList.splice(0, result.current.groupsCount[0]);
+	expect(unreadGroup.find((room) => room.name === fakeRoom.name)).toBeUndefined();
+});
