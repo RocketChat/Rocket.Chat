@@ -4,10 +4,10 @@ import type { AtLeast, IOmnichannelQueue, IOmnichannelRoom } from '@rocket.chat/
 import { License } from '@rocket.chat/license';
 import moment from 'moment';
 
+import { OmnichannelQueue } from './queue';
 import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../app/settings/server';
-import { OmnichannelQueue } from './queue';
 
 export class OmnichannelService extends ServiceClassInternal implements IOmnichannelService {
 	protected name = 'omnichannel';

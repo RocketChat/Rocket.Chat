@@ -1,7 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
-import type { IOTR } from '../lib/IOTR';
 import { OTRRoom } from './OTRRoom';
+import type { IOTR } from '../lib/IOTR';
 
 class OTR implements IOTR {
 	private instancesByRoomId: { [rid: string]: OTRRoom };

@@ -7,6 +7,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import TeamsChannelItem from './TeamsChannelItem';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -19,7 +20,6 @@ import {
 } from '../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
-import TeamsChannelItem from './TeamsChannelItem';
 
 type TeamsChannelsProps = {
 	loading: boolean;

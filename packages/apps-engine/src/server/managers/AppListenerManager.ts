@@ -1,3 +1,4 @@
+import type { AppAccessorManager } from './AppAccessorManager';
 import type { IEmailDescriptor, IPreEmailSentContext } from '../../definition/email';
 import { EssentialAppDisabledException } from '../../definition/exceptions';
 import type { IExternalComponent } from '../../definition/externalComponent';
@@ -29,7 +30,6 @@ import type { AppManager } from '../AppManager';
 import type { ProxiedApp } from '../ProxiedApp';
 import { Utilities } from '../misc/Utilities';
 import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/deno/AppsEngineDenoRuntime';
-import type { AppAccessorManager } from './AppAccessorManager';
 
 interface IListenerExecutor {
     [AppInterface.IPreMessageSentPrevent]: {

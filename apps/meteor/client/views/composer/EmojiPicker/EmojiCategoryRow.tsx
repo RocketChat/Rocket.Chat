@@ -5,9 +5,9 @@ import type { MouseEvent, MutableRefObject } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import EmojiElement from './EmojiElement';
 import { CUSTOM_CATEGORY } from '../../../../app/emoji/client';
 import type { EmojiByCategory, EmojiCategoryPosition } from '../../../../app/emoji/client';
-import EmojiElement from './EmojiElement';
 
 type EmojiCategoryRowProps = EmojiByCategory & {
 	categoryKey: EmojiByCategory['key'];

@@ -5,10 +5,6 @@ import { t } from 'i18next';
 import React, { memo, useCallback, useEffect } from 'react';
 import tinykeys from 'tinykeys';
 
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import { useInvalidateLicense, useLicense } from '../../../hooks/useLicense';
-import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 import { SubscriptionCalloutLimits } from './SubscriptionCalloutLimits';
 import SubscriptionPageSkeleton from './SubscriptionPageSkeleton';
 import UpgradeButton from './components/UpgradeButton';
@@ -25,6 +21,10 @@ import PlanCardCommunity from './components/cards/PlanCard/PlanCardCommunity';
 import SeatsCard from './components/cards/SeatsCard';
 import { useRemoveLicense } from './hooks/useRemoveLicense';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import { useInvalidateLicense, useLicense } from '../../../hooks/useLicense';
+import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 
 function useShowLicense() {
 	const [showLicenseTab, setShowLicenseTab] = useSessionStorage('admin:showLicenseTab', false);

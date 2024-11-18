@@ -2,10 +2,10 @@ import { MessageComposerAction } from '@rocket.chat/ui-composer';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import FormattingToolbarDropdown from './FormattingToolbarDropdown';
 import type { FormattingButton } from '../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { isPromptButton } from '../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import type { ComposerAPI } from '../../../../../lib/chats/ChatAPI';
-import FormattingToolbarDropdown from './FormattingToolbarDropdown';
 
 type MessageBoxFormattingToolbarProps = {
 	composer: ComposerAPI;
@@ -62,10 +62,10 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 					/>
 				) : (
 					<span
+						key={formatter.label}
 						{...(disabled && { style: { pointerEvents: 'none' } })}
 						className='rc-message-box__toolbar-formatting-item'
 						title={formatter.label}
-						key={formatter.label}
 					>
 						<a href={formatter.link} target='_blank' rel='noopener noreferrer' className='rc-message-box__toolbar-formatting-link'>
 							{formatter.text()}

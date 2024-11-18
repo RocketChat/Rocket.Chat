@@ -8,12 +8,12 @@ import { Meteor } from 'meteor/meteor';
 import stripHtml from 'string-strip-html';
 import _ from 'underscore';
 
+import { replaceVariables } from './replaceVariables';
 import { validateEmail } from '../../../lib/emailValidator';
 import { strLeft, strRightBack } from '../../../lib/utils/stringUtils';
 import { i18n } from '../../../server/lib/i18n';
 import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
-import { replaceVariables } from './replaceVariables';
 
 let contentHeader: string | undefined;
 let contentFooter: string | undefined;

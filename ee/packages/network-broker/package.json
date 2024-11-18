@@ -33,7 +33,7 @@
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
 		"ejson": "^2.2.3",
-		"moleculer": "^0.14.34",
+		"moleculer": "^0.14.35",
 		"pino": "^8.21.0"
 	}
 }
