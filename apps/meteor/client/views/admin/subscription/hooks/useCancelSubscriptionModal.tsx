@@ -1,9 +1,9 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
+import { useRemoveLicense } from './useRemoveLicense';
 import { useLicenseName } from '../../../../hooks/useLicense';
 import { CancelSubscriptionModal } from '../components/CancelSubscriptionModal';
-import { useRemoveLicense } from './useRemoveLicense';
 
 export const useCancelSubscriptionModal = () => {
 	const { data: planName = '' } = useLicenseName();
