@@ -1,7 +1,7 @@
 import type { AtLeast } from '@rocket.chat/core-typings';
 
 import { hasPermission } from '../../../../app/authorization/client';
-import { ChatRoom } from '../../../../app/models/client';
+import { Rooms } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getAvatarURL } from '../../../../app/utils/client/getAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
@@ -29,7 +29,7 @@ roomCoordinator.add(
 		},
 
 		findRoom(identifier) {
-			return ChatRoom.findOne({ _id: identifier });
+			return Rooms.findOne({ _id: identifier });
 		},
 
 		canSendMessage(_rid) {

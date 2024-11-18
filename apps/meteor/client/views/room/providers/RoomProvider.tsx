@@ -9,7 +9,7 @@ import UserCardProvider from './UserCardProvider';
 import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
 import { useRoomQuery } from './hooks/useRoomQuery';
 import { useUsersNameChanged } from './hooks/useUsersNameChanged';
-import { ChatSubscription } from '../../../../app/models/client';
+import { Subscriptions } from '../../../../app/models/client';
 import { UserAction } from '../../../../app/ui/client/lib/UserAction';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
@@ -45,7 +45,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		}
 	}, [resultFromLocal.data, resultFromLocal.isSuccess, resultFromServer, router]);
 
-	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
+	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => Subscriptions.findOne({ rid }) ?? null);
 
 	useRedirectOnSettingsChanged(subscriptionQuery.data);
 
