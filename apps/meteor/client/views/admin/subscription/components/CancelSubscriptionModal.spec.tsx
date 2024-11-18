@@ -3,8 +3,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
-import { DOWNGRADE_LINK } from '../utils/links';
 import { CancelSubscriptionModal } from './CancelSubscriptionModal';
+import { DOWNGRADE_LINK } from '../utils/links';
 
 it('should display plan name in the title', async () => {
 	const confirmFn = jest.fn();
