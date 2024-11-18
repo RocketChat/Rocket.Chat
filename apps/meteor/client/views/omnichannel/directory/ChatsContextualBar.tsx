@@ -3,6 +3,11 @@ import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import Chat from './chats/Chat';
+import ChatInfoDirectory from './chats/contextualBar/ChatInfoDirectory';
+import { RoomEditWithData } from './chats/contextualBar/RoomEdit';
+import { FormSkeleton } from './components';
+import { useOmnichannelRoomInfo } from './hooks/useOmnichannelRoomInfo';
 import {
 	Contextualbar,
 	ContextualbarHeader,
@@ -11,11 +16,6 @@ import {
 	ContextualbarAction,
 	ContextualbarClose,
 } from '../../../components/Contextualbar';
-import Chat from './chats/Chat';
-import ChatInfoDirectory from './chats/contextualBar/ChatInfoDirectory';
-import { RoomEditWithData } from './chats/contextualBar/RoomEdit';
-import { FormSkeleton } from './components';
-import { useOmnichannelRoomInfo } from './hooks/useOmnichannelRoomInfo';
 
 const ChatsContextualBar = ({ chatReload }: { chatReload?: () => void }) => {
 	const { t } = useTranslation();

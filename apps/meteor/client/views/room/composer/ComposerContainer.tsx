@@ -3,8 +3,6 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import { useAirGappedRestriction } from '../../../hooks/useAirGappedRestriction';
-import { useRoom } from '../contexts/RoomContext';
 import ComposerAirGappedRestricted from './ComposerAirGappedRestricted';
 import ComposerAnonymous from './ComposerAnonymous';
 import ComposerArchived from './ComposerArchived';
@@ -16,10 +14,12 @@ import ComposerMessage from './ComposerMessage';
 import ComposerOmnichannel from './ComposerOmnichannel';
 import ComposerReadOnly from './ComposerReadOnly';
 import ComposerVoIP from './ComposerVoIP';
+import { useRoom } from '../contexts/RoomContext';
 import { useMessageComposerIsAnonymous } from './hooks/useMessageComposerIsAnonymous';
 import { useMessageComposerIsArchived } from './hooks/useMessageComposerIsArchived';
 import { useMessageComposerIsBlocked } from './hooks/useMessageComposerIsBlocked';
 import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOnly';
+import { useAirGappedRestriction } from '../../../hooks/useAirGappedRestriction';
 
 const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactElement => {
 	const room = useRoom();

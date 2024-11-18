@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 
+import UsersTableRow from './UsersTableRow';
 import FilterByText from '../../../../../components/FilterByText';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import {
@@ -18,7 +19,6 @@ import {
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../../components/GenericTable/hooks/useSort';
 import { useDirectoryQuery } from '../../../hooks/useDirectoryQuery';
-import UsersTableRow from './UsersTableRow';
 
 const UsersTable = ({ workspace = 'local' }): ReactElement => {
 	const t = useTranslation();

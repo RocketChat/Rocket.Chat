@@ -1,5 +1,5 @@
-import type { ISetting } from '../../definition/settings';
 import { BaseBridge } from './BaseBridge';
+import type { ISetting } from '../../definition/settings';
 
 export abstract class InternalBridge extends BaseBridge {
     public doGetUsernamesOfRoomById(roomId: string): Promise<Array<string>> {

@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 
+import RetentionPolicyWarning from './RetentionPolicyWarning';
 import { createRenteionPolicySettingsMock as createMock } from '../../../../tests/mocks/client/mockRetentionPolicySettings';
 import { createFakeRoom } from '../../../../tests/mocks/data';
-import RetentionPolicyWarning from './RetentionPolicyWarning';
 
 jest.useFakeTimers();
 

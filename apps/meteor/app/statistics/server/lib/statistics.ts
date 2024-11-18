@@ -29,6 +29,10 @@ import {
 import { MongoInternals } from 'meteor/mongo';
 import moment from 'moment';
 
+import { getAppsStatistics } from './getAppsStatistics';
+import { getStatistics as getEnterpriseStatistics } from './getEEStatistics';
+import { getImporterStatistics } from './getImporterStatistics';
+import { getServicesStatistics } from './getServicesStatistics';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
 import { getControl } from '../../../../server/lib/migrations';
@@ -38,10 +42,6 @@ import { getStatistics as federationGetStatistics } from '../../../federation/se
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
 import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
-import { getAppsStatistics } from './getAppsStatistics';
-import { getStatistics as getEnterpriseStatistics } from './getEEStatistics';
-import { getImporterStatistics } from './getImporterStatistics';
-import { getServicesStatistics } from './getServicesStatistics';
 
 const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: number }> => {
 	const result = await Users.getUserLanguages();

@@ -6,8 +6,8 @@ import type { FormEventHandler, ReactElement } from 'react';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { FocusScope } from 'react-aria';
 
-import { getURL } from '../../../../app/utils/client/getURL';
 import { getButtonStyle } from './getButtonStyle';
+import { getURL } from '../../../../app/utils/client/getURL';
 
 const focusableElementsString = `
 	a[href]:not([tabindex="-1"]),

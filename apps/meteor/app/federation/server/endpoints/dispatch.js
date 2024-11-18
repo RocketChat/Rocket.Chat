@@ -6,6 +6,7 @@ import EJSON from 'ejson';
 import { API } from '../../../api/server';
 import { FileUpload } from '../../../file-upload/server';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
+import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import {
 	notifyOnMessageChange,
 	notifyOnRoomChanged,
@@ -551,6 +552,18 @@ API.v1.addRoute(
 	{ authRequired: false, rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 1000 } },
 	{
 		async post() {
+			/*
+			The legacy federation has been deprecated for over a year
+			and no longer receives any updates. This feature also has
+			relevant security issues that weren't addressed.
+			Workspaces should migrate to the newer matrix federation.
+			*/
+			apiDeprecationLogger.endpoint(this.request.route, '8.0.0', this.response, 'Use Matrix Federation instead.');
+
+			if (!process.env.ENABLE_INSECURE_LEGACY_FEDERATION) {
+				return API.v1.failure('Deprecated. ENABLE_INSECURE_LEGACY_FEDERATION environment variable is needed to enable it.');
+			}
+
 			if (!isFederationEnabled()) {
 				return API.v1.failure('Federation not enabled');
 			}

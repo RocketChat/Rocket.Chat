@@ -4,6 +4,7 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
+import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import { isURL } from '../../../../lib/utils/isURL';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -12,7 +13,6 @@ import { settings } from '../../../settings/server';
 import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
-import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 // TODO: most of the types here are wrong, but I don't want to change them now
 

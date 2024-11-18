@@ -3,6 +3,7 @@ import { useTranslation, useUserPreference, useEndpoint, useToastMessageDispatch
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
+import OutlookSettingItem from './OutlookSettingItem';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -12,7 +13,6 @@ import {
 	ContextualbarFooter,
 } from '../../../components/Contextualbar';
 import { useOutlookAuthentication, useOutlookAuthenticationMutationLogout } from '../hooks/useOutlookAuthentication';
-import OutlookSettingItem from './OutlookSettingItem';
 
 type OutlookSettingsListProps = {
 	onClose: () => void;

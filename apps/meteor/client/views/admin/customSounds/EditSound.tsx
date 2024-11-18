@@ -4,10 +4,10 @@ import type { ReactElement, SyntheticEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { validate, createSoundData } from './lib';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
-import { validate, createSoundData } from './lib';
 
 type EditSoundProps = {
 	close?: () => void;

@@ -5,9 +5,9 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import MessageListTab from './MessageListTab';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 import { useRoom } from '../contexts/RoomContext';
-import MessageListTab from './MessageListTab';
 
 const MentionsTab = (): ReactElement => {
 	const getMentionedMessages = useEndpoint('GET', '/v1/chat.getMentionedMessages');

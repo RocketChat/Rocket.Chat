@@ -2,8 +2,8 @@ import { usePermission, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import NotAuthorizedPage from '../../views/notAuthorized/NotAuthorizedPage';
 import { PrioritiesPage } from './PrioritiesPage';
+import NotAuthorizedPage from '../../views/notAuthorized/NotAuthorizedPage';
 
 const PrioritiesRoute = (): ReactElement => {
 	const canViewPriorities = usePermission('manage-livechat-priorities');

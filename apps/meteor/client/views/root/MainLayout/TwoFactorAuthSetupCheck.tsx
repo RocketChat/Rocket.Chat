@@ -3,10 +3,10 @@ import { useLayout, useUser, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { lazy, useCallback } from 'react';
 
-import { Roles } from '../../../../app/models/client';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import LayoutWithSidebar from './LayoutWithSidebar';
 import LayoutWithSidebarV2 from './LayoutWithSidebarV2';
+import { Roles } from '../../../../app/models/client';
+import { useReactiveValue } from '../../../hooks/useReactiveValue';
 
 const AccountSecurityPage = lazy(() => import('../../account/security/AccountSecurityPage'));
 

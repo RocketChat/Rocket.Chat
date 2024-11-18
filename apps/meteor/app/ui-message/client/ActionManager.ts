@@ -7,12 +7,12 @@ import { t } from 'i18next';
 import type { ContextType } from 'react';
 import { lazy } from 'react';
 
+import { UiKitTriggerTimeoutError } from './UiKitTriggerTimeoutError';
 import * as banners from '../../../client/lib/banners';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { exhaustiveCheck } from '../../../lib/utils/exhaustiveCheck';
 import { sdk } from '../../utils/client/lib/SDKClient';
-import { UiKitTriggerTimeoutError } from './UiKitTriggerTimeoutError';
 
 const UiKitModal = lazy(() => import('../../../client/views/modal/uikit/UiKitModal'));
 

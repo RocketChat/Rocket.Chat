@@ -4,8 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from '../../components/FormSkeleton';
 import EditContactInfo from './EditContactInfo';
+import { FormSkeleton } from '../../components/FormSkeleton';
 
 const EditContactInfoWithData = ({ id, onCancel }: { id: string; onCancel: () => void; onClose?: () => void }) => {
 	const { t } = useTranslation();

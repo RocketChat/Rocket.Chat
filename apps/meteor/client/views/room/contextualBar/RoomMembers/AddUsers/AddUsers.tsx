@@ -8,6 +8,7 @@ import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { useAddMatrixUsers } from './AddMatrixUsers/useAddMatrixUsers';
 import {
 	ContextualbarHeader,
 	ContextualbarBack,
@@ -20,7 +21,6 @@ import UserAutoCompleteMultiple from '../../../../../components/UserAutoComplete
 import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
-import { useAddMatrixUsers } from './AddMatrixUsers/useAddMatrixUsers';
 
 type AddUsersProps = {
 	rid: IRoom['_id'];

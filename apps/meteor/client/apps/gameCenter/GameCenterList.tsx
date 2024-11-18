@@ -4,10 +4,10 @@ import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarContent } from '../../components/Contextualbar';
-import { FormSkeleton } from '../../components/Skeleton';
 import type { IGame } from './GameCenter';
 import GameCenterInvitePlayersModal from './GameCenterInvitePlayersModal';
+import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarContent } from '../../components/Contextualbar';
+import { FormSkeleton } from '../../components/Skeleton';
 
 interface IGameCenterListProps {
 	handleClose: (e: any) => void;

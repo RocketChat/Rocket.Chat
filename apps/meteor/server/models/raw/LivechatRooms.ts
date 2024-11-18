@@ -29,9 +29,9 @@ import type {
 	UpdateOptions,
 } from 'mongodb';
 
+import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { BaseRaw } from './BaseRaw';
 
 /**
  * @extends BaseRaw<ILivechatRoom>

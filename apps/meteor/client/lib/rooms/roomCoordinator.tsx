@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import React from 'react';
 
 import { hasPermission } from '../../../app/authorization/client';
-import { ChatRoom, ChatSubscription } from '../../../app/models/client';
+import { Rooms, Subscriptions } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
 import type {
 	RoomSettingsEnum,
@@ -61,7 +61,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 				return false;
 			},
 			canSendMessage(rid: string): boolean {
-				return ChatSubscription.find({ rid }).count() > 0;
+				return Subscriptions.find({ rid }).count() > 0;
 			},
 			...directives,
 			config: roomConfig,
@@ -118,7 +118,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			t: 1,
 			...(user && { muted: 1, unmuted: 1 }),
 		};
-		const room = ChatRoom.findOne({ _id: rid }, { fields });
+		const room = Rooms.findOne({ _id: rid }, { fields });
 		if (!room) {
 			return false;
 		}
@@ -157,12 +157,12 @@ class RoomCoordinatorClient extends RoomCoordinator {
 
 	// #ToDo: Move this out of the RoomCoordinator
 	public archived(rid: string): boolean {
-		const room = ChatRoom.findOne({ _id: rid }, { fields: { archived: 1 } });
+		const room = Rooms.findOne({ _id: rid }, { fields: { archived: 1 } });
 		return Boolean(room?.archived);
 	}
 
 	public verifyCanSendMessage(rid: string): boolean {
-		const room = ChatRoom.findOne({ _id: rid }, { fields: { t: 1, federated: 1 } });
+		const room = Rooms.findOne({ _id: rid }, { fields: { t: 1, federated: 1 } });
 		if (!room?.t) {
 			return false;
 		}

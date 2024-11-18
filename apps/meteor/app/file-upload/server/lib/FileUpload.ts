@@ -22,6 +22,7 @@ import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
 
+import { streamToBuffer } from './streamToBuffer';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -33,7 +34,6 @@ import { settings } from '../../../settings/server';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { fileUploadIsValidContentType } from '../../../utils/server/restrictions';
-import { streamToBuffer } from './streamToBuffer';
 
 const cookie = new Cookies();
 let maxFileSize = 0;

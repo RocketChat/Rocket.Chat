@@ -34,6 +34,10 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { ObjectId } from 'mongodb';
 
+import { Livechat as LivechatTyped } from './LivechatTyped';
+import { queueInquiry, saveQueueInquiry } from './QueueManager';
+import { RoutingManager } from './RoutingManager';
+import { getOnlineAgents } from './getOnlineAgents';
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
 import { i18n } from '../../../../server/lib/i18n';
@@ -47,10 +51,6 @@ import {
 	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
-import { Livechat as LivechatTyped } from './LivechatTyped';
-import { queueInquiry, saveQueueInquiry } from './QueueManager';
-import { RoutingManager } from './RoutingManager';
-import { getOnlineAgents } from './getOnlineAgents';
 
 const logger = new Logger('LivechatHelper');
 export const allowAgentSkipQueue = (agent: SelectedAgent) => {

@@ -2,12 +2,6 @@ import { Base64 } from '@rocket.chat/base64';
 import { Emitter } from '@rocket.chat/emitter';
 import EJSON from 'ejson';
 
-import { RoomManager } from '../../../client/lib/RoomManager';
-import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
-import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
-import { ChatRoom, Subscriptions, Messages } from '../../models/client';
-import { sdk } from '../../utils/client/lib/SDKClient';
-import { t } from '../../utils/lib/i18n';
 import { E2ERoomState } from './E2ERoomState';
 import {
 	toString,
@@ -30,6 +24,12 @@ import {
 } from './helper';
 import { log, logError } from './logger';
 import { e2e } from './rocketchat.e2e';
+import { RoomManager } from '../../../client/lib/RoomManager';
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
+import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
+import { Rooms, Subscriptions, Messages } from '../../models/client';
+import { sdk } from '../../utils/client/lib/SDKClient';
+import { t } from '../../utils/lib/i18n';
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
@@ -325,7 +325,7 @@ export class E2ERoom extends Emitter {
 		}
 
 		try {
-			const room = ChatRoom.findOne({ _id: this.roomId })!;
+			const room = Rooms.findOne({ _id: this.roomId })!;
 			// Only room creator can set keys for room
 			if (!room.e2eKeyId && this.userShouldCreateKeys(room)) {
 				this.setState(E2ERoomState.CREATING_KEYS);

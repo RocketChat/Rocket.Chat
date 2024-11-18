@@ -15,6 +15,7 @@ import {
 	FieldHint,
 	Accordion,
 	AccordionItem,
+	Divider,
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
@@ -30,9 +31,9 @@ import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import { useEncryptedRoomDescription } from './hooks/useEncryptedRoomDescription';
 import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
-import { useEncryptedRoomDescription } from './hooks/useEncryptedRoomDescription';
 
 type CreateTeamModalInputs = {
 	name: string;
@@ -296,6 +297,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 										<FieldDescription id={`${showDiscussionsId}-hint`}>{t('Show_discussions_description')}</FieldDescription>
 									</Field>
 								</FieldGroup>
+								<Divider mb={36} />
 							</FeaturePreviewOn>
 						</FeaturePreview>
 						<FieldGroup>

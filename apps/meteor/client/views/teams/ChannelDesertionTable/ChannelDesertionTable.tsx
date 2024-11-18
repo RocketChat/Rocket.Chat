@@ -4,9 +4,9 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ChannelDesertionTableRow from './ChannelDesertionTableRow';
 import { GenericTable, GenericTableHeaderCell, GenericTableHeader, GenericTableBody } from '../../../components/GenericTable';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import ChannelDesertionTableRow from './ChannelDesertionTableRow';
 
 type ChannelDesertionTableProps = {
 	lastOwnerWarning?: string;

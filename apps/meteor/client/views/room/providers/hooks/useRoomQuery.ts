@@ -3,7 +3,7 @@ import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { ChatRoom } from '../../../../../app/models/client';
+import { Rooms } from '../../../../../app/models/client';
 import { queueMicrotask } from '../../../../lib/utils/queueMicrotask';
 
 export function useRoomQuery(
@@ -12,7 +12,7 @@ export function useRoomQuery(
 ): UseQueryResult<IRoom | null, Error> {
 	const queryKey = ['rooms', rid] as const;
 
-	const queryResult = useQuery(queryKey, async (): Promise<IRoom | null> => ChatRoom.findOne({ _id: rid }, { reactive: false }) ?? null, {
+	const queryResult = useQuery(queryKey, async (): Promise<IRoom | null> => Rooms.findOne({ _id: rid }, { reactive: false }) ?? null, {
 		staleTime: Infinity,
 		...options,
 	});
@@ -20,7 +20,7 @@ export function useRoomQuery(
 	const { refetch } = queryResult;
 
 	useEffect(() => {
-		const liveQueryHandle = ChatRoom.find({ _id: rid }).observe({
+		const liveQueryHandle = Rooms.find({ _id: rid }).observe({
 			added: () => queueMicrotask(() => refetch({ exact: false })),
 			changed: () => queueMicrotask(() => refetch({ exact: false })),
 			removed: () => queueMicrotask(() => refetch({ exact: false })),

@@ -9,8 +9,8 @@ import type {
 import type { FindPaginated, IModerationReportsModel, PaginationParams } from '@rocket.chat/model-typings';
 import type { AggregationCursor, Collection, Db, Document, FindCursor, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
 
-import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements IModerationReportsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IModerationReport>>) {
