@@ -2,10 +2,10 @@ import { useUserId, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useCallback } from 'react';
 
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 import PasswordChangeCheck from './PasswordChangeCheck';
 import RegisterUsername from './RegisterUsername';
+import { useReactiveValue } from '../../../hooks/useReactiveValue';
+import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 
 const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
 	const userId = useUserId();

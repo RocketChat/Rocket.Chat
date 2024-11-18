@@ -1,8 +1,8 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import NotAuthorizedPage from '../../views/notAuthorized/NotAuthorizedPage';
 import SlaPage from './SlaPage';
+import NotAuthorizedPage from '../../views/notAuthorized/NotAuthorizedPage';
 
 const SlaRoute = () => {
 	const canViewSlas = usePermission('manage-livechat-sla');

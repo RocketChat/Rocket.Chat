@@ -2,10 +2,10 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 
+import MessageBoxHint from './MessageBoxHint';
 import { E2ERoomState } from '../../../../../app/e2e/client/E2ERoomState';
 import { useRoom } from '../../contexts/RoomContext';
 import { useE2EERoomState } from '../../hooks/useE2EERoomState';
-import MessageBoxHint from './MessageBoxHint';
 
 jest.mock('../../hooks/useE2EERoomState', () => ({
 	useE2EERoomState: jest.fn(),

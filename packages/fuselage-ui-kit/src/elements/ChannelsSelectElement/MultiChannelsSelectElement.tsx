@@ -4,9 +4,9 @@ import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useCallback, useState } from 'react';
 
+import { useChannelsData } from './hooks/useChannelsData';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
-import { useChannelsData } from './hooks/useChannelsData';
 
 type MultiChannelsSelectProps = BlockProps<UiKit.MultiChannelsSelectElement>;
 

@@ -6,10 +6,10 @@ import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { useRemoveWebDAVAccountIntegrationMutation } from './hooks/useRemoveWebDAVAccountIntegrationMutation';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useWebDAVAccountIntegrationsQuery } from '../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
 import { getWebdavServerName } from '../../../lib/getWebdavServerName';
-import { useRemoveWebDAVAccountIntegrationMutation } from './hooks/useRemoveWebDAVAccountIntegrationMutation';
 
 const AccountIntegrationsPage = () => {
 	const { data: webdavAccountIntegrations } = useWebDAVAccountIntegrationsQuery();

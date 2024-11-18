@@ -3,15 +3,15 @@ import { useLocalStorage, useDebouncedValue, useEffectEvent } from '@rocket.chat
 import { useSetModal, usePermission, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useMemo, useState } from 'react';
 
+import AddExistingModal from './AddExistingModal';
+import TeamsChannels from './TeamsChannels';
+import { useTeamsChannelList } from './hooks/useTeamsChannelList';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import CreateChannelWithData from '../../../../sidebar/header/CreateChannel';
 import { useRoom } from '../../../room/contexts/RoomContext';
 import { useRoomToolbox } from '../../../room/contexts/RoomToolboxContext';
-import AddExistingModal from './AddExistingModal';
-import TeamsChannels from './TeamsChannels';
-import { useTeamsChannelList } from './hooks/useTeamsChannelList';
 
 const TeamsChannelsWithData = () => {
 	const room = useRoom();

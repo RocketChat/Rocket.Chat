@@ -3,6 +3,7 @@ import { isE2EEMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
+import { MessageAction } from './MessageAction';
 import { getPermaLink } from '../../../../client/lib/getPermaLink';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
@@ -14,7 +15,6 @@ import ReportMessageModal from '../../../../client/views/room/modals/ReportMessa
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
 import { ChatRoom, Subscriptions } from '../../../models/client';
 import { t } from '../../../utils/lib/i18n';
-import { MessageAction } from './MessageAction';
 
 const getMainMessageText = (message: IMessage): IMessage => {
 	const newMessage = { ...message };

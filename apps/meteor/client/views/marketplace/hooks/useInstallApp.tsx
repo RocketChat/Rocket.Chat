@@ -7,10 +7,10 @@ import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import { useAppsReload } from '../../../contexts/hooks/useAppsReload';
 import AppPermissionsReviewModal from '../AppPermissionsReviewModal';
 import AppUpdateModal from '../AppUpdateModal';
+import { useAppsCountQuery } from './useAppsCountQuery';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { handleInstallError } from '../helpers/handleInstallError';
 import { getManifestFromZippedApp } from '../lib/getManifestFromZippedApp';
-import { useAppsCountQuery } from './useAppsCountQuery';
 
 export const useInstallApp = (file: File): { install: () => void; isInstalling: boolean } => {
 	const reloadAppsList = useAppsReload();

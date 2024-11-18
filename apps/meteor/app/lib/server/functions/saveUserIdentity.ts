@@ -1,6 +1,10 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
+import { _setRealName } from './setRealName';
+import { _setUsername } from './setUsername';
+import { updateGroupDMsName } from './updateGroupDMsName';
+import { validateName } from './validateName';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { FileUpload } from '../../../file-upload/server';
 import {
@@ -8,10 +12,6 @@ import {
 	notifyOnSubscriptionChangedByUserId,
 	notifyOnSubscriptionChangedByNameAndRoomType,
 } from '../lib/notifyListener';
-import { _setRealName } from './setRealName';
-import { _setUsername } from './setUsername';
-import { updateGroupDMsName } from './updateGroupDMsName';
-import { validateName } from './validateName';
 
 /**
  *

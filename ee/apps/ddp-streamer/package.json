@@ -33,14 +33,14 @@
 		"gc-stats": "^1.4.1",
 		"jaeger-client": "^3.19.0",
 		"mem": "^8.1.1",
-		"moleculer": "^0.14.34",
+		"moleculer": "^0.14.35",
 		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
 		"nats": "^2.28.2",
 		"pino": "^8.21.0",
 		"polka": "^0.5.2",
 		"sharp": "^0.33.5",
 		"underscore": "^1.13.7",
-		"uuid": "^11.0.2",
+		"uuid": "^11.0.3",
 		"ws": "^8.18.0"
 	},
 	"devDependencies": {

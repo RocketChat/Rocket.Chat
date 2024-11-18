@@ -4,11 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useDefaultDownload } from './useDefaultDownload';
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { PERIOD_OPTIONS } from '../components/constants';
 import { formatPeriodDescription } from '../utils/formatPeriodDescription';
-import { useDefaultDownload } from './useDefaultDownload';
 
 const colors = {
 	warning: Palette.statusColor['status-font-on-warning'].toString(),

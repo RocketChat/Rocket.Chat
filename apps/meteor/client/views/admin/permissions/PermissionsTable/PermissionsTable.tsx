@@ -5,6 +5,9 @@ import { useRoute, usePermission, useMethod, useTranslation, useSetModal } from 
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 
+import PermissionRow from './PermissionRow';
+import PermissionsTableFilter from './PermissionsTableFilter';
+import RoleHeader from './RoleHeader';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
@@ -12,9 +15,6 @@ import { Page, PageHeader, PageContent } from '../../../../components/Page';
 import CustomRoleUpsellModal from '../CustomRoleUpsellModal';
 import PermissionsContextBar from '../PermissionsContextBar';
 import { usePermissionsAndRoles } from '../hooks/usePermissionsAndRoles';
-import PermissionRow from './PermissionRow';
-import PermissionsTableFilter from './PermissionsTableFilter';
-import RoleHeader from './RoleHeader';
 
 const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactElement => {
 	const t = useTranslation();

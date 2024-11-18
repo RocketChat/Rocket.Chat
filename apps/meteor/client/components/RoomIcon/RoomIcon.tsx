@@ -4,8 +4,8 @@ import { Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { isValidElement } from 'react';
 
-import { useRoomIcon } from '../../hooks/useRoomIcon';
 import { OmnichannelRoomIcon } from './OmnichannelRoomIcon';
+import { useRoomIcon } from '../../hooks/useRoomIcon';
 
 export const RoomIcon = ({
 	room,
