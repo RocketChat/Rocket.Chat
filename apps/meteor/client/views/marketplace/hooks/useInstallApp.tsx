@@ -92,7 +92,7 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 
 		const isExempt = !data?.isEnterprise && isInstalled;
 		if (isInstalled && isExempt) {
-			return setModal(<AppExemptModal appName={appFile.name} cancel={cancelAction} />);
+			return setModal(<AppExemptModal appName={appFile.name} onCancel={cancelAction} />);
 		}
 
 		if (isInstalled) {

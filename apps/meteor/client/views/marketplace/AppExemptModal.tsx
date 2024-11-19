@@ -7,11 +7,11 @@ import { useCheckoutUrl } from '../admin/subscription/hooks/useCheckoutUrl';
 import { PRICING_LINK } from '../admin/subscription/utils/links';
 
 type AppExemptModalProps = {
-	cancel: () => void;
+	onCancel: () => void;
 	appName: string;
 };
 
-const AppExemptModal = ({ cancel, appName }: AppExemptModalProps) => {
+const AppExemptModal = ({ onCancel, appName }: AppExemptModalProps) => {
 	const { t } = useTranslation();
 
 	const openExternalLink = useExternalLink();
@@ -19,11 +19,7 @@ const AppExemptModal = ({ cancel, appName }: AppExemptModalProps) => {
 
 	const goToManageSubscriptionPage = (): void => {
 		openExternalLink(manageSubscriptionUrl);
-		cancel();
-	};
-
-	const handleCancelButton = (): void => {
-		cancel();
+		onCancel();
 	};
 
 	return (
@@ -32,7 +28,7 @@ const AppExemptModal = ({ cancel, appName }: AppExemptModalProps) => {
 				<Modal.HeaderText>
 					<Modal.Title>{t('Apps_Cannot_Be_Updated')}</Modal.Title>
 				</Modal.HeaderText>
-				<Modal.Close aria-label={t('Close')} onClick={handleCancelButton} />
+				<Modal.Close aria-label={t('Close')} onClick={onCancel} />
 			</Modal.Header>
 
 			<Modal.Content>
@@ -47,7 +43,7 @@ const AppExemptModal = ({ cancel, appName }: AppExemptModalProps) => {
 					</a>
 				</Modal.FooterAnnotation>
 				<Modal.FooterControllers>
-					<Button onClick={handleCancelButton}>{t('Cancel')}</Button>
+					<Button onClick={onCancel}>{t('Cancel')}</Button>
 					<Button onClick={goToManageSubscriptionPage} primary>
 						{t('Upgrade')}
 					</Button>
