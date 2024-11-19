@@ -4,7 +4,7 @@ import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MutableRefObject } from 'react';
 import React, { forwardRef, useCallback, useRef, useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
-import type { StateSnapshot } from 'react-virtuoso';
+import type { VirtuosoHandle, StateSnapshot } from 'react-virtuoso';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
 import { RoomManager } from '../../../lib/RoomManager';
@@ -20,8 +20,8 @@ import MessageListProvider from './providers/MessageListProvider';
 type MessageListProps = {
 	rid: IRoom['_id'];
 	messageListRef: ComponentProps<typeof MessageListProvider>['messageListRef'];
-	renderBefore: any;
-	renderAfter: any;
+	renderBefore: React.ReactNode;
+	renderAfter: React.ReactNode;
 	isLoadingMoreMessages: boolean;
 };
 
@@ -44,13 +44,13 @@ export const MessageListVirtual = forwardRef<HTMLElement, MessageListProps>(func
 	const state = React.useRef<StateSnapshot | undefined>(store?.state);
 	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
 	const firstUnreadMessageId = useFirstUnreadMessageId();
-	const virtuosoRef: any = useRef(null);
-	const isAtBottomRef: any = useRef(true);
-	const scrollerRef: any = useRef(null);
+	const virtuosoRef = useRef<VirtuosoHandle | null>(null);
+	const isAtBottomRef = useRef<boolean>(true);
+	const scrollerRef = useRef<HTMLElement | null>(null);
 
 	useLockOnLoadMoreMessages(isLoadingMoreMessages, virtuosoRef, state, messages, scrollerRef);
 
-	const extraProps: any = useMemo(() => {
+	const extraProps: Record<string, any> = useMemo(() => {
 		return !state.current ? { initialTopMostItemIndex: messages.length - 1 } : {};
 	}, [messages.length]);
 
@@ -126,7 +126,7 @@ export const MessageListVirtual = forwardRef<HTMLElement, MessageListProps>(func
 					itemContent={itemContent}
 					isScrolling={() => {
 						const store = RoomManager.getStore(rid);
-						virtuosoRef?.current?.getState((snapshot: any) => {
+						virtuosoRef?.current?.getState((snapshot: StateSnapshot) => {
 							if (snapshot) {
 								store?.update({ state: snapshot });
 								state.current = snapshot;
