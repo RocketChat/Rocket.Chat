@@ -19,8 +19,8 @@ import type {
 } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
-import { notifyOnSettingChanged } from '../../../app/lib/server/lib/notifyListener';
 import { BaseRaw } from './BaseRaw';
+import { notifyOnSettingChanged } from '../../../app/lib/server/lib/notifyListener';
 
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements ILivechatVisitorsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatVisitor>>) {
@@ -49,7 +49,11 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query);
 	}
 
-	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null> {
+	async findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null> {
+		if (!emailAddress) {
+			return null;
+		}
+
 		const query = {
 			'visitorEmails.address': String(emailAddress).toLowerCase(),
 		};

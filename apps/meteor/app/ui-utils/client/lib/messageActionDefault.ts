@@ -3,6 +3,7 @@ import { isE2EEMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
+import { MessageAction } from './MessageAction';
 import { getPermaLink } from '../../../../client/lib/getPermaLink';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
@@ -12,9 +13,8 @@ import ForwardMessageModal from '../../../../client/views/room/modals/ForwardMes
 import ReactionListModal from '../../../../client/views/room/modals/ReactionListModal';
 import ReportMessageModal from '../../../../client/views/room/modals/ReportMessageModal';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
-import { ChatRoom, Subscriptions } from '../../../models/client';
+import { Rooms, Subscriptions } from '../../../models/client';
 import { t } from '../../../utils/lib/i18n';
-import { MessageAction } from './MessageAction';
 
 const getMainMessageText = (message: IMessage): IMessage => {
 	const newMessage = { ...message };
@@ -51,7 +51,7 @@ Meteor.startup(async () => {
 
 			// Check if we already have a DM started with the message user (not ourselves) or we can start one
 			if (!!user && user._id !== message.u._id && !hasPermission('create-d')) {
-				const dmRoom = ChatRoom.findOne({ _id: [user._id, message.u._id].sort().join('') });
+				const dmRoom = Rooms.findOne({ _id: [user._id, message.u._id].sort().join('') });
 				if (!dmRoom || !Subscriptions.findOne({ 'rid': dmRoom._id, 'u._id': user._id })) {
 					return false;
 				}

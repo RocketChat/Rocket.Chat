@@ -1,22 +1,33 @@
 import type { IVisitorEmail, IVisitorPhone } from './ILivechatVisitor';
 import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IOmnichannelSource } from './IRoom';
+import type { IOmnichannelSource, OmnichannelSourceType } from './IRoom';
+
+export interface ILivechatContactVisitorAssociation {
+	visitorId: string;
+	source: {
+		type: OmnichannelSourceType;
+		id?: IOmnichannelSource['id'];
+	};
+}
 
 export interface ILivechatContactChannel {
 	name: string;
 	verified: boolean;
-	visitorId: string;
+	visitor: ILivechatContactVisitorAssociation;
 	blocked: boolean;
 	field?: string;
 	value?: string;
 	verifiedAt?: Date;
-	details?: IOmnichannelSource;
+	details: IOmnichannelSource;
+	lastChat?: {
+		_id: string;
+		ts: Date;
+	};
 }
 
 export interface ILivechatContactConflictingField {
-	field: string;
-	oldValue: string;
-	newValue: string;
+	field: 'name' | 'manager' | `customFields.${string}`;
+	value: string;
 }
 
 export interface ILivechatContact extends IRocketChatRecord {
@@ -25,13 +36,13 @@ export interface ILivechatContact extends IRocketChatRecord {
 	emails?: IVisitorEmail[];
 	contactManager?: string;
 	unknown?: boolean;
-	hasConflict?: boolean;
 	conflictingFields?: ILivechatContactConflictingField[];
 	customFields?: Record<string, string | unknown>;
-	channels?: ILivechatContactChannel[];
+	channels: ILivechatContactChannel[];
 	createdAt: Date;
 	lastChat?: {
 		_id: string;
 		ts: Date;
 	};
+	importIds?: string[];
 }

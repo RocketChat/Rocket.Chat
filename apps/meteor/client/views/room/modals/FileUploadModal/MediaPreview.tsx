@@ -3,10 +3,10 @@ import type { ReactElement } from 'react';
 import React, { useEffect, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { userAgentMIMETypeFallback } from '../../../../lib/utils/userAgentMIMETypeFallback';
 import { FilePreviewType } from './FilePreview';
 import ImagePreview from './ImagePreview';
 import PreviewSkeleton from './PreviewSkeleton';
+import { userAgentMIMETypeFallback } from '../../../../lib/utils/userAgentMIMETypeFallback';
 
 type ReaderOnloadCallback = (url: FileReader['result']) => void;
 

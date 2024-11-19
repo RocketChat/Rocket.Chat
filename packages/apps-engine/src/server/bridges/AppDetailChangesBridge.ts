@@ -1,5 +1,5 @@
-import type { ISetting } from '../../definition/settings';
 import { BaseBridge } from './BaseBridge';
+import type { ISetting } from '../../definition/settings';
 
 /**
  * An abstract class which will contain various methods related to Apps

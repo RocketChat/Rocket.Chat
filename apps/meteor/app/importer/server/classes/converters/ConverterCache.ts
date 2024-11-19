@@ -1,4 +1,4 @@
-import type { IImportUser } from '@rocket.chat/core-typings';
+import type { IImportUser, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
 export type UserIdentification = {
@@ -17,6 +17,8 @@ export class ConverterCache {
 	// display name uses a different cache because it's only used on mentions so we don't need to load it every time we load an user
 	private _userDisplayNameCache = new Map<string, string>();
 
+	private _userNameToIdCache = new Map<string, string | undefined>();
+
 	private _roomCache = new Map<string, string>();
 
 	private _roomNameCache = new Map<string, string>();
@@ -28,6 +30,9 @@ export class ConverterCache {
 		};
 
 		this._userCache.set(importId, cache);
+		if (username) {
+			this._userNameToIdCache.set(username, _id);
+		}
 		return cache;
 	}
 
@@ -55,6 +60,10 @@ export class ConverterCache {
 		}
 
 		this.addUser(userData.importIds[0], userData._id, userData.username);
+	}
+
+	addUsernameToId(username: string, id: string): void {
+		this._userNameToIdCache.set(username, id);
 	}
 
 	async findImportedRoomId(importId: string): Promise<string | null> {
@@ -194,5 +203,20 @@ export class ConverterCache {
 				}),
 			)
 		).filter((user) => user) as string[];
+	}
+
+	async getIdOfUsername(username: string | undefined): Promise<string | undefined> {
+		if (!username) {
+			return;
+		}
+
+		if (this._userNameToIdCache.has(username)) {
+			return this._userNameToIdCache.get(username);
+		}
+
+		const user = await Users.findOneByUsername<Pick<IUser, '_id'>>(username, { projection: { _id: 1 } });
+		this.addUsernameToId(username, user?._id);
+
+		return user?._id;
 	}
 }

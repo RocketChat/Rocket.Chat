@@ -4,6 +4,7 @@ import { AppBridges } from './AppBridges';
 import { AppDetailChangesBridge } from './AppDetailChangesBridge';
 import { CloudWorkspaceBridge } from './CloudWorkspaceBridge';
 import { CommandBridge } from './CommandBridge';
+import { ContactBridge } from './ContactBridge';
 import { EmailBridge } from './EmailBridge';
 import { EnvironmentalVariableBridge } from './EnvironmentalVariableBridge';
 import { HttpBridge, IHttpBridgeRequestInfo } from './HttpBridge';
@@ -25,6 +26,7 @@ import { VideoConferenceBridge } from './VideoConferenceBridge';
 
 export {
     CloudWorkspaceBridge,
+    ContactBridge,
     EnvironmentalVariableBridge,
     HttpBridge,
     IHttpBridgeRequestInfo,

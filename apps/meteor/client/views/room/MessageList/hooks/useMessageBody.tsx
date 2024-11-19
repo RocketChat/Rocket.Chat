@@ -3,9 +3,9 @@ import type { Options, Root } from '@rocket.chat/message-parser';
 import { useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { parseMessageTextToAstMarkdown } from '../../../../lib/parseMessageTextToAstMarkdown';
 import { useAutoLinkDomains } from './useAutoLinkDomains';
 import { useAutoTranslate } from './useAutoTranslate';
+import { parseMessageTextToAstMarkdown } from '../../../../lib/parseMessageTextToAstMarkdown';
 
 export const useMessageBody = (message: IMessage | undefined, rid: string): string | Root => {
 	const subscription = useUserSubscription(rid);

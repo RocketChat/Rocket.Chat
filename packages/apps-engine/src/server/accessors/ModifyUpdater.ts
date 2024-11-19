@@ -1,3 +1,7 @@
+import { LivechatUpdater } from './LivechatUpdater';
+import { MessageBuilder } from './MessageBuilder';
+import { RoomBuilder } from './RoomBuilder';
+import { UserUpdater } from './UserUpdater';
 import type { ILivechatUpdater, IMessageBuilder, IMessageUpdater, IModifyUpdater, IRoomBuilder } from '../../definition/accessors';
 import type { IUserUpdater } from '../../definition/accessors/IUserUpdater';
 import { RocketChatAssociationModel } from '../../definition/metadata';
@@ -5,10 +9,6 @@ import { RoomType } from '../../definition/rooms';
 import type { IUser } from '../../definition/users';
 import type { AppBridges } from '../bridges';
 import { UIHelper } from '../misc/UIHelper';
-import { LivechatUpdater } from './LivechatUpdater';
-import { MessageBuilder } from './MessageBuilder';
-import { RoomBuilder } from './RoomBuilder';
-import { UserUpdater } from './UserUpdater';
 
 export class ModifyUpdater implements IModifyUpdater {
     private livechatUpdater: ILivechatUpdater;

@@ -3,10 +3,10 @@ import { Callout } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import CannedResponseEdit from './CannedResponseEdit';
 import { FormSkeleton } from '../../components/Skeleton';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useEndpointData } from '../../hooks/useEndpointData';
-import CannedResponseEdit from './CannedResponseEdit';
 
 const CannedResponseEditWithDepartmentData = ({ cannedResponseData }: { cannedResponseData: Serialized<IOmnichannelCannedResponse> }) => {
 	const departmentId = useMemo(() => cannedResponseData?.departmentId, [cannedResponseData]) as string;

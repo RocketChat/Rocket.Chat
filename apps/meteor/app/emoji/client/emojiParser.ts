@@ -1,5 +1,5 @@
-import { isIE11 } from '../../../client/lib/utils/isIE11';
 import { emoji } from './lib';
+import { isIE11 } from '../../../client/lib/utils/isIE11';
 
 /**
  * emojiParser is a function that will replace emojis

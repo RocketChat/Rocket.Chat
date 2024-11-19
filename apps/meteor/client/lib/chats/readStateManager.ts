@@ -2,7 +2,7 @@ import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 
-import { ChatMessage } from '../../../app/models/client';
+import { Messages } from '../../../app/models/client';
 import { LegacyRoomManager } from '../../../app/ui-utils/client/lib/LegacyRoomManager';
 import { RoomHistoryManager } from '../../../app/ui-utils/client/lib/RoomHistoryManager';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
@@ -70,7 +70,7 @@ export class ReadStateManager extends Emitter {
 			return;
 		}
 
-		const firstUnreadRecord = ChatMessage.findOne(
+		const firstUnreadRecord = Messages.findOne(
 			{
 				'rid': this.subscription.rid,
 				'ts': {

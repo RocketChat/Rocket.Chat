@@ -17,10 +17,10 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 import { useVideoConfSetPreferences } from '../../../../../../contexts/VideoConfContext';
 import { AsyncStatePhase } from '../../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../../hooks/useEndpointData';
-import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 
 type IncomingPopupProps = {
 	id: string;

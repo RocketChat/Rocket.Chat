@@ -4,8 +4,8 @@ import { useSetModal } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GenericTableCell } from '../../../../../components/GenericTable';
 import AssignAgentModal from './AssignAgentModal';
+import { GenericTableCell } from '../../../../../components/GenericTable';
 
 type AssignAgentButtonProps = { extension: string; reload: () => void };
 

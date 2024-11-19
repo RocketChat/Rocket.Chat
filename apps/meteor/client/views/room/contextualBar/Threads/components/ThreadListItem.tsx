@@ -1,20 +1,20 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IThreadMainMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Palette } from '@rocket.chat/fuselage';
-import { useMethod, useSetting, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
+import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
 import React, { useCallback, memo } from 'react';
 
+import ThreadListMessage from './ThreadListMessage';
 import { useDecryptedMessage } from '../../../../../hooks/useDecryptedMessage';
 import { normalizeThreadMessage } from '../../../../../lib/normalizeThreadMessage';
-import ThreadListMessage from './ThreadListMessage';
 
 type ThreadListItemProps = {
-	thread: IMessage;
+	thread: IThreadMainMessage;
 	unread: string[];
 	unreadUser: string[];
 	unreadGroup: string[];
-	onClick: (tmid: IMessage['_id']) => void;
+	onClick: (tmid: IThreadMainMessage['_id']) => void;
 };
 
 const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, onClick }: ThreadListItemProps): ReactElement => {
@@ -26,32 +26,7 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, onClick }: Th
 
 	const following = !!uid && (thread.replies?.includes(uid) ?? false);
 
-	const followMessage = useMethod('followMessage');
-	const unfollowMessage = useMethod('unfollowMessage');
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const toggleFollowMessage = useCallback(async (): Promise<void> => {
-		try {
-			if (following) {
-				await unfollowMessage({ mid: thread._id });
-			} else {
-				await followMessage({ mid: thread._id });
-			}
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	}, [following, unfollowMessage, thread._id, followMessage, dispatchToastMessage]);
-
-	const handleToggleFollowButtonClick = useCallback(
-		(event: MouseEvent<HTMLElement>): void => {
-			event.preventDefault();
-			event.stopPropagation();
-			toggleFollowMessage();
-		},
-		[toggleFollowMessage],
-	);
-
-	const showRealNames = useSetting('UI_Use_Real_Name', false);
+	const showRealNames = (useSetting('UI_Use_Real_Name') as boolean | undefined) ?? false;
 
 	const handleListItemClick = useCallback(
 		(event: MouseEvent<HTMLElement>): void => {
@@ -77,7 +52,7 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, onClick }: Th
 			replies={thread.tcount ?? 0}
 			tlm={thread.tlm}
 			ts={thread.ts}
-			participants={thread.replies?.length}
+			participants={thread.replies}
 			name={showRealNames ? name : thread.u.username}
 			username={thread.u.username}
 			unread={unread.includes(thread._id)}
@@ -86,7 +61,7 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, onClick }: Th
 			following={following}
 			data-id={thread._id}
 			msg={msg ?? ''}
-			handleFollowButton={handleToggleFollowButtonClick}
+			rid={thread.rid}
 			onClick={handleListItemClick}
 			emoji={thread?.emoji}
 		/>

@@ -5,10 +5,6 @@ import { t } from 'i18next';
 import React, { memo, useCallback, useEffect } from 'react';
 import tinykeys from 'tinykeys';
 
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import { useInvalidateLicense, useLicense } from '../../../hooks/useLicense';
-import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 import { SubscriptionCalloutLimits } from './SubscriptionCalloutLimits';
 import SubscriptionPageSkeleton from './SubscriptionPageSkeleton';
 import UpgradeButton from './components/UpgradeButton';
@@ -23,8 +19,12 @@ import MACCard from './components/cards/MACCard';
 import PlanCard from './components/cards/PlanCard';
 import PlanCardCommunity from './components/cards/PlanCard/PlanCardCommunity';
 import SeatsCard from './components/cards/SeatsCard';
-import { useRemoveLicense } from './hooks/useRemoveLicense';
+import { useCancelSubscriptionModal } from './hooks/useCancelSubscriptionModal';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import { useInvalidateLicense, useLicense } from '../../../hooks/useLicense';
+import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 
 function useShowLicense() {
 	const [showLicenseTab, setShowLicenseTab] = useSessionStorage('admin:showLicenseTab', false);
@@ -70,6 +70,8 @@ const SubscriptionPage = () => {
 	const macLimit = getKeyLimit('monthlyActiveContacts');
 	const seatsLimit = getKeyLimit('activeUsers');
 
+	const { isLoading: isCancelSubscriptionLoading, open: openCancelSubscriptionModal } = useCancelSubscriptionModal();
+
 	const handleSyncLicenseUpdate = useCallback(() => {
 		syncLicenseUpdate.mutate(undefined, {
 			onSuccess: () => invalidateLicenseQuery(100),
@@ -94,8 +96,6 @@ const SubscriptionPage = () => {
 			);
 		}
 	}, [handleSyncLicenseUpdate, router, subscriptionSuccess, syncLicenseUpdate.isIdle]);
-
-	const removeLicense = useRemoveLicense();
 
 	return (
 		<Page bg='tint'>
@@ -177,7 +177,7 @@ const SubscriptionPage = () => {
 							</Grid>
 							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise}>
 								{Boolean(licensesData?.license?.information.cancellable) && (
-									<Button loading={removeLicense.isLoading} secondary danger onClick={() => removeLicense.mutate()}>
+									<Button loading={isCancelSubscriptionLoading} secondary danger onClick={openCancelSubscriptionModal}>
 										{t('Cancel_subscription')}
 									</Button>
 								)}

@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next';
 import type { VirtuosoGridHandle } from 'react-virtuoso';
 import { VirtuosoGrid } from 'react-virtuoso';
 
-import type { EmojiItem } from '../../../../app/emoji/client';
-import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
 import EmojiElement from './EmojiElement';
 import SearchingResultWrapper from './SearchingResultWrapper';
+import type { EmojiItem } from '../../../../app/emoji/client';
+import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
 
 /**
  * the `SearchingResults` is missing the previous loadMore function that was implemented before on the latest version of EmojiPicker using the Blaze Template. It can't be implemented because of the issue with react-virtuoso and the custom scrollbars, since its using virtual list its not gonna be an issue rendering bigger results for search

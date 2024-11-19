@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { router } from '../../../client/providers/RouterProvider';
-import { ChatSubscription } from '../../models/client';
+import { Subscriptions } from '../../models/client';
 import { LegacyRoomManager, MessageAction } from '../../ui-utils/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 
@@ -16,7 +16,7 @@ Meteor.startup(() => {
 		type: 'interaction',
 		async action(_, { message }) {
 			try {
-				const subscription = ChatSubscription.findOne({
+				const subscription = Subscriptions.findOne({
 					rid: message.rid,
 				});
 

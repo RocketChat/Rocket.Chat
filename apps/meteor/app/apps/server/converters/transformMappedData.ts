@@ -1,5 +1,3 @@
-import cloneDeep from 'lodash.clonedeep';
-
 /**
  * Transforms a `data` source object to another object,
  * essentially applying a to -> from mapping provided by
@@ -62,16 +60,41 @@ import cloneDeep from 'lodash.clonedeep';
  * @returns Object The data after transformations have been applied
  */
 
-export const transformMappedData = async <
-	ResultType extends {
-		-readonly [p in keyof MapType]: MapType[p] extends keyof DataType
-			? DataType[MapType[p]]
-			: MapType[p] extends (...args: any[]) => any
-				? Awaited<ReturnType<MapType[p]>>
+type MapFor<DataType> = {
+	[p in string]:
+		| string
+		| ((data: DataType) => Promise<unknown>)
+		| ((data: DataType) => unknown)
+		| { from: string; list: true }
+		| { from: string; map: MapFor<DataType[keyof DataType]>; list?: boolean };
+};
+
+type ResultFor<DataType extends Record<string, any>, MapType extends MapFor<DataType>> = {
+	-readonly [p in keyof MapType]: MapType[p] extends keyof DataType
+		? DataType[MapType[p]]
+		: MapType[p] extends (...args: any[]) => any
+			? Awaited<ReturnType<MapType[p]>>
+			: MapType[p] extends { from: infer KeyName; map?: Record<string, any>; list?: boolean }
+				? KeyName extends keyof DataType
+					? MapType[p]['list'] extends true
+						? DataType[KeyName] extends any[]
+							? MapType[p]['map'] extends MapFor<DataType[KeyName][number]>
+								? ResultFor<DataType[KeyName][number], MapType[p]['map']>[]
+								: DataType[KeyName]
+							: DataType[KeyName][]
+						: DataType[KeyName] extends object
+							? MapType[p]['map'] extends MapFor<DataType[KeyName]>
+								? ResultFor<DataType[KeyName], MapType[p]['map']>
+								: never
+							: never
+					: never
 				: never;
-	},
+};
+
+export const transformMappedData = async <
+	ResultType extends ResultFor<DataType, MapType>,
 	DataType extends Record<string, any>,
-	MapType extends { [p in string]: string | ((data: DataType) => Promise<unknown>) | ((data: DataType) => unknown) },
+	MapType extends MapFor<DataType>,
 	UnmappedProperties extends {
 		[p in keyof DataType as Exclude<p, MapType[keyof MapType]>]: DataType[p];
 	},
@@ -79,7 +102,7 @@ export const transformMappedData = async <
 	data: DataType,
 	map: MapType,
 ): Promise<ResultType & { _unmappedProperties_: UnmappedProperties }> => {
-	const originalData: DataType = cloneDeep(data);
+	const originalData: DataType = structuredClone(data);
 	const transformedData: Record<string, any> = {};
 
 	for await (const [to, from] of Object.entries(map)) {
@@ -94,6 +117,26 @@ export const transformMappedData = async <
 				transformedData[to] = originalData[from];
 			}
 			delete originalData[from];
+		} else if (typeof from === 'object' && 'from' in from) {
+			const { from: fromName } = from;
+
+			if (from.list) {
+				if (Array.isArray(originalData[fromName])) {
+					if ('map' in from && from.map) {
+						if (typeof originalData[fromName] === 'object') {
+							transformedData[to] = await Promise.all(originalData[fromName].map((item) => transformMappedData(item, from.map)));
+						}
+					} else {
+						transformedData[to] = [...originalData[fromName]];
+					}
+				} else if (originalData[fromName] !== undefined && originalData[fromName] !== null) {
+					transformedData[to] = [originalData[fromName]];
+				}
+			} else {
+				transformedData[to] = await transformMappedData(originalData[fromName], from.map);
+			}
+
+			delete originalData[fromName];
 		}
 	}
 

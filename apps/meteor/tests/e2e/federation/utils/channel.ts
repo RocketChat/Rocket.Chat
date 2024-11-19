@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import type { FederationChannel } from '../page-objects/channel';
 import { doLogin } from './auth';
 import type { API } from './test';
+import type { FederationChannel } from '../page-objects/channel';
 
 const doLoginAndGoToHome = async (
 	page: Page,

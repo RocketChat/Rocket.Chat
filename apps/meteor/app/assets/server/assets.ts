@@ -220,16 +220,14 @@ class RocketChatAssetsClass {
 		return assets;
 	}
 
-	public async setAsset(binaryContent: string, contentType: string, asset: string): Promise<void> {
-		const file = Buffer.from(binaryContent, 'binary');
-		await this.setAssetWithBuffer(file, contentType, asset);
-	}
-
-	public async setAssetWithBuffer(binaryContent: Buffer, contentType: string, asset: string): Promise<void> {
-		await this._setAsset(binaryContent, contentType, asset);
-	}
-
-	private async _setAsset(file: Buffer, contentType: string, asset: string): Promise<void> {
+	public async setAssetWithBuffer(
+		file: Buffer,
+		contentType: string,
+		asset: string,
+	): Promise<{
+		key: string;
+		value: IRocketChatAsset;
+	}> {
 		const assetInstance = getAssetByKey(asset);
 		if (!assetInstance) {
 			throw new Meteor.Error('error-invalid-asset', 'Invalid asset', {
@@ -260,29 +258,29 @@ class RocketChatAssetsClass {
 		await RocketChatAssetsInstance.deleteFile(asset);
 
 		const ws = RocketChatAssetsInstance.createWriteStream(asset, contentType);
-		ws.on('end', () => {
-			return setTimeout(async () => {
-				const key = `Assets_${asset}`;
-				const value = {
-					url: `assets/${asset}.${extension}`,
-					defaultUrl: assetInstance.defaultUrl,
-				};
 
-				void (async () => {
-					const { modifiedCount } = await Settings.updateValueById(key, value);
-					if (modifiedCount) {
-						void notifyOnSettingChangedById(key);
-					}
-				})();
+		return new Promise((resolve) => {
+			ws.on('end', () => {
+				return setTimeout(async () => {
+					const key = `Assets_${asset}`;
+					const value = {
+						url: `assets/${asset}.${extension}`,
+						defaultUrl: assetInstance.defaultUrl,
+					} as IRocketChatAsset;
 
-				return RocketChatAssets.processAsset(key, value);
-			}, 200);
+					await RocketChatAssets.processAsset(key, value);
+					resolve({
+						key,
+						value,
+					});
+				}, 200);
+			});
+
+			rs.pipe(ws);
 		});
-
-		rs.pipe(ws);
 	}
 
-	public async unsetAsset(asset: string): Promise<void> {
+	public async unsetAsset(asset: string) {
 		if (!getAssetByKey(asset)) {
 			throw new Meteor.Error('error-invalid-asset', 'Invalid asset', {
 				function: 'RocketChat.Assets.unsetAsset',
@@ -295,14 +293,12 @@ class RocketChatAssetsClass {
 			defaultUrl: getAssetByKey(asset).defaultUrl,
 		};
 
-		void (async () => {
-			const { modifiedCount } = await Settings.updateValueById(key, value);
-			if (modifiedCount) {
-				void notifyOnSettingChangedById(key);
-			}
-		})();
-
 		await RocketChatAssets.processAsset(key, value);
+
+		return {
+			key,
+			value,
+		};
 	}
 
 	public refreshClients(): boolean {
@@ -421,32 +417,6 @@ export const refreshClients = async (userId: string) => {
 	}
 
 	return RocketChatAssets.refreshClients();
-};
-
-export const unsetAsset = async (userId: string, asset: string) => {
-	if (!userId) {
-		throw new Error('Invalid user');
-	}
-
-	const _hasPermission = await hasPermissionAsync(userId, 'manage-assets');
-	if (!_hasPermission) {
-		throw new Error('Managing assets not allowed');
-	}
-
-	return RocketChatAssets.unsetAsset(asset);
-};
-
-export const setAsset = async (userId: string, binaryContent: Buffer, contentType: string, asset: string) => {
-	if (!userId) {
-		throw new Error('Invalid user');
-	}
-
-	const _hasPermission = await hasPermissionAsync(userId, 'manage-assets');
-	if (!_hasPermission) {
-		throw new Error('Managing assets not allowed');
-	}
-
-	await RocketChatAssets.setAssetWithBuffer(binaryContent, contentType, asset);
 };
 
 const listener = (req: IncomingMessage, res: ServerResponse, next: NextHandleFunction) => {

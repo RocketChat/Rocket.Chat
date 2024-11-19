@@ -1,12 +1,28 @@
-import { Box, Icon, Margins, States, StatesIcon, StatesSubtitle, StatesTitle, TextInput, Throbber } from '@rocket.chat/fuselage';
-import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, Dispatch, ReactElement, SetStateAction } from 'react';
+import {
+	Box,
+	Button,
+	ButtonGroup,
+	ContextualbarFooter,
+	Icon,
+	Margins,
+	States,
+	StatesIcon,
+	StatesSubtitle,
+	StatesTitle,
+	TextInput,
+	Throbber,
+} from '@rocket.chat/fuselage';
+import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useSetting, useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
+import type { ChangeEvent, ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import ContactHistoryMessage from './ContactHistoryMessage';
+import { useHistoryMessageList } from './useHistoryMessageList';
 import {
 	ContextualbarHeader,
-	ContextualbarAction,
 	ContextualbarIcon,
 	ContextualbarTitle,
 	ContextualbarClose,
@@ -18,24 +34,35 @@ import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';
 import { isMessageSequential } from '../../../room/MessageList/lib/isMessageSequential';
-import ContactHistoryMessage from './ContactHistoryMessage';
-import { useHistoryMessageList } from './useHistoryMessageList';
 
-const ContactHistoryMessagesList = ({
-	chatId,
-	setChatId,
-	close,
-}: {
+type ContactHistoryMessagesListProps = {
 	chatId: string;
-	setChatId: Dispatch<SetStateAction<string>>;
-	close: () => void;
-}): ReactElement => {
+	onClose: () => void;
+	onOpenRoom?: () => void;
+};
+
+const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHistoryMessagesListProps) => {
+	const { t } = useTranslation();
 	const [text, setText] = useState('');
-	const t = useTranslation();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
-	const { itemsList: messageList, loadMoreItems } = useHistoryMessageList(
-		useMemo(() => ({ roomId: chatId, filter: text }), [chatId, text]),
+	const userId = useUserId();
+
+	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
+		debounceDelay: 200,
+	});
+
+	const query = useDebouncedValue(
+		useMemo(
+			() => ({
+				roomId: chatId,
+				filter: text,
+			}),
+			[text, chatId],
+		),
+		500,
 	);
+
+	const { itemsList: messageList, loadMoreItems } = useHistoryMessageList(query, userId);
 
 	const handleSearchChange = (event: ChangeEvent<HTMLInputElement>): void => {
 		setText(event.currentTarget.value);
@@ -47,10 +74,9 @@ const ContactHistoryMessagesList = ({
 	return (
 		<>
 			<ContextualbarHeader>
-				<ContextualbarAction onClick={(): void => setChatId('')} title={t('Back')} name='arrow-back' />
 				<ContextualbarIcon name='history' />
-				<ContextualbarTitle>{t('Chat_History')}</ContextualbarTitle>
-				<ContextualbarClose onClick={close} />
+				<ContextualbarTitle>{t('Conversation')}</ContextualbarTitle>
+				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 
 			<ContextualbarContent paddingInline={0}>
@@ -87,14 +113,22 @@ const ContactHistoryMessagesList = ({
 					</States>
 				)}
 				{phase !== AsyncStatePhase.LOADING && totalItemCount === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
+				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
 					{!error && totalItemCount > 0 && history.length > 0 && (
 						<Virtuoso
 							totalCount={totalItemCount}
+							initialTopMostItemIndex={{ index: 'LAST' }}
+							followOutput
+							style={{
+								height: blockSize,
+								width: inlineSize,
+							}}
 							endReached={
 								phase === AsyncStatePhase.LOADING
 									? (): void => undefined
-									: (start): unknown => loadMoreItems(start, Math.min(50, totalItemCount - start))
+									: (start): void => {
+											loadMoreItems(start, Math.min(50, totalItemCount - start));
+										}
 							}
 							overscan={25}
 							data={messages}
@@ -111,6 +145,13 @@ const ContactHistoryMessagesList = ({
 					)}
 				</Box>
 			</ContextualbarContent>
+			{onOpenRoom && (
+				<ContextualbarFooter>
+					<ButtonGroup stretch>
+						<Button onClick={onOpenRoom}>{t('Open_chat')}</Button>
+					</ButtonGroup>
+				</ContextualbarFooter>
+			)}
 		</>
 	);
 };

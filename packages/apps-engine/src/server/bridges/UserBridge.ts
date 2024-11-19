@@ -1,8 +1,8 @@
+import { BaseBridge } from './BaseBridge';
 import type { IUser, IUserCreationOptions, UserType } from '../../definition/users';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export abstract class UserBridge extends BaseBridge {
     public async doGetById(id: string, appId: string): Promise<IUser> {

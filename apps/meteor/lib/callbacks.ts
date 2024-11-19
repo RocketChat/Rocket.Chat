@@ -28,10 +28,10 @@ import type {
 import type { Updater } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
 
+import { Callbacks } from './callbacks/callbacksBase';
 import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import type { CloseRoomParams } from '../app/livechat/server/lib/localTypes';
-import { Callbacks } from './callbacks/callbacksBase';
 
 /**
  * Callbacks returning void, like event listeners.
