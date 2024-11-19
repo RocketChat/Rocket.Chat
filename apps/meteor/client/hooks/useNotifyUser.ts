@@ -2,7 +2,7 @@ import type { AtLeast, ISubscription } from '@rocket.chat/core-typings';
 import { useRouter, useStream, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
 
-import { useIsLayoutEmbedded } from './useIsLayoutEmbedded';
+import { useEmbeddedLayout } from './useEmbeddedLayout';
 import { CachedChatSubscription } from '../../app/models/client';
 import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
 import { RoomManager } from '../lib/RoomManager';
@@ -11,7 +11,7 @@ import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 export const useNotifyUser = () => {
 	const user = useUser();
 	const router = useRouter();
-	const isLayoutEmbedded = useIsLayoutEmbedded();
+	const isLayoutEmbedded = useEmbeddedLayout();
 	const notifyUserStream = useStream('notify-user');
 	const muteFocusedConversations = useUserPreference('muteFocusedConversations');
 
