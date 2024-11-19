@@ -30,8 +30,7 @@ export async function removeWorkspaceRegistrationInfo() {
 			})(Settings.updateValueById, 'Show_Setup_Wizard', 'in_progress');
 		}
 
-		// TODO: audit
-		return Settings.resetValueById(settingId, null);
+		return updateAuditedBySystem({ reason: 'removeWorkspaceRegistrationInfo' })(Settings.resetValueById, settingId, null);
 	});
 
 	(await Promise.all(promises)).forEach((value, index) => {
