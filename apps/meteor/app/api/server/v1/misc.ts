@@ -20,7 +20,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
+import { resetAuditedSettingByUser, updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { getLogs } from '../../../../server/stream/stdout';
 import { passwordPolicy } from '../../../lib/server';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
@@ -704,8 +704,12 @@ API.v1.addRoute(
 					return auditSettingOperation(Settings.updateValueById, 'Deployment_FingerPrint_Verified', true);
 				}
 
-				// TODO: audit
-				return Settings.resetValueById(settingId);
+				return resetAuditedSettingByUser({
+					_id: this.userId,
+					username: this.user.username!,
+					ip: this.requestIp,
+					useragent: this.request.headers['user-agent'] || '',
+				})(Settings.resetValueById, settingId);
 			});
 
 			(await Promise.all(promises)).forEach((value, index) => {

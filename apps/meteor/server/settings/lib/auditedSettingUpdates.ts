@@ -3,6 +3,26 @@ import { ServerEvents } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server/cached';
 
+export const resetAuditedSettingByUser =
+	<F extends (key: ISetting['_id']) => any>(actor: Omit<IAuditServerUserActor, 'type'>) =>
+	(fn: F, key: ISetting['_id']) => {
+		const { value, packageValue } = settings.getSetting(key) ?? {};
+
+		void ServerEvents.createAuditServerEvent(
+			'settings.changed',
+			{
+				id: key,
+				previous: value,
+				current: packageValue,
+			},
+			{
+				type: 'user',
+				...actor,
+			},
+		);
+		return fn(key);
+	};
+
 export const updateAuditedByUser =
 	<T extends ISetting['value'], F extends (_id: ISetting['_id'], value: T, ...args: any[]) => any>(
 		actor: Omit<IAuditServerUserActor, 'type'>,
@@ -12,6 +32,7 @@ export const updateAuditedByUser =
 		const setting = settings.getSetting(key);
 
 		const previous = setting?.value;
+
 		void ServerEvents.createAuditServerEvent(
 			'settings.changed',
 			{
