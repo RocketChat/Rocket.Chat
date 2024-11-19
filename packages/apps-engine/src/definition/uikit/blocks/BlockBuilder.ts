@@ -1,6 +1,5 @@
 import { v1 as uuid } from 'uuid';
 
-import type { Omit } from '../../../lib/utils';
 import type { IActionsBlock, IBlock, IConditionalBlock, IConditionalBlockFilters, IContextBlock, IImageBlock, IInputBlock, ISectionBlock } from './Blocks';
 import { BlockType } from './Blocks';
 import type {
@@ -18,6 +17,7 @@ import type {
 import { BlockElementType } from './Elements';
 import type { ITextObject } from './Objects';
 import { TextObjectType } from './Objects';
+import type { Omit } from '../../../lib/utils';
 
 type BlockFunctionParameter<T extends IBlock> = Omit<T, 'type'>;
 type ElementFunctionParameter<T extends IBlockElement> = T extends IInteractiveElement

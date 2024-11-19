@@ -2,8 +2,8 @@ import type { Box } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
 import React from 'react';
 
-import { useFormatMemorySize } from '../../../../../hooks/useFormatMemorySize';
 import Title from './AttachmentTitle';
+import { useFormatMemorySize } from '../../../../../hooks/useFormatMemorySize';
 
 type AttachmentSizeProps = ComponentPropsWithoutRef<typeof Box> & { size: number; wrapper?: boolean };
 

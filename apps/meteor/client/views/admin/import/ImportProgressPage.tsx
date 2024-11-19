@@ -1,20 +1,21 @@
 import type { ProgressStep } from '@rocket.chat/core-typings';
 import { Box, Margins, ProgressBar, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { useErrorHandler } from './useErrorHandler';
 import { ImportingStartedStates } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import { useErrorHandler } from './useErrorHandler';
 
 // TODO: review inner logic
 const ImportProgressPage = function ImportProgressPage() {
 	const queryClient = useQueryClient();
 	const streamer = useStream('importers');
-	const t = useTranslation();
+	const { t, i18n } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const handleError = useErrorHandler();
 
@@ -77,7 +78,7 @@ const ImportProgressPage = function ImportProgressPage() {
 
 			switch (step) {
 				case 'importer_done':
-					t.has(message) &&
+					i18n.exists(message) &&
 						dispatchToastMessage({
 							type: 'success',
 							message: t(message),
@@ -87,7 +88,7 @@ const ImportProgressPage = function ImportProgressPage() {
 
 				case 'importer_import_failed':
 				case 'importer_import_cancelled':
-					t.has(message) && handleError(message);
+					i18n.exists(message) && handleError(message);
 					router.navigate('/admin/import');
 					return;
 

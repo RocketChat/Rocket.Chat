@@ -3,6 +3,8 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import EditInviteLink from './EditInviteLink';
+import InviteLink from './InviteLink';
 import {
 	ContextualbarHeader,
 	ContextualbarTitle,
@@ -10,8 +12,6 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 } from '../../../../../components/Contextualbar';
-import EditInviteLink from './EditInviteLink';
-import InviteLink from './InviteLink';
 
 type InviteUsersProps = {
 	onClickBackMembers?: () => void;

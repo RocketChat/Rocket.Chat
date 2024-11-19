@@ -6,6 +6,8 @@ import type { FormEvent, ReactElement } from 'react';
 import React, { useMemo, useState, useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import ThreadListItem from './components/ThreadListItem';
+import { useThreadsList } from './hooks/useThreadsList';
 import {
 	ContextualbarClose,
 	ContextualbarContent,
@@ -22,8 +24,6 @@ import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import { useGoToThread } from '../../hooks/useGoToThread';
-import ThreadListItem from './components/ThreadListItem';
-import { useThreadsList } from './hooks/useThreadsList';
 
 type ThreadType = 'all' | 'following' | 'unread';
 
@@ -163,7 +163,7 @@ const ThreadList = () => {
 									? (): void => undefined
 									: (start): void => {
 											loadMoreItems(start, Math.min(50, itemCount - start));
-									  }
+										}
 							}
 							overscan={25}
 							data={items}

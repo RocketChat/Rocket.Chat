@@ -10,8 +10,8 @@ function ExternalFrameContainer() {
 	const uid = useUserId();
 	const room = useRoom();
 	const { 'X-Auth-Token': authToken } = sdk.rest.getCredentials() || {};
-	const keyStr = useSetting<string>('Omnichannel_External_Frame_Encryption_JWK');
-	const frameURLSetting = useSetting<string>('Omnichannel_External_Frame_URL');
+	const keyStr = useSetting('Omnichannel_External_Frame_Encryption_JWK', '');
+	const frameURLSetting = useSetting('Omnichannel_External_Frame_URL', '');
 
 	const token = useQuery(['externalFrame', keyStr, authToken], async () => {
 		if (!keyStr || !authToken) {
@@ -39,7 +39,7 @@ function ExternalFrameContainer() {
 
 	return (
 		<div className='flex-nav'>
-			<iframe title='external-frame' className='external-frame' src={externalFrameUrl} />
+			<iframe style={{ width: '100%', height: '100%' }} title='external-frame' src={externalFrameUrl} />
 		</div>
 	);
 }

@@ -4,8 +4,8 @@ import { BlockContext } from '@rocket.chat/ui-kit';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { contextualBarParser } from '../../surfaces';
 import MultiUsersSelectElement from './MultiUsersSelectElement';
+import { contextualBarParser } from '../../surfaces';
 import { useUsersData } from './hooks/useUsersData';
 
 const usersBlock: MultiUsersSelectElementType = {
@@ -54,7 +54,7 @@ describe('UiKit MultiUsersSelect Element', () => {
           surfaceRenderer={contextualBarParser}
         />
       </MockedServerContext>,
-      { legacyRoot: true }
+      { legacyRoot: true },
     );
   });
 

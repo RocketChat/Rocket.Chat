@@ -33,8 +33,8 @@ import type {
 	ModifyResult,
 } from 'mongodb';
 
-import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 import { BaseRaw } from './BaseRaw';
+import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 
 export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISubscription>>) {
@@ -264,6 +264,17 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return Users.find<P>({ _id: { $in: users } }, options || {});
 	}
 
+	async countUsersInRoles(roles: IRole['_id'][], rid: IRoom['_id'] | undefined): Promise<number> {
+		const query = {
+			roles: { $in: roles },
+			...(rid && { rid }),
+		};
+
+		// Ideally, the count of subscriptions would be the same (or really similar) to the count in users
+		// As sub/user/room is a 1:1 relation.
+		return this.countDocuments(query);
+	}
+
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid?: IRoom['_id']): Promise<UpdateResult> {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
@@ -403,10 +414,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		options: AggregateOptions = {},
 	): Promise<SpotlightUser[]> {
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
-		const orStatement = searchFields.reduce((acc, el) => {
-			acc.push({ [el.trim()]: termRegex });
-			return acc;
-		}, [] as { [x: string]: RegExp }[]);
+		const orStatement = searchFields.reduce(
+			(acc, el) => {
+				acc.push({ [el.trim()]: termRegex });
+				return acc;
+			},
+			[] as { [x: string]: RegExp }[],
+		);
 
 		return this.col
 			.aggregate<SpotlightUser>(
@@ -924,12 +938,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 						$set: {
 							hideMentionStatus,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							hideMentionStatus: 1,
 						},
-				  };
+					};
 
 		return this.updateOne(query, update);
 	}

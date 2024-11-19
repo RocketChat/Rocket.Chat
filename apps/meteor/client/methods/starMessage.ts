@@ -1,7 +1,7 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
-import { ChatMessage, ChatSubscription } from '../../app/models/client';
+import { Messages, Subscriptions } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { t } from '../../app/utils/lib/i18n';
 import { dispatchToastMessage } from '../lib/toast';
@@ -15,12 +15,12 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		if (!ChatSubscription.findOne({ rid: message.rid })) {
+		if (!Subscriptions.findOne({ rid: message.rid })) {
 			dispatchToastMessage({ type: 'error', message: t('error-starring-message') });
 			return false;
 		}
 
-		if (!ChatMessage.findOneByRoomIdAndMessageId(message.rid, message._id)) {
+		if (!Messages.findOne({ _id: message._id, rid: message.rid })) {
 			dispatchToastMessage({ type: 'error', message: t('error-starring-message') });
 			return false;
 		}
@@ -31,7 +31,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (message.starred) {
-			ChatMessage.update(
+			Messages.update(
 				{ _id: message._id },
 				{
 					$addToSet: {
@@ -45,7 +45,7 @@ Meteor.methods<ServerMethods>({
 			return true;
 		}
 
-		ChatMessage.update(
+		Messages.update(
 			{ _id: message._id },
 			{
 				$pull: {

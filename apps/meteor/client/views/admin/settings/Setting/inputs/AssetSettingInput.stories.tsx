@@ -9,7 +9,7 @@ export default {
 	component: AssetSettingInput,
 	decorators: [
 		(fn) => (
-			<div className='rc-old'>
+			<div>
 				<div className='page-settings'>
 					<Field>{fn()}</Field>
 				</div>

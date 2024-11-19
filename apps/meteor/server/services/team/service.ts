@@ -33,7 +33,7 @@ import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { checkUsernameAvailability } from '../../../app/lib/server/functions/checkUsernameAvailability';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
-import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedByRoomIdAndUserId, notifyOnRoomChangedById } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
 
 export class TeamService extends ServiceClassInternal implements ITeamService {
@@ -66,7 +66,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				? []
 				: await Users.findActiveByIdsOrUsernames(members, {
 						projection: { username: 1 },
-				  }).toArray();
+					}).toArray();
 		const memberUsernames = membersResult.map(({ username }) => username);
 		const memberIds = membersResult.map(({ _id }) => _id);
 
@@ -130,6 +130,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			if (room.id) {
 				await Message.saveSystemMessage('user-converted-to-team', roomId, team.name, createdBy);
 			}
+
+			void notifyOnRoomChangedById(roomId, 'inserted');
 
 			return {
 				_id: teamId,
@@ -810,7 +812,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 					uid !== member.userId && byUser
 						? {
 								byUser,
-						  }
+							}
 						: undefined,
 				);
 			}

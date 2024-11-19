@@ -11,13 +11,13 @@ jobs:
   deploy-preview:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: rharkor/caching-for-turbo@v1.5
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         with:
-          node-version: 20.17.0
+          node-version: 20.18.0
           deno-version: 1.37.1
           cache-modules: true
           install: true

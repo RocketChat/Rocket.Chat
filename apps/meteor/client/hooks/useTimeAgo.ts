@@ -8,7 +8,7 @@ const dayFormat = ['h:mm A', 'H:mm'] as const;
 
 export const useTimeAgo = (): ((time: Date | number | string) => string) => {
 	const clockMode = useUserPreference<1 | 2>('clockMode');
-	const timeFormat = useSetting<string>('Message_TimeFormat', 'LT');
+	const timeFormat = useSetting('Message_TimeFormat', 'LT');
 	const format = clockMode !== undefined ? dayFormat[clockMode - 1] : timeFormat;
 	return useCallback(
 		(time) => {
@@ -25,7 +25,7 @@ export const useTimeAgo = (): ((time: Date | number | string) => string) => {
 
 export const useShortTimeAgo = (): ((time: Date | string | number) => string) => {
 	const clockMode = useUserPreference<1 | 2>('clockMode');
-	const timeFormat = useSetting('Message_TimeFormat') as string;
+	const timeFormat = useSetting('Message_TimeFormat', 'LT');
 	const format = clockMode !== undefined ? dayFormat[clockMode - 1] : timeFormat;
 	return useCallback(
 		(time) =>

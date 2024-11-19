@@ -4,8 +4,8 @@ import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
-import { ContextualbarSkeleton } from '../../components/Contextualbar';
 import TagEdit from './TagEdit';
+import { ContextualbarSkeleton } from '../../components/Contextualbar';
 
 const TagEditWithDepartmentData = ({ tagData }: { tagData: ILivechatTag }) => {
 	const t = useTranslation();

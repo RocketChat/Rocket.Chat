@@ -1,8 +1,8 @@
+import type { AppManager } from './AppManager';
 import type { AppStatus } from '../definition/AppStatus';
 import { AppsEngineException } from '../definition/exceptions';
 import type { IAppAuthorInfo, IAppInfo } from '../definition/metadata';
 import { AppMethod } from '../definition/metadata';
-import type { AppManager } from './AppManager';
 import { InvalidInstallationError } from './errors/InvalidInstallationError';
 import { AppConsole } from './logging';
 import { AppLicenseValidationResult } from './marketplace/license';
@@ -15,7 +15,11 @@ export class ProxiedApp {
 
     private latestLicenseValidationResult: AppLicenseValidationResult;
 
-    constructor(private readonly manager: AppManager, private storageItem: IAppStorageItem, private readonly appRuntime: DenoRuntimeSubprocessController) {
+    constructor(
+        private readonly manager: AppManager,
+        private storageItem: IAppStorageItem,
+        private readonly appRuntime: DenoRuntimeSubprocessController,
+    ) {
         this.previousStatus = storageItem.status;
     }
 
@@ -52,11 +56,6 @@ export class ProxiedApp {
     // We'll need to refactor this method to remove the rest parameters so we can pass an options parameter
     public async call(method: `${AppMethod}`, ...args: Array<any>): Promise<any> {
         let options;
-
-        // Pre events need to be fast as they block the user
-        if (method.startsWith('checkPre') || method.startsWith('executePre')) {
-            options = { timeout: 1000 };
-        }
 
         try {
             return await this.appRuntime.sendRequest({ method: `app:${method}`, params: args }, options);

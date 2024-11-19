@@ -5,13 +5,13 @@ import { useSetModal, useTranslation, useRouter, useRouteParameter } from '@rock
 import React, { useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
+import OutgoingWebhookForm from './OutgoingWebhookForm';
 import GenericModal from '../../../../components/GenericModal';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../../components/Page';
 import { triggerWordsToArray, triggerWordsToString } from '../helpers/triggerWords';
 import { useCreateIntegration } from '../hooks/useCreateIntegration';
 import { useDeleteIntegration } from '../hooks/useDeleteIntegration';
 import { useUpdateIntegration } from '../hooks/useUpdateIntegration';
-import OutgoingWebhookForm from './OutgoingWebhookForm';
 
 const getInitialValue = (webhookData: Serialized<IOutgoingIntegration> | undefined, defaultToken: string) => ({
 	enabled: webhookData?.enabled ?? true,

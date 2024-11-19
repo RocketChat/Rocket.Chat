@@ -3,13 +3,13 @@ import type { IActionManager } from '@rocket.chat/ui-contexts';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
 
+import { useChatMessagesInstance } from './useChatMessagesInstance';
 import { E2ERoomState } from '../../../../../app/e2e/client/E2ERoomState';
 import { ChatMessages } from '../../../../../app/ui/client/lib/ChatMessages';
 import { useEmojiPicker } from '../../../../contexts/EmojiPickerContext';
 import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
 import { useRoomSubscription } from '../../contexts/RoomContext';
 import { useE2EERoomState } from '../../hooks/useE2EERoomState';
-import { useChatMessagesInstance } from './useChatMessagesInstance';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useUserId: jest.fn(),

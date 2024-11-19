@@ -3,10 +3,10 @@ import util from 'util';
 
 import mem from 'mem';
 
-import * as federationErrors from '../functions/errors';
 import { federationRequest } from './http';
 import { isFederationEnabled } from './isFederationEnabled';
 import { dnsLogger } from './logger';
+import * as federationErrors from '../functions/errors';
 
 const dnsResolveSRV = util.promisify(dnsResolver.resolveSrv);
 const dnsResolveTXT = util.promisify(dnsResolver.resolveTxt);

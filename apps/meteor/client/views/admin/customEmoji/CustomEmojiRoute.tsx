@@ -1,8 +1,12 @@
 import { Button } from '@rocket.chat/fuselage';
-import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import AddCustomEmoji from './AddCustomEmoji';
+import CustomEmoji from './CustomEmoji';
+import EditCustomEmojiWithData from './EditCustomEmojiWithData';
 import {
 	Contextualbar,
 	ContextualbarHeader,
@@ -12,12 +16,9 @@ import {
 } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
-import AddCustomEmoji from './AddCustomEmoji';
-import CustomEmoji from './CustomEmoji';
-import EditCustomEmojiWithData from './EditCustomEmojiWithData';
 
 const CustomEmojiRoute = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const route = useRoute('emoji-custom');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');

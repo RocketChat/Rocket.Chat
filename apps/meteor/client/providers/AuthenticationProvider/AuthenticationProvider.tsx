@@ -5,8 +5,8 @@ import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
 import React, { useMemo } from 'react';
 
-import { loginServices } from '../../lib/loginServices';
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
+import { loginServices } from '../../lib/loginServices';
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
@@ -15,8 +15,8 @@ type AuthenticationProviderProps = {
 };
 
 const AuthenticationProvider = ({ children }: AuthenticationProviderProps): ReactElement => {
-	const isLdapEnabled = useSetting<boolean>('LDAP_Enable');
-	const isCrowdEnabled = useSetting<boolean>('CROWD_Enable');
+	const isLdapEnabled = useSetting('LDAP_Enable', false);
+	const isCrowdEnabled = useSetting('CROWD_Enable', false);
 
 	const loginMethod: LoginMethods = (isLdapEnabled && 'loginWithLDAP') || (isCrowdEnabled && 'loginWithCrowd') || 'loginWithPassword';
 

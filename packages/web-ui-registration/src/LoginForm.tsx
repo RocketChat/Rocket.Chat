@@ -75,12 +75,12 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 	const { t } = useTranslation();
 	const formLabelId = useUniqueId();
 	const [errorOnSubmit, setErrorOnSubmit] = useState<LoginErrorState>(undefined);
-	const isResetPasswordAllowed = useSetting('Accounts_PasswordReset');
+	const isResetPasswordAllowed = useSetting('Accounts_PasswordReset', true);
 	const login = useLoginWithPassword();
-	const showFormLogin = useSetting('Accounts_ShowFormLogin');
+	const showFormLogin = useSetting('Accounts_ShowFormLogin', true);
 
-	const usernameOrEmailPlaceholder = String(useSetting('Accounts_EmailOrUsernamePlaceholder'));
-	const passwordPlaceholder = String(useSetting('Accounts_PasswordPlaceholder'));
+	const usernameOrEmailPlaceholder = useSetting('Accounts_EmailOrUsernamePlaceholder', '');
+	const passwordPlaceholder = useSetting('Accounts_PasswordPlaceholder', '');
 
 	useDocumentTitle(t('registration.component.login'), false);
 

@@ -5,6 +5,8 @@ import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { hashQueryKey, useQuery } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 
+import AddManager from './AddManager';
+import RemoveManagerButton from './RemoveManagerButton';
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
 import {
@@ -18,15 +20,12 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import AddManager from './AddManager';
-import RemoveManagerButton from './RemoveManagerButton';
 
 // TODO: Missing error state
 const ManagersTable = () => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
-	const debouncedText = useDebouncedValue(text, 500);
 
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address'>('name');
 
@@ -35,12 +34,12 @@ const ManagersTable = () => {
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
-				text: debouncedText,
+				text,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: current,
 			}),
-			[debouncedText, sortBy, sortDirection, itemsPerPage, current],
+			[text, sortBy, sortDirection, itemsPerPage, current],
 		),
 		500,
 	);
@@ -79,7 +78,9 @@ const ManagersTable = () => {
 	return (
 		<>
 			<AddManager reload={refetch} />
-			{((isSuccess && data?.users.length > 0) || queryHasChanged) && <FilterByText onChange={setText} />}
+			{((isSuccess && data?.users.length > 0) || queryHasChanged) && (
+				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
+			)}
 			{isLoading && (
 				<GenericTable aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -99,7 +100,7 @@ const ManagersTable = () => {
 			)}
 			{isSuccess && data.users.length > 0 && (
 				<>
-					<GenericTable aria-busy={text !== debouncedText} aria-label={t('Managers')}>
+					<GenericTable aria-busy={isLoading} aria-label={t('Managers')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.users.map((user) => (

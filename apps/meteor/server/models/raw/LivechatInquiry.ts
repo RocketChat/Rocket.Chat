@@ -23,9 +23,9 @@ import type {
 	DeleteOptions,
 } from 'mongodb';
 
+import { BaseRaw } from './BaseRaw';
 import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { BaseRaw } from './BaseRaw';
 
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
@@ -120,6 +120,18 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		const query = {
 			rid,
 		};
+		return this.findOne(query, options);
+	}
+
+	findOneReadyByRoomId<T extends Document = ILivechatInquiryRecord>(
+		rid: string,
+		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
+	): Promise<T | null> {
+		const query = {
+			rid,
+			status: LivechatInquiryStatus.READY,
+		};
+
 		return this.findOne(query, options);
 	}
 
@@ -389,6 +401,23 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				},
 			},
 		);
+	}
+
+	async setStatusById(inquiryId: string, status: LivechatInquiryStatus): Promise<ILivechatInquiryRecord> {
+		const result = await this.findOneAndUpdate(
+			{ _id: inquiryId },
+			{ $set: { status } },
+			{
+				upsert: true,
+				returnDocument: 'after',
+			},
+		);
+
+		if (!result.value) {
+			throw new Error('error-failed-to-set-inquiry-status');
+		}
+
+		return result.value;
 	}
 
 	setNameByRoomId(rid: string, name: string): Promise<UpdateResult> {

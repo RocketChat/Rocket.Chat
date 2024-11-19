@@ -1,6 +1,6 @@
 import { LicenseImp } from '.';
-import { MockedLicenseBuilder, getReadyLicenseManager } from '../__tests__/MockedLicenseBuilder';
 import { getAppsConfig } from './deprecated';
+import { MockedLicenseBuilder, getReadyLicenseManager } from '../__tests__/MockedLicenseBuilder';
 
 describe('Marketplace Restrictions', () => {
 	it('should respect the default if there is no license applied', async () => {

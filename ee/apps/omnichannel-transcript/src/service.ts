@@ -6,12 +6,12 @@ import polka from 'polka';
 
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
 
-startTracing({ service: 'omnichannel-transcript' });
-
 const PORT = process.env.PORT || 3036;
 
 (async () => {
-	const db = await getConnection();
+	const { db, client } = await getConnection();
+
+	startTracing({ service: 'omnichannel-transcript', db: client });
 
 	registerServiceModels(db, await getTrashCollection());
 

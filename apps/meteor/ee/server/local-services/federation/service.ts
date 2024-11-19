@@ -6,7 +6,6 @@ import type {
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
 
-import { AbstractFederationService } from '../../../../server/services/federation/service';
 import type { FederationUserServiceEE } from './application/UserService';
 import type { FederationDirectMessageRoomServiceSender } from './application/room/sender/DirectMessageRoomServiceSender';
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
@@ -16,6 +15,7 @@ import { FederationFactoryEE } from './infrastructure/Factory';
 import type { RocketChatRoomAdapterEE } from './infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatUserAdapterEE } from './infrastructure/rocket-chat/adapters/User';
 import { FederationRoomSenderConverterEE } from './infrastructure/rocket-chat/converters/RoomSender';
+import { AbstractFederationService } from '../../../../server/services/federation/service';
 
 abstract class AbstractBaseFederationServiceEE extends AbstractFederationService {
 	protected internalUserServiceEE: FederationUserServiceEE;

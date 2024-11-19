@@ -8,14 +8,14 @@ const getName = (members: IUser[]): string => members.map(({ username }) => user
 
 async function getUsersWhoAreInTheSameGroupDMsAs(user: IUser) {
 	// add all users to single array so we can fetch details from them all at once
-	const rooms = Rooms.findGroupDMsByUids([user._id], { projection: { uids: 1 } });
-	if ((await rooms.count()) === 0) {
+	if ((await Rooms.countGroupDMsByUids([user._id])) === 0) {
 		return;
 	}
 
 	const userIds = new Set();
 	const users = new Map();
 
+	const rooms = Rooms.findGroupDMsByUids([user._id], { projection: { uids: 1 } });
 	await rooms.forEach((room) => {
 		if (!room.uids) {
 			return;

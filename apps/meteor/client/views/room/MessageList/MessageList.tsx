@@ -4,11 +4,11 @@ import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { Fragment } from 'react';
 
+import { MessageListItem } from './MessageListItem';
 import { MessageTypes } from '../../../../app/ui-utils/client';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
-import { MessageListItem } from './MessageListItem';
 import { useMessages } from './hooks/useMessages';
 import { isMessageSequential } from './lib/isMessageSequential';
 import MessageListProvider from './providers/MessageListProvider';
@@ -22,7 +22,7 @@ export const MessageList = function MessageList({ rid, messageListRef }: Message
 	const messages = useMessages({ rid });
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
-	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
+	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 
 	return (

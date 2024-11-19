@@ -28,8 +28,8 @@ import type {
 	OptionalId,
 } from 'mongodb';
 
-import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 type DestructuredDate = { year: number; month: number; day: number };
 type DestructuredDateWithType = {

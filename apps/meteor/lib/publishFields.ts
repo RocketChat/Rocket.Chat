@@ -99,6 +99,8 @@ export const roomFields = {
 	slaId: 1,
 	estimatedWaitingTimeQueue: 1,
 	v: 1,
+	contactId: 1,
+	verified: 1,
 	departmentId: 1,
 	servedBy: 1,
 	source: 1,

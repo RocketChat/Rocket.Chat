@@ -21,15 +21,17 @@ import type {
 	UserStatus,
 	ILivechatDepartment,
 	MessageMention,
-	OmnichannelSourceType,
+	IOmnichannelRoomInfo,
+	IOmnichannelInquiryExtraData,
+	IOmnichannelRoomExtraData,
 } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
 
+import { Callbacks } from './callbacks/callbacksBase';
 import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
-import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped';
-import { Callbacks } from './callbacks/callbacksBase';
+import type { CloseRoomParams } from '../app/livechat/server/lib/localTypes';
 
 /**
  * Callbacks returning void, like event listeners.
@@ -108,10 +110,7 @@ interface EventLikeCallbackSignatures {
  * TODO: develop a middleware alternative and grant independence of execution order
  */
 type ChainedCallbackSignatures = {
-	'livechat.beforeRoom': (
-		roomInfo: Record<string, unknown>,
-		extraData?: Record<string, unknown> & { sla?: string },
-	) => Record<string, unknown>;
+	'livechat.beforeRoom': (roomInfo: IOmnichannelRoomInfo, extraData?: IOmnichannelRoomExtraData) => Partial<IOmnichannelRoom>;
 	'livechat.newRoom': (room: IOmnichannelRoom) => IOmnichannelRoom;
 
 	'livechat.beforeForwardRoomToDepartment': <T extends { room: IOmnichannelRoom; transferData?: { department: { _id: string } } }>(
@@ -207,15 +206,7 @@ type ChainedCallbackSignatures = {
 			options: { forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any }; clientAction?: boolean };
 		},
 	) => Promise<(IOmnichannelRoom & { chatQueued: boolean }) | undefined>;
-	'livechat.beforeInquiry': (
-		data: Pick<ILivechatInquiryRecord, 'source'> & { sla?: string; priority?: string; [other: string]: unknown } & {
-			customFields?: Record<string, unknown>;
-			source?: OmnichannelSourceType;
-		},
-	) => Pick<ILivechatInquiryRecord, 'source'> & { sla?: string; priority?: string; [other: string]: unknown } & {
-		customFields?: Record<string, unknown>;
-		source?: OmnichannelSourceType;
-	};
+	'livechat.beforeInquiry': (data: IOmnichannelInquiryExtraData) => Partial<ILivechatInquiryRecord>;
 	'roomNameChanged': (room: IRoom) => void;
 	'roomTopicChanged': (room: IRoom) => void;
 	'roomAnnouncementChanged': (room: IRoom) => void;

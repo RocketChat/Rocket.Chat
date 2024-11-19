@@ -4,21 +4,20 @@ import { Google } from 'meteor/google-oauth';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
+import { createOAuthTotpLoginMethod } from './oauth';
 import { overrideLoginMethod, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
 import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
-import { createOAuthTotpLoginMethod } from './oauth';
 
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace Meteor {
 		function loginWithGoogle(
-			options?:
-				| Meteor.LoginWithExternalServiceOptions & {
-						loginUrlParameters?: {
-							include_granted_scopes?: boolean;
-							hd?: string;
-						};
-				  },
+			options?: Meteor.LoginWithExternalServiceOptions & {
+				loginUrlParameters?: {
+					include_granted_scopes?: boolean;
+					hd?: string;
+				};
+			},
 			callback?: LoginCallback,
 		): void;
 	}

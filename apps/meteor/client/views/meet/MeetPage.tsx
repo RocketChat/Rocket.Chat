@@ -1,18 +1,19 @@
 import { Button, Box, Flex } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useRouteParameter, useSearchParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import CallPage from './CallPage';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 import NotFoundPage from '../notFound/NotFoundPage';
 import PageLoading from '../root/PageLoading';
-import CallPage from './CallPage';
 import './styles.css';
 
 const MeetPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [isRoomMember, setIsRoomMember] = useState(false);
 	const [status, setStatus] = useState(null);
 	const [visitorId, setVisitorId] = useState(null);
@@ -86,7 +87,7 @@ const MeetPage = () => {
 							top: '5%',
 							right: '2%',
 						}}
-						className='Self_Video'
+						className='meet__video--self'
 						backgroundColor='dark'
 						alignItems='center'
 					>

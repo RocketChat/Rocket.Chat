@@ -1,7 +1,7 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { isGroupsOnlineProps } from '@rocket.chat/rest-typings';
+import { isGroupsOnlineProps, isGroupsMessagesProps } from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
@@ -746,19 +746,30 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.messages',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isGroupsMessagesProps },
 	{
 		async get() {
+			const { roomId, mentionIds, starredIds, pinned } = this.queryParams;
+
 			const findResult = await findPrivateGroupByIdOrName({
-				params: this.queryParams,
+				params: { roomId },
 				userId: this.userId,
 			});
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
-			const ourQuery = Object.assign({}, query, { rid: findResult.rid });
+			const parseIds = (ids: string | undefined, field: string) =>
+				typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
 
-			const { cursor, totalCount } = await Messages.findPaginated(ourQuery, {
+			const ourQuery = {
+				...query,
+				rid: findResult.rid,
+				...parseIds(mentionIds, 'mentions._id'),
+				...parseIds(starredIds, 'starred._id'),
+				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
+			};
+
+			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
 				skip: offset,
 				limit: count,

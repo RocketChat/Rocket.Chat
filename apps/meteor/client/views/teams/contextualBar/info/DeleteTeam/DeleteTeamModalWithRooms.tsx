@@ -4,8 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
-import GenericModalSkeleton from '../../../../../components/GenericModal/GenericModalSkeleton';
 import DeleteTeamModal from './DeleteTeamModal';
+import GenericModalSkeleton from '../../../../../components/GenericModal/GenericModalSkeleton';
 
 type DeleteTeamModalWithRoomsProps = {
 	teamId: string;

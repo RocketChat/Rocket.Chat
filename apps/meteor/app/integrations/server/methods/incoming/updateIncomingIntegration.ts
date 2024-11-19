@@ -181,7 +181,7 @@ Meteor.methods<ServerMethods>({
 								script: integration.script,
 								scriptEnabled: integration.scriptEnabled,
 								scriptEngine,
-						  }),
+							}),
 					...(typeof integration.overrideDestinationChannelEnabled !== 'undefined' && {
 						overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
 					}),

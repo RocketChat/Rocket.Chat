@@ -1,7 +1,8 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import CounterItem from '../realTimeMonitoring/counter/CounterItem';
 import CounterRow from '../realTimeMonitoring/counter/CounterRow';
@@ -12,7 +13,7 @@ const conversationsInitialData = [initialData, initialData];
 const productivityInitialData = [initialData];
 
 const Overview = ({ type, dateRange, departmentId }: { type: string; dateRange: { start: string; end: string }; departmentId: string }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { start, end } = dateRange;
 

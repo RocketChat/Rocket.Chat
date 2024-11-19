@@ -11,28 +11,22 @@ import { Random } from '@rocket.chat/random';
 import type { ParsedMail, Attachment } from 'mailparser';
 import stripHtml from 'string-strip-html';
 
+import { logger } from './logger';
 import { FileUpload } from '../../../app/file-upload/server';
 import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
+import { setDepartmentForGuest } from '../../../app/livechat/server/lib/departmentsLib';
 import { settings } from '../../../app/settings/server';
 import { i18n } from '../../lib/i18n';
-import { logger } from './logger';
 
 type FileAttachment = VideoAttachmentProps & ImageAttachmentProps & AudioAttachmentProps;
 
 const language = settings.get<string>('Language') || 'en';
 const t = i18n.getFixedT(language);
 
-async function getGuestByEmail(email: string, name: string, inbox: string, department = ''): Promise<ILivechatVisitor | null> {
-	const guest = await LivechatVisitors.findOneGuestByEmailAddressAndSource(
-		email,
-		{
-			'source.type': OmnichannelSourceType.EMAIL,
-			'source.id': inbox,
-		},
-		{ projection: { department: 1, token: 1, source: 1 } },
-	);
+async function getGuestByEmail(email: string, name: string, department = ''): Promise<ILivechatVisitor | null> {
+	const guest = await LivechatVisitors.findOneGuestByEmailAddress(email);
 
 	if (guest) {
 		if (guest.department !== department) {
@@ -41,12 +35,8 @@ async function getGuestByEmail(email: string, name: string, inbox: string, depar
 				delete guest.department;
 				return guest;
 			}
-			await LivechatTyped.setDepartmentForGuest({ token: guest.token, department });
+			await setDepartmentForGuest({ token: guest.token, department });
 			return LivechatVisitors.findOneEnabledById(guest._id, {});
-		}
-		if (!guest.source) {
-			const source = { type: OmnichannelSourceType.EMAIL, id: inbox, alias: 'email-inbox' };
-			await LivechatVisitors.setSourceById(guest._id, source);
 		}
 		return guest;
 	}
@@ -56,7 +46,6 @@ async function getGuestByEmail(email: string, name: string, inbox: string, depar
 		name: name || email,
 		email,
 		department,
-		source: { type: OmnichannelSourceType.EMAIL, id: inbox, alias: 'email-inbox' },
 	});
 
 	if (!livechatVisitor) {
@@ -117,7 +106,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	const references = typeof email.references === 'string' ? [email.references] : email.references;
 	const initialRef = [email.messageId, email.inReplyTo].filter(Boolean) as string[];
 	const thread = (references?.length ? references : []).flatMap((t: string) => t.split(',')).concat(initialRef);
-	const guest = await getGuestByEmail(email.from.value[0].address, email.from.value[0].name, inbox, department);
+	const guest = await getGuestByEmail(email.from.value[0].address, email.from.value[0].name, department);
 
 	if (!guest) {
 		logger.error(`No visitor found for ${email.from.value[0].address}`);
@@ -151,7 +140,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 					wrapTails: ')',
 				},
 				skipHtmlDecoding: false,
-		  }).result
+			}).result
 		: email.text || '';
 
 	const rid = room?._id ?? Random.id();

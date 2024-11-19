@@ -6,10 +6,10 @@ import type { ReactElement } from 'react';
 import React, { useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import RoleCell from './RoleCell';
 import { CONSTANTS } from '../../../../../app/authorization/lib';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { useChangeRole } from '../hooks/useChangeRole';
-import RoleCell from './RoleCell';
 
 const getName = (t: TFunction, permission: IPermission): string => {
 	if (permission.level === CONSTANTS.SETTINGS_LEVEL) {
