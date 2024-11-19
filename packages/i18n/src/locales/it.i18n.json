@@ -2298,7 +2298,6 @@
   "Notifications_Max_Room_Members_Description": "Numero massimo di membri nella stanza quando le notifiche per tutti i messaggi vengono disabilitate. Gli utenti possono comunque modificare l'impostazione di ogni stanza per ricevere tutte le notifiche su base individuale. (0 per disabilitare)",
   "Notifications_Muted_Description": "Se decidi di disattivare l'audio, non vedrai l'evidenziazione della stanza nell'elenco quando ci sono nuovi messaggi, ad eccezione delle menzioni. Le notifiche di muting annulleranno le impostazioni delle notifiche.",
   "Notifications_Preferences": "Notifiche Preferenze",
-  "Notifications_Sound_Volume": "Notifiche del volume sonoro",
   "Notify_active_in_this_room": "Notifica utenti attivi in questa stanza",
   "Notify_all_in_this_room": "Notifica tutti in questo canale",
   "Num_Agents": "# Operatori",
