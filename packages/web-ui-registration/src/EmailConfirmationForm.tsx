@@ -29,7 +29,7 @@ export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string
 	return (
 		<Form
 			onSubmit={handleSubmit((data) => {
-				if (sendEmail.isLoading) {
+				if (sendEmail.isPending) {
 					return;
 				}
 				sendEmail.mutate(data.email);
@@ -40,7 +40,7 @@ export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string
 				<Form.Subtitle>{t('registration.page.emailVerification.subTitle')}</Form.Subtitle>
 			</Form.Header>
 			<Form.Container>
-				<FieldGroup disabled={sendEmail.isLoading || sendEmail.isSuccess}>
+				<FieldGroup disabled={sendEmail.isPending || sendEmail.isSuccess}>
 					<Field>
 						<FieldLabel htmlFor='email'>{t('registration.component.form.email')}*</FieldLabel>
 						<FieldRow>
@@ -65,7 +65,7 @@ export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string
 			</Form.Container>
 			<Form.Footer>
 				<ButtonGroup>
-					<Button loading={sendEmail.isLoading} type='submit' primary>
+					<Button loading={sendEmail.isPending} type='submit' primary>
 						{t('registration.component.form.sendConfirmationEmail')}
 					</Button>
 				</ButtonGroup>

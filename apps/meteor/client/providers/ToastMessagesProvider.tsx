@@ -1,5 +1,7 @@
 import { ToastBarProvider, useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { ToastMessagesContext } from '@rocket.chat/ui-contexts';
+import type { DefaultError, Query } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import React, { useEffect } from 'react';
 
@@ -16,6 +18,23 @@ type ToastMessageInnerProviderProps = {
 
 const ToastMessageInnerProvider = ({ children }: ToastMessageInnerProviderProps) => {
 	const dispatchToastBar = useToastBarDispatch();
+
+	const queryClient = useQueryClient();
+	const queryCacheInstance = queryClient.getQueryCache();
+	queryCacheInstance.config.onError = (error: DefaultError, query: Query<unknown, unknown, unknown>) => {
+		const { errorToastMessage, apiErrorToastMessage } = query?.meta as { errorToastMessage?: string; apiErrorToastMessage?: boolean };
+		if (apiErrorToastMessage) {
+			dispatchToastMessage({ type: 'error', message: error });
+		} else if (errorToastMessage) {
+			dispatchToastMessage({ type: 'error', message: errorToastMessage });
+		}
+	};
+	queryCacheInstance.config.onSuccess = (_, query: Query<unknown, unknown, unknown>) => {
+		const { successToastMessage } = query?.meta as { successToastMessage?: string };
+		if (successToastMessage) {
+			dispatchToastMessage({ type: 'success', message: successToastMessage });
+		}
+	};
 
 	useEffect(
 		() =>

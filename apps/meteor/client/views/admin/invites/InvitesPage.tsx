@@ -26,14 +26,12 @@ const InvitesPage = (): ReactElement => {
 
 	const { data, isPending, refetch, isSuccess, isError } = useQuery({
 		queryKey: ['invites'],
-
 		queryFn: async () => {
 			const invites = await getInvites();
 			return invites;
 		},
-
-		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
+		meta: {
+			apiErrorToastMessage: true,
 		},
 	});
 

@@ -17,7 +17,6 @@ export const useValidateInviteQuery = (userId: string | null, token: string | un
 
 	return useQuery({
 		queryKey: ['invite', token],
-
 		queryFn: async () => {
 			if (!token) {
 				return false;
@@ -26,29 +25,23 @@ export const useValidateInviteQuery = (userId: string | null, token: string | un
 			try {
 				const { valid } = await handleValidateInviteToken({ token });
 
+				if (registrationForm !== 'Disabled') {
+					setLoginDefaultState('invite-register');
+				} else {
+					setLoginDefaultState('login');
+				}
+
+				if (!valid || !userId) {
+					return false;
+				}
+
+				getInviteRoomMutation(token);
+
 				return valid;
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t('Failed_to_validate_invite_token') });
 				return false;
 			}
-		},
-
-		onSuccess: async (valid) => {
-			if (!token) {
-				return;
-			}
-
-			if (registrationForm !== 'Disabled') {
-				setLoginDefaultState('invite-register');
-			} else {
-				setLoginDefaultState('login');
-			}
-
-			if (!valid || !userId) {
-				return;
-			}
-
-			return getInviteRoomMutation(token);
 		},
 	});
 };

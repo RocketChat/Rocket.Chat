@@ -1,7 +1,7 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EnterpriseDepartmentsModal from '../../../components/Omnichannel/modals/EnterpriseDepartmentsModal';
@@ -19,13 +19,13 @@ const NewDepartment = ({ id }: NewDepartmentProps) => {
 	const { data, isPending, isError } = useQuery({
 		queryKey: ['getDepartments'],
 		queryFn: () => getDepartmentCreationAvailable(),
-
-		onSuccess: (data) => {
-			if (data.isDepartmentCreationAvailable === false) {
-				setModal(<EnterpriseDepartmentsModal closeModal={(): void => setModal(null)} />);
-			}
-		},
 	});
+
+	useEffect(() => {
+		if (data?.isDepartmentCreationAvailable === false) {
+			setModal(<EnterpriseDepartmentsModal closeModal={(): void => setModal(null)} />);
+		}
+	}, [data?.isDepartmentCreationAvailable, setModal]);
 
 	if (isError) {
 		return <Callout type='danger'>{t('Unavailable')}</Callout>;

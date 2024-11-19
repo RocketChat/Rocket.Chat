@@ -1,4 +1,4 @@
-import { useMethod, useToastMessageDispatch, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useMethod, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { useRoom } from '../../../contexts/RoomContext';
@@ -16,7 +16,6 @@ export const useMessageSearchQuery = ({
 	const room = useRoom();
 
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
 
 	const searchMessages = useMethod('rocketchatSearch.search');
 	return useQuery({
@@ -27,11 +26,8 @@ export const useMessageSearchQuery = ({
 			return result.message?.docs ?? [];
 		},
 		placeholderData: keepPreviousData,
-		onError: () => {
-			dispatchToastMessage({
-				type: 'error',
-				message: t('Search_message_search_failed'),
-			});
+		meta: {
+			errorToastMessage: t('Search_message_search_failed'),
 		},
 	});
 };

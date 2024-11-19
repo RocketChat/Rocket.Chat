@@ -36,35 +36,11 @@ const ImportProgressPage = function ImportProgressPage() {
 
 	const currentOperation = useQuery({
 		queryKey: ['ImportProgressPage', 'currentOperation'],
-
 		queryFn: async () => {
 			const { operation } = await getCurrentImportOperation();
 			return operation;
 		},
-
 		refetchInterval: 1000,
-
-		onSuccess: ({ valid, status }) => {
-			if (!valid) {
-				router.navigate('/admin/import');
-				return;
-			}
-
-			if (status === 'importer_done') {
-				dispatchToastMessage({ type: 'success', message: t('Importer_done') });
-				router.navigate('/admin/import');
-				return;
-			}
-
-			if (!(ImportingStartedStates as string[]).includes(status)) {
-				router.navigate('/admin/import/prepare');
-			}
-		},
-
-		onError: (error) => {
-			handleError(error, t('Failed_To_Load_Import_Data'));
-			router.navigate('/admin/import');
-		},
 	});
 
 	const handleProgressUpdated = useMutableCallback(
@@ -103,7 +79,6 @@ const ImportProgressPage = function ImportProgressPage() {
 
 	const progress = useQuery({
 		queryKey: ['importers', 'progress'],
-
 		queryFn: async () => {
 			const { key, step, count: { completed = 0, total = 0 } = {} } = await getImportProgress();
 			return {
@@ -113,10 +88,12 @@ const ImportProgressPage = function ImportProgressPage() {
 				total,
 			};
 		},
-
 		enabled: !!currentOperation.isSuccess,
+	});
 
-		onSuccess: (progress) => {
+	useEffect(() => {
+		if (progress.data) {
+			const { step, key, total, completed } = progress.data;
 			if (!progress) {
 				dispatchToastMessage({ type: 'warning', message: t('Importer_not_in_progress') });
 				router.navigate('/admin/import/prepare');
@@ -124,21 +101,20 @@ const ImportProgressPage = function ImportProgressPage() {
 			}
 
 			// do not use the endpoint data to update the completed progress, leave it to the streamer
-			if (!(ImportingStartedStates as string[]).includes(progress.step)) {
+			if (!(ImportingStartedStates as string[]).includes(step)) {
 				handleProgressUpdated({
-					key: progress.key,
-					step: progress.step,
-					total: progress.total,
-					completed: progress.completed,
+					key,
+					step,
+					total,
+					completed,
 				});
 			}
-		},
-
-		onError: (error) => {
-			handleError(error, t('Failed_To_Load_Import_Data'));
+		}
+		if (progress.error) {
+			handleError(progress.error, t('Failed_To_Load_Import_Data'));
 			router.navigate('/admin/import');
-		},
-	});
+		}
+	}, [dispatchToastMessage, handleError, handleProgressUpdated, progress, router, t]);
 
 	useEffect(() => {
 		return streamer('progress', (progress) => {
@@ -153,6 +129,31 @@ const ImportProgressPage = function ImportProgressPage() {
 			}
 		});
 	}, [handleProgressUpdated, streamer]);
+
+	useEffect(() => {
+		if (currentOperation?.data) {
+			const { valid, status } = currentOperation.data;
+			if (!valid) {
+				router.navigate('/admin/import');
+				return;
+			}
+
+			if (status === 'importer_done') {
+				dispatchToastMessage({ type: 'success', message: t('Importer_done') });
+				router.navigate('/admin/import');
+				return;
+			}
+
+			if (!(ImportingStartedStates as string[]).includes(status)) {
+				router.navigate('/admin/import/prepare');
+			}
+		}
+
+		if (currentOperation?.error) {
+			handleError(currentOperation.error, t('Failed_To_Load_Import_Data'));
+			router.navigate('/admin/import');
+		}
+	}, [currentOperation, dispatchToastMessage, handleError, router, t]);
 
 	return (
 		<Page>

@@ -1,4 +1,4 @@
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -17,8 +17,6 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 	const { t } = useTranslation();
 	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
 
-	const dispatchToastMessage = useToastMessageDispatch();
-
 	const { data, isPending, refetch } = useQuery({
 		queryKey: ['custom-sounds', _id],
 
@@ -30,10 +28,7 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 			}
 			return sounds[0];
 		},
-
-		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
-		},
+		meta: { apiErrorToastMessage: true },
 	});
 
 	if (isPending) {

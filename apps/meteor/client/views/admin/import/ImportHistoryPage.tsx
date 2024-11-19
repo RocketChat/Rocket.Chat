@@ -25,24 +25,24 @@ function ImportHistoryPage() {
 
 	const currentOperation = useQuery({
 		queryKey: ['ImportHistoryPage', 'currentOperation'],
-
 		queryFn: async () => {
 			const { operation = { valid: false } } = await getCurrentImportOperation();
 			return operation;
 		},
-
-		onError: () => dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_Operation') }),
+		meta: {
+			errorToastMessage: t('Failed_To_Load_Import_Operation'),
+		},
 	});
 
 	const latestOperations = useQuery({
 		queryKey: ['ImportHistoryPage', 'latestOperations'],
-
 		queryFn: async () => {
 			const operations = await getLatestImportOperations();
 			return operations;
 		},
-
-		onError: () => dispatchToastMessage({ type: 'error', message: t('Failed_To_Load_Import_History') }),
+		meta: {
+			errorToastMessage: t('Failed_To_Load_Import_History'),
+		},
 	});
 
 	const isLoading = currentOperation.isPending || latestOperations.isPending;

@@ -8,7 +8,6 @@ import { omit } from '../../../../lib/utils/omit';
 import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
 import { OldUrlRoomError } from '../../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
-import { queryClient } from '../../../lib/queryClient';
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
@@ -103,14 +102,5 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			return { rid: room._id };
 		},
 		retry: 0,
-		onError: async (error) => {
-			if (['l', 'v'].includes(type) && error instanceof RoomNotFoundError) {
-				const { ChatRoom } = await import('../../../../app/models/client');
-
-				ChatRoom.remove(reference);
-				queryClient.removeQueries(['rooms', reference]);
-				queryClient.removeQueries(['/v1/rooms.info', reference]);
-			}
-		},
 	});
 }

@@ -1,6 +1,6 @@
 import { useEndpoint, useRouter, useSearchParameter, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VisitorDoesNotExistError } from '../../lib/errors/VisitorDoesNotExistError';
@@ -16,7 +16,7 @@ const MeetRoute = () => {
 	const token = useSearchParameter('token') ?? '';
 	const getVisitorByToken = useEndpoint('GET', '/v1/livechat/visitor/:token', { token });
 
-	const { data: hasVisitor } = useQuery({
+	const { data: hasVisitor, error } = useQuery({
 		queryKey: ['meet', { token }],
 
 		queryFn: async () => {
@@ -35,24 +35,22 @@ const MeetRoute = () => {
 
 			return true;
 		},
+	});
 
-		onSuccess: (hasVisitor) => {
-			if (hasVisitor === false) {
-				router.navigate('/home');
-			}
-		},
-
-		onError: (error) => {
+	useEffect(() => {
+		if (error) {
 			if (error instanceof VisitorDoesNotExistError) {
 				dispatchToastMessage({ type: 'error', message: t('core.Visitor_does_not_exist') });
-				router.navigate('/home');
 				return;
 			}
 
 			dispatchToastMessage({ type: 'error', message: error });
+		}
+
+		if (!hasVisitor) {
 			router.navigate('/home');
-		},
-	});
+		}
+	}, [hasVisitor, error, router, dispatchToastMessage, t]);
 
 	if (!hasVisitor) {
 		return <PageLoading />;

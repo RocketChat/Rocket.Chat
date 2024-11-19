@@ -1,6 +1,6 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Accordion } from '@rocket.chat/fuselage';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -11,12 +11,10 @@ import AppReleasesItem from './AppReleasesItem';
 
 const AppReleases = ({ id }: { id: App['id'] }): ReactElement => {
 	const getVersions = useEndpoint('GET', '/apps/:id/versions', { id });
-	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 
 	const { data, isPending, isFetched } = useQuery({
 		queryKey: ['apps', id, 'versions'],
-
 		queryFn: async () => {
 			const { apps } = await getVersions();
 
@@ -25,9 +23,8 @@ const AppReleases = ({ id }: { id: App['id'] }): ReactElement => {
 			}
 			return apps;
 		},
-
-		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
+		meta: {
+			apiErrorToastMessage: true,
 		},
 	});
 

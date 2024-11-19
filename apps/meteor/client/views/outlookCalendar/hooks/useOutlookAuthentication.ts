@@ -20,10 +20,6 @@ export const useOutlookAuthentication = () => {
 
 			return Boolean(await desktopApp?.hasOutlookCredentials?.()) || false;
 		},
-
-		onError: (error) => {
-			console.error(error);
-		},
 	});
 
 	return { authEnabled: Boolean(authEnabled), isError, error };
