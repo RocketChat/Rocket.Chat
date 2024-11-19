@@ -1,5 +1,6 @@
-import { MutableRefObject, useEffect, useRef } from 'react';
-import { StateSnapshot, VirtuosoHandle } from 'react-virtuoso';
+import type { MutableRefObject } from 'react';
+import { useEffect, useRef } from 'react';
+import type { VirtuosoHandle } from 'react-virtuoso';
 
 const isElementInViewPort = (element: HTMLElement) => {
 	const rect = element.getBoundingClientRect();
@@ -9,9 +10,14 @@ const isElementInViewPort = (element: HTMLElement) => {
 const getFirstMessageElementInfo = (itemList: NodeListOf<HTMLElement>) => {
 	let id = null;
 	let top = 0;
-	let index = 0;
+	let index = -1;
 
 	while (!id) {
+		index++;
+		if (index > itemList.length - 1) {
+			break;
+		}
+
 		const item = itemList[index];
 		const message = item.querySelector('.rcx-message') as HTMLElement | null;
 
@@ -25,10 +31,6 @@ const getFirstMessageElementInfo = (itemList: NodeListOf<HTMLElement>) => {
 			top = bounds.top;
 			break;
 		}
-		index++;
-		if (index > itemList.length) {
-			break;
-		}
 	}
 
 	return {
@@ -40,7 +42,6 @@ const getFirstMessageElementInfo = (itemList: NodeListOf<HTMLElement>) => {
 export const useLockOnLoadMoreMessages = (
 	isLoadingMoreMessages: boolean,
 	virtuosoRef: MutableRefObject<VirtuosoHandle | null>,
-	state: StateSnapshot | undefined,
 	messages: Array<{ _id: string }>,
 	scrollerRef: MutableRefObject<HTMLElement | null>,
 ) => {
@@ -61,12 +62,15 @@ export const useLockOnLoadMoreMessages = (
 		if (isPositionLockedRef?.current === true) {
 			const listElements = scrollerRef?.current?.querySelectorAll('.virtuoso-list > div') as NodeListOf<HTMLElement>;
 			const firstItem = getFirstMessageElementInfo(listElements);
+			if (!firstItem?.id) {
+				return;
+			}
 			const lockedItemIndex = messages.findIndex((message) => message._id === firstItem.id);
 
 			virtuosoRef?.current?.scrollToIndex(lockedItemIndex);
 			isPositionLockedRef.current = false;
 		}
-	}, [isLoadingMoreMessages, virtuosoRef, state]);
+	}, [isLoadingMoreMessages]);
 
 	return null;
 };

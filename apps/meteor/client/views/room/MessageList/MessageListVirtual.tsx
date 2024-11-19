@@ -48,7 +48,7 @@ export const MessageListVirtual = forwardRef<HTMLElement, MessageListProps>(func
 	const isAtBottomRef = useRef<boolean>(true);
 	const scrollerRef = useRef<HTMLElement | null>(null);
 
-	useLockOnLoadMoreMessages(isLoadingMoreMessages, virtuosoRef, state, messages, scrollerRef);
+	useLockOnLoadMoreMessages(isLoadingMoreMessages, virtuosoRef, messages, scrollerRef);
 
 	const extraProps: Record<string, any> = useMemo(() => {
 		return !state.current ? { initialTopMostItemIndex: messages.length - 1 } : {};
