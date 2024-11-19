@@ -3,4 +3,4 @@
 "@rocket.chat/i18n": minor
 ---
 
-Disabled the possiblity to upload exempted apps
+Disables the possiblity to upload exempted apps
