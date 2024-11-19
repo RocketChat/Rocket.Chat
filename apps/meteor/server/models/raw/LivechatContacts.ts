@@ -73,7 +73,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 				key: {
 					preRegistration: 1,
 				},
-				name: 'preRegistration',
+				sparse: true,
 				unique: false,
 			},
 		];
