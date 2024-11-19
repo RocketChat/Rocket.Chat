@@ -21,7 +21,6 @@ type MessageListItemProps = {
 	subscription: ISubscription | undefined;
 	system: boolean;
 };
-
 export const MessageListItem = ({
 	message,
 	previous,
