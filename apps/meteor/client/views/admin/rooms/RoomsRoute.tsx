@@ -2,8 +2,8 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import RoomsPage from './RoomsPage';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const RoomsRoute = (): ReactElement => {
 	const canViewRoomAdministration = usePermission('view-room-administration');

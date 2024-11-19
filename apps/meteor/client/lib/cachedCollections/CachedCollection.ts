@@ -6,14 +6,14 @@ import { Mongo } from 'meteor/mongo';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import { isTruthy } from '../../../lib/isTruthy';
-import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 import type { MinimongoCollection } from '../../definitions/MinimongoCollection';
 import { baseURI } from '../baseURI';
 import { onLoggedIn } from '../loggedIn';
-import { getConfig } from '../utils/getConfig';
 import { CachedCollectionManager } from './CachedCollectionManager';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { isTruthy } from '../../../lib/isTruthy';
+import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
+import { getConfig } from '../utils/getConfig';
 
 export type EventType = 'notify-logged' | 'notify-all' | 'notify-user';
 

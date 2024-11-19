@@ -6,8 +6,8 @@ import type { KeyboardEvent } from 'react';
 import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GenericTableRow, GenericTableCell } from '../../components/GenericTable';
 import { useRemoveBusinessHour } from './useRemoveBusinessHour';
+import { GenericTableRow, GenericTableCell } from '../../components/GenericTable';
 
 const BusinessHoursRow = ({ _id, name, timezone, workHours, active, type }: Serialized<ILivechatBusinessHour>) => {
 	const { t } = useTranslation();

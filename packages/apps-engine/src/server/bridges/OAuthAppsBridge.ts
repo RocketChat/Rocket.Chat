@@ -1,8 +1,8 @@
+import { BaseBridge } from './BaseBridge';
 import type { IOAuthApp, IOAuthAppParams } from '../../definition/accessors/IOAuthApp';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export abstract class OAuthAppsBridge extends BaseBridge {
     public async doCreate(oAuthApp: IOAuthAppParams, appId: string) {

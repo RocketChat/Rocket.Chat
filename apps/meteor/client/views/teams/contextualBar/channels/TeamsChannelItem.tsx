@@ -17,9 +17,9 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import TeamsChannelItemMenu from './TeamsChannelItemMenu';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import TeamsChannelItemMenu from './TeamsChannelItemMenu';
 
 type TeamsChannelItemProps = {
 	room: IRoom;

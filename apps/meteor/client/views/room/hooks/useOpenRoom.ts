@@ -38,9 +38,9 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 				try {
 					const { rid } = await createDirectMessage(...reference.split(', '));
-					const { ChatSubscription } = await import('../../../../app/models/client');
+					const { Subscriptions } = await import('../../../../app/models/client');
 					const { waitUntilFind } = await import('../../../lib/utils/waitUntilFind');
-					await waitUntilFind(() => ChatSubscription.findOne({ rid }));
+					await waitUntilFind(() => Subscriptions.findOne({ rid }));
 					directRoute.push({ rid }, (prev) => prev);
 				} catch (error) {
 					throw new RoomNotFoundError(undefined, { type, reference });
@@ -64,10 +64,10 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				}
 			}
 
-			const { ChatRoom, ChatSubscription } = await import('../../../../app/models/client');
+			const { Rooms, Subscriptions } = await import('../../../../app/models/client');
 
-			ChatRoom.upsert({ _id: roomData._id }, { $set, $unset });
-			const room = ChatRoom.findOne({ _id: roomData._id });
+			Rooms.upsert({ _id: roomData._id }, { $set, $unset });
+			const room = Rooms.findOne({ _id: roomData._id });
 
 			if (!room) {
 				throw new TypeError('room is undefined');
@@ -95,7 +95,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			}
 
 			// update user's room subscription
-			const sub = ChatSubscription.findOne({ rid: room._id });
+			const sub = Subscriptions.findOne({ rid: room._id });
 			if (sub && !sub.open) {
 				await openRoom(room._id);
 			}
@@ -105,9 +105,9 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			retry: 0,
 			onError: async (error) => {
 				if (['l', 'v'].includes(type) && error instanceof RoomNotFoundError) {
-					const { ChatRoom } = await import('../../../../app/models/client');
+					const { Rooms } = await import('../../../../app/models/client');
 
-					ChatRoom.remove(reference);
+					Rooms.remove(reference);
 					queryClient.removeQueries(['rooms', reference]);
 					queryClient.removeQueries(['/v1/rooms.info', reference]);
 				}

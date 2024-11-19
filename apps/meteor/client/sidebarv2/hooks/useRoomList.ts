@@ -4,10 +4,10 @@ import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-conte
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
+import { useQueryOptions } from './useQueryOptions';
 import { useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
 import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../hooks/omnichannel/useQueuedInquiries';
-import { useQueryOptions } from './useQueryOptions';
 
 const query = { open: { $ne: false } };
 
@@ -78,7 +78,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 					return incomingCall.add(room);
 				}
 
-				if (sidebarShowUnread && (room.alert || room.unread) && !room.hideUnreadStatus) {
+				if (sidebarShowUnread && (room.alert || room.unread || room.tunread?.length) && !room.hideUnreadStatus) {
 					return unread.add(room);
 				}
 

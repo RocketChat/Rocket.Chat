@@ -8,17 +8,17 @@ import { useTranslation, useLayoutHiddenActions } from '@rocket.chat/ui-contexts
 import type { ComponentProps, MouseEvent } from 'react';
 import React, { memo } from 'react';
 
-import { messageBox } from '../../../../../../app/ui-utils/client';
-import { isTruthy } from '../../../../../../lib/isTruthy';
-import { useMessageboxAppsActionButtons } from '../../../../../hooks/useAppActionButtons';
-import { useChat } from '../../../contexts/ChatContext';
-import { useRoom } from '../../../contexts/RoomContext';
 import { useAudioMessageAction } from './hooks/useAudioMessageAction';
 import { useCreateDiscussionAction } from './hooks/useCreateDiscussionAction';
 import { useFileUploadAction } from './hooks/useFileUploadAction';
 import { useShareLocationAction } from './hooks/useShareLocationAction';
 import { useVideoMessageAction } from './hooks/useVideoMessageAction';
 import { useWebdavActions } from './hooks/useWebdavActions';
+import { messageBox } from '../../../../../../app/ui-utils/client';
+import { isTruthy } from '../../../../../../lib/isTruthy';
+import { useMessageboxAppsActionButtons } from '../../../../../hooks/useAppActionButtons';
+import { useChat } from '../../../contexts/ChatContext';
+import { useRoom } from '../../../contexts/RoomContext';
 
 type MessageBoxActionsToolbarProps = {
 	canSend: boolean;

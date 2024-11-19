@@ -5,8 +5,8 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import PageSkeleton from '../../../components/PageSkeleton';
 import EditCustomFields from './EditCustomFields';
+import PageSkeleton from '../../../components/PageSkeleton';
 
 const EditCustomFieldsWithData = ({ customFieldId }: { customFieldId: ILivechatCustomField['_id'] }) => {
 	const { t } = useTranslation();

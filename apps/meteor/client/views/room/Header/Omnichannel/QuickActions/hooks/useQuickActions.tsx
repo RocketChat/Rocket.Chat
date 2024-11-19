@@ -14,8 +14,10 @@ import {
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useEffect } from 'react';
 
-import PlaceChatOnHoldModal from '../../../../../../../app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
+import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
+import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
 import { LivechatInquiry } from '../../../../../../../app/livechat/client/collections/LivechatInquiry';
+import PlaceChatOnHoldModal from '../../../../../../../app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import { LegacyRoomManager } from '../../../../../../../app/ui-utils/client';
 import CloseChatModal from '../../../../../../components/Omnichannel/modals/CloseChatModal';
 import CloseChatModalData from '../../../../../../components/Omnichannel/modals/CloseChatModalData';
@@ -29,8 +31,6 @@ import { quickActionHooks } from '../../../../../../ui';
 import { useOmnichannelRoom } from '../../../../contexts/RoomContext';
 import type { QuickActionsActionConfig } from '../../../../lib/quickActions';
 import { QuickActionsEnum } from '../../../../lib/quickActions';
-import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
-import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
 
 export const useQuickActions = (): {
 	quickActions: QuickActionsActionConfig[];

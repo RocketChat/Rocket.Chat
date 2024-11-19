@@ -2,8 +2,8 @@ import type { IImport } from '@rocket.chat/core-typings';
 import type { IImportsModel } from '@rocket.chat/model-typings';
 import type { Db, Document, FindCursor, FindOptions, UpdateResult, IndexDescription } from 'mongodb';
 
-import { ensureArray } from '../../../lib/utils/arrayUtils';
 import { BaseRaw } from './BaseRaw';
+import { ensureArray } from '../../../lib/utils/arrayUtils';
 
 export class ImportsModel extends BaseRaw<IImport> implements IImportsModel {
 	constructor(db: Db) {

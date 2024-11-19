@@ -17,7 +17,7 @@ export default {
 	},
 	decorators: [
 		(fn) => (
-			<div className='rc-old'>
+			<div>
 				<div className='page-settings'>{fn()}</div>
 			</div>
 		),

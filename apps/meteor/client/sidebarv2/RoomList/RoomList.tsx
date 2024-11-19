@@ -5,6 +5,10 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso } from 'react-virtuoso';
 
+import RoomListCollapser from './RoomListCollapser';
+import RoomListRow from './RoomListRow';
+import RoomListRowWrapper from './RoomListRowWrapper';
+import RoomListWrapper from './RoomListWrapper';
 import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
@@ -13,10 +17,6 @@ import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
-import RoomListCollapser from './RoomListCollapser';
-import RoomListRow from './RoomListRow';
-import RoomListRowWrapper from './RoomListRowWrapper';
-import RoomListWrapper from './RoomListWrapper';
 
 const RoomList = () => {
 	const { t } = useTranslation();

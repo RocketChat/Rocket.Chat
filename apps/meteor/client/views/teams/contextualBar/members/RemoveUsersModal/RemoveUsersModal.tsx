@@ -1,10 +1,10 @@
 import type { Serialized, IRoom } from '@rocket.chat/core-typings';
 import React, { useMemo } from 'react';
 
+import BaseRemoveUsersModal from './BaseRemoveUsersModal';
 import GenericModalSkeleton from '../../../../../components/GenericModal/GenericModalSkeleton';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../lib/asyncState';
-import BaseRemoveUsersModal from './BaseRemoveUsersModal';
 
 type RemoveUsersModalProps = {
 	onClose: () => void;

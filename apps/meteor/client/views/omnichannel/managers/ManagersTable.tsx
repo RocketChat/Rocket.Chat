@@ -5,6 +5,8 @@ import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { hashQueryKey, useQuery } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 
+import AddManager from './AddManager';
+import RemoveManagerButton from './RemoveManagerButton';
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
 import {
@@ -18,8 +20,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import AddManager from './AddManager';
-import RemoveManagerButton from './RemoveManagerButton';
 
 // TODO: Missing error state
 const ManagersTable = () => {

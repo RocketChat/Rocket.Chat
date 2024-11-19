@@ -2,7 +2,6 @@ import { VoipProvider } from '@rocket.chat/ui-voip';
 import type { ReactNode } from 'react';
 import React from 'react';
 
-import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
 import ActionManagerProvider from './ActionManagerProvider';
 import AuthenticationProvider from './AuthenticationProvider/AuthenticationProvider';
 import AuthorizationProvider from './AuthorizationProvider';
@@ -25,6 +24,7 @@ import TranslationProvider from './TranslationProvider';
 import UserPresenceProvider from './UserPresenceProvider';
 import UserProvider from './UserProvider';
 import VideoConfProvider from './VideoConfProvider';
+import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
 
 type MeteorProviderProps = {
 	children?: ReactNode;

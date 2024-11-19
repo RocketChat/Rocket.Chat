@@ -4,8 +4,8 @@ import { ExternalLink } from '@rocket.chat/ui-client';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { useLicenseLimitsByBehavior } from '../../../hooks/useLicenseLimitsByBehavior';
 import { useCheckoutUrl } from './hooks/useCheckoutUrl';
+import { useLicenseLimitsByBehavior } from '../../../hooks/useLicenseLimitsByBehavior';
 
 export const SubscriptionCalloutLimits = () => {
 	const manageSubscriptionUrl = useCheckoutUrl();

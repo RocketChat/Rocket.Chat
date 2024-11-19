@@ -18,8 +18,8 @@ import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 
-import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import type { IOmniRoomClosingMessage } from './internalTypes';
+import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 
 export class OmnichannelVoipService extends ServiceClassInternal implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';

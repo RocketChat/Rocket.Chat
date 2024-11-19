@@ -5,7 +5,6 @@ import React, { createElement, lazy, memo, Suspense } from 'react';
 import { FocusScope } from 'react-aria';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { ContextualbarSkeleton } from '../../components/Contextualbar';
 import RoomE2EESetup from './E2EESetup/RoomE2EESetup';
 import Header from './Header';
 import { HeaderV2 } from './HeaderV2';
@@ -19,6 +18,7 @@ import RoomLayout from './layout/RoomLayout';
 import ChatProvider from './providers/ChatProvider';
 import { DateListProvider } from './providers/DateListProvider';
 import { SelectedMessagesProvider } from './providers/SelectedMessagesProvider';
+import { ContextualbarSkeleton } from '../../components/Contextualbar';
 
 const UiKitContextualBar = lazy(() => import('./contextualBar/uikit/UiKitContextualBar'));
 

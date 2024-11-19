@@ -87,7 +87,7 @@ function DropTargetOverlay({
 			borderColor='currentColor'
 			color={enabled ? 'primary' : 'danger'}
 			className={css`
-				animation-name: zoomIn;
+				animation-name: zoom-in;
 				animation-duration: 0.1s;
 			`}
 			onDragLeave={handleDragLeave}

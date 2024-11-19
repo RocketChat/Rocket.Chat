@@ -5,9 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from '../../components/Skeleton';
 import CannedResponseEdit from './CannedResponseEdit';
 import CannedResponseEditWithDepartmentData from './CannedResponseEditWithDepartmentData';
+import { FormSkeleton } from '../../components/Skeleton';
 
 const CannedResponseEditWithData = ({ cannedResponseId }: { cannedResponseId: IOmnichannelCannedResponse['_id'] }) => {
 	const { t } = useTranslation();

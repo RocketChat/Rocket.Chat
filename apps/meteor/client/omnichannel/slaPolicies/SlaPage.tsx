@@ -4,6 +4,9 @@ import { useRouteParameter, useRoute } from '@rocket.chat/ui-contexts';
 import React, { useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import SlaEditWithData from './SlaEditWithData';
+import SlaNew from './SlaNew';
+import SlaTable from './SlaTable';
 import {
 	Contextualbar,
 	ContextualbarTitle,
@@ -12,9 +15,6 @@ import {
 	ContextualbarDialog,
 } from '../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../components/Page';
-import SlaEditWithData from './SlaEditWithData';
-import SlaNew from './SlaNew';
-import SlaTable from './SlaTable';
 
 const SlaPage = () => {
 	const { t } = useTranslation();
