@@ -21,6 +21,7 @@ import videoConferenceHandler from './handlers/videoconference-handler.ts';
 import apiHandler from './handlers/api-handler.ts';
 import handleApp from './handlers/app/handler.ts';
 import handleScheduler from './handlers/scheduler-handler.ts';
+import registerErrorListeners from './error-handlers.ts';
 
 type Handlers = {
     app: typeof handleApp;
@@ -125,5 +126,7 @@ async function main() {
         }
     }
 }
+
+registerErrorListeners();
 
 main();

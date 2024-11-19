@@ -367,7 +367,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
         this.deno.stderr.on('data', this.parseError.bind(this));
         this.deno.on('error', (err) => {
             this.state = 'invalid';
-            console.error('Failed to startup Deno subprocess', err);
+            console.error(`Failed to startup Deno subprocess for app ${this.getAppId()}`, err);
         });
         this.once('ready', this.onReady.bind(this));
         this.parseStdout(this.deno.stdout);
@@ -543,6 +543,10 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
                 break;
             case 'log':
                 console.log('SUBPROCESS LOG', message);
+                break;
+            case 'unhandledRejection':
+            case 'unhandledException':
+                this.debug('Unhandled error of type "%s" caught in subprocess', method);
                 break;
             default:
                 console.warn('Unrecognized method from sub process');
