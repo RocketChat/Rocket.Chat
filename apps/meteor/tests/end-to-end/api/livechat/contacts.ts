@@ -664,7 +664,7 @@ describe('LIVECHAT - contacts', () => {
 			const { room, visitor } = response;
 			const newName = faker.person.fullName();
 
-			expect(room.v).to.have.property('contactId').that.is.a('string');
+			expect(room).to.have.property('contactId').that.is.a('string');
 			expect(room.fname).to.be.equal(visitor.name);
 
 			const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
@@ -693,7 +693,7 @@ describe('LIVECHAT - contacts', () => {
 		it('should update inquiry when a contact name changes', async () => {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			expect(room.v).to.have.property('contactId').that.is.a('string');
+			expect(room).to.have.property('contactId').that.is.a('string');
 			expect(room.fname).to.not.be.equal('New Contact Name');
 
 			const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
