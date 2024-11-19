@@ -1,3 +1,4 @@
+export * from './IAppContactsConverter';
 export * from './IAppConvertersMap';
 export * from './IAppDepartmentsConverter';
 export * from './IAppMessagesConverter';

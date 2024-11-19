@@ -7,10 +7,11 @@ import { Importer, ProgressStep, ImporterWebsocket } from '../../importer/server
 import type { ConverterOptions } from '../../importer/server/classes/ImportDataConverter';
 import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
 import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
+import { addParsedContacts } from '../../importer-omnichannel-contacts/server/addParsedContacts';
 import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';
 
 export class CsvImporter extends Importer {
-	private csvParser: (csv: string) => string[];
+	private csvParser: (csv: string) => string[][];
 
 	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: ConverterOptions = {}) {
 		super(info, importRecord, converterOptions);
@@ -46,6 +47,7 @@ export class CsvImporter extends Importer {
 		let messagesCount = 0;
 		let usersCount = 0;
 		let channelsCount = 0;
+		let contactsCount = 0;
 		const dmRooms = new Set<string>();
 		const roomIds = new Map<string, string>();
 		const usedUsernames = new Set<string>();
@@ -136,6 +138,18 @@ export class CsvImporter extends Importer {
 				}
 
 				await super.updateRecord({ 'count.users': usersCount });
+				increaseProgressCount();
+				continue;
+			}
+
+			// Parse the contacts
+			if (entry.entryName.toLowerCase() === 'contacts.csv') {
+				await super.updateProgress(ProgressStep.PREPARING_CONTACTS);
+				const parsedContacts = this.csvParser(entry.getData().toString());
+
+				contactsCount = await addParsedContacts.call(this.converter, parsedContacts);
+
+				await super.updateRecord({ 'count.contacts': contactsCount });
 				increaseProgressCount();
 				continue;
 			}
@@ -258,12 +272,12 @@ export class CsvImporter extends Importer {
 			}
 		}
 
-		await super.addCountToTotal(messagesCount + usersCount + channelsCount);
+		await super.addCountToTotal(messagesCount + usersCount + channelsCount + contactsCount);
 		ImporterWebsocket.progressUpdated({ rate: 100 });
 
-		// Ensure we have at least a single user, channel, or message
-		if (usersCount === 0 && channelsCount === 0 && messagesCount === 0) {
-			this.logger.error('No users, channels, or messages found in the import file.');
+		// Ensure we have at least a single record of any kind
+		if (usersCount === 0 && channelsCount === 0 && messagesCount === 0 && contactsCount === 0) {
+			this.logger.error('No valid record found in the import file.');
 			await super.updateProgress(ProgressStep.ERROR);
 		}
 

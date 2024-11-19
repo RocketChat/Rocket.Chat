@@ -10,6 +10,7 @@ import React, { memo, useMemo, useRef } from 'react';
 
 import MessageActionMenu from './MessageActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
+import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -85,6 +86,7 @@ const MessageToolbar = ({
 
 	// TODO: move this to another place
 	useWebDAVMessageAction();
+	useNewDiscussionMessageAction();
 
 	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
 		const props = { message, room, user, subscription, settings: mapSettings, chat };
