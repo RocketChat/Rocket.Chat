@@ -111,7 +111,7 @@ export type App = {
 		addonTierId?: string;
 	}[];
 	marketplaceVersion: string;
-	latest: Omit<App, 'latest'>;
+	latest: App;
 	status?: AppStatus;
 	subscriptionInfo: AppSubscriptionInfo;
 	licenseValidation?: {
