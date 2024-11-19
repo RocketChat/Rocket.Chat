@@ -25,6 +25,7 @@ type ImportOperationSummaryProps = {
 		users?: number;
 		channels?: number;
 		messages?: number;
+		contacts?: number;
 		total?: number;
 	};
 	valid?: boolean;
@@ -38,7 +39,7 @@ function ImportOperationSummary({
 	file = '',
 	user,
 	small,
-	count: { users = 0, channels = 0, messages = 0, total = 0 } = {},
+	count: { users = 0, channels = 0, messages = 0, total = 0, contacts = 0 } = {},
 	valid,
 }: ImportOperationSummaryProps) {
 	const { t } = useTranslation();
@@ -102,6 +103,7 @@ function ImportOperationSummary({
 					<TableCell>{status && t(status.replace('importer_', 'importer_status_') as TranslationKey)}</TableCell>
 					<TableCell>{fileName}</TableCell>
 					<TableCell align='center'>{users}</TableCell>
+					<TableCell align='center'>{contacts}</TableCell>
 					<TableCell align='center'>{channels}</TableCell>
 					<TableCell align='center'>{messages}</TableCell>
 					<TableCell align='center'>{total}</TableCell>
