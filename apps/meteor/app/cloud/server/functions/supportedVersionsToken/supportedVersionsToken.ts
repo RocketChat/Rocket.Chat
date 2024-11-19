@@ -68,9 +68,11 @@ const cacheValueInSettings = <T extends SettingValue>(
 		const value = await fn();
 
 		if (
-			await updateAuditedBySystem({
-				reason: 'cacheValueInSettings reset',
-			})(Settings.updateValueById, key, value).modifiedCount
+			(
+				await updateAuditedBySystem({
+					reason: 'cacheValueInSettings reset',
+				})(Settings.updateValueById, key, value)
+			).modifiedCount
 		) {
 			void notifyOnSettingChangedById(key);
 		}
