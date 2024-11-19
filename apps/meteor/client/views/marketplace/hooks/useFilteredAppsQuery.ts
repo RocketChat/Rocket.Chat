@@ -1,3 +1,8 @@
+import type { App } from '@rocket.chat/core-typings';
+
+import type { MarketplaceContext } from './useMarketplaceContext';
+import { useMarketplaceContext } from './useMarketplaceContext';
+import { useMarketplaceQuery } from './useMarketplaceQuery';
 import { filterAppsByCategories } from '../helpers/filterAppsByCategories';
 import { filterAppsByDisabled } from '../helpers/filterAppsByDisabled';
 import { filterAppsByEnabled } from '../helpers/filterAppsByEnabled';
@@ -7,10 +12,6 @@ import { filterAppsByPaid } from '../helpers/filterAppsByPaid';
 import { filterAppsByText } from '../helpers/filterAppsByText';
 import { sortAppsByAlphabeticalOrInverseOrder } from '../helpers/sortAppsByAlphabeticalOrInverseOrder';
 import { sortAppsByClosestOrFarthestModificationDate } from '../helpers/sortAppsByClosestOrFarthestModificationDate';
-import type { App } from '../types';
-import type { MarketplaceContext } from './useMarketplaceContext';
-import { useMarketplaceContext } from './useMarketplaceContext';
-import { useMarketplaceQuery } from './useMarketplaceQuery';
 
 export type PurchaseType = 'all' | 'free' | 'paid' | 'premium';
 export type Status = 'all' | 'enabled' | 'disabled';
