@@ -2,17 +2,32 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
-import { useMessageListJumpToMessageParam, useMessageListRef } from '../../../../components/message/list/MessageListContext';
+import {
+	useMessageListJumpToMessageParam,
+	useMessageListRef,
+	useVirtuosoRef,
+} from '../../../../components/message/list/MessageListContext';
 import { setHighlightMessage, clearHighlightMessage } from '../providers/messageHighlightSubscription';
 
 // this is an arbitrary value so that there's a gap between the header and the message;
 const SCROLL_EXTRA_OFFSET = 60;
 
-export const useJumpToMessage = (messageId: IMessage['_id']) => {
+/*
+	Virtualization note:
+	useJump is triggered every time the component renders; it make sense when it is rendered once on the page
+	now it can be rendered on scroll, multiple times, therefore it will be triggered multiple times.
+**/
+
+export const useJumpToMessageVirtual = (messageId: IMessage['_id']) => {
 	const jumpToMessageParam = useMessageListJumpToMessageParam();
 	const listRef = useMessageListRef();
 	const router = useRouter();
-    // const virtuosoRef = useVirtuosoRef();
+	const virtuosoRef = useVirtuosoRef();
+
+	console.log({
+		listRef,
+		jumpToMessageParam,
+	});
 
 	const ref = useCallback(
 		(node: HTMLElement | null) => {
@@ -21,6 +36,7 @@ export const useJumpToMessage = (messageId: IMessage['_id']) => {
 			}
 			setTimeout(() => {
 				if (listRef?.current) {
+					alert('JUMP TO VIRTUAL');
 					const wrapper = listRef.current;
 					const containerRect = wrapper.getBoundingClientRect();
 					const messageRect = node.getBoundingClientRect();

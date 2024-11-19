@@ -84,8 +84,8 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	},
 	{
 		name: 'virtualizedRoomList',
-		i18n: 'Sidepanel_navigation',
-		description: 'Sidepanel_navigation_description',
+		i18n: 'Virtualized_room_list',
+		description: 'Virtualized_room_list_description',
 		group: 'Message',
 		value: false,
 		enabled: true,

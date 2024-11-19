@@ -11,7 +11,7 @@ import { RoomManager } from '../../../lib/RoomManager';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
-import { MessageListItemVirtual } from './MessageListItemVirtual';
+import { MessageListItem } from './MessageListItem';
 import { useLockOnLoadMoreMessages } from './hooks/useLockLoadScroll';
 import { useMessages } from './hooks/useMessages';
 import { isMessageSequential } from './lib/isMessageSequential';
@@ -25,7 +25,6 @@ type MessageListProps = {
 	isLoadingMoreMessages: boolean;
 };
 
-// also memoize this component
 const ListComponent = React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, ref) => (
 	<div className='virtuoso-list' {...props} ref={ref} />
 ));
@@ -50,10 +49,6 @@ export const MessageListVirtual = forwardRef<HTMLElement, MessageListProps>(func
 	const scrollerRef: any = useRef(null);
 
 	useLockOnLoadMoreMessages(isLoadingMoreMessages, virtuosoRef, state, messages, scrollerRef);
-
-	useEffect(() => {
-		console.log('MessageList useEffect');
-	}, [messages]);
 
 	const extraProps: any = useMemo(() => {
 		return !state.current ? { initialTopMostItemIndex: messages.length - 1 } : {};
@@ -84,7 +79,7 @@ export const MessageListVirtual = forwardRef<HTMLElement, MessageListProps>(func
 			const visible = !isThreadMessage(message) && !system;
 
 			return (
-				<MessageListItemVirtual
+				<MessageListItem
 					message={message}
 					previous={previous}
 					showUnreadDivider={showUnreadDivider}
@@ -111,7 +106,6 @@ export const MessageListVirtual = forwardRef<HTMLElement, MessageListProps>(func
 					components={{
 						Header: renderBefore,
 						Footer: renderAfter,
-						// eslint-disable-next-line react/display-name, react/no-multi-comp
 						List: MemoizedListComponent,
 					}}
 					totalCount={messages?.length}
@@ -119,8 +113,8 @@ export const MessageListVirtual = forwardRef<HTMLElement, MessageListProps>(func
 					scrollerRef={refSetter}
 					computeItemKey={(index) => messages[index]._id}
 					increaseViewportBy={{
-						top: 10000,
-						bottom: 10000,
+						top: 4000,
+						bottom: 4000,
 					}}
 					followOutput={(isAtBottom: boolean) => {
 						if (isAtBottom) {
@@ -139,10 +133,6 @@ export const MessageListVirtual = forwardRef<HTMLElement, MessageListProps>(func
 							}
 						});
 					}}
-					// totalListHeightChanged={(value) => {
-					// 	console.log(value);
-					// 	// height can change on scroll which conflicts with the bottom Main issue is the load-more strategy lock of the scroll position. It has its own method on VML, but on VC it kind of needs to be implemented by hand. I made an initial attempt using the scrollToIndex method, it works but it isn’t optimal as it can have small differences..
-					// }}
 					atBottomStateChange={(state) => {
 						isAtBottomRef.current = state;
 					}}
@@ -150,7 +140,7 @@ export const MessageListVirtual = forwardRef<HTMLElement, MessageListProps>(func
 					atTopThreshold={0}
 					atBottomThreshold={100}
 					style={{ height: '100%' }}
-					{...extraProps} // there is an issue with setting initialTopMostItemIndex to null | undefined
+					{...extraProps} // there is an issue with setting initialTopMostItemIndex to null | undefined on the first render
 				/>
 			</SelectedMessagesProvider>
 		</MessageListProvider>

@@ -12,6 +12,7 @@ import { HeaderV2 } from './HeaderV2';
 import MessageHighlightProvider from './MessageList/providers/MessageHighlightProvider';
 import RoomBody from './body/RoomBody';
 import RoomBodyV2 from './body/RoomBodyV2';
+import RoomBodyVirtualized from './body/RoomBodyVirtualized';
 import { useRoom } from './contexts/RoomContext';
 import { useRoomToolbox } from './contexts/RoomToolboxContext';
 import { useAppsContextualBar } from './hooks/useAppsContextualBar';
@@ -19,7 +20,6 @@ import RoomLayout from './layout/RoomLayout';
 import ChatProvider from './providers/ChatProvider';
 import { DateListProvider } from './providers/DateListProvider';
 import { SelectedMessagesProvider } from './providers/SelectedMessagesProvider';
-import RoomBodyVirtualized from './body/RoomBodyVirtualized';
 
 const UiKitContextualBar = lazy(() => import('./contextualBar/uikit/UiKitContextualBar'));
 
