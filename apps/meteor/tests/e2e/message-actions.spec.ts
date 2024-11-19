@@ -137,6 +137,7 @@ test.describe.serial('message-actions', () => {
 
 	test('expect create a discussion from message', async ({ page }) => {
 		const message = `Message for discussion - ${Date.now()}`;
+		const discussionName = `Discussion Name - ${Date.now()}`;
 
 		await poHomeChannel.content.sendMessage(message);
 		await poHomeChannel.content.openLastMessageMenu();
@@ -144,8 +145,12 @@ test.describe.serial('message-actions', () => {
 		const createButton = page.getByRole('dialog').getByRole('button', { name: 'create' });
 		// Name should be prefilled thus making the create button enabled
 		await expect(createButton).not.toBeDisabled();
+		await page.locator('role=textbox[name="Name"]').fill(discussionName);
 		await createButton.click();
-		await expect(page.locator('header h1')).toHaveText(message);
+		await expect(page.locator('header h1')).toHaveText(discussionName);
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		// Should fail if more than one discussion has been created
+		await expect(page.locator('div.messages-box').getByText(discussionName)).toBeVisible();
 	});
 
 	test('expect star the message', async ({ page }) => {
