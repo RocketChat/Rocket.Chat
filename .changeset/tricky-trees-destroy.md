@@ -1,4 +1,4 @@
 ---
 "@rocket.chat/meteor": patch
 ---
-Added login and permisson validaton for resetIrcConnection method
+Adds login and permission validation for resetIrcConnection method
