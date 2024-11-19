@@ -7,13 +7,13 @@ import './models/startup';
 import './settings';
 import '../app/settings/server';
 
-import { startLicense } from '../ee/app/license/server/startup';
-import { registerEEBroker } from '../ee/server';
-import { startFederationService } from '../ee/server/startup/services';
 import { configureLoginServices } from './configuration';
 import { configureLogLevel } from './configureLogLevel';
 import { registerServices } from './services/startup';
 import { startup } from './startup';
+import { startLicense } from '../ee/app/license/server/startup';
+import { registerEEBroker } from '../ee/server';
+import { startFederationService } from '../ee/server/startup/services';
 
 import './routes';
 import '../app/lib/server/startup';

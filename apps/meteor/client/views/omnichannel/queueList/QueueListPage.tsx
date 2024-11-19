@@ -1,8 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import QueueListTable from './QueueListTable';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const QueueListPage = () => {
 	const { t } = useTranslation();

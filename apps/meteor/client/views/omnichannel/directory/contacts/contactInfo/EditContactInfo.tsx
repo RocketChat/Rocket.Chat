@@ -19,7 +19,7 @@ import { useCustomFieldsMetadata } from '../../hooks/useCustomFieldsMetadata';
 type ContactNewEditProps = {
 	id: string;
 	data?: { contact: Serialized<ILivechatVisitor> | null };
-	close(): void;
+	onCancel: () => void;
 };
 
 type ContactFormData = {
@@ -57,7 +57,7 @@ const getInitialValues = (data: ContactNewEditProps['data']): ContactFormData =>
 	};
 };
 
-const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement => {
+const EditContactInfo = ({ id, data, onCancel }: ContactNewEditProps): ReactElement => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
@@ -168,7 +168,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 			await saveContact(payload);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			await queryClient.invalidateQueries({ queryKey: ['current-contacts'] });
-			close();
+			onCancel();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -211,7 +211,7 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button flexGrow={1} onClick={close}>
+					<Button flexGrow={1} onClick={onCancel}>
 						{t('Cancel')}
 					</Button>
 					<Button
@@ -231,4 +231,4 @@ const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement 
 	);
 };
 
-export default ContactNewEdit;
+export default EditContactInfo;

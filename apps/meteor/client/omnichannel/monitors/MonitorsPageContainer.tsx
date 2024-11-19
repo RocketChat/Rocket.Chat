@@ -1,9 +1,9 @@
 import React from 'react';
 
+import MonitorsPage from './MonitorsPage';
 import PageSkeleton from '../../components/PageSkeleton';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import NotAuthorizedPage from '../../views/notAuthorized/NotAuthorizedPage';
-import MonitorsPage from './MonitorsPage';
 
 const MonitorsPageContainer = () => {
 	const license = useHasLicenseModule('livechat-enterprise');

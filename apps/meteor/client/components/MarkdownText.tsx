@@ -132,7 +132,7 @@ const MarkdownText = ({
 
 		// Add a hook to make all external links open a new window
 		dompurify.addHook('afterSanitizeAttributes', (node) => {
-			if ('target' in node) {
+			if (isElement(node) && 'target' in node) {
 				const href = node.getAttribute('href') || '';
 
 				node.setAttribute('title', `${t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
@@ -156,5 +156,7 @@ const MarkdownText = ({
 		/>
 	) : null;
 };
+
+const isElement = (node: Node): node is Element => node.nodeType === Node.ELEMENT_NODE;
 
 export default MarkdownText;

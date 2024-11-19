@@ -4,6 +4,7 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import DeviceManagementInfo from './DeviceManagementInfo';
 import {
 	Contextualbar,
 	ContextualbarSkeleton,
@@ -14,7 +15,6 @@ import {
 } from '../../../../components/Contextualbar';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
-import DeviceManagementInfo from './DeviceManagementInfo';
 
 const convertSessionFromAPI = ({
 	loginAt,

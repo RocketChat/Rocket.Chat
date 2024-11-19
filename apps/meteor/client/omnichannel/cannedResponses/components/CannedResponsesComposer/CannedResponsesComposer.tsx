@@ -12,9 +12,9 @@ import type { ComponentProps } from 'react';
 import React, { memo, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 import { Backdrop } from '../../../../components/Backdrop';
 import { useEmojiPicker } from '../../../../contexts/EmojiPickerContext';
-import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 
 const CannedResponsesComposer = ({ onChange, ...props }: ComponentProps<typeof MessageComposerInput>) => {
 	const { t } = useTranslation();

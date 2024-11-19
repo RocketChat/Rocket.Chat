@@ -8,6 +8,8 @@ import moment from 'moment';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import DepartmentField from './DepartmentField';
+import VisitorClientInfo from './VisitorClientInfo';
 import { hasPermission } from '../../../../../../app/authorization/client';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../../components/InfoPanel';
@@ -19,8 +21,6 @@ import CustomField from '../../../components/CustomField';
 import { AgentField, ContactField, SlaField } from '../../components';
 import PriorityField from '../../components/PriorityField';
 import { formatQueuedAt } from '../../utils/formatQueuedAt';
-import DepartmentField from './DepartmentField';
-import VisitorClientInfo from './VisitorClientInfo';
 
 type ChatInfoDirectoryProps = {
 	id: string;
@@ -85,19 +85,11 @@ function ChatInfoDirectory({ id, route = undefined, room }: ChatInfoDirectoryPro
 			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });
 		}
 
-		routePath.push(
-			route
-				? {
-						tab: 'room-info',
-						context: 'edit',
-						id,
-					}
-				: {
-						page: 'chats',
-						id,
-						bar: 'edit',
-					},
-		);
+		routePath.push({
+			tab: route ? 'room-info' : 'chats',
+			context: 'edit',
+			id,
+		});
 	});
 
 	return (

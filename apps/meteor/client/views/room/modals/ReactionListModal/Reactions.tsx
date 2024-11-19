@@ -4,8 +4,8 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import Emoji from '../../../../components/Emoji';
 import ReactionUserTag from './ReactionUserTag';
+import Emoji from '../../../../components/Emoji';
 
 const Reactions = ({ reactions }: { reactions: Required<IMessage>['reactions'] }): ReactElement => {
 	const useRealName = useSetting('UI_Use_Real_Name');

@@ -4,12 +4,12 @@ import type { IPermission } from '@rocket.chat/apps-engine/definition/permission
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { Serialized } from '@rocket.chat/core-typings';
 
+import type { IAppExternalURL, ICategory } from './@types/IOrchestrator';
+import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 import { hasAtLeastOnePermission } from '../../app/authorization/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { dispatchToastMessage } from '../lib/toast';
 import type { App } from '../views/marketplace/types';
-import type { IAppExternalURL, ICategory } from './@types/IOrchestrator';
-import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 
 const isErrorObject = (e: unknown): e is { error: string } =>
 	typeof e === 'object' && e !== null && 'error' in e && typeof e.error === 'string';

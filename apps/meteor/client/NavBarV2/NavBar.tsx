@@ -4,10 +4,6 @@ import { usePermission, useTranslation, useUser } from '@rocket.chat/ui-contexts
 import { useVoipState } from '@rocket.chat/ui-voip';
 import React, { useRef } from 'react';
 
-import { useIsCallEnabled, useIsCallReady } from '../contexts/CallContext';
-import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnabled';
-import { useOmnichannelShowQueueLink } from '../hooks/omnichannel/useOmnichannelShowQueueLink';
-import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 import {
 	NavBarItemOmniChannelCallDialPad,
 	NavBarItemOmnichannelContact,
@@ -18,6 +14,10 @@ import {
 import { NavBarItemMarketPlaceMenu, NavBarItemAuditMenu, NavBarItemDirectoryPage, NavBarItemHomePage } from './NavBarPagesToolbar';
 import { NavBarItemLoginPage, NavBarItemAdministrationMenu, UserMenu } from './NavBarSettingsToolbar';
 import { NavBarItemVoipDialer } from './NavBarVoipToolbar';
+import { useIsCallEnabled, useIsCallReady } from '../contexts/CallContext';
+import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnabled';
+import { useOmnichannelShowQueueLink } from '../hooks/omnichannel/useOmnichannelShowQueueLink';
+import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 
 const NavBar = () => {
 	const t = useTranslation();

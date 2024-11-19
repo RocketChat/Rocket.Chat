@@ -39,7 +39,7 @@ function ExternalFrameContainer() {
 
 	return (
 		<div className='flex-nav'>
-			<iframe title='external-frame' className='external-frame' src={externalFrameUrl} />
+			<iframe style={{ width: '100%', height: '100%' }} title='external-frame' src={externalFrameUrl} />
 		</div>
 	);
 }

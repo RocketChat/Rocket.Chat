@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useCategoryFlatList } from './useCategoryFlatList';
+import { useCategoryToggle } from './useCategoryToggle';
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import type {
 	CategoryDropDownGroups,
@@ -10,8 +12,6 @@ import type {
 	selectedCategoriesList,
 } from '../definitions/CategoryDropdownDefinitions';
 import { handleAPIError } from '../helpers/handleAPIError';
-import { useCategoryFlatList } from './useCategoryFlatList';
-import { useCategoryToggle } from './useCategoryToggle';
 
 export const useCategories = (): [CategoryDropDownGroups, selectedCategoriesList, selectedCategoriesList, CategoryOnSelected] => {
 	const { t } = useTranslation();

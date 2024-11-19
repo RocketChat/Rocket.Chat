@@ -2,11 +2,11 @@ import { useDebouncedState, useLocalStorage } from '@rocket.chat/fuselage-hooks'
 import type { ReactNode, ReactElement, ContextType } from 'react';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 
+import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
 import type { EmojiByCategory } from '../../../app/emoji/client';
 import { emoji, getFrequentEmoji, updateRecent, createEmojiList, createPickerEmojis, CUSTOM_CATEGORY } from '../../../app/emoji/client';
 import { EmojiPickerContext } from '../../contexts/EmojiPickerContext';
 import EmojiPicker from '../../views/composer/EmojiPicker/EmojiPicker';
-import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
 
 const DEFAULT_ITEMS_LIMIT = 90;
 

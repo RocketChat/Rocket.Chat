@@ -18,13 +18,13 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useMessageOrigins } from './useMessageOrigins';
+import { useTopFivePopularChannels } from './useTopFivePopularChannels';
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
 import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import LegendSymbol from '../dataView/LegendSymbol';
-import { useMessageOrigins } from './useMessageOrigins';
-import { useTopFivePopularChannels } from './useTopFivePopularChannels';
 
 const colors = {
 	warning: Palette.statusColor['status-font-on-warning'].toString(),

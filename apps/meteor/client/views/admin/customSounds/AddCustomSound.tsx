@@ -4,9 +4,9 @@ import type { ReactElement, FormEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { validate, createSoundData } from './lib';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
-import { validate, createSoundData } from './lib';
 
 type AddCustomSoundProps = {
 	goToNew: (_id: string) => () => void;

@@ -12,13 +12,13 @@ import {
 import moment from 'moment';
 import type { Document } from 'mongodb';
 
-import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
-import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
 import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
 import { updateInquiryQueueSla } from './SlaHelper';
 import { memoizeDebounce } from './debounceByParams';
 import { logger } from './logger';
+import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
+import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
 
 type QueueInfo = {
 	message: {

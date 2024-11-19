@@ -7,9 +7,9 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import qrcode from 'yaqrcode';
 
+import BackupCodesModal from './BackupCodesModal';
 import TextCopy from '../../../components/TextCopy';
 import TwoFactorTotpModal from '../../../components/TwoFactorModal/TwoFactorTotpModal';
-import BackupCodesModal from './BackupCodesModal';
 
 const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
 	const { t } = useTranslation();

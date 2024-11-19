@@ -1,9 +1,9 @@
+import { BaseBridge } from './BaseBridge';
 import type { ITypingOptions } from '../../definition/accessors/INotifier';
 import type { IMessage } from '../../definition/messages';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export interface ITypingDescriptor extends ITypingOptions {
     isTyping: boolean;

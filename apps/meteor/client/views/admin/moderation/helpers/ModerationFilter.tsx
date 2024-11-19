@@ -1,7 +1,7 @@
 import React from 'react';
 
-import FilterByText from '../../../../components/FilterByText';
 import DateRangePicker from './DateRangePicker';
+import FilterByText from '../../../../components/FilterByText';
 
 type ModerationFilterProps = {
 	text: string;

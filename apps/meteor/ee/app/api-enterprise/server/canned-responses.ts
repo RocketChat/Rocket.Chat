@@ -3,9 +3,9 @@ import { isPOSTCannedResponsesProps, isDELETECannedResponsesProps, isCannedRespo
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
+import { findAllCannedResponses, findAllCannedResponsesFilter, findOneCannedResponse } from './lib/canned-responses';
 import { API } from '../../../../app/api/server';
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
-import { findAllCannedResponses, findAllCannedResponsesFilter, findOneCannedResponse } from './lib/canned-responses';
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

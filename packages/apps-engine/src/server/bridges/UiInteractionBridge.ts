@@ -1,9 +1,9 @@
+import { BaseBridge } from './BaseBridge';
 import type { IUIKitInteraction } from '../../definition/uikit';
 import type { IUser } from '../../definition/users';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export abstract class UiInteractionBridge extends BaseBridge {
     public async doNotifyUser(user: IUser, interaction: IUIKitInteraction, appId: string): Promise<void> {

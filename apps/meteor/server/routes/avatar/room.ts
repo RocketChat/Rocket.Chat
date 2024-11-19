@@ -5,8 +5,8 @@ import { Avatars, Rooms } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
 import { Cookies } from 'meteor/ostrio:cookies';
 
-import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { serveSvgAvatarInRequestedFormat, wasFallbackModified, setCacheAndDispositionHeaders, serveAvatarFile } from './utils';
+import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 const cookie = new Cookies();
 const getRoomAndAvatarFile = async (roomId: IRoom['_id']): Promise<{ room: IRoom; file: IUpload | null } | void> => {
