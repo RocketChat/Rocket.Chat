@@ -91,7 +91,7 @@ export const notifyOnRoomChangedByUsernamesOrUids = withDbWatcherCheck(
 
 export const notifyOnRoomChangedByContactId = withDbWatcherCheck(
 	async <T extends IOmnichannelRoom>(
-		contactId: Exclude<T['v']['contactId'], undefined>,
+		contactId: Exclude<T['contactId'], undefined>,
 		clientAction: ClientAction = 'updated',
 	): Promise<void> => {
 		const cursor = LivechatRooms.findOpenByContactId(contactId);
