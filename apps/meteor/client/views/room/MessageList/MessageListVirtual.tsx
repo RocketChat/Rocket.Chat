@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MutableRefObject } from 'react';
-import React, { forwardRef, useCallback, useRef, useEffect, useMemo } from 'react';
+import React, { forwardRef, useCallback, useRef, useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import type { StateSnapshot } from 'react-virtuoso';
 

@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import {
 	useMessageListJumpToMessageParam,
 	useMessageListRef,
-	useVirtuosoRef,
+	// useVirtuosoRef,
 } from '../../../../components/message/list/MessageListContext';
 import { setHighlightMessage, clearHighlightMessage } from '../providers/messageHighlightSubscription';
 
@@ -22,12 +22,7 @@ export const useJumpToMessageVirtual = (messageId: IMessage['_id']) => {
 	const jumpToMessageParam = useMessageListJumpToMessageParam();
 	const listRef = useMessageListRef();
 	const router = useRouter();
-	const virtuosoRef = useVirtuosoRef();
-
-	console.log({
-		listRef,
-		jumpToMessageParam,
-	});
+	// const virtuosoRef = useVirtuosoRef();
 
 	const ref = useCallback(
 		(node: HTMLElement | null) => {

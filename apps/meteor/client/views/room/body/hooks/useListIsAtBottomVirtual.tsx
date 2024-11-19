@@ -42,10 +42,7 @@ export const useListIsAtBottom = () => {
 				return;
 			}
 
-			console.log(node);
-
 			const observer = new ResizeObserver(() => {
-				console.log('resize');
 				if (atBottomRef.current === true) {
 					node.scrollTo({ left: 30, top: node.scrollHeight });
 				}

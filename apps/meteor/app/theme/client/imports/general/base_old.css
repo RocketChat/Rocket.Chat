@@ -61,12 +61,32 @@
 	}
 
 	& ul.messages-list {
+		padding: 21px 0 10px;
+	}
+
+	& ul.messages-list-virtual {
 		overflow: hidden;
 		height: 100%;
+		padding: 0;
 	}
 
 	& .virtuoso-header {
 		padding-top: 20px;
+	}
+
+	/* Temporary room scroll-bar styling */
+	::-webkit-scrollbar {
+		width: 4px;
+	}
+
+	::-webkit-scrollbar-track {
+		box-shadow: none;
+		border-radius: 10px;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: rgba(0, 0, 0, 0.35);
+		border-radius: 10px;
 	}
 }
 
@@ -179,7 +199,7 @@ blockquote {
 
 	&:last-child::before {
 		border-radius: 0 0 2px 2px;
-	}	
+	}
 }
 
 .new-room-highlight a {
@@ -253,11 +273,16 @@ blockquote {
 	overflow: hidden;
 	flex-direction: column;
 	margin: 8px 10px 0;
-	transition: transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease;
+	transition:
+		transform 0.4s ease,
+		visibility 0.3s ease,
+		opacity 0.3s ease;
 	transform: translateY(-10px);
 	opacity: 0;
 	border-radius: var(--border-radius);
-	box-shadow: 0 1px 1px 0 rgb(0 0 0 / 20%), 0 2px 10px 0 rgb(0 0 0 / 16%);
+	box-shadow:
+		0 1px 1px 0 rgb(0 0 0 / 20%),
+		0 2px 10px 0 rgb(0 0 0 / 16%);
 	font-size: 1em;
 	font-weight: bold;
 
@@ -331,19 +356,22 @@ blockquote {
 }
 
 .code-mirror-box {
-	& .CodeMirror { /* stylelint-disable-line */
+	& .CodeMirror {
+		/* stylelint-disable-line */
 		border-width: var(--input-border-width);
 		border-color: var(--input-border-color);
 		border-radius: var(--input-border-radius);
 	}
 
 	&.code-mirror-box-fullscreen {
-		& .CodeMirror { /* stylelint-disable-line */
+		& .CodeMirror {
+			/* stylelint-disable-line */
 			display: flex;
 			flex-direction: column;
 			flex-grow: 1;
 
-			& .CodeMirror-scroll { /* stylelint-disable-line */
+			& .CodeMirror-scroll {
+				/* stylelint-disable-line */
 				flex-grow: 1;
 			}
 		}
@@ -375,7 +403,9 @@ blockquote {
 
 @media (width <= 767px) {
 	.main-content {
-		transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1), transform 0.1s linear;
+		transition:
+			right 0.25s cubic-bezier(0.5, 0, 0.1, 1),
+			transform 0.1s linear;
 		will-change: transform;
 	}
 }

@@ -69,7 +69,7 @@ const getEdgeDateInfo = (elements: Set<HTMLElement>) => {
 	};
 };
 
-export const useDateScroll = (margin = 8): useDateScrollReturn => {
+export const useDateScrollVirtual = (margin = 8): useDateScrollReturn => {
 	const [bubbleDate, setBubbleDate] = useSafely(
 		useState<{
 			date: string;

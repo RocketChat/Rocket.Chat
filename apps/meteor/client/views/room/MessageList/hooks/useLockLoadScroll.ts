@@ -15,17 +15,12 @@ const getFirstMessageElementInfo = (itemList: any) => {
 		const message = item.querySelector('.rcx-message');
 
 		if (!message || !isElementInViewPort(message)) {
-			// console.log(`aborting on id ${id}`);
 			continue;
 		}
 
 		id = message?.getAttribute('id');
 		if (id) {
-			console.log(message);
 			const bounds = message.getBoundingClientRect();
-			console.log({ bounds });
-			console.log('break on id');
-			console.log(id);
 			top = bounds.top;
 			break;
 		}
@@ -34,11 +29,6 @@ const getFirstMessageElementInfo = (itemList: any) => {
 			break;
 		}
 	}
-
-	console.log({
-		id,
-		top,
-	});
 
 	return {
 		id,
