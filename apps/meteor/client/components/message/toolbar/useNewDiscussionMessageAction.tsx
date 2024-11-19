@@ -61,5 +61,8 @@ export const useNewDiscussionMessageAction = () => {
 			order: 1,
 			group: 'menu',
 		});
+		return () => {
+			MessageAction.removeButton('start-discussion');
+		};
 	}, [enabled, setModal]);
 };
