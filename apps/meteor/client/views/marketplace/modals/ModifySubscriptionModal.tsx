@@ -5,6 +5,7 @@ import React from 'react';
 
 import IframeModal from '../IframeModal';
 import { useSyncAppMutation } from '../hooks/useSyncAppMutation';
+import { marketplaceQueryKeys } from '../queryKeys';
 
 type ModifySubscriptionModalProps = {
 	app: App;
@@ -21,7 +22,7 @@ const ModifySubscriptionModal = ({ app, onDismiss }: ModifySubscriptionModalProp
 	const buildExternalUrl = useEndpoint('GET', '/apps');
 
 	const { isSuccess, data: url } = useQuery({
-		queryKey: ['marketplace', 'apps', { appId: app.id }, 'subscription-url'] as const,
+		queryKey: marketplaceQueryKeys.app.urls.subscription(app.id),
 		queryFn: async () => {
 			const data = (await buildExternalUrl({
 				buildExternalUrl: 'true',

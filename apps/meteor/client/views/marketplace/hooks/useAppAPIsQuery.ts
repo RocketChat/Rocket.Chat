@@ -3,20 +3,10 @@ import type { Serialized, App } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { type UseQueryOptions, useQuery } from '@tanstack/react-query';
 
+import { marketplaceQueryKeys } from '../queryKeys';
+
 type UseAppAPIsQueryOptions<TData = Serialized<IApiEndpointMetadata[]>> = Omit<
-	UseQueryOptions<
-		Serialized<IApiEndpointMetadata[]>,
-		Error,
-		TData,
-		readonly [
-			'marketplace',
-			'apps',
-			{
-				readonly appId: string;
-			},
-			'apis',
-		]
-	>,
+	UseQueryOptions<Serialized<IApiEndpointMetadata[]>, Error, TData, ReturnType<typeof marketplaceQueryKeys.app.apis>>,
 	'queryKey' | 'queryFn'
 >;
 
@@ -24,7 +14,7 @@ export const useAppAPIsQuery = <TData = Serialized<IApiEndpointMetadata[]>>(appI
 	const getApis = useEndpoint('GET', '/apps/:id/apis', { id: appId });
 
 	return useQuery({
-		queryKey: ['marketplace', 'apps', { appId }, 'apis'] as const,
+		queryKey: marketplaceQueryKeys.app.apis(appId),
 		queryFn: async () => {
 			const { apis } = await getApis();
 

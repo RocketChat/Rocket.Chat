@@ -3,10 +3,11 @@ import type { App, SettingValue } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { handleAPIError } from '../helpers/handleAPIError';
 import { useAppQuery } from './useAppQuery';
 import { useAppSettingsQuery } from './useAppSettingsQuery';
 import { useAppsOrchestrator } from './useAppsOrchestrator';
+import { handleAPIError } from '../helpers/handleAPIError';
+import { marketplaceQueryKeys } from '../queryKeys';
 
 export const useSaveAppSettingsMutation = (appId: App['id']) => {
 	const { data: app } = useAppQuery(appId);
@@ -35,7 +36,7 @@ export const useSaveAppSettingsMutation = (appId: App['id']) => {
 			await appsOrchestrator.setAppSettings(appId, data);
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries(['marketplace', 'apps', { appId }, 'settings']);
+			queryClient.invalidateQueries(marketplaceQueryKeys.app.settings(appId));
 			dispatchToastMessage({ type: 'success', message: `${app?.name} settings saved succesfully` });
 		},
 		onError: (error) => handleAPIError(error),

@@ -4,9 +4,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import React, { useEffect } from 'react';
 
+import { AppsOrchestratorContext } from './AppsOrchestratorContext';
+import { marketplaceQueryKeys } from './queryKeys';
 import { AppClientOrchestratorInstance } from '../../apps/orchestrator';
 import { useInvalidateLicense, useLicense } from '../../hooks/useLicense';
-import { AppsOrchestratorContext } from './AppsOrchestratorContext';
 
 type AppsOrchestratorProviderProps = {
 	children: ReactNode;
@@ -17,8 +18,7 @@ const AppsOrchestratorProvider = ({ children }: AppsOrchestratorProviderProps) =
 
 	const invalidate = useDebouncedCallback(
 		() => {
-			queryClient.invalidateQueries(['marketplace']);
-			queryClient.invalidateQueries(['apps/count']);
+			queryClient.invalidateQueries(marketplaceQueryKeys.all);
 		},
 		100,
 		[],

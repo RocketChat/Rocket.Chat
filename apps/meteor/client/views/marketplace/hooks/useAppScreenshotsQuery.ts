@@ -2,6 +2,8 @@ import type { Serialized, AppScreenshot, App } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { type UseQueryOptions, useQuery } from '@tanstack/react-query';
 
+import { marketplaceQueryKeys } from '../queryKeys';
+
 type UseAppScreenshotsQueryOptions<TData = Serialized<AppScreenshot[]>> = Omit<
 	UseQueryOptions<
 		Serialized<AppScreenshot[]>,
@@ -26,7 +28,7 @@ export const useAppScreenshotsQuery = <TData = Serialized<AppScreenshot[]>>(
 	const getScreenshots = useEndpoint('GET', '/apps/:id/screenshots', { id: appId });
 
 	return useQuery({
-		queryKey: ['marketplace', 'apps', { appId }, 'screenshots'] as const,
+		queryKey: marketplaceQueryKeys.app.screenshots(appId),
 		queryFn: async () => {
 			const { screenshots } = await getScreenshots();
 

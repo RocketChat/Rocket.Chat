@@ -3,9 +3,10 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
+import { useAppsOrchestrator } from './useAppsOrchestrator';
 import { MarketplaceUnsupportedVersionError } from '../lib/MarketplaceUnsupportedVersionError';
 import { storeQueryFunction } from '../lib/storeQueryFunction';
-import { useAppsOrchestrator } from './useAppsOrchestrator';
+import { marketplaceQueryKeys } from '../queryKeys';
 
 type QueryData = {
 	marketplace: App[];
@@ -14,18 +15,7 @@ type QueryData = {
 };
 
 type UseMarketplaceQueryOptions<TData = QueryData> = Omit<
-	UseQueryOptions<
-		QueryData,
-		Error,
-		TData,
-		readonly [
-			'marketplace',
-			'apps',
-			{
-				readonly canManageApps: boolean;
-			},
-		]
-	>,
+	UseQueryOptions<QueryData, Error, TData, ReturnType<typeof marketplaceQueryKeys.apps>>,
 	'queryKey' | 'queryFn'
 >;
 
@@ -37,7 +27,7 @@ export const useMarketplaceQuery = <TData = QueryData>(options?: UseMarketplaceQ
 	const orchestrator = useAppsOrchestrator();
 
 	return useQuery({
-		queryKey: ['marketplace', 'apps', { canManageApps }] as const,
+		queryKey: marketplaceQueryKeys.apps({ canManageApps }),
 		queryFn: async () => {
 			const [appsFromMarketplace, installedApps] = await Promise.all([
 				orchestrator.getAppsFromMarketplace(canManageApps),

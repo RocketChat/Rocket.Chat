@@ -1,6 +1,8 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 
+import { marketplaceQueryKeys } from '../../../queryKeys';
+
 export const useMarkAppRequestsAsSeenMutation = () => {
 	const markSeen = useEndpoint('POST', '/apps/app-request/markAsSeen');
 	const queryClient = useQueryClient();
@@ -15,8 +17,7 @@ export const useMarkAppRequestsAsSeenMutation = () => {
 		},
 		retry: false,
 		onSuccess: () => {
-			queryClient.refetchQueries({ queryKey: ['app-requests-stats'] });
-			queryClient.invalidateQueries(['marketplace']);
+			queryClient.invalidateQueries(marketplaceQueryKeys.all);
 		},
 	});
 };

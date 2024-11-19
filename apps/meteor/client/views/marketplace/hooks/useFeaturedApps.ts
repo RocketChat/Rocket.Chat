@@ -2,13 +2,14 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
 import { useMarketplaceQuery } from './useMarketplaceQuery';
+import { marketplaceQueryKeys } from '../queryKeys';
 
 export const useFeaturedApps = () => {
 	const { isLoading, isError, error, data } = useMarketplaceQuery();
 	const featuredApps = useEndpoint('GET', '/apps/featured-apps');
 
 	return useQuery({
-		queryKey: ['marketplace', 'featured-apps'] as const,
+		queryKey: marketplaceQueryKeys.featuredApps(),
 		queryFn: async () => {
 			if (isError) {
 				throw error;

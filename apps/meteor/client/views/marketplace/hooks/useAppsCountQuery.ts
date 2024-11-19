@@ -2,13 +2,14 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
 import type { MarketplaceContext } from './useMarketplaceContext';
+import { marketplaceQueryKeys } from '../queryKeys';
 
 export const useAppsCountQuery = (context: MarketplaceContext) => {
 	const getAppsCount = useEndpoint('GET', '/apps/count');
 
-	return useQuery(
-		['apps/count', context],
-		async () => {
+	return useQuery({
+		queryKey: marketplaceQueryKeys.appsCountOnContext(context),
+		queryFn: async () => {
 			const data = await getAppsCount();
 
 			const numberOfEnabledApps = context === 'private' ? data.totalPrivateEnabled : data.totalMarketplaceEnabled;
@@ -21,6 +22,6 @@ export const useAppsCountQuery = (context: MarketplaceContext) => {
 				limit: enabledAppsLimit,
 			};
 		},
-		{ staleTime: 10_000 },
-	);
+		staleTime: 10_000,
+	});
 };

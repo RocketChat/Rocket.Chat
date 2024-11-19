@@ -3,9 +3,10 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
-import type { ISettings } from '../../../apps/@types/IOrchestrator';
 import { useAppQuery } from './useAppQuery';
 import { useAppsOrchestrator } from './useAppsOrchestrator';
+import type { ISettings } from '../../../apps/@types/IOrchestrator';
+import { marketplaceQueryKeys } from '../queryKeys';
 
 export const useAppInfoQuery = (appId: App['id']) => {
 	const { isLoading, isError, error, data: app } = useAppQuery(appId);
@@ -30,7 +31,7 @@ export const useAppInfoQuery = (appId: App['id']) => {
 	});
 
 	return useQuery({
-		queryKey: ['marketplace', 'apps', { app }] as const,
+		queryKey: marketplaceQueryKeys.appInfo(app),
 		queryFn: async () => {
 			if (isError) {
 				throw error;

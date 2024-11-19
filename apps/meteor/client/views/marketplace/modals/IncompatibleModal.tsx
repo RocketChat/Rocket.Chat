@@ -4,6 +4,7 @@ import React from 'react';
 
 import IframeModal from '../IframeModal';
 import { useAppsOrchestrator } from '../hooks/useAppsOrchestrator';
+import { marketplaceQueryKeys } from '../queryKeys';
 
 type IncompatibleModalProps = {
 	app: App;
@@ -15,7 +16,7 @@ const IncompatibleModal = ({ app, action, onDismiss }: IncompatibleModalProps) =
 	const appsOrchestrator = useAppsOrchestrator();
 
 	const { isSuccess, data: url } = useQuery({
-		queryKey: ['marketplace', 'apps', { appId: app.id }, 'incompatible-url'] as const,
+		queryKey: marketplaceQueryKeys.app.urls.incompatible(app.id),
 		queryFn: async () => {
 			const data = await appsOrchestrator.buildIncompatibleExternalUrl(app.id, app.marketplaceVersion, action);
 			return data.url;

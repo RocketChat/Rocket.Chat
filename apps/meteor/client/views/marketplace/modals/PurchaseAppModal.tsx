@@ -4,6 +4,7 @@ import React from 'react';
 
 import IframeModal from '../IframeModal';
 import { useAppsOrchestrator } from '../hooks/useAppsOrchestrator';
+import { marketplaceQueryKeys } from '../queryKeys';
 
 type PurchaseAppModalProps = {
 	app: App;
@@ -15,7 +16,7 @@ const PurchaseAppModal = ({ app, onPurchase, onDismiss }: PurchaseAppModalProps)
 	const appsOrchestrator = useAppsOrchestrator();
 
 	const { isSuccess, data: url } = useQuery({
-		queryKey: ['marketplace', 'apps', { appId: app.id }, 'purchase-url'] as const,
+		queryKey: marketplaceQueryKeys.app.urls.purchase(app.id),
 		queryFn: async () => {
 			const data = await appsOrchestrator.buildExternalUrl(app.id, app.purchaseType, false);
 			return data.url;

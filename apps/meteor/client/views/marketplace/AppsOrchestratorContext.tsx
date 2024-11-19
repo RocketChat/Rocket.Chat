@@ -5,7 +5,6 @@ import type { Serialized, App } from '@rocket.chat/core-typings';
 import { createContext } from 'react';
 
 import type { IAppExternalURL, ICategory } from '../../apps/@types/IOrchestrator';
-import type { App } from './types';
 
 export interface IAppsOrchestrator {
 	load(): Promise<void>;

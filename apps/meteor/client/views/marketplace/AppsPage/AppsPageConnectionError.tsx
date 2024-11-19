@@ -3,12 +3,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { marketplaceQueryKeys } from '../queryKeys';
+
 const AppsPageContentError = () => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 
 	const handleReloadClick = () => {
-		queryClient.invalidateQueries(['marketplace']);
+		queryClient.invalidateQueries(marketplaceQueryKeys.all);
 	};
 
 	return (

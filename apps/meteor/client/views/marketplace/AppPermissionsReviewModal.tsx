@@ -1,4 +1,4 @@
-import type { App } from '@rocket.chat/core-typings';
+import type { App, AppPermission } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,7 @@ import GenericModal from '../../components/GenericModal';
 export type AppPermissionsReviewModalProps = {
 	appPermissions: App['permissions'];
 	onCancel: () => void;
-	onConfirm: (permissionsGranted: AppPermissionsReviewModalProps['appPermissions']) => void;
+	onConfirm: (permissionsGranted: AppPermission[]) => void;
 };
 
 const AppPermissionsReviewModal = ({ appPermissions, onCancel, onConfirm }: AppPermissionsReviewModalProps) => {

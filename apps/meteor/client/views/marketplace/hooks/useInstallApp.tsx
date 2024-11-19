@@ -12,6 +12,7 @@ import AppUpdateModal from '../AppUpdateModal';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { handleInstallError } from '../helpers/handleInstallError';
 import { getManifestFromZippedApp } from '../lib/getManifestFromZippedApp';
+import { marketplaceQueryKeys } from '../queryKeys';
 
 export const useInstallApp = (file: File): { install: () => void; isInstalling: boolean } => {
 	const setModal = useSetModal();
@@ -28,9 +29,8 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 
 	const queryClient = useQueryClient();
 
-	const { mutate: sendFile } = useMutation(
-		['apps/installPrivateApp'],
-		({ permissionsGranted, appFile, appId }: { permissionsGranted: AppPermission[]; appFile: File; appId?: string }) => {
+	const { mutate: sendFile } = useMutation({
+		mutationFn: ({ permissionsGranted, appFile, appId }: { permissionsGranted: AppPermission[]; appFile: File; appId?: string }) => {
 			const fileData = new FormData();
 			fileData.append('app', appFile, appFile.name);
 			fileData.append('permissions', JSON.stringify(permissionsGranted));
@@ -41,27 +41,25 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 
 			return uploadAppEndpoint(fileData) as any;
 		},
-		{
-			onSuccess: (data: { app: App }) => {
-				router.navigate({
-					name: 'marketplace',
-					params: {
-						context: 'private',
-						page: 'info',
-						id: data.app.id,
-					},
-				});
-			},
-			onError: (e) => {
-				handleAPIError(e);
-			},
-			onSettled: () => {
-				setInstalling(false);
-				setModal(null);
-				queryClient.refetchQueries({ queryKey: ['marketplace'], exact: false });
-			},
+		onSuccess: (data: { app: App }) => {
+			router.navigate({
+				name: 'marketplace',
+				params: {
+					context: 'private',
+					page: 'info',
+					id: data.app.id,
+				},
+			});
 		},
-	);
+		onError: (e) => {
+			handleAPIError(e);
+		},
+		onSettled: () => {
+			setInstalling(false);
+			setModal(null);
+			queryClient.refetchQueries({ queryKey: marketplaceQueryKeys.all, exact: false });
+		},
+	});
 
 	const cancelAction = useCallback(() => {
 		setInstalling(false);

@@ -14,6 +14,7 @@ import type { RadioDropDownGroup, RadioDropDownItem } from '../definitions/Radio
 import { useAppsOrchestrator } from '../hooks/useAppsOrchestrator';
 import type { PurchaseType, SortingMethod, Status } from '../hooks/useFilteredAppsQuery';
 import { useMarketplaceContext } from '../hooks/useMarketplaceContext';
+import { marketplaceQueryKeys } from '../queryKeys';
 
 export type AppFilters = {
 	text: string;
@@ -90,7 +91,7 @@ const SearchFiltersForm = () => {
 	const appsOrchestrator = useAppsOrchestrator();
 
 	const categoryQueryResult = useQuery({
-		queryKey: ['marketplace', 'categories'] as const,
+		queryKey: marketplaceQueryKeys.categories(),
 		queryFn: async () => {
 			const categories = await appsOrchestrator.getCategories();
 			return Array.from(new Set(categories.map((category) => category.title)));

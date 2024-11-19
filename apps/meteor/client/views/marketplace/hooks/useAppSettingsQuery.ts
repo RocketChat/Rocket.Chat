@@ -3,6 +3,8 @@ import type { Serialized, App } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { type UseQueryOptions, useQuery } from '@tanstack/react-query';
 
+import { marketplaceQueryKeys } from '../queryKeys';
+
 type UseAppSettingsQueryOptions<TData = Serialized<Record<string, ISetting>>> = Omit<
 	UseQueryOptions<
 		Serialized<Record<string, ISetting>>,
@@ -27,7 +29,7 @@ export const useAppSettingsQuery = <TData = Serialized<Record<string, ISetting>>
 	const getSettings = useEndpoint('GET', '/apps/:id/settings', { id: appId });
 
 	return useQuery({
-		queryKey: ['marketplace', 'apps', { appId }, 'settings'] as const,
+		queryKey: marketplaceQueryKeys.app.settings(appId),
 		queryFn: async () => {
 			const { settings } = await getSettings();
 
