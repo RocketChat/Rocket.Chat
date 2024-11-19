@@ -1,6 +1,7 @@
 import type { App } from '@rocket.chat/core-typings';
 import { MenuItem, MenuItemContent, MenuSection, MenuV2, Skeleton } from '@rocket.chat/fuselage';
 import { useHandleMenuAction } from '@rocket.chat/ui-client';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,18 +16,20 @@ type AppMenuProps = {
 const AppMenu = ({ app, isAppDetailsPage }: AppMenuProps) => {
 	const { t } = useTranslation();
 
-	const { isLoading, isAdminUser, sections } = useAppMenu(app, isAppDetailsPage);
+	const canManageApps = usePermission('manage-apps');
 
-	const itemsList = sections.reduce((acc, { items }) => [...acc, ...items], [] as AppMenuOption[]);
+	const { isLoading, sections } = useAppMenu(app, isAppDetailsPage);
 
-	const onAction = useHandleMenuAction(itemsList);
-	const disabledKeys = itemsList.filter((item) => item.disabled).map((item) => item.id);
+	const items = sections.reduce((acc, { items }) => [...acc, ...items], [] as AppMenuOption[]);
+
+	const onAction = useHandleMenuAction(items);
+	const disabledKeys = items.filter((item) => item.disabled).map((item) => item.id);
 
 	if (isLoading) {
 		return <Skeleton variant='rect' height='x28' width='x28' />;
 	}
 
-	if (!isAdminUser && app?.installed && sections.length === 0) {
+	if (!canManageApps && app?.installed && sections.length === 0) {
 		return null;
 	}
 

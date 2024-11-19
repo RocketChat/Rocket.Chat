@@ -1,9 +1,11 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import { useSetModal, useEndpoint, useTranslation, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useEndpoint, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactNode } from 'react';
 import React, { useMemo, useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import semver from 'semver';
 
 import { useAppInstallationHandler } from './useAppInstallationHandler';
@@ -12,6 +14,8 @@ import { useMarketplaceActions } from './useMarketplaceActions';
 import { useMarketplaceContext } from './useMarketplaceContext';
 import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
 import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
+import { useSetAppStatusMutation } from './useSetAppStatusMutation';
+import { useUninstallAppMutation } from './useUninstallAppMutation';
 import WarningModal from '../../../components/WarningModal';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
@@ -22,33 +26,25 @@ import UninstallGrandfatheredAppModal from '../components/UninstallGrandfathered
 import type { Actions } from '../helpers';
 import { appEnabledStatuses, appButtonProps } from '../helpers';
 import { handleAPIError } from '../helpers/handleAPIError';
-import { warnEnableDisableApp } from '../helpers/warnEnableDisableApp';
 
 export type AppMenuOption = {
 	id: string;
-	section: number;
 	content: ReactNode;
 	disabled?: boolean;
 	onClick?: (e?: MouseEvent<HTMLElement>) => void;
 };
 
-type AppMenuSections = {
-	items: AppMenuOption[];
-}[];
-
 export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const setModal = useSetModal();
-	const dispatchToastMessage = useToastMessageDispatch();
 	const openIncompatibleModal = useOpenIncompatibleModal();
 
 	const context = useMarketplaceContext();
 	const appCountQuery = useAppsCountQuery(context);
 
-	const isAdminUser = usePermission('manage-apps');
-	const { data } = useIsEnterprise();
-	const isEnterpriseLicense = !!data?.isEnterprise;
+	const canManageApps = usePermission('manage-apps');
+	const { data: { isEnterprise: isEnterpriseLicense = false } = {} } = useIsEnterprise();
 
 	const workspaceHasMarketplaceAddon = useHasLicenseModule(app.addon);
 	const workspaceHasInstalledAddon = useHasLicenseModule(app.installedAddon);
@@ -57,7 +53,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
 	const [isAppPurchased, setPurchased] = useState(app?.isPurchased);
 
-	const button = appButtonProps({ ...app, isAdminUser, endUserRequested: false });
+	const button = appButtonProps({ ...app, isAdminUser: canManageApps, endUserRequested: false });
 	const buttonLabel = button?.label.replace(' ', '_') as
 		| 'Update'
 		| 'Install'
@@ -69,12 +65,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		| 'Requested';
 	const action = button?.action || '';
 
-	const setAppStatus = useEndpoint<'POST', '/apps/:id/status'>('POST', '/apps/:id/status', { id: app.id });
 	const buildExternalUrl = useEndpoint('GET', '/apps');
-	const syncApp = useEndpoint<'POST', '/apps/:id/sync'>('POST', '/apps/:id/sync', { id: app.id });
-	const uninstallApp = useEndpoint<'DELETE', '/apps/:id'>('DELETE', '/apps/:id', { id: app.id });
+	const syncApp = useEndpoint('POST', '/apps/:id/sync', { id: app.id });
 
-	const canAppBeSubscribed = app.purchaseType === 'subscription';
 	const isSubscribed = app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);
 	const isAppEnabled = app.status ? appEnabledStatuses.includes(app.status) : false;
 
@@ -126,17 +119,17 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	const handleAddon = useCallback(
 		(actionType: AddonActionType, callback: () => void) => {
-			if (actionType === 'enable' && isAdminUser && app.installedAddon && !workspaceHasInstalledAddon) {
+			if (actionType === 'enable' && canManageApps && app.installedAddon && !workspaceHasInstalledAddon) {
 				return missingAddonHandler(actionType);
 			}
 
-			if (actionType !== 'enable' && isAdminUser && app.addon && !workspaceHasMarketplaceAddon) {
+			if (actionType !== 'enable' && canManageApps && app.addon && !workspaceHasMarketplaceAddon) {
 				return missingAddonHandler(actionType);
 			}
 
 			callback();
 		},
-		[app.addon, app.installedAddon, isAdminUser, missingAddonHandler, workspaceHasInstalledAddon, workspaceHasMarketplaceAddon],
+		[app.addon, app.installedAddon, canManageApps, missingAddonHandler, workspaceHasInstalledAddon, workspaceHasMarketplaceAddon],
 	);
 
 	const handleAcquireApp = useCallback(() => {
@@ -174,7 +167,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal} />);
 	}, [app, isSubscribed, setModal, closeModal, openIncompatibleModal, buildExternalUrl, syncApp]);
 
-	const handleViewLogs = useCallback(() => {
+	const handleViewLogs = useEffectEvent(() => {
 		router.navigate({
 			name: 'marketplace',
 			params: {
@@ -185,45 +178,44 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				tab: 'logs',
 			},
 		});
-	}, [app.id, app.version, context, router]);
+	});
 
-	const handleDisable = useCallback(() => {
-		const confirm = async () => {
+	const setAppStatusMutation = useSetAppStatusMutation(app);
+
+	const handleEnable = useEffectEvent(() => {
+		if (canManageApps && app.installedAddon && !workspaceHasInstalledAddon) {
+			return missingAddonHandler('enable');
+		}
+
+		setAppStatusMutation.mutate(AppStatus.MANUALLY_ENABLED);
+	});
+
+	const handleDisable = useEffectEvent(() => {
+		const handleConfirm = () => {
 			closeModal();
-			try {
-				const { status } = await setAppStatus({ status: AppStatus.MANUALLY_DISABLED });
-				warnEnableDisableApp(app.name, status, 'disable');
-			} catch (error) {
-				handleAPIError(error);
-			}
+			setAppStatusMutation.mutate(AppStatus.MANUALLY_DISABLED);
 		};
+
+		const handleClose = () => {
+			closeModal();
+		};
+
 		setModal(
-			<WarningModal close={closeModal} confirm={confirm} text={t('Apps_Marketplace_Deactivate_App_Prompt')} confirmText={t('Yes')} />,
+			<WarningModal
+				text={t('Apps_Marketplace_Deactivate_App_Prompt')}
+				confirmText={t('Yes')}
+				confirm={handleConfirm}
+				close={handleClose}
+			/>,
 		);
-	}, [app.name, closeModal, setAppStatus, setModal, t]);
+	});
 
-	const handleEnable = useCallback(() => {
-		handleAddon('enable', async () => {
-			try {
-				const { status } = await setAppStatus({ status: AppStatus.MANUALLY_ENABLED });
-				warnEnableDisableApp(app.name, status, 'enable');
-			} catch (error) {
-				handleAPIError(error);
-			}
-		});
-	}, [app.name, handleAddon, setAppStatus]);
+	const uninstallAppMutation = useUninstallAppMutation(app);
 
-	const handleUninstall = useCallback(() => {
+	const handleUninstall = useEffectEvent(() => {
 		const uninstall = async () => {
 			closeModal();
-			try {
-				const { success } = await uninstallApp();
-				if (success) {
-					dispatchToastMessage({ type: 'success', message: `${app.name} uninstalled` });
-				}
-			} catch (error) {
-				handleAPIError(error);
-			}
+			await uninstallAppMutation.mutateAsync();
 		};
 
 		if (isSubscribed) {
@@ -233,49 +225,25 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 			setModal(
 				<WarningModal
-					close={closeModal}
-					cancel={uninstall}
-					confirm={confirm}
 					text={t('Apps_Marketplace_Uninstall_Subscribed_App_Prompt')}
 					confirmText={t('Apps_Marketplace_Modify_App_Subscription')}
 					cancelText={t('Apps_Marketplace_Uninstall_Subscribed_App_Anyway')}
+					close={closeModal}
+					cancel={uninstall}
+					confirm={confirm}
 				/>,
 			);
-		}
-
-		if (!appCountQuery.data) {
-			return;
 		}
 
 		if (app.migrated) {
-			setModal(
-				<UninstallGrandfatheredAppModal
-					context={context}
-					appName={app.name}
-					limit={appCountQuery.data.limit}
-					handleUninstall={uninstall}
-					handleClose={closeModal}
-				/>,
-			);
+			setModal(<UninstallGrandfatheredAppModal appName={app.name} handleUninstall={uninstall} handleClose={closeModal} />);
 			return;
 		}
 
 		setModal(
 			<WarningModal close={closeModal} confirm={uninstall} text={t('Apps_Marketplace_Uninstall_App_Prompt')} confirmText={t('Yes')} />,
 		);
-	}, [
-		isSubscribed,
-		appCountQuery.data,
-		app.migrated,
-		app.name,
-		setModal,
-		closeModal,
-		t,
-		uninstallApp,
-		dispatchToastMessage,
-		context,
-		handleSubscription,
-	]);
+	});
 
 	const incompatibleIconName = useCallback(
 		(app, action) => {
@@ -312,15 +280,11 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		handleAddon('update', openPermissionModal);
 	}, [app, handleAddon, openPermissionModal, openIncompatibleModal, closeModal]);
 
-	const canUpdate = app.installed && app.version && app.marketplaceVersion && semver.lt(app.version, app.marketplaceVersion);
-
-	const menuSections = useMemo(() => {
-		const bothAppStatusOptions = [
-			canAppBeSubscribed &&
-				isSubscribed &&
-				isAdminUser && {
+	const sections = useMemo(() => {
+		function* generateOptions(): Generator<AppMenuOption> {
+			if (app.purchaseType === 'subscription' && isSubscribed && canManageApps) {
+				yield {
 					id: 'subscribe',
-					section: 0,
 					content: (
 						<>
 							<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' mie={4} />
@@ -328,51 +292,43 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 						</>
 					),
 					onClick: handleSubscription,
-				},
-		];
+				};
+			}
 
-		const nonInstalledAppOptions = [
-			!app.installed &&
-				!!button && {
+			if (!app.installed && button) {
+				yield {
 					id: 'acquire',
-					section: 0,
 					disabled: requestedEndUser,
 					content: (
 						<>
-							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' mie={4} />}
+							{canManageApps && <Icon name={incompatibleIconName(app, 'install')} size='x16' mie={4} />}
 							{t(buttonLabel)}
 						</>
 					),
 					onClick: handleAcquireApp,
-				},
-		];
+				};
 
-		const isEnterpriseOrNot = (app.isEnterpriseOnly && isEnterpriseLicense) || !app.isEnterpriseOnly;
-		const isPossibleToEnableApp = app.installed && isAdminUser && !isAppEnabled && isEnterpriseOrNot;
-		const doesItReachedTheLimit =
-			!app.migrated &&
-			!appCountQuery?.data?.hasUnlimitedApps &&
-			appCountQuery?.data?.enabled !== undefined &&
-			appCountQuery?.data?.enabled >= appCountQuery?.data?.limit;
+				return;
+			}
 
-		const installedAppOptions = [
-			isAdminUser &&
-				app.installed && {
-					id: 'viewLogs',
-					section: 0,
-					content: (
-						<>
-							<Icon name='desktop-text' size='x16' mie={4} />
-							{t('View_Logs')}
-						</>
-					),
-					onClick: handleViewLogs,
-				},
-			isAdminUser &&
-				!!canUpdate &&
-				!isAppDetailsPage && {
+			if (!canManageApps || !app.installed) {
+				return;
+			}
+
+			yield {
+				id: 'viewLogs',
+				content: (
+					<>
+						<Icon name='desktop-text' size='x16' mie={4} />
+						{t('View_Logs')}
+					</>
+				),
+				onClick: handleViewLogs,
+			};
+
+			if (!isAppDetailsPage && app.version && app.marketplaceVersion && semver.lt(app.version, app.marketplaceVersion)) {
+				yield {
 					id: 'update',
-					section: 0,
 					content: (
 						<>
 							<Icon name={incompatibleIconName(app, 'update')} size='x16' mie={4} />
@@ -380,12 +336,12 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 						</>
 					),
 					onClick: handleUpdate,
-				},
-			app.installed &&
-				isAdminUser &&
-				isAppEnabled && {
+				};
+			}
+
+			if (isAppEnabled) {
+				yield {
 					id: 'disable',
-					section: 0,
 					content: (
 						<Box color='status-font-on-warning'>
 							<Icon name='ban' size='x16' mie={4} />
@@ -393,52 +349,61 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 						</Box>
 					),
 					onClick: handleDisable,
-				},
-			isPossibleToEnableApp && {
-				id: 'enable',
-				section: 0,
-				disabled: doesItReachedTheLimit,
-				content: (
-					<>
-						<Icon name='check' size='x16' marginInlineEnd='x4' />
-						{t('Enable')}
-					</>
-				),
-				onClick: handleEnable,
-			},
-			app.installed &&
-				isAdminUser && {
-					id: 'uninstall',
-					section: 1,
+				};
+			} else if (!app.isEnterpriseOnly || isEnterpriseLicense) {
+				const doesItReachedTheLimit =
+					!app.migrated &&
+					!appCountQuery?.data?.hasUnlimitedApps &&
+					appCountQuery?.data?.enabled !== undefined &&
+					appCountQuery?.data?.enabled >= appCountQuery?.data?.limit;
+
+				yield {
+					id: 'enable',
+					disabled: doesItReachedTheLimit,
 					content: (
-						<Box color='status-font-on-danger'>
-							<Icon name='trash' size='x16' mie={4} />
-							{t('Uninstall')}
-						</Box>
+						<>
+							<Icon name='check' size='x16' marginInlineEnd='x4' />
+							{t('Enable')}
+						</>
 					),
-					onClick: handleUninstall,
-				},
-		];
+					onClick: handleEnable,
+				};
+			}
+		}
 
-		const filtered = [...bothAppStatusOptions, ...nonInstalledAppOptions, ...installedAppOptions].flatMap((value) =>
-			value && typeof value !== 'boolean' ? value : [],
-		);
-
-		const sections: AppMenuSections = [];
-
-		filtered.forEach((option) => {
-			if (typeof sections[option.section] === 'undefined') {
-				sections[option.section] = { items: [] };
+		function* generateSpecialOptions(): Generator<AppMenuOption> {
+			if (!canManageApps || !app.installed) {
+				return;
 			}
 
-			sections[option.section].items.push(option);
-		});
+			yield {
+				id: 'uninstall',
+				content: (
+					<Box color='status-font-on-danger'>
+						<Icon name='trash' size='x16' mie={4} />
+						{t('Uninstall')}
+					</Box>
+				),
+				onClick: handleUninstall,
+			};
+		}
+
+		const sections: { items: AppMenuOption[] }[] = [];
+
+		const normalOptions = Array.from(generateOptions());
+		if (normalOptions.length) {
+			sections.push({ items: normalOptions });
+		}
+
+		const specialOptions = Array.from(generateSpecialOptions());
+		if (specialOptions.length) {
+			sections.push({ items: specialOptions });
+		}
 
 		return sections;
 	}, [
-		canAppBeSubscribed,
 		isSubscribed,
-		isAdminUser,
+		canManageApps,
 		incompatibleIconName,
 		app,
 		t,
@@ -453,7 +418,6 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		appCountQuery?.data?.enabled,
 		appCountQuery?.data?.limit,
 		handleViewLogs,
-		canUpdate,
 		isAppDetailsPage,
 		handleUpdate,
 		handleDisable,
@@ -461,5 +425,5 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		handleUninstall,
 	]);
 
-	return { isLoading, isAdminUser, sections: menuSections };
+	return { isLoading: isLoading || setAppStatusMutation.isLoading, sections };
 };

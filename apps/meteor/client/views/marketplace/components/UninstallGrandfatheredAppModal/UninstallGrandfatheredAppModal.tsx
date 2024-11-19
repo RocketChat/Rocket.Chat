@@ -1,27 +1,39 @@
-import { Button, Modal } from '@rocket.chat/fuselage';
-import React from 'react';
+import { Button, Modal, Skeleton } from '@rocket.chat/fuselage';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
-import type { MarketplaceContext } from '../../hooks/useMarketplaceContext';
+import { useAppsCountQuery } from '../../hooks/useAppsCountQuery';
+import { useMarketplaceContext } from '../../hooks/useMarketplaceContext';
 import { usePrivateAppsEnabled } from '../../hooks/usePrivateAppsEnabled';
 
 type UninstallGrandfatheredAppModalProps = {
-	context: MarketplaceContext;
-	limit: number;
 	appName: string;
 	handleUninstall: () => void;
 	handleClose: () => void;
 };
 
-const UninstallGrandfatheredAppModal = ({ context, limit, appName, handleUninstall, handleClose }: UninstallGrandfatheredAppModalProps) => {
+const UninstallGrandfatheredAppModal = ({ appName, handleUninstall, handleClose }: UninstallGrandfatheredAppModalProps) => {
 	const { t } = useTranslation();
 	const privateAppsEnabled = usePrivateAppsEnabled();
+	const context = useMarketplaceContext();
+	const { isLoading, isSuccess, data } = useAppsCountQuery(context);
 
-	const modalContent =
-		context === 'private' && !privateAppsEnabled
-			? t('App_will_lose_grandfathered_status_private')
-			: t('App_will_lose_grandfathered_status', { limit });
+	const content = useMemo(() => {
+		if (context === 'private' && !privateAppsEnabled) {
+			return <MarkdownText content={t('App_will_lose_grandfathered_status_private')} />;
+		}
+
+		if (isLoading) {
+			return <Skeleton variant='text' width='100%' />;
+		}
+
+		if (isSuccess) {
+			return <MarkdownText content={t('App_will_lose_grandfathered_status', { limit: data.limit })} />;
+		}
+
+		return null;
+	}, [context, data?.limit, isLoading, isSuccess, privateAppsEnabled, t]);
 
 	return (
 		<Modal>
@@ -31,9 +43,7 @@ const UninstallGrandfatheredAppModal = ({ context, limit, appName, handleUninsta
 				</Modal.HeaderText>
 				<Modal.Close onClick={handleClose} />
 			</Modal.Header>
-			<Modal.Content>
-				<MarkdownText content={modalContent} />
-			</Modal.Content>
+			<Modal.Content>{content}</Modal.Content>
 			<Modal.Footer justifyContent='space-between'>
 				<Modal.FooterAnnotation>
 					{/* TODO: Move the link to a go link when available */}
