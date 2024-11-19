@@ -1,4 +1,5 @@
 import { Modal, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldError, TextInput, Button } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
 import type { ReactElement, ComponentProps } from 'react';
@@ -30,8 +31,7 @@ const FileUploadModal = ({
 		register,
 		handleSubmit,
 		formState: { errors, isValid },
-		setFocus,
-	} = useForm({ mode: 'onChange', defaultValues: { name: fileName, description: fileDescription } });
+	} = useForm({ mode: 'onBlur', defaultValues: { name: fileName, description: fileDescription } });
 
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -73,16 +73,19 @@ const FileUploadModal = ({
 		}
 	}, [file, dispatchToastMessage, invalidContentType, t, onClose]);
 
-	useEffect(() => {
-		setFocus('description');
-	}, [setFocus]);
+	const fileUploadFormId = useUniqueId();
 
 	return (
-		<Modal wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(submit)} {...props} />}>
+		<Modal
+			aria-labelledby={`${fileUploadFormId}-title`}
+			wrapperFunction={(props: ComponentProps<typeof Box>) => (
+				<Box is='form' id={fileUploadFormId} onSubmit={handleSubmit(submit)} {...props} />
+			)}
+		>
 			<Box display='flex' flexDirection='column' height='100%'>
 				<Modal.Header>
-					<Modal.Title>{t('FileUpload')}</Modal.Title>
-					<Modal.Close onClick={onClose} />
+					<Modal.Title id={`${fileUploadFormId}-title`}>{t('FileUpload')}</Modal.Title>
+					<Modal.Close tabIndex={-1} onClick={onClose} />
 				</Modal.Header>
 				<Modal.Content>
 					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe={16}>
