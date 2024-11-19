@@ -7,10 +7,10 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import UsersInRoleTable from './UsersInRoleTable';
 import { Page, PageHeader, PageContent } from '../../../../components/Page';
 import RoomAutoComplete from '../../../../components/RoomAutoComplete';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
-import UsersInRoleTable from './UsersInRoleTable';
 
 type UsersInRolePayload = {
 	rid?: IRoom['_id'];

@@ -7,6 +7,7 @@ import type { ReactElement, MutableRefObject } from 'react';
 import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import CustomUserStatusRow from './CustomUserStatusRow';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResult from '../../../../components/GenericNoResults';
 import {
@@ -18,7 +19,6 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import CustomUserStatusRow from './CustomUserStatusRow';
 
 type CustomUserStatusProps = {
 	reload: MutableRefObject<() => void>;

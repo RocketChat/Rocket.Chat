@@ -1,6 +1,6 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 
-import { CachedCollection } from '../../../app/ui-cached-collection/client';
+import { CachedCollection } from '../cachedCollections';
 
 class PublicSettingsCachedCollection extends CachedCollection<ISetting> {
 	constructor() {

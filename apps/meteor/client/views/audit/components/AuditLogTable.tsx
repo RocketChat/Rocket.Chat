@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 
+import AuditLogEntry from './AuditLogEntry';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -14,7 +15,6 @@ import {
 } from '../../../components/GenericTable';
 import { createEndOfToday, createStartOfToday } from '../utils/dateRange';
 import type { DateRange } from '../utils/dateRange';
-import AuditLogEntry from './AuditLogEntry';
 import DateRangePicker from './forms/DateRangePicker';
 
 const AuditLogTable = (): ReactElement => {

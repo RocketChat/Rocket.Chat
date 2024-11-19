@@ -1,10 +1,10 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
+import AddLinkComposerActionModal from './AddLinkComposerActionModal';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import { settings } from '../../../settings/client';
-import AddLinkComposerActionModal from './AddLinkComposerActionModal';
 
 type FormattingButtonDefault = { label: TranslationKey; condition?: () => boolean };
 

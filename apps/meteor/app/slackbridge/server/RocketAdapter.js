@@ -6,13 +6,13 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
+import { rocketLogger } from './logger';
 import { callbacks } from '../../../lib/callbacks';
 import { sleep } from '../../../lib/utils/sleep';
 import { createRoom } from '../../lib/server/functions/createRoom';
 import { sendMessage } from '../../lib/server/functions/sendMessage';
 import { setUserAvatar } from '../../lib/server/functions/setUserAvatar';
 import { settings } from '../../settings/server';
-import { rocketLogger } from './logger';
 
 export default class RocketAdapter {
 	constructor(slackBridge) {

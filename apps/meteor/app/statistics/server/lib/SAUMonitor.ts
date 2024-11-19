@@ -6,11 +6,11 @@ import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import UAParser from 'ua-parser-js';
 
+import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 import { getMostImportantRole } from '../../../../lib/roles/getMostImportantRole';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { aggregates } from '../../../../server/models/raw/Sessions';
 import { sauEvents } from '../../../../server/services/sauMonitor/events';
-import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 
 type DateObj = { day: number; month: number; year: number };
 

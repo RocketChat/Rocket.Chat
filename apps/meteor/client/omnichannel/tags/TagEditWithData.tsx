@@ -5,9 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ContextualbarSkeleton } from '../../components/Contextualbar';
 import TagEdit from './TagEdit';
 import TagEditWithDepartmentData from './TagEditWithDepartmentData';
+import { ContextualbarSkeleton } from '../../components/Contextualbar';
 
 const TagEditWithData = ({ tagId }: { tagId: ILivechatTag['_id'] }) => {
 	const { t } = useTranslation();

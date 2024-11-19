@@ -4,8 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from '../../../components/Skeleton';
 import EditCustomEmoji from './EditCustomEmoji';
+import { FormSkeleton } from '../../../components/Skeleton';
 
 type EditCustomEmojiWithDataProps = {
 	_id: string;

@@ -4,10 +4,10 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import GenericModal from '../../../components/GenericModal';
-import MapView from '../../../components/message/content/location/MapView';
 import { getGeolocationPermission } from './getGeolocationPermission';
 import { getGeolocationPosition } from './getGeolocationPosition';
+import GenericModal from '../../../components/GenericModal';
+import MapView from '../../../components/message/content/location/MapView';
 
 type ShareLocationModalProps = {
 	rid: IRoom['_id'];

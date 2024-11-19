@@ -9,6 +9,17 @@ import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans } from 'react-i18next';
 
+import AdminInviteUsers from './AdminInviteUsers';
+import AdminUserCreated from './AdminUserCreated';
+import AdminUserForm from './AdminUserForm';
+import AdminUserFormWithData from './AdminUserFormWithData';
+import AdminUserInfoWithData from './AdminUserInfoWithData';
+import AdminUserUpgrade from './AdminUserUpgrade';
+import UsersPageHeaderContent from './UsersPageHeaderContent';
+import UsersTable from './UsersTable';
+import useFilteredUsers from './hooks/useFilteredUsers';
+import usePendingUsersCount from './hooks/usePendingUsersCount';
+import { useSeatsCap } from './useSeatsCap';
 import {
 	Contextualbar,
 	ContextualbarHeader,
@@ -22,17 +33,6 @@ import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useLicenseLimitsByBehavior } from '../../../hooks/useLicenseLimitsByBehavior';
 import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
 import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
-import AdminInviteUsers from './AdminInviteUsers';
-import AdminUserCreated from './AdminUserCreated';
-import AdminUserForm from './AdminUserForm';
-import AdminUserFormWithData from './AdminUserFormWithData';
-import AdminUserInfoWithData from './AdminUserInfoWithData';
-import AdminUserUpgrade from './AdminUserUpgrade';
-import UsersPageHeaderContent from './UsersPageHeaderContent';
-import UsersTable from './UsersTable';
-import useFilteredUsers from './hooks/useFilteredUsers';
-import usePendingUsersCount from './hooks/usePendingUsersCount';
-import { useSeatsCap } from './useSeatsCap';
 
 export type UsersFilters = {
 	text: string;

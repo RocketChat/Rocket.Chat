@@ -23,9 +23,9 @@ import type { MouseEventHandler, ReactElement } from 'react';
 import { useContext, memo } from 'react';
 
 import { UiKitContext } from '../..';
+import { useVideoConfDataStream } from './hooks/useVideoConfDataStream';
 import { useSurfaceType } from '../../hooks/useSurfaceType';
 import type { BlockProps } from '../../utils/BlockProps';
-import { useVideoConfDataStream } from './hooks/useVideoConfDataStream';
 
 type VideoConferenceBlockProps = BlockProps<UiKit.VideoConferenceBlock>;
 

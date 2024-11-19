@@ -9,6 +9,8 @@ import type { ReactElement, Dispatch, SetStateAction } from 'react';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import UsersTableFilters from './UsersTableFilters';
+import UsersTableRow from './UsersTableRow';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -21,8 +23,6 @@ import type { usePagination } from '../../../../components/GenericTable/hooks/us
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import type { AdminUsersTab, UsersFilters, UsersTableSortingOption } from '../AdminUsersPage';
 import { useVoipExtensionPermission } from '../voip/hooks/useVoipExtensionPermission';
-import UsersTableFilters from './UsersTableFilters';
-import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
 	tab: AdminUsersTab;

@@ -4,10 +4,10 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
+import NotificationPreferences from './NotificationPreferences';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
-import NotificationPreferences from './NotificationPreferences';
 
 export type NotificationFormValues = {
 	turnOn: boolean;

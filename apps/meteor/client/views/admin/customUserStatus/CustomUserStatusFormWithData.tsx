@@ -6,8 +6,8 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from '../../../components/Skeleton';
 import CustomUserStatusForm from './CustomUserStatusForm';
+import { FormSkeleton } from '../../../components/Skeleton';
 
 type CustomUserStatusFormWithDataProps = {
 	_id?: IUserStatus['_id'];

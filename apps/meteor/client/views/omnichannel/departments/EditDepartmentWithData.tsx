@@ -4,9 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from '../../../components/Skeleton';
 import EditDepartment from './EditDepartment';
 import EditDepartmentWithAllowedForwardData from './EditDepartmentWithAllowedForwardData';
+import { FormSkeleton } from '../../../components/Skeleton';
 
 const params = { onlyMyDepartments: 'true' } as const;
 

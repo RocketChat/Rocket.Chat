@@ -5,9 +5,9 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import AdminUserForm from './AdminUserForm';
 import { FormSkeleton } from '../../../components/Skeleton';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
-import AdminUserForm from './AdminUserForm';
 
 type AdminUserFormWithDataProps = {
 	uid: IUser['_id'];

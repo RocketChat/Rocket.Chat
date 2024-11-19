@@ -10,12 +10,12 @@ import client from 'prom-client';
 import gcStats from 'prometheus-gc-stats';
 import _ from 'underscore';
 
+import { metrics } from './metrics';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { getControl } from '../../../../server/lib/migrations';
 import { settings } from '../../../settings/server';
 import { getAppsStatistics } from '../../../statistics/server/lib/getAppsStatistics';
 import { Info } from '../../../utils/rocketchat.info';
-import { metrics } from './metrics';
 
 const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 

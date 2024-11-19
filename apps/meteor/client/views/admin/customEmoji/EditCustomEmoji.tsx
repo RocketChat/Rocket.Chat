@@ -30,6 +30,7 @@ type EditCustomEmojiProps = {
 		name: string;
 		aliases: string[];
 		extension: string;
+		etag?: string;
 	};
 };
 
@@ -51,7 +52,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 		}
 
 		if (data) {
-			return absoluteUrl(`/emoji-custom/${encodeURIComponent(data.name)}.${data.extension}`);
+			return absoluteUrl(`/emoji-custom/${encodeURIComponent(data.name)}.${data.extension}${data.etag ? `?etag=${data.etag}` : ''}`);
 		}
 
 		return null;

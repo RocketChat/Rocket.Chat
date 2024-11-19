@@ -5,6 +5,11 @@ import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useLayoutContextualBarExpanded, useToastMessageDispatch, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
+import ThreadChat from './components/ThreadChat';
+import ThreadSkeleton from './components/ThreadSkeleton';
+import ThreadTitle from './components/ThreadTitle';
+import { useThreadMainMessageQuery } from './hooks/useThreadMainMessageQuery';
+import { useToggleFollowingThreadMutation } from './hooks/useToggleFollowingThreadMutation';
 import {
 	Contextualbar,
 	ContextualbarHeader,
@@ -17,11 +22,6 @@ import {
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import { useGoToThreadList } from '../../hooks/useGoToThreadList';
 import ChatProvider from '../../providers/ChatProvider';
-import ThreadChat from './components/ThreadChat';
-import ThreadSkeleton from './components/ThreadSkeleton';
-import ThreadTitle from './components/ThreadTitle';
-import { useThreadMainMessageQuery } from './hooks/useThreadMainMessageQuery';
-import { useToggleFollowingThreadMutation } from './hooks/useToggleFollowingThreadMutation';
 
 type ThreadProps = {
 	tmid: IMessage['_id'];

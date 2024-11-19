@@ -1,8 +1,8 @@
 import { Messages, Roles, Rooms, Subscriptions, ReadReceipts } from '@rocket.chat/models';
 
+import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 import { FileUpload } from '../../../file-upload/server';
 import { notifyOnSubscriptionChanged } from '../lib/notifyListener';
-import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 
 const bulkRoomCleanUp = async (rids: string[]): Promise<unknown> => {
 	// no bulk deletion for files

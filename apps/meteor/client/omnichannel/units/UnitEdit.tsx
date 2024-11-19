@@ -20,6 +20,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { useRemoveUnit } from './useRemoveUnit';
 import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
@@ -32,7 +33,6 @@ import { useRecordList } from '../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useDepartmentsByUnitsList } from '../../views/hooks/useDepartmentsByUnitsList';
 import { useMonitorsList } from '../../views/hooks/useMonitorsList';
-import { useRemoveUnit } from './useRemoveUnit';
 
 type UnitEditProps = {
 	unitData?: Serialized<IOmnichannelBusinessUnit>;

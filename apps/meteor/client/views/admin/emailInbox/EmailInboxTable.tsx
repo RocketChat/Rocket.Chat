@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo, useCallback } from 'react';
 
+import SendTestButton from './SendTestButton';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -16,7 +17,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import SendTestButton from './SendTestButton';
 
 const EmailInboxTable = (): ReactElement => {
 	const t = useTranslation();

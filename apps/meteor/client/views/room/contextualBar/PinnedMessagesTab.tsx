@@ -5,10 +5,10 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import MessageListTab from './MessageListTab';
 import { onClientMessageReceived } from '../../../lib/onClientMessageReceived';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 import { useRoom } from '../contexts/RoomContext';
-import MessageListTab from './MessageListTab';
 
 const PinnedMessagesTab = (): ReactElement => {
 	const getPinnedMessages = useEndpoint('GET', '/v1/chat.getPinnedMessages');

@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import EditRoom from './EditRoom';
 import {
 	Contextualbar,
 	ContextualbarHeader,
@@ -11,7 +12,6 @@ import {
 	ContextualbarClose,
 	ContextualbarSkeleton,
 } from '../../../components/Contextualbar';
-import EditRoom from './EditRoom';
 
 type EditRoomWithDataProps = { rid?: IRoom['_id']; onReload: () => void };
 

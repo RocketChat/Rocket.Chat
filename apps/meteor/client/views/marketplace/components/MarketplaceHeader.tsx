@@ -8,9 +8,9 @@ import { GenericResourceUsageSkeleton } from '../../../components/GenericResourc
 import { PageHeader } from '../../../components/Page';
 import UpgradeButton from '../../admin/subscription/components/UpgradeButton';
 import UnlimitedAppsUpsellModal from '../UnlimitedAppsUpsellModal';
+import EnabledAppsCount from './EnabledAppsCount';
 import { useAppsCountQuery } from '../hooks/useAppsCountQuery';
 import { usePrivateAppsEnabled } from '../hooks/usePrivateAppsEnabled';
-import EnabledAppsCount from './EnabledAppsCount';
 import PrivateAppInstallModal from './PrivateAppInstallModal/PrivateAppInstallModal';
 import UpdateRocketChatButton from './UpdateRocketChatButton';
 

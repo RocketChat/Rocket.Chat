@@ -2,8 +2,8 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import type { Action } from '../../../hooks/useActionSpread';
 import { useConfirmOwnerChanges } from './useConfirmOwnerChanges';
+import type { Action } from '../../../hooks/useActionSpread';
 
 export const useChangeUserStatusAction = (userId: IUser['_id'], isActive: boolean, onChange: () => void): Action | undefined => {
 	const t = useTranslation();

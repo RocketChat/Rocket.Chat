@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import React, { useState, useMemo, useEffect } from 'react';
 
+import CustomSoundRow from './CustomSoundRow';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
@@ -16,7 +17,6 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import CustomSoundRow from './CustomSoundRow';
 
 type CustomSoundsTableProps = {
 	onClick: (soundId: string) => () => void;

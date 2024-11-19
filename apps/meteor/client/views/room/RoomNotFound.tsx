@@ -5,9 +5,9 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import RoomLayout from './layout/RoomLayout';
 import NotFoundState from '../../components/NotFoundState';
 import SidebarToggler from '../../components/SidebarToggler';
-import RoomLayout from './layout/RoomLayout';
 
 const RoomNotFound = (): ReactElement => {
 	const { t } = useTranslation();

@@ -4,9 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from '../../../components/Skeleton';
 import type { EditDepartmentProps } from './EditDepartment';
 import EditDepartment from './EditDepartment';
+import { FormSkeleton } from '../../../components/Skeleton';
 
 const EditDepartmentWithAllowedForwardData = ({ data, ...props }: Omit<EditDepartmentProps, 'allowedToForwardData'>) => {
 	const { t } = useTranslation();

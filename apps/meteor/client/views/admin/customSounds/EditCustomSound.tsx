@@ -4,8 +4,8 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from '../../../components/Skeleton';
 import EditSound from './EditSound';
+import { FormSkeleton } from '../../../components/Skeleton';
 
 type EditCustomSoundProps = {
 	_id: string | undefined;

@@ -9,10 +9,6 @@ import type { ReactElement, ReactNode } from 'react';
 import React, { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { useLicense, useLicenseName } from '../../../../hooks/useLicense';
-import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
-import { isOverLicenseLimits } from '../../../../lib/utils/isOverLicenseLimits';
 import VersionCardActionButton from './components/VersionCardActionButton';
 import type { VersionActionItem } from './components/VersionCardActionItem';
 import VersionCardActionItem from './components/VersionCardActionItem';
@@ -20,6 +16,10 @@ import { VersionCardSkeleton } from './components/VersionCardSkeleton';
 import { VersionTag } from './components/VersionTag';
 import { getVersionStatus } from './getVersionStatus';
 import RegisterWorkspaceModal from './modals/RegisterWorkspaceModal';
+import { useFormatDate } from '../../../../hooks/useFormatDate';
+import { useLicense, useLicenseName } from '../../../../hooks/useLicense';
+import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
+import { isOverLicenseLimits } from '../../../../lib/utils/isOverLicenseLimits';
 
 const SUPPORT_EXTERNAL_LINK = 'https://go.rocket.chat/i/version-support';
 const RELEASES_EXTERNAL_LINK = 'https://go.rocket.chat/i/update-product';

@@ -3,8 +3,6 @@ import { isActionAttachment } from '@rocket.chat/core-typings';
 import type { ReactNode, ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
-import MarkdownText from '../../../MarkdownText';
-import { useCollapse } from '../../hooks/useCollapse';
 import { ActionAttachment } from './default/ActionAttachtment';
 import FieldsAttachment from './default/FieldsAttachment';
 import AttachmentAuthor from './structure/AttachmentAuthor';
@@ -17,6 +15,8 @@ import AttachmentRow from './structure/AttachmentRow';
 import AttachmentText from './structure/AttachmentText';
 import AttachmentThumb from './structure/AttachmentThumb';
 import AttachmentTitle from './structure/AttachmentTitle';
+import MarkdownText from '../../../MarkdownText';
+import { useCollapse } from '../../hooks/useCollapse';
 
 const applyMarkdownIfRequires = (
 	list: MessageAttachmentDefault['mrkdwn_in'] = ['text', 'pretext'],

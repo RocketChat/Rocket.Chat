@@ -5,8 +5,8 @@ import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from '../../../components/Skeleton';
 import EditOauthApp from './EditOauthApp';
+import { FormSkeleton } from '../../../components/Skeleton';
 
 const EditOauthAppWithData = ({ _id, ...props }: { _id: string }): ReactElement => {
 	const { t } = useTranslation();

@@ -17,6 +17,10 @@ import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler,
 import React, { memo, useRef, useReducer, useCallback } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
+import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
+import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
+import MessageBoxHint from './MessageBoxHint';
+import MessageBoxReplies from './MessageBoxReplies';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -38,10 +42,6 @@ import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
-import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
-import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
-import MessageBoxHint from './MessageBoxHint';
-import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 

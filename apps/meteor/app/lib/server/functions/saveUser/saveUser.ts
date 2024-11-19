@@ -1,6 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import type { DeepWritable, DeepPartial } from '@rocket.chat/core-typings';
-import { isUserFederated, type IUser, type IRole, type IUserSettings, type RequiredField } from '@rocket.chat/core-typings';
+import { isUserFederated } from '@rocket.chat/core-typings';
+import type { DeepWritable, DeepPartial, IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';

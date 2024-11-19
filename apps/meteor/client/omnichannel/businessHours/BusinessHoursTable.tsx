@@ -4,6 +4,7 @@ import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 
+import BusinessHoursRow from './BusinessHoursRow';
 import FilterByText from '../../components/FilterByText';
 import GenericNoResults from '../../components/GenericNoResults';
 import {
@@ -14,7 +15,6 @@ import {
 	GenericTableLoadingRow,
 } from '../../components/GenericTable';
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
-import BusinessHoursRow from './BusinessHoursRow';
 
 const BusinessHoursTable = () => {
 	const t = useTranslation();

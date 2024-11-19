@@ -3,10 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
 import React from 'react';
 
-import GenericModal from '../../components/GenericModal';
-import GenericModalSkeleton from '../../components/GenericModal/GenericModalSkeleton';
 import OutlookEventItemContent from './OutlookEventsList/OutlookEventItemContent';
 import { useOutlookOpenCall } from './hooks/useOutlookOpenCall';
+import GenericModal from '../../components/GenericModal';
+import GenericModalSkeleton from '../../components/GenericModal/GenericModalSkeleton';
 
 type OutlookCalendarEventModalProps = ComponentProps<typeof GenericModal> & {
 	id?: string;

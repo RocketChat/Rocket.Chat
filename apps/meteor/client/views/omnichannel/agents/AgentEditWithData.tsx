@@ -6,8 +6,8 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from '../../../components/Skeleton';
 import AgentEdit from './AgentEdit';
+import { FormSkeleton } from '../../../components/Skeleton';
 
 const AgentEditWithData = ({ uid }: { uid: ILivechatAgent['_id'] }): ReactElement => {
 	const { t } = useTranslation();

@@ -5,8 +5,8 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ContextualbarSkeleton } from '../../../components/Contextualbar';
 import EditTrigger from './EditTrigger';
+import { ContextualbarSkeleton } from '../../../components/Contextualbar';
 
 const EditTriggerWithData = ({ triggerId }: { triggerId: ILivechatTrigger['_id'] }) => {
 	const { t } = useTranslation();

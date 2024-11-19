@@ -5,17 +5,17 @@ import type { ReactElement } from 'react';
 import React, { lazy, Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ChatRoom } from '../../../app/models/client';
+import RoomSkeleton from './RoomSkeleton';
+import RoomSidepanel from './Sidepanel/RoomSidepanel';
+import { useOpenRoom } from './hooks/useOpenRoom';
 import { FeaturePreviewSidePanelNavigation } from '../../components/FeaturePreviewSidePanelNavigation';
 import { Header } from '../../components/Header';
 import { getErrorMessage } from '../../lib/errorHandling';
 import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
 import { OldUrlRoomError } from '../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../lib/errors/RoomNotFoundError';
+import { Rooms } from '../../../app/models/client';
 import { queryClient } from '../../lib/queryClient';
-import RoomSkeleton from './RoomSkeleton';
-import RoomSidepanel from './Sidepanel/RoomSidepanel';
-import { useOpenRoom } from './hooks/useOpenRoom';
 
 const RoomProvider = lazy(() => import('./providers/RoomProvider'));
 const RoomNotFound = lazy(() => import('./RoomNotFound'));
@@ -37,7 +37,7 @@ const RoomOpener = ({ type, reference }: RoomOpenerProps): ReactElement => {
 	useEffect(() => {
 		if (error) {
 			if (['l', 'v'].includes(type) && error instanceof RoomNotFoundError) {
-				ChatRoom.remove(reference);
+				Rooms.remove(reference);
 				queryClient.removeQueries({ queryKey: ['rooms', reference] });
 				queryClient.removeQueries({ queryKey: ['/v1/rooms.info', reference] });
 			}

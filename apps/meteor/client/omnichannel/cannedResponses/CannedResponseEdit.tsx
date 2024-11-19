@@ -6,9 +6,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import React, { memo, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../components/Page';
 import CannedResponseForm from './components/cannedResponseForm';
 import { useRemoveCannedResponse } from './useRemoveCannedResponse';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../components/Page';
 
 type CannedResponseEditProps = {
 	cannedResponseData?: Serialized<IOmnichannelCannedResponse>;

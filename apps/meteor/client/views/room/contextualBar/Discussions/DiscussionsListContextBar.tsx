@@ -4,12 +4,12 @@ import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 
+import DiscussionsList from './DiscussionsList';
+import { useDiscussionsList } from './useDiscussionsList';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useRoom } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
-import DiscussionsList from './DiscussionsList';
-import { useDiscussionsList } from './useDiscussionsList';
 
 const DiscussionListContextBar = (): ReactElement | null => {
 	const userId = useUserId();

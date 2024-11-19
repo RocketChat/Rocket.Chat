@@ -51,17 +51,17 @@ function ContactTable(): ReactElement {
 
 	const onButtonNewClick = useEffectEvent(() =>
 		directoryRoute.push({
-			page: 'contacts',
-			bar: 'new',
+			tab: 'contacts',
+			context: 'new',
 		}),
 	);
 
 	const onRowClick = useEffectEvent(
 		(id) => (): void =>
 			directoryRoute.push({
-				page: 'contacts',
 				id,
-				bar: 'info',
+				tab: 'contacts',
+				context: 'info',
 			}),
 	);
 

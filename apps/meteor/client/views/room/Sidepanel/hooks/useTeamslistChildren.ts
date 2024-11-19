@@ -3,7 +3,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { Mongo } from 'meteor/mongo';
 import { useEffect, useMemo } from 'react';
 
-import { ChatRoom } from '../../../../../app/models/client';
+import { Rooms } from '../../../../../app/models/client';
 
 export const useTeamsListChildrenUpdate = (
 	parentRid: string,
@@ -36,7 +36,7 @@ export const useTeamsListChildrenUpdate = (
 	const result = useQuery({
 		queryKey: ['sidepanel', 'list', parentRid, sidepanelItems],
 		queryFn: () =>
-			ChatRoom.find(query, {
+			Rooms.find(query, {
 				sort: { lm: -1 },
 			}).fetch(),
 		enabled: sidepanelItems !== null && teamId !== null,
@@ -47,7 +47,7 @@ export const useTeamsListChildrenUpdate = (
 	const { refetch } = result;
 
 	useEffect(() => {
-		const liveQueryHandle = ChatRoom.find(query).observe({
+		const liveQueryHandle = Rooms.find(query).observe({
 			added: () => queueMicrotask(() => refetch()),
 			changed: () => queueMicrotask(() => refetch()),
 			removed: () => queueMicrotask(() => refetch()),
