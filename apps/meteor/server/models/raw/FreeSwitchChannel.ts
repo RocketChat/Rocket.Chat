@@ -11,9 +11,7 @@ export class FreeSwitchChannelRaw extends BaseRaw<IFreeSwitchChannel> implements
 
 	protected modelIndexes(): IndexDescription[] {
 		return [
-			{ key: { uniqueId: 1 }, unique: true },
-			{ key: { otherLegUniqueId: 1 }, unique: false },
-			{ key: { callId: 1 }, unique: false },
+			{ key: { uniqueId: 1, otherLegUniqueId: 1, callId: 1 }, unique: true },
 		];
 	}
 
