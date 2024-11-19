@@ -14,7 +14,7 @@ export const parameters: Parameters = {
 
 export const decorators: Decorator[] = [
 	(Story) => (
-		<div className='rc-old'>
+		<div>
 			<style>{`
 				body {
 					background-color: white;

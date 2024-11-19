@@ -84,8 +84,8 @@ function ComposerBoxPopup<
 	}, [focused]);
 
 	return (
-		<Box className='message-popup-position' position='relative'>
-			<Tile ref={composerBoxPopupRef} className='message-popup' padding={0} role='menu' mbe={8} overflow='hidden' aria-labelledby={id}>
+		<Box position='relative'>
+			<Tile ref={composerBoxPopupRef} padding={0} role='menu' mbe={8} overflow='hidden' aria-labelledby={id}>
 				{title && (
 					<Box bg='tint' pi={16} pb={8} id={id}>
 						{title}
