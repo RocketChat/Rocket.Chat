@@ -1,6 +1,6 @@
 import { ADMIN_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { HomeChannel } from './page-objects';
+import { Utils, HomeChannel } from './page-objects';
 import { createTargetChannel, createTargetTeam } from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { expect, test } from './utils/test';
@@ -8,6 +8,7 @@ import { expect, test } from './utils/test';
 test.use({ storageState: Users.admin.state });
 test.describe.serial('message-actions', () => {
 	let poHomeChannel: HomeChannel;
+	let poUtils: Utils;
 	let targetChannel: string;
 	let forwardChannel: string;
 	let forwardTeam: string;
@@ -18,6 +19,7 @@ test.describe.serial('message-actions', () => {
 	});
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+		poUtils = new Utils(page);
 		await page.goto('/home');
 		await poHomeChannel.sidenav.openChat(targetChannel);
 	});
@@ -145,12 +147,12 @@ test.describe.serial('message-actions', () => {
 		const createButton = page.getByRole('dialog').getByRole('button', { name: 'create' });
 		// Name should be prefilled thus making the create button enabled
 		await expect(createButton).not.toBeDisabled();
-		await page.locator('role=textbox[name="Name"]').fill(discussionName);
+		await poUtils.inputName.fill(discussionName);
 		await createButton.click();
 		await expect(page.locator('header h1')).toHaveText(discussionName);
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		// Should fail if more than one discussion has been created
-		await expect(page.locator('div.messages-box').getByText(discussionName)).toBeVisible();
+		await expect(poUtils.mainContent.getByText(discussionName)).toBeVisible();
 	});
 
 	test('expect star the message', async ({ page }) => {
