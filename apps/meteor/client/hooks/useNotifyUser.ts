@@ -41,7 +41,7 @@ export const useNotifyUser = () => {
 				void KonchatNotification.newMessage(rid);
 			}
 		},
-		[muteFocusedConversations],
+		[muteFocusedConversations, router],
 	);
 
 	useEffect(() => {
@@ -81,11 +81,11 @@ export const useNotifyUser = () => {
 
 			void notifyNewRoom(sub);
 		});
-	}, [notifyNewMessageAudio, notifyNewRoom, notifyUserStream, router, user?._id]);
 
-	CachedChatSubscription.collection.find().observe({
-		changed: (sub) => {
-			void notifyNewRoom(sub);
-		},
-	});
+		CachedChatSubscription.collection.find().observe({
+			changed: (sub) => {
+				void notifyNewRoom(sub);
+			},
+		});
+	}, [notifyNewMessageAudio, notifyNewRoom, notifyUserStream, router, user?._id]);
 };
