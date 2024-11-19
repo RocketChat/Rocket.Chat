@@ -12,7 +12,7 @@ export const useOpenIncompatibleModal = () => {
 				<IncompatibleModal
 					app={app}
 					action={actionName}
-					onDismiss={() => {
+					onClose={() => {
 						setModal(null);
 						cancelAction();
 					}}

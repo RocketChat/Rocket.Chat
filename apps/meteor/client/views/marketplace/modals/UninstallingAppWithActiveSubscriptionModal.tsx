@@ -10,10 +10,10 @@ import { useUninstallAppMutation } from '../hooks/useUninstallAppMutation';
 
 type UninstallingAppWithActiveSubscriptionModalProps = {
 	app: App;
-	onDismiss: () => void;
+	onClose: () => void;
 };
 
-const UninstallingAppWithActiveSubscriptionModal = ({ app, onDismiss }: UninstallingAppWithActiveSubscriptionModalProps) => {
+const UninstallingAppWithActiveSubscriptionModal = ({ app, onClose }: UninstallingAppWithActiveSubscriptionModalProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
@@ -21,18 +21,18 @@ const UninstallingAppWithActiveSubscriptionModal = ({ app, onDismiss }: Uninstal
 		const haveActiveSubscription = app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);
 
 		if (app?.versionIncompatible && !haveActiveSubscription) {
-			setModal(<IncompatibleModal app={app} action='subscribe' onDismiss={onDismiss} />);
+			setModal(<IncompatibleModal app={app} action='subscribe' onClose={onClose} />);
 			return;
 		}
 
-		setModal(<ModifySubscriptionModal app={app} onDismiss={onDismiss} />);
+		setModal(<ModifySubscriptionModal app={app} onClose={onClose} />);
 	};
 
 	const uninstallAppMutation = useUninstallAppMutation(app);
 
 	const handleCancel = async () => {
 		await uninstallAppMutation.mutateAsync();
-		onDismiss();
+		onClose();
 	};
 
 	return (
@@ -42,7 +42,7 @@ const UninstallingAppWithActiveSubscriptionModal = ({ app, onDismiss }: Uninstal
 			cancelText={t('Apps_Marketplace_Uninstall_Subscribed_App_Anyway')}
 			confirm={handleConfirm}
 			cancel={handleCancel}
-			close={onDismiss}
+			close={onClose}
 		/>
 	);
 };

@@ -8,22 +8,20 @@ import { useSetAppStatusMutation } from '../hooks/useSetAppStatusMutation';
 
 type DisableAppModalProps = {
 	app: App;
-	onDismiss: () => void;
+	onClose: () => void;
 };
 
-const DisableAppModal = ({ app, onDismiss }: DisableAppModalProps) => {
+const DisableAppModal = ({ app, onClose }: DisableAppModalProps) => {
 	const { t } = useTranslation();
 
 	const setAppStatusMutation = useSetAppStatusMutation(app);
 
 	const handleConfirm = async () => {
 		await setAppStatusMutation.mutateAsync(AppStatus.MANUALLY_DISABLED);
-		onDismiss();
+		onClose();
 	};
 
-	return (
-		<WarningModal text={t('Apps_Marketplace_Deactivate_App_Prompt')} confirmText={t('Yes')} confirm={handleConfirm} close={onDismiss} />
-	);
+	return <WarningModal text={t('Apps_Marketplace_Deactivate_App_Prompt')} confirmText={t('Yes')} confirm={handleConfirm} close={onClose} />;
 };
 
 export default DisableAppModal;

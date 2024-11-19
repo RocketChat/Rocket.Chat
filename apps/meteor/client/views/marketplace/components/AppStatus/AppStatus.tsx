@@ -11,7 +11,7 @@ import semver from 'semver';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { useIsEnterprise } from '../../../../hooks/useIsEnterprise';
-import AddonRequiredModal from '../../AppsList/AddonRequiredModal';
+import AddonRequiredModal from '../../modals/AddonRequiredModal';
 import type { appStatusSpanResponseProps } from '../../helpers';
 import { appButtonProps, appMultiStatusProps } from '../../helpers';
 import type { AppInstallationHandlerParams } from '../../hooks/useAppInstallationHandler';
@@ -88,7 +88,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 		if (canManageApps && appAddon && !workspaceHasAddon) {
 			const actionType = button?.action === 'update' ? 'update' : 'install';
-			return setModal(<AddonRequiredModal actionType={actionType} onDismiss={cancelAction} onInstallAnyway={installApp} />);
+			return setModal(<AddonRequiredModal actionType={actionType} onClose={cancelAction} onInstallAnyway={installApp} />);
 		}
 
 		installApp();

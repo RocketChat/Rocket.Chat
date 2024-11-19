@@ -9,11 +9,11 @@ export type AddonActionType = 'install' | 'enable' | 'update';
 
 type AddonRequiredModalProps = {
 	actionType: AddonActionType;
-	onDismiss: () => void;
 	onInstallAnyway: () => void;
+	onClose: () => void;
 };
 
-const AddonRequiredModal = ({ actionType, onDismiss, onInstallAnyway }: AddonRequiredModalProps) => {
+const AddonRequiredModal = ({ actionType, onInstallAnyway, onClose }: AddonRequiredModalProps) => {
 	const { t } = useTranslation();
 
 	const handleOpenLink = useExternalLink();
@@ -24,7 +24,7 @@ const AddonRequiredModal = ({ actionType, onDismiss, onInstallAnyway }: AddonReq
 				<Modal.HeaderText>
 					<Modal.Title>{t('Add-on_required')}</Modal.Title>
 				</Modal.HeaderText>
-				<Modal.Close onClick={onDismiss} />
+				<Modal.Close onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>{t('Add-on_required_modal_enable_content')}</Modal.Content>
 			<Modal.Footer>

@@ -12,10 +12,10 @@ import { useMarketplaceContext } from '../hooks/useMarketplaceContext';
 type AppsInstallationModalProps = {
 	appName: string;
 	onInstall: () => void;
-	onDismiss: () => void;
+	onClose: () => void;
 };
 
-const AppInstallationModal = ({ appName, onInstall, onDismiss }: AppsInstallationModalProps) => {
+const AppInstallationModal = ({ appName, onInstall, onClose }: AppsInstallationModalProps) => {
 	const { t } = useTranslation();
 
 	const { isSuccess, data } = useAppsCountQuery(useMarketplaceContext());
@@ -25,7 +25,7 @@ const AppInstallationModal = ({ appName, onInstall, onDismiss }: AppsInstallatio
 
 	const handleEnableUnlimitedAppsButtonClick = useEffectEvent(() => {
 		openExternalLink(manageSubscriptionUrl);
-		onDismiss();
+		onClose();
 	});
 
 	if (!isSuccess) {
@@ -43,7 +43,7 @@ const AppInstallationModal = ({ appName, onInstall, onDismiss }: AppsInstallatio
 					<Modal.HeaderText>
 						<Modal.Title data-qa-id='confirm-app-upload-modal-title'>{t('App_limit_reached')}</Modal.Title>
 					</Modal.HeaderText>
-					<Modal.Close onClick={onDismiss} />
+					<Modal.Close onClick={onClose} />
 				</Modal.Header>
 
 				<Modal.Content>
@@ -67,7 +67,7 @@ const AppInstallationModal = ({ appName, onInstall, onDismiss }: AppsInstallatio
 					<Modal.HeaderText>
 						<Modal.Title data-qa-id='confirm-app-upload-modal-title'>{t('App_limit_exceeded')}</Modal.Title>
 					</Modal.HeaderText>
-					<Modal.Close onClick={onDismiss} />
+					<Modal.Close onClick={onClose} />
 				</Modal.Header>
 
 				<Modal.Content>
@@ -99,7 +99,7 @@ const AppInstallationModal = ({ appName, onInstall, onDismiss }: AppsInstallatio
 						{t('Apps_Currently_Enabled', { context: '', enabled, limit })}
 					</Modal.Title>
 				</Modal.HeaderText>
-				<Modal.Close onClick={onDismiss} />
+				<Modal.Close onClick={onClose} />
 			</Modal.Header>
 
 			<Modal.Content>

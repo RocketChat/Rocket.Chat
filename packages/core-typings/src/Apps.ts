@@ -111,7 +111,7 @@ export type App = {
 		addonTierId?: string;
 	}[];
 	marketplaceVersion: string;
-	latest: App;
+	latest: Omit<App, 'latest'>;
 	status?: AppStatus;
 	subscriptionInfo: AppSubscriptionInfo;
 	licenseValidation?: {
@@ -120,7 +120,7 @@ export type App = {
 	};
 	tosLink: string;
 	privacyLink: string;
-	marketplace?: unknown;
+	marketplace?: boolean;
 	modifiedAt: string;
 	permissions: AppPermission[];
 	languages: string[];

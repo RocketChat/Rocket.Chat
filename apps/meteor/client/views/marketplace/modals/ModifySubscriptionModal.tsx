@@ -9,10 +9,10 @@ import { marketplaceQueryKeys } from '../queryKeys';
 
 type ModifySubscriptionModalProps = {
 	app: App;
-	onDismiss: () => void;
+	onClose: () => void;
 };
 
-const ModifySubscriptionModal = ({ app, onDismiss }: ModifySubscriptionModalProps) => {
+const ModifySubscriptionModal = ({ app, onClose }: ModifySubscriptionModalProps) => {
 	const syncAppMutation = useSyncAppMutation(app);
 
 	const handleConfirm = () => {
@@ -39,7 +39,7 @@ const ModifySubscriptionModal = ({ app, onDismiss }: ModifySubscriptionModalProp
 		return null;
 	}
 
-	return <IframeModal url={url} confirm={handleConfirm} cancel={onDismiss} />;
+	return <IframeModal url={url} confirm={handleConfirm} cancel={onClose} />;
 };
 
 export default ModifySubscriptionModal;

@@ -95,7 +95,7 @@ export function createFakeMessageWithMd(overrides?: Partial<MessageWithMdEnforce
 export function createFakeApp(partialApp: Partial<App> = {}): App {
 	const appId = faker.database.mongodbObjectId();
 
-	const app: App = {
+	const app: Omit<App, 'latest'> = {
 		id: appId,
 		iconFileData: faker.image.dataUri(),
 		name: faker.commerce.productName(),
@@ -130,9 +130,6 @@ export function createFakeApp(partialApp: Partial<App> = {}): App {
 		isSubscribed: faker.datatype.boolean(),
 		bundledIn: [],
 		marketplaceVersion: faker.system.semver(),
-		get latest() {
-			return app;
-		},
 		subscriptionInfo: {
 			typeOf: faker.lorem.word(),
 			status: faker.helpers.enumValue(AppSubscriptionStatus),
@@ -165,7 +162,7 @@ export function createFakeApp(partialApp: Partial<App> = {}): App {
 		...partialApp,
 	};
 
-	return app;
+	return { ...app, latest: app };
 }
 
 export const createFakeExternalComponentUserInfo = (partial: Partial<IExternalComponentUserInfo> = {}): IExternalComponentUserInfo => ({

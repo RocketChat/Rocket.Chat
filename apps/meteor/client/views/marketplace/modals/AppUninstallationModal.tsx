@@ -7,22 +7,20 @@ import { useUninstallAppMutation } from '../hooks/useUninstallAppMutation';
 
 type AppUninstallationModalProps = {
 	app: App;
-	onDismiss: () => void;
+	onClose: () => void;
 };
 
-const AppUninstallationModal = ({ app, onDismiss }: AppUninstallationModalProps) => {
+const AppUninstallationModal = ({ app, onClose }: AppUninstallationModalProps) => {
 	const { t } = useTranslation();
 
 	const uninstallAppMutation = useUninstallAppMutation(app);
 
 	const handleConfirm = async () => {
 		await uninstallAppMutation.mutateAsync();
-		onDismiss();
+		onClose();
 	};
 
-	return (
-		<WarningModal text={t('Apps_Marketplace_Uninstall_App_Prompt')} confirmText={t('Yes')} confirm={handleConfirm} close={onDismiss} />
-	);
+	return <WarningModal text={t('Apps_Marketplace_Uninstall_App_Prompt')} confirmText={t('Yes')} confirm={handleConfirm} close={onClose} />;
 };
 
 export default AppUninstallationModal;

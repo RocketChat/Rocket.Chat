@@ -7,11 +7,11 @@ import { GenericResourceUsageSkeleton } from '../../../components/GenericResourc
 import { PageHeader } from '../../../components/Page';
 import UpgradeButton from '../../admin/subscription/components/UpgradeButton';
 import EnabledAppsCount from '../components/EnabledAppsCount';
-import PrivateAppInstallModal from '../components/PrivateAppInstallModal/PrivateAppInstallModal';
 import { useAppsCountQuery } from '../hooks/useAppsCountQuery';
 import { useMarketplaceQuery } from '../hooks/useMarketplaceQuery';
 import { usePrivateAppsEnabled } from '../hooks/usePrivateAppsEnabled';
 import { MarketplaceUnsupportedVersionError } from '../lib/MarketplaceUnsupportedVersionError';
+import PrivateAppInstallModal from '../modals/PrivateAppInstallModal';
 
 const PrivateAppsPageHeader = () => {
 	const marketplaceQueryResult = useMarketplaceQuery();

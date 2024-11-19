@@ -9,10 +9,10 @@ import { marketplaceQueryKeys } from '../queryKeys';
 type PurchaseAppModalProps = {
 	app: App;
 	onPurchase: () => void;
-	onDismiss: () => void;
+	onClose: () => void;
 };
 
-const PurchaseAppModal = ({ app, onPurchase, onDismiss }: PurchaseAppModalProps) => {
+const PurchaseAppModal = ({ app, onPurchase, onClose }: PurchaseAppModalProps) => {
 	const appsOrchestrator = useAppsOrchestrator();
 
 	const { isSuccess, data: url } = useQuery({
@@ -27,7 +27,7 @@ const PurchaseAppModal = ({ app, onPurchase, onDismiss }: PurchaseAppModalProps)
 		return null;
 	}
 
-	return <IframeModal url={url} cancel={onDismiss} confirm={onPurchase} />;
+	return <IframeModal url={url} cancel={onClose} confirm={onPurchase} />;
 };
 
 export default PurchaseAppModal;

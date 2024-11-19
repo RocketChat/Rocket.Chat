@@ -16,15 +16,15 @@ import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewM
 import { useSetAppStatusMutation } from './useSetAppStatusMutation';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import type { AddonActionType } from '../AppsList/AddonRequiredModal';
-import AddonRequiredModal from '../AppsList/AddonRequiredModal';
-import UninstallGrandfatheredAppModal from '../components/UninstallGrandfatheredAppModal/UninstallGrandfatheredAppModal';
+import type { AddonActionType } from '../modals/AddonRequiredModal';
+import AddonRequiredModal from '../modals/AddonRequiredModal';
 import type { Actions } from '../helpers';
 import { appEnabledStatuses, appButtonProps } from '../helpers';
 import AppUninstallationModal from '../modals/AppUninstallationModal';
 import DisableAppModal from '../modals/DisableAppModal';
 import IncompatibleModal from '../modals/IncompatibleModal';
 import ModifySubscriptionModal from '../modals/ModifySubscriptionModal';
+import UninstallGrandfatheredAppModal from '../modals/UninstallGrandfatheredAppModal';
 import UninstallingAppWithActiveSubscriptionModal from '../modals/UninstallingAppWithActiveSubscriptionModal';
 
 export type AppMenuOption = {
@@ -105,7 +105,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	// My propose here is to refactor the hook to make it clearer and with less unnecessary caching.
 	const missingAddonHandler = useCallback(
 		(actionType: AddonActionType) => {
-			setModal(<AddonRequiredModal actionType={actionType} onDismiss={closeModal} onInstallAnyway={installApp} />);
+			setModal(<AddonRequiredModal actionType={actionType} onClose={closeModal} onInstallAnyway={installApp} />);
 		},
 		[installApp, closeModal, setModal],
 	);
@@ -147,7 +147,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	const handleEnable = useEffectEvent(async () => {
 		if (app.installedAddon && !workspaceHasInstalledAddon) {
-			setModal(<AddonRequiredModal actionType='enable' onInstallAnyway={installApp} onDismiss={closeModal} />);
+			setModal(<AddonRequiredModal actionType='enable' onInstallAnyway={installApp} onClose={closeModal} />);
 			return;
 		}
 
@@ -155,21 +155,21 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	});
 
 	const handleDisable = useEffectEvent(() => {
-		setModal(<DisableAppModal app={app} onDismiss={closeModal} />);
+		setModal(<DisableAppModal app={app} onClose={closeModal} />);
 	});
 
 	const handleUninstall = useEffectEvent(() => {
 		if (isSubscribed) {
-			setModal(<UninstallingAppWithActiveSubscriptionModal app={app} onDismiss={closeModal} />);
+			setModal(<UninstallingAppWithActiveSubscriptionModal app={app} onClose={closeModal} />);
 			return;
 		}
 
 		if (app.migrated) {
-			setModal(<UninstallGrandfatheredAppModal app={app} onDismiss={closeModal} />);
+			setModal(<UninstallGrandfatheredAppModal app={app} onClose={closeModal} />);
 			return;
 		}
 
-		setModal(<AppUninstallationModal app={app} onDismiss={closeModal} />);
+		setModal(<AppUninstallationModal app={app} onClose={closeModal} />);
 	});
 
 	const incompatibleIconName = useCallback(
@@ -200,7 +200,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		setLoading(true);
 
 		if (app?.versionIncompatible) {
-			setModal(<IncompatibleModal app={app} action='update' onDismiss={closeModal} />);
+			setModal(<IncompatibleModal app={app} action='update' onClose={closeModal} />);
 			return;
 		}
 
@@ -209,11 +209,11 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	const handleSubscription = useEffectEvent(() => {
 		if (app?.versionIncompatible && !isSubscribed) {
-			setModal(<IncompatibleModal app={app} action='subscribe' onDismiss={closeModal} />);
+			setModal(<IncompatibleModal app={app} action='subscribe' onClose={closeModal} />);
 			return;
 		}
 
-		setModal(<ModifySubscriptionModal app={app} onDismiss={closeModal} />);
+		setModal(<ModifySubscriptionModal app={app} onClose={closeModal} />);
 	});
 
 	const sections = useMemo(() => {

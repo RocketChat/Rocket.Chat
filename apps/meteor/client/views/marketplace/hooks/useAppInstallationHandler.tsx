@@ -87,7 +87,7 @@ export const useAppInstallationHandler = ({ app, action, onDismiss, onSuccess }:
 							purchasedRef.current = true;
 							openPermissionModal();
 						}}
-						onDismiss={onDismiss}
+						onClose={onDismiss}
 					/>,
 				);
 				return;
@@ -100,6 +100,6 @@ export const useAppInstallationHandler = ({ app, action, onDismiss, onSuccess }:
 			return acquireApp();
 		}
 
-		setModal(<AppInstallationModal appName={app.name} onInstall={acquireApp} onDismiss={closeModal} />);
+		setModal(<AppInstallationModal appName={app.name} onInstall={acquireApp} onClose={closeModal} />);
 	});
 };

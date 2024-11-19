@@ -3,18 +3,18 @@ import { Button, Modal, Skeleton } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import MarkdownText from '../../../../components/MarkdownText';
-import { useAppsCountQuery } from '../../hooks/useAppsCountQuery';
-import { useMarketplaceContext } from '../../hooks/useMarketplaceContext';
-import { usePrivateAppsEnabled } from '../../hooks/usePrivateAppsEnabled';
-import { useUninstallAppMutation } from '../../hooks/useUninstallAppMutation';
+import MarkdownText from '../../../components/MarkdownText';
+import { useAppsCountQuery } from '../hooks/useAppsCountQuery';
+import { useMarketplaceContext } from '../hooks/useMarketplaceContext';
+import { usePrivateAppsEnabled } from '../hooks/usePrivateAppsEnabled';
+import { useUninstallAppMutation } from '../hooks/useUninstallAppMutation';
 
 type UninstallGrandfatheredAppModalProps = {
 	app: App;
-	onDismiss: () => void;
+	onClose: () => void;
 };
 
-const UninstallGrandfatheredAppModal = ({ app, onDismiss }: UninstallGrandfatheredAppModalProps) => {
+const UninstallGrandfatheredAppModal = ({ app, onClose }: UninstallGrandfatheredAppModalProps) => {
 	const { t } = useTranslation();
 	const privateAppsEnabled = usePrivateAppsEnabled();
 	const context = useMarketplaceContext();
@@ -24,7 +24,7 @@ const UninstallGrandfatheredAppModal = ({ app, onDismiss }: UninstallGrandfather
 
 	const handleUninstallButtonClick = async () => {
 		await uninstallAppMutation.mutateAsync();
-		onDismiss();
+		onClose();
 	};
 
 	const content = useMemo(() => {
@@ -49,7 +49,7 @@ const UninstallGrandfatheredAppModal = ({ app, onDismiss }: UninstallGrandfather
 				<Modal.HeaderText>
 					<Modal.Title>{t('Uninstall_grandfathered_app', { appName: app.name })}</Modal.Title>
 				</Modal.HeaderText>
-				<Modal.Close onClick={onDismiss} />
+				<Modal.Close onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>{content}</Modal.Content>
 			<Modal.Footer justifyContent='space-between'>
@@ -60,7 +60,7 @@ const UninstallGrandfatheredAppModal = ({ app, onDismiss }: UninstallGrandfather
 					</a>
 				</Modal.FooterAnnotation>
 				<Modal.FooterControllers>
-					<Button onClick={onDismiss}>{t('Cancel')}</Button>
+					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button danger onClick={handleUninstallButtonClick}>
 						{t('Uninstall')}
 					</Button>

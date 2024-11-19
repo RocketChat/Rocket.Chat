@@ -2,16 +2,16 @@ import { Box, Button, Modal } from '@rocket.chat/fuselage';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useExternalLink } from '../../../../hooks/useExternalLink';
-import { useCheckoutUrl } from '../../../admin/subscription/hooks/useCheckoutUrl';
-import { PRICING_LINK } from '../../../admin/subscription/utils/links';
+import { useExternalLink } from '../../../hooks/useExternalLink';
+import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
+import { PRICING_LINK } from '../../admin/subscription/utils/links';
 
 type PrivateAppInstallModalProps = {
-	onClose: () => void;
 	onProceed: () => void;
+	onClose: () => void;
 };
 
-const PrivateAppInstallModal = ({ onClose, onProceed }: PrivateAppInstallModalProps) => {
+const PrivateAppInstallModal = ({ onProceed, onClose }: PrivateAppInstallModalProps) => {
 	const { t } = useTranslation();
 
 	const openExternalLink = useExternalLink();

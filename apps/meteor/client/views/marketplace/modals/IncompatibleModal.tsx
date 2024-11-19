@@ -9,10 +9,10 @@ import { marketplaceQueryKeys } from '../queryKeys';
 type IncompatibleModalProps = {
 	app: App;
 	action: 'subscribe' | 'update';
-	onDismiss: () => void;
+	onClose: () => void;
 };
 
-const IncompatibleModal = ({ app, action, onDismiss }: IncompatibleModalProps) => {
+const IncompatibleModal = ({ app, action, onClose }: IncompatibleModalProps) => {
 	const appsOrchestrator = useAppsOrchestrator();
 
 	const { isSuccess, data: url } = useQuery({
@@ -27,7 +27,7 @@ const IncompatibleModal = ({ app, action, onDismiss }: IncompatibleModalProps) =
 		return null;
 	}
 
-	return <IframeModal url={url} confirm={onDismiss} cancel={onDismiss} />;
+	return <IframeModal url={url} confirm={onClose} cancel={onClose} />;
 };
 
 export default IncompatibleModal;
