@@ -30,6 +30,7 @@ const FileUploadModal = ({
 		register,
 		handleSubmit,
 		formState: { errors, isValid },
+		setFocus,
 	} = useForm({ mode: 'onChange', defaultValues: { name: fileName, description: fileDescription } });
 
 	const t = useTranslation();
@@ -71,6 +72,10 @@ const FileUploadModal = ({
 			onClose();
 		}
 	}, [file, dispatchToastMessage, invalidContentType, t, onClose]);
+
+	useEffect(() => {
+		setFocus('description');
+	}, [setFocus]);
 
 	return (
 		<Modal wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(submit)} {...props} />}>
