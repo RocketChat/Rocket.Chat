@@ -11866,8 +11866,9 @@ var aa = 500, d0 = Kt({
   color: e.barTextColor
 })), C0 = /* @__PURE__ */ s(({ state: e }) => {
   let t = e.description, o = e.title;
-  return /* @__PURE__ */ a.createElement(I0, null, /* @__PURE__ */ a.createElement(w0, { crashed: e.crashed }, /* @__PURE__ */ a.createElement(
-  o, { ...e })), /* @__PURE__ */ a.createElement(E0, null, /* @__PURE__ */ a.createElement(t, { ...e })));
+  return /* @__PURE__ */ a.createElement(I0, null, /* @__PURE__ */ a.createElement(w0, { crashed: e.crashed, id: "testing-module-title" }, /* @__PURE__ */ a.
+  createElement(o, { ...e })), /* @__PURE__ */ a.createElement(E0, { id: "testing-module-description" }, /* @__PURE__ */ a.createElement(t, {
+  ...e })));
 }, "DynamicInfo"), Bf = /* @__PURE__ */ s(({
   testProviders: e,
   errorCount: t,
@@ -11903,8 +11904,8 @@ var aa = 500, d0 = Kt({
           maxHeight: m ? 0 : y
         }
       },
-      /* @__PURE__ */ a.createElement(g0, { ref: d }, e.map((g) => /* @__PURE__ */ a.createElement(x0, { key: g.id }, /* @__PURE__ */ a.createElement(
-      C0, { state: g }), /* @__PURE__ */ a.createElement(S0, null, g.watchable && /* @__PURE__ */ a.createElement(
+      /* @__PURE__ */ a.createElement(g0, { ref: d }, e.map((g) => /* @__PURE__ */ a.createElement(x0, { key: g.id, "data-module-id": g.id },
+      /* @__PURE__ */ a.createElement(C0, { state: g }), /* @__PURE__ */ a.createElement(S0, null, g.watchable && /* @__PURE__ */ a.createElement(
         fe,
         {
           "aria-label": `${g.watching ? "Disable" : "Enable"} watch mode for ${g.name}`,
