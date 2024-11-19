@@ -79,8 +79,7 @@ function getOpenedRoomByRid(rid: IRoom['_id']) {
 }
 
 const computation = Tracker.autorun(() => {
-	const ready = CachedChatRoom.ready.get() && mainReady.get();
-	if (ready !== true) {
+	if (!mainReady.get()) {
 		return;
 	}
 	Tracker.nonreactive(() =>

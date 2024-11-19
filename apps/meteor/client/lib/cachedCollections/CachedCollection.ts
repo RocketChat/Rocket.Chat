@@ -71,23 +71,6 @@ export class CachedCollection<T extends { _id: string }, U = T> {
 			: () => undefined;
 
 		CachedCollectionManager.register(this);
-
-		if (!userRelated) {
-			void this.init();
-			return;
-		}
-
-		if (process.env.NODE_ENV === 'test') {
-			return;
-		}
-
-		onLoggedIn(() => {
-			void this.init();
-		});
-
-		Accounts.onLogout(() => {
-			this.ready.set(false);
-		});
 	}
 
 	protected get eventName(): `${Name}-changed` | `${string}/${Name}-changed` {
@@ -370,4 +353,23 @@ export class CachedCollection<T extends { _id: string }, U = T> {
 	}
 
 	private reconnectionComputation: Tracker.Computation | undefined;
+
+	listen() {
+		if (!this.userRelated) {
+			void this.init();
+			return;
+		}
+
+		if (process.env.NODE_ENV === 'test') {
+			return;
+		}
+
+		onLoggedIn(() => {
+			void this.init();
+		});
+
+		Accounts.onLogout(() => {
+			this.ready.set(false);
+		});
+	}
 }
