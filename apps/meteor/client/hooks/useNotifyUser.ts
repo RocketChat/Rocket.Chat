@@ -2,6 +2,7 @@ import type { AtLeast, ISubscription } from '@rocket.chat/core-typings';
 import { useRouter, useStream, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
 
+import { useIsLayoutEmbedded } from './useIsLayoutEmbedded';
 import { CachedChatSubscription } from '../../app/models/client';
 import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
 import { RoomManager } from '../lib/RoomManager';
@@ -10,6 +11,7 @@ import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 export const useNotifyUser = () => {
 	const user = useUser();
 	const router = useRouter();
+	const isLayoutEmbedded = useIsLayoutEmbedded();
 	const notifyUserStream = useStream('notify-user');
 	const muteFocusedConversations = useUserPreference('muteFocusedConversations');
 
@@ -31,7 +33,7 @@ export const useNotifyUser = () => {
 			const hasFocus = document.hasFocus();
 			const messageIsInOpenedRoom = RoomManager.opened === rid;
 
-			if (router.getSearchParameters().layout === 'embedded') {
+			if (isLayoutEmbedded) {
 				if (!hasFocus && messageIsInOpenedRoom) {
 					// Play a notification sound
 					void KonchatNotification.newMessage(rid);
@@ -41,7 +43,7 @@ export const useNotifyUser = () => {
 				void KonchatNotification.newMessage(rid);
 			}
 		},
-		[muteFocusedConversations, router],
+		[isLayoutEmbedded, muteFocusedConversations],
 	);
 
 	useEffect(() => {
@@ -61,7 +63,7 @@ export const useNotifyUser = () => {
 				hasFocus,
 			});
 
-			if (router.getSearchParameters().layout === 'embedded') {
+			if (isLayoutEmbedded) {
 				if (!hasFocus && messageIsInOpenedRoom) {
 					// Show a notification.
 					KonchatNotification.showDesktop(notification);
@@ -87,5 +89,5 @@ export const useNotifyUser = () => {
 				void notifyNewRoom(sub);
 			},
 		});
-	}, [notifyNewMessageAudio, notifyNewRoom, notifyUserStream, router, user?._id]);
+	}, [isLayoutEmbedded, notifyNewMessageAudio, notifyNewRoom, notifyUserStream, router, user?._id]);
 };
