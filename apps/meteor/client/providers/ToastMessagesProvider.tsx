@@ -22,17 +22,26 @@ const ToastMessageInnerProvider = ({ children }: ToastMessageInnerProviderProps)
 	const queryClient = useQueryClient();
 	const queryCacheInstance = queryClient.getQueryCache();
 	queryCacheInstance.config.onError = (error: DefaultError, query: Query<unknown, unknown, unknown>) => {
-		const { errorToastMessage, apiErrorToastMessage } = query?.meta as { errorToastMessage?: string; apiErrorToastMessage?: boolean };
-		if (apiErrorToastMessage) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} else if (errorToastMessage) {
-			dispatchToastMessage({ type: 'error', message: errorToastMessage });
+		const meta = query?.meta;
+		if (meta) {
+			const { errorToastMessage, apiErrorToastMessage } = meta as {
+				errorToastMessage?: string;
+				apiErrorToastMessage?: boolean;
+			};
+			if (apiErrorToastMessage) {
+				dispatchToastMessage({ type: 'error', message: error });
+			} else if (errorToastMessage) {
+				dispatchToastMessage({ type: 'error', message: errorToastMessage });
+			}
 		}
 	};
 	queryCacheInstance.config.onSuccess = (_, query: Query<unknown, unknown, unknown>) => {
-		const { successToastMessage } = query?.meta as { successToastMessage?: string };
-		if (successToastMessage) {
-			dispatchToastMessage({ type: 'success', message: successToastMessage });
+		const meta = query?.meta;
+		if (meta) {
+			const { successToastMessage } = meta as { successToastMessage?: string };
+			if (successToastMessage) {
+				dispatchToastMessage({ type: 'success', message: successToastMessage });
+			}
 		}
 	};
 
