@@ -12,7 +12,9 @@ export function useRoomQuery(
 ): UseQueryResult<IRoom | null, Error> {
 	const queryKey = ['rooms', rid] as const;
 
-	const queryResult = useQuery({queryKey, queryFn: async (): Promise<IRoom | null> => Rooms.findOne({ _id: rid }, { reactive: false }) ?? null,
+	const queryResult = useQuery({
+		queryKey,
+		queryFn: async (): Promise<IRoom | null> => Rooms.findOne({ _id: rid }, { reactive: false }) ?? null,
 		staleTime: Infinity,
 		...options,
 	});
