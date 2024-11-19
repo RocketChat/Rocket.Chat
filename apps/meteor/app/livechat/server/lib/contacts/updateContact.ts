@@ -1,14 +1,14 @@
 import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/core-typings';
 import { LivechatContacts, LivechatInquiry, LivechatRooms, Subscriptions } from '@rocket.chat/models';
 
+import { getAllowedCustomFields } from './getAllowedCustomFields';
+import { validateContactManager } from './validateContactManager';
+import { validateCustomFields } from './validateCustomFields';
 import {
 	notifyOnSubscriptionChangedByVisitorIds,
 	notifyOnRoomChangedByContactId,
 	notifyOnLivechatInquiryChangedByVisitorIds,
 } from '../../../../lib/server/lib/notifyListener';
-import { getAllowedCustomFields } from './getAllowedCustomFields';
-import { validateContactManager } from './validateContactManager';
-import { validateCustomFields } from './validateCustomFields';
 
 export type UpdateContactParams = {
 	contactId: string;
