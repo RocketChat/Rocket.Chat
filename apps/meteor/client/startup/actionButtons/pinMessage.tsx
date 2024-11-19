@@ -8,7 +8,6 @@ import { imperativeModal } from '../../lib/imperativeModal';
 import { queryClient } from '../../lib/queryClient';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../lib/toast';
-import { messageArgs } from '../../lib/utils/messageArgs';
 import PinMessageModal from '../../views/room/modals/PinMessageModal';
 
 Meteor.startup(() => {
@@ -18,8 +17,7 @@ Meteor.startup(() => {
 		label: 'Pin',
 		type: 'interaction',
 		context: ['pinned', 'message', 'message-mobile', 'threads', 'direct', 'videoconf', 'videoconf-threads'],
-		async action(_, props) {
-			const { message = messageArgs(this).msg } = props;
+		async action(_, { message }) {
 			const onConfirm = async () => {
 				message.pinned = true;
 				try {

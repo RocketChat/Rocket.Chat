@@ -3,19 +3,18 @@ import { isE2EEMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
+import { MessageAction } from './MessageAction';
 import { getPermaLink } from '../../../../client/lib/getPermaLink';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
-import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { router } from '../../../../client/providers/RouterProvider';
 import ForwardMessageModal from '../../../../client/views/room/modals/ForwardMessageModal/ForwardMessageModal';
 import ReactionListModal from '../../../../client/views/room/modals/ReactionListModal';
 import ReportMessageModal from '../../../../client/views/room/modals/ReportMessageModal';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
-import { ChatRoom, Subscriptions } from '../../../models/client';
+import { Rooms, Subscriptions } from '../../../models/client';
 import { t } from '../../../utils/lib/i18n';
-import { MessageAction } from './MessageAction';
 
 const getMainMessageText = (message: IMessage): IMessage => {
 	const newMessage = { ...message };
@@ -32,8 +31,7 @@ Meteor.startup(async () => {
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		role: 'link',
 		type: 'communication',
-		action(_, props) {
-			const { message = messageArgs(this).msg } = props;
+		action(_, { message }) {
 			roomCoordinator.openRouteLink(
 				'd',
 				{ name: message.u.username },
@@ -53,7 +51,7 @@ Meteor.startup(async () => {
 
 			// Check if we already have a DM started with the message user (not ourselves) or we can start one
 			if (!!user && user._id !== message.u._id && !hasPermission('create-d')) {
-				const dmRoom = ChatRoom.findOne({ _id: [user._id, message.u._id].sort().join('') });
+				const dmRoom = Rooms.findOne({ _id: [user._id, message.u._id].sort().join('') });
 				if (!dmRoom || !Subscriptions.findOne({ 'rid': dmRoom._id, 'u._id': user._id })) {
 					return false;
 				}
@@ -74,8 +72,7 @@ Meteor.startup(async () => {
 		label: 'Forward_message',
 		context: ['message', 'message-mobile', 'threads'],
 		type: 'communication',
-		async action(_, props) {
-			const { message = messageArgs(this).msg } = props;
+		async action(_, { message }) {
 			const permalink = await getPermaLink(message._id);
 			imperativeModal.open({
 				component: ForwardMessageModal,
@@ -100,9 +97,7 @@ Meteor.startup(async () => {
 		icon: 'quote',
 		label: 'Quote',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
-		async action(_, props) {
-			const { message = messageArgs(this).msg, chat, autoTranslateOptions } = props;
-
+		async action(_, { message, chat, autoTranslateOptions }) {
 			if (message && autoTranslateOptions?.autoTranslateEnabled && autoTranslateOptions.showAutoTranslate(message)) {
 				message.msg =
 					message.translations && autoTranslateOptions.autoTranslateLanguage
@@ -130,9 +125,8 @@ Meteor.startup(async () => {
 		// classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		type: 'duplication',
-		async action(_, props) {
+		async action(_, { message }) {
 			try {
-				const { message = messageArgs(this).msg } = props;
 				const permalink = await getPermaLink(message._id);
 				await navigator.clipboard.writeText(permalink);
 				dispatchToastMessage({ type: 'success', message: t('Copied') });
@@ -157,8 +151,7 @@ Meteor.startup(async () => {
 		// classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		type: 'duplication',
-		async action(_, props) {
-			const { message = messageArgs(this).msg } = props;
+		async action(_, { message }) {
 			const msgText = getMainMessageText(message).msg;
 			await navigator.clipboard.writeText(msgText);
 			dispatchToastMessage({ type: 'success', message: t('Copied') });
@@ -176,8 +169,7 @@ Meteor.startup(async () => {
 		label: 'Edit',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		type: 'management',
-		async action(_, props) {
-			const { message = messageArgs(this).msg, chat } = props;
+		async action(_, { message, chat }) {
 			await chat?.messageEditing.editMessage(message);
 		},
 		condition({ message, subscription, settings, room, user }) {
@@ -220,7 +212,7 @@ Meteor.startup(async () => {
 		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		color: 'alert',
 		type: 'management',
-		async action(this: unknown, _, { message = messageArgs(this).msg, chat }) {
+		async action(_, { message, chat }) {
 			await chat?.flows.requestMessageDeletion(message);
 		},
 		condition({ message, subscription, room, chat, user }) {
@@ -248,7 +240,7 @@ Meteor.startup(async () => {
 		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		color: 'alert',
 		type: 'management',
-		action(this: unknown, _, { message = messageArgs(this).msg }) {
+		action(_, { message }) {
 			imperativeModal.open({
 				component: ReportMessageModal,
 				props: {
@@ -275,7 +267,7 @@ Meteor.startup(async () => {
 		label: 'Reactions',
 		context: ['message', 'message-mobile', 'threads', 'videoconf', 'videoconf-threads'],
 		type: 'interaction',
-		action(this: unknown, _, { message: { reactions = {} } = messageArgs(this).msg }) {
+		action(_, { message: { reactions = {} } }) {
 			imperativeModal.open({
 				component: ReactionListModal,
 				props: { reactions, onClose: imperativeModal.close },

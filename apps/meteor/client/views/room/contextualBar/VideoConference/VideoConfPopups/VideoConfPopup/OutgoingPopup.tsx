@@ -15,8 +15,8 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useVideoConfCapabilities, useVideoConfPreferences } from '../../../../../../contexts/VideoConfContext';
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
+import { useVideoConfCapabilities, useVideoConfPreferences } from '../../../../../../contexts/VideoConfContext';
 
 type OutgoingPopupProps = {
 	id: string;

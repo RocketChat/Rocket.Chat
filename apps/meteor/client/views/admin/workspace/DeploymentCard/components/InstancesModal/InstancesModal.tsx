@@ -3,10 +3,10 @@ import type { IInstance } from '@rocket.chat/rest-typings';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../../../components/GenericModal';
-import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
 import DescriptionList from './DescriptionList';
 import DescriptionListEntry from './DescriptionListEntry';
+import GenericModal from '../../../../../../components/GenericModal';
+import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
 
 type InstancesModalProps = {
 	instances: IInstance[];

@@ -14,6 +14,10 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 		rid: string,
 		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
 	): Promise<T | null>;
+	findOneReadyByRoomId<T extends Document = ILivechatInquiryRecord>(
+		rid: string,
+		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
+	): Promise<T | null>;
 	getDistinctQueuedDepartments(options: DistinctOptions): Promise<(string | undefined)[]>;
 	setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null>;
 	setLastMessageByRoomId(rid: ILivechatInquiryRecord['rid'], message: IMessage): Promise<ILivechatInquiryRecord | null>;
@@ -43,4 +47,5 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	removeByVisitorToken(token: string): Promise<void>;
 	markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ILivechatInquiryRecord | null>;
 	findIdsByVisitorToken(token: ILivechatInquiryRecord['v']['token']): FindCursor<ILivechatInquiryRecord>;
+	setStatusById(inquiryId: string, status: LivechatInquiryStatus): Promise<ILivechatInquiryRecord>;
 }

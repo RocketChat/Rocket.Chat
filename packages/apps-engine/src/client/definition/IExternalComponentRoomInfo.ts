@@ -1,5 +1,5 @@
-import type { IRoom } from '../../definition/rooms';
 import type { IExternalComponentUserInfo } from './IExternalComponentUserInfo';
+import type { IRoom } from '../../definition/rooms';
 
 type ClientRoomInfo = Pick<IRoom, 'id' | 'slugifiedName'>;
 

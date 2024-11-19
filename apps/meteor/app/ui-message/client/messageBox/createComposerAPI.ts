@@ -2,10 +2,10 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
 
-import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
-import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
+import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {

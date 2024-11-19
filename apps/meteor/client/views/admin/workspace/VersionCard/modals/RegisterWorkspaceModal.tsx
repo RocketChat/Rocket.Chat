@@ -4,9 +4,9 @@ import { useSetModal } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import useFeatureBullets from '../hooks/useFeatureBullets';
 import RegisterWorkspaceSetupModal from './RegisterWorkspaceSetupModal';
 import RegisterWorkspaceTokenModal from './RegisterWorkspaceTokenModal';
+import useFeatureBullets from '../hooks/useFeatureBullets';
 
 type RegisterWorkspaceModalProps = {
 	onClose: () => void;

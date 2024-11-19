@@ -16,6 +16,9 @@ const insertUserDoc = sinon.stub();
 const callbacks = {
 	run: sinon.stub(),
 };
+const bcryptHash = sinon.stub();
+const sha = sinon.stub();
+const generateTempPassword = sinon.stub();
 
 const { UserConverter } = proxyquire.noCallThru().load('../../../../../app/importer/server/classes/converters/UserConverter', {
 	'../../../../../lib/callbacks': {
@@ -39,8 +42,19 @@ const { UserConverter } = proxyquire.noCallThru().load('../../../../../app/impor
 	'../../../../lib/server/lib/notifyListener': {
 		notifyOnUserChange: sinon.stub(),
 	},
+	'./generateTempPassword': {
+		generateTempPassword,
+		'@global': true,
+	},
+	'bcrypt': {
+		'hash': bcryptHash,
+		'@global': true,
+	},
 	'meteor/check': sinon.stub(),
 	'meteor/meteor': sinon.stub(),
+	'@rocket.chat/sha256': {
+		SHA256: sha,
+	},
 	'meteor/accounts-base': {
 		Accounts: {
 			insertUserDoc,
@@ -122,14 +136,16 @@ describe('User Converter', () => {
 		});
 
 		const converter = new UserConverter({ workInMemory: true });
-		sinon.stub(converter, 'generateTempPassword');
-		sinon.stub(converter, 'hashPassword');
-		converter.generateTempPassword.returns('tempPassword');
-		converter.hashPassword.callsFake((pass: string) => `hashed=${pass}`);
+		const hashPassword = sinon.stub(converter, 'hashPassword');
+
+		generateTempPassword.returns('tempPassword');
+		hashPassword.callsFake(async (pass) => `hashed=${pass}`);
+		bcryptHash.callsFake((pass: string) => `hashed=${pass}`);
+		sha.callsFake((pass: string) => pass);
 
 		it('should map an empty object', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 				}),
@@ -138,7 +154,7 @@ describe('User Converter', () => {
 
 		it('should map the name and username', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					name: 'name1',
@@ -154,7 +170,7 @@ describe('User Converter', () => {
 
 		it('should map optional fields', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					statusText: 'statusText1',
@@ -194,7 +210,7 @@ describe('User Converter', () => {
 
 		it('should not map roles', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					roles: ['role1'],
@@ -204,7 +220,7 @@ describe('User Converter', () => {
 
 		it('should map identifiers', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					name: 'user1',
 					emails: ['user1@domain.com'],
 					importIds: ['importId1'],
@@ -222,7 +238,7 @@ describe('User Converter', () => {
 
 		it('should map password', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					password: 'batata',
@@ -240,7 +256,7 @@ describe('User Converter', () => {
 
 		it('should map ldap service data', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					services: {
@@ -263,7 +279,7 @@ describe('User Converter', () => {
 
 		it('should map deleted users', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					deleted: true,
@@ -277,7 +293,7 @@ describe('User Converter', () => {
 
 		it('should map restored users', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					deleted: false,
@@ -291,7 +307,7 @@ describe('User Converter', () => {
 
 		it('should map user type', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					type: 'user',
@@ -301,7 +317,7 @@ describe('User Converter', () => {
 
 		it('should map bot type', async () => {
 			expect(
-				await (converter as any).buildNewUserObject({
+				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
 					type: 'bot',

@@ -3,10 +3,10 @@ import { useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-co
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import EditOauthAppWithData from './EditOauthAppWithData';
 import OAuthAddApp from './OAuthAddApp';
 import OAuthAppsTable from './OAuthAppsTable';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const OAuthAppsPage = (): ReactElement => {
 	const t = useTranslation();

@@ -3,8 +3,8 @@ import { useLayout, useSession } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 import SidebarTogglerButton from './SidebarTogglerButton';
+import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 
 const SideBarToggler = (): ReactElement => {
 	const { sidebar } = useLayout();

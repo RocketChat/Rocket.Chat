@@ -2,8 +2,8 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 
-import { createFakeUser } from '../../../../../tests/mocks/data';
 import UsersTable from './UsersTable';
+import { createFakeUser } from '../../../../../tests/mocks/data';
 
 const createFakeAdminUser = (freeSwitchExtension?: string) =>
 	createFakeUser({

@@ -1,6 +1,6 @@
 import { Users } from './fixtures/userStates';
 import { AccountProfile, HomeChannel } from './page-objects';
-import { setSettingValueById } from './utils';
+import { createTargetChannel, setSettingValueById } from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { test, expect } from './utils/test';
 
@@ -9,13 +9,16 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('feature preview', () => {
 	let poHomeChannel: HomeChannel;
 	let poAccountProfile: AccountProfile;
+	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', true);
+		targetChannel = await createTargetChannel(api);
 	});
 
 	test.afterAll(async ({ api }) => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', false);
+		await api.post('/channels.delete', { roomName: targetChannel });
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -73,13 +76,13 @@ test.describe.serial('feature preview', () => {
 		test('should display "Recent" button on sidebar search section, and display recent chats when clicked', async ({ page }) => {
 			await page.goto('/home');
 
-			await poHomeChannel.sidenav.btnRecent.click();
-			await expect(poHomeChannel.sidenav.sidebar.getByRole('heading', { name: 'Recent' })).toBeVisible();
+			await poHomeChannel.sidebar.btnRecent.click();
+			await expect(poHomeChannel.sidebar.sidebar.getByRole('heading', { name: 'Recent' })).toBeVisible();
 		});
 
 		test('should expand/collapse sidebar groups', async ({ page }) => {
 			await page.goto('/home');
-			const collapser = poHomeChannel.sidenav.firstCollapser;
+			const collapser = poHomeChannel.sidebar.firstCollapser;
 			let isExpanded: boolean;
 
 			await collapser.click();
@@ -94,7 +97,7 @@ test.describe.serial('feature preview', () => {
 		test('should expand/collapse sidebar groups with keyboard', async ({ page }) => {
 			await page.goto('/home');
 
-			const collapser = poHomeChannel.sidenav.firstCollapser;
+			const collapser = poHomeChannel.sidebar.firstCollapser;
 
 			await expect(async () => {
 				await collapser.focus();
@@ -115,7 +118,7 @@ test.describe.serial('feature preview', () => {
 		test('should be able to use keyboard to navigate through sidebar items', async ({ page }) => {
 			await page.goto('/home');
 
-			const collapser = poHomeChannel.sidenav.firstCollapser;
+			const collapser = poHomeChannel.sidebar.firstCollapser;
 			const dataIndex = await collapser.locator('../..').getAttribute('data-index');
 			const nextItem = page.locator(`[data-index="${Number(dataIndex) + 1}"]`).getByRole('link');
 
@@ -129,7 +132,7 @@ test.describe.serial('feature preview', () => {
 		test('should persist collapsed/expanded groups after page reload', async ({ page }) => {
 			await page.goto('/home');
 
-			const collapser = poHomeChannel.sidenav.firstCollapser;
+			const collapser = poHomeChannel.sidebar.firstCollapser;
 			await collapser.click();
 			const isExpanded = await collapser.getAttribute('aria-expanded');
 
@@ -137,6 +140,23 @@ test.describe.serial('feature preview', () => {
 
 			const isExpandedAfterReload = await collapser.getAttribute('aria-expanded');
 			expect(isExpanded).toEqual(isExpandedAfterReload);
+		});
+
+		test('should show unread badge on collapser when group is collapsed and has unread items', async ({ page }) => {
+			await page.goto('/home');
+
+			await poHomeChannel.sidebar.openChat(targetChannel);
+			await poHomeChannel.content.sendMessage('hello world');
+
+			await poHomeChannel.sidebar.typeSearch(targetChannel);
+			const item = poHomeChannel.sidebar.getSearchRoomByName(targetChannel);
+			await poHomeChannel.sidebar.markItemAsUnread(item);
+			await poHomeChannel.sidebar.escSearch();
+
+			const collapser = poHomeChannel.sidebar.firstCollapser;
+			await collapser.click();
+
+			await expect(poHomeChannel.sidebar.getItemUnreadBadge(collapser)).toBeVisible();
 		});
 	});
 });

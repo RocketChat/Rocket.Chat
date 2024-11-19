@@ -3,10 +3,10 @@ import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Page, PageHeader, PageContent } from '../../components/Page';
 import CannedResponseEdit from './CannedResponseEdit';
 import CannedResponseEditWithData from './CannedResponseEditWithData';
 import CannedResponsesTable from './CannedResponsesTable';
+import { Page, PageHeader, PageContent } from '../../components/Page';
 
 const CannedResponsesPage = () => {
 	const { t } = useTranslation();

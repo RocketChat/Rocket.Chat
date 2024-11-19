@@ -8,6 +8,9 @@ import type {
 	IOmnichannelServiceLevelAgreements,
 	ReportResult,
 	MACStats,
+	ILivechatContactVisitorAssociation,
+	ILivechatContact,
+	AtLeast,
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatRoomsModel } from '@rocket.chat/model-typings';
@@ -29,9 +32,9 @@ import type {
 	UpdateOptions,
 } from 'mongodb';
 
+import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { BaseRaw } from './BaseRaw';
 
 /**
  * @extends BaseRaw<ILivechatRoom>
@@ -1221,21 +1224,17 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	findPaginatedRoomsByVisitorsIdsAndSource({
-		visitorsIds,
-		source,
+	findClosedRoomsByContactPaginated({
+		contactId,
 		options = {},
 	}: {
-		visitorsIds: string[];
-		source?: string;
+		contactId: string;
 		options?: FindOptions;
 	}): FindPaginated<FindCursor<IOmnichannelRoom>> {
 		return this.findPaginated<IOmnichannelRoom>(
 			{
-				'v._id': { $in: visitorsIds },
-				...(source && {
-					$or: [{ 'source.type': new RegExp(escapeRegExp(source), 'i') }, { 'source.alias': new RegExp(escapeRegExp(source), 'i') }],
-				}),
+				contactId,
+				closedAt: { $exists: true },
 			},
 			options,
 		);
@@ -1921,6 +1920,21 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find(query, options);
 	}
 
+	findOneOpenByContactChannelVisitor(
+		association: ILivechatContactVisitorAssociation,
+		options: FindOptions<IOmnichannelRoom> = {},
+	): Promise<IOmnichannelRoom | null> {
+		const query: Filter<IOmnichannelRoom> = {
+			't': 'l',
+			'open': true,
+			'v._id': association.visitorId,
+			'source.type': association.source.type,
+			...(association.source.id ? { 'source.id': association.source.id } : {}),
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneOpenByVisitorToken(visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
@@ -1989,6 +2003,23 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		return this.find(query, options);
+	}
+
+	async findNewestByContactVisitorAssociation<T extends Document = IOmnichannelRoom>(
+		association: ILivechatContactVisitorAssociation,
+		options: Omit<FindOptions<IOmnichannelRoom>, 'sort' | 'limit'> = {},
+	): Promise<T | null> {
+		const query: Filter<IOmnichannelRoom> = {
+			't': 'l',
+			'v._id': association.visitorId,
+			'source.type': association.source.type,
+			...(association.source.id ? { 'source.id': association.source.id } : {}),
+		};
+
+		return this.findOne<T>(query, {
+			...options,
+			sort: { _updatedAt: -1 },
+		});
 	}
 
 	findOneOpenByRoomIdAndVisitorToken(roomId: string, visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}) {
@@ -2724,6 +2755,66 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	getTotalConversationsWithoutDepartmentBetweenDates(_start: Date, _end: Date, _extraQuery: Filter<IOmnichannelRoom>): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
+
+	setContactByVisitorAssociation(
+		association: ILivechatContactVisitorAssociation,
+		contact: Pick<AtLeast<ILivechatContact, '_id'>, '_id' | 'name'>,
+	): Promise<UpdateResult | Document> {
+		return this.updateMany(
+			{
+				't': 'l',
+				'v._id': association.visitorId,
+				'source.type': association.source.type,
+				...(association.source.id ? { 'source.id': association.source.id } : {}),
+			},
+			{
+				$set: {
+					contactId: contact._id,
+					...(contact.name ? { fname: contact.name } : {}),
+				},
+			},
+		);
+	}
+
+	updateContactDataByContactId(
+		oldContactId: ILivechatContact['_id'],
+		contact: Partial<Pick<ILivechatContact, '_id' | 'name'>>,
+	): Promise<UpdateResult | Document> {
+		const update = {
+			...(contact._id ? { contactId: contact._id } : {}),
+			...(contact.name ? { fname: contact.name } : {}),
+		};
+
+		if (!Object.keys(update).length) {
+			throw new Error('error-invalid-operation');
+		}
+
+		return this.updateMany(
+			{
+				t: 'l',
+				contactId: oldContactId,
+			},
+			{
+				$set: update,
+			},
+		);
+	}
+
+	updateMergedContactIds(
+		_contactIdsThatWereMerged: ILivechatContact['_id'][],
+		_newContactId: ILivechatContact['_id'],
+		_options?: UpdateOptions,
+	): Promise<UpdateResult | Document> {
+		throw new Error('Method not implemented.');
+	}
+
+	findClosedRoomsByContactAndSourcePaginated(_params: {
+		contactId: string;
+		source?: string;
+		options?: FindOptions;
+	}): FindPaginated<FindCursor<IOmnichannelRoom>> {
 		throw new Error('Method not implemented.');
 	}
 }

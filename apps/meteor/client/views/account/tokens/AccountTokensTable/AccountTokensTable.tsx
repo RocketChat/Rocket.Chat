@@ -4,6 +4,8 @@ import type { ReactElement, RefObject } from 'react';
 import React, { useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import AccountTokensRow from './AccountTokensRow';
+import AddToken from './AddToken';
 import GenericModal from '../../../../components/GenericModal';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
@@ -17,8 +19,6 @@ import { usePagination } from '../../../../components/GenericTable/hooks/usePagi
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useResizeInlineBreakpoint } from '../../../../hooks/useResizeInlineBreakpoint';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
-import AccountTokensRow from './AccountTokensRow';
-import AddToken from './AddToken';
 
 const AccountTokensTable = (): ReactElement => {
 	const { t } = useTranslation();
@@ -155,11 +155,11 @@ const AccountTokensTable = (): ReactElement => {
 								filteredTokens &&
 								filteredTokens.map((filteredToken) => (
 									<AccountTokensRow
-										{...filteredToken}
 										key={filteredToken.createdAt}
 										onRegenerate={handleRegenerate}
 										onRemove={handleRemove}
 										isMedium={isMedium}
+										{...filteredToken}
 									/>
 								))}
 						</GenericTableBody>

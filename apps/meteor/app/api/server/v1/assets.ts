@@ -1,13 +1,18 @@
+import { Settings } from '@rocket.chat/models';
 import { isAssetsUnsetAssetProps } from '@rocket.chat/rest-typings';
 
-import { RocketChatAssets, setAsset, unsetAsset, refreshClients } from '../../../assets/server';
+import { RocketChatAssets, refreshClients } from '../../../assets/server';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';
 
 API.v1.addRoute(
 	'assets.setAsset',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-assets'],
+	},
 	{
 		async post() {
 			const asset = await getUploadFormData(
@@ -29,7 +34,14 @@ API.v1.addRoute(
 				throw new Error('Invalid asset');
 			}
 
-			await setAsset(this.userId, fileBuffer, mimetype, assetName);
+			const { key, value } = await RocketChatAssets.setAssetWithBuffer(fileBuffer, mimetype, assetName);
+
+			const { modifiedCount } = await Settings.updateValueById(key, value);
+
+			if (modifiedCount) {
+				void notifyOnSettingChangedById(key);
+			}
+
 			if (refreshAllClients) {
 				await refreshClients(this.userId);
 			}
@@ -44,6 +56,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isAssetsUnsetAssetProps,
+		permissionsRequired: ['manage-assets'],
 	},
 	{
 		async post() {
@@ -52,7 +65,15 @@ API.v1.addRoute(
 			if (!isValidAsset) {
 				throw Error('Invalid asset');
 			}
-			await unsetAsset(this.userId, assetName);
+
+			const { key, value } = await RocketChatAssets.unsetAsset(assetName);
+
+			const { modifiedCount } = await Settings.updateValueById(key, value);
+
+			if (modifiedCount) {
+				void notifyOnSettingChangedById(key);
+			}
+
 			if (refreshAllClients) {
 				await refreshClients(this.userId);
 			}

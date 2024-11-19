@@ -2,8 +2,8 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import SubscriptionPage from './SubscriptionPage';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const SubscriptionRoute = (): ReactElement => {
 	const canViewSubscription = usePermission('manage-cloud');
