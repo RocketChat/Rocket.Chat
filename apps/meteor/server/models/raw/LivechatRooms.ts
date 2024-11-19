@@ -2820,6 +2820,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	findOpenByContactId(contactId: ILivechatContact['_id'], options?: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom> {
-		return this.find({ 'open': true, 'contactId': contactId }, options);
+		return this.find({ open: true, contactId }, options);
 	}
 }
