@@ -112,7 +112,6 @@ export class ContactMerger {
 		}
 	}
 
-<<<<<<< HEAD
 	static async createWithFields(session: ClientSession | undefined, ...fieldLists: FieldAndValue[][]): Promise<ContactMerger> {
 		const merger = new ContactMerger();
 		await merger.loadDataForFields(session, ...fieldLists);
@@ -121,11 +120,7 @@ export class ContactMerger {
 	}
 
 	static getAllFieldsFromContact(contact: ILivechatContact): FieldAndValue[] {
-		const { customFields = {}, name, contactManager } = contact;
-=======
-	static async getAllFieldsFromContact(contact: ILivechatContact): Promise<FieldAndValue[]> {
 		const { customFields = {}, name, contactManager, activity } = contact;
->>>>>>> b5a8aaaee3 (feat: use livechat contacts to calculate workspace MAC)
 
 		const fields = new Set<FieldAndValue>();
 
