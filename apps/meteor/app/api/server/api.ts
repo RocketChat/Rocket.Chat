@@ -48,8 +48,6 @@ const logger = new Logger('API');
 // TODO: MAJOR check if this is still needed
 const applyBreakingChanges = semver.gte(Info.version, '8.0.0');
 
-console.log('API version', Info.version, applyBreakingChanges);
-
 interface IAPIProperties {
 	useDefaultAuth: boolean;
 	prettyJson: boolean;
