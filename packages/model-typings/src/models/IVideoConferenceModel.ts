@@ -5,6 +5,7 @@ import type {
 	IUser,
 	VideoConference,
 	VideoConferenceStatus,
+	IVoIPVideoConferenceData,
 } from '@rocket.chat/core-typings';
 import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions } from 'mongodb';
 
@@ -67,4 +68,6 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	setDiscussionRidById(callId: string, discussionRid: IRoom['_id']): Promise<void>;
 
 	unsetDiscussionRid(discussionRid: IRoom['_id']): Promise<void>;
+
+	createVoIP(callDetails: IVoIPVideoConferenceData): Promise<string>;
 }

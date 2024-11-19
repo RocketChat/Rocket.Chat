@@ -21,6 +21,7 @@ import type {
 	VideoConferenceCapabilities,
 	VideoConferenceCreateData,
 	Optional,
+	ExternalVideoConference,
 } from '@rocket.chat/core-typings';
 import {
 	VideoConferenceStatus,
@@ -140,7 +141,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	public async join(uid: IUser['_id'] | undefined, callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string> {
 		return wrapExceptions(async () => {
 			const call = await VideoConferenceModel.findOneById(callId);
-			if (!call || call.endedAt) {
+			if (!call || call.endedAt || !videoConfTypes.isCallManagedByApp(call)) {
 				throw new Error('invalid-call');
 			}
 
@@ -173,6 +174,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const call = await VideoConferenceModel.findOneById(callId);
 		if (!call) {
 			throw new Error('invalid-call');
+		}
+
+		if (!videoConfTypes.isCallManagedByApp(call)) {
+			return [];
 		}
 
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
@@ -855,7 +860,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async joinCall(
-		call: VideoConference,
+		call: ExternalVideoConference,
 		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | undefined,
 		options: VideoConferenceJoinOptions,
 	): Promise<string> {
@@ -885,7 +890,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return room?.fname || room?.name || rid;
 	}
 
-	private async generateNewUrl(call: VideoConference): Promise<string> {
+	private async generateNewUrl(call: ExternalVideoConference): Promise<string> {
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
 			throw new Error('video-conf-provider-unavailable');
 		}
@@ -944,7 +949,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async getUrl(
-		call: VideoConference,
+		call: ExternalVideoConference,
 		user?: AtLeast<IUser, '_id' | 'username' | 'name'>,
 		options: VideoConferenceJoinOptions = {},
 	): Promise<string> {
@@ -987,6 +992,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-data-not-found');
 		}
 
+		if (!videoConfTypes.isCallManagedByApp(call)) {
+			return;
+		}
+
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
 			throw new Error('video-conf-provider-unavailable');
 		}
@@ -1001,6 +1010,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-data-not-found');
 		}
 
+		if (!videoConfTypes.isCallManagedByApp(call)) {
+			return;
+		}
+
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
 			throw new Error('video-conf-provider-unavailable');
 		}
@@ -1013,6 +1026,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		if (!call) {
 			throw new Error('video-conf-data-not-found');
+		}
+
+		if (!videoConfTypes.isCallManagedByApp(call)) {
+			return;
 		}
 
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {

@@ -5,6 +5,8 @@ import type {
 	IUser,
 	IRoom,
 	RocketChatRecordDeleted,
+	IVoIPVideoConference,
+	IVoIPVideoConferenceData,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
@@ -134,6 +136,20 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		};
 
 		return (await this.insertOne(call)).insertedId;
+	}
+
+	public async createVoIP(callDetails: IVoIPVideoConferenceData): Promise<string> {
+		const call: Omit<InsertionModel<IVoIPVideoConference>, 'rid' | 'createdBy'> = {
+			type: 'voip',
+			users: [],
+			messages: {},
+			status: VideoConferenceStatus.ENDED,
+			createdAt: new Date(),
+			providerName: 'chat.rocket.voip',
+			...callDetails,
+		};
+
+		return (await this.insertOne(call as InsertionModel<IVoIPVideoConference>)).insertedId;
 	}
 
 	public updateOneById(

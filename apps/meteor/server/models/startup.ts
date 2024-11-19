@@ -15,6 +15,7 @@ import './EmojiCustom';
 import './ExportOperations';
 import './FederationKeys';
 import './FederationServers';
+import './FreeSwitchChannel';
 import './ImportData';
 import './InstanceStatus';
 import './IntegrationHistory';
