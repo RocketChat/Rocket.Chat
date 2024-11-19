@@ -2,9 +2,9 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
-import { KonchatNotification } from '../../../app/ui/client/lib/KonchatNotification';
 import CustomHomePage from './CustomHomePage';
 import DefaultHomePage from './DefaultHomePage';
+import { KonchatNotification } from '../../../app/ui/client/lib/KonchatNotification';
 
 const HomePage = (): ReactElement => {
 	useEffect(() => {

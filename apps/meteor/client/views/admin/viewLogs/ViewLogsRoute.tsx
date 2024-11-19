@@ -2,8 +2,8 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import ViewLogsPage from './ViewLogsPage';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const ViewLogsRoute = (): ReactElement => {
 	const canViewLogs = usePermission('view-logs');

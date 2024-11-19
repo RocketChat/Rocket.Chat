@@ -5,6 +5,7 @@ import { GenericMenu } from '@rocket.chat/ui-client';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import RoomInfoActions from './RoomInfoActions';
 import {
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
@@ -28,7 +29,6 @@ import MarkdownText from '../../../../../components/MarkdownText';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 import { useRoomActions } from '../hooks/useRoomActions';
 import { useSplitRoomActions } from '../hooks/useSplitRoomActions';
-import RoomInfoActions from './RoomInfoActions';
 
 type RoomInfoProps = {
 	room: IRoom;

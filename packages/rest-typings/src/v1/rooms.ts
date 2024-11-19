@@ -1,8 +1,8 @@
 import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage, ITeam } from '@rocket.chat/core-typings';
 
+import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
-import { ajv } from './Ajv';
 
 type RoomsAutoCompleteChannelAndPrivateProps = { selector: string };
 

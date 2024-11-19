@@ -6,6 +6,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import VideoConfListItem from './VideoConfListItem';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -16,7 +17,6 @@ import {
 } from '../../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../../components/CustomScrollbars';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
-import VideoConfListItem from './VideoConfListItem';
 
 type VideoConfListProps = {
 	onClose: () => void;

@@ -28,6 +28,7 @@ import React, { useMemo, useRef, useCallback, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom';
 import type { OutgoingByeRequest } from 'sip.js/lib/core';
 
+import { useVoipSounds } from './hooks/useVoipSounds';
 import type { CallContextValue } from '../../contexts/CallContext';
 import { CallContext, useIsVoipEnterprise } from '../../contexts/CallContext';
 import { useDialModal } from '../../hooks/useDialModal';
@@ -36,7 +37,6 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import type { QueueAggregator } from '../../lib/voip/QueueAggregator';
 import { parseOutboundPhoneNumber } from '../../lib/voip/parseOutboundPhoneNumber';
 import { WrapUpCallModal } from '../../voip/components/modals/WrapUpCallModal';
-import { useVoipSounds } from './hooks/useVoipSounds';
 
 type NetworkState = 'online' | 'offline';
 

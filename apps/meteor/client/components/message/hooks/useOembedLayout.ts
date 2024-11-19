@@ -15,7 +15,7 @@ export const useOembedLayout = (): OembedLayout => {
   very often, so this hook is not going to be re-evaluated very often either;
   this is why we don't need to memoize the result or store it in a context
   */
-	const enabled = useSetting<boolean>('API_Embed', false);
+	const enabled = useSetting('API_Embed', false);
 	const { isMobile } = useLayout();
 
 	const maxWidth = isMobile ? ('100%' as const) : 368;

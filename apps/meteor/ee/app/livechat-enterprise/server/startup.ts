@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-import { businessHourManager } from '../../../../app/livechat/server/business-hour';
-import { SingleBusinessHourBehavior } from '../../../../app/livechat/server/business-hour/Single';
-import { settings } from '../../../../app/settings/server';
 import { MultipleBusinessHoursBehavior } from './business-hour/Multiple';
 import { updatePredictedVisitorAbandonment, updateQueueInactivityTimeout } from './lib/Helper';
 import { VisitorInactivityMonitor } from './lib/VisitorInactivityMonitor';
 import { logger } from './lib/logger';
+import { businessHourManager } from '../../../../app/livechat/server/business-hour';
+import { SingleBusinessHourBehavior } from '../../../../app/livechat/server/business-hour/Single';
+import { settings } from '../../../../app/settings/server';
 import './lib/query.helper';
 
 const visitorActivityMonitor = new VisitorInactivityMonitor();

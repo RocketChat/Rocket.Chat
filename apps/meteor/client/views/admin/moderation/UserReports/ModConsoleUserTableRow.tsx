@@ -1,10 +1,10 @@
 import type { IUser, UserReport, Serialized } from '@rocket.chat/core-typings';
 import React from 'react';
 
+import ModConsoleUserActions from './ModConsoleUserActions';
 import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import UserColumn from '../helpers/UserColumn';
-import ModConsoleUserActions from './ModConsoleUserActions';
 
 export type ModConsoleUserRowProps = {
 	report: Serialized<Pick<UserReport, '_id' | 'reportedUser' | 'ts'> & { count: number }>;

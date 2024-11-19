@@ -2,9 +2,9 @@ import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import type { MouseEvent } from 'react';
 import React, { memo } from 'react';
 
+import DiscussionsListItem from './components/DiscussionsListItem';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { normalizeThreadMessage } from '../../../../lib/normalizeThreadMessage';
-import DiscussionsListItem from './components/DiscussionsListItem';
 
 type DiscussionListRowProps = {
 	discussion: IDiscussionMessage;

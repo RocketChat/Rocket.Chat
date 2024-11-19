@@ -9,7 +9,6 @@
         "testunit": "run-p .:test:node .:test:deno",
         ".:test:node": "NODE_ENV=test ts-node ./tests/runner.ts",
         ".:test:deno": "cd deno-runtime && deno task test",
-        "lint": "run-p .:lint:eslint .:lint:deno",
         ".:lint:eslint": "eslint .",
         ".:lint:deno": "deno lint --ignore=deno-runtime/.deno deno-runtime/",
         "fix-lint": "eslint . --fix",
@@ -75,7 +74,7 @@
         "@types/nedb": "^1.8.16",
         "@types/node": "~20.16.15",
         "@types/semver": "^7.5.8",
-        "@types/stack-trace": "0.0.29",
+        "@types/stack-trace": "0.0.33",
         "@types/uuid": "~10.0.0",
         "@typescript-eslint/eslint-plugin": "~5.60.1",
         "@typescript-eslint/parser": "~5.60.1",
@@ -96,13 +95,13 @@
         "@msgpack/msgpack": "3.0.0-beta2",
         "adm-zip": "^0.5.16",
         "debug": "^4.3.7",
-        "esbuild": "^0.20.2",
+        "esbuild": "^0.24.0",
         "jose": "^4.15.9",
         "jsonrpc-lite": "^2.2.0",
         "lodash.clonedeep": "^4.5.0",
         "semver": "^7.6.3",
         "stack-trace": "0.0.10",
-        "uuid": "~11.0.2"
+        "uuid": "~11.0.3"
     },
     "nyc": {
         "include": [

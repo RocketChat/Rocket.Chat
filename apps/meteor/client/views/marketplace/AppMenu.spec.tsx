@@ -3,9 +3,9 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 
+import AppMenu from './AppMenu';
 import { mockedAppsContext } from '../../../tests/mocks/client/marketplace';
 import { createFakeApp } from '../../../tests/mocks/data';
-import AppMenu from './AppMenu';
 
 describe('without app details', () => {
 	it('should look good', async () => {

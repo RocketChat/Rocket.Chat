@@ -15,12 +15,12 @@ import type { ReactElement } from 'react';
 import React, { useState, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
-import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
 import AccountProfileForm from './AccountProfileForm';
 import ActionConfirmModal from './ActionConfirmModal';
 import { getProfileInitialValues } from './getProfileInitialValues';
+import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
+import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
+import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
 
 // TODO: enforce useMutation
 const AccountProfilePage = (): ReactElement => {

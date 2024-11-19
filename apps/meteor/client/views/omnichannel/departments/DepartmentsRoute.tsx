@@ -1,8 +1,8 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import DepartmentsPage from './DepartmentsPage';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const DepartmentsRoute = () => {
 	const canViewDepartments = usePermission('manage-livechat-departments');

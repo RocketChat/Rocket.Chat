@@ -2,8 +2,8 @@ import type { IOmnichannelRoom, IRoomWithRetentionPolicy, ISubscription } from '
 import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
-import { CachedCollection } from '../../../ui-cached-collection/client/models/CachedCollection';
 import { CachedChatRoom } from './CachedChatRoom';
+import { CachedCollection } from '../../../../client/lib/cachedCollections/CachedCollection';
 
 declare module '@rocket.chat/core-typings' {
 	interface ISubscription {

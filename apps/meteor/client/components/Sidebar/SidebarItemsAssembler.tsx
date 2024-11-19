@@ -2,9 +2,9 @@ import { Divider } from '@rocket.chat/fuselage';
 import React, { Fragment, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import SidebarNavigationItem from './SidebarNavigationItem';
 import type { SidebarItem } from '../../lib/createSidebarItems';
 import { isSidebarItem } from '../../lib/createSidebarItems';
-import SidebarNavigationItem from './SidebarNavigationItem';
 
 type SidebarItemsAssemblerProps = {
 	items: SidebarItem[];

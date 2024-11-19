@@ -11,7 +11,7 @@ import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 
 const UserMenuHeader = ({ user }: { user: IUser }) => {
 	const { t } = useTranslation();
-	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 	const displayName = useUserDisplayName(user);
 
 	return (

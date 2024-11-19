@@ -1,7 +1,7 @@
+import { BaseBridge } from './BaseBridge';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export abstract class EnvironmentalVariableBridge extends BaseBridge {
     public async doGetValueByName(envVarName: string, appId: string): Promise<string | undefined> {

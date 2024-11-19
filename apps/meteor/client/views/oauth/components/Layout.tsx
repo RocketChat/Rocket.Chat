@@ -9,7 +9,7 @@ type LayoutProps = {
 };
 
 const Layout = ({ children }: LayoutProps) => {
-	const hideLogo = useSetting<boolean>('Layout_Login_Hide_Logo');
+	const hideLogo = useSetting('Layout_Login_Hide_Logo', false);
 	const customLogo = useAssetWithDarkModePath('logo');
 	const customBackground = useAssetWithDarkModePath('background');
 

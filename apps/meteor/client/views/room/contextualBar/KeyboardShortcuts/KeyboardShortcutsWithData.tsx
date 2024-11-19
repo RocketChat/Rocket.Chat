@@ -1,8 +1,8 @@
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import KeyboardShortcuts from './KeyboardShortcuts';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 const KeyboardShortcutsWithData = (): ReactElement => {
 	const { closeTab } = useRoomToolbox();

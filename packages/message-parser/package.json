@@ -66,14 +66,14 @@
     "prettier": "~3.3.3",
     "prettier-plugin-pegjs": "~0.5.4",
     "rimraf": "^6.0.1",
-    "ts-loader": "~9.4.4",
+    "ts-loader": "~9.5.1",
     "typedoc": "~0.24.8",
     "typescript": "~5.6.3",
     "webpack": "~5.95.0",
     "webpack-cli": "~5.1.4"
   },
   "dependencies": {
-    "tldts": "~6.1.58"
+    "tldts": "~6.1.61"
   },
   "volta": {
     "extends": "../../package.json"

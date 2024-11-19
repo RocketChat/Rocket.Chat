@@ -5,6 +5,7 @@ import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import NotificationPreferencesForm from './NotificationPreferencesForm';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -13,7 +14,6 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 } from '../../../../components/Contextualbar';
-import NotificationPreferencesForm from './NotificationPreferencesForm';
 
 type NotificationPreferencesProps = {
 	handleClose: () => void;

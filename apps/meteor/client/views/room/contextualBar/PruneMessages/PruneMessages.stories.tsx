@@ -2,8 +2,8 @@ import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { Contextualbar } from '../../../../components/Contextualbar';
 import PruneMessages from './PruneMessages';
+import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
 	title: 'Room/Contextual Bar/PruneMessages',

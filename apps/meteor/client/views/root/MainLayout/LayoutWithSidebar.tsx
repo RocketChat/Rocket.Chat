@@ -3,9 +3,9 @@ import { useLayout, useSetting, useCurrentModal, useRoute, useCurrentRoutePath }
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useRef } from 'react';
 
-import Sidebar from '../../../sidebar';
 import AccessibilityShortcut from './AccessibilityShortcut';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
+import Sidebar from '../../../sidebar';
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
@@ -51,7 +51,7 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 			{!removeSidenav && <Sidebar />}
 			<main
 				id='main-content'
-				className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}
+				className={['main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}
 			>
 				{children}
 			</main>

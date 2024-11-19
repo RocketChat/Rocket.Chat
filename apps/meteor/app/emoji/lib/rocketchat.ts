@@ -31,6 +31,7 @@ export type EmojiPackages = {
 					aliases?: string[];
 					aliasOf?: undefined;
 					extension?: string;
+					etag?: string;
 			  }
 			| {
 					emojiPackage: string;
@@ -38,6 +39,7 @@ export type EmojiPackages = {
 					extension?: undefined;
 					aliases?: undefined;
 					shortnames?: undefined;
+					etag?: string;
 			  };
 	};
 };
