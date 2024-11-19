@@ -49,7 +49,11 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query);
 	}
 
-	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null> {
+	async findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null> {
+		if (!emailAddress) {
+			return null;
+		}
+
 		const query = {
 			'visitorEmails.address': String(emailAddress).toLowerCase(),
 		};

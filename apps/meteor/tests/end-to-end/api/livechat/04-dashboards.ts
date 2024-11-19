@@ -18,7 +18,7 @@ import {
 } from '../../../data/livechat/rooms';
 import { createAnOnlineAgent } from '../../../data/livechat/users';
 import { sleep } from '../../../data/livechat/utils';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting } from '../../../data/permissions.helper';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updateEESetting, updateSetting } from '../../../data/permissions.helper';
 import { deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
@@ -30,6 +30,7 @@ describe('LIVECHAT - dashboards', function () {
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 	});
 
 	let department: ILivechatDepartment;
