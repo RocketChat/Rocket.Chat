@@ -30,7 +30,7 @@ const FileUploadModal = ({
 	const {
 		register,
 		handleSubmit,
-		formState: { errors, isValid },
+		formState: { errors, isSubmitting },
 	} = useForm({ mode: 'onBlur', defaultValues: { name: fileName, description: fileDescription } });
 
 	const t = useTranslation();
@@ -74,6 +74,8 @@ const FileUploadModal = ({
 	}, [file, dispatchToastMessage, invalidContentType, t, onClose]);
 
 	const fileUploadFormId = useUniqueId();
+	const fileNameField = useUniqueId();
+	const fileDescriptionField = useUniqueId();
 
 	return (
 		<Modal
@@ -93,28 +95,36 @@ const FileUploadModal = ({
 					</Box>
 					<FieldGroup>
 						<Field>
-							<FieldLabel>{t('Upload_file_name')}</FieldLabel>
+							<FieldLabel htmlFor={fileNameField}>{t('Upload_file_name')}</FieldLabel>
 							<FieldRow>
 								<TextInput
+									id={fileNameField}
 									{...register('name', {
-										required: t('error-the-field-is-required', { field: t('Name') }),
+										required: t('error-the-field-is-required', { field: t('Upload_file_name') }),
 									})}
+									error={errors.name?.message}
+									aria-invalid={errors.name ? 'true' : 'false'}
+									aria-describedby={`${fileNameField}-error`}
+									aria-required='true'
 								/>
 							</FieldRow>
-							<FieldError>{errors.name?.message}</FieldError>
+							{errors.name && <FieldError id={`${fileNameField}-error`}>{errors.name.message}</FieldError>}
 						</Field>
 						{showDescription && (
 							<Field>
-								<FieldLabel>{t('Upload_file_description')}</FieldLabel>
+								<FieldLabel htmlFor={fileDescriptionField}>{t('Upload_file_description')}</FieldLabel>
 								<FieldRow>
 									<TextInput
+										id={fileDescriptionField}
 										{...register('description', {
 											validate: (value) => isDescriptionValid(value || ''),
 										})}
-										aria-label={t('Upload_file_description')}
+										error={errors.description?.message}
+										aria-invalid={errors.description ? 'true' : 'false'}
+										aria-describedby={`${fileDescriptionField}-error`}
 									/>
 								</FieldRow>
-								<FieldError>{errors.description?.message}</FieldError>
+								{errors.description && <FieldError id={`${fileDescriptionField}-error`}>{errors.description.message}</FieldError>}
 							</Field>
 						)}
 					</FieldGroup>
@@ -124,7 +134,7 @@ const FileUploadModal = ({
 						<Button secondary onClick={onClose}>
 							{t('Cancel')}
 						</Button>
-						<Button primary type='submit' disabled={!isValid}>
+						<Button primary type='submit' loading={isSubmitting}>
 							{t('Send')}
 						</Button>
 					</Modal.FooterControllers>
