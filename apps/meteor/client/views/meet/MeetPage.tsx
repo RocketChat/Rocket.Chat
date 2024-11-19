@@ -87,7 +87,7 @@ const MeetPage = () => {
 							top: '5%',
 							right: '2%',
 						}}
-						className='Self_Video'
+						className='meet__video--self'
 						backgroundColor='dark'
 						alignItems='center'
 					>

@@ -1,10 +1,10 @@
-@import '../../styles/colors';
-@import '../../styles/variables';
+@use '../../styles/colors';
+@use '../../styles/variables';
 
-$modal-padding: $default-padding;
-$modal-border-radius: 2 * $default-border-radius;
+$modal-padding: variables.$default-padding;
+$modal-border-radius: 2 * variables.$default-border-radius;
 $modal-shadow: 0 7px 16px 0 rgba(0, 0, 0, 0.1);
-$modal-background-color: $bg-color-white;
+$modal-background-color: colors.$bg-color-white;
 
 :global(.is-blurred) {
 	filter: blur(2px);
@@ -19,7 +19,7 @@ $modal-background-color: $bg-color-white;
 	width: 100%;
 	height: 100%;
 
-	background-color: $overlay-bg-color;
+	background-color: colors.$overlay-bg-color;
 }
 
 .modal {
@@ -43,7 +43,7 @@ $modal-background-color: $bg-color-white;
 
 	&--animated {
 		animation-name: fadeInUp;
-		animation-duration: $default-time-animation;
+		animation-duration: variables.$default-time-animation;
 	}
 }
 
@@ -52,7 +52,7 @@ $modal-background-color: $bg-color-white;
 
 	text-align: center;
 
-	color: $color-text-dark;
+	color: colors.$color-text-dark;
 
 	font-size: 1rem;
 	font-weight: 500;

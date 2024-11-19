@@ -7,4 +7,4 @@ export const AuthzCachedCollection = new CachedCollection<IPermission>({
 	eventType: 'notify-logged',
 });
 
-export const ChatPermissions = AuthzCachedCollection.collection;
+export const Permissions = AuthzCachedCollection.collection;

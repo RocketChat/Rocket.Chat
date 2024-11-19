@@ -196,6 +196,10 @@ API.v1.addRoute(
 			const fileStore = FileUpload.getStore('Uploads');
 			const uploadedFile = await fileStore.insert(details, fileBuffer);
 
+			if ((fields.description?.length ?? 0) > settings.get<number>('Message_MaxAllowedSize')) {
+				throw new Meteor.Error('error-message-size-exceeded');
+			}
+
 			uploadedFile.description = fields.description;
 
 			delete fields.description;
@@ -297,6 +301,10 @@ API.v1.addRoute(
 
 			if (!file) {
 				throw new Meteor.Error('invalid-file');
+			}
+
+			if ((this.bodyParams.description?.length ?? 0) > settings.get<number>('Message_MaxAllowedSize')) {
+				throw new Meteor.Error('error-message-size-exceeded');
 			}
 
 			file.description = this.bodyParams.description;

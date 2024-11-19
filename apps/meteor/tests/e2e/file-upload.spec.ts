@@ -76,6 +76,7 @@ test.describe.serial('file-upload', () => {
 		await expect(poHomeChannel.content.btnModalConfirm).not.toBeVisible();
 	});
 });
+
 test.describe('file-upload-not-member', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;

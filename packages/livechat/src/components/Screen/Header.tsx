@@ -12,6 +12,7 @@ import Alert from '../Alert';
 import { Avatar } from '../Avatar';
 import Header from '../Header';
 import Tooltip from '../Tooltip';
+import type { ScreenContextValue } from './ScreenProvider';
 
 type screenHeaderProps = {
 	alerts: { id: string; children: ComponentChildren; [key: string]: unknown }[];
@@ -24,7 +25,7 @@ type screenHeaderProps = {
 	onEnableNotifications: () => unknown;
 	onDisableNotifications: () => unknown;
 	onMinimize: () => unknown;
-	onRestore: () => unknown;
+	onRestore: ScreenContextValue['onRestore'];
 	onOpenWindow: () => unknown;
 	queueInfo: {
 		spot: number;
