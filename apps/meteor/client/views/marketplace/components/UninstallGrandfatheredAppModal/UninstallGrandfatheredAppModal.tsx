@@ -1,3 +1,4 @@
+import type { App } from '@rocket.chat/core-typings';
 import { Button, Modal, Skeleton } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,18 +7,25 @@ import MarkdownText from '../../../../components/MarkdownText';
 import { useAppsCountQuery } from '../../hooks/useAppsCountQuery';
 import { useMarketplaceContext } from '../../hooks/useMarketplaceContext';
 import { usePrivateAppsEnabled } from '../../hooks/usePrivateAppsEnabled';
+import { useUninstallAppMutation } from '../../hooks/useUninstallAppMutation';
 
 type UninstallGrandfatheredAppModalProps = {
-	appName: string;
-	handleUninstall: () => void;
-	handleClose: () => void;
+	app: App;
+	onDismiss: () => void;
 };
 
-const UninstallGrandfatheredAppModal = ({ appName, handleUninstall, handleClose }: UninstallGrandfatheredAppModalProps) => {
+const UninstallGrandfatheredAppModal = ({ app, onDismiss }: UninstallGrandfatheredAppModalProps) => {
 	const { t } = useTranslation();
 	const privateAppsEnabled = usePrivateAppsEnabled();
 	const context = useMarketplaceContext();
 	const { isLoading, isSuccess, data } = useAppsCountQuery(context);
+
+	const uninstallAppMutation = useUninstallAppMutation(app);
+
+	const handleUninstallButtonClick = async () => {
+		await uninstallAppMutation.mutateAsync();
+		onDismiss();
+	};
 
 	const content = useMemo(() => {
 		if (context === 'private' && !privateAppsEnabled) {
@@ -39,9 +47,9 @@ const UninstallGrandfatheredAppModal = ({ appName, handleUninstall, handleClose 
 		<Modal>
 			<Modal.Header>
 				<Modal.HeaderText>
-					<Modal.Title>{t('Uninstall_grandfathered_app', { appName })}</Modal.Title>
+					<Modal.Title>{t('Uninstall_grandfathered_app', { appName: app.name })}</Modal.Title>
 				</Modal.HeaderText>
-				<Modal.Close onClick={handleClose} />
+				<Modal.Close onClick={onDismiss} />
 			</Modal.Header>
 			<Modal.Content>{content}</Modal.Content>
 			<Modal.Footer justifyContent='space-between'>
@@ -52,8 +60,8 @@ const UninstallGrandfatheredAppModal = ({ appName, handleUninstall, handleClose 
 					</a>
 				</Modal.FooterAnnotation>
 				<Modal.FooterControllers>
-					<Button onClick={handleClose}>{t('Cancel')}</Button>
-					<Button danger onClick={handleUninstall}>
+					<Button onClick={onDismiss}>{t('Cancel')}</Button>
+					<Button danger onClick={handleUninstallButtonClick}>
 						{t('Uninstall')}
 					</Button>
 				</Modal.FooterControllers>

@@ -1,54 +1,41 @@
 import type { App } from '@rocket.chat/core-typings';
-import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import React, { useCallback, useRef } from 'react';
 
 import { useAppsCountQuery } from './useAppsCountQuery';
 import { useAppsOrchestrator } from './useAppsOrchestrator';
 import { useMarketplaceContext } from './useMarketplaceContext';
+import { useNotifyAdminsMutation } from './useNotifyAdminsMutation';
 import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
 import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
-import { useExternalLink } from '../../../hooks/useExternalLink';
-import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 import IframeModal from '../IframeModal';
-import AppInstallModal from '../components/AppInstallModal/AppInstallModal';
 import type { Actions } from '../helpers';
 import { handleAPIError } from '../helpers/handleAPIError';
+import AppInstallationModal from '../modals/AppInstallationModal';
+import PurchaseAppModal from '../modals/PurchaseAppModal';
 
 export type AppInstallationHandlerParams = {
 	app: App;
 	action: Actions | '';
-	isAppPurchased?: boolean;
 	onDismiss: () => void;
 	onSuccess: (action: Actions | '', appPermissions?: App['permissions']) => void;
-	setIsPurchased: (purchased: boolean) => void;
 };
 
-export function useAppInstallationHandler({
-	app,
-	action,
-	isAppPurchased,
-	onDismiss,
-	onSuccess,
-	setIsPurchased,
-}: AppInstallationHandlerParams) {
+export const useAppInstallationHandler = ({ app, action, onDismiss, onSuccess }: AppInstallationHandlerParams) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
-	const context = useMarketplaceContext();
+	const appCountQuery = useAppsCountQuery(useMarketplaceContext());
 
-	const appCountQuery = useAppsCountQuery(context);
-
-	const notifyAdmins = useEndpoint('POST', `/apps/notify-admins`);
+	const notifyAdminsMutation = useNotifyAdminsMutation();
 
 	const openIncompatibleModal = useOpenIncompatibleModal();
 
-	const openExternalLink = useExternalLink();
-	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'user-page', action: 'buy_more' });
-
-	const closeModal = useCallback(() => {
+	const closeModal = useEffectEvent(() => {
 		setModal(null);
 		onDismiss();
-	}, [onDismiss, setModal]);
+	});
 
 	const success = useCallback(
 		(appPermissions?: App['permissions']) => {
@@ -62,53 +49,25 @@ export function useAppInstallationHandler({
 
 	const appsOrchestrator = useAppsOrchestrator();
 
-	const acquireApp = useCallback(async () => {
-		if (action === 'purchase' && !isAppPurchased) {
-			try {
-				const data = await appsOrchestrator.buildExternalUrl(app.id, app.purchaseType, false);
-				setModal(
-					<IframeModal
-						url={data.url}
-						cancel={onDismiss}
-						confirm={() => {
-							setIsPurchased(true);
-							openPermissionModal();
-						}}
-					/>,
-				);
-			} catch (error) {
-				handleAPIError(error);
-			}
-			return;
-		}
+	const purchasedRef = useRef(app?.isPurchased ?? false);
 
-		openPermissionModal();
-	}, [action, isAppPurchased, openPermissionModal, appsOrchestrator, app.id, app.purchaseType, setModal, onDismiss, setIsPurchased]);
-
-	return useCallback(async () => {
+	return useEffectEvent(async () => {
 		if (app?.versionIncompatible) {
 			openIncompatibleModal(app, action, closeModal);
 			return;
 		}
 
 		if (action === 'request') {
-			const requestConfirmAction = (postMessage: Record<string, unknown>) => {
+			const handleConfirm = (postMessage: Record<string, unknown>) => {
 				setModal(null);
-				dispatchToastMessage({ type: 'success', message: 'App request submitted' });
-
-				notifyAdmins({
-					appId: app.id,
-					appName: app.name,
-					appVersion: app.marketplaceVersion,
-					message: typeof postMessage.message === 'string' ? postMessage.message : '',
-				});
-
+				dispatchToastMessage({ type: 'success', message: 'App request submitted' }); // TODO: i18n
+				notifyAdminsMutation.mutate({ app, postMessage });
 				success();
 			};
 
 			try {
 				const data = await appsOrchestrator.buildExternalAppRequest(app.id);
-				setModal(<IframeModal url={data.url} wrapperHeight='x460' cancel={onDismiss} confirm={requestConfirmAction} />);
+				setModal(<IframeModal url={data.url} wrapperHeight='x460' cancel={onDismiss} confirm={handleConfirm} />);
 			} catch (error) {
 				handleAPIError(error);
 			}
@@ -119,37 +78,28 @@ export function useAppInstallationHandler({
 			return;
 		}
 
+		const acquireApp = async () => {
+			if (action === 'purchase' && !purchasedRef.current) {
+				setModal(
+					<PurchaseAppModal
+						app={app}
+						onPurchase={() => {
+							purchasedRef.current = true;
+							openPermissionModal();
+						}}
+						onDismiss={onDismiss}
+					/>,
+				);
+				return;
+			}
+
+			openPermissionModal();
+		};
+
 		if (appCountQuery.data.hasUnlimitedApps) {
 			return acquireApp();
 		}
 
-		setModal(
-			<AppInstallModal
-				enabled={appCountQuery.data.enabled}
-				limit={appCountQuery.data.limit}
-				appName={app.name}
-				handleClose={closeModal}
-				handleConfirm={acquireApp}
-				handleEnableUnlimitedApps={() => {
-					openExternalLink(manageSubscriptionUrl);
-					setModal(null);
-				}}
-			/>,
-		);
-	}, [
-		app,
-		action,
-		appCountQuery.data,
-		setModal,
-		closeModal,
-		acquireApp,
-		openIncompatibleModal,
-		dispatchToastMessage,
-		notifyAdmins,
-		success,
-		appsOrchestrator,
-		onDismiss,
-		openExternalLink,
-		manageSubscriptionUrl,
-	]);
-}
+		setModal(<AppInstallationModal appName={app.name} onInstall={acquireApp} onDismiss={closeModal} />);
+	});
+};

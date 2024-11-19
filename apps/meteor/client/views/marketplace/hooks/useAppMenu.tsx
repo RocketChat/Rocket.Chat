@@ -2,7 +2,7 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useEndpoint, usePermission, useRouter } from '@rocket.chat/ui-contexts';
+import { useSetModal, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactNode } from 'react';
 import React, { useMemo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,19 +13,19 @@ import { useAppsCountQuery } from './useAppsCountQuery';
 import { useMarketplaceActions } from './useMarketplaceActions';
 import { useMarketplaceContext } from './useMarketplaceContext';
 import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
-import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
 import { useSetAppStatusMutation } from './useSetAppStatusMutation';
-import { useUninstallAppMutation } from './useUninstallAppMutation';
-import WarningModal from '../../../components/WarningModal';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import type { AddonActionType } from '../AppsList/AddonRequiredModal';
 import AddonRequiredModal from '../AppsList/AddonRequiredModal';
-import IframeModal from '../IframeModal';
 import UninstallGrandfatheredAppModal from '../components/UninstallGrandfatheredAppModal/UninstallGrandfatheredAppModal';
 import type { Actions } from '../helpers';
 import { appEnabledStatuses, appButtonProps } from '../helpers';
-import { handleAPIError } from '../helpers/handleAPIError';
+import AppUninstallationModal from '../modals/AppUninstallationModal';
+import DisableAppModal from '../modals/DisableAppModal';
+import IncompatibleModal from '../modals/IncompatibleModal';
+import ModifySubscriptionModal from '../modals/ModifySubscriptionModal';
+import UninstallingAppWithActiveSubscriptionModal from '../modals/UninstallingAppWithActiveSubscriptionModal';
 
 export type AppMenuOption = {
 	id: string;
@@ -38,7 +38,6 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const setModal = useSetModal();
-	const openIncompatibleModal = useOpenIncompatibleModal();
 
 	const context = useMarketplaceContext();
 	const appCountQuery = useAppsCountQuery(context);
@@ -51,7 +50,6 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	const [isLoading, setLoading] = useState(false);
 	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
-	const [isAppPurchased, setPurchased] = useState(app?.isPurchased);
 
 	const button = appButtonProps({ ...app, isAdminUser: canManageApps, endUserRequested: false });
 	const buttonLabel = button?.label.replace(' ', '_') as
@@ -64,9 +62,6 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		| 'Request'
 		| 'Requested';
 	const action = button?.action || '';
-
-	const buildExternalUrl = useEndpoint('GET', '/apps');
-	const syncApp = useEndpoint('POST', '/apps/:id/sync', { id: app.id });
 
 	const isSubscribed = app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);
 	const isAppEnabled = app.status ? appEnabledStatuses.includes(app.status) : false;
@@ -99,22 +94,20 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		onConfirm: (permissionsGranted) => installationSuccess(action, permissionsGranted),
 	});
 
-	const appInstallationHandler = useAppInstallationHandler({
+	const installApp = useAppInstallationHandler({
 		app,
-		isAppPurchased,
 		action,
 		onDismiss: closeModal,
 		onSuccess: installationSuccess,
-		setIsPurchased: setPurchased,
 	});
 
 	// TODO: There is no necessity of all these callbacks being out of the above useMemo.
 	// My propose here is to refactor the hook to make it clearer and with less unnecessary caching.
 	const missingAddonHandler = useCallback(
 		(actionType: AddonActionType) => {
-			setModal(<AddonRequiredModal actionType={actionType} onDismiss={closeModal} onInstallAnyway={appInstallationHandler} />);
+			setModal(<AddonRequiredModal actionType={actionType} onDismiss={closeModal} onInstallAnyway={installApp} />);
 		},
-		[appInstallationHandler, closeModal, setModal],
+		[installApp, closeModal, setModal],
 	);
 
 	const handleAddon = useCallback(
@@ -134,38 +127,8 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	const handleAcquireApp = useCallback(() => {
 		setLoading(true);
-		handleAddon('install', appInstallationHandler);
-	}, [appInstallationHandler, handleAddon]);
-
-	const handleSubscription = useCallback(async () => {
-		if (app?.versionIncompatible && !isSubscribed) {
-			openIncompatibleModal(app, 'subscribe', closeModal);
-			return;
-		}
-
-		let data;
-		try {
-			data = (await buildExternalUrl({
-				buildExternalUrl: 'true',
-				appId: app.id,
-				purchaseType: app.purchaseType,
-				details: 'true',
-			})) as { url: string };
-		} catch (error) {
-			handleAPIError(error);
-			return;
-		}
-
-		const confirm = async () => {
-			try {
-				await syncApp();
-			} catch (error) {
-				handleAPIError(error);
-			}
-		};
-
-		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal} />);
-	}, [app, isSubscribed, setModal, closeModal, openIncompatibleModal, buildExternalUrl, syncApp]);
+		handleAddon('install', installApp);
+	}, [installApp, handleAddon]);
 
 	const handleViewLogs = useEffectEvent(() => {
 		router.navigate({
@@ -182,67 +145,31 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	const setAppStatusMutation = useSetAppStatusMutation(app);
 
-	const handleEnable = useEffectEvent(() => {
-		if (canManageApps && app.installedAddon && !workspaceHasInstalledAddon) {
-			return missingAddonHandler('enable');
-		}
-
-		setAppStatusMutation.mutate(AppStatus.MANUALLY_ENABLED);
-	});
-
-	const handleDisable = useEffectEvent(() => {
-		const handleConfirm = () => {
-			closeModal();
-			setAppStatusMutation.mutate(AppStatus.MANUALLY_DISABLED);
-		};
-
-		const handleClose = () => {
-			closeModal();
-		};
-
-		setModal(
-			<WarningModal
-				text={t('Apps_Marketplace_Deactivate_App_Prompt')}
-				confirmText={t('Yes')}
-				confirm={handleConfirm}
-				close={handleClose}
-			/>,
-		);
-	});
-
-	const uninstallAppMutation = useUninstallAppMutation(app);
-
-	const handleUninstall = useEffectEvent(() => {
-		const uninstall = async () => {
-			closeModal();
-			await uninstallAppMutation.mutateAsync();
-		};
-
-		if (isSubscribed) {
-			const confirm = async () => {
-				await handleSubscription();
-			};
-
-			setModal(
-				<WarningModal
-					text={t('Apps_Marketplace_Uninstall_Subscribed_App_Prompt')}
-					confirmText={t('Apps_Marketplace_Modify_App_Subscription')}
-					cancelText={t('Apps_Marketplace_Uninstall_Subscribed_App_Anyway')}
-					close={closeModal}
-					cancel={uninstall}
-					confirm={confirm}
-				/>,
-			);
-		}
-
-		if (app.migrated) {
-			setModal(<UninstallGrandfatheredAppModal appName={app.name} handleUninstall={uninstall} handleClose={closeModal} />);
+	const handleEnable = useEffectEvent(async () => {
+		if (app.installedAddon && !workspaceHasInstalledAddon) {
+			setModal(<AddonRequiredModal actionType='enable' onInstallAnyway={installApp} onDismiss={closeModal} />);
 			return;
 		}
 
-		setModal(
-			<WarningModal close={closeModal} confirm={uninstall} text={t('Apps_Marketplace_Uninstall_App_Prompt')} confirmText={t('Yes')} />,
-		);
+		await setAppStatusMutation.mutateAsync(AppStatus.MANUALLY_ENABLED);
+	});
+
+	const handleDisable = useEffectEvent(() => {
+		setModal(<DisableAppModal app={app} onDismiss={closeModal} />);
+	});
+
+	const handleUninstall = useEffectEvent(() => {
+		if (isSubscribed) {
+			setModal(<UninstallingAppWithActiveSubscriptionModal app={app} onDismiss={closeModal} />);
+			return;
+		}
+
+		if (app.migrated) {
+			setModal(<UninstallGrandfatheredAppModal app={app} onDismiss={closeModal} />);
+			return;
+		}
+
+		setModal(<AppUninstallationModal app={app} onDismiss={closeModal} />);
 	});
 
 	const incompatibleIconName = useCallback(
@@ -269,16 +196,25 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		[isSubscribed],
 	);
 
-	const handleUpdate = useCallback(async () => {
+	const handleUpdate = useEffectEvent(() => {
 		setLoading(true);
 
 		if (app?.versionIncompatible) {
-			openIncompatibleModal(app, 'update', closeModal);
+			setModal(<IncompatibleModal app={app} action='update' onDismiss={closeModal} />);
 			return;
 		}
 
 		handleAddon('update', openPermissionModal);
-	}, [app, handleAddon, openPermissionModal, openIncompatibleModal, closeModal]);
+	});
+
+	const handleSubscription = useEffectEvent(() => {
+		if (app?.versionIncompatible && !isSubscribed) {
+			setModal(<IncompatibleModal app={app} action='subscribe' onDismiss={closeModal} />);
+			return;
+		}
+
+		setModal(<ModifySubscriptionModal app={app} onDismiss={closeModal} />);
+	});
 
 	const sections = useMemo(() => {
 		function* generateOptions(): Generator<AppMenuOption> {
@@ -402,27 +338,27 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 		return sections;
 	}, [
-		isSubscribed,
-		canManageApps,
-		incompatibleIconName,
 		app,
-		t,
-		handleSubscription,
-		button,
-		requestedEndUser,
-		buttonLabel,
-		handleAcquireApp,
-		isEnterpriseLicense,
-		isAppEnabled,
-		appCountQuery?.data?.hasUnlimitedApps,
 		appCountQuery?.data?.enabled,
+		appCountQuery?.data?.hasUnlimitedApps,
 		appCountQuery?.data?.limit,
-		handleViewLogs,
-		isAppDetailsPage,
-		handleUpdate,
+		button,
+		buttonLabel,
+		canManageApps,
+		handleAcquireApp,
 		handleDisable,
 		handleEnable,
+		handleSubscription,
 		handleUninstall,
+		handleUpdate,
+		handleViewLogs,
+		incompatibleIconName,
+		isAppDetailsPage,
+		isAppEnabled,
+		isEnterpriseLicense,
+		isSubscribed,
+		requestedEndUser,
+		t,
 	]);
 
 	return { isLoading: isLoading || setAppStatusMutation.isLoading, sections };

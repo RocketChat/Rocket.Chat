@@ -1,14 +1,13 @@
-import type { App } from '@rocket.chat/core-typings';
+import type { App, AppPermission } from '@rocket.chat/core-typings';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
-import type { AppPermissionsReviewModalProps } from '../AppPermissionsReviewModal';
 import AppPermissionsReviewModal from '../AppPermissionsReviewModal';
 
 export const useOpenAppPermissionsReviewModal: (params: {
 	app: App;
-	onCancel: AppPermissionsReviewModalProps['onCancel'];
-	onConfirm: AppPermissionsReviewModalProps['onConfirm'];
+	onCancel: () => void;
+	onConfirm: (permissionsGranted: AppPermission[]) => void;
 }) => () => void = ({ app, onCancel, onConfirm }) => {
 	const setModal = useSetModal();
 
@@ -18,7 +17,7 @@ export const useOpenAppPermissionsReviewModal: (params: {
 			onCancel();
 		};
 
-		const handleConfirm: typeof onConfirm = (appPermissions) => {
+		const handleConfirm = (appPermissions: AppPermission[]) => {
 			setModal(null);
 			onConfirm(appPermissions);
 		};

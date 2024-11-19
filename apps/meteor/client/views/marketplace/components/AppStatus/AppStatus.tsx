@@ -30,14 +30,13 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const { t } = useTranslation();
 	const [endUserRequested, setEndUserRequested] = useState(false);
 	const [loading, setLoading] = useSafely(useState(false));
-	const [isAppPurchased, setPurchased] = useSafely(useState(!!app?.isPurchased));
 	const setModal = useSetModal();
-	const isAdminUser = usePermission('manage-apps');
+	const canManageApps = usePermission('manage-apps');
 	const context = useMarketplaceContext();
 
 	const { price, purchaseType, pricingPlans } = app;
 
-	const button = appButtonProps({ ...app, isAdminUser, endUserRequested });
+	const button = appButtonProps({ ...app, isAdminUser: canManageApps, endUserRequested });
 	const isAppRequestsPage = context === 'requested';
 	const shouldShowPriceDisplay = isAppDetailsPage && button && !app.isEnterpriseOnly;
 	const canUpdate = installed && app?.version && app?.marketplaceVersion && semver.lt(app?.version, app?.marketplaceVersion);
@@ -77,25 +76,23 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		setModal(null);
 	}, [setLoading, setModal]);
 
-	const appInstallationHandler = useAppInstallationHandler({
+	const installApp = useAppInstallationHandler({
 		app,
 		action: action || 'purchase',
-		isAppPurchased,
 		onDismiss: cancelAction,
 		onSuccess: confirmAction,
-		setIsPurchased: setPurchased,
 	});
 
 	const handleAcquireApp = useCallback(() => {
 		setLoading(true);
 
-		if (isAdminUser && appAddon && !workspaceHasAddon) {
+		if (canManageApps && appAddon && !workspaceHasAddon) {
 			const actionType = button?.action === 'update' ? 'update' : 'install';
-			return setModal(<AddonRequiredModal actionType={actionType} onDismiss={cancelAction} onInstallAnyway={appInstallationHandler} />);
+			return setModal(<AddonRequiredModal actionType={actionType} onDismiss={cancelAction} onInstallAnyway={installApp} />);
 		}
 
-		appInstallationHandler();
-	}, [button?.action, appAddon, appInstallationHandler, cancelAction, isAdminUser, setLoading, setModal, workspaceHasAddon]);
+		installApp();
+	}, [button?.action, appAddon, installApp, cancelAction, canManageApps, setLoading, setModal, workspaceHasAddon]);
 
 	// @TODO we should refactor this to not use the label to determine the variant
 	const getStatusVariant = (status: appStatusSpanResponseProps) => {

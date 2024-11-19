@@ -14,7 +14,3 @@ export default {
 const Template: StoryFn<typeof UninstallGrandfatheredAppModal> = (args) => <UninstallGrandfatheredAppModal {...args} />;
 
 export const Default = Template.bind({});
-Default.storyName = 'UninstallGrandfatheredAppModal';
-Default.args = {
-	appName: 'Example-App-Name',
-};
