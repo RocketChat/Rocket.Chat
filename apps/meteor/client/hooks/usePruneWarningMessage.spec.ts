@@ -1,9 +1,9 @@
 import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { renderHook } from '@testing-library/react';
 
+import { usePruneWarningMessage } from './usePruneWarningMessage';
 import { createRenteionPolicySettingsMock as createMock } from '../../tests/mocks/client/mockRetentionPolicySettings';
 import { createFakeRoom } from '../../tests/mocks/data';
-import { usePruneWarningMessage } from './usePruneWarningMessage';
 
 jest.useFakeTimers();
 

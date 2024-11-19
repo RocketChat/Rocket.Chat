@@ -3,11 +3,11 @@ import { Users, OmnichannelServiceLevelAgreements, LivechatTag, LivechatUnitMoni
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { updateSLAInquiries } from './Helper';
+import { removeSLAFromRooms } from './SlaHelper';
 import { callbacks } from '../../../../../lib/callbacks';
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
-import { updateSLAInquiries } from './Helper';
-import { removeSLAFromRooms } from './SlaHelper';
 
 export const LivechatEnterprise = {
 	async addMonitor(username: string) {

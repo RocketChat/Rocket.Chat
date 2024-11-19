@@ -8,6 +8,9 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import RoomListRow from './RoomListRow';
+import RoomListRowWrapper from './RoomListRowWrapper';
+import RoomListWrapper from './RoomListWrapper';
 import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
@@ -15,9 +18,6 @@ import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
-import RoomListRow from './RoomListRow';
-import RoomListRowWrapper from './RoomListRowWrapper';
-import RoomListWrapper from './RoomListWrapper';
 
 const computeItemKey = (index: number, room: IRoom): IRoom['_id'] | number => room._id || index;
 

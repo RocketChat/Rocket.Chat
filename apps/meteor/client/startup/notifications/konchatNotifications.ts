@@ -69,6 +69,7 @@ Meteor.startup(() => {
 			});
 		};
 	};
+
 	Tracker.autorun(() => {
 		if (!Meteor.userId() || !settings.get('Outlook_Calendar_Enabled')) {
 			sdk.stop('notify-user', `${Meteor.userId()}/calendar`);
@@ -109,8 +110,10 @@ Meteor.startup(() => {
 			notifyNewMessageAudio(notification.payload.rid);
 		});
 
-		CachedChatSubscription.on('changed', (sub): void => {
-			void notifyNewRoom(sub);
+		CachedChatSubscription.collection.find().observe({
+			changed: (sub) => {
+				void notifyNewRoom(sub);
+			},
 		});
 
 		sdk.stream('notify-user', [`${Meteor.userId()}/subscriptions-changed`], (action, sub) => {

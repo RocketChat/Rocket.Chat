@@ -1,10 +1,9 @@
 import type { IEmoji } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
-import { Session } from 'meteor/session';
 
-import { emoji, updateRecent } from '../../../emoji/client';
-import { CachedCollectionManager } from '../../../ui-cached-collection/client';
+import { onLoggedIn } from '../../../../client/lib/loggedIn';
+import { emoji, removeFromRecent, replaceEmojiInRecent } from '../../../emoji/client';
 import { getURL } from '../../../utils/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
@@ -18,16 +17,12 @@ const isSetNotNull = (fn: () => unknown) => {
 	return value !== null && value !== undefined;
 };
 
-const getEmojiUrlFromName = (name: string, extension: string) => {
-	if (name == null) {
+const getEmojiUrlFromName = (name: string, extension: string, etag?: string) => {
+	if (!name) {
 		return;
 	}
 
-	const key = `emoji_random_${name}` as const;
-
-	const random = (Session as unknown as { keys: Record<string, any> }).keys[key] ?? 0;
-
-	return getURL(`/emoji-custom/${encodeURIComponent(name)}.${extension}?_dc=${random}`);
+	return getURL(`/emoji-custom/${encodeURIComponent(name)}.${extension}${etag ? `?etag=${etag}` : ''}`);
 };
 
 export const deleteEmojiCustom = (emojiData: IEmoji) => {
@@ -49,7 +44,8 @@ export const deleteEmojiCustom = (emojiData: IEmoji) => {
 			}
 		}
 	}
-	updateRecent(['rocket']);
+
+	removeFromRecent(emojiData.name, emoji.packages.base.emojisByCategory.recent);
 };
 
 export const updateEmojiCustom = (emojiData: IEmoji) => {
@@ -94,7 +90,9 @@ export const updateEmojiCustom = (emojiData: IEmoji) => {
 		}
 	}
 
-	updateRecent(['rocket']);
+	if (previousExists) {
+		replaceEmojiInRecent({ oldEmoji: emojiData.previousName, newEmoji: emojiData.name });
+	}
 };
 
 const customRender = (html: string) => {
@@ -123,6 +121,7 @@ const customRender = (html: string) => {
 		return `<span class="emoji" style="background-image:url(${getEmojiUrlFromName(
 			emojiAlias,
 			dataCheck.extension!,
+			dataCheck.etag,
 		)});" data-emoji="${emojiAlias}" title="${shortname}">${shortname}</span>`;
 	});
 
@@ -141,8 +140,8 @@ emoji.packages.emojiCustom = {
 	renderPicker: customRender,
 };
 
-Meteor.startup(() =>
-	CachedCollectionManager.onLogin(async () => {
+Meteor.startup(() => {
+	onLoggedIn(async () => {
 		try {
 			const {
 				emojis: { update: emojis },
@@ -164,5 +163,5 @@ Meteor.startup(() =>
 		} catch (e) {
 			console.error('Error getting custom emoji', e);
 		}
-	}),
-);
+	});
+});

@@ -5,8 +5,8 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { FormSkeleton } from '../../../components/Skeleton';
 import EmailInboxForm from './EmailInboxForm';
+import { FormSkeleton } from '../../../components/Skeleton';
 
 const EmailInboxFormWithData = ({ id }: { id: IEmailInbox['_id'] }): ReactElement => {
 	const t = useTranslation();

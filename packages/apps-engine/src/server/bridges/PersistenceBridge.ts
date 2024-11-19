@@ -1,8 +1,8 @@
+import { BaseBridge } from './BaseBridge';
 import type { RocketChatAssociationRecord } from '../../definition/metadata';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export abstract class PersistenceBridge extends BaseBridge {
     public async doPurge(appId: string): Promise<void> {

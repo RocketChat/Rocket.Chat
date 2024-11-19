@@ -13,10 +13,10 @@ import type {
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import _ from 'underscore';
 
+import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
 import { i18n } from '../../../server/lib/i18n';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
-import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
 
 /**
  * Represents google translate class

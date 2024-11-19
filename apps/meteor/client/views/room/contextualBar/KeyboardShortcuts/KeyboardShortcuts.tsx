@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import KeyboardShortcutSection from './KeyboardShortcutSection';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -9,7 +10,6 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 } from '../../../../components/Contextualbar';
-import KeyboardShortcutSection from './KeyboardShortcutSection';
 
 const KeyboardShortcuts = ({ handleClose }: { handleClose: () => void }): ReactElement => {
 	const { t } = useTranslation();

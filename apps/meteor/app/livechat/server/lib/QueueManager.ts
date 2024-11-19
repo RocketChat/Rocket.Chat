@@ -1,12 +1,14 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Omnichannel } from '@rocket.chat/core-services';
-import type { ILivechatDepartment, IOmnichannelRoomInfo, IOmnichannelRoomExtraData } from '@rocket.chat/core-typings';
-import {
-	LivechatInquiryStatus,
-	type ILivechatInquiryRecord,
-	type ILivechatVisitor,
-	type IOmnichannelRoom,
-	type SelectedAgent,
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import type {
+	ILivechatDepartment,
+	IOmnichannelRoomInfo,
+	IOmnichannelRoomExtraData,
+	ILivechatInquiryRecord,
+	ILivechatVisitor,
+	IOmnichannelRoom,
+	SelectedAgent,
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
@@ -14,6 +16,11 @@ import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
+import { Livechat } from './LivechatTyped';
+import { RoutingManager } from './RoutingManager';
+import { getOnlineAgents } from './getOnlineAgents';
+import { getInquirySortMechanismSetting } from './settings';
 import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { sendNotification } from '../../../lib/server';
@@ -24,11 +31,6 @@ import {
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
-import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
-import { Livechat } from './LivechatTyped';
-import { RoutingManager } from './RoutingManager';
-import { getOnlineAgents } from './getOnlineAgents';
-import { getInquirySortMechanismSetting } from './settings';
 
 const logger = new Logger('QueueManager');
 
@@ -94,8 +96,7 @@ export class QueueManager {
 
 		const inquiryAgent = await RoutingManager.delegateAgent(defaultAgent, inquiry);
 		logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
-		await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
-		const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
+		const dbInquiry = await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
 
 		if (!dbInquiry) {
 			throw new Error('inquiry-not-found');
@@ -122,6 +123,10 @@ export class QueueManager {
 			return LivechatInquiryStatus.QUEUED;
 		}
 
+		if (settings.get('Livechat_waiting_queue')) {
+			return LivechatInquiryStatus.QUEUED;
+		}
+
 		if (RoutingManager.getConfig()?.autoAssignAgent) {
 			return LivechatInquiryStatus.READY;
 		}
@@ -135,6 +140,7 @@ export class QueueManager {
 
 	static async queueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
 		if (inquiry.status === 'ready') {
+			logger.debug({ msg: 'Inquiry is ready. Delegating', inquiry, defaultAgent });
 			return RoutingManager.delegateInquiry(inquiry, defaultAgent, undefined, room);
 		}
 
@@ -252,7 +258,11 @@ export class QueueManager {
 			throw new Error('room-not-found');
 		}
 
-		if (!newRoom.servedBy && settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
+		if (
+			!newRoom.servedBy &&
+			settings.get('Livechat_waiting_queue') &&
+			settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')
+		) {
 			const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
 				inquiryId: inquiry._id,
 				department,
@@ -320,6 +330,10 @@ export class QueueManager {
 	}
 
 	private static dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, agent?: SelectedAgent | null) => {
+		if (RoutingManager.getConfig()?.autoAssignAgent) {
+			return;
+		}
+
 		logger.debug(`Notifying agents of new inquiry ${inquiry._id} queued`);
 
 		const { department, rid, v } = inquiry;

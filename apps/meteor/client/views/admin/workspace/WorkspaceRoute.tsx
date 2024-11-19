@@ -4,12 +4,12 @@ import type { ReactElement } from 'react';
 import React, { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import WorkspacePage from './WorkspacePage';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
 import { useWorkspaceInfo } from '../../../hooks/useWorkspaceInfo';
 import { downloadJsonAs } from '../../../lib/download';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
-import WorkspacePage from './WorkspacePage';
 
 const WorkspaceRoute = (): ReactElement => {
 	const { t } = useTranslation();

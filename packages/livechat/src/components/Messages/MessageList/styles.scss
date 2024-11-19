@@ -1,5 +1,5 @@
-@import '../../../styles/colors';
-@import '../../../styles/variables';
+@use '../../../styles/colors';
+@use '../../../styles/variables';
 
 .message-list {
 	display: flex;
@@ -23,7 +23,7 @@
 
 	&:hover::-webkit-scrollbar {
 		&-thumb {
-			background-color: $color-text-light;
+			background-color: colors.$color-text-light;
 		}
 	}
 

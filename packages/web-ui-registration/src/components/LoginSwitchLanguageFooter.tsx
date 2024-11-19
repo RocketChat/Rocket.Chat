@@ -13,7 +13,7 @@ const useSuggestedLanguages = ({
 }) => {
 	const availableLanguages = useLanguages();
 	const currentLanguage = useLanguage();
-	const serverLanguage = normalizeLanguage(useSetting<string>('Language') || 'en');
+	const serverLanguage = normalizeLanguage(useSetting('Language', 'en'));
 
 	const suggestions = useMemo(() => {
 		const potentialLanguages = new Set([serverLanguage, browserLanguage, 'en'].map(normalizeLanguage));

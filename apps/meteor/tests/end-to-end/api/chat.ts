@@ -515,6 +515,179 @@ describe('[Chat]', () => {
 				})
 				.end(done);
 		});
+
+		describe('text message allowed size', () => {
+			before(async () => {
+				await updateSetting('Message_MaxAllowedSize', 10);
+			});
+
+			after(async () => {
+				await updateSetting('Message_MaxAllowedSize', 5000);
+			});
+
+			it('should return an error if text parameter surpasses the maximum allowed size', (done) => {
+				void request
+					.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: '#general',
+						text: 'Text to test max limit allowed',
+						alias: 'Gruggy',
+						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'error-message-size-exceeded');
+					})
+					.end(done);
+			});
+
+			it('should return an error if text parameter in the first attachment surpasses the maximum allowed size', (done) => {
+				void request
+					.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: testChannel.name,
+						text: 'Yay!',
+						emoji: ':smirk:',
+						attachments: [
+							{
+								color: '#ff0000',
+								text: 'Text to test max limit allowed',
+								ts: '2016-12-09T16:53:06.761Z',
+								thumb_url: 'http://res.guggy.com/logo_128.png',
+								message_link: 'https://google.com',
+								collapsed: false,
+								author_name: 'Bradley Hilton',
+								author_link: 'https://rocket.chat/',
+								author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
+								title: 'Attachment Example',
+								title_link: 'https://youtube.com',
+								title_link_download: true,
+								image_url: 'http://res.guggy.com/logo_128.png',
+								audio_url: 'http://www.w3schools.com/tags/horse.mp3',
+								video_url: 'http://www.w3schools.com/tags/movie.mp4',
+								fields: [],
+							},
+						],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'error-message-size-exceeded');
+					})
+					.end(done);
+			});
+
+			it('should return an error if text parameter in any of the attachments surpasses the maximum allowed size', (done) => {
+				void request
+					.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: testChannel.name,
+						text: 'Yay!',
+						emoji: ':smirk:',
+						attachments: [
+							{
+								color: '#ff0000',
+								text: 'Yay!',
+								ts: '2016-12-09T16:53:06.761Z',
+								thumb_url: 'http://res.guggy.com/logo_128.png',
+								message_link: 'https://google.com',
+								collapsed: false,
+								author_name: 'Bradley Hilton',
+								author_link: 'https://rocket.chat/',
+								author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
+								title: 'Attachment Example',
+								title_link: 'https://youtube.com',
+								title_link_download: true,
+								image_url: 'http://res.guggy.com/logo_128.png',
+								audio_url: 'http://www.w3schools.com/tags/horse.mp3',
+								video_url: 'http://www.w3schools.com/tags/movie.mp4',
+								fields: [],
+							},
+							{
+								color: '#ff0000',
+								text: 'Text to large to test max limit allowed',
+								ts: '2016-12-09T16:53:06.761Z',
+								thumb_url: 'http://res.guggy.com/logo_128.png',
+								message_link: 'https://google.com',
+								collapsed: false,
+								author_name: 'Bradley Hilton',
+								author_link: 'https://rocket.chat/',
+								author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
+								title: 'Attachment Example',
+								title_link: 'https://youtube.com',
+								title_link_download: true,
+								image_url: 'http://res.guggy.com/logo_128.png',
+								audio_url: 'http://www.w3schools.com/tags/horse.mp3',
+								video_url: 'http://www.w3schools.com/tags/movie.mp4',
+								fields: [],
+							},
+						],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'error-message-size-exceeded');
+					})
+					.end(done);
+			});
+
+			it('should pass if any text parameter length does not surpasses the maximum allowed size', (done) => {
+				void request
+					.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						channel: testChannel.name,
+						text: 'Sample',
+						emoji: ':smirk:',
+						attachments: [
+							{
+								color: '#ff0000',
+								text: 'Sample',
+								ts: '2016-12-09T16:53:06.761Z',
+								thumb_url: 'http://res.guggy.com/logo_128.png',
+								message_link: 'https://google.com',
+								collapsed: false,
+								author_name: 'Bradley Hilton',
+								author_link: 'https://rocket.chat/',
+								author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
+								title: 'Attachment Example',
+								title_link: 'https://youtube.com',
+								title_link_download: true,
+								image_url: 'http://res.guggy.com/logo_128.png',
+								audio_url: 'http://www.w3schools.com/tags/horse.mp3',
+								video_url: 'http://www.w3schools.com/tags/movie.mp4',
+								fields: [
+									{
+										short: true,
+										title: 'Test',
+										value: 'Testing out something or other',
+									},
+									{
+										short: true,
+										title: 'Another Test',
+										value: '[Link](https://google.com/) something and this and that.',
+									},
+								],
+							},
+						],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('message.msg', 'Sample');
+					})
+					.end(done);
+			});
+		});
 	});
 
 	describe('/chat.getMessage', () => {

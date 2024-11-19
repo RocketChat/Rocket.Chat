@@ -1,9 +1,9 @@
 import type { IRouterPaths, RouteName, RouterPathPattern } from '@rocket.chat/ui-contexts';
 import React, { type ElementType, type ReactNode } from 'react';
 
+import { appLayout } from './appLayout';
 import { router } from '../providers/RouterProvider';
 import MainLayout from '../views/root/MainLayout';
-import { appLayout } from './appLayout';
 
 type GroupName = 'omnichannel' | 'marketplace' | 'account' | 'admin';
 

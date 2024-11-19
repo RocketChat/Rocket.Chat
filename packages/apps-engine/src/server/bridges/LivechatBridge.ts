@@ -1,3 +1,4 @@
+import { BaseBridge } from './BaseBridge';
 import type { IExtraRoomParams } from '../../definition/accessors/ILivechatCreator';
 import type { IDepartment, ILivechatMessage, ILivechatRoom, ILivechatTransferData, IVisitor } from '../../definition/livechat';
 import type { IMessage } from '../../definition/messages';
@@ -5,7 +6,6 @@ import type { IUser } from '../../definition/users';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 type LivechatReadPermissions = keyof Pick<
     typeof AppPermissions,

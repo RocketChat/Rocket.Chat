@@ -1,5 +1,5 @@
-import { Importers } from '../../importer/server';
 import { SlackUsersImporter } from './SlackUsersImporter';
+import { Importers } from '../../importer/server';
 
 Importers.add({
 	key: 'slack-users',
