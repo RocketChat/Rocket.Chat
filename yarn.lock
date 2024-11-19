@@ -9493,7 +9493,7 @@ __metadata:
     supertest: "npm:^7.0.0"
     supports-color: "npm:~7.2.0"
     suretype: "npm:~2.4.1"
-    swiper: "npm:^11.1.14"
+    swiper: "patch:swiper@npm%3A11.1.14#~/.yarn/patches/swiper-npm-11.1.14-8126fa478a.patch"
     template-file: "npm:^6.0.1"
     textarea-caret: "npm:^3.1.0"
     tinykeys: "npm:^1.4.0"
@@ -36895,10 +36895,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swiper@npm:^11.1.14":
+"swiper@npm:11.1.14":
   version: 11.1.14
   resolution: "swiper@npm:11.1.14"
   checksum: 10/ccbdc7027022c500d4624103fc59dcb7de44122d17c005a04807a8998e6e8fe7032f4cb78e9ff0ac33705f32ec540df7fdf9002774079bcce5fd72cf6ba41457
+  languageName: node
+  linkType: hard
+
+"swiper@patch:swiper@npm%3A11.1.14#~/.yarn/patches/swiper-npm-11.1.14-8126fa478a.patch":
+  version: 11.1.14
+  resolution: "swiper@patch:swiper@npm%3A11.1.14#~/.yarn/patches/swiper-npm-11.1.14-8126fa478a.patch::version=11.1.14&hash=c4398b"
+  checksum: 10/9177de6e116ea07e18f329464d44a2116ec2d87d1403d7072c1f39661a10325fef7e149dbb5a59a36a2e1c9915dc0caf74a5022f64e4ac296f8dfe0d70689b90
   languageName: node
   linkType: hard
 
