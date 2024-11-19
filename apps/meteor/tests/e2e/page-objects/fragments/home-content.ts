@@ -391,6 +391,10 @@ export class HomeContent {
 		return this.page.locator('[aria-roledescription="system message"]', { hasText: text });
 	}
 
+	getMessageByText(text: string): Locator {
+		return this.page.locator('[role="listitem"][aria-roledescription="message"]', { hasText: text });
+	}
+
 	async waitForChannel(): Promise<void> {
 		await this.page.locator('role=main').waitFor();
 		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
