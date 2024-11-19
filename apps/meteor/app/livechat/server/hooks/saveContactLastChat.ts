@@ -12,7 +12,9 @@ callbacks.add(
 
 		const {
 			_id,
-			v: { _id: guestId, contactId },
+			v: { _id: guestId },
+			source,
+			contactId,
 		} = room;
 
 		const lastChat = {
@@ -21,7 +23,14 @@ callbacks.add(
 		};
 		await LivechatVisitors.setLastChatById(guestId, lastChat);
 		if (contactId) {
-			await LivechatContacts.updateLastChatById(contactId, lastChat);
+			await LivechatContacts.updateLastChatById(
+				contactId,
+				{
+					visitorId: guestId,
+					source,
+				},
+				lastChat,
+			);
 		}
 	},
 	callbacks.priority.MEDIUM,
