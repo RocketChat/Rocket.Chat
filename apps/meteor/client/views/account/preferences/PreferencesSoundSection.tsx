@@ -1,8 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, FieldLabel, FieldRow, Select, FieldGroup, ToggleSwitch, Tooltip, Box, FieldHint } from '@rocket.chat/fuselage';
+import { Accordion, Field, FieldLabel, FieldRow, Select, FieldGroup, ToggleSwitch, FieldHint, Slider } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useCustomSound } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent } from 'react';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
@@ -25,91 +24,77 @@ const PreferencesSoundSection = () => {
 		<Accordion.Item title={t('Sound')}>
 			<FieldGroup>
 				<Field>
-					<FieldLabel htmlFor={masterVolumeId}>{t('Master_volume')}</FieldLabel>
-					<FieldHint>{t('Master_volume_hint')}</FieldHint>
+					<FieldLabel aria-describedby={`${masterVolumeId}-hint`}>{t('Master_volume')}</FieldLabel>
+					<FieldHint id={`${masterVolumeId}-hint`} mbe={4}>
+						{t('Master_volume_hint')}
+					</FieldHint>
 					<FieldRow>
 						<Controller
 							name='masterVolume'
 							control={control}
-							render={({ field: { onChange, value, ref } }) => (
-								<Box
-									id={masterVolumeId}
-									ref={ref}
-									is='input'
-									flexGrow={1}
-									type='range'
-									min='0'
-									max='100'
+							render={({ field: { onChange, value } }) => (
+								<Slider
+									aria-labelledby={masterVolumeId}
+									aria-describedby={`${masterVolumeId}-hint`}
 									value={value}
-									onChange={(e: ChangeEvent<HTMLInputElement>) => {
-										onChange(Math.max(0, Math.min(Number(e.currentTarget.value), 100)));
-									}}
+									minValue={0}
+									maxValue={100}
+									onChange={onChange}
 								/>
 							)}
 						/>
-						<Tooltip placement='right' mis={8}>
-							{masterVolume}
-						</Tooltip>
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={notificationsSoundVolumeId}>{t('Notification_volume')}</FieldLabel>
-					<FieldHint>{t('Notification_volume_hint')}</FieldHint>
+					<FieldLabel id={notificationsSoundVolumeId}>{t('Notification_volume')}</FieldLabel>
+					<FieldHint id={`${notificationsSoundVolumeId}-hint`} mbe={4}>
+						{t('Notification_volume_hint')}
+					</FieldHint>
 					<FieldRow>
 						<Controller
 							name='notificationsSoundVolume'
 							control={control}
-							render={({ field: { onChange, value, ref } }) => (
-								<Box
-									id={notificationsSoundVolumeId}
-									ref={ref}
-									is='input'
-									flexGrow={1}
-									type='range'
-									min='0'
-									max='100'
+							render={({ field: { onChange, value } }) => (
+								<Slider
+									aria-labelledby={notificationsSoundVolumeId}
+									aria-describedby={`${notificationsSoundVolumeId}-hint`}
 									value={value}
-									onChange={(e: ChangeEvent<HTMLInputElement>) => {
+									minValue={0}
+									maxValue={100}
+									onChange={(value: number) => {
 										const soundVolume = (notificationsSoundVolume * masterVolume) / 100;
 										customSound.play(newMessageNotification, { volume: soundVolume / 100 });
-										onChange(Math.max(0, Math.min(Number(e.currentTarget.value), 100)));
+										onChange(value);
 									}}
 								/>
 							)}
 						/>
-						<Tooltip placement='right' mis={8}>
-							{notificationsSoundVolume}
-						</Tooltip>
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={voipRingerVolumeId}>{t('Call_ringer_volume')}</FieldLabel>
-					<FieldHint>{t('Call_ringer_volume_hint')}</FieldHint>
+					<FieldLabel aria-describedby={`${voipRingerVolumeId}-hint`}>{t('Call_ringer_volume')}</FieldLabel>
+					<FieldHint id={`${voipRingerVolumeId}-hint`} mbe={4}>
+						{t('Call_ringer_volume_hint')}
+					</FieldHint>
 					<FieldRow>
 						<Controller
 							name='voipRingerVolume'
 							control={control}
-							render={({ field: { onChange, value, ref } }) => (
-								<Box
-									id={voipRingerVolumeId}
-									ref={ref}
-									is='input'
-									flexGrow={1}
-									type='range'
-									min='0'
-									max='100'
+							render={({ field: { onChange, value } }) => (
+								<Slider
+									aria-labelledby={voipRingerVolumeId}
+									aria-describedby={`${voipRingerVolumeId}-hint`}
 									value={value}
-									onChange={(e: ChangeEvent<HTMLInputElement>) => {
+									minValue={0}
+									maxValue={100}
+									onChange={(value: number) => {
 										const soundVolume = (voipRingerVolume * masterVolume) / 100;
 										customSound.play('telephone', { volume: soundVolume / 100 });
-										onChange(Math.max(0, Math.min(Number(e.currentTarget.value), 100)));
+										onChange(value);
 									}}
 								/>
 							)}
 						/>
-						<Tooltip placement='right' mis={8}>
-							{voipRingerVolume}
-						</Tooltip>
 					</FieldRow>
 				</Field>
 				<Field>
@@ -122,11 +107,11 @@ const PreferencesSoundSection = () => {
 								<Select
 									id={newRoomNotificationId}
 									value={value}
+									options={soundsList}
 									onChange={(value) => {
 										onChange(value);
 										customSound.play(String(value), { volume: notificationsSoundVolume / 100 });
 									}}
-									options={soundsList}
 								/>
 							)}
 						/>
@@ -142,11 +127,11 @@ const PreferencesSoundSection = () => {
 								<Select
 									id={newMessageNotificationId}
 									value={value}
+									options={soundsList}
 									onChange={(value) => {
 										onChange(value);
 										customSound.play(String(value), { volume: notificationsSoundVolume / 100 });
 									}}
-									options={soundsList}
 								/>
 							)}
 						/>
