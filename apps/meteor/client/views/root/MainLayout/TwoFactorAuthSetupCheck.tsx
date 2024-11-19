@@ -29,7 +29,7 @@ const TwoFactorAuthSetupCheck = ({ children }: { children: ReactNode }): ReactEl
 	if (require2faSetup) {
 		return (
 			<main id='rocket-chat' className={embeddedLayout ? 'embedded-view' : undefined}>
-				<div className='rc-old main-content content-background-color'>
+				<div className='main-content content-background-color'>
 					<AccountSecurityPage />
 				</div>
 			</main>

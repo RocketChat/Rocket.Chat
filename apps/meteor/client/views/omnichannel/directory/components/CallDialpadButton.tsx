@@ -13,7 +13,7 @@ const rcxCallDialButton = css`
 	}
 `;
 
-export const CallDialpadButton = ({ phoneNumber }: { phoneNumber: string }): ReactElement => {
+export const CallDialpadButton = ({ phoneNumber }: { phoneNumber?: string }): ReactElement => {
 	const { t } = useTranslation();
 
 	const { outBoundCallsAllowed, outBoundCallsEnabledForUser } = useVoipOutboundStates();
