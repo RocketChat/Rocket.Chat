@@ -8788,7 +8788,7 @@ __metadata:
     "@storybook/react": "npm:^8.4.1"
     "@storybook/react-webpack5": "npm:^8.4.1"
     "@storybook/theming": "npm:^8.4.1"
-    "@tanstack/react-query": "npm:^5.59.19"
+    "@tanstack/react-query": "patch:@tanstack/react-query@npm%3A5.60.5#~/.yarn/patches/@tanstack-react-query-npm-5.60.5-04c500b172.patch"
     "@testing-library/react": "npm:~16.0.1"
     "@testing-library/user-event": "npm:~14.5.2"
     "@types/react": "npm:~17.0.80"
@@ -9281,7 +9281,7 @@ __metadata:
     "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.3"
     "@storybook/react": "npm:^8.4.1"
     "@storybook/react-webpack5": "npm:^8.4.1"
-    "@tanstack/react-query": "npm:^5.59.19"
+    "@tanstack/react-query": "patch:@tanstack/react-query@npm%3A5.60.5#~/.yarn/patches/@tanstack-react-query-npm-5.60.5-04c500b172.patch"
     "@testing-library/react": "npm:~16.0.1"
     "@testing-library/user-event": "npm:~14.5.2"
     "@types/adm-zip": "npm:^0.5.6"
@@ -9574,7 +9574,7 @@ __metadata:
     "@rocket.chat/i18n": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:*"
     "@storybook/react": "npm:^8.4.1"
-    "@tanstack/react-query": "npm:^5.59.19"
+    "@tanstack/react-query": "patch:@tanstack/react-query@npm%3A5.60.5#~/.yarn/patches/@tanstack-react-query-npm-5.60.5-04c500b172.patch"
     "@types/use-sync-external-store": "npm:^0.0.6"
     eslint: "npm:~8.45.0"
     i18next: "npm:~23.4.9"
@@ -10390,7 +10390,7 @@ __metadata:
     "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.3"
     "@storybook/react": "npm:^8.4.1"
     "@storybook/react-webpack5": "npm:^8.4.1"
-    "@tanstack/react-query": "npm:^5.59.19"
+    "@tanstack/react-query": "patch:@tanstack/react-query@npm%3A5.60.5#~/.yarn/patches/@tanstack-react-query-npm-5.60.5-04c500b172.patch"
     "@testing-library/react": "npm:~16.0.1"
     "@testing-library/user-event": "npm:~14.5.2"
     "@types/jest": "npm:~29.5.14"
@@ -10490,7 +10490,7 @@ __metadata:
     "@storybook/react": "npm:^8.4.1"
     "@storybook/react-webpack5": "npm:^8.4.1"
     "@storybook/theming": "npm:^8.4.1"
-    "@tanstack/react-query": "npm:^5.59.19"
+    "@tanstack/react-query": "patch:@tanstack/react-query@npm%3A5.60.5#~/.yarn/patches/@tanstack-react-query-npm-5.60.5-04c500b172.patch"
     "@testing-library/react": "npm:~16.0.1"
     "@types/react": "npm:~17.0.80"
     babel-loader: "npm:~9.2.1"
@@ -11468,21 +11468,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.59.17":
-  version: 5.59.17
-  resolution: "@tanstack/query-core@npm:5.59.17"
-  checksum: 10/9ba6612b65f8a4c65cbf264df01be9a18895ba4f8faaa115ca11364bbee6d79ba71327b1257b31283f3f7d25e3dc954e18204d3ec53154dd8d3e4ba0a53cee24
+"@tanstack/query-core@npm:5.60.5":
+  version: 5.60.5
+  resolution: "@tanstack/query-core@npm:5.60.5"
+  checksum: 10/2c85ed3a26db31ea9fb2e44f94afee4564c8a5e47fc2c9f4e7a3b477e90642d1330ecdbc48f3b503205401772cedd94545eff23e628badd2bff5509b1da62e94
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^5.59.19":
-  version: 5.59.19
-  resolution: "@tanstack/react-query@npm:5.59.19"
+"@tanstack/react-query@npm:5.60.5":
+  version: 5.60.5
+  resolution: "@tanstack/react-query@npm:5.60.5"
   dependencies:
-    "@tanstack/query-core": "npm:5.59.17"
+    "@tanstack/query-core": "npm:5.60.5"
   peerDependencies:
     react: ^18 || ^19
-  checksum: 10/def87fc10646c79a355a05f9a76faa0b4ca511073cd80ebe2a701d05f43969c41498e42bd5228c3c6047d5af3e5805ced5a72a890504f776b861eaf4d17eea0d
+  checksum: 10/00a5ef74ceb50f6bbacec2545392de65d3d9e6dc6de2a7107943460a83d1988eb66740f40b8682c8de0e9a1faff76256ab1584a816c70dd4ff9205dedc209f0a
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@patch:@tanstack/react-query@npm%3A5.60.5#~/.yarn/patches/@tanstack-react-query-npm-5.60.5-04c500b172.patch":
+  version: 5.60.5
+  resolution: "@tanstack/react-query@patch:@tanstack/react-query@npm%3A5.60.5#~/.yarn/patches/@tanstack-react-query-npm-5.60.5-04c500b172.patch::version=5.60.5&hash=287929"
+  dependencies:
+    "@tanstack/query-core": "npm:5.60.5"
+  peerDependencies:
+    react: ^18 || ^19
+  checksum: 10/dbb0bb6598f5d095a2d632eade1c1b1b586e24befc6538412bde03a0dc6627a0ed0cde27974e9afeb2a406cc6ff08a2ada6ae497c81b819a4fd1d0c0ae4ed50a
   languageName: node
   linkType: hard
 
