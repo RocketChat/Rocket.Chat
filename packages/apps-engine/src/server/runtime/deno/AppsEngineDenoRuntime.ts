@@ -545,8 +545,11 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
                 console.log('SUBPROCESS LOG', message);
                 break;
             case 'unhandledRejection':
-            case 'unhandledException':
+            case 'uncaughtException':
                 this.debug('Unhandled error of type "%s" caught in subprocess', method);
+                const logger = new AppConsole(`runtime:${method}`);
+                logger.error(message.payload);
+                await this.logStorage.storeEntries(AppConsole.toStorageEntry(this.getAppId(), logger));
                 break;
             default:
                 console.warn('Unrecognized method from sub process');

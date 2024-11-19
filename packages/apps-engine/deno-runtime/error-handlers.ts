@@ -22,7 +22,7 @@ export function unhandledExceptionListener(event: ErrorEvent) {
 
     const { type, message, filename, lineno, colno } = event;
     Messenger.sendNotification({
-        method: 'unhandledException',
+        method: 'uncaughtException',
         params: [{ type, message, filename, lineno, colno }],
     });
 }
