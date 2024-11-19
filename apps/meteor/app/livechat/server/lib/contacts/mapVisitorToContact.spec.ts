@@ -87,6 +87,76 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 			contactManager: undefined,
 		},
 	],
+
+	[
+		{
+			_id: 'visitor1',
+			username: 'Username',
+			activity: ['2024-11'],
+		},
+		{
+			type: OmnichannelSourceType.WIDGET,
+		},
+		{
+			name: 'Username',
+			emails: undefined,
+			phones: undefined,
+			unknown: false,
+			channels: [
+				{
+					name: 'sms',
+					visitor: {
+						visitorId: 'visitor1',
+						source: {
+							type: OmnichannelSourceType.WIDGET,
+						},
+					},
+					blocked: false,
+					verified: false,
+					details: {
+						type: OmnichannelSourceType.WIDGET,
+					},
+				},
+			],
+			customFields: undefined,
+			contactManager: undefined,
+		},
+	],
+
+	[
+		{
+			_id: 'visitor1',
+			username: 'Username',
+			activity: [],
+		},
+		{
+			type: OmnichannelSourceType.WIDGET,
+		},
+		{
+			name: 'Username',
+			emails: undefined,
+			phones: undefined,
+			unknown: true,
+			channels: [
+				{
+					name: 'sms',
+					visitor: {
+						visitorId: 'visitor1',
+						source: {
+							type: OmnichannelSourceType.WIDGET,
+						},
+					},
+					blocked: false,
+					verified: false,
+					details: {
+						type: OmnichannelSourceType.WIDGET,
+					},
+				},
+			],
+			customFields: undefined,
+			contactManager: undefined,
+		},
+	],
 ];
 
 describe('mapVisitorToContact', () => {
