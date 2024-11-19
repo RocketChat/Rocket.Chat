@@ -62,6 +62,7 @@ export type Options = (
 						'*'?: { operation: TOperation; permissions: string[] };
 				  });
 			authRequired?: boolean;
+			incompleteUserAllowed?: boolean;
 			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
 			rateLimiterOptions?:
 				| {
@@ -159,11 +160,17 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 		query: Record<string, unknown>;
 	}>;
 } & (TOptions extends { authRequired: true }
-	? {
-			user: IUser;
-			userId: string;
-			readonly token: string;
-		}
+	? TOptions extends { incompleteUserAllowed: true }
+		? {
+				user: IUser;
+				userId: string;
+				readonly token: string;
+			}
+		: {
+				user: Omit<IUser, 'username'> & Required<Pick<IUser, 'username'>>;
+				userId: string;
+				readonly token: string;
+			}
 	: TOptions extends { authOrAnonRequired: true }
 		? {
 				user?: IUser;

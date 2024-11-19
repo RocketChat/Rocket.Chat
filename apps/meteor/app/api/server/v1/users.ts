@@ -92,7 +92,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.update',
-	{ authRequired: true, twoFactorRequired: true, validateParams: isUsersUpdateParamsPOST },
+	{ authRequired: true, twoFactorRequired: true, validateParams: isUsersUpdateParamsPOST, incompleteUserAllowed: true },
 	{
 		async post() {
 			const userData = { _id: this.bodyParams.userId, ...this.bodyParams.data };
