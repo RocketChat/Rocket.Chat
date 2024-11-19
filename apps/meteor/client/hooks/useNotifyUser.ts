@@ -6,7 +6,6 @@ import { CachedChatSubscription } from '../../app/models/client';
 import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
 import { RoomManager } from '../lib/RoomManager';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
-import { isLayoutEmbedded } from '../lib/utils/isLayoutEmbedded';
 
 export const useNotifyUser = () => {
 	const user = useUser();
@@ -32,7 +31,7 @@ export const useNotifyUser = () => {
 			const hasFocus = document.hasFocus();
 			const messageIsInOpenedRoom = RoomManager.opened === rid;
 
-			if (isLayoutEmbedded()) {
+			if (router.getSearchParameters().layout === 'embedded') {
 				if (!hasFocus && messageIsInOpenedRoom) {
 					// Play a notification sound
 					void KonchatNotification.newMessage(rid);
