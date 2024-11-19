@@ -3,9 +3,9 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ManagersTable from './ManagersTable';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
-import ManagersTable from './ManagersTable';
 
 const ManagersRoute = (): ReactElement => {
 	const { t } = useTranslation();

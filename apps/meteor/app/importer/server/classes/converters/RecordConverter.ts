@@ -4,8 +4,8 @@ import { ImportData } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { type FindCursor, ObjectId } from 'mongodb';
 
-import type { IConversionCallbacks } from '../../definitions/IConversionCallbacks';
 import { ConverterCache } from './ConverterCache';
+import type { IConversionCallbacks } from '../../definitions/IConversionCallbacks';
 
 export type RecordConverterOptions = {
 	workInMemory?: boolean;

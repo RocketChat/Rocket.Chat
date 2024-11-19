@@ -2,8 +2,8 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import AccountTokensTable from './AccountTokensTable';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const AccountTokensPage = (): ReactElement => {
 	const { t } = useTranslation();

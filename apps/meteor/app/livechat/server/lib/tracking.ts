@@ -1,8 +1,8 @@
 import { Message } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 
-import { settings } from '../../../settings/server';
 import { livechatLogger } from './logger';
+import { settings } from '../../../settings/server';
 
 type PageInfo = { title: string; location: { href: string }; change: string };
 

@@ -1,6 +1,6 @@
-import type { App } from '../../definition/App';
 import type { IAppsEngineRuntimeOptions } from './AppsEngineRuntime';
 import { AppsEngineRuntime } from './AppsEngineRuntime';
+import type { App } from '../../definition/App';
 
 export class AppsEngineEmptyRuntime extends AppsEngineRuntime {
     public static async runCode(code: string, sandbox?: Record<string, any>, options?: IAppsEngineRuntimeOptions): Promise<any> {

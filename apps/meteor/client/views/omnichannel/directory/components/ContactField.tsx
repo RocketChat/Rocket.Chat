@@ -5,13 +5,13 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { FormSkeleton } from './FormSkeleton';
 import { UserStatus } from '../../../../components/UserStatus';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import AgentInfoDetails from '../../components/AgentInfoDetails';
 import Field from '../../components/Field';
 import Info from '../../components/Info';
 import Label from '../../components/Label';
-import { FormSkeleton } from './FormSkeleton';
 
 type ContactFieldProps = {
 	contact: IVisitor;

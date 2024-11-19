@@ -2,9 +2,9 @@ import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useClearUnreadAllMessagesMutation } from './useClearUnreadAllMessagesMutation';
 import GenericModal from '../../../components/GenericModal';
 import { imperativeModal } from '../../../lib/imperativeModal';
-import { useClearUnreadAllMessagesMutation } from './useClearUnreadAllMessagesMutation';
 
 export const useEscapeKeyStroke = () => {
 	const dispatchToastMessage = useToastMessageDispatch();

@@ -7,6 +7,7 @@ import type { ReactElement } from 'react';
 import React, { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { ThreadMessageItem } from './ThreadMessageItem';
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
@@ -20,7 +21,6 @@ import { useMessageListNavigation } from '../../../hooks/useMessageListNavigatio
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
 import { useLegacyThreadMessages } from '../hooks/useLegacyThreadMessages';
-import { ThreadMessageItem } from './ThreadMessageItem';
 
 const isMessageSequential = (current: IMessage, previous: IMessage | undefined, groupingRange: number): boolean => {
 	if (!previous) {

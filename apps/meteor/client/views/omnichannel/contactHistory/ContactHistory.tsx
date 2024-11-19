@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
-import { useRoomToolbox } from '../../room/contexts/RoomToolboxContext';
 import ContactHistoryList from './ContactHistoryList';
 import ContactHistoryMessagesList from './MessageList/ContactHistoryMessagesList';
+import { useRoomToolbox } from '../../room/contexts/RoomToolboxContext';
 
 const ContactHistory = () => {
 	const [chatId, setChatId] = useState<string>('');

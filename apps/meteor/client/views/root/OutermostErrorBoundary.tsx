@@ -5,8 +5,8 @@ import type { ReactNode } from 'react';
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { Info } from '../../../app/utils/rocketchat.info';
 import AppErrorPage from './AppErrorPage';
+import { Info } from '../../../app/utils/rocketchat.info';
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

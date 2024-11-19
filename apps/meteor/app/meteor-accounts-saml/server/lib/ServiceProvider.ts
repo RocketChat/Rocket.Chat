@@ -5,11 +5,11 @@ import zlib from 'zlib';
 
 import { Meteor } from 'meteor/meteor';
 
+import { SAMLUtils } from './Utils';
 import type { ILogoutResponse } from '../definition/ILogoutResponse';
 import type { ISAMLRequest } from '../definition/ISAMLRequest';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import type { ILogoutRequestValidateCallback, ILogoutResponseValidateCallback, IResponseValidateCallback } from '../definition/callbacks';
-import { SAMLUtils } from './Utils';
 import { AuthorizeRequest } from './generators/AuthorizeRequest';
 import { LogoutRequest } from './generators/LogoutRequest';
 import { LogoutResponse } from './generators/LogoutResponse';

@@ -13,15 +13,15 @@
 		"/server"
 	],
 	"dependencies": {
-		"@swc/core": "~1.7.42",
+		"@swc/core": "~1.9.2",
 		"@swc/jest": "~0.2.37",
-		"@testing-library/jest-dom": "~6.4.8",
+		"@testing-library/jest-dom": "~6.6.3",
 		"@types/jest-axe": "~3.5.9",
 		"identity-obj-proxy": "~3.0.0",
 		"jest-axe": "~9.0.0",
 		"jest-environment-jsdom": "~29.7.0",
 		"jest-environment-node": "~29.7.0",
-		"uuid": "~11.0.2"
+		"uuid": "~11.0.3"
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:~",
