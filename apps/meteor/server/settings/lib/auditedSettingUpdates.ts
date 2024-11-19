@@ -9,7 +9,9 @@ export const updateAuditedByUser =
 	) =>
 	(fn: F, ...args: Parameters<F>) => {
 		const [key, value, ...rest] = args;
-		const previous = settings.get(key);
+		const setting = settings.getSetting(key);
+
+		const previous = setting?.value;
 		void ServerEvents.createAuditServerEvent(
 			'settings.changed',
 			{
@@ -31,7 +33,10 @@ export const updateAuditedBySystem =
 	) =>
 	(fn: F, ...args: Parameters<F>) => {
 		const [key, value, ...rest] = args;
-		const previous = settings.get(key);
+		const setting = settings.getSetting(key);
+
+		const previous = setting?.value;
+
 		void ServerEvents.createAuditServerEvent(
 			'settings.changed',
 			{
@@ -53,7 +58,9 @@ export const updateAuditedByApp =
 	) =>
 	(fn: F, ...args: Parameters<F>) => {
 		const [key, value, ...rest] = args;
-		const previous = settings.get(key);
+		const setting = settings.getSetting(key);
+
+		const previous = setting?.value;
 		void ServerEvents.createAuditServerEvent(
 			'settings.changed',
 			{
