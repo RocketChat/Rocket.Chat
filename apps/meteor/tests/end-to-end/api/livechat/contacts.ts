@@ -668,7 +668,7 @@ describe('LIVECHAT - contacts', () => {
 			expect(room.fname).to.be.equal(visitor.name);
 
 			const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
-				contactId: room.v.contactId,
+				contactId: room.contactId,
 				name: newName,
 			});
 
@@ -697,7 +697,7 @@ describe('LIVECHAT - contacts', () => {
 			expect(room.fname).to.not.be.equal('New Contact Name');
 
 			const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
-				contactId: room.v.contactId,
+				contactId: room.contactId,
 				name: 'Edited Contact Name Inquiry',
 			});
 			expect(res.status).to.be.equal(200);
