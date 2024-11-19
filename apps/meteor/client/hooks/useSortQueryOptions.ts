@@ -1,7 +1,7 @@
 import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-export const useQueryOptions = (): {
+export const useSortQueryOptions = (): {
 	sort:
 		| {
 				lm?: -1 | 1 | undefined;
