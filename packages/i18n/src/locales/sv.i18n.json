@@ -3542,7 +3542,6 @@
   "Notifications_Max_Room_Members_Description": "Max antal medlemmar i rummet när notiser för alla meddelanden blir inaktiverade. Användare kan ändå ändra per rumsinställning för att få alla notiser individuellt. (0 för att inaktivera)",
   "Notifications_Muted_Description": "Om du väljer att stänga av allt kommer du inte att se rummets höjdpunkt i listan när det finns nya meddelanden, med undantag för omnämnanden. Att stänga av notifieringar kommer att åsidosätta meddelandeinställningar.",
   "Notifications_Preferences": "Notisinställningar",
-  "Notifications_Sound_Volume": "Ljudvolym för meddelanden",
   "Notify_active_in_this_room": "Meddela aktiva användare i det här rummet",
   "Notify_all_in_this_room": "Meddela alla i det här rummet",
   "Now_Its_Visible_For_Everyone": "Nu är den synlig för alla",
