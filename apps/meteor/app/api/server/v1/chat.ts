@@ -22,6 +22,7 @@ import { processWebhookMessage } from '../../../lib/server/functions/processWebh
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage';
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
+import { pinMessage } from '../../../message-pin/server/pinMessage';
 import { OEmbed } from '../../../oembed/server/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { settings } from '../../../settings/server';
@@ -157,7 +158,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			const pinnedMessage = await Meteor.callAsync('pinMessage', msg);
+			const pinnedMessage = await pinMessage(msg, this.userId);
 
 			const [message] = await normalizeMessagesForUser([pinnedMessage], this.userId);
 
