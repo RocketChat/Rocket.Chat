@@ -4,8 +4,8 @@ import { ServerEvents } from '@rocket.chat/models';
 import { settings } from '../../../app/settings/server/cached';
 
 export const resetAuditedSettingByUser =
-	<F extends (key: ISetting['_id']) => any>(actor: Omit<IAuditServerUserActor, 'type'>) =>
-	(fn: F, key: ISetting['_id']) => {
+	(actor: Omit<IAuditServerUserActor, 'type'>) =>
+	<F extends (key: ISetting['_id']) => any>(fn: F, key: ISetting['_id']): ReturnType<F> => {
 		const { value, packageValue } = settings.getSetting(key) ?? {};
 
 		void ServerEvents.createAuditServerEvent(
@@ -24,10 +24,11 @@ export const resetAuditedSettingByUser =
 	};
 
 export const updateAuditedByUser =
-	<T extends ISetting['value'], F extends (_id: ISetting['_id'], value: T, ...args: any[]) => any>(
-		actor: Omit<IAuditServerUserActor, 'type'>,
-	) =>
-	(fn: F, ...args: Parameters<F>) => {
+	(actor: Omit<IAuditServerUserActor, 'type'>) =>
+	<K extends ISetting['_id'], T extends ISetting['value'], F extends (_id: K, value: T, ...args: any[]) => any>(
+		fn: F,
+		...args: Parameters<F>
+	): ReturnType<F> => {
 		const [key, value, ...rest] = args;
 		const setting = settings.getSetting(key);
 
@@ -49,10 +50,11 @@ export const updateAuditedByUser =
 	};
 
 export const updateAuditedBySystem =
+	(actor: Omit<IAuditServerSystemActor, 'type'>) =>
 	<T extends ISetting['value'], F extends (_id: ISetting['_id'], value: T, ...args: any[]) => any>(
-		actor: Omit<IAuditServerSystemActor, 'type'>,
-	) =>
-	(fn: F, ...args: Parameters<F>) => {
+		fn: F,
+		...args: Parameters<F>
+	): ReturnType<F> => {
 		const [key, value, ...rest] = args;
 		const setting = settings.getSetting(key);
 
@@ -77,7 +79,7 @@ export const updateAuditedByApp =
 	<T extends ISetting['value'], F extends (_id: ISetting['_id'], value: T, ...args: any[]) => any>(
 		actor: Omit<IAuditServerAppActor, 'type'>,
 	) =>
-	(fn: F, ...args: Parameters<F>) => {
+	(fn: F, ...args: Parameters<F>): ReturnType<F> => {
 		const [key, value, ...rest] = args;
 		const setting = settings.getSetting(key);
 
