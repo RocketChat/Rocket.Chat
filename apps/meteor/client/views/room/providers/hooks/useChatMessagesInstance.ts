@@ -2,13 +2,13 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
+import { useInstance } from './useInstance';
 import { ChatMessages } from '../../../../../app/ui/client/lib/ChatMessages';
 import { useEmojiPicker } from '../../../../contexts/EmojiPickerContext';
 import type { ChatAPI } from '../../../../lib/chats/ChatAPI';
 import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
 import { useRoomSubscription } from '../../contexts/RoomContext';
 import { useE2EERoomState } from '../../hooks/useE2EERoomState';
-import { useInstance } from './useInstance';
 
 export function useChatMessagesInstance({
 	rid,

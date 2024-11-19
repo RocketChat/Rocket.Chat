@@ -2,10 +2,10 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { settings } from '../../settings/server';
 import { CROWD } from './crowd';
 import { logger } from './logger';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
+import { settings } from '../../settings/server';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

@@ -11,16 +11,16 @@ import type { KeyboardEvent, ReactElement } from 'react';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import StatusIndicators from './StatusIndicators';
+import MessageRoles from './header/MessageRoles';
+import { useMessageListShowUsername, useMessageListShowRealName, useMessageListShowRoles } from './list/MessageListContext';
 import { getUserDisplayName } from '../../../lib/getUserDisplayName';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../hooks/useFormatTime';
 import { useUserData } from '../../hooks/useUserData';
 import type { UserPresence } from '../../lib/presence';
-import { useUserCard } from '../../views/room/contexts/UserCardContext';
-import StatusIndicators from './StatusIndicators';
-import MessageRoles from './header/MessageRoles';
 import { useMessageRoles } from './header/hooks/useMessageRoles';
-import { useMessageListShowUsername, useMessageListShowRealName, useMessageListShowRoles } from './list/MessageListContext';
+import { useUserCard } from '../../views/room/contexts/UserCardContext';
 
 type MessageHeaderProps = {
 	message: IMessage;

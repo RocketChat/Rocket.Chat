@@ -5,6 +5,7 @@ import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts'
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 
+import TeamsTableRow from './TeamsTableRow';
 import FilterByText from '../../../../../components/FilterByText';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import {
@@ -17,7 +18,6 @@ import {
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../../components/GenericTable/hooks/useSort';
 import { useDirectoryQuery } from '../../../hooks/useDirectoryQuery';
-import TeamsTableRow from './TeamsTableRow';
 
 const TeamsTable = () => {
 	const t = useTranslation();

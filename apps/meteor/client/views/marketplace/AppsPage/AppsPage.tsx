@@ -1,8 +1,8 @@
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { Page } from '../../../components/Page';
 import AppsPageContent from './AppsPageContent';
+import { Page } from '../../../components/Page';
 
 const AppsPage = (): ReactElement => {
 	return (

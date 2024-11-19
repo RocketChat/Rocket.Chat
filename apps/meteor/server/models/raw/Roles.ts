@@ -3,8 +3,8 @@ import type { IRolesModel } from '@rocket.chat/model-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { Collection, FindCursor, Db, Filter, FindOptions, Document, CountDocumentsOptions } from 'mongodb';
 
-import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
 import { BaseRaw } from './BaseRaw';
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
 
 export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IRole>>) {

@@ -3,8 +3,8 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { StateSnapshot } from 'react-virtuoso';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { RoomHistoryManager } from '../../app/ui-utils/client/lib/RoomHistoryManager';
 import { getConfig } from './utils/getConfig';
+import { RoomHistoryManager } from '../../app/ui-utils/client/lib/RoomHistoryManager';
 
 const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));
 

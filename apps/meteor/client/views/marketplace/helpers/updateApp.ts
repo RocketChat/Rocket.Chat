@@ -1,8 +1,8 @@
 import type { App, AppPermission } from '@rocket.chat/core-typings';
 
-import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import { handleAPIError } from './handleAPIError';
 import { warnStatusChange } from './warnStatusChange';
+import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 
 type updateAppProps = App & {
 	permissionsGranted?: AppPermission[];

@@ -3,9 +3,9 @@ import type { ReactElement } from 'react';
 import React, { lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 
-import { queryClient } from '../../lib/queryClient';
 import OutermostErrorBoundary from './OutermostErrorBoundary';
 import PageLoading from './PageLoading';
+import { queryClient } from '../../lib/queryClient';
 
 const MeteorProvider = lazy(() => import('../../providers/MeteorProvider'));
 const AppLayout = lazy(() => import('./AppLayout'));

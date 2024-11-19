@@ -4,6 +4,8 @@ import { hashQueryKey } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import AddAgent from './AddAgent';
+import AgentsTableRow from './AgentsTableRow';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
 import {
@@ -17,8 +19,6 @@ import { usePagination } from '../../../../components/GenericTable/hooks/usePagi
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { useAgentsQuery } from '../hooks/useAgentsQuery';
 import { useQuery } from '../hooks/useQuery';
-import AddAgent from './AddAgent';
-import AgentsTableRow from './AgentsTableRow';
 
 // TODO: missing error state
 const AgentsTable = () => {

@@ -5,6 +5,10 @@ import { type Readable, EventEmitter } from 'stream';
 import debugFactory from 'debug';
 import * as jsonrpc from 'jsonrpc-lite';
 
+import { LivenessManager } from './LivenessManager';
+import { ProcessMessenger } from './ProcessMessenger';
+import { bundleLegacyApp } from './bundler';
+import { decoder } from './codec';
 import { AppStatus } from '../../../definition/AppStatus';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
@@ -12,10 +16,6 @@ import type { IParseAppPackageResult } from '../../compiler';
 import { AppConsole, type ILoggerStorageEntry } from '../../logging';
 import type { AppAccessorManager, AppApiManager } from '../../managers';
 import type { AppLogStorage, IAppStorageItem } from '../../storage';
-import { LivenessManager } from './LivenessManager';
-import { ProcessMessenger } from './ProcessMessenger';
-import { bundleLegacyApp } from './bundler';
-import { decoder } from './codec';
 
 const baseDebug = debugFactory('appsEngine:runtime:deno');
 
@@ -152,7 +152,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
             // If the app doesn't request any permissions, it gets the default set of permissions, which includes "networking"
             // If the app requests specific permissions, we need to check whether it requests "networking" or not
-            if (!this.appPackage.info.permissions || this.appPackage.info.permissions.findIndex((p) => p.name === 'networking.default') !== -1) {
+            if (!this.appPackage.info.permissions || this.appPackage.info.permissions.findIndex((p) => p.name === 'networking') !== -1) {
                 options.splice(1, 0, '--allow-net');
             }
 

@@ -7,6 +7,7 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import UsersInRoleTableRow from './UsersInRoleTableRow';
 import GenericError from '../../../../../components/GenericError';
 import GenericModal from '../../../../../components/GenericModal';
 import GenericNoResults from '../../../../../components/GenericNoResults';
@@ -18,7 +19,6 @@ import {
 	GenericTableLoadingTable,
 } from '../../../../../components/GenericTable';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
-import UsersInRoleTableRow from './UsersInRoleTableRow';
 
 type UsersInRoleTableProps = {
 	roleName: IRole['name'];

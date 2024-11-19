@@ -2,6 +2,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Settings } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import Bridge from '../irc-bridge';
@@ -16,8 +17,18 @@ declare module '@rocket.chat/ddp-client' {
 Meteor.methods<ServerMethods>({
 	async resetIrcConnection() {
 		const ircEnabled = Boolean(settings.get('IRC_Enabled'));
+		const uid = Meteor.userId();
+
+		if (!uid) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'resetIrcConnection' });
+		}
+
+		if (!(await hasPermissionAsync(uid, 'edit-privileged-setting'))) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'resetIrcConnection' });
+		}
 
 		const updatedLastPingValue = await Settings.updateValueById('IRC_Bridge_Last_Ping', new Date(0), { upsert: true });
+
 		if (updatedLastPingValue.modifiedCount || updatedLastPingValue.upsertedCount) {
 			void notifyOnSettingChangedById('IRC_Bridge_Last_Ping');
 		}

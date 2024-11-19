@@ -5,6 +5,7 @@ import { useQuery, hashQueryKey } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
+import RemoveSlaButton from './RemoveSlaButton';
 import FilterByText from '../../components/FilterByText';
 import GenericNoResults from '../../components/GenericNoResults/GenericNoResults';
 import {
@@ -18,7 +19,6 @@ import {
 } from '../../components/GenericTable';
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../components/GenericTable/hooks/useSort';
-import RemoveSlaButton from './RemoveSlaButton';
 
 const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	const t = useTranslation();

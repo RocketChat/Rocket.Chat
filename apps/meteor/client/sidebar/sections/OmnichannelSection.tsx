@@ -5,12 +5,12 @@ import { useLayout, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { OverMacLimitSection } from './OverMacLimitSection';
+import { OmniChannelCallDialPad, OmnichannelCallToggle, OmnichannelLivechatToggle } from './actions';
 import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
 import { useIsOverMacLimit } from '../../hooks/omnichannel/useIsOverMacLimit';
 import { useOmnichannelShowQueueLink } from '../../hooks/omnichannel/useOmnichannelShowQueueLink';
 import SidebarHeaderToolbar from '../header/SidebarHeaderToolbar';
-import { OverMacLimitSection } from './OverMacLimitSection';
-import { OmniChannelCallDialPad, OmnichannelCallToggle, OmnichannelLivechatToggle } from './actions';
 
 const OmnichannelSection = () => {
 	const { t } = useTranslation();

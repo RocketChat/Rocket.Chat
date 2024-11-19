@@ -5,7 +5,7 @@
 	"dependencies": {
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/i18n": "workspace:~",
-		"@storybook/react": "^8.4.1",
+		"@storybook/react": "^8.4.4",
 		"i18next": "~23.4.9",
 		"react-i18next": "~13.2.2",
 		"use-sync-external-store": "~1.2.2"

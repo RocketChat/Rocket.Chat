@@ -6,10 +6,10 @@ import type { FormEvent } from 'react';
 import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import BaseGroupPage from './BaseGroupPage';
 import GenericModal from '../../../../components/GenericModal';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useEditableSettings } from '../../EditableSettingsContext';
-import BaseGroupPage from './BaseGroupPage';
 
 type LDAPGroupPageProps = ISetting & {
 	onClickBack?: () => void;

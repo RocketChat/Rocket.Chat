@@ -1,8 +1,8 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import NotAuthorizedPage from '../../views/notAuthorized/NotAuthorizedPage';
 import TagsPage from './TagsPage';
+import NotAuthorizedPage from '../../views/notAuthorized/NotAuthorizedPage';
 
 const TagsRoute = () => {
 	const canViewTags = usePermission('manage-livechat-tags');
