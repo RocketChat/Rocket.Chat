@@ -152,7 +152,7 @@ test.describe.serial('message-actions', () => {
 		await expect(page.locator('header h1')).toHaveText(discussionName);
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		// Should fail if more than one discussion has been created
-		await expect(poHomeChannel.content.getMessageByContent(discussionName)).toHaveCount(1);
+		await expect(poHomeChannel.content.getMessageByText(discussionName)).toHaveCount(1);
 	});
 
 	test('expect star the message', async ({ page }) => {

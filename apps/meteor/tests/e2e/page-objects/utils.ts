@@ -26,8 +26,4 @@ export class Utils {
 	get btnModalConfirmDelete() {
 		return this.page.locator('.rcx-modal >> button >> text="Delete"');
 	}
-
-	get inputName(): Locator {
-		return this.page.locator('role=textbox[name="Name"]');
-	}
 }

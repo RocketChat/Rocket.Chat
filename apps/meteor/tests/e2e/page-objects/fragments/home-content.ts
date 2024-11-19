@@ -31,10 +31,6 @@ export class HomeContent {
 		return this.page.locator('role=menu[name="People"]');
 	}
 
-	getMessageByContent(content: string): Locator {
-		return this.page.locator('[role="listitem"][role-description="message"]').filter({ hasText: content });
-	}
-
 	get lastUserMessage(): Locator {
 		return this.page.locator('[data-qa-type="message"]').last();
 	}
@@ -393,6 +389,10 @@ export class HomeContent {
 
 	getSystemMessageByText(text: string): Locator {
 		return this.page.locator('[aria-roledescription="system message"]', { hasText: text });
+	}
+
+	getMessageByText(text: string): Locator {
+		return this.page.locator('[role="listitem"][aria-roledescription="message"]', { hasText: text });
 	}
 
 	async waitForChannel(): Promise<void> {
