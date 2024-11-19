@@ -31,6 +31,10 @@ export class HomeContent {
 		return this.page.locator('role=menu[name="People"]');
 	}
 
+	getMessageByContent(content: string): Locator {
+		return this.page.locator('[role="listitem"][role-description="message"]').filter({ hasText: content });
+	}
+
 	get lastUserMessage(): Locator {
 		return this.page.locator('[data-qa-type="message"]').last();
 	}
