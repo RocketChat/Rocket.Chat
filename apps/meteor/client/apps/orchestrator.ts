@@ -73,7 +73,7 @@ class AppClientOrchestrator {
 			return { apps: [], error: 'Invalid response from API' };
 		}
 
-		const apps = (result as App[]).map((app: App) => {
+		const apps = result.map((app: App): App => {
 			const { latest, appRequestStats, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt, bundledIn, requestedEndUser } = app;
 			return {
 				...latest,
@@ -85,6 +85,7 @@ class AppClientOrchestrator {
 				modifiedAt,
 				bundledIn,
 				requestedEndUser,
+				latest,
 			};
 		});
 
