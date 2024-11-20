@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	isChatReportMessageProps,
@@ -7,6 +7,7 @@ import {
 	isChatUpdateProps,
 	isChatGetThreadsListProps,
 	isChatDeleteProps,
+	isChatSyncMessagesProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
@@ -74,22 +75,32 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.syncMessages',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatSyncMessagesProps },
 	{
 		async get() {
-			const { roomId, lastUpdate } = this.queryParams;
+			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams;
 
 			if (!roomId) {
-				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
+				throw new Meteor.Error('error-param-required', 'The required "roomId" query param is missing');
 			}
 
-			if (!lastUpdate) {
-				throw new Meteor.Error('error-lastUpdate-param-not-provided', 'The required "lastUpdate" query param is missing.');
-			} else if (isNaN(Date.parse(lastUpdate))) {
-				throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
+			if (!lastUpdate && !type) {
+				throw new Meteor.Error('error-param-required', 'The "type" or "lastUpdate" parameters must be provided');
 			}
 
-			const result = await Meteor.callAsync('messages/get', roomId, { lastUpdate: new Date(lastUpdate) });
+			if (lastUpdate && isNaN(Date.parse(lastUpdate))) {
+				throw new Meteor.Error('error-lastUpdate-param-invalid', 'The "lastUpdate" query parameter must be a valid date');
+			}
+
+			const getMessagesQuery = {
+				...(lastUpdate && { lastUpdate: new Date(lastUpdate) }),
+				...(next && { next }),
+				...(previous && { previous }),
+				...(count && { count }),
+				...(type && { type }),
+			};
+
+			const result = await Meteor.callAsync('messages/get', roomId, getMessagesQuery);
 
 			if (!result) {
 				return API.v1.failure();
@@ -97,8 +108,9 @@ API.v1.addRoute(
 
 			return API.v1.success({
 				result: {
-					updated: await normalizeMessagesForUser(result.updated, this.userId),
-					deleted: result.deleted,
+					...(result.updated && { updated: await normalizeMessagesForUser(result.updated, this.userId) }),
+					...(result.deleted && { deleted: result.deleted }),
+					...(result.cursor && { cursor: result.cursor }),
 				},
 			});
 		},
@@ -538,7 +550,7 @@ API.v1.addRoute(
 			};
 
 			const threadQuery = { ...query, ...typeThread, rid: room._id, tcount: { $exists: true } };
-			const { cursor, totalCount } = await Messages.findPaginated(threadQuery, {
+			const { cursor, totalCount } = await Messages.findPaginated<IThreadMainMessage>(threadQuery, {
 				sort: sort || { tlm: -1 },
 				skip: offset,
 				limit: count,
