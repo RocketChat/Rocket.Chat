@@ -17,6 +17,7 @@ import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 
+import { updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { disableCustomScripts } from '../../../lib/server/functions/disableCustomScripts';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
@@ -200,9 +201,16 @@ API.v1.addRoute(
 					return API.v1.success();
 				}
 
+				const auditSettingOperation = updateAuditedByUser({
+					_id: this.userId,
+					username: this.user.username!,
+					ip: this.requestIp,
+					useragent: this.request.headers['user-agent'] || '',
+				});
+
 				if (isSettingColor(setting) && isSettingsUpdatePropsColor(this.bodyParams)) {
 					const updateOptionsPromise = Settings.updateOptionsById<ISettingColor>(this.urlParams._id, { editor: this.bodyParams.editor });
-					const updateValuePromise = Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+					const updateValuePromise = auditSettingOperation(Settings.updateValueNotHiddenById, this.urlParams._id, this.bodyParams.value);
 
 					const [updateOptionsResult, updateValueResult] = await Promise.all([updateOptionsPromise, updateValuePromise]);
 
@@ -214,7 +222,12 @@ API.v1.addRoute(
 				}
 
 				if (isSettingsUpdatePropDefault(this.bodyParams)) {
-					const { matchedCount } = await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+					const { matchedCount } = await auditSettingOperation(
+						Settings.updateValueNotHiddenById,
+						this.urlParams._id,
+						this.bodyParams.value,
+					);
+
 					if (!matchedCount) {
 						return API.v1.failure();
 					}

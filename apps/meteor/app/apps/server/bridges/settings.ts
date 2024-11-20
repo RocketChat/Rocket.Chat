@@ -3,6 +3,7 @@ import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { ServerSettingBridge } from '@rocket.chat/apps-engine/server/bridges/ServerSettingBridge';
 import { Settings } from '@rocket.chat/models';
 
+import { updateAuditedByApp } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 
 export class AppSettingBridge extends ServerSettingBridge {
@@ -56,7 +57,15 @@ export class AppSettingBridge extends ServerSettingBridge {
 			throw new Error(`The setting "${setting.id}" is not readable.`);
 		}
 
-		(await Settings.updateValueById(setting.id, setting.value)).modifiedCount && void notifyOnSettingChangedById(setting.id);
+		if (
+			(
+				await updateAuditedByApp({
+					_id: appId,
+				})(Settings.updateValueById, setting.id, setting.value)
+			).modifiedCount
+		) {
+			void notifyOnSettingChangedById(setting.id);
+		}
 	}
 
 	protected async incrementValue(id: string, value: number, appId: string): Promise<void> {

@@ -4,10 +4,10 @@ import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-conte
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { useQueryOptions } from './useQueryOptions';
 import { useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
 import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../hooks/omnichannel/useQueuedInquiries';
+import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 
 const query = { open: { $ne: false } };
 
@@ -44,7 +44,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 
-	const options = useQueryOptions();
+	const options = useSortQueryOptions();
 
 	const rooms = useUserSubscriptions(query, options);
 

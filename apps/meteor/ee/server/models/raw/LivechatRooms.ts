@@ -4,11 +4,13 @@ import type {
 	IOmnichannelServiceLevelAgreements,
 	RocketChatRecordDeleted,
 	ReportResult,
+	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
-import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import type { Updater } from '@rocket.chat/models';
-import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, Filter, AggregationCursor } from 'mongodb';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, Filter, AggregationCursor, UpdateOptions } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { LivechatRoomsRaw } from '../../../../server/models/raw/LivechatRooms';
@@ -66,6 +68,11 @@ declare module '@rocket.chat/model-typings' {
 		getConversationsWithoutTagsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number>;
 		getTotalConversationsWithoutAgentsBetweenDate(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number>;
 		getTotalConversationsWithoutDepartmentBetweenDates(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): Promise<number>;
+		updateMergedContactIds(
+			contactIdsThatWereMerged: ILivechatContact['_id'][],
+			newContactId: ILivechatContact['_id'],
+			options?: UpdateOptions,
+		): Promise<UpdateResult | Document>;
 	}
 }
 
@@ -725,5 +732,34 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 			},
 			...extraQuery,
 		});
+	}
+
+	updateMergedContactIds(
+		contactIdsThatWereMerged: ILivechatContact['_id'][],
+		newContactId: ILivechatContact['_id'],
+		options?: UpdateOptions,
+	): Promise<UpdateResult | Document> {
+		return this.updateMany({ contactId: { $in: contactIdsThatWereMerged } }, { $set: { contactId: newContactId } }, options);
+	}
+
+	findClosedRoomsByContactAndSourcePaginated({
+		contactId,
+		source,
+		options = {},
+	}: {
+		contactId: string;
+		source?: string;
+		options?: FindOptions;
+	}): FindPaginated<FindCursor<IOmnichannelRoom>> {
+		return this.findPaginated<IOmnichannelRoom>(
+			{
+				contactId,
+				closedAt: { $exists: true },
+				...(source && {
+					$or: [{ 'source.type': new RegExp(escapeRegExp(source), 'i') }, { 'source.alias': new RegExp(escapeRegExp(source), 'i') }],
+				}),
+			},
+			options,
+		);
 	}
 }

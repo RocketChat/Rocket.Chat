@@ -211,7 +211,7 @@ export class HomeContent {
 	}
 
 	get btnContactEdit(): Locator {
-		return this.page.locator('.rcx-vertical-bar button:has-text("Edit")');
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Edit', exact: true });
 	}
 
 	get inputModalClosingComment(): Locator {
@@ -389,6 +389,10 @@ export class HomeContent {
 
 	getSystemMessageByText(text: string): Locator {
 		return this.page.locator('[aria-roledescription="system message"]', { hasText: text });
+	}
+
+	getMessageByText(text: string): Locator {
+		return this.page.locator('[role="listitem"][aria-roledescription="message"]', { hasText: text });
 	}
 
 	async waitForChannel(): Promise<void> {

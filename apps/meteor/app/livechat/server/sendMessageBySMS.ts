@@ -55,7 +55,7 @@ callbacks.add(
 			return message;
 		}
 
-		const visitor = await LivechatVisitors.getVisitorByToken(room.v.token, { projection: { phone: 1 } });
+		const visitor = await LivechatVisitors.getVisitorByToken(room.v.token, { projection: { phone: 1, source: 1 } });
 
 		if (!visitor?.phone || visitor.phone.length === 0) {
 			return message;
