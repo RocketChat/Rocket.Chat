@@ -4,11 +4,11 @@ import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
 
+import ThreadListMetrics from './ThreadListMetrics';
 import Emoji from '../../../../../components/Emoji';
 import ThreadMetricsFollow from '../../../../../components/message/content/ThreadMetricsFollow';
 import ThreadMetricsUnreadBadge from '../../../../../components/message/content/ThreadMetricsUnreadBadge';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
-import ThreadListMetrics from './ThreadListMetrics';
 
 type ThreadListMessageProps = {
 	_id: IMessage['_id'];
