@@ -11,13 +11,13 @@ import semver from 'semver';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { useIsEnterprise } from '../../../../hooks/useIsEnterprise';
-import AddonRequiredModal from '../../modals/AddonRequiredModal';
 import type { appStatusSpanResponseProps } from '../../helpers';
 import { appButtonProps, appMultiStatusProps } from '../../helpers';
 import type { AppInstallationHandlerParams } from '../../hooks/useAppInstallationHandler';
 import { useAppInstallationHandler } from '../../hooks/useAppInstallationHandler';
 import { useMarketplaceActions } from '../../hooks/useMarketplaceActions';
 import { useMarketplaceContext } from '../../hooks/useMarketplaceContext';
+import AddonRequiredModal from '../../modals/AddonRequiredModal';
 
 type AppStatusProps = {
 	app: App;

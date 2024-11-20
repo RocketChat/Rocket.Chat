@@ -8,9 +8,9 @@ import semver from 'semver';
 
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
+import AddonChip from './AddonChip';
 import AppStatus from '../components/AppStatus';
 import { useMarketplaceContext } from '../hooks/useMarketplaceContext';
-import AddonChip from './AddonChip';
 
 // TODO: org props
 const AppRow = ({ className, ...props }: App & { className?: string }): ReactElement => {

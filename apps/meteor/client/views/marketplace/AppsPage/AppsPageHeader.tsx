@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { useMarketplaceContext } from '../hooks/useMarketplaceContext';
 import DefaultAppsPageHeader from './DefaultAppsPageHeader';
 import PrivateAppsPageHeader from './PrivateAppsPageHeader';
+import { useMarketplaceContext } from '../hooks/useMarketplaceContext';
 
 const AppsPageHeader = () => {
 	const context = useMarketplaceContext();

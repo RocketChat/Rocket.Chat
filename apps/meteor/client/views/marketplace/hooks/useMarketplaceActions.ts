@@ -1,10 +1,10 @@
 import type { App, AppPermission } from '@rocket.chat/core-typings';
 import { useMutation } from '@tanstack/react-query';
 
+import { useAppsOrchestrator } from './useAppsOrchestrator';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { warnAppInstall } from '../helpers/warnAppInstall';
 import { warnStatusChange } from '../helpers/warnStatusChange';
-import { useAppsOrchestrator } from './useAppsOrchestrator';
 
 type InstallAppParams = App & {
 	permissionsGranted?: AppPermission[];

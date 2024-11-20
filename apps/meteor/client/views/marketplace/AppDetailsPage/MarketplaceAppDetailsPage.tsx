@@ -1,10 +1,10 @@
 import type { App } from '@rocket.chat/core-typings';
 import React from 'react';
 
-import { useAppDetailsPageTab } from '../hooks/useAppDetailsPageTab';
 import AppDetailsPageHeader from './AppDetailsPageHeader';
 import AppDetailsPageLayout from './AppDetailsPageLayout';
 import AppDetailsPageTabs from './AppDetailsPageTabs';
+import { useAppDetailsPageTab } from '../hooks/useAppDetailsPageTab';
 import AppDetails from './tabs/AppDetails';
 import AppReleases from './tabs/AppReleases';
 import AppRequests from './tabs/AppRequests/AppRequests';

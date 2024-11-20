@@ -6,12 +6,12 @@ import React from 'react';
 import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useAppDetailsPageTab } from '../hooks/useAppDetailsPageTab';
-import { useAppSettingsForm } from '../hooks/useAppSettingsForm';
-import { useSaveAppSettingsMutation } from '../hooks/useSaveAppSettingsMutation';
 import AppDetailsPageHeader from './AppDetailsPageHeader';
 import AppDetailsPageLayout from './AppDetailsPageLayout';
 import AppDetailsPageTabs from './AppDetailsPageTabs';
+import { useAppDetailsPageTab } from '../hooks/useAppDetailsPageTab';
+import { useAppSettingsForm } from '../hooks/useAppSettingsForm';
+import { useSaveAppSettingsMutation } from '../hooks/useSaveAppSettingsMutation';
 import AppDetails from './tabs/AppDetails';
 import AppLogs from './tabs/AppLogs';
 import AppReleases from './tabs/AppReleases';

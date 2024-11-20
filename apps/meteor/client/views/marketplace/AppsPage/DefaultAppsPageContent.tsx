@@ -6,9 +6,9 @@ import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppsList from '../AppsList';
-import { useMarketplaceContext } from '../hooks/useMarketplaceContext';
 import FeaturedAppsSections from './FeaturedAppsSections';
 import { useSearchFiltersFormContext } from './SearchFiltersForm';
+import { useMarketplaceContext } from '../hooks/useMarketplaceContext';
 
 type DefaultAppsPageContentProps = {
 	items: App[];

@@ -16,10 +16,10 @@ import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewM
 import { useSetAppStatusMutation } from './useSetAppStatusMutation';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import type { AddonActionType } from '../modals/AddonRequiredModal';
-import AddonRequiredModal from '../modals/AddonRequiredModal';
 import type { Actions } from '../helpers';
 import { appEnabledStatuses, appButtonProps } from '../helpers';
+import type { AddonActionType } from '../modals/AddonRequiredModal';
+import AddonRequiredModal from '../modals/AddonRequiredModal';
 import AppUninstallationModal from '../modals/AppUninstallationModal';
 import DisableAppModal from '../modals/DisableAppModal';
 import IncompatibleModal from '../modals/IncompatibleModal';
