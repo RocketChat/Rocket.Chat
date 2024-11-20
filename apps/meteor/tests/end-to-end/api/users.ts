@@ -4537,4 +4537,42 @@ describe('[Users]', () => {
 				});
 		});
 	});
+
+	it('should allow clearing the bio field (empty string)', (done) => {
+		void request
+			.post(api('users.update'))
+			.set(credentials)
+			.send({
+				userId: targetUser._id,
+				data: {
+					bio: '',
+				},
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.not.have.nested.property('user.bio');
+			})
+			.end(done);
+	});
+
+	it('should reject invalid bio values (e.g., null)', (done) => {
+		void request
+			.post(api('users.update'))
+			.set(credentials)
+			.send({
+				userId: targetUser._id,
+				data: {
+					bio: null,
+				},
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+				expect(res.body.error).to.include('invalid bio');
+			})
+			.end(done);
+	});
 });
