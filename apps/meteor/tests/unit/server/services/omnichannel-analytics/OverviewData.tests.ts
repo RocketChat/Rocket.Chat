@@ -1,6 +1,6 @@
 /* eslint-disable new-cap */
 import { expect } from 'chai';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import sinon from 'sinon';
 
 import { conversations } from './mockData';
