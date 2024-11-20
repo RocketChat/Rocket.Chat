@@ -21,9 +21,12 @@ import PlanCardCommunity from './components/cards/PlanCard/PlanCardCommunity';
 import SeatsCard from './components/cards/SeatsCard';
 import { useCancelSubscriptionModal } from './hooks/useCancelSubscriptionModal';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
+import UiKitSubscriptionLicense from './surface/UiKitSubscriptionLicense';
+import { Page, PageScrollableContentWithShadow } from '../../../components/Page';
+import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
+import PageHeaderNoShadow from '../../../components/Page/PageHeaderNoShadow';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import { useInvalidateLicense, useLicense } from '../../../hooks/useLicense';
+import { useInvalidateLicense } from '../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 
 function useShowLicense() {
@@ -99,7 +102,7 @@ const SubscriptionPage = () => {
 
 	return (
 		<Page bg='tint'>
-			<PageHeader title={t('Subscription')}>
+			<PageHeaderNoShadow title={t('Subscription')}>
 				<ButtonGroup>
 					{isRegistered && (
 						<Button loading={syncLicenseUpdate.isLoading} icon='reload' onClick={() => handleSyncLicenseUpdate()}>
@@ -110,7 +113,17 @@ const SubscriptionPage = () => {
 						{t(isEnterprise ? 'Manage_subscription' : 'Upgrade')}
 					</UpgradeButton>
 				</ButtonGroup>
-			</PageHeader>
+			</PageHeaderNoShadow>
+			<PageBlockWithBorder>
+				<UiKitSubscriptionLicense
+					key='license'
+					initialView={{
+						viewId: 'license',
+						appId: 'cloud-announcements-core',
+						blocks: [],
+					}}
+				/>
+			</PageBlockWithBorder>
 			<PageScrollableContentWithShadow p={16}>
 				{(showSubscriptionCallout || syncLicenseUpdate.isLoading) && (
 					<Callout type='info' title={t('Sync_license_update_Callout_Title')} m={8}>
