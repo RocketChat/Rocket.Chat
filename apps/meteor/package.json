@@ -128,7 +128,6 @@
 		"@types/meteor-collection-hooks": "^0.8.9",
 		"@types/mkdirp": "^1.0.2",
 		"@types/mocha": "github:whitecolor/mocha-types",
-		"@types/moment-timezone": "^0.5.30",
 		"@types/node": "~20.16.15",
 		"@types/node-gcm": "^1.0.5",
 		"@types/node-rsa": "^1.1.4",

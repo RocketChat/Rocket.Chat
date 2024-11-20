@@ -9276,7 +9276,6 @@ __metadata:
     "@types/meteor-collection-hooks": "npm:^0.8.9"
     "@types/mkdirp": "npm:^1.0.2"
     "@types/mocha": "github:whitecolor/mocha-types"
-    "@types/moment-timezone": "npm:^0.5.30"
     "@types/node": "npm:~20.16.15"
     "@types/node-gcm": "npm:^1.0.5"
     "@types/node-rsa": "npm:^1.1.4"
@@ -12906,15 +12905,6 @@ __metadata:
   version: 8.0.0
   resolution: "@types/mocha@https://github.com/whitecolor/mocha-types.git#commit=da22474cf43f48a56c86f8c23a5a0ea36e295768"
   checksum: 10/8821dd8701ae1ddf24505139de2b5a4780a1391c62d86d26c27cce08ddc161774f9acddd68581030954742ef3bbc71bfae467be586a6ab8a631ea28297c87a8a
-  languageName: node
-  linkType: hard
-
-"@types/moment-timezone@npm:^0.5.30":
-  version: 0.5.30
-  resolution: "@types/moment-timezone@npm:0.5.30"
-  dependencies:
-    moment-timezone: "npm:*"
-  checksum: 10/488b5880b346101f15e3f90267eb8d848ce20a41ea8b51305b1fee25f4fac57b93d553dc0de6f2eb8412be764bd74c9c347ed678c9a6d20d800a06c106b674f9
   languageName: node
   linkType: hard
 
@@ -29029,21 +29019,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment-timezone@npm:*, moment-timezone@npm:^0.5.x":
-  version: 0.5.43
-  resolution: "moment-timezone@npm:0.5.43"
-  dependencies:
-    moment: "npm:^2.29.4"
-  checksum: 10/f8b66f8562960d6c2ec90ea7e2ca8c10bd5f5cf5ced2eaaac83deb1011b145d0154e8d77018cf5e913d489898a343122a3d815768809653ab039306dce1db1eb
-  languageName: node
-  linkType: hard
-
 "moment-timezone@npm:^0.5.46, moment-timezone@npm:~0.5.46":
   version: 0.5.46
   resolution: "moment-timezone@npm:0.5.46"
   dependencies:
     moment: "npm:^2.29.4"
   checksum: 10/7613ba388fa6004af62675fb9945cb0d37758b559d07470a5e188419ffe1ac03eb2ed16fe80aa34d1e7dd39fc5bd67dc02cd59e8dcdab95504cface2c78e4b3d
+  languageName: node
+  linkType: hard
+
+"moment-timezone@npm:^0.5.x":
+  version: 0.5.43
+  resolution: "moment-timezone@npm:0.5.43"
+  dependencies:
+    moment: "npm:^2.29.4"
+  checksum: 10/f8b66f8562960d6c2ec90ea7e2ca8c10bd5f5cf5ced2eaaac83deb1011b145d0154e8d77018cf5e913d489898a343122a3d815768809653ab039306dce1db1eb
   languageName: node
   linkType: hard
 
