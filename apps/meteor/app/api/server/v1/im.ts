@@ -400,10 +400,9 @@ API.v1.addRoute(
 				...parseIds(starredIds, 'starred._id'),
 				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
 			};
-			const sortObj = { ts: sort?.ts ?? -1 };
 
 			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
-				sort: sortObj,
+				sort: sort,
 				skip: offset,
 				limit: count,
 				...(fields && { projection: fields }),
