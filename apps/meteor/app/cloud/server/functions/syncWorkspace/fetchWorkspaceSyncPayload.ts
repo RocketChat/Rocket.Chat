@@ -42,33 +42,5 @@ export async function fetchWorkspaceSyncPayload({
 
 	assertWorkspaceSyncPayload(payload);
 
-	const cloudSyncAnnouncement = {
-		viewId: 'subscription-announcement',
-		appId: 'cloud-communication-core',
-		blocks: [
-			{
-				type: 'callout',
-				title: {
-					type: 'plain_text',
-					text: 'Workspace eligible for Starter Plan',
-				},
-				text: {
-					type: 'plain_text',
-					text: 'Get free access to premium capabilities for up to 50 users',
-				},
-				accessory: {
-					type: 'button',
-					text: {
-						type: 'plain_text',
-						text: 'Switch Plan',
-					},
-					actionId: 'callout-action',
-					appId: 'cloud-announcements-core',
-					blockId: 'section-button',
-				},
-			},
-		],
-	};
-
-	return { ...payload, cloudSyncAnnouncement };
+	return payload;
 }
