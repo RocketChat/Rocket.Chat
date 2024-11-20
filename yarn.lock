@@ -9354,7 +9354,7 @@ __metadata:
     dompurify: "npm:^3.2.0"
     ejson: "npm:^2.2.3"
     emailreplyparser: "npm:^0.0.5"
-    emoji-toolkit: "npm:^7.0.1"
+    emoji-toolkit: "npm:^9.0.1"
     emojione: "npm:^4.5.0"
     emojione-assets: "npm:^4.5.0"
     esl: "npm:^11.2.1"
@@ -9614,7 +9614,7 @@ __metadata:
     "@types/node": "npm:~20.16.15"
     date-fns: "npm:^2.30.0"
     ejson: "npm:^2.2.3"
-    emoji-toolkit: "npm:^7.0.1"
+    emoji-toolkit: "npm:^9.0.1"
     eslint: "npm:~8.45.0"
     eventemitter3: "npm:^5.0.1"
     jest: "npm:~29.7.0"
@@ -9648,7 +9648,7 @@ __metadata:
     "@types/node": "npm:~20.16.15"
     "@types/polka": "npm:^0.5.7"
     ejson: "npm:^2.2.3"
-    emoji-toolkit: "npm:^7.0.1"
+    emoji-toolkit: "npm:^9.0.1"
     eslint: "npm:~8.45.0"
     event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^5.0.1"
@@ -9730,7 +9730,7 @@ __metadata:
     "@types/react-dom": "npm:~17.0.25"
     buffer: "npm:~6.0.3"
     emoji-assets: "npm:^7.0.1"
-    emoji-toolkit: "npm:^7.0.1"
+    emoji-toolkit: "npm:^9.0.1"
     eslint: "npm:~8.45.0"
     jest: "npm:~29.7.0"
     moment: "npm:^2.29.4"
@@ -9853,7 +9853,7 @@ __metadata:
     "@types/node": "npm:~20.16.15"
     "@types/polka": "npm:^0.5.7"
     ejson: "npm:^2.2.3"
-    emoji-toolkit: "npm:^7.0.1"
+    emoji-toolkit: "npm:^9.0.1"
     eslint: "npm:~8.45.0"
     event-loop-stats: "npm:^1.4.1"
     eventemitter3: "npm:^5.0.1"
@@ -20206,10 +20206,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"emoji-toolkit@npm:^7.0.1":
-  version: 7.0.1
-  resolution: "emoji-toolkit@npm:7.0.1"
-  checksum: 10/5b8c84718d0efa4b00a877ac5c6cf3844a9e33f52d5d50b6d02563be781df311390b524a9989289f8a0e80104054dae4517a5e26ee1b40dc901051f80aa7f1af
+"emoji-toolkit@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "emoji-toolkit@npm:9.0.1"
+  checksum: 10/e2dd3edda04f3b6c0850512438cca8952a2750f04d884b9939850e08a77c296c36b824a298eca42cdce6cd6027df52684e4753cf3d1856a0e5a24560f084d5ee
   languageName: node
   linkType: hard
 
@@ -34346,6 +34346,7 @@ __metadata:
     "@types/chart.js": "npm:^2.9.41"
     "@types/js-yaml": "npm:^4.0.9"
     "@types/stream-buffers": "npm:^3.0.7"
+    emoji-toolkit: "npm:^9.0.1"
     node-gyp: "npm:^10.2.0"
     ts-node: "npm:^10.9.2"
     turbo: "npm:^2.2.3"

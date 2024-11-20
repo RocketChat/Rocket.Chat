@@ -24,7 +24,7 @@
 		"@types/node": "~20.16.15",
 		"date-fns": "^2.30.0",
 		"ejson": "^2.2.3",
-		"emoji-toolkit": "^7.0.1",
+		"emoji-toolkit": "^9.0.1",
 		"eventemitter3": "^5.0.1",
 		"mem": "^8.1.1",
 		"moment-timezone": "^0.5.46",
