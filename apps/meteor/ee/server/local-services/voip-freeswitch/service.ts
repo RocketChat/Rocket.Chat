@@ -8,10 +8,12 @@ import { settings } from '../../../../app/settings/server';
 export class VoipFreeSwitchService extends ServiceClassInternal implements IVoipFreeSwitchService {
 	protected name = 'voip-freeswitch';
 
-	constructor() {
-		super();
-		const options = this.getConnectionSettings();
-		void listenToEvents((...args) => this.onFreeSwitchEvent(...args), options);
+	public async started(): Promise<void> {
+		try {
+			void listenToEvents((...args) => this.onFreeSwitchEvent(...args), this.getConnectionSettings());
+		} catch (error) {
+			console.error(error);
+		}
 	}
 
 	private getConnectionSettings(): { host: string; port: number; password: string; timeout: number } {
