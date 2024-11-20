@@ -123,6 +123,18 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.findOne(query, options);
 	}
 
+	findOneReadyByRoomId<T extends Document = ILivechatInquiryRecord>(
+		rid: string,
+		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
+	): Promise<T | null> {
+		const query = {
+			rid,
+			status: LivechatInquiryStatus.READY,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findIdsByVisitorToken(token: ILivechatInquiryRecord['v']['token']): FindCursor<ILivechatInquiryRecord> {
 		return this.find({ 'v.token': token }, { projection: { _id: 1 } });
 	}
@@ -389,6 +401,23 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				},
 			},
 		);
+	}
+
+	async setStatusById(inquiryId: string, status: LivechatInquiryStatus): Promise<ILivechatInquiryRecord> {
+		const result = await this.findOneAndUpdate(
+			{ _id: inquiryId },
+			{ $set: { status } },
+			{
+				upsert: true,
+				returnDocument: 'after',
+			},
+		);
+
+		if (!result.value) {
+			throw new Error('error-failed-to-set-inquiry-status');
+		}
+
+		return result.value;
 	}
 
 	setNameByRoomId(rid: string, name: string): Promise<UpdateResult> {

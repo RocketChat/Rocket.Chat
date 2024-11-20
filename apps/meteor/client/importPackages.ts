@@ -36,7 +36,6 @@ import '../app/tokenpass/client';
 import '../app/webrtc/client';
 import '../app/wordpress/client';
 import '../app/e2e/client';
-import '../app/discussion/client';
 import '../app/threads/client';
 import '../app/utils/client';
 import '../app/settings/client';

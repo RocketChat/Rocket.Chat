@@ -8,6 +8,8 @@ import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useAnalytics } from '../../../app/analytics/client/loadScript';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
+import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
+import { useNotifyUser } from '../../hooks/useNotifyUser';
 import { appLayout } from '../../lib/appLayout';
 
 const AppLayout = () => {
@@ -24,6 +26,8 @@ const AppLayout = () => {
 	useAnalytics();
 	useEscapeKeyStroke();
 	useAnalyticsEventTracking();
+	useLoadRoomForAllowedAnonymousRead();
+	useNotifyUser();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 
