@@ -11,10 +11,10 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useTimeAgo } from '../../../hooks/useTimeAgo';
-import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 import ThreadMetricsFollow from './ThreadMetricsFollow';
 import ThreadMetricsParticipants from './ThreadMetricsParticipants';
+import { useTimeAgo } from '../../../hooks/useTimeAgo';
+import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 
 type ThreadMetricsProps = {
 	unread: boolean;
