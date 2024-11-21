@@ -58,13 +58,13 @@ export const useHideRoomAction = ({ rid, type, name }: HideRoomProps, { redirect
 				router.navigate('/home');
 			}
 		},
-		onError: (error, _, context) => {
+		onError: async (error, _, context) => {
 			dispatchToastMessage({ type: 'error', message: error });
 
 			// Revert optimistic changes
 			if (context?.ogDocument) {
 				const { alert, open } = context.ogDocument;
-				Subscriptions.update({ rid, 'u._id': userId }, { $set: { alert, open } });
+				await Subscriptions.update({ rid, 'u._id': userId }, { $set: { alert, open } });
 			}
 		},
 	});
