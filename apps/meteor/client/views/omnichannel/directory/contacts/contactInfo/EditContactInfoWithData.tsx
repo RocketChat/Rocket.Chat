@@ -11,7 +11,10 @@ const EditContactInfoWithData = ({ id, onCancel }: { id: string; onCancel: () =>
 	const { t } = useTranslation();
 
 	const getContactEndpoint = useEndpoint('GET', '/v1/omnichannel/contact');
-	const { data, isLoading, isError } = useQuery(['getContactById', id], async () => getContactEndpoint({ contactId: id }));
+	const { data, isLoading, isError } = useQuery({
+		queryKey: ['getContactById', id],
+		queryFn: async () => getContactEndpoint({ contactId: id }),
+	});
 
 	if (isLoading) {
 		return (

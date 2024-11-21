@@ -38780,6 +38780,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"use-strict@npm:1.0.1":
+  version: 1.0.1
+  resolution: "use-strict@npm:1.0.1"
+  checksum: 10/e2798c587b8dc95483ac376e1b9b13fbab179bbd498ed7bd55cba2ef72792569621ba25d9aa5df21f884a161d28624d39165070a690fc5f088bf903e097fc267
+  languageName: node
+  linkType: hard
+
 "use-sync-external-store@npm:1.2.2, use-sync-external-store@npm:^1.2.2, use-sync-external-store@npm:~1.2.0, use-sync-external-store@npm:~1.2.2":
   version: 1.2.2
   resolution: "use-sync-external-store@npm:1.2.2"

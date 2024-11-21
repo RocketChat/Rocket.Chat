@@ -5,6 +5,9 @@ import type { ReactElement } from 'react';
 import React, { lazy, Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import RoomSkeleton from './RoomSkeleton';
+import RoomSidepanel from './Sidepanel/RoomSidepanel';
+import { useOpenRoom } from './hooks/useOpenRoom';
 import { Rooms } from '../../../app/models/client';
 import { FeaturePreviewSidePanelNavigation } from '../../components/FeaturePreviewSidePanelNavigation';
 import { Header } from '../../components/Header';
@@ -13,9 +16,6 @@ import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
 import { OldUrlRoomError } from '../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../lib/errors/RoomNotFoundError';
 import { queryClient } from '../../lib/queryClient';
-import RoomSkeleton from './RoomSkeleton';
-import RoomSidepanel from './Sidepanel/RoomSidepanel';
-import { useOpenRoom } from './hooks/useOpenRoom';
 
 const RoomProvider = lazy(() => import('./providers/RoomProvider'));
 const RoomNotFound = lazy(() => import('./RoomNotFound'));
