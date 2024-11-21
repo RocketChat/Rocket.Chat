@@ -5,6 +5,7 @@ import { MessageAction } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { toggleStarredMessage } from '../../lib/mutationEffects/starredMessage';
 import { queryClient } from '../../lib/queryClient';
+import { roomsQueryKeys } from '../../lib/queryKeys';
 import { dispatchToastMessage } from '../../lib/toast';
 
 Meteor.startup(() => {
@@ -21,7 +22,8 @@ Meteor.startup(() => {
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
-				queryClient.invalidateQueries(['rooms', message.rid, 'starred-messages']);
+				queryClient.invalidateQueries(roomsQueryKeys.starredMessages(message.rid));
+				queryClient.invalidateQueries(roomsQueryKeys.messageActions(message.rid, message._id));
 			}
 		},
 		condition({ message, subscription, user }) {
