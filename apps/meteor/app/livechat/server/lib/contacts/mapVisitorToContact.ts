@@ -22,6 +22,7 @@ export async function mapVisitorToContact(visitor: ILivechatVisitor, source: IOm
 				blocked: false,
 				verified: false,
 				details: source,
+				lastChat: visitor.lastChat,
 			},
 		],
 		customFields: visitor.livechatData,
