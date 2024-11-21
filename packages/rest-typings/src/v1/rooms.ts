@@ -1,8 +1,8 @@
 import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage, ITeam } from '@rocket.chat/core-typings';
 
-import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
+import { ajv } from './Ajv';
 
 type RoomsAutoCompleteChannelAndPrivateProps = { selector: string };
 
@@ -598,24 +598,6 @@ const roomsCleanHistorySchema = {
 
 export const isRoomsCleanHistoryProps = ajv.compile<RoomsCleanHistoryProps>(roomsCleanHistorySchema);
 
-type RoomsOpenProps = {
-	roomId: string;
-};
-
-const roomsOpenSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-			minLength: 1,
-		},
-		required: ['roomId'],
-		additionalProperties: false,
-	},
-};
-
-export const isRoomsOpenProps = ajv.compile<RoomsOpenProps>(roomsOpenSchema);
-
 export type RoomsEndpoints = {
 	'/v1/rooms.autocomplete.channelAndPrivate': {
 		GET: (params: RoomsAutoCompleteChannelAndPrivateProps) => {
@@ -781,9 +763,5 @@ export type RoomsEndpoints = {
 		GET: (params: RoomsImagesProps) => PaginatedResult<{
 			files: IUpload[];
 		}>;
-	};
-
-	'/v1/rooms.open': {
-		POST: (params: RoomsOpenProps) => void;
 	};
 };
