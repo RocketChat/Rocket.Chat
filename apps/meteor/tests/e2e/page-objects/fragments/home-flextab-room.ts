@@ -122,4 +122,18 @@ export class HomeFlextabRoom {
 	get checkboxIgnoreThreads(): Locator {
 		return this.page.getByRole('dialog').locator('label', { has: this.page.getByRole('checkbox', { name: 'Do not prune Threads' }) });
 	}
+
+	get checkboxChannels(): Locator {
+		return this.page.getByRole('dialog').locator('label', { has: this.page.getByRole('checkbox', { name: 'Channels' }) });
+	}
+
+	get checkboxDiscussions(): Locator {
+		return this.page.getByRole('dialog').locator('label', { has: this.page.getByRole('checkbox', { name: 'Discussions' }) });
+	}
+
+	async toggleSidepanelWithChannels() {
+		await this.advancedSettingsAccordion.click();
+		await this.checkboxChannels.click();
+		await this.btnSave.click();
+	}
 }

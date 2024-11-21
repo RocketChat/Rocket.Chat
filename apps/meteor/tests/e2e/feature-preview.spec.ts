@@ -1,6 +1,8 @@
+import { faker } from '@faker-js/faker';
+
 import { Users } from './fixtures/userStates';
 import { AccountProfile, HomeChannel } from './page-objects';
-import { createTargetChannel, setSettingValueById } from './utils';
+import { createTargetChannel, createTargetTeam, deleteChannel, deleteTeam, setSettingValueById } from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { test, expect } from './utils/test';
 
@@ -10,6 +12,8 @@ test.describe.serial('feature preview', () => {
 	let poHomeChannel: HomeChannel;
 	let poAccountProfile: AccountProfile;
 	let targetChannel: string;
+	let targetTeam: string;
+	const targetChannelNameInTeam = `channel-from-team-${faker.number.int()}`;
 
 	test.beforeAll(async ({ api }) => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', true);
@@ -18,7 +22,7 @@ test.describe.serial('feature preview', () => {
 
 	test.afterAll(async ({ api }) => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', false);
-		await api.post('/channels.delete', { roomName: targetChannel });
+		await deleteChannel(api, targetChannel);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -157,6 +161,131 @@ test.describe.serial('feature preview', () => {
 			await collapser.click();
 
 			await expect(poHomeChannel.sidebar.getItemUnreadBadge(collapser)).toBeVisible();
+		});
+	});
+
+	test.describe('Sidepanel', () => {
+		test.beforeEach(async ({ api }) => {
+			await setUserPreferences(api, {
+				sidebarViewMode: 'Condensed',
+				featuresPreview: [
+					{
+						name: 'newNavigation',
+						value: true,
+					},
+					{
+						name: 'sidepanelNavigation',
+						value: true,
+					},
+				],
+			});
+			targetTeam = await createTargetTeam(api);
+		});
+
+		test.afterEach(async ({ api }) => {
+			await setUserPreferences(api, {
+				sidebarViewMode: 'Condensed',
+				featuresPreview: [
+					{
+						name: 'newNavigation',
+						value: false,
+					},
+					{
+						name: 'sidepanelNavigation',
+						value: false,
+					},
+				],
+			});
+			await deleteTeam(api, targetTeam);
+		});
+		test('should be able to toggle "Sidepanel" feature', async ({ page }) => {
+			await page.goto('/account/feature-preview');
+
+			await poAccountProfile.getAccordionItemByName('Navigation').click();
+			const sidepanelCheckbox = poAccountProfile.getCheckboxByLabelText('Secondary navigation for teams');
+			await expect(sidepanelCheckbox).toBeChecked();
+			await sidepanelCheckbox.click();
+			await expect(sidepanelCheckbox).not.toBeChecked();
+
+			await poAccountProfile.btnSaveChanges.click();
+
+			await expect(poAccountProfile.btnSaveChanges).not.toBeVisible();
+			await expect(sidepanelCheckbox).not.toBeChecked();
+		});
+
+		test('should display sidepanel on a team', async ({ page }) => {
+			await page.goto('/home');
+
+			await poHomeChannel.sidebar.openChat(targetTeam);
+
+			await poHomeChannel.tabs.btnRoomInfo.click();
+			await poHomeChannel.tabs.room.btnEdit.click();
+			await poHomeChannel.tabs.room.toggleSidepanelWithChannels();
+
+			await expect(poHomeChannel.sidepanel.sidepanelList).toBeVisible();
+		});
+
+		test('should display new channel from team on the sidepanel', async ({ page, api }) => {
+			await page.goto('/home');
+
+			await poHomeChannel.sidebar.openChat(targetTeam);
+
+			await poHomeChannel.tabs.btnRoomInfo.click();
+			await poHomeChannel.tabs.room.btnEdit.click();
+			await poHomeChannel.tabs.room.toggleSidepanelWithChannels();
+
+			await expect(poHomeChannel.toastSuccess).toBeVisible();
+			await poHomeChannel.dismissToast();
+
+			await poHomeChannel.tabs.btnChannels.click();
+			await poHomeChannel.tabs.channels.btnCreateNew.click();
+			await poHomeChannel.sidenav.inputChannelName.fill(targetChannelNameInTeam);
+			await poHomeChannel.sidenav.checkboxPrivateChannel.click();
+			await poHomeChannel.sidenav.btnCreate.click();
+
+			await expect(poHomeChannel.sidepanel.sidepanelList).toBeVisible();
+			await expect(poHomeChannel.sidepanel.getItemByName(targetChannelNameInTeam)).toBeVisible();
+
+			await deleteChannel(api, targetChannelNameInTeam);
+		});
+
+		test('should display sidepanel item with the same display preference as the sidebar', async ({ page }) => {
+			await page.goto('/home');
+			const message = 'hello world';
+
+			await poHomeChannel.sidebar.setDisplayMode('Extended');
+			await poHomeChannel.sidebar.openChat(targetTeam);
+
+			await poHomeChannel.tabs.btnRoomInfo.click();
+			await poHomeChannel.tabs.room.btnEdit.click();
+			await poHomeChannel.tabs.room.toggleSidepanelWithChannels();
+			await expect(poHomeChannel.toastSuccess).toBeVisible();
+			await poHomeChannel.dismissToast();
+
+			await poHomeChannel.content.sendMessage(message);
+			await expect(poHomeChannel.sidepanel.getExtendedItem(targetTeam, message)).toBeVisible();
+		});
+
+		// remove .fail after fix
+		test.fail('should escape special characters on item subtitle', async ({ page }) => {
+			await page.goto('/home');
+			const message = 'hello > world';
+			const parsedWrong = 'hello &gt; world';
+
+			await poHomeChannel.sidebar.setDisplayMode('Extended');
+
+			await poHomeChannel.sidebar.openChat(targetTeam);
+
+			await poHomeChannel.tabs.btnRoomInfo.click();
+			await poHomeChannel.tabs.room.btnEdit.click();
+			await poHomeChannel.tabs.room.toggleSidepanelWithChannels();
+			await expect(poHomeChannel.toastSuccess).toBeVisible();
+			await poHomeChannel.dismissToast();
+
+			await poHomeChannel.content.sendMessage(message);
+
+			await expect(poHomeChannel.sidepanel.getExtendedItem(targetTeam, message)).toBeVisible();
+			await expect(poHomeChannel.sidepanel.getExtendedItem(targetTeam, message)).not.toHaveText(parsedWrong);
 		});
 	});
 });
