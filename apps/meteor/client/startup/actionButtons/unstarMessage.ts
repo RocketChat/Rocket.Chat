@@ -3,8 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../app/settings/client';
 import { MessageAction } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { toggleStarredMessage } from '../../lib/mutationEffects/starredMessage';
 import { queryClient } from '../../lib/queryClient';
-import { starMessage } from '../../lib/starMessage';
 import { dispatchToastMessage } from '../../lib/toast';
 
 Meteor.startup(() => {
@@ -17,7 +17,7 @@ Meteor.startup(() => {
 		async action(_, { message }) {
 			try {
 				await sdk.rest.post('/v1/chat.unStarMessage', { messageId: message._id });
-				starMessage(message, false);
+				toggleStarredMessage(message, false);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
