@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useRoomConvertToTeam } from './actions/useRoomConvertToTeam';
 import { useRoomLeave } from './actions/useRoomLeave';
 import { useRoomMoveToTeam } from './actions/useRoomMoveToTeam';
-import { useRoomCloseAction } from '../../../../../hooks/useRoomCloseAction';
+import { useHideRoomAction } from '../../../../../hooks/useHideRoomAction';
 import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
 
 type UseRoomActionsOptions = {
@@ -23,7 +23,7 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room, { reload: resetState });
 	const handleMoveToTeam = useRoomMoveToTeam(room);
 	const handleConvertToTeam = useRoomConvertToTeam(room);
-	const handleHide = useRoomCloseAction({ rid: room._id, type: room.t, name: room.name ?? '' });
+	const handleHide = useHideRoomAction({ rid: room._id, type: room.t, name: room.name ?? '' });
 
 	return useMemo(() => {
 		const memoizedActions = {

@@ -20,7 +20,7 @@ import React, { memo, useMemo } from 'react';
 import { LegacyRoomManager } from '../../app/ui-utils/client';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import WarningModal from '../components/WarningModal';
-import { useRoomCloseAction } from '../hooks/useRoomCloseAction';
+import { useHideRoomAction } from '../hooks/useHideRoomAction';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { useOmnichannelPrioritiesMenu } from '../omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
@@ -90,7 +90,7 @@ const RoomMenu = ({
 
 	const queryClient = useQueryClient();
 
-	const handleHide = useRoomCloseAction({ rid, type, name }, { redirect: false });
+	const handleHide = useHideRoomAction({ rid, type, name }, { redirect: false });
 
 	const canLeave = ((): boolean => {
 		if (type === 'c' && !canLeaveChannel) {

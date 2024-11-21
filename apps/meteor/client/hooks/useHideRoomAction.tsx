@@ -6,18 +6,18 @@ import { useMutation } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useDontAskAgain } from './useDontAskAgain';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
-import { useDontAskAgain } from './useDontAskAgain';
 
-type RoomCloseProps = {
+type HideRoomProps = {
 	rid: string;
 	type: RoomType;
 	name: string;
 };
 
-type RoomCloseOptions = {
+type HideRoomOptions = {
 	redirect?: boolean;
 };
 
@@ -29,7 +29,7 @@ const CLOSE_ENDPOINTS_BY_ROOM_TYPE = {
 	l: '/v1/groups.close', // livechat
 } as const;
 
-export const useRoomCloseAction = ({ rid, type, name }: RoomCloseProps, { redirect = true }: RoomCloseOptions = {}) => {
+export const useHideRoomAction = ({ rid, type, name }: HideRoomProps, { redirect = true }: HideRoomOptions = {}) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const closeModal = useEffectEvent(() => setModal());

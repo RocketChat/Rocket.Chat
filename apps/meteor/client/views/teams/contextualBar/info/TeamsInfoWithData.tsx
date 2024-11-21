@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import LeaveTeam from './LeaveTeam';
 import TeamsInfo from './TeamsInfo';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
-import { useRoomCloseAction } from '../../../../hooks/useRoomCloseAction';
+import { useHideRoomAction } from '../../../../hooks/useHideRoomAction';
 import { useDeleteRoom } from '../../../hooks/roomActions/useDeleteRoom';
 import { useRoom } from '../../../room/contexts/RoomContext';
 import { useRoomToolbox } from '../../../room/contexts/RoomToolboxContext';
@@ -30,7 +30,7 @@ const TeamsInfoWithLogic = ({ openEditing }: TeamsInfoWithLogicProps) => {
 	const leaveTeam = useEndpointAction('POST', '/v1/teams.leave');
 	const convertTeamToChannel = useEndpointAction('POST', '/v1/teams.convertToChannel');
 
-	const hideTeam = useRoomCloseAction({ rid: room._id, type: room.t, name: room.name ?? '' });
+	const hideTeam = useHideRoomAction({ rid: room._id, type: room.t, name: room.name ?? '' });
 
 	const router = useRouter();
 
