@@ -21,7 +21,7 @@ import type {
 	IMessage,
 	SettingValue,
 	MessageTypesValues,
-	IOmnichannelRoom,
+	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import {
 	Rooms,
@@ -90,10 +90,7 @@ export const notifyOnRoomChangedByUsernamesOrUids = withDbWatcherCheck(
 );
 
 export const notifyOnRoomChangedByContactId = withDbWatcherCheck(
-	async <T extends IOmnichannelRoom>(
-		contactId: Exclude<T['contactId'], undefined>,
-		clientAction: ClientAction = 'updated',
-	): Promise<void> => {
+	async <T extends ILivechatContact>(contactId: T['_id'], clientAction: ClientAction = 'updated'): Promise<void> => {
 		const cursor = LivechatRooms.findOpenByContactId(contactId);
 
 		void cursor.forEach((room) => {
