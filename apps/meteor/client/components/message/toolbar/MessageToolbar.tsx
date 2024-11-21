@@ -12,6 +12,7 @@ import MessageActionMenu from './MessageActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
 import { useStarMessageAction } from './useStarMessageAction';
+import { useUnstarMessageAction } from './useUnstarMessageAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -90,6 +91,7 @@ const MessageToolbar = ({
 	useWebDAVMessageAction();
 	useNewDiscussionMessageAction();
 	useStarMessageAction(message, { room, user });
+	useUnstarMessageAction();
 
 	const actionsQueryResult = useQuery({
 		queryKey: roomsQueryKeys.messageActionsWithParameters(room._id, message),

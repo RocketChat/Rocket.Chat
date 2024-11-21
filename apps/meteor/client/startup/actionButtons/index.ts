@@ -6,4 +6,3 @@ import './permalinkPinned';
 import './permalinkStar';
 import './pinMessage';
 import './unpinMessage';
-import './unstarMessage';
