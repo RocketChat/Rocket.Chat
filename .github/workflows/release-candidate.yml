@@ -1,7 +1,7 @@
 name: Release candidate cut
 on:
   schedule:
-    - cron: '28 0 20 * *' # run at minute 28 to avoid the chance of delay due to high load on GH
+    - cron: '28 12 20 * *' # run at minute 28 to avoid the chance of delay due to high load on GH
 jobs:
   new-release:
     runs-on: ubuntu-latest

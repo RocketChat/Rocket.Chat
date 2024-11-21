@@ -5,6 +5,7 @@ import { Tracker } from 'meteor/tracker';
 import { CustomSounds } from '../../../app/custom-sounds/client/lib/CustomSounds';
 import { Users } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
+import { getUserNotificationsSoundVolume } from '../../../app/utils/client/getUserNotificationsSoundVolume';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
@@ -21,7 +22,7 @@ Meteor.startup(() => {
 			},
 		});
 		const newRoomNotification = getUserPreference<string>(user, 'newRoomNotification');
-		const audioVolume = getUserPreference(user, 'notificationsSoundVolume', 100);
+		const audioVolume = getUserNotificationsSoundVolume(user?._id);
 
 		if (!newRoomNotification) {
 			return;
