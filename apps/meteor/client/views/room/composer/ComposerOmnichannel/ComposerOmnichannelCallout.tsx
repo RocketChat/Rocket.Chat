@@ -31,7 +31,7 @@ const ComposerOmnichannelCallout = () => {
 	} = room;
 
 	const getContactById = useEndpoint('GET', '/v1/omnichannel/contacts.get');
-	const { data } = useQuery(['getContactById', contactId], () => getContactById({ contactId }));
+	const { data } = useQuery({ queryKey: ['getContactById', contactId], queryFn: () => getContactById({ contactId }) });
 
 	const association = { visitorId, source };
 	const currentChannel = data?.contact?.channels?.find((channel) => isSameChannel(channel.visitor, association));

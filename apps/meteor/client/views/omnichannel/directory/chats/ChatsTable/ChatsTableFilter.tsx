@@ -24,7 +24,7 @@ const ChatsTableFilter = () => {
 		const onDeleteAll = async () => {
 			try {
 				await removeClosedChats();
-				queryClient.invalidateQueries(['current-chats']);
+				queryClient.invalidateQueries({ queryKey: ['current-chats'] });
 				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });

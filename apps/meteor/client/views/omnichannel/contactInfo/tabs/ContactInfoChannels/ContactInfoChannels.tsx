@@ -18,9 +18,12 @@ const ContactInfoChannels = ({ contactId }: ContactInfoChannelsProps) => {
 	const { t } = useTranslation();
 
 	const getContactChannels = useEndpoint('GET', '/v1/omnichannel/contacts.channels');
-	const { data, isError, isLoading } = useQuery(['getContactChannels', contactId], () => getContactChannels({ contactId }));
+	const { data, isError, isPending } = useQuery({
+		queryKey: ['getContactChannels', contactId],
+		queryFn: () => getContactChannels({ contactId }),
+	});
 
-	if (isLoading) {
+	if (isPending) {
 		return (
 			<ContextualbarContent>
 				<Box pb={12}>
