@@ -26,6 +26,8 @@ export interface IFreeSwitchChannel extends IRocketChatRecord {
 
 	events: IFreeSwitchChannelEvent[];
 
+	callId?: string;
+
 	answerState?: string;
 	hangupCause?: string;
 	direction?: string;

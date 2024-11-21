@@ -64,6 +64,10 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		}
 
 		const allChannels = await FreeSwitchChannel.findAllByUniqueIds(allIds).toArray();
+		// Do not log the call if any of the channels already has a callId
+		if (allChannels.some((channel) => Boolean(channel.callId))) {
+			return;
+		}
 		// Do not log the call unless at least one of the channels got created
 		if (!allChannels.some((channel) => Boolean(channel.createdAt))) {
 			return;
@@ -117,7 +121,6 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 
 			if (channel.outgoing) {
 				data.events.outgoing = true;
-				data.external = true;
 			}
 			if (channel.placedOnHold) {
 				data.events.hold = true;

@@ -14,7 +14,7 @@ export class FreeSwitchChannelRaw extends BaseRaw<IFreeSwitchChannel> implements
 	}
 
 	public async registerEvent(uniqueId: string, event: IFreeSwitchChannelEvent, channelData?: Partial<IFreeSwitchChannel>): Promise<void> {
-		const { referencedIds = [] } = channelData || {};
+		const { referencedIds = [], ...dataToSet } = channelData || {};
 
 		await this.findOneAndUpdate(
 			{
@@ -27,7 +27,7 @@ export class FreeSwitchChannelRaw extends BaseRaw<IFreeSwitchChannel> implements
 				},
 				$set: {
 					uniqueId,
-					...channelData,
+					...dataToSet,
 				},
 			},
 			{
