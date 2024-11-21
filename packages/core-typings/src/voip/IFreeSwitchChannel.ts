@@ -1,24 +1,40 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { VideoConference } from '../IVideoConference';
+import type { IUser } from '../IUser';
 
 export interface IFreeSwitchChannelEvent {
 	eventName: string;
+	state?: string;
 
 	data: Record<string, string>;
 }
 
+export interface IFreeSwitchChannelUser {
+	extension?: string;
+	context?: string;
+	user?: Pick<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'>;
+	identifiers: string[];
+}
+
 export interface IFreeSwitchChannel extends IRocketChatRecord {
+	uniqueId: string;
 	lastEventName: string;
 	channelState: string;
+	createdAt?: Date;
+	endedAt?: Date;
 
-	uniqueId: string;
-	otherLegUniqueId?: string;
-	caller?: {
-		username?: string;
-		context?: string;
-	};
+	referencedIds?: string[];
 
 	events: IFreeSwitchChannelEvent[];
 
-	callId?: VideoConference['_id'];
+	answerState?: string;
+	hangupCause?: string;
+	direction?: string;
+	duration?: number;
+	destroyed?: boolean;
+
+	outgoing?: boolean;
+	placedOnHold?: boolean;
+	parked?: boolean;
+	bridged?: boolean;
+	answered?: boolean;
 }

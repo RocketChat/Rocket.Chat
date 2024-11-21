@@ -4,11 +4,13 @@ import type { FindCursor, FindOptions } from 'mongodb';
 import type { IBaseModel } from './IBaseModel';
 
 export interface IFreeSwitchChannelModel extends IBaseModel<IFreeSwitchChannel> {
-	registerEvent(channelUniqueId: string, event: IFreeSwitchChannelEvent, channelData?: Partial<IFreeSwitchChannel>): Promise<void>;
+	registerEvent(uniqueId: string, event: IFreeSwitchChannelEvent, channelData?: Partial<IFreeSwitchChannel>): Promise<void>;
 
-	findAllByUniqueIds(uniqueIds: string[], options?: FindOptions<IFreeSwitchChannel>): FindCursor<IFreeSwitchChannel>;
+	linkUniqueIds(uniqueIds: string[]): Promise<void>;
 
-	getCallIdByUniqueIds(uniqueIds: string[]): Promise<string | undefined>;
+	findOneByUniqueId<T extends IFreeSwitchChannel>(uniqueId: string, options?: FindOptions<IFreeSwitchChannel>): Promise<T | null>;
 
-	setCallIdByUniqueIds(uniqueIds: string[], callId: string): Promise<void>;
+	findAllByUniqueIds<T extends IFreeSwitchChannel>(uniqueIds: string[], options?: FindOptions<IFreeSwitchChannel>): FindCursor<T>;
+
+	setCallIdByIds(ids: string[], callId: string): Promise<void>;
 }

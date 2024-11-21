@@ -5,11 +5,11 @@ import type {
 	IUser,
 	VideoConference,
 	VideoConferenceStatus,
-	IVoIPVideoConferenceData,
+	IVoIPVideoConference,
 } from '@rocket.chat/core-typings';
 import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, FindOptions } from 'mongodb';
 
-import type { FindPaginated, IBaseModel } from './IBaseModel';
+import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 
 export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	findPaginatedByRoomId(
@@ -69,5 +69,5 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 
 	unsetDiscussionRid(discussionRid: IRoom['_id']): Promise<void>;
 
-	createVoIP(callDetails: IVoIPVideoConferenceData): Promise<string>;
+	createVoIP(call: InsertionModel<IVoIPVideoConference>): Promise<string>;
 }

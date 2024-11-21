@@ -73,17 +73,25 @@ export interface ILivechatVideoConference extends IVideoConference {
 	type: 'livechat';
 }
 
-export interface IVoIPVideoConferenceData {
+export interface IVoIPVideoConferenceData {}
+
+export type IVoIPVideoConference = IVideoConference & {
+	type: 'voip';
+
 	callerExtension?: string;
 	calleeExtension?: string;
 	external?: boolean;
 	transferred?: boolean;
 	duration?: number;
-}
 
-export type IVoIPVideoConference = IVideoConference & {
-	type: 'voip';
-} & IVoIPVideoConferenceData;
+	events: {
+		outgoing?: boolean;
+		hold?: boolean;
+		park?: boolean;
+		bridge?: boolean;
+		answer?: boolean;
+	};
+};
 
 export type ExternalVideoConference = IDirectVideoConference | IGroupVideoConference | ILivechatVideoConference;
 

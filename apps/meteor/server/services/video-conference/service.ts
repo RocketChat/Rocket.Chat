@@ -22,6 +22,7 @@ import type {
 	VideoConferenceCreateData,
 	Optional,
 	ExternalVideoConference,
+	IVoIPVideoConference,
 } from '@rocket.chat/core-typings';
 import {
 	VideoConferenceStatus,
@@ -57,6 +58,7 @@ import { isRoomCompatibleWithVideoConfRinging } from '../../lib/isRoomCompatible
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
+import { InsertionModel } from '@rocket.chat/model-typings';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -457,6 +459,16 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		return true;
+	}
+
+	public async createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id']> {
+		return wrapExceptions(async () => VideoConferenceModel.createVoIP(data)).catch((e) => {
+			logger.error({
+				name: 'Error on VideoConf.createVoIP',
+				error: e,
+			});
+			throw e;
+		});
 	}
 
 	private notifyUser(

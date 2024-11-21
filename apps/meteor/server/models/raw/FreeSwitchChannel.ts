@@ -13,21 +13,20 @@ export class FreeSwitchChannelRaw extends BaseRaw<IFreeSwitchChannel> implements
 		return [{ key: { uniqueId: 1 }, unique: true }];
 	}
 
-	public async registerEvent(
-		channelUniqueId: string,
-		event: IFreeSwitchChannelEvent,
-		channelData?: Partial<IFreeSwitchChannel>,
-	): Promise<void> {
+	public async registerEvent(uniqueId: string, event: IFreeSwitchChannelEvent, channelData?: Partial<IFreeSwitchChannel>): Promise<void> {
+		const { referencedIds = [] } = channelData || {};
+
 		await this.findOneAndUpdate(
 			{
-				uniqueId: channelUniqueId,
+				uniqueId,
 			},
 			{
 				$addToSet: {
 					events: event,
+					...(referencedIds.length && { referencedIds: { $each: referencedIds } }),
 				},
 				$set: {
-					uniqueId: channelUniqueId,
+					uniqueId,
 					...channelData,
 				},
 			},
@@ -37,27 +36,27 @@ export class FreeSwitchChannelRaw extends BaseRaw<IFreeSwitchChannel> implements
 		);
 	}
 
-	public async getCallIdByUniqueIds(uniqueIds: string[]): Promise<string | undefined> {
-		const channel = await this.findOne(
-			{
-				$or: [{ uniqueId: { $in: uniqueIds } }, { otherLegUniqueId: { $in: uniqueIds } }],
-				callId: { $exists: true },
-			},
-			{ projection: { callId: 1 } },
-		);
-		return channel?.callId;
+	public async linkUniqueIds(uniqueIds: string[]): Promise<void> {
+		await this.updateMany({ uniqueId: { $in: uniqueIds } }, { $addToSet: { referencedIds: { $each: uniqueIds } } });
 	}
 
-	public findAllByUniqueIds(uniqueIds: string[], options?: FindOptions<IFreeSwitchChannel>): FindCursor<IFreeSwitchChannel> {
-		return this.find(
+	public async findOneByUniqueId<T extends IFreeSwitchChannel>(
+		uniqueId: string,
+		options?: FindOptions<IFreeSwitchChannel>,
+	): Promise<T | null> {
+		return this.findOne<T>({ uniqueId }, options);
+	}
+
+	public findAllByUniqueIds<T extends IFreeSwitchChannel>(uniqueIds: string[], options?: FindOptions<IFreeSwitchChannel>): FindCursor<T> {
+		return this.find<T>(
 			{
-				$or: [{ uniqueId: { $in: uniqueIds } }, { otherLegUniqueId: { $in: uniqueIds } }],
+				uniqueId: { $in: uniqueIds },
 			},
 			options,
 		);
 	}
 
-	public async setCallIdByUniqueIds(uniqueIds: string[], callId: string): Promise<void> {
-		await this.updateMany({ $or: [{ uniqueId: { $in: uniqueIds } }, { otherLegUniqueId: { $in: uniqueIds } }] }, { $set: { callId } });
+	public async setCallIdByIds(ids: string[], callId: string): Promise<void> {
+		await this.updateMany({ _id: { $in: ids } }, { $set: { callId } });
 	}
 }
