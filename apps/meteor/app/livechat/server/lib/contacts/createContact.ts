@@ -33,7 +33,7 @@ export async function createContact({
 	}
 
 	const allowedCustomFields = await getAllowedCustomFields();
-	const customFields = validateCustomFields(allowedCustomFields, receivedCustomFields);
+	const customFields = validateCustomFields(allowedCustomFields, receivedCustomFields, { onlyFilterFields: true });
 
 	return LivechatContacts.insertContact({
 		name,
