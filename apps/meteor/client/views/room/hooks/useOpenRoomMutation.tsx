@@ -1,10 +1,19 @@
+import type { RoomType } from '@rocket.chat/core-typings';
 import { useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 
 import { Subscriptions } from '../../../../app/models/client';
 
-export const useOpenRoomMutation = () => {
-	const openRoom = useEndpoint('POST', '/v1/rooms.open');
+const openEndpoints = {
+	p: '/v1/groups.open',
+	d: '/v1/im.open',
+	c: '/v1/channels.open',
+	v: '/v1/channels.open',
+	l: '/v1/channels.open',
+} as const;
+
+export const useOpenRoomMutation = ({ type }: { type: RoomType }) => {
+	const openRoom = useEndpoint('POST', openEndpoints[type]);
 	const userId = useUserId();
 
 	return useMutation({

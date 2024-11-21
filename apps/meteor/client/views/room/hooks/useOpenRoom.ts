@@ -3,13 +3,13 @@ import { useMethod, useRoute, useSetting, useUser } from '@rocket.chat/ui-contex
 import { useQuery } from '@tanstack/react-query';
 import { useRef } from 'react';
 
+import { useOpenRoomMutation } from './useOpenRoomMutation';
 import { roomFields } from '../../../../lib/publishFields';
 import { omit } from '../../../../lib/utils/omit';
 import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
 import { OldUrlRoomError } from '../../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
 import { queryClient } from '../../../lib/queryClient';
-import { useOpenRoomMutation } from './useOpenRoomMutation';
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
@@ -17,7 +17,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 	const getRoomByTypeAndName = useMethod('getRoomByTypeAndName');
 	const createDirectMessage = useMethod('createDirectMessage');
 	const directRoute = useRoute('direct');
-	const openRoom = useOpenRoomMutation();
+	const openRoom = useOpenRoomMutation({ type });
 
 	const unsubscribeFromRoomOpenedEvent = useRef<() => void>(() => undefined);
 
