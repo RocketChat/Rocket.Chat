@@ -13,6 +13,7 @@ import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
 import { useFollowMessageAction } from './useFollowMessageAction';
 import { useJumpToMessageContextAction } from './useJumpToMessageContextAction';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
+import { usePermalinkPinned } from './usePermalinkPinned';
 import { usePermalinkStar } from './usePermalinkStar';
 import { usePinMessageAction } from './usePinMessageAction';
 import { useReplyInThreadMessageAction } from './useReplyInThreadMessageAction';
@@ -106,6 +107,7 @@ const MessageToolbar = ({
 	useFollowMessageAction(message, { room, user, context });
 	useUnFollowMessageAction(message, { room, user, context });
 	useReplyInThreadMessageAction(message, { room, subscription });
+	usePermalinkPinned();
 	useJumpToMessageContextAction(message, {
 		id: 'jump-to-message',
 		order: 100,
