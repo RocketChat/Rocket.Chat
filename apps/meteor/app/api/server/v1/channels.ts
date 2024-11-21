@@ -70,7 +70,7 @@ async function findChannelByIdOrName({
 		room = await Rooms.findOneByName(params.roomName || '', { projection });
 	}
 
-	if (!room || (room.t !== 'c' && room.t !== 'l')) {
+	if (!room || !['c', 'l', 'v'].includes(room.t)) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
 	}
 
