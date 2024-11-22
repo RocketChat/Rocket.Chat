@@ -8276,6 +8276,7 @@ __metadata:
     "@swc/jest": ^0.2.29
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ~12.1.5
+    "@types/dompurify": ^3.0.5
     "@types/jest": ~29.5.7
     "@types/katex": ~0.16.5
     "@types/react": ~17.0.69
@@ -8284,6 +8285,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ~5.60.1
     "@typescript-eslint/parser": ~5.60.1
     babel-loader: ^8.3.0
+    dompurify: ^3.1.7
     eslint: ~8.45.0
     eslint-plugin-anti-trojan-source: ~1.1.1
     eslint-plugin-react: ~7.32.2
@@ -12205,6 +12207,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/dompurify@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "@types/dompurify@npm:3.0.5"
+  dependencies:
+    "@types/trusted-types": "*"
+  checksum: ffc34eca6a4536e1c8c16a47cce2623c5a118a9785492e71230052d92933ff096d14326ff449031e8dfaac509413222372d8f2b28786a13159de6241df716185
+  languageName: node
+  linkType: hard
+
 "@types/ejson@npm:^2.2.1":
   version: 2.2.1
   resolution: "@types/ejson@npm:2.2.1"
@@ -13253,6 +13264,13 @@ __metadata:
   version: 2.0.2
   resolution: "@types/trusted-types@npm:2.0.2"
   checksum: 3371eef5f1c50e1c3c07a127c1207b262ba65b83dd167a1c460fc1b135a3fb0c97b9f508efebd383f239cc5dd5b7169093686a692a501fde9c3f7208657d9b0d
+  languageName: node
+  linkType: hard
+
+"@types/trusted-types@npm:^2.0.7":
+  version: 2.0.7
+  resolution: "@types/trusted-types@npm:2.0.7"
+  checksum: 8e4202766a65877efcf5d5a41b7dd458480b36195e580a3b1085ad21e948bc417d55d6f8af1fd2a7ad008015d4117d5fdfe432731157da3c68678487174e4ba3
   languageName: node
   linkType: hard
 
@@ -19593,6 +19611,18 @@ __metadata:
   version: 2.3.8
   resolution: "dompurify@npm:2.3.8"
   checksum: dc7b32ee57a03fe5166a850071200897cc13fa069287a709e3b2138052d73ec09a87026b9e28c8d2f254a74eaa52ef30644e98e54294c30acbca2a53f1bbc5f4
+  languageName: node
+  linkType: hard
+
+"dompurify@npm:^3.1.7":
+  version: 3.2.1
+  resolution: "dompurify@npm:3.2.1"
+  dependencies:
+    "@types/trusted-types": ^2.0.7
+  dependenciesMeta:
+    "@types/trusted-types":
+      optional: true
+  checksum: 63becfa6c58a1d64755c2deb45db878ea51cf2935d77dd18ea266ef5b942dcf172b5c698265ec45bfb3e326ecf4ef1cf8e669939fed2c124b428298d31800949
   languageName: node
   linkType: hard
 

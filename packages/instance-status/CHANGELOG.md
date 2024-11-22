@@ -1,5 +1,11 @@
 # @rocket.chat/instance-status
 
+## 0.0.33
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.33
+
 ## 0.0.32
 
 ### Patch Changes
