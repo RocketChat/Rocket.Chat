@@ -66,7 +66,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{ key: { 'u._id': 1, 'open': 1, 'department': 1 } },
 			{ key: { rid: 1, ls: 1 } },
 			{ key: { 'u._id': 1, 'autotranslate': 1 } },
-			{ key: { 'v._id': 1, 't': 1 } },
+			{ key: { 'v._id': 1, 'open': 1 } },
 		];
 	}
 
@@ -344,7 +344,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 	findOpenByVisitorIds(visitorIds: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
 		const query = {
-			't': 'l' as const,
 			'open': true,
 			'v._id': { $in: visitorIds },
 		};
@@ -606,7 +605,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	updateNameAndFnameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document> {
-		const query = { 't': 'l' as const, 'v._id': { $in: visitorIds } };
+		const query = { 'v._id': { $in: visitorIds } };
 
 		const update = {
 			$set: {
