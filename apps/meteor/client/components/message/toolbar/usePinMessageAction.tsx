@@ -1,21 +1,28 @@
-import { useSetting, useToastMessageDispatch, useSetModal } from '@rocket.chat/ui-contexts';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { useSetting, useToastMessageDispatch, useSetModal, usePermission } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { queryClient } from '../../../lib/queryClient';
-import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import PinMessageModal from '../../../views/room/modals/PinMessageModal';
 
-export const usePinMessageAction = () => {
+export const usePinMessageAction = (room: IRoom) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const setModal = useSetModal();
 
 	const allowPinning = useSetting('Message_AllowPinning');
+	const hasPermission = usePermission('pin-message', room._id);
 
 	useEffect(() => {
+		if (!allowPinning || isOmnichannelRoom(room) || !hasPermission) {
+			return () => {
+				MessageAction.removeButton('pin-message');
+			};
+		}
+
 		MessageAction.addButton({
 			id: 'pin-message',
 			icon: 'pin',
@@ -43,15 +50,12 @@ export const usePinMessageAction = () => {
 					},
 				});
 			},
-			condition({ message, subscription, room }) {
-				if (!allowPinning || message.pinned || !subscription) {
+			condition({ message, subscription }) {
+				if (message.pinned || !subscription) {
 					return false;
 				}
-				const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
-				if (isLivechatRoom) {
-					return false;
-				}
-				return hasAtLeastOnePermission('pin-message', message.rid);
+
+				return true;
 			},
 			order: 2,
 			group: 'menu',
@@ -60,5 +64,5 @@ export const usePinMessageAction = () => {
 		return () => {
 			MessageAction.removeButton('pin-message');
 		};
-	}, [allowPinning, dispatchToastMessage, setModal]);
+	}, [allowPinning, dispatchToastMessage, hasPermission, room, setModal]);
 };
