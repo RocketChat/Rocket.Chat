@@ -137,6 +137,10 @@ jobs:
     name: 📦 Build Packages
     needs: [release-versions, notify-draft-services]
     runs-on: ubuntu-20.04
+    env:
+      TURBO_API: ${{ secrets.TURBOAPI }}
+      TURBO_TOKEN: ${{ secrets.TURBOREMOTEAPIKEY }}
+      TURBO_TEAM: rocket.chat
     steps:
       - name: Github Info
         run: |
@@ -172,8 +176,6 @@ jobs:
           key: vite-local-cache-${{ runner.OS }}-${{ hashFiles('package.json') }}
           restore-keys: |
             vite-local-cache-${{ runner.os }}-
-
-      - uses: rharkor/caching-for-turbo@v1.5
 
       - name: Build Rocket.Chat Packages
         run: yarn build
