@@ -1,17 +1,24 @@
-import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { usePermission, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { queryClient } from '../../../lib/queryClient';
 
-export const useUnpinMessageAction = () => {
+export const useUnpinMessageAction = (room: IRoom) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const allowPinning = useSetting('Message_AllowPinning');
+	const hasPermission = usePermission('pin-message', room._id);
 
 	useEffect(() => {
+		if (!allowPinning || !hasPermission) {
+			return () => {
+				MessageAction.removeButton('unpin-message');
+			};
+		}
+
 		MessageAction.addButton({
 			id: 'unpin-message',
 			icon: 'pin',
@@ -28,11 +35,10 @@ export const useUnpinMessageAction = () => {
 				}
 			},
 			condition({ message, subscription }) {
-				if (!subscription || !allowPinning || !message.pinned) {
+				if (!subscription || !message.pinned) {
 					return false;
 				}
-
-				return hasAtLeastOnePermission('pin-message', message.rid);
+				return true;
 			},
 			order: 2,
 			group: 'menu',
@@ -41,5 +47,5 @@ export const useUnpinMessageAction = () => {
 		return () => {
 			MessageAction.removeButton('unpin-message');
 		};
-	}, [allowPinning, dispatchToastMessage]);
+	}, [allowPinning, dispatchToastMessage, hasPermission]);
 };

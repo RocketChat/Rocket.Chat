@@ -88,7 +88,7 @@ const MessageToolbar = ({
 	// TODO: move this to another place
 	useWebDAVMessageAction();
 	useNewDiscussionMessageAction();
-	useUnpinMessageAction();
+	useUnpinMessageAction(room);
 
 	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
 		const props = { message, room, user, subscription, settings: mapSettings, chat };
