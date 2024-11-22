@@ -137,10 +137,6 @@ jobs:
     name: 📦 Build Packages
     needs: [release-versions, notify-draft-services]
     runs-on: ubuntu-20.04
-    env:
-      TURBO_API: ${{ secrets.TURBOAPI }}
-      TURBO_TOKEN: ${{ secrets.TURBOREMOTEAPIKEY }}
-      TURBO_TEAM: rocket.chat
     steps:
       - name: Github Info
         run: |
@@ -179,6 +175,10 @@ jobs:
 
       - name: Build Rocket.Chat Packages
         run: yarn build
+        env:
+          TURBO_API: ${{ vars.TURBOAPI }}
+          TURBO_TOKEN: ${{ vars.TURBOREMOTEAPIKEY }}
+          TURBO_TEAM: rocket.chat
 
       - name: Store turbo build
         uses: actions/upload-artifact@v4
