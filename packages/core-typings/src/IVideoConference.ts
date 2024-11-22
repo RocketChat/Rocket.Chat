@@ -77,6 +77,7 @@ export interface IVoIPVideoConferenceData {}
 
 export type IVoIPVideoConference = IVideoConference & {
 	type: 'voip';
+	externalId: string;
 
 	callerExtension?: string;
 	calleeExtension?: string;

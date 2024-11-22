@@ -12,6 +12,7 @@ import {
 import { getDomain, getUserPassword, getExtensionList, getExtensionDetails, listenToEvents } from '@rocket.chat/freeswitch';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { FreeSwitchChannel, Rooms, Users } from '@rocket.chat/models';
+import { wrapExceptions } from '@rocket.chat/tools';
 
 import { settings } from '../../../../app/settings/server';
 
@@ -20,7 +21,10 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 
 	public async started(): Promise<void> {
 		try {
-			void listenToEvents((...args) => this.onFreeSwitchEvent(...args), this.getConnectionSettings());
+			void listenToEvents(
+				async (...args) => wrapExceptions(() => this.onFreeSwitchEvent(...args)).suppress(),
+				this.getConnectionSettings(),
+			);
 		} catch (error) {
 			console.error(error);
 		}
@@ -64,6 +68,9 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		}
 
 		const allChannels = await FreeSwitchChannel.findAllByUniqueIds(allIds).toArray();
+		if (!allChannels.length) {
+			return;
+		}
 		// Do not log the call if any of the channels already has a callId
 		if (allChannels.some((channel) => Boolean(channel.callId))) {
 			return;
@@ -81,6 +88,10 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 	}
 
 	private async buildCallData(channels: IFreeSwitchChannel[]): Promise<InsertionModel<IVoIPVideoConference>> {
+		if (!channels.length) {
+			throw new Error('error-invalid-free-switch-channels');
+		}
+
 		const allData = this.mergeAllEventData(channels);
 
 		const caller = await this.getCallerFromEvents(allData);
@@ -92,7 +103,7 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			: { _id: 'rocket.cat', username: 'rocket.cat', name: 'rocket.cat' };
 
 		const rooms = users.length === 2 ? await Rooms.findDMsByUids(users.map(({ _id }) => _id)).toArray() : [];
-		const rid = rooms.shift()?._id || 'invalid-rid';
+		const rid = rooms.shift()?._id || '';
 
 		const data: Omit<InsertionModel<IVoIPVideoConference>, 'createdAt'> & { createdAt?: Date } = {
 			type: 'voip',
@@ -104,6 +115,8 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			createdBy,
 			events: {},
 
+			externalId: channels[0].uniqueId,
+
 			callerExtension: caller?.extension,
 			calleeExtension: callee?.extension,
 		};
@@ -111,6 +124,8 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		for (const channel of channels) {
 			if (channel.createdAt && (!data.createdAt || data.createdAt > channel.createdAt)) {
 				data.createdAt = channel.createdAt;
+				// If this channel was created first, use its uniqueId as the main one
+				data.externalId = channel.uniqueId;
 			}
 			if (channel.endedAt && (!data.endedAt || data.endedAt < channel.endedAt)) {
 				data.endedAt = channel.endedAt;
@@ -145,6 +160,10 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 	private async logCallOnVideoConf(channels: IFreeSwitchChannel[]): Promise<void> {
 		const videoConfCall = await this.buildCallData(channels);
 		const callId = await VideoConf.createVoIP(videoConfCall);
+
+		if (!callId) {
+			return;
+		}
 
 		await FreeSwitchChannel.setCallIdByIds(
 			channels.map(({ _id }) => _id),
@@ -224,6 +243,10 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		let extension: string | undefined;
 
 		for await (const key of eventKeys) {
+			if (!eventData[key]) {
+				continue;
+			}
+
 			for await (const value of eventData[key]) {
 				if (!value || value === '0' || identifiers.includes(value)) {
 					continue;

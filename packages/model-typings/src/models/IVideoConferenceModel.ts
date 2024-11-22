@@ -69,5 +69,5 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 
 	unsetDiscussionRid(discussionRid: IRoom['_id']): Promise<void>;
 
-	createVoIP(call: InsertionModel<IVoIPVideoConference>): Promise<string>;
+	createVoIP(call: InsertionModel<IVoIPVideoConference>): Promise<string | undefined>;
 }

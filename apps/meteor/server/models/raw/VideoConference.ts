@@ -137,8 +137,11 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		return (await this.insertOne(call)).insertedId;
 	}
 
-	public async createVoIP(call: InsertionModel<IVoIPVideoConference>): Promise<string> {
-		return (await this.insertOne(call)).insertedId;
+	public async createVoIP(call: InsertionModel<IVoIPVideoConference>): Promise<string | undefined> {
+		const { externalId, ...data } = call;
+
+		const doc = await this.findOneAndUpdate({ externalId }, { $set: data }, { upsert: true, returnDocument: 'after' });
+		return doc.value?._id;
 	}
 
 	public updateOneById(
