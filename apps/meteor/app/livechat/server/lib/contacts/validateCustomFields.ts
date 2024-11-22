@@ -6,13 +6,16 @@ import { i18n } from '../../../../utils/lib/i18n';
 export function validateCustomFields(
 	allowedCustomFields: AtLeast<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>[],
 	customFields: Record<string, string | unknown>,
-	{ ignoreAdditionalFields = false, onlyFilterFields = false }: { ignoreAdditionalFields?: boolean; onlyFilterFields?: boolean } = {},
+	{
+		ignoreAdditionalFields = false,
+		ignoreValidationErrors = false,
+	}: { ignoreAdditionalFields?: boolean; ignoreValidationErrors?: boolean } = {},
 ): Record<string, string> {
 	const validValues: Record<string, string> = {};
 
 	for (const cf of allowedCustomFields) {
 		if (!customFields.hasOwnProperty(cf._id)) {
-			if (cf.required && !onlyFilterFields) {
+			if (cf.required && !ignoreValidationErrors) {
 				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
 			}
 			continue;
@@ -20,7 +23,7 @@ export function validateCustomFields(
 		const cfValue: string = trim(customFields[cf._id]);
 
 		if (!cfValue || typeof cfValue !== 'string') {
-			if (cf.required && !onlyFilterFields) {
+			if (cf.required && !ignoreValidationErrors) {
 				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
 			}
 			continue;
@@ -29,7 +32,7 @@ export function validateCustomFields(
 		if (cf.regexp) {
 			const regex = new RegExp(cf.regexp);
 			if (!regex.test(cfValue)) {
-				if (onlyFilterFields) {
+				if (ignoreValidationErrors) {
 					continue;
 				}
 
