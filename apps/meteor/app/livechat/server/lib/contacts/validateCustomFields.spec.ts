@@ -20,8 +20,21 @@ describe('validateCustomFields', () => {
 			.and.to.equal({});
 	});
 
+	it('should NOT throw an error when a non-required custom field is missing', () => {
+		const allowedCustomFields = [{ _id: 'field1', label: 'Field 1', required: false }];
+		const customFields = {};
+
+		expect(() => validateCustomFields(allowedCustomFields, customFields)).not.to.throw();
+	});
+
 	it('should throw an error if a custom field value does not match the regexp', () => {
 		expect(() => validateCustomFields(mockCustomFields, { cf1: 'invalid' })).to.throw();
+	});
+
+	it('should not throw an error if a custom field value does not match the regexp, but the onlyFilterFields option is provided', () => {
+		expect(() => validateCustomFields(mockCustomFields, { cf1: 'invalid' }, { onlyFilterFields: true }))
+			.not.to.throw()
+			.and.to.equal({});
 	});
 
 	it('should handle an empty customFields input without throwing an error', () => {
@@ -36,5 +49,14 @@ describe('validateCustomFields', () => {
 		const customFields = { field2: 'value' };
 
 		expect(() => validateCustomFields(allowedCustomFields, customFields)).to.throw();
+	});
+
+	it('should not throw an error if a extra custom field is passed, but the onlyFilterFields option is provided', () => {
+		const allowedCustomFields = [{ _id: 'field1', label: 'Field 1', required: false }];
+		const customFields = { field2: 'value' };
+
+		expect(() => validateCustomFields(allowedCustomFields, customFields, { onlyFilterFields: true }))
+			.not.to.throw()
+			.and.to.equal({});
 	});
 });
