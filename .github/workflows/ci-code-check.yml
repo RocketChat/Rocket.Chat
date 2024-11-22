@@ -47,8 +47,6 @@ jobs:
       #     docker rmi $(docker image ls -aq)
       #     df -h
 
-      - uses: rharkor/caching-for-turbo@v1.5
-
       - name: Restore turbo build
         uses: actions/download-artifact@v4
         with:
@@ -56,6 +54,10 @@ jobs:
           path: .turbo/cache
       - name: Cache TypeCheck
         uses: actions/cache@v4
+        env:
+          TURBO_API: ${{ vars.TURBOAPI }}
+          TURBO_TOKEN: ${{ vars.TURBOREMOTEAPIKEY }}
+          TURBO_TEAM: rocket.chat
         if: matrix.check == 'ts'
         with:
           path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
