@@ -2,7 +2,7 @@ import type { RoomType } from '@rocket.chat/core-typings';
 import { useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 
-import { Subscriptions } from '../../../../app/models/client';
+import { updateSubscription } from '../../../lib/mutationEffects/updateSubscription';
 
 const openEndpoints = {
 	p: '/v1/groups.open',
@@ -24,20 +24,22 @@ export const useOpenRoomMutation = ({ type }: { type: RoomType }) => {
 
 			await openRoom({ roomId });
 
-			return roomId;
+			return { userId, roomId };
 		},
-		onMutate: async ({ roomId: rid }) => {
-			const ogDocument = await Subscriptions.findOne({ rid, 'u._id': userId }, { fields: { open: 1 } });
-			await Subscriptions.update({ rid, 'u._id': userId }, { $set: { open: true } });
-			return { ogDocument };
-		},
-		onError: async (_, { roomId }, context) => {
-			if (!context?.ogDocument) {
+		onMutate: async ({ roomId }) => {
+			if (!userId) {
 				return;
 			}
 
-			const { open } = context.ogDocument;
-			Subscriptions.update({ roomId, 'u._id': userId }, { $set: { open } });
+			return updateSubscription(roomId, userId, { open: true });
+		},
+		onError: async (_, { roomId }, rollbackDocument) => {
+			if (!userId || !rollbackDocument) {
+				return;
+			}
+
+			const { open } = rollbackDocument;
+			await updateSubscription(roomId, userId, { open });
 		},
 	});
 };
