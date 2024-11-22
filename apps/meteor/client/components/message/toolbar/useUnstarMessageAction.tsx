@@ -1,3 +1,5 @@
+import type { IRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
@@ -7,12 +9,18 @@ import { toggleStarredMessage } from '../../../lib/mutationEffects/starredMessag
 import { queryClient } from '../../../lib/queryClient';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
 
-export const useUnstarMessageAction = () => {
+export const useUnstarMessageAction = (room: IRoom) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const allowStaring = useSetting('Message_AllowStarring');
 
 	useEffect(() => {
+		if (!allowStaring || isOmnichannelRoom(room)) {
+			return () => {
+				MessageAction.removeButton('unstar-message');
+			};
+		}
+
 		MessageAction.addButton({
 			id: 'unstar-message',
 			icon: 'star',
@@ -30,11 +38,7 @@ export const useUnstarMessageAction = () => {
 					queryClient.invalidateQueries(roomsQueryKeys.messageActions(message.rid, message._id));
 				}
 			},
-			condition({ message, subscription, user }) {
-				if (subscription == null && allowStaring) {
-					return false;
-				}
-
+			condition({ message, user }) {
 				return Boolean(message.starred?.find((star: any) => star._id === user?._id));
 			},
 			order: 3,

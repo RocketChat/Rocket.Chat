@@ -91,7 +91,7 @@ const MessageToolbar = ({
 	useWebDAVMessageAction();
 	useNewDiscussionMessageAction();
 	useStarMessageAction(message, { room, user });
-	useUnstarMessageAction();
+	useUnstarMessageAction(room);
 
 	const actionsQueryResult = useQuery({
 		queryKey: roomsQueryKeys.messageActionsWithParameters(room._id, message),
