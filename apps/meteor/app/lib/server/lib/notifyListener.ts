@@ -267,7 +267,7 @@ export const notifyOnLivechatInquiryChangedByVisitorIds = withDbWatcherCheck(
 	async (
 		visitorIds: ILivechatInquiryRecord['v']['_id'][],
 		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
-		diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
+		diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: Date; takenAt: Date }>,
 	): Promise<void> => {
 		const cursor = LivechatInquiry.findByVisitorIds(visitorIds);
 
