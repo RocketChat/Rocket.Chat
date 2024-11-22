@@ -6,11 +6,13 @@ import sinon from 'sinon';
 import type { CreateContactParams } from './createContact';
 
 const getContactManagerIdByUsername = sinon.stub();
+const getAllowedCustomFields = sinon.stub();
 
 const { mapVisitorToContact } = proxyquire.noCallThru().load('./mapVisitorToContact', {
 	'./getContactManagerIdByUsername': {
 		getContactManagerIdByUsername,
 	},
+	'./getAllowedCustomFields': { getAllowedCustomFields },
 });
 
 const testDate = new Date();
@@ -142,6 +144,7 @@ describe('mapVisitorToContact', () => {
 
 			return undefined;
 		});
+		getAllowedCustomFields.returns([]);
 	});
 
 	const index = 0;
