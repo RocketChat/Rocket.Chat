@@ -101,7 +101,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 					unread={unread}
 					mention={mention}
 					all={all}
-					participants={normalizedMessage?.replies?.length}
+					participants={normalizedMessage?.replies}
 				/>
 			)}
 

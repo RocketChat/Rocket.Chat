@@ -295,6 +295,10 @@ export class ContactMerger {
 			...(allConflicts.length ? { conflictingFields: { $each: allConflicts } } : {}),
 		};
 
+		if (newChannels.length) {
+			dataToSet.preRegistration = false;
+		}
+
 		const updateData: UpdateFilter<ILivechatContact> = {
 			...(Object.keys(dataToSet).length ? { $set: dataToSet } : {}),
 			...(Object.keys(dataToAdd).length ? { $addToSet: dataToAdd } : {}),

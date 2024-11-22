@@ -46,7 +46,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 	const t = useTranslation();
 
 	const {
-		formState: { isSubmitting, isValidating, errors },
+		formState: { errors },
 		handleSubmit,
 		control,
 		watch,
@@ -246,7 +246,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button type='submit' primary loading={isSubmitting || isValidating}>
+					<Button type='submit' primary loading={createDiscussionMutation.isLoading}>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

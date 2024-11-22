@@ -10,12 +10,14 @@ import React, { memo, useMemo, useRef } from 'react';
 
 import MessageActionMenu from './MessageActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
+import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 import { useMessageActionAppsActionButtons } from '../../../hooks/useAppActionButtons';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
+import { roomsQueryKeys } from '../../../lib/queryKeys';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
@@ -85,17 +87,22 @@ const MessageToolbar = ({
 
 	// TODO: move this to another place
 	useWebDAVMessageAction();
+	useNewDiscussionMessageAction();
 
-	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
-		const props = { message, room, user, subscription, settings: mapSettings, chat };
+	const actionsQueryResult = useQuery({
+		queryKey: roomsQueryKeys.messageActionsWithParameters(room._id, message),
+		queryFn: async () => {
+			const props = { message, room, user, subscription, settings: mapSettings, chat };
 
-		const toolboxItems = await MessageAction.getAll(props, context, 'message');
-		const menuItems = await MessageAction.getAll(props, context, 'menu');
+			const toolboxItems = await MessageAction.getAll(props, context, 'message');
+			const menuItems = await MessageAction.getAll(props, context, 'menu');
 
-		return {
-			message: toolboxItems.filter((action) => !hiddenActions.includes(action.id)),
-			menu: menuItems.filter((action) => !(isLayoutEmbedded && action.id === 'reply-directly') && !hiddenActions.includes(action.id)),
-		};
+			return {
+				message: toolboxItems.filter((action) => !hiddenActions.includes(action.id)),
+				menu: menuItems.filter((action) => !(isLayoutEmbedded && action.id === 'reply-directly') && !hiddenActions.includes(action.id)),
+			};
+		},
+		keepPreviousData: true,
 	});
 
 	const toolbox = useRoomToolbox();

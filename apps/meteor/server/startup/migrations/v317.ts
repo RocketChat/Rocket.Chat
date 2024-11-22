@@ -61,6 +61,7 @@ addMigration({
 	version: 317,
 	name: 'Change default color of OAuth login services buttons',
 	async up() {
+		// TODO: audit
 		const promises = settingsToUpdate
 			.map(async ({ key, defaultValue, newValue }) => {
 				const oldSettingValue = await getSettingValue(key);
