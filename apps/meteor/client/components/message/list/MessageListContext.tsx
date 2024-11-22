@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
+import type { VirtuosoHandle } from 'react-virtuoso';
 
 export type MessageListContextValue = {
 	useShowTranslated: (message: IMessage) => boolean;
@@ -25,7 +26,7 @@ export type MessageListContextValue = {
 	jumpToMessageParam?: string;
 	username: string | undefined;
 	messageListRef?: React.RefObject<HTMLElement>;
-	virtuosoRef?: React.RefObject<any>;
+	virtuosoRef?: React.RefObject<VirtuosoHandle>;
 };
 
 export const MessageListContext = createContext<MessageListContextValue>({

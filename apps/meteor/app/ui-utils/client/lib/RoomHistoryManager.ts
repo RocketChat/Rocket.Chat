@@ -264,12 +264,12 @@ class RoomHistoryManagerClass extends Emitter {
 
 	public async clear(rid: IRoom['_id']) {
 		const room = this.getRoom(rid);
-		Messages.remove({ rid });
 		room.isLoading.set(true);
 		room.hasMore.set(true);
 		room.hasMoreNext.set(false);
 		room.oldestTs = undefined;
 		room.loaded = undefined;
+		Messages.remove({ rid });
 	}
 
 	public async getSurroundingMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) {

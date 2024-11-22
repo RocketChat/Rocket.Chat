@@ -11,7 +11,7 @@ import { HeaderV2 } from './HeaderV2';
 import MessageHighlightProvider from './MessageList/providers/MessageHighlightProvider';
 import RoomBody from './body/RoomBody';
 import RoomBodyV2 from './body/RoomBodyV2';
-import RoomBodyVirtualized from './body/RoomBodyVirtualized';
+import RoomBodyVirtual from './body/RoomBodyVirtual';
 import { useRoom } from './contexts/RoomContext';
 import { useRoomToolbox } from './contexts/RoomToolboxContext';
 import { useAppsContextualBar } from './hooks/useAppsContextualBar';
@@ -68,7 +68,7 @@ const Room = (): ReactElement => {
 											<FeaturePreviewOff>
 												<FeaturePreview feature='virtualizedRoomList'>
 													<FeaturePreviewOn>
-														<RoomBodyVirtualized />
+														<RoomBodyVirtual />
 													</FeaturePreviewOn>
 													<FeaturePreviewOff>
 														<RoomBody />

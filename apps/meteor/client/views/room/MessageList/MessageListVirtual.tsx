@@ -1,17 +1,17 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
-import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useRouter, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MutableRefObject } from 'react';
 import React, { forwardRef, useCallback, useRef, useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import type { VirtuosoHandle, StateSnapshot } from 'react-virtuoso';
 
+import { MessageListItem } from './MessageListItem';
 import { MessageTypes } from '../../../../app/ui-utils/client';
 import { RoomManager } from '../../../lib/RoomManager';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
-import { MessageListItem } from './MessageListItem';
 import { useLockOnLoadMoreMessages } from './hooks/useLockLoadScroll';
 import { useMessages } from './hooks/useMessages';
 import { isMessageSequential } from './lib/isMessageSequential';
@@ -20,9 +20,10 @@ import MessageListProvider from './providers/MessageListProvider';
 type MessageListProps = {
 	rid: IRoom['_id'];
 	messageListRef: ComponentProps<typeof MessageListProvider>['messageListRef'];
-	renderBefore: React.ReactNode;
-	renderAfter: React.ReactNode;
+	renderBefore: React.ComponentType;
+	renderAfter: React.ComponentType;
 	isLoadingMoreMessages: boolean;
+	atBottomRef: MutableRefObject<boolean>;
 };
 
 const ListComponent = React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, ref) => (
@@ -34,24 +35,26 @@ const MemoizedListComponent = React.memo(ListComponent);
 
 // eslint-disable-next-line react/no-multi-comp
 export const MessageListVirtual = forwardRef<HTMLElement, MessageListProps>(function MessageListVirtual(
-	{ rid, messageListRef, renderBefore, renderAfter, isLoadingMoreMessages },
+	{ rid, messageListRef, renderBefore, renderAfter, isLoadingMoreMessages, atBottomRef },
 	ref,
 ) {
 	const messages = useMessages({ rid });
+	const router = useRouter();
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
-	const store = RoomManager.getStore(rid);
-	const state = React.useRef<StateSnapshot | undefined>(store?.state);
+	const roomStore = RoomManager.getStore(rid);
+	const state = React.useRef<StateSnapshot | undefined>(roomStore?.state);
 	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 	const virtuosoRef = useRef<VirtuosoHandle | null>(null);
-	const isAtBottomRef = useRef<boolean>(true);
 	const scrollerRef = useRef<HTMLElement | null>(null);
+	const jumpToMessageParam = !!router.getLocationPathname().includes('msg');
 
 	useLockOnLoadMoreMessages(isLoadingMoreMessages, virtuosoRef, messages, scrollerRef);
 
 	const extraProps: Record<string, any> = useMemo(() => {
-		return !state.current ? { initialTopMostItemIndex: messages.length - 1 } : {};
+		// if set initialTopMostItemIndex overrides the state
+		return !state.current || jumpToMessageParam ? { initialTopMostItemIndex: messages.length - 1 } : {};
 	}, [messages.length]);
 
 	const refSetter = useCallback(
@@ -68,6 +71,14 @@ export const MessageListVirtual = forwardRef<HTMLElement, MessageListProps>(func
 			}
 		},
 		[ref],
+	);
+
+	const virtuosoSetter = useCallback(
+		(virtuoso) => {
+			virtuosoRef.current = virtuoso;
+			RoomManager.getStore(rid)?.update({ virtuosoRoom: virtuoso });
+		},
+		[virtuosoRef, rid],
 	);
 
 	const itemContent = useCallback(
@@ -109,7 +120,7 @@ export const MessageListVirtual = forwardRef<HTMLElement, MessageListProps>(func
 						List: MemoizedListComponent,
 					}}
 					totalCount={messages?.length}
-					ref={virtuosoRef}
+					ref={virtuosoSetter}
 					scrollerRef={refSetter}
 					computeItemKey={(index) => messages[index]._id}
 					increaseViewportBy={{
@@ -117,7 +128,7 @@ export const MessageListVirtual = forwardRef<HTMLElement, MessageListProps>(func
 						bottom: 4000,
 					}}
 					followOutput={(isAtBottom: boolean) => {
-						if (isAtBottom) {
+						if (isAtBottom && !jumpToMessageParam) {
 							return 'smooth';
 						}
 						return false;
@@ -126,6 +137,7 @@ export const MessageListVirtual = forwardRef<HTMLElement, MessageListProps>(func
 					itemContent={itemContent}
 					isScrolling={() => {
 						const store = RoomManager.getStore(rid);
+
 						virtuosoRef?.current?.getState((snapshot: StateSnapshot) => {
 							if (snapshot) {
 								store?.update({ state: snapshot });
@@ -134,7 +146,7 @@ export const MessageListVirtual = forwardRef<HTMLElement, MessageListProps>(func
 						});
 					}}
 					atBottomStateChange={(state) => {
-						isAtBottomRef.current = state;
+						atBottomRef.current = state;
 					}}
 					restoreStateFrom={state.current}
 					atTopThreshold={0}

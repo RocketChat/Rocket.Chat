@@ -12,6 +12,11 @@ import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import Announcement from '../Announcement';
 import { BubbleDate } from '../BubbleDate';
 import { MessageListVirtual } from '../MessageList';
+import DropTargetOverlay from './DropTargetOverlay';
+import JumpToRecentMessageButton from './JumpToRecentMessageButton';
+import LeaderBar from './LeaderBar';
+import LoadingMessagesIndicator from './LoadingMessagesIndicator';
+import RetentionPolicyWarning from './RetentionPolicyWarning';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import ComposerContainer from '../composer/ComposerContainer';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
@@ -22,11 +27,6 @@ import { useUserCard } from '../contexts/UserCardContext';
 import { useDateScrollVirtual } from '../hooks/useDateScrollVirtual';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
-import DropTargetOverlay from './DropTargetOverlay';
-import JumpToRecentMessageButton from './JumpToRecentMessageButton';
-import LeaderBar from './LeaderBar';
-import LoadingMessagesIndicator from './LoadingMessagesIndicator';
-import RetentionPolicyWarning from './RetentionPolicyWarning';
 import RoomForeword from './RoomForeword/RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
@@ -35,7 +35,7 @@ import { useGetMore } from './hooks/useGetMore';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
 import { useLeaderBanner } from './hooks/useLeaderBanner';
-import { useListIsAtBottom } from './hooks/useListIsAtBottom';
+import { useListIsAtBottom } from './hooks/useListIsAtBottomVirtual';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useHandleUnread } from './hooks/useUnreadMessages';
@@ -96,7 +96,7 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScrollVirtual();
 
-	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom } = useListIsAtBottom();
+	const { atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom } = useListIsAtBottom();
 
 	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
 
@@ -121,7 +121,6 @@ const RoomBody = (): ReactElement => {
 	const innerRef = useMergedRefs(
 		dateScrollInnerRef,
 		innerBoxRef,
-		isAtBottomInnerRef,
 		newMessagesScrollRef,
 		leaderBannerInnerRef,
 		unreadBarInnerRef,
@@ -283,6 +282,7 @@ const RoomBody = (): ReactElement => {
 											<MessageListVirtual
 												ref={innerRef}
 												rid={room._id}
+												atBottomRef={atBottomRef}
 												messageListRef={innerBoxRef}
 												isLoadingMoreMessages={isLoadingMoreMessages}
 												renderBefore={() =>

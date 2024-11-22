@@ -1,26 +1,17 @@
-import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useRef } from 'react';
 
-import { isAtBottom as isAtBottomLib } from '../../../../../app/ui/client/views/app/lib/scrolling';
-import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
+import { RoomManager } from '../../../../lib/RoomManager';
+import { useRoom } from '../../contexts/RoomContext';
 
 export const useListIsAtBottom = () => {
+	const room = useRoom();
+	const store = RoomManager.getStore(room._id);
 	const atBottomRef = useRef(true);
 
-	const innerBoxRef = useRef<HTMLDivElement | null>(null);
-
 	const sendToBottom = useCallback(() => {
-		if (!innerBoxRef.current) {
-			return;
-		}
-		const scrollTo: ScrollToOptions = {
-			top: innerBoxRef.current.scrollHeight,
-			behavior: 'smooth',
-		};
-		if (!atBottomRef?.current) {
-			scrollTo.behavior = 'instant';
-		}
-		innerBoxRef.current.scrollTo(scrollTo);
+		store?.virtuosoRoom?.scrollTo({
+			top: 10000,
+		});
 	}, []);
 
 	const sendToBottomIfNecessary = useCallback(() => {
@@ -29,43 +20,14 @@ export const useListIsAtBottom = () => {
 		}
 	}, [atBottomRef, sendToBottom]);
 
-	const isAtBottom = useCallback((threshold = 0) => {
-		if (!innerBoxRef.current) {
-			return true;
-		}
-		return isAtBottomLib(innerBoxRef.current, threshold);
+	const isAtBottom = useCallback(() => {
+		console.log('check if it is at bottom');
+
+		return !!atBottomRef?.current;
 	}, []);
-
-	const ref = useCallback(
-		(node: HTMLElement | null) => {
-			if (!node) {
-				return;
-			}
-
-			const observer = new ResizeObserver(() => {
-				if (atBottomRef.current === true) {
-					node.scrollTo({ left: 30, top: node.scrollHeight });
-				}
-			});
-
-			observer.observe(node);
-
-			node.addEventListener(
-				'scroll',
-				withThrottling({ wait: 100 })(() => {
-					atBottomRef.current = isAtBottom(200);
-				}),
-				{
-					passive: true,
-				},
-			);
-		},
-		[isAtBottom],
-	);
 
 	return {
 		atBottomRef,
-		innerRef: useMergedRefs(ref, innerBoxRef) as unknown as React.MutableRefObject<HTMLDivElement | null>,
 		sendToBottom,
 		sendToBottomIfNecessary,
 		isAtBottom,

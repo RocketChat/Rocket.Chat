@@ -74,19 +74,8 @@
 		padding-top: 20px;
 	}
 
-	/* Temporary room scroll-bar styling */
-	::-webkit-scrollbar {
-		width: 4px;
-	}
-
-	::-webkit-scrollbar-track {
-		box-shadow: none;
-		border-radius: 10px;
-	}
-
-	::-webkit-scrollbar-thumb {
-		background: rgba(0, 0, 0, 0.35);
-		border-radius: 10px;
+	& .virtuoso {
+		scrollbar-width: thin;
 	}
 }
 

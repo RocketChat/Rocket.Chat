@@ -1,10 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import type { StateSnapshot } from 'react-virtuoso';
+import type { StateSnapshot, VirtuosoHandle } from 'react-virtuoso';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { getConfig } from './utils/getConfig';
 import { RoomHistoryManager } from '../../app/ui-utils/client/lib/RoomHistoryManager';
+import { getConfig } from './utils/getConfig';
 
 const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));
 
@@ -19,7 +19,11 @@ class RoomStore extends Emitter<{
 
 	atBottom = true;
 
+	lastJumpId?: string;
+
 	state?: StateSnapshot;
+
+	virtuosoRoom?: VirtuosoHandle | null;
 
 	constructor(readonly rid: string) {
 		super();
@@ -27,7 +31,22 @@ class RoomStore extends Emitter<{
 		debug && this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));
 	}
 
-	update({ scroll, lastTime, atBottom, state }: { scroll?: number; lastTime?: Date; atBottom?: boolean; state?: StateSnapshot }): void {
+	update({
+		scroll,
+		lastTime,
+		atBottom,
+		state,
+		lastJumpId,
+		virtuosoRoom,
+	}: {
+		scroll?: number;
+		lastTime?: Date;
+		atBottom?: boolean;
+		state?: StateSnapshot;
+		scrolling?: boolean;
+		lastJumpId?: string;
+		virtuosoRoom?: VirtuosoHandle | null;
+	}): void {
 		if (scroll !== undefined) {
 			this.scroll = scroll;
 		}
@@ -42,6 +61,12 @@ class RoomStore extends Emitter<{
 		}
 		if (state !== undefined) {
 			this.state = state;
+		}
+		if (lastJumpId !== undefined) {
+			this.lastJumpId = lastJumpId;
+		}
+		if (virtuosoRoom !== undefined) {
+			this.virtuosoRoom = virtuosoRoom;
 		}
 	}
 }
@@ -128,6 +153,7 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 		if (!this.rooms.has(rid)) {
 			this.rooms.set(rid, new RoomStore(rid));
 		}
+
 		this.rid = rid;
 		this.parentRid = parent;
 		this.emit('opened', this.rid);

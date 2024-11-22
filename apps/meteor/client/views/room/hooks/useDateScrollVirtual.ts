@@ -153,7 +153,7 @@ export const useDateScrollVirtual = (margin = 8): useDateScrollReturn => {
 				onScroll(list);
 			});
 
-			node.addEventListener('scroll', fn, { passive: true });
+			// node.addEventListener('scroll', fn, { passive: true });
 		},
 		[list, margin, setBubbleDate],
 	);
