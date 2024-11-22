@@ -7,9 +7,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useDontAskAgain } from './useDontAskAgain';
-import { Subscriptions } from '../../app/models/client';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
+import { updateSubscription } from '../lib/mutationEffects/updateSubscription';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 type HideRoomProps = {
@@ -30,7 +30,7 @@ const CLOSE_ENDPOINTS_BY_ROOM_TYPE = {
 	l: '/v1/channels.close', // livechat
 } as const;
 
-export const useHideRoomAction = ({ rid, type, name }: HideRoomProps, { redirect = true }: HideRoomOptions = {}) => {
+export const useHideRoomAction = ({ rid: roomId, type, name }: HideRoomProps, { redirect = true }: HideRoomOptions = {}) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const closeModal = useEffectEvent(() => setModal());
@@ -42,29 +42,25 @@ export const useHideRoomAction = ({ rid, type, name }: HideRoomProps, { redirect
 	const hideRoomEndpoint = useEndpoint('POST', CLOSE_ENDPOINTS_BY_ROOM_TYPE[type]);
 
 	const hideRoom = useMutation({
-		mutationFn: () => hideRoomEndpoint({ roomId: rid }),
+		mutationFn: () => hideRoomEndpoint({ roomId }),
 		onMutate: async () => {
 			closeModal();
 
-			const ogDocument = await Subscriptions.findOne({ rid, 'u._id': userId }, { fields: { alert: 1, open: 1 } });
-
-			// Optmistic update
-			await Subscriptions.update({ rid, 'u._id': userId }, { $set: { alert: false, open: false } });
-
-			return { ogDocument };
+			if (userId) {
+				return updateSubscription(roomId, userId, { alert: false, open: false });
+			}
 		},
 		onSuccess: () => {
 			if (redirect) {
 				router.navigate('/home');
 			}
 		},
-		onError: async (error, _, context) => {
+		onError: async (error, _, rollbackDocument) => {
 			dispatchToastMessage({ type: 'error', message: error });
 
-			// Revert optimistic changes
-			if (context?.ogDocument) {
-				const { alert, open } = context.ogDocument;
-				await Subscriptions.update({ rid, 'u._id': userId }, { $set: { alert, open } });
+			if (userId && rollbackDocument) {
+				const { alert, open } = rollbackDocument;
+				await updateSubscription(roomId, userId, { alert, open });
 			}
 		},
 	});
