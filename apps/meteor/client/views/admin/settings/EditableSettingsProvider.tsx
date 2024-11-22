@@ -8,7 +8,7 @@ import type { FilterOperators } from 'mongodb';
 import type { MutableRefObject, ReactNode } from 'react';
 import React, { useEffect, useMemo, useRef } from 'react';
 
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import { useLicenseBase } from '../../../hooks/useLicense';
 import { createReactiveSubscriptionFactory } from '../../../lib/createReactiveSubscriptionFactory';
 import type { EditableSetting, EditableSettingsContextValue } from '../EditableSettingsContext';
 import { EditableSettingsContext } from '../EditableSettingsContext';
@@ -193,9 +193,12 @@ const EditableSettingsProvider = ({ children, query = defaultQuery, omit = defau
 		Tracker.flush();
 	});
 
-	const { data } = useIsEnterprise();
+	const { data } = useLicenseBase({
+		select: (data) => ({ isEnterprise: Boolean(data?.license.license), activeModules: data?.license.activeModules }),
+	});
 
 	const isEnterprise = data?.isEnterprise ?? false;
+	const activeModules = useMemo(() => data?.activeModules ?? [], [data]);
 
 	const contextValue = useMemo<EditableSettingsContextValue>(
 		() => ({
@@ -205,8 +208,9 @@ const EditableSettingsProvider = ({ children, query = defaultQuery, omit = defau
 			queryGroupTabs,
 			dispatch,
 			isEnterprise,
+			activeModules,
 		}),
-		[queryEditableSetting, queryEditableSettings, queryGroupSections, queryGroupTabs, dispatch, isEnterprise],
+		[queryEditableSetting, queryEditableSettings, queryGroupSections, queryGroupTabs, dispatch, isEnterprise, activeModules],
 	);
 
 	return <EditableSettingsContext.Provider children={children} value={contextValue} />;
