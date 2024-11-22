@@ -8,6 +8,12 @@ export const useJumpToStarMessage = () => {
 	const allowStarring = useSetting('Message_AllowStarring');
 
 	useEffect(() => {
+		if (!allowStarring) {
+			return () => {
+				MessageAction.removeButton('jump-to-star-message');
+			};
+		}
+
 		MessageAction.addButton({
 			id: 'jump-to-star-message',
 			icon: 'jump',
@@ -17,7 +23,7 @@ export const useJumpToStarMessage = () => {
 				setMessageJumpQueryStringParameter(message._id);
 			},
 			condition({ message, subscription, user }) {
-				if (subscription == null || !allowStarring) {
+				if (subscription == null) {
 					return false;
 				}
 
