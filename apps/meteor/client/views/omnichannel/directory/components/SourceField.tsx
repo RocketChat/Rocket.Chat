@@ -7,6 +7,7 @@ import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/Omnichannel
 import Field from '../../components/Field';
 import Info from '../../components/Info';
 import Label from '../../components/Label';
+import { useOmnichannelSource } from '../../hooks/useOmnichannelSource';
 
 type SourceFieldProps = {
 	room: IOmnichannelRoom;
@@ -14,26 +15,7 @@ type SourceFieldProps = {
 
 const SourceField = ({ room }: SourceFieldProps) => {
 	const { t } = useTranslation();
-
-	const roomSource = room.source.alias || room.source.id || room.source.type;
-
-	// TODO: create a hook that gets the default types values (alias, icons, ids, etc...)
-	// so we don't have to write this object again and again
-	const defaultTypesLabels: {
-		widget: string;
-		email: string;
-		sms: string;
-		app: string;
-		api: string;
-		other: string;
-	} = {
-		widget: t('Livechat'),
-		email: t('Email'),
-		sms: t('SMS'),
-		app: room.source.alias || t('Custom_Integration'),
-		api: room.source.alias || t('Custom_Integration'),
-		other: t('Custom_Integration'),
-	};
+	const { getSourceName } = useOmnichannelSource();
 
 	const defaultTypesVisitorData: {
 		widget: string | undefined;
@@ -58,7 +40,7 @@ const SourceField = ({ room }: SourceFieldProps) => {
 				<Box display='flex' alignItems='center'>
 					<OmnichannelRoomIcon source={room.source} status={room.v.status} size='x24' />
 					<Label mi={8} mbe='0'>
-						{defaultTypesLabels[room.source.type] || roomSource}
+						{getSourceName(room.source)}
 					</Label>
 					{defaultTypesVisitorData[room.source.type]}
 				</Box>

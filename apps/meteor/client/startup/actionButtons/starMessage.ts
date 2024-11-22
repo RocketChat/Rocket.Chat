@@ -3,7 +3,9 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../app/settings/client';
 import { MessageAction } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { toggleStarredMessage } from '../../lib/mutationEffects/starredMessage';
 import { queryClient } from '../../lib/queryClient';
+import { roomsQueryKeys } from '../../lib/queryKeys';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../lib/toast';
 
@@ -16,12 +18,13 @@ Meteor.startup(() => {
 		context: ['starred', 'message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		async action(_, { message }) {
 			try {
-				await sdk.call('starMessage', { ...message, starred: true });
-				queryClient.invalidateQueries(['rooms', message.rid, 'starred-messages']);
+				await sdk.rest.post('/v1/chat.starMessage', { messageId: message._id });
+				toggleStarredMessage(message, true);
 			} catch (error) {
-				if (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-				}
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				queryClient.invalidateQueries(roomsQueryKeys.starredMessages(message.rid));
+				queryClient.invalidateQueries(roomsQueryKeys.messageActions(message.rid, message._id));
 			}
 		},
 		condition({ message, subscription, user, room }) {

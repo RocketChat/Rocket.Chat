@@ -4,6 +4,7 @@ import { Logger } from '@rocket.chat/logger';
 import { Settings } from '@rocket.chat/models';
 import { v4 as uuidv4 } from 'uuid';
 
+import { updateAuditedBySystem } from './lib/auditedSettingUpdates';
 import { settingsRegistry, settings } from '../../app/settings/server';
 
 const logger = new Logger('FingerPrint');
@@ -17,10 +18,13 @@ const generateFingerprint = function () {
 };
 
 const updateFingerprint = async function (fingerprint: string, verified: boolean) {
+	const auditedSettingBySystem = updateAuditedBySystem({
+		reason: 'updateFingerprint',
+	});
 	// No need to call ws listener because current function is called on startup
 	await Promise.all([
-		Settings.updateValueById('Deployment_FingerPrint_Hash', fingerprint),
-		Settings.updateValueById('Deployment_FingerPrint_Verified', verified),
+		auditedSettingBySystem(Settings.updateValueById, 'Deployment_FingerPrint_Hash', fingerprint),
+		auditedSettingBySystem(Settings.updateValueById, 'Deployment_FingerPrint_Verified', verified),
 	]);
 };
 

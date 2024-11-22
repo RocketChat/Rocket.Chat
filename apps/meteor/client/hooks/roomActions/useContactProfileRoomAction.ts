@@ -2,7 +2,7 @@ import { lazy, useMemo } from 'react';
 
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
-const ContactInfoRouter = lazy(() => import('../../views/omnichannel/directory/contacts/contactInfo/ContactInfoRouter'));
+const ContactInfoRouter = lazy(() => import('../../views/omnichannel/contactInfo/ContactInfoRouter'));
 
 export const useContactProfileRoomAction = () => {
 	return useMemo(
