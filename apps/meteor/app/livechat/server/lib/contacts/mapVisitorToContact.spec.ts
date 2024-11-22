@@ -132,6 +132,54 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 			contactManager: undefined,
 		},
 	],
+
+	[
+		{
+			_id: 'visitor1',
+			username: 'Username',
+			lastChat: {
+				_id: 'last-chat-id',
+				ts: testDate,
+			},
+			livechatData: {
+				customFieldId: 'customFieldValue',
+				invalidCustomFieldId: 'invalidCustomFieldValue',
+			},
+		},
+		{
+			type: OmnichannelSourceType.WIDGET,
+		},
+		{
+			name: 'Username',
+			emails: undefined,
+			phones: undefined,
+			unknown: false,
+			channels: [
+				{
+					name: 'sms',
+					visitor: {
+						visitorId: 'visitor1',
+						source: {
+							type: OmnichannelSourceType.WIDGET,
+						},
+					},
+					blocked: false,
+					verified: false,
+					details: {
+						type: OmnichannelSourceType.WIDGET,
+					},
+				},
+			],
+			customFields: {
+				customFieldId: 'customFieldValue',
+			},
+			lastChat: {
+				_id: 'last-chat-id',
+				ts: testDate,
+			},
+			contactManager: undefined,
+		},
+	],
 ];
 
 describe('mapVisitorToContact', () => {
@@ -144,7 +192,7 @@ describe('mapVisitorToContact', () => {
 
 			return undefined;
 		});
-		getAllowedCustomFields.returns([]);
+		getAllowedCustomFields.resolves([{ _id: 'customFieldId', label: 'custom-field-label' }]);
 	});
 
 	const index = 0;
