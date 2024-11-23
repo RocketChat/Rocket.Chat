@@ -12,7 +12,6 @@ const stubs = {
 	updateUserReferences: sinon.stub(),
 	setUsername: sinon.stub(),
 	setRealName: sinon.stub(),
-	setBio: sinon.stub(),
 	validateName: sinon.stub(),
 	FileUpload: sinon.stub(),
 };
@@ -130,19 +129,6 @@ describe('Users - saveUserIdentity', () => {
 		expect(stubs.updateUsernameOfEditByUserId.called).to.be.false;
 		expect(stubs.updateDirectNameAndFnameByName.called).to.be.true;
 		expect(stubs.updateUserReferences.called).to.be.true;
-		expect(result).to.be.true;
-	});
-
-	it('should update bio to an empty string and call setBio', async () => {
-		stubs.findOneUserById.returns({ bio: 'Some bio text', username: 'oldUsername' });
-		stubs.setRealName.returns(true);
-		stubs.setUsername.returns(true);
-		stubs.setBio = sinon.stub();
-		const result = await saveUserIdentity({ _id: 'valid_id', bio: '' });
-		expect(stubs.setRealName.called).to.be.false;
-		expect(stubs.setUsername.called).to.be.false;
-		expect(stubs.updateUsernameOfEditByUserId.called).to.be.false;
-		expect(stubs.setBio.calledWith('valid_id', '')).to.be.true;
 		expect(result).to.be.true;
 	});
 });
