@@ -3,7 +3,7 @@ import { useRouter } from '@rocket.chat/ui-contexts';
 import type { Dispatch, SetStateAction } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { ChatMessage } from '../../../../../app/models/client';
+import { Messages } from '../../../../../app/models/client';
 import { LegacyRoomManager, RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
@@ -60,7 +60,7 @@ export const useHandleUnread = (
 		const { firstUnread } = RoomHistoryManager.getRoom(rid);
 		let message = firstUnread?.get();
 		if (!message) {
-			message = ChatMessage.findOne({ rid, ts: { $gt: unread?.since } }, { sort: { ts: 1 }, limit: 1 });
+			message = Messages.findOne({ rid, ts: { $gt: unread?.since } }, { sort: { ts: 1 }, limit: 1 });
 		}
 		if (!message) {
 			return;
@@ -80,7 +80,7 @@ export const useHandleUnread = (
 			return;
 		}
 
-		const count = ChatMessage.find({
+		const count = Messages.find({
 			rid: room._id,
 			ts: { $lte: lastMessageDate, $gt: subscription?.ls },
 		}).count();
@@ -158,7 +158,7 @@ export const useHandleUnread = (
 							return;
 						}
 
-						const lastMessage = ChatMessage.findOne(lastInvisibleMessageOnScreen.id);
+						const lastMessage = Messages.findOne(lastInvisibleMessageOnScreen.id);
 						if (!lastMessage) {
 							setUnreadCount(0);
 							return;

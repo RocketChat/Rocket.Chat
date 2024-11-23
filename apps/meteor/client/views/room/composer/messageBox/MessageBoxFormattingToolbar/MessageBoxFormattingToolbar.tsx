@@ -61,13 +61,8 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 						}}
 					/>
 				) : (
-					<span
-						key={formatter.label}
-						{...(disabled && { style: { pointerEvents: 'none' } })}
-						className='rc-message-box__toolbar-formatting-item'
-						title={formatter.label}
-					>
-						<a href={formatter.link} target='_blank' rel='noopener noreferrer' className='rc-message-box__toolbar-formatting-link'>
+					<span key={formatter.label} {...(disabled && { style: { pointerEvents: 'none' } })} title={formatter.label}>
+						<a href={formatter.link} target='_blank' rel='noopener noreferrer'>
 							{formatter.text()}
 						</a>
 					</span>

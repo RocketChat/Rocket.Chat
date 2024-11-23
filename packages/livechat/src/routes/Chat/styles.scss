@@ -1,5 +1,5 @@
-@import '../../styles/colors';
-@import '../../styles/variables';
+@use '../../styles/colors';
+@use '../../styles/variables';
 
 .chat {
 	&__messages {
@@ -40,13 +40,13 @@
 			width: 20px;
 			height: 20px;
 
-			margin: $default-padding auto;
+			margin: variables.$default-padding auto;
 
 			content: "";
 			animation: loader-rotate 1s linear infinite;
 
-			border: 4px solid $color-dark-blue;
-			border-color: $color-dark-blue transparent transparent transparent;
+			border: 4px solid colors.$color-dark-blue;
+			border-color: colors.$color-dark-blue transparent transparent transparent;
 			border-radius: 50%;
 		}
 	}

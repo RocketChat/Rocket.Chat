@@ -1,5 +1,11 @@
 import { faker } from '@faker-js/faker';
-import type { ILivechatAgent, ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type {
+	ILivechatAgent,
+	ILivechatVisitor,
+	IOmnichannelRoom,
+	IUser,
+	ILivechatContactVisitorAssociation,
+} from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 
@@ -12,10 +18,13 @@ import {
 	createLivechatRoomWidget,
 	createVisitor,
 	deleteVisitor,
+	getLivechatRoomInfo,
 } from '../../../data/livechat/rooms';
 import { removeAgent } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser, deleteUser } from '../../../data/users.helper';
+import { expectInvalidParams } from '../../../data/validation.helper';
+import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - contacts', () => {
 	let agentUser: IUser;
@@ -585,12 +594,77 @@ describe('LIVECHAT - contacts', () => {
 		});
 	});
 
+	describe('Contact Rooms', () => {
+		before(async () => {
+			await updatePermission('view-livechat-contact', ['admin']);
+		});
+
+		after(async () => {
+			await restorePermissionToRoles('view-livechat-contact');
+		});
+
+		it('should create a contact and assign it to the room', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			expect(room).to.have.property('contactId').that.is.a('string');
+		});
+
+		it('should create a room using the pre-created contact', async () => {
+			const email = faker.internet.email().toLowerCase();
+			const phone = faker.phone.number();
+
+			const contact = {
+				name: 'Contact Name',
+				emails: [email],
+				phones: [phone],
+				contactManager: agentUser?._id,
+			};
+
+			const { body } = await request
+				.post(api('omnichannel/contacts'))
+				.set(credentials)
+				.send({ ...contact });
+			const { contactId } = body;
+
+			const visitor = await createVisitor(undefined, 'Visitor Name', email, phone);
+
+			const room = await createLivechatRoom(visitor.token);
+
+			expect(room).to.have.property('contactId', contactId);
+			expect(room).to.have.property('fname', 'Contact Name');
+		});
+
+		it('should update room names when a contact name changes', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			expect(room).to.have.property('contactId').that.is.a('string');
+			expect(room.fname).to.not.be.equal('New Contact Name');
+
+			const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
+				contactId: room.contactId,
+				name: 'New Contact Name',
+			});
+
+			expect(res.status).to.be.equal(200);
+
+			const sameRoom = await createLivechatRoom(visitor.token, { rid: room._id });
+			expect(sameRoom._id).to.be.equal(room._id);
+			expect(sameRoom.fname).to.be.equal('New Contact Name');
+		});
+	});
+
 	describe('[GET] omnichannel/contacts.get', () => {
 		let contactId: string;
+		let contactId2: string;
+		let association: ILivechatContactVisitorAssociation;
+
+		const email = faker.internet.email().toLowerCase();
+		const phone = faker.phone.number();
+
 		const contact = {
 			name: faker.person.fullName(),
-			emails: [faker.internet.email().toLowerCase()],
-			phones: [faker.phone.number()],
+			emails: [email],
+			phones: [phone],
 			contactManager: agentUser?._id,
 		};
 
@@ -601,6 +675,28 @@ describe('LIVECHAT - contacts', () => {
 				.set(credentials)
 				.send({ ...contact });
 			contactId = body.contactId;
+
+			const { body: contact2Body } = await request
+				.post(api('omnichannel/contacts'))
+				.set(credentials)
+				.send({
+					name: faker.person.fullName(),
+					emails: [faker.internet.email().toLowerCase()],
+					phones: [faker.phone.number()],
+					contactManager: agentUser?._id,
+				});
+			contactId2 = contact2Body.contactId;
+
+			const visitor = await createVisitor(undefined, contact.name, email, phone);
+
+			const room = await createLivechatRoom(visitor.token);
+			association = {
+				visitorId: visitor._id,
+				source: {
+					type: room.source.type,
+					id: room.source.id,
+				},
+			};
 		});
 
 		after(async () => {
@@ -624,12 +720,51 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.contact.contactManager).to.be.equal(contact.contactManager);
 		});
 
-		it('should return null if contact does not exist', async () => {
-			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: 'invalid' });
+		it('should be able get a contact by visitor association', async () => {
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ visitor: association });
 
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
-			expect(res.body.contact).to.be.null;
+			expect(res.body.contact).to.have.property('createdAt');
+			expect(res.body.contact._id).to.be.equal(contactId);
+			expect(res.body.contact.name).to.be.equal(contact.name);
+			expect(res.body.contact.emails).to.be.deep.equal([
+				{
+					address: contact.emails[0],
+				},
+			]);
+			expect(res.body.contact.phones).to.be.deep.equal([{ phoneNumber: contact.phones[0] }]);
+			expect(res.body.contact.contactManager).to.be.equal(contact.contactManager);
+		});
+
+		it('should return 404 if contact does not exist using contactId', async () => {
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: 'invalid' });
+
+			expect(res.status).to.be.equal(404);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'Resource not found');
+		});
+
+		it('should return 404 if contact does not exist using visitor association', async () => {
+			const res = await request
+				.get(api(`omnichannel/contacts.get`))
+				.set(credentials)
+				.query({ visitor: { ...association, visitorId: 'invalidId' } });
+
+			expect(res.status).to.be.equal(404);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'Resource not found');
+		});
+
+		it('should return 404 if contact does not exist using visitor source', async () => {
+			const res = await request
+				.get(api(`omnichannel/contacts.get`))
+				.set(credentials)
+				.query({ visitor: { ...association, source: { type: 'email' } } });
+
+			expect(res.status).to.be.equal(404);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'Resource not found');
 		});
 
 		it("should return an error if user doesn't have 'view-livechat-contact' permission", async () => {
@@ -643,13 +778,81 @@ describe('LIVECHAT - contacts', () => {
 			await restorePermissionToRoles('view-livechat-contact');
 		});
 
-		it('should return an error if contactId is missing', async () => {
+		it('should return an error if contactId and visitor association is missing', async () => {
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials);
 
-			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error');
-			expect(res.body.error).to.be.equal("must have required property 'contactId' [invalid-params]");
-			expect(res.body.errorType).to.be.equal('invalid-params');
+			expectInvalidParams(res, [
+				"must have required property 'contactId'",
+				"must have required property 'visitor'",
+				'must match exactly one schema in oneOf [invalid-params]',
+			]);
+		});
+
+		it('should return an error if more than one field is provided', async () => {
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId, visitor: association });
+
+			expectInvalidParams(res, [
+				'must NOT have additional properties',
+				'must NOT have additional properties',
+				'must match exactly one schema in oneOf [invalid-params]',
+			]);
+		});
+
+		describe('Contact Channels', () => {
+			let visitor: ILivechatVisitor;
+
+			beforeEach(async () => {
+				visitor = await createVisitor();
+			});
+
+			afterEach(async () => {
+				await deleteVisitor(visitor.token);
+			});
+
+			it('should add a channel to a contact when creating a new room', async () => {
+				const room = await createLivechatRoom(visitor.token);
+
+				expect(room.contactId).to.be.a('string');
+
+				const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.contactId });
+
+				expect(res.status).to.be.equal(200);
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.contact.channels).to.be.an('array');
+				expect(res.body.contact.channels.length).to.be.equal(1);
+				expect(res.body.contact.channels[0].name).to.be.equal('api');
+				expect(res.body.contact.channels[0].verified).to.be.false;
+				expect(res.body.contact.channels[0].blocked).to.be.false;
+				expect(res.body.contact.channels[0].visitor)
+					.to.be.an('object')
+					.that.is.deep.equal({
+						visitorId: visitor._id,
+						source: {
+							type: 'api',
+						},
+					});
+			});
+
+			it('should not add a channel if visitor already has one with same type', async () => {
+				const room = await createLivechatRoom(visitor.token);
+
+				const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.contactId });
+
+				expect(res.status).to.be.equal(200);
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.contact.channels).to.be.an('array');
+				expect(res.body.contact.channels.length).to.be.equal(1);
+
+				await closeOmnichannelRoom(room._id);
+				await request.get(api('livechat/room')).query({ token: visitor.token });
+
+				const secondResponse = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.contactId });
+
+				expect(secondResponse.status).to.be.equal(200);
+				expect(secondResponse.body).to.have.property('success', true);
+				expect(secondResponse.body.contact.channels).to.be.an('array');
+				expect(secondResponse.body.contact.channels.length).to.be.equal(1);
+			});
 		});
 
 		describe('Last Chat', () => {
@@ -666,22 +869,28 @@ describe('LIVECHAT - contacts', () => {
 				await deleteVisitor(visitor._id);
 			});
 
+			it('should have assigned a contactId to the new room', async () => {
+				expect(room.contactId).to.be.a('string');
+			});
+
 			it('should return the last chat', async () => {
-				const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: visitor.contactId });
+				const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.contactId });
 
 				expect(res.status).to.be.equal(200);
 				expect(res.body).to.have.property('success', true);
 				expect(res.body.contact).to.have.property('lastChat');
 				expect(res.body.contact.lastChat).to.have.property('ts');
 				expect(res.body.contact.lastChat._id).to.be.equal(room._id);
+				expect(res.body.contact.channels[0].lastChat).to.have.property('ts');
+				expect(res.body.contact.channels[0].lastChat._id).to.be.equal(room._id);
 			});
 
 			it('should not return the last chat if contact never chatted', async () => {
-				const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId });
+				const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: contactId2 });
 
 				expect(res.status).to.be.equal(200);
 				expect(res.body).to.have.property('success', true);
-				expect(res.body.contact).to.have.property('_id', contactId);
+				expect(res.body.contact).to.have.property('_id', contactId2);
 				expect(res.body.contact).to.not.have.property('lastChat');
 			});
 		});
@@ -689,6 +898,8 @@ describe('LIVECHAT - contacts', () => {
 
 	describe('[GET] omnichannel/contacts.search', () => {
 		let contactId: string;
+		let visitor: ILivechatVisitor;
+		let room: IOmnichannelRoom;
 		const contact = {
 			name: faker.person.fullName(),
 			emails: [faker.internet.email().toLowerCase()],
@@ -700,10 +911,14 @@ describe('LIVECHAT - contacts', () => {
 			await updatePermission('view-livechat-contact', ['admin']);
 			const { body } = await request.post(api('omnichannel/contacts')).set(credentials).send(contact);
 			contactId = body.contactId;
+			visitor = await createVisitor();
+			room = await createLivechatRoom(visitor.token);
 		});
 
 		after(async () => {
 			await restorePermissionToRoles('view-livechat-contact');
+			await closeOmnichannelRoom(room._id);
+			await deleteVisitor(visitor._id);
 		});
 
 		it('should be able to list all contacts', async () => {
@@ -716,6 +931,24 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.count).to.be.an('number');
 			expect(res.body.total).to.be.an('number');
 			expect(res.body.offset).to.be.an('number');
+		});
+
+		it('should return only known contacts by default', async () => {
+			const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials);
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contacts).to.be.an('array');
+			expect(res.body.contacts[0].unknown).to.be.false;
+		});
+
+		it('should be able to filter contacts by unknown field', async () => {
+			const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials).query({ unknown: true });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contacts).to.be.an('array');
+			expect(res.body.contacts[0].unknown).to.be.true;
 		});
 
 		it('should return only contacts that match the searchText using email', async () => {
@@ -781,54 +1014,6 @@ describe('LIVECHAT - contacts', () => {
 		});
 	});
 
-	describe('Contact Channels', () => {
-		let visitor: ILivechatVisitor;
-
-		beforeEach(async () => {
-			visitor = await createVisitor();
-		});
-
-		afterEach(async () => {
-			await deleteVisitor(visitor.token);
-		});
-
-		it('should add a channel to a contact when creating a new room', async () => {
-			await request.get(api('livechat/room')).query({ token: visitor.token });
-
-			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: visitor.contactId });
-
-			expect(res.status).to.be.equal(200);
-			expect(res.body).to.have.property('success', true);
-			expect(res.body.contact.channels).to.be.an('array');
-			expect(res.body.contact.channels.length).to.be.equal(1);
-			expect(res.body.contact.channels[0].name).to.be.equal('api');
-			expect(res.body.contact.channels[0].verified).to.be.false;
-			expect(res.body.contact.channels[0].blocked).to.be.false;
-			expect(res.body.contact.channels[0].visitorId).to.be.equal(visitor._id);
-		});
-
-		it('should not add a channel if visitor already has one with same type', async () => {
-			const roomResult = await request.get(api('livechat/room')).query({ token: visitor.token });
-
-			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: visitor.contactId });
-
-			expect(res.status).to.be.equal(200);
-			expect(res.body).to.have.property('success', true);
-			expect(res.body.contact.channels).to.be.an('array');
-			expect(res.body.contact.channels.length).to.be.equal(1);
-
-			await closeOmnichannelRoom(roomResult.body.room._id);
-			await request.get(api('livechat/room')).query({ token: visitor.token });
-
-			const secondResponse = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: visitor.contactId });
-
-			expect(secondResponse.status).to.be.equal(200);
-			expect(secondResponse.body).to.have.property('success', true);
-			expect(secondResponse.body.contact.channels).to.be.an('array');
-			expect(secondResponse.body.contact.channels.length).to.be.equal(1);
-		});
-	});
-
 	describe('[GET] omnichannel/contacts.history', () => {
 		let visitor: ILivechatVisitor;
 		let room1: IOmnichannelRoom;
@@ -847,33 +1032,28 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should be able to list a contact history', async () => {
-			const res = await request.get(api(`omnichannel/contacts.history`)).set(credentials).query({ contactId: visitor.contactId });
+			const res = await request.get(api(`omnichannel/contacts.history`)).set(credentials).query({ contactId: room1.contactId });
 
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
 			expect(res.body.history).to.be.an('array');
-			expect(res.body.history.length).to.be.equal(2);
-			expect(res.body.total).to.be.equal(2);
+			expect(res.body.history.length).to.be.equal(1);
+			expect(res.body.total).to.be.equal(1);
 			expect(res.body.count).to.be.an('number');
 			expect(res.body.offset).to.be.an('number');
 
-			expect(res.body.history[0]).to.have.property('_id', room2._id);
-			expect(res.body.history[0]).to.not.have.property('closedAt');
-			expect(res.body.history[0]).to.have.property('fname', visitor.name);
-			expect(res.body.history[0].source).to.have.property('type', 'widget');
-
-			expect(res.body.history[1]).to.have.property('_id', room1._id);
-			expect(res.body.history[1]).to.have.property('closedAt');
-			expect(res.body.history[1]).to.have.property('closedBy');
-			expect(res.body.history[1]).to.have.property('closer', 'user');
-			expect(res.body.history[1].source).to.have.property('type', 'api');
+			expect(res.body.history[0]).to.have.property('_id', room1._id);
+			expect(res.body.history[0]).to.have.property('closedAt');
+			expect(res.body.history[0]).to.have.property('closedBy');
+			expect(res.body.history[0]).to.have.property('closer', 'user');
+			expect(res.body.history[0].source).to.have.property('type', 'api');
 		});
 
 		it('should be able to filter a room by the source', async () => {
 			const res = await request
 				.get(api(`omnichannel/contacts.history`))
 				.set(credentials)
-				.query({ contactId: visitor.contactId, source: 'api' });
+				.query({ contactId: room1.contactId, source: 'api' });
 
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
@@ -886,16 +1066,22 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should return an empty list if contact does not have history', async () => {
-			const emptyVisitor = await createVisitor();
-			const res = await request.get(api(`omnichannel/contacts.history`)).set(credentials).query({ contactId: emptyVisitor.contactId });
+			const { body } = await request
+				.post(api('omnichannel/contacts'))
+				.set(credentials)
+				.send({
+					name: faker.person.fullName(),
+					emails: [faker.internet.email().toLowerCase()],
+					phones: [faker.phone.number()],
+				});
+
+			const res = await request.get(api(`omnichannel/contacts.history`)).set(credentials).query({ contactId: body.contactId });
 
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
 			expect(res.body.history).to.be.an('array');
 			expect(res.body.history.length).to.be.equal(0);
 			expect(res.body.total).to.be.equal(0);
-
-			await deleteVisitor(emptyVisitor.token);
 		});
 
 		it('should return an error if contacts not exists', async () => {
@@ -904,6 +1090,346 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.status).to.be.equal(400);
 			expect(res.body).to.have.property('success', false);
 			expect(res.body.error).to.be.equal('error-contact-not-found');
+		});
+	});
+
+	describe('[GET] omnichannel/contacts.channels', () => {
+		let contactId: string;
+		let visitor: ILivechatVisitor;
+		let room: IOmnichannelRoom;
+
+		before(async () => {
+			await updatePermission('view-livechat-contact', ['admin']);
+			visitor = await createVisitor();
+			room = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(room._id);
+			contactId = room.contactId as string;
+		});
+
+		after(async () => {
+			await deleteVisitor(visitor._id);
+			await restorePermissionToRoles('view-livechat-contact');
+		});
+
+		it('should be able get the channels of a contact by his id', async () => {
+			const res = await request.get(api(`omnichannel/contacts.channels`)).set(credentials).query({ contactId });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.channels).to.be.an('array');
+			expect(res.body.channels.length).to.be.equal(1);
+			expect(res.body.channels[0]).to.have.property('name', 'api');
+			expect(res.body.channels[0])
+				.to.have.property('visitor')
+				.that.is.an('object')
+				.and.deep.equal({
+					visitorId: visitor._id,
+					source: {
+						type: 'api',
+					},
+				});
+			expect(res.body.channels[0]).to.have.property('verified', false);
+			expect(res.body.channels[0]).to.have.property('blocked', false);
+			expect(res.body.channels[0]).to.have.property('lastChat');
+		});
+
+		it('should return an empty array if contact does not have channels', async () => {
+			const { body } = await request
+				.post(api('omnichannel/contacts'))
+				.set(credentials)
+				.send({ name: faker.person.fullName(), emails: [faker.internet.email().toLowerCase()], phones: [faker.phone.number()] });
+			const res = await request.get(api(`omnichannel/contacts.channels`)).set(credentials).query({ contactId: body.contactId });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.channels).to.be.an('array');
+			expect(res.body.channels.length).to.be.equal(0);
+		});
+
+		it('should return an empty array if contact does not exist', async () => {
+			const res = await request.get(api(`omnichannel/contacts.channels`)).set(credentials).query({ contactId: 'invalid' });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.channels).to.be.an('array');
+			expect(res.body.channels.length).to.be.equal(0);
+		});
+
+		it("should return an error if user doesn't have 'view-livechat-contact' permission", async () => {
+			await removePermissionFromAllRoles('view-livechat-contact');
+
+			const res = await request.get(api(`omnichannel/contacts.channels`)).set(credentials).query({ contactId });
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+
+			await restorePermissionToRoles('view-livechat-contact');
+		});
+
+		it('should return an error if contactId is missing', async () => {
+			const res = await request.get(api(`omnichannel/contacts.channels`)).set(credentials);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
+			expect(res.body.error).to.be.equal("must have required property 'contactId' [invalid-params]");
+			expect(res.body.errorType).to.be.equal('invalid-params');
+		});
+	});
+
+	(IS_EE ? describe : describe.skip)('[POST] omnichannel/contacts.block', async () => {
+		let visitor: ILivechatVisitor;
+		let room: IOmnichannelRoom;
+		let association: ILivechatContactVisitorAssociation;
+
+		before(async () => {
+			visitor = await createVisitor();
+			room = await createLivechatRoom(visitor.token);
+
+			association = {
+				visitorId: visitor._id,
+				source: {
+					type: room.source.type,
+					id: room.source.id,
+				},
+			};
+		});
+
+		after(async () => {
+			await deleteVisitor(visitor.token);
+		});
+
+		it('should be able to block a contact channel', async () => {
+			const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitor: association });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+
+			const { body } = await request.get(api('omnichannel/contacts.get')).set(credentials).query({ visitor: association });
+
+			expect(body.contact.channels).to.be.an('array');
+			expect(body.contact.channels.length).to.be.equal(1);
+			expect(body.contact.channels[0].blocked).to.be.true;
+		});
+
+		it('should return an error if contact does not exist', async () => {
+			const res = await request
+				.post(api('omnichannel/contacts.block'))
+				.set(credentials)
+				.send({ visitor: { ...association, visitorId: 'invalid' } });
+
+			expect(res.status).to.be.equal(400);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('error-contact-not-found');
+		});
+
+		it('should return an error if contact does not exist 2', async () => {
+			const res = await request
+				.post(api('omnichannel/contacts.block'))
+				.set(credentials)
+				.send({ visitor: { ...association, source: { type: 'sms' } } });
+
+			expect(res.status).to.be.equal(400);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('error-contact-not-found');
+		});
+
+		it('should close room when contact is blocked', async () => {
+			const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitor: association });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+
+			const closedRoom = await getLivechatRoomInfo(room._id);
+
+			expect(closedRoom).to.have.property('closedAt');
+			expect(closedRoom).to.have.property('closedBy');
+			expect(closedRoom.lastMessage?.msg).to.be.equal('This channel has been blocked');
+		});
+
+		it('should not be able to open a room when contact is blocked', async () => {
+			await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitor: association });
+
+			const createRoomResponse = await request.get(api('livechat/room')).query({ token: visitor.token }).set(credentials);
+
+			expect(createRoomResponse.status).to.be.equal(400);
+			expect(createRoomResponse.body).to.have.property('success', false);
+			expect(createRoomResponse.body).to.have.property('error', 'error-contact-channel-blocked');
+		});
+
+		it('should return an error if visitor is missing', async () => {
+			const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({});
+
+			expect(res.status).to.be.equal(400);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal("must have required property 'visitor' [invalid-params]");
+		});
+
+		it('should return an error if visitorId is missing', async () => {
+			const res = await request
+				.post(api('omnichannel/contacts.block'))
+				.set(credentials)
+				.send({ visitor: { source: association.source } });
+
+			expect(res.status).to.be.equal(400);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal("must have required property 'visitorId' [invalid-params]");
+		});
+
+		it('should return an error if source is missing', async () => {
+			const res = await request
+				.post(api('omnichannel/contacts.block'))
+				.set(credentials)
+				.send({ visitor: { visitorId: association.visitorId } });
+
+			expect(res.status).to.be.equal(400);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal("must have required property 'source' [invalid-params]");
+		});
+
+		it('should return an error if source type is missing', async () => {
+			const res = await request
+				.post(api('omnichannel/contacts.block'))
+				.set(credentials)
+				.send({ visitor: { visitorId: association.visitorId, source: { id: association.source.id } } });
+
+			expect(res.status).to.be.equal(400);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal("must have required property 'type' [invalid-params]");
+		});
+
+		describe('Permissions', () => {
+			before(async () => {
+				await removePermissionFromAllRoles('block-livechat-contact');
+			});
+
+			after(async () => {
+				await restorePermissionToRoles('block-livechat-contact');
+			});
+
+			it("should return an error if user doesn't have 'block-livechat-contact' permission", async () => {
+				const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitor: association });
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			});
+		});
+	});
+
+	(IS_EE ? describe : describe.skip)('[POST] omnichannel/contacts.unblock', async () => {
+		let visitor: ILivechatVisitor;
+		let room: IOmnichannelRoom;
+		let association: ILivechatContactVisitorAssociation;
+
+		before(async () => {
+			visitor = await createVisitor();
+			room = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(room._id);
+			association = { visitorId: visitor._id, source: { type: room.source.type, id: room.source.id } };
+		});
+
+		after(async () => {
+			await deleteVisitor(visitor.token);
+		});
+
+		it('should be able to unblock a contact channel', async () => {
+			await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitor: association });
+
+			const { body } = await request.get(api('omnichannel/contacts.get')).set(credentials).query({ visitor: association });
+
+			expect(body.contact.channels).to.be.an('array');
+			expect(body.contact.channels.length).to.be.equal(1);
+			expect(body.contact.channels[0].blocked).to.be.true;
+
+			const res = await request.post(api('omnichannel/contacts.unblock')).set(credentials).send({ visitor: association });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+
+			const { body: body2 } = await request.get(api('omnichannel/contacts.get')).set(credentials).query({ visitor: association });
+
+			expect(body2.contact.channels).to.be.an('array');
+			expect(body2.contact.channels.length).to.be.equal(1);
+			expect(body2.contact.channels[0].blocked).to.be.false;
+		});
+
+		it('should return an error if contact does not exist', async () => {
+			const res = await request
+				.post(api('omnichannel/contacts.block'))
+				.set(credentials)
+				.send({ visitor: { ...association, visitorId: 'invalid' } });
+
+			expect(res.status).to.be.equal(400);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('error-contact-not-found');
+		});
+
+		it('should return an error if contact does not exist 2', async () => {
+			const res = await request
+				.post(api('omnichannel/contacts.block'))
+				.set(credentials)
+				.send({ visitor: { ...association, source: { type: 'sms', id: room.source.id } } });
+
+			expect(res.status).to.be.equal(400);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('error-contact-not-found');
+		});
+
+		it('should return an error if visitor is missing', async () => {
+			const res = await request.post(api('omnichannel/contacts.unblock')).set(credentials).send({});
+
+			expect(res.status).to.be.equal(400);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal("must have required property 'visitor' [invalid-params]");
+		});
+
+		it('should return an error if visitorId is missing', async () => {
+			const res = await request
+				.post(api('omnichannel/contacts.unblock'))
+				.set(credentials)
+				.send({ visitor: { source: association.source } });
+
+			expect(res.status).to.be.equal(400);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal("must have required property 'visitorId' [invalid-params]");
+		});
+
+		it('should return an error if source is missing', async () => {
+			const res = await request
+				.post(api('omnichannel/contacts.unblock'))
+				.set(credentials)
+				.send({ visitor: { visitorId: association.visitorId } });
+
+			expect(res.status).to.be.equal(400);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal("must have required property 'source' [invalid-params]");
+		});
+
+		it('should return an error if source type is missing', async () => {
+			const res = await request
+				.post(api('omnichannel/contacts.unblock'))
+				.set(credentials)
+				.send({ visitor: { visitorId: association.visitorId, source: { id: association.source.id } } });
+
+			expect(res.status).to.be.equal(400);
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal("must have required property 'type' [invalid-params]");
+		});
+
+		describe('Permissions', () => {
+			before(async () => {
+				await removePermissionFromAllRoles('unblock-livechat-contact');
+			});
+
+			after(async () => {
+				await restorePermissionToRoles('unblock-livechat-contact');
+			});
+
+			it("should return an error if user doesn't have 'unblock-livechat-contact' permission", async () => {
+				const res = await request.post(api('omnichannel/contacts.unblock')).set(credentials).send({ visitor: association });
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			});
 		});
 	});
 });

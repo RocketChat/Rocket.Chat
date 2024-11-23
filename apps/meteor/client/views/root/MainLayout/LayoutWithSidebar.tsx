@@ -51,7 +51,7 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 			{!removeSidenav && <Sidebar />}
 			<main
 				id='main-content'
-				className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}
+				className={['main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}
 			>
 				{children}
 			</main>

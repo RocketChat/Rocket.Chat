@@ -12,11 +12,7 @@ export default {
 		controls: { hideNoControlsWarning: true },
 	},
 	decorators: [
-		(fn: () => ReactNode): ReactElement => (
-			<div className='rc-old' style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-				{fn()}
-			</div>
-		),
+		(fn: () => ReactNode): ReactElement => <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>{fn()}</div>,
 	],
 } satisfies Meta<typeof ViewLogsPage>;
 
