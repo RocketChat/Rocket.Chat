@@ -4,37 +4,37 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
-import { useStarMessageMutation } from '../hooks/useStarMessageMutation';
+import { useUnstarMessageMutation } from '../hooks/useUnstarMessageMutation';
 
-export const useStarMessageAction = (message: IMessage, { room, user }: { room: IRoom; user: IUser | undefined }) => {
-	const allowStarring = useSetting('Message_AllowStarring', true);
+export const useUnstarMessageAction = (message: IMessage, { room, user }: { room: IRoom; user: IUser | undefined }) => {
+	const allowStarring = useSetting('Message_AllowStarring');
 
-	const { mutateAsync: starMessage } = useStarMessageMutation();
+	const { mutateAsync: unstarMessage } = useUnstarMessageMutation();
 
 	useEffect(() => {
 		if (!allowStarring || isOmnichannelRoom(room)) {
 			return;
 		}
 
-		if (Array.isArray(message.starred) && message.starred.some((star) => star._id === user?._id)) {
+		if (!Array.isArray(message.starred) || message.starred.every((star) => star._id !== user?._id)) {
 			return;
 		}
 
 		MessageAction.addButton({
-			id: 'star-message',
+			id: 'unstar-message',
 			icon: 'star',
-			label: 'Star',
+			label: 'Unstar_Message',
 			type: 'interaction',
 			context: ['starred', 'message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 			async action() {
-				await starMessage(message);
+				await unstarMessage(message);
 			},
 			order: 3,
 			group: 'menu',
 		});
 
 		return () => {
-			MessageAction.removeButton('star-message');
+			MessageAction.removeButton('unstar-message');
 		};
-	}, [allowStarring, message, room, starMessage, user?._id]);
+	}, [allowStarring, message, room, unstarMessage, user?._id]);
 };
