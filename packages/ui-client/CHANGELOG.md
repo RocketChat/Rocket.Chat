@@ -1,5 +1,11 @@
 # @rocket.chat/ui-client
 
+## 1.0.13
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@1.0.13
+
 ## 1.0.12
 
 ### Patch Changes

@@ -1,5 +1,31 @@
 # @rocket.chat/meteor
 
+## 6.3.13
+
+### Patch Changes
+
+- b9f091d278: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- 74c90d3bba: Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+  - @rocket.chat/core-typings@6.3.13
+  - @rocket.chat/rest-typings@6.3.13
+  - @rocket.chat/api-client@0.1.13
+  - @rocket.chat/omnichannel-services@0.0.19
+  - @rocket.chat/pdf-worker@0.0.19
+  - @rocket.chat/presence@0.0.19
+  - @rocket.chat/core-services@0.1.13
+  - @rocket.chat/cron@0.0.15
+  - @rocket.chat/gazzodown@1.0.13
+  - @rocket.chat/model-typings@0.0.19
+  - @rocket.chat/ui-contexts@1.0.13
+  - @rocket.chat/fuselage-ui-kit@1.0.13
+  - @rocket.chat/models@0.0.19
+  - @rocket.chat/ui-theming@0.0.1
+  - @rocket.chat/ui-client@1.0.13
+  - @rocket.chat/ui-video-conf@1.0.13
+  - @rocket.chat/web-ui-registration@1.0.13
+  - @rocket.chat/instance-status@0.0.19
+
 ## 6.3.12
 
 ### Patch Changes
