@@ -1,11 +1,11 @@
 import { OmnichannelIntegration } from '@rocket.chat/core-services';
 import type {
 	ILivechatVisitor,
-	IOmnichannelRoom,
 	IUpload,
 	MessageAttachment,
 	ServiceData,
 	FileAttachmentProps,
+	IOmnichannelRoomInfo,
 } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -17,14 +17,21 @@ import { Meteor } from 'meteor/meteor';
 import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
 import { API } from '../../../../api/server';
 import { FileUpload } from '../../../../file-upload/server';
+import { checkUrlForSsrf } from '../../../../lib/server/functions/checkUrlForSsrf';
 import { settings } from '../../../../settings/server';
-import type { ILivechatMessage } from '../../../server/lib/LivechatTyped';
+import { setCustomField } from '../../../server/api/lib/customFields';
 import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
+import type { ILivechatMessage } from '../../../server/lib/localTypes';
 
 const logger = new Logger('SMS');
 
 const getUploadFile = async (details: Omit<IUpload, '_id'>, fileUrl: string) => {
-	const response = await fetch(fileUrl);
+	const isSsrfSafe = await checkUrlForSsrf(fileUrl);
+	if (!isSsrfSafe) {
+		throw new Meteor.Error('error-invalid-url', 'Invalid URL');
+	}
+
+	const response = await fetch(fileUrl, { redirect: 'error' });
 
 	const content = Buffer.from(await response.arrayBuffer());
 
@@ -67,8 +74,13 @@ const defineVisitor = async (smsNumber: string, targetDepartment?: string) => {
 		data.department = targetDepartment;
 	}
 
-	const id = await LivechatTyped.registerGuest(data);
-	return LivechatVisitors.findOneEnabledById(id);
+	const livechatVisitor = await LivechatTyped.registerGuest(data);
+
+	if (!livechatVisitor) {
+		throw new Meteor.Error('error-invalid-visitor', 'Invalid visitor');
+	}
+
+	return livechatVisitor;
 };
 
 const normalizeLocationSharing = (payload: ServiceData) => {
@@ -86,12 +98,18 @@ const normalizeLocationSharing = (payload: ServiceData) => {
 // @ts-expect-error - this is an special endpoint that requires the return to not be wrapped as regular returns
 API.v1.addRoute('livechat/sms-incoming/:service', {
 	async post() {
-		if (!(await OmnichannelIntegration.isConfiguredSmsService(this.urlParams.service))) {
+		const { service } = this.urlParams;
+		if (!(await OmnichannelIntegration.isConfiguredSmsService(service))) {
 			return API.v1.failure('Invalid service');
 		}
 
 		const smsDepartment = settings.get<string>('SMS_Default_Omnichannel_Department');
-		const SMSService = await OmnichannelIntegration.getSmsService(this.urlParams.service);
+		const SMSService = await OmnichannelIntegration.getSmsService(service);
+
+		if (!SMSService.validateRequest(this.request)) {
+			return API.v1.failure('Invalid request');
+		}
+
 		const sms = SMSService.parse(this.bodyParams);
 		const { department } = this.queryParams;
 		let targetDepartment = await defineDepartment(department || smsDepartment);
@@ -104,26 +122,26 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			return API.v1.success(SMSService.error(new Error('Invalid visitor')));
 		}
 
-		const { token } = visitor;
-		const room = await LivechatRooms.findOneOpenByVisitorTokenAndDepartmentIdAndSource(token, targetDepartment, OmnichannelSourceType.SMS);
-		const roomExists = !!room;
-		const location = normalizeLocationSharing(sms);
-		const rid = room?._id || Random.id();
-
-		const roomInfo = {
+		const roomInfo: IOmnichannelRoomInfo = {
 			sms: {
 				from: sms.to,
 			},
 			source: {
 				type: OmnichannelSourceType.SMS,
-				alias: this.urlParams.service,
+				alias: service,
+				destination: sms.to,
 			},
 		};
 
-		// create an empty room first place, so attachments have a place to live
-		if (!roomExists) {
-			await LivechatTyped.getRoom(visitor, { rid, token, msg: '' }, roomInfo, undefined);
-		}
+		const { token } = visitor;
+		const room =
+			(await LivechatRooms.findOneOpenByVisitorTokenAndDepartmentIdAndSource(token, targetDepartment, OmnichannelSourceType.SMS)) ??
+			(await LivechatTyped.createRoom({
+				visitor,
+				roomInfo,
+			}));
+		const location = normalizeLocationSharing(sms);
+		const rid = room?._id;
 
 		let file: ILivechatMessage['file'];
 		const attachments: (MessageAttachment | undefined)[] = [];
@@ -223,10 +241,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		const sendMessage: {
 			guest: ILivechatVisitor;
 			message: ILivechatMessage;
-			roomInfo: {
-				source?: IOmnichannelRoom['source'];
-				[key: string]: unknown;
-			};
+			roomInfo: IOmnichannelRoomInfo;
 		} = {
 			guest: visitor,
 			roomInfo,
@@ -247,16 +262,16 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			setImmediate(async () => {
 				if (sms.extra) {
 					if (sms.extra.fromCountry) {
-						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'country', sms.extra.fromCountry);
+						await setCustomField(sendMessage.message.token, 'country', sms.extra.fromCountry);
 					}
 					if (sms.extra.fromState) {
-						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'state', sms.extra.fromState);
+						await setCustomField(sendMessage.message.token, 'state', sms.extra.fromState);
 					}
 					if (sms.extra.fromCity) {
-						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'city', sms.extra.fromCity);
+						await setCustomField(sendMessage.message.token, 'city', sms.extra.fromCity);
 					}
-					if (sms.extra.toPhone) {
-						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'phoneNumber', sms.extra.toPhone);
+					if (sms.extra.fromZip) {
+						await setCustomField(sendMessage.message.token, 'zip', sms.extra.fromZip);
 					}
 				}
 			});

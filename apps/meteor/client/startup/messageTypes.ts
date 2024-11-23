@@ -61,4 +61,10 @@ Meteor.startup(() => {
 		system: true,
 		message: 'Pinned_a_message',
 	});
+
+	MessageTypes.registerType({
+		id: 'message_pinned_e2e',
+		system: true,
+		message: 'Pinned_a_message',
+	});
 });

@@ -1,16 +1,14 @@
-import type { IUpload, IUploadWithUser, IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IIntegration } from '@rocket.chat/core-typings';
+import type { IUploadWithUser, IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IIntegration } from '@rocket.chat/core-typings';
 
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ChannelsAddAllProps } from './ChannelsAddAllProps';
 import type { ChannelsArchiveProps } from './ChannelsArchiveProps';
 import type { ChannelsConvertToTeamProps } from './ChannelsConvertToTeamProps';
 import type { ChannelsCreateProps } from './ChannelsCreateProps';
 import type { ChannelsDeleteProps } from './ChannelsDeleteProps';
+import type { ChannelsFilesListProps } from './ChannelsFilesListProps';
 import type { ChannelsGetAllUserMentionsByChannelProps } from './ChannelsGetAllUserMentionsByChannelProps';
 import type { ChannelsGetIntegrationsProps } from './ChannelsGetIntegrationsProps';
 import type { ChannelsHistoryProps } from './ChannelsHistoryProps';
-import type { ChannelsImagesProps } from './ChannelsImagesProps';
 import type { ChannelsInviteProps } from './ChannelsInviteProps';
 import type { ChannelsJoinProps } from './ChannelsJoinProps';
 import type { ChannelsKickProps } from './ChannelsKickProps';
@@ -32,16 +30,17 @@ import type { ChannelsSetReadOnlyProps } from './ChannelsSetReadOnlyProps';
 import type { ChannelsSetTopicProps } from './ChannelsSetTopicProps';
 import type { ChannelsSetTypeProps } from './ChannelsSetTypeProps';
 import type { ChannelsUnarchiveProps } from './ChannelsUnarchiveProps';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../../helpers/PaginatedResult';
+
+export * from './ChannelsFilesListProps';
+export * from './ChannelsListProps';
+export * from './ChannelsOnlineProps';
 
 export type ChannelsEndpoints = {
 	'/v1/channels.files': {
-		GET: (params: PaginatedRequest<{ roomId: string } | { roomName: string }>) => PaginatedResult<{
+		GET: (params: ChannelsFilesListProps) => PaginatedResult<{
 			files: IUploadWithUser[];
-		}>;
-	};
-	'/v1/channels.images': {
-		GET: (params: ChannelsImagesProps) => PaginatedResult<{
-			files: IUpload[];
 		}>;
 	};
 	'/v1/channels.members': {

@@ -1,6 +1,8 @@
 import type { IImportUser, ILDAPEntry, IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { License } from '@rocket.chat/license';
+import { Settings } from '@rocket.chat/models';
+import { isValidCron } from 'cron-validator';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../app/settings/server';
@@ -27,7 +29,10 @@ Meteor.startup(async () => {
 					return;
 				}
 
-				const schedule = ldapIntervalValuesToCronMap[settings.get<string>(intervalSetting)];
+				const settingValue = settings.get<string>(intervalSetting);
+				const schedule =
+					ldapIntervalValuesToCronMap[settingValue] ??
+					(isValidCron(settingValue) ? settingValue : ((await Settings.findOneById(intervalSetting))?.packageValue as string));
 				if (schedule) {
 					if (schedule !== lastSchedule && (await cronJobs.has(jobName))) {
 						await cronJobs.remove(jobName);

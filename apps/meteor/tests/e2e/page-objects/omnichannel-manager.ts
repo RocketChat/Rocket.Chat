@@ -12,8 +12,8 @@ export class OmnichannelManager {
 		this.sidenav = new OmnichannelSidenav(page);
 	}
 
-	get inputSearch() {
-		return this.page.locator('[placeholder="Search"]');
+	private get inputSearch() {
+		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	async search(text: string) {
@@ -27,19 +27,20 @@ export class OmnichannelManager {
 	}
 
 	get inputUsername(): Locator {
-		return this.page.locator('input').first();
+		return this.page.getByRole('main').getByLabel('Username');
+	}
+
+	async selectUsername(username: string) {
+		await this.inputUsername.fill(username);
+		await this.page.locator(`role=option[name="${username}"]`).click();
 	}
 
 	get btnAdd(): Locator {
 		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add manager"');
 	}
 
-	firstRowInTable(userId: string) {
-		return this.page.locator(`[data-qa-id="GenericTableManagerInfoBody"] [qa-user-id="${userId}"]`);
-	}
-
-	get btnDeleteFirstRowInTable() {
-		return this.page.locator('button[title="Remove"]');
+	findRowByName(name: string) {
+		return this.page.locator('role=table[name="Managers"] >> role=row', { has: this.page.locator(`role=cell[name="${name}"]`) });
 	}
 
 	btnDeleteSelectedAgent(text: string) {

@@ -8,10 +8,24 @@ import { CloudWorkspaceAccessTokenError } from './getWorkspaceAccessToken';
 import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
-export async function getWorkspaceAccessTokenWithScope(scope = '', throwOnError = false) {
+type WorkspaceAccessTokenWithScope = {
+	token: string;
+	expiresAt: Date;
+	scope: string;
+};
+
+type GetWorkspaceAccessTokenWithScopeParams = {
+	scope?: string;
+	throwOnError?: boolean;
+};
+
+export async function getWorkspaceAccessTokenWithScope({
+	scope = '',
+	throwOnError = false,
+}: GetWorkspaceAccessTokenWithScopeParams): Promise<WorkspaceAccessTokenWithScope> {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
-	const tokenResponse = { token: '', expiresAt: new Date() };
+	const tokenResponse = { token: '', expiresAt: new Date(), scope: '' };
 
 	if (!workspaceRegistered) {
 		return tokenResponse;
@@ -45,7 +59,7 @@ export async function getWorkspaceAccessTokenWithScope(scope = '', throwOnError 
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			method: 'POST',
 			body,
-			timeout: 3000,
+			timeout: 5000,
 		});
 
 		payload = await response.json();
@@ -62,6 +76,7 @@ export async function getWorkspaceAccessTokenWithScope(scope = '', throwOnError 
 		return {
 			token: payload.access_token,
 			expiresAt,
+			scope: payload.scope,
 		};
 	} catch (err: any) {
 		if (err instanceof CloudWorkspaceAccessTokenError) {

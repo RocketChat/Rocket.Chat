@@ -1,6 +1,6 @@
 import type { LoginServiceConfiguration, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILoginServiceConfigurationModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, DeleteResult } from 'mongodb';
+import type { Collection, Db, DeleteResult, Document, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -15,7 +15,7 @@ export class LoginServiceConfigurationRaw extends BaseRaw<LoginServiceConfigurat
 	}
 
 	async createOrUpdateService(
-		serviceName: string,
+		serviceName: LoginServiceConfiguration['service'],
 		serviceData: Partial<LoginServiceConfiguration>,
 	): Promise<LoginServiceConfiguration['_id']> {
 		const service = serviceName.toLowerCase();
@@ -44,9 +44,14 @@ export class LoginServiceConfigurationRaw extends BaseRaw<LoginServiceConfigurat
 		return existing._id;
 	}
 
-	async removeService(serviceName: string): Promise<DeleteResult> {
-		const service = serviceName.toLowerCase();
+	async removeService(_id: LoginServiceConfiguration['_id']): Promise<DeleteResult> {
+		return this.deleteOne({ _id });
+	}
 
-		return this.deleteOne({ service });
+	async findOneByService<P extends Document = LoginServiceConfiguration>(
+		serviceName: LoginServiceConfiguration['service'],
+		options?: FindOptions<P>,
+	): Promise<P | null> {
+		return this.findOne({ service: serviceName.toLowerCase() }, options);
 	}
 }

@@ -6,10 +6,10 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
+import PlanCardHeader from './PlanCardHeader';
 import { useLicenseName } from '../../../../../../hooks/useLicense';
 import { DOWNGRADE_LINK, TRIAL_LINK } from '../../../utils/links';
 import UpgradeButton from '../../UpgradeButton';
-import PlanCardHeader from './PlanCardHeader';
 
 type PlanCardProps = {
 	licenseInformation: ILicenseV3['information'];

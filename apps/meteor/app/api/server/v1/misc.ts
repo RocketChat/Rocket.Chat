@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
-import type { IUser } from '@rocket.chat/core-typings';
-import { Settings, Users } from '@rocket.chat/models';
+import { isOAuthUser, type IUser } from '@rocket.chat/core-typings';
+import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import {
 	isShieldSvgProps,
 	isSpotlightProps,
@@ -10,7 +10,6 @@ import {
 	isMethodCallAnonProps,
 	isFingerprintProps,
 	isMeteorCall,
-	validateParamsPwGetPolicyRest,
 } from '@rocket.chat/rest-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import EJSON from 'ejson';
@@ -21,12 +20,13 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { resetAuditedSettingByUser, updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { getLogs } from '../../../../server/stream/stdout';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { passwordPolicy } from '../../../lib/server';
-import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
-import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
+import { getBaseUserFields } from '../../../utils/server/functions/getBaseUserFields';
+import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
 import { getURL } from '../../../utils/server/getURL';
 import { API } from '../api';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
@@ -175,15 +175,19 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const fields = getDefaultUserFields();
-			const { services, ...user } = (await Users.findOneById(this.userId, { projection: fields })) as IUser;
+			const userFields = { ...getBaseUserFields(), services: 1 };
+			const { services, ...user } = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
 
 			return API.v1.success(
 				await getUserInfo({
 					...user,
+					isOAuthUser: isOAuthUser({ ...user, services }),
 					...(services && {
 						services: {
-							...services,
+							...(services.github && { github: services.github }),
+							...(services.gitlab && { gitlab: services.gitlab }),
+							...(services.email2fa?.enabled && { email2fa: { enabled: services.email2fa.enabled } }),
+							...(services.totp?.enabled && { totp: { enabled: services.totp.enabled } }),
 							password: {
 								// The password hash shouldn't be leaked but the client may need to know if it exists.
 								exists: Boolean(services?.password?.bcrypt),
@@ -360,8 +364,14 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, query } = await this.parseJsonQuery();
+			const { text, type, workspace = 'local' } = this.queryParams;
 
-			const { text, type, workspace = 'local' } = query;
+			const filter = {
+				...(query ? { ...query } : {}),
+				...(text ? { text } : {}),
+				...(type ? { type } : {}),
+				...(workspace ? { workspace } : {}),
+			};
 
 			if (sort && Object.keys(sort).length > 1) {
 				return API.v1.failure('This method support only one "sort" parameter');
@@ -370,9 +380,7 @@ API.v1.addRoute(
 			const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
 
 			const result = await Meteor.callAsync('browseChannels', {
-				text,
-				type,
-				workspace,
+				...filter,
 				sortBy,
 				sortDirection,
 				offset: Math.max(0, offset),
@@ -399,33 +407,6 @@ API.v1.addRoute(
 	},
 	{
 		get() {
-			return API.v1.success(passwordPolicy.getPasswordPolicy());
-		},
-	},
-);
-
-API.v1.addRoute(
-	'pw.getPolicyReset',
-	{
-		authRequired: false,
-		validateParams: validateParamsPwGetPolicyRest,
-	},
-	{
-		async get() {
-			apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, ' Use pw.getPolicy instead.');
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					token: String,
-				}),
-			);
-			const { token } = this.queryParams;
-
-			const user = await Users.findOneByResetToken(token, { projection: { _id: 1 } });
-			if (!user) {
-				return API.v1.unauthorized();
-			}
-
 			return API.v1.success(passwordPolicy.getPasswordPolicy());
 		},
 	},
@@ -469,12 +450,9 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'stdout.queue',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-logs'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-logs'))) {
-				return API.v1.unauthorized();
-			}
 			return API.v1.success({ queue: getLogs() });
 		},
 	},
@@ -634,9 +612,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const isMailURLSet = !(process.env.MAIL_URL === 'undefined' || process.env.MAIL_URL === undefined);
-			const isSMTPConfigured = Boolean(settings.get('SMTP_Host')) || isMailURLSet;
-			return API.v1.success({ isSMTPConfigured });
+			return API.v1.success({ isSMTPConfigured: isSMTPConfigured() });
 		},
 	},
 );
@@ -686,27 +662,61 @@ API.v1.addRoute(
 				setDeploymentAs: String,
 			});
 
+			const settingsIds: string[] = [];
+
 			if (this.bodyParams.setDeploymentAs === 'new-workspace') {
-				await Promise.all([
-					Settings.resetValueById('uniqueID', process.env.DEPLOYMENT_ID || uuidv4()),
-					// Settings.resetValueById('Cloud_Url'),
-					Settings.resetValueById('Cloud_Service_Agree_PrivacyTerms'),
-					Settings.resetValueById('Cloud_Workspace_Id'),
-					Settings.resetValueById('Cloud_Workspace_Name'),
-					Settings.resetValueById('Cloud_Workspace_Client_Id'),
-					Settings.resetValueById('Cloud_Workspace_Client_Secret'),
-					Settings.resetValueById('Cloud_Workspace_Client_Secret_Expires_At'),
-					Settings.resetValueById('Cloud_Workspace_Registration_Client_Uri'),
-					Settings.resetValueById('Cloud_Workspace_PublicKey'),
-					Settings.resetValueById('Cloud_Workspace_License'),
-					Settings.resetValueById('Cloud_Workspace_Had_Trial'),
-					Settings.resetValueById('Cloud_Workspace_Access_Token'),
-					Settings.resetValueById('Cloud_Workspace_Access_Token_Expires_At', new Date(0)),
-					Settings.resetValueById('Cloud_Workspace_Registration_State'),
-				]);
+				await WorkspaceCredentials.removeAllCredentials();
+
+				settingsIds.push(
+					'Cloud_Service_Agree_PrivacyTerms',
+					'Cloud_Workspace_Id',
+					'Cloud_Workspace_Name',
+					'Cloud_Workspace_Client_Id',
+					'Cloud_Workspace_Client_Secret',
+					'Cloud_Workspace_Client_Secret_Expires_At',
+					'Cloud_Workspace_Registration_Client_Uri',
+					'Cloud_Workspace_PublicKey',
+					'Cloud_Workspace_License',
+					'Cloud_Workspace_Had_Trial',
+					'uniqueID',
+				);
 			}
 
-			await Settings.updateValueById('Deployment_FingerPrint_Verified', true);
+			settingsIds.push('Deployment_FingerPrint_Verified');
+
+			const auditSettingOperation = updateAuditedByUser({
+				_id: this.userId,
+				username: this.user.username!,
+				ip: this.requestIp,
+				useragent: this.request.headers['user-agent'] || '',
+			});
+
+			const promises = settingsIds.map((settingId) => {
+				if (settingId === 'uniqueID') {
+					return auditSettingOperation(Settings.resetValueById, 'uniqueID', process.env.DEPLOYMENT_ID || uuidv4());
+				}
+
+				if (settingId === 'Cloud_Workspace_Access_Token_Expires_At') {
+					return auditSettingOperation(Settings.resetValueById, 'Cloud_Workspace_Access_Token_Expires_At', new Date(0));
+				}
+
+				if (settingId === 'Deployment_FingerPrint_Verified') {
+					return auditSettingOperation(Settings.updateValueById, 'Deployment_FingerPrint_Verified', true);
+				}
+
+				return resetAuditedSettingByUser({
+					_id: this.userId,
+					username: this.user.username!,
+					ip: this.requestIp,
+					useragent: this.request.headers['user-agent'] || '',
+				})(Settings.resetValueById, settingId);
+			});
+
+			(await Promise.all(promises)).forEach((value, index) => {
+				if (value?.modifiedCount) {
+					void notifyOnSettingChangedById(settingsIds[index]);
+				}
+			});
 
 			return API.v1.success({});
 		},

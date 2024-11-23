@@ -1,5 +1,5 @@
 import { TextInput, Box, Icon } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import {
@@ -23,7 +23,7 @@ export default {
 	decorators: [
 		(fn) => <div style={{ height: '100vh', maxHeight: 300, display: 'flex', flexDirection: 'column', marginInline: 24 }}>{fn()}</div>,
 	],
-} as ComponentMeta<typeof GenericTable>;
+} satisfies Meta<typeof GenericTable>;
 
 const headers = (
 	<>
@@ -46,7 +46,7 @@ const filter = (
 	</>
 );
 
-export const Default: ComponentStory<typeof GenericTable> = () => (
+export const Default: StoryFn<typeof GenericTable> = () => (
 	<>
 		{filter}
 		<GenericTable>
@@ -63,7 +63,7 @@ export const Default: ComponentStory<typeof GenericTable> = () => (
 	</>
 );
 
-export const Loading: ComponentStory<typeof GenericTable> = () => (
+export const Loading: StoryFn<typeof GenericTable> = () => (
 	<>
 		{filter}
 		<GenericTable>
@@ -75,7 +75,7 @@ export const Loading: ComponentStory<typeof GenericTable> = () => (
 	</>
 );
 
-export const NoResults: ComponentStory<typeof GenericTable> = () => (
+export const NoResults: StoryFn<typeof GenericTable> = () => (
 	<>
 		{filter}
 		<GenericNoResults />

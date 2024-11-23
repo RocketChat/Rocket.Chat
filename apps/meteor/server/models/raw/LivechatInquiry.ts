@@ -13,18 +13,19 @@ import type {
 	Document,
 	FindOptions,
 	DistinctOptions,
-	UpdateResult,
 	ModifyResult,
+	UpdateResult,
 	Filter,
 	DeleteResult,
 	IndexDescription,
 	FindCursor,
 	UpdateFilter,
+	DeleteOptions,
 } from 'mongodb';
 
+import { BaseRaw } from './BaseRaw';
 import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { BaseRaw } from './BaseRaw';
 
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
@@ -114,12 +115,28 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 
 	findOneByRoomId<T extends Document = ILivechatInquiryRecord>(
 		rid: string,
-		options: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
+		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
 	): Promise<T | null> {
 		const query = {
 			rid,
 		};
 		return this.findOne(query, options);
+	}
+
+	findOneReadyByRoomId<T extends Document = ILivechatInquiryRecord>(
+		rid: string,
+		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
+	): Promise<T | null> {
+		const query = {
+			rid,
+			status: LivechatInquiryStatus.READY,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findIdsByVisitorToken(token: ILivechatInquiryRecord['v']['token']): FindCursor<ILivechatInquiryRecord> {
+		return this.find({ 'v.token': token }, { projection: { _id: 1 } });
 	}
 
 	getDistinctQueuedDepartments(options: DistinctOptions): Promise<(string | undefined)[]> {
@@ -131,8 +148,9 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return updated?.value;
 	}
 
-	async setLastMessageByRoomId(rid: string, message: IMessage): Promise<UpdateResult> {
-		return this.updateOne({ rid }, { $set: { lastMessage: message } });
+	async setLastMessageByRoomId(rid: ILivechatInquiryRecord['rid'], message: IMessage): Promise<ILivechatInquiryRecord | null> {
+		const updated = await this.findOneAndUpdate({ rid }, { $set: { lastMessage: message } }, { returnDocument: 'after' });
+		return updated?.value;
 	}
 
 	async findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string): Promise<ILivechatInquiryRecord | null> {
@@ -149,10 +167,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 						},
 					},
 					{
-						locked: false,
-					},
-					{
-						locked: { $exists: false },
+						locked: { $ne: true },
 					},
 				],
 			},
@@ -184,7 +199,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 
 	async unlockAll(): Promise<UpdateResult | Document> {
 		return this.updateMany(
-			{ $or: [{ lockedAt: { $exists: true } }, { locked: { $exists: true } }] },
+			{ locked: { $exists: true } },
 			{ $unset: { locked: 1, lockedAt: 1 }, $set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() } },
 		);
 	}
@@ -272,8 +287,8 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		throw new Error('Method not implemented on the community edition.');
 	}
 
-	async removeByRoomId(rid: string): Promise<DeleteResult> {
-		return this.deleteOne({ rid });
+	async removeByRoomId(rid: string, options?: DeleteOptions): Promise<DeleteResult> {
+		return this.deleteOne({ rid }, options);
 	}
 
 	getQueuedInquiries(options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord> {
@@ -303,8 +318,8 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	queueInquiry(inquiryId: string): Promise<UpdateResult> {
-		return this.updateOne(
+	async queueInquiry(inquiryId: string): Promise<ILivechatInquiryRecord | null> {
+		const result = await this.findOneAndUpdate(
 			{
 				_id: inquiryId,
 			},
@@ -312,7 +327,10 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				$set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() },
 				$unset: { takenAt: 1 },
 			},
+			{ returnDocument: 'after' },
 		);
+
+		return result?.value;
 	}
 
 	queueInquiryAndRemoveDefaultAgent(inquiryId: string): Promise<UpdateResult> {
@@ -385,6 +403,23 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
+	async setStatusById(inquiryId: string, status: LivechatInquiryStatus): Promise<ILivechatInquiryRecord> {
+		const result = await this.findOneAndUpdate(
+			{ _id: inquiryId },
+			{ $set: { status } },
+			{
+				upsert: true,
+				returnDocument: 'after',
+			},
+		);
+
+		if (!result.value) {
+			throw new Error('error-failed-to-set-inquiry-status');
+		}
+
+		return result.value;
+	}
+
 	setNameByRoomId(rid: string, name: string): Promise<UpdateResult> {
 		const query = { rid };
 
@@ -424,7 +459,8 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		await this.deleteMany(query);
 	}
 
-	async markInquiryActiveForPeriod(rid: string, period: string): Promise<UpdateResult> {
-		return this.updateOne({ rid }, { $addToSet: { 'v.activity': period } });
+	async markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ILivechatInquiryRecord | null> {
+		const updated = await this.findOneAndUpdate({ rid }, { $addToSet: { 'v.activity': period } });
+		return updated?.value;
 	}
 }

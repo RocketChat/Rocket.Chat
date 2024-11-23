@@ -1,4 +1,5 @@
 /packages/* @RocketChat/Architecture
+/packages/apps-engine/ @RocketChat/apps
 /packages/core-typings/ @RocketChat/Architecture
 /packages/rest-typings/ @RocketChat/Architecture @RocketChat/backend
 /packages/ui-contexts/ @RocketChat/frontend
@@ -22,12 +23,12 @@
 /apps/meteor/server/models @RocketChat/Architecture
 apps/meteor/server/startup/migrations @RocketChat/Architecture
 /apps/meteor/packages/rocketchat-livechat @RocketChat/omnichannel
-/apps/meteor/server/services/voip @RocketChat/omnichannel
+/apps/meteor/server/services/voip-asterisk @RocketChat/omnichannel
 /apps/meteor/server/services/omnichannel-voip @RocketChat/omnichannel
 /apps/meteor/server/features/EmailInbox @RocketChat/omnichannel
 /apps/meteor/ee/app/canned-responses @RocketChat/omnichannel
 /apps/meteor/ee/app/livechat @RocketChat/omnichannel
 /apps/meteor/ee/app/livechat-enterprise @RocketChat/omnichannel
-/apps/meteor/ee/client/omnichannel @RocketChat/omnichannel
+/apps/meteor/client/omnichannel @RocketChat/omnichannel
 /apps/meteor/client/components/omnichannel @RocketChat/omnichannel
 /apps/meteor/client/components/voip @RocketChat/omnichannel

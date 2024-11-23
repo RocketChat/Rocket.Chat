@@ -11,7 +11,11 @@ export class Publication extends EventEmitter implements IPublication {
 
 	connection: IPublication['connection'];
 
-	constructor(public client: Client, private packet: IPacket, private server: Server) {
+	constructor(
+		public client: Client,
+		private packet: IPacket,
+		private server: Server,
+	) {
 		super();
 		this.packet = packet;
 		client.subscriptions.set(packet.id, this);
@@ -19,7 +23,7 @@ export class Publication extends EventEmitter implements IPublication {
 		this.once('stop', () => client.subscriptions.delete(packet.id));
 
 		this._session = {
-			sendAdded: this.added,
+			sendAdded: this.added.bind(this),
 			socket: client,
 			userId: client.userId,
 		};

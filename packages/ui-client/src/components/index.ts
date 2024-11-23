@@ -1,3 +1,4 @@
+export { default as AnchorPortal, AnchorPortalProps } from './AnchorPortal';
 export * from './EmojiPicker';
 export * from './ExternalLink';
 export * from './DotLeader';
@@ -8,5 +9,9 @@ export { default as TextSeparator } from './TextSeparator';
 export * from './TooltipComponent';
 export * as UserStatus from './UserStatus';
 export * from './Header';
+export * from './HeaderV2';
 export * from './MultiSelectCustom/MultiSelectCustom';
-export * from './FeaturePreview/FeaturePreview';
+export * from './FeaturePreview';
+export * from './RoomBanner';
+export { default as UserAutoComplete } from './UserAutoComplete';
+export * from './GenericMenu';

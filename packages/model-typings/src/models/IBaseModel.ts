@@ -9,6 +9,7 @@ import type {
 	EnhancedOmit,
 	Filter,
 	FindCursor,
+	FindOneAndDeleteOptions,
 	FindOneAndUpdateOptions,
 	FindOptions,
 	InsertManyResult,
@@ -22,12 +23,14 @@ import type {
 	WithId,
 } from 'mongodb';
 
+import type { Updater } from '../updater';
+
 export type DefaultFields<Base> = Record<keyof Base, 1> | Record<keyof Base, 0> | void;
 export type ResultFields<Base, Defaults> = Defaults extends void
 	? Base
 	: Defaults[keyof Defaults] extends 1
-	? Pick<Defaults, keyof Defaults>
-	: Omit<Defaults, keyof Defaults>;
+		? Pick<Defaults, keyof Defaults>
+		: Omit<Defaults, keyof Defaults>;
 
 export type InsertionModel<T> = EnhancedOmit<OptionalId<T>, '_updatedAt'> & {
 	_updatedAt?: Date;
@@ -48,7 +51,10 @@ export interface IBaseModel<
 	createIndexes(): Promise<string[] | void>;
 
 	getCollectionName(): string;
+	getUpdater(): Updater<T>;
+	updateFromUpdater(query: Filter<T>, updater: Updater<T>): Promise<UpdateResult>;
 
+	findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<ModifyResult<T>>;
 	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>>;
 
 	findOneById(_id: T['_id'], options?: FindOptions<T> | undefined): Promise<T | null>;
@@ -85,9 +91,11 @@ export interface IBaseModel<
 
 	removeById(_id: T['_id']): Promise<DeleteResult>;
 
+	removeByIds(ids: T['_id'][]): Promise<DeleteResult>;
+
 	deleteOne(filter: Filter<T>, options?: DeleteOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteResult>;
 
-	deleteMany(filter: Filter<T>, options?: DeleteOptions): Promise<DeleteResult>;
+	deleteMany(filter: Filter<T>, options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void }): Promise<DeleteResult>;
 
 	// Trash
 	trashFind<P extends TDeleted>(

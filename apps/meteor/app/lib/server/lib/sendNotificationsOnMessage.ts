@@ -10,18 +10,19 @@ import {
 import { Subscriptions, Users } from '@rocket.chat/models';
 import emojione from 'emojione';
 import moment from 'moment';
-import type { Filter, RootFilterOperators } from 'mongodb';
+import type { RootFilterOperators } from 'mongodb';
 
+import { getMentions } from './notifyUsersOnMessage';
 import { callbacks } from '../../../../lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
 import { settings } from '../../../settings/server';
-import { messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
+import { parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { getEmailData, shouldNotifyEmail } from '../functions/notifications/email';
+import { messageContainsHighlight } from '../functions/notifications/messageContainsHighlight';
 import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
-import { getMentions } from './notifyUsersOnMessage';
 
 type SubscriptionAggregation = {
 	receiver: [Pick<IUser, 'active' | 'emails' | 'language' | 'status' | 'statusConnection' | 'username' | 'settings'> | null];
@@ -117,7 +118,7 @@ export const sendNotification = async ({
 			disableAllMessageNotifications,
 			status: receiver.status ?? 'offline',
 			statusConnection: receiver.statusConnection ?? 'offline',
-			desktopNotifications: desktopNotifications ?? 'default',
+			desktopNotifications,
 			hasMentionToAll,
 			hasMentionToHere,
 			isHighlighted,
@@ -266,7 +267,7 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 		return;
 	}
 
-	const sender = await roomCoordinator.getRoomDirectives(room.t).getMsgSender(message.u._id);
+	const sender = await roomCoordinator.getRoomDirectives(room.t).getMsgSender(message);
 	if (!sender) {
 		return message;
 	}
@@ -304,33 +305,32 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 	} as const;
 
 	(['desktop', 'mobile', 'email'] as const).forEach((kind) => {
-		const notificationField = `${kind === 'mobile' ? 'mobilePush' : kind}Notifications`;
+		const notificationField = kind === 'mobile' ? 'mobilePush' : `${kind}Notifications`;
 
-		const filter: Filter<ISubscription> = { [notificationField]: 'all' };
+		query.$or.push({
+			[notificationField]: 'all',
+			...(disableAllMessageNotifications ? { [`${kind}PrefOrigin`]: { $ne: 'user' } } : {}),
+		});
 
 		if (disableAllMessageNotifications) {
-			filter[`${kind}PrefOrigin`] = { $ne: 'user' };
+			return;
 		}
 
-		query.$or.push(filter);
-
-		if (mentionIdsWithoutGroups.length > 0) {
+		if (room.t === 'd') {
+			query.$or.push({
+				[notificationField]: 'mentions',
+			});
+		} else if (mentionIdsWithoutGroups.length > 0) {
 			query.$or.push({
 				[notificationField]: 'mentions',
 				'u._id': { $in: mentionIdsWithoutGroups },
-			});
-		} else if (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) {
-			query.$or.push({
-				[notificationField]: 'mentions',
 			});
 		}
 
 		const serverField = kind === 'email' ? 'emailNotificationMode' : `${kind}Notifications`;
 		const serverPreference = settings.get(`Accounts_Default_User_Preferences_${serverField}`);
-		if (
-			(room.t === 'd' && serverPreference !== 'nothing') ||
-			(!disableAllMessageNotifications && (serverPreference === 'all' || hasMentionToAll || hasMentionToHere))
-		) {
+
+		if (serverPreference === 'all' || hasMentionToAll || hasMentionToHere || room.t === 'd') {
 			query.$or.push({
 				[notificationField]: { $exists: false },
 			});
@@ -407,7 +407,7 @@ settings.watch('Troubleshoot_Disable_Notifications', (value) => {
 
 	callbacks.add(
 		'afterSaveMessage',
-		(message, room) => sendAllNotifications(message, room),
+		(message, { room }) => sendAllNotifications(message, room),
 		callbacks.priority.LOW,
 		'sendNotificationsOnMessage',
 	);

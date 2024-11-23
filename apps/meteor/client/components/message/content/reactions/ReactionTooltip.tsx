@@ -1,7 +1,8 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { Skeleton } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useGetMessageByID } from '../../../../views/room/contextualBar/Threads/hooks/useGetMessageByID';
 import MarkdownText from '../../../MarkdownText';
@@ -36,13 +37,13 @@ const getTranslationKey = (users: string[], mine: boolean): TranslationKey => {
 };
 
 const ReactionTooltip = ({ emojiName, usernames, mine, messageId, showRealName, username }: ReactionTooltipProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const key = getTranslationKey(usernames, mine);
 
 	const getMessage = useGetMessageByID();
 
-	const { data: users } = useQuery(
+	const { data: users, isLoading } = useQuery(
 		['chat.getMessage', 'reactions', messageId, usernames],
 		async () => {
 			// This happens if the only reaction is from the current user
@@ -72,6 +73,17 @@ const ReactionTooltip = ({ emojiName, usernames, mine, messageId, showRealName, 
 		},
 		{ staleTime: 1000 * 60 * 5 },
 	);
+
+	if (isLoading) {
+		return (
+			<>
+				<Skeleton width='x200' variant='text' backgroundColor='surface-light' />
+				<Skeleton width='x200' variant='text' backgroundColor='surface-light' />
+				{usernames.length > 5 && <Skeleton width='x200' variant='text' backgroundColor='surface-light' />}
+				{usernames.length > 8 && <Skeleton width='x200' variant='text' backgroundColor='surface-light' />}
+			</>
+		);
+	}
 
 	return (
 		<MarkdownText

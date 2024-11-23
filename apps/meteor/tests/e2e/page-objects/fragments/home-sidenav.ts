@@ -9,16 +9,20 @@ export class HomeSidenav {
 		this.page = page;
 	}
 
+	get advancedSettingsAccordion(): Locator {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Advanced settings', exact: true });
+	}
+
 	get checkboxPrivateChannel(): Locator {
-		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Private"');
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Private' }) });
 	}
 
 	get checkboxEncryption(): Locator {
-		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Encrypted"');
+		return this.page.locator('role=dialog[name="Create channel"] >> label >> text="Encrypted"');
 	}
 
 	get checkboxReadOnly(): Locator {
-		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Read Only"');
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Read-only' }) });
 	}
 
 	get inputChannelName(): Locator {
@@ -33,8 +37,49 @@ export class HomeSidenav {
 		return this.page.locator('role=button[name="Create"]');
 	}
 
-	getSidebarItemByName(name: string): Locator {
-		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
+	get inputSearch(): Locator {
+		return this.page.locator('[placeholder="Search (Ctrl+K)"]').first();
+	}
+
+	get userProfileMenu(): Locator {
+		return this.page.getByRole('button', { name: 'User menu', exact: true });
+	}
+
+	get sidebarChannelsList(): Locator {
+		return this.page.getByRole('list', { name: 'Channels' });
+	}
+
+	get sidebarToolbar(): Locator {
+		return this.page.getByRole('toolbar', { name: 'Sidebar actions' });
+	}
+
+	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
+		await this.sidebarToolbar.getByRole('button', { name: 'Display', exact: true }).click();
+		await this.sidebarToolbar.getByRole('menuitemcheckbox', { name: mode }).click();
+		await this.sidebarToolbar.click();
+	}
+
+	// Note: this is different from openChat because queued chats are not searchable
+	getQueuedChat(name: string): Locator {
+		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: new RegExp(`^${name}$`) }).first();
+	}
+
+	get accountProfileOption(): Locator {
+		return this.page.locator('role=menuitemcheckbox[name="Profile"]');
+	}
+
+	// TODO: refactor getSidebarItemByName to not use data-qa
+	getSidebarItemByName(name: string, isRead?: boolean): Locator {
+		return this.page.locator(
+			['[data-qa="sidebar-item"]', `[aria-label="${name}"]`, isRead && '[data-unread="false"]'].filter(Boolean).join(''),
+		);
+	}
+
+	async selectMarkAsUnread(name: string) {
+		const sidebarItem = this.getSidebarItemByName(name);
+		await sidebarItem.focus();
+		await sidebarItem.locator('.rcx-sidebar-item__menu').click();
+		await this.page.getByRole('option', { name: 'Mark Unread' }).click();
 	}
 
 	async selectPriority(name: string, priority: string) {
@@ -59,28 +104,40 @@ export class HomeSidenav {
 		await this.page.locator(`role=menuitem[name="${text}"]`).click();
 	}
 
+	async openSearch(): Promise<void> {
+		await this.page.locator('role=navigation >> role=button[name=Search]').click();
+	}
+
+	getSearchRoomByName(name: string): Locator {
+		return this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`);
+	}
+
+	async searchRoom(name: string): Promise<void> {
+		await this.openSearch();
+		await this.page.locator('role=search >> role=searchbox').fill(name);
+	}
+
 	async logout(): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
+		await this.userProfileMenu.click();
 		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
 	}
 
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
+		await this.userProfileMenu.click();
 		await this.page.locator(`role=menuitemcheckbox[name="${status}"]`).click();
 	}
 
 	async openChat(name: string): Promise<void> {
-		await this.page.locator('role=navigation >> role=button[name=Search]').click();
-		await this.page.locator('role=search >> role=searchbox').type(name);
-		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
+		await this.searchRoom(name);
+		await this.getSearchRoomByName(name).click();
 		await this.waitForChannel();
 	}
 
 	async waitForChannel(): Promise<void> {
 		await this.page.locator('role=main').waitFor();
 		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
+		await this.page.locator('role=main >> role=list').waitFor();
 
-		await expect(this.page.locator('role=main >> .rcx-skeleton')).toHaveCount(0);
 		await expect(this.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
 	}
 
@@ -109,15 +166,26 @@ export class HomeSidenav {
 		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
 	}
 
-	// Note: this is a workaround for now since queued omnichannel chats are not searchable yet so we can't use openChat() :(
-	async openQueuedOmnichannelChat(name: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
-	}
-
 	async createPublicChannel(name: string) {
 		await this.openNewByLabel('Channel');
 		await this.checkboxPrivateChannel.click();
 		await this.inputChannelName.type(name);
 		await this.btnCreate.click();
+	}
+
+	async createEncryptedChannel(name: string) {
+		await this.openNewByLabel('Channel');
+		await this.inputChannelName.fill(name);
+		await this.advancedSettingsAccordion.click();
+		await this.checkboxEncryption.click();
+		await this.btnCreate.click();
+	}
+
+	getRoomBadge(roomName: string): Locator {
+		return this.getSidebarItemByName(roomName).getByRole('status', { exact: true });
+	}
+
+	getSearchChannelBadge(name: string): Locator {
+		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`).first().getByRole('status', { exact: true });
 	}
 }

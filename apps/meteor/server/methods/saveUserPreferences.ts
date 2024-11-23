@@ -1,10 +1,16 @@
+import type { ISubscription, ThemePreference } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { FontSize } from '@rocket.chat/rest-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { ThemePreference } from '@rocket.chat/ui-theming/src/types/themes';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import {
+	notifyOnSubscriptionChangedByAutoTranslateAndUserId,
+	notifyOnSubscriptionChangedByUserId,
+	notifyOnSubscriptionChangedByUserPreferences,
+	notifyOnUserChange,
+} from '../../app/lib/server/lib/notifyListener';
 import { settings as rcSettings } from '../../app/settings/server';
 
 type UserPreferences = {
@@ -19,7 +25,9 @@ type UserPreferences = {
 	autoImageLoad: boolean;
 	emailNotificationMode: string;
 	unreadAlert: boolean;
+	masterVolume: number;
 	notificationsSoundVolume: number;
+	voipRingerVolume: number;
 	desktopNotifications: string;
 	pushNotifications: string;
 	enableAutoAway: boolean;
@@ -46,10 +54,35 @@ type UserPreferences = {
 	mentionsWithSymbol?: boolean;
 };
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		saveUserPreferences(preferences: Partial<UserPreferences>): boolean;
+	}
+}
+
+async function updateNotificationPreferences(
+	userId: ISubscription['u']['_id'],
+	setting: keyof ISubscription,
+	newValue: string,
+	oldValue: string,
+	preferenceType: keyof ISubscription,
+) {
+	if (newValue === oldValue) {
+		return;
+	}
+
+	if (newValue === 'default') {
+		const clearNotificationResponse = await Subscriptions.clearNotificationUserPreferences(userId, setting, preferenceType);
+		if (clearNotificationResponse.modifiedCount) {
+			void notifyOnSubscriptionChangedByUserPreferences(userId, preferenceType, 'user');
+		}
+		return;
+	}
+
+	const updateNotificationResponse = await Subscriptions.updateNotificationUserPreferences(userId, newValue, setting, preferenceType);
+	if (updateNotificationResponse.modifiedCount) {
+		void notifyOnSubscriptionChangedByUserPreferences(userId, preferenceType, 'subscription');
 	}
 }
 
@@ -66,7 +99,9 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		autoImageLoad: Match.Optional(Boolean),
 		emailNotificationMode: Match.Optional(String),
 		unreadAlert: Match.Optional(Boolean),
+		masterVolume: Match.Optional(Number),
 		notificationsSoundVolume: Match.Optional(Number),
+		voipRingerVolume: Match.Optional(Number),
 		desktopNotifications: Match.Optional(String),
 		pushNotifications: Match.Optional(String),
 		enableAutoAway: Match.Optional(Boolean),
@@ -94,8 +129,8 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		mentionsWithSymbol: Match.Optional(Boolean),
 	};
 	check(settings, Match.ObjectIncluding(keys));
-	const user = await Users.findOneById(userId);
 
+	const user = await Users.findOneById(userId);
 	if (!user) {
 		return;
 	}
@@ -128,53 +163,58 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 
 	await Users.setPreferences(user._id, settings);
 
+	const diff = (Object.keys(settings) as (keyof UserPreferences)[]).reduce<Record<string, any>>((data, key) => {
+		data[`settings.preferences.${key}`] = settings[key];
+
+		return data;
+	}, {});
+
+	void notifyOnUserChange({
+		id: user._id,
+		clientAction: 'updated',
+		diff: {
+			...diff,
+			...(settings.language != null && { language: settings.language }),
+		},
+	});
+
 	// propagate changed notification preferences
 	setImmediate(async () => {
-		if (settings.desktopNotifications && oldDesktopNotifications !== settings.desktopNotifications) {
-			if (settings.desktopNotifications === 'default') {
-				await Subscriptions.clearNotificationUserPreferences(user._id, 'desktopNotifications', 'desktopPrefOrigin');
-			} else {
-				await Subscriptions.updateNotificationUserPreferences(
-					user._id,
-					settings.desktopNotifications,
-					'desktopNotifications',
-					'desktopPrefOrigin',
-				);
+		const { desktopNotifications, pushNotifications, emailNotificationMode, highlights, language } = settings;
+		const promises = [];
+
+		if (desktopNotifications) {
+			promises.push(
+				updateNotificationPreferences(user._id, 'desktopNotifications', desktopNotifications, oldDesktopNotifications, 'desktopPrefOrigin'),
+			);
+		}
+
+		if (pushNotifications) {
+			promises.push(
+				updateNotificationPreferences(user._id, 'mobilePushNotifications', pushNotifications, oldMobileNotifications, 'mobilePrefOrigin'),
+			);
+		}
+
+		if (emailNotificationMode) {
+			promises.push(
+				updateNotificationPreferences(user._id, 'emailNotifications', emailNotificationMode, oldEmailNotifications, 'emailPrefOrigin'),
+			);
+		}
+
+		await Promise.allSettled(promises);
+
+		if (Array.isArray(highlights)) {
+			const response = await Subscriptions.updateUserHighlights(user._id, highlights);
+			if (response.modifiedCount) {
+				void notifyOnSubscriptionChangedByUserId(user._id);
 			}
 		}
 
-		if (settings.pushNotifications && oldMobileNotifications !== settings.pushNotifications) {
-			if (settings.pushNotifications === 'default') {
-				await Subscriptions.clearNotificationUserPreferences(user._id, 'mobilePushNotifications', 'mobilePrefOrigin');
-			} else {
-				await Subscriptions.updateNotificationUserPreferences(
-					user._id,
-					settings.pushNotifications,
-					'mobilePushNotifications',
-					'mobilePrefOrigin',
-				);
+		if (language && oldLanguage !== language && rcSettings.get('AutoTranslate_AutoEnableOnJoinRoom')) {
+			const response = await Subscriptions.updateAllAutoTranslateLanguagesByUserId(user._id, language);
+			if (response.modifiedCount) {
+				void notifyOnSubscriptionChangedByAutoTranslateAndUserId(user._id);
 			}
-		}
-
-		if (settings.emailNotificationMode && oldEmailNotifications !== settings.emailNotificationMode) {
-			if (settings.emailNotificationMode === 'default') {
-				await Subscriptions.clearNotificationUserPreferences(user._id, 'emailNotifications', 'emailPrefOrigin');
-			} else {
-				await Subscriptions.updateNotificationUserPreferences(
-					user._id,
-					settings.emailNotificationMode,
-					'emailNotifications',
-					'emailPrefOrigin',
-				);
-			}
-		}
-
-		if (Array.isArray(settings.highlights)) {
-			await Subscriptions.updateUserHighlights(user._id, settings.highlights);
-		}
-
-		if (settings.language && oldLanguage !== settings.language && rcSettings.get('AutoTranslate_AutoEnableOnJoinRoom')) {
-			await Subscriptions.updateAllAutoTranslateLanguagesByUserId(user._id, settings.language);
 		}
 	});
 };

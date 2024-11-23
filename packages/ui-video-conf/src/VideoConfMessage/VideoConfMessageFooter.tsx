@@ -1,9 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import type { AllHTMLAttributes, ReactElement } from 'react';
 
 import VideoConfMessageRow from './VideoConfMessageRow';
 
-const VideoConfMessageFooter = ({ children, ...props }: { children: ReactNode }): ReactElement => (
+type VideoConfMessageFooterProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
+
+const VideoConfMessageFooter = ({ children, ...props }: VideoConfMessageFooterProps): ReactElement => (
 	<VideoConfMessageRow backgroundColor='tint' {...props}>
 		<Box mi='neg-x4' display='flex' alignItems='center'>
 			{children}

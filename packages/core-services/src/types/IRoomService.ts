@@ -8,7 +8,6 @@ export interface ISubscriptionExtraData {
 }
 
 interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
-	nameValidationRegex?: string;
 	creator: string;
 	subscriptionExtra?: ISubscriptionExtraData;
 }
@@ -25,6 +24,7 @@ export interface ICreateRoomParams {
 	readOnly?: boolean;
 	extraData?: Partial<ICreateRoomExtraData>;
 	options?: ICreateRoomOptions;
+	sidepanel?: IRoom['sidepanel'];
 }
 export interface IRoomService {
 	addMember(uid: string, rid: string): Promise<boolean>;
@@ -33,16 +33,15 @@ export interface IRoomService {
 	createDirectMessageWithMultipleUsers(members: string[], creatorId: string): Promise<{ rid: string }>;
 	addUserToRoom(
 		roomId: string,
-		user: Pick<IUser, '_id' | 'username'> | string,
+		user: Pick<IUser, '_id'> | string,
 		inviter?: Pick<IUser, '_id' | 'username'>,
-		silenced?: boolean,
+		options?: {
+			skipSystemMessage?: boolean;
+			skipAlertSound?: boolean;
+		},
 	): Promise<boolean | undefined>;
 	removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: Pick<IUser, '_id' | 'username'> }): Promise<void>;
-	getValidRoomName(
-		displayName: string,
-		roomId?: string,
-		options?: { allowDuplicates?: boolean; nameValidationRegex?: string },
-	): Promise<string>;
+	getValidRoomName(displayName: string, roomId?: string, options?: { allowDuplicates?: boolean }): Promise<string>;
 	saveRoomTopic(
 		roomId: string,
 		roomTopic: string | undefined,
@@ -54,4 +53,8 @@ export interface IRoomService {
 	): Promise<void>;
 	getRouteLink(room: AtLeast<IRoom, '_id' | 't' | 'name'>): Promise<string | boolean>;
 	join(param: { room: IRoom; user: Pick<IUser, '_id'>; joinCode?: string }): Promise<boolean | undefined>;
+	beforeLeave(room: IRoom): Promise<void>;
+	beforeUserRemoved(room: IRoom): Promise<void>;
+	beforeNameChange(room: IRoom): Promise<void>;
+	beforeTopicChange(room: IRoom): Promise<void>;
 }

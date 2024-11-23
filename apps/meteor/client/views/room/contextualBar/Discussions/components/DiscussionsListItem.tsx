@@ -1,17 +1,18 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import { Box, Message } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import MessageAvatar from '../../../../../components/message/header/MessageAvatar';
+import Emoji from '../../../../../components/Emoji';
 import { clickableItem } from '../../../../../lib/clickableItem';
 
 type DiscussionListItemProps = {
 	_id: IDiscussionMessage['_id'];
 	msg: ReactNode;
 	dcount: number;
-	dlm: Date;
+	dlm: Date | undefined;
 	formatDate: (date: Date) => string;
 	username: IDiscussionMessage['u']['username'];
 	name?: IDiscussionMessage['u']['name'];
@@ -32,11 +33,11 @@ const DiscussionListItem = ({
 	emoji,
 	...props
 }: DiscussionListItemProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	return (
 		<Box is={Message} {...props} className={className} pbs={16} pbe={8}>
 			<Message.LeftContainer>
-				<MessageAvatar username={username} emoji={emoji} size='x36' />
+				<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
 			</Message.LeftContainer>
 			<Message.Container>
 				<Message.Header>
@@ -60,7 +61,7 @@ const DiscussionListItem = ({
 						{!!dcount && (
 							<Message.Metrics.Item>
 								<Message.Metrics.Item.Icon name='clock' />
-								<Message.Metrics.Item.Label>{formatDate(dlm)}</Message.Metrics.Item.Label>
+								<Message.Metrics.Item.Label>{dlm ? formatDate(dlm) : undefined}</Message.Metrics.Item.Label>
 							</Message.Metrics.Item>
 						)}
 					</Message.Metrics>

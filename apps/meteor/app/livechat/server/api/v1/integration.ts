@@ -2,7 +2,9 @@ import { Settings } from '@rocket.chat/models';
 import { isPOSTomnichannelIntegrations } from '@rocket.chat/rest-typings';
 
 import { trim } from '../../../../../lib/utils/stringUtils';
+import { updateAuditedByUser } from '../../../../../server/settings/lib/auditedSettingUpdates';
 import { API } from '../../../../api/server';
+import { notifyOnSettingChangedById } from '../../../../lib/server/lib/notifyListener';
 
 API.v1.addRoute(
 	'omnichannel/integrations',
@@ -23,53 +25,47 @@ API.v1.addRoute(
 				LivechatWebhookOnAgentMessage,
 			} = this.bodyParams;
 
-			const promises = [];
+			const settingsIds = [
+				typeof LivechatWebhookUrl !== 'undefined' && { _id: 'Livechat_webhookUrl', value: trim(LivechatWebhookUrl) },
+				typeof LivechatSecretToken !== 'undefined' && { _id: 'Livechat_secret_token', value: trim(LivechatSecretToken) },
+				typeof LivechatHttpTimeout !== 'undefined' && { _id: 'Livechat_http_timeout', value: LivechatHttpTimeout },
+				typeof LivechatWebhookOnStart !== 'undefined' && { _id: 'Livechat_webhook_on_start', value: !!LivechatWebhookOnStart },
+				typeof LivechatWebhookOnClose !== 'undefined' && { _id: 'Livechat_webhook_on_close', value: !!LivechatWebhookOnClose },
+				typeof LivechatWebhookOnChatTaken !== 'undefined' && { _id: 'Livechat_webhook_on_chat_taken', value: !!LivechatWebhookOnChatTaken },
+				typeof LivechatWebhookOnChatQueued !== 'undefined' && {
+					_id: 'Livechat_webhook_on_chat_queued',
+					value: !!LivechatWebhookOnChatQueued,
+				},
+				typeof LivechatWebhookOnForward !== 'undefined' && { _id: 'Livechat_webhook_on_forward', value: !!LivechatWebhookOnForward },
+				typeof LivechatWebhookOnOfflineMsg !== 'undefined' && {
+					_id: 'Livechat_webhook_on_offline_msg',
+					value: !!LivechatWebhookOnOfflineMsg,
+				},
+				typeof LivechatWebhookOnVisitorMessage !== 'undefined' && {
+					_id: 'Livechat_webhook_on_visitor_message',
+					value: !!LivechatWebhookOnVisitorMessage,
+				},
+				typeof LivechatWebhookOnAgentMessage !== 'undefined' && {
+					_id: 'Livechat_webhook_on_agent_message',
+					value: !!LivechatWebhookOnAgentMessage,
+				},
+			].filter(Boolean) as unknown as { _id: string; value: any }[];
 
-			if (typeof LivechatWebhookUrl !== 'undefined') {
-				promises.push(Settings.updateValueById('Livechat_webhookUrl', trim(LivechatWebhookUrl)));
-			}
+			const auditSettingOperation = updateAuditedByUser({
+				_id: this.userId,
+				username: this.user.username!,
+				ip: this.requestIp,
+				useragent: this.request.headers['user-agent'] || '',
+			});
 
-			if (typeof LivechatSecretToken !== 'undefined') {
-				promises.push(Settings.updateValueById('Livechat_secret_token', trim(LivechatSecretToken)));
-			}
+			const promises = settingsIds.map((setting) => auditSettingOperation(Settings.updateValueById, setting._id, setting.value));
 
-			if (typeof LivechatHttpTimeout !== 'undefined') {
-				promises.push(Settings.updateValueById('Livechat_http_timeout', LivechatHttpTimeout));
-			}
+			(await Promise.all(promises)).forEach((value, index) => {
+				if (value?.modifiedCount) {
+					void notifyOnSettingChangedById(settingsIds[index]._id);
+				}
+			});
 
-			if (typeof LivechatWebhookOnStart !== 'undefined') {
-				promises.push(Settings.updateValueById('Livechat_webhook_on_start', !!LivechatWebhookOnStart));
-			}
-
-			if (typeof LivechatWebhookOnClose !== 'undefined') {
-				promises.push(Settings.updateValueById('Livechat_webhook_on_close', !!LivechatWebhookOnClose));
-			}
-
-			if (typeof LivechatWebhookOnChatTaken !== 'undefined') {
-				promises.push(Settings.updateValueById('Livechat_webhook_on_chat_taken', !!LivechatWebhookOnChatTaken));
-			}
-
-			if (typeof LivechatWebhookOnChatQueued !== 'undefined') {
-				promises.push(Settings.updateValueById('Livechat_webhook_on_chat_queued', !!LivechatWebhookOnChatQueued));
-			}
-
-			if (typeof LivechatWebhookOnForward !== 'undefined') {
-				promises.push(Settings.updateValueById('Livechat_webhook_on_forward', !!LivechatWebhookOnForward));
-			}
-
-			if (typeof LivechatWebhookOnOfflineMsg !== 'undefined') {
-				promises.push(Settings.updateValueById('Livechat_webhook_on_offline_msg', !!LivechatWebhookOnOfflineMsg));
-			}
-
-			if (typeof LivechatWebhookOnVisitorMessage !== 'undefined') {
-				promises.push(Settings.updateValueById('Livechat_webhook_on_visitor_message', !!LivechatWebhookOnVisitorMessage));
-			}
-
-			if (typeof LivechatWebhookOnAgentMessage !== 'undefined') {
-				promises.push(Settings.updateValueById('Livechat_webhook_on_agent_message', !!LivechatWebhookOnAgentMessage));
-			}
-
-			await Promise.all(promises);
 			return API.v1.success();
 		},
 	},

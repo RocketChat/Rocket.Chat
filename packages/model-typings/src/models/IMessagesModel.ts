@@ -71,7 +71,12 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
 	findLivechatMessages(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage>;
-	findLivechatMessagesWithoutClosing(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage>;
+	findLivechatMessagesWithoutTypes(
+		rid: IRoom['_id'],
+		ignoredTypes: IMessage['t'][],
+		showSystemMessages: boolean,
+		options?: FindOptions<IMessage>,
+	): FindCursor<IMessage>;
 	countRoomsWithStarredMessages(options: AggregateOptions): Promise<number>;
 
 	countRoomsWithPinnedMessages(options: AggregateOptions): Promise<number>;
@@ -113,6 +118,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		roomId: IRoom['_id'],
 		types: IMessage['t'][],
 		ts: Date,
+		showSystemMessages: boolean,
 		options?: FindOptions<IMessage>,
 		showThreadMessages?: boolean,
 	): FindCursor<IMessage>;
@@ -200,12 +206,12 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	getLastTimestamp(options?: FindOptions<IMessage>): Promise<Date | undefined>;
 	findOneBySlackBotIdAndSlackTs(slackBotId: string, slackTs: Date): Promise<IMessage | null>;
 	findByRoomIdAndMessageIds(rid: string, messageIds: string[], options?: FindOptions<IMessage>): FindCursor<IMessage>;
-	findForUpdates(roomId: string, timestamp: Date, options?: FindOptions<IMessage>): FindCursor<IMessage>;
+	findForUpdates(roomId: IMessage['rid'], timestamp: { $lt: Date } | { $gt: Date }, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	updateUsernameOfEditByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 	updateAllUsernamesByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 
 	setUrlsById(_id: string, urls: NonNullable<IMessage['urls']>): Promise<UpdateResult>;
-	getLastVisibleMessageSentWithNoTypeByRoomId(rid: string, messageId?: string): Promise<IMessage | null>;
+	getLastVisibleUserMessageSentByRoomId(rid: string, messageId?: string): Promise<IMessage | null>;
 
 	findOneBySlackTs(slackTs: Date): Promise<IMessage | null>;
 
@@ -285,4 +291,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	findThreadsByRoomId(rid: string, skip: number, limit: number): FindCursor<IMessage>;
 	decreaseReplyCountById(_id: string, inc?: number): Promise<UpdateResult>;
+	countPinned(options?: CountDocumentsOptions): Promise<number>;
+	countStarred(options?: CountDocumentsOptions): Promise<number>;
 }

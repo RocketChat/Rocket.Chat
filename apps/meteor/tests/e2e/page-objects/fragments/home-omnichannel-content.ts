@@ -23,11 +23,11 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('[data-qa-id="return-to-queue-modal"]');
 	}
 
-	get btnReturnToQueueConfirm():Locator {
+	get btnReturnToQueueConfirm(): Locator {
 		return this.modalReturnToQueue.locator('role=button[name="Confirm"]');
 	}
 
-	get btnReturnToQueueCancel():Locator {
+	get btnReturnToQueueCancel(): Locator {
 		return this.modalReturnToQueue.locator('role=button[name="Cancel"]');
 	}
 
@@ -52,13 +52,13 @@ export class HomeOmnichannelContent extends HomeContent {
 	}
 
 	get infoContactEmail(): Locator {
-		return this.page.locator('[data-qa-id="contactInfo-email"]');
+		return this.page.getByRole('dialog').locator('p[data-type="email"]');
 	}
 
 	get infoContactName(): Locator {
 		return this.page.locator('[data-qa-id="contactInfo-name"]');
 	}
-	
+
 	get btnReturn(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-back"]');
 	}

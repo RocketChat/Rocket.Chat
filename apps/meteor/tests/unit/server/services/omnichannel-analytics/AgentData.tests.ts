@@ -1,7 +1,7 @@
 /* eslint-disable new-cap */
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import { expect } from 'chai';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import sinon from 'sinon';
 
 import { AgentOverviewData } from '../../../../../server/services/omnichannel-analytics/AgentData';

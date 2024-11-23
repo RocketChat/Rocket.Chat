@@ -1,8 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { IconButton, ModalBackdrop } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 
 import GenericError from '../GenericError/GenericError';
 
@@ -14,12 +14,12 @@ const closeButtonStyle = css`
 `;
 
 export const ImageGalleryError = ({ onClose }: { onClose: () => void }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return createPortal(
 		<ModalBackdrop display='flex' justifyContent='center' color='pure-white'>
 			<GenericError buttonAction={onClose} buttonTitle={t('Close')} />
-			<IconButton icon='cross' aria-label='Close gallery' className={closeButtonStyle} onClick={onClose} />
+			<IconButton icon='cross' aria-label={t('Close_gallery')} className={closeButtonStyle} onClick={onClose} />
 		</ModalBackdrop>,
 		document.body,
 	);

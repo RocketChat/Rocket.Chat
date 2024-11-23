@@ -124,7 +124,7 @@ export type AppsEndpoints = {
 			status: string;
 		};
 		POST: (params: { status: AppStatus }) => {
-			status: string;
+			status: AppStatus;
 		};
 	};
 
@@ -248,9 +248,8 @@ export type AppsEndpoints = {
 							version: string;
 							permissionsGranted?: IPermission[];
 							url?: string;
-							downloadOnly?: boolean;
 					  }
-					| { url: string; downloadOnly?: boolean },
+					| { url: string },
 			):
 				| {
 						app: App;

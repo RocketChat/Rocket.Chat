@@ -49,9 +49,7 @@ test.describe.serial('homepage', () => {
 
 			test('visibility and button functionality in custom body with empty custom content', async () => {
 				await test.step('expect default value in custom body', async () => {
-					await expect(
-						adminPage.locator('div >> text="Admins may insert content html to be rendered in this white space."'),
-					).toBeVisible();
+					await expect(adminPage.locator('div >> text="Admins may insert content html to be rendered in this white space."')).toBeVisible();
 				});
 
 				await test.step('expect both change visibility and show only custom content buttons to be disabled', async () => {

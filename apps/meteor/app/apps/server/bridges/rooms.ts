@@ -1,21 +1,24 @@
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
+import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { GetMessagesOptions } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
-import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom } from '@rocket.chat/core-typings';
-import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as ICoreMessage } from '@rocket.chat/core-typings';
+import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
+import type { FindOptions, Sort } from 'mongodb';
 
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
+import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
 
 export class AppRoomBridge extends RoomBridge {
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 	}
 
@@ -65,13 +68,17 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getById(roomId: string, appId: string): Promise<IRoom> {
 		this.orch.debugLog(`The App ${appId} is getting the roomById: "${roomId}"`);
 
-		return this.orch.getConverters()?.get('rooms').convertById(roomId);
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
+		const promise: Promise<IRoom | undefined> = this.orch.getConverters()?.get('rooms').convertById(roomId);
+		return promise as Promise<IRoom>;
 	}
 
 	protected async getByName(roomName: string, appId: string): Promise<IRoom> {
 		this.orch.debugLog(`The App ${appId} is getting the roomByName: "${roomName}"`);
 
-		return this.orch.getConverters()?.get('rooms').convertByName(roomName);
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
+		const promise: Promise<IRoom | undefined> = this.orch.getConverters()?.get('rooms').convertByName(roomName);
+		return promise as Promise<IRoom>;
 	}
 
 	protected async getCreatorById(roomId: string, appId: string): Promise<IUser | undefined> {
@@ -79,7 +86,7 @@ export class AppRoomBridge extends RoomBridge {
 
 		const room = await Rooms.findOneById(roomId);
 
-		if (!room || !room.u || !room.u._id) {
+		if (!room?.u?._id) {
 			return undefined;
 		}
 
@@ -91,19 +98,54 @@ export class AppRoomBridge extends RoomBridge {
 
 		const room = await Rooms.findOneByName(roomName, {});
 
-		if (!room || !room.u || !room.u._id) {
+		if (!room?.u?._id) {
 			return undefined;
 		}
 
 		return this.orch.getConverters()?.get('users').convertById(room.u._id);
 	}
 
+	protected async getMessages(roomId: string, options: GetMessagesOptions, appId: string): Promise<IMessageRaw[]> {
+		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}" with options:`, options);
+
+		const { limit, skip = 0, sort: _sort } = options;
+
+		const messageConverter = this.orch.getConverters()?.get('messages');
+		if (!messageConverter) {
+			throw new Error('Message converter not found');
+		}
+
+		// We support only one field for now
+		const sort: Sort | undefined = _sort?.createdAt ? { ts: _sort.createdAt } : undefined;
+
+		const messageQueryOptions: FindOptions<ICoreMessage> = {
+			limit,
+			skip,
+			sort,
+		};
+
+		const query = {
+			rid: roomId,
+			_hidden: { $ne: true },
+			t: { $exists: false },
+		};
+
+		const cursor = Messages.find(query, messageQueryOptions);
+
+		const messagePromises: Promise<IMessageRaw>[] = await cursor.map((message) => messageConverter.convertMessageRaw(message)).toArray();
+
+		return Promise.all(messagePromises);
+	}
+
 	protected async getMembers(roomId: string, appId: string): Promise<Array<IUser>> {
 		this.orch.debugLog(`The App ${appId} is getting the room's members by room id: "${roomId}"`);
 		const subscriptions = await Subscriptions.findByRoomId(roomId, {});
-		return Promise.all(
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
+		const promises: Promise<(IUser | undefined)[]> = Promise.all(
 			(await subscriptions.toArray()).map((sub: ISubscription) => this.orch.getConverters()?.get('users').convertById(sub.u?._id)),
 		);
+
+		return promises as Promise<IUser[]>;
 	}
 
 	protected async getDirectByUsernames(usernames: Array<string>, appId: string): Promise<IRoom | undefined> {
@@ -124,7 +166,7 @@ export class AppRoomBridge extends RoomBridge {
 
 		const rm = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
 
-		await Rooms.updateOne({ _id: rm._id }, { $set: rm });
+		await Rooms.updateOne({ _id: rm._id }, { $set: rm as Partial<ICoreRoom> });
 
 		for await (const username of members) {
 			const member = await Users.findOneByUsername(username, {});
@@ -162,9 +204,10 @@ export class AppRoomBridge extends RoomBridge {
 			throw new Error('There must be a parent room to create a discussion.');
 		}
 
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
 		const discussion = {
 			prid: rcRoom.prid,
-			t_name: rcRoom.fname,
+			t_name: rcRoom.fname as string,
 			pmid: rcMessage ? rcMessage._id : undefined,
 			reply: reply && reply.trim() !== '' ? reply : undefined,
 			users: members.length > 0 ? members : [],
@@ -198,7 +241,68 @@ export class AppRoomBridge extends RoomBridge {
 		}[];
 		// Was this a bug?
 		const users = await Users.findByIds(subs.map((user: { uid: string }) => user.uid)).toArray();
-		const userConverter = this.orch.getConverters()!.get('users');
-		return users.map((user: ICoreUser) => userConverter!.convertToApp(user));
+		const userConverter = this.orch.getConverters().get('users');
+		return users.map((user: ICoreUser) => userConverter.convertToApp(user));
+	}
+
+	protected async getUnreadByUser(roomId: string, uid: string, options: GetMessagesOptions, appId: string): Promise<Array<IMessageRaw>> {
+		this.orch.debugLog(`The App ${appId} is getting the unread messages for the user: "${uid}" in the room: "${roomId}"`);
+
+		const messageConverter = this.orch.getConverters()?.get('messages');
+		if (!messageConverter) {
+			throw new Error('Message converter not found');
+		}
+
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, uid, { projection: { ls: 1 } });
+
+		if (!subscription) {
+			const errorMessage = `No subscription found for user with ID "${uid}" in room with ID "${roomId}". This means the user is not subscribed to the room.`;
+			this.orch.debugLog(errorMessage);
+			throw new Error('User not subscribed to room');
+		}
+
+		const lastSeen = subscription?.ls;
+		if (!lastSeen) {
+			return [];
+		}
+
+		const sort: Sort = options.sort?.createdAt ? { ts: options.sort.createdAt } : { ts: 1 };
+
+		const cursor = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, lastSeen, new Date(), [], {
+			...options,
+			sort,
+		});
+
+		const messages = await cursor.toArray();
+		return Promise.all(messages.map((msg) => messageConverter.convertMessageRaw(msg)));
+	}
+
+	protected async getUserUnreadMessageCount(roomId: string, uid: string, appId: string): Promise<number> {
+		this.orch.debugLog(`The App ${appId} is getting the unread messages count of the room: "${roomId}" for the user: "${uid}"`);
+
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, uid, { projection: { ls: 1 } });
+
+		if (!subscription) {
+			const errorMessage = `No subscription found for user with ID "${uid}" in room with ID "${roomId}". This means the user is not subscribed to the room.`;
+			this.orch.debugLog(errorMessage);
+			throw new Error('User not subscribed to room');
+		}
+
+		const lastSeen = subscription?.ls;
+		if (!lastSeen) {
+			return 0;
+		}
+
+		return Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, lastSeen, new Date(), []);
+	}
+
+	protected async removeUsers(roomId: string, usernames: Array<string>, appId: string): Promise<void> {
+		this.orch.debugLog(`The App ${appId} is removing users ${usernames} from room id: ${roomId}`);
+		if (!roomId) {
+			throw new Error('roomId was not provided.');
+		}
+
+		const members = await Users.findUsersByUsernames(usernames, { limit: 50 }).toArray();
+		await Promise.all(members.map((user) => removeUserFromRoom(roomId, user)));
 	}
 }

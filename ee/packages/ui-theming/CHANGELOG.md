@@ -1,5 +1,53 @@
 # @rocket.chat/ui-theming
 
+## 0.4.0
+
+### Minor Changes
+
+- ([#33592](https://github.com/RocketChat/Rocket.Chat/pull/33592)) Adds ability to collapse/expand sidebar groups
+
+## 0.4.0-rc.0
+
+### Minor Changes
+
+- ([#33592](https://github.com/RocketChat/Rocket.Chat/pull/33592)) Adds ability to collapse/expand sidebar groups
+
+## 0.3.0
+
+### Minor Changes
+
+- ([#32821](https://github.com/RocketChat/Rocket.Chat/pull/32821)) Replaced new `SidebarV2` components under feature preview
+
+## 0.3.0-rc.0
+
+### Minor Changes
+
+- ([#32821](https://github.com/RocketChat/Rocket.Chat/pull/32821)) Replaced new `SidebarV2` components under feature preview
+
+## 0.2.1
+
+### Patch Changes
+
+- ([#32968](https://github.com/RocketChat/Rocket.Chat/pull/32968)) Bumped @rocket.chat/fuselage that fixes the Menu onPointerUp event behavior
+
+## 0.2.1-rc.0
+
+### Patch Changes
+
+- ([#32968](https://github.com/RocketChat/Rocket.Chat/pull/32968)) Bumped @rocket.chat/fuselage that fixes the Menu onPointerUp event behavior
+
+## 0.2.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+## 0.2.0-rc.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
 ## 0.1.2
 
 ### Patch Changes

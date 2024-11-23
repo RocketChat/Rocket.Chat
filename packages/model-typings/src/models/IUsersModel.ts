@@ -9,7 +9,17 @@ import type {
 	AtLeast,
 	ILivechatAgentStatus,
 } from '@rocket.chat/core-typings';
-import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult, ModifyResult } from 'mongodb';
+import type {
+	Document,
+	UpdateResult,
+	FindCursor,
+	FindOptions,
+	Filter,
+	InsertOneResult,
+	DeleteResult,
+	ModifyResult,
+	UpdateOptions,
+} from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -77,6 +87,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findLDAPUsers<T = IUser>(options?: any): FindCursor<T>;
 
+	findLDAPUsersExceptIds<T = IUser>(userIds: IUser['_id'][], options?: FindOptions<IUser>): FindCursor<T>;
+
 	findConnectedLDAPUsers<T = IUser>(options?: any): FindCursor<T>;
 
 	isUserInRole(userId: IUser['_id'], roleId: IRole['_id']): Promise<boolean>;
@@ -132,8 +144,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	addBusinessHourByAgentIds(agentIds: string[], businessHourId: string): any;
 
-	makeAgentsWithinBusinessHourAvailable(agentIds?: string[]): Promise<UpdateResult | Document>;
-
 	removeBusinessHourByAgentIds(agentIds: any, businessHourId: any): any;
 
 	openBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment: any, businessHourId: any): any;
@@ -141,8 +151,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	closeBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment: any, businessHourId: any): any;
 
 	closeAgentsBusinessHoursByBusinessHourIds(businessHourIds: any): any;
-
-	updateLivechatStatusBasedOnBusinessHours(userIds?: any): any;
 
 	setLivechatStatusActiveBasedOnBusinessHours(userId: any): any;
 
@@ -164,7 +172,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	isUserInRoleScope(uid: IUser['_id']): Promise<boolean>;
 
-	addBannerById(_id: any, banner: any): any;
+	addBannerById(_id: IUser['_id'], banner: any): Promise<UpdateResult>;
 
 	findOneByAgentUsername(username: any, options: any): any;
 
@@ -192,7 +200,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	setAsFederated(userId: string): any;
 
-	removeRoomByRoomId(rid: any): any;
+	removeRoomByRoomId(rid: any, options?: UpdateOptions): any;
 
 	findOneByResetToken(token: string, options: FindOptions<IUser>): Promise<IUser | null>;
 
@@ -216,6 +224,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	countFederatedExternalUsers(): Promise<number>;
 	findOnlineUserFromList(userList: string[], isLivechatEnabledWhenAgentIdle?: boolean): FindCursor<IUser>;
+	countOnlineUserFromList(userList: string[], isLivechatEnabledWhenAgentIdle?: boolean): Promise<number>;
 	getUnavailableAgents(
 		departmentId?: string,
 		extraQuery?: Document,
@@ -236,6 +245,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<IUser | null>;
 
 	findBotAgents(usernameList?: string[]): FindCursor<IUser>;
+	countBotAgents(usernameList?: string[]): Promise<number>;
 	removeAllRoomsByUserId(userId: string): Promise<UpdateResult>;
 	removeRoomByUserId(userId: string, rid: string): Promise<UpdateResult>;
 	addRoomByUserId(userId: string, rid: string): Promise<UpdateResult>;
@@ -391,4 +401,13 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countByRole(roleName: string): Promise<number>;
 	removeEmailCodeOfUserId(userId: string): Promise<UpdateResult>;
 	incrementInvalidEmailCodeAttempt(userId: string): Promise<ModifyResult<IUser>>;
+	findOnlineButNotAvailableAgents(userIds: string[] | null): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
+	findAgentsAvailableWithoutBusinessHours(userIds: string[] | null): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
+	updateLivechatStatusByAgentIds(userIds: string[], status: ILivechatAgentStatus): Promise<UpdateResult>;
+	findOneByFreeSwitchExtension<T = IUser>(extension: string, options?: FindOptions<IUser>): Promise<T | null>;
+	setFreeSwitchExtension(userId: string, extension: string | undefined): Promise<UpdateResult>;
+	findAssignedFreeSwitchExtensions(): FindCursor<string>;
+	findUsersWithAssignedFreeSwitchExtensions<T = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
+	countUsersInRoles(roles: IRole['_id'][]): Promise<number>;
+	countAllUsersWithPendingAvatar(): Promise<number>;
 }

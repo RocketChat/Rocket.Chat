@@ -24,7 +24,7 @@ const getBlocks = (mentions: IMessage['mentions'], messageId: string, lng: strin
 			actionId: 'add-users',
 			text: {
 				type: 'plain_text',
-				text: i18n.t('Add_them', undefined, lng),
+				text: i18n.t('Add_them', { lng }),
 			},
 		},
 		dismissBlock: {
@@ -35,7 +35,7 @@ const getBlocks = (mentions: IMessage['mentions'], messageId: string, lng: strin
 			actionId: 'dismiss',
 			text: {
 				type: 'plain_text',
-				text: i18n.t('Do_nothing', undefined, lng),
+				text: i18n.t('Do_nothing', { lng }),
 			},
 		},
 		dmBlock: {
@@ -46,7 +46,7 @@ const getBlocks = (mentions: IMessage['mentions'], messageId: string, lng: strin
 			actionId: 'share-message',
 			text: {
 				type: 'plain_text',
-				text: i18n.t('Let_them_know', undefined, lng),
+				text: i18n.t('Let_them_know', { lng }),
 			},
 		},
 	} as const;
@@ -54,7 +54,7 @@ const getBlocks = (mentions: IMessage['mentions'], messageId: string, lng: strin
 
 callbacks.add(
 	'afterSaveMessage',
-	async (message, room) => {
+	async (message, { room }) => {
 		// TODO: check if I need to test this 60 second rule.
 		// If the message was edited, or is older than 60 seconds (imported)
 		// the notifications will be skipped, so we can also skip this validation
@@ -62,7 +62,7 @@ callbacks.add(
 			return message;
 		}
 
-		const mentions = message.mentions.filter(({ _id }) => _id !== 'all' && _id !== 'here');
+		const mentions = message.mentions.filter(({ _id, type }) => _id !== 'all' && _id !== 'here' && type !== 'team');
 		if (!mentions.length) {
 			return message;
 		}
@@ -121,7 +121,7 @@ callbacks.add(
 					type: 'section',
 					text: {
 						type: 'mrkdwn',
-						text: i18n.t(messageLabel, { mentions: mentionsText }, language),
+						text: i18n.t(messageLabel, { mentions: mentionsText, lng: language }),
 					},
 				} as const,
 				Boolean(elements.length) &&

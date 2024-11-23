@@ -5,6 +5,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import OutlookEventItem from './OutlookEventItem';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -14,12 +15,11 @@ import {
 	ContextualbarFooter,
 	ContextualbarSkeleton,
 } from '../../../components/Contextualbar';
-import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
+import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
 import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
 import { useMutationOutlookCalendarSync, useOutlookCalendarListForToday } from '../hooks/useOutlookCalendarList';
 import { NotOnDesktopError } from '../lib/NotOnDesktopError';
-import OutlookEventItem from './OutlookEventItem';
 
 type OutlookEventsListProps = {
 	onClose: () => void;
@@ -28,7 +28,7 @@ type OutlookEventsListProps = {
 
 const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): ReactElement => {
 	const t = useTranslation();
-	const outlookUrl = useSetting<string>('Outlook_Calendar_Outlook_Url');
+	const outlookUrl = useSetting('Outlook_Calendar_Outlook_Url', '');
 	const { authEnabled, isError, error } = useOutlookAuthentication();
 
 	const hasOutlookMethods = !(isError && error instanceof NotOnDesktopError);
@@ -108,7 +108,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 									totalCount={total}
 									overscan={25}
 									data={calendarEvents}
-									components={{ Scroller: ScrollableContentWrapper }}
+									components={{ Scroller: VirtuosoScrollbars }}
 									itemContent={(_index, calendarData): ReactElement => <OutlookEventItem {...calendarData} />}
 								/>
 							</Box>

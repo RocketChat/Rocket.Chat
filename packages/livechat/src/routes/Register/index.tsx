@@ -1,5 +1,6 @@
+import type { FunctionalComponent } from 'preact';
 import { route } from 'preact-router';
-import { useContext, useEffect, useRef } from 'preact/hooks';
+import { useContext, useEffect, useMemo, useRef } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
@@ -15,41 +16,47 @@ import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
 import CustomFields from '../../lib/customFields';
 import { validateEmail } from '../../lib/email';
 import { parentCall } from '../../lib/parentCall';
+import Triggers from '../../lib/triggers';
 import { StoreContext } from '../../store';
+import type { StoreState } from '../../store';
 import styles from './styles.scss';
 
 // Custom field as in the form payload
 type FormPayloadCustomField = { [key: string]: string };
 
-export const Register = ({ screenProps }: { screenProps: { [key: string]: unknown }; path: string }) => {
+export type RegisterFormValues = { name: string; email: string; department?: string; [key: string]: any };
+
+export const Register: FunctionalComponent<{ path: string }> = () => {
 	const { t } = useTranslation();
 
 	const topRef = useRef<HTMLDivElement>(null);
 	const bottomRef = useRef<HTMLDivElement>(null);
 
 	const {
-		handleSubmit,
-		formState: { errors, isDirty, isValid, isSubmitting },
-		control,
-	} = useForm({ mode: 'onChange' });
-
-	const {
 		config: {
 			departments = [],
 			messages: { registrationFormMessage: message },
 			settings: { nameFieldRegistrationForm: hasNameField, emailFieldRegistrationForm: hasEmailField },
-			theme: { title, color },
+			theme: { title },
 			customFields = [],
 		},
-		iframe: {
-			guest: { department: guestDepartment, name: guestName, email: guestEmail },
-			theme: { color: customColor, fontColor: customFontColor, iconColor: customIconColor, title: customTitle },
-		},
+
+		iframe: { defaultDepartment, guest: { name: guestName = undefined, email: guestEmail = undefined } = {} },
+
 		loading = false,
 		token,
 		dispatch,
 		user,
 	} = useContext(StoreContext);
+
+	const {
+		handleSubmit,
+		formState: { errors, isDirty, isValid, isSubmitting },
+		control,
+		resetField,
+	} = useForm<RegisterFormValues>({
+		mode: 'onChange',
+	});
 
 	const defaultTitle = t('need_help');
 	const defaultMessage = t('please_tell_us_some_information_to_start_the_chat');
@@ -75,28 +82,35 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 		department?: string;
 		customFields: FormPayloadCustomField;
 	}) => {
+		const guestDepartment = department || defaultDepartment;
 		const fields = {
 			name,
 			email,
-			...(department && { department }),
+			...(guestDepartment && { department: guestDepartment }),
 		};
 
-		dispatch({ loading: true, department });
+		dispatch({ loading: true });
+
 		try {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...fields, token } });
-			dispatch({ user });
-			parentCall('callback', ['pre-chat-form-submit', fields]);
+			await dispatch({ user } as Omit<StoreState['user'], 'ts'>);
+
+			parentCall('callback', 'pre-chat-form-submit', fields);
+			Triggers.callbacks?.emit('chat-visitor-registered');
 			registerCustomFields(customFields);
 		} finally {
 			dispatch({ loading: false });
 		}
 	};
 
-	const getDepartmentDefault = () => {
-		if (departments.some((dept) => dept._id === guestDepartment)) {
-			return guestDepartment;
-		}
-	};
+	const defaultDepartmentId = useMemo(
+		() => departments.find((dept) => dept.name === defaultDepartment || dept._id === defaultDepartment)?._id,
+		[defaultDepartment, departments],
+	);
+
+	useEffect(() => {
+		resetField('department', { defaultValue: defaultDepartmentId });
+	}, [departments, defaultDepartment, resetField, defaultDepartmentId]);
 
 	const availableDepartments = departments.filter((dept) => dept.showOnRegistration);
 
@@ -107,17 +121,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 	}, [user?._id]);
 
 	return (
-		<Screen
-			theme={{
-				color: customColor || color,
-				fontColor: customFontColor,
-				iconColor: customIconColor,
-				title: customTitle,
-			}}
-			title={title || defaultTitle}
-			className={createClassName(styles, 'register')}
-			{...screenProps}
-		>
+		<Screen title={title || defaultTitle} className={createClassName(styles, 'register')}>
 			<FormScrollShadow topRef={topRef} bottomRef={bottomRef}>
 				<Screen.Content full>
 					<Form
@@ -164,7 +168,7 @@ export const Register = ({ screenProps }: { screenProps: { [key: string]: unknow
 								<Controller
 									name='department'
 									control={control}
-									defaultValue={getDepartmentDefault()}
+									defaultValue={defaultDepartmentId}
 									render={({ field }) => (
 										<SelectInput
 											options={sortArrayByColumn(availableDepartments, 'name').map(({ _id, name }: { _id: string; name: string }) => ({

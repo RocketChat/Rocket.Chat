@@ -43,9 +43,9 @@ callbacks.add(
 							},
 							{ 'queueInfo.chats': { $gte: maxChatsPerSetting } },
 						],
-				  }
+					}
 				: // dummy filter meaning: don't match anything
-				  { _id: '' };
+					{ _id: '' };
 
 		return { $match: { $or: [agentFilter, globalFilter] } };
 	},

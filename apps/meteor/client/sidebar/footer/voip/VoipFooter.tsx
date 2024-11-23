@@ -2,13 +2,13 @@ import type { IVoipRoom, ICallerInfo, VoIpCallerInfo } from '@rocket.chat/core-t
 import { VoipClientEvents } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, SidebarFooter, Menu, IconButton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MouseEvent, ReactNode } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import type { VoipFooterMenuOptions } from '../../../../ee/client/hooks/useVoipFooterMenu';
-import type { CallActionsType } from '../../../contexts/CallContext';
 import { useOmnichannelContactLabel } from './hooks/useOmnichannelContactLabel';
+import type { CallActionsType } from '../../../contexts/CallContext';
+import type { VoipFooterMenuOptions } from '../../../hooks/useVoipFooterMenu';
 
 type VoipFooterPropsType = {
 	caller: ICallerInfo;
@@ -50,13 +50,13 @@ export const VoipFooter = ({
 	options,
 }: VoipFooterPropsType): ReactElement => {
 	const contactLabel = useOmnichannelContactLabel(caller);
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const cssClickable =
 		callerState === 'IN_CALL' || callerState === 'ON_HOLD'
 			? css`
 					cursor: pointer;
-			  `
+				`
 			: '';
 
 	const handleHold = (e: MouseEvent<HTMLButtonElement>): void => {

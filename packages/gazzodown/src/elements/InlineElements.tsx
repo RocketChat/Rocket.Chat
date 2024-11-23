@@ -1,23 +1,24 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { lazy, ReactElement } from 'react';
 
-import ColorElement from '../colors/ColorElement';
-import EmojiElement from '../emoji/EmojiElement';
-import KatexErrorBoundary from '../katex/KatexErrorBoundary';
-import ChannelMentionElement from '../mentions/ChannelMentionElement';
-import UserMentionElement from '../mentions/UserMentionElement';
 import BoldSpan from './BoldSpan';
 import ImageElement from './ImageElement';
 import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
 import PlainSpan from './PlainSpan';
 import StrikeSpan from './StrikeSpan';
+import Timestamp from './Timestamp';
+import CodeElement from '../code/CodeElement';
+import ColorElement from '../colors/ColorElement';
+import EmojiElement from '../emoji/EmojiElement';
+import KatexErrorBoundary from '../katex/KatexErrorBoundary';
+import ChannelMentionElement from '../mentions/ChannelMentionElement';
+import UserMentionElement from '../mentions/UserMentionElement';
 
-const CodeElement = lazy(() => import('../code/CodeElement'));
 const KatexElement = lazy(() => import('../katex/KatexElement'));
 
 type InlineElementsProps = {
-	children: MessageParser.Inlines[];
+	children: (MessageParser.Inlines | { fallback: MessageParser.Plain; type: undefined })[];
 };
 
 const InlineElements = ({ children }: InlineElementsProps): ReactElement => (
@@ -70,8 +71,16 @@ const InlineElements = ({ children }: InlineElementsProps): ReactElement => (
 						</KatexErrorBoundary>
 					);
 
-				default:
+				case 'TIMESTAMP': {
+					return <Timestamp key={index} children={child} />;
+				}
+
+				default: {
+					if ('fallback' in child) {
+						return <InlineElements key={index} children={[child.fallback]} />;
+					}
 					return null;
+				}
 			}
 		})}
 	</>

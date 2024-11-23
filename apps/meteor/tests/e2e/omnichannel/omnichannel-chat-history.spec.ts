@@ -1,29 +1,28 @@
-import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
 import { test, expect } from '../utils/test';
 
-test.describe('Omnichannel chat histr', () => {
+test.describe('Omnichannel chat history', () => {
 	let poLiveChat: OmnichannelLiveChat;
-	let newUser: { email: string; name: string };
+	let newVisitor: { email: string; name: string };
 
 	let agent: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 
 	test.beforeAll(async ({ api, browser }) => {
-		newUser = {
-			name: faker.person.firstName(),
-			email: faker.internet.email(),
-		};
+		newVisitor = createFakeVisitor();
 
 		// Set user user 1 as manager and agent
 		await api.post('/livechat/users/agent', { username: 'user1' });
 		await api.post('/livechat/users/manager', { username: 'user1' });
+
 		const { page } = await createAuxContext(browser, Users.user1);
 		agent = { page, poHomeOmnichannel: new HomeOmnichannel(page) };
 	});
+
 	test.beforeEach(async ({ page, api }) => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
 	});
@@ -38,13 +37,13 @@ test.describe('Omnichannel chat histr', () => {
 		await test.step('Expect send a message as a visitor', async () => {
 			await page.goto('/livechat');
 			await poLiveChat.openLiveChat();
-			await poLiveChat.sendMessage(newUser, false);
+			await poLiveChat.sendMessage(newVisitor, false);
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeOmnichannel.sidenav.openChat(newUser.name);
+			await agent.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
 		});
 
 		await test.step('Expect to be able to close an omnichannel to conversation', async () => {
@@ -62,14 +61,16 @@ test.describe('Omnichannel chat histr', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeOmnichannel.sidenav.openChat(newUser.name);
+			await agent.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
 		});
 
 		await test.step('Expect to be able to see conversation history', async () => {
-			await agent.poHomeOmnichannel.btnCurrentChats.click();
-			await expect(agent.poHomeOmnichannel.historyItem).toBeVisible();
-			await agent.poHomeOmnichannel.historyItem.click();
-			await expect(agent.poHomeOmnichannel.historyMessage).toBeVisible();
+			await agent.poHomeOmnichannel.btnContactInfo.click();
+			await agent.poHomeOmnichannel.contacts.contactInfo.tabHistory.click();
+			await expect(agent.poHomeOmnichannel.contacts.contactInfo.historyItem).toBeVisible();
+
+			await agent.poHomeOmnichannel.contacts.contactInfo.historyItem.click();
+			await expect(agent.poHomeOmnichannel.contacts.contactInfo.historyMessage).toBeVisible();
 		});
 	});
 });

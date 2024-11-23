@@ -1,9 +1,10 @@
 import { TextInput, Box, Select, InputBox } from '@rocket.chat/fuselage';
 import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import type { Dispatch, FC, SetStateAction } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
@@ -12,24 +13,25 @@ import { CurrentChatTags } from '../additionalForms';
 import Label from './Label';
 import RemoveAllClosed from './RemoveAllClosed';
 
-type FilterByTextType = FC<{
+type FilterByTextTypeProps = {
 	setFilter: Dispatch<SetStateAction<Record<string, any>>>;
 	setCustomFields: Dispatch<SetStateAction<{ [key: string]: string } | undefined>>;
 	customFields: { [key: string]: string } | undefined;
 	hasCustomFields: boolean;
 	reload?: () => void;
-}>;
+};
 
-const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCustomFields, hasCustomFields, ...props }) => {
+const FilterByText = ({ setFilter, reload, customFields, setCustomFields, hasCustomFields, ...props }: FilterByTextTypeProps) => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const statusOptions: [string, string][] = [
 		['all', t('All')],
 		['closed', t('Closed')],
 		['opened', t('Room_Status_Open')],
 		['onhold', t('On_Hold_Chats')],
+		['queued', t('Queued')],
 	];
 
 	const [guest, setGuest] = useLocalStorage('guest', '');

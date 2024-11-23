@@ -1,16 +1,18 @@
 import { Message } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
+import { notifyOnRoomChangedById } from '../../app/lib/server/lib/notifyListener';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { callbacks } from '../../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		unmuteUserInRoom(data: { rid: IRoom['_id']; username: string }): boolean;
@@ -75,6 +77,7 @@ export const unmuteUserInRoom = async (fromId: string, data: { rid: IRoom['_id']
 
 	setImmediate(() => {
 		void callbacks.run('afterUnmuteUser', { unmutedUser, fromUser }, room);
+		void notifyOnRoomChangedById(data.rid);
 	});
 
 	return true;
@@ -82,6 +85,8 @@ export const unmuteUserInRoom = async (fromId: string, data: { rid: IRoom['_id']
 
 Meteor.methods<ServerMethods>({
 	async unmuteUserInRoom(data) {
+		methodDeprecationLogger.method('unmuteUserInRoom', '8.0.0');
+
 		const fromId = Meteor.userId();
 
 		check(

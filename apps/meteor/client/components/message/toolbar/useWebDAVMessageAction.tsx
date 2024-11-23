@@ -4,11 +4,10 @@ import React, { useEffect } from 'react';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { getURL } from '../../../../app/utils/client';
 import { useWebDAVAccountIntegrationsQuery } from '../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
-import { messageArgs } from '../../../lib/utils/messageArgs';
 import SaveToWebdavModal from '../../../views/room/webdav/SaveToWebdavModal';
 
 export const useWebDAVMessageAction = () => {
-	const enabled = useSetting<boolean>('Webdav_Integration_Enabled', false);
+	const enabled = useSetting('Webdav_Integration_Enabled', false);
 
 	const { data } = useWebDAVAccountIntegrationsQuery({ enabled });
 
@@ -26,8 +25,7 @@ export const useWebDAVMessageAction = () => {
 			condition: ({ message, subscription }) => {
 				return !!subscription && !!data?.length && !!message.file;
 			},
-			action(_, props) {
-				const { message = messageArgs(this).msg } = props;
+			action(_, { message }) {
 				const [attachment] = message.attachments || [];
 				const url = getURL(attachment.title_link as string, { full: true });
 

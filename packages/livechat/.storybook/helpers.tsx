@@ -1,14 +1,16 @@
 import { action } from '@storybook/addon-actions';
-import { type DecoratorFunction } from '@storybook/csf';
-import type { Args, PreactFramework } from '@storybook/preact';
+import type { Decorator } from '@storybook/preact';
 import { loremIpsum as originalLoremIpsum } from 'lorem-ipsum';
 
+import { ScreenContext } from '../src/components/Screen/ScreenProvider';
 import gazzoAvatar from './assets/gazzo.jpg';
 import martinAvatar from './assets/martin.jpg';
 import tassoAvatar from './assets/tasso.jpg';
 
-export const screenDecorator: DecoratorFunction<PreactFramework, Args> = (storyFn) => (
-	<div style={{ display: 'flex', width: 365, height: 500 }}>{storyFn()}</div>
+export const screenDecorator: Decorator = (storyFn) => (
+	<div style={{ display: 'flex', width: 365, height: 500 }}>
+		<ScreenContext.Provider value={screenProps()}>{storyFn()}</ScreenContext.Provider>
+	</div>
 );
 
 export const screenProps = () => ({
@@ -32,7 +34,7 @@ export const avatarResolver = (username: string) =>
 		'guilherme.gazzo': gazzoAvatar,
 		'martin.schoeler': martinAvatar,
 		'tasso.evangelista': tassoAvatar,
-	}[username]);
+	})[username];
 
 export const attachmentResolver = (url: string) => url;
 

@@ -21,6 +21,7 @@ export interface IServiceProviderOptions {
 	metadataTemplate: string;
 	callbackUrl: string;
 
-	// The id attribute is filled midway through some operations
+	// The id and redirectUrl attributes are filled midway through some operations
 	id?: string;
+	redirectUrl?: string;
 }

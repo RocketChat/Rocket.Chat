@@ -1,21 +1,21 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box, CheckBox } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import ChannelDeletionTableRow from './ChannelDeletionTableRow';
 import { GenericTable, GenericTableHeaderCell, GenericTableBody, GenericTableHeader } from '../../../../../../components/GenericTable';
 import { useSort } from '../../../../../../components/GenericTable/hooks/useSort';
-import ChannelDeletionTableRow from './ChannelDeletionTableRow';
 
-type ChannelDeletationTable = {
+type ChannelDeletionTableProps = {
 	rooms: Serialized<IRoom>[];
 	onToggleAllRooms: () => void;
 	onChangeRoomSelection: (room: Serialized<IRoom>) => void;
 	selectedRooms: { [key: string]: Serialized<IRoom> };
 };
 
-const ChannelDeletionTable = ({ rooms, onChangeRoomSelection, selectedRooms, onToggleAllRooms }: ChannelDeletationTable) => {
-	const t = useTranslation();
+const ChannelDeletionTable = ({ rooms, onChangeRoomSelection, selectedRooms, onToggleAllRooms }: ChannelDeletionTableProps) => {
+	const { t } = useTranslation();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'usersCount'>('name');
 
 	const selectedRoomsLength = Object.values(selectedRooms).filter(Boolean).length;

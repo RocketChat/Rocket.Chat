@@ -7,7 +7,6 @@ import { Logger } from '@rocket.chat/logger';
 import { Meteor } from 'meteor/meteor';
 import type { StaticFiles } from 'meteor/webapp';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
-import _ from 'underscore';
 
 import { settings } from '../../settings/server';
 
@@ -16,14 +15,28 @@ type NextFunction = (err?: any) => void;
 
 const logger = new Logger('CORS');
 
+let templatePromise: Promise<void> | void;
+
+declare module 'meteor/webapp' {
+	// eslint-disable-next-line @typescript-eslint/no-namespace
+	namespace WebApp {
+		function setInlineScriptsAllowed(allowed: boolean): Promise<void>;
+	}
+}
+
 settings.watch<boolean>(
 	'Enable_CSP',
-	Meteor.bindEnvironment((enabled) => {
-		WebAppInternals.setInlineScriptsAllowed(!enabled);
+	Meteor.bindEnvironment(async (enabled) => {
+		templatePromise = WebAppInternals.setInlineScriptsAllowed(!enabled);
 	}),
 );
 
-WebApp.rawConnectHandlers.use((_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
+WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
+	if (templatePromise) {
+		await templatePromise;
+		templatePromise = void 0;
+	}
+
 	// XSS Protection for old browsers (IE)
 	res.setHeader('X-XSS-Protection', '1');
 
@@ -46,6 +59,8 @@ WebApp.rawConnectHandlers.use((_req: http.IncomingMessage, res: http.ServerRespo
 		const inlineHashes = [
 			// Hash for `window.close()`, required by the CAS login popup.
 			"'sha256-jqxtvDkBbRAl9Hpqv68WdNOieepg8tJSYu1xIy7zT34='",
+			// Hash for /apps/meteor/packages/rocketchat-livechat/assets/demo.html:25
+			"'sha256-aui5xYk3Lu1dQcnsPlNZI+qDTdfzdUv3fzsw80VLJgw='",
 		]
 			.filter(Boolean)
 			.join(' ');
@@ -158,7 +173,7 @@ WebApp.httpServer.addListener('request', (req, res, ...args) => {
 
 	const isLocal =
 		localhostRegexp.test(remoteAddress) &&
-		(!req.headers['x-forwarded-for'] || _.all((req.headers['x-forwarded-for'] as string).split(','), localhostTest));
+		(!req.headers['x-forwarded-for'] || (req.headers['x-forwarded-for'] as string).split(',').every(localhostTest));
 	// @ts-expect-error - `pair` is valid, but doesnt exists on types
 	const isSsl = req.connection.pair || (req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'].indexOf('https') !== -1);
 

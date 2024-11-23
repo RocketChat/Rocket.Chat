@@ -1,16 +1,17 @@
 import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
-import { Box, Button, TextInput, Avatar, IconButton, Label } from '@rocket.chat/fuselage';
+import { Box, Button, Avatar, TextInput, IconButton, Label } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
 import React, { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
-import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
-import UserAvatar from '../UserAvatar';
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 import { readFileAsDataURL } from './readFileAsDataURL';
+import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
+import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 
 type UserAvatarEditorProps = {
 	currentUsername: IUser['username'];
@@ -21,7 +22,7 @@ type UserAvatarEditorProps = {
 };
 
 function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, etag }: UserAvatarEditorProps): ReactElement {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const rotateImages = useSetting('FileUpload_RotateImages');
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState<string>();
@@ -81,11 +82,11 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 					data-qa-id='UserAvatarEditor'
 					username={currentUsername || ''}
 					etag={etag}
-					onError={() => dispatchToastMessage({ type: 'error', message: t('error-invalid-image-url') })}
 					style={{
-						objectFit: 'contain',
 						imageOrientation: rotateImages ? 'from-image' : 'none',
+						objectFit: 'contain',
 					}}
+					onError={() => dispatchToastMessage({ type: 'error', message: t('error-invalid-image-url') })}
 				/>
 				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis={4}>
 					<Box display='flex' flexDirection='row' mbs='none'>

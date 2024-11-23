@@ -1,5 +1,6 @@
 import type { CpuInfo } from 'os';
 
+import type { IMatrixFederationStatistics } from './IMatrixFederationStatistics';
 import type { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';
 import type { ISettingStatisticsObject } from './ISetting';
 import type { ITeamStats } from './ITeam';
@@ -46,6 +47,8 @@ export interface IStats {
 	totalLivechatAgents: number;
 	totalLivechatManagers: number;
 	totalCustomFields: number;
+	totalLivechatPublicCustomFields: number;
+	livechatAutomaticForwardingUnansweredChats: boolean;
 	livechatEnabled: boolean;
 	isDepartmentRemovalEnabled: boolean;
 	totalChannelMessages: number;
@@ -53,6 +56,8 @@ export interface IStats {
 	totalDirectMessages: number;
 	totalDiscussionsMessages: number;
 	totalLivechatMessages: number;
+	totalLivechatRoomsWithPriority: number;
+	totalLivechatRoomsWithDepartment: number;
 	totalTriggers: number;
 	totalMessages: number;
 	federatedServers: number;
@@ -159,6 +164,11 @@ export interface IStats {
 		priorities?: number;
 		slas?: number;
 		businessUnits?: number;
+		omnichannelPdfTranscriptRequested?: number;
+		omnichannelPdfTranscriptSucceeded?: number;
+		omnichannelRoomsWithSlas?: number;
+		omnichannelRoomsWithPriorities?: number;
+		livechatMonitors?: number;
 	};
 	createdAt: Date | string;
 	totalOTR: number;
@@ -169,7 +179,6 @@ export interface IStats {
 	dashboardCount: number;
 	joinJitsiButton: number;
 	totalBroadcastRooms: number;
-	totalRoomsWithActiveLivestream: number;
 	totalTriggeredEmails: number;
 	totalRoomsWithStarred: number;
 	totalRoomsWithPinned: number;
@@ -220,11 +229,10 @@ export interface IStats {
 	totalWebRTCCalls: number;
 	uncaughtExceptionsCount: number;
 	push: number;
+	pushSecured: boolean;
 	dailyPeakConnections: number;
 	maxMonthlyPeakConnections: number;
-	matrixFederation: {
-		enabled: boolean;
-	};
+	matrixFederation: IMatrixFederationStatistics;
 	webRTCEnabled: boolean;
 	webRTCEnabledForOmnichannel: boolean;
 	omnichannelWebRTCCalls: number;

@@ -1,7 +1,7 @@
 import type { IAppsTokens } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { AppsTokens } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -9,7 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { logger } from './logger';
 import { _matchToken } from './push';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'raix:push-update'(options: {

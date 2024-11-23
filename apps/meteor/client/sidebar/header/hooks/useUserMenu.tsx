@@ -1,18 +1,21 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useLogout, useTranslation } from '@rocket.chat/ui-contexts';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { useLogout } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 import UserMenuHeader from '../UserMenuHeader';
 import { useAccountItems } from './useAccountItems';
 import { useStatusItems } from './useStatusItems';
+import { useVoipItemsSection } from './useVoipItemsSection';
 
 export const useUserMenu = (user: IUser) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const statusItems = useStatusItems();
 	const accountItems = useAccountItems();
+	const voipItemsSection = useVoipItemsSection();
 
 	const logout = useLogout();
 	const handleLogout = useMutableCallback(() => {
@@ -35,6 +38,7 @@ export const useUserMenu = (user: IUser) => {
 			title: t('Status'),
 			items: statusItems,
 		},
+		voipItemsSection,
 		{
 			title: t('Account'),
 			items: accountItems,
@@ -42,5 +46,5 @@ export const useUserMenu = (user: IUser) => {
 		{
 			items: [logoutItem],
 		},
-	];
+	].filter((section) => section !== undefined);
 };

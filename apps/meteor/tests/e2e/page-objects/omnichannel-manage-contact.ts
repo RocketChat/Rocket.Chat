@@ -7,14 +7,6 @@ export class OmnichannelManageContact {
 		this.page = page;
 	}
 
-	get newContactTitle(): Locator {
-		return this.page.locator('h3 >> text="New contact"');
-	}
-
-	get editContactTitle(): Locator {
-		return this.page.locator('h3 >> text="Edit Contact Profile"');
-	}
-
 	get inputName(): Locator {
 		return this.page.locator('input[name=name]');
 	}

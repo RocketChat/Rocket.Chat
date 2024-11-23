@@ -1,15 +1,15 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Subscriptions, Rooms } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
-import { broadcastMessageFromData } from '../../../server/modules/watchers/lib/messages';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		starMessage(message: Omit<IMessage, 'starred'> & { starred: boolean }): boolean;
@@ -55,13 +55,14 @@ Meteor.methods<ServerMethods>({
 
 		if (isTheLastMessage(room, message)) {
 			await Rooms.updateLastMessageStar(room._id, uid, message.starred);
+			void notifyOnRoomChangedById(room._id);
 		}
 
-		await Apps.triggerEvent(AppEvents.IPostMessageStarred, message, await Meteor.userAsync(), message.starred);
+		await Apps.self?.triggerEvent(AppEvents.IPostMessageStarred, message, await Meteor.userAsync(), message.starred);
 
 		await Messages.updateUserStarById(message._id, uid, message.starred);
 
-		void broadcastMessageFromData({
+		void notifyOnMessageChange({
 			id: message._id,
 		});
 

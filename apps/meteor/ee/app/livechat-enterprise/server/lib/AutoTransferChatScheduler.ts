@@ -5,11 +5,11 @@ import { LivechatRooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
+import { schedulerLogger } from './logger';
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
 import { Livechat as LivechatTyped } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
-import { schedulerLogger } from './logger';
 
 const SCHEDULER_NAME = 'omnichannel_scheduler';
 
@@ -35,6 +35,7 @@ class AutoTransferChatSchedulerClass {
 			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
 			db: { collection: SCHEDULER_NAME },
 			defaultConcurrency: 1,
+			processEvery: process.env.TEST_MODE === 'true' ? '3 seconds' : '1 minute',
 		});
 
 		await this.scheduler.start();
@@ -115,7 +116,7 @@ class AutoTransferChatSchedulerClass {
 
 		await forwardRoomToAgent(room, {
 			userId: agent.agentId,
-			transferredBy,
+			transferredBy: { ...transferredBy, userType: 'user' },
 			transferredTo: agent,
 			scope: 'autoTransferUnansweredChatsToAgent',
 			comment: timeoutDuration,

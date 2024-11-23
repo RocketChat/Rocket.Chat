@@ -1,14 +1,16 @@
 import { Button } from '@rocket.chat/fuselage';
-import { useRouteParameter, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import EditTrigger from './EditTrigger';
 import EditTriggerWithData from './EditTriggerWithData';
 import TriggersTable from './TriggersTable';
+import { ContextualbarDialog } from '../../../components/Contextualbar';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const TriggersPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const id = useRouteParameter('id');
 	const context = useRouteParameter('context');
 	const router = useRouter();
@@ -23,8 +25,12 @@ const TriggersPage = () => {
 					<TriggersTable />
 				</PageContent>
 			</Page>
-			{context === 'edit' && id && <EditTriggerWithData triggerId={id} />}
-			{context === 'new' && <EditTrigger />}
+			{context && (
+				<ContextualbarDialog>
+					{context === 'edit' && id && <EditTriggerWithData triggerId={id} />}
+					{context === 'new' && <EditTrigger />}
+				</ContextualbarDialog>
+			)}
 		</Page>
 	);
 };

@@ -1,5 +1,709 @@
 # @rocket.chat/ui-client
 
+## 12.0.0
+
+### Minor Changes
+
+- ([#33592](https://github.com/RocketChat/Rocket.Chat/pull/33592)) Adds ability to collapse/expand sidebar groups
+
+### Patch Changes
+
+- ([#33346](https://github.com/RocketChat/Rocket.Chat/pull/33346)) Implements integration with FreeSwitch to enable VoIP calls for team collaboration workspaces
+
+- ([#33507](https://github.com/RocketChat/Rocket.Chat/pull/33507)) Fixed an issue where "Filter by room type" was selectable in the Rooms filter.
+
+- <details><summary>Updated dependencies [9274cf4586]:</summary>
+
+  - @rocket.chat/ui-avatar@8.0.0
+  - @rocket.chat/ui-contexts@12.0.0
+  </details>
+
+## 12.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@12.0.0-rc.6
+  - @rocket.chat/ui-avatar@8.0.0-rc.6
+  </details>
+
+## 12.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@12.0.0-rc.5
+  - @rocket.chat/ui-avatar@8.0.0-rc.5
+  </details>
+
+## 12.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@12.0.0-rc.4
+  - @rocket.chat/ui-avatar@8.0.0-rc.4
+  </details>
+
+## 12.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@12.0.0-rc.3
+  - @rocket.chat/ui-avatar@8.0.0-rc.3
+  </details>
+
+## 12.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@12.0.0-rc.2
+  - @rocket.chat/ui-avatar@8.0.0-rc.2
+  </details>
+
+## 12.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@12.0.0-rc.1
+  - @rocket.chat/ui-avatar@8.0.0-rc.1
+  </details>
+
+## 12.0.0-rc.0
+
+### Minor Changes
+
+- ([#33592](https://github.com/RocketChat/Rocket.Chat/pull/33592)) Adds ability to collapse/expand sidebar groups
+
+### Patch Changes
+
+- ([#33346](https://github.com/RocketChat/Rocket.Chat/pull/33346)) Implements integration with FreeSwitch to enable VoIP calls for team collaboration workspaces
+
+- ([#33507](https://github.com/RocketChat/Rocket.Chat/pull/33507)) Fixed an issue where "Filter by room type" was selectable in the Rooms filter.
+
+- <details><summary>Updated dependencies [9274cf4586]:</summary>
+
+  - @rocket.chat/ui-avatar@8.0.0-rc.0
+  - @rocket.chat/ui-contexts@12.0.0-rc.0
+  </details>
+
+## 11.0.0
+
+### Minor Changes
+
+- ([#33156](https://github.com/RocketChat/Rocket.Chat/pull/33156)) added `sidepanelNavigation` to feature preview list
+
+- ([#32821](https://github.com/RocketChat/Rocket.Chat/pull/32821)) Replaced new `SidebarV2` components under feature preview
+
+- ([#33212](https://github.com/RocketChat/Rocket.Chat/pull/33212)) Added new Admin Feature Preview management view, this will allow the workspace admins to both enable feature previewing in the workspace as well as define which feature previews are enabled by default for the users in the workspace.
+
+- ([#33225](https://github.com/RocketChat/Rocket.Chat/pull/33225)) Implemented new feature preview for Sidepanel
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [cd0d50016e]:</summary>
+
+  - @rocket.chat/ui-avatar@7.0.0
+  - @rocket.chat/ui-contexts@11.0.0
+  </details>
+
+## 11.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@11.0.0-rc.5
+  - @rocket.chat/ui-avatar@7.0.0-rc.5
+  </details>
+
+## 11.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@11.0.0-rc.4
+  - @rocket.chat/ui-avatar@7.0.0-rc.4
+  </details>
+
+## 11.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@11.0.0-rc.3
+  - @rocket.chat/ui-avatar@7.0.0-rc.3
+  </details>
+
+## 11.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@11.0.0-rc.2
+  - @rocket.chat/ui-avatar@7.0.0-rc.2
+  </details>
+
+## 11.0.0-rc.1
+
+### Minor Changes
+
+- ([#33212](https://github.com/RocketChat/Rocket.Chat/pull/33212)) Added new Admin Feature Preview management view, this will allow the workspace admins to both enable feature previewing in the workspace as well as define which feature previews are enabled by default for the users in the workspace.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@11.0.0-rc.1
+  - @rocket.chat/ui-avatar@7.0.0-rc.1
+  </details>
+
+## 11.0.0-rc.0
+
+### Minor Changes
+
+- ([#33156](https://github.com/RocketChat/Rocket.Chat/pull/33156)) added `sidepanelNavigation` to feature preview list
+
+- ([#32821](https://github.com/RocketChat/Rocket.Chat/pull/32821)) Replaced new `SidebarV2` components under feature preview
+
+- ([#33225](https://github.com/RocketChat/Rocket.Chat/pull/33225)) Implemented new feature preview for Sidepanel
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [cd0d50016e]:</summary>
+
+  - @rocket.chat/ui-avatar@7.0.0-rc.0
+  - @rocket.chat/ui-contexts@11.0.0-rc.0
+  </details>
+
+## 10.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@10.0.1
+  </details>
+
+## 10.0.0
+
+### Patch Changes
+
+- ([#32968](https://github.com/RocketChat/Rocket.Chat/pull/32968)) Bumped @rocket.chat/fuselage that fixes the Menu onPointerUp event behavior
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@10.0.0
+  </details>
+
+## 10.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@10.0.0-rc.6
+  </details>
+
+## 10.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@10.0.0-rc.5
+  </details>
+
+## 10.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@10.0.0-rc.4
+  </details>
+
+## 10.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@10.0.0-rc.3
+  </details>
+
+## 10.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@10.0.0-rc.2
+  </details>
+
+## 10.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@10.0.0-rc.1
+  </details>
+
+## 10.0.0-rc.0
+
+### Patch Changes
+
+- ([#32968](https://github.com/RocketChat/Rocket.Chat/pull/32968)) Bumped @rocket.chat/fuselage that fixes the Menu onPointerUp event behavior
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@10.0.0-rc.0
+  </details>
+
+## 9.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.2
+  </details>
+
+## 9.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.1
+  </details>
+
+## 9.0.0
+
+### Minor Changes
+
+- ([#32517](https://github.com/RocketChat/Rocket.Chat/pull/32517)) Feature Preview: New Navigation - `Header` and `Contextualbar` size improvements consistent with the new global `NavBar`
+
+### Patch Changes
+
+- ([#32024](https://github.com/RocketChat/Rocket.Chat/pull/32024)) Implemented a new tab to the users page called 'Active', this tab lists all users who have logged in for the first time and are active.
+
+- <details><summary>Updated dependencies [2d89a0c448, 4e8aa575a6]:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0
+  </details>
+
+## 9.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0-rc.6
+  </details>
+
+## 9.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0-rc.5
+  </details>
+
+## 9.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0-rc.4
+  </details>
+
+## 9.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0-rc.3
+  </details>
+
+## 9.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0-rc.2
+  </details>
+
+## 9.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0-rc.1
+  </details>
+
+## 9.0.0-rc.0
+
+### Minor Changes
+
+- ([#32517](https://github.com/RocketChat/Rocket.Chat/pull/32517)) Feature Preview: New Navigation - `Header` and `Contextualbar` size improvements consistent with the new global `NavBar`
+
+### Patch Changes
+
+- ([#32024](https://github.com/RocketChat/Rocket.Chat/pull/32024)) Implemented a new tab to the users page called 'Active', this tab lists all users who have logged in for the first time and are active.
+
+- <details><summary>Updated dependencies [2d89a0c448, 4e8aa575a6]:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0-rc.0
+  </details>
+
+## 8.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.2
+  </details>
+
+## 8.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.1
+  </details>
+
+## 8.0.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4f72d62aa7]:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0
+  </details>
+
+## 8.0.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.7
+  </details>
+
+## 8.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.6
+  </details>
+
+## 8.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.5
+  </details>
+
+## 8.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.4
+  </details>
+
+## 8.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.3
+  </details>
+
+## 8.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.2
+  </details>
+
+## 8.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.1
+  </details>
+
+## 8.0.0-rc.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4f72d62aa7]:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.0
+
+## 7.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@7.0.3
+  </details>
+
+## 7.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@7.0.2
+  </details>
+
+## 7.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@7.0.1
+  </details>
+
+## 7.0.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@7.0.0
+  </details>
+
+## 7.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@7.0.0-rc.2
+  </details>
+
+## 7.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@7.0.0-rc.1
+  </details>
+
+## 7.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@7.0.0-rc.0
+  </details>
+
+## 6.0.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c0d54d742a]:</summary>
+
+  - @rocket.chat/ui-contexts@6.0.0
+  </details>
+
+## 6.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@6.0.0-rc.2
+  </details>
+
+## 6.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@6.0.0-rc.1
+  </details>
+
+## 6.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c0d54d742a]:</summary>
+
+  - @rocket.chat/ui-contexts@6.0.0-rc.0
+
+## 5.0.2
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@5.0.2
+  </details>
+
+> > > > > > > origin/master
+
+## 5.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@5.0.1
+  </details>
+
+## 5.0.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@5.0.0
+  </details>
+
+## 5.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@5.0.0-rc.4
+  </details>
+
+## 5.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@5.0.0-rc.3
+  </details>
+
+## 5.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@5.0.0-rc.2
+  </details>
+
+## 5.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@5.0.0-rc.1
+  </details>
+
+## 5.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@5.0.0-rc.0
+  </details>
+
+## 4.0.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.6
+  </details>
+
+## 4.0.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.5
+  </details>
+
+## 4.0.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.4
+  </details>
+
+## 4.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.3
+  </details>
+
+## 4.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.2
+  </details>
+
+## 4.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.1
+  </details>
+
 ## 4.0.0
 
 ### Minor Changes

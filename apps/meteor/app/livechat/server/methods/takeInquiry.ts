@@ -1,13 +1,15 @@
 import { Omnichannel } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { RoutingManager } from '../lib/RoutingManager';
+import { isAgentAvailableToTakeContactInquiry } from '../lib/contacts/isAgentAvailableToTakeContactInquiry';
+import { migrateVisitorIfMissingContact } from '../lib/contacts/migrateVisitorIfMissingContact';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'livechat:takeInquiry'(
@@ -51,7 +53,15 @@ export const takeInquiry = async (
 
 	const room = await LivechatRooms.findOneById(inquiry.rid);
 	if (!room || !(await Omnichannel.isWithinMACLimit(room))) {
-		throw new Error('error-mac-limit-reached');
+		throw new Meteor.Error('error-mac-limit-reached');
+	}
+
+	const contactId = room.contactId ?? (await migrateVisitorIfMissingContact(room.v._id, room.source));
+	if (contactId) {
+		const isAgentAvailableToTakeContactInquiryResult = await isAgentAvailableToTakeContactInquiry(inquiry.v._id, room.source, contactId);
+		if (!isAgentAvailableToTakeContactInquiryResult.value) {
+			throw new Meteor.Error(isAgentAvailableToTakeContactInquiryResult.error);
+		}
 	}
 
 	const agent = {
@@ -60,7 +70,7 @@ export const takeInquiry = async (
 	};
 
 	try {
-		await RoutingManager.takeInquiry(inquiry, agent, options);
+		await RoutingManager.takeInquiry(inquiry, agent, options ?? {}, room);
 	} catch (e: any) {
 		throw new Meteor.Error(e.message);
 	}

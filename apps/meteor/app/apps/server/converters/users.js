@@ -35,6 +35,7 @@ export class AppUsersConverter {
 			name: user.name,
 			roles: user.roles,
 			status: user.status,
+			statusText: user.statusText,
 			statusConnection,
 			utcOffset: user.utcOffset,
 			createdAt: user.createdAt,

@@ -1,8 +1,7 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';
 import ChannelDesertionTable from '../../ChannelDesertionTable';
@@ -18,7 +17,7 @@ type FirstStepProps = {
 	selectedRooms: { [key: string]: Serialized<IRoom> };
 };
 
-const FirstStep: FC<FirstStepProps> = ({
+const FirstStep = ({
 	onClose,
 	onCancel,
 	onConfirm,
@@ -28,8 +27,8 @@ const FirstStep: FC<FirstStepProps> = ({
 	selectedRooms,
 	eligibleRoomsLength,
 	...props
-}) => {
-	const t = useTranslation();
+}: FirstStepProps) => {
+	const { t } = useTranslation();
 
 	return (
 		<GenericModal

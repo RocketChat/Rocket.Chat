@@ -1,17 +1,11 @@
 import { useContext } from 'react';
 
-import type { Device, IExperimentalHTMLAudioElement } from '../DeviceContext';
+import type { Device } from '../DeviceContext';
 import { DeviceContext, isDeviceContextEnabled } from '../DeviceContext';
 
 // This allows different places to set the output device by providing a HTMLAudioElement
 
-type setOutputMediaDevice = ({
-	outputDevice,
-	HTMLAudioElement,
-}: {
-	outputDevice: Device;
-	HTMLAudioElement: IExperimentalHTMLAudioElement;
-}) => void;
+type setOutputMediaDevice = ({ outputDevice, HTMLAudioElement }: { outputDevice: Device; HTMLAudioElement: HTMLAudioElement }) => void;
 
 export const useSetOutputMediaDevice = (): setOutputMediaDevice => {
 	const context = useContext(DeviceContext);

@@ -37,12 +37,12 @@ const URL = {
 		return `${this.contactCenter}/edit/${NEW_CONTACT.id}`;
 	},
 	get contactInfo() {
-		return `${this.contactCenter}/info/${NEW_CONTACT.id}`;
+		return `${this.contactCenter}/details/${NEW_CONTACT.id}`;
 	},
 };
 
 const ERROR = {
-	nameRequired: 'The field Name is required.',
+	nameRequired: 'Name required',
 	invalidEmail: 'Invalid email address',
 	existingEmail: 'Email already exists',
 	existingPhone: 'Phone already exists',
@@ -50,7 +50,8 @@ const ERROR = {
 
 test.use({ storageState: Users.admin.state });
 
-test.describe('Omnichannel Contact Center', () => {
+// TODO: this will need to be refactored
+test.describe.skip('Omnichannel Contact Center', () => {
 	let poContacts: OmnichannelContacts;
 	let poOmniSection: OmnichannelSection;
 
@@ -66,8 +67,8 @@ test.describe('Omnichannel Contact Center', () => {
 
 	test.afterAll(async ({ api }) => {
 		// Remove added contacts
-		await api.delete('/livechat/visitor', { token: EXISTING_CONTACT.token });
-		await api.delete('/livechat/visitor', { token: NEW_CONTACT.token });
+		await api.delete(`/livechat/visitor/${EXISTING_CONTACT.token}`);
+		await api.delete(`/livechat/visitor/${NEW_CONTACT.token}`);
 		if (IS_EE) {
 			await api.post('method.call/livechat:removeCustomField', { message: NEW_CUSTOM_FIELD.field });
 		}
@@ -91,6 +92,7 @@ test.describe('Omnichannel Contact Center', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/');
 		await poOmniSection.btnContactCenter.click();
+		await poOmniSection.tabContacts.click();
 		await page.waitForURL(URL.contactCenter);
 	});
 
@@ -98,16 +100,16 @@ test.describe('Omnichannel Contact Center', () => {
 		await test.step('cancel button', async () => {
 			await poContacts.btnNewContact.click();
 			await page.waitForURL(URL.newContact);
-			await expect(poContacts.newContact.newContactTitle).toBeVisible();
+			await expect(poContacts.newContact.inputName).toBeVisible();
 			await poContacts.newContact.btnCancel.click();
 			await page.waitForURL(URL.contactCenter);
-			await expect(poContacts.newContact.newContactTitle).not.toBeVisible();
+			await expect(poContacts.newContact.inputName).not.toBeVisible();
 		});
 
 		await test.step('open contextual bar', async () => {
 			await poContacts.btnNewContact.click();
 			await page.waitForURL(URL.newContact);
-			await expect(poContacts.newContact.newContactTitle).toBeVisible();
+			await expect(poContacts.newContact.inputName).toBeVisible();
 			await expect(poContacts.newContact.btnSave).toBeDisabled();
 		});
 

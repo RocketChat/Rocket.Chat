@@ -35,7 +35,7 @@ API.v1.addRoute(
 					? {
 							update: result,
 							remove: [],
-					  }
+						}
 					: result,
 			);
 		},
@@ -82,6 +82,7 @@ API.v1.addRoute(
 		async post() {
 			const { readThreads = false } = this.bodyParams;
 			const roomId = 'rid' in this.bodyParams ? this.bodyParams.rid : this.bodyParams.roomId;
+
 			await readMessages(roomId, this.userId, readThreads);
 
 			return API.v1.success();

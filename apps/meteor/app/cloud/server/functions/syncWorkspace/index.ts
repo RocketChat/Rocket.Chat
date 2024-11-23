@@ -1,10 +1,10 @@
 import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/CloudWorkspaceRegistrationError';
 import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { CloudWorkspaceAccessTokenEmptyError, CloudWorkspaceAccessTokenError, isAbortError } from '../getWorkspaceAccessToken';
-import { getCachedSupportedVersionsToken } from '../supportedVersionsToken/supportedVersionsToken';
 import { announcementSync } from './announcementSync';
 import { legacySyncWorkspace } from './legacySyncWorkspace';
 import { syncCloudData } from './syncCloudData';
+import { getCachedSupportedVersionsToken } from '../supportedVersionsToken/supportedVersionsToken';
 
 /**
  * Syncs the workspace with the cloud
@@ -15,7 +15,6 @@ export async function syncWorkspace() {
 	try {
 		await announcementSync();
 		await syncCloudData();
-		await getCachedSupportedVersionsToken.reset();
 	} catch (err) {
 		switch (true) {
 			case err instanceof CloudWorkspaceRegistrationError:
@@ -34,7 +33,6 @@ export async function syncWorkspace() {
 				});
 				try {
 					await legacySyncWorkspace();
-					await getCachedSupportedVersionsToken.reset();
 				} catch (err) {
 					switch (true) {
 						case err instanceof CloudWorkspaceRegistrationError:
@@ -52,5 +50,7 @@ export async function syncWorkspace() {
 				}
 			}
 		}
+	} finally {
+		await getCachedSupportedVersionsToken.reset();
 	}
 }

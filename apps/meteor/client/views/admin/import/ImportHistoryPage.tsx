@@ -4,10 +4,10 @@ import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 
-import { ProgressStep } from '../../../../app/importer/lib/ImporterProgressStep';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import ImportOperationSummary from './ImportOperationSummary';
 import ImportOperationSummarySkeleton from './ImportOperationSummarySkeleton';
+import { ProgressStep } from '../../../../app/importer/lib/ImporterProgressStep';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 
 // TODO: review inner logic
 function ImportHistoryPage() {
@@ -152,6 +152,9 @@ function ImportHistoryPage() {
 									{t('Users')}
 								</TableCell>
 								<TableCell is='th' align='center'>
+									{t('Contacts')}
+								</TableCell>
+								<TableCell is='th' align='center'>
 									{t('Channels')}
 								</TableCell>
 								<TableCell is='th' align='center'>
@@ -180,9 +183,7 @@ function ImportHistoryPage() {
 								{latestOperations.data
 									.filter(({ _id }) => !currentOperation.data.valid || currentOperation.data._id !== _id)
 									// Forcing valid=false as the current API only accept preparation/progress over currentOperation
-									?.map((operation) => (
-										<ImportOperationSummary key={operation._id} {...operation} valid={false} small={small} />
-									))}
+									?.map((operation) => <ImportOperationSummary key={operation._id} {...operation} valid={false} small={small} />)}
 							</>
 						)}
 					</TableBody>

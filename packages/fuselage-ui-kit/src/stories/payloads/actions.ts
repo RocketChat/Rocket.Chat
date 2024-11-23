@@ -20,22 +20,22 @@ export const actionsWithAllSelects: readonly UiKit.LayoutBlock[] = [
         blockId: 'dummy-block-id',
         actionId: 'dummy-action-id',
         type: 'channels_select',
-        // placeholder: {
-        //   type: 'plain_text',
-        //   text: 'Select a channel',
-        //   emoji: true,
-        // },
+        placeholder: {
+          type: 'plain_text',
+          text: 'Select a channel',
+          emoji: true,
+        },
       },
       {
         appId: 'dummy-app-id',
         blockId: 'dummy-block-id',
         actionId: 'dummy-action-id',
         type: 'users_select',
-        // placeholder: {
-        //   type: 'plain_text',
-        //   text: 'Select a user',
-        //   emoji: true,
-        // },
+        placeholder: {
+          type: 'plain_text',
+          text: 'Select a user',
+          emoji: true,
+        },
       },
       {
         appId: 'dummy-app-id',
@@ -122,11 +122,11 @@ export const actionsWithInitializedSelects: readonly UiKit.LayoutBlock[] = [
         blockId: 'dummy-block-id',
         actionId: 'dummy-action-id',
         type: 'users_select',
-        // placeholder: {
-        //   type: 'plain_text',
-        //   text: 'Select a user',
-        //   emoji: true,
-        // },
+        placeholder: {
+          type: 'plain_text',
+          text: 'Select a user',
+          emoji: true,
+        },
         // initialUser: 'U123',
       },
       {

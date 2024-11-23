@@ -31,7 +31,7 @@ export const AuthorizationUtils = class {
 		}
 
 		const rules = restrictedRolePermissions.get(roleId);
-		if (!rules || !rules.size) {
+		if (!rules?.size) {
 			return false;
 		}
 

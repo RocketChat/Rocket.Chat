@@ -1,8 +1,8 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Messages, ModerationReports, Rooms, Users } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { AppEvents, Apps } from '../../../ee/server/apps';
 
 export const reportMessage = async (messageId: IMessage['_id'], description: string, uid: IUser['_id']) => {
 	if (!uid) {
@@ -49,7 +49,7 @@ export const reportMessage = async (messageId: IMessage['_id'], description: str
 
 	await ModerationReports.createWithMessageDescriptionAndUserId(message, description, roomInfo, reportedBy);
 
-	await Apps.triggerEvent(AppEvents.IPostMessageReported, message, user, description);
+	await Apps.self?.triggerEvent(AppEvents.IPostMessageReported, message, user, description);
 
 	return true;
 };

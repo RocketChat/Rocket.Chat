@@ -6,10 +6,10 @@ import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import type { Db } from 'mongodb';
 
+import { schedulerLogger } from './logger';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { settings } from '../../../../../app/settings/server';
 import { i18n } from '../../../../../server/lib/i18n';
-import { schedulerLogger } from './logger';
 
 const SCHEDULER_NAME = 'omnichannel_queue_inactivity_monitor';
 
@@ -39,6 +39,7 @@ class OmnichannelQueueInactivityMonitorClass {
 			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
 			db: { collection: SCHEDULER_NAME },
 			defaultConcurrency: 1,
+			processEvery: process.env.TEST_MODE === 'true' ? '3 seconds' : '1 minute',
 		});
 		this.createIndex();
 		const language = settings.get<string>('Language') || 'en';

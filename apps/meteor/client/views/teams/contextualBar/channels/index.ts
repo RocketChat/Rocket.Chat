@@ -1,1 +1,1 @@
-export { default } from './TeamsChannels';
+export { default } from './TeamsChannelsWithData';

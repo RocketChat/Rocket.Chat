@@ -14,7 +14,7 @@ type ChartDataValidActions =
 
 type DateParam = {
 	gte: Date;
-	lt: Date;
+	lte: Date;
 };
 
 export class ChartData {

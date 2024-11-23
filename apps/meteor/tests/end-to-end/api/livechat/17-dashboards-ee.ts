@@ -14,16 +14,15 @@ import {
 	sendMessage,
 	fetchInquiry,
 } from '../../../data/livechat/rooms';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - dashboards', function () {
-	this.retries(0);
-
+(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - dashboards', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 		await createAgent();
 	});
 

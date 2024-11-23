@@ -1,6 +1,6 @@
 import { isThreadMainMessage } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
-import type { VFC, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import React, { useMemo, memo } from 'react';
 
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
@@ -15,14 +15,14 @@ import { useLoadSurroundingMessages } from '../hooks/useLoadSurroundingMessages'
 
 type MessageListProviderProps = {
 	children: ReactNode;
-	scrollMessageList?: MessageListContextValue['scrollMessageList'];
+	messageListRef?: React.RefObject<HTMLElement>;
 	attachmentDimension?: {
 		width?: number;
 		height?: number;
 	};
 };
 
-const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMessageList, attachmentDimension }) => {
+const MessageListProvider = ({ children, messageListRef, attachmentDimension }: MessageListProviderProps) => {
 	const room = useRoom();
 
 	if (!room) {
@@ -37,10 +37,10 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 
 	const { isMobile } = useLayout();
 
-	const showRealName = Boolean(useSetting('UI_Use_Real_Name'));
-	const showColors = useSetting('HexColorPreview_Enabled') as boolean;
+	const showRealName = useSetting('UI_Use_Real_Name', false);
+	const showColors = useSetting('HexColorPreview_Enabled', false);
 
-	const displayRolesGlobal = Boolean(useSetting('UI_DisplayRoles'));
+	const displayRolesGlobal = useSetting('UI_DisplayRoles', true);
 	const hideRolesPreference = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
 	const showRoles = displayRolesGlobal && hideRolesPreference;
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
@@ -79,7 +79,7 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 			showRoles,
 			showRealName,
 			showUsername,
-			scrollMessageList,
+			messageListRef,
 			jumpToMessageParam: msgParameter,
 			...(katexEnabled && {
 				katex: {
@@ -120,7 +120,7 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 			reactToMessage,
 			showColors,
 			msgParameter,
-			scrollMessageList,
+			messageListRef,
 			chat?.emojiPicker,
 		],
 	);

@@ -1,16 +1,18 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ChannelMention, UserMention } from '@rocket.chat/gazzodown';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useLayout, useRouter, useSetting, useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
 import React, { useCallback, memo, useMemo } from 'react';
 
 import { detectEmoji } from '../lib/utils/detectEmoji';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
-import { useChat } from '../views/room/contexts/ChatContext';
-import { useGoToRoom } from '../views/room/hooks/useGoToRoom';
 import { useMessageListHighlights } from './message/list/MessageListContext';
+import { useUserCard } from '../views/room/contexts/UserCardContext';
+import { useGoToRoom } from '../views/room/hooks/useGoToRoom';
 
 type GazzodownTextProps = {
 	children: JSX.Element;
@@ -25,7 +27,12 @@ type GazzodownTextProps = {
 };
 
 const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTextProps) => {
+	const enableTimestamp = useFeaturePreview('enable-timestamp-message-parser');
+	const [userLanguage] = useLocalStorage('userLanguage', 'en');
+
 	const highlights = useMessageListHighlights();
+	const { triggerProps, openUserCard } = useUserCard();
+
 	const highlightRegex = useMemo(() => {
 		if (!highlights?.length) {
 			return;
@@ -47,11 +54,9 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
 	const useEmoji = Boolean(useUserPreference('useEmojis'));
-	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
+	const useRealName = useSetting('UI_Use_Real_Name', false);
 	const ownUserId = useUserId();
 	const showMentionSymbol = Boolean(useUserPreference<boolean>('mentionsWithSymbol'));
-
-	const chat = useChat();
 
 	const resolveUserMention = useCallback(
 		(mention: string) => {
@@ -75,10 +80,10 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 
 			return (event: UIEvent): void => {
 				event.stopPropagation();
-				chat?.userCard.open(username)(event);
+				openUserCard(event, username);
 			};
 		},
-		[chat?.userCard],
+		[openUserCard],
 	);
 
 	const goToRoom = useGoToRoom();
@@ -124,6 +129,9 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				isMobile,
 				ownUserId,
 				showMentionSymbol,
+				triggerProps,
+				enableTimestamp,
+				language: userLanguage,
 			}}
 		>
 			{children}

@@ -1,6 +1,6 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { LayoutContext, useRouter, useSetting } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ReactNode } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
 const hiddenActionsDefaultValue = {
@@ -10,8 +10,12 @@ const hiddenActionsDefaultValue = {
 	userToolbox: [],
 };
 
-const LayoutProvider: FC = ({ children }) => {
-	const showTopNavbarEmbeddedLayout = Boolean(useSetting('UI_Show_top_navbar_embedded_layout'));
+type LayoutProviderProps = {
+	children?: ReactNode;
+};
+
+const LayoutProvider = ({ children }: LayoutProviderProps) => {
+	const showTopNavbarEmbeddedLayout = useSetting('UI_Show_top_navbar_embedded_layout', false);
 	const [isCollapsed, setIsCollapsed] = useState(false);
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
 	const [hiddenActions, setHiddenActions] = useState(hiddenActionsDefaultValue);

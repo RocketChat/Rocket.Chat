@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
@@ -23,6 +23,7 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 	let departments: Awaited<ReturnType<typeof createDepartment>>[];
 	let conversations: Awaited<ReturnType<typeof createConversation>>[];
 	let agents: Awaited<ReturnType<typeof createAgent>>[];
+	let tags: Awaited<ReturnType<typeof createTag>>[];
 
 	// Allow manual on hold
 	test.beforeAll(async ({ api }) => {
@@ -61,9 +62,9 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 
 	// Create tags
 	test.beforeAll(async ({ api }) => {
-		const promises = await Promise.all([createTag(api, 'tagA'), createTag(api, 'tagB')]);
+		tags = await Promise.all([createTag(api, { name: 'tagA' }), createTag(api, { name: 'tagB' })]);
 
-		promises.forEach((res) => expect(res.status()).toBe(200));
+		tags.forEach((res) => expect(res.response.status()).toBe(200));
 	});
 
 	// Create rooms
@@ -120,10 +121,11 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 			...departments.map((department) => department.delete()),
 			// Delete agents
 			...agents.map((agent) => agent.delete()),
+			// Delete tags
+			...tags.map((tag) => tag.delete()),
 			// Reset setting
 			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }),
 			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: true }),
-			// TODO: remove tags
 		]);
 	});
 
@@ -144,7 +146,7 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 		expect(results.violations).toEqual([]);
 	});
 
-	test('OC - Current chats - Filters', async () => {
+	test('OC - Current chats - Filters', async ({ page }) => {
 		const [departmentA, departmentB] = departments.map(({ data }) => data);
 
 		await test.step('expect to filter by guest', async () => {
@@ -232,6 +234,12 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 			await poCurrentChats.removeTag('tagB');
 			await expect(poCurrentChats.findRowByName(visitorB)).toBeVisible();
 			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
+		});
+
+		await test.step('expect department filter to show selected value after page reload', async () => {
+			await poCurrentChats.selectDepartment(departmentA.name);
+			await page.reload();
+			await expect(poCurrentChats.inputDepartmentValue).toContainText(departmentA.name);
 		});
 
 		// TODO: Unit test await test.step('expect to filter by period', async () => {});

@@ -1,28 +1,34 @@
+import type { IAppServerOrchestrator, IAppsLivechatMessage, IAppsMessage } from '@rocket.chat/apps';
 import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
-import type {
-	ILivechatMessage,
-	IVisitor,
-	ILivechatRoom,
-	ILivechatTransferData,
-	IDepartment,
-} from '@rocket.chat/apps-engine/definition/livechat';
-import type { IMessage as IAppsEngineMesage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IVisitor, ILivechatRoom, ILivechatTransferData, IDepartment } from '@rocket.chat/apps-engine/definition/livechat';
+import type { IMessage as IAppsEngineMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { LivechatBridge } from '@rocket.chat/apps-engine/server/bridges/LivechatBridge';
-import type { SelectedAgent } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IOmnichannelRoom, SelectedAgent, IMessage, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
-import { Random } from '@rocket.chat/random';
 
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../../lib/callbacks';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
-import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
+import { getRoomMessages } from '../../../livechat/server/lib/getRoomMessages';
+import type { ILivechatMessage } from '../../../livechat/server/lib/localTypes';
 import { settings } from '../../../settings/server';
 
+declare module '@rocket.chat/apps/dist/converters/IAppMessagesConverter' {
+	export interface IAppMessagesConverter {
+		convertMessage(message: IMessage, cacheObj?: object): Promise<IAppsMessage>;
+	}
+}
+
+declare module '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator' {
+	interface IExtraRoomParams {
+		customFields?: Record<string, unknown>;
+	}
+}
+
 export class AppLivechatBridge extends LivechatBridge {
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 	}
 
@@ -36,16 +42,21 @@ export class AppLivechatBridge extends LivechatBridge {
 		return LivechatTyped.online(departmentId);
 	}
 
-	protected async createMessage(message: ILivechatMessage, appId: string): Promise<string> {
+	protected async createMessage(message: IAppsLivechatMessage, appId: string): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is creating a new message.`);
 
 		if (!message.token) {
 			throw new Error('Invalid token for livechat message');
 		}
 
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
+		const guest = this.orch.getConverters().get('visitors').convertAppVisitor(message.visitor);
+		const appMessage = (await this.orch.getConverters().get('messages').convertAppMessage(message)) as IMessage | undefined;
+		const livechatMessage = appMessage as ILivechatMessage | undefined;
+
 		const msg = await LivechatTyped.sendMessage({
-			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(message.visitor),
-			message: await this.orch.getConverters()?.get('messages').convertAppMessage(message),
+			guest: guest as ILivechatVisitor,
+			message: livechatMessage as ILivechatMessage,
 			agent: undefined,
 			roomInfo: {
 				source: {
@@ -59,13 +70,16 @@ export class AppLivechatBridge extends LivechatBridge {
 		return msg._id;
 	}
 
-	protected async getMessageById(messageId: string, appId: string): Promise<ILivechatMessage> {
+	protected async getMessageById(messageId: string, appId: string): Promise<IAppsLivechatMessage> {
 		this.orch.debugLog(`The App ${appId} is getting the message: "${messageId}"`);
 
-		return this.orch.getConverters()?.get('messages').convertById(messageId);
+		const message = await this.orch.getConverters().get('messages').convertById(messageId);
+
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
+		return message as IAppsLivechatMessage;
 	}
 
-	protected async updateMessage(message: ILivechatMessage, appId: string): Promise<void> {
+	protected async updateMessage(message: IAppsLivechatMessage, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is updating a message.`);
 
 		const data = {
@@ -77,16 +91,13 @@ export class AppLivechatBridge extends LivechatBridge {
 		await LivechatTyped.updateMessage(data);
 	}
 
-	protected async createRoom(visitor: IVisitor, agent: IUser, appId: string, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {
+	protected async createRoom(
+		visitor: IVisitor,
+		agent: IUser,
+		appId: string,
+		{ source, customFields }: IExtraRoomParams = {},
+	): Promise<ILivechatRoom> {
 		this.orch.debugLog(`The App ${appId} is creating a livechat room.`);
-
-		const { source } = extraParams || {};
-		// `source` will likely have the properties below, so we tell TS it's alright
-		const { sidebarIcon, defaultIcon, label } = (source || {}) as {
-			sidebarIcon?: string;
-			defaultIcon?: string;
-			label?: string;
-		};
 
 		let agentRoom: SelectedAgent | undefined;
 		if (agent?.id) {
@@ -97,24 +108,28 @@ export class AppLivechatBridge extends LivechatBridge {
 			agentRoom = { agentId: user._id, username: user.username };
 		}
 
-		const result = await getRoom({
-			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
-			agent: agentRoom,
-			rid: Random.id(),
+		const room = await LivechatTyped.createRoom({
+			visitor: this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			roomInfo: {
 				source: {
 					type: OmnichannelSourceType.APP,
 					id: appId,
 					alias: this.orch.getManager()?.getOneById(appId)?.getName(),
-					label,
-					sidebarIcon,
-					defaultIcon,
+					...(source &&
+						source.type === 'app' && {
+							sidebarIcon: source.sidebarIcon,
+							defaultIcon: source.defaultIcon,
+							label: source.label,
+							destination: source.destination,
+						}),
 				},
 			},
-			extraParams: undefined,
+			agent: agentRoom,
+			extraData: customFields && { customFields },
 		});
 
-		return this.orch.getConverters()?.get('rooms').convertRoom(result.room);
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
+		return this.orch.getConverters()?.get('rooms').convertRoom(room) as Promise<ILivechatRoom>;
 	}
 
 	protected async closeRoom(room: ILivechatRoom, comment: string, closer: IUser | undefined, appId: string): Promise<boolean> {
@@ -135,6 +150,27 @@ export class AppLivechatBridge extends LivechatBridge {
 		return true;
 	}
 
+	protected async findOpenRoomsByAgentId(agentId: string, appId: string): Promise<ILivechatRoom[]> {
+		this.orch.debugLog(`The App ${appId} is looking for livechat rooms associated with agent ${agentId}`);
+
+		if (!agentId) {
+			throw new Error('Invalid agentId');
+		}
+
+		const rooms = await LivechatRooms.findOpenByAgent(agentId).toArray();
+		return Promise.all(rooms.map((room) => this.orch.getConverters()?.get('rooms').convertRoom(room) as Promise<ILivechatRoom>));
+	}
+
+	protected async countOpenRoomsByAgentId(agentId: string, appId: string): Promise<number> {
+		this.orch.debugLog(`The App ${appId} is counting livechat rooms associated with agent ${agentId}`);
+
+		if (!agentId) {
+			throw new Error('Invalid agentId');
+		}
+
+		return LivechatRooms.countOpenByAgent(agentId);
+	}
+
 	protected async findRooms(visitor: IVisitor, departmentId: string | null, appId: string): Promise<Array<ILivechatRoom>> {
 		this.orch.debugLog(`The App ${appId} is looking for livechat visitors.`);
 
@@ -152,7 +188,8 @@ export class AppLivechatBridge extends LivechatBridge {
 			result = await LivechatRooms.findOpenByVisitorToken(visitor.token, {}, extraQuery).toArray();
 		}
 
-		return Promise.all((result as unknown as ILivechatRoom[]).map((room) => this.orch.getConverters()?.get('rooms').convertRoom(room)));
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
+		return Promise.all(result.map((room) => this.orch.getConverters()?.get('rooms').convertRoom(room) as Promise<ILivechatRoom>));
 	}
 
 	protected async createVisitor(visitor: IVisitor, appId: string): Promise<string> {
@@ -170,7 +207,33 @@ export class AppLivechatBridge extends LivechatBridge {
 			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
 		};
 
-		return LivechatTyped.registerGuest(registerData);
+		const livechatVisitor = await LivechatTyped.registerGuest(registerData);
+
+		if (!livechatVisitor) {
+			throw new Error('Invalid visitor, cannot create');
+		}
+
+		return livechatVisitor._id;
+	}
+
+	protected async createAndReturnVisitor(visitor: IVisitor, appId: string): Promise<IVisitor | undefined> {
+		this.orch.debugLog(`The App ${appId} is creating a livechat visitor.`);
+
+		const registerData = {
+			department: visitor.department,
+			username: visitor.username,
+			name: visitor.name,
+			token: visitor.token,
+			email: '',
+			connectionData: undefined,
+			id: visitor.id,
+			...(visitor.phone?.length && { phone: { number: visitor.phone[0].phoneNumber } }),
+			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
+		};
+
+		const livechatVisitor = await LivechatTyped.registerGuest(registerData);
+
+		return this.orch.getConverters()?.get('visitors').convertVisitor(livechatVisitor);
 	}
 
 	protected async transferVisitor(visitor: IVisitor, transferData: ILivechatTransferData, appId: string): Promise<boolean> {
@@ -192,7 +255,8 @@ export class AppLivechatBridge extends LivechatBridge {
 			username,
 			name,
 			type,
-		};
+			userType: 'user',
+		} as const;
 
 		let userId;
 		let transferredTo;
@@ -208,8 +272,9 @@ export class AppLivechatBridge extends LivechatBridge {
 			userId = transferredTo._id;
 		}
 
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
 		return LivechatTyped.transfer(
-			await this.orch.getConverters()?.get('rooms').convertAppRoom(currentRoom),
+			(await this.orch.getConverters()?.get('rooms').convertAppRoom(currentRoom)) as IOmnichannelRoom,
 			this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			{ userId, departmentId, transferredBy, transferredTo },
 		);
@@ -275,12 +340,13 @@ export class AppLivechatBridge extends LivechatBridge {
 		this.orch.debugLog(`The App ${appId} is looking for livechat departments.`);
 
 		const converter = this.orch.getConverters()?.get('departments');
-		const boundConverter = converter.convertDepartment.bind(converter);
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
+		const boundConverter = converter.convertDepartment.bind(converter) as (_: ILivechatDepartment) => Promise<IDepartment>;
 
 		return Promise.all((await LivechatDepartment.findEnabledWithAgents().toArray()).map(boundConverter));
 	}
 
-	protected async _fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IAppsEngineMesage>> {
+	protected async _fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IAppsEngineMessage>> {
 		this.orch.debugLog(`The App ${appId} is getting the transcript for livechat room ${roomId}.`);
 		const messageConverter = this.orch.getConverters()?.get('messages');
 
@@ -288,9 +354,8 @@ export class AppLivechatBridge extends LivechatBridge {
 			throw new Error('Could not get the message converter to process livechat room messages');
 		}
 
-		const livechatMessages = await LivechatTyped.getRoomMessages({ rid: roomId });
-
-		return Promise.all(livechatMessages.map((message) => messageConverter.convertMessage(message) as Promise<IAppsEngineMesage>));
+		const livechatMessages = await getRoomMessages({ rid: roomId });
+		return Promise.all(await livechatMessages.map((message) => messageConverter.convertMessage(message, livechatMessages)).toArray());
 	}
 
 	protected async setCustomFields(

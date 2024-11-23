@@ -1,14 +1,13 @@
 import { Box, Flex, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useStream } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import type { FC } from 'react';
 import React, { useEffect, useState } from 'react';
 
+import OngoingCallDuration from './OngoingCallDuration';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { WebRTC } from '../../../app/webrtc/client';
 import { WEB_RTC_EVENTS } from '../../../app/webrtc/lib/constants';
-import UserAvatar from '../../components/avatar/UserAvatar';
-import OngoingCallDuration from './OngoingCallDuration';
 import './styles.css';
 
 type CallPageProps = {
@@ -23,7 +22,7 @@ type CallPageProps = {
 	callStartTime: any;
 };
 
-const CallPage: FC<CallPageProps> = ({
+const CallPage = ({
 	roomId,
 	visitorToken,
 	visitorId,
@@ -33,7 +32,7 @@ const CallPage: FC<CallPageProps> = ({
 	visitorName,
 	agentName,
 	callStartTime,
-}) => {
+}: CallPageProps) => {
 	if (!roomId) {
 		throw new Error('Call Page - no room id');
 	}
@@ -61,35 +60,47 @@ const CallPage: FC<CallPageProps> = ({
 			if (!visitorId) {
 				throw new Error('Call Page - no visitor id');
 			}
-			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId, visitorId as any);
+			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId, visitorId);
 			const isMobileDevice = (): boolean => {
 				if (isLayoutEmbedded) {
 					setCallInIframe(true);
 				}
 				if (window.innerWidth <= 450 && window.innerHeight >= 629 && window.innerHeight <= 900) {
 					setIsLocalMobileDevice(true);
-					webrtcInstance.media = {
-						audio: true,
-						video: {
-							width: { ideal: 440 },
-							height: { ideal: 580 },
-						},
-					};
+					if (webrtcInstance)
+						webrtcInstance.media = {
+							audio: true,
+							video: {
+								width: { ideal: 440 },
+								height: { ideal: 580 },
+							},
+						};
 					return true;
 				}
 				return false;
 			};
 
-			const unsubNotifyUser = subscribeNotifyUser(`${visitorId}/${WEB_RTC_EVENTS.WEB_RTC}`, (type: any, data: any) => {
+			const unsubNotifyUser = subscribeNotifyUser(`${visitorId}/${WEB_RTC_EVENTS.WEB_RTC}`, (type, data) => {
 				if (data.room == null) {
 					return;
 				}
-				webrtcInstance.onUserStream(type, data);
+
+				switch (type) {
+					case 'candidate':
+						webrtcInstance?.onUserStream('candidate', data);
+						break;
+					case 'description':
+						webrtcInstance?.onUserStream('description', data);
+						break;
+					case 'join':
+						webrtcInstance?.onUserStream('join', data);
+						break;
+				}
 			});
 
 			const unsubNotifyRoom = subscribeNotifyRoom(`${roomId}/${WEB_RTC_EVENTS.WEB_RTC}`, (type: any, data: any) => {
 				if (type === 'callStatus' && data.callStatus === 'ended') {
-					webrtcInstance.stop();
+					webrtcInstance?.stop();
 					setStatus(data.callStatus);
 				} else if (type === 'getDeviceType') {
 					sdk.publish('notify-room', [
@@ -131,7 +142,7 @@ const CallPage: FC<CallPageProps> = ({
 			if (status === 'inProgress') {
 				sdk.publish('notify-room', [`${roomId}/${WEB_RTC_EVENTS.WEB_RTC}`, 'getDeviceType']);
 
-				webrtcInstance.startCall({
+				webrtcInstance?.startCall({
 					audio: true,
 					video: {
 						width: { ideal: 1920 },
@@ -146,10 +157,10 @@ const CallPage: FC<CallPageProps> = ({
 				if (type === 'callStatus') {
 					switch (data.callStatus) {
 						case 'ended':
-							webrtcInstance.stop();
+							webrtcInstance?.stop();
 							break;
 						case 'inProgress':
-							webrtcInstance.startCall({
+							webrtcInstance?.startCall({
 								audio: true,
 								video: {
 									width: { ideal: 1920 },
@@ -169,10 +180,10 @@ const CallPage: FC<CallPageProps> = ({
 
 	const toggleButton = (control: any): any => {
 		if (control === 'mic') {
-			WebRTC.getInstanceByRoomId(roomId, visitorToken).toggleAudio();
+			WebRTC.getInstanceByRoomId(roomId, visitorToken)?.toggleAudio();
 			return setIsMicOn(!isMicOn);
 		}
-		WebRTC.getInstanceByRoomId(roomId, visitorToken).toggleVideo();
+		WebRTC.getInstanceByRoomId(roomId, visitorToken)?.toggleVideo();
 		setIsCameraOn(!isCameraOn);
 		sdk.publish('notify-room', [
 			`${roomId}/${WEB_RTC_EVENTS.WEB_RTC}`,
@@ -202,7 +213,7 @@ const CallPage: FC<CallPageProps> = ({
 						top: '5%',
 						right: '2%',
 					}}
-					className='Self_Video'
+					className='meet__video--self'
 					alignItems='center'
 					backgroundColor='dark'
 				>
@@ -217,15 +228,14 @@ const CallPage: FC<CallPageProps> = ({
 							display: isCameraOn ? 'block' : 'none',
 						}}
 					></video>
-					<UserAvatar
+					<Box
 						style={{
 							display: isCameraOn ? 'none' : 'block',
 							margin: 'auto',
 						}}
-						username={localAvatar}
-						className='rcx-message__avatar'
-						size={isLocalMobileDevice || callInIframe ? 'x32' : 'x48'}
-					/>
+					>
+						<UserAvatar username={localAvatar} size={isLocalMobileDevice || callInIframe ? 'x32' : 'x48'} />
+					</Box>
 				</Box>
 				<Box
 					position='absolute'
@@ -240,7 +250,7 @@ const CallPage: FC<CallPageProps> = ({
 							square
 							title={isMicOn ? t('Mute_microphone') : t('Unmute_microphone')}
 							onClick={(): any => toggleButton('mic')}
-							className={isMicOn ? 'On' : 'Off'}
+							className={isMicOn ? 'meet__button--on' : 'meet__button--off'}
 							size={Number(buttonSize)}
 						>
 							{isMicOn ? <Icon name='mic' size={iconSize} /> : <Icon name='mic-off' size={iconSize} />}
@@ -250,7 +260,7 @@ const CallPage: FC<CallPageProps> = ({
 							square
 							title={isCameraOn ? t('Turn_off_video') : t('Turn_on_video')}
 							onClick={(): void => toggleButton('camera')}
-							className={isCameraOn ? 'On' : 'Off'}
+							className={isCameraOn ? 'meet__button--on' : 'meet__button--off'}
 							size={parseInt(buttonSize)}
 						>
 							{isCameraOn ? <Icon name='video' size={iconSize} /> : <Icon name='video-off' size={iconSize} />}
@@ -281,7 +291,9 @@ const CallPage: FC<CallPageProps> = ({
 						transform: 'scaleX(-1)',
 						display: isRemoteCameraOn ? 'block' : 'none',
 					}}
-				></video>
+				>
+					<track kind='captions' />
+				</video>
 				<Box
 					position='absolute'
 					zIndex={1}
@@ -293,15 +305,15 @@ const CallPage: FC<CallPageProps> = ({
 						top: isRemoteMobileDevice || isLocalMobileDevice ? '10%' : '30%',
 					}}
 				>
-					<UserAvatar
+					<Box
 						style={{
 							display: 'block',
 							margin: 'auto',
 						}}
-						username={remoteAvatar}
-						className='rcx-message__avatar'
-						size={!callInIframe ? 'x124' : avatarSize}
-					/>
+					>
+						<UserAvatar username={remoteAvatar} size={!callInIframe ? 'x124' : avatarSize} />
+					</Box>
+
 					<Box color='white' fontSize={callInIframe ? 12 : 18} textAlign='center' margin={3}>
 						<OngoingCallDuration counter={getCallDuration(callStartTime)} />
 					</Box>
@@ -332,19 +344,18 @@ const CallPage: FC<CallPageProps> = ({
 								top: '5%',
 								right: '2%',
 							}}
-							className='Self_Video'
+							className='meet__video--self'
 							backgroundColor='dark'
 							alignItems='center'
 						>
-							<UserAvatar
+							<Box
 								style={{
 									display: 'block',
 									margin: 'auto',
 								}}
-								username={agentName}
-								className='rcx-message__avatar'
-								size={isLocalMobileDevice ? 'x32' : 'x48'}
-							/>
+							>
+								<UserAvatar username={agentName} size={isLocalMobileDevice ? 'x32' : 'x48'} />
+							</Box>
 						</Box>
 						<Box
 							position='absolute'
@@ -357,15 +368,14 @@ const CallPage: FC<CallPageProps> = ({
 							}}
 							alignItems='center'
 						>
-							<UserAvatar
+							<Box
 								style={{
 									display: 'block',
 									margin: 'auto',
 								}}
-								username={visitorName}
-								className='rcx-message__avatar'
-								size='x124'
-							/>
+							>
+								<UserAvatar username={visitorName} size='x124' />
+							</Box>
 							<Box color='white' fontSize={16} margin={15}>
 								Calling...
 							</Box>

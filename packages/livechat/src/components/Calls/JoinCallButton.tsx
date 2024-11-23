@@ -21,6 +21,9 @@ export const JoinCallButton = ({ t, ...props }: JoinCallButtonProps) => {
 	const { token, room } = store.state;
 
 	const clickJoinCall = () => {
+		if (!room) {
+			return;
+		}
 		switch (props.callProvider) {
 			case 'video-conference': {
 				window.open(props.url, room._id);

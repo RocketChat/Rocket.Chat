@@ -7,6 +7,7 @@ export class AppListenerBridge {
 	}
 
 	async handleEvent(event, ...payload) {
+		// eslint-disable-next-line complexity
 		const method = (() => {
 			switch (event) {
 				case AppInterface.IPreMessageSentPrevent:
@@ -142,10 +143,11 @@ export class AppListenerBridge {
 					};
 				case AppInterface.IPreRoomUserLeave:
 				case AppInterface.IPostRoomUserLeave:
-					const [leavingUser] = payload;
+					const [leavingUser, removedBy] = payload;
 					return {
 						room: rm,
 						leavingUser: this.orch.getConverters().get('users').convertToApp(leavingUser),
+						removedBy: this.orch.getConverters().get('users').convertToApp(removedBy),
 					};
 				default:
 					return rm;

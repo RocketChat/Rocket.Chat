@@ -1,17 +1,17 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Select, Margins, Field, FieldLabel, FieldRow, Label } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { Box, Select, Margins, Field, FieldLabel, FieldRow, Label, Option } from '@rocket.chat/fuselage';
 import React, { useMemo, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import AgentOverview from './AgentOverview';
 import DateRangePicker from './DateRangePicker';
 import InterchangeableChart from './InterchangeableChart';
 import Overview from './Overview';
+import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 
 const useOptions = (type: string): SelectOption[] => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	return useMemo(() => {
 		if (type === 'Conversations') {
 			return [
@@ -30,7 +30,7 @@ const useOptions = (type: string): SelectOption[] => {
 };
 
 const AnalyticsPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [type, setType] = useState('Conversations');
 	const [department, setDepartment] = useState<string | null>(null);
 	const [dateRange, setDateRange] = useState({ start: '', end: '' });
@@ -63,7 +63,13 @@ const AnalyticsPage = () => {
 							</Box>
 							<Box display='flex' mi={4} flexDirection='column' flexGrow={1}>
 								<Label mb={4}>{t('Departments')}</Label>
-								<AutoCompleteDepartment value={department || undefined} onChange={setDepartment} onlyMyDepartments />
+								<AutoCompleteDepartment
+									value={department || undefined}
+									onChange={setDepartment}
+									onlyMyDepartments
+									withTitle={false}
+									renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
+								/>
 							</Box>
 						</Box>
 						<DateRangePicker flexGrow={1} mi={4} onChange={setDateRange} />

@@ -1,6 +1,6 @@
+import type { ThemePreference } from '@rocket.chat/core-typings';
 import type { FontSize } from '@rocket.chat/rest-typings';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ThemePreference } from '@rocket.chat/ui-theming/src/types/themes';
 
 export type AccessibilityPreferencesData = {
 	themeAppearence?: ThemePreference;

@@ -1,5 +1,75 @@
 # Change Log
 
+## 0.37.0
+
+### Minor Changes
+
+- ([#33528](https://github.com/RocketChat/Rocket.Chat/pull/33528)) Adds `accessory` properties to `CalloutBlock`
+
+- ([#33066](https://github.com/RocketChat/Rocket.Chat/pull/33066)) Introduces new property `category` for Rocket.Chat Apps to register UI action buttons. This property is used to group buttons in the UI.
+
+## 0.37.0-rc.0
+
+### Minor Changes
+
+- ([#33528](https://github.com/RocketChat/Rocket.Chat/pull/33528)) Adds `accessory` properties to `CalloutBlock`
+
+- ([#33066](https://github.com/RocketChat/Rocket.Chat/pull/33066)) Introduces new property `category` for Rocket.Chat Apps to register UI action buttons. This property is used to group buttons in the UI.
+
+## 0.36.1
+
+### Patch Changes
+
+- ([#33000](https://github.com/RocketChat/Rocket.Chat/pull/33000)) fix UiKit error message: Failed to resolve module: @rocket.chat/icons
+
+## 0.36.1-rc.0
+
+### Patch Changes
+
+- ([#33000](https://github.com/RocketChat/Rocket.Chat/pull/33000)) fix UiKit error message: Failed to resolve module: @rocket.chat/icons
+
+## 0.36.0
+
+### Minor Changes
+
+- ([#32793](https://github.com/RocketChat/Rocket.Chat/pull/32793)) New Feature: Video Conference Persistent Chat.
+  This feature provides a discussion id for conference provider apps to store the chat messages exchanged during the conferences, so that those users may then access those messages again at any time through Rocket.Chat.
+
+## 0.36.0-rc.0
+
+### Minor Changes
+
+- ([#32793](https://github.com/RocketChat/Rocket.Chat/pull/32793)) New Feature: Video Conference Persistent Chat.
+  This feature provides a discussion id for conference provider apps to store the chat messages exchanged during the conferences, so that those users may then access those messages again at any time through Rocket.Chat.
+
+## 0.35.0
+
+### Minor Changes
+
+- ([#31455](https://github.com/RocketChat/Rocket.Chat/pull/31455)) Introduced new elements for apps to select users
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+## 0.35.0-rc.0
+
+### Minor Changes
+
+- ([#31455](https://github.com/RocketChat/Rocket.Chat/pull/31455)) Introduced new elements for apps to select users
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+## 0.34.0
+
+### Minor Changes
+
+- ([#31918](https://github.com/RocketChat/Rocket.Chat/pull/31918)) Introduced new elements for apps to select channels
+
+## 0.34.0-rc.0
+
+### Minor Changes
+
+- ([#31918](https://github.com/RocketChat/Rocket.Chat/pull/31918)) Introduced new elements for apps to select channels
+
 ## 0.33.0
 
 ### Minor Changes

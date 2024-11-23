@@ -1,5 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { IOmnichannelRoom, IOmnichannelServiceLevelAgreements, InquiryWithAgentInfo } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import {
 	Rooms as RoomRaw,
 	LivechatRooms,
@@ -11,13 +12,13 @@ import {
 import moment from 'moment';
 import type { Document } from 'mongodb';
 
-import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
-import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
 import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
 import { updateInquiryQueueSla } from './SlaHelper';
 import { memoizeDebounce } from './debounceByParams';
 import { logger } from './logger';
+import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
+import { settings } from '../../../../../app/settings/server';
+import { callbacks } from '../../../../../lib/callbacks';
 
 type QueueInfo = {
 	message: {
@@ -107,15 +108,11 @@ export const dispatchInquiryPosition = async (inquiry: Omit<InquiryWithAgentInfo
 		return;
 	}
 	const data = await normalizeQueueInfo({ position, queueInfo, department });
-	const propagateInquiryPosition = (inquiry: Omit<InquiryWithAgentInfo, 'v'>) => {
+	return setTimeout(() => {
 		void api.broadcast('omnichannel.room', inquiry.rid, {
 			type: 'queueData',
 			data,
 		});
-	};
-
-	return setTimeout(() => {
-		propagateInquiryPosition(inquiry);
 	}, 1000);
 };
 
@@ -143,7 +140,10 @@ const dispatchWaitingQueueStatus = async (department?: string) => {
 // but we don't need to notify _each_ change that takes place, just their final position
 export const debouncedDispatchWaitingQueueStatus = memoizeDebounce(dispatchWaitingQueueStatus, 1200);
 
-export const setPredictedVisitorAbandonmentTime = async (room: Pick<IOmnichannelRoom, '_id' | 'responseBy' | 'departmentId'>) => {
+export const setPredictedVisitorAbandonmentTime = async (
+	room: Pick<IOmnichannelRoom, '_id' | 'responseBy' | 'departmentId'>,
+	roomUpdater?: Updater<IOmnichannelRoom>,
+) => {
 	if (
 		!room.responseBy?.firstResponseTs ||
 		!settings.get('Livechat_abandoned_rooms_action') ||
@@ -164,7 +164,11 @@ export const setPredictedVisitorAbandonmentTime = async (room: Pick<IOmnichannel
 	}
 
 	const willBeAbandonedAt = moment(room.responseBy.firstResponseTs).add(Number(secondsToAdd), 'seconds').toDate();
-	await LivechatRooms.setPredictedVisitorAbandonmentByRoomId(room._id, willBeAbandonedAt);
+	if (roomUpdater) {
+		await LivechatRooms.getPredictedVisitorAbandonmentByRoomIdUpdateQuery(willBeAbandonedAt, roomUpdater);
+	} else {
+		await LivechatRooms.setPredictedVisitorAbandonmentByRoomId(room._id, willBeAbandonedAt);
+	}
 };
 
 export const updatePredictedVisitorAbandonment = async () => {

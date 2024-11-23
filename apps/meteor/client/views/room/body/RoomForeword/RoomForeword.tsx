@@ -1,18 +1,18 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isVoipRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Flex, Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import UserAvatar from '../../../../components/avatar/UserAvatar';
-import { VoipRoomForeword } from '../../../../components/voip/room/VoipRoomForeword';
 import RoomForewordUsernameList from './RoomForewordUsernameList';
+import { VoipRoomForeword } from '../../../../components/voip/room/VoipRoomForeword';
 
 type RoomForewordProps = { user: IUser | null; room: IRoom };
 
 const RoomForeword = ({ user, room }: RoomForewordProps): ReactElement | null => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	if (isVoipRoom(room)) {
 		return <VoipRoomForeword room={room} />;
@@ -20,7 +20,7 @@ const RoomForeword = ({ user, room }: RoomForewordProps): ReactElement | null =>
 
 	if (!isDirectMessageRoom(room)) {
 		return (
-			<Box fontScale='c1' color='default' display='flex' justifyContent='center'>
+			<Box fontScale='c1' color='default' display='flex' justifyContent='center' mb={8}>
 				{t('Start_of_conversation')}
 			</Box>
 		);
@@ -33,7 +33,7 @@ const RoomForeword = ({ user, room }: RoomForewordProps): ReactElement | null =>
 	}
 
 	return (
-		<Box is='div' flexGrow={1} display='flex' justifyContent='center' flexDirection='column'>
+		<Box is='div' flexGrow={1} display='flex' justifyContent='center' flexDirection='column' mb={8}>
 			<Flex.Item grow={1}>
 				<Box display='flex' alignItems='center' justifyContent='center'>
 					{usernames.map((username, index) => (

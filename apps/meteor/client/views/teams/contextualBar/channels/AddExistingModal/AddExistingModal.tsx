@@ -1,17 +1,19 @@
 import { Box, Button, Field, FieldLabel, Modal } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { memo, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import RoomsAvailableForTeamsAutoComplete from './RoomsAvailableForTeamsAutoComplete';
 
 type AddExistingModalProps = {
 	teamId: string;
 	onClose: () => void;
+	reload?: () => void;
 };
 
-const AddExistingModal = ({ onClose, teamId }: AddExistingModalProps) => {
-	const t = useTranslation();
+const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) => {
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const addRoomEndpoint = useEndpoint('POST', '/v1/teams.addRooms');
@@ -31,13 +33,14 @@ const AddExistingModal = ({ onClose, teamId }: AddExistingModalProps) => {
 				});
 
 				dispatchToastMessage({ type: 'success', message: t('Channels_added') });
+				reload?.();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {
 				onClose();
 			}
 		},
-		[addRoomEndpoint, teamId, onClose, dispatchToastMessage, t],
+		[addRoomEndpoint, teamId, onClose, dispatchToastMessage, reload, t],
 	);
 
 	return (

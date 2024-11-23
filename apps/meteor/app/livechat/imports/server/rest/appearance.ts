@@ -1,8 +1,11 @@
+import type { ISettingSelectOption } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { isPOSTLivechatAppearanceParams } from '@rocket.chat/rest-typings';
 
 import { isTruthy } from '../../../../../lib/isTruthy';
+import { updateAuditedByUser } from '../../../../../server/settings/lib/auditedSettingUpdates';
 import { API } from '../../../../api/server';
+import { notifyOnSettingChangedById } from '../../../../lib/server/lib/notifyListener';
 import { findAppearance } from '../../../server/api/lib/appearance';
 
 API.v1.addRoute(
@@ -45,6 +48,11 @@ API.v1.addRoute(
 				'Livechat_name_field_registration_form',
 				'Livechat_email_field_registration_form',
 				'Livechat_registration_form_message',
+				'Livechat_hide_watermark',
+				'Livechat_background',
+				'Livechat_widget_position',
+				'Livechat_hide_system_messages',
+				'Omnichannel_allow_visitors_to_close_conversation',
 			];
 
 			const valid = settings.every((setting) => validSettingList.includes(setting._id));
@@ -53,10 +61,14 @@ API.v1.addRoute(
 				throw new Error('invalid-setting');
 			}
 
-			const dbSettings = await Settings.findByIds(validSettingList, { projection: { _id: 1, value: 1, type: 1 } })
+			const dbSettings = await Settings.findByIds(validSettingList, { projection: { _id: 1, value: 1, type: 1, values: 1 } })
 				.map((dbSetting) => {
 					const setting = settings.find(({ _id }) => _id === dbSetting._id);
 					if (!setting || dbSetting.value === setting.value) {
+						return;
+					}
+
+					if (dbSetting.type === 'multiSelect' && (!Array.isArray(setting.value) || !validateValues(setting.value, dbSetting.values))) {
 						return;
 					}
 
@@ -80,23 +92,41 @@ API.v1.addRoute(
 				})
 				.toArray();
 
-			await Promise.all(
-				dbSettings.filter(isTruthy).map((setting) => {
-					return Settings.updateValueById(setting._id, setting.value);
-				}),
-			);
+			const eligibleSettings = dbSettings.filter(isTruthy);
+
+			const auditSettingOperation = updateAuditedByUser({
+				_id: this.userId,
+				username: this.user.username!,
+				ip: this.requestIp,
+				useragent: this.request.headers['user-agent'] || '',
+			});
+
+			const promises = eligibleSettings.map(({ _id, value }) => auditSettingOperation(Settings.updateValueById, _id, value));
+			(await Promise.all(promises)).forEach((value, index) => {
+				if (value?.modifiedCount) {
+					void notifyOnSettingChangedById(eligibleSettings[index]._id);
+				}
+			});
 
 			return API.v1.success();
 		},
 	},
 );
 
-function coerceInt(value: string | number | boolean): number {
+function validateValues(values: string[], allowedValues: ISettingSelectOption[] = []): boolean {
+	return values.every((value) => allowedValues.some((allowedValue) => allowedValue.key === value));
+}
+
+function coerceInt(value: string | number | boolean | string[]): number {
 	if (typeof value === 'number') {
 		return value;
 	}
 
 	if (typeof value === 'boolean') {
+		return 0;
+	}
+
+	if (Array.isArray(value)) {
 		return 0;
 	}
 

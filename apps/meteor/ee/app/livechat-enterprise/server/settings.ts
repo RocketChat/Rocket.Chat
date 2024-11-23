@@ -194,6 +194,47 @@ export const createSettings = async (): Promise<void> => {
 		modules: ['livechat-enterprise'],
 	});
 
+	await settingsRegistry.add('Livechat_widget_position', 'right', {
+		type: 'select',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		i18nLabel: 'Livechat_widget_position_on_the_screen',
+		public: true,
+		values: [
+			{ key: 'left', i18nLabel: 'Left' },
+			{ key: 'right', i18nLabel: 'Right' },
+		],
+		enterprise: true,
+		invalidValue: 'right',
+		modules: ['livechat-enterprise'],
+		enableQuery: omnichannelEnabledQuery,
+	});
+
+	await settingsRegistry.add('Livechat_background', '', {
+		type: 'string',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		i18nDescription: 'Livechat_background_description',
+		placeholder: '#FFFFFF',
+		public: true,
+		enterprise: true,
+		invalidValue: '',
+		modules: ['livechat-enterprise'],
+		enableQuery: omnichannelEnabledQuery,
+	});
+
+	await settingsRegistry.add('Livechat_hide_watermark', false, {
+		type: 'boolean',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		invalidValue: false,
+		enableQuery: omnichannelEnabledQuery,
+		i18nDescription: 'Livechat_hide_watermark_description',
+		enterprise: true,
+		sorter: 999,
+		modules: ['livechat-enterprise'],
+	});
+
 	await settingsRegistry.add('Omnichannel_contact_manager_routing', true, {
 		type: 'boolean',
 		group: 'Omnichannel',
@@ -261,6 +302,23 @@ export const createSettings = async (): Promise<void> => {
 		type: 'boolean',
 		public: true,
 		i18nLabel: 'Omnichannel_transcript_pdf',
+	});
+
+	await settingsRegistry.add('Livechat_hide_system_messages', ['uj', 'ul', 'livechat-close'], {
+		type: 'multiSelect',
+		group: 'Omnichannel',
+		section: 'Livechat',
+		enterprise: true,
+		modules: ['livechat-enterprise'],
+		invalidValue: ['uj', 'ul', 'livechat-close'],
+		public: true,
+		values: [
+			{ key: 'uj', i18nLabel: 'Message_HideType_uj' },
+			{ key: 'ul', i18nLabel: 'Message_HideType_ul' },
+			{ key: 'livechat-close', i18nLabel: 'Message_HideType_livechat_closed' },
+			{ key: 'livechat-started', i18nLabel: 'Message_HideType_livechat_started' },
+			{ key: 'livechat_transfer_history', i18nLabel: 'Message_HideType_livechat_transfer_history' },
+		],
 	});
 
 	await Settings.addOptionValueById('Livechat_Routing_Method', {

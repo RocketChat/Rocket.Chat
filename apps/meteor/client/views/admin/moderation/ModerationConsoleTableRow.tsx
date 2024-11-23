@@ -1,10 +1,10 @@
 import type { IModerationAudit, IUser } from '@rocket.chat/core-typings';
 import React from 'react';
 
-import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import ModerationConsoleActions from './ModerationConsoleActions';
 import UserColumn from './helpers/UserColumn';
+import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
+import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 export type ModerationConsoleRowProps = {
 	report: IModerationAudit;
@@ -13,7 +13,7 @@ export type ModerationConsoleRowProps = {
 };
 
 const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: ModerationConsoleRowProps): JSX.Element => {
-	const { userId: _id, rooms, name, count, message, username, ts } = report;
+	const { userId: _id, rooms, name, count, username, ts } = report;
 
 	const roomNames = rooms.map((room) => {
 		if (room.t === 'd') {
@@ -31,7 +31,6 @@ const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: Moder
 			<GenericTableCell withTruncatedText>
 				<UserColumn username={username} name={name} fontSize='micro' size={isDesktopOrLarger ? 'x20' : 'x40'} />
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{message}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{concatenatedRoomNames}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{formatDateAndTime(ts)}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{count}</GenericTableCell>

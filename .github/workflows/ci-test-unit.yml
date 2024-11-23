@@ -6,6 +6,12 @@ on:
       node-version:
         required: true
         type: string
+      deno-version:
+        required: true
+        type: string
+      enterprise-license:
+        required: false
+        type: string
     secrets:
       CODECOV_TOKEN:
         required: false
@@ -13,6 +19,7 @@ on:
 env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+  ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
 
 jobs:
   test:
@@ -21,17 +28,30 @@ jobs:
     name: Unit Tests
 
     steps:
+      - name: Collect Workflow Telemetry
+        uses: catchpoint/workflow-telemetry-action@v2
+        with:
+          theme: dark
+          job_summary: true
+          comment_on_pr: false
       - uses: actions/checkout@v4
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ inputs.node-version }}
+          deno-version: ${{ inputs.deno-version }}
           cache-modules: true
           install: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+      - uses: rharkor/caching-for-turbo@v1.5
 
+      - name: Restore turbo build
+        uses: actions/download-artifact@v4
+        with:
+          name: turbo-build
+          path: .turbo/cache
       - name: Unit Test
         run: yarn testunit
 

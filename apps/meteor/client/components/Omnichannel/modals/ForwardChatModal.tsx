@@ -10,12 +10,14 @@ import {
 	Divider,
 	FieldLabel,
 	FieldRow,
+	Option,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
@@ -32,11 +34,19 @@ const ForwardChatModal = ({
 	onCancel: () => void;
 	room: IOmnichannelRoom;
 }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const getUserData = useEndpoint('GET', '/v1/users.info');
-	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle') as boolean;
+	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle', true);
 
-	const { getValues, handleSubmit, register, setFocus, setValue, watch } = useForm();
+	const {
+		getValues,
+		handleSubmit,
+		register,
+		setFocus,
+		setValue,
+		watch,
+		formState: { isSubmitting },
+	} = useForm();
 
 	useEffect(() => {
 		setFocus('comment');
@@ -71,7 +81,7 @@ const ForwardChatModal = ({
 				uid = user?._id;
 			}
 
-			onForward(departmentId, uid, comment);
+			await onForward(departmentId, uid, comment);
 		},
 		[getUserData, onForward],
 	);
@@ -98,7 +108,7 @@ const ForwardChatModal = ({
 						<FieldLabel>{t('Forward_to_department')}</FieldLabel>
 						<FieldRow>
 							<PaginatedSelectFiltered
-								withTitle
+								withTitle={false}
 								filter={departmentsFilter as string}
 								setFilter={setDepartmentsFilter}
 								options={departments}
@@ -110,6 +120,7 @@ const ForwardChatModal = ({
 								}}
 								flexGrow={1}
 								endReached={endReached}
+								renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
 							/>
 						</FieldRow>
 					</Field>
@@ -146,7 +157,7 @@ const ForwardChatModal = ({
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button type='submit' disabled={!username && !department} primary>
+					<Button type='submit' disabled={!username && !department} primary loading={isSubmitting}>
 						{t('Forward')}
 					</Button>
 				</Modal.FooterControllers>

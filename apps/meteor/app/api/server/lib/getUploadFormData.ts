@@ -5,6 +5,8 @@ import type { ValidateFunction } from 'ajv';
 import busboy from 'busboy';
 import type { Request } from 'express';
 
+import { getMimeType } from '../../../utils/lib/mimeTypes';
+
 type UploadResult<K> = {
 	file: Readable & { truncated: boolean };
 	fieldname: string;
@@ -14,6 +16,14 @@ type UploadResult<K> = {
 	fileBuffer: Buffer;
 	fields: K;
 };
+
+type UploadResultWithOptionalFile<K> =
+	| UploadResult<K>
+	| ({
+			[P in keyof Omit<UploadResult<K>, 'fields'>]: undefined;
+	  } & {
+			fields: K;
+	  });
 
 export async function getUploadFormData<
 	T extends string,
@@ -25,8 +35,37 @@ export async function getUploadFormData<
 		field?: T;
 		validate?: V;
 		sizeLimit?: number;
+		fileOptional: true;
+	},
+): Promise<UploadResultWithOptionalFile<K>>;
+
+export async function getUploadFormData<
+	T extends string,
+	K extends Record<string, string> = Record<string, string>,
+	V extends ValidateFunction<K> = ValidateFunction<K>,
+>(
+	{ request }: { request: Request },
+	options?: {
+		field?: T;
+		validate?: V;
+		sizeLimit?: number;
+		fileOptional?: false | undefined;
+	},
+): Promise<UploadResult<K>>;
+
+export async function getUploadFormData<
+	T extends string,
+	K extends Record<string, string> = Record<string, string>,
+	V extends ValidateFunction<K> = ValidateFunction<K>,
+>(
+	{ request }: { request: Request },
+	options: {
+		field?: T;
+		validate?: V;
+		sizeLimit?: number;
+		fileOptional?: boolean;
 	} = {},
-): Promise<UploadResult<K>> {
+): Promise<UploadResultWithOptionalFile<K>> {
 	const limits = {
 		files: 1,
 		...(options.sizeLimit && options.sizeLimit > -1 && { fileSize: options.sizeLimit }),
@@ -35,9 +74,9 @@ export async function getUploadFormData<
 	const bb = busboy({ headers: request.headers, defParamCharset: 'utf8', limits });
 	const fields = Object.create(null) as K;
 
-	let uploadedFile: UploadResult<K> | undefined;
+	let uploadedFile: UploadResultWithOptionalFile<K> | undefined;
 
-	let returnResult = (_value: UploadResult<K>) => {
+	let returnResult = (_value: UploadResultWithOptionalFile<K>) => {
 		// noop
 	};
 	let returnError = (_error?: Error | string | null | undefined) => {
@@ -46,10 +85,22 @@ export async function getUploadFormData<
 
 	function onField(fieldname: keyof K, value: K[keyof K]) {
 		fields[fieldname] = value;
+		uploadedFile = {
+			fields,
+			encoding: undefined,
+			filename: undefined,
+			fieldname: undefined,
+			mimetype: undefined,
+			fileBuffer: undefined,
+			file: undefined,
+		};
 	}
 
 	function onEnd() {
 		if (!uploadedFile) {
+			return returnError(new MeteorError('No file or fields were uploaded'));
+		}
+		if (!('file' in uploadedFile) && !options.fileOptional) {
 			return returnError(new MeteorError('No file uploaded'));
 		}
 		if (options.validate !== undefined && !options.validate(fields)) {
@@ -83,7 +134,7 @@ export async function getUploadFormData<
 				file,
 				filename,
 				encoding,
-				mimetype,
+				mimetype: getMimeType(mimetype, filename),
 				fieldname,
 				fields,
 				fileBuffer: Buffer.concat(fileChunks),
@@ -119,7 +170,7 @@ export async function getUploadFormData<
 
 	request.pipe(bb);
 
-	return new Promise((resolve, reject) => {
+	return new Promise<UploadResultWithOptionalFile<K>>((resolve, reject) => {
 		returnResult = resolve;
 		returnError = reject;
 	});

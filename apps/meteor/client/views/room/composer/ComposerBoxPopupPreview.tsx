@@ -1,11 +1,11 @@
-import { Box, Skeleton, Tile } from '@rocket.chat/fuselage';
+import { Box, Skeleton, Tile, Option } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMethod } from '@rocket.chat/ui-contexts';
 import type { ForwardedRef } from 'react';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 
-import { useChat } from '../contexts/ChatContext';
 import type { ComposerBoxPopupProps } from './ComposerBoxPopup';
+import { useChat } from '../contexts/ChatContext';
 
 type ComposerBoxPopupPreviewItem = { _id: string; type: 'image' | 'video' | 'audio' | 'text' | 'other'; value: string; sort?: number };
 
@@ -96,8 +96,8 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 	}
 
 	return (
-		<Box className='message-popup-position' position='relative'>
-			<Tile className='message-popup' display='flex' padding={8} role='menu' mbe={8} aria-labelledby={id}>
+		<Box position='relative'>
+			<Tile display='flex' padding={8} role='menu' mbe={8} aria-labelledby={id}>
 				<Box role='listbox' display='flex' overflow='auto' fontSize={0} width={0} flexGrow={1} aria-busy={isLoading}>
 					{isLoading &&
 						Array(5)
@@ -123,17 +123,19 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 								{item.type === 'image' && <img src={item.value} alt={item._id} />}
 								{item.type === 'audio' && (
 									<audio controls>
+										<track kind='captions' />
 										<source src={item.value} />
 										Your browser does not support the audio element.
 									</audio>
 								)}
 								{item.type === 'video' && (
 									<video controls className='inline-video'>
+										<track kind='captions' />
 										<source src={item.value} />
 										Your browser does not support the video element.
 									</video>
 								)}
-								{item.type === 'text' && <h4>{item.value}</h4>}
+								{item.type === 'text' && <Option>{item.value}</Option>}
 								{item.type === 'other' && <code>{item.value}</code>}
 							</Box>
 						))}

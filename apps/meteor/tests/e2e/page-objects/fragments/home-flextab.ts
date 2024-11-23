@@ -36,12 +36,20 @@ export class HomeFlextab {
 		return this.page.locator('[data-qa-id="ToolBoxAction-hash"]');
 	}
 
+	get btnTeamMembers(): Locator {
+		return this.page.locator('role=menuitem[name="Teams Members"]');
+	}
+
 	get kebab(): Locator {
 		return this.page.locator('role=button[name="Options"]');
 	}
 
 	get btnNotificationPreferences(): Locator {
 		return this.page.locator('role=menuitem[name="Notifications Preferences"]');
+	}
+
+	get btnE2EERoomSetupDisableE2E(): Locator {
+		return this.page.locator('[data-qa-id=ToolBoxAction-key]');
 	}
 
 	get btnDisableE2E(): Locator {
@@ -52,11 +60,23 @@ export class HomeFlextab {
 		return this.page.locator('role=menuitem[name="Enable E2E"]');
 	}
 
+	get btnEnableOTR(): Locator {
+		return this.page.locator('role=menuitem[name="OTR"]');
+	}
+
 	get flexTabViewThreadMessage(): Locator {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="message-body"]');
 	}
 
 	get userInfoUsername(): Locator {
 		return this.page.locator('[data-qa="UserInfoUserName"]');
+	}
+
+	get btnPinnedMessagesList(): Locator {
+		return this.page.locator('[data-key="pinned-messages"]');
+	}
+
+	get btnStarredMessageList(): Locator {
+		return this.page.locator('[data-key="starred-messages"]');
 	}
 }

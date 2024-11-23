@@ -1,5 +1,5 @@
 import 'meteor/meteor';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import type { IStreamerConstructor, IStreamer } from 'meteor/rocketchat:streamer';
 
 type StringifyBuffers<T extends unknown[]> = {
@@ -60,6 +60,9 @@ declare module 'meteor/meteor' {
 		}
 
 		interface IMeteorConnection {
+			httpHeaders: Record<string, any>;
+			referer: string;
+			clientAddress: string;
 			_send(message: IDDPMessage): void;
 
 			_methodInvokers: Record<string, any>;

@@ -2,7 +2,7 @@ import { lazy, useMemo } from 'react';
 
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
-const TeamsChannels = lazy(() => import('../../views/teams/contextualBar/channels/TeamsChannels'));
+const TeamsChannels = lazy(() => import('../../views/teams/contextualBar/channels'));
 
 export const useTeamChannelsRoomAction = () => {
 	return useMemo(

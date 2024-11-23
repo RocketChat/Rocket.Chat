@@ -80,12 +80,24 @@ export class AccountProfile {
 		return this.page.locator('input[type=file]');
 	}
 
+	get securityHeader(): Locator {
+		return this.page.locator('h1[data-qa-type="PageHeader-title"]:has-text("Security")');
+	}
+
+	get securityPasswordSection(): Locator {
+		return this.page.locator('[role="button"]:has-text("Password")');
+	}
+
+	get security2FASection(): Locator {
+		return this.page.locator('[role="button"]:has-text("Two Factor Authentication")');
+	}
+
 	get securityE2EEncryptionSection(): Locator {
-		return this.page.locator('[role="button"]:has-text("E2E Encryption")');
+		return this.page.locator('[role="button"]:has-text("End-to-end encryption")');
 	}
 
 	get securityE2EEncryptionResetKeyButton(): Locator {
-		return this.page.locator("role=button[name='Reset E2E Key']");
+		return this.page.locator("role=button[name='Reset E2EE key']");
 	}
 
 	get securityE2EEncryptionPassword(): Locator {
@@ -98,5 +110,13 @@ export class AccountProfile {
 
 	get securityE2EEncryptionSavePasswordButton(): Locator {
 		return this.page.locator("role=button[name='Save changes']");
+	}
+
+	getAccordionItemByName(name: string): Locator {
+		return this.page.getByRole('button', { name, exact: true });
+	}
+
+	getCheckboxByLabelText(name: string): Locator {
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name }) });
 	}
 }

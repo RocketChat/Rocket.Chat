@@ -2,13 +2,13 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, Select, ButtonGroup, Button, FieldGroup, InputBox } from '@rocket.chat/fuselage';
 import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
-import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../components/Contextualbar';
 import type { MailExportFormValues } from './ExportMessages';
 import { useRoomExportMutation } from './useRoomExportMutation';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../components/Contextualbar';
 
 type FileExportProps = {
 	formId: string;
@@ -18,7 +18,7 @@ type FileExportProps = {
 };
 
 const FileExport = ({ formId, rid, exportOptions, onCancel }: FileExportProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { control, handleSubmit } = useFormContext<MailExportFormValues>();
 	const roomExportMutation = useRoomExportMutation();
 	const formFocus = useAutoFocus<HTMLFormElement>();
@@ -31,12 +31,12 @@ const FileExport = ({ formId, rid, exportOptions, onCancel }: FileExportProps) =
 		[t],
 	);
 
-	const handleExport = ({ type, dateFrom, dateTo, format }: MailExportFormValues) => {
+	const handleExport = ({ dateFrom, dateTo, format }: MailExportFormValues) => {
 		roomExportMutation.mutateAsync({
 			rid,
-			type,
-			dateFrom,
-			dateTo,
+			type: 'file',
+			...(dateFrom && { dateFrom }),
+			...(dateTo && { dateTo }),
 			format,
 		});
 	};

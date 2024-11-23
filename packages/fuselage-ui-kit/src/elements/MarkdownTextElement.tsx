@@ -1,6 +1,8 @@
+import { Skeleton } from '@rocket.chat/fuselage';
 import { Markup } from '@rocket.chat/gazzodown';
 import { parse } from '@rocket.chat/message-parser';
 import type { TextObject } from '@rocket.chat/ui-kit';
+import { Suspense } from 'react';
 
 import { useAppTranslation } from '../hooks/useAppTranslation';
 
@@ -15,7 +17,11 @@ const MarkdownTextElement = ({ textObject }: { textObject: TextObject }) => {
     return null;
   }
 
-  return <Markup tokens={parse(text, { emoticons: false })} />;
+  return (
+    <Suspense fallback={<Skeleton />}>
+      <Markup tokens={parse(text, { emoticons: false })} />
+    </Suspense>
+  );
 };
 
 export default MarkdownTextElement;

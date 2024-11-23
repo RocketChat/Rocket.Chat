@@ -7,9 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import LocalTime from '../../../components/LocalTime';
 import MarkdownText from '../../../components/MarkdownText';
-import UserCard from '../../../components/UserCard';
-import UserCardInfo from '../../../components/UserCard/UserCardInfo';
-import UserCardRole from '../../../components/UserCard/UserCardRole';
+import { UserCard, UserCardInfo, UserCardRole } from '../../../components/UserCard';
 
 const clampStyle = css`
 	display: -webkit-box;
@@ -24,7 +22,7 @@ type CurrentUserDisplayProps = {
 };
 
 const CurrentUserDisplay = ({ user }: CurrentUserDisplayProps) => {
-	const showRealNames = useSetting<boolean>('UI_Use_Real_Name');
+	const showRealNames = useSetting('UI_Use_Real_Name', false);
 	const getRoles = useRolesDescription();
 
 	const { t } = useTranslation();

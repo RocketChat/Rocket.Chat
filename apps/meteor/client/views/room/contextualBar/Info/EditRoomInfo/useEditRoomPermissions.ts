@@ -1,20 +1,40 @@
 import type { IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
-import { usePermission, useAtLeastOnePermission, useRole } from '@rocket.chat/ui-contexts';
+import { usePermission, useAtLeastOnePermission, useRole, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
+import { E2EEState } from '../../../../../../app/e2e/client/E2EEState';
 import { RoomSettingsEnum } from '../../../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
+import { useE2EEState } from '../../../hooks/useE2EEState';
 
 const getCanChangeType = (room: IRoom | IRoomWithRetentionPolicy, canCreateChannel: boolean, canCreateGroup: boolean, isAdmin: boolean) =>
 	(!room.default || isAdmin) && ((room.t === 'p' && canCreateChannel) || (room.t === 'c' && canCreateGroup));
 
 export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) => {
 	const isAdmin = useRole('admin');
+	const e2eeState = useE2EEState();
+	const isE2EEReady = e2eeState === E2EEState.READY || e2eeState === E2EEState.SAVE_PASSWORD;
 	const canCreateChannel = usePermission('create-c');
 	const canCreateGroup = usePermission('create-p');
+	const teamsInfoEndpoint = useEndpoint('GET', '/v1/teams.info');
 
-	const canChangeType = getCanChangeType(room, canCreateChannel, canCreateGroup, isAdmin);
+	const teamId = room.teamId || '';
+	const { data: teamInfoData } = useQuery(['teamId', teamId], async () => teamsInfoEndpoint({ teamId }), {
+		keepPreviousData: true,
+		retry: false,
+		enabled: room.teamId !== '',
+	});
+
+	const canCreateTeamChannel = usePermission('create-team-channel', teamInfoData?.teamInfo.roomId);
+	const canCreateTeamGroup = usePermission('create-team-group', teamInfoData?.teamInfo.roomId);
+
+	const canChangeType = getCanChangeType(
+		room,
+		teamId ? canCreateTeamChannel : canCreateChannel,
+		teamId ? canCreateTeamGroup : canCreateGroup,
+		isAdmin,
+	);
 	const canSetReadOnly = usePermission('set-readonly', room._id);
 	const canSetReactWhenReadOnly = usePermission('set-react-when-readonly', room._id);
 	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
@@ -22,7 +42,7 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		useMemo(() => ['archive-room', 'unarchive-room'], []),
 		room._id,
 	);
-	const canToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id) && (room.encrypted || e2e.isReady());
+	const canToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id) && (room.encrypted || isE2EEReady);
 
 	const [
 		canViewName,
@@ -34,6 +54,7 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		canViewReadOnly,
 		canViewHideSysMes,
 		canViewJoinCode,
+		canViewReactWhenReadOnly,
 		canViewEncrypted,
 	] = useMemo(() => {
 		const isAllowed =
@@ -72,6 +93,7 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		canViewReadOnly,
 		canViewHideSysMes,
 		canViewJoinCode,
+		canViewReactWhenReadOnly,
 		canViewEncrypted,
 	};
 };

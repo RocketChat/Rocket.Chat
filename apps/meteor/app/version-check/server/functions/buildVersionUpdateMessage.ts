@@ -3,6 +3,8 @@ import semver from 'semver';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
+import { updateAuditedBySystem } from '../../../../server/settings/lib/auditedSettingUpdates';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
 
@@ -13,6 +15,10 @@ export const buildVersionUpdateMessage = async (
 		infoUrl: string;
 	}[] = [],
 ) => {
+	if (process.env.TEST_MODE) {
+		return;
+	}
+
 	const lastCheckedVersion = settings.get<string>('Update_LatestAvailableVersion');
 
 	if (!lastCheckedVersion) {
@@ -33,7 +39,11 @@ export const buildVersionUpdateMessage = async (
 			continue;
 		}
 
-		await Settings.updateValueById('Update_LatestAvailableVersion', version.version);
+		(
+			await updateAuditedBySystem({
+				reason: 'buildVersionUpdateMessage',
+			})(Settings.updateValueById, 'Update_LatestAvailableVersion', version.version)
+		).modifiedCount && void notifyOnSettingChangedById('Update_LatestAvailableVersion');
 
 		await sendMessagesToAdmins({
 			msgs: async ({ adminUser }) => [

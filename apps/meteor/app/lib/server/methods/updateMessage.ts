@@ -1,18 +1,23 @@
 import type { IEditedMessage, IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { settings } from '../../../settings/server';
 import { updateMessage } from '../functions/updateMessage';
 
-const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg'];
+const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg', 'customFields', 'content', 'e2eMentions'];
 
-export async function executeUpdateMessage(uid: IUser['_id'], message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>, previewUrls?: string[]) {
+export async function executeUpdateMessage(
+	uid: IUser['_id'],
+	message: AtLeast<IMessage, '_id' | 'rid' | 'msg' | 'customFields'>,
+	previewUrls?: string[],
+) {
 	const originalMessage = await Messages.findOneById(message._id);
 	if (!originalMessage?._id) {
 		return;
@@ -26,8 +31,11 @@ export async function executeUpdateMessage(uid: IUser['_id'], message: AtLeast<I
 		}
 	});
 
+	// IF the message has custom fields, always update
+	// Ideally, we'll compare the custom fields to check for change, but since we don't know the shape of
+	// custom fields, as it's user defined, we're gonna update
 	const msgText = originalMessage?.attachments?.[0]?.description ?? originalMessage.msg;
-	if (msgText === message.msg && !previewUrls) {
+	if (msgText === message.msg && !previewUrls && !message.customFields) {
 		return;
 	}
 
@@ -53,7 +61,7 @@ export async function executeUpdateMessage(uid: IUser['_id'], message: AtLeast<I
 	}
 
 	const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
-	const bypassBlockTimeLimit = await hasPermissionAsync(uid, 'bypass-time-limit-edit-and-delete');
+	const bypassBlockTimeLimit = await hasPermissionAsync(uid, 'bypass-time-limit-edit-and-delete', message.rid);
 
 	if (!bypassBlockTimeLimit && Match.test(blockEditInMinutes, Number) && blockEditInMinutes !== 0) {
 		let currentTsDiff = 0;
@@ -90,7 +98,7 @@ export async function executeUpdateMessage(uid: IUser['_id'], message: AtLeast<I
 	return updateMessage(message, user, originalMessage, previewUrls);
 }
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		updateMessage(message: IEditedMessage, previewUrls?: string[]): void;
@@ -108,6 +116,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateMessage' });
 		}
 
-		return executeUpdateMessage(uid, message, previewUrls);
+		return applyAirGappedRestrictionsValidation(() => executeUpdateMessage(uid, message, previewUrls));
 	},
 });

@@ -1,9 +1,10 @@
 import { LivechatPriority } from '@rocket.chat/models';
 import { isGETLivechatPrioritiesParams, isPUTLivechatPriority } from '@rocket.chat/rest-typings';
 
+import { findPriority, updatePriority } from './lib/priorities';
 import { API } from '../../../../../app/api/server';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
-import { findPriority, updatePriority } from './lib/priorities';
+import { notifyOnLivechatPriorityChanged } from '../../../../../app/lib/server/lib/notifyListener';
 
 API.v1.addRoute(
 	'livechat/priorities',
@@ -55,7 +56,11 @@ API.v1.addRoute(
 		},
 		async put() {
 			const { priorityId } = this.urlParams;
+
 			await updatePriority(priorityId, this.bodyParams);
+
+			void notifyOnLivechatPriorityChanged({ _id: priorityId, ...this.bodyParams });
+
 			return API.v1.success();
 		},
 	},
@@ -75,7 +80,13 @@ API.v1.addRoute(
 			if (!(await LivechatPriority.canResetPriorities())) {
 				return API.v1.failure();
 			}
-			await LivechatPriority.resetPriorities();
+
+			const eligiblePriorities = (await LivechatPriority.findByDirty().toArray()).map(({ _id }) => _id);
+
+			await LivechatPriority.resetPriorities(eligiblePriorities);
+
+			eligiblePriorities.forEach((_id) => notifyOnLivechatPriorityChanged({ _id, name: undefined }));
+
 			return API.v1.success();
 		},
 		async get() {

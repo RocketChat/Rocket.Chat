@@ -1,14 +1,15 @@
 import { Box, Option, OptionSkeleton, Tile } from '@rocket.chat/fuselage';
 import { useUniqueId, useContentBoxSize } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useEffect, memo, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export type ComposerBoxPopupProps<
 	T extends {
 		_id: string;
 		sort?: number;
+		disabled?: boolean;
 	},
 > = {
 	title?: string;
@@ -22,6 +23,7 @@ function ComposerBoxPopup<
 	T extends {
 		_id: string;
 		sort?: number;
+		disabled?: boolean;
 	},
 >({
 	title,
@@ -30,14 +32,16 @@ function ComposerBoxPopup<
 	select,
 	renderItem = ({ item }: { item: T }) => <>{JSON.stringify(item)}</>,
 }: ComposerBoxPopupProps<T>): ReactElement | null {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const id = useUniqueId();
 	const composerBoxPopupRef = useRef<HTMLElement>(null);
 	const popupSizes = useContentBoxSize(composerBoxPopupRef);
 
 	const variant = popupSizes && popupSizes.inlineSize < 480 ? 'small' : 'large';
 
-	const getOptionTitle = <T extends { _id: string; sort?: number; outside?: boolean; suggestion?: boolean }>(item: T) => {
+	const getOptionTitle = <T extends { _id: string; sort?: number; outside?: boolean; suggestion?: boolean; disabled?: boolean }>(
+		item: T,
+	) => {
 		if (variant !== 'small') {
 			return undefined;
 		}
@@ -48,6 +52,10 @@ function ComposerBoxPopup<
 
 		if (item.suggestion) {
 			return t('Suggestion_from_recent_messages');
+		}
+
+		if (item.disabled) {
+			return t('Unavailable_in_encrypted_channels');
 		}
 	};
 
@@ -76,8 +84,8 @@ function ComposerBoxPopup<
 	}, [focused]);
 
 	return (
-		<Box className='message-popup-position' position='relative'>
-			<Tile ref={composerBoxPopupRef} className='message-popup' padding={0} role='menu' mbe={8} overflow='hidden' aria-labelledby={id}>
+		<Box position='relative'>
+			<Tile ref={composerBoxPopupRef} padding={0} role='menu' mbe={8} overflow='hidden' aria-labelledby={id}>
 				{title && (
 					<Box bg='tint' pi={16} pb={8} id={id}>
 						{title}
@@ -96,6 +104,7 @@ function ComposerBoxPopup<
 								id={`popup-item-${item._id}`}
 								tabIndex={item === focused ? 0 : -1}
 								aria-selected={item === focused}
+								disabled={item.disabled}
 							>
 								{renderItem({ item: { ...item, variant } })}
 							</Option>

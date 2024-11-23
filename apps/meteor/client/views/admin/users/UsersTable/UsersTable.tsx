@@ -1,12 +1,16 @@
+import type { IRole, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
-import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import type { ReactElement, MutableRefObject } from 'react';
-import React, { useRef, useMemo, useState, useEffect } from 'react';
+import { useEffectEvent, useBreakpoints } from '@rocket.chat/fuselage-hooks';
+import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
+import type { UseQueryResult } from '@tanstack/react-query';
+import type { ReactElement, Dispatch, SetStateAction } from 'react';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import FilterByText from '../../../../components/FilterByText';
+import UsersTableFilters from './UsersTableFilters';
+import UsersTableRow from './UsersTableRow';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -15,149 +19,164 @@ import {
 	GenericTableBody,
 	GenericTableLoadingTable,
 } from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import UsersTableRow from './UsersTableRow';
+import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
+import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import type { AdminUsersTab, UsersFilters, UsersTableSortingOption } from '../AdminUsersPage';
+import { useVoipExtensionPermission } from '../voip/hooks/useVoipExtensionPermission';
 
 type UsersTableProps = {
-	reload: MutableRefObject<() => void>;
+	tab: AdminUsersTab;
+	roleData: { roles: IRole[] } | undefined;
+	onReload: () => void;
+	setUserFilters: Dispatch<SetStateAction<UsersFilters>>;
+	filteredUsersQueryResult: UseQueryResult<PaginatedResult<{ users: Serialized<DefaultUserInfo>[] }>>;
+	paginationData: ReturnType<typeof usePagination>;
+	sortData: ReturnType<typeof useSort<UsersTableSortingOption>>;
+	isSeatsCapExceeded: boolean;
 };
 
-// TODO: Missing error state
-const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
-	const t = useTranslation();
-	const usersRoute = useRoute('admin-users');
-	const mediaQuery = useMediaQuery('(min-width: 1024px)');
-	const [text, setText] = useState('');
+const UsersTable = ({
+	filteredUsersQueryResult,
+	setUserFilters,
+	roleData,
+	tab,
+	onReload,
+	paginationData,
+	sortData,
+	isSeatsCapExceeded,
+}: UsersTableProps): ReactElement | null => {
+	const { t } = useTranslation();
+	const router = useRouter();
+	const breakpoints = useBreakpoints();
 
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
-	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address' | 'status'>('name');
+	const isMobile = !breakpoints.includes('xl');
+	const isLaptop = !breakpoints.includes('xxl');
 
-	const searchTerm = useDebouncedValue(text, 500);
-	const prevSearchTerm = useRef<string>('');
+	const { data, isLoading, isError, isSuccess } = filteredUsersQueryResult;
 
-	const query = useDebouncedValue(
-		useMemo(() => {
-			if (searchTerm !== prevSearchTerm.current) {
-				setCurrent(0);
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = paginationData;
+	const { sortBy, sortDirection, setSort } = sortData;
+
+	const canManageVoipExtension = useVoipExtensionPermission();
+
+	const isKeyboardEvent = (
+		event: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>,
+	): event is React.KeyboardEvent<HTMLElement> => {
+		return (event as React.KeyboardEvent<HTMLElement>).key !== undefined;
+	};
+
+	const handleClickOrKeyDown = useEffectEvent(
+		(id, e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>): void => {
+			e.stopPropagation();
+
+			const keyboardSubmitKeys = ['Enter', ' '];
+
+			if (isKeyboardEvent(e) && !keyboardSubmitKeys.includes(e.key)) {
+				return;
 			}
 
-			return {
-				fields: JSON.stringify({
-					name: 1,
-					username: 1,
-					emails: 1,
-					roles: 1,
-					status: 1,
-					avatarETag: 1,
-					active: 1,
-				}),
-				query: JSON.stringify({
-					$or: [
-						{ 'emails.address': { $regex: escapeRegExp(searchTerm), $options: 'i' } },
-						{ username: { $regex: escapeRegExp(searchTerm), $options: 'i' } },
-						{ name: { $regex: escapeRegExp(searchTerm), $options: 'i' } },
-					],
-				}),
-				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				count: itemsPerPage,
-				offset: searchTerm === prevSearchTerm.current ? current : 0,
-			};
-		}, [searchTerm, sortBy, sortDirection, itemsPerPage, current, setCurrent]),
-		500,
-	);
-
-	const getUsers = useEndpoint('GET', '/v1/users.list');
-
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const { data, isLoading, error, isSuccess, refetch } = useQuery(
-		['users', query],
-		async () => {
-			const users = await getUsers(query);
-			return users;
+			router.navigate({
+				name: 'admin-users',
+				params: {
+					context: 'info',
+					id,
+				},
+			});
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
-		},
-	);
-
-	useEffect(() => {
-		reload.current = refetch;
-	}, [reload, refetch]);
-
-	useEffect(() => {
-		prevSearchTerm.current = searchTerm;
-	}, [searchTerm]);
-
-	const handleClick = useMutableCallback((id): void =>
-		usersRoute.push({
-			context: 'info',
-			id,
-		}),
 	);
 
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell w='x200' key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>,
-			mediaQuery && (
+			<GenericTableHeaderCell key='username' direction={sortDirection} active={sortBy === 'username'} onClick={setSort} sort='username'>
+				{t('Username')}
+			</GenericTableHeaderCell>,
+			!isLaptop && (
 				<GenericTableHeaderCell
-					w='x140'
-					key='username'
+					key='email'
 					direction={sortDirection}
-					active={sortBy === 'username'}
+					active={sortBy === 'emails.address'}
 					onClick={setSort}
-					sort='username'
+					sort='emails.address'
 				>
-					{t('Username')}
+					{t('Email')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell
-				w='x120'
-				key='email'
-				direction={sortDirection}
-				active={sortBy === 'emails.address'}
-				onClick={setSort}
-				sort='emails.address'
-			>
-				{t('Email')}
-			</GenericTableHeaderCell>,
-			mediaQuery && (
-				<GenericTableHeaderCell w='x120' key='roles' onClick={setSort}>
-					{t('Roles')}
+			!isLaptop && <GenericTableHeaderCell key='roles'>{t('Roles')}</GenericTableHeaderCell>,
+			tab === 'all' && !isMobile && (
+				<GenericTableHeaderCell key='status' direction={sortDirection} active={sortBy === 'status'} onClick={setSort} sort='status'>
+					{t('Registration_status')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell w='x100' key='status' direction={sortDirection} active={sortBy === 'status'} onClick={setSort} sort='status'>
-				{t('Status')}
-			</GenericTableHeaderCell>,
+			tab === 'pending' && !isMobile && (
+				<GenericTableHeaderCell key='action' direction={sortDirection} active={sortBy === 'active'} onClick={setSort} sort='active'>
+					{t('Pending_action')}
+				</GenericTableHeaderCell>
+			),
+			tab === 'all' && canManageVoipExtension && (
+				<GenericTableHeaderCell
+					w='x180'
+					key='freeSwitchExtension'
+					direction={sortDirection}
+					active={sortBy === 'freeSwitchExtension'}
+					onClick={setSort}
+					sort='freeSwitchExtension'
+				>
+					{t('Voice_call_extension')}
+				</GenericTableHeaderCell>
+			),
+			<GenericTableHeaderCell key='actions' w={tab === 'pending' ? 'x204' : 'x50'} />,
 		],
-		[mediaQuery, setSort, sortBy, sortDirection, t],
+		[isLaptop, isMobile, setSort, sortBy, sortDirection, t, tab, canManageVoipExtension],
 	);
-
-	if (error) {
-		return null;
-	}
 
 	return (
 		<>
-			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
+			<UsersTableFilters roleData={roleData} setUsersFilters={setUserFilters} />
+
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
-					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={5} />}</GenericTableBody>
+					<GenericTableBody>
+						<GenericTableLoadingTable headerCells={5} />
+					</GenericTableBody>
 				</GenericTable>
 			)}
-			{data?.users && data.count > 0 && isSuccess && (
+
+			{isError && (
+				<GenericNoResults icon='warning' title={t('Something_went_wrong')} buttonTitle={t('Reload_page')} buttonAction={onReload} />
+			)}
+
+			{isSuccess && data.users.length === 0 && (
+				<GenericNoResults
+					icon='user'
+					title={t('Users_Table_Generic_No_users', {
+						postProcess: 'sprintf',
+						sprintf: [tab !== 'all' ? t(tab as TranslationKey) : ''],
+					})}
+					description={t(`Users_Table_no_${tab}_users_description`)}
+				/>
+			)}
+
+			{isSuccess && !!data?.users && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{data?.users.map((user) => (
-								<UsersTableRow key={user._id} onClick={handleClick} mediaQuery={mediaQuery} user={user} />
+							{data.users.map((user) => (
+								<UsersTableRow
+									key={user._id}
+									tab={tab}
+									user={user}
+									isMobile={isMobile}
+									isLaptop={isLaptop}
+									isSeatsCapExceeded={isSeatsCapExceeded}
+									showVoipExtension={canManageVoipExtension}
+									onReload={onReload}
+									onClick={handleClickOrKeyDown}
+								/>
 							))}
 						</GenericTableBody>
 					</GenericTable>
@@ -165,14 +184,13 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
+						count={data.total || 0}
 						onSetItemsPerPage={setItemsPerPage}
 						onSetCurrent={setCurrent}
 						{...paginationProps}
 					/>
 				</>
 			)}
-			{isSuccess && data?.count === 0 && <GenericNoResults />}
 		</>
 	);
 };

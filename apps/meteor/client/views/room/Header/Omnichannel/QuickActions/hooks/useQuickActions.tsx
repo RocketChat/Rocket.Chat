@@ -10,13 +10,15 @@ import {
 	useMethod,
 	useTranslation,
 	useRouter,
+	useUserSubscription,
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useState, useEffect } from 'react';
 
+import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
+import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
 import { LivechatInquiry } from '../../../../../../../app/livechat/client/collections/LivechatInquiry';
+import PlaceChatOnHoldModal from '../../../../../../../app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import { LegacyRoomManager } from '../../../../../../../app/ui-utils/client';
-import PlaceChatOnHoldModal from '../../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
-import { useHasLicenseModule } from '../../../../../../../ee/client/hooks/useHasLicenseModule';
 import CloseChatModal from '../../../../../../components/Omnichannel/modals/CloseChatModal';
 import CloseChatModalData from '../../../../../../components/Omnichannel/modals/CloseChatModalData';
 import ForwardChatModal from '../../../../../../components/Omnichannel/modals/ForwardChatModal';
@@ -24,12 +26,11 @@ import ReturnChatQueueModal from '../../../../../../components/Omnichannel/modal
 import TranscriptModal from '../../../../../../components/Omnichannel/modals/TranscriptModal';
 import { useIsRoomOverMacLimit } from '../../../../../../hooks/omnichannel/useIsRoomOverMacLimit';
 import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
+import { useHasLicenseModule } from '../../../../../../hooks/useHasLicenseModule';
 import { quickActionHooks } from '../../../../../../ui';
 import { useOmnichannelRoom } from '../../../../contexts/RoomContext';
 import type { QuickActionsActionConfig } from '../../../../lib/quickActions';
 import { QuickActionsEnum } from '../../../../lib/quickActions';
-import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
-import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
 
 export const useQuickActions = (): {
 	quickActions: QuickActionsActionConfig[];
@@ -47,6 +48,7 @@ export const useQuickActions = (): {
 	const visitorRoomId = room.v._id;
 	const rid = room._id;
 	const uid = useUserId();
+	const subscription = useUserSubscription(rid);
 	const roomLastMessage = room.lastMessage;
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
@@ -194,7 +196,7 @@ export const useQuickActions = (): {
 									sendToVisitor: preferences?.omnichannelTranscriptEmail,
 									requestData,
 								},
-						  }
+							}
 						: { transcriptEmail: { sendToVisitor: false } }),
 				});
 				LivechatInquiry.remove({ rid });
@@ -330,7 +332,7 @@ export const useQuickActions = (): {
 			case QuickActionsEnum.TranscriptPDF:
 				return hasLicense && !isRoomOverMacLimit && canSendTranscriptPDF;
 			case QuickActionsEnum.CloseChat:
-				return !!roomOpen && (canCloseRoom || canCloseOthersRoom);
+				return (subscription && (canCloseRoom || canCloseOthersRoom)) || (!!roomOpen && canCloseOthersRoom);
 			case QuickActionsEnum.OnHoldChat:
 				return !!roomOpen && canPlaceChatOnHold;
 			default:

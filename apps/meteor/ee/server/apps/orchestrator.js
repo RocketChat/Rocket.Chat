@@ -1,10 +1,12 @@
+import { registerOrchestrator } from '@rocket.chat/apps';
 import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Logger } from '@rocket.chat/logger';
 import { AppLogs, Apps as AppsModel, AppsPersistence } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
+import { AppRealLogStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 import { RealAppBridges } from '../../../app/apps/server/bridges';
 import {
 	AppMessagesConverter,
@@ -16,12 +18,11 @@ import {
 	AppUploadsConverter,
 	AppVisitorsConverter,
 	AppRolesConverter,
+	AppContactsConverter,
 } from '../../../app/apps/server/converters';
 import { AppThreadsConverter } from '../../../app/apps/server/converters/threads';
 import { settings } from '../../../app/settings/server';
 import { canEnableApp } from '../../app/license/server/canEnableApp';
-import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
-import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
@@ -54,7 +55,7 @@ export class AppServerOrchestrator {
 		this._logModel = AppLogs;
 		this._persistModel = AppsPersistence;
 		this._storage = new AppRealStorage(this._model);
-		this._logStorage = new AppRealLogsStorage(this._logModel);
+		this._logStorage = new AppRealLogStorage(this._logModel);
 		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath);
 
 		this._converters = new Map();
@@ -63,6 +64,7 @@ export class AppServerOrchestrator {
 		this._converters.set('settings', new AppSettingsConverter(this));
 		this._converters.set('users', new AppUsersConverter(this));
 		this._converters.set('visitors', new AppVisitorsConverter(this));
+		this._converters.set('contacts', new AppContactsConverter(this));
 		this._converters.set('departments', new AppDepartmentsConverter(this));
 		this._converters.set('uploads', new AppUploadsConverter(this));
 		this._converters.set('videoConferences', new AppVideoConferencesConverter());
@@ -172,34 +174,37 @@ export class AppServerOrchestrator {
 		await this.getManager().load();
 
 		// Before enabling each app we verify if there is still room for it
-		await this.getManager()
-			.get()
-			// We reduce everything to a promise chain so it runs sequentially
-			.reduce(
-				(control, app) =>
-					control.then(async () => {
-						const canEnable = await canEnableApp(app.getStorageItem());
+		const apps = await this.getManager().get();
 
-						if (canEnable) {
-							return this.getManager().loadOne(app.getID());
-						}
+		// This needs to happen sequentially to keep track of app limits
+		for await (const app of apps) {
+			try {
+				await canEnableApp(app.getStorageItem());
 
-						this._rocketchatLogger.warn(`App "${app.getInfo().name}" can't be enabled due to CE limits.`);
-					}),
-				Promise.resolve(),
-			);
+				await this.getManager().loadOne(app.getID(), true);
+			} catch (error) {
+				this._rocketchatLogger.warn(`App "${app.getInfo().name}" could not be enabled: `, error.message);
+			}
+		}
 
 		await this.getBridges().getSchedulerBridge().startScheduler();
 
-		this._rocketchatLogger.info(`Loaded the Apps Framework and loaded a total of ${this.getManager().get({ enabled: true }).length} Apps!`);
+		const appCount = (await this.getManager().get({ enabled: true })).length;
+
+		this._rocketchatLogger.info(`Loaded the Apps Framework and loaded a total of ${appCount} Apps!`);
 	}
 
-	async disableApps() {
-		await this.getManager()
-			.get()
-			.forEach((app) => {
-				this.getManager().disable(app.getID());
-			});
+	async migratePrivateApps() {
+		const apps = await this.getManager().get({ installationSource: 'private' });
+
+		await Promise.all(apps.map((app) => this.getManager().migrate(app.getID())));
+		await Promise.all(apps.map((app) => this.getNotifier().appUpdated(app.getID())));
+	}
+
+	async disableMarketplaceApps() {
+		const apps = await this.getManager().get({ installationSource: 'marketplace' });
+
+		await Promise.all(apps.map((app) => this.getManager().disable(app.getID())));
 	}
 
 	async unload() {
@@ -249,8 +254,8 @@ export class AppServerOrchestrator {
 	}
 }
 
-export const AppEvents = AppInterface;
 export const Apps = new AppServerOrchestrator();
+registerOrchestrator(Apps);
 
 settings.watch('Apps_Framework_Source_Package_Storage_Type', (value) => {
 	if (!Apps.isInitialized()) {

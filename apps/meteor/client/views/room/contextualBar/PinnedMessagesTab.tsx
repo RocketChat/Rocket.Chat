@@ -1,12 +1,14 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import MessageListTab from './MessageListTab';
+import { onClientMessageReceived } from '../../../lib/onClientMessageReceived';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 import { useRoom } from '../contexts/RoomContext';
-import MessageListTab from './MessageListTab';
 
 const PinnedMessagesTab = (): ReactElement => {
 	const getPinnedMessages = useEndpoint('GET', '/v1/chat.getPinnedMessages');
@@ -25,10 +27,10 @@ const PinnedMessagesTab = (): ReactElement => {
 			messages.push(...result.messages.map(mapMessageFromApi));
 		}
 
-		return messages;
+		return Promise.all(messages.map(onClientMessageReceived));
 	});
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<MessageListTab

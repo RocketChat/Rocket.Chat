@@ -21,6 +21,12 @@ declare module 'meteor/accounts-base' {
 			credentialToken?: string;
 			credentialSecret?: string;
 		};
+
+		/**
+		 * There is one case where the onlogout event is triggered with no user:
+		 * during the deletion, the user is logged out, and the framework try to get the user from the database.
+		 */
+		function onLogout(func: (options: { user?: Meteor.User; connection: Meteor.Connection }) => void): void;
 	}
 }
 
@@ -66,7 +72,7 @@ Meteor.logout = async function (...args) {
 
 				// Remove the userId from the client to prevent calls to the server while the logout is processed.
 				// If the logout fails, the userId will be reloaded on the resume call
-				Meteor._localStorage.removeItem(Accounts.USER_ID_KEY);
+				Accounts.storageLocation.removeItem(Accounts.USER_ID_KEY);
 
 				// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
 				window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${provider}/?redirect=${encodeURIComponent(result)}`));

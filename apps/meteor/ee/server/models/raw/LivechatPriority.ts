@@ -1,7 +1,7 @@
 import type { ILivechatPriority } from '@rocket.chat/core-typings';
 import type { ILivechatPriorityModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Db, UpdateFilter, ModifyResult, IndexDescription } from 'mongodb';
+import type { Db, UpdateFilter, ModifyResult, IndexDescription, FindCursor } from 'mongodb';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
@@ -48,12 +48,16 @@ export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements I
 		return this.findOne(query, options);
 	}
 
+	findByDirty(): FindCursor<Pick<ILivechatPriority, '_id'>> {
+		return this.find({ dirty: true }, { projection: { _id: 1 } });
+	}
+
 	async canResetPriorities(): Promise<boolean> {
 		return Boolean(await this.findOne({ dirty: true }, { projection: { _id: 1 } }));
 	}
 
-	async resetPriorities(): Promise<void> {
-		await this.updateMany({ dirty: true }, [{ $set: { dirty: false } }, { $unset: 'name' }]);
+	async resetPriorities(ids: ILivechatPriority['_id'][]): Promise<void> {
+		await this.updateMany({ _id: { $in: ids } }, [{ $set: { dirty: false } }, { $unset: 'name' }]);
 	}
 
 	async updatePriority(_id: string, reset: boolean, name?: string): Promise<ModifyResult<ILivechatPriority>> {

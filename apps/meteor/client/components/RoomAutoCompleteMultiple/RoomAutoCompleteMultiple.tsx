@@ -1,11 +1,10 @@
 import { AutoComplete, Option, Chip, Box, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { memo, useMemo, useState } from 'react';
-
-import RoomAvatar from '../avatar/RoomAvatar';
 
 const generateQuery = (
 	term = '',
@@ -32,7 +31,7 @@ const RoomAutoCompleteMultiple = ({ value, onChange, ...props }: RoomAutoComplet
 				? result.data.items.map(({ fname, name, _id, avatarETag, t }) => ({
 						value: _id,
 						label: { name: fname || name, avatarETag, type: t },
-				  }))
+					}))
 				: [],
 		[result.data?.items, result.isSuccess],
 	);

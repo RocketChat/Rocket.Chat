@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';

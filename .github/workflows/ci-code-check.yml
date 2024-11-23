@@ -6,6 +6,9 @@ on:
       node-version:
         required: true
         type: string
+      deno-version:
+        required: true
+        type: string
 
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
@@ -33,8 +36,10 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ inputs.node-version }}
+          deno-version: ${{ inputs.deno-version }}
           cache-modules: true
           install: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # - name: Free disk space
       #   run: |
@@ -42,10 +47,15 @@ jobs:
       #     docker rmi $(docker image ls -aq)
       #     df -h
 
-      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+      - uses: rharkor/caching-for-turbo@v1.5
 
+      - name: Restore turbo build
+        uses: actions/download-artifact@v4
+        with:
+          name: turbo-build
+          path: .turbo/cache
       - name: Cache TypeCheck
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         if: matrix.check == 'ts'
         with:
           path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
@@ -60,7 +70,7 @@ jobs:
         run: yarn turbo run typecheck
 
       - name: Cache eslint
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         if: matrix.check == 'lint'
         with:
           path: ./apps/meteor/.eslintcache

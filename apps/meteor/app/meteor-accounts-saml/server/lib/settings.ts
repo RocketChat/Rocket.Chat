@@ -2,9 +2,6 @@ import type { SAMLConfiguration } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { settings, settingsRegistry } from '../../../settings/server';
-import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { SAMLUtils } from './Utils';
 import {
 	defaultAuthnContextTemplate,
@@ -17,6 +14,13 @@ import {
 	defaultMetadataTemplate,
 	defaultMetadataCertificateTemplate,
 } from './constants';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import {
+	notifyOnLoginServiceConfigurationChanged,
+	notifyOnLoginServiceConfigurationChangedByService,
+} from '../../../lib/server/lib/notifyListener';
+import { settings, settingsRegistry } from '../../../settings/server';
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
 const getSamlConfigs = function (service: string): SAMLConfiguration {
 	const configs: SAMLConfiguration = {
@@ -117,9 +121,22 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 					const samlConfigs = getSamlConfigs(key);
 					SAMLUtils.log(key);
 					await LoginServiceConfiguration.createOrUpdateService(serviceName, samlConfigs);
+					void notifyOnLoginServiceConfigurationChangedByService(serviceName);
 					return configureSamlService(samlConfigs);
 				}
-				await LoginServiceConfiguration.removeService(serviceName);
+
+				const service = await LoginServiceConfiguration.findOneByService(serviceName, { projection: { _id: 1 } });
+				if (!service?._id) {
+					return false;
+				}
+
+				const { deletedCount } = await LoginServiceConfiguration.removeService(service._id);
+				if (!deletedCount) {
+					return false;
+				}
+
+				void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
+
 				return false;
 			}),
 		)
@@ -213,10 +230,12 @@ export const addSettings = async function (name: string): Promise<void> {
 					await this.add(`SAML_Custom_${name}_button_label_color`, '#FFFFFF', {
 						type: 'string',
 						i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color',
+						alert: 'OAuth_button_colors_alert',
 					});
 					await this.add(`SAML_Custom_${name}_button_color`, '#1d74f5', {
 						type: 'string',
 						i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
+						alert: 'OAuth_button_colors_alert',
 					});
 				});
 

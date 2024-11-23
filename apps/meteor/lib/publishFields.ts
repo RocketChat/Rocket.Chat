@@ -37,6 +37,7 @@ export const subscriptionFields = {
 	ignored: 1,
 	E2EKey: 1,
 	E2ESuggestedKey: 1,
+	oldRoomKeys: 1,
 	tunread: 1,
 	tunreadGroup: 1,
 	tunreadUser: 1,
@@ -74,6 +75,7 @@ export const roomFields = {
 	avatarETag: 1,
 	usersCount: 1,
 	msgs: 1,
+	sidepanel: 1,
 
 	// @TODO create an API to register this fields based on room type
 	tags: 1,
@@ -86,7 +88,6 @@ export const roomFields = {
 	reactWhenReadOnly: 1,
 	sysMes: 1,
 	sentiment: 1,
-	streamingOptions: 1,
 	broadcast: 1,
 	encrypted: 1,
 	e2eKeyId: 1,
@@ -98,6 +99,8 @@ export const roomFields = {
 	slaId: 1,
 	estimatedWaitingTimeQueue: 1,
 	v: 1,
+	contactId: 1,
+	verified: 1,
 	departmentId: 1,
 	servedBy: 1,
 	source: 1,
@@ -120,4 +123,5 @@ export const roomFields = {
 	callDuration: 1,
 	callTotalHoldTime: 1,
 	callWaitingTime: 1,
+	usersWaitingForE2EKeys: 1,
 } as const;

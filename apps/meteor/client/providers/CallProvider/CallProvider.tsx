@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Random } from '@rocket.chat/random';
-import type { Device, IExperimentalHTMLAudioElement } from '@rocket.chat/ui-contexts';
+import type { Device } from '@rocket.chat/ui-contexts';
 import {
 	useRouter,
 	useUser,
@@ -23,24 +23,28 @@ import {
 	useSetModal,
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ReactNode } from 'react';
 import React, { useMemo, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { OutgoingByeRequest } from 'sip.js/lib/core';
 
-import { isOutboundClient, useVoipClient } from '../../../ee/client/hooks/useVoipClient';
-import { parseOutboundPhoneNumber } from '../../../ee/client/lib/voip/parseOutboundPhoneNumber';
-import { WrapUpCallModal } from '../../../ee/client/voip/components/modals/WrapUpCallModal';
+import { useVoipSounds } from './hooks/useVoipSounds';
 import type { CallContextValue } from '../../contexts/CallContext';
 import { CallContext, useIsVoipEnterprise } from '../../contexts/CallContext';
 import { useDialModal } from '../../hooks/useDialModal';
+import { isOutboundClient, useVoipClient } from '../../hooks/useVoipClient';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import type { QueueAggregator } from '../../lib/voip/QueueAggregator';
-import { useVoipSounds } from './hooks/useVoipSounds';
+import { parseOutboundPhoneNumber } from '../../lib/voip/parseOutboundPhoneNumber';
+import { WrapUpCallModal } from '../../voip/components/modals/WrapUpCallModal';
 
 type NetworkState = 'online' | 'offline';
 
-export const CallProvider: FC = ({ children }) => {
+type CallProviderProps = {
+	children?: ReactNode;
+};
+
+export const CallProvider = ({ children }: CallProviderProps) => {
 	const [clientState, setClientState] = useState<'registered' | 'unregistered'>('unregistered');
 
 	const voipEnabled = useSetting('VoIP_Enabled');
@@ -61,7 +65,7 @@ export const CallProvider: FC = ({ children }) => {
 
 	const hasVoIPEnterpriseLicense = useIsVoipEnterprise();
 
-	const remoteAudioMediaRef = useRef<IExperimentalHTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
+	const remoteAudioMediaRef = useRef<HTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
 	const [queueCounter, setQueueCounter] = useState(0);
 	const [queueName, setQueueName] = useState('');
@@ -526,7 +530,13 @@ export const CallProvider: FC = ({ children }) => {
 	return (
 		<CallContext.Provider value={contextValue}>
 			{children}
-			{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
+			{contextValue.enabled &&
+				createPortal(
+					<audio ref={remoteAudioMediaRef}>
+						<track kind='captions' />
+					</audio>,
+					document.body,
+				)}
 		</CallContext.Provider>
 	);
 };

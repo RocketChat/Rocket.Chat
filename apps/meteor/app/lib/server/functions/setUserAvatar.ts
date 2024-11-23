@@ -5,10 +5,11 @@ import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 
+import { checkUrlForSsrf } from './checkUrlForSsrf';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { FileUpload } from '../../../file-upload/server';
 import { RocketChatFile } from '../../../file/server';
+import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
 
 export const setAvatarFromServiceWithValidation = async (
@@ -88,8 +89,17 @@ export async function setUserAvatar(
 	const { buffer, type } = await (async (): Promise<{ buffer: Buffer; type: string }> => {
 		if (service === 'url' && typeof dataURI === 'string') {
 			let response: Response;
+
+			const isSsrfSafe = await checkUrlForSsrf(dataURI);
+			if (!isSsrfSafe) {
+				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${encodeURI(dataURI)}`, {
+					function: 'setUserAvatar',
+					url: dataURI,
+				});
+			}
+
 			try {
-				response = await fetch(dataURI);
+				response = await fetch(dataURI, { redirect: 'error' });
 			} catch (e) {
 				SystemLogger.info(`Not a valid response, from the avatar url: ${encodeURI(dataURI)}`);
 				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${encodeURI(dataURI)}`, {

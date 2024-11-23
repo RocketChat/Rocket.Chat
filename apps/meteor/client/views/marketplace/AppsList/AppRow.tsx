@@ -1,14 +1,15 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Badge, Card, CardBody, CardCol, CardControls, CardHeader, CardRow, CardTitle } from '@rocket.chat/fuselage';
+import { AppAvatar } from '@rocket.chat/ui-avatar';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
 import React, { memo } from 'react';
 import semver from 'semver';
 
-import AppAvatar from '../../../components/avatar/AppAvatar';
 import AppStatus from '../AppDetailsPage/tabs/AppStatus/AppStatus';
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
+import AddonChip from './AddonChip';
 
 // TODO: org props
 const AppRow = ({ className, ...props }: App & { className?: string }): ReactElement => {
@@ -50,6 +51,7 @@ const AppRow = ({ className, ...props }: App & { className?: string }): ReactEle
 	return (
 		<div role='listitem' className={className} key={id}>
 			<Card
+				data-qa-type='app-row'
 				horizontal
 				clickable
 				role='link'
@@ -67,6 +69,7 @@ const AppRow = ({ className, ...props }: App & { className?: string }): ReactEle
 								{name}
 							</CardTitle>
 							{Boolean(bundledIn?.length) && <BundleChips bundledIn={bundledIn} />}
+							<AddonChip app={props} />
 						</CardHeader>
 						{shortDescription && <CardBody id={`${id}-description`}>{shortDescription}</CardBody>}
 					</CardCol>

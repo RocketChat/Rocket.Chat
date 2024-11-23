@@ -6,7 +6,7 @@ import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-test.describe.serial('channel-management', () => {
+test.describe.serial('create-channel', () => {
 	let poHomeChannel: HomeChannel;
 
 	test.beforeEach(async ({ page }) => {

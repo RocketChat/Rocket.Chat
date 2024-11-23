@@ -1,18 +1,17 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
-import { lazy } from 'react';
 
-import EmojiElement from '../emoji/EmojiElement';
-import ChannelMentionElement from '../mentions/ChannelMentionElement';
-import UserMentionElement from '../mentions/UserMentionElement';
 import BoldSpan from './BoldSpan';
 import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
 import PlainSpan from './PlainSpan';
-
-const CodeElement = lazy(() => import('../code/CodeElement'));
+import CodeElement from '../code/CodeElement';
+import EmojiElement from '../emoji/EmojiElement';
+import ChannelMentionElement from '../mentions/ChannelMentionElement';
+import UserMentionElement from '../mentions/UserMentionElement';
 
 type MessageBlock =
+	| MessageParser.Timestamp
 	| MessageParser.Emoji
 	| MessageParser.ChannelMention
 	| MessageParser.UserMention

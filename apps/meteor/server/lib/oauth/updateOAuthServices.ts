@@ -7,9 +7,13 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration } from '@rocket.chat/models';
 
-import { CustomOAuth } from '../../../app/custom-oauth/server/custom_oauth_server';
-import { settings } from '../../../app/settings/server/cached';
 import { logger } from './logger';
+import { CustomOAuth } from '../../../app/custom-oauth/server/custom_oauth_server';
+import {
+	notifyOnLoginServiceConfigurationChanged,
+	notifyOnLoginServiceConfigurationChangedByService,
+} from '../../../app/lib/server/lib/notifyListener';
+import { settings } from '../../../app/settings/server/cached';
 
 export async function updateOAuthServices(): Promise<void> {
 	const services = settings.getByRegexp(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);
@@ -113,8 +117,15 @@ export async function updateOAuthServices(): Promise<void> {
 			}
 
 			await LoginServiceConfiguration.createOrUpdateService(serviceKey, data);
+			void notifyOnLoginServiceConfigurationChangedByService(serviceKey);
 		} else {
-			await LoginServiceConfiguration.removeService(serviceKey);
+			const service = await LoginServiceConfiguration.findOneByService(serviceName, { projection: { _id: 1 } });
+			if (service?._id) {
+				const { deletedCount } = await LoginServiceConfiguration.removeService(service._id);
+				if (deletedCount > 0) {
+					void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
+				}
+			}
 		}
 	}
 }

@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 
 import { InstanceStatus } from '@rocket.chat/models';
+import { injectCurrentContext, tracerActiveSpan } from '@rocket.chat/tracing';
 
 import { asyncLocalStorage } from '.';
 import type { EventSignatures } from './events/Events';
@@ -17,24 +18,25 @@ export class LocalBroker implements IBroker {
 	private services = new Set<IServiceClass>();
 
 	async call(method: string, data: any): Promise<any> {
-		const result = await asyncLocalStorage.run(
-			{
-				id: 'ctx.id',
-				nodeID: 'ctx.nodeID',
-				requestID: 'ctx.requestID',
-				broker: this,
+		return tracerActiveSpan(
+			`action ${method}`,
+			{},
+			() => {
+				return asyncLocalStorage.run(
+					{
+						id: 'ctx.id',
+						nodeID: 'ctx.nodeID',
+						requestID: 'ctx.requestID',
+						broker: this,
+					},
+					(): any => this.methods.get(method)?.(...data),
+				);
 			},
-			(): any => this.methods.get(method)?.(...data),
+			injectCurrentContext(),
 		);
-
-		return result;
 	}
 
-	async waitAndCall(method: string, data: any): Promise<any> {
-		return this.call(method, data);
-	}
-
-	destroyService(instance: ServiceClass): void {
+	async destroyService(instance: ServiceClass): Promise<void> {
 		const namespace = instance.getName();
 
 		instance.getEvents().forEach((event) => event.listeners.forEach((listener) => this.events.removeListener(event.eventName, listener)));
@@ -51,7 +53,7 @@ export class LocalBroker implements IBroker {
 			this.methods.delete(`${namespace}.${method}`);
 		}
 		instance.removeAllListeners();
-		instance.stopped();
+		await instance.stopped();
 	}
 
 	createService(instance: IServiceClass): void {

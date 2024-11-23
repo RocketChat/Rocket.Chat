@@ -1,22 +1,28 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
 
 import { sleep } from '../../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
-import { createVisitor, createLivechatRoom, makeAgentUnavailable, closeOmnichannelRoom, sendMessage } from '../../../data/livechat/rooms';
+import {
+	createVisitor,
+	createLivechatRoom,
+	makeAgentUnavailable,
+	closeOmnichannelRoom,
+	sendMessage,
+	deleteVisitor,
+} from '../../../data/livechat/rooms';
 import { createBotAgent, getRandomVisitorToken } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe('LIVECHAT - Utils', function () {
-	this.retries(0);
-
+describe('LIVECHAT - Utils', () => {
 	before((done) => getCredentials(done));
 
-	before(async () => {
+	after(async () => {
 		await updateSetting('Livechat_enabled', true);
+		await updateSetting('Livechat_offline_email', '');
 	});
 
 	describe('livechat/offline.message', () => {
@@ -108,7 +114,7 @@ describe('LIVECHAT - Utils', function () {
 		(IS_EE ? it : it.skip)('should return online as true if there is at least one agent online', async () => {
 			const { department } = await createDepartmentWithAnOnlineAgent();
 
-			const { body } = await request.get(api(`livechat/config?department=${department._id}`)).set(credentials);
+			const { body } = await request.get(api('livechat/config')).query({ department: department._id }).set(credentials);
 			expect(body).to.have.property('config');
 			expect(body.config).to.have.property('online', true);
 		});
@@ -116,7 +122,7 @@ describe('LIVECHAT - Utils', function () {
 			const { department, agent } = await createDepartmentWithAnOnlineAgent();
 			await makeAgentUnavailable(agent.credentials);
 
-			const { body } = await request.get(api(`livechat/config?department=${department._id}`)).set(credentials);
+			const { body } = await request.get(api('livechat/config')).query({ department: department._id }).set(credentials);
 			expect(body).to.have.property('config');
 			expect(body.config).to.have.property('online', false);
 		});
@@ -129,7 +135,7 @@ describe('LIVECHAT - Utils', function () {
 			const botUser = await createBotAgent();
 			await addOrRemoveAgentFromDepartment(department._id, { agentId: botUser.user._id, username: botUser.user.username as string }, true);
 
-			const { body } = await request.get(api(`livechat/config?department=${department._id}`)).set(credentials);
+			const { body } = await request.get(api('livechat/config')).query({ department: department._id }).set(credentials);
 			expect(body).to.have.property('config');
 
 			await updateSetting('Livechat_assign_new_conversation_to_bot', false);
@@ -137,7 +143,7 @@ describe('LIVECHAT - Utils', function () {
 		});
 		it('should return a guest if there exists a guest with the same token', async () => {
 			const guest = await createVisitor();
-			const { body } = await request.get(api(`livechat/config?token=${guest.token}`)).set(credentials);
+			const { body } = await request.get(api('livechat/config')).query({ token: guest.token }).set(credentials);
 			expect(body).to.have.property('config');
 			expect(body.config).to.have.property('guest');
 			expect(body.config.guest).to.have.property('name', guest.name);
@@ -145,13 +151,13 @@ describe('LIVECHAT - Utils', function () {
 		it('should not return a guest if there exists a guest with the same token but the guest is not online', async () => {
 			const token = getRandomVisitorToken();
 
-			const { body } = await request.get(api(`livechat/config?token=${token}`)).set(credentials);
+			const { body } = await request.get(api('livechat/config')).query({ token }).set(credentials);
 			expect(body).to.have.property('config');
 			expect(body.config).to.not.have.property('guest');
 		});
 		it('should return no online room if visitor is not chatting with an agent', async () => {
 			const visitor = await createVisitor();
-			const { body } = await request.get(api(`livechat/config?token=${visitor.token}`)).set(credentials);
+			const { body } = await request.get(api('livechat/config')).query({ token: visitor.token }).set(credentials);
 			expect(body).to.have.property('config');
 			expect(body.config).to.not.have.property('room');
 		});
@@ -159,7 +165,7 @@ describe('LIVECHAT - Utils', function () {
 			const newVisitor = await createVisitor();
 			const newRoom = await createLivechatRoom(newVisitor.token);
 
-			const { body } = await request.get(api(`livechat/config?token=${newVisitor.token}`)).set(credentials);
+			const { body } = await request.get(api('livechat/config')).query({ token: newVisitor.token }).set(credentials);
 
 			expect(body).to.have.property('config');
 			expect(body.config).to.have.property('room');
@@ -276,6 +282,27 @@ describe('LIVECHAT - Utils', function () {
 				.set(credentials)
 				.send({ token: visitor.token, rid: room._id, email: 'visitor@notadomain.com' });
 			expect(body).to.have.property('success', true);
+		});
+		it('should allow a visitor to get a transcript even if token changed by using an old token that matches room.v', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(room._id);
+			const visitor2 = await createVisitor(undefined, undefined, visitor.visitorEmails?.[0].address);
+			const room2 = await createLivechatRoom(visitor2.token);
+			await closeOmnichannelRoom(room2._id);
+
+			expect(visitor.token !== visitor2.token).to.be.true;
+			const { body } = await request
+				.post(api('livechat/transcript'))
+				.set(credentials)
+				.send({ token: visitor.token, rid: room._id, email: 'visitor@notadomain.com' });
+			expect(body).to.have.property('success', true);
+
+			const { body: body2 } = await request
+				.post(api('livechat/transcript'))
+				.set(credentials)
+				.send({ token: visitor2.token, rid: room2._id, email: 'visitor@notadomain.com' });
+			expect(body2).to.have.property('success', true);
 		});
 	});
 
@@ -453,8 +480,46 @@ describe('LIVECHAT - Utils', function () {
 			expect(body).to.have.property('token', visitor.token);
 		});
 	});
+	describe('livechat/visitors.search', () => {
+		it('should bring sorted data by last chat time', async () => {
+			const visitor1 = await createVisitor(undefined, 'VisitorInPast');
+			const room1 = await createLivechatRoom(visitor1.token);
+
+			const visitor2 = await createVisitor(undefined, 'VisitorInPresent');
+			const room2 = await createLivechatRoom(visitor2.token);
+
+			const { body: result1 } = await request
+				.get(api('livechat/visitors.search'))
+				.query({ term: 'VisitorIn', sort: '{"lastChat.ts":1}' })
+				.set(credentials)
+				.send();
+
+			expect(result1).to.have.property('visitors').that.is.an('array');
+			expect(result1.visitors[0]).to.have.property('name');
+			expect(result1.visitors[0].name).to.be.eq('VisitorInPast');
+
+			const { body: result2 } = await request
+				.get(api('livechat/visitors.search'))
+				.query({ term: 'VisitorIn', sort: '{"lastChat.ts":-1}' })
+				.set(credentials)
+				.send();
+
+			expect(result2).to.have.property('visitors').that.is.an('array');
+			expect(result2.visitors[0]).to.have.property('name');
+			expect(result2.visitors[0].name).to.be.eq('VisitorInPresent');
+
+			await closeOmnichannelRoom(room1._id);
+			await closeOmnichannelRoom(room2._id);
+			await deleteVisitor(visitor1.token);
+			await deleteVisitor(visitor2.token);
+		});
+	});
 
 	describe('livechat/message', () => {
+		const visitorTokens: string[] = [];
+
+		after(() => Promise.all(visitorTokens.map((token) => deleteVisitor(token))));
+
 		it('should fail if no token', async () => {
 			await request.post(api('livechat/message')).set(credentials).send({}).expect(400);
 		});
@@ -469,22 +534,29 @@ describe('LIVECHAT - Utils', function () {
 		});
 		it('should fail if rid is invalid', async () => {
 			const visitor = await createVisitor();
+			visitorTokens.push(visitor.token);
 			await request.post(api('livechat/message')).set(credentials).send({ token: visitor.token, rid: 'test', msg: 'test' }).expect(400);
 		});
 		it('should fail if rid belongs to another visitor', async () => {
 			const visitor = await createVisitor();
 			const visitor2 = await createVisitor();
+			visitorTokens.push(visitor.token, visitor2.token);
+
 			const room = await createLivechatRoom(visitor2.token);
 			await request.post(api('livechat/message')).set(credentials).send({ token: visitor.token, rid: room._id, msg: 'test' }).expect(400);
 		});
 		it('should fail if room is closed', async () => {
 			const visitor = await createVisitor();
+			visitorTokens.push(visitor.token);
+
 			const room = await createLivechatRoom(visitor.token);
 			await closeOmnichannelRoom(room._id);
 			await request.post(api('livechat/message')).set(credentials).send({ token: visitor.token, rid: room._id, msg: 'test' }).expect(400);
 		});
 		it('should fail if message is greater than Livechat_enable_message_character_limit setting', async () => {
 			const visitor = await createVisitor();
+			visitorTokens.push(visitor.token);
+
 			const room = await createLivechatRoom(visitor.token);
 			await updateSetting('Livechat_enable_message_character_limit', true);
 			await updateSetting('Livechat_message_character_limit', 1);
@@ -494,6 +566,8 @@ describe('LIVECHAT - Utils', function () {
 		});
 		it('should send a message', async () => {
 			const visitor = await createVisitor();
+			visitorTokens.push(visitor.token);
+
 			const room = await createLivechatRoom(visitor.token);
 			await request.post(api('livechat/message')).set(credentials).send({ token: visitor.token, rid: room._id, msg: 'test' }).expect(200);
 		});

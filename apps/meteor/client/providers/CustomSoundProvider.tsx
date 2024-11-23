@@ -1,10 +1,15 @@
 import { CustomSoundContext, useUserId, useStream } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ReactNode } from 'react';
 import React, { useEffect } from 'react';
 
 import { CustomSounds } from '../../app/custom-sounds/client/lib/CustomSounds';
+import { useContinuousSoundNotification } from '../hooks/useContinuousSoundNotification';
 
-const CustomSoundProvider: FC = ({ children }) => {
+type CustomSoundProviderProps = {
+	children?: ReactNode;
+};
+
+const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 	const userId = useUserId();
 	useEffect(() => {
 		if (!userId) {
@@ -12,6 +17,8 @@ const CustomSoundProvider: FC = ({ children }) => {
 		}
 		void CustomSounds.fetchCustomSoundList();
 	}, [userId]);
+
+	useContinuousSoundNotification();
 
 	const streamAll = useStream('notify-all');
 

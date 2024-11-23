@@ -33,7 +33,7 @@ export class OmnichannelTransferChatModal {
 	async selectDepartment(name: string) {
 		await this.inputFowardDepartment.click();
 		await this.inputFowardDepartment.fill(name);
-		await this.page.locator(`li[role="option"][title="${name}"]`).click();
+		await this.page.locator(`li[role="option"]`, { hasText: name }).click();
 	}
 
 	async selectUser(name: string, id?: string) {

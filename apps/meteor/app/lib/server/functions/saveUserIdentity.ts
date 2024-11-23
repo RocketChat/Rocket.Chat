@@ -1,12 +1,17 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { FileUpload } from '../../../file-upload/server';
 import { _setRealName } from './setRealName';
 import { _setUsername } from './setUsername';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { FileUpload } from '../../../file-upload/server';
+import {
+	notifyOnRoomChangedByUsernamesOrUids,
+	notifyOnSubscriptionChangedByUserId,
+	notifyOnSubscriptionChangedByNameAndRoomType,
+} from '../lib/notifyListener';
 
 /**
  *
@@ -128,18 +133,38 @@ async function updateUsernameReferences({
 			await Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
 		}
 
-		await Rooms.replaceUsername(previousUsername, username);
-		await Rooms.replaceMutedUsername(previousUsername, username);
-		await Rooms.replaceUsernameOfUserByUserId(user._id, username);
-		await Subscriptions.setUserUsernameByUserId(user._id, username);
+		const responses = await Promise.all([
+			Rooms.replaceUsername(previousUsername, username),
+			Rooms.replaceMutedUsername(previousUsername, username),
+			Rooms.replaceUsernameOfUserByUserId(user._id, username),
+			Subscriptions.setUserUsernameByUserId(user._id, username),
+			LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username),
+		]);
 
-		await LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
+		if (responses[3]?.modifiedCount) {
+			void notifyOnSubscriptionChangedByUserId(user._id);
+		}
+
+		if (responses[0]?.modifiedCount || responses[1]?.modifiedCount || responses[2]?.modifiedCount) {
+			void notifyOnRoomChangedByUsernamesOrUids([user._id], [previousUsername, username]);
+		}
 	}
 
 	// update other references if either the name or username has changed
 	if (usernameChanged || nameChanged) {
 		// update name and fname of 1-on-1 direct messages
-		await Subscriptions.updateDirectNameAndFnameByName(previousUsername, rawUsername && username, rawName && name);
+		const updateDirectNameResponse = await Subscriptions.updateDirectNameAndFnameByName(
+			previousUsername,
+			rawUsername && username,
+			rawName && name,
+		);
+
+		if (updateDirectNameResponse?.modifiedCount) {
+			void notifyOnSubscriptionChangedByNameAndRoomType({
+				t: 'd',
+				name: username,
+			});
+		}
 
 		// update name and fname of group direct messages
 		await updateGroupDMsName(user);

@@ -1,8 +1,9 @@
 import { Box, Margins, ButtonGroup, ContextualbarSkeleton } from '@rocket.chat/fuselage';
-import { useEndpoint, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { HTMLAttributes } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
 	Contextualbar,
@@ -11,7 +12,8 @@ import {
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
 } from '../../../components/Contextualbar';
-import UserInfo from '../../../components/UserInfo';
+import { InfoPanelLabel, InfoPanelText } from '../../../components/InfoPanel';
+import { UserInfoAvatar, UserInfoUsername } from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { MaxChatsPerAgentDisplay } from '../additionalForms';
 import AgentInfoAction from './AgentInfoAction';
@@ -22,7 +24,7 @@ type AgentInfoProps = {
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const AgentInfo = ({ uid }: AgentInfoProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const getAgentById = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: uid });
 	const { data, isLoading, isError } = useQuery(['livechat-getAgentInfoById', uid], async () => getAgentById(), {
@@ -50,7 +52,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 			<ContextualbarScrollableContent>
 				{username && (
 					<Box alignSelf='center'>
-						<UserInfo.Avatar data-qa='AgentUserInfoAvatar' username={username} />
+						<UserInfoAvatar data-qa='AgentUserInfoAvatar' username={username} />
 					</Box>
 				)}
 				<ButtonGroup align='center'>
@@ -65,12 +67,12 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 				</ButtonGroup>
 				<Margins block={4}>
 					<Box mb={2}>
-						<UserInfo.Username data-qa='AgentInfoUserInfoUserName' username={username} status={<UserStatus status={userStatus} />} />
+						<UserInfoUsername data-qa='AgentInfoUserInfoUserName' username={username} status={<UserStatus status={userStatus} />} />
 					</Box>
 					{statusLivechat && (
 						<>
-							<UserInfo.Label data-qa='AgentInfoUserInfoLabel'>{t('Livechat_status')}</UserInfo.Label>
-							<UserInfo.Info>{t(statusLivechat === 'available' ? 'Available' : 'Not_Available')}</UserInfo.Info>
+							<InfoPanelLabel data-qa='AgentInfoUserInfoLabel'>{t('Livechat_status')}</InfoPanelLabel>
+							<InfoPanelText>{statusLivechat === 'available' ? t('Available') : t('Not_Available')}</InfoPanelText>
 						</>
 					)}
 					{MaxChatsPerAgentDisplay && <MaxChatsPerAgentDisplay maxNumberSimultaneousChat={data.user.livechat?.maxNumberSimultaneousChat} />}

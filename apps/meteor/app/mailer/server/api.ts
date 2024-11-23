@@ -1,3 +1,4 @@
+import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
@@ -7,12 +8,12 @@ import { Meteor } from 'meteor/meteor';
 import stripHtml from 'string-strip-html';
 import _ from 'underscore';
 
-import { Apps } from '../../../ee/server/apps';
+import { replaceVariables } from './replaceVariables';
 import { validateEmail } from '../../../lib/emailValidator';
 import { strLeft, strRightBack } from '../../../lib/utils/stringUtils';
 import { i18n } from '../../../server/lib/i18n';
+import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
-import { replaceVariables } from './replaceVariables';
 
 let contentHeader: string | undefined;
 let contentFooter: string | undefined;
@@ -43,7 +44,7 @@ export const replace = (str: string, data: { [key: string]: unknown } = {}): str
 			? {
 					fname: strLeft(String(data.name), ' '),
 					lname: strRightBack(String(data.name), ' '),
-			  }
+				}
 			: {}),
 		...data,
 	};
@@ -172,11 +173,14 @@ export const sendNoWrap = async ({
 		html = undefined;
 	}
 
-	await Settings.incrementValueById('Triggered_Emails_Count');
+	const { value } = await Settings.incrementValueById('Triggered_Emails_Count', 1, { returnDocument: 'after' });
+	if (value) {
+		void notifyOnSettingChanged(value);
+	}
 
 	const email = { to, from, replyTo, subject, html, text, headers };
 
-	const eventResult = await Apps.triggerEvent('IPreEmailSent', { email });
+	const eventResult = await Apps.self?.triggerEvent(AppEvents.IPreEmailSent, { email });
 
 	setImmediate(() => Email.sendAsync(eventResult || email).catch((e) => console.error(e)));
 };

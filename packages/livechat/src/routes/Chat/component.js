@@ -2,6 +2,7 @@ import { Component, createRef } from 'preact';
 import { Suspense, lazy } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
+import styles from './styles.scss';
 import { Button } from '../../components/Button';
 import { CallIframe } from '../../components/Calls/CallIFrame';
 import { default as CallNotification } from '../../components/Calls/CallNotification';
@@ -19,7 +20,6 @@ import PlusIcon from '../../icons/plus.svg';
 import RemoveIcon from '../../icons/remove.svg';
 import SendIcon from '../../icons/send.svg';
 import EmojiIcon from '../../icons/smile.svg';
-import styles from './styles.scss';
 
 import 'emoji-mart/css/emoji-mart.css';
 
@@ -110,9 +110,7 @@ class Chat extends Component {
 
 	render = (
 		{
-			color,
 			title,
-			fontColor,
 			uid,
 			agent,
 			typingUsernames,
@@ -135,14 +133,13 @@ class Chat extends Component {
 			incomingCallAlert,
 			ongoingCall,
 			dispatch,
+			theme,
 			...props
 		},
 		{ atBottom = true, text },
 	) => (
 		<Screen
-			color={color}
 			title={title || t('need_help')}
-			fontColor={fontColor}
 			agent={agent || null}
 			queueInfo={queueInfo}
 			nopadding
@@ -151,6 +148,7 @@ class Chat extends Component {
 			onRemoveUserData={onRemoveUserData}
 			className={createClassName(styles, 'chat')}
 			handleEmojiClick={this.handleEmojiClick}
+			theme={theme}
 			{...props}
 		>
 			<FilesDropTarget inputRef={this.inputRef} overlayed overlayText={t('drop_here_to_upload_a_file')} onUpload={onUpload}>
@@ -168,9 +166,11 @@ class Chat extends Component {
 							typingUsernames={typingUsernames}
 							conversationFinishedMessage={conversationFinishedMessage}
 							lastReadMessageId={lastReadMessageId}
-							onScrollTo={this.handleScrollTo}
 							handleEmojiClick={this.handleEmojiClick}
 							dispatch={dispatch}
+							hideSenderAvatar={theme?.hideGuestAvatar}
+							hideReceiverAvatar={theme?.hideAgentAvatar}
+							onScrollTo={this.handleScrollTo}
 						/>
 						{this.state.emojiPickerActive && (
 							<Suspense fallback={null}>

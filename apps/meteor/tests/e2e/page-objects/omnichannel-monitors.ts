@@ -20,7 +20,7 @@ export class OmnichannelMonitors extends OmnichannelAdministration {
 	}
 
 	get inputSearch(): Locator {
-		return this.page.locator('input[placeholder="Search"]');
+		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	findRowByName(name: string): Locator {

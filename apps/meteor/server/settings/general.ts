@@ -90,6 +90,7 @@ export const createGeneralSettings = () =>
 				step: 3,
 				order: 1,
 			},
+			alert: 'Language_setting_warning',
 		});
 		await this.add('Allow_Invalid_SelfSigned_Certs', false, {
 			type: 'boolean',

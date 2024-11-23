@@ -1,11 +1,11 @@
 import type { IEditedMessage } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
 import { hasAtLeastOnePermission, hasPermission } from '../../app/authorization/client';
-import { ChatMessage } from '../../app/models/client';
+import { Messages } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { t } from '../../app/utils/lib/i18n';
 import { dispatchToastMessage } from '../lib/toast';
@@ -17,7 +17,7 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 
-		const originalMessage = ChatMessage.findOne(message._id);
+		const originalMessage = Messages.findOne(message._id);
 
 		if (!originalMessage) {
 			return;
@@ -50,7 +50,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const blockEditInMinutes = Number(settings.get('Message_AllowEditing_BlockEditInMinutes') as number | undefined);
-		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete');
+		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete', message.rid);
 
 		if (!bypassBlockTimeLimit && blockEditInMinutes !== 0) {
 			if (originalMessage.ts) {
@@ -85,7 +85,7 @@ Meteor.methods<ServerMethods>({
 					originalMessage.attachments[0].description = message.msg;
 				}
 			}
-			ChatMessage.update(
+			Messages.update(
 				{
 					'_id': message._id,
 					'u._id': uid,

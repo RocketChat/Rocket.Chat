@@ -30,7 +30,7 @@ const RegisterUsername = () => {
 	const uid = useUserId();
 	const logout = useLogout();
 	const formLabelId = useUniqueId();
-	const hideLogo = useSetting<boolean>('Layout_Login_Hide_Logo');
+	const hideLogo = useSetting('Layout_Login_Hide_Logo', false);
 	const customLogo = useAssetWithDarkModePath('logo');
 	const customBackground = useAssetWithDarkModePath('background');
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -105,7 +105,10 @@ const RegisterUsername = () => {
 							<Field>
 								<FieldLabel id='username-label'>{t('Username')}</FieldLabel>
 								<FieldRow>
-									<TextInput aria-labelledby='username-label' {...register('username', { required: t('Username_cant_be_empty') })} />
+									<TextInput
+										aria-labelledby='username-label'
+										{...register('username', { required: t('Required_field', { field: t('Username') }) })}
+									/>
 								</FieldRow>
 								{errors.username && (
 									<FieldError>

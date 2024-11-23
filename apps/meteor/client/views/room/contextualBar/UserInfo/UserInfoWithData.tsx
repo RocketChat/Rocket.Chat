@@ -1,9 +1,11 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
-import { useRolesDescription, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRolesDescription } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import UserInfoActions from './UserInfoActions';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
 import {
 	ContextualbarHeader,
@@ -14,31 +16,42 @@ import {
 	ContextualbarContent,
 } from '../../../../components/Contextualbar';
 import { FormSkeleton } from '../../../../components/Skeleton';
-import UserCard from '../../../../components/UserCard';
-import UserInfo from '../../../../components/UserInfo';
+import { UserCardRole } from '../../../../components/UserCard';
+import { UserInfo } from '../../../../components/UserInfo';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
-import UserInfoActions from './UserInfoActions';
 
 type UserInfoWithDataProps = {
-	uid: IUser['_id'];
+	uid?: IUser['_id'];
 	username?: IUser['username'];
 	rid: IRoom['_id'];
 	onClose: () => void;
-	onClickBack: () => void;
+	onClickBack?: () => void;
 };
 
 const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const getRoles = useRolesDescription();
 
 	const {
 		value: data,
 		phase: state,
 		error,
-	} = useEndpointData('/v1/users.info', { params: useMemo(() => ({ userId: uid, username }), [uid, username]) });
+	} = useEndpointData('/v1/users.info', {
+		params: useMemo(() => {
+			if (uid) {
+				return { userId: uid };
+			}
+
+			if (username) {
+				return { username };
+			}
+
+			throw new Error('userId or username is required');
+		}, [uid, username]),
+	});
 
 	const isLoading = state === AsyncStatePhase.LOADING;
 
@@ -61,6 +74,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			nickname,
 			createdAt,
 			canViewAllInfo,
+			freeSwitchExtension,
 		} = data.user;
 
 		return {
@@ -68,7 +82,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			name,
 			username,
 			lastLogin,
-			roles: roles && getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
+			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
 			phone,
@@ -80,6 +94,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			status: <ReactiveUserStatus uid={_id} />,
 			statusText,
 			nickname,
+			freeSwitchExtension,
 		};
 	}, [data, getRoles]);
 

@@ -50,8 +50,8 @@ class RoomCoordinatorServer extends RoomCoordinator {
 
 				return { title, text, name: room.name };
 			},
-			getMsgSender(senderId: IUser['_id']): Promise<IUser | null> {
-				return Users.findOneById(senderId);
+			getMsgSender(message: IMessage): Promise<IUser | null> {
+				return Users.findOneById(message.u._id);
 			},
 			includeInRoomSearch(): boolean {
 				return false;

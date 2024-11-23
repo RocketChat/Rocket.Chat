@@ -1,19 +1,17 @@
 export class BrokerMocked {
 	actions: Record<string, (...params: unknown[]) => Promise<unknown>> = {};
 
-	destroyService(): void {
-		// no op
+	services: Map<string, any> = new Map();
+
+	async destroyService(name: string): Promise<void> {
+		this.services.delete(name);
 	}
 
-	createService(): void {
-		// no op
+	createService(instance: any): void {
+		this.services.set(instance.name, instance);
 	}
 
 	async call(method: string, data: any): Promise<any> {
-		return this.actions[method](data);
-	}
-
-	async waitAndCall(method: string, data: any): Promise<any> {
 		return this.actions[method](data);
 	}
 

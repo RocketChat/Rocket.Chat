@@ -1,9 +1,9 @@
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 
-import { settings } from '../../settings/server';
 import { searchEventService } from './events';
 import { searchProviderService } from './service';
+import { settings } from '../../settings/server';
 
 class Search extends ServiceClassInternal {
 	protected name = 'search';
@@ -36,10 +36,10 @@ class Search extends ServiceClassInternal {
 
 const service = new Search();
 
-settings.watch('Search.Provider', () => {
+settings.watch('Search.Provider', async () => {
 	if (searchProviderService.activeProvider?.on) {
 		api.registerService(service);
 	} else {
-		api.destroyService(service);
+		await api.destroyService(service);
 	}
 });

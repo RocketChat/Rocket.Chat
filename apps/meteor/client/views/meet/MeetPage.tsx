@@ -1,18 +1,19 @@
 import { Button, Box, Flex } from '@rocket.chat/fuselage';
-import { useRouteParameter, useSearchParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import CallPage from './CallPage';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import UserAvatar from '../../components/avatar/UserAvatar';
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 import NotFoundPage from '../notFound/NotFoundPage';
 import PageLoading from '../root/PageLoading';
-import CallPage from './CallPage';
 import './styles.css';
 
 const MeetPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [isRoomMember, setIsRoomMember] = useState(false);
 	const [status, setStatus] = useState(null);
 	const [visitorId, setVisitorId] = useState(null);
@@ -86,19 +87,18 @@ const MeetPage = () => {
 							top: '5%',
 							right: '2%',
 						}}
-						className='Self_Video'
+						className='meet__video--self'
 						backgroundColor='dark'
 						alignItems='center'
 					>
-						<UserAvatar
+						<Box
 							style={{
 								display: 'block',
 								margin: 'auto',
 							}}
-							username={visitorToken ? visitorName : agentName}
-							className='rcx-message__avatar'
-							size={isMobileDevice() ? 'x32' : 'x48'}
-						/>
+						>
+							<UserAvatar username={visitorToken ? visitorName : agentName} size={isMobileDevice() ? 'x32' : 'x48'} />
+						</Box>
 					</Box>
 					<Box
 						position='absolute'
@@ -111,15 +111,14 @@ const MeetPage = () => {
 						}}
 						alignItems='center'
 					>
-						<UserAvatar
+						<Box
 							style={{
 								display: 'block',
 								margin: 'auto',
 							}}
-							username={visitorToken ? agentName : visitorName}
-							className='rcx-message__avatar'
-							size='x124'
-						/>
+						>
+							<UserAvatar username={visitorToken ? agentName : visitorName} size='x124' />
+						</Box>
 						<p style={{ color: 'white', fontSize: 16, margin: 15 }}>Call Ended!</p>
 						<p
 							style={{

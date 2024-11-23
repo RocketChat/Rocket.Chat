@@ -4,15 +4,11 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import type { SupportedVersions } from '@rocket.chat/server-cloud-communication';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
-import { useModal, useMediaUrl } from '@rocket.chat/ui-contexts';
+import { useSetModal, useMediaUrl } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { useLicense, useLicenseName } from '../../../../hooks/useLicense';
-import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
-import { isOverLicenseLimits } from '../../../../lib/utils/isOverLicenseLimits';
 import VersionCardActionButton from './components/VersionCardActionButton';
 import type { VersionActionItem } from './components/VersionCardActionItem';
 import VersionCardActionItem from './components/VersionCardActionItem';
@@ -20,6 +16,10 @@ import { VersionCardSkeleton } from './components/VersionCardSkeleton';
 import { VersionTag } from './components/VersionTag';
 import { getVersionStatus } from './getVersionStatus';
 import RegisterWorkspaceModal from './modals/RegisterWorkspaceModal';
+import { useFormatDate } from '../../../../hooks/useFormatDate';
+import { useLicense, useLicenseName } from '../../../../hooks/useLicense';
+import { useRegistrationStatus } from '../../../../hooks/useRegistrationStatus';
+import { isOverLicenseLimits } from '../../../../lib/utils/isOverLicenseLimits';
 
 const SUPPORT_EXTERNAL_LINK = 'https://go.rocket.chat/i/version-support';
 const RELEASES_EXTERNAL_LINK = 'https://go.rocket.chat/i/update-product';
@@ -39,7 +39,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 		backgroundSize: mediaQuery ? 'auto' : 'contain',
 	};
 
-	const { setModal } = useModal();
+	const setModal = useSetModal();
 
 	const { t } = useTranslation();
 
@@ -116,11 +116,11 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 							danger: true,
 							icon: 'warning',
 							label: t('Plan_limits_reached'),
-					  }
+						}
 					: {
 							icon: 'check',
 							label: t('Operating_withing_plan_limits'),
-					  },
+						},
 				(isAirgapped || !versions) && {
 					icon: 'warning',
 					label: (
@@ -157,12 +157,12 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 					? {
 							icon: 'check',
 							label: t('Workspace_registered'),
-					  }
+						}
 					: {
 							danger: true,
 							icon: 'warning',
 							label: t('Workspace_not_registered'),
-					  },
+						},
 			].filter(Boolean) as VersionActionItem[]
 		).sort((a) => (a.danger ? -1 : 1));
 	}, [isOverLimits, t, isAirgapped, versions, versionStatus?.label, versionStatus?.expiration, formatDate, isRegistered]);
@@ -170,7 +170,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 	if (isLoading && !licenseData) {
 		return (
 			<Card style={{ ...cardBackground }}>
-				<VersionCardSkeleton />;
+				<VersionCardSkeleton />
 			</Card>
 		);
 	}

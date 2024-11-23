@@ -1,23 +1,30 @@
+import { useToolbar } from '@react-aria/toolbar';
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
-import { isThreadMessage, isRoomFederated, isVideoConfMessage } from '@rocket.chat/core-typings';
+import { isThreadMessage, isRoomFederated, isVideoConfMessage, isE2EEMessage } from '@rocket.chat/core-typings';
 import { MessageToolbar as FuselageMessageToolbar, MessageToolbarItem } from '@rocket.chat/fuselage';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useSettings, useTranslation, useMethod, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
-import React, { memo, useMemo } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { memo, useMemo, useRef } from 'react';
 
+import MessageActionMenu from './MessageActionMenu';
+import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
+import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
+import { useStarMessageAction } from './useStarMessageAction';
+import { useUnstarMessageAction } from './useUnstarMessageAction';
+import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 import { useMessageActionAppsActionButtons } from '../../../hooks/useAppActionButtons';
+import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
+import { roomsQueryKeys } from '../../../lib/queryKeys';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
 import { useChat } from '../../../views/room/contexts/ChatContext';
 import { useRoomToolbox } from '../../../views/room/contexts/RoomToolboxContext';
-import MessageActionMenu from './MessageActionMenu';
-import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 
 const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
 	if (context) {
@@ -45,7 +52,7 @@ type MessageToolbarProps = {
 	room: IRoom;
 	subscription?: ISubscription;
 	onChangeMenuVisibility: (visible: boolean) => void;
-};
+} & ComponentProps<typeof FuselageMessageToolbar>;
 
 const MessageToolbar = ({
 	message,
@@ -53,10 +60,15 @@ const MessageToolbar = ({
 	room,
 	subscription,
 	onChangeMenuVisibility,
+	...props
 }: MessageToolbarProps): ReactElement | null => {
 	const t = useTranslation();
 	const user = useUser() ?? undefined;
 	const settings = useSettings();
+	const isLayoutEmbedded = useEmbeddedLayout();
+
+	const toolbarRef = useRef(null);
+	const { toolbarProps } = useToolbar(props, toolbarRef);
 
 	const quickReactionsEnabled = useFeaturePreview('quickReactions');
 
@@ -71,21 +83,30 @@ const MessageToolbar = ({
 
 	const actionButtonApps = useMessageActionAppsActionButtons(context);
 
+	const starsAction = useMessageActionAppsActionButtons(context, 'ai');
+
 	const { messageToolbox: hiddenActions } = useLayoutHiddenActions();
 
 	// TODO: move this to another place
 	useWebDAVMessageAction();
+	useNewDiscussionMessageAction();
+	useStarMessageAction(message, { room, user });
+	useUnstarMessageAction(message, { room, user });
 
-	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
-		const props = { message, room, user, subscription, settings: mapSettings, chat };
+	const actionsQueryResult = useQuery({
+		queryKey: roomsQueryKeys.messageActionsWithParameters(room._id, message),
+		queryFn: async () => {
+			const props = { message, room, user, subscription, settings: mapSettings, chat };
 
-		const toolboxItems = await MessageAction.getAll(props, context, 'message');
-		const menuItems = await MessageAction.getAll(props, context, 'menu');
+			const toolboxItems = await MessageAction.getAll(props, context, 'message');
+			const menuItems = await MessageAction.getAll(props, context, 'menu');
 
-		return {
-			message: toolboxItems.filter((action) => !hiddenActions.includes(action.id)),
-			menu: menuItems.filter((action) => !hiddenActions.includes(action.id)),
-		};
+			return {
+				message: toolboxItems.filter((action) => !hiddenActions.includes(action.id)),
+				menu: menuItems.filter((action) => !(isLayoutEmbedded && action.id === 'reply-directly') && !hiddenActions.includes(action.id)),
+			};
+		},
+		keepPreviousData: true,
 	});
 
 	const toolbox = useRoomToolbox();
@@ -106,7 +127,7 @@ const MessageToolbar = ({
 	};
 
 	return (
-		<FuselageMessageToolbar>
+		<FuselageMessageToolbar ref={toolbarRef} {...toolbarProps} aria-label={t('Message_actions')} {...props}>
 			{quickReactionsEnabled &&
 				isReactionAllowed &&
 				quickReactions.slice(0, 3).map(({ emoji, image }) => {
@@ -118,19 +139,39 @@ const MessageToolbar = ({
 						onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions })}
 						key={action.id}
 						icon={action.icon}
-						title={t(action.label)}
+						title={
+							action?.disabled?.({ message, room, user, subscription, settings: mapSettings, chat, context })
+								? t('Action_not_available_encrypted_content', { action: t(action.label) })
+								: t(action.label)
+						}
 						data-qa-id={action.label}
 						data-qa-type='message-action-menu'
+						disabled={action?.disabled?.({ message, room, user, subscription, settings: mapSettings, chat, context })}
 					/>
 				))}
+			{starsAction.data && starsAction.data.length > 0 && (
+				<MessageToolbarStarsActionMenu
+					options={starsAction.data.map((action) => ({
+						...action,
+						action: (e) => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
+					}))}
+					onChangeMenuVisibility={onChangeMenuVisibility}
+					data-qa-type='message-action-stars-menu-options'
+					context={{ message, room, user, subscription, settings: mapSettings, chat, context }}
+					isMessageEncrypted={isE2EEMessage(message)}
+				/>
+			)}
+
 			{actionsQueryResult.isSuccess && actionsQueryResult.data.menu.length > 0 && (
 				<MessageActionMenu
-					onChangeMenuVisibility={onChangeMenuVisibility}
 					options={[...actionsQueryResult.data?.menu, ...(actionButtonApps.data ?? [])].filter(Boolean).map((action) => ({
 						...action,
-						action: (e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
+						action: (e) => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
 					}))}
+					onChangeMenuVisibility={onChangeMenuVisibility}
 					data-qa-type='message-action-menu-options'
+					context={{ message, room, user, subscription, settings: mapSettings, chat, context }}
+					isMessageEncrypted={isE2EEMessage(message)}
 				/>
 			)}
 		</FuselageMessageToolbar>

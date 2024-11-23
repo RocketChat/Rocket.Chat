@@ -1,7 +1,14 @@
-import { MessageBlock, MessageMetrics, MessageMetricsItem, MessageMetricsReply } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import {
+	MessageBlock,
+	MessageMetrics,
+	MessageMetricsItem,
+	MessageMetricsItemIcon,
+	MessageMetricsItemLabel,
+	MessageMetricsReply,
+} from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
@@ -14,7 +21,7 @@ type DiscussionMetricsProps = {
 };
 
 const DiscussionMetrics = ({ lm, count, rid, drid }: DiscussionMetricsProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const format = useTimeAgo();
 
 	const goToRoom = useGoToRoom();
@@ -26,8 +33,8 @@ const DiscussionMetrics = ({ lm, count, rid, drid }: DiscussionMetricsProps): Re
 					{count ? t('message_counter', { count }) : t('Reply')}
 				</MessageMetricsReply>
 				<MessageMetricsItem title={lm?.toLocaleString()}>
-					<MessageMetricsItem.Icon name='clock' />
-					<MessageMetricsItem.Label>{lm ? format(lm) : t('No_messages_yet')}</MessageMetricsItem.Label>
+					<MessageMetricsItemIcon name='clock' />
+					<MessageMetricsItemLabel>{lm ? format(lm) : t('No_messages_yet')}</MessageMetricsItemLabel>
 				</MessageMetricsItem>
 			</MessageMetrics>
 		</MessageBlock>

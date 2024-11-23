@@ -14,20 +14,21 @@ import {
 	FieldError,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
+import { useEditAdminRoomPermissions } from './useEditAdminRoomPermissions';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { useArchiveRoom } from '../../hooks/roomActions/useArchiveRoom';
 import { useDeleteRoom } from '../../hooks/roomActions/useDeleteRoom';
-import { useEditAdminRoomPermissions } from './useEditAdminRoomPermissions';
 
 type EditRoomProps = {
-	room: Pick<IRoom, RoomAdminFieldsType>;
+	room: IRoom;
 	onChange: () => void;
 	onDelete: () => void;
 };
@@ -63,7 +64,7 @@ const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormV
 });
 
 const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -86,7 +87,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		canViewReactWhenReadOnly,
 	} = useEditAdminRoomPermissions(room);
 
-	const { roomType, readOnly, archived } = watch();
+	const { roomType, readOnly, archived, isDefault } = watch();
 
 	const changeArchiving = archived !== !!room.archived;
 
@@ -96,7 +97,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 	const handleArchive = useArchiveRoom(room);
 
-	const handleUpdateRoomData = useEffectEvent(async ({ isDefault, roomName, favorite, ...formData }) => {
+	const handleUpdateRoomData = useEffectEvent(async ({ isDefault, favorite, ...formData }) => {
 		const data = getDirtyFields(formData, dirtyFields);
 		delete data.archived;
 		delete data.favorite;
@@ -104,7 +105,6 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 		try {
 			await saveAction({
 				rid: room._id,
-				roomName: roomType === 'd' ? undefined : roomName,
 				default: isDefault,
 				favorite: { defaultValue: isDefault, favorite },
 				...data,
@@ -157,7 +157,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 					<FieldRow>
 						<Controller
 							name='roomName'
-							rules={{ required: t('The_field_is_required', t('Name')) }}
+							rules={{ required: t('Required_field', { field: t('Name') }) }}
 							control={control}
 							render={({ field }) => (
 								<TextInput
@@ -183,7 +183,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 							<Field>
 								<FieldLabel htmlFor={ownerField}>{t('Owner')}</FieldLabel>
 								<FieldRow>
-									<TextInput id={ownerField} readOnly value={room.u?.username} />
+									<TextInput id={ownerField} name='roomOwner' readOnly value={room.u?.username} />
 								</FieldRow>
 							</Field>
 						)}
@@ -325,7 +325,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 							name='favorite'
 							control={control}
 							render={({ field: { value, ...field } }) => (
-								<ToggleSwitch id={favoriteField} {...field} disabled={isDeleting} checked={value} />
+								<ToggleSwitch id={favoriteField} {...field} disabled={isDeleting || !isDefault} checked={value} />
 							)}
 						/>
 					</FieldRow>

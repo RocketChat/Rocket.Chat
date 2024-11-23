@@ -9,6 +9,7 @@ import { getUsersInRolePaginated } from '../../../authorization/server/functions
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { notifyOnRoleChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server/index';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -90,7 +91,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.getUsersInRole',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['access-permissions'] },
 	{
 		async get() {
 			const { roomId, role } = this.queryParams;
@@ -107,9 +108,6 @@ API.v1.addRoute(
 
 			if (!role) {
 				throw new Meteor.Error('error-param-not-provided', 'Query param "role" is required');
-			}
-			if (!(await hasPermissionAsync(this.userId, 'access-permissions'))) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 			if (roomId && !(await hasPermissionAsync(this.userId, 'view-other-user-channels'))) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
@@ -149,16 +147,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.delete',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['access-permissions'] },
 	{
 		async post() {
 			const { bodyParams } = this;
 			if (!isRoleDeleteProps(bodyParams)) {
 				throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
-			}
-
-			if (!(await hasPermissionAsync(this.userId, 'access-permissions'))) {
-				throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
 			}
 
 			const role = await Roles.findOneByIdOrName(bodyParams.roleId);
@@ -171,13 +165,13 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-role-protected', 'Cannot delete a protected role');
 			}
 
-			const existingUsers = await Roles.findUsersInRole(role._id);
-
-			if (existingUsers && (await existingUsers.count()) > 0) {
+			if ((await Roles.countUsersInRole(role._id)) > 0) {
 				throw new Meteor.Error('error-role-in-use', "Cannot delete role because it's in use");
 			}
 
 			await Roles.removeById(role._id);
+
+			void notifyOnRoleChanged(role, 'removed');
 
 			return API.v1.success();
 		},
@@ -186,7 +180,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.removeUserFromRole',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['access-permissions'] },
 	{
 		async post() {
 			const { bodyParams } = this;
@@ -195,10 +189,6 @@ API.v1.addRoute(
 			}
 
 			const { roleId, roleName, username, scope } = bodyParams;
-
-			if (!(await hasPermissionAsync(this.userId, 'access-permissions'))) {
-				throw new Meteor.Error('error-not-allowed', 'Accessing permissions is not allowed');
-			}
 
 			if (!roleId) {
 				if (!roleName) {
@@ -225,7 +215,7 @@ API.v1.addRoute(
 			}
 
 			if (role._id === 'admin') {
-				const adminCount = await (await Roles.findUsersInRole('admin')).count();
+				const adminCount = await Roles.countUsersInRole('admin');
 				if (adminCount === 1) {
 					throw new Meteor.Error('error-admin-required', 'You need to have at least one admin');
 				}

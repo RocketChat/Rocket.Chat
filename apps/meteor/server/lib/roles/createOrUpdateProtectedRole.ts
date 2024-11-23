@@ -8,6 +8,7 @@ export const createOrUpdateProtectedRoleAsync = async (
 	const role = await Roles.findOneById<Pick<IRole, '_id' | 'name' | 'scope' | 'description' | 'mandatory2fa'>>(roleId, {
 		projection: { name: 1, scope: 1, description: 1, mandatory2fa: 1 },
 	});
+
 	if (role) {
 		await Roles.updateById(
 			roleId,

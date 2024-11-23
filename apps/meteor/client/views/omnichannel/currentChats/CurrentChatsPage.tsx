@@ -1,15 +1,18 @@
 import { Callout, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
-import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { hashQueryKey } from '@tanstack/react-query';
 import moment from 'moment';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useCallback, useMemo, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 
-import { RoomActivityIcon } from '../../../../ee/client/omnichannel/components/RoomActivityIcon';
-import { useOmnichannelPriorities } from '../../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
-import { PriorityIcon } from '../../../../ee/client/omnichannel/priorities/PriorityIcon';
+import CustomFieldsList from './CustomFieldsList';
+import FilterByText from './FilterByText';
+import RemoveChatButton from './RemoveChatButton';
+import { useAllCustomFields } from './hooks/useAllCustomFields';
+import { useCurrentChats } from './hooks/useCurrentChats';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -24,11 +27,9 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useIsOverMacLimit } from '../../../hooks/omnichannel/useIsOverMacLimit';
-import CustomFieldsList from './CustomFieldsList';
-import FilterByText from './FilterByText';
-import RemoveChatButton from './RemoveChatButton';
-import { useAllCustomFields } from './hooks/useAllCustomFields';
-import { useCurrentChats } from './hooks/useCurrentChats';
+import { RoomActivityIcon } from '../../../omnichannel/components/RoomActivityIcon';
+import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
+import { PriorityIcon } from '../../../omnichannel/priorities/PriorityIcon';
 
 type DebouncedParams = {
 	fname: string;
@@ -54,6 +55,7 @@ type CurrentChatQuery = {
 	customFields?: string;
 	sort: string;
 	count?: number;
+	queued?: boolean;
 };
 
 type useQueryType = (
@@ -95,8 +97,9 @@ const currentChatQuery: useQueryType = (
 	}
 
 	if (status !== 'all') {
-		query.open = status === 'opened' || status === 'onhold';
+		query.open = status === 'opened' || status === 'onhold' || status === 'queued';
 		query.onhold = status === 'onhold';
+		query.queued = status === 'queued';
 	}
 	if (servedBy && servedBy !== 'all') {
 		query.agents = [servedBy];
@@ -127,7 +130,8 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 	);
 	const [customFields, setCustomFields] = useState<{ [key: string]: string }>();
 
-	const t = useTranslation();
+	const { t } = useTranslation();
+	const directoryPath = useRouter().buildRoutePath('/omnichannel-directory');
 
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
@@ -170,8 +174,9 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 	const renderRow = useCallback(
 		(room) => {
 			const { _id, fname, servedBy, ts, lm, department, open, onHold, priorityWeight } = room;
-			const getStatusText = (open: boolean, onHold: boolean): string => {
+			const getStatusText = (open: boolean, onHold: boolean, servedBy: boolean): string => {
 				if (!open) return t('Closed');
+				if (open && !servedBy) return t('Queued');
 				return onHold ? t('On_Hold_Chats') : t('Room_Status_Open');
 			};
 
@@ -198,9 +203,13 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 						{moment(lm).format('L LTS')}
 					</GenericTableCell>
 					<GenericTableCell withTruncatedText data-qa='current-chats-cell-status'>
-						<RoomActivityIcon room={room} /> {getStatusText(open, onHold)}
+						<RoomActivityIcon room={room} /> {getStatusText(open, onHold, !!servedBy?.username)}
 					</GenericTableCell>
-					{canRemoveClosedChats && !open && <RemoveChatButton _id={_id} />}
+					{canRemoveClosedChats && (
+						<GenericTableCell maxHeight='x36' fontScale='p2' color='hint' withTruncatedText data-qa='current-chats-cell-delete'>
+							{!open && <RemoveChatButton _id={_id} />}
+						</GenericTableCell>
+					)}
 				</GenericTableRow>
 			);
 		},
@@ -297,6 +306,12 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 			<Page>
 				<PageHeader title={t('Current_Chats')} />
 				<PageContent>
+					<Callout type='warning' title={t('This_page_will_be_deprecated_soon')}>
+						<Trans i18nKey='Manage_conversations_in_the_contact_center'>
+							Manage conversations in the
+							<a href={directoryPath}>contact center</a>.
+						</Trans>
+					</Callout>
 					{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && (
 						<FilterByText
 							setFilter={onFilter as ComponentProps<typeof FilterByText>['setFilter']}

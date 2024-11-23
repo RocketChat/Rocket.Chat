@@ -4,6 +4,7 @@ import { Logger } from '@rocket.chat/logger';
 import { Settings } from '@rocket.chat/models';
 import { v4 as uuidv4 } from 'uuid';
 
+import { updateAuditedBySystem } from './lib/auditedSettingUpdates';
 import { settingsRegistry, settings } from '../../app/settings/server';
 
 const logger = new Logger('FingerPrint');
@@ -17,9 +18,14 @@ const generateFingerprint = function () {
 };
 
 const updateFingerprint = async function (fingerprint: string, verified: boolean) {
-	await Settings.updateValueById('Deployment_FingerPrint_Hash', fingerprint);
-
-	await Settings.updateValueById('Deployment_FingerPrint_Verified', verified);
+	const auditedSettingBySystem = updateAuditedBySystem({
+		reason: 'updateFingerprint',
+	});
+	// No need to call ws listener because current function is called on startup
+	await Promise.all([
+		auditedSettingBySystem(Settings.updateValueById, 'Deployment_FingerPrint_Hash', fingerprint),
+		auditedSettingBySystem(Settings.updateValueById, 'Deployment_FingerPrint_Verified', verified),
+	]);
 };
 
 const verifyFingerPrint = async function () {
@@ -40,6 +46,7 @@ const verifyFingerPrint = async function () {
 	if (process.env.AUTO_ACCEPT_FINGERPRINT === 'true') {
 		logger.info('Updating fingerprint as AUTO_ACCEPT_FINGERPRINT is true', fingerprint);
 		await updateFingerprint(fingerprint, true);
+		return;
 	}
 
 	logger.warn('Updating fingerprint as pending for admin verification', fingerprint);

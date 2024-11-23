@@ -5,36 +5,36 @@ import { useSetModal, useTranslation, useRouter, useRouteParameter } from '@rock
 import React, { useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
+import OutgoingWebhookForm from './OutgoingWebhookForm';
 import GenericModal from '../../../../components/GenericModal';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../../components/Page';
 import { triggerWordsToArray, triggerWordsToString } from '../helpers/triggerWords';
 import { useCreateIntegration } from '../hooks/useCreateIntegration';
 import { useDeleteIntegration } from '../hooks/useDeleteIntegration';
 import { useUpdateIntegration } from '../hooks/useUpdateIntegration';
-import OutgoingWebhookForm from './OutgoingWebhookForm';
 
 const getInitialValue = (webhookData: Serialized<IOutgoingIntegration> | undefined, defaultToken: string) => ({
-	enabled: webhookData?.enabled || true,
-	impersonateUser: webhookData?.impersonateUser || false,
-	event: webhookData?.event || 'sendMessage',
+	enabled: webhookData?.enabled ?? true,
+	impersonateUser: webhookData?.impersonateUser ?? false,
+	event: webhookData?.event ?? 'sendMessage',
 	urls: webhookData?.urls?.join('\n') ?? '',
-	token: webhookData?.token || defaultToken,
-	triggerWords: triggerWordsToString(webhookData?.triggerWords) || '',
-	targetRoom: webhookData?.targetRoom || '',
-	channel: webhookData?.channel.join(', ') || '',
-	username: webhookData?.username || '',
-	name: webhookData?.name || '',
-	alias: webhookData?.alias || '',
-	avatar: webhookData?.avatar || '',
-	emoji: webhookData?.emoji || '',
-	scriptEnabled: webhookData?.scriptEnabled || false,
-	scriptEngine: webhookData?.scriptEngine || 'isolated-vm',
-	script: webhookData?.script || '',
-	retryFailedCalls: webhookData?.retryFailedCalls || true,
-	retryCount: webhookData?.retryCount || 6,
-	retryDelay: webhookData?.retryDelay || 'powers-of-ten',
-	triggerWordAnywhere: webhookData?.triggerWordAnywhere || false,
-	runOnEdits: webhookData?.runOnEdits || true,
+	token: webhookData?.token ?? defaultToken,
+	triggerWords: triggerWordsToString(webhookData?.triggerWords) ?? '',
+	targetRoom: webhookData?.targetRoom ?? '',
+	channel: webhookData?.channel.join(', ') ?? '',
+	username: webhookData?.username ?? '',
+	name: webhookData?.name ?? '',
+	alias: webhookData?.alias ?? '',
+	avatar: webhookData?.avatar ?? '',
+	emoji: webhookData?.emoji ?? '',
+	scriptEnabled: webhookData?.scriptEnabled ?? false,
+	scriptEngine: webhookData?.scriptEngine ?? 'isolated-vm',
+	script: webhookData?.script ?? '',
+	retryFailedCalls: webhookData?.retryFailedCalls ?? true,
+	retryCount: webhookData?.retryCount ?? 6,
+	retryDelay: webhookData?.retryDelay ?? 'powers-of-ten',
+	triggerWordAnywhere: webhookData?.triggerWordAnywhere ?? false,
+	runOnEdits: webhookData?.runOnEdits ?? true,
 });
 
 const OUTGOING_TYPE = 'webhook-outgoing';

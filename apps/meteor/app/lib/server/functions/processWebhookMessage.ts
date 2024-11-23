@@ -2,12 +2,12 @@ import type { IMessage, IUser, RequiredField, MessageAttachment } from '@rocket.
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
+import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
+import { sendMessage } from './sendMessage';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { validateRoomMessagePermissionsAsync } from '../../../authorization/server/functions/canSendMessage';
-import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
-import { sendMessage } from './sendMessage';
 
 type Payload = {
 	channel?: string | string[];
@@ -25,6 +25,7 @@ type Payload = {
 	bot?: IMessage['bot'];
 	groupable?: IMessage['groupable'];
 	tmid?: IMessage['tmid'];
+	customFields?: IMessage['customFields'];
 };
 
 type DefaultValues = {
@@ -109,6 +110,7 @@ export const processWebhookMessage = async function (
 			bot: messageObj.bot,
 			groupable: messageObj.groupable !== undefined ? messageObj.groupable : false,
 			tmid: messageObj.tmid,
+			customFields: messageObj.customFields,
 		};
 
 		if (!_.isEmpty(messageObj.icon_url) || !_.isEmpty(messageObj.avatar)) {

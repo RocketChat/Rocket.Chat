@@ -1,8 +1,10 @@
 import { Sidebar } from '@rocket.chat/fuselage';
-import { useUserId, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import SidebarHeaderToolbar from './SidebarHeaderToolbar';
 import CreateRoom from './actions/CreateRoom';
 import Directory from './actions/Directory';
 import Login from './actions/Login';
@@ -10,12 +12,12 @@ import Search from './actions/Search';
 import Sort from './actions/Sort';
 
 const HeaderUnstable = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const uid = useUserId();
 
 	return (
 		<Sidebar.TopBar.Section>
-			<Sidebar.TopBar.Actions align='end'>
+			<SidebarHeaderToolbar align='end' aria-label={t('Sidebar_actions')}>
 				<Search title={t('Search')} />
 				{uid && (
 					<>
@@ -25,7 +27,7 @@ const HeaderUnstable = (): ReactElement => {
 					</>
 				)}
 				{!uid && <Login title={t('Login')} />}
-			</Sidebar.TopBar.Actions>
+			</SidebarHeaderToolbar>
 		</Sidebar.TopBar.Section>
 	);
 };

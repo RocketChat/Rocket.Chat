@@ -54,6 +54,8 @@ const getClientAddress = (req: IncomingMessage): string | undefined => {
 	return forwardedForClean[forwardedForClean.length - httpForwardedCount];
 };
 
+export const clientMap = new WeakMap<WebSocket, Client>();
+
 export class Client extends EventEmitter {
 	private chain = Promise.resolve();
 
@@ -71,7 +73,11 @@ export class Client extends EventEmitter {
 
 	public userToken?: string;
 
-	constructor(public ws: WebSocket, public meteorClient = false, req: IncomingMessage) {
+	constructor(
+		public ws: WebSocket,
+		public meteorClient = false,
+		req: IncomingMessage,
+	) {
 		super();
 
 		this.connection = {
@@ -114,6 +120,8 @@ export class Client extends EventEmitter {
 		});
 
 		this.send(SERVER_ID);
+
+		clientMap.set(ws, this);
 	}
 
 	greeting(): void {

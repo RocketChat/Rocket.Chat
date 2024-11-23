@@ -13,16 +13,17 @@ import {
 	useTranslation,
 	useEndpoint,
 } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
 
 import { LegacyRoomManager } from '../../app/ui-utils/client';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
-import { useOmnichannelPrioritiesMenu } from '../../ee/client/omnichannel/hooks/useOmnichannelPrioritiesMenu';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import WarningModal from '../components/WarningModal';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
+import { useOmnichannelPrioritiesMenu } from '../omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
 const fields: Fields = {
 	f: true,
@@ -100,6 +101,8 @@ const RoomMenu = ({
 	const isOmnichannelRoom = type === 'l';
 	const prioritiesMenu = useOmnichannelPrioritiesMenu(rid);
 
+	const queryClient = useQueryClient();
+
 	const canLeave = ((): boolean => {
 		if (type === 'c' && !canLeaveChannel) {
 			return false;
@@ -131,7 +134,6 @@ const RoomMenu = ({
 				text={t(warnText as TranslationKey, name)}
 				confirmText={t('Leave_room')}
 				close={closeModal}
-				cancel={closeModal}
 				cancelText={t('Cancel')}
 				confirm={leave}
 			/>,
@@ -174,17 +176,22 @@ const RoomMenu = ({
 
 	const handleToggleRead = useMutableCallback(async () => {
 		try {
+			queryClient.invalidateQueries(['sidebar/search/spotlight']);
+
 			if (isUnread) {
 				await readMessages({ rid, readThreads: true });
 				return;
 			}
-			await unreadMessages(undefined, rid);
+
 			if (subscription == null) {
 				return;
 			}
+
 			LegacyRoomManager.close(subscription.t + subscription.name);
 
 			router.navigate('/home');
+
+			await unreadMessages(undefined, rid);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -201,10 +208,14 @@ const RoomMenu = ({
 	const menuOptions = useMemo(
 		() => ({
 			...(!hideDefaultOptions && {
-				hideRoom: {
-					label: { label: t('Hide'), icon: 'eye-off' },
-					action: handleHide,
-				},
+				...(isOmnichannelRoom
+					? {}
+					: {
+							hideRoom: {
+								label: { label: t('Hide'), icon: 'eye-off' },
+								action: handleHide,
+							},
+						}),
 				toggleRead: {
 					label: { label: isUnread ? t('Mark_read') : t('Mark_unread'), icon: 'flag' },
 					action: handleToggleRead,
@@ -218,7 +229,7 @@ const RoomMenu = ({
 								},
 								action: handleToggleFavorite,
 							},
-					  }
+						}
 					: {}),
 				...(canLeave && {
 					leaveRoom: {
@@ -251,7 +262,6 @@ const RoomMenu = ({
 			title={t('Options')}
 			mini
 			aria-keyshortcuts='alt'
-			tabIndex={-1}
 			options={menuOptions}
 			maxHeight={300}
 			renderItem={({ label: { label, icon }, ...props }): JSX.Element => <Option label={label} icon={icon} {...props} />}

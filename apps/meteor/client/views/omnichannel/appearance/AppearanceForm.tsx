@@ -1,6 +1,5 @@
 import {
 	Field,
-	FieldLabel,
 	FieldRow,
 	TextInput,
 	ToggleSwitch,
@@ -9,15 +8,23 @@ import {
 	InputBox,
 	TextAreaInput,
 	NumberInput,
+	Select,
+	MultiSelect,
+	FieldHint,
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
+import FieldLabel from './AppearanceFieldLabel';
+import MarkdownText from '../../../components/MarkdownText';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const AppearanceForm = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
+	const isEnterprise = useHasLicenseModule('livechat-enterprise');
 
 	const { control, watch } = useFormContext();
 	const { Livechat_enable_message_character_limit } = watch();
@@ -41,9 +48,116 @@ const AppearanceForm = () => {
 	const livechatRegistrationFormMessageField = useUniqueId();
 	const livechatConversationFinishedMessageField = useUniqueId();
 	const livechatConversationFinishedTextField = useUniqueId();
+	const livechatHideWatermarkField = useUniqueId();
+	const livechatWidgetPositionField = useUniqueId();
+	const livechatBackgroundField = useUniqueId();
+	const livechatHideSystemMessagesField = useUniqueId();
+	const omnichannelVisitorsCanCloseConversationField = useUniqueId();
 
 	return (
 		<Accordion>
+			<Accordion.Item defaultExpanded title={t('General')}>
+				<FieldGroup>
+					<Field>
+						<FieldRow>
+							<FieldLabel premium htmlFor={livechatHideWatermarkField}>
+								{t('Livechat_hide_watermark')}
+							</FieldLabel>
+							<Controller
+								name='Livechat_hide_watermark'
+								control={control}
+								render={({ field: { value, ...field } }) => (
+									<ToggleSwitch id={livechatHideWatermarkField} {...field} checked={value} disabled={!isEnterprise} />
+								)}
+							/>
+						</FieldRow>
+					</Field>
+
+					<Field>
+						<FieldLabel premium htmlFor={livechatBackgroundField}>
+							{t('Livechat_background')}
+						</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='Livechat_background'
+								control={control}
+								render={({ field: { value, ...field } }) => (
+									<TextInput {...field} id={livechatBackgroundField} value={value} disabled={!isEnterprise} />
+								)}
+							/>
+						</FieldRow>
+						<FieldHint>
+							<MarkdownText variant='inline' preserveHtml content={t('Livechat_background_description')} />
+						</FieldHint>
+					</Field>
+
+					<Field>
+						<FieldLabel premium htmlFor={livechatWidgetPositionField}>
+							{t('Livechat_widget_position_on_the_screen')}
+						</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='Livechat_widget_position'
+								control={control}
+								render={({ field: { value, ...field } }) => (
+									<Select
+										{...field}
+										id={livechatWidgetPositionField}
+										value={value}
+										disabled={!isEnterprise}
+										options={[
+											['left', t('Left')],
+											['right', t('Right')],
+										]}
+									/>
+								)}
+							/>
+						</FieldRow>
+					</Field>
+
+					<Field>
+						<FieldLabel premium htmlFor={livechatHideSystemMessagesField}>
+							{t('Livechat_hide_system_messages')}
+						</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='Livechat_hide_system_messages'
+								control={control}
+								render={({ field: { value, ...field } }) => (
+									<MultiSelect
+										{...field}
+										id={livechatHideSystemMessagesField}
+										value={value}
+										disabled={!isEnterprise}
+										options={[
+											['uj', t('Message_HideType_uj')],
+											['ul', t('Message_HideType_ul')],
+											['livechat-close', t('Message_HideType_livechat_closed')],
+											['livechat-started', t('Message_HideType_livechat_started')],
+											['livechat_transfer_history', t('Message_HideType_livechat_transfer_history')],
+										]}
+									/>
+								)}
+							/>
+						</FieldRow>
+					</Field>
+					<Field>
+						<FieldRow>
+							<FieldLabel htmlFor={omnichannelVisitorsCanCloseConversationField}>
+								{t('Omnichannel_allow_visitors_to_close_conversation')}
+							</FieldLabel>
+							<Controller
+								name='Omnichannel_allow_visitors_to_close_conversation'
+								control={control}
+								render={({ field: { value, ...field } }) => (
+									<ToggleSwitch id={omnichannelVisitorsCanCloseConversationField} {...field} checked={value} />
+								)}
+							/>
+						</FieldRow>
+					</Field>
+				</FieldGroup>
+			</Accordion.Item>
+
 			<Accordion.Item defaultExpanded title={t('Livechat_online')}>
 				<FieldGroup>
 					<Field>
@@ -118,6 +232,7 @@ const AppearanceForm = () => {
 					</Field>
 				</FieldGroup>
 			</Accordion.Item>
+
 			<Accordion.Item title={t('Livechat_offline')}>
 				<FieldGroup>
 					<Field>
@@ -192,6 +307,7 @@ const AppearanceForm = () => {
 					</Field>
 				</FieldGroup>
 			</Accordion.Item>
+
 			<Accordion.Item title={t('Livechat_registration_form')}>
 				<FieldGroup>
 					<Field>
@@ -242,6 +358,7 @@ const AppearanceForm = () => {
 					</Field>
 				</FieldGroup>
 			</Accordion.Item>
+
 			<Accordion.Item title={t('Conversation_finished')}>
 				<FieldGroup>
 					<Field>

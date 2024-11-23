@@ -12,6 +12,7 @@ import type {
 	DeleteResult,
 	IndexDescription,
 	SortDirection,
+	AggregationCursor,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -111,34 +112,6 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.findPaginated(query, options);
 	}
 
-	findActiveDepartmentsByAgentId(agentId: string): FindCursor<ILivechatDepartmentAgents>;
-
-	findActiveDepartmentsByAgentId(agentId: string, options: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents>;
-
-	findActiveDepartmentsByAgentId<P extends Document>(
-		agentId: string,
-		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): FindCursor<P>;
-
-	findActiveDepartmentsByAgentId<P extends Document>(
-		agentId: string,
-		options?:
-			| undefined
-			| FindOptions<ILivechatDepartmentAgents>
-			| FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): FindCursor<ILivechatDepartmentAgents> | FindCursor<P> {
-		const query = {
-			agentId,
-			departmentEnabled: true,
-		};
-
-		if (options === undefined) {
-			return this.find(query);
-		}
-
-		return this.find(query, options);
-	}
-
 	findByDepartmentIds(departmentIds: string[], options = {}): FindCursor<ILivechatDepartmentAgents> {
 		return this.find({ departmentId: { $in: departmentIds } }, options);
 	}
@@ -152,7 +125,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 	}
 
 	removeByDepartmentId(departmentId: string): Promise<DeleteResult> {
-		return this.deleteOne({ departmentId });
+		return this.deleteMany({ departmentId });
 	}
 
 	findByDepartmentId(departmentId: string, options?: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents> {
@@ -174,7 +147,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		departmentEnabled: boolean;
 		count: number;
 		order: number;
-	}): Promise<Document | UpdateResult> {
+	}): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				agentId: agent.agentId,
@@ -192,8 +165,8 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		);
 	}
 
-	async removeByAgentId(agentId: string): Promise<void> {
-		await this.deleteMany({ agentId });
+	async removeByAgentId(agentId: string): Promise<DeleteResult> {
+		return this.deleteMany({ agentId });
 	}
 
 	async removeByDepartmentIdAndAgentId(departmentId: string, agentId: string): Promise<void> {
@@ -201,11 +174,11 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 	}
 
 	async getNextAgentForDepartment(
-		departmentId: string,
+		departmentId: ILivechatDepartmentAgents['departmentId'],
 		isLivechatEnabledWhenAgentIdle?: boolean,
-		ignoreAgentId?: string,
+		ignoreAgentId?: ILivechatDepartmentAgents['agentId'],
 		extraQuery?: Filter<IUser>,
-	): Promise<{ agentId: string; username: string } | null | undefined> {
+	): Promise<Pick<ILivechatDepartmentAgents, '_id' | 'agentId' | 'departmentId' | 'username'> | null | undefined> {
 		const agents = await this.findByDepartmentId(departmentId).toArray();
 
 		if (agents.length === 0) {
@@ -231,25 +204,28 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 			...(ignoreAgentId && { agentId: { $ne: ignoreAgentId } }),
 		};
 
-		const sort: { [k: string]: SortDirection } = {
-			count: 1,
-			order: 1,
-			username: 1,
-		};
 		const update = {
 			$inc: {
 				count: 1,
 			},
 		};
 
-		const agent = await this.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
-		if (agent?.value) {
-			return {
-				agentId: agent.value.agentId,
-				username: agent.value.username,
-			};
-		}
-		return null;
+		const sort: { [k: string]: SortDirection } = {
+			count: 1,
+			order: 1,
+			username: 1,
+		};
+
+		const projection = {
+			_id: 1,
+			agentId: 1,
+			departmentId: 1,
+			username: 1,
+		};
+
+		const agent = await this.findOneAndUpdate(query, update, { sort, projection, returnDocument: 'after' });
+
+		return agent.value;
 	}
 
 	async checkOnlineForDepartment(departmentId: string): Promise<boolean> {
@@ -291,6 +267,19 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.find(query);
 	}
 
+	async countOnlineForDepartment(departmentId: string, isLivechatEnabledWhenAgentIdle?: boolean): Promise<number> {
+		const agents = await this.findByDepartmentId(departmentId, { projection: { username: 1 } }).toArray();
+
+		if (agents.length === 0) {
+			return 0;
+		}
+
+		return Users.countOnlineUserFromList(
+			agents.map((a) => a.username),
+			isLivechatEnabledWhenAgentIdle,
+		);
+	}
+
 	async getBotsForDepartment(departmentId: string): Promise<undefined | FindCursor<ILivechatDepartmentAgents>> {
 		const agents = await this.findByDepartmentId(departmentId).toArray();
 
@@ -311,15 +300,29 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.find(query);
 	}
 
-	async getNextBotForDepartment(departmentId: string, ignoreAgentId?: string): Promise<{ agentId: string; username: string } | undefined> {
-		const agents = await this.findByDepartmentId(departmentId).toArray();
+	async countBotsForDepartment(departmentId: string): Promise<number> {
+		const agents = await this.findByDepartmentId(departmentId, { projection: { username: 1 } }).toArray();
 
 		if (agents.length === 0) {
+			return 0;
+		}
+
+		return Users.countBotAgents(agents.map((a) => a.username));
+	}
+
+	async getNextBotForDepartment(
+		departmentId: ILivechatDepartmentAgents['departmentId'],
+		ignoreAgentId?: ILivechatDepartmentAgents['agentId'],
+	): Promise<Pick<ILivechatDepartmentAgents, '_id' | 'agentId' | 'departmentId' | 'username'> | null | undefined> {
+		const agents = await this.findByDepartmentId(departmentId).toArray();
+
+		if (!agents.length) {
 			return;
 		}
 
-		const botUsers = await Users.findBotAgents(agents.map((a) => a.username)).toArray();
-		const botUsernames = botUsers.map((user) => user.username).filter(isStringValue);
+		const botUsernames = (await Users.findBotAgents(agents.map((a) => a.username)).toArray())
+			.map((user) => user.username)
+			.filter(isStringValue);
 
 		const query = {
 			departmentId,
@@ -329,24 +332,28 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 			...(ignoreAgentId && { agentId: { $ne: ignoreAgentId } }),
 		};
 
-		const sort: { [k: string]: SortDirection } = {
-			count: 1,
-			order: 1,
-			username: 1,
-		};
 		const update = {
 			$inc: {
 				count: 1,
 			},
 		};
 
-		const bot = await this.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
-		if (bot?.value) {
-			return {
-				agentId: bot.value.agentId,
-				username: bot.value.username,
-			};
-		}
+		const sort: { [k: string]: SortDirection } = {
+			count: 1,
+			order: 1,
+			username: 1,
+		};
+
+		const projection = {
+			_id: 1,
+			agentId: 1,
+			departmentId: 1,
+			username: 1,
+		};
+
+		const bot = await this.findOneAndUpdate(query, update, { sort, projection, returnDocument: 'after' });
+
+		return bot.value;
 	}
 
 	replaceUsernameOfAgentByUserId(userId: string, username: string): Promise<UpdateResult | Document> {
@@ -375,6 +382,47 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 
 	findAllAgentsConnectedToListOfDepartments(departmentIds: string[]): Promise<string[]> {
 		return this.col.distinct('agentId', { departmentId: { $in: departmentIds }, departmentEnabled: true });
+	}
+
+	findByAgentsAndDepartmentId(
+		agentsIds: ILivechatDepartmentAgents['agentId'][],
+		departmentId: ILivechatDepartmentAgents['departmentId'],
+		options?: FindOptions<ILivechatDepartmentAgents>,
+	): FindCursor<ILivechatDepartmentAgents> {
+		return this.find({ agentId: { $in: agentsIds }, departmentId }, options);
+	}
+
+	findDepartmentsOfAgent(agentId: string, enabled = false): AggregationCursor<ILivechatDepartmentAgents & { departmentName: string }> {
+		return this.col.aggregate<ILivechatDepartmentAgents & { departmentName: string }>([
+			{
+				$match: {
+					agentId,
+					...(enabled && { departmentEnabled: true }),
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_livechat_department',
+					localField: 'departmentId',
+					foreignField: '_id',
+					as: 'department',
+				},
+			},
+			{ $unwind: '$department' },
+			{
+				$project: {
+					_id: '$_id',
+					agentId: '$agentId',
+					departmentId: '$departmentId',
+					departmentName: '$department.name',
+					username: '$username',
+					count: '$count',
+					order: '$order',
+					departmentEnabled: '$departmentEnabled',
+					_updatedAt: '$_updatedAt',
+				},
+			},
+		]);
 	}
 }
 
