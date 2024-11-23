@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/core-typings';
 import { getDomain, getUserPassword, getExtensionList, getExtensionDetails, listenToEvents } from '@rocket.chat/freeswitch';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { FreeSwitchChannel, Rooms, Users } from '@rocket.chat/models';
+import { FreeSwitchChannel, Rooms, Users, VideoConference } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
 
 import { settings } from '../../../../app/settings/server';
@@ -108,8 +108,8 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		const data: Omit<InsertionModel<IVoIPVideoConference>, 'createdAt'> & { createdAt?: Date } = {
 			type: 'voip',
 			rid,
-			users: users.map((user) => ({ ...user, ts: new Date() }) as IVideoConferenceUser),
-			status: VideoConferenceStatus.ENDED,
+			users: [...(caller.user ? [{ ...caller.user, ts: new Date() }] : [])],
+			status: VideoConferenceStatus.DECLINED,
 			messages: {},
 			providerName: 'chat.rocket.voip',
 			createdBy,
@@ -146,8 +146,15 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			if (channel.bridged) {
 				data.events.bridge = true;
 			}
-			if (channel.answered) {
+			if (channel.answered && !data.events.answer) {
 				data.events.answer = true;
+				data.status = VideoConferenceStatus.ENDED;
+				if (callee.user) {
+					data.users.push({
+						...callee.user,
+						ts: new Date(),
+					});
+				}
 			}
 		}
 
