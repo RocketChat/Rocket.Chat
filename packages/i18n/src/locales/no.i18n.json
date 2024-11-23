@@ -4489,6 +4489,7 @@
   "registration.component.form.invalidEmail": "E-posten som er oppgitt, er ugyldig",
   "registration.component.form.email": "E-post",
   "registration.component.form.emailPlaceholder": "eksempel@eksempel.no",
+  "registration.component.form.passwordPlaceholder": "●●●●●●●●",
   "registration.component.form.password": "Passord",
   "registration.component.form.divider": "eller",
   "registration.component.form.submit": "Sende inn",

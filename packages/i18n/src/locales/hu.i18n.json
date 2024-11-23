@@ -5312,6 +5312,7 @@
   "registration.component.form.invalidEmail": "Érvénytelen email cím",
   "registration.component.form.email": "E-mail-cím",
   "registration.component.form.emailPlaceholder": "pelda@example.com",
+  "registration.component.form.passwordPlaceholder": "●●●●●●●●",
   "registration.component.form.password": "Jelszó",
   "registration.component.form.divider": "vagy",
   "registration.component.form.submit": "Elküldés",
