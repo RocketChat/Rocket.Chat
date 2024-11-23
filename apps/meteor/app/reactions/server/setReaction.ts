@@ -11,12 +11,8 @@ import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
-<<<<<<< HEAD
-import { notifyOnRoomChangedById } from '../../lib/server/lib/notifyListener';
 import { sendMessageNotifications } from '../../lib/server/lib/sendNotificationsOnMessage';
-=======
 import { notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
->>>>>>> 66b0e163e5b8498472fe519d44a624e317071879
 
 export const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
 	if (!message.reactions) {
@@ -37,10 +33,6 @@ export const removeUserReaction = (message: IMessage, reaction: string, username
 	return message;
 };
 
-<<<<<<< HEAD
-async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction: string , shouldReact?: boolean, reactionWithTranslation?: string) {
-	reaction = `:${reaction.replace(/:/g, '')}:`;
-=======
 export async function setReaction(
 	room: Pick<IRoom, '_id' | 'muted' | 'unmuted' | 'reactWhenReadOnly' | 'ro' | 'lastMessage' | 'federated'>,
 	user: IUser,
@@ -49,7 +41,6 @@ export async function setReaction(
 	userAlreadyReacted?: boolean,
 ) {
 	await Message.beforeReacted(message, room);
->>>>>>> 66b0e163e5b8498472fe519d44a624e317071879
 
 	if (Array.isArray(room.muted) && room.muted.includes(user.username as string)) {
 		throw new Meteor.Error('error-not-allowed', i18n.t('You_have_been_muted', { lng: user.language }), {
@@ -98,14 +89,8 @@ export async function setReaction(
 			await Rooms.setReactionsInLastMessage(room._id, message.reactions);
 		}
 
-<<<<<<< HEAD
-		await sendMessageNotifications(message, room, undefined, reaction, user, reactionWithTranslation);
-
-		await callbacks.run('setReaction', message._id, reaction);
-		await callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
-=======
+		await sendMessageNotifications(message, room as IRoom, undefined, reaction);
 		void callbacks.run('afterSetReaction', message, { user, reaction, shouldReact: true });
->>>>>>> 66b0e163e5b8498472fe519d44a624e317071879
 
 		isReacted = true;
 	}
@@ -117,10 +102,6 @@ export async function setReaction(
 	});
 }
 
-<<<<<<< HEAD
-export async function executeSetReaction(userId: string, reaction: string, messageId: IMessage['_id'], shouldReact?: boolean, reactionWithTranslation?: string) {
-	const user = await Users.findOneById(userId);
-=======
 export async function executeSetReaction(
 	userId: string,
 	reaction: string,
@@ -130,7 +111,6 @@ export async function executeSetReaction(
 	// Check if the emoji is valid before proceeding
 	const reactionWithoutColons = reaction.replace(/:/g, '');
 	reaction = `:${reactionWithoutColons}:`;
->>>>>>> 66b0e163e5b8498472fe519d44a624e317071879
 
 	if (!emoji.list[reaction] && (await EmojiCustom.countByNameOrAlias(reactionWithoutColons)) === 0) {
 		throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', {
@@ -161,8 +141,8 @@ export async function executeSetReaction(
 	}
 
 	const room = await Rooms.findOneById<
-		Pick<IRoom, '_id' | 'ro' | 'muted' | 'reactWhenReadOnly' | 'lastMessage' | 't' | 'prid' | 'federated'>
-	>(message.rid, { projection: { _id: 1, ro: 1, muted: 1, reactWhenReadOnly: 1, lastMessage: 1, t: 1, prid: 1, federated: 1 } });
+		Pick<IRoom, '_id' | 'fname' | 'name' | 'ro' | 'muted' | 'reactWhenReadOnly' | 'lastMessage' | 't' | 'prid' | 'federated'>
+	>(message.rid, { projection: { _id: 1, fname: 1, name: 1,ro: 1, muted: 1, reactWhenReadOnly: 1, lastMessage: 1, t: 1, prid: 1, federated: 1 } });
 	if (!room) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 	}
@@ -171,29 +151,25 @@ export async function executeSetReaction(
 		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'setReaction' });
 	}
 
-<<<<<<< HEAD
-	return setReaction(room, user, message, reaction, shouldReact, reactionWithTranslation);
-=======
 	return setReaction(room, user, message, reaction, userAlreadyReacted);
->>>>>>> 66b0e163e5b8498472fe519d44a624e317071879
 }
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		setReaction(reaction: string, messageId: IMessage['_id'], shouldReact?: boolean, reactionWithTranslation?: string): boolean | undefined;
+		setReaction(reaction: string, messageId: IMessage['_id'], shouldReact?: boolean): boolean | undefined;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	async setReaction(reaction, messageId, shouldReact, reactionWithTranslation) {
+	async setReaction(reaction, messageId, shouldReact) {
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
 		}
 
 		try {
-			await executeSetReaction(uid, reaction, messageId, shouldReact, reactionWithTranslation);
+			await executeSetReaction(uid, reaction, messageId, shouldReact);
 		} catch (e: any) {
 			if (e.error === 'error-not-allowed' && e.reason && e.details && e.details.rid) {
 				void api.broadcast('notify.ephemeralMessage', uid, e.details.rid, {

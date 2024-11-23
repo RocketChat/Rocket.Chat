@@ -1,14 +1,13 @@
-import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-
+import i18next from 'i18next';
 import { getEmojiClassNameAndDataTitle } from '../../client/lib/utils/renderEmoji';
 
-export function parseReaction(reactionText: string, roomtype: RoomType, reactionWithTranslation: string): string {
-	let reaction = '';
-	if (roomtype === 'd') {
-		reaction = `${reactionWithTranslation} ${getEmojiClassNameAndDataTitle(reactionText.trim()).children}`;
-	} else {
-		const reactionMessage = reactionText.trim().split(' ');
-		reaction = `${reactionMessage[0]} ${reactionWithTranslation} ${getEmojiClassNameAndDataTitle(reactionMessage[1].trim()).children}`;
+const translateReactedWith = ()=>{
+	if(i18next.t('Reacted_with') === 'Reacted_with'){
+		return 'Reacted with';
 	}
-	return reaction;
+	return i18next.t('Reacted_with');
+}
+
+export function parseReaction(msg: string, emoji: string): string {
+	return `${translateReactedWith()} ${getEmojiClassNameAndDataTitle(emoji.trim()).children} \n msg : "${msg}"`;
 }

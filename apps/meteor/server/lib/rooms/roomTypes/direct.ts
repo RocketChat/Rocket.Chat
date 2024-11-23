@@ -91,7 +91,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		return (room?.uids?.length || 0) > 2;
 	},
 
-	async getNotificationDetails(room, sender, notificationMessage, userId, reaction) {
+	async getNotificationDetails(room, sender, notificationMessage, userId) {
 		const useRealName = settings.get<boolean>('UI_Use_Real_Name');
 
 		const displayRoomName = await this.roomName(room, userId);
@@ -99,14 +99,14 @@ roomCoordinator.add(DirectMessageRoomType, {
 		if (this.isGroupChat(room)) {
 			return {
 				title: displayRoomName,
-				text: `${(useRealName && sender.name) || sender.username}: ${reaction === '' ? notificationMessage : reaction}`,
+				text: `${(useRealName && sender.name) || sender.username}: ${notificationMessage}`,
 				name: room.name || displayRoomName,
 			};
 		}
 
 		return {
 			title: (useRealName && sender.name) || sender.username,
-			text: reaction === '' ? notificationMessage : reaction,
+			text: notificationMessage,
 			name: room.name || displayRoomName,
 		};
 	},

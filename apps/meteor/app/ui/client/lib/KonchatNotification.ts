@@ -1,4 +1,3 @@
-import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { INotificationDesktop, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
@@ -59,7 +58,7 @@ class KonchatNotification {
 		const requireInteraction = getUserPreference<boolean>(Meteor.userId(), 'desktopNotificationRequireInteraction');
 		const n = new Notification(notification.title, {
 			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username as string),
-			body: notification.reacted ? parseReaction(notification.text, notification.payload.type as RoomType, notification.reactionWithTranslation) : stripTags(message.msg),
+			body: notification.reaction !== '' ? parseReaction(notification.text, notification.reaction as string) : stripTags(message.msg),
 			tag: notification.payload._id,
 			canReply: true,
 			silent: true,

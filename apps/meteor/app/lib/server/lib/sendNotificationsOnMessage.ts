@@ -14,7 +14,6 @@ import type { RootFilterOperators } from 'mongodb';
 
 import { getMentions } from './notifyUsersOnMessage';
 import { callbacks } from '../../../../lib/callbacks';
-import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
 import { settings } from '../../../settings/server';
@@ -47,7 +46,6 @@ export const sendNotification = async ({
 	mentionIds,
 	disableAllMessageNotifications,
 	reaction,
-	reactionWithTranslation,
 }: {
 	subscription: SubscriptionAggregation;
 	sender: Pick<IUser, '_id' | 'name' | 'username'>;
@@ -61,7 +59,6 @@ export const sendNotification = async ({
 	mentionIds: string[];
 	disableAllMessageNotifications: boolean;
 	reaction: string;
-	reactionWithTranslation: string;
 }) => {
 	if (settings.get<boolean>('Troubleshoot_Disable_Notifications') === true) {
 		return;
@@ -140,7 +137,6 @@ export const sendNotification = async ({
 			message,
 			room,
 			reaction,
-			reactionWithTranslation,
 		});
 	}
 
@@ -269,13 +265,12 @@ const lookup = {
 	},
 } as const;
 
-export async function sendMessageNotifications(message: IMessage, room: IRoom, usersInThread: string[] = [], reaction = '', user?: IUser, reactionWithTranslation?: string) {
+export async function sendMessageNotifications(message: IMessage, room: IRoom, usersInThread: string[] = [], reaction = '') {
 	if (settings.get<boolean>('Troubleshoot_Disable_Notifications') === true) {
 		return;
 	}
 
-	const sender = user || (await roomCoordinator.getRoomDirectives(room.t).getMsgSender(message.u._id));
-
+	const sender = await Meteor.userAsync() as IUser;
 	if (!sender) {
 		return message;
 	}
@@ -374,7 +369,6 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 				disableAllMessageNotifications,
 				hasReplyToThread: usersInThread?.includes(subscription.u._id),
 				reaction,
-				reactionWithTranslation: reactionWithTranslation || '',
 			}),
 	);
 

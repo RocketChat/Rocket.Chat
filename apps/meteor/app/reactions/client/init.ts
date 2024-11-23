@@ -12,7 +12,7 @@ Meteor.startup(() => {
 		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 		action(event, { message, chat }) {
 			event?.stopPropagation();
-			chat?.emojiPicker.open(event?.currentTarget as Element, (emoji , reactionWithTranslation) => sdk.call('setReaction', emoji, message._id, undefined, reactionWithTranslation));
+			chat?.emojiPicker.open(event?.currentTarget as Element, (emoji) => sdk.call('setReaction', `:${emoji}:`, message._id));
 		},
 		condition({ message, user, room, subscription }) {
 			if (!room) {
