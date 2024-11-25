@@ -60,7 +60,7 @@ export const useHideRoomAction = ({ rid: roomId, type, name }: HideRoomProps, { 
 
 			if (userId && rollbackDocument) {
 				const { alert, open } = rollbackDocument;
-				await updateSubscription(roomId, userId, { alert, open });
+				updateSubscription(roomId, userId, { alert, open });
 			}
 		},
 	});
