@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 import { Subscriptions } from '../../../app/models/client';
 
 export const toggleFavoriteRoom = (roomId: string, favorite: boolean) => {
