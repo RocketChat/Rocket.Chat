@@ -15,7 +15,7 @@ const CountSeatsCard = ({ activeUsers }: { activeUsers: number }): ReactElement 
 				infoText: t('CountSeats_InfoText'),
 			}}
 		>
-			<Box fontScale='h1'>
+			<Box fontScale='h1' display='flex' alignItems='center' justifyContent='center'>
 				<Icon color='font-annotation' name='user' size={40} mie={4} />
 				{activeUsers}
 			</Box>

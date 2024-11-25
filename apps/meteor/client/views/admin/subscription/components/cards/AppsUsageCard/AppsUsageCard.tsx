@@ -27,7 +27,7 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 		// FIXME: not accessible enough
 		return (
 			<FeatureUsageCard card={{ title: t('Apps') }}>
-				<Skeleton variant='rect' width='x112' height='x112' role='presentation' />
+				<Skeleton variant='rect' width='x112' height='x224' role='presentation' />
 			</FeatureUsageCard>
 		);
 	}
