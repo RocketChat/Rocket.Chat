@@ -11,15 +11,15 @@ const Favorite = ({ room: { _id, f: favorite = false, t: type, name } }: { room:
 	const t = useTranslation();
 	const subscribed = useUserIsSubscribed();
 
-	const isFavoritesEnabled = useSetting('Favorite_Rooms') && ['c', 'p', 'd', 't'].includes(type);
-	const toggleFavorite = useToggleFavoriteMutation();
+	const isFavoritesEnabled = useSetting('Favorite_Rooms', true) && ['c', 'p', 'd', 't'].includes(type);
+	const { mutate: toggleFavorite } = useToggleFavoriteMutation();
 
 	const handleFavoriteClick = useEffectEvent(() => {
 		if (!isFavoritesEnabled) {
 			return;
 		}
 
-		toggleFavorite.mutate({ roomId: _id, favorite: !favorite, roomName: name || '' });
+		toggleFavorite({ roomId: _id, favorite: !favorite, roomName: name || '' });
 	});
 
 	const favoriteLabel = favorite ? `${t('Unfavorite')} ${name}` : `${t('Favorite')} ${name}`;
