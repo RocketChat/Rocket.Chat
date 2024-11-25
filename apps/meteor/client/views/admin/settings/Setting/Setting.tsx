@@ -1,4 +1,4 @@
-import type { ISettingColor, LicenseModule, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
+import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
 import { Box, Button, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
@@ -9,7 +9,8 @@ import { useTranslation } from 'react-i18next';
 
 import MemoizedSetting from './MemoizedSetting';
 import MarkdownText from '../../../../components/MarkdownText';
-import { useEditableSetting, useEditableSettingsDispatch, useIsEnterprise, useLicenseActiveModules } from '../../EditableSettingsContext';
+import { useEditableSetting, useEditableSettingsDispatch } from '../../EditableSettingsContext';
+import { useHasSettingModule } from '../hooks/useHasSettingModule';
 
 type SettingProps = {
 	className?: string;
@@ -20,8 +21,7 @@ type SettingProps = {
 function Setting({ className = undefined, settingId, sectionChanged }: SettingProps): ReactElement {
 	const setting = useEditableSetting(settingId);
 	const persistedSetting = useSettingStructure(settingId);
-	const isEnterprise = useIsEnterprise();
-	const activeModules = useLicenseActiveModules();
+	const hasSettingModule = useHasSettingModule(setting);
 
 	if (!setting || !persistedSetting) {
 		throw new Error(`Setting ${settingId} not found`);
@@ -112,15 +112,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 		[alert, i18n, t],
 	);
 
-	const hasSettingModule = useMemo(() => {
-		if (!setting?.modules || setting?.modules.length === 0) {
-			return false;
-		}
-
-		return setting.modules.every((module) => activeModules.includes(module as LicenseModule));
-	}, [activeModules, setting?.modules]);
-
-	const shouldDisableEnterprise = setting.enterprise && !isEnterprise && !hasSettingModule;
+	const shouldDisableEnterprise = setting.enterprise && !hasSettingModule;
 
 	const PRICING_URL = 'https://go.rocket.chat/i/see-paid-plan-customize-homepage';
 

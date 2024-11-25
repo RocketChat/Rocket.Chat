@@ -1,4 +1,4 @@
-import type { ISettingBase, ISettingColor, ISetting, LicenseModule } from '@rocket.chat/core-typings';
+import type { ISettingBase, ISettingColor, ISetting } from '@rocket.chat/core-typings';
 import type { SettingsContextQuery } from '@rocket.chat/ui-contexts';
 import { createContext, useContext, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
@@ -28,8 +28,6 @@ export type EditableSettingsContextValue = {
 		_id: ISetting['_id'],
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISetting['_id'][]];
 	readonly dispatch: (changes: Partial<EditableSetting>[]) => void;
-	readonly isEnterprise: boolean;
-	readonly activeModules: LicenseModule[];
 };
 
 export const EditableSettingsContext = createContext<EditableSettingsContextValue>({
@@ -38,13 +36,7 @@ export const EditableSettingsContext = createContext<EditableSettingsContextValu
 	queryGroupSections: () => [(): (() => void) => (): void => undefined, (): string[] => []],
 	queryGroupTabs: () => [(): (() => void) => (): void => undefined, (): ISetting['_id'][] => []],
 	dispatch: () => undefined,
-	isEnterprise: false,
-	activeModules: [],
 });
-
-export const useIsEnterprise = (): boolean => useContext(EditableSettingsContext).isEnterprise;
-
-export const useLicenseActiveModules = () => useContext(EditableSettingsContext).activeModules;
 
 export const useEditableSetting = (_id: ISetting['_id']): EditableSetting | undefined => {
 	const { queryEditableSetting } = useContext(EditableSettingsContext);
