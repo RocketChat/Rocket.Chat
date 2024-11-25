@@ -31,4 +31,12 @@ export class OmnichannelContacts {
 	get toastSuccess(): Locator {
 		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
 	}
+
+	get btnSaveContact(): Locator {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Save', exact: true });
+	}
+
+	get inputContactName(): Locator {
+		return this.page.getByRole('dialog').locator('[name=name]');
+	}
 }
