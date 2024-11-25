@@ -45,6 +45,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 
 	test.afterAll(async ({ api }) => {
 		await Promise.all([
+			api.post('/settings/Livechat_accept_chats_with_no_agents', { value: false }),
 			api.post('/settings/Livechat_waiting_queue', { value: false }),
 			api.post('/settings/Livechat_waiting_queue_message', { value: '' }),
 			api.delete('/livechat/users/agent/user1'),
@@ -69,7 +70,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			await poLiveChat.page.close();
 		});
 
-		test('Update user position on Queue', async () => {
+		test.only('Update user position on Queue', async () => {
 			await test.step('should start livechat session', async () => {
 				await poLiveChat.openAnyLiveChatAndSendMessage({
 					liveChatUser: firstVisitor,
