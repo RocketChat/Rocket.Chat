@@ -3,7 +3,4 @@ import './jumpToPinMessage';
 import './jumpToSearchMessage';
 import './jumpToStarMessage';
 import './permalinkPinned';
-import './permalinkStar';
-import './starMessage';
 import './unpinMessage';
-import './unstarMessage';
