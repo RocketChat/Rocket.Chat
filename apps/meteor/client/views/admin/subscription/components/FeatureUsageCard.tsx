@@ -14,12 +14,14 @@ export type CardProps = {
 	title: string;
 	infoText?: ReactNode;
 	upgradeButton?: ReactNode;
+	isHorizontallyCenteredOnly?: boolean;
 };
 
 const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps): ReactElement => {
-	const { title, infoText, upgradeButton } = card;
+	const { title, infoText, upgradeButton, isHorizontallyCenteredOnly } = card;
 
 	const breakpoints = useBreakpoints();
+
 	const isMobile = !breakpoints.includes('lg');
 
 	return (
@@ -28,7 +30,14 @@ const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps): ReactEleme
 				{title} {infoText && <InfoTextIconModal title={title} infoText={infoText} />}
 			</CardTitle>
 			<CardBody>
-				<Box h='full' w='full' display='flex' alignItems='center' justifyContent='center' flexDirection='column'>
+				<Box
+					h='full'
+					w='full'
+					display='flex'
+					alignItems='center'
+					justifyContent={isHorizontallyCenteredOnly ? 'flex-start' : 'center'}
+					flexDirection='column'
+				>
 					{children}
 				</Box>
 			</CardBody>

@@ -53,6 +53,7 @@ const ActiveSessionsCard = (): ReactElement => {
 						</UpgradeButton>
 					),
 				}),
+				isHorizontallyCenteredOnly: true,
 			}}
 		>
 			<Box color='font-secondary-info'>
