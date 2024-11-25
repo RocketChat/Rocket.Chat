@@ -27,12 +27,4 @@ export class OmnichannelContacts {
 	findRowByName(contactName: string) {
 		return this.page.locator(`td >> text="${contactName}"`);
 	}
-
-	get btnSaveContact(): Locator {
-		return this.page.getByRole('dialog').getByRole('button', { name: 'Save', exact: true });
-	}
-
-	get inputContactName(): Locator {
-		return this.page.getByRole('dialog').locator('[name=name]');
-	}
 }

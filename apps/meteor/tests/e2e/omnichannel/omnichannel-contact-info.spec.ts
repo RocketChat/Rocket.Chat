@@ -52,8 +52,8 @@ test.describe('Omnichannel contact info', () => {
 		});
 
 		await test.step('Expect to update room name and subscription when updating contact name', async () => {
-			await agent.poContacts.inputContactName.fill('Edited Contact Name');
-			await agent.poContacts.btnSaveContact.click();
+			await agent.poContacts.newContact.inputName.fill('Edited Contact Name');
+			await agent.poContacts.newContact.btnSave.click();
 			await expect(agent.poHomeChannel.sidenav.sidebarChannelsList.getByText('Edited Contact Name')).toBeVisible();
 			await expect(agent.poHomeChannel.content.channelHeader.getByText('Edited Contact Name')).toBeVisible();
 		});
