@@ -14,6 +14,7 @@ addMigration({
 		const loginTermsValue = settings.get('Layout_Login_Terms');
 
 		if (loginTermsValue === oldLoginTermsValue) {
+			// TODO: audit
 			await Settings.updateOne({ _id: 'Layout_Login_Terms' }, { $set: { value: '', packageValue: '' } });
 			SystemLogger.warn(`The default value of the setting 'Login Terms' has changed to an empty string. Please review your settings.`);
 		}

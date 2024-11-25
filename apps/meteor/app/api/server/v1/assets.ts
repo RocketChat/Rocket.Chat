@@ -1,6 +1,7 @@
 import { Settings } from '@rocket.chat/models';
 import { isAssetsUnsetAssetProps } from '@rocket.chat/rest-typings';
 
+import { updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { RocketChatAssets, refreshClients } from '../../../assets/server';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
@@ -36,7 +37,12 @@ API.v1.addRoute(
 
 			const { key, value } = await RocketChatAssets.setAssetWithBuffer(fileBuffer, mimetype, assetName);
 
-			const { modifiedCount } = await Settings.updateValueById(key, value);
+			const { modifiedCount } = await updateAuditedByUser({
+				_id: this.userId,
+				username: this.user.username!,
+				ip: this.requestIp,
+				useragent: this.request.headers['user-agent'] || '',
+			})(Settings.updateValueById, key, value);
 
 			if (modifiedCount) {
 				void notifyOnSettingChangedById(key);
@@ -68,7 +74,12 @@ API.v1.addRoute(
 
 			const { key, value } = await RocketChatAssets.unsetAsset(assetName);
 
-			const { modifiedCount } = await Settings.updateValueById(key, value);
+			const { modifiedCount } = await updateAuditedByUser({
+				_id: this.userId,
+				username: this.user.username!,
+				ip: this.requestIp,
+				useragent: this.request.headers['user-agent'] || '',
+			})(Settings.updateValueById, key, value);
 
 			if (modifiedCount) {
 				void notifyOnSettingChangedById(key);

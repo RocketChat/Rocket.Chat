@@ -29,6 +29,8 @@ addMigration({
 
 			const newValue = convertDaysToMs(Number(value));
 
+			// TODO: audit
+
 			promises.push(
 				Settings.updateOne(
 					{
