@@ -3,6 +3,7 @@ import { Settings } from '@rocket.chat/models';
 import { isPOSTLivechatAppearanceParams } from '@rocket.chat/rest-typings';
 
 import { isTruthy } from '../../../../../lib/isTruthy';
+import { updateAuditedByUser } from '../../../../../server/settings/lib/auditedSettingUpdates';
 import { API } from '../../../../api/server';
 import { notifyOnSettingChangedById } from '../../../../lib/server/lib/notifyListener';
 import { findAppearance } from '../../../server/api/lib/appearance';
@@ -92,7 +93,15 @@ API.v1.addRoute(
 				.toArray();
 
 			const eligibleSettings = dbSettings.filter(isTruthy);
-			const promises = eligibleSettings.map(({ _id, value }) => Settings.updateValueById(_id, value));
+
+			const auditSettingOperation = updateAuditedByUser({
+				_id: this.userId,
+				username: this.user.username!,
+				ip: this.requestIp,
+				useragent: this.request.headers['user-agent'] || '',
+			});
+
+			const promises = eligibleSettings.map(({ _id, value }) => auditSettingOperation(Settings.updateValueById, _id, value));
 			(await Promise.all(promises)).forEach((value, index) => {
 				if (value?.modifiedCount) {
 					void notifyOnSettingChangedById(eligibleSettings[index]._id);

@@ -3,9 +3,9 @@ import { Box, CheckBox } from '@rocket.chat/fuselage';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ChannelDeletionTableRow from './ChannelDeletionTableRow';
 import { GenericTable, GenericTableHeaderCell, GenericTableBody, GenericTableHeader } from '../../../../../../components/GenericTable';
 import { useSort } from '../../../../../../components/GenericTable/hooks/useSort';
-import ChannelDeletionTableRow from './ChannelDeletionTableRow';
 
 type ChannelDeletionTableProps = {
 	rooms: Serialized<IRoom>[];

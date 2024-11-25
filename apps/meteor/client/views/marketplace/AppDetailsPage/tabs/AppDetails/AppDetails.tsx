@@ -5,14 +5,14 @@ import DOMPurify from 'dompurify';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import AppDetailsAPIs from './AppDetailsAPIs';
+import { normalizeUrl } from './normalizeUrl';
 import { useExternalLink } from '../../../../../hooks/useExternalLink';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { GET_ADDONS_LINK } from '../../../../admin/subscription/utils/links';
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
 import type { AppInfo } from '../../../definitions/AppInfo';
 import { purifyOptions } from '../../../lib/purifyOptions';
-import AppDetailsAPIs from './AppDetailsAPIs';
-import { normalizeUrl } from './normalizeUrl';
 
 type AppDetailsProps = {
 	app: AppInfo;
@@ -28,7 +28,9 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 		screenshots,
 		apis,
 		documentationUrl: documentation,
-		addon: appAddon,
+		addon,
+		installedAddon,
+		installed,
 	} = app;
 
 	const isMarkdown = detailedDescription && Object.keys(detailedDescription).length !== 0 && detailedDescription.rendered;
@@ -37,6 +39,8 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 	const normalizedHomepageUrl = homepage ? normalizeUrl(homepage) : undefined;
 	const normalizedSupportUrl = support ? normalizeUrl(support) : undefined;
 	const normalizedDocumentationUrl = documentation ? normalizeUrl(documentation) : undefined;
+
+	const appAddon = installed ? installedAddon : addon;
 
 	const workspaceHasAddon = useHasLicenseModule(appAddon);
 

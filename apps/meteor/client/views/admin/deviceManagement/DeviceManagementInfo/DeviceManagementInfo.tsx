@@ -1,9 +1,10 @@
 import type { DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, StatusBullet } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
 	Contextualbar,
@@ -23,7 +24,7 @@ type DeviceManagementInfoProps = DeviceManagementPopulatedSession & {
 };
 
 const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, onReload }: DeviceManagementInfoProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const deviceManagementRouter = useRoute('device-management');
 	const formatDateAndTime = useFormatDateAndTime();
 

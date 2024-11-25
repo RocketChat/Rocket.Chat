@@ -1,8 +1,9 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { memo, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';
 import CannedResponseForm from '../../components/cannedResponseForm';
@@ -30,7 +31,7 @@ const CreateCannedResponseModal = ({
 	onClose: () => void;
 	reloadCannedList: () => void;
 }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const methods = useForm({ defaultValues: getInitialData(cannedResponseData) });

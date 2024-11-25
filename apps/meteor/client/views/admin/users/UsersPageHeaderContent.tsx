@@ -3,11 +3,11 @@ import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useExternalLink } from '../../../hooks/useExternalLink';
-import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
 import SeatsCapUsage from './SeatsCapUsage';
 import type { SeatCapProps } from './useSeatsCap';
 import AssignExtensionButton from './voip/AssignExtensionButton';
+import { useExternalLink } from '../../../hooks/useExternalLink';
+import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
 import { useVoipExtensionPermission } from './voip/hooks/useVoipExtensionPermission';
 
 type UsersPageHeaderContentProps = {

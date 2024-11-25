@@ -6,7 +6,10 @@ import type { RoomBridge } from '../bridges';
 import { type GetMessagesOptions, GetMessagesSortableFields } from '../bridges/RoomBridge';
 
 export class RoomRead implements IRoomRead {
-    constructor(private roomBridge: RoomBridge, private appId: string) {}
+    constructor(
+        private roomBridge: RoomBridge,
+        private appId: string,
+    ) {}
 
     public getById(id: string): Promise<IRoom> {
         return this.roomBridge.doGetById(id, this.appId);

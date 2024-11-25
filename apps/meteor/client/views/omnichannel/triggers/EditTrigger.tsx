@@ -1,11 +1,14 @@
 import { type ILivechatTrigger, type ILivechatTriggerAction, type Serialized } from '@rocket.chat/core-typings';
 import { FieldGroup, Button, ButtonGroup, Field, FieldLabel, FieldRow, FieldError, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRouter, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
+import { ConditionForm } from './ConditionForm';
+import { ActionForm } from './actions/ActionForm';
 import {
 	ContextualbarScrollableContent,
 	ContextualbarTitle,
@@ -14,8 +17,6 @@ import {
 	ContextualbarHeader,
 	ContextualbarClose,
 } from '../../../components/Contextualbar';
-import { ConditionForm } from './ConditionForm';
-import { ActionForm } from './actions/ActionForm';
 
 export type TriggersPayload = {
 	name: string;
@@ -74,7 +75,7 @@ const getInitialValues = (triggerData: Serialized<ILivechatTrigger> | undefined)
 });
 
 const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigger> }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();

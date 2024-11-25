@@ -2,9 +2,10 @@ import type { IWorkspaceInfo, IStats } from '@rocket.chat/core-typings';
 import { Button, Card, CardControls } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { IInstance } from '@rocket.chat/rest-typings';
-import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import WorkspaceCardSection from '../components/WorkspaceCardSection';
@@ -17,7 +18,7 @@ type DeploymentCardProps = {
 };
 
 const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, instances }: DeploymentCardProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const setModal = useSetModal();
 

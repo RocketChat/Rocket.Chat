@@ -1,3 +1,5 @@
 import { startTracing } from '@rocket.chat/tracing';
 
-startTracing({ service: 'core' });
+import { client } from './database/utils';
+
+startTracing({ service: 'core', db: client });

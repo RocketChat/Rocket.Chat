@@ -10,7 +10,9 @@ import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@roc
 
 import { callbacks } from '../../../../lib/callbacks';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
-import { type ILivechatMessage, Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
+import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
+import { getRoomMessages } from '../../../livechat/server/lib/getRoomMessages';
+import type { ILivechatMessage } from '../../../livechat/server/lib/localTypes';
 import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/apps/dist/converters/IAppMessagesConverter' {
@@ -51,21 +53,6 @@ export class AppLivechatBridge extends LivechatBridge {
 		const guest = this.orch.getConverters().get('visitors').convertAppVisitor(message.visitor);
 		const appMessage = (await this.orch.getConverters().get('messages').convertAppMessage(message)) as IMessage | undefined;
 		const livechatMessage = appMessage as ILivechatMessage | undefined;
-
-		if (guest) {
-			const visitorSource = {
-				type: OmnichannelSourceType.APP,
-				id: appId,
-				alias: this.orch.getManager()?.getOneById(appId)?.getNameSlug(),
-			};
-			const fullVisitor = await LivechatVisitors.findOneEnabledByIdAndSource({
-				_id: guest._id,
-				sourceFilter: { 'source.type': visitorSource.type, 'source.id': visitorSource.id, 'source.alias': visitorSource.alias },
-			});
-			if (!fullVisitor?.source) {
-				await LivechatVisitors.setSourceById(guest._id, visitorSource);
-			}
-		}
 
 		const msg = await LivechatTyped.sendMessage({
 			guest: guest as ILivechatVisitor,
@@ -301,7 +288,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		}
 
 		return Promise.all(
-			(await LivechatVisitors.findEnabledBySource({ 'source.type': OmnichannelSourceType.APP, 'source.id': appId }, query).toArray()).map(
+			(await LivechatVisitors.findEnabled(query).toArray()).map(
 				async (visitor) => visitor && this.orch.getConverters()?.get('visitors').convertVisitor(visitor),
 			),
 		);
@@ -310,7 +297,7 @@ export class AppLivechatBridge extends LivechatBridge {
 	protected async findVisitorById(id: string, appId: string): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${appId} is looking for livechat visitors.`);
 
-		return this.orch.getConverters()?.get('visitors').convertByIdAndSource(id, appId);
+		return this.orch.getConverters()?.get('visitors').convertById(id);
 	}
 
 	protected async findVisitorByEmail(email: string, appId: string): Promise<IVisitor | undefined> {
@@ -319,9 +306,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		return this.orch
 			.getConverters()
 			?.get('visitors')
-			.convertVisitor(
-				await LivechatVisitors.findOneGuestByEmailAddressAndSource(email, { 'source.type': OmnichannelSourceType.APP, 'source.id': appId }),
-			);
+			.convertVisitor(await LivechatVisitors.findOneGuestByEmailAddress(email));
 	}
 
 	protected async findVisitorByToken(token: string, appId: string): Promise<IVisitor | undefined> {
@@ -330,12 +315,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		return this.orch
 			.getConverters()
 			?.get('visitors')
-			.convertVisitor(
-				await LivechatVisitors.getVisitorByTokenAndSource({
-					token,
-					sourceFilter: { 'source.type': OmnichannelSourceType.APP, 'source.id': appId },
-				}),
-			);
+			.convertVisitor(await LivechatVisitors.getVisitorByToken(token, {}));
 	}
 
 	protected async findVisitorByPhoneNumber(phoneNumber: string, appId: string): Promise<IVisitor | undefined> {
@@ -344,12 +324,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		return this.orch
 			.getConverters()
 			?.get('visitors')
-			.convertVisitor(
-				await LivechatVisitors.findOneVisitorByPhoneAndSource(phoneNumber, {
-					'source.type': OmnichannelSourceType.APP,
-					'source.id': appId,
-				}),
-			);
+			.convertVisitor(await LivechatVisitors.findOneVisitorByPhone(phoneNumber));
 	}
 
 	protected async findDepartmentByIdOrName(value: string, appId: string): Promise<IDepartment | undefined> {
@@ -379,7 +354,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			throw new Error('Could not get the message converter to process livechat room messages');
 		}
 
-		const livechatMessages = await LivechatTyped.getRoomMessages({ rid: roomId });
+		const livechatMessages = await getRoomMessages({ rid: roomId });
 		return Promise.all(await livechatMessages.map((message) => messageConverter.convertMessage(message, livechatMessages)).toArray());
 	}
 

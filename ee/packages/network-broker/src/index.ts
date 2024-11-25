@@ -102,7 +102,7 @@ const network = new ServiceBroker({
 										colorize: true,
 									},
 								},
-						  }
+							}
 						: {}),
 				},
 			},

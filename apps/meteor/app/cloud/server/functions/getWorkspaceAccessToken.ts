@@ -1,6 +1,8 @@
 import type { IWorkspaceCredentials } from '@rocket.chat/core-typings';
 import { WorkspaceCredentials } from '@rocket.chat/models';
 
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { workspaceScopes } from '../oauthScopes';
 import { getWorkspaceAccessTokenWithScope } from './getWorkspaceAccessTokenWithScope';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
@@ -24,20 +26,27 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 		return '';
 	}
 
-	const workspaceCredentials = await WorkspaceCredentials.getCredentialByScope(scope);
-	if (!workspaceCredentials) {
-		throw new CloudWorkspaceAccessTokenError();
+	// Note: If no scope is given, it means we should assume the default scope, we store the default scopes
+	//       in the global variable workspaceScopes.
+	if (scope === '') {
+		scope = workspaceScopes.join(' ');
 	}
 
-	if (!hasWorkspaceAccessTokenExpired(workspaceCredentials) && !forceNew) {
+	const workspaceCredentials = await WorkspaceCredentials.getCredentialByScope(scope);
+	if (workspaceCredentials && !hasWorkspaceAccessTokenExpired(workspaceCredentials) && !forceNew) {
+		SystemLogger.debug(
+			`Workspace credentials cache hit using scope: ${scope}. Avoiding generating a new access token from cloud services.`,
+		);
 		return workspaceCredentials.accessToken;
 	}
 
-	const accessToken = await getWorkspaceAccessTokenWithScope(scope, throwOnError);
+	SystemLogger.debug(`Workspace credentials cache miss using scope: ${scope}, fetching new access token from cloud services.`);
+
+	const accessToken = await getWorkspaceAccessTokenWithScope({ scope, throwOnError });
 
 	if (save) {
 		await WorkspaceCredentials.updateCredentialByScope({
-			scope,
+			scope: accessToken.scope,
 			accessToken: accessToken.token,
 			expirationDate: accessToken.expiresAt,
 		});

@@ -20,6 +20,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { resetAuditedSettingByUser, updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { getLogs } from '../../../../server/stream/stdout';
 import { passwordPolicy } from '../../../lib/server';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
@@ -664,7 +665,8 @@ API.v1.addRoute(
 			const settingsIds: string[] = [];
 
 			if (this.bodyParams.setDeploymentAs === 'new-workspace') {
-				await WorkspaceCredentials.unsetCredentialByScope();
+				await WorkspaceCredentials.removeAllCredentials();
+
 				settingsIds.push(
 					'Cloud_Service_Agree_PrivacyTerms',
 					'Cloud_Workspace_Id',
@@ -682,20 +684,32 @@ API.v1.addRoute(
 
 			settingsIds.push('Deployment_FingerPrint_Verified');
 
+			const auditSettingOperation = updateAuditedByUser({
+				_id: this.userId,
+				username: this.user.username!,
+				ip: this.requestIp,
+				useragent: this.request.headers['user-agent'] || '',
+			});
+
 			const promises = settingsIds.map((settingId) => {
 				if (settingId === 'uniqueID') {
-					return Settings.resetValueById('uniqueID', process.env.DEPLOYMENT_ID || uuidv4());
+					return auditSettingOperation(Settings.resetValueById, 'uniqueID', process.env.DEPLOYMENT_ID || uuidv4());
 				}
 
 				if (settingId === 'Cloud_Workspace_Access_Token_Expires_At') {
-					return Settings.resetValueById('Cloud_Workspace_Access_Token_Expires_At', new Date(0));
+					return auditSettingOperation(Settings.resetValueById, 'Cloud_Workspace_Access_Token_Expires_At', new Date(0));
 				}
 
 				if (settingId === 'Deployment_FingerPrint_Verified') {
-					return Settings.updateValueById('Deployment_FingerPrint_Verified', true);
+					return auditSettingOperation(Settings.updateValueById, 'Deployment_FingerPrint_Verified', true);
 				}
 
-				return Settings.resetValueById(settingId);
+				return resetAuditedSettingByUser({
+					_id: this.userId,
+					username: this.user.username!,
+					ip: this.requestIp,
+					useragent: this.request.headers['user-agent'] || '',
+				})(Settings.resetValueById, settingId);
 			});
 
 			(await Promise.all(promises)).forEach((value, index) => {

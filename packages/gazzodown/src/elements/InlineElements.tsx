@@ -1,12 +1,6 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { lazy, ReactElement } from 'react';
 
-import CodeElement from '../code/CodeElement';
-import ColorElement from '../colors/ColorElement';
-import EmojiElement from '../emoji/EmojiElement';
-import KatexErrorBoundary from '../katex/KatexErrorBoundary';
-import ChannelMentionElement from '../mentions/ChannelMentionElement';
-import UserMentionElement from '../mentions/UserMentionElement';
 import BoldSpan from './BoldSpan';
 import ImageElement from './ImageElement';
 import ItalicSpan from './ItalicSpan';
@@ -14,6 +8,12 @@ import LinkSpan from './LinkSpan';
 import PlainSpan from './PlainSpan';
 import StrikeSpan from './StrikeSpan';
 import Timestamp from './Timestamp';
+import CodeElement from '../code/CodeElement';
+import ColorElement from '../colors/ColorElement';
+import EmojiElement from '../emoji/EmojiElement';
+import KatexErrorBoundary from '../katex/KatexErrorBoundary';
+import ChannelMentionElement from '../mentions/ChannelMentionElement';
+import UserMentionElement from '../mentions/UserMentionElement';
 
 const KatexElement = lazy(() => import('../katex/KatexElement'));
 

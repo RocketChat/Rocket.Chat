@@ -4,10 +4,10 @@ import { useTranslation, useStream } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 
+import OngoingCallDuration from './OngoingCallDuration';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { WebRTC } from '../../../app/webrtc/client';
 import { WEB_RTC_EVENTS } from '../../../app/webrtc/lib/constants';
-import OngoingCallDuration from './OngoingCallDuration';
 import './styles.css';
 
 type CallPageProps = {
@@ -213,7 +213,7 @@ const CallPage = ({
 						top: '5%',
 						right: '2%',
 					}}
-					className='Self_Video'
+					className='meet__video--self'
 					alignItems='center'
 					backgroundColor='dark'
 				>
@@ -250,7 +250,7 @@ const CallPage = ({
 							square
 							title={isMicOn ? t('Mute_microphone') : t('Unmute_microphone')}
 							onClick={(): any => toggleButton('mic')}
-							className={isMicOn ? 'On' : 'Off'}
+							className={isMicOn ? 'meet__button--on' : 'meet__button--off'}
 							size={Number(buttonSize)}
 						>
 							{isMicOn ? <Icon name='mic' size={iconSize} /> : <Icon name='mic-off' size={iconSize} />}
@@ -260,7 +260,7 @@ const CallPage = ({
 							square
 							title={isCameraOn ? t('Turn_off_video') : t('Turn_on_video')}
 							onClick={(): void => toggleButton('camera')}
-							className={isCameraOn ? 'On' : 'Off'}
+							className={isCameraOn ? 'meet__button--on' : 'meet__button--off'}
 							size={parseInt(buttonSize)}
 						>
 							{isCameraOn ? <Icon name='video' size={iconSize} /> : <Icon name='video-off' size={iconSize} />}
@@ -344,7 +344,7 @@ const CallPage = ({
 								top: '5%',
 								right: '2%',
 							}}
-							className='Self_Video'
+							className='meet__video--self'
 							backgroundColor='dark'
 							alignItems='center'
 						>

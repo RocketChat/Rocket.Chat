@@ -1,9 +1,11 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
-import { useRolesDescription, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRolesDescription } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import UserInfoActions from './UserInfoActions';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
 import {
 	ContextualbarHeader,
@@ -20,7 +22,6 @@ import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
-import UserInfoActions from './UserInfoActions';
 
 type UserInfoWithDataProps = {
 	uid?: IUser['_id'];
@@ -31,7 +32,7 @@ type UserInfoWithDataProps = {
 };
 
 const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const getRoles = useRolesDescription();
 
 	const {

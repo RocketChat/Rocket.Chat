@@ -61,7 +61,7 @@ export class HomeSidenav {
 
 	// Note: this is different from openChat because queued chats are not searchable
 	getQueuedChat(name: string): Locator {
-		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first();
+		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: new RegExp(`^${name}$`) }).first();
 	}
 
 	get accountProfileOption(): Locator {
@@ -175,7 +175,7 @@ export class HomeSidenav {
 
 	async createEncryptedChannel(name: string) {
 		await this.openNewByLabel('Channel');
-		await this.inputChannelName.type(name);
+		await this.inputChannelName.fill(name);
 		await this.advancedSettingsAccordion.click();
 		await this.checkboxEncryption.click();
 		await this.btnCreate.click();

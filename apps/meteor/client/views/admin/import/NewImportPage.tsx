@@ -1,18 +1,19 @@
 import { Box, Button, ButtonGroup, Callout, Chip, Field, Margins, Select, InputBox, TextInput, UrlInput } from '@rocket.chat/fuselage';
 import { useUniqueId, useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useRouter, useRouteParameter, useSetting, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRouter, useRouteParameter, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ChangeEvent, DragEvent, FormEvent, Key, SyntheticEvent } from 'react';
 import React, { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { useErrorHandler } from './useErrorHandler';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
-import { useErrorHandler } from './useErrorHandler';
 
 // TODO: review inner logic
 function NewImportPage() {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const handleError = useErrorHandler();
 
@@ -29,7 +30,7 @@ function NewImportPage() {
 	const importerKey = useRouteParameter('importerKey');
 	const importer = useMemo(() => (importers || []).find(({ key }) => key === importerKey), [importerKey, importers]);
 
-	const maxFileSize = useSetting<number>('FileUpload_MaxFileSize') ?? 0;
+	const maxFileSize = useSetting('FileUpload_MaxFileSize', 0);
 
 	const router = useRouter();
 

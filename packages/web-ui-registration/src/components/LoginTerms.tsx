@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 export const LoginTerms = (): ReactElement => {
 	const { t } = useTranslation();
-	const loginTerms = useSetting('Layout_Login_Terms') as string;
+	const loginTerms = useSetting('Layout_Login_Terms', '');
 
 	return (
 		<HorizontalWizardLayoutCaption>

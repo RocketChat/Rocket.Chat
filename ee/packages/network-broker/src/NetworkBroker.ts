@@ -17,12 +17,6 @@ const lifecycle: { [k: string]: string } = {
 	stopped: 'stopped',
 };
 
-const {
-	WAIT_FOR_SERVICES_TIMEOUT = '10000', // 10 seconds
-} = process.env;
-
-const waitForServicesTimeout = parseInt(WAIT_FOR_SERVICES_TIMEOUT, 10) || 10000;
-
 export class NetworkBroker implements IBroker {
 	private broker: ServiceBroker;
 
@@ -52,30 +46,6 @@ export class NetworkBroker implements IBroker {
 		});
 		if (!services.find((service) => service.name === method.split('.')[0])) {
 			return new Error('method-not-available');
-		}
-
-		return this.broker.call(method, data, {
-			meta: {
-				optl: injectCurrentContext(),
-			},
-		});
-	}
-
-	async waitAndCall(method: string, data: any): Promise<any> {
-		if (!(await this.started)) {
-			return;
-		}
-
-		try {
-			await this.broker.waitForServices(method.split('.')[0], waitForServicesTimeout);
-		} catch (err) {
-			console.error(err);
-			throw new Error('Dependent services not available');
-		}
-
-		const context = asyncLocalStorage.getStore();
-		if (context?.ctx?.call) {
-			return context.ctx.call(method, data);
 		}
 
 		return this.broker.call(method, data, {
@@ -125,10 +95,10 @@ export class NetworkBroker implements IBroker {
 					? (ctx: Context): void => {
 							// internal events params are not an array
 							instance.emit(eventName, ctx.params as Parameters<EventSignatures[typeof eventName]>);
-					  }
+						}
 					: (ctx: Context): void => {
 							instance.emit(eventName, ...(ctx.params as Parameters<EventSignatures[typeof eventName]>));
-					  };
+						};
 				return map;
 			}, {}),
 		};

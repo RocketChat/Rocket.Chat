@@ -5,11 +5,11 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
+import PlanCardHeader from './PlanCardHeader';
 import { useFormatDate } from '../../../../../../hooks/useFormatDate';
 import { useIsSelfHosted } from '../../../../../../hooks/useIsSelfHosted';
 import { useLicenseName } from '../../../../../../hooks/useLicense';
 import { CONTACT_SALES_LINK } from '../../../utils/links';
-import PlanCardHeader from './PlanCardHeader';
 
 type LicenseLimits = {
 	activeUsers: { max: number; value?: number };
