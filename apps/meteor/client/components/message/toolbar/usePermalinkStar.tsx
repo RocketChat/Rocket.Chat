@@ -22,15 +22,11 @@ export const usePermalinkStar = (
 			return;
 		}
 
-		if (Array.isArray(message.starred) && message.starred.every((star) => star._id !== user?._id)) {
-			return;
-		}
-
 		MessageAction.addButton({
 			id: 'permalink-star',
 			icon: 'permalink',
 			label: 'Copy_link',
-			context: ['starred', 'threads', 'videoconf-threads'],
+			context: ['starred'],
 			async action() {
 				try {
 					const permalink = await getPermaLink(message._id);
