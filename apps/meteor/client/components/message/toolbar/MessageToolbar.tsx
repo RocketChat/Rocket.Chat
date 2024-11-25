@@ -11,6 +11,9 @@ import React, { memo, useMemo, useRef } from 'react';
 import MessageActionMenu from './MessageActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
+import { usePermalinkStar } from './usePermalinkStar';
+import { useStarMessageAction } from './useStarMessageAction';
+import { useUnstarMessageAction } from './useUnstarMessageAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -88,6 +91,9 @@ const MessageToolbar = ({
 	// TODO: move this to another place
 	useWebDAVMessageAction();
 	useNewDiscussionMessageAction();
+	useStarMessageAction(message, { room, user });
+	useUnstarMessageAction(message, { room, user });
+	usePermalinkStar(message, { subscription, user });
 
 	const actionsQueryResult = useQuery({
 		queryKey: roomsQueryKeys.messageActionsWithParameters(room._id, message),

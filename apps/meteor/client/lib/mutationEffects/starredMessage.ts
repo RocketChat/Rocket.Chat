@@ -2,8 +2,6 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { Messages } from '../../../app/models/client';
-import { t } from '../../../app/utils/lib/i18n';
-import { dispatchToastMessage } from '../toast';
 
 export const toggleStarredMessage = (message: IMessage, starred: boolean) => {
 	const uid = Meteor.userId()!;
@@ -17,7 +15,6 @@ export const toggleStarredMessage = (message: IMessage, starred: boolean) => {
 				},
 			},
 		);
-		dispatchToastMessage({ type: 'success', message: t('Message_has_been_starred') });
 		return;
 	}
 
@@ -29,5 +26,4 @@ export const toggleStarredMessage = (message: IMessage, starred: boolean) => {
 			},
 		},
 	);
-	dispatchToastMessage({ type: 'success', message: t('Message_has_been_unstarred') });
 };
