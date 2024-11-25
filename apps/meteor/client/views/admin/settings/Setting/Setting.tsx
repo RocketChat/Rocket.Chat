@@ -113,7 +113,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	);
 
 	const hasSettingModule = useMemo(() => {
-		if (!setting?.modules) {
+		if (!setting?.modules || setting?.modules.length === 0) {
 			return false;
 		}
 
