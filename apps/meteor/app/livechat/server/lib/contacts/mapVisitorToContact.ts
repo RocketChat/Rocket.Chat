@@ -27,7 +27,11 @@ export async function mapVisitorToContact(visitor: ILivechatVisitor, source: IOm
 			},
 		],
 		customFields:
-			visitor.livechatData && validateCustomFields(await getAllowedCustomFields(), visitor.livechatData, { ignoreValidationErrors: true }),
+			visitor.livechatData &&
+			validateCustomFields(await getAllowedCustomFields(), visitor.livechatData, {
+				ignoreAdditionalFields: true,
+				ignoreValidationErrors: true,
+			}),
 		lastChat: visitor.lastChat,
 		contactManager: visitor.contactManager?.username && (await getContactManagerIdByUsername(visitor.contactManager.username)),
 	};
