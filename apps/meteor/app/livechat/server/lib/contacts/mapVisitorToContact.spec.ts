@@ -120,6 +120,10 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 					details: {
 						type: OmnichannelSourceType.WIDGET,
 					},
+					lastChat: {
+						_id: 'last-chat-id',
+						ts: testDate,
+					},
 				},
 			],
 			customFields: undefined,
