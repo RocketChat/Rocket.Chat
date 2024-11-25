@@ -25,6 +25,7 @@ export async function mapVisitorToContact(visitor: ILivechatVisitor, source: IOm
 			},
 		],
 		customFields: visitor.livechatData,
+		lastChat: visitor.lastChat,
 		contactManager: visitor.contactManager?.username && (await getContactManagerIdByUsername(visitor.contactManager.username)),
 	};
 }

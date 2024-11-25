@@ -13,6 +13,7 @@ const { mapVisitorToContact } = proxyquire.noCallThru().load('./mapVisitorToCont
 	},
 });
 
+const testDate = new Date();
 const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactParams][] = [
 	[
 		{
@@ -93,6 +94,10 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 			_id: 'visitor1',
 			username: 'Username',
 			activity: ['2024-11'],
+			lastChat: {
+				_id: 'last-chat-id',
+				ts: testDate,
+			},
 		},
 		{
 			type: OmnichannelSourceType.WIDGET,
@@ -119,6 +124,10 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 				},
 			],
 			customFields: undefined,
+			lastChat: {
+				_id: 'last-chat-id',
+				ts: testDate,
+			},
 			contactManager: undefined,
 		},
 	],
