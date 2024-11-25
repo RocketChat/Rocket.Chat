@@ -5,12 +5,13 @@ import React from 'react';
 type WorkspaceCardSectionProps = {
 	title: string;
 	body?: ReactNode;
+	isHeader?: boolean;
 };
 
-const WorkspaceCardSection = ({ title, body }: WorkspaceCardSectionProps) => {
+const WorkspaceCardSection = ({ title, body, isHeader }: WorkspaceCardSectionProps) => {
 	return (
-		<Box fontScale='c1'>
-			<Box fontScale='c2'>{title}</Box>
+		<Box fontScale='p2'>
+			<Box fontScale={isHeader ? 'h4' : 'p2b'}>{title}</Box>
 			{body && body}
 		</Box>
 	);

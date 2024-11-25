@@ -41,6 +41,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps): ReactElement =
 							<WorkspaceCardTextSeparator label={t('Total')} value={statistics.totalUsers} />
 						</>
 					}
+					isHeader
 				/>
 
 				<WorkspaceCardSection
@@ -54,6 +55,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps): ReactElement =
 							<WorkspaceCardTextSeparator label={t('Stats_App_Users')} value={statistics.appUsers} />
 						</>
 					}
+					isHeader
 				/>
 
 				<WorkspaceCardSection
@@ -64,6 +66,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps): ReactElement =
 							<WorkspaceCardTextSeparator label={t('Stats_Total_Uploads_Size')} value={formatMemorySize(statistics.uploadsTotalSize)} />
 						</>
 					}
+					isHeader
 				/>
 			</CardBody>
 

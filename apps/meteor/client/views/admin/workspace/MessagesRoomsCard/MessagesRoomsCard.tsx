@@ -28,6 +28,7 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 						<WorkspaceCardTextSeparator label={t('Total')} value={statistics.totalRooms} />
 					</>
 				}
+				isHeader
 			/>
 
 			<WorkspaceCardSection
@@ -54,6 +55,7 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 						<WorkspaceCardTextSeparator label={t('Total')} value={statistics.totalMessages} />
 					</>
 				}
+				isHeader
 			/>
 		</Card>
 	);

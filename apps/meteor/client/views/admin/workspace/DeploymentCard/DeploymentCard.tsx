@@ -30,7 +30,7 @@ const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, in
 
 	return (
 		<Card data-qa-id='deployment-card' height='full'>
-			<WorkspaceCardSection title={t('Deployment')} />
+			<WorkspaceCardSection title={t('Deployment')} isHeader />
 			<WorkspaceCardSection title={t('Version')} body={statistics.version} />
 			<WorkspaceCardSection title={t('Deployment_ID')} body={statistics.uniqueId} />
 
