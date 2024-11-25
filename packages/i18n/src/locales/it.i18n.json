@@ -3348,6 +3348,7 @@
   "registration.component.form.invalidEmail": "L'email inserita non è valida",
   "registration.component.form.email": "Email",
   "registration.component.form.emailPlaceholder": "example@example.com",
+  "registration.component.form.passwordPlaceholder": "********",
   "registration.component.form.password": "Password",
   "registration.component.form.divider": "o",
   "registration.component.form.submit": "Invia",

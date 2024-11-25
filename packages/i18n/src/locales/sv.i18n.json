@@ -5530,6 +5530,7 @@
   "registration.component.form.invalidEmail": "Den angivna epostadressen är ogiltig",
   "registration.component.form.email": "E-post",
   "registration.component.form.emailPlaceholder": "din@epost.com",
+  "registration.component.form.passwordPlaceholder": "********",
   "registration.component.form.password": "Lösenord",
   "registration.component.form.divider": "eller",
   "registration.component.form.submit": "Skicka",
