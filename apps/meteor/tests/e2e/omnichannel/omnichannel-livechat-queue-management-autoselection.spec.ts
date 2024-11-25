@@ -70,7 +70,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			await poLiveChat.page.close();
 		});
 
-		test.only('Update user position on Queue', async () => {
+		test('Update user position on Queue', async () => {
 			await test.step('should start livechat session', async () => {
 				await poLiveChat.openAnyLiveChatAndSendMessage({
 					liveChatUser: firstVisitor,
