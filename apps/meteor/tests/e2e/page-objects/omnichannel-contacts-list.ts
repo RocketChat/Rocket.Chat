@@ -28,10 +28,6 @@ export class OmnichannelContacts {
 		return this.page.locator(`td >> text="${contactName}"`);
 	}
 
-	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
-	}
-
 	get btnSaveContact(): Locator {
 		return this.page.getByRole('dialog').getByRole('button', { name: 'Save', exact: true });
 	}
