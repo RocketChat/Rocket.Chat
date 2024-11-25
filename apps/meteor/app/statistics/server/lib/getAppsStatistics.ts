@@ -6,7 +6,7 @@ import mem from 'mem';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { Info } from '../../../utils/rocketchat.info';
 
-export type AppsStatistics = {
+type AppsStatistics = {
 	engineVersion: string;
 	totalInstalled: number | false;
 	totalActive: number | false;
