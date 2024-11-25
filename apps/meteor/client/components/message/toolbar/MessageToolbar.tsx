@@ -93,7 +93,7 @@ const MessageToolbar = ({
 	useNewDiscussionMessageAction();
 	useStarMessageAction(message, { room, user });
 	useUnstarMessageAction(message, { room, user });
-	usePermalinkStar();
+	usePermalinkStar(message, { subscription, user });
 
 	const actionsQueryResult = useQuery({
 		queryKey: roomsQueryKeys.messageActionsWithParameters(room._id, message),

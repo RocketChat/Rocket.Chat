@@ -1,3 +1,4 @@
+import type { IMessage, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
@@ -6,18 +7,31 @@ import { useTranslation } from 'react-i18next';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { getPermaLink } from '../../../lib/getPermaLink';
 
-export const usePermalinkStar = () => {
+export const usePermalinkStar = (
+	message: IMessage,
+	{ user, subscription }: { user: IUser | undefined; subscription: ISubscription | undefined },
+) => {
 	const { t } = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
+	const encrypted = isE2EEMessage(message);
+
 	useEffect(() => {
+		if (!subscription) {
+			return;
+		}
+
+		if (Array.isArray(message.starred) && message.starred.every((star) => star._id !== user?._id)) {
+			return;
+		}
+
 		MessageAction.addButton({
 			id: 'permalink-star',
 			icon: 'permalink',
 			label: 'Copy_link',
 			context: ['starred', 'threads', 'videoconf-threads'],
-			async action(_, { message }) {
+			async action() {
 				try {
 					const permalink = await getPermaLink(message._id);
 					navigator.clipboard.writeText(permalink);
@@ -26,22 +40,13 @@ export const usePermalinkStar = () => {
 					dispatchToastMessage({ type: 'error', message: e });
 				}
 			},
-			condition({ message, subscription, user }) {
-				if (subscription == null) {
-					return false;
-				}
-
-				return Boolean(message.starred?.find((star) => star._id === user?._id));
-			},
 			order: 10,
 			group: 'menu',
-			disabled({ message }) {
-				return isE2EEMessage(message);
-			},
+			disabled: () => encrypted,
 		});
 
 		return () => {
 			MessageAction.removeButton('permalink-star');
 		};
-	}, [dispatchToastMessage, t]);
+	}, [dispatchToastMessage, encrypted, message._id, message.starred, subscription, t, user?._id]);
 };
