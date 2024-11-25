@@ -1,5 +1,4 @@
 import { Box, Card, CardBody, CardControls, CardTitle } from '@rocket.chat/fuselage';
-import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
 
@@ -20,12 +19,8 @@ export type CardProps = {
 const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps): ReactElement => {
 	const { title, infoText, upgradeButton, isHorizontallyCenteredOnly } = card;
 
-	const breakpoints = useBreakpoints();
-
-	const isMobile = !breakpoints.includes('lg');
-
 	return (
-		<Card height={isMobile ? 'full' : 'x244'}>
+		<Card height='full' style={{ minHeight: '244px' }}>
 			<CardTitle>
 				{title} {infoText && <InfoTextIconModal title={title} infoText={infoText} />}
 			</CardTitle>
