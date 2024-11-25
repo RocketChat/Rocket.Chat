@@ -1,39 +1,21 @@
-import { useEndpoint, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import { Meteor } from 'meteor/meteor';
 import { useTranslation } from 'react-i18next';
 
-import { Subscriptions } from '../../../../app/models/client';
+import { toggleFavoriteRoom } from '../../../lib/mutationEffects/room';
 
 export const useToggleFavoriteMutation = () => {
-	const userId = useUserId();
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const toggleFavorite = useEndpoint('POST', '/v1/rooms.favorite');
 
 	return useMutation(
 		async ({ roomId, favorite }: { roomId: string; favorite: boolean; roomName: string }) => {
-			if (!userId) {
-				throw new Meteor.Error('error-not-authorized', 'Not authorized', {
-					mutation: 'toggleFavorite',
-				});
-			}
-
 			await toggleFavorite({ roomId, favorite });
 		},
 		{
 			onSuccess: (_data, { roomId, favorite, roomName }) => {
-				Subscriptions.update(
-					{
-						'rid': roomId,
-						'u._id': userId,
-					},
-					{
-						$set: {
-							f: favorite,
-						},
-					},
-				);
+				toggleFavoriteRoom(roomId, favorite);
 				dispatchToastMessage({
 					type: 'success',
 					message: favorite
