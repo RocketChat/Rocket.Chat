@@ -1,16 +1,20 @@
-import { MessageMetricsItem, MessageBlock, MessageMetrics, MessageMetricsReply, MessageMetricsFollowing } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import {
+	MessageMetricsItem,
+	MessageBlock,
+	MessageMetrics,
+	MessageMetricsReply,
+	MessageMetricsItemIcon,
+	MessageMetricsItemLabel,
+} from '@rocket.chat/fuselage';
+import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ThreadMetricsFollow from './ThreadMetricsFollow';
+import ThreadMetricsParticipants from './ThreadMetricsParticipants';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
-import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
 import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
-import { followStyle, anchor } from '../helpers/followSyle';
-import AllMentionNotification from '../notification/AllMentionNotification';
-import MeMentionNotification from '../notification/MeMentionNotification';
-import UnreadMessagesNotification from '../notification/UnreadMessagesNotification';
 
 type ThreadMetricsProps = {
 	unread: boolean;
@@ -20,7 +24,7 @@ type ThreadMetricsProps = {
 	mid: string;
 	rid: string;
 	counter: number;
-	participants: number;
+	participants: string[];
 	following: boolean;
 };
 
@@ -31,51 +35,33 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 
 	const goToThread = useGoToThread();
 
-	const dispatchToastMessage = useToastMessageDispatch();
-	const toggleFollowingThreadMutation = useToggleFollowingThreadMutation({
-		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
-		},
-	});
+	const { ref, borderBoxSize } = useResizeObserver<HTMLDivElement>();
 
-	const handleFollow = useCallback(() => {
-		toggleFollowingThreadMutation.mutate({ rid, tmid: mid, follow: !following });
-	}, [following, rid, mid, toggleFollowingThreadMutation]);
+	const isSmall = (borderBoxSize.inlineSize || Infinity) < 320;
 
 	return (
-		<MessageBlock className={followStyle}>
+		<MessageBlock ref={ref}>
 			<MessageMetrics>
-				<MessageMetricsReply data-rid={rid} data-mid={mid} onClick={() => goToThread({ rid, tmid: mid })}>
-					{t('Reply')}
+				<MessageMetricsReply
+					data-rid={rid}
+					data-mid={mid}
+					onClick={() => goToThread({ rid, tmid: mid })}
+					primary={!!unread}
+					position='relative'
+					overflow='visible'
+				>
+					{t('View_thread')}
 				</MessageMetricsReply>
-				<MessageMetricsItem title={t('Replies')}>
-					<MessageMetricsItem.Icon name='thread' />
-					<MessageMetricsItem.Label>{counter}</MessageMetricsItem.Label>
+				<ThreadMetricsFollow unread={unread} mention={mention} all={all} mid={mid} rid={rid} following={following} />
+				{participants?.length > 0 && <ThreadMetricsParticipants participants={participants} />}
+				<MessageMetricsItem title={t('Last_message__date__', { date: format(lm) })}>
+					<MessageMetricsItemIcon name='thread' />
+					{isSmall ? (
+						<MessageMetricsItemLabel>{t('__count__replies', { count: counter })}</MessageMetricsItemLabel>
+					) : (
+						<MessageMetricsItemLabel>{t('__count__replies__date__', { count: counter, date: format(lm) })}</MessageMetricsItemLabel>
+					)}
 				</MessageMetricsItem>
-				{!!participants && (
-					<MessageMetricsItem title={t('Participants')}>
-						<MessageMetricsItem.Icon name='user' />
-						<MessageMetricsItem.Label>{participants}</MessageMetricsItem.Label>
-					</MessageMetricsItem>
-				)}
-				<MessageMetricsItem title={lm?.toLocaleString()}>
-					<MessageMetricsItem.Icon name='clock' />
-					<MessageMetricsItem.Label>{format(lm)}</MessageMetricsItem.Label>
-				</MessageMetricsItem>
-				<MessageMetricsItem className={!following ? anchor : undefined} data-rid={rid}>
-					<MessageMetricsFollowing
-						title={following ? t('Following') : t('Not_following')}
-						name={following ? 'bell' : 'bell-off'}
-						onClick={handleFollow}
-					/>
-				</MessageMetricsItem>
-				{(mention || all || unread) && (
-					<MessageMetricsItem>
-						<MessageMetricsItem.Label>
-							{(mention && <MeMentionNotification />) || (all && <AllMentionNotification />) || (unread && <UnreadMessagesNotification />)}
-						</MessageMetricsItem.Label>
-					</MessageMetricsItem>
-				)}
 			</MessageMetrics>
 		</MessageBlock>
 	);

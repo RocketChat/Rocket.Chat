@@ -95,6 +95,10 @@ export class UsersRaw extends BaseRaw {
 				name: 'username_insensitive',
 				collation: { locale: 'en', strength: 2, caseLevel: false },
 			},
+			{
+				key: { active: 1, lastLogin: 1 },
+				partialFilterExpression: { active: true, lastLogin: { $exists: true } },
+			},
 		];
 	}
 
