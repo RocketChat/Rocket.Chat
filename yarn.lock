@@ -9398,7 +9398,7 @@ __metadata:
     imap: "npm:^0.8.19"
     ip-range-check: "npm:^0.2.0"
     is-svg: "npm:^4.4.0"
-    isolated-vm: "npm:4.7.2"
+    isolated-vm: "npm:5.0.1"
     jest: "npm:~29.7.0"
     jschardet: "npm:^3.1.4"
     jsdom: "npm:^16.7.0"
@@ -25545,13 +25545,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"isolated-vm@npm:4.7.2":
-  version: 4.7.2
-  resolution: "isolated-vm@npm:4.7.2"
+"isolated-vm@npm:5.0.1":
+  version: 5.0.1
+  resolution: "isolated-vm@npm:5.0.1"
   dependencies:
     node-gyp: "npm:latest"
     prebuild-install: "npm:^7.1.1"
-  checksum: 10/02973e9cf1fbfa013988abda0e8fc3a1ba30054126036570a54576779680d30166b8e7b81579bb5bd6e0bb060defcd9a0dbb05215ec297b5d8a002fc73a8924d
+  checksum: 10/55c69e9ba8ae6adaf7f76b9bfe2614d0edfcabc273c6346598ac4c0801016e9eb31e01b821cb1f59797362640c9ca7a9d003035aa8d2a7a311380b9afbf4fb23
   languageName: node
   linkType: hard
 

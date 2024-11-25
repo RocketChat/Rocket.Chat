@@ -360,7 +360,7 @@
 		"imap": "^0.8.19",
 		"ip-range-check": "^0.2.0",
 		"is-svg": "^4.4.0",
-		"isolated-vm": "4.7.2",
+		"isolated-vm": "5.0.1",
 		"jschardet": "^3.1.4",
 		"jsdom": "^16.7.0",
 		"jsrsasign": "^11.1.0",
