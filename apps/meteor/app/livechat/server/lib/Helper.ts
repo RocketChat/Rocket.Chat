@@ -95,14 +95,9 @@ export const createLivechatRoom = async (
 	});
 
 	const source = extraRoomInfo.source || roomInfo.source;
-	const updater = LivechatContacts.getUpdater();
 
 	if (settings.get<string>('Livechat_Require_Contact_Verification') === 'always') {
-		LivechatContacts.setVerifiedUpdateQuery(false, updater);
-	}
-
-	if (updater.hasChanges()) {
-		await LivechatContacts.updateFromUpdaterByAssociation({ visitorId: _id, source }, updater);
+		await LivechatContacts.setChannelVerifiedStatus({ visitorId: _id, source }, false);
 	}
 
 	const contactId = await migrateVisitorIfMissingContact(_id, source);

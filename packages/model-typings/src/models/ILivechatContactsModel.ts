@@ -44,7 +44,8 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	): Promise<ILivechatContact[]>;
 	findAllByVisitorId(visitorId: string): FindCursor<ILivechatContact>;
 	addEmail(contactId: string, email: string): Promise<ILivechatContact | null>;
-	setBlockedUpdateQuery(blocked: boolean, contactUpdater: Updater<ILivechatContact>): Updater<ILivechatContact>;
+	setChannelBlockStatus(visitor: ILivechatContactVisitorAssociation, blocked: boolean): Promise<UpdateResult>;
+	setChannelVerifiedStatus(visitor: ILivechatContactVisitorAssociation, verified: boolean): Promise<UpdateResult>;
 	setVerifiedUpdateQuery(verified: boolean, contactUpdater: Updater<ILivechatContact>): Updater<ILivechatContact>;
 	setFieldAndValueUpdateQuery(field: string, value: string, contactUpdater: Updater<ILivechatContact>): Updater<ILivechatContact>;
 }
