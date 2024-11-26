@@ -1,7 +1,7 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Callout, IconButton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { usePermission, useRouter, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,21 +22,16 @@ type ContactInfoProps = {
 const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 	const { t } = useTranslation();
 
-	const { getRouteName } = useRouter();
 	const setModal = useSetModal();
-	const currentRouteName = getRouteName();
 	const handleNavigate = useContactRoute();
 	const context = useRouteParameter('context');
 
 	const formatDate = useFormatDate();
-
 	const canEditContact = usePermission('edit-omnichannel-contact');
 
 	const { name, emails, phones, conflictingFields, createdAt, lastChat, contactManager, customFields: userCustomFields } = contact;
 
 	const hasConflicts = conflictingFields && conflictingFields?.length > 0;
-	const showContactHistory = (currentRouteName === 'live' || currentRouteName === 'omnichannel-directory') && lastChat;
-
 	const customFieldEntries = useValidCustomFields(userCustomFields);
 
 	return (
@@ -90,11 +85,9 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 				<TabsItem onClick={() => handleNavigate({ context: 'channels' })} selected={context === 'channels'}>
 					{t('Channels')}
 				</TabsItem>
-				{showContactHistory && (
-					<TabsItem onClick={() => handleNavigate({ context: 'history' })} selected={context === 'history'}>
-						{t('History')}
-					</TabsItem>
-				)}
+				<TabsItem onClick={() => handleNavigate({ context: 'history' })} selected={context === 'history'}>
+					{t('History')}
+				</TabsItem>
 			</Tabs>
 			{context === 'details' && (
 				<ContactInfoDetails
@@ -106,7 +99,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 				/>
 			)}
 			{context === 'channels' && <ContactInfoChannels contactId={contact?._id} />}
-			{context === 'history' && showContactHistory && <ContactInfoHistory contact={contact} />}
+			{context === 'history' && <ContactInfoHistory contact={contact} />}
 		</>
 	);
 };
