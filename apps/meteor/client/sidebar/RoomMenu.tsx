@@ -13,7 +13,6 @@ import {
 	useTranslation,
 	useEndpoint,
 } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
 
@@ -29,6 +28,7 @@ const fields: Fields = {
 	f: true,
 	t: true,
 	name: true,
+	disableNotifications: true,
 };
 
 type RoomMenuProps = {
@@ -100,8 +100,6 @@ const RoomMenu = ({
 
 	const isOmnichannelRoom = type === 'l';
 	const prioritiesMenu = useOmnichannelPrioritiesMenu(rid);
-
-	const queryClient = useQueryClient();
 
 	const canLeave = ((): boolean => {
 		if (type === 'c' && !canLeaveChannel) {
@@ -176,22 +174,17 @@ const RoomMenu = ({
 
 	const handleToggleRead = useMutableCallback(async () => {
 		try {
-			queryClient.invalidateQueries(['sidebar/search/spotlight']);
-
 			if (isUnread) {
 				await readMessages({ rid, readThreads: true });
 				return;
 			}
-
+			await unreadMessages(undefined, rid);
 			if (subscription == null) {
 				return;
 			}
-
 			LegacyRoomManager.close(subscription.t + subscription.name);
 
 			router.navigate('/home');
-
-			await unreadMessages(undefined, rid);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -202,6 +195,21 @@ const RoomMenu = ({
 			await toggleFavorite({ roomId: rid, favorite: !isFavorite });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+		}
+	});
+
+	const isMuted = Boolean(subscription?.disableNotifications);
+	const saveNotificationSettings = useMethod('saveNotificationSettings');
+
+	const toggleMuteRoom = useMutableCallback(async () => {
+		try {
+			await saveNotificationSettings(rid, 'disableNotifications', isMuted ? '0' : '1');
+			dispatchToastMessage({
+				type: 'success',
+				message: t(isMuted ? ('Room_unmuted' as TranslationKey) : ('Room_muted' as TranslationKey)),
+			});
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error.message : String(error) });
 		}
 	});
 
@@ -237,6 +245,13 @@ const RoomMenu = ({
 						action: handleLeave,
 					},
 				}),
+				toggleMute: {
+					label: {
+						label: isMuted ? t('Unmute room' as TranslationKey) : t('Mute room' as TranslationKey),
+						icon: isMuted ? 'volume' : 'volume-off',
+					},
+					action: toggleMuteRoom,
+				},
 			}),
 			...(isOmnichannelRoom && prioritiesMenu),
 		}),
@@ -253,6 +268,8 @@ const RoomMenu = ({
 			handleLeave,
 			isOmnichannelRoom,
 			prioritiesMenu,
+			isMuted,
+			toggleMuteRoom,
 		],
 	);
 
