@@ -4,9 +4,8 @@ import { useSetting, useToastMessageDispatch, useSetModal, usePermission } from 
 import { useEffect } from 'react';
 
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
-import { sdk } from '../../../../app/utils/client/lib/SDKClient';
-import { queryClient } from '../../../lib/queryClient';
 import PinMessageModal from '../../../views/room/modals/PinMessageModal';
+import { usePinMessageMutation } from '../hooks/usePinMessageMutation';
 
 export const usePinMessageAction = (
 	message: IMessage,
@@ -18,21 +17,15 @@ export const usePinMessageAction = (
 
 	const allowPinning = useSetting('Message_AllowPinning');
 	const hasPermission = usePermission('pin-message', room._id);
+	const { mutateAsync: pinMessage } = usePinMessageMutation();
 
 	useEffect(() => {
 		if (!allowPinning || isOmnichannelRoom(room) || !hasPermission || message.pinned || !subscription) {
-			return () => {
-				MessageAction.removeButton('pin-message');
-			};
+			return;
 		}
 
 		const onConfirm = async () => {
-			try {
-				await sdk.call('pinMessage', message);
-				queryClient.invalidateQueries(['rooms', message.rid, 'pinned-messages']);
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
+			pinMessage(message);
 			setModal(null);
 		};
 
@@ -59,5 +52,5 @@ export const usePinMessageAction = (
 		return () => {
 			MessageAction.removeButton('pin-message');
 		};
-	}, [allowPinning, dispatchToastMessage, hasPermission, message, room, setModal, subscription]);
+	}, [allowPinning, dispatchToastMessage, hasPermission, message, pinMessage, room, setModal, subscription]);
 };
