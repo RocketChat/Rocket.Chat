@@ -6,11 +6,13 @@ import sinon from 'sinon';
 import type { CreateContactParams } from './createContact';
 
 const getContactManagerIdByUsername = sinon.stub();
+const getAllowedCustomFields = sinon.stub();
 
 const { mapVisitorToContact } = proxyquire.noCallThru().load('./mapVisitorToContact', {
 	'./getContactManagerIdByUsername': {
 		getContactManagerIdByUsername,
 	},
+	'./getAllowedCustomFields': { getAllowedCustomFields },
 });
 
 const testDate = new Date();
@@ -140,6 +142,10 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 		{
 			_id: 'visitor1',
 			username: 'Username',
+			livechatData: {
+				customFieldId: 'customFieldValue',
+				invalidCustomFieldId: 'invalidCustomFieldValue',
+			},
 			activity: [],
 		},
 		{
@@ -166,7 +172,9 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 					},
 				},
 			],
-			customFields: undefined,
+			customFields: {
+				customFieldId: 'customFieldValue',
+			},
 			contactManager: undefined,
 		},
 	],
@@ -182,6 +190,7 @@ describe('mapVisitorToContact', () => {
 
 			return undefined;
 		});
+		getAllowedCustomFields.resolves([{ _id: 'customFieldId', label: 'custom-field-label' }]);
 	});
 
 	const index = 0;
