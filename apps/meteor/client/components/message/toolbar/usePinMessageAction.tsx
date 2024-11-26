@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { useSetting, useToastMessageDispatch, useSetModal, usePermission } from '@rocket.chat/ui-contexts';
+import { useSetting, useSetModal, usePermission } from '@rocket.chat/ui-contexts';
 import React, { useEffect } from 'react';
 
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -11,8 +11,6 @@ export const usePinMessageAction = (
 	message: IMessage,
 	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
 ) => {
-	const dispatchToastMessage = useToastMessageDispatch();
-
 	const setModal = useSetModal();
 
 	const allowPinning = useSetting('Message_AllowPinning');
@@ -45,5 +43,5 @@ export const usePinMessageAction = (
 		return () => {
 			MessageAction.removeButton('pin-message');
 		};
-	}, [allowPinning, dispatchToastMessage, hasPermission, message, pinMessage, room, setModal, subscription]);
+	}, [allowPinning, hasPermission, message, pinMessage, room, setModal, subscription]);
 };
