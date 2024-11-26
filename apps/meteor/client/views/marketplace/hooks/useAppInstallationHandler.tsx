@@ -83,6 +83,7 @@ export const useAppInstallationHandler = ({ app, action, onDismiss, onSuccess }:
 				setModal(
 					<PurchaseAppModal
 						app={app}
+						appsOrchestrator={appsOrchestrator}
 						onPurchase={() => {
 							purchasedRef.current = true;
 							openPermissionModal();

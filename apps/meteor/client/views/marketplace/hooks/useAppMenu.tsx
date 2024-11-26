@@ -18,6 +18,7 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import type { Actions } from '../helpers';
 import { appEnabledStatuses, appButtonProps } from '../helpers';
+import { useAppsOrchestrator } from './useAppsOrchestrator';
 import type { AddonActionType } from '../modals/AddonRequiredModal';
 import AddonRequiredModal from '../modals/AddonRequiredModal';
 import AppUninstallationModal from '../modals/AppUninstallationModal';
@@ -196,11 +197,13 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		[isSubscribed],
 	);
 
+	const appsOrchestrator = useAppsOrchestrator();
+
 	const handleUpdate = useEffectEvent(() => {
 		setLoading(true);
 
 		if (app?.versionIncompatible) {
-			setModal(<IncompatibleModal app={app} action='update' onClose={closeModal} />);
+			setModal(<IncompatibleModal app={app} appsOrchestrator={appsOrchestrator} action='update' onClose={closeModal} />);
 			return;
 		}
 
@@ -209,7 +212,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	const handleSubscription = useEffectEvent(() => {
 		if (app?.versionIncompatible && !isSubscribed) {
-			setModal(<IncompatibleModal app={app} action='subscribe' onClose={closeModal} />);
+			setModal(<IncompatibleModal app={app} appsOrchestrator={appsOrchestrator} action='subscribe' onClose={closeModal} />);
 			return;
 		}
 

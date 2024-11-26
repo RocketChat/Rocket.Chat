@@ -2,19 +2,18 @@ import type { App } from '@rocket.chat/core-typings';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
+import type { IAppsOrchestrator } from '../AppsOrchestratorContext';
 import IframeModal from '../IframeModal';
-import { useAppsOrchestrator } from '../hooks/useAppsOrchestrator';
 import { marketplaceQueryKeys } from '../queryKeys';
 
 type IncompatibleModalProps = {
 	app: App;
+	appsOrchestrator: IAppsOrchestrator;
 	action: 'subscribe' | 'update';
 	onClose: () => void;
 };
 
-const IncompatibleModal = ({ app, action, onClose }: IncompatibleModalProps) => {
-	const appsOrchestrator = useAppsOrchestrator();
-
+const IncompatibleModal = ({ app, appsOrchestrator, action, onClose }: IncompatibleModalProps) => {
 	const { isSuccess, data: url } = useQuery({
 		queryKey: marketplaceQueryKeys.app.urls.incompatible(app.id),
 		queryFn: async () => {
@@ -24,7 +23,7 @@ const IncompatibleModal = ({ app, action, onClose }: IncompatibleModalProps) => 
 	});
 
 	if (!isSuccess) {
-		return null;
+		return <div />; // FIXME: @react-aria/focus bug
 	}
 
 	return <IframeModal url={url} confirm={onClose} cancel={onClose} />;

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import IncompatibleModal from './IncompatibleModal';
 import ModifySubscriptionModal from './ModifySubscriptionModal';
 import WarningModal from '../../../components/WarningModal';
+import { useAppsOrchestrator } from '../hooks/useAppsOrchestrator';
 import { useUninstallAppMutation } from '../hooks/useUninstallAppMutation';
 
 type UninstallingAppWithActiveSubscriptionModalProps = {
@@ -16,12 +17,13 @@ type UninstallingAppWithActiveSubscriptionModalProps = {
 const UninstallingAppWithActiveSubscriptionModal = ({ app, onClose }: UninstallingAppWithActiveSubscriptionModalProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
+	const appsOrchestrator = useAppsOrchestrator();
 
 	const handleConfirm = () => {
 		const haveActiveSubscription = app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);
 
 		if (app?.versionIncompatible && !haveActiveSubscription) {
-			setModal(<IncompatibleModal app={app} action='subscribe' onClose={onClose} />);
+			setModal(<IncompatibleModal app={app} appsOrchestrator={appsOrchestrator} action='subscribe' onClose={onClose} />);
 			return;
 		}
 
