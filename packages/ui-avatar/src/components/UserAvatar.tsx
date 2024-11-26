@@ -4,13 +4,21 @@ import { memo } from 'react';
 import type { BaseAvatarProps } from './BaseAvatar';
 import BaseAvatar from './BaseAvatar';
 
-type UserAvatarProps = Omit<BaseAvatarProps, 'url' | 'title'> & {
+type UsernameProp = {
 	username: string;
-	userId?: string;
+	userId?: never;
+};
+
+type UserIdProp = {
+	userId: string;
+	username?: never;
+};
+
+type UserAvatarProps = Omit<BaseAvatarProps, 'url' | 'title'> & {
 	etag?: string;
 	url?: string;
 	title?: string;
-};
+} & (UsernameProp | UserIdProp);
 
 const UserAvatar = ({ username, userId, etag, ...rest }: UserAvatarProps) => {
 	const getUserAvatarPath = useUserAvatarPath();

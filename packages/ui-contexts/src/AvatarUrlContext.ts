@@ -6,7 +6,7 @@ export type AvatarUrlContextValue = {
 	getUserPathAvatar: {
 		(username: string, etag?: string): string;
 		(params: { userId: string; etag?: string }): string;
-		(params: { username: string; etag?: string }): string;
+		(params: { username?: string; etag?: string }): string;
 	};
 	getRoomPathAvatar: (...args: any) => string;
 };
