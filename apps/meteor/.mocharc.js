@@ -37,6 +37,5 @@ module.exports = {
 		'tests/unit/server/**/*.tests.ts',
 		'tests/unit/server/**/*.spec.ts',
 		'app/api/**/*.spec.ts',
-		'apps/meteor/tests/**/*.spec.ts',
 	],
 };
