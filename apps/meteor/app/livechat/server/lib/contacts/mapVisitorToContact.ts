@@ -8,7 +8,7 @@ export async function mapVisitorToContact(visitor: ILivechatVisitor, source: IOm
 		name: visitor.name || visitor.username,
 		emails: visitor.visitorEmails?.map(({ address }) => address),
 		phones: visitor.phone?.map(({ phoneNumber }) => phoneNumber),
-		unknown: true,
+		unknown: !visitor.activity || visitor.activity.length === 0,
 		channels: [
 			{
 				name: source.label || source.type.toString(),
@@ -22,6 +22,7 @@ export async function mapVisitorToContact(visitor: ILivechatVisitor, source: IOm
 				blocked: false,
 				verified: false,
 				details: source,
+				lastChat: visitor.lastChat,
 			},
 		],
 		customFields: visitor.livechatData,
