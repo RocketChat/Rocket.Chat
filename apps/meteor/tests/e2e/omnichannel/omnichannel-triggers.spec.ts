@@ -5,6 +5,10 @@ import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
+import { setSettingValueById } from '../utils';
+import { createAgent, deleteAgent } from '../utils/omnichannel/agents';
+import { createManager, deleteManager } from '../utils/omnichannel/managers';
+import { deleteClosedRooms } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
 test.describe.serial('OC - Livechat Triggers', () => {
@@ -18,12 +22,10 @@ test.describe.serial('OC - Livechat Triggers', () => {
 		newVisitor = createFakeVisitor();
 		triggersName = faker.string.uuid();
 		triggerMessage = 'This is a trigger message';
-		const requests = await Promise.all([
-			api.post('/livechat/users/agent', { username: 'user1' }),
-			api.post('/livechat/users/manager', { username: 'user1' }),
-			api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: true }),
-		]);
-		requests.every((e) => expect(e.status()).toBe(200));
+
+		await Promise.all([createAgent(api, 'user1'), createManager(api, 'user1')]);
+
+		await setSettingValueById(api, 'Livechat_clear_local_storage_when_chat_ended', true);
 
 		const { page } = await createAuxContext(browser, Users.user1, '/omnichannel/triggers');
 		agent = { page, poHomeOmnichannel: new HomeOmnichannel(page) };
@@ -42,9 +44,10 @@ test.describe.serial('OC - Livechat Triggers', () => {
 		await Promise.all(ids.map((id) => api.delete(`/livechat/triggers/${id}`)));
 
 		await Promise.all([
-			api.delete('/livechat/users/agent/user1'),
-			api.delete('/livechat/users/manager/user1'),
-			api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false }),
+			deleteClosedRooms(api),
+			deleteAgent(api, 'user1'),
+			deleteManager(api, 'user1'),
+			setSettingValueById(api, 'Livechat_clear_local_storage_when_chat_ended', false),
 		]);
 		await agent.page.close();
 	});
@@ -55,12 +58,11 @@ test.describe.serial('OC - Livechat Triggers', () => {
 
 		await test.step('expect to register visitor', async () => {
 			await expect(poLiveChat.btnChatNow).not.toBeVisible();
-			await poLiveChat.sendMessage(newVisitor, false);
+			await poLiveChat.registerVisitor(newVisitor);
 		});
 
 		await test.step('expect send a message as a visitor', async () => {
-			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
-			await poLiveChat.btnSendMessageToOnlineAgent.click();
+			await poLiveChat.sendMessage('this_a_test_message_from_user');
 			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_user')).toBeVisible();
 		});
 
@@ -97,7 +99,7 @@ test.describe.serial('OC - Livechat Triggers', () => {
 
 		await test.step('expect to register visitor', async () => {
 			await poLiveChat.btnChatNow.click();
-			await poLiveChat.sendMessage(newVisitor, false);
+			await poLiveChat.registerVisitor(newVisitor);
 		});
 
 		await test.step('expect trigger message after registration', async () => {
@@ -105,8 +107,7 @@ test.describe.serial('OC - Livechat Triggers', () => {
 		});
 
 		await test.step('expect send a message as a visitor', async () => {
-			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
-			await poLiveChat.btnSendMessageToOnlineAgent.click();
+			await poLiveChat.sendMessage('this_a_test_message_from_user');
 			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_user')).toBeVisible();
 		});
 
@@ -137,7 +138,7 @@ test.describe.serial('OC - Livechat Triggers', () => {
 		});
 
 		await test.step('expect to register visitor', async () => {
-			await poLiveChat.sendMessage(newVisitor, false);
+			await poLiveChat.registerVisitor(newVisitor);
 		});
 
 		await test.step('expect trigger message after registration', async () => {
@@ -145,8 +146,7 @@ test.describe.serial('OC - Livechat Triggers', () => {
 		});
 
 		await test.step('expect send a message as a visitor', async () => {
-			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
-			await poLiveChat.btnSendMessageToOnlineAgent.click();
+			await poLiveChat.sendMessage('this_a_test_message_from_user');
 			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_user')).toBeVisible();
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
 		});

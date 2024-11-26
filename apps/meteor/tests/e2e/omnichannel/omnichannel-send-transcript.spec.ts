@@ -5,58 +5,64 @@ import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
+import { createAgent } from '../utils/omnichannel/agents';
+import { createManager } from '../utils/omnichannel/managers';
+import { deleteClosedRooms } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-transcript', () => {
 	let poLiveChat: OmnichannelLiveChat;
-	let newVisitor: { email: string; name: string };
+	let visitor: { email: string; name: string };
+	let poAgent: { page: Page; poHomeChannel: HomeChannel };
+	let agent: Awaited<ReturnType<typeof createAgent>>;
+	let manager: Awaited<ReturnType<typeof createManager>>;
 
-	let agent: { page: Page; poHomeChannel: HomeChannel };
 	test.beforeAll(async ({ api, browser }) => {
-		newVisitor = createFakeVisitor();
+		visitor = createFakeVisitor();
 
 		// Set user user 1 as manager and agent
-		await api.post('/livechat/users/agent', { username: 'user1' });
-		await api.post('/livechat/users/manager', { username: 'user1' });
+		agent = await createAgent(api, 'user1');
+		manager = await createManager(api, 'user1');
 
 		const { page } = await createAuxContext(browser, Users.user1);
-		agent = { page, poHomeChannel: new HomeChannel(page) };
+		poAgent = { page, poHomeChannel: new HomeChannel(page) };
 	});
+
 	test.beforeEach(async ({ page, api }) => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
+
+		await page.goto('/livechat');
+		await poLiveChat.startChat({ visitor });
+	});
+
+	test.afterEach(async () => {
+		await poLiveChat.closeChat();
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.delete('/livechat/users/agent/user1');
-		await api.delete('/livechat/users/manager/user1');
-		await agent.page.close();
+		await deleteClosedRooms(api);
+		await agent.delete();
+		await manager.delete();
+		await poAgent.page.close();
 	});
 
-	test('Receiving a message from visitor', async ({ page }) => {
-		await test.step('Expect send a message as a visitor', async () => {
-			await page.goto('/livechat');
-			await poLiveChat.openLiveChat();
-			await poLiveChat.sendMessage(newVisitor, false);
-			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
-			await poLiveChat.btnSendMessageToOnlineAgent.click();
+	test('Receiving a message from visitor', async () => {
+		await test.step('expect to have 1 omnichannel assigned to agent 1', async () => {
+			await poAgent.poHomeChannel.sidenav.openChat(visitor.name);
 		});
 
-		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+		await test.step('expect to be able to send transcript to email', async () => {
+			await poAgent.poHomeChannel.content.btnSendTranscript.click();
+			await poAgent.poHomeChannel.content.btnSendTranscriptToEmail.click();
+			await poAgent.poHomeChannel.content.btnModalConfirm.click();
+			await expect(poAgent.poHomeChannel.toastSuccess).toBeVisible();
 		});
 
-		await test.step('Expect to be able to send transcript to email', async () => {
-			await agent.poHomeChannel.content.btnSendTranscript.click();
-			await agent.poHomeChannel.content.btnSendTranscriptToEmail.click();
-			await agent.poHomeChannel.content.btnModalConfirm.click();
-			await expect(agent.poHomeChannel.toastSuccess).toBeVisible();
-		});
-
-		await test.step('Expect to be not able send transcript as PDF', async () => {
+		await test.step('expect to be not able send transcript as PDF', async () => {
 			test.skip(!IS_EE, 'Enterprise Only');
-			await agent.poHomeChannel.content.btnSendTranscript.click();
-			await agent.poHomeChannel.content.btnSendTranscriptAsPDF.hover();
-			await expect(agent.poHomeChannel.content.btnSendTranscriptAsPDF).toHaveAttribute('aria-disabled', 'true');
+			await poAgent.poHomeChannel.content.btnSendTranscript.click();
+			await poAgent.poHomeChannel.content.btnSendTranscriptAsPDF.hover();
+			await expect(poAgent.poHomeChannel.content.btnSendTranscriptAsPDF).toHaveAttribute('aria-disabled', 'true');
 		});
 	});
 });

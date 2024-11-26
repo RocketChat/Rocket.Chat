@@ -5,6 +5,7 @@ import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChatEmbedded } from '../page-objects';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
+import { deleteClosedRooms } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
 declare const window: Window & {
@@ -21,6 +22,7 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 	let poLiveChat: OmnichannelLiveChatEmbedded;
 	let poAuxContext: { page: Page; poHomeOmnichannel: HomeOmnichannel };
+	const visitor = createFakeVisitor();
 
 	test.beforeAll(async ({ api }) => {
 		agent = await createAgent(api, 'user1');
@@ -37,10 +39,18 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 		poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
 	});
 
-	test.beforeEach(async ({ page }) => {
-		poLiveChat = new OmnichannelLiveChatEmbedded(page);
+	test.beforeEach(async ({ page, api }) => {
+		poLiveChat = new OmnichannelLiveChatEmbedded(page, api);
 
 		await page.goto('/packages/rocketchat_livechat/assets/demo.html');
+	});
+
+	test.beforeEach('should initiate Livechat conversation', async () => {
+		await poLiveChat.startChat({ visitor, message: 'message_from_user' });
+	});
+
+	test.afterEach('should close livechat conversation', async () => {
+		await poLiveChat.closeChat();
 	});
 
 	test.afterEach(async ({ page }) => {
@@ -48,21 +58,12 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 		await page.close();
 	});
 
-	test.afterAll(async () => {
+	test.afterAll(async ({ api }) => {
+		await deleteClosedRooms(api);
 		await agent.delete();
 	});
 
 	test('OC - Livechat - Change bubble background color', async () => {
-		const visitor = createFakeVisitor();
-
-		await test.step('should initiate Livechat conversation', async () => {
-			await poLiveChat.openLiveChat();
-			await poLiveChat.sendMessage(visitor, false);
-			await poLiveChat.onlineAgentMessage.fill('message_from_user');
-			await poLiveChat.btnSendMessageToOnlineAgent.click();
-			await expect(poLiveChat.txtChatMessage('message_from_user')).toBeVisible();
-		});
-
 		await test.step('expect to send a message as agent', async () => {
 			await poAuxContext.poHomeOmnichannel.sidenav.openChat(visitor.name);
 			await poAuxContext.poHomeOmnichannel.content.sendMessage('message_from_agent');
@@ -92,14 +93,6 @@ test.describe('OC - Livechat - Bubble background color', async () => {
 
 			expect(await poLiveChat.messageBubbleBackground('message_from_user')).toBe('rgb(193, 39, 45)');
 			expect(await poLiveChat.messageBubbleBackground('message_from_agent')).toBe('rgb(247, 248, 250)');
-		});
-
-		await test.step('should close the conversation', async () => {
-			await poAuxContext.poHomeOmnichannel.sidenav.openChat(visitor.name);
-			await poAuxContext.poHomeOmnichannel.content.btnCloseChat.click();
-			await poAuxContext.poHomeOmnichannel.content.closeChatModal.inputComment.fill('this_is_a_test_comment');
-			await poAuxContext.poHomeOmnichannel.content.closeChatModal.btnConfirm.click();
-			await expect(poAuxContext.poHomeOmnichannel.toastSuccess).toBeVisible();
 		});
 	});
 });

@@ -1,13 +1,11 @@
-import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
+import { setSettingValueById } from '../utils';
+import { createAgent, deleteAgent } from '../utils/omnichannel/agents';
+import { deleteClosedRooms } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
-
-const firstVisitor = createFakeVisitor();
-
-const secondVisitor = createFakeVisitor();
 
 test.use({ storageState: Users.user1.state });
 
@@ -23,10 +21,10 @@ test.describe('OC - Livechat - Queue Management', () => {
 
 	test.beforeAll(async ({ api, browser }) => {
 		await Promise.all([
-			api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }),
-			api.post('/settings/Livechat_waiting_queue', { value: true }),
-			api.post('/settings/Livechat_waiting_queue_message', { value: waitingQueueMessage }),
-			api.post('/livechat/users/agent', { username: 'user1' }),
+			setSettingValueById(api, 'Livechat_Routing_Method', 'Manual_Selection'),
+			setSettingValueById(api, 'Livechat_waiting_queue', true),
+			setSettingValueById(api, 'Livechat_waiting_queue_message', waitingQueueMessage),
+			createAgent(api, 'user1'),
 		]);
 
 		const { page: omniPage } = await createAuxContext(browser, Users.user1, '/', true);
@@ -41,29 +39,28 @@ test.describe('OC - Livechat - Queue Management', () => {
 		await poLiveChat.page.goto('/livechat');
 	});
 
-	test.afterAll(async ({ api }) => {
-		await Promise.all([
-			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
-			api.post('/settings/Livechat_waiting_queue', { value: false }),
-			api.post('/settings/Livechat_waiting_queue_message', { value: '' }),
-			api.delete('/livechat/users/agent/user1'),
-		]);
-		await poHomeOmnichannel.page.close();
-	});
-
 	test.afterEach(async () => {
 		await poLiveChat.closeChat();
 		await poLiveChat.page.close();
 	});
 
+	test.afterAll(async ({ api }) => {
+		await Promise.all([
+			deleteClosedRooms(api),
+			setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection'),
+			setSettingValueById(api, 'Livechat_waiting_queue', false),
+			setSettingValueById(api, 'Livechat_waiting_queue_message', ''),
+			deleteAgent(api, 'user1'),
+		]);
+
+		await poHomeOmnichannel.page.close();
+	});
+
 	test('OC - Queue Management - Waiting Queue Message enabled', async () => {
 		await test.step('should start livechat session', async () => {
-			await poLiveChat.openAnyLiveChatAndSendMessage({
-				liveChatUser: firstVisitor,
-				message: 'Test message',
-				isOffline: false,
-			});
+			await poLiveChat.startChat();
 		});
+
 		await test.step('expect to receive Waiting Queue message on chat', async () => {
 			await expect(poLiveChat.page.locator(`div >> text=${waitingQueueMessage}`)).toBeVisible();
 		});
@@ -84,21 +81,17 @@ test.describe('OC - Livechat - Queue Management', () => {
 			await poLiveChat2.page.close();
 		});
 
+		test.afterAll(async ({ api }) => {
+			await deleteClosedRooms(api);
+		});
+
 		test('Update user position on Queue', async () => {
-			await test.step('should start secondary livechat session', async () => {
-				await poLiveChat2.openAnyLiveChatAndSendMessage({
-					liveChatUser: secondVisitor,
-					message: 'Test message',
-					isOffline: false,
-				});
+			const { visitor: secondVisitor } = await test.step('should start secondary livechat session', async () => {
+				return poLiveChat2.startChat();
 			});
 
 			await test.step('should start primary livechat session', async () => {
-				await poLiveChat.openAnyLiveChatAndSendMessage({
-					liveChatUser: firstVisitor,
-					message: 'Test message',
-					isOffline: false,
-				});
+				await poLiveChat.startChat();
 			});
 
 			await test.step('should verify the queue position of the primary user', async () => {

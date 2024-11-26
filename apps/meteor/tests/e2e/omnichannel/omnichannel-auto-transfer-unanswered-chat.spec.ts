@@ -5,23 +5,26 @@ import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
-import { test, expect } from '../utils/test';
+import { setSettingValueById } from '../utils';
+import { createAgent, deleteAgent } from '../utils/omnichannel/agents';
+import { deleteClosedRooms } from '../utils/omnichannel/rooms';
+import { test } from '../utils/test';
 
-test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
+test.describe('OC - Chat Auto-Transfer', () => {
 	test.skip(!IS_EE, 'Enterprise Only');
 
 	let poLiveChat: OmnichannelLiveChat;
-	let newVisitor: { email: string; name: string };
+	let visitor: { email: string; name: string };
 
 	let agent1: { page: Page; poHomeChannel: HomeChannel };
 	let agent2: { page: Page; poHomeChannel: HomeChannel };
 
 	test.beforeAll(async ({ api, browser }) => {
 		await Promise.all([
-			api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
-			api.post('/livechat/users/agent', { username: 'user2' }).then((res) => expect(res.status()).toBe(200)),
-			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status()).toBe(200)),
-			api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 5 }).then((res) => expect(res.status()).toBe(200)),
+			createAgent(api, 'user1'),
+			createAgent(api, 'user2'),
+			setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection'),
+			setSettingValueById(api, 'Livechat_auto_transfer_chat_timeout', 5),
 		]);
 
 		const { page } = await createAuxContext(browser, Users.user1);
@@ -36,9 +39,10 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 		await agent2.page.close();
 
 		await Promise.all([
-			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
-			api.delete('/livechat/users/agent/user2').then((res) => expect(res.status()).toBe(200)),
-			api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 0 }).then((res) => expect(res.status()).toBe(200)),
+			deleteClosedRooms(api),
+			deleteAgent(api, 'user1'),
+			deleteAgent(api, 'user2'),
+			setSettingValueById(api, 'Livechat_auto_transfer_chat_timeout', 0),
 		]);
 	});
 
@@ -48,23 +52,30 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 		await agent2.poHomeChannel.sidenav.switchOmnichannelStatus('offline');
 
 		// start a new chat for each test
-		newVisitor = createFakeVisitor();
 		poLiveChat = new OmnichannelLiveChat(page, api);
-		await page.goto('/livechat');
-		await poLiveChat.openLiveChat();
-		await poLiveChat.sendMessage(newVisitor, false);
-		await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
-		await poLiveChat.btnSendMessageToOnlineAgent.click();
 	});
 
-	test('expect chat to be auto transferred to next agent within 5 seconds of no reply from first agent', async () => {
-		await agent1.poHomeChannel.sidenav.openChat(newVisitor.name);
+	test.beforeEach(async ({ page }) => {
+		visitor = createFakeVisitor();
 
-		await agent2.poHomeChannel.sidenav.switchOmnichannelStatus('online');
+		await page.goto('/livechat');
+		await poLiveChat.startChat({ visitor });
+	});
 
-		// wait for the chat to be closed automatically for 5 seconds
-		await agent1.page.waitForTimeout(7000);
+	test.afterEach(async () => {
+		await poLiveChat.closeChat();
+	});
 
-		await agent2.poHomeChannel.sidenav.openChat(newVisitor.name);
+	test('OC - Chat Auto-Transfer - Transfer after 5 seconds idle', async () => {
+		await test.step('expect chat to be auto transferred to next agent within 5 seconds of no reply from first agent', async () => {
+			await agent1.poHomeChannel.sidenav.openChat(visitor.name);
+
+			await agent2.poHomeChannel.sidenav.switchOmnichannelStatus('online');
+
+			// wait for the chat to be closed automatically for 5 seconds
+			await agent1.page.waitForTimeout(7000);
+
+			await agent2.poHomeChannel.sidenav.openChat(visitor.name);
+		});
 	});
 });

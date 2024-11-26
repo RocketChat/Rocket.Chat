@@ -1,6 +1,8 @@
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelAgents } from '../page-objects';
+import { setSettingValueById } from '../utils';
+import { deleteAgent } from '../utils/omnichannel/agents';
 import { createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
 
@@ -25,10 +27,12 @@ test.describe.serial('OC - Manage Agents', () => {
 
 	// Ensure that there is no leftover data even if test fails
 	test.afterEach(async ({ api }) => {
-		await api.delete('/livechat/users/agent/user1');
-		await api.post('/settings/Omnichannel_enable_department_removal', { value: true }).then((res) => expect(res.status()).toBe(200));
-		await department.delete();
-		await api.post('/settings/Omnichannel_enable_department_removal', { value: false }).then((res) => expect(res.status()).toBe(200));
+		await Promise.all([
+			deleteAgent(api, 'user1'),
+			setSettingValueById(api, 'Omnichannel_enable_department_removal', true),
+			department.delete(),
+			setSettingValueById(api, 'Omnichannel_enable_department_removal', false),
+		]);
 	});
 
 	test('OC - Manage Agents - Add, search and remove using table', async ({ page }) => {
@@ -103,6 +107,12 @@ test.describe.serial('OC - Manage Agents', () => {
 			await poOmnichannelAgents.inputMaxChats.click();
 			await poOmnichannelAgents.inputMaxChats.fill('2');
 			await poOmnichannelAgents.btnSave.click();
+		});
+
+		await test.step('expect to remove "user1" via sidebar', async () => {
+			await poOmnichannelAgents.inputSearch.fill('user1');
+			await poOmnichannelAgents.firstRowInTable.click();
+			await poOmnichannelAgents.btnRemove.click();
 		});
 	});
 

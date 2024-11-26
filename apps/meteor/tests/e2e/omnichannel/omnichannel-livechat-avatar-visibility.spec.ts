@@ -5,6 +5,7 @@ import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChatEmbedded } from '../page-objects';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
+import { deleteClosedRooms } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
 declare const window: Window & {
@@ -37,8 +38,8 @@ test.describe('OC - Livechat - Avatar visibility', async () => {
 		poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
 	});
 
-	test.beforeEach(async ({ page }) => {
-		poLiveChat = new OmnichannelLiveChatEmbedded(page);
+	test.beforeEach(async ({ page, api }) => {
+		poLiveChat = new OmnichannelLiveChatEmbedded(page, api);
 
 		await page.goto('/packages/rocketchat_livechat/assets/demo.html');
 	});
@@ -48,7 +49,8 @@ test.describe('OC - Livechat - Avatar visibility', async () => {
 		await page.close();
 	});
 
-	test.afterAll(async () => {
+	test.afterAll(async ({ api }) => {
+		await deleteClosedRooms(api);
 		await agent.delete();
 	});
 
@@ -56,10 +58,7 @@ test.describe('OC - Livechat - Avatar visibility', async () => {
 		const visitor = createFakeVisitor();
 
 		await test.step('should initiate Livechat conversation', async () => {
-			await poLiveChat.openLiveChat();
-			await poLiveChat.sendMessage(visitor, false);
-			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
-			await poLiveChat.btnSendMessageToOnlineAgent.click();
+			await poLiveChat.startChat({ visitor, message: 'this_a_test_message_from_user' });
 			await expect(poLiveChat.txtChatMessage('this_a_test_message_from_user')).toBeVisible();
 		});
 
@@ -89,9 +88,7 @@ test.describe('OC - Livechat - Avatar visibility', async () => {
 
 		await test.step('should close the conversation', async () => {
 			await poAuxContext.poHomeOmnichannel.sidenav.openChat(visitor.name);
-			await poAuxContext.poHomeOmnichannel.content.btnCloseChat.click();
-			await poAuxContext.poHomeOmnichannel.content.closeChatModal.inputComment.fill('this_is_a_test_comment');
-			await poAuxContext.poHomeOmnichannel.content.closeChatModal.btnConfirm.click();
+			await poAuxContext.poHomeOmnichannel.content.closeChat();
 			await expect(poAuxContext.poHomeOmnichannel.toastSuccess).toBeVisible();
 		});
 	});

@@ -3,6 +3,7 @@ import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, OmnichannelSettings } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
@@ -42,18 +43,17 @@ test.describe('OC - Livechat - Hide watermark', async () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		const res = await api.post('/settings/Livechat_hide_watermark', { value: false });
-		await expect(res.status()).toBe(200);
+		await setSettingValueById(api, 'Livechat_hide_watermark', false);
 	});
 
 	test('OC - Livechat - Hide watermark', async () => {
 		await test.step('expect to open Livechat', async () => {
 			await poLiveChat.openLiveChat();
-			await poLiveChat.sendMessage(visitor, false);
+			await poLiveChat.registerVisitor(visitor);
 		});
 
 		await test.step('expect watermark to start visible (default)', async () => {
-			await expect(poLiveChat.onlineAgentMessage).toBeVisible();
+			await expect(poLiveChat.inputComposer).toBeVisible();
 			await expect(poLiveChat.txtWatermark).toBeVisible();
 		});
 
@@ -66,7 +66,7 @@ test.describe('OC - Livechat - Hide watermark', async () => {
 		await test.step('expect watermark to be hidden', async () => {
 			await poLiveChat.page.reload();
 			await poLiveChat.openLiveChat();
-			await expect(poLiveChat.onlineAgentMessage).toBeVisible();
+			await expect(poLiveChat.inputComposer).toBeVisible();
 			await expect(poLiveChat.txtWatermark).toBeHidden();
 		});
 	});

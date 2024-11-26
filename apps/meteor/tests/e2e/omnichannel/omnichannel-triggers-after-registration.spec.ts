@@ -5,6 +5,10 @@ import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
+import { setSettingValueById } from '../utils';
+import { createAgent } from '../utils/omnichannel/agents';
+import { createManager } from '../utils/omnichannel/managers';
+import { deleteClosedRooms } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
 test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
@@ -42,10 +46,7 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 			],
 		});
 
-		await Promise.all([
-			api.post('/livechat/users/agent', { username: 'user1' }),
-			api.post('/livechat/users/manager', { username: 'user1' }),
-		]);
+		await Promise.all([createAgent(api, 'user1'), createManager(api, 'user1')]);
 
 		const { page: agentPage } = await createAuxContext(browser, Users.user1);
 		agent = { page: agentPage, poHomeOmnichannel: new HomeOmnichannel(agentPage) };
@@ -66,47 +67,47 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false });
+		await deleteClosedRooms(api);
+		await setSettingValueById(api, 'Livechat_clear_local_storage_when_chat_ended', false);
 	});
 
-	test.describe('OC - Livechat New Chat Triggers - After Registration', async () => {
-		test('expect trigger message after registration', async () => {
+	test('OC - Livechat New Chat Triggers - After Registration', async () => {
+		await test.step('expect trigger message after registration', async () => {
 			await poLiveChat.page.goto('/livechat');
-			await poLiveChat.sendMessageAndCloseChat(newVisitor);
+			await poLiveChat.startAndCloseChat(newVisitor);
 
-			await poLiveChat.startNewChat();
+			await poLiveChat.btnNewChat.click();
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
 		});
 	});
 
-	test.describe('OC - Livechat Triggers - After Registration - Reload', async () => {
-		test('expect trigger message after registration', async () => {
+	test('OC - Livechat Triggers - After Registration - Reload', async () => {
+		await test.step('expect trigger message after registration', async () => {
 			await test.step('expect trigger message after registration to be visible', async () => {
 				await poLiveChat.page.goto('/livechat');
-				await poLiveChat.openAnyLiveChat();
-				await poLiveChat.sendMessage(newVisitor, false);
+				await poLiveChat.btnOpenLiveChat.click();
+				await poLiveChat.registerVisitor(newVisitor);
 				await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
 			});
 
 			await test.step('expect trigger message after registration to be visible after reload', async () => {
 				await poLiveChat.page.reload();
-				await poLiveChat.openAnyLiveChat();
+				await poLiveChat.btnOpenLiveChat.click();
 				await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
 			});
 
 			await test.step('expect to close room and reload', async () => {
-				await poLiveChat.onlineAgentMessage.type('message_after_trigger');
-				await poLiveChat.btnSendMessageToOnlineAgent.click();
+				await poLiveChat.sendMessage('message_after_trigger');
 				await expect(poLiveChat.txtChatMessage('message_after_trigger')).toBeVisible();
 				await poLiveChat.closeChat();
 
 				await expect(poLiveChat.btnNewChat).toBeVisible();
-				await poLiveChat.startNewChat();
+				await poLiveChat.btnNewChat.click();
 				await poLiveChat.page.reload();
 			});
 
 			await test.step('expect trigger message after registration to be visible after reload on new chat', async () => {
-				await poLiveChat.openAnyLiveChat();
+				await poLiveChat.btnOpenLiveChat.click();
 				await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
 			});
 		});
@@ -114,18 +115,18 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 
 	test.describe('OC - Livechat New Chat Triggers - After Registration, clear Local storage', async () => {
 		test.beforeAll(async ({ api }) => {
-			await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: true });
+			await setSettingValueById(api, 'Livechat_clear_local_storage_when_chat_ended', true);
 		});
 
 		test('expect trigger message after registration not be visible after local storage clear', async () => {
 			await poLiveChat.page.goto('/livechat');
-			await poLiveChat.sendMessageAndCloseChat(newVisitor);
+			await poLiveChat.startAndCloseChat();
 
 			await expect(poLiveChat.btnNewChat).toBeVisible();
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).not.toBeVisible();
 
-			await poLiveChat.startNewChat();
-			await poLiveChat.sendMessage(newVisitor, false);
+			await poLiveChat.btnNewChat.click();
+			await poLiveChat.registerVisitor(newVisitor);
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
 		});
 	});

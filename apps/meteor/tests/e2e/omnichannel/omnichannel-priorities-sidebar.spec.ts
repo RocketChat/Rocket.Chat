@@ -3,6 +3,9 @@ import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { OmnichannelRoomInfo } from '../page-objects/omnichannel-room-info';
+import { setSettingValueById } from '../utils';
+import { createAgent, deleteAgent } from '../utils/omnichannel/agents';
+import { createManager, deleteManager } from '../utils/omnichannel/managers';
 import { createConversation } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
@@ -18,15 +21,14 @@ test.use({ storageState: Users.user1.state });
 test.describe.serial('OC - Priorities [Sidebar]', () => {
 	let poHomeChannel: HomeOmnichannel;
 	let poRoomInfo: OmnichannelRoomInfo;
+	let conversation: Awaited<ReturnType<typeof createConversation>>;
 
 	test.beforeAll(async ({ api }) => {
-		(
-			await Promise.all([
-				api.post('/livechat/users/agent', { username: 'user1' }),
-				api.post('/livechat/users/manager', { username: 'user1' }),
-				api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }),
-			])
-		).every((res) => expect(res.status()).toBe(200));
+		await Promise.all([
+			createAgent(api, 'user1'),
+			createManager(api, 'user1'),
+			setSettingValueById(api, 'Livechat_Routing_Method', 'Manual_Selection'),
+		]);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -40,17 +42,19 @@ test.describe.serial('OC - Priorities [Sidebar]', () => {
 	});
 
 	test.beforeEach(async ({ api }) => {
-		await createConversation(api, { visitorName: visitor.name });
+		conversation = await createConversation(api, { visitorName: visitor.name });
+	});
+
+	test.afterEach(async () => {
+		await conversation.delete();
 	});
 
 	test.afterAll(async ({ api }) => {
-		(
-			await Promise.all([
-				api.delete('/livechat/users/agent/user1'),
-				api.delete('/livechat/users/manager/user1'),
-				api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
-			])
-		).every((res) => expect(res.status()).toBe(200));
+		await Promise.all([
+			deleteAgent(api, 'user1'),
+			deleteManager(api, 'user1'),
+			setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection'),
+		]);
 	});
 
 	test('OC - Priorities [Sidebar] - Update conversation priority', async ({ page }) => {
