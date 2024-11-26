@@ -41,7 +41,7 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 	const { ref, breakpoints } = useBreakpointsElement();
 
 	const contextualbarPosition = breakpoints.includes('md') ? 'relative' : 'absolute';
-	const contextualbarSize = breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%';
+	const contextualbarSize = breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '500px') : '100%';
 
 	const layout = useLayout();
 
