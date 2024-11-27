@@ -76,7 +76,7 @@ describe('verifyContactChannel', () => {
 		await runVerifyContactChannel(() => undefined, {
 			contactId: 'contactId',
 			field: 'field',
-			value: 'value',
+			value: 'Value',
 			visitorId: 'visitorId',
 			roomId: 'roomId',
 		});

@@ -31,7 +31,7 @@ async function _verifyContactChannel(
 
 		const updater = LivechatContacts.getUpdater();
 		LivechatContacts.setVerifiedUpdateQuery(true, updater);
-		LivechatContacts.setFieldAndValueUpdateQuery(field, value, updater);
+		LivechatContacts.setFieldAndValueUpdateQuery(field, value.toLowerCase(), updater);
 		await LivechatContacts.updateFromUpdaterByAssociation({ visitorId, source: room.source }, updater, { session });
 
 		await LivechatRooms.update({ _id: roomId }, { $set: { verified: true } }, { session });
