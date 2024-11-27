@@ -104,10 +104,10 @@ const MessageToolbar = ({
 	useStarMessageAction(message, { room, user });
 	useUnstarMessageAction(message, { room, user });
 	usePermalinkStar(message, { subscription, user });
+	usePermalinkPinned(message, { subscription });
 	useFollowMessageAction(message, { room, user, context });
 	useUnFollowMessageAction(message, { room, user, context });
 	useReplyInThreadMessageAction(message, { room, subscription });
-	usePermalinkPinned();
 	useJumpToMessageContextAction(message, {
 		id: 'jump-to-message',
 		order: 100,
