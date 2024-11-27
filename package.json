@@ -41,11 +41,11 @@
 	},
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"engines": {
-		"yarn": "4.5.0",
+		"yarn": "4.5.3",
 		"node": "20.18.0",
 		"npm": "Use yarn instead"
 	},
-	"packageManager": "yarn@4.5.0",
+	"packageManager": "yarn@4.5.3",
 	"houston": {
 		"minTag": "0.55.0-rc.0",
 		"updateFiles": [

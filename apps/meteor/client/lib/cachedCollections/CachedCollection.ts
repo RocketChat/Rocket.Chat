@@ -15,8 +15,6 @@ import { isTruthy } from '../../../lib/isTruthy';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 import { getConfig } from '../utils/getConfig';
 
-export type EventType = 'notify-logged' | 'notify-all' | 'notify-user';
-
 type Name = 'rooms' | 'subscriptions' | 'permissions' | 'public-settings' | 'private-settings';
 
 const hasId = <T>(record: T): record is T & { _id: string } => typeof record === 'object' && record !== null && '_id' in record;
