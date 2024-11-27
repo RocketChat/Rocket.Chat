@@ -39,5 +39,5 @@ it('should invalidate any subscription queries', async () => {
 
 	await waitFor(() => expect(result.current.status).toBe('success'));
 
-	expect(queryClient.invalidateQueries).toHaveBeenCalledWith(subscriptionsQueryKeys.subscription('general'));
+	expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: subscriptionsQueryKeys.subscription('general') });
 });
