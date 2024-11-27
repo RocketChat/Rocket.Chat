@@ -795,7 +795,9 @@ export class AppManager {
                 return this.getCompiler().toSandBox(this, stored, parseResult);
             }
 
-            return appPackageOrInstance;
+            if (appPackageOrInstance instanceof ProxiedApp) {
+                return appPackageOrInstance;
+            }
         })();
 
         await this.purgeAppConfig(app, { keepScheduledJobs: true });
