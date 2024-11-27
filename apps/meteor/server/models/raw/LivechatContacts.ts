@@ -24,8 +24,8 @@ import type {
 	AggregationCursor,
 } from 'mongodb';
 
-import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements ILivechatContactsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatContact>>) {
@@ -290,7 +290,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 	}
 
 	countContactsWithoutChannels(): Promise<number> {
-		return this.countDocuments({ channels: { $in: [undefined, []] } });
+		return this.countDocuments({ channels: { $size: 0 } });
 	}
 
 	getStatistics(): AggregationCursor<{ totalConflicts: number; avgChannelsPerContact: number }> {
