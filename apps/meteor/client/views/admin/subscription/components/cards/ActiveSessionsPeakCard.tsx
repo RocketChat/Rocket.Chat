@@ -44,7 +44,7 @@ const ActiveSessionsPeakCard = (): ReactElement => {
 
 	return (
 		<FeatureUsageCard card={card}>
-			<Box color='font-secondary-info'>
+			<Box color='font-secondary-info' textAlign='center'>
 				<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'} mbe={12}>
 					{used} / {total}
 				</Box>

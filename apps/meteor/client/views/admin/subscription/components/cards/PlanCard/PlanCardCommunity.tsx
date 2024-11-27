@@ -12,7 +12,7 @@ const PlanCardCommunity = (): ReactElement => {
 		<Card height='full'>
 			<PlanCardHeader name={t('Community')} />
 			<CardBody flexDirection='column'>
-				<Box display='flex' flexDirection='row' alignItems='center' mbe={8}>
+				<Box display='flex' flexDirection='row' alignItems='center'>
 					<Icon name='card' size={24} mie={12} /> {t('free_per_month_user')}
 				</Box>
 				<Box display='flex' flexDirection='row' alignItems='center'>
