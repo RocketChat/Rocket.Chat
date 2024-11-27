@@ -21,9 +21,6 @@ const InvitePage = (): ReactElement => {
 	const registrationForm = useSetting('Accounts_RegistrationForm');
 	const setLoginDefaultState = useSessionDispatch('loginDefaultState');
 
-	console.log('isValidInvite', isValidInvite);
-	console.log('isPending', isPending);
-
 	useEffect(() => {
 		if (isValidInvite) {
 			if (registrationForm !== 'Disabled') {
@@ -39,12 +36,6 @@ const InvitePage = (): ReactElement => {
 			getInviteRoomMutation(token);
 		}
 	}, [getInviteRoomMutation, isValidInvite, registrationForm, setLoginDefaultState, token, userId]);
-
-	// useEffect(() => {
-	// 	if (userId && token) {
-	// 		getInviteRoomMutation(token);
-	// 	}
-	// }, [getInviteRoomMutation, token, userId]);
 
 	if (isPending) {
 		return <PageLoading />;
