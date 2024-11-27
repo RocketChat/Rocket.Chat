@@ -68,6 +68,7 @@
     "@rocket.chat/web-ui-registration": "12.0.0"
   },
   "changesets": [
+    "bump-patch-1732728542480",
     "clean-flies-collect",
     "curvy-flies-greet",
     "fair-colts-remain",
