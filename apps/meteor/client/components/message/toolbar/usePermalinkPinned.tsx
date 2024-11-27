@@ -15,7 +15,7 @@ export const usePermalinkPinned = (message: IMessage, { subscription }: { subscr
 	const encrypted = isE2EEMessage(message);
 
 	useEffect(() => {
-		if (subscription) {
+		if (!subscription) {
 			return;
 		}
 
