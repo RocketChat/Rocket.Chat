@@ -1,17 +1,23 @@
+import type { IMessage, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessageJumpQueryStringParameter';
 
-export const useJumpToStarMessage = () => {
+export const useJumpToStarMessage = (
+	message: IMessage,
+	{ subscription, user }: { subscription: ISubscription | undefined; user: IUser | undefined },
+) => {
 	const allowStarring = useSetting('Message_AllowStarring');
 
 	useEffect(() => {
-		if (!allowStarring) {
-			return () => {
-				MessageAction.removeButton('jump-to-star-message');
-			};
+		if (!allowStarring || !subscription) {
+			return;
+		}
+
+		if (Array.isArray(message.starred) && message.starred.some((star) => star._id === user?._id)) {
+			return;
 		}
 
 		MessageAction.addButton({
@@ -19,15 +25,8 @@ export const useJumpToStarMessage = () => {
 			icon: 'jump',
 			label: 'Jump_to_message',
 			context: ['starred', 'threads', 'message-mobile', 'videoconf-threads'],
-			action(_, { message }) {
+			action() {
 				setMessageJumpQueryStringParameter(message._id);
-			},
-			condition({ message, subscription, user }) {
-				if (subscription == null) {
-					return false;
-				}
-
-				return Boolean(message.starred?.find((star) => star._id === user?._id));
 			},
 			order: 100,
 			group: 'message',
@@ -36,5 +35,5 @@ export const useJumpToStarMessage = () => {
 		return () => {
 			MessageAction.removeButton('jump-to-star-message');
 		};
-	}, [allowStarring]);
+	}, [allowStarring, message._id, message.starred, subscription, user?._id]);
 };
