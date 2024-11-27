@@ -9501,7 +9501,7 @@ __metadata:
     twilio: "npm:^3.84.1"
     twit: "npm:^2.2.11"
     typescript: "npm:~5.7.2"
-    typia: "npm:~6.11.4"
+    typia: "npm:~6.12.2"
     ua-parser-js: "npm:^1.0.39"
     underscore: "npm:^1.13.7"
     universal-perf-hooks: "npm:^1.0.1"
@@ -10234,9 +10234,9 @@ __metadata:
     ts-jest: "npm:~29.2.5"
     ts-loader: "npm:~9.5.1"
     ts-node: "npm:~10.9.2"
-    ts-patch: "npm:~3.2.1"
-    typescript: "npm:~5.7.2"
-    typia: "npm:~6.11.4"
+    ts-patch: "npm:^3.2.1"
+    typescript: "npm:~5.6.3"
+    typia: "npm:~6.12.2"
   peerDependencies:
     "@rocket.chat/icons": "*"
   languageName: unknown
@@ -10598,10 +10598,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@samchon/openapi@npm:^1.1.2":
-  version: 1.2.2
-  resolution: "@samchon/openapi@npm:1.2.2"
-  checksum: 10/f6f40a5d6f554080dc8e9967ffd34f781d5e39c91f502d605a63c7c00bc54a551dba583fe74a257351df2a7ff339f439a75e4192077ac2a6c1cf7f6d4618bb61
+"@samchon/openapi@npm:^1.2.4":
+  version: 1.2.4
+  resolution: "@samchon/openapi@npm:1.2.4"
+  checksum: 10/7d16be3291ee7cd9bd331832ca1cb3abab017593d72e4a7b4f6884ae9f7a2a89ee5f214a233c7a3cdc5f7f5eec10cef7ef87c6330fa73cb5665b587579b93d95
   languageName: node
   linkType: hard
 
@@ -37652,7 +37652,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-patch@npm:~3.2.1":
+"ts-patch@npm:^3.2.1":
   version: 3.2.1
   resolution: "ts-patch@npm:3.2.1"
   dependencies:
@@ -38046,6 +38046,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:~5.6.3":
+  version: 5.6.3
+  resolution: "typescript@npm:5.6.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10/c328e418e124b500908781d9f7b9b93cf08b66bf5936d94332b463822eea2f4e62973bfb3b8a745fdc038785cb66cf59d1092bac3ec2ac6a3e5854687f7833f1
+  languageName: node
+  linkType: hard
+
 "typescript@npm:~5.7.2":
   version: 5.7.2
   resolution: "typescript@npm:5.7.2"
@@ -38053,6 +38063,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10/4caa3904df69db9d4a8bedc31bafc1e19ffb7b24fbde2997a1633ae1398d0de5bdbf8daf602ccf3b23faddf1aeeb9b795223a2ed9c9a4fdcaf07bfde114a401a
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A~5.6.3#optional!builtin<compat/typescript>":
+  version: 5.6.3
+  resolution: "typescript@patch:typescript@npm%3A5.6.3#optional!builtin<compat/typescript>::version=5.6.3&hash=8c6c40"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10/00504c01ee42d470c23495426af07512e25e6546bce7e24572e72a9ca2e6b2e9bea63de4286c3cfea644874da1467dcfca23f4f98f7caf20f8b03c0213bb6837
   languageName: node
   linkType: hard
 
@@ -38066,21 +38086,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typia@npm:~6.11.4":
-  version: 6.11.4
-  resolution: "typia@npm:6.11.4"
+"typia@npm:~6.12.2":
+  version: 6.12.2
+  resolution: "typia@npm:6.12.2"
   dependencies:
-    "@samchon/openapi": "npm:^1.1.2"
+    "@samchon/openapi": "npm:^1.2.4"
     commander: "npm:^10.0.0"
     comment-json: "npm:^4.2.3"
     inquirer: "npm:^8.2.5"
     package-manager-detector: "npm:^0.2.0"
     randexp: "npm:^0.5.3"
   peerDependencies:
+    "@samchon/openapi": ">=1.2.4 <2.0.0"
     typescript: ">=4.8.0 <5.7.0"
   bin:
     typia: lib/executable/typia.js
-  checksum: 10/b3fcb77ee7f8ed70fe2c8a433d0a87b2548b51e8b20c2f428b7d9ff930df5fea0ffd31501dc55a932c8b2caafcc02a714ea1ffe242c03304bebf5b2b306b0cb9
+  checksum: 10/d06269217ac47fcf2d951302348df865e1585d5684645a38009f4456f3970b7569def6a98cdf5107d6fc72877c0fe9af41902194a09c3bec5aa8adf9af84254d
   languageName: node
   linkType: hard
 
