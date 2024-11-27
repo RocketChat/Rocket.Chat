@@ -9,7 +9,10 @@ API.v1.addRoute(
 		async get() {
 			const result = await Presence.getConnectionCount();
 
-			return API.v1.success(result);
+			return API.v1.success({
+				...result,
+				max: 10_000,
+			});
 		},
 	},
 );

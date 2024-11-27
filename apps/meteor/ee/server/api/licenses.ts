@@ -15,9 +15,22 @@ API.v1.addRoute(
 		async get() {
 			const unrestrictedAccess = await hasPermissionAsync(this.userId, 'view-privileged-setting');
 			const loadCurrentValues = unrestrictedAccess && Boolean(this.queryParams.loadValues);
-
-			const license = await License.getInfo({ limits: unrestrictedAccess, license: unrestrictedAccess, currentValues: loadCurrentValues });
-
+			let license = await License.getInfo({ limits: unrestrictedAccess, license: unrestrictedAccess, currentValues: loadCurrentValues });
+			license = {
+				...license,
+				trial: false,
+				limits: {
+					...license?.limits,
+					activeUsers: {
+						...license?.limits?.activeUsers,
+						max: -1,
+					},
+					monthlyActiveContacts: {
+						...license?.limits?.monthlyActiveContacts,
+						max: -1,
+					},
+				},
+			};
 			return API.v1.success({ license });
 		},
 	},
@@ -57,10 +70,11 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const maxActiveUsers = License.getMaxActiveUsers();
+			// const maxActiveUsers = License.getMaxActiveUsers();
 			const activeUsers = await Users.getActiveLocalUserCount();
 
-			return API.v1.success({ maxActiveUsers: maxActiveUsers > 0 ? maxActiveUsers : null, activeUsers });
+			return API.v1.success({ maxActiveUsers: null, activeUsers });
+			// return API.v1.success({ maxActiveUsers: maxActiveUsers > 0 ? maxActiveUsers : null, activeUsers });
 		},
 	},
 );
