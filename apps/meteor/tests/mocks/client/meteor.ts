@@ -10,11 +10,14 @@ export const Meteor = {
 		setItem: jest.fn(),
 	},
 	users: {},
+	userId: () => 'uid',
 };
 
 export const Mongo = {
 	Collection: class Collection {
 		findOne = jest.fn();
+
+		update = jest.fn();
 	},
 };
 
