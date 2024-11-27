@@ -13,7 +13,6 @@ export const useReactiveQuery = <TQueryFnData, TData = TQueryFnData, TQueryKey e
 
 	return useQuery({
 		queryKey,
-
 		queryFn: (): Promise<TQueryFnData> =>
 			new Promise((resolve, reject) => {
 				queueMicrotask(() => {
