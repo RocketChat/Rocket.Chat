@@ -33,6 +33,7 @@ export async function mapVisitorToContact(visitor: ILivechatVisitor, source: IOm
 				ignoreAdditionalFields: true,
 				ignoreValidationErrors: true,
 			}),
+		shouldValidateCustomFields: false,
 		lastChat: visitor.lastChat,
 		contactManager: visitor.contactManager?.username && (await getContactManagerIdByUsername(visitor.contactManager.username)),
 	};

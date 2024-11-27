@@ -15,6 +15,7 @@ export type CreateContactParams = {
 	contactManager?: string;
 	channels?: ILivechatContactChannel[];
 	importIds?: string[];
+	shouldValidateCustomFields?: boolean;
 };
 
 export async function createContact({
@@ -27,13 +28,15 @@ export async function createContact({
 	channels = [],
 	unknown,
 	importIds,
+	shouldValidateCustomFields = true,
 }: CreateContactParams): Promise<string> {
 	if (contactManager) {
 		await validateContactManager(contactManager);
 	}
 
-	const allowedCustomFields = await getAllowedCustomFields();
-	const customFields = validateCustomFields(allowedCustomFields, receivedCustomFields);
+	const customFields = shouldValidateCustomFields
+		? validateCustomFields(await getAllowedCustomFields(), receivedCustomFields)
+		: receivedCustomFields;
 
 	return LivechatContacts.insertContact({
 		name,
