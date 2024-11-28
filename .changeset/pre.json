@@ -69,6 +69,7 @@
   },
   "changesets": [
     "bump-patch-1732728542480",
+    "bump-patch-1732835767114",
     "clean-flies-collect",
     "curvy-flies-greet",
     "fair-colts-remain",
