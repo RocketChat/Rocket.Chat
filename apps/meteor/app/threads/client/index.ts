@@ -1,2 +1,2 @@
-import './messageAction/replyInThread';
+import './messageAction/useReplyInThreadMessageAction';
 import './threads.css';

@@ -20,6 +20,7 @@ import { useUnFollowMessageAction } from './useUnFollowMessageAction';
 import { useUnpinMessageAction } from './useUnpinMessageAction';
 import { useUnstarMessageAction } from './useUnstarMessageAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
+import { useReplyInThreadMessageAction } from '../../../../app/threads/client/messageAction/useReplyInThreadMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
@@ -104,6 +105,7 @@ const MessageToolbar = ({
 	usePermalinkStar(message, { subscription, user });
 	useFollowMessageAction(message, { room, user, context });
 	useUnFollowMessageAction(message, { room, user, context });
+	useReplyInThreadMessageAction(message, { room, subscription });
 	useJumpToMessageContextAction(message, {
 		id: 'jump-to-message',
 		order: 100,
