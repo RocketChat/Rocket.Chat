@@ -1,4 +1,4 @@
 import './messageAction/follow';
-import './messageAction/unfollow';
+import './messageAction/useUnFollowMessageAction';
 import './messageAction/replyInThread';
 import './threads.css';
