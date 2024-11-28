@@ -1,9 +1,8 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { useToggleFollowingThreadMutation } from '../../../../client/views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
 import { Messages } from '../../../models/client';
 import { MessageAction } from '../../../ui-utils/client';
@@ -15,6 +14,8 @@ export const useUnFollowMessageAction = (
 	{ room, user, context }: { room: IRoom; user: IUser | undefined; context: MessageActionContext },
 ) => {
 	const threadsEnabled = useSetting('Threads_enabled');
+
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const toggleFollowingMutation = useToggleFollowingThreadMutation({
 		onSuccess: () => {
