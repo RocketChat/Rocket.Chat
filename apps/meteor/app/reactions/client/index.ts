@@ -1,2 +1,2 @@
-import './init';
+import './useReactionMessageAction';
 import './methods/setReaction';
