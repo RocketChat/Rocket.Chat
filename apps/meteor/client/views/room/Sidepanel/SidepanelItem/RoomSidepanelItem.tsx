@@ -6,7 +6,7 @@ import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 import { useTemplateByViewMode } from '../../../../sidebarv2/hooks/useTemplateByViewMode';
 import { useItemData } from '../hooks/useItemData';
 
-export type RoomSidepanelItemProps = {
+type RoomSidepanelItemProps = {
 	openedRoom?: string;
 	room: IRoom;
 	parentRid: string;
