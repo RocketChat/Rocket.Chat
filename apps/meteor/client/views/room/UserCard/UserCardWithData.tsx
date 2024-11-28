@@ -25,7 +25,7 @@ type UserCardWithDataProps = {
 const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWithDataProps) => {
 	const { t } = useTranslation();
 	const getRoles = useRolesDescription();
-	const showRealNames = Boolean(useSetting('UI_Use_Real_Name'));
+	const showRealNames = useSetting('UI_Use_Real_Name', false);
 
 	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username });
 	const {

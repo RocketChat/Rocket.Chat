@@ -4,10 +4,10 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import EmailInboxForm from './EmailInboxForm';
 import EmailInboxFormWithData from './EmailInboxFormWithData';
 import EmailInboxTable from './EmailInboxTable';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const EmailInboxPage = (): ReactElement => {
 	const { t } = useTranslation();

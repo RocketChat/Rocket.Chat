@@ -4,12 +4,12 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef } from 'react';
 
+import { useGetMessageByID } from './useGetMessageByID';
 import { withDebouncing } from '../../../../../../lib/utils/highOrderFunctions';
 import type { FieldExpression, Query } from '../../../../../lib/minimongo';
 import { createFilterFromQuery } from '../../../../../lib/minimongo';
 import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { useRoom } from '../../../contexts/RoomContext';
-import { useGetMessageByID } from './useGetMessageByID';
 
 type RoomMessagesRidEvent = IMessage;
 

@@ -14,15 +14,6 @@ import type { Request, Response } from 'meteor/rocketchat:restivus';
 import { Restivus } from 'meteor/rocketchat:restivus';
 import _ from 'underscore';
 
-import { isObject } from '../../../lib/utils/isObject';
-import { getNestedProp } from '../../../server/lib/getNestedProp';
-import { getRestPayload } from '../../../server/lib/logger/logPayloads';
-import { checkCodeForUser } from '../../2fa/server/code';
-import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { notifyOnUserChangeAsync } from '../../lib/server/lib/notifyListener';
-import { metrics } from '../../metrics/server';
-import { settings } from '../../settings/server';
-import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import type { PermissionsPayload } from './api.helpers';
 import { checkPermissionsForInvocation, checkPermissions, parseDeprecation } from './api.helpers';
 import type {
@@ -37,6 +28,15 @@ import type {
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
+import { isObject } from '../../../lib/utils/isObject';
+import { getNestedProp } from '../../../server/lib/getNestedProp';
+import { getRestPayload } from '../../../server/lib/logger/logPayloads';
+import { checkCodeForUser } from '../../2fa/server/code';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
+import { notifyOnUserChangeAsync } from '../../lib/server/lib/notifyListener';
+import { metrics } from '../../metrics/server';
+import { settings } from '../../settings/server';
+import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 
 const logger = new Logger('API');
 

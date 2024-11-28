@@ -5,8 +5,8 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from '../../components/Skeleton';
 import SlaEdit from './SlaEdit';
+import { FormSkeleton } from '../../components/Skeleton';
 
 type SlaEditProps = {
 	slaId: string;

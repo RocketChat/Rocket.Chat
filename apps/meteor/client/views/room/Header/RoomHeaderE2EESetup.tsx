@@ -1,11 +1,11 @@
 import React, { lazy } from 'react';
 
+import RoomHeader from './RoomHeader';
+import type { RoomHeaderProps } from './RoomHeader';
 import { E2EEState } from '../../../../app/e2e/client/E2EEState';
 import { E2ERoomState } from '../../../../app/e2e/client/E2ERoomState';
 import { useE2EERoomState } from '../hooks/useE2EERoomState';
 import { useE2EEState } from '../hooks/useE2EEState';
-import RoomHeader from './RoomHeader';
-import type { RoomHeaderProps } from './RoomHeader';
 
 const RoomToolboxE2EESetup = lazy(() => import('./RoomToolbox/RoomToolboxE2EESetup'));
 

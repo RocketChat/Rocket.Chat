@@ -5,8 +5,9 @@ import { useTranslation } from 'react-i18next';
 
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { getBadgeTitle, getMessage } from '../../../../sidebarv2/RoomList/SidebarItemTemplateWithData';
+import { getMessage } from '../../../../sidebarv2/RoomList/SidebarItemTemplateWithData';
 import { useAvatarTemplate } from '../../../../sidebarv2/hooks/useAvatarTemplate';
+import { useUnreadDisplay } from '../../../../sidebarv2/hooks/useUnreadDisplay';
 
 export const useItemData = (
 	room: ISubscription & IRoom,
@@ -15,7 +16,7 @@ export const useItemData = (
 	const { t } = useTranslation();
 	const AvatarTemplate = useAvatarTemplate();
 
-	const highlighted = Boolean(!room.hideUnreadStatus && (room.alert || room.unread));
+	const { unreadTitle, unreadVariant, showUnread, highlightUnread: highlighted, unreadCount } = useUnreadDisplay(room);
 
 	const icon = useMemo(
 		() => <SidebarItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />,
@@ -24,28 +25,17 @@ export const useItemData = (
 	const time = 'lastMessage' in room ? room.lastMessage?.ts : undefined;
 	const message = viewMode === 'extended' && getMessage(room, room.lastMessage, t);
 
-	const threadUnread = Number(room.tunread?.length) > 0;
-	const isUnread = room.unread > 0 || threadUnread;
-	const showBadge =
-		!room.hideUnreadStatus || (!room.hideMentionStatus && (Boolean(room.userMentions) || Number(room.tunreadUser?.length) > 0));
-	const badgeTitle = getBadgeTitle(room.userMentions, Number(room.tunread?.length), room.groupMentions, room.unread, t);
-	const variant =
-		((room.userMentions || room.tunreadUser?.length) && 'danger') ||
-		(threadUnread && 'primary') ||
-		(room.groupMentions && 'warning') ||
-		'secondary';
-
 	const badges = useMemo(
 		() => (
 			<>
-				{showBadge && isUnread && (
-					<SidebarItemBadge variant={variant} title={badgeTitle}>
-						{room.unread + (room.tunread?.length || 0)}
+				{showUnread && (
+					<SidebarItemBadge variant={unreadVariant} title={unreadTitle} role='status'>
+						{unreadCount.total}
 					</SidebarItemBadge>
 				)}
 			</>
 		),
-		[badgeTitle, isUnread, room.tunread?.length, room.unread, showBadge, variant],
+		[showUnread, unreadCount.total, unreadTitle, unreadVariant],
 	);
 
 	const itemData = useMemo(

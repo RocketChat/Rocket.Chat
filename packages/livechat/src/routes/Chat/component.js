@@ -2,6 +2,7 @@ import { Component, createRef } from 'preact';
 import { Suspense, lazy } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
+import styles from './styles.scss';
 import { Button } from '../../components/Button';
 import { CallIframe } from '../../components/Calls/CallIFrame';
 import { default as CallNotification } from '../../components/Calls/CallNotification';
@@ -19,7 +20,6 @@ import PlusIcon from '../../icons/plus.svg';
 import RemoveIcon from '../../icons/remove.svg';
 import SendIcon from '../../icons/send.svg';
 import EmojiIcon from '../../icons/smile.svg';
-import styles from './styles.scss';
 
 import 'emoji-mart/css/emoji-mart.css';
 

@@ -28,7 +28,7 @@
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"ajv": "^8.17.1",
-		"ajv-formats": "^2.1.1"
+		"ajv-formats": "^3.0.1"
 	},
 	"volta": {
 		"extends": "../../package.json"

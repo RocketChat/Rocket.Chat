@@ -1,7 +1,5 @@
 import type { IUploadWithUser, IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IIntegration } from '@rocket.chat/core-typings';
 
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ChannelsAddAllProps } from './ChannelsAddAllProps';
 import type { ChannelsArchiveProps } from './ChannelsArchiveProps';
 import type { ChannelsConvertToTeamProps } from './ChannelsConvertToTeamProps';
@@ -32,6 +30,8 @@ import type { ChannelsSetReadOnlyProps } from './ChannelsSetReadOnlyProps';
 import type { ChannelsSetTopicProps } from './ChannelsSetTopicProps';
 import type { ChannelsSetTypeProps } from './ChannelsSetTypeProps';
 import type { ChannelsUnarchiveProps } from './ChannelsUnarchiveProps';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
 export * from './ChannelsFilesListProps';
 export * from './ChannelsListProps';

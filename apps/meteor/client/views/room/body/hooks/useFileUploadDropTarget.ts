@@ -4,12 +4,12 @@ import type { ReactNode } from 'react';
 import type React from 'react';
 import { useCallback, useMemo } from 'react';
 
+import { useDropTarget } from './useDropTarget';
 import { useIsRoomOverMacLimit } from '../../../../hooks/omnichannel/useIsRoomOverMacLimit';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
-import { useDropTarget } from './useDropTarget';
 
 export const useFileUploadDropTarget = (): readonly [
 	fileUploadTriggerProps: {
@@ -29,7 +29,7 @@ export const useFileUploadDropTarget = (): readonly [
 
 	const t = useTranslation();
 
-	const fileUploadEnabled = useSetting<boolean>('FileUpload_Enabled');
+	const fileUploadEnabled = useSetting('FileUpload_Enabled', true);
 	const user = useUser();
 	const fileUploadAllowedForUser = useReactiveValue(
 		useCallback(() => !roomCoordinator.readOnly(room._id, { username: user?.username }), [room._id, user?.username]),

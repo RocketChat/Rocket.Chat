@@ -8,6 +8,8 @@ import { App as SlackApp } from '@slack/bolt';
 import { RTMClient } from '@slack/rtm-api';
 import { Meteor } from 'meteor/meteor';
 
+import { SlackAPI } from './SlackAPI';
+import { slackLogger } from './logger';
 import { saveRoomName, saveRoomTopic } from '../../channel-settings/server';
 import { FileUpload } from '../../file-upload/server';
 import { addUserToRoom } from '../../lib/server/functions/addUserToRoom';
@@ -20,8 +22,6 @@ import { updateMessage } from '../../lib/server/functions/updateMessage';
 import { executeSetReaction } from '../../reactions/server/setReaction';
 import { settings } from '../../settings/server';
 import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
-import { SlackAPI } from './SlackAPI';
-import { slackLogger } from './logger';
 
 export default class SlackAdapter {
 	constructor(slackBridge) {

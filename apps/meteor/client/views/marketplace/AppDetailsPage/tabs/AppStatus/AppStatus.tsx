@@ -8,6 +8,7 @@ import React, { useCallback, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import semver from 'semver';
 
+import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
 import AddonRequiredModal from '../../../AppsList/AddonRequiredModal';
@@ -16,7 +17,6 @@ import { appButtonProps, appMultiStatusProps } from '../../../helpers';
 import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstallationHandler';
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
 import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
-import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 
 type AppStatusProps = {
 	app: App;

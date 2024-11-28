@@ -19,6 +19,10 @@ import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler,
 import React, { memo, useRef, useReducer, useCallback, useState, useEffect } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
+import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
+import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
+import MessageBoxHint from './MessageBoxHint';
+import MessageBoxReplies from './MessageBoxReplies';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -42,10 +46,6 @@ import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import FilePreview from './FilePreview/FilePreview';
 import { handleSendFiles } from './HandleFileUploads';
-import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
-import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
-import MessageBoxHint from './MessageBoxHint';
-import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
@@ -118,8 +118,8 @@ const MessageBox = ({
 	const chat = useChat();
 	const room = useRoom();
 	const t = useTranslation();
-	const e2eEnabled = useSetting<boolean>('E2E_Enable');
-	const unencryptedMessagesAllowed = useSetting<boolean>('E2E_Allow_Unencrypted_Messages');
+	const e2eEnabled = useSetting('E2E_Enable', false);
+	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 

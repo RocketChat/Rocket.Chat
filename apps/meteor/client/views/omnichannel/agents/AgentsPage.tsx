@@ -3,12 +3,12 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ContextualbarDialog } from '../../../components/Contextualbar';
-import { Page, PageHeader, PageContent } from '../../../components/Page';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AgentEditWithData from './AgentEditWithData';
 import AgentInfo from './AgentInfo';
 import AgentsTable from './AgentsTable/AgentsTable';
+import { ContextualbarDialog } from '../../../components/Contextualbar';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
+import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const AgentsPage = (): ReactElement => {
 	const { t } = useTranslation();

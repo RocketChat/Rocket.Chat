@@ -5,12 +5,12 @@ import { useToastMessageDispatch, useAbsoluteUrl, useMethod, useTranslation, use
 import type { ReactElement } from 'react';
 import React, { memo, useEffect, useState } from 'react';
 
+import CreateOAuthModal from './CreateOAuthModal';
 import { strRight } from '../../../../../../lib/utils/stringUtils';
 import GenericModal from '../../../../../components/GenericModal';
 import { useEditableSettingsGroupSections } from '../../../EditableSettingsContext';
 import SettingsGroupPage from '../../SettingsGroupPage';
 import SettingsSection from '../../SettingsSection';
-import CreateOAuthModal from './CreateOAuthModal';
 
 type OAuthGroupPageProps = ISetting & {
 	onClickBack?: () => void;

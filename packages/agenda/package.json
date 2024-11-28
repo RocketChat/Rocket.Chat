@@ -6,7 +6,7 @@
 	"dependencies": {
 		"cron": "~1.8.2",
 		"date.js": "~0.3.3",
-		"debug": "~4.1.1",
+		"debug": "~4.3.7",
 		"human-interval": "^2.0.1",
 		"moment-timezone": "~0.5.46",
 		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"

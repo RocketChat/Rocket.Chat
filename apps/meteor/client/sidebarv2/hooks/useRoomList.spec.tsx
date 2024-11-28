@@ -3,9 +3,9 @@ import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
 import React from 'react';
 
+import { useRoomList } from './useRoomList';
 import { createFakeRoom, createFakeSubscription, createFakeUser } from '../../../tests/mocks/data';
 import { VideoConfContext } from '../../contexts/VideoConfContext';
-import { useRoomList } from './useRoomList';
 
 const user = createFakeUser({
 	active: true,
@@ -13,43 +13,53 @@ const user = createFakeUser({
 	type: 'user',
 });
 
-const unreadRooms = [
-	{ ...createFakeSubscription({ t: 'c', unread: 1 }), ...createFakeRoom({ t: 'c' }) },
-	{ ...createFakeSubscription({ t: 'c', unread: 1 }), ...createFakeRoom({ t: 'c' }) },
-	{ ...createFakeSubscription({ t: 'c', unread: 1 }), ...createFakeRoom({ t: 'c' }) },
-	{ ...createFakeSubscription({ t: 'c', unread: 1 }), ...createFakeRoom({ t: 'c' }) },
+const emptyUnread = {
+	userMentions: 0,
+	groupMentions: 0,
+	unread: 0,
+	tunread: undefined,
+	tunreadUser: undefined,
+	tunreadGroup: undefined,
+	alert: false,
+};
+
+const unreadChannels = [
+	{ ...createFakeSubscription({ t: 'c', tunread: ['1'] }), ...createFakeRoom({ t: 'c' }) },
+	{ ...createFakeSubscription({ t: 'c', tunread: ['1'] }), ...createFakeRoom({ t: 'c' }) },
+	{ ...createFakeSubscription({ t: 'c', tunreadUser: ['1'] }), ...createFakeRoom({ t: 'c' }) },
+	{ ...createFakeSubscription({ t: 'c', tunreadUser: ['1'] }), ...createFakeRoom({ t: 'c' }) },
 ];
 
 const favoriteRooms = [
-	{ ...createFakeSubscription({ t: 'c', f: true, unread: undefined }), ...createFakeRoom({ t: 'c' }) },
-	{ ...createFakeSubscription({ t: 'c', f: true, unread: undefined }), ...createFakeRoom({ t: 'c' }) },
-	{ ...createFakeSubscription({ t: 'c', f: true, unread: undefined }), ...createFakeRoom({ t: 'c' }) },
+	{ ...createFakeSubscription({ t: 'c', f: true, ...emptyUnread }), ...createFakeRoom({ t: 'c' }) },
+	{ ...createFakeSubscription({ t: 'c', f: true, ...emptyUnread }), ...createFakeRoom({ t: 'c' }) },
+	{ ...createFakeSubscription({ t: 'c', f: true, ...emptyUnread }), ...createFakeRoom({ t: 'c' }) },
 ];
 
 const teams = [
-	{ ...createFakeSubscription({ unread: undefined }), ...createFakeRoom({ teamMain: true }) },
-	{ ...createFakeSubscription({ unread: undefined }), ...createFakeRoom({ teamMain: true }) },
-	{ ...createFakeSubscription({ unread: undefined }), ...createFakeRoom({ teamMain: true }) },
-	{ ...createFakeSubscription({ unread: undefined }), ...createFakeRoom({ teamMain: true }) },
-	{ ...createFakeSubscription({ unread: undefined }), ...createFakeRoom({ teamMain: true }) },
+	{ ...createFakeSubscription({ ...emptyUnread }), ...createFakeRoom({ teamMain: true }) },
+	{ ...createFakeSubscription({ ...emptyUnread }), ...createFakeRoom({ teamMain: true }) },
+	{ ...createFakeSubscription({ ...emptyUnread }), ...createFakeRoom({ teamMain: true }) },
+	{ ...createFakeSubscription({ ...emptyUnread }), ...createFakeRoom({ teamMain: true }) },
+	{ ...createFakeSubscription({ ...emptyUnread }), ...createFakeRoom({ teamMain: true }) },
 ];
 
 const discussionRooms = [
-	{ ...createFakeSubscription({ unread: undefined }), ...createFakeRoom({ prid: '123' }) },
-	{ ...createFakeSubscription({ unread: undefined }), ...createFakeRoom({ prid: '124' }) },
-	{ ...createFakeSubscription({ unread: undefined }), ...createFakeRoom({ prid: '125' }) },
-	{ ...createFakeSubscription({ unread: undefined }), ...createFakeRoom({ prid: '126' }) },
-	{ ...createFakeSubscription({ unread: undefined }), ...createFakeRoom({ prid: '127' }) },
+	{ ...createFakeSubscription({ ...emptyUnread }), ...createFakeRoom({ prid: '123' }) },
+	{ ...createFakeSubscription({ ...emptyUnread }), ...createFakeRoom({ prid: '124' }) },
+	{ ...createFakeSubscription({ ...emptyUnread }), ...createFakeRoom({ prid: '125' }) },
+	{ ...createFakeSubscription({ ...emptyUnread }), ...createFakeRoom({ prid: '126' }) },
+	{ ...createFakeSubscription({ ...emptyUnread }), ...createFakeRoom({ prid: '127' }) },
 ];
 
 const directRooms = [
-	{ ...createFakeSubscription({ t: 'd', unread: undefined }), ...createFakeRoom({ t: 'd' }) },
-	{ ...createFakeSubscription({ t: 'd', unread: undefined }), ...createFakeRoom({ t: 'd' }) },
-	{ ...createFakeSubscription({ t: 'd', unread: undefined }), ...createFakeRoom({ t: 'd' }) },
-	{ ...createFakeSubscription({ t: 'd', unread: undefined }), ...createFakeRoom({ t: 'd' }) },
+	{ ...createFakeSubscription({ t: 'd', ...emptyUnread }), ...createFakeRoom({ t: 'd' }) },
+	{ ...createFakeSubscription({ t: 'd', ...emptyUnread }), ...createFakeRoom({ t: 'd' }) },
+	{ ...createFakeSubscription({ t: 'd', ...emptyUnread }), ...createFakeRoom({ t: 'd' }) },
+	{ ...createFakeSubscription({ t: 'd', ...emptyUnread }), ...createFakeRoom({ t: 'd' }) },
 ];
 
-const fakeRooms = [...unreadRooms, ...favoriteRooms, ...teams, ...discussionRooms, ...directRooms];
+const fakeRooms = [...unreadChannels, ...favoriteRooms, ...teams, ...discussionRooms, ...directRooms];
 
 const emptyArr: any[] = [];
 
@@ -228,7 +238,7 @@ it('should return "Unread" group with the correct items if sidebarShowUnread is 
 	});
 	const unreadIndex = result.current.groupsList.indexOf('Unread');
 	expect(result.current.groupsList).toContain('Unread');
-	expect(result.current.groupsCount[unreadIndex]).toEqual(unreadRooms.length);
+	expect(result.current.groupsCount[unreadIndex]).toEqual(unreadChannels.length);
 });
 
 it('should not include unread room in unread group if hideUnreadStatus is enabled', async () => {
@@ -246,6 +256,58 @@ it('should not include unread room in unread group if hideUnreadStatus is enable
 	const unreadIndex = result.current.groupsList.indexOf('Unread');
 	const roomListUnread = result.current.roomList.filter((room) => room.unread);
 
-	expect(result.current.groupsCount[unreadIndex]).toEqual(unreadRooms.length);
-	expect(roomListUnread.length).not.toEqual(unreadRooms.length);
+	expect(result.current.groupsCount[unreadIndex]).toEqual(unreadChannels.length);
+	expect(roomListUnread.length).not.toEqual(unreadChannels.length);
+});
+
+it('should accumulate unread data into `groupedUnreadInfo` when group is collapsed', async () => {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: ['Channels'] }), {
+		legacyRoot: true,
+		wrapper: getWrapperSettings({ sidebarGroupByType: true }).build(),
+	});
+
+	const channelsIndex = result.current.groupsList.indexOf('Channels');
+	const { groupMentions, unread, userMentions, tunread, tunreadUser } = result.current.groupedUnreadInfo[channelsIndex];
+
+	expect(groupMentions).toEqual(fakeRooms.reduce((acc, cv) => acc + cv.groupMentions, 0));
+	expect(unread).toEqual(fakeRooms.reduce((acc, cv) => acc + cv.unread, 0));
+	expect(userMentions).toEqual(fakeRooms.reduce((acc, cv) => acc + cv.userMentions, 0));
+	expect(tunread).toEqual(fakeRooms.reduce((acc, cv) => [...acc, ...(cv.tunread || [])], [] as string[]));
+	expect(tunreadUser).toEqual(fakeRooms.reduce((acc, cv) => [...acc, ...(cv.tunreadUser || [])], [] as string[]));
+});
+
+it('should add to unread group when has thread unread, even if alert is false', async () => {
+	const fakeRoom = {
+		...createFakeSubscription({ ...emptyUnread, tunread: ['1'], alert: false }),
+	} as unknown as SubscriptionWithRoom;
+
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		legacyRoot: true,
+		wrapper: getWrapperSettings({
+			sidebarGroupByType: true,
+			sidebarShowUnread: true,
+			fakeRoom,
+		}).build(),
+	});
+
+	const unreadGroup = result.current.roomList.splice(0, result.current.groupsCount[0]);
+	expect(unreadGroup.find((room) => room.name === fakeRoom.name)).toBeDefined();
+});
+
+it('should not add room to unread group if thread unread is an empty array', async () => {
+	const fakeRoom = {
+		...createFakeSubscription({ ...emptyUnread, tunread: [] }),
+	} as unknown as SubscriptionWithRoom;
+
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		legacyRoot: true,
+		wrapper: getWrapperSettings({
+			sidebarGroupByType: true,
+			sidebarShowUnread: true,
+			fakeRoom,
+		}).build(),
+	});
+
+	const unreadGroup = result.current.roomList.splice(0, result.current.groupsCount[0]);
+	expect(unreadGroup.find((room) => room.name === fakeRoom.name)).toBeUndefined();
 });

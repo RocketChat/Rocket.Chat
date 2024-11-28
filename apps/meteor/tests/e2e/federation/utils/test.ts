@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import type { APIResponse } from '@playwright/test';
 import { test as baseTest } from '@playwright/test';
 

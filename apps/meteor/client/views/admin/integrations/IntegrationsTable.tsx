@@ -5,6 +5,7 @@ import { useEndpoint, useRoute, useTranslation, useLayout } from '@rocket.chat/u
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useCallback, useState } from 'react';
 
+import IntegrationRow from './IntegrationRow';
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
@@ -16,7 +17,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import IntegrationRow from './IntegrationRow';
 
 const IntegrationsTable = ({ type }: { type?: string }) => {
 	const t = useTranslation();

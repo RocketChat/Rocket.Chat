@@ -36,7 +36,7 @@ const ForwardChatModal = ({
 }): ReactElement => {
 	const { t } = useTranslation();
 	const getUserData = useEndpoint('GET', '/v1/users.info');
-	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle') as boolean;
+	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle', true);
 
 	const {
 		getValues,

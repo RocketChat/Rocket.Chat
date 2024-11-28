@@ -11,7 +11,7 @@ export const useFileUploadAction = (
 	handleFiles: (filesList: File[], resetFileInput?: () => void) => void,
 ): GenericMenuItemProps => {
 	const t = useTranslation();
-	const fileUploadEnabled = useSetting<boolean>('FileUpload_Enabled');
+	const fileUploadEnabled = useSetting('FileUpload_Enabled', true);
 	const fileInputRef = useFileInput(fileInputProps);
 
 	useEffect(() => {

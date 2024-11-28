@@ -7,6 +7,8 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import React, { useEffect, useMemo, useState } from 'react';
 
+import DepartmentField from './DepartmentField';
+import VisitorClientInfo from './VisitorClientInfo';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../../components/InfoPanel';
 import MarkdownText from '../../../../../components/MarkdownText';
@@ -18,8 +20,6 @@ import { AgentField, SlaField, ContactField, SourceField } from '../../component
 import PriorityField from '../../components/PriorityField';
 import { useOmnichannelRoomInfo } from '../../hooks/useOmnichannelRoomInfo';
 import { formatQueuedAt } from '../../utils/formatQueuedAt';
-import DepartmentField from './DepartmentField';
-import VisitorClientInfo from './VisitorClientInfo';
 
 type ChatInfoProps = {
 	id: string;

@@ -1,9 +1,9 @@
 import { applyLicense } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
 
+import { syncCloudData } from './syncWorkspace/syncCloudData';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
-import { syncCloudData } from './syncWorkspace/syncCloudData';
 
 type SaveRegistrationDataDTO = {
 	workspaceId: string;

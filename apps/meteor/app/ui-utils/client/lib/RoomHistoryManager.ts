@@ -11,7 +11,7 @@ import { onClientMessageReceived } from '../../../../client/lib/onClientMessageR
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { waitForElement } from '../../../../client/lib/utils/waitForElement';
-import { ChatMessage, ChatSubscription } from '../../../models/client';
+import { Messages, Subscriptions } from '../../../models/client';
 import { getUserPreference } from '../../../utils/client';
 
 export async function upsertMessage(
@@ -22,7 +22,7 @@ export async function upsertMessage(
 		msg: IMessage & { ignored?: boolean };
 		subscription?: ISubscription;
 	},
-	collection: MinimongoCollection<IMessage> = ChatMessage,
+	collection: MinimongoCollection<IMessage> = Messages,
 ) {
 	const userId = msg.u?._id;
 
@@ -42,7 +42,7 @@ export async function upsertMessage(
 
 export function upsertMessageBulk(
 	{ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription },
-	collection: MinimongoCollection<IMessage> = ChatMessage,
+	collection: MinimongoCollection<IMessage> = Messages,
 ) {
 	const { queries } = collection;
 	collection.queries = [];
@@ -135,7 +135,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 		let ls = undefined;
 
-		const subscription = ChatSubscription.findOne({ rid });
+		const subscription = Subscriptions.findOne({ rid });
 		if (subscription) {
 			({ ls } = subscription);
 		}
@@ -214,9 +214,9 @@ class RoomHistoryManagerClass extends Emitter {
 
 		room.isLoading.set(true);
 
-		const lastMessage = ChatMessage.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: -1 } });
+		const lastMessage = Messages.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: -1 } });
 
-		const subscription = ChatSubscription.findOne({ rid });
+		const subscription = Subscriptions.findOne({ rid });
 
 		if (lastMessage?.ts) {
 			const { ts } = lastMessage;
@@ -264,7 +264,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 	public async clear(rid: IRoom['_id']) {
 		const room = this.getRoom(rid);
-		ChatMessage.remove({ rid });
+		Messages.remove({ rid });
 		room.isLoading.set(true);
 		room.hasMore.set(true);
 		room.hasMoreNext.set(false);
@@ -277,7 +277,7 @@ class RoomHistoryManagerClass extends Emitter {
 			return;
 		}
 
-		const messageAlreadyLoaded = Boolean(ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } }));
+		const messageAlreadyLoaded = Boolean(Messages.findOne({ _id: message._id, _hidden: { $ne: true } }));
 
 		if (messageAlreadyLoaded) {
 			return;
@@ -286,7 +286,7 @@ class RoomHistoryManagerClass extends Emitter {
 		const room = this.getRoom(message.rid);
 		void this.clear(message.rid);
 
-		const subscription = ChatSubscription.findOne({ rid: message.rid });
+		const subscription = Subscriptions.findOne({ rid: message.rid });
 
 		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit);
 

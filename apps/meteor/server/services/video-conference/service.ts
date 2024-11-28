@@ -42,8 +42,8 @@ import { createRoom } from '../../../app/lib/server/functions/createRoom';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { metrics } from '../../../app/metrics/server/lib/metrics';
-import PushNotification from '../../../app/push-notifications/server/lib/PushNotification';
 import { Push } from '../../../app/push/server/push';
+import PushNotification from '../../../app/push-notifications/server/lib/PushNotification';
 import { settings } from '../../../app/settings/server';
 import { updateCounter } from '../../../app/statistics/server/functions/updateStatsCounter';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
@@ -1097,8 +1097,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
-		const name = settings.get<string>('VideoConf_Persistent_Chat_Discussion_Name') || i18n.t('Conference Call Chat History');
-		const displayName = `${name} - ${new Date().toISOString().substring(0, 10)}`;
+		const name = settings.get<string>('VideoConf_Persistent_Chat_Discussion_Name') || i18n.t('[date] Video Call Chat');
+		let displayName;
+		const date = new Date().toISOString().substring(0, 10);
+
+		if (name.includes('[date]')) {
+			displayName = name.replace('[date]', date);
+		} else {
+			displayName = `${date} ${name}`;
+		}
 
 		await this.createDiscussionForConference(displayName, call, createdBy);
 	}
