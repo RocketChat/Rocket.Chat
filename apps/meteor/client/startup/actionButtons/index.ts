@@ -1,4 +1,3 @@
-import './jumpToMessage';
 import './jumpToPinMessage';
 import './jumpToSearchMessage';
 import './jumpToStarMessage';

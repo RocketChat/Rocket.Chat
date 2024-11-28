@@ -10,6 +10,7 @@ import React, { memo, useMemo, useRef } from 'react';
 
 import MessageActionMenu from './MessageActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
+import { useJumpToMessageAction } from './useJumpToMessageAction';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
 import { usePermalinkStar } from './usePermalinkStar';
 import { useStarMessageAction } from './useStarMessageAction';
@@ -91,6 +92,7 @@ const MessageToolbar = ({
 	// TODO: move this to another place
 	useWebDAVMessageAction();
 	useNewDiscussionMessageAction();
+	useJumpToMessageAction(message);
 	useStarMessageAction(message, { room, user });
 	useUnstarMessageAction(message, { room, user });
 	usePermalinkStar(message, { subscription, user });
