@@ -3,18 +3,9 @@ import type { ReactNode } from 'react';
 import React from 'react';
 
 type WorkspaceCardSectionProps = {
-	title: string;
-	body?: ReactNode;
-	isHeader?: boolean;
+	children: ReactNode;
 };
 
-const WorkspaceCardSection = ({ title, body }: WorkspaceCardSectionProps) => {
-	return (
-		<Box fontScale='p2'>
-			<Box fontScale='p2b'>{title}</Box>
-			{body && body}
-		</Box>
-	);
-};
+const WorkspaceCardSection = ({ children }: WorkspaceCardSectionProps) => <Box fontScale='p2'>{children}</Box>;
 
 export default WorkspaceCardSection;
