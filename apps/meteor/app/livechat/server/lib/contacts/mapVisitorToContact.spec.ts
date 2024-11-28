@@ -53,6 +53,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 				},
 			],
 			customFields: undefined,
+			shouldValidateCustomFields: false,
 			contactManager: 'manager1',
 		},
 	],
@@ -87,6 +88,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 				},
 			],
 			customFields: undefined,
+			shouldValidateCustomFields: false,
 			contactManager: undefined,
 		},
 	],
@@ -130,6 +132,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 				},
 			],
 			customFields: undefined,
+			shouldValidateCustomFields: false,
 			lastChat: {
 				_id: 'last-chat-id',
 				ts: testDate,
@@ -175,6 +178,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 			customFields: {
 				customFieldId: 'customFieldValue',
 			},
+			shouldValidateCustomFields: false,
 			contactManager: undefined,
 		},
 	],
