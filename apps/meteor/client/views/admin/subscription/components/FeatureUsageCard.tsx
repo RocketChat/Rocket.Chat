@@ -20,7 +20,7 @@ const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps): ReactEleme
 	const { title, infoText, upgradeButton, isHorizontallyCenteredOnly } = card;
 
 	return (
-		<Card height='full' style={{ minHeight: '244px' }}>
+		<Card height='full'>
 			<CardTitle>
 				{title} {infoText && <InfoTextIconModal title={title} infoText={infoText} />}
 			</CardTitle>
