@@ -8,10 +8,10 @@ type WorkspaceCardSectionProps = {
 	isHeader?: boolean;
 };
 
-const WorkspaceCardSection = ({ title, body, isHeader }: WorkspaceCardSectionProps) => {
+const WorkspaceCardSection = ({ title, body }: WorkspaceCardSectionProps) => {
 	return (
 		<Box fontScale='p2'>
-			<Box fontScale={isHeader ? 'h4' : 'p2b'}>{title}</Box>
+			<Box fontScale='p2b'>{title}</Box>
 			{body && body}
 		</Box>
 	);

@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import WorkspaceCardSection from '../components/WorkspaceCardSection';
+import WorkspaceCardSectionWithHeader from '../components/WorkspaceCardSectionWithHeader';
 import WorkspaceCardTextSeparator from '../components/WorkspaceCardTextSeparator';
 
 type MessagesRoomsCardProps = {
@@ -16,7 +16,7 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 
 	return (
 		<Card height='full'>
-			<WorkspaceCardSection
+			<WorkspaceCardSectionWithHeader
 				title={t('Total_rooms')}
 				body={
 					<>
@@ -28,10 +28,10 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 						<WorkspaceCardTextSeparator label={t('Total')} value={statistics.totalRooms} />
 					</>
 				}
-				isHeader
+				titleToContentGap={20}
 			/>
 
-			<WorkspaceCardSection
+			<WorkspaceCardSectionWithHeader
 				title={t('Messages')}
 				body={
 					<>
@@ -55,7 +55,7 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 						<WorkspaceCardTextSeparator label={t('Total')} value={statistics.totalMessages} />
 					</>
 				}
-				isHeader
+				titleToContentGap={20}
 			/>
 		</Card>
 	);
