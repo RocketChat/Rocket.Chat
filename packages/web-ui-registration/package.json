@@ -44,7 +44,7 @@
 		"react-i18next": "~13.2.2",
 		"storybook": "^8.4.4",
 		"storybook-dark-mode": "^4.0.2",
-		"typescript": "~5.6.3"
+		"typescript": "~5.7.2"
 	},
 	"peerDependencies": {
 		"@rocket.chat/layout": "*",
