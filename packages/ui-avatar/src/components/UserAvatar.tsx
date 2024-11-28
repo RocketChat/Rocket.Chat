@@ -13,7 +13,6 @@ type UserIdProp = {
 	userId: string;
 	username?: never;
 };
-
 type UserAvatarProps = Omit<BaseAvatarProps, 'url' | 'title'> & {
 	etag?: string;
 	url?: string;
@@ -27,9 +26,13 @@ const UserAvatar = ({ username, userId, etag, ...rest }: UserAvatarProps) => {
 		const { url = getUserAvatarPath({ userId, etag }), ...props } = rest;
 		return <BaseAvatar url={url} {...props} />;
 	}
+	if (username) {
+		const { url = getUserAvatarPath({ username, etag }), ...props } = rest;
+		return <BaseAvatar url={url} data-username={username} title={username} {...props} />;
+	}
 
-	const { url = getUserAvatarPath({ username, etag }), ...props } = rest;
-	return <BaseAvatar url={url} data-username={username} title={username} {...props} />;
+	// TODO: We should throw an Error after fixing the issue in Composer passing the username undefined
+	return null;
 };
 
 export default memo(UserAvatar);
