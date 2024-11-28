@@ -25,7 +25,7 @@ export class OmnichannelContacts {
 	}
 
 	findRowByName(contactName: string) {
-		return this.page.locator(`td >> text="${contactName}"`);
+		return this.page.locator('td', { hasText: new RegExp(`^${contactName}$`) });
 	}
 
 	get toastSuccess(): Locator {
