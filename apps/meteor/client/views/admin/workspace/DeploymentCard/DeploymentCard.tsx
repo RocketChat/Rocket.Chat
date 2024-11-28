@@ -74,11 +74,9 @@ const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, in
 					</WorkspaceCardSection>
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('Commit_details')} />
-						<>
-							{t('github_HEAD')}: ({commit.hash ? commit.hash.slice(0, 9) : ''}) <br />
-							{t('Branch')}: {commit.branch} <br />
-							{commit.subject}
-						</>
+						{t('github_HEAD')}: ({commit.hash ? commit.hash.slice(0, 9) : ''}) <br />
+						{t('Branch')}: {commit.branch} <br />
+						{commit.subject}
 					</WorkspaceCardSection>
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('PID')} />
