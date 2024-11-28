@@ -262,8 +262,6 @@ export class ContactMerger {
 			customFieldsPerName.get(customField.type)?.push(customField);
 		}
 
-		const customFieldConflicts: CustomFieldAndValue[] = [];
-
 		for (const [key, customFields] of customFieldsPerName) {
 			const fieldName = key.replace('customFields.', '');
 
@@ -274,8 +272,6 @@ export class ContactMerger {
 					dataToSet[key] = first.value;
 				}
 			}
-
-			customFieldConflicts.push(...customFields);
 		}
 
 		const allConflicts: ILivechatContactConflictingField[] =
@@ -284,7 +280,6 @@ export class ContactMerger {
 				: [
 						...newNames.map((name): ILivechatContactConflictingField => ({ field: 'name', value: name })),
 						...newManagers.map((manager): ILivechatContactConflictingField => ({ field: 'manager', value: manager as string })),
-						...customFieldConflicts.map(({ type, value }): ILivechatContactConflictingField => ({ field: type, value })),
 					];
 
 		// Phones, Emails and Channels are simply added to the contact's existing list

@@ -66,6 +66,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{ key: { 'u._id': 1, 'open': 1, 'department': 1 } },
 			{ key: { rid: 1, ls: 1 } },
 			{ key: { 'u._id': 1, 'autotranslate': 1 } },
+			{ key: { 'v._id': 1, 'open': 1 } },
 		];
 	}
 
@@ -341,6 +342,15 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options || {});
 	}
 
+	findOpenByVisitorIds(visitorIds: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		const query = {
+			'open': true,
+			'v._id': { $in: visitorIds },
+		};
+
+		return this.find(query, options || {});
+	}
+
 	findByRoomIdAndNotAlertOrOpenExcludingUserIds(
 		{
 			roomId,
@@ -588,6 +598,19 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			$set: {
 				name,
 				fname,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	updateNameAndFnameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document> {
+		const query = { 'v._id': { $in: visitorIds } };
+
+		const update = {
+			$set: {
+				name,
+				fname: name,
 			},
 		};
 
