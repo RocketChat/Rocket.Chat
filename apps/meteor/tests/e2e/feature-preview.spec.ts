@@ -159,7 +159,6 @@ test.describe.serial('feature preview', () => {
 
 			const collapser = poHomeChannel.sidebar.getCollapseGroupByName('Channels');
 			await collapser.click();
-
 			await expect(poHomeChannel.sidebar.getItemUnreadBadge(collapser)).toBeVisible();
 		});
 	});
@@ -167,7 +166,7 @@ test.describe.serial('feature preview', () => {
 	test.describe('Sidepanel', () => {
 		test.beforeEach(async ({ api }) => {
 			await setUserPreferences(api, {
-				sidebarViewMode: 'Condensed',
+				sidebarViewMode: 'Medium',
 				featuresPreview: [
 					{
 						name: 'newNavigation',
@@ -184,7 +183,7 @@ test.describe.serial('feature preview', () => {
 
 		test.afterEach(async ({ api }) => {
 			await setUserPreferences(api, {
-				sidebarViewMode: 'Condensed',
+				sidebarViewMode: 'Medium',
 				featuresPreview: [
 					{
 						name: 'newNavigation',
