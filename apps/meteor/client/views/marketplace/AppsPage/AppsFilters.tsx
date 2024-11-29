@@ -13,10 +13,7 @@ import type { RadioDropDownGroup, RadioDropDownOnSelected } from '../definitions
 
 type AppsFiltersProps = {
 	text: string;
-	setText: React.Dispatch<React.SetStateAction<string>> & {
-		flush: () => void;
-		cancel: () => void;
-	};
+	setText: (text: string) => void;
 	freePaidFilterStructure: RadioDropDownGroup;
 	freePaidFilterOnSelected: RadioDropDownOnSelected;
 	categories: CategoryDropDownListProps['categories'];

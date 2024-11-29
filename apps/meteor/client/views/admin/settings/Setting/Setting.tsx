@@ -9,7 +9,8 @@ import { useTranslation } from 'react-i18next';
 
 import MemoizedSetting from './MemoizedSetting';
 import MarkdownText from '../../../../components/MarkdownText';
-import { useEditableSetting, useEditableSettingsDispatch, useIsEnterprise } from '../../EditableSettingsContext';
+import { useEditableSetting, useEditableSettingsDispatch } from '../../EditableSettingsContext';
+import { useHasSettingModule } from '../hooks/useHasSettingModule';
 
 type SettingProps = {
 	className?: string;
@@ -20,7 +21,7 @@ type SettingProps = {
 function Setting({ className = undefined, settingId, sectionChanged }: SettingProps): ReactElement {
 	const setting = useEditableSetting(settingId);
 	const persistedSetting = useSettingStructure(settingId);
-	const isEnterprise = useIsEnterprise();
+	const hasSettingModule = useHasSettingModule(setting);
 
 	if (!setting || !persistedSetting) {
 		throw new Error(`Setting ${settingId} not found`);
@@ -105,12 +106,13 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 			) : undefined,
 		[i18n, i18nDescription, t],
 	);
+
 	const callout = useMemo(
 		() => alert && <span dangerouslySetInnerHTML={{ __html: i18n.exists(alert) ? t(alert) : alert }} />,
 		[alert, i18n, t],
 	);
 
-	const shouldDisableEnterprise = setting.enterprise && !isEnterprise;
+	const shouldDisableEnterprise = setting.enterprise && !hasSettingModule;
 
 	const PRICING_URL = 'https://go.rocket.chat/i/see-paid-plan-customize-homepage';
 
