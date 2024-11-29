@@ -16,7 +16,7 @@ export class Sidepanel {
 	}
 
 	getItemByName(name: string): Locator {
-		return this.sidepanelList.getByRole('link', { name, exact: true });
+		return this.sidepanelList.getByRole('link').filter({ hasText: name });
 	}
 
 	getExtendedItem(name: string, subtitle?: string): Locator {

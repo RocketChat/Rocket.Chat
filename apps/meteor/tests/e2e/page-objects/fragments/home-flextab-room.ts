@@ -131,9 +131,8 @@ export class HomeFlextabRoom {
 		return this.page.getByRole('dialog').locator('label', { has: this.page.getByRole('checkbox', { name: 'Discussions' }) });
 	}
 
-	async toggleSidepanelWithChannels() {
-		await this.advancedSettingsAccordion.click();
+	async toggleSidepanelItems() {
 		await this.checkboxChannels.click();
-		await this.btnSave.click();
+		await this.checkboxDiscussions.click();
 	}
 }
