@@ -159,7 +159,8 @@ const MailExportForm = ({ formId, rid, onCancel, exportOptions }: MailExportForm
 													return undefined;
 												}
 
-												if (additionalEmails !== '' && validateEmail(additionalEmails)) {
+												const emails = additionalEmails?.split(',').map((email) => email.trim());
+												if (additionalEmails !== '' && emails.every((email) => validateEmail(email))) {
 													return undefined;
 												}
 
