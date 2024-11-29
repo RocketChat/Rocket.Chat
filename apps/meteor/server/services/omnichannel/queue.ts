@@ -15,6 +15,8 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 
 	private queues: (string | undefined)[] = [];
 
+	private lock = Promise.resolve();
+
 	private delay() {
 		const timeout = settings.get<number>('Omnichannel_queue_delay_timeout') ?? 5;
 		return timeout < 1 ? DEFAULT_RACE_TIMEOUT : timeout * 1000;
@@ -25,16 +27,20 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	}
 
 	async start() {
-		if (this.running) {
-			return;
-		}
+		this.lock = this.lock.then(async () => {
+			if (this.running) {
+				return;
+			}
 
-		const activeQueues = await this.getActiveQueues();
-		queueLogger.debug(`Active queues: ${activeQueues.length}`);
-		this.running = true;
+			const activeQueues = await this.getActiveQueues();
+			queueLogger.debug(`Active queues: ${activeQueues.length}`);
+			this.running = true;
 
-		queueLogger.info('Service started');
-		return this.execute();
+			queueLogger.info('Service started');
+			await this.execute();
+		});
+
+		return this.lock;
 	}
 
 	async stop() {
@@ -45,6 +51,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		await LivechatInquiry.unlockAll();
 
 		this.running = false;
+		this.lock = Promise.resolve();
 		queueLogger.info('Service stopped');
 	}
 
