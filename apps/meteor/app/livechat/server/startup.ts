@@ -22,11 +22,7 @@ import './roomAccessValidator.internalService';
 const logger = new Logger('LivechatStartup');
 
 Meteor.startup(async () => {
-	roomCoordinator.setRoomFind('l', async (_id) => {
-		const room = await LivechatRooms.findOneById(_id);
-
-		return (await maybeMigrateLivechatRoom(room)) ?? undefined;
-	});
+	roomCoordinator.setRoomFind('l', async (id) => maybeMigrateLivechatRoom(await LivechatRooms.findOneById(id)));
 
 	beforeLeaveRoomCallback.add(
 		(user, room) => {
