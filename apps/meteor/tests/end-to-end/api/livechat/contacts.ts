@@ -788,7 +788,7 @@ describe('LIVECHAT - contacts', () => {
 		it('should return an error if contactId and visitor association is missing', async () => {
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials);
 
-			expectInvalidParams(res, ["must have required property 'contactId'"]);
+			expectInvalidParams(res, ["must have required property 'contactId' [invalid-params]"]);
 		});
 
 		describe('Contact Channels', () => {
