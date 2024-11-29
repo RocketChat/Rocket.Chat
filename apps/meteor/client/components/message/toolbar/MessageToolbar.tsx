@@ -11,6 +11,7 @@ import React, { memo, useMemo, useRef } from 'react';
 import MessageActionMenu from './MessageActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
 import { useJumpToSearchMessageAction } from './useJumpToSearchMessageAction';
+import { useJumpToPinMessageAction } from './useJumpToPinMessageAction';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
 import { usePermalinkStar } from './usePermalinkStar';
 import { useStarMessageAction } from './useStarMessageAction';
@@ -93,6 +94,7 @@ const MessageToolbar = ({
 	useWebDAVMessageAction();
 	useNewDiscussionMessageAction();
 	useJumpToSearchMessageAction(message);
+	useJumpToPinMessageAction(message, { subscription });
 	useStarMessageAction(message, { room, user });
 	useUnstarMessageAction(message, { room, user });
 	usePermalinkStar(message, { subscription, user });
