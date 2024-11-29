@@ -1362,28 +1362,16 @@ export const ContactVisitorAssociationSchema = {
 };
 
 const GETOmnichannelContactsSchema = {
-	oneOf: [
-		{
-			type: 'object',
-			properties: {
-				contactId: {
-					type: 'string',
-					nullable: false,
-					isNotEmpty: true,
-				},
-			},
-			required: ['contactId'],
-			additionalProperties: false,
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+			nullable: false,
+			isNotEmpty: true,
 		},
-		{
-			type: 'object',
-			properties: {
-				visitor: ContactVisitorAssociationSchema,
-			},
-			required: ['visitor'],
-			additionalProperties: false,
-		},
-	],
+	},
+	required: ['contactId'],
+	additionalProperties: false,
 };
 
 export const isGETOmnichannelContactsProps = ajv.compile<GETOmnichannelContactsProps>(GETOmnichannelContactsSchema);
