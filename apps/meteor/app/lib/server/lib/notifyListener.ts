@@ -21,9 +21,11 @@ import type {
 	IMessage,
 	SettingValue,
 	MessageTypesValues,
+	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import {
 	Rooms,
+	LivechatRooms,
 	Permissions,
 	Settings,
 	PbxEvents,
@@ -84,6 +86,16 @@ export const notifyOnRoomChangedByUsernamesOrUids = withDbWatcherCheck(
 		for await (const item of items) {
 			void api.broadcast('watch.rooms', { clientAction, room: item });
 		}
+	},
+);
+
+export const notifyOnRoomChangedByContactId = withDbWatcherCheck(
+	async <T extends ILivechatContact>(contactId: T['_id'], clientAction: ClientAction = 'updated'): Promise<void> => {
+		const cursor = LivechatRooms.findOpenByContactId(contactId);
+
+		void cursor.forEach((room) => {
+			void api.broadcast('watch.rooms', { clientAction, room });
+		});
 	},
 );
 
@@ -248,6 +260,20 @@ export const notifyOnLivechatInquiryChangedById = withDbWatcherCheck(
 		}
 
 		void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+	},
+);
+
+export const notifyOnLivechatInquiryChangedByVisitorIds = withDbWatcherCheck(
+	async (
+		visitorIds: ILivechatInquiryRecord['v']['_id'][],
+		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+		diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: Date; takenAt: Date }>,
+	): Promise<void> => {
+		const cursor = LivechatInquiry.findByVisitorIds(visitorIds);
+
+		void cursor.forEach((inquiry) => {
+			void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+		});
 	},
 );
 
@@ -546,6 +572,19 @@ export const notifyOnSubscriptionChangedByUserIdAndRoomType = withDbWatcherCheck
 		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
 	): Promise<void> => {
 		const cursor = Subscriptions.findByUserIdAndRoomType(uid, t, { projection: subscriptionFields });
+
+		void cursor.forEach((subscription) => {
+			void api.broadcast('watch.subscriptions', { clientAction, subscription });
+		});
+	},
+);
+
+export const notifyOnSubscriptionChangedByVisitorIds = withDbWatcherCheck(
+	async (
+		visitorIds: Exclude<ISubscription['v'], undefined>['_id'][],
+		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+	): Promise<void> => {
+		const cursor = Subscriptions.findOpenByVisitorIds(visitorIds, { projection: subscriptionFields });
 
 		void cursor.forEach((subscription) => {
 			void api.broadcast('watch.subscriptions', { clientAction, subscription });
