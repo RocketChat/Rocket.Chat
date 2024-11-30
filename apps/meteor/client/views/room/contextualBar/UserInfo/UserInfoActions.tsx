@@ -74,7 +74,7 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 		<ButtonGroup align='center' wrap>
 			{actions}
 		</ButtonGroup>
-		);
+	);
 };
 
 export default UserInfoActions;
