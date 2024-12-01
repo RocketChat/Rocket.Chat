@@ -71,6 +71,61 @@ describe('getUploadFormData', () => {
 		expect(result.fileBuffer).to.not.be.undefined;
 		expect(result.fileBuffer.toString()).to.equal('Hello, this is a test file!');
 	});
+	it('should parse a file upload with multiple additional fields', async () => {
+		const mockRequest = createMockRequest(
+			{
+				fieldName: 'fieldValue',
+				extraField1: 'extraValue1',
+				extraField2: 'extraValue2',
+			},
+			{
+				fieldname: 'fileField',
+				filename: 'test_with_fields.txt',
+				content: 'This file has additional fields!',
+				mimetype: 'text/plain',
+			},
+		);
+
+		const result = await getUploadFormData({ request: mockRequest as Request }, { field: 'fileField' });
+
+		expect(result).to.deep.include({
+			fieldname: 'fileField',
+			filename: 'test_with_fields.txt',
+			mimetype: 'text/plain',
+			fields: {
+				fieldName: 'fieldValue',
+				extraField1: 'extraValue1',
+				extraField2: 'extraValue2',
+			},
+		});
+
+		expect(result.fileBuffer).to.not.be.undefined;
+		expect(result.fileBuffer.toString()).to.equal('This file has additional fields!');
+	});
+
+	it('should handle a file upload when fileOptional is true', async () => {
+		const mockRequest = createMockRequest(
+			{ fieldName: 'fieldValue' },
+			{
+				fieldname: 'fileField',
+				filename: 'optional.txt',
+				content: 'This file is optional!',
+				mimetype: 'text/plain',
+			},
+		);
+
+		const result = await getUploadFormData({ request: mockRequest as Request }, { fileOptional: true });
+
+		expect(result).to.deep.include({
+			fieldname: 'fileField',
+			filename: 'optional.txt',
+			mimetype: 'text/plain',
+			fields: { fieldName: 'fieldValue' },
+		});
+
+		expect(result.fileBuffer).to.not.be.undefined;
+		expect(result.fileBuffer?.toString()).to.equal('This file is optional!');
+	});
 
 	it('should throw an error when no file is uploaded and fileOptional is false', async () => {
 		const mockRequest = createMockRequest({ fieldName: 'fieldValue' });
