@@ -6,7 +6,7 @@ import React, { useEffect, useRef } from 'react';
 
 import AccessibilityShortcut from './AccessibilityShortcut';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
-import NavBar from '../../../NavBarV2';
+import NavBar from '../../../navbar';
 import Sidebar from '../../../sidebarv2';
 
 const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElement => {
