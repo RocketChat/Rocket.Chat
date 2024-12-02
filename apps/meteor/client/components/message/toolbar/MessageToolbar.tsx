@@ -102,25 +102,20 @@ const MessageToolbar = ({
 	useJumpToMessageContextAction(message, {
 		id: 'jump-to-message',
 		order: 100,
-		context: ['mentions', 'threads', 'videoconf-threads'],
+		context: ['mentions', 'threads', 'videoconf-threads', 'message-mobile', 'search'],
 	});
 
 	useJumpToMessageContextAction(message, {
 		id: 'jump-to-pin-message',
 		order: 100,
 		hidden: !subscription,
-		context: ['pinned', 'message-mobile', 'direct'],
-	});
-	useJumpToMessageContextAction(message, {
-		id: 'jump-to-search-message',
-		order: 100,
-		context: ['search'],
+		context: ['pinned', 'direct'],
 	});
 	useJumpToMessageContextAction(message, {
 		id: 'jump-to-star-message',
 		hidden: !allowStarring || !subscription,
 		order: 100,
-		context: ['starred', 'threads', 'message-mobile', 'videoconf-threads'],
+		context: ['starred'],
 	});
 
 	const actionsQueryResult = useQuery({
