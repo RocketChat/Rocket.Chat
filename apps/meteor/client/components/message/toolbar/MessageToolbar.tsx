@@ -100,6 +100,12 @@ const MessageToolbar = ({
 	usePermalinkStar(message, { subscription, user });
 
 	useJumpToMessageContextAction(message, {
+		id: 'jump-to-message',
+		order: 100,
+		context: ['mentions', 'threads', 'videoconf-threads'],
+	});
+
+	useJumpToMessageContextAction(message, {
 		id: 'jump-to-pin-message',
 		order: 100,
 		hidden: !subscription,
