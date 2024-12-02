@@ -1,6 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useUserSubscription } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import React from 'react';
 
 import ParentRoom from './ParentRoom';
@@ -10,7 +9,7 @@ type ParentRoomWithDataProps = {
 	room: IRoom;
 };
 
-const ParentRoomWithData = ({ room }: ParentRoomWithDataProps): ReactElement => {
+const ParentRoomWithData = ({ room }: ParentRoomWithDataProps) => {
 	const { prid } = room;
 
 	if (!prid) {

@@ -4,11 +4,11 @@ import React, { useMemo } from 'react';
 import { HeaderTag, HeaderTagIcon } from '../../../components/Header';
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
 
-type FederatedRoomProps = {
+type FederatedRoomOriginServerProps = {
 	room: IRoomWithFederationOriginalName;
 };
 
-const FederatedRoomOriginServer = ({ room }: FederatedRoomProps): ReactElement | null => {
+const FederatedRoomOriginServer = ({ room }: FederatedRoomOriginServerProps): ReactElement | null => {
 	const originServerName = useMemo(() => room.federationOriginalName?.split(':')[1], [room.federationOriginalName]);
 	if (!originServerName) {
 		return null;

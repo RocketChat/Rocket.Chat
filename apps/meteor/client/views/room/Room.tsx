@@ -7,7 +7,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 import RoomE2EESetup from './E2EESetup/RoomE2EESetup';
 import Header from './Header';
-import { HeaderV2 } from './HeaderV2';
+import { HeaderV2 } from './Header';
 import MessageHighlightProvider from './MessageList/providers/MessageHighlightProvider';
 import RoomBody from './body/RoomBody';
 import RoomBodyV2 from './body/RoomBodyV2';
