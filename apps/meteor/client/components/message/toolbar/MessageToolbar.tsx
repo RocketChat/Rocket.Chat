@@ -3,16 +3,14 @@ import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket
 import { isThreadMessage, isRoomFederated, isVideoConfMessage, isE2EEMessage } from '@rocket.chat/core-typings';
 import { MessageToolbar as FuselageMessageToolbar, MessageToolbarItem } from '@rocket.chat/fuselage';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
-import { useUser, useSettings, useTranslation, useMethod, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+import { useUser, useSettings, useTranslation, useMethod, useLayoutHiddenActions, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useMemo, useRef } from 'react';
 
 import MessageActionMenu from './MessageActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
-import { useJumpToStarMessage } from './useJumpToStarMessage';
-import { useJumpToSearchMessageAction } from './useJumpToSearchMessageAction';
-import { useJumpToPinMessageAction } from './useJumpToPinMessageAction';
+import { useJumpToMessageContextAction } from './useJumpToMessageContextAction';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
 import { usePermalinkStar } from './usePermalinkStar';
 import { useStarMessageAction } from './useStarMessageAction';
@@ -90,16 +88,32 @@ const MessageToolbar = ({
 	const starsAction = useMessageActionAppsActionButtons(context, 'ai');
 
 	const { messageToolbox: hiddenActions } = useLayoutHiddenActions();
+	const allowStarring = useSetting('Message_AllowStarring');
 
 	// TODO: move this to another place
 	useWebDAVMessageAction();
 	useNewDiscussionMessageAction();
-	useJumpToStarMessage(message, { subscription, user });
-	useJumpToSearchMessageAction(message);
-	useJumpToPinMessageAction(message, { subscription });
 	useStarMessageAction(message, { room, user });
 	useUnstarMessageAction(message, { room, user });
 	usePermalinkStar(message, { subscription, user });
+
+	useJumpToMessageContextAction(message, {
+		id: 'jump-to-pin-message',
+		order: 100,
+		hidden: !subscription,
+		context: ['pinned', 'message-mobile', 'direct'],
+	});
+	useJumpToMessageContextAction(message, {
+		id: 'jump-to-search-message',
+		order: 100,
+		context: ['search'],
+	});
+	useJumpToMessageContextAction(message, {
+		id: 'jump-to-star-message',
+		hidden: !allowStarring || !subscription,
+		order: 100,
+		context: ['starred', 'threads', 'message-mobile', 'videoconf-threads'],
+	});
 
 	const actionsQueryResult = useQuery({
 		queryKey: roomsQueryKeys.messageActionsWithParameters(room._id, message),
