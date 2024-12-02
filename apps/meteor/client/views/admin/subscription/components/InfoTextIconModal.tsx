@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';
 
-export type InfoTextIconModalProps = {
+type InfoTextIconModalProps = {
 	title: string;
 	infoText: ReactNode;
 };

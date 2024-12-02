@@ -17,7 +17,13 @@ import {
 	takeInquiry,
 } from '../../../data/livechat/rooms';
 import { parseMethodResponse } from '../../../data/livechat/utils';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
+import {
+	removePermissionFromAllRoles,
+	restorePermissionToRoles,
+	updateEESetting,
+	updatePermission,
+	updateSetting,
+} from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
 import { createUser, login, deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -28,6 +34,7 @@ describe('LIVECHAT - inquiries', () => {
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 	});
 
 	describe('livechat/inquiries.list', () => {
