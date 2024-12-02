@@ -18,8 +18,8 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 
 	constructor() {
 		this.serviceStarter = new ServiceStarter(
-			() => this.#start(),
-			() => this.#stop(),
+			() => this._start(),
+			() => this._stop(),
 		);
 	}
 
@@ -36,7 +36,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		return this.running;
 	}
 
-	async #start() {
+	private async _start() {
 		if (this.running) {
 			return;
 		}
@@ -49,7 +49,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		await this.execute();
 	}
 
-	async #stop() {
+	private async _stop() {
 		if (!this.running) {
 			return;
 		}
@@ -57,6 +57,12 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		await LivechatInquiry.unlockAll();
 
 		this.running = false;
+
+		if (this.timeoutHandler !== null) {
+			clearTimeout(this.timeoutHandler);
+			this.timeoutHandler = null;
+		}
+
 		queueLogger.info('Service stopped');
 	}
 
@@ -66,10 +72,6 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 
 	async stop() {
 		await this.serviceStarter.stop();
-		if (this.timeoutHandler !== null) {
-			clearTimeout(this.timeoutHandler);
-		}
-		this.timeoutHandler = null;
 	}
 
 	private async getActiveQueues() {
