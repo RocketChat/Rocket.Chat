@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-client",
-	"version": "12.0.0",
+	"version": "13.0.0-rc.1",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -52,7 +52,7 @@
 		"react-dom": "^17.0.2",
 		"react-hook-form": "~7.45.4",
 		"storybook": "^8.4.4",
-		"typescript": "~5.6.3"
+		"typescript": "~5.7.2"
 	},
 	"peerDependencies": {
 		"@react-aria/toolbar": "*",
@@ -60,8 +60,8 @@
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
-		"@rocket.chat/ui-avatar": "8.0.0",
-		"@rocket.chat/ui-contexts": "12.0.0",
+		"@rocket.chat/ui-avatar": "9.0.0-rc.1",
+		"@rocket.chat/ui-contexts": "13.0.0-rc.1",
 		"react": "*",
 		"react-i18next": "*"
 	},
