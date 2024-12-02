@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import UserItem from './UserItem';
-import SidebarItemTemplateWithData from '../RoomList/SidebarItemTemplateWithData';
+import SidebarItemTemplateWithData from '../RoomList/SideBarItemTemplateWithData';
 
 type RowProps = {
 	item: ISubscription & IRoom;
