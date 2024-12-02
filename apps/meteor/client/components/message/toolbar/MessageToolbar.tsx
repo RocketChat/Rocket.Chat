@@ -13,6 +13,7 @@ import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
 import { useJumpToMessageContextAction } from './useJumpToMessageContextAction';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
 import { usePermalinkStar } from './usePermalinkStar';
+import { usePinMessageAction } from './usePinMessageAction';
 import { useStarMessageAction } from './useStarMessageAction';
 import { useUnstarMessageAction } from './useUnstarMessageAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
@@ -93,6 +94,7 @@ const MessageToolbar = ({
 	// TODO: move this to another place
 	useWebDAVMessageAction();
 	useNewDiscussionMessageAction();
+	usePinMessageAction(message, { room, subscription });
 	useStarMessageAction(message, { room, user });
 	useUnstarMessageAction(message, { room, user });
 	usePermalinkStar(message, { subscription, user });
