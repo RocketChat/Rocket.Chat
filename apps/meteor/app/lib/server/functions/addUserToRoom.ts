@@ -29,7 +29,7 @@ export const addUserToRoom = async function (
 ): Promise<boolean | undefined> {
 	const now = new Date();
 	const room = await Rooms.findOneById(rid);
-	console.info('hit', rid);
+
 	if (!room) {
 		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 			method: 'addUserToRoom',

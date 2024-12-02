@@ -1150,7 +1150,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			Random.id(),
 			user,
 			[],
-			false,
+			true,
 			false,
 			{
 				fname: name,
