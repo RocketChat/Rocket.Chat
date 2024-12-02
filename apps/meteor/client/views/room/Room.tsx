@@ -7,7 +7,6 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 import RoomE2EESetup from './E2EESetup/RoomE2EESetup';
 import Header from './Header';
-import { HeaderV2 } from './Header';
 import MessageHighlightProvider from './MessageList/providers/MessageHighlightProvider';
 import RoomBody from './body/RoomBody';
 import RoomBodyV2 from './body/RoomBodyV2';
@@ -43,18 +42,7 @@ const Room = (): ReactElement => {
 									? t('Conversation_with__roomName__', { roomName: room.name })
 									: t('Channel__roomName__', { roomName: room.name })
 							}
-							header={
-								<>
-									<FeaturePreview feature='newNavigation'>
-										<FeaturePreviewOn>
-											<HeaderV2 room={room} />
-										</FeaturePreviewOn>
-										<FeaturePreviewOff>
-											<Header room={room} />
-										</FeaturePreviewOff>
-									</FeaturePreview>
-								</>
-							}
+							header={<Header room={room} />}
 							body={
 								shouldDisplayE2EESetup ? (
 									<RoomE2EESetup />
