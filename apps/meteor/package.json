@@ -433,7 +433,7 @@
 		"tinykeys": "^1.4.0",
 		"twilio": "^3.84.1",
 		"twit": "^2.2.11",
-		"typia": "~6.12.2",
+		"typia": "~7.0.0",
 		"ua-parser-js": "^1.0.39",
 		"underscore": "^1.13.7",
 		"universal-perf-hooks": "^1.0.1",

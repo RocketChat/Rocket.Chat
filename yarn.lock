@@ -8765,10 +8765,10 @@ __metadata:
     "@rocket.chat/icons": "*"
     "@rocket.chat/prettier-config": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-avatar": 9.0.0-rc.0
-    "@rocket.chat/ui-contexts": 13.0.0-rc.0
+    "@rocket.chat/ui-avatar": 9.0.0-rc.1
+    "@rocket.chat/ui-contexts": 13.0.0-rc.1
     "@rocket.chat/ui-kit": 0.37.0
-    "@rocket.chat/ui-video-conf": 13.0.0-rc.0
+    "@rocket.chat/ui-video-conf": 13.0.0-rc.1
     "@tanstack/react-query": "*"
     react: ~17.0.2
     react-dom: "*"
@@ -8853,8 +8853,8 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "*"
     "@rocket.chat/message-parser": 0.31.31
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-client": 13.0.0-rc.0
-    "@rocket.chat/ui-contexts": 13.0.0-rc.0
+    "@rocket.chat/ui-client": 13.0.0-rc.1
+    "@rocket.chat/ui-contexts": 13.0.0-rc.1
     katex: "*"
     react: "*"
   languageName: unknown
@@ -9501,7 +9501,7 @@ __metadata:
     twilio: "npm:^3.84.1"
     twit: "npm:^2.2.11"
     typescript: "npm:~5.7.2"
-    typia: "npm:~6.12.2"
+    typia: "npm:~7.0.0"
     ua-parser-js: "npm:^1.0.39"
     underscore: "npm:^1.13.7"
     universal-perf-hooks: "npm:^1.0.1"
@@ -10089,7 +10089,7 @@ __metadata:
     typescript: "npm:~5.7.2"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
-    "@rocket.chat/ui-contexts": 13.0.0-rc.0
+    "@rocket.chat/ui-contexts": 13.0.0-rc.1
     react: ~17.0.2
   languageName: unknown
   linkType: soft
@@ -10139,8 +10139,8 @@ __metadata:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/ui-avatar": 9.0.0-rc.0
-    "@rocket.chat/ui-contexts": 13.0.0-rc.0
+    "@rocket.chat/ui-avatar": 9.0.0-rc.1
+    "@rocket.chat/ui-contexts": 13.0.0-rc.1
     react: "*"
     react-i18next: "*"
   languageName: unknown
@@ -10236,7 +10236,7 @@ __metadata:
     ts-node: "npm:~10.9.2"
     ts-patch: "npm:^3.2.1"
     typescript: "npm:~5.6.3"
-    typia: "npm:~6.12.2"
+    typia: "npm:~7.0.0"
   peerDependencies:
     "@rocket.chat/icons": "*"
   languageName: unknown
@@ -10310,8 +10310,8 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-avatar": 9.0.0-rc.0
-    "@rocket.chat/ui-contexts": 13.0.0-rc.0
+    "@rocket.chat/ui-avatar": 9.0.0-rc.1
+    "@rocket.chat/ui-contexts": 13.0.0-rc.1
     react: ~17.0.2
     react-dom: ^17.0.2
   languageName: unknown
@@ -10367,9 +10367,9 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-avatar": 9.0.0-rc.0
-    "@rocket.chat/ui-client": 13.0.0-rc.0
-    "@rocket.chat/ui-contexts": 13.0.0-rc.0
+    "@rocket.chat/ui-avatar": 9.0.0-rc.1
+    "@rocket.chat/ui-client": 13.0.0-rc.1
+    "@rocket.chat/ui-contexts": 13.0.0-rc.1
     react: ~17.0.2
     react-aria: ~3.23.1
     react-dom: ^17.0.2
@@ -10457,7 +10457,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": 0.2.2
-    "@rocket.chat/ui-contexts": 13.0.0-rc.0
+    "@rocket.chat/ui-contexts": 13.0.0-rc.1
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
@@ -10598,10 +10598,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@samchon/openapi@npm:^1.2.4":
-  version: 1.2.4
-  resolution: "@samchon/openapi@npm:1.2.4"
-  checksum: 10/7d16be3291ee7cd9bd331832ca1cb3abab017593d72e4a7b4f6884ae9f7a2a89ee5f214a233c7a3cdc5f7f5eec10cef7ef87c6330fa73cb5665b587579b93d95
+"@samchon/openapi@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@samchon/openapi@npm:2.0.0"
+  checksum: 10/4653a4d6eac7cd179c43d41a8398e117e0d9e5e38c1cff4e4c1e8380daf7e2897a526502b3b2d80c6277b638fea7c389e1bd280c28b2f417600fa9d67b3b5743
   languageName: node
   linkType: hard
 
@@ -38086,22 +38086,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typia@npm:~6.12.2":
-  version: 6.12.2
-  resolution: "typia@npm:6.12.2"
+"typia@npm:~7.0.0":
+  version: 7.0.0
+  resolution: "typia@npm:7.0.0"
   dependencies:
-    "@samchon/openapi": "npm:^1.2.4"
+    "@samchon/openapi": "npm:^2.0.0"
     commander: "npm:^10.0.0"
     comment-json: "npm:^4.2.3"
     inquirer: "npm:^8.2.5"
     package-manager-detector: "npm:^0.2.0"
     randexp: "npm:^0.5.3"
   peerDependencies:
-    "@samchon/openapi": ">=1.2.4 <2.0.0"
+    "@samchon/openapi": ">=2.0.0 <3.0.0"
     typescript: ">=4.8.0 <5.7.0"
   bin:
     typia: lib/executable/typia.js
-  checksum: 10/d06269217ac47fcf2d951302348df865e1585d5684645a38009f4456f3970b7569def6a98cdf5107d6fc72877c0fe9af41902194a09c3bec5aa8adf9af84254d
+  checksum: 10/0671a25bffd5cbdbc1a39f039f9a94d4be255c40693c280c017290930071e9168c47ce0ab8a24cc32136fdfbf9d068fdd86f7245c88fa0efcbc279b94f14f4f2
   languageName: node
   linkType: hard
 
