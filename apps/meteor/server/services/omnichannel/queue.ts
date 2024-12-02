@@ -61,11 +61,11 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	}
 
 	async start() {
-		this.serviceStarter.start();
+		return this.serviceStarter.start();
 	}
 
 	async stop() {
-		this.serviceStarter.stop();
+		await this.serviceStarter.stop();
 		if (this.timeoutHandler !== null) {
 			clearTimeout(this.timeoutHandler);
 		}
