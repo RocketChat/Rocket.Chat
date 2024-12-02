@@ -8,7 +8,7 @@ import Extended from './Extended';
 import * as Status from '../../components/UserStatus';
 
 export default {
-	title: 'Sidebar/Extended',
+	title: 'SidebarV2/Extended',
 	component: Extended,
 	decorators: [
 		(fn) => (
@@ -22,14 +22,7 @@ export default {
 const Template: StoryFn<typeof Extended> = (args) => (
 	<Extended
 		{...args}
-		title={
-			<Box display='flex' flexDirection='row' w='full' alignItems='center'>
-				<Box flexGrow='1' withTruncatedText>
-					John Doe
-				</Box>
-				<Box fontScale='micro'>15:38</Box>
-			</Box>
-		}
+		title='John Doe'
 		subtitle={
 			<Box display='flex' flexDirection='row' w='full' alignItems='center'>
 				<Box flexGrow='1' withTruncatedText>

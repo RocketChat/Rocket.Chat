@@ -10,7 +10,7 @@ import { useOmnichannelContactLabel } from './hooks/useOmnichannelContactLabel';
 import type { CallActionsType } from '../../../contexts/CallContext';
 import type { VoipFooterMenuOptions } from '../../../hooks/useVoipFooterMenu';
 
-type VoipFooterPropsType = {
+type VoipFooterProps = {
 	caller: ICallerInfo;
 	callerState: VoIpCallerInfo['state'];
 	callActions: CallActionsType;
@@ -30,7 +30,7 @@ type VoipFooterPropsType = {
 	options: VoipFooterMenuOptions;
 };
 
-export const VoipFooter = ({
+const VoipFooter = ({
 	caller,
 	callerState,
 	callActions,
@@ -48,7 +48,7 @@ export const VoipFooter = ({
 	isEnterprise = false,
 	children,
 	options,
-}: VoipFooterPropsType): ReactElement => {
+}: VoipFooterProps): ReactElement => {
 	const contactLabel = useOmnichannelContactLabel(caller);
 	const { t } = useTranslation();
 
@@ -175,3 +175,5 @@ export const VoipFooter = ({
 		</SidebarFooter>
 	);
 };
+
+export default VoipFooter;
