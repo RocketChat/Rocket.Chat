@@ -29,6 +29,30 @@ describe('ServiceStarter', () => {
 		expect(stop).toHaveBeenCalled();
 	});
 
+	it('should only call .start for the second time after the initial call has finished running', async () => {
+		let running = false;
+		const start = jest.fn(async () => {
+			expect(running).toBe(false);
+
+			running = true;
+			await wait(100);
+			running = false;
+		});
+		const stop = jest.fn();
+
+		const instance = new ServiceStarter(start, stop);
+
+		void instance.start();
+		setImmediate(() => {
+			void instance.start();
+		});
+
+		await instance.wait();
+
+		expect(start).toHaveBeenCalledTimes(2);
+		expect(stop).not.toHaveBeenCalled();
+	});
+
 	it('should chain up to two calls to .start', async () => {
 		const start = jest.fn(async () => {
 			await wait(100);
