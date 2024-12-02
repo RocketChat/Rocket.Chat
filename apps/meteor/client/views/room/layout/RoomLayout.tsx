@@ -9,7 +9,7 @@ import React, { Suspense, useMemo } from 'react';
 
 import { ContextualbarDialog } from '../../../components/Contextualbar';
 import HeaderSkeleton from '../Header/HeaderSkeleton';
-import HeaderSkeletonV2 from '../HeaderV2/HeaderSkeleton';
+import HeaderSkeletonV2 from '../Header/HeaderSkeleton';
 
 type RoomLayoutProps = {
 	header?: ReactNode;
