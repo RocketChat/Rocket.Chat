@@ -14,7 +14,6 @@ import { Meteor } from 'meteor/meteor';
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { createContact } from '../../lib/contacts/createContact';
-import { getContactByChannel } from '../../lib/contacts/getContactByChannel';
 import { getContactChannelsGrouped } from '../../lib/contacts/getContactChannelsGrouped';
 import { getContactHistory } from '../../lib/contacts/getContactHistory';
 import { getContacts } from '../../lib/contacts/getContacts';
@@ -133,13 +132,13 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-contact'], validateParams: isGETOmnichannelContactsProps },
 	{
 		async get() {
-			const { contactId, visitor } = this.queryParams;
+			const { contactId } = this.queryParams;
 
-			if (!contactId && !visitor) {
+			if (!contactId) {
 				return API.v1.notFound();
 			}
 
-			const contact = await (contactId ? LivechatContacts.findOneById(contactId) : getContactByChannel(visitor));
+			const contact = await LivechatContacts.findOneById(contactId);
 
 			if (!contact) {
 				return API.v1.notFound();
