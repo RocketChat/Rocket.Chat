@@ -2,7 +2,7 @@ import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import React, { memo, useMemo } from 'react';
 
-import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
+import SidebarItemTemplateWithData from './SideBarItemTemplateWithData';
 import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
