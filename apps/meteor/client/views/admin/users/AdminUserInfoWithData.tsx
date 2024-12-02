@@ -6,6 +6,8 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
+import AdminUserInfoActions from './AdminUserInfoActions';
+import type { AdminUsersTab } from './AdminUsersPage';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { ContextualbarContent } from '../../../components/Contextualbar';
 import { FormSkeleton } from '../../../components/Skeleton';
@@ -13,14 +15,14 @@ import { UserCardRole } from '../../../components/UserCard';
 import { UserInfo } from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
-import AdminUserInfoActions from './AdminUserInfoActions';
 
 type AdminUserInfoWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
+	tab: AdminUsersTab;
 };
 
-const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): ReactElement => {
+const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProps): ReactElement => {
 	const t = useTranslation();
 	const getRoles = useRolesDescription();
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
@@ -123,6 +125,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 					isFederatedUser={!!data.user.federated}
 					onChange={onChange}
 					onReload={onReload}
+					tab={tab}
 				/>
 			}
 		/>

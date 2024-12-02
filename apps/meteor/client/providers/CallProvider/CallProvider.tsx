@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Random } from '@rocket.chat/random';
-import type { Device, IExperimentalHTMLAudioElement } from '@rocket.chat/ui-contexts';
+import type { Device } from '@rocket.chat/ui-contexts';
 import {
 	useRouter,
 	useUser,
@@ -28,6 +28,7 @@ import React, { useMemo, useRef, useCallback, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom';
 import type { OutgoingByeRequest } from 'sip.js/lib/core';
 
+import { useVoipSounds } from './hooks/useVoipSounds';
 import type { CallContextValue } from '../../contexts/CallContext';
 import { CallContext, useIsVoipEnterprise } from '../../contexts/CallContext';
 import { useDialModal } from '../../hooks/useDialModal';
@@ -36,7 +37,6 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import type { QueueAggregator } from '../../lib/voip/QueueAggregator';
 import { parseOutboundPhoneNumber } from '../../lib/voip/parseOutboundPhoneNumber';
 import { WrapUpCallModal } from '../../voip/components/modals/WrapUpCallModal';
-import { useVoipSounds } from './hooks/useVoipSounds';
 
 type NetworkState = 'online' | 'offline';
 
@@ -65,7 +65,7 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 
 	const hasVoIPEnterpriseLicense = useIsVoipEnterprise();
 
-	const remoteAudioMediaRef = useRef<IExperimentalHTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
+	const remoteAudioMediaRef = useRef<HTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
 	const [queueCounter, setQueueCounter] = useState(0);
 	const [queueName, setQueueName] = useState('');

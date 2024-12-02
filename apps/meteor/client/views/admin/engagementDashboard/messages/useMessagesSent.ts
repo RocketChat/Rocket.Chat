@@ -25,7 +25,7 @@ export const useMessagesSent = ({ period }: UseMessagesSentOptions) => {
 						...response,
 						start,
 						end,
-				  }
+					}
 				: undefined;
 		},
 		{

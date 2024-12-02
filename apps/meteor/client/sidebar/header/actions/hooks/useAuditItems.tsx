@@ -1,6 +1,6 @@
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 
-import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 
 /**

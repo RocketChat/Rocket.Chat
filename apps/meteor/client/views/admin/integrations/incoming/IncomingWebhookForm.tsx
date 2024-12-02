@@ -18,16 +18,17 @@ import {
 	FieldHint,
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
+import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import useClipboardWithToast from '../../../../hooks/useClipboardWithToast';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
 import { useExampleData } from '../hooks/useExampleIncomingData';
 
 const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomingIntegration> }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const absoluteUrl = useAbsoluteUrl();
 
 	const {
@@ -57,13 +58,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 	const { copy: copyToken } = useClipboardWithToast(`${webhookData?._id}/${webhookData?.token}`);
 	const { copy: copyCurlData } = useClipboardWithToast(curlData);
 
-	const scriptEngineOptions: SelectOption[] = useMemo(
-		() => [
-			['vm2', t('Script_Engine_vm2')],
-			['isolated-vm', t('Script_Engine_isolated_vm')],
-		],
-		[t],
-	);
+	const scriptEngineOptions: SelectOption[] = useMemo(() => [['isolated-vm', t('Script_Engine_isolated_vm')]], [t]);
 
 	const hilightedExampleJson = useHighlightedCode('json', JSON.stringify(exampleData, null, 2));
 
@@ -167,7 +162,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 								<Controller
 									name='channel'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Post_to_Channel')) }}
+									rules={{ required: t('Required_field', { field: t('Post_to_Channel') }) }}
 									render={({ field }) => (
 										<TextInput
 											id={channelField}
@@ -184,7 +179,10 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 							<FieldHint
 								id={`${channelField}-hint-2`}
 								dangerouslySetInnerHTML={{
-									__html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', '@', '#', '@john', '#general'),
+									__html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', {
+										postProcess: 'sprintf',
+										sprintf: ['@', '#', '@john', '#general'],
+									}),
 								}}
 							/>
 							{errors?.channel && (
@@ -201,7 +199,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 								<Controller
 									name='username'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Post_to_Channel')) }}
+									rules={{ required: t('Required_field', { field: t('Post_to_Channel') }) }}
 									render={({ field }) => (
 										<TextInput
 											id={usernameField}
@@ -271,7 +269,10 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 								/>
 							</FieldRow>
 							<FieldHint id={`${emojiField}-hint-1`}>{t('You_can_use_an_emoji_as_avatar')}</FieldHint>
-							<FieldHint id={`${emojiField}-hint-2`} dangerouslySetInnerHTML={{ __html: t('Example_s', ':ghost:') }} />
+							<FieldHint
+								id={`${emojiField}-hint-2`}
+								dangerouslySetInnerHTML={{ __html: t('Example_s', { postProcess: 'sprintf', sprintf: [':ghost:'] }) }}
+							/>
 						</Field>
 						<Field>
 							<FieldRow>

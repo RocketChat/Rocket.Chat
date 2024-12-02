@@ -1,15 +1,16 @@
 import { RadioButton } from '@rocket.chat/fuselage';
-import { useEndpoint, useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { useEndpoint, useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import {
 	OmnichannelSortingDisclaimer,
 	useOmnichannelSortingDisclaimer,
 } from '../../../../components/Omnichannel/OmnichannelSortingDisclaimer';
 
 export const useSortModeItems = (): GenericMenuItemProps[] => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const sidebarSortBy = useUserPreference<'activity' | 'alphabetical'>('sidebarSortby', 'activity');

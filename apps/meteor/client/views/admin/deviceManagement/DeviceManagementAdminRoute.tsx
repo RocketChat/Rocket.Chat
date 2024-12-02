@@ -1,17 +1,18 @@
-import { usePermission, useRouter, useSetModal, useCurrentModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter, useSetModal, useCurrentModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import DeviceManagementAdminPage from './DeviceManagementAdminPage';
 import { getURL } from '../../../../app/utils/client/getURL';
 import GenericUpsellModal from '../../../components/GenericUpsellModal';
 import { useUpsellActions } from '../../../components/GenericUpsellModal/hooks';
 import PageSkeleton from '../../../components/PageSkeleton';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
-import DeviceManagementAdminPage from './DeviceManagementAdminPage';
 
 const DeviceManagementAdminRoute = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const setModal = useSetModal();
 	const isModalOpen = !!useCurrentModal();

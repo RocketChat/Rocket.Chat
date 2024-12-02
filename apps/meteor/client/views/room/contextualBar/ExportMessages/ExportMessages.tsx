@@ -1,15 +1,15 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
+import FileExport from './FileExport';
+import MailExportForm from './MailExportForm';
 import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../components/Contextualbar';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useRoom } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
-import FileExport from './FileExport';
-import MailExportForm from './MailExportForm';
 
 export type MailExportFormValues = {
 	type: 'email' | 'file';
@@ -23,7 +23,7 @@ export type MailExportFormValues = {
 };
 
 const ExportMessages = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const room = useRoom();
 
 	const { closeTab } = useRoomToolbox();
@@ -39,11 +39,13 @@ const ExportMessages = () => {
 			toUsers: [],
 			additionalEmails: '',
 			messagesCount: 0,
-			subject: t('Mail_Messages_Subject', roomName),
+			subject: t('Mail_Messages_Subject', {
+				postProcess: 'sprintf',
+				sprintf: [roomName],
+			}),
 			format: 'html',
 		},
 	});
-
 	const exportOptions = useMemo<SelectOption[]>(
 		() => [
 			['email', t('Send_via_email')],

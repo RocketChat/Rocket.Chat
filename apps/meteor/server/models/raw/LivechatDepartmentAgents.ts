@@ -12,6 +12,7 @@ import type {
 	DeleteResult,
 	IndexDescription,
 	SortDirection,
+	AggregationCursor,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -109,34 +110,6 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		}
 
 		return this.findPaginated(query, options);
-	}
-
-	findActiveDepartmentsByAgentId(agentId: string): FindCursor<ILivechatDepartmentAgents>;
-
-	findActiveDepartmentsByAgentId(agentId: string, options: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents>;
-
-	findActiveDepartmentsByAgentId<P extends Document>(
-		agentId: string,
-		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): FindCursor<P>;
-
-	findActiveDepartmentsByAgentId<P extends Document>(
-		agentId: string,
-		options?:
-			| undefined
-			| FindOptions<ILivechatDepartmentAgents>
-			| FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): FindCursor<ILivechatDepartmentAgents> | FindCursor<P> {
-		const query = {
-			agentId,
-			departmentEnabled: true,
-		};
-
-		if (options === undefined) {
-			return this.find(query);
-		}
-
-		return this.find(query, options);
 	}
 
 	findByDepartmentIds(departmentIds: string[], options = {}): FindCursor<ILivechatDepartmentAgents> {
@@ -294,6 +267,19 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.find(query);
 	}
 
+	async countOnlineForDepartment(departmentId: string, isLivechatEnabledWhenAgentIdle?: boolean): Promise<number> {
+		const agents = await this.findByDepartmentId(departmentId, { projection: { username: 1 } }).toArray();
+
+		if (agents.length === 0) {
+			return 0;
+		}
+
+		return Users.countOnlineUserFromList(
+			agents.map((a) => a.username),
+			isLivechatEnabledWhenAgentIdle,
+		);
+	}
+
 	async getBotsForDepartment(departmentId: string): Promise<undefined | FindCursor<ILivechatDepartmentAgents>> {
 		const agents = await this.findByDepartmentId(departmentId).toArray();
 
@@ -312,6 +298,16 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		};
 
 		return this.find(query);
+	}
+
+	async countBotsForDepartment(departmentId: string): Promise<number> {
+		const agents = await this.findByDepartmentId(departmentId, { projection: { username: 1 } }).toArray();
+
+		if (agents.length === 0) {
+			return 0;
+		}
+
+		return Users.countBotAgents(agents.map((a) => a.username));
 	}
 
 	async getNextBotForDepartment(
@@ -394,6 +390,39 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		options?: FindOptions<ILivechatDepartmentAgents>,
 	): FindCursor<ILivechatDepartmentAgents> {
 		return this.find({ agentId: { $in: agentsIds }, departmentId }, options);
+	}
+
+	findDepartmentsOfAgent(agentId: string, enabled = false): AggregationCursor<ILivechatDepartmentAgents & { departmentName: string }> {
+		return this.col.aggregate<ILivechatDepartmentAgents & { departmentName: string }>([
+			{
+				$match: {
+					agentId,
+					...(enabled && { departmentEnabled: true }),
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_livechat_department',
+					localField: 'departmentId',
+					foreignField: '_id',
+					as: 'department',
+				},
+			},
+			{ $unwind: '$department' },
+			{
+				$project: {
+					_id: '$_id',
+					agentId: '$agentId',
+					departmentId: '$departmentId',
+					departmentName: '$department.name',
+					username: '$username',
+					count: '$count',
+					order: '$order',
+					departmentEnabled: '$departmentEnabled',
+					_updatedAt: '$_updatedAt',
+				},
+			},
+		]);
 	}
 }
 

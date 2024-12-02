@@ -1,4 +1,3 @@
-import '@testing-library/jest-dom';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 

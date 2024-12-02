@@ -1,8 +1,9 @@
 import { UserStatus as UserStatusType } from '@rocket.chat/core-typings';
 import { Button, PositionAnimated, Options, useCursor, Box } from '@rocket.chat/fuselage';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { useRef, useCallback, useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { UserStatus } from './UserStatus';
 
@@ -21,9 +22,9 @@ const UserStatusMenu = ({
 	optionWidth = undefined,
 	placement = 'bottom-end',
 }: UserStatusMenuProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [status, setStatus] = useState(initialStatus);
-	const allowInvisibleStatus = useSetting('Accounts_AllowInvisibleStatusOption') as boolean;
+	const allowInvisibleStatus = useSetting('Accounts_AllowInvisibleStatusOption', true);
 
 	const options = useMemo(() => {
 		const renderOption = (status: UserStatusType, label: string): ReactElement => (

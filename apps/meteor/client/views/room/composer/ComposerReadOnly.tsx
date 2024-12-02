@@ -1,15 +1,16 @@
 import { Button } from '@rocket.chat/fuselage';
 import { MessageFooterCallout, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { dispatchToastMessage } from '../../../lib/toast';
 import { useRoom, useUserIsSubscribed } from '../contexts/RoomContext';
 
 const ComposerReadOnly = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const room = useRoom();
 	const isSubscribed = useUserIsSubscribed();
 	const joinChannel = useEndpoint('POST', '/v1/channels.join');

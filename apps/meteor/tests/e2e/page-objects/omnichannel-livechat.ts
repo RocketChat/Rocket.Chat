@@ -7,7 +7,10 @@ import { expect } from '../utils/test';
 export class OmnichannelLiveChat {
 	readonly page: Page;
 
-	constructor(page: Page, private readonly api: { get(url: string): Promise<APIResponse> }) {
+	constructor(
+		page: Page,
+		private readonly api: { get(url: string): Promise<APIResponse> },
+	) {
 		this.page = page;
 	}
 
@@ -64,7 +67,7 @@ export class OmnichannelLiveChat {
 	}
 
 	txtChatMessage(message: string): Locator {
-		return this.page.locator(`text="${message}"`);
+		return this.page.locator(`[data-qa="message-bubble"] >> text="${message}"`);
 	}
 
 	async closeChat(): Promise<void> {
@@ -86,6 +89,19 @@ export class OmnichannelLiveChat {
 
 	async startNewChat(): Promise<void> {
 		await this.btnNewChat.click();
+	}
+
+	async openAnyLiveChatAndSendMessage(params: {
+		liveChatUser: { name: string; email: string };
+		message: string;
+		isOffline?: boolean;
+		department?: string;
+	}): Promise<void> {
+		const { liveChatUser, message, isOffline, department } = params;
+		await this.openAnyLiveChat();
+		await this.sendMessage(liveChatUser, isOffline, department);
+		await this.onlineAgentMessage.fill(message);
+		await this.btnSendMessageToOnlineAgent.click();
 	}
 
 	unreadMessagesBadge(count: number): Locator {
@@ -172,6 +188,7 @@ export class OmnichannelLiveChat {
 		await this.onlineAgentMessage.fill(message);
 		await this.btnSendMessageToOnlineAgent.click();
 		await expect(this.txtChatMessage(message)).toBeVisible();
+		await expect(this.page.locator('[data-qa="message-bubble"] >> text="Chat started"')).toBeVisible();
 		await this.closeChat();
 	}
 
@@ -205,5 +222,9 @@ export class OmnichannelLiveChat {
 		await this.fileUploadTarget.dispatchEvent('dragenter', { dataTransfer });
 
 		await this.fileUploadTarget.dispatchEvent('drop', { dataTransfer });
+	}
+
+	queuePosition(position: number): Locator {
+		return this.page.locator(`div[role='alert'] >> text=Your spot is #${position}`);
 	}
 }

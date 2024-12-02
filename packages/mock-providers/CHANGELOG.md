@@ -1,5 +1,103 @@
 # @rocket.chat/mock-providers
 
+## 0.1.5-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [66ecc64fc1d4464ad2818ad04e23a09cdf221194, 6c83bf0657004ee9cf43d5c832f51826a6591165, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0, d1e6a73796269824fb1aa7afcc7b8aa242e34e90, 661cc01237629ce83699d6c25df25d12985e88bf, ce7024af36fcde97b1da5b2731f6edc4a4c236b8, 616655585cb1c5c60d7cee97e25b17af3dfda794, e5fe727f6a2f0e60cdf7ba225e1f6caa6db2045c, 322bafd4bd1fe91ed34610501b269e4d8951944c]:</summary>
+
+  - @rocket.chat/i18n@1.1.0-rc.0
+  </details>
+
+## 0.1.4
+
+### Patch Changes
+
+- ([#33346](https://github.com/RocketChat/Rocket.Chat/pull/33346)) Implements integration with FreeSwitch to enable VoIP calls for team collaboration workspaces
+
+- <details><summary>Updated dependencies [c5b0c98803, 2806cb5d3e, 34ed9ad646, bcacbb1cee, 9bcb802fdc, f33c07ebb8, 9cf079721b, debd3ffa22, e3629e065b, 03d148524b, 4aa731d6e9, 53cc1111f8, e3dac4aab6, 5acb59bb39, 31eb47f573]:</summary>
+
+  - @rocket.chat/i18n@1.0.0
+  </details>
+
+## 0.1.4-rc.0
+
+### Patch Changes
+
+- ([#33346](https://github.com/RocketChat/Rocket.Chat/pull/33346)) Implements integration with FreeSwitch to enable VoIP calls for team collaboration workspaces
+
+- <details><summary>Updated dependencies [c5b0c98803, 2806cb5d3e, 34ed9ad646, bcacbb1cee, 9bcb802fdc, f33c07ebb8, 9cf079721b, debd3ffa22, e3629e065b, 03d148524b, 4aa731d6e9, 53cc1111f8, e3dac4aab6, 5acb59bb39, 31eb47f573]:</summary>
+
+  - @rocket.chat/i18n@1.0.0-rc.0
+  </details>
+
+## 0.1.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [bb94c9c67a, 7c14fd1a80, 274f4f5881, 2f9eea03d2, 0f21fa01a3]:</summary>
+
+  - @rocket.chat/i18n@0.8.0
+  </details>
+
+## 0.1.3-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [2f9eea03d2]:</summary>
+
+  - @rocket.chat/i18n@0.8.0-rc.1
+  </details>
+
+## 0.1.3-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [bb94c9c67a, 7c14fd1a80, 274f4f5881, 0f21fa01a3]:</summary>
+
+  - @rocket.chat/i18n@0.8.0-rc.0
+  </details>
+
+## 0.1.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [127866ce97, 0c919db7b4, b764c415dc, 1f061a1aa5, dd37ea1b35, 58c0efc732, 58c0efc732]:</summary>
+
+  - @rocket.chat/i18n@0.7.0
+  </details>
+
+## 0.1.2-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [127866ce97, 0c919db7b4, b764c415dc, 1f061a1aa5, dd37ea1b35, 58c0efc732, 58c0efc732]:</summary>
+
+  - @rocket.chat/i18n@0.7.0-rc.0
+  </details>
+
+## 0.1.1
+
+### Patch Changes
+
+- ([#32482](https://github.com/RocketChat/Rocket.Chat/pull/32482)) Fixed an issue with blocked login when dismissed 2FA modal by clicking outside of it or pressing the escape key
+
+- <details><summary>Updated dependencies [b4bbcbfc9a, 25da5280a5, 1b7b1161cf, 03c8b066f9, 2d89a0c448, 3ffe4a2944, 3b4b19cfc5]:</summary>
+
+  - @rocket.chat/i18n@0.6.0
+  </details>
+
+## 0.1.1-rc.0
+
+### Patch Changes
+
+- ([#32482](https://github.com/RocketChat/Rocket.Chat/pull/32482)) Fixed an issue with blocked login when dismissed 2FA modal by clicking outside of it or pressing the escape key
+
+- <details><summary>Updated dependencies [b4bbcbfc9a, 25da5280a5, 1b7b1161cf, 03c8b066f9, 2d89a0c448, 3ffe4a2944, 3b4b19cfc5]:</summary>
+
+  - @rocket.chat/i18n@0.6.0-rc.0
+  </details>
+
 ## 0.1.0
 
 ### Minor Changes

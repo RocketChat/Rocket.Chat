@@ -2,7 +2,7 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { IMessage, IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
-import { after, before, beforeEach, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
 
 import { api, credentials, getCredentials, methodCall, request } from '../../data/api-data';
 import { sendSimpleMessage } from '../../data/chat.helper';
@@ -616,8 +616,18 @@ describe('Meteor.methods', () => {
 
 	describe('[@cleanRoomHistory]', () => {
 		let rid: IRoom['_id'];
-
+		let testUser: IUser;
+		let testUserCredentials: Credentials;
 		let channelName: string;
+
+		before('update permissions', async () => {
+			await updatePermission('clean-channel-history', ['admin', 'user']);
+		});
+
+		before('create test user', async () => {
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+		});
 
 		before('create room', (done) => {
 			channelName = `methods-test-channel-${Date.now()}`;
@@ -676,7 +686,36 @@ describe('Meteor.methods', () => {
 				.end(done);
 		});
 
-		after(() => deleteRoom({ type: 'p', roomId: rid }));
+		after(() =>
+			Promise.all([deleteRoom({ type: 'p', roomId: rid }), deleteUser(testUser), updatePermission('clean-channel-history', ['admin'])]),
+		);
+
+		it('should throw an error if user is not part of the room', async () => {
+			await request
+				.post(methodCall('cleanRoomHistory'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'cleanRoomHistory',
+						params: [
+							{
+								roomId: rid,
+								oldest: { $date: new Date().getTime() },
+								latest: { $date: new Date().getTime() },
+							},
+						],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error').that.is.an('object');
+					expect(data.error).to.have.a.property('error', 'error-not-allowed');
+				});
+		});
 
 		it('should not change the _updatedAt value when nothing is changed on the room', async () => {
 			const roomBefore = await request.get(api('groups.info')).set(credentials).query({
@@ -2020,6 +2059,29 @@ describe('Meteor.methods', () => {
 					expect(res.body).to.have.property('success', false);
 				});
 		});
+
+		it('should return an error if request includes unallowed parameters', (done) => {
+			void request
+				.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [{ _id: `${Date.now() + Math.random()}`, rid, msg: 'test message', _notAllowed: '1' }],
+						id: 1000,
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error').that.is.an('object');
+					expect(data.error.sanitizedError).to.have.a.property('reason', 'Match failed');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[@updateMessage]', () => {
@@ -2030,6 +2092,13 @@ describe('Meteor.methods', () => {
 		let messageWithMarkdownId: IMessage['_id'];
 		let channelName: string;
 		const siteUrl = process.env.SITE_URL || process.env.TEST_API_URL || 'http://localhost:3000';
+		let testUser: TestUser<IUser>;
+		let testUserCredentials: Credentials;
+
+		before(async () => {
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+		});
 
 		before('create room', (done) => {
 			channelName = `methods-test-channel-${Date.now()}`;
@@ -2125,13 +2194,14 @@ describe('Meteor.methods', () => {
 		after(() =>
 			Promise.all([
 				deleteRoom({ type: 'p', roomId: rid }),
+				deleteUser(testUser),
 				updatePermission('bypass-time-limit-edit-and-delete', ['bot', 'app']),
 				updateSetting('Message_AllowEditing_BlockEditInMinutes', 0),
 			]),
 		);
 
-		it('should update a message with a URL', (done) => {
-			void request
+		it('should update a message with a URL', async () => {
+			await request
 				.post(methodCall('updateMessage'))
 				.set(credentials)
 				.send({
@@ -2149,8 +2219,53 @@ describe('Meteor.methods', () => {
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('msg').that.is.an('string');
+				});
+		});
+
+		it('should fail if user does not have permissions to update a message with the same content', async () => {
+			await request
+				.post(methodCall('updateMessage'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateMessage',
+						params: [{ _id: messageId, rid, msg: 'test message with https://github.com' }],
+						id: 'id',
+						msg: 'method',
+					}),
 				})
-				.end(done);
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('msg').that.is.an('string');
+					expect(data.error).to.have.a.property('error', 'error-action-not-allowed');
+				});
+		});
+
+		it('should fail if user does not have permissions to update a message with different content', async () => {
+			await request
+				.post(methodCall('updateMessage'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateMessage',
+						params: [{ _id: messageId, rid, msg: 'updating test message with https://github.com' }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('msg').that.is.an('string');
+					expect(data.error).to.have.a.property('error', 'error-action-not-allowed');
+				});
 		});
 
 		it('should add a quote attachment to a message', async () => {
@@ -2424,130 +2539,6 @@ describe('Meteor.methods', () => {
 					})
 					.end(done);
 			});
-		});
-	});
-
-	describe('[@deleteMessage]', () => {
-		let rid: IRoom['_id'];
-		let messageId: IMessage['_id'];
-
-		before('create room', (done) => {
-			const channelName = `methods-test-channel-${Date.now()}`;
-			void request
-				.post(api('groups.create'))
-				.set(credentials)
-				.send({
-					name: channelName,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('group._id');
-					expect(res.body).to.have.nested.property('group.name', channelName);
-					expect(res.body).to.have.nested.property('group.t', 'p');
-					expect(res.body).to.have.nested.property('group.msgs', 0);
-					rid = res.body.group._id;
-				})
-				.end(done);
-		});
-
-		beforeEach('send message with URL', (done) => {
-			void request
-				.post(methodCall('sendMessage'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'sendMessage',
-						params: [
-							{
-								_id: `${Date.now() + Math.random()}`,
-								rid,
-								msg: 'test message with https://github.com',
-							},
-						],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
-
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('urls').that.is.an('array');
-					expect(data.result.urls[0].url).to.equal('https://github.com');
-					messageId = data.result._id;
-				})
-				.end(done);
-		});
-
-		after(() =>
-			Promise.all([
-				deleteRoom({ type: 'p', roomId: rid }),
-				updatePermission('bypass-time-limit-edit-and-delete', ['bot', 'app']),
-				updateSetting('Message_AllowEditing_BlockEditInMinutes', 0),
-			]),
-		);
-
-		it('should delete a message', (done) => {
-			void request
-				.post(methodCall('deleteMessage'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'deleteMessage',
-						params: [{ _id: messageId, rid }],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('msg', 'result');
-					expect(data).to.have.a.property('id', 'id');
-				})
-				.end(done);
-		});
-
-		it('should delete a message when bypass time limits permission is enabled', async () => {
-			await Promise.all([
-				updatePermission('bypass-time-limit-edit-and-delete', ['admin']),
-				updateSetting('Message_AllowEditing_BlockEditInMinutes', 0.01),
-			]);
-
-			await request
-				.post(methodCall('deleteMessage'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'deleteMessage',
-						params: [{ _id: messageId, rid }],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('msg', 'result');
-					expect(data).to.have.a.property('id', 'id');
-				});
-
-			await Promise.all([
-				updatePermission('bypass-time-limit-edit-and-delete', ['bot', 'app']),
-				updateSetting('Message_AllowEditing_BlockEditInMinutes', 0),
-			]);
 		});
 	});
 
@@ -3293,6 +3284,411 @@ describe('Meteor.methods', () => {
 					expect(data).to.have.a.property('result', true);
 				})
 				.end(done);
+		});
+	});
+
+	(IS_EE ? describe : describe.skip)('[@auditGetAuditions] EE', () => {
+		let testUser: TestUser<IUser>;
+		let testUserCredentials: Credentials;
+
+		const now = new Date();
+		const startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).getTime();
+		const endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).getTime();
+
+		before('create test user', async () => {
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+		});
+
+		before('generate audits data', async () => {
+			await request
+				.post(methodCall('auditGetMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'auditGetMessages',
+						params: [
+							{
+								type: '',
+								msg: 'test1234',
+								startDate: { $date: startDate },
+								endDate: { $date: endDate },
+								rid: 'GENERAL',
+								users: [],
+							},
+						],
+						id: '14',
+						msg: 'method',
+					}),
+				});
+		});
+
+		after(() => Promise.all([deleteUser(testUser)]));
+
+		it('should fail if the user does not have permissions to get auditions', async () => {
+			await request
+				.post(methodCall('auditGetAuditions'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'auditGetAuditions',
+						params: [
+							{
+								startDate: { $date: startDate },
+								endDate: { $date: endDate },
+							},
+						],
+						id: '18',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('message');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error');
+					expect(data.error).to.have.a.property('error', 'Not allowed');
+				});
+		});
+
+		it('should not return more user data than necessary - e.g. passwords, hashes, tokens', async () => {
+			await request
+				.post(methodCall('auditGetAuditions'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'auditGetAuditions',
+						params: [
+							{
+								startDate: { $date: startDate },
+								endDate: { $date: endDate },
+							},
+						],
+						id: '18',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('result').that.is.an('array');
+					expect(data.result.length).to.be.greaterThan(0);
+					expect(data).to.have.a.property('msg', 'result');
+					expect(data).to.have.a.property('id', '18');
+					data.result.forEach((item: any) => {
+						expect(item).to.have.all.keys('_id', 'ts', 'results', 'u', 'fields', '_updatedAt');
+						expect(item.u).to.not.have.property('services');
+						expect(item.u).to.not.have.property('roles');
+						expect(item.u).to.not.have.property('lastLogin');
+						expect(item.u).to.not.have.property('statusConnection');
+						expect(item.u).to.not.have.property('emails');
+					});
+				});
+		});
+	});
+
+	describe('UpdateOTRAck', () => {
+		let testUser: TestUser<IUser>;
+		let testUser2: TestUser<IUser>;
+		let testUserCredentials: Credentials;
+		let dmTestId: IRoom['_id'];
+
+		before(async () => {
+			testUser = await createUser();
+			testUser2 = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+		});
+
+		before('create direct conversation between both users', (done) => {
+			void request
+				.post(methodCall('createDirectMessage'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'createDirectMessage',
+						params: [testUser2.username],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					const result = JSON.parse(res.body.message);
+					expect(result.result).to.be.an('object');
+					expect(result.result).to.have.property('rid').that.is.an('string');
+
+					dmTestId = result.result.rid;
+					done();
+				});
+		});
+
+		after(() => Promise.all([deleteRoom({ type: 'd', roomId: dmTestId }), deleteUser(testUser), deleteUser(testUser2)]));
+
+		it('should fail if required parameters are not present', async () => {
+			await request
+				.post(methodCall('updateOTRAck'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateOTRAck',
+						params: [
+							{
+								message: {
+									_id: 'czjFdkFab7H5bWxYq',
+									// rid: 'test',
+									msg: 'test',
+									t: 'otr',
+									ts: { $date: 1725447664093 },
+									u: {
+										_id: 'test',
+										username: 'test',
+										name: 'test',
+									},
+								},
+								ack: 'test',
+							},
+						],
+						id: '18',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('message');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error');
+					expect(data.error).to.have.a.property('message', "Match error: Missing key 'rid'");
+				});
+		});
+
+		it('should fail if required parameters have a different type', async () => {
+			await request
+				.post(methodCall('updateOTRAck'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateOTRAck',
+						params: [
+							{
+								message: {
+									_id: 'czjFdkFab7H5bWxYq',
+									rid: { $ne: 'test' },
+									msg: 'test',
+									t: 'otr',
+									ts: { $date: 1725447664093 },
+									u: {
+										_id: 'test',
+										username: 'test',
+										name: 'test',
+									},
+								},
+								ack: 'test',
+							},
+						],
+						id: '18',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('message');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error');
+					expect(data.error).to.have.a.property('message', 'Match error: Expected string, got object in field rid');
+				});
+		});
+
+		it('should fail if "t" is not "otr"', async () => {
+			await request
+				.post(methodCall('updateOTRAck'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateOTRAck',
+						params: [
+							{
+								message: {
+									_id: 'czjFdkFab7H5bWxYq',
+									rid: 'test',
+									msg: 'test',
+									t: 'notOTR',
+									ts: { $date: 1725447664093 },
+									u: {
+										_id: 'test',
+										username: 'test',
+										name: 'test',
+									},
+								},
+								ack: 'test',
+							},
+						],
+						id: '18',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('message');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error');
+					expect(data.error).to.have.a.property('message', 'Invalid message type [error-invalid-message]');
+				});
+		});
+
+		it('should fail if room does not exist', async () => {
+			await request
+				.post(methodCall('updateOTRAck'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateOTRAck',
+						params: [
+							{
+								message: {
+									_id: 'czjFdkFab7H5bWxYq',
+									rid: 'test',
+									msg: 'test',
+									t: 'otr',
+									ts: { $date: 1725447664093 },
+									u: {
+										_id: 'test',
+										username: 'test',
+										name: 'test',
+									},
+								},
+								ack: 'test',
+							},
+						],
+						id: '18',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('message');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error');
+					expect(data.error).to.have.a.property('message', 'Invalid room [error-invalid-room]');
+				});
+		});
+
+		it('should fail if room is not a DM', async () => {
+			await request
+				.post(methodCall('updateOTRAck'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateOTRAck',
+						params: [
+							{
+								message: {
+									_id: 'czjFdkFab7H5bWxYq',
+									rid: 'GENERAL',
+									msg: 'test',
+									t: 'otr',
+									ts: { $date: 1725447664093 },
+									u: {
+										_id: 'test',
+										username: 'test',
+										name: 'test',
+									},
+								},
+								ack: 'test',
+							},
+						],
+						id: '18',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('message');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error');
+					expect(data.error).to.have.a.property('message', 'Invalid room [error-invalid-room]');
+				});
+		});
+
+		it('should fail if user is not part of DM room', async () => {
+			await request
+				.post(methodCall('updateOTRAck'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateOTRAck',
+						params: [
+							{
+								message: {
+									_id: 'czjFdkFab7H5bWxYq',
+									rid: dmTestId,
+									msg: 'test',
+									t: 'otr',
+									ts: { $date: 1725447664093 },
+									u: {
+										_id: testUser._id,
+										username: testUser.username,
+										name: 'test',
+									},
+								},
+								ack: 'test',
+							},
+						],
+						id: '18',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('message');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error');
+					expect(data.error).to.have.a.property('message', 'Invalid user, not in room [error-invalid-user]');
+				});
+		});
+
+		it('should pass if all parameters are present and user is part of DM room', async () => {
+			await request
+				.post(methodCall('updateOTRAck'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateOTRAck',
+						params: [
+							{
+								message: {
+									_id: 'czjFdkFab7H5bWxYq',
+									rid: dmTestId,
+									msg: 'test',
+									t: 'otr',
+									ts: { $date: 1725447664093 },
+									u: {
+										_id: testUser._id,
+										username: testUser.username,
+										name: 'test',
+									},
+								},
+								ack: 'test',
+							},
+						],
+						id: '18',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('message');
+					expect(res.body).to.have.a.property('success', true);
+				});
 		});
 	});
 });

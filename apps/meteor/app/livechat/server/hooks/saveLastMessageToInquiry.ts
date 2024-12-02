@@ -1,4 +1,4 @@
-import { isOmnichannelRoom, isEditedMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
 import { LivechatInquiry } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -7,9 +7,9 @@ import { settings } from '../../../settings/server';
 import { RoutingManager } from '../lib/RoutingManager';
 
 callbacks.add(
-	'afterSaveMessage',
-	async (message, room) => {
-		if (!isOmnichannelRoom(room) || isEditedMessage(message) || message.t) {
+	'afterOmnichannelSaveMessage',
+	async (message, { room }) => {
+		if (isEditedMessage(message) || message.t) {
 			return message;
 		}
 

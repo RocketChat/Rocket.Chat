@@ -43,6 +43,10 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 		return this.page.locator(`[role=option][value="${name}"]`);
 	}
 
+	public selectOptionChip(name: string) {
+		return this.page.getByRole('option', { name });
+	}
+
 	async selectDepartment({ name, _id }: { name: string; _id: string }) {
 		await this.inputDepartments.click();
 		await this.inputDepartments.fill(name);

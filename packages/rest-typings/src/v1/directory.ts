@@ -8,15 +8,11 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-type DirectoryProps = PaginatedRequest;
+type DirectoryProps = PaginatedRequest<{ text?: string; type?: string; workspace?: string; query?: string }>;
 
 const DirectorySchema = {
 	type: 'object',
 	properties: {
-		query: {
-			type: 'string',
-			nullable: true,
-		},
 		count: {
 			type: 'number',
 			nullable: true,
@@ -29,7 +25,24 @@ const DirectorySchema = {
 			type: 'string',
 			nullable: true,
 		},
+		text: {
+			type: 'string',
+			nullable: true,
+		},
+		type: {
+			type: 'string',
+			nullable: true,
+		},
+		workspace: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
 	},
+	required: [],
 	additionalProperties: false,
 };
 

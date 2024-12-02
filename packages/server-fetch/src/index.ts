@@ -2,23 +2,24 @@ import http from 'http';
 import https from 'https';
 
 import { AbortController } from 'abort-controller';
-import type { HttpProxyAgent } from 'http-proxy-agent';
-import { default as createHttpProxyAgent } from 'http-proxy-agent';
-import type { HttpsProxyAgent } from 'https-proxy-agent';
-import { default as createHttpsProxyAgent } from 'https-proxy-agent';
+import { HttpProxyAgent } from 'http-proxy-agent';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import fetch from 'node-fetch';
 import { getProxyForUrl } from 'proxy-from-env';
 
 import { parseRequestOptions } from './parsers';
 import type { ExtendedFetchOptions } from './types';
 
-function getFetchAgent(url: string, allowSelfSignedCerts?: boolean): http.Agent | https.Agent | null | HttpsProxyAgent | HttpProxyAgent {
+function getFetchAgent<U extends string>(
+	url: U,
+	allowSelfSignedCerts?: boolean,
+): http.Agent | https.Agent | null | HttpsProxyAgent<U> | HttpProxyAgent<U> {
 	const isHttps = /^https/.test(url);
 
 	const proxy = getProxyForUrl(url);
 	if (proxy) {
-		const agentFn = isHttps ? createHttpsProxyAgent : createHttpProxyAgent;
-		return agentFn(proxy);
+		const AgentFn = isHttps ? HttpsProxyAgent : HttpProxyAgent;
+		return new AgentFn(proxy);
 	}
 
 	if (!allowSelfSignedCerts) {

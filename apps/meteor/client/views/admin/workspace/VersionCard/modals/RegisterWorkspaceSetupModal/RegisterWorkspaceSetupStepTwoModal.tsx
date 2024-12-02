@@ -1,7 +1,7 @@
 import { Modal, Box, Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect } from 'react';
-import { Trans } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 
 type Props = {
 	email: string;
@@ -19,7 +19,7 @@ type Props = {
 const setIntervalTime = (interval?: number): number => (interval ? interval * 1000 : 0);
 
 const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, intentData, onSuccess, ...props }: Props) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const cloudConfirmationPoll = useEndpoint('GET', '/v1/cloud.confirmationPoll');
@@ -49,7 +49,7 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 		} catch (error: any) {
 			console.log(error);
 		}
-	}, [cloudConfirmationPoll, intentData.device_code, dispatchToastMessage, t]);
+	}, [cloudConfirmationPoll, intentData.device_code, dispatchToastMessage, t, onSuccess]);
 
 	useEffect(() => {
 		const pollInterval = setInterval(() => getConfirmation(), setIntervalTime(intentData.interval));
@@ -89,6 +89,7 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 				</Box>
 			</Modal.Content>
 			<Modal.Footer>
+				{/* FIXME: missing translation */}
 				<Box is='div' display='flex' justifyContent='start' fontSize='c1' w='full'>
 					Didn’t receive email?{' '}
 					<Box is='a' pi={4} onClick={handleResendRegistrationEmail}>

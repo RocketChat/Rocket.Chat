@@ -1,16 +1,17 @@
 import { Callout } from '@rocket.chat/fuselage';
-import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import AppearancePage from './AppearancePage';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
-import AppearancePage from './AppearancePage';
 
 const AppearancePageContainer = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/appearance');
 

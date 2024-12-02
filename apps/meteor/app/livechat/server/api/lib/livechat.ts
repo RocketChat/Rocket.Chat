@@ -49,16 +49,11 @@ async function findDepartments(
 }
 
 export function findGuest(token: string): Promise<ILivechatVisitor | null> {
-	return LivechatVisitors.getVisitorByToken(token, {
-		projection: {
-			name: 1,
-			username: 1,
-			token: 1,
-			visitorEmails: 1,
-			department: 1,
-			activity: 1,
-		},
-	});
+	return LivechatVisitors.getVisitorByToken(token);
+}
+
+export function findGuestWithoutActivity(token: string): Promise<ILivechatVisitor | null> {
+	return LivechatVisitors.getVisitorByToken(token, { projection: { name: 1, username: 1, token: 1, visitorEmails: 1, department: 1 } });
 }
 
 export async function findRoom(token: string, rid?: string): Promise<IOmnichannelRoom | null> {
@@ -138,6 +133,7 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 			hiddenSystemMessages: initSettings.Livechat_hide_system_messages,
 			livechatLogo: initSettings.Assets_livechat_widget_logo,
 			hideWatermark: initSettings.Livechat_hide_watermark || false,
+			visitorsCanCloseChat: initSettings.Omnichannel_allow_visitors_to_close_conversation,
 		},
 		theme: {
 			title: initSettings.Livechat_title,

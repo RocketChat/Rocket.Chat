@@ -4,6 +4,7 @@ import { Messages, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import logger from './logger';
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -36,7 +37,11 @@ Meteor.methods<ServerMethods>({
 				});
 			}
 
-			await Subscriptions.setAsUnreadByRoomIdAndUserId(lastMessage.rid, userId, lastMessage.ts);
+			const setAsUnreadResponse = await Subscriptions.setAsUnreadByRoomIdAndUserId(lastMessage.rid, userId, lastMessage.ts);
+			if (setAsUnreadResponse.modifiedCount) {
+				void notifyOnSubscriptionChangedByRoomIdAndUserId(lastMessage.rid, userId);
+			}
+
 			return;
 		}
 
@@ -72,7 +77,11 @@ Meteor.methods<ServerMethods>({
 		if (firstUnreadMessage.ts >= lastSeen) {
 			return logger.debug('Provided message is already marked as unread');
 		}
-		logger.debug(`Updating unread  message of ${originalMessage.ts} as the first unread`);
-		await Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, userId, originalMessage.ts);
+
+		logger.debug(`Updating unread message of ${originalMessage.ts} as the first unread`);
+		const setAsUnreadResponse = await Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, userId, originalMessage.ts);
+		if (setAsUnreadResponse.modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomIdAndUserId(originalMessage.rid, userId);
+		}
 	},
 });

@@ -2,13 +2,13 @@ import type { IEditedMessage, IMessage, IRoom, ISubscription } from '@rocket.cha
 import { Random } from '@rocket.chat/random';
 import moment from 'moment';
 
+import type { DataAPI } from './ChatAPI';
 import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
-import { Messages, ChatRoom, ChatSubscription } from '../../../app/models/client';
+import { Messages, Rooms, Subscriptions } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
 import { MessageTypes } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { prependReplies } from '../utils/prependReplies';
-import type { DataAPI } from './ChatAPI';
 
 export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage['_id'] | undefined }): DataAPI => {
 	const composeMessage = async (
@@ -214,8 +214,22 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		return deleteAllowed && onTimeForDelete;
 	};
 
-	const deleteMessage = async (mid: IMessage['_id']): Promise<void> => {
-		await sdk.call('deleteMessage', { _id: mid });
+	const deleteMessage = async (msgIdOrMsg: IMessage | IMessage['_id']): Promise<void> => {
+		let msgId: string;
+		let roomId: string;
+		if (typeof msgIdOrMsg === 'string') {
+			msgId = msgIdOrMsg;
+			const msg = await findMessageByID(msgId);
+			if (!msg) {
+				throw new Error('Message not found');
+			}
+			roomId = msg.rid;
+		} else {
+			msgId = msgIdOrMsg._id;
+			roomId = msgIdOrMsg.rid;
+		}
+
+		await sdk.rest.post('/v1/chat.delete', { msgId, roomId });
 	};
 
 	const drafts = new Map<IMessage['_id'] | undefined, string>();
@@ -230,7 +244,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		drafts.set(mid, draft);
 	};
 
-	const findRoom = async (): Promise<IRoom | undefined> => ChatRoom.findOne({ _id: rid }, { reactive: false });
+	const findRoom = async (): Promise<IRoom | undefined> => Rooms.findOne({ _id: rid }, { reactive: false });
 
 	const getRoom = async (): Promise<IRoom> => {
 		const room = await findRoom();
@@ -242,14 +256,14 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		return room;
 	};
 
-	const isSubscribedToRoom = async (): Promise<boolean> => !!ChatSubscription.findOne({ rid }, { reactive: false });
+	const isSubscribedToRoom = async (): Promise<boolean> => !!Subscriptions.findOne({ rid }, { reactive: false });
 
 	const joinRoom = async (): Promise<void> => {
 		await sdk.call('joinRoom', rid);
 	};
 
 	const findDiscussionByID = async (drid: IRoom['_id']): Promise<IRoom | undefined> =>
-		ChatRoom.findOne({ _id: drid, prid: { $exists: true } }, { reactive: false });
+		Rooms.findOne({ _id: drid, prid: { $exists: true } }, { reactive: false });
 
 	const getDiscussionByID = async (drid: IRoom['_id']): Promise<IRoom> => {
 		const discussion = await findDiscussionByID(drid);
@@ -277,13 +291,13 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const findSubscription = async (): Promise<ISubscription | undefined> => {
-		return ChatSubscription.findOne({ rid }, { reactive: false });
+		return Subscriptions.findOne({ rid }, { reactive: false });
 	};
 
 	const getSubscription = createStrictGetter(findSubscription, 'Subscription not found');
 
 	const findSubscriptionFromMessage = async (message: IMessage): Promise<ISubscription | undefined> => {
-		return ChatSubscription.findOne({ rid: message.rid }, { reactive: false });
+		return Subscriptions.findOne({ rid: message.rid }, { reactive: false });
 	};
 
 	const getSubscriptionFromMessage = createStrictGetter(findSubscriptionFromMessage, 'Subscription not found');

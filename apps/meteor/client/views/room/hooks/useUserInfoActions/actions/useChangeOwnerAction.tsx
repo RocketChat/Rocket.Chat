@@ -108,7 +108,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 						icon: 'shield-check' as const,
 						onClick: changeOwnerAction,
 						type: 'privileges' as UserInfoActionType,
-				  }
+					}
 				: undefined,
 		[changeOwnerAction, roomCanSetOwner, userCanSetOwner, isOwner, t, room],
 	);

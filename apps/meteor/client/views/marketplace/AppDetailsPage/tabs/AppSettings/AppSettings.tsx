@@ -1,12 +1,12 @@
 import { Box, FieldGroup } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import type { ISettings } from '../../../../../apps/@types/IOrchestrator';
 import AppSetting from './AppSetting';
+import type { ISettings } from '../../../../../apps/@types/IOrchestrator';
 
 const AppSettings = ({ settings }: { settings: ISettings }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<>

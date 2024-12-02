@@ -4,12 +4,12 @@ import type { ReactNode } from 'react';
 import type React from 'react';
 import { useCallback, useMemo } from 'react';
 
+import { useDropTarget } from './useDropTarget';
 import { useIsRoomOverMacLimit } from '../../../../hooks/omnichannel/useIsRoomOverMacLimit';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useChat } from '../../contexts/ChatContext';
-import { useRoom } from '../../contexts/RoomContext';
-import { useDropTarget } from './useDropTarget';
+import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 
 export const useFileUploadDropTarget = (): readonly [
 	fileUploadTriggerProps: {
@@ -29,13 +29,14 @@ export const useFileUploadDropTarget = (): readonly [
 
 	const t = useTranslation();
 
-	const fileUploadEnabled = useSetting<boolean>('FileUpload_Enabled');
+	const fileUploadEnabled = useSetting('FileUpload_Enabled', true);
 	const user = useUser();
 	const fileUploadAllowedForUser = useReactiveValue(
 		useCallback(() => !roomCoordinator.readOnly(room._id, { username: user?.username }), [room._id, user?.username]),
 	);
 
 	const chat = useChat();
+	const subscription = useRoomSubscription();
 
 	const onFileDrop = useMutableCallback(async (files: File[]) => {
 		const { getMimeType } = await import('../../../../../app/utils/lib/mimeTypes');
@@ -70,7 +71,7 @@ export const useFileUploadDropTarget = (): readonly [
 			} as const;
 		}
 
-		if (!fileUploadAllowedForUser) {
+		if (!fileUploadAllowedForUser || !subscription) {
 			return {
 				enabled: false,
 				reason: t('error-not-allowed'),
@@ -83,7 +84,7 @@ export const useFileUploadDropTarget = (): readonly [
 			onFileDrop,
 			...overlayProps,
 		} as const;
-	}, [fileUploadAllowedForUser, fileUploadEnabled, isRoomOverMacLimit, onFileDrop, overlayProps, t]);
+	}, [fileUploadAllowedForUser, fileUploadEnabled, isRoomOverMacLimit, onFileDrop, overlayProps, subscription, t]);
 
 	return [triggerProps, allOverlayProps] as const;
 };

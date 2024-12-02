@@ -1,7 +1,7 @@
-@import '../mixins';
+@use '../mixins';
 
 .textarea-input {
-	@include form__input-box;
-
 	resize: none;
+
+	@include mixins.form__input-box;
 }

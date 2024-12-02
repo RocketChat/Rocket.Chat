@@ -1,10 +1,11 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { useAuditMenu } from './useAuditMenu';
 
 it('should return an empty array of items if doesn`t have license', async () => {
-	const { result, waitFor } = renderHook(() => useAuditMenu(), {
+	const { result } = renderHook(() => useAuditMenu(), {
+		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/licenses.info', () => ({
 				// @ts-expect-error: just for testing
@@ -18,13 +19,12 @@ it('should return an empty array of items if doesn`t have license', async () => 
 			.build(),
 	});
 
-	await waitFor(() => result.all.length > 1);
-
-	expect(result.current).toEqual([]);
+	await waitFor(() => expect(result.current).toEqual([]));
 });
 
 it('should return an empty array of items if have license and not have permissions', async () => {
-	const { result, waitFor } = renderHook(() => useAuditMenu(), {
+	const { result } = renderHook(() => useAuditMenu(), {
+		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/licenses.info', () => ({
 				license: {
@@ -41,13 +41,12 @@ it('should return an empty array of items if have license and not have permissio
 			.build(),
 	});
 
-	await waitFor(() => result.all.length > 1);
-
-	expect(result.current).toEqual([]);
+	await waitFor(() => expect(result.current).toEqual([]));
 });
 
 it('should return auditItems if have license and permissions', async () => {
-	const { result, waitFor } = renderHook(() => useAuditMenu(), {
+	const { result } = renderHook(() => useAuditMenu(), {
+		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/licenses.info', () => ({
 				license: {
@@ -65,12 +64,12 @@ it('should return auditItems if have license and permissions', async () => {
 			.build(),
 	});
 
-	await waitFor(() => result.current.length > 0);
-
-	expect(result.current[0].items[0]).toEqual(
-		expect.objectContaining({
-			id: 'messages',
-		}),
+	await waitFor(() =>
+		expect(result.current[0]?.items[0]).toEqual(
+			expect.objectContaining({
+				id: 'messages',
+			}),
+		),
 	);
 
 	expect(result.current[0].items[1]).toEqual(
@@ -81,7 +80,8 @@ it('should return auditItems if have license and permissions', async () => {
 });
 
 it('should return auditMessages item if have license and can-audit permission', async () => {
-	const { result, waitFor } = renderHook(() => useAuditMenu(), {
+	const { result } = renderHook(() => useAuditMenu(), {
+		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/licenses.info', () => ({
 				license: {
@@ -98,17 +98,18 @@ it('should return auditMessages item if have license and can-audit permission', 
 			.build(),
 	});
 
-	await waitFor(() => result.current.length > 0);
-
-	expect(result.current[0].items[0]).toEqual(
-		expect.objectContaining({
-			id: 'messages',
-		}),
+	await waitFor(() =>
+		expect(result.current[0]?.items[0]).toEqual(
+			expect.objectContaining({
+				id: 'messages',
+			}),
+		),
 	);
 });
 
 it('should return audiLogs item if have license and can-audit-log permission', async () => {
-	const { result, waitFor } = renderHook(() => useAuditMenu(), {
+	const { result } = renderHook(() => useAuditMenu(), {
+		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/licenses.info', () => ({
 				license: {
@@ -125,11 +126,11 @@ it('should return audiLogs item if have license and can-audit-log permission', a
 			.build(),
 	});
 
-	await waitFor(() => result.current.length > 0);
-
-	expect(result.current[0].items[0]).toEqual(
-		expect.objectContaining({
-			id: 'auditLog',
-		}),
+	await waitFor(() =>
+		expect(result.current[0]?.items[0]).toEqual(
+			expect.objectContaining({
+				id: 'auditLog',
+			}),
+		),
 	);
 });

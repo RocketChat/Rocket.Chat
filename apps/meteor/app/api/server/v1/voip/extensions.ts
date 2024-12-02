@@ -3,10 +3,10 @@ import type { IVoipExtensionBase } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
+import { logger } from './logger';
 import { settings } from '../../../../settings/server';
 import { generateJWT } from '../../../../utils/server/lib/JWTHelper';
 import { API } from '../../api';
-import { logger } from './logger';
 
 // Get the connector version and type
 API.v1.addRoute(

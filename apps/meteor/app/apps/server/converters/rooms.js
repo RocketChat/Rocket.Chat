@@ -1,5 +1,5 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { LivechatVisitors, Rooms, LivechatDepartment, Users } from '@rocket.chat/models';
+import { LivechatVisitors, Rooms, LivechatDepartment, Users, LivechatContacts } from '@rocket.chat/models';
 
 import { transformMappedData } from './transformMappedData';
 
@@ -75,6 +75,12 @@ export class AppRoomsConverter {
 			};
 		}
 
+		let contactId;
+		if (room.contact?._id) {
+			const contact = await LivechatContacts.findOneById(room.contact._id, { projection: { _id: 1 } });
+			contactId = contact._id;
+		}
+
 		const newRoom = {
 			...(room.id && { _id: room.id }),
 			fname: room.displayName,
@@ -100,6 +106,7 @@ export class AppRoomsConverter {
 			customFields: room.customFields,
 			livechatData: room.livechatData,
 			prid: typeof room.parentRoom === 'undefined' ? undefined : room.parentRoom.id,
+			contactId,
 			...(room._USERNAMES && { _USERNAMES: room._USERNAMES }),
 			...(room.source && {
 				source: {
@@ -111,8 +118,8 @@ export class AppRoomsConverter {
 		return Object.assign(newRoom, room._unmappedProperties_);
 	}
 
-	async convertRoom(room) {
-		if (!room) {
+	async convertRoom(originalRoom) {
+		if (!originalRoom) {
 			return undefined;
 		}
 
@@ -134,6 +141,7 @@ export class AppRoomsConverter {
 			_USERNAMES: '_USERNAMES',
 			description: 'description',
 			source: 'source',
+			closer: 'closer',
 			isDefault: (room) => {
 				const result = !!room.default;
 				delete room.default;
@@ -179,6 +187,15 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('visitors').convertById(v._id);
 			},
+			contact: (room) => {
+				const { contactId } = room;
+
+				if (!contactId) {
+					return undefined;
+				}
+
+				return this.orch.getConverters().get('contacts').convertById(contactId);
+			},
 			// Note: room.v is not just visitor, it also contains channel related visitor data
 			// so we need to pass this data to the converter
 			// So suppose you have a contact whom we're contacting using SMS via 2 phone no's,
@@ -209,6 +226,19 @@ export class AppRoomsConverter {
 				delete room.departmentId;
 
 				return this.orch.getConverters().get('departments').convertById(departmentId);
+			},
+			closedBy: async (room) => {
+				const { closedBy } = room;
+
+				if (!closedBy) {
+					return undefined;
+				}
+
+				delete room.closedBy;
+				if (originalRoom.closer === 'user') {
+					return this.orch.getConverters().get('users').convertById(closedBy._id);
+				}
+				return this.orch.getConverters().get('visitors').convertById(closedBy._id);
 			},
 			servedBy: async (room) => {
 				const { servedBy } = room;
@@ -245,7 +275,7 @@ export class AppRoomsConverter {
 			},
 		};
 
-		return transformMappedData(room, map);
+		return transformMappedData(originalRoom, map);
 	}
 
 	_convertTypeToApp(typeChar) {

@@ -1,11 +1,12 @@
 import type { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
+import { GenericMenu } from '@rocket.chat/ui-client';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
-import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import { HeaderToolbarAction, HeaderToolbarDivider } from '../../../../components/Header';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import type { RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext';
@@ -20,7 +21,7 @@ type MenuActionsProps = {
 }[];
 
 const RoomToolbox = ({ className }: RoomToolboxProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { roomToolboxExpanded } = useLayout();
 
 	const toolbox = useRoomToolbox();

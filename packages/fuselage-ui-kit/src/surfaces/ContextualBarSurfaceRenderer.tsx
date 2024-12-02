@@ -1,12 +1,12 @@
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 
-import TabNavigationBlock from '../blocks/TabNavigationBlock';
-import { AppIdProvider } from '../contexts/AppIdContext';
 import {
   FuselageSurfaceRenderer,
   renderTextObject,
 } from './FuselageSurfaceRenderer';
+import TabNavigationBlock from '../blocks/TabNavigationBlock';
+import { AppIdProvider } from '../contexts/AppIdContext';
 
 export class ContextualBarSurfaceRenderer extends FuselageSurfaceRenderer {
   public constructor() {
@@ -30,7 +30,7 @@ export class ContextualBarSurfaceRenderer extends FuselageSurfaceRenderer {
   tab_navigation(
     block: UiKit.ExperimentalTabNavigationBlock,
     context: UiKit.BlockContext,
-    index: number
+    index: number,
   ): ReactElement | null {
     if (context === UiKit.BlockContext.BLOCK) {
       return (

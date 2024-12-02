@@ -10,8 +10,12 @@ import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
+import DropTargetOverlay from './DropTargetOverlay';
+import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import RoomAnnouncement from '../RoomAnnouncement';
+import LoadingMessagesIndicator from './LoadingMessagesIndicator';
+import RetentionPolicyWarning from './RetentionPolicyWarning';
 import ComposerContainer from '../composer/ComposerContainer';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
@@ -20,10 +24,6 @@ import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
-import DropTargetOverlay from './DropTargetOverlay';
-import JumpToRecentMessageButton from './JumpToRecentMessageButton';
-import LoadingMessagesIndicator from './LoadingMessagesIndicator';
-import RetentionPolicyWarning from './RetentionPolicyWarning';
 import RoomForeword from './RoomForeword/RoomForeword';
 import { RoomTopic } from './RoomTopic';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
@@ -61,7 +61,7 @@ const RoomBody = (): ReactElement => {
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useRoomMessages();
 
-	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead') as boolean | undefined;
+	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', false);
 
 	const canPreviewChannelRoom = usePermission('preview-c-room');
 
@@ -262,9 +262,9 @@ const RoomBody = (): ReactElement => {
 														{hasMorePreviousMessages ? (
 															<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 														) : (
-															<li className='start color-info-font-color'>
-																{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
+															<li>
 																<RoomForeword user={user} room={room} />
+																{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
 															</li>
 														)}
 													</>

@@ -6,6 +6,7 @@ export const createPermissions = async () => {
 	const permissions = [
 		{ _id: 'can-audit', roles: ['admin', 'auditor'] },
 		{ _id: 'can-audit-log', roles: ['admin', 'auditor-log'] },
+		{ _id: 'view-members-list-all-rooms', roles: ['admin', 'auditor'] },
 	];
 
 	const defaultRoles = [

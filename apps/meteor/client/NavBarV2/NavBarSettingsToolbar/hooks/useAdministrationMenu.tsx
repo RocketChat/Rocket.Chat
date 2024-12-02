@@ -1,6 +1,6 @@
-import { useAtLeastOnePermission, usePermission, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
-
-import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { useAtLeastOnePermission, usePermission, useRouter } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 const ADMIN_PERMISSIONS = [
 	'view-statistics',
@@ -32,7 +32,7 @@ const ADMIN_PERMISSIONS = [
 
 export const useAdministrationMenu = () => {
 	const router = useRouter();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const isAdmin = useAtLeastOnePermission(ADMIN_PERMISSIONS);
 	const isOmnichannel = usePermission('view-livechat-manager');

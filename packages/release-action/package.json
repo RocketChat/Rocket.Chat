@@ -10,20 +10,20 @@
 	"main": "dist/index.js",
 	"packageManager": "yarn@3.5.1",
 	"devDependencies": {
-		"@types/node": "^16.18.60",
-		"typescript": "~5.3.3"
+		"@types/node": "~20.17.8",
+		"typescript": "~5.7.2"
 	},
 	"dependencies": {
-		"@actions/core": "^1.10.1",
+		"@actions/core": "^1.11.1",
 		"@actions/exec": "^1.1.1",
-		"@actions/github": "^5.1.1",
-		"@octokit/plugin-throttling": "^6.0.0",
+		"@actions/github": "^6.0.0",
+		"@octokit/plugin-throttling": "^6.1.0",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"eslint": "~8.45.0",
 		"mdast-util-to-string": "2.0.0",
 		"remark-parse": "9.0.0",
 		"remark-stringify": "9.0.1",
-		"semver": "^7.5.2",
+		"semver": "^7.6.3",
 		"unified": "9.2.2"
 	}
 }

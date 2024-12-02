@@ -9,8 +9,6 @@ export const MockedServerContext = ({
 	handleRequest,
 	handleMethod,
 	children,
-
-	isEnterprise,
 }: {
 	handleRequest?: <TMethod extends Method, TPathPattern extends PathPattern>(args: {
 		method: TMethod;
@@ -41,14 +39,6 @@ export const MockedServerContext = ({
 						keys: UrlParams<TPathPattern>;
 						params: OperationParams<TMethod, TPathPattern>;
 					}) => {
-						if (isEnterprise !== undefined) {
-							if (args.method === 'GET' && args.pathPattern === '/v1/licenses.isEnterprise') {
-								return {
-									isEnterprise,
-								} as any;
-							}
-						}
-
 						return handleRequest?.(args);
 					},
 					getStream: () => () => undefined,

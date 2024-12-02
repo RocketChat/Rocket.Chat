@@ -1,9 +1,6 @@
+import server from '@rocket.chat/jest-presets/server';
+import type { Config } from 'jest';
+
 export default {
-	preset: 'ts-jest',
-	errorOnDeprecated: true,
-	testEnvironment: 'jsdom',
-	modulePathIgnorePatterns: ['<rootDir>/dist/'],
-	moduleNameMapper: {
-		'\\.css$': 'identity-obj-proxy',
-	},
-};
+	preset: server.preset,
+} satisfies Config;

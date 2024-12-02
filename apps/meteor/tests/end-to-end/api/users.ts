@@ -91,7 +91,7 @@ const setRoomConfig = ({ roomId, favorite, isDefault }: { roomId: IRoom['_id']; 
 				? {
 						defaultValue: true,
 						favorite: false,
-				  }
+					}
 				: undefined,
 		});
 };
@@ -605,6 +605,25 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
+
+		it('should return an error when trying register new user with an invalid username', (done) => {
+			void request
+				.post(api('users.register'))
+				.send({
+					email,
+					name: 'name',
+					username: 'test$username<>',
+					pass: 'test',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').and.to.be.equal('The username provided is not valid');
+				})
+				.end(done);
+		});
+
 		it('should return an error when trying register new user with an existing username', (done) => {
 			void request
 				.post(api('users.register'))
@@ -703,7 +722,7 @@ describe('[Users]', () => {
 				.set(credentials)
 				.query({
 					userId: targetUser._id,
-					fields: JSON.stringify({ userRooms: 1 }),
+					includeUserRooms: true,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -731,6 +750,7 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
+
 		it('should return the rooms when the user request your own rooms but he does NOT have the necessary permission', (done) => {
 			void updatePermission('view-other-user-channels', []).then(() => {
 				void request
@@ -738,7 +758,7 @@ describe('[Users]', () => {
 					.set(credentials)
 					.query({
 						userId: credentials['X-User-Id'],
-						fields: JSON.stringify({ userRooms: 1 }),
+						includeUserRooms: true,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -1081,37 +1101,6 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
-		it('should query all users in the system by custom fields', (done) => {
-			const query = {
-				fields: JSON.stringify({
-					username: 1,
-					_id: 1,
-					customFields: 1,
-				}),
-				query: JSON.stringify({
-					'customFields.customFieldText': 'success',
-				}),
-			};
-
-			void request
-				.get(api('users.list'))
-				.query(query)
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('users');
-					const queriedUser = (res.body.users as IUser[]).find((u) => u._id === user._id);
-					assert.isDefined(queriedUser);
-					expect(queriedUser).to.have.property('customFields');
-					expect(queriedUser.customFields).to.have.property('customFieldText', 'success');
-				})
-				.end(done);
-		});
-
 		it('should sort for user statuses and check if deactivated user is correctly sorted', (done) => {
 			const query = {
 				fields: JSON.stringify({
@@ -1185,7 +1174,7 @@ describe('[Users]', () => {
 			await request.get(api('users.list')).set(user2Credentials).expect('Content-Type', 'application/json').expect(403);
 		});
 
-		it('should exclude inviteToken in the user item for privileged users even when fields={inviteToken:1} is specified', async () => {
+		it('should exclude inviteToken in the user item for privileged users', async () => {
 			await request
 				.post(api('useInviteToken'))
 				.set(user2Credentials)
@@ -1217,7 +1206,7 @@ describe('[Users]', () => {
 				});
 		});
 
-		it('should exclude inviteToken in the user item for normal users even when fields={inviteToken:1} is specified', async () => {
+		it('should exclude inviteToken in the user item for normal users', async () => {
 			await updateSetting('API_Apply_permission_view-outside-room_on_users-list', false);
 			await request
 				.post(api('useInviteToken'))
@@ -1654,6 +1643,42 @@ describe('[Users]', () => {
 					expect(res.body).to.have.property('error', `Bio size exceeds ${MAX_BIO_LENGTH} characters [error-bio-size-exceeded]`);
 				})
 				.end(done);
+		});
+
+		it('should return an error when trying to upsert a user by sending an empty userId', () => {
+			return request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: '',
+					data: {},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error', 'must NOT have fewer than 1 characters [invalid-params]');
+				});
+		});
+
+		it('should return an error when trying to use the joinDefaultChannels param, which is not intended for updates', () => {
+			return request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						joinDefaultChannels: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error', 'must NOT have additional properties [invalid-params]');
+				});
 		});
 
 		it("should update a bot's email", (done) => {
@@ -2624,18 +2649,37 @@ describe('[Users]', () => {
 	});
 
 	describe('[/users.forgotPassword]', () => {
+		it('should return an error when "Accounts_PasswordReset" is disabled', (done) => {
+			void updateSetting('Accounts_PasswordReset', false).then(() => {
+				void request
+					.post(api('users.forgotPassword'))
+					.send({
+						email: adminEmail,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Password reset is not enabled');
+					})
+					.end(done);
+			});
+		});
+
 		it('should send email to user (return success), when is a valid email', (done) => {
-			void request
-				.post(api('users.forgotPassword'))
-				.send({
-					email: adminEmail,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+			void updateSetting('Accounts_PasswordReset', true).then(() => {
+				void request
+					.post(api('users.forgotPassword'))
+					.send({
+						email: adminEmail,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
 		});
 
 		it('should not send email to user(return error), when is a invalid email', (done) => {
@@ -2944,7 +2988,7 @@ describe('[Users]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 				});
 		});
 
@@ -3207,10 +3251,10 @@ describe('[Users]', () => {
 						.get(api('users.getPersonalAccessTokens'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
-						.expect(400)
+						.expect(403)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
-							expect(res.body.errorType).to.be.equal('not-authorized');
+							expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
 						})
 						.end(done);
 				});
@@ -3331,6 +3375,7 @@ describe('[Users]', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 					})
 					.end(done);
 			});
@@ -3347,6 +3392,7 @@ describe('[Users]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 				})
 				.end(done);
 		});
@@ -3363,6 +3409,7 @@ describe('[Users]', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 					})
 					.end(done);
 			});
@@ -3577,7 +3624,7 @@ describe('[Users]', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'unauthorized');
+						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 					})
 					.end(done);
 			});
@@ -3700,9 +3747,9 @@ describe('[Users]', () => {
 
 		it('should invalidate all active sesions', (done) => {
 			/* We want to validate that the login with the "old" credentials fails
-      		However, the removal of the tokens is done asynchronously.
-      		Thus, we check that within the next seconds, at least one try to
-      		access an authentication requiring route fails */
+				However, the removal of the tokens is done asynchronously.
+				Thus, we check that within the next seconds, at least one try to
+				access an authentication requiring route fails */
 			let counter = 0;
 
 			async function checkAuthenticationFails() {
@@ -4060,9 +4107,9 @@ describe('[Users]', () => {
 
 		it('should invalidate all active sesions', (done) => {
 			/* We want to validate that the login with the "old" credentials fails
-      		However, the removal of the tokens is done asynchronously.
-      		Thus, we check that within the next seconds, at least one try to
-      		access an authentication requiring route fails */
+				However, the removal of the tokens is done asynchronously.
+				Thus, we check that within the next seconds, at least one try to
+				access an authentication requiring route fails */
 			let counter = 0;
 
 			async function checkAuthenticationFails() {

@@ -1,5 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import type { TFunction } from 'i18next';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -17,7 +18,7 @@ if ('serviceWorker' in navigator) {
 	});
 }
 
-export const registerDownloadForUid = (uid: string, t: ReturnType<typeof useTranslation>['t'], title?: string) => {
+export const registerDownloadForUid = (uid: string, t: TFunction, title?: string) => {
 	ee.once(uid, ({ result }) => {
 		downloadAs({ data: [new Blob([result])] }, title ?? t('Download'));
 	});

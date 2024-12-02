@@ -18,9 +18,9 @@ import {
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { outgoingEvents } from '../../../../../app/integrations/lib/outgoingEvents';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
@@ -52,7 +52,7 @@ type EditOutgoingWebhookPayload = Pick<
 >;
 
 const OutgoingWebhookForm = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const {
 		control,
@@ -75,13 +75,7 @@ const OutgoingWebhookForm = () => {
 		[t],
 	);
 
-	const scriptEngineOptions: SelectOption[] = useMemo(
-		() => [
-			['vm2', t('Script_Engine_vm2')],
-			['isolated-vm', t('Script_Engine_isolated_vm')],
-		],
-		[t],
-	);
+	const scriptEngineOptions: SelectOption[] = useMemo(() => [['isolated-vm', t('Script_Engine_isolated_vm')]], [t]);
 
 	const showChannel = useMemo(() => outgoingEvents[event].use.channel, [event]);
 	const showTriggerWords = useMemo(() => outgoingEvents[event].use.triggerWords, [event]);
@@ -185,7 +179,10 @@ const OutgoingWebhookForm = () => {
 								<FieldHint
 									id={`${channelField}-hint-2`}
 									dangerouslySetInnerHTML={{
-										__html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', '@', '#', '@john', '#general'),
+										__html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', {
+											postProcess: 'sprintf',
+											sprintf: ['@', '#', '@john', '#general'],
+										}),
 									}}
 								/>
 								<FieldHint id={`${channelField}-hint-3`} dangerouslySetInnerHTML={{ __html: t('Integrations_for_all_channels') }} />
@@ -229,7 +226,10 @@ const OutgoingWebhookForm = () => {
 								<FieldHint
 									id={`${targetRoomField}-hint-2`}
 									dangerouslySetInnerHTML={{
-										__html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', '@', '#', '@john', '#general'),
+										__html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', {
+											postProcess: 'sprintf',
+											sprintf: ['@', '#', '@john', '#general'],
+										}),
 									}}
 								/>
 							</Field>
@@ -242,7 +242,7 @@ const OutgoingWebhookForm = () => {
 								<Controller
 									name='urls'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('URLs')) }}
+									rules={{ required: t('Required_field', { field: t('URLs') }) }}
 									render={({ field }) => (
 										<TextAreaInput
 											id={urlsField}
@@ -280,7 +280,7 @@ const OutgoingWebhookForm = () => {
 								<Controller
 									name='username'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Post_as')) }}
+									rules={{ required: t('Required_field', { field: t('Post_as') }) }}
 									render={({ field }) => (
 										<TextInput
 											id={usernameField}
@@ -357,7 +357,10 @@ const OutgoingWebhookForm = () => {
 								/>
 							</FieldRow>
 							<FieldHint id={`${emojiField}-hint-1`}>{t('You_can_use_an_emoji_as_avatar')}</FieldHint>
-							<FieldHint id={`${emojiField}-hint-2`} dangerouslySetInnerHTML={{ __html: t('Example_s', ':ghost:') }} />
+							<FieldHint
+								id={`${emojiField}-hint-2`}
+								dangerouslySetInnerHTML={{ __html: t('Example_s', { postProcess: 'sprintf', sprintf: [':ghost:'] }) }}
+							/>
 						</Field>
 						<Field>
 							<FieldLabel htmlFor={tokenField} required>
@@ -367,7 +370,7 @@ const OutgoingWebhookForm = () => {
 								<Controller
 									name='token'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Token')) }}
+									rules={{ required: t('Required_field', { field: t('Token') }) }}
 									render={({ field }) => (
 										<TextInput
 											id={tokenField}

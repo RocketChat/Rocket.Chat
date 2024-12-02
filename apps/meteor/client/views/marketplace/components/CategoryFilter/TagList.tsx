@@ -8,14 +8,20 @@ type TagListProps = {
 	onClick: CategoryDropDownListProps['onSelected'];
 };
 
-const TagList = ({ categories, onClick }: TagListProps) => (
-	<ButtonGroup wrap small>
-		{categories.map((category) => (
-			<Chip flexShrink={0} key={category.id} onClick={(): void => onClick(category)} disabled={undefined} mbe={8}>
-				{category.label}
-			</Chip>
-		))}
-	</ButtonGroup>
-);
+const TagList = ({ categories, onClick }: TagListProps) => {
+	if (!categories.length) {
+		return null;
+	}
+
+	return (
+		<ButtonGroup wrap small>
+			{categories.map((category) => (
+				<Chip key={category.id} onClick={() => onClick(category)}>
+					{category.label}
+				</Chip>
+			))}
+		</ButtonGroup>
+	);
+};
 
 export default TagList;

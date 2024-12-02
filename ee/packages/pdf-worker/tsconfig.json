@@ -1,10 +1,7 @@
 {
 	"extends": "../../../tsconfig.base.server.json",
 	"compilerOptions": {
-		"declaration": true,
-		"rootDir": "./src",
-		"outDir": "./dist",
-		"jsx": "react-jsx",
+		"jsx": "react-jsx"
 	},
-	"include": ["./src/**/*"]
+	"include": ["./src/**/*", "./jest.config.ts", "./.storybook/**/*"]
 }

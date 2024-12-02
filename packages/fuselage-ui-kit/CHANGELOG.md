@@ -1,5 +1,551 @@
 # Change Log
 
+## 13.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.1
+  - @rocket.chat/gazzodown@13.0.0-rc.1
+  - @rocket.chat/ui-contexts@13.0.0-rc.1
+  - @rocket.chat/ui-avatar@9.0.0-rc.1
+  - @rocket.chat/ui-video-conf@13.0.0-rc.1
+  </details>
+
+## 13.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [82767d8fd8a52ac348e8aded1d238e688d36129b, 80e36bfc3938775eb26aa5576f1b9b98896e1cc4, 3569b0a9c48f8b94ebaef2f8b607c52fdb8e570a, b4841cb7206d855d7a1bc7604683a5b4a48b7176, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0, ce7024af36fcde97b1da5b2731f6edc4a4c236b8, d398866dba725918017e3609807f9d0ab9b89b72, d398866dba725918017e3609807f9d0ab9b89b72]:</summary>
+
+  - @rocket.chat/apps-engine@1.48.0-rc.0
+  - @rocket.chat/core-typings@7.1.0-rc.0
+  - @rocket.chat/gazzodown@13.0.0-rc.0
+  - @rocket.chat/ui-contexts@13.0.0-rc.0
+  - @rocket.chat/ui-avatar@9.0.0-rc.0
+  - @rocket.chat/ui-video-conf@13.0.0-rc.0
+  </details>
+
+## 12.0.0
+
+### Minor Changes
+
+- ([#33592](https://github.com/RocketChat/Rocket.Chat/pull/33592)) Adds ability to collapse/expand sidebar groups
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [687f1efd5f, bcacbb1cee, 9274cf4586, b338807d76, 5f9826bed6, debd3ffa22, a5f25e73b5, 3ea02d3cc1, e3629e065b, 03d148524b, 81998f3450, 509143d6dd]:</summary>
+
+  - @rocket.chat/ui-kit@0.37.0
+  - @rocket.chat/core-typings@7.0.0
+  - @rocket.chat/ui-video-conf@12.0.0
+  - @rocket.chat/gazzodown@12.0.0
+  - @rocket.chat/ui-avatar@8.0.0
+  - @rocket.chat/apps-engine@1.47.0
+  - @rocket.chat/ui-contexts@12.0.0
+  </details>
+
+## 12.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.6
+  - @rocket.chat/gazzodown@12.0.0-rc.6
+  - @rocket.chat/ui-contexts@12.0.0-rc.6
+  - @rocket.chat/ui-avatar@8.0.0-rc.6
+  - @rocket.chat/ui-video-conf@12.0.0-rc.6
+  </details>
+
+## 12.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@12.0.0-rc.5
+  - @rocket.chat/gazzodown@12.0.0-rc.5
+  - @rocket.chat/ui-avatar@8.0.0-rc.5
+  - @rocket.chat/ui-video-conf@12.0.0-rc.5
+  - @rocket.chat/core-typings@7.0.0-rc.5
+  </details>
+
+## 12.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.4
+  - @rocket.chat/gazzodown@12.0.0-rc.4
+  - @rocket.chat/ui-contexts@12.0.0-rc.4
+  - @rocket.chat/ui-avatar@8.0.0-rc.4
+  - @rocket.chat/ui-video-conf@12.0.0-rc.4
+  </details>
+
+## 12.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.3
+  - @rocket.chat/gazzodown@12.0.0-rc.3
+  - @rocket.chat/ui-contexts@12.0.0-rc.3
+  - @rocket.chat/ui-avatar@8.0.0-rc.3
+  - @rocket.chat/ui-video-conf@12.0.0-rc.3
+  </details>
+
+## 12.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.2
+  - @rocket.chat/gazzodown@12.0.0-rc.2
+  - @rocket.chat/ui-contexts@12.0.0-rc.2
+  - @rocket.chat/ui-avatar@8.0.0-rc.2
+  - @rocket.chat/ui-video-conf@12.0.0-rc.2
+  </details>
+
+## 12.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.1
+  - @rocket.chat/gazzodown@12.0.0-rc.1
+  - @rocket.chat/ui-contexts@12.0.0-rc.1
+  - @rocket.chat/ui-avatar@8.0.0-rc.1
+  - @rocket.chat/ui-video-conf@12.0.0-rc.1
+  </details>
+
+## 12.0.0-rc.0
+
+### Minor Changes
+
+- ([#33592](https://github.com/RocketChat/Rocket.Chat/pull/33592)) Adds ability to collapse/expand sidebar groups
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7726d68374, 687f1efd5f, bcacbb1cee, 9274cf4586, b338807d76, 5f9826bed6, debd3ffa22, a5f25e73b5, 3ea02d3cc1, e3629e065b, 03d148524b, 81998f3450, 509143d6dd]:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.0
+  - @rocket.chat/ui-kit@0.37.0-rc.0
+  - @rocket.chat/ui-video-conf@12.0.0-rc.0
+  - @rocket.chat/gazzodown@12.0.0-rc.0
+  - @rocket.chat/ui-avatar@8.0.0-rc.0
+  - @rocket.chat/apps-engine@1.47.0-rc.0
+  - @rocket.chat/ui-contexts@12.0.0-rc.0
+  </details>
+
+## 11.0.0
+
+### Minor Changes
+
+- ([#32821](https://github.com/RocketChat/Rocket.Chat/pull/32821)) Replaced new `SidebarV2` components under feature preview
+
+### Patch Changes
+
+- ([#33179](https://github.com/RocketChat/Rocket.Chat/pull/33179)) Fixed an error that incorrectly showed conference calls as not answered after they ended
+
+- ([#32999](https://github.com/RocketChat/Rocket.Chat/pull/32999)) Fixes multiple selection for MultiStaticSelectElement in UiKit
+
+- <details><summary>Updated dependencies [274f4f5881, cd0d50016e, 927710d778, 12d6307998]:</summary>
+
+  - @rocket.chat/core-typings@6.13.0
+  - @rocket.chat/ui-video-conf@11.0.0
+  - @rocket.chat/gazzodown@11.0.0
+  - @rocket.chat/ui-avatar@7.0.0
+  - @rocket.chat/ui-contexts@11.0.0
+  </details>
+
+## 11.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.6
+  - @rocket.chat/gazzodown@11.0.0-rc.6
+  - @rocket.chat/ui-contexts@11.0.0-rc.6
+  - @rocket.chat/ui-avatar@7.0.0-rc.6
+  - @rocket.chat/ui-video-conf@11.0.0-rc.6
+  </details>
+
+## 11.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.5
+  - @rocket.chat/gazzodown@11.0.0-rc.5
+  - @rocket.chat/ui-contexts@11.0.0-rc.5
+  - @rocket.chat/ui-avatar@7.0.0-rc.5
+  - @rocket.chat/ui-video-conf@11.0.0-rc.5
+  </details>
+
+## 11.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.4
+  - @rocket.chat/gazzodown@11.0.0-rc.4
+  - @rocket.chat/ui-contexts@11.0.0-rc.4
+  - @rocket.chat/ui-avatar@7.0.0-rc.4
+  - @rocket.chat/ui-video-conf@11.0.0-rc.4
+  </details>
+
+## 11.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.3
+  - @rocket.chat/gazzodown@11.0.0-rc.3
+  - @rocket.chat/ui-contexts@11.0.0-rc.3
+  - @rocket.chat/ui-avatar@7.0.0-rc.3
+  - @rocket.chat/ui-video-conf@11.0.0-rc.3
+  </details>
+
+## 11.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.2
+  - @rocket.chat/gazzodown@11.0.0-rc.2
+  - @rocket.chat/ui-contexts@11.0.0-rc.2
+  - @rocket.chat/ui-avatar@7.0.0-rc.2
+  - @rocket.chat/ui-video-conf@11.0.0-rc.2
+  </details>
+
+## 11.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@11.0.0-rc.1
+  - @rocket.chat/gazzodown@11.0.0-rc.1
+  - @rocket.chat/ui-avatar@7.0.0-rc.1
+  - @rocket.chat/ui-video-conf@11.0.0-rc.1
+  - @rocket.chat/core-typings@6.13.0-rc.1
+  </details>
+
+## 11.0.0-rc.0
+
+### Minor Changes
+
+- ([#32821](https://github.com/RocketChat/Rocket.Chat/pull/32821)) Replaced new `SidebarV2` components under feature preview
+
+### Patch Changes
+
+- ([#33179](https://github.com/RocketChat/Rocket.Chat/pull/33179)) Fixed an error that incorrectly showed conference calls as not answered after they ended
+
+- ([#32999](https://github.com/RocketChat/Rocket.Chat/pull/32999)) Fixes multiple selection for MultiStaticSelectElement in UiKit
+
+- <details><summary>Updated dependencies [274f4f5881, cd0d50016e, 927710d778, 12d6307998]:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.0
+  - @rocket.chat/ui-video-conf@11.0.0-rc.0
+  - @rocket.chat/gazzodown@11.0.0-rc.0
+  - @rocket.chat/ui-avatar@7.0.0-rc.0
+  - @rocket.chat/ui-contexts@11.0.0-rc.0
+  </details>
+
+## 10.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.1
+  - @rocket.chat/gazzodown@10.0.1
+  - @rocket.chat/ui-contexts@10.0.1
+  - @rocket.chat/ui-avatar@6.0.1
+  - @rocket.chat/ui-video-conf@10.0.1
+  </details>
+
+## 10.0.0
+
+### Patch Changes
+
+- ([#32968](https://github.com/RocketChat/Rocket.Chat/pull/32968)) Bumped @rocket.chat/fuselage that fixes the Menu onPointerUp event behavior
+
+- <details><summary>Updated dependencies [8ea6517c4e, c11f3722df, 7937ff741a, 58c0efc732, e28be46db7, 58c0efc732]:</summary>
+
+  - @rocket.chat/ui-video-conf@10.0.0
+  - @rocket.chat/gazzodown@10.0.0
+  - @rocket.chat/ui-avatar@6.0.0
+  - @rocket.chat/ui-kit@0.36.1
+  - @rocket.chat/core-typings@6.12.0
+  - @rocket.chat/ui-contexts@10.0.0
+  </details>
+
+## 10.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.6
+  - @rocket.chat/gazzodown@10.0.0-rc.6
+  - @rocket.chat/ui-contexts@10.0.0-rc.6
+  - @rocket.chat/ui-avatar@6.0.0-rc.6
+  - @rocket.chat/ui-video-conf@10.0.0-rc.6
+  </details>
+
+## 10.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.5
+  - @rocket.chat/gazzodown@10.0.0-rc.5
+  - @rocket.chat/ui-contexts@10.0.0-rc.5
+  - @rocket.chat/ui-avatar@6.0.0-rc.5
+  - @rocket.chat/ui-video-conf@10.0.0-rc.5
+  </details>
+
+## 10.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.4
+  - @rocket.chat/gazzodown@10.0.0-rc.4
+  - @rocket.chat/ui-contexts@10.0.0-rc.4
+  - @rocket.chat/ui-avatar@6.0.0-rc.4
+  - @rocket.chat/ui-video-conf@10.0.0-rc.4
+  </details>
+
+## 10.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@6.12.0-rc.3
+  - @rocket.chat/gazzodown@10.0.0-rc.3
+  - @rocket.chat/ui-contexts@10.0.0-rc.3
+  - @rocket.chat/ui-avatar@6.0.0-rc.3
+  - @rocket.chat/ui-video-conf@10.0.0-rc.3
+  </details>
+
+## 10.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.2
+  - @rocket.chat/gazzodown@10.0.0-rc.2
+  - @rocket.chat/ui-contexts@10.0.0-rc.2
+  - @rocket.chat/ui-avatar@6.0.0-rc.2
+  - @rocket.chat/ui-video-conf@10.0.0-rc.2
+  </details>
+
+## 10.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.1
+  - @rocket.chat/gazzodown@10.0.0-rc.1
+  - @rocket.chat/ui-contexts@10.0.0-rc.1
+  - @rocket.chat/ui-avatar@6.0.0-rc.1
+  - @rocket.chat/ui-video-conf@10.0.0-rc.1
+  </details>
+
+## 10.0.0-rc.0
+
+### Patch Changes
+
+- ([#32968](https://github.com/RocketChat/Rocket.Chat/pull/32968)) Bumped @rocket.chat/fuselage that fixes the Menu onPointerUp event behavior
+
+- <details><summary>Updated dependencies [8ea6517c4e, c11f3722df, 7937ff741a, 58c0efc732, e28be46db7, 58c0efc732]:</summary>
+
+  - @rocket.chat/ui-video-conf@10.0.0-rc.0
+  - @rocket.chat/gazzodown@10.0.0-rc.0
+  - @rocket.chat/ui-avatar@6.0.0-rc.0
+  - @rocket.chat/ui-kit@0.36.1-rc.0
+  - @rocket.chat/core-typings@6.12.0-rc.0
+  - @rocket.chat/ui-contexts@10.0.0-rc.0
+  </details>
+
+## 9.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.2
+  - @rocket.chat/gazzodown@9.0.2
+  - @rocket.chat/ui-contexts@9.0.2
+  - @rocket.chat/ui-avatar@5.0.2
+  - @rocket.chat/ui-video-conf@9.0.2
+  </details>
+
+## 9.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.1
+  - @rocket.chat/gazzodown@9.0.1
+  - @rocket.chat/ui-contexts@9.0.1
+  - @rocket.chat/ui-avatar@5.0.1
+  - @rocket.chat/ui-video-conf@9.0.1
+  </details>
+
+## 9.0.0
+
+### Patch Changes
+
+- ([#32679](https://github.com/RocketChat/Rocket.Chat/pull/32679)) Fix validations from "UiKit" modal component
+
+- ([#32719](https://github.com/RocketChat/Rocket.Chat/pull/32719)) Added the `user` param to apps-engine update method call, allowing apps' new `onUpdate` hook to know who triggered the update.
+
+- <details><summary>Updated dependencies [2d89a0c448, 24f7df4894, 4e8aa575a6, b8e5887fb9]:</summary>
+
+  - @rocket.chat/ui-video-conf@9.0.0
+  - @rocket.chat/core-typings@6.11.0
+  - @rocket.chat/ui-contexts@9.0.0
+  - @rocket.chat/ui-kit@0.36.0
+  - @rocket.chat/gazzodown@9.0.0
+  - @rocket.chat/ui-avatar@5.0.0
+  </details>
+
+## 9.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.6
+  - @rocket.chat/gazzodown@9.0.0-rc.6
+  - @rocket.chat/ui-contexts@9.0.0-rc.6
+  - @rocket.chat/ui-avatar@5.0.0-rc.6
+  - @rocket.chat/ui-video-conf@9.0.0-rc.6
+  </details>
+
+## 9.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.5
+  - @rocket.chat/gazzodown@9.0.0-rc.5
+  - @rocket.chat/ui-contexts@9.0.0-rc.5
+  - @rocket.chat/ui-avatar@5.0.0-rc.5
+  - @rocket.chat/ui-video-conf@9.0.0-rc.5
+  </details>
+
+## 9.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.4
+  - @rocket.chat/gazzodown@9.0.0-rc.4
+  - @rocket.chat/ui-contexts@9.0.0-rc.4
+  - @rocket.chat/ui-avatar@5.0.0-rc.4
+  - @rocket.chat/ui-video-conf@9.0.0-rc.4
+  </details>
+
+## 9.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.3
+  - @rocket.chat/gazzodown@9.0.0-rc.3
+  - @rocket.chat/ui-contexts@9.0.0-rc.3
+  - @rocket.chat/ui-avatar@5.0.0-rc.3
+  - @rocket.chat/ui-video-conf@9.0.0-rc.3
+  </details>
+
+## 9.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.2
+  - @rocket.chat/gazzodown@9.0.0-rc.2
+  - @rocket.chat/ui-contexts@9.0.0-rc.2
+  - @rocket.chat/ui-avatar@5.0.0-rc.2
+  - @rocket.chat/ui-video-conf@9.0.0-rc.2
+  </details>
+
+## 9.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.1
+  - @rocket.chat/gazzodown@9.0.0-rc.1
+  - @rocket.chat/ui-contexts@9.0.0-rc.1
+  - @rocket.chat/ui-avatar@5.0.0-rc.1
+  - @rocket.chat/ui-video-conf@9.0.0-rc.1
+  </details>
+
+## 9.0.0-rc.0
+
+### Patch Changes
+
+- ([#32679](https://github.com/RocketChat/Rocket.Chat/pull/32679)) Fix validations from "UiKit" modal component
+
+- ([#32719](https://github.com/RocketChat/Rocket.Chat/pull/32719)) Added the `user` param to apps-engine update method call, allowing apps' new `onUpdate` hook to know who triggered the update.
+
+- <details><summary>Updated dependencies [2d89a0c448, 24f7df4894, 4e8aa575a6, b8e5887fb9]:</summary>
+
+  - @rocket.chat/ui-video-conf@9.0.0-rc.0
+  - @rocket.chat/core-typings@6.11.0-rc.0
+  - @rocket.chat/ui-contexts@9.0.0-rc.0
+  - @rocket.chat/ui-kit@0.36.0-rc.0
+  - @rocket.chat/gazzodown@9.0.0-rc.0
+  - @rocket.chat/ui-avatar@5.0.0-rc.0
+  </details>
+
+## 8.0.2
+
+### Patch Changes
+
+- ([#32935](https://github.com/RocketChat/Rocket.Chat/pull/32935)) Fixed an issue that prevented apps from being updated or uninstalled in some cases
+
+- ([#32935](https://github.com/RocketChat/Rocket.Chat/pull/32935)) Fixed an issue that prevented apps from handling errors during execution in some cases
+
+- ([#32935](https://github.com/RocketChat/Rocket.Chat/pull/32935)) Improved Apps-Engine installation to prevent start up errors on manual installation setups
+
+- ([#32935](https://github.com/RocketChat/Rocket.Chat/pull/32935)) Fixed an issue that caused the video conference button on rooms to not recognize a video conference provider app in some cases
+
+- <details><summary>Updated dependencies [ca6a9d8de8, ca6a9d8de8, ca6a9d8de8, ca6a9d8de8]:</summary>
+
+  - @rocket.chat/core-typings@6.10.2
+  - @rocket.chat/gazzodown@8.0.2
+  - @rocket.chat/ui-contexts@8.0.2
+  - @rocket.chat/ui-avatar@4.0.2
+  - @rocket.chat/ui-video-conf@8.0.2
+  </details>
+
 ## 8.0.1
 
 ### Patch Changes

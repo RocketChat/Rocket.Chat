@@ -1,7 +1,7 @@
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import type { GenericMenuItemProps } from '../../../../../../components/GenericMenu/GenericMenuItem';
 import { useFileInput } from '../../../../../../hooks/useFileInput';
 import { useChat } from '../../../../contexts/ChatContext';
 
@@ -9,7 +9,7 @@ const fileInputProps = { type: 'file', multiple: true };
 
 export const useFileUploadAction = (disabled: boolean): GenericMenuItemProps => {
 	const t = useTranslation();
-	const fileUploadEnabled = useSetting<boolean>('FileUpload_Enabled');
+	const fileUploadEnabled = useSetting('FileUpload_Enabled', true);
 	const fileInputRef = useFileInput(fileInputProps);
 	const chat = useChat();
 

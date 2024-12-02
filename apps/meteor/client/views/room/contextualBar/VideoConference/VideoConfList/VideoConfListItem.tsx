@@ -25,7 +25,7 @@ const VideoConfListItem = ({
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();
-	const showRealName = Boolean(useSetting('UI_Use_Real_Name'));
+	const showRealName = useSetting('UI_Use_Real_Name', false);
 
 	const {
 		_id: callId,

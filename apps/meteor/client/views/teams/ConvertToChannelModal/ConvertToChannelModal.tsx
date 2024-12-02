@@ -1,15 +1,15 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import React, { useMemo } from 'react';
 
+import BaseConvertToChannelModal from './BaseConvertToChannelModal';
 import GenericModalSkeleton from '../../../components/GenericModal/GenericModalSkeleton';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../lib/asyncState';
-import BaseConvertToChannelModal from './BaseConvertToChannelModal';
 
 type ConvertToChannelModalProps = {
 	onClose: () => void;
 	onCancel: () => void;
-	onConfirm: () => Serialized<IRoom>[];
+	onConfirm: (deletedRooms: { [key: string]: Serialized<IRoom> }) => void;
 	teamId: string;
 	userId: string;
 };
@@ -20,7 +20,7 @@ const ConvertToChannelModal = ({ onClose, onCancel, onConfirm, teamId, userId }:
 	});
 
 	if (phase === AsyncStatePhase.LOADING) {
-		return <GenericModalSkeleton onClose={onClose} />;
+		return <GenericModalSkeleton />;
 	}
 
 	return <BaseConvertToChannelModal onClose={onClose} onCancel={onCancel} onConfirm={onConfirm} rooms={value?.rooms} />;

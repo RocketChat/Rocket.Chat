@@ -1,4 +1,4 @@
-import { slashCommands } from '../../../app/utils/lib/slashCommand';
+import { slashCommands } from '../../../app/utils/client/slashCommand';
 
 const callback = undefined;
 const result = undefined;

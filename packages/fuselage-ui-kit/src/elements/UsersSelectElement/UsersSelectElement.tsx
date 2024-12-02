@@ -4,9 +4,9 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { useCallback, useState } from 'react';
 
+import { useUsersData } from './hooks/useUsersData';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
-import { useUsersData } from './hooks/useUsersData';
 
 type UsersSelectElementProps = BlockProps<UiKit.UsersSelectElement>;
 
@@ -24,10 +24,10 @@ const UsersSelectElement = ({ block, context }: UsersSelectElementProps) => {
   const data = useUsersData({ filter: debouncedFilter });
 
   const handleChange = useCallback(
-    (value) => {
-      action({ target: { value } });
+    (value: string | string[]) => {
+      if (!Array.isArray(value)) action({ target: { value } });
     },
-    [action]
+    [action],
   );
 
   return (

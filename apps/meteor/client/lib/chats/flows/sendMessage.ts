@@ -57,7 +57,6 @@ export const sendMessage = async (
 	}
 
 	chat.readStateManager.clearUnreadMark();
-	await chat.readStateManager.debouncedMarkAsRead();
 
 	text = text.trim();
 

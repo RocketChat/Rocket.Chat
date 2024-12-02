@@ -261,13 +261,8 @@ callbacks.add(
 );
 
 callbacks.add(
-	'afterSaveMessage',
-	async (message, room) => {
-		// only call webhook if it is a livechat room
-		if (!isOmnichannelRoom(room) || !room?.v?.token) {
-			return message;
-		}
-
+	'afterOmnichannelSaveMessage',
+	async (message, { room }) => {
 		// if the message has a token, it was sent from the visitor
 		// if not, it was sent from the agent
 		if (message.token && !settings.get('Livechat_webhook_on_visitor_message')) {

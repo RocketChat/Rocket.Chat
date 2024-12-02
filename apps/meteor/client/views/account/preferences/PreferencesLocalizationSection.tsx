@@ -1,21 +1,18 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Accordion, Field, FieldGroup, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useLanguages, useTranslation } from '@rocket.chat/ui-contexts';
+import { useLanguages } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 const PreferencesLocalizationSection = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const languages = useLanguages();
 
 	const { control } = useFormContext();
 
-	const languageOptions = useMemo(() => {
-		const mapOptions: SelectOption[] = languages.map(({ key, name }) => [key, name]);
-		mapOptions.sort(([a], [b]) => a.localeCompare(b));
-		return mapOptions;
-	}, [languages]);
+	const languageOptions = useMemo(() => languages.map(({ key, name }): SelectOption => [key, name]), [languages]);
 
 	const languageId = useUniqueId();
 

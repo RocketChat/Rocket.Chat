@@ -1,15 +1,16 @@
 import { Throbber, Box } from '@rocket.chat/fuselage';
 import type { IFederationPublicRooms } from '@rocket.chat/rest-typings';
-import { useSetModal, useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
-import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
-import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import FederatedRoomListEmptyPlaceholder from './FederatedRoomListEmptyPlaceholder';
 import FederatedRoomListItem from './FederatedRoomListItem';
 import { useInfiniteFederationSearchPublicRooms } from './useInfiniteFederationSearchPublicRooms';
+import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
+import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
 type FederatedRoomListProps = {
 	serverName: string;
@@ -22,7 +23,7 @@ const FederatedRoomList = ({ serverName, roomName, count }: FederatedRoomListPro
 	const joinExternalPublicRoom = useEndpoint('POST', '/v1/federation/joinExternalPublicRoom');
 
 	const setModal = useSetModal();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { data, isLoading, isFetchingNextPage, fetchNextPage } = useInfiniteFederationSearchPublicRooms(serverName, roomName, count);
 

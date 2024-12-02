@@ -1,9 +1,6 @@
-export const getLocalePercentage = (locale: string, total: number, fraction: number, decimalCount = 2): string => {
-	const option = {
+export const getLocalePercentage = (locale: string, total: number, fraction: number, decimalCount = 2) =>
+	new Intl.NumberFormat(locale, {
 		style: 'percent',
 		minimumFractionDigits: decimalCount,
 		maximumFractionDigits: decimalCount,
-	};
-
-	return new Intl.NumberFormat(locale, option).format(fraction / total);
-};
+	}).format(fraction / total);

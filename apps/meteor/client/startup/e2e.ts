@@ -5,7 +5,8 @@ import { Tracker } from 'meteor/tracker';
 
 import { E2EEState } from '../../app/e2e/client/E2EEState';
 import { e2e } from '../../app/e2e/client/rocketchat.e2e';
-import { ChatRoom } from '../../app/models/client';
+import { MentionsParser } from '../../app/mentions/lib/MentionsParser';
+import { Rooms } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
@@ -78,7 +79,7 @@ Meteor.startup(() => {
 				return message;
 			}
 
-			const subscription = await waitUntilFind(() => ChatRoom.findOne({ _id: message.rid }));
+			const subscription = await waitUntilFind(() => Rooms.findOne({ _id: message.rid }));
 
 			subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 
@@ -86,6 +87,27 @@ Meteor.startup(() => {
 
 			if (!shouldConvertSentMessages) {
 				return message;
+			}
+
+			const mentionsEnabled = settings.get<boolean>('E2E_Enabled_Mentions');
+
+			if (mentionsEnabled) {
+				const me = Meteor.user()?.username || '';
+				const pattern = settings.get('UTF8_User_Names_Validation');
+				const useRealName = settings.get('UI_Use_Real_Name');
+
+				const mentions = new MentionsParser({
+					pattern: () => pattern,
+					useRealName: () => useRealName,
+					me: () => me,
+				});
+
+				const e2eMentions: IMessage['e2eMentions'] = {
+					e2eUserMentions: mentions.getUserMentions(message.msg),
+					e2eChannelMentions: mentions.getChannelMentions(message.msg),
+				};
+
+				message.e2eMentions = e2eMentions;
 			}
 
 			// Should encrypt this message.

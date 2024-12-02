@@ -11,7 +11,7 @@ import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/li
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
-import { notifyOnRoomChangedById } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
 
 export const addUserToRoom = async function (
 	rid: string,
@@ -82,7 +82,7 @@ export const addUserToRoom = async function (
 
 	const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(userToBeAdded);
 
-	await Subscriptions.createWithRoomAndUser(room, userToBeAdded as IUser, {
+	const { insertedId } = await Subscriptions.createWithRoomAndUser(room, userToBeAdded as IUser, {
 		ts: now,
 		open: true,
 		alert: !skipAlertSound,
@@ -93,7 +93,9 @@ export const addUserToRoom = async function (
 		...getDefaultSubscriptionPref(userToBeAdded as IUser),
 	});
 
-	void notifyOnRoomChangedById(rid);
+	if (insertedId) {
+		void notifyOnSubscriptionChangedById(insertedId, 'inserted');
+	}
 
 	if (!userToBeAdded.username) {
 		throw new Meteor.Error('error-invalid-user', 'Cannot add an user to a room without a username');
@@ -143,5 +145,6 @@ export const addUserToRoom = async function (
 		await Rooms.addUserIdToE2EEQueueByRoomIds([room._id], userToBeAdded._id);
 	}
 
+	void notifyOnRoomChangedById(rid);
 	return true;
 };

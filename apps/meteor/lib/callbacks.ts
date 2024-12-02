@@ -21,14 +21,17 @@ import type {
 	UserStatus,
 	ILivechatDepartment,
 	MessageMention,
-	OmnichannelSourceType,
+	IOmnichannelRoomInfo,
+	IOmnichannelInquiryExtraData,
+	IOmnichannelRoomExtraData,
 } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
 
+import { Callbacks } from './callbacks/callbacksBase';
 import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
-import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped';
-import { Callbacks } from './callbacks/callbacksBase';
+import type { CloseRoomParams } from '../app/livechat/server/lib/localTypes';
 
 /**
  * Callbacks returning void, like event listeners.
@@ -49,7 +52,8 @@ interface EventLikeCallbackSignatures {
 	'afterDeleteUser': (user: IUser) => void;
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
 	'afterRoomNameChange': (params: { rid: string; name: string; oldName: string }) => void;
-	'afterSaveMessage': (message: IMessage, room: IRoom, uid?: string) => void;
+	'afterSaveMessage': (message: IMessage, params: { room: IRoom; uid?: string; roomUpdater?: Updater<IRoom> }) => void;
+	'afterOmnichannelSaveMessage': (message: IMessage, constant: { room: IOmnichannelRoom; roomUpdater: Updater<IOmnichannelRoom> }) => void;
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.closeRoom': (params: { room: IOmnichannelRoom; options: CloseRoomParams['options'] }) => void;
@@ -97,7 +101,6 @@ interface EventLikeCallbackSignatures {
 	'beforeSaveUser': ({ user, oldUser }: { user: IUser; oldUser?: IUser }) => void;
 	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser?: IUser | null }) => void;
 	'livechat.afterTagRemoved': (tag: ILivechatTagRecord) => void;
-	'beforeUserImport': (data: { userCount: number }) => void;
 	'afterUserImport': (data: { inserted: IUser['_id'][]; updated: IUser['_id']; skipped: number; failed: number }) => void;
 }
 
@@ -107,10 +110,7 @@ interface EventLikeCallbackSignatures {
  * TODO: develop a middleware alternative and grant independence of execution order
  */
 type ChainedCallbackSignatures = {
-	'livechat.beforeRoom': (
-		roomInfo: Record<string, unknown>,
-		extraData?: Record<string, unknown> & { sla?: string },
-	) => Record<string, unknown>;
+	'livechat.beforeRoom': (roomInfo: IOmnichannelRoomInfo, extraData?: IOmnichannelRoomExtraData) => Partial<IOmnichannelRoom>;
 	'livechat.newRoom': (room: IOmnichannelRoom) => IOmnichannelRoom;
 
 	'livechat.beforeForwardRoomToDepartment': <T extends { room: IOmnichannelRoom; transferData?: { department: { _id: string } } }>(
@@ -206,15 +206,7 @@ type ChainedCallbackSignatures = {
 			options: { forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any }; clientAction?: boolean };
 		},
 	) => Promise<(IOmnichannelRoom & { chatQueued: boolean }) | undefined>;
-	'livechat.beforeInquiry': (
-		data: Pick<ILivechatInquiryRecord, 'source'> & { sla?: string; priority?: string; [other: string]: unknown } & {
-			customFields?: Record<string, unknown>;
-			source?: OmnichannelSourceType;
-		},
-	) => Pick<ILivechatInquiryRecord, 'source'> & { sla?: string; priority?: string; [other: string]: unknown } & {
-		customFields?: Record<string, unknown>;
-		source?: OmnichannelSourceType;
-	};
+	'livechat.beforeInquiry': (data: IOmnichannelInquiryExtraData) => Partial<ILivechatInquiryRecord>;
 	'roomNameChanged': (room: IRoom) => void;
 	'roomTopicChanged': (room: IRoom) => void;
 	'roomAnnouncementChanged': (room: IRoom) => void;
@@ -223,6 +215,7 @@ type ChainedCallbackSignatures = {
 	'unarchiveRoom': (room: IRoom) => void;
 	'roomAvatarChanged': (room: IRoom) => void;
 	'beforeGetMentions': (mentionIds: string[], teamMentions: MessageMention[]) => Promise<string[]>;
+	'livechat.manageDepartmentUnit': (params: { userId: string; departmentId: string; unitId?: string }) => void;
 };
 
 export type Hook =
@@ -245,6 +238,7 @@ export type Hook =
 	| 'livechat.offlineMessage'
 	| 'livechat.onCheckRoomApiParams'
 	| 'livechat.onLoadConfigApi'
+	| 'livechat.manageDepartmentUnit'
 	| 'loginPageStateChange'
 	| 'mapLDAPUserData'
 	| 'onCreateUser'
@@ -252,10 +246,8 @@ export type Hook =
 	| 'onValidateLogin'
 	| 'openBroadcast'
 	| 'renderNotification'
-	| 'setReaction'
 	| 'streamMessage'
 	| 'streamNewMessage'
-	| 'unsetReaction'
 	| 'userAvatarSet'
 	| 'userConfirmationEmailRequested'
 	| 'userForgotPasswordEmailRequested'

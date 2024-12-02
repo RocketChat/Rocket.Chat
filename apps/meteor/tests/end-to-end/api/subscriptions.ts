@@ -50,8 +50,36 @@ describe('[Subscriptions]', () => {
 			.end(done);
 	});
 
-	it('/subscriptions.getOne:', () => {
-		it('subscriptions.getOne', (done) => {
+	describe('/subscriptions.getOne', () => {
+		it('should fail if no roomId provided', (done) => {
+			void request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', "must have required property 'roomId' [invalid-params]");
+				})
+				.end(done);
+		});
+
+		it('should fail if not logged in', (done) => {
+			void request
+				.get(api('subscriptions.getOne'))
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				})
+				.end(done);
+		});
+
+		it('should return the subscription with success', (done) => {
 			void request
 				.get(api('subscriptions.getOne'))
 				.set(credentials)
@@ -65,6 +93,52 @@ describe('[Subscriptions]', () => {
 					expect(res.body).to.have.property('subscription').and.to.be.an('object');
 				})
 				.end(done);
+		});
+
+		it('should keep subscription as read after sending a message', async () => {
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('subscription').and.to.be.an('object');
+					expect(res.body.subscription).to.have.property('alert', false);
+				});
+
+			await request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: testChannel._id,
+						msg: 'Sample message',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message').and.to.be.an('object');
+				});
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('subscription').and.to.be.an('object');
+					expect(res.body.subscription).to.have.property('alert', false);
+				});
 		});
 	});
 

@@ -1,19 +1,19 @@
 import { Callout } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from '../../components/Skeleton';
-import { usePriorityInfo } from '../../views/omnichannel/directory/hooks/usePriorityInfo';
 import type { PriorityEditFormProps } from './PriorityEditForm';
 import PriorityEditForm from './PriorityEditForm';
+import { FormSkeleton } from '../../components/Skeleton';
+import { usePriorityInfo } from '../../views/omnichannel/directory/hooks/usePriorityInfo';
 
 type PriorityEditFormWithDataProps = Omit<PriorityEditFormProps, 'data'> & {
 	priorityId: string;
 };
 
 function PriorityEditFormWithData({ priorityId, ...props }: PriorityEditFormWithDataProps): ReactElement {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { data, isInitialLoading, isError } = usePriorityInfo(priorityId);
 
 	if (isInitialLoading) {

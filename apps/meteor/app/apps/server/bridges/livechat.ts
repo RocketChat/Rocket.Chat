@@ -1,7 +1,7 @@
-import type { IAppServerOrchestrator, IAppsLivechatMessage } from '@rocket.chat/apps';
+import type { IAppServerOrchestrator, IAppsLivechatMessage, IAppsMessage } from '@rocket.chat/apps';
 import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
 import type { IVisitor, ILivechatRoom, ILivechatTransferData, IDepartment } from '@rocket.chat/apps-engine/definition/livechat';
-import type { IMessage as IAppsEngineMesage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IMessage as IAppsEngineMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { LivechatBridge } from '@rocket.chat/apps-engine/server/bridges/LivechatBridge';
 import type { ILivechatDepartment, IOmnichannelRoom, SelectedAgent, IMessage, ILivechatVisitor } from '@rocket.chat/core-typings';
@@ -10,8 +10,16 @@ import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@roc
 
 import { callbacks } from '../../../../lib/callbacks';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
-import { type ILivechatMessage, Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
+import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
+import { getRoomMessages } from '../../../livechat/server/lib/getRoomMessages';
+import type { ILivechatMessage } from '../../../livechat/server/lib/localTypes';
 import { settings } from '../../../settings/server';
+
+declare module '@rocket.chat/apps/dist/converters/IAppMessagesConverter' {
+	export interface IAppMessagesConverter {
+		convertMessage(message: IMessage, cacheObj?: object): Promise<IAppsMessage>;
+	}
+}
 
 declare module '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator' {
 	interface IExtraRoomParams {
@@ -112,6 +120,7 @@ export class AppLivechatBridge extends LivechatBridge {
 							sidebarIcon: source.sidebarIcon,
 							defaultIcon: source.defaultIcon,
 							label: source.label,
+							destination: source.destination,
 						}),
 				},
 			},
@@ -337,7 +346,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		return Promise.all((await LivechatDepartment.findEnabledWithAgents().toArray()).map(boundConverter));
 	}
 
-	protected async _fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IAppsEngineMesage>> {
+	protected async _fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IAppsEngineMessage>> {
 		this.orch.debugLog(`The App ${appId} is getting the transcript for livechat room ${roomId}.`);
 		const messageConverter = this.orch.getConverters()?.get('messages');
 
@@ -345,9 +354,8 @@ export class AppLivechatBridge extends LivechatBridge {
 			throw new Error('Could not get the message converter to process livechat room messages');
 		}
 
-		const livechatMessages = await LivechatTyped.getRoomMessages({ rid: roomId });
-
-		return Promise.all(livechatMessages.map((message) => messageConverter.convertMessage(message) as Promise<IAppsEngineMesage>));
+		const livechatMessages = await getRoomMessages({ rid: roomId });
+		return Promise.all(await livechatMessages.map((message) => messageConverter.convertMessage(message, livechatMessages)).toArray());
 	}
 
 	protected async setCustomFields(

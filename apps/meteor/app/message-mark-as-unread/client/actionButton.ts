@@ -2,9 +2,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { dispatchToastMessage } from '../../../client/lib/toast';
-import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { router } from '../../../client/providers/RouterProvider';
-import { ChatSubscription } from '../../models/client';
+import { Subscriptions } from '../../models/client';
 import { LegacyRoomManager, MessageAction } from '../../ui-utils/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 
@@ -15,20 +14,18 @@ Meteor.startup(() => {
 		label: 'Mark_unread',
 		context: ['message', 'message-mobile', 'threads'],
 		type: 'interaction',
-		async action(_, props) {
-			const { message = messageArgs(this).msg } = props;
-
+		async action(_, { message }) {
 			try {
-				await sdk.call('unreadMessages', message);
-				const subscription = ChatSubscription.findOne({
+				const subscription = Subscriptions.findOne({
 					rid: message.rid,
 				});
 
 				if (subscription == null) {
 					return;
 				}
+				router.navigate('/home');
 				await LegacyRoomManager.close(subscription.t + subscription.name);
-				return router.navigate('/home');
+				await sdk.call('unreadMessages', message);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
