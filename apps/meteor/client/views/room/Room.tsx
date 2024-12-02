@@ -1,4 +1,3 @@
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { createElement, lazy, memo, Suspense } from 'react';
@@ -9,7 +8,6 @@ import RoomE2EESetup from './E2EESetup/RoomE2EESetup';
 import Header from './Header';
 import MessageHighlightProvider from './MessageList/providers/MessageHighlightProvider';
 import RoomBody from './body/RoomBody';
-import RoomBodyV2 from './body/RoomBodyV2';
 import { useRoom } from './contexts/RoomContext';
 import { useRoomToolbox } from './contexts/RoomToolboxContext';
 import { useAppsContextualBar } from './hooks/useAppsContextualBar';
@@ -43,22 +41,7 @@ const Room = (): ReactElement => {
 									: t('Channel__roomName__', { roomName: room.name })
 							}
 							header={<Header room={room} />}
-							body={
-								shouldDisplayE2EESetup ? (
-									<RoomE2EESetup />
-								) : (
-									<>
-										<FeaturePreview feature='newNavigation'>
-											<FeaturePreviewOn>
-												<RoomBodyV2 />
-											</FeaturePreviewOn>
-											<FeaturePreviewOff>
-												<RoomBody />
-											</FeaturePreviewOff>
-										</FeaturePreview>
-									</>
-								)
-							}
+							body={shouldDisplayE2EESetup ? <RoomE2EESetup /> : <RoomBody />}
 							aside={
 								(toolbox.tab?.tabComponent && (
 									<ErrorBoundary fallback={null}>
