@@ -4,13 +4,13 @@ import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
-import CreateChannelWithData from '../../../sidebar/header/CreateChannel';
+import CreateChannelModal from '../../../sidebar/header/CreateChannelModal';
 
 const CreateChannelsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
-	const openCreateChannelModal = (): void => setModal(<CreateChannelWithData onClose={(): void => setModal(null)} />);
+	const openCreateChannelModal = (): void => setModal(<CreateChannelModal onClose={(): void => setModal(null)} />);
 
 	return (
 		<GenericCard
