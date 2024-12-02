@@ -199,13 +199,15 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 	}
 
 	setChannelBlockStatus(visitor: ILivechatContactVisitorAssociation, blocked: boolean): Promise<UpdateResult> {
-		return this.updateOne(this.makeQueryForVisitor(visitor), { 'channels.$.blocked': blocked });
+		return this.updateOne(this.makeQueryForVisitor(visitor), { $set: { 'channels.$.blocked': blocked } });
 	}
 
 	setChannelVerifiedStatus(visitor: ILivechatContactVisitorAssociation, verified: boolean): Promise<UpdateResult> {
 		return this.updateOne(this.makeQueryForVisitor(visitor), {
-			'channels.$.verified': verified,
-			...(verified && { 'channels.$.verifiedAt': new Date() }),
+			$set: {
+				'channels.$.verified': verified,
+				...(verified && { 'channels.$.verifiedAt': new Date() }),
+			},
 		});
 	}
 
