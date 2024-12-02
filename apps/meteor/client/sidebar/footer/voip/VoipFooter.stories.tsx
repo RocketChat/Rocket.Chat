@@ -3,7 +3,7 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import type { StoryFn } from '@storybook/react';
 import React, { useState } from 'react';
 
-import { VoipFooter } from './VoipFooter';
+import VoipFooter from './VoipFooter';
 
 const callActions = {
 	mute: () => ({}),
@@ -22,7 +22,7 @@ const callerDefault = {
 };
 
 export default {
-	title: 'Sidebar/Footer/VoipFooter',
+	title: 'SidebarV2/Footer/VoipFooter',
 	component: VoipFooter,
 	parameters: {
 		controls: { expanded: true },

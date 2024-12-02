@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
-import { Badge, Sidebar, SidebarItemAction, SidebarItemActions, Margins } from '@rocket.chat/fuselage';
+import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemBadge, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
@@ -14,8 +14,9 @@ import { useOmnichannelPriorities } from '../../omnichannel/hooks/useOmnichannel
 import RoomMenu from '../RoomMenu';
 import { OmnichannelBadges } from '../badges/OmnichannelBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
+export const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
 	if (!lastMessage) {
 		return t('No_messages_yet');
 	}
@@ -34,28 +35,10 @@ const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: TFunction
 	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizeSidebarMessage(lastMessage, t)}`;
 };
 
-const getBadgeTitle = (userMentions: number, threadUnread: number, groupMentions: number, unread: number, t: TFunction) => {
-	const title = [] as string[];
-	if (userMentions) {
-		title.push(t('mentions_counter', { count: userMentions }));
-	}
-	if (threadUnread) {
-		title.push(t('threads_counter', { count: threadUnread }));
-	}
-	if (groupMentions) {
-		title.push(t('group_mentions_counter', { count: groupMentions }));
-	}
-	const count = unread - userMentions - groupMentions;
-	if (count > 0) {
-		title.push(t('unread_messages_counter', { count }));
-	}
-	return title.join(', ');
-};
-
 type RoomListRowProps = {
 	extended: boolean;
 	t: TFunction;
-	SideBarItemTemplate: ComponentType<
+	SidebarItemTemplate: ComponentType<
 		{
 			icon: ReactNode;
 			title: ReactNode;
@@ -92,53 +75,41 @@ type RoomListRowProps = {
 	};
 };
 
-function SideBarItemTemplateWithData({
+const SidebarItemTemplateWithData = ({
 	room,
 	id,
 	selected,
 	style,
 	extended,
-	SideBarItemTemplate,
+	SidebarItemTemplate,
 	AvatarTemplate,
 	t,
 	isAnonymous,
 	videoConfActions,
-}: RoomListRowProps): ReactElement {
+}: RoomListRowProps) => {
 	const { sidebar } = useLayout();
 
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
-	const {
-		lastMessage,
-		hideUnreadStatus,
-		hideMentionStatus,
-		unread = 0,
-		alert,
-		userMentions,
-		groupMentions,
-		tunread = [],
-		tunreadUser = [],
-		rid,
-		t: type,
-		cl,
-	} = room;
+	const { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
 
-	const highlighted = Boolean(!hideUnreadStatus && (alert || unread));
+	const { lastMessage, unread = 0, alert, rid, t: type, cl } = room;
+
 	const icon = (
-		// TODO: Remove icon='at'
-		<Sidebar.Item.Icon highlighted={highlighted} icon='at'>
-			<RoomIcon room={room} placement='sidebar' isIncomingCall={Boolean(videoConfActions)} />
-		</Sidebar.Item.Icon>
+		<SidebarV2ItemIcon
+			highlighted={highlighted}
+			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={Boolean(videoConfActions)} />}
+		/>
 	);
 
 	const actions = useMemo(
 		() =>
 			videoConfActions && (
-				<SidebarItemActions>
-					<SidebarItemAction onClick={videoConfActions.acceptCall} secondary success icon='phone' />
-					<SidebarItemAction onClick={videoConfActions.rejectCall} secondary danger icon='phone-off' />
-				</SidebarItemActions>
+				<SidebarV2Actions>
+					<SidebarV2Action onClick={videoConfActions.acceptCall} mini secondary success icon='phone' />
+					<SidebarV2Action onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' />
+				</SidebarV2Actions>
 			),
 		[videoConfActions],
 	);
@@ -149,28 +120,19 @@ function SideBarItemTemplateWithData({
 	const message = extended && getMessage(room, lastMessage, t);
 	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
 
-	const threadUnread = tunread.length > 0;
-	const variant =
-		((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'secondary';
-
-	const isUnread = unread > 0 || threadUnread;
-	const showBadge = !hideUnreadStatus || (!hideMentionStatus && (Boolean(userMentions) || tunreadUser.length > 0));
-
-	const badgeTitle = getBadgeTitle(userMentions, tunread.length, groupMentions, unread, t);
-
 	const badges = (
-		<Margins inlineStart={8}>
-			{showBadge && isUnread && (
-				<Badge role='status' {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant} title={badgeTitle}>
-					{unread + tunread?.length}
-				</Badge>
+		<>
+			{showUnread && (
+				<SidebarV2ItemBadge variant={unreadVariant} title={unreadTitle} role='status'>
+					{unreadCount.total}
+				</SidebarV2ItemBadge>
 			)}
 			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
-		</Margins>
+		</>
 	);
 
 	return (
-		<SideBarItemTemplate
+		<SidebarItemTemplate
 			is='a'
 			id={id}
 			data-qa='sidebar-item'
@@ -197,7 +159,7 @@ function SideBarItemTemplateWithData({
 				((): ReactElement => (
 					<RoomMenu
 						alert={alert}
-						threadUnread={threadUnread}
+						threadUnread={unreadCount.threads > 0}
 						rid={rid}
 						unread={!!unread}
 						roomOpen={selected}
@@ -210,7 +172,7 @@ function SideBarItemTemplateWithData({
 			}
 		/>
 	);
-}
+};
 
 function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | undefined): boolean {
 	if (!a || !b) {
@@ -224,7 +186,7 @@ const keys: (keyof RoomListRowProps)[] = [
 	'style',
 	'extended',
 	'selected',
-	'SideBarItemTemplate',
+	'SidebarItemTemplate',
 	'AvatarTemplate',
 	't',
 	'sidebarViewMode',
@@ -232,7 +194,7 @@ const keys: (keyof RoomListRowProps)[] = [
 ];
 
 // eslint-disable-next-line react/no-multi-comp
-export default memo(SideBarItemTemplateWithData, (prevProps, nextProps) => {
+export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
 		return false;
 	}
