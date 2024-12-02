@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { getMessage } from '../../../../sidebarv2/RoomList/SidebarItemTemplateWithData';
-import { useAvatarTemplate } from '../../../../sidebarv2/hooks/useAvatarTemplate';
-import { useUnreadDisplay } from '../../../../sidebarv2/hooks/useUnreadDisplay';
+import { getMessage } from '../../../../sidebar/RoomList/SidebarItemTemplateWithData';
+import { useAvatarTemplate } from '../../../../sidebar/hooks/useAvatarTemplate';
+import { useUnreadDisplay } from '../../../../sidebar/hooks/useUnreadDisplay';
 
 export const useItemData = (
 	room: ISubscription & IRoom,

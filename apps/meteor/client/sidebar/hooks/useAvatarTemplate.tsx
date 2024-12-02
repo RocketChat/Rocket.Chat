@@ -18,7 +18,7 @@ export const useAvatarTemplate = (
 			return null;
 		}
 
-		const size = ((): 'x36' | 'x28' | 'x16' => {
+		const size = ((): 'x36' | 'x28' | 'x20' => {
 			switch (viewMode) {
 				case 'extended':
 					return 'x36';
@@ -26,7 +26,7 @@ export const useAvatarTemplate = (
 					return 'x28';
 				case 'condensed':
 				default:
-					return 'x16';
+					return 'x20';
 			}
 		})();
 
