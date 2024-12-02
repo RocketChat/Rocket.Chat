@@ -19,21 +19,13 @@ export class ServiceStarter {
 		this.#stopperFn = stopperFn;
 	}
 
-	async #doStart(): Promise<void> {
-		return this.#doCall('start');
-	}
-
-	async #doStop(): Promise<void> {
-		return this.#doCall('stop');
-	}
-
 	async #checkStatus(): Promise<void> {
 		if (this.#nextCall === 'start') {
-			return this.#doStart();
+			return this.#doCall('start');
 		}
 
 		if (this.#nextCall === 'stop') {
-			return this.#doStop();
+			return this.#doCall('stop');
 		}
 	}
 
@@ -46,16 +38,10 @@ export class ServiceStarter {
 			} else if (this.#stopperFn) {
 				await this.#stopperFn();
 			}
-		} catch (e) {
-			if (this.#nextCall) {
-				setImmediate(() => this.#checkStatus());
-			}
-			throw e;
 		} finally {
 			this.#currentCall = undefined;
+			await this.#checkStatus();
 		}
-
-		await this.#checkStatus();
 	}
 
 	async #call(call: 'start' | 'stop'): Promise<void> {
@@ -64,7 +50,7 @@ export class ServiceStarter {
 		if (this.#currentCall) {
 			return this.#lock;
 		}
-		this.#lock = this.#lock.then(this.#checkStatus);
+		this.#lock = this.#lock.then(() => this.#checkStatus());
 		return this.#lock;
 	}
 
@@ -74,5 +60,9 @@ export class ServiceStarter {
 
 	async stop(): Promise<void> {
 		return this.#call('stop');
+	}
+
+	async wait(): Promise<void> {
+		return this.#lock;
 	}
 }
