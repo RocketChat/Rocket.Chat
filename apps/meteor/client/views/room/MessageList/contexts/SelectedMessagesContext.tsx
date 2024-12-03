@@ -44,6 +44,13 @@ export const useToggleSelect = (mid: string): (() => void) => {
 	}, [mid, selectedMessageStore]);
 };
 
+export const useToggleSelectAll = (mids: string[]): (() => void) => {
+	const { selectedMessageStore } = useContext(SelectedMessageContext);
+	return useCallback(() => {
+		selectedMessageStore.toggleAll(mids);
+	}, [mids, selectedMessageStore]);
+};
+
 export const useCountSelected = (): number => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 

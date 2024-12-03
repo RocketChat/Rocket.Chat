@@ -45,6 +45,16 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 		this.emit('change');
 	}
 
+	select(mid: string): void {
+		if (this.store.has(mid)) {
+			return;
+		}
+
+		this.store.add(mid);
+		this.emit(mid, true);
+		this.emit('change');
+	}
+
 	count(): number {
 		return this.store.size;
 	}
@@ -60,6 +70,10 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 		this.clearStore();
 		this.isSelecting = false;
 		this.emit('toggleIsSelecting', false);
+	}
+
+	toggleAll(mids: string[]): void {
+		mids.forEach((mid) => this.select(mid));
 	}
 })();
 

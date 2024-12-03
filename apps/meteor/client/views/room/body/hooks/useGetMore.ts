@@ -1,17 +1,28 @@
 import type { MutableRefObject } from 'react';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
+import { useToggleSelectAll } from '../../MessageList/contexts/SelectedMessagesContext';
 
 export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) => {
+	const ref: MutableRefObject<HTMLElement | null> = useRef(null);
+	const handleToggleAll = useToggleSelectAll();
+
+	const handleGetMore = () => {
+		ref.current?.scrollTo({ top: 0, behavior: 'smooth' });
+		handleToggleAll();
+	};
+
 	return {
+		handleGetMore,
 		innerRef: useCallback(
 			(wrapper: HTMLElement | null) => {
 				if (!wrapper) {
 					return;
 				}
 
+				ref.current = wrapper;
 				let lastScrollTopRef = 0;
 
 				wrapper.addEventListener(
