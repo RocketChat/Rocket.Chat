@@ -44,11 +44,18 @@ export const useToggleSelect = (mid: string): (() => void) => {
 	}, [mid, selectedMessageStore]);
 };
 
-export const useToggleSelectAll = (mids: string[]): (() => void) => {
+export const useToggleSelectAll = (): (() => void) => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 	return useCallback(() => {
-		selectedMessageStore.toggleAll(mids);
-	}, [mids, selectedMessageStore]);
+		selectedMessageStore.toggleAll(Array.from(selectedMessageStore.availableMessages));
+	}, [selectedMessageStore]);
+};
+
+export const useClearSelection = (): (() => void) => {
+	const { selectedMessageStore } = useContext(SelectedMessageContext);
+	return useCallback(() => {
+		selectedMessageStore.clearStore();
+	}, [selectedMessageStore]);
 };
 
 export const useCountSelected = (): number => {

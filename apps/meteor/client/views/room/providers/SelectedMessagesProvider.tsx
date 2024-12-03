@@ -1,8 +1,10 @@
 import { Emitter } from '@rocket.chat/emitter';
 import type { ReactNode } from 'react';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { SelectedMessageContext } from '../MessageList/contexts/SelectedMessagesContext';
+import { useMessages } from '../MessageList/hooks/useMessages';
+import { useRoom } from '../contexts/RoomContext';
 
 // data-qa-select
 
@@ -13,6 +15,8 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 	} & { [mid: string]: boolean }
 > {
 	store = new Set<string>();
+
+	availableMessages = new Set<string>();
 
 	isSelecting = false;
 
@@ -82,6 +86,13 @@ type SelectedMessagesProviderProps = {
 };
 
 export const SelectedMessagesProvider = ({ children }: SelectedMessagesProviderProps) => {
+	const room = useRoom();
+	const messages = useMessages({ rid: room._id });
+
+	useEffect(() => {
+		selectedMessageStore.availableMessages = new Set(messages.map((message) => message._id));
+	}, [messages]);
+
 	const value = useMemo(
 		() => ({
 			selectedMessageStore,
