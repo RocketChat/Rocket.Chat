@@ -86,6 +86,15 @@ const RoomMembers = ({
 
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 
+	members.sort((usr1,usr2) => {
+		const username1 = usr1.username ?? '';
+		const username2 = usr2.username ?? '';
+
+		if (username1 < username2) return -1;
+		if (username1 > username2) return 1;
+		return 0;
+	})
+
 	return (
 		<>
 			<ContextualbarHeader data-qa-id='RoomHeader-Members'>
