@@ -59,7 +59,7 @@ const NavBar = () => {
 						<NavBarGroup role='toolbar' ref={omnichannelToolbarRef} {...omnichannelToolbarProps}>
 							{showOmnichannelQueueLink && <NavBarItemOmnichannelQueue title={t('Queue')} />}
 							{isCallReady && <NavBarItemOmniChannelCallDialPad />}
-							<NavBarItemOmnichannelContact title={t('Contacts')} />
+							<NavBarItemOmnichannelContact title={t('Contact_Center')} />
 							{isCallEnabled && <NavBarItemOmnichannelCallToggle />}
 							<NavBarItemOmnichannelLivechatToggle />
 						</NavBarGroup>

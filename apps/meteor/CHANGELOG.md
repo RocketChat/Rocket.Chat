@@ -1,5 +1,149 @@
 # @rocket.chat/meteor
 
+## 7.1.0-rc.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.1
+  - @rocket.chat/rest-typings@7.1.0-rc.1
+  - @rocket.chat/license@1.0.1-rc.1
+  - @rocket.chat/omnichannel-services@0.3.7-rc.1
+  - @rocket.chat/pdf-worker@0.2.7-rc.1
+  - @rocket.chat/presence@0.2.10-rc.1
+  - @rocket.chat/api-client@0.2.10-rc.1
+  - @rocket.chat/apps@0.2.1-rc.1
+  - @rocket.chat/core-services@0.7.2-rc.1
+  - @rocket.chat/cron@0.1.10-rc.1
+  - @rocket.chat/freeswitch@1.0.1-rc.1
+  - @rocket.chat/fuselage-ui-kit@13.0.0-rc.1
+  - @rocket.chat/gazzodown@13.0.0-rc.1
+  - @rocket.chat/model-typings@1.1.0-rc.1
+  - @rocket.chat/ui-contexts@13.0.0-rc.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.2-rc.1
+  - @rocket.chat/models@1.0.1-rc.1
+  - @rocket.chat/ui-theming@0.4.0
+  - @rocket.chat/ui-avatar@9.0.0-rc.1
+  - @rocket.chat/ui-client@13.0.0-rc.1
+  - @rocket.chat/ui-video-conf@13.0.0-rc.1
+  - @rocket.chat/ui-voip@3.0.0-rc.1
+  - @rocket.chat/web-ui-registration@13.0.0-rc.1
+  - @rocket.chat/instance-status@0.1.10-rc.1
+  </details>
+
+## 7.1.0-rc.0
+
+### Minor Changes
+
+- ([#33897](https://github.com/RocketChat/Rocket.Chat/pull/33897)) adds unread badge to sidebar collapser
+
+- ([#32906](https://github.com/RocketChat/Rocket.Chat/pull/32906)) Improves thread metrics featuring user avatars, better titles and repositioned elements.
+
+- ([#33810](https://github.com/RocketChat/Rocket.Chat/pull/33810)) Adds cursor pagination on chat.syncMessages endpoint
+
+- ([#33214](https://github.com/RocketChat/Rocket.Chat/pull/33214)) Adds a new route to allow fetching avatars by the user's id `/avatar/uid/<UserID>`
+
+- ([#32727](https://github.com/RocketChat/Rocket.Chat/pull/32727)) These changes aims to add:
+  - A brand-new omnichannel contact profile
+  - The ability to communicate with known contacts only
+  - Communicate with verified contacts only
+  - Merge verified contacts across different channels
+  - Block contact channels
+  - Resolve conflicting contact information when registered via different channels
+  - An advanced contact center filters
+- ([#33920](https://github.com/RocketChat/Rocket.Chat/pull/33920)) Improves the customizability of the naming of automatic Persistent video calls discussions, allowing the date of the call to be in different parts of the name, using the `[date]` keyword.
+
+- ([#33997](https://github.com/RocketChat/Rocket.Chat/pull/33997)) Prevent apps' subprocesses from crashing on unhandled rejections or uncaught exceptions
+
+- ([#33814](https://github.com/RocketChat/Rocket.Chat/pull/33814)) Adds a confirmation modal to the cancel subscription action
+
+- ([#33949](https://github.com/RocketChat/Rocket.Chat/pull/33949)) Disables the possiblity to upload exempted apps
+
+### Patch Changes
+
+- ([#33776](https://github.com/RocketChat/Rocket.Chat/pull/33776)) Fix user highlights not matching only whole words
+
+- ([#33818](https://github.com/RocketChat/Rocket.Chat/pull/33818)) Remove unused client side `setUserActiveStatus` meteor method.
+
+- ([#33596](https://github.com/RocketChat/Rocket.Chat/pull/33596)) Bump meteor to 3.0.4 and Node version to 20.18.0
+
+- ([#33713](https://github.com/RocketChat/Rocket.Chat/pull/33713)) Deprecated the `from` field in the apps email bridge and made it optional, using the server's settings when the field is omitted
+
+- ([#32991](https://github.com/RocketChat/Rocket.Chat/pull/32991)) Fixes an issue where updating custom emojis didn’t work as expected, ensuring that uploaded emojis now update correctly and display without any caching problems.
+
+- ([#33985](https://github.com/RocketChat/Rocket.Chat/pull/33985)) Fixes issue that could cause multiple discussions to be created when creating it from a message action
+
+- ([#33904](https://github.com/RocketChat/Rocket.Chat/pull/33904)) adds missing html attributes in sidebar item templates
+
+- ([#33218](https://github.com/RocketChat/Rocket.Chat/pull/33218)) Fixes message character limit not being applied to file upload descriptions
+
+- ([#33908](https://github.com/RocketChat/Rocket.Chat/pull/33908)) Fixes the issue where newly created teams are incorrectly displayed as channels on the sidebar when the DISABLE_DB_WATCHERS environment variable is enabled
+
+- ([#33953](https://github.com/RocketChat/Rocket.Chat/pull/33953)) Adds a divider on Create team modal - advanced settings
+
+- ([#33786](https://github.com/RocketChat/Rocket.Chat/pull/33786)) Fixed an issue that would grant network permission to app's processes in wrong cases
+
+- ([#33986](https://github.com/RocketChat/Rocket.Chat/pull/33986)) Fixes sidepanel not replicating sidebar sort preference
+
+- ([#33689](https://github.com/RocketChat/Rocket.Chat/pull/33689)) Fixes banner breaking the UI with specific payloads
+
+- ([#33808](https://github.com/RocketChat/Rocket.Chat/pull/33808)) Fixes client-side updates for recent emoji list when custom emojis are modified.
+
+- ([#33902](https://github.com/RocketChat/Rocket.Chat/pull/33902)) Adds "Master volume" and "Call ringer volume" to the user preferences sound section.
+
+- ([#33311](https://github.com/RocketChat/Rocket.Chat/pull/33311)) Sends server statistics only once a day despite multiple instance being started at different times.
+
+- ([#33719](https://github.com/RocketChat/Rocket.Chat/pull/33719)) stops calling an object through proxy calling getQueueWorker
+
+- ([#33785](https://github.com/RocketChat/Rocket.Chat/pull/33785)) Fixed an issue where the installed apps list would go stale without a refresh in some cases
+
+- ([#33278](https://github.com/RocketChat/Rocket.Chat/pull/33278)) Fixes display of emoji aliases in custom emoji list by adding commas between aliases
+
+- ([#33772](https://github.com/RocketChat/Rocket.Chat/pull/33772)) Fixes `waiting queue` feature. When `Livechat_waiting_queue` setting is enabled, incoming conversations should be sent to the queue instead of being assigned directly.
+
+- ([#33963](https://github.com/RocketChat/Rocket.Chat/pull/33963)) Fixes edge case of thread unread not being added to unread group
+
+- ([#33994](https://github.com/RocketChat/Rocket.Chat/pull/33994)) Adds login and permission validation for resetIrcConnection method
+
+- ([#33880](https://github.com/RocketChat/Rocket.Chat/pull/33880)) Updates VoIP field labels from 'Free Extension Numbers' to 'Available Extensions' to better describe the field's purpose and improve clarity.
+
+- ([#33958](https://github.com/RocketChat/Rocket.Chat/pull/33958)) Fixes an issue where resizable handler renders over the expanded thread view while using contextualbarResizable feature preview
+
+- <details><summary>Updated dependencies [82767d8fd8a52ac348e8aded1d238e688d36129b, 80e36bfc3938775eb26aa5576f1b9b98896e1cc4, 66ecc64fc1d4464ad2818ad04e23a09cdf221194, 6c83bf0657004ee9cf43d5c832f51826a6591165, e7edeac3bdd22da0a04b8e873d5a008e249fb4be, 3569b0a9c48f8b94ebaef2f8b607c52fdb8e570a, b4841cb7206d855d7a1bc7604683a5b4a48b7176, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0, d1e6a73796269824fb1aa7afcc7b8aa242e34e90, 661cc01237629ce83699d6c25df25d12985e88bf, 63ccadc012499e004445ad6bc6cd2ff777aecbd1, ce7024af36fcde97b1da5b2731f6edc4a4c236b8, 616655585cb1c5c60d7cee97e25b17af3dfda794, e5fe727f6a2f0e60cdf7ba225e1f6caa6db2045c, d398866dba725918017e3609807f9d0ab9b89b72, 322bafd4bd1fe91ed34610501b269e4d8951944c, d398866dba725918017e3609807f9d0ab9b89b72]:</summary>
+
+  - @rocket.chat/apps-engine@1.48.0-rc.0
+  - @rocket.chat/model-typings@1.1.0-rc.0
+  - @rocket.chat/core-typings@7.1.0-rc.0
+  - @rocket.chat/i18n@1.1.0-rc.0
+  - @rocket.chat/rest-typings@7.1.0-rc.0
+  - @rocket.chat/core-services@0.7.2-rc.0
+  - @rocket.chat/presence@0.2.10-rc.0
+  - @rocket.chat/apps@0.2.1-rc.0
+  - @rocket.chat/fuselage-ui-kit@13.0.0-rc.0
+  - @rocket.chat/omnichannel-services@0.3.7-rc.0
+  - @rocket.chat/models@1.0.1-rc.0
+  - @rocket.chat/license@1.0.1-rc.0
+  - @rocket.chat/pdf-worker@0.2.7-rc.0
+  - @rocket.chat/api-client@0.2.10-rc.0
+  - @rocket.chat/cron@0.1.10-rc.0
+  - @rocket.chat/freeswitch@1.0.1-rc.0
+  - @rocket.chat/gazzodown@13.0.0-rc.0
+  - @rocket.chat/ui-contexts@13.0.0-rc.0
+  - @rocket.chat/web-ui-registration@13.0.0-rc.0
+  - @rocket.chat/network-broker@0.1.2-rc.0
+  - @rocket.chat/instance-status@0.1.10-rc.0
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/ui-theming@0.4.0
+  - @rocket.chat/ui-avatar@9.0.0-rc.0
+  - @rocket.chat/ui-client@13.0.0-rc.0
+  - @rocket.chat/ui-video-conf@13.0.0-rc.0
+  - @rocket.chat/ui-voip@3.0.0-rc.0
+  </details>
+
 ## 7.0.0
 
 ### Major Changes

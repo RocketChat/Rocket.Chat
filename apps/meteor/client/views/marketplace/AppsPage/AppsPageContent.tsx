@@ -1,4 +1,4 @@
-import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
@@ -29,7 +29,8 @@ type AppsContext = 'explore' | 'installed' | 'premium' | 'private' | 'requested'
 const AppsPageContent = (): ReactElement => {
 	const { t } = useTranslation();
 	const { marketplaceApps, installedApps, privateApps, reload } = useAppsResult();
-	const [text, setText] = useDebouncedState('', 500);
+	const [text, setText] = useState('');
+	const debouncedText = useDebouncedValue(text, 500);
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const router = useRouter();
@@ -127,7 +128,7 @@ const AppsPageContent = (): ReactElement => {
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 	const appsResult = useFilteredApps({
 		appsData: getAppsData(),
-		text,
+		text: debouncedText,
 		current,
 		itemsPerPage,
 		categories: useMemo(() => selectedCategories.map(({ label }) => label), [selectedCategories]),
