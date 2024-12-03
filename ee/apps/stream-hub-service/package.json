@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/stream-hub-service",
 	"private": true,
-	"version": "0.4.9",
+	"version": "0.4.10-rc.1",
 	"description": "Rocket.Chat Stream Hub service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -24,7 +24,7 @@
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~20.16.15",
+		"@types/node": "~20.17.8",
 		"ejson": "^2.2.3",
 		"event-loop-stats": "^1.4.1",
 		"eventemitter3": "^5.0.1",
@@ -44,7 +44,7 @@
 		"@types/polka": "^0.5.7",
 		"eslint": "~8.45.0",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.6.3"
+		"typescript": "~5.7.2"
 	},
 	"main": "./dist/ee/apps/stream-hub-service/src/service.js",
 	"files": [
