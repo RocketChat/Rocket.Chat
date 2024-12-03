@@ -1,10 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../app/settings';
-import { Users, Messages } from '../../../app/models';
 import { msgStream } from '../../../app/lib/server';
+import { Messages, Users } from '../../../app/models';
+import { settings } from '../../../app/settings';
 
 import { MY_MESSAGE } from '.';
+
+
+import redis from '/app/redis/redis';
+
 
 Meteor.startup(function() {
 	function publishMessage(type, record) {
@@ -27,13 +31,29 @@ Meteor.startup(function() {
 		}
 	}
 
-	return Messages.on('change', function({ clientAction, id, data/* , oplog*/ }) {
+	const handleMessage = (clientAction, data, id) => {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated':
 				const message = data || Messages.findOne({ _id: id });
 				publishMessage(clientAction, message);
+
 				break;
 		}
-	});
+	};
+
+	const redisMessageHandle = (channel, redisObj) => {
+		const data = JSON.stringify(redisObj);
+		return handleMessage('inserted', data, data._id);
+	};
+
+
+	if (settings.get('Use_Oplog_As_Real_Time')) {
+		Messages.on('change', function({ clientAction, id, data/* , oplog*/ }) {
+			handleMessage(clientAction, data, id);
+		});
+	} else {
+		console.log('redis on message');
+		redis.on('message', redisMessageHandle);
+	}
 });
