@@ -199,6 +199,6 @@ export class LivenessManager {
             pid: this.subprocess.pid,
         });
 
-        this.controller.restartApp();
+        setTimeout(() => this.controller.restartApp(), Math.max(this.restartCount++ * 1000, 10 * 1000));
     }
 }
