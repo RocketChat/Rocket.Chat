@@ -3,6 +3,8 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
+import { useReactiveQuery } from '../../../../client/hooks/useReactiveQuery';
+import { roomsQueryKeys } from '../../../../client/lib/queryKeys';
 import { useToggleFollowingThreadMutation } from '../../../../client/views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
 import { Messages } from '../../../models/client';
 import { MessageAction } from '../../../ui-utils/client';
@@ -17,7 +19,7 @@ export const useUnFollowMessageAction = (
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const toggleFollowingMutation = useToggleFollowingThreadMutation({
+	const { mutate: toggleFollowingThread } = useToggleFollowingThreadMutation({
 		onSuccess: () => {
 			dispatchToastMessage({
 				type: 'success',
@@ -25,16 +27,22 @@ export const useUnFollowMessageAction = (
 			});
 		},
 	});
+
+	const { tmid, _id } = message;
+	const messageQuery = useReactiveQuery(
+		roomsQueryKeys.message(room._id, message._id),
+		() => Messages.findOne({ _id: tmid || _id }, { fields: { replies: 1 } }) ?? null,
+	);
+
 	useEffect(() => {
 		if (!message || !threadsEnabled || isOmnichannelRoom(room)) {
 			return;
 		}
 
-		const { tmid, _id } = message;
 		let { replies } = message;
 
 		if (tmid || context) {
-			const parentMessage = Messages.findOne({ _id: tmid || _id }, { fields: { replies: 1 } });
+			const parentMessage = messageQuery.data;
 			if (parentMessage) {
 				replies = parentMessage.replies || [];
 			}
@@ -55,12 +63,12 @@ export const useUnFollowMessageAction = (
 			type: 'interaction',
 			context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 			async action() {
-				toggleFollowingMutation.mutate({ tmid: tmid || _id, follow: false, rid: room._id });
+				toggleFollowingThread({ tmid: tmid || _id, follow: false, rid: room._id });
 			},
 			order: 1,
 			group: 'menu',
 		});
 
 		return () => MessageAction.removeButton('unfollow-message');
-	}, [context, message, room, threadsEnabled, toggleFollowingMutation, user]);
+	}, [_id, context, message, messageQuery.data, room, threadsEnabled, tmid, toggleFollowingThread, user]);
 };
