@@ -46,7 +46,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		this.running = true;
 
 		queueLogger.info('Service started');
-		await this.execute();
+		return this.execute();
 	}
 
 	private async _stop() {
@@ -71,7 +71,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	}
 
 	async stop() {
-		await this.serviceStarter.stop();
+		return this.serviceStarter.stop();
 	}
 
 	private async getActiveQueues() {
