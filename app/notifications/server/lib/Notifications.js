@@ -1,9 +1,11 @@
-import { Meteor } from 'meteor/meteor';
 import { DDPCommon } from 'meteor/ddp-common';
+import { Meteor } from 'meteor/meteor';
 
-import { WEB_RTC_EVENTS } from '../../../webrtc';
-import { Subscriptions, Rooms } from '../../../models/server';
+import { Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
+import { WEB_RTC_EVENTS } from '../../../webrtc';
+
+import { loginStream } from '/app/lib/server/lib/loginStream';
 
 const changedPayload = function(collection, id, fields) {
 	return DDPCommon.stringifyDDP({
@@ -66,6 +68,7 @@ class Notifications {
 		this.streamAll = new Meteor.Streamer('notify-all');
 		this.streamLogged = new Meteor.Streamer('notify-logged');
 		this.streamRoom = new Meteor.Streamer('notify-room');
+		this.streamBind = loginStream;
 		this.streamRoomUsers = new Meteor.Streamer('notify-room-users');
 		this.streamUser = new RoomStreamer('notify-user');
 		this.streamAll.allowWrite('none');

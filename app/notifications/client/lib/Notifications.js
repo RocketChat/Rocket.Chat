@@ -15,6 +15,7 @@ class Notifications {
 		this.streamAll = new Meteor.Streamer('notify-all');
 		this.streamLogged = new Meteor.Streamer('notify-logged');
 		this.streamRoom = new Meteor.Streamer('notify-room');
+		this.streamBind = new Meteor.Streamer('channel-subscriber');
 		this.streamRoomUsers = new Meteor.Streamer('notify-room-users');
 		this.streamUser = new Meteor.Streamer('notify-user');
 		if (this.debug === true) {
@@ -64,6 +65,10 @@ class Notifications {
 
 	onLogged(eventName, callback) {
 		return this.onLogin(() => this.streamLogged.on(eventName, callback));
+	}
+
+	bindChannels(eventName, callback) {
+		return this.streamBind.on(eventName, callback);
 	}
 
 	onRoom(room, eventName, callback) {
