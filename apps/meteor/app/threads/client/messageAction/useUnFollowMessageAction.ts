@@ -1,6 +1,7 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { useReactiveQuery } from '../../../../client/hooks/useReactiveQuery';
@@ -19,6 +20,8 @@ export const useUnFollowMessageAction = (
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
+	const queryClient = useQueryClient();
+
 	const { mutate: toggleFollowingThread } = useToggleFollowingThreadMutation({
 		onSuccess: () => {
 			dispatchToastMessage({
@@ -30,7 +33,7 @@ export const useUnFollowMessageAction = (
 
 	const { tmid, _id } = message;
 	const messageQuery = useReactiveQuery(
-		roomsQueryKeys.message(room._id, message._id),
+		roomsQueryKeys.message(message.rid, message._id),
 		() => Messages.findOne({ _id: tmid || _id }, { fields: { replies: 1 } }) ?? null,
 	);
 
@@ -64,6 +67,7 @@ export const useUnFollowMessageAction = (
 			context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
 			async action() {
 				toggleFollowingThread({ tmid: tmid || _id, follow: false, rid: room._id });
+				await queryClient.invalidateQueries(roomsQueryKeys.message(message.rid, message._id));
 			},
 			order: 1,
 			group: 'menu',
