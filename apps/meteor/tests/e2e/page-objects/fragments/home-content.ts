@@ -84,7 +84,7 @@ export class HomeContent {
 	async typeMessage(text: string): Promise<void> {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
-		await this.page.locator('[name="msg"]').fill(text);
+		await this.page.locator('[name="msg"]').pressSequentially(text);
 	}
 
 	async sendMessage(text: string): Promise<void> {

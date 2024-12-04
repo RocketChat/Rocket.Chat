@@ -113,9 +113,9 @@ test.describe.serial('message-mentions', () => {
 		await page.goto('/home');
 	});
 
-	test('expect show "all" and "here" options', async () => {
+	test.only('expect show "all" and "here" options', async () => {
 		await poHomeChannel.sidebar.openChat('general');
-		await poHomeChannel.content.inputMessage.type('@');
+		await poHomeChannel.content.typeMessage('@');
 
 		await expect(poHomeChannel.content.messagePopupUsers.locator('role=listitem >> text="all"')).toBeVisible();
 		await expect(poHomeChannel.content.messagePopupUsers.locator('role=listitem >> text="here"')).toBeVisible();

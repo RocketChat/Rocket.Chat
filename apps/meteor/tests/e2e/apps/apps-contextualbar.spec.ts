@@ -18,7 +18,7 @@ test.describe.serial('Apps > ContextualBar', () => {
 		poHomeChannel = new HomeChannel(page);
 
 		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat('general');
+		await poHomeChannel.sidebar.openChat('general');
 	});
 
 	test.afterAll(async () => {
