@@ -21,7 +21,23 @@ export default async function handleApp(method: string, params: unknown): Promis
 
     // We don't want the getStatus method to generate logs, so we handle it separately
     if (appMethod === 'getStatus') {
-        return handleGetStatus();
+        try {
+            return handleGetStatus();
+        } catch (e) {
+            if (!(e instanceof Error)) {
+                return new JsonRpcError('Unknown error', -32000, e);
+            }
+
+            if ((e.cause as string)?.includes('invalid_param_type')) {
+                return JsonRpcError.invalidParams(null);
+            }
+
+            if ((e.cause as string)?.includes('invalid_app')) {
+                return JsonRpcError.internalError({ message: 'App unavailable' });
+            }
+
+            return new JsonRpcError(e.message, -32000, e);
+        }
     }
 
     // `app` will be undefined if the method here is "app:construct"
