@@ -22,7 +22,7 @@ export default async function handleApp(method: string, params: unknown): Promis
     // We don't want the getStatus method to generate logs, so we handle it separately
     if (appMethod === 'getStatus') {
         try {
-            return handleGetStatus();
+            return await handleGetStatus();
         } catch (e) {
             if (!(e instanceof Error)) {
                 return new JsonRpcError('Unknown error', -32000, e);
