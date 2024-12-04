@@ -438,7 +438,7 @@ describe('[Direct Messages]', () => {
 						console.log(res.body);
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('joined', true);
-						expect(res.body).to.have.property('members').and.to.be.an('array').and.to.be.eq(2);
+						expect(res.body).to.have.property('members').and.to.be.a('number').and.to.be.eq(2);
 						expect(res.body).to.have.property('unreads').and.to.be.a('number').and.to.be.eq(1);
 						expect(res.body).to.have.property('unreadsFrom');
 						expect(res.body).to.have.property('msgs').and.to.be.a('number').and.to.be.eq(1);
