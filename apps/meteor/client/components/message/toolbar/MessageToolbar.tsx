@@ -10,6 +10,7 @@ import React, { memo, useMemo, useRef } from 'react';
 
 import MessageActionMenu from './MessageActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
+import { useFollowMessageAction } from './useFollowMessageAction';
 import { useJumpToMessageContextAction } from './useJumpToMessageContextAction';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
 import { usePermalinkStar } from './usePermalinkStar';
@@ -101,14 +102,13 @@ const MessageToolbar = ({
 	useStarMessageAction(message, { room, user });
 	useUnstarMessageAction(message, { room, user });
 	usePermalinkStar(message, { subscription, user });
+	useFollowMessageAction(message, { room, user, context });
 	useUnFollowMessageAction(message, { room, user, context });
-
 	useJumpToMessageContextAction(message, {
 		id: 'jump-to-message',
 		order: 100,
 		context: ['mentions', 'threads', 'videoconf-threads', 'message-mobile', 'search'],
 	});
-
 	useJumpToMessageContextAction(message, {
 		id: 'jump-to-pin-message',
 		order: 100,
