@@ -65,9 +65,8 @@ export const useUnFollowMessageAction = (
 			label: 'Unfollow_message',
 			type: 'interaction',
 			context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
-			async action() {
+			action() {
 				toggleFollowingThread({ tmid: tmid || _id, follow: false, rid: room._id });
-				await queryClient.invalidateQueries(roomsQueryKeys.message(message.rid, message._id));
 			},
 			order: 1,
 			group: 'menu',
