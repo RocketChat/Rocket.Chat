@@ -42,7 +42,6 @@ export const useFollowMessageAction = (
 		}
 
 		let { replies = [] } = message;
-		console.log(messageQuery, messageQuery.data);
 		if (tmid || context) {
 			const parentMessage = messageQuery.data;
 			if (parentMessage) {
