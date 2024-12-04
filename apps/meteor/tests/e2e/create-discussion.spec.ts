@@ -19,11 +19,11 @@ test.describe.serial('create-discussion', () => {
 		const discussionName = faker.string.uuid();
 		const discussionMessage = faker.animal.type();
 
-		await poHomeDiscussion.sidenav.openNewByLabel('Discussion');
-		await poHomeDiscussion.inputChannelName.type('general');
+		await poHomeDiscussion.sidebar.openCreateNewByLabel('Discussion');
+		await poHomeDiscussion.inputChannelName.fill('general');
 		await page.locator('role=listbox >> role=option[name=general]').click();
-		await poHomeDiscussion.inputName.type(discussionName);
-		await poHomeDiscussion.inputMessage.type(discussionMessage);
+		await poHomeDiscussion.inputName.fill(discussionName);
+		await poHomeDiscussion.inputMessage.fill(discussionMessage);
 		await poHomeDiscussion.btnCreate.click();
 
 		await expect(page).toHaveURL(/\/channel\/[a-z0-9]{0,17}$/i);

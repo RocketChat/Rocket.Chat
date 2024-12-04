@@ -17,13 +17,15 @@ test.describe.serial('sidebar-administration-menu', () => {
 	test.describe('admin user', () => {
 		test('should open workspace page', async ({ page }) => {
 			test.skip(!IS_EE, 'Enterprise only');
-			await poHomeDiscussion.sidenav.openAdministrationByLabel('Workspace');
+			await poHomeDiscussion.navbar.openWorkspaceSettingsMenu();
+			await poHomeDiscussion.navbar.workspaceMenuItem.click();
 
 			await expect(page).toHaveURL('admin/info');
 		});
 
 		test('should open omnichannel page', async ({ page }) => {
-			await poHomeDiscussion.sidenav.openAdministrationByLabel('Omnichannel');
+			await poHomeDiscussion.navbar.openWorkspaceSettingsMenu();
+			await poHomeDiscussion.navbar.omnichannelMenuItem.click();
 
 			await expect(page).toHaveURL('omnichannel/current');
 		});

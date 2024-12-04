@@ -319,7 +319,6 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 												disabled={e2eDisabled || federated}
 												onChange={onChange}
 												aria-describedby={`${encryptedId}-hint`}
-												aria-labelledby='Encrypted_channel_Label'
 											/>
 										)}
 									/>

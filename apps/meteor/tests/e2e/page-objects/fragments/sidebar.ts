@@ -47,9 +47,9 @@ export class Sidebar {
 	}
 
 	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
-		await this.sidebarSearchSection.getByRole('button', { name: 'Display', exact: true }).click();
-		await this.sidebarSearchSection.getByRole('menuitemcheckbox', { name: mode }).click();
-		await this.sidebarSearchSection.click();
+		await this.searchSection.getByRole('button', { name: 'Display', exact: true }).click();
+		await this.searchSection.getByRole('menuitemcheckbox', { name: mode }).click();
+		await this.searchSection.click();
 	}
 
 	async escSearch(): Promise<void> {
@@ -70,22 +70,27 @@ export class Sidebar {
 	}
 
 	getSearchRoomByName(name: string): Locator {
-		return this.searchList.getByRole('link', { name });
+		return this.searchList.getByRole('link', { name, exact: true });
 	}
 
 	getSidebarItemByName(name: string): Locator {
-		return this.channelsList.getByRole('link', { name });
+		return this.channelsList.getByRole('link', { name, exact: true });
+	}
+
+	async waitForReadItem(name: string): Promise<void> {
+		await this.sidebar.locator(`a[aria-label="${name}"][data-unread="false"]`).waitFor();
 	}
 
 	async openChat(name: string): Promise<void> {
 		await this.typeSearch(name);
 		await this.getSearchRoomByName(name).click();
+		await this.waitForChannel();
 	}
 
 	async openItemMenu(item: Locator): Promise<void> {
 		await item.hover();
 		await item.focus();
-		await item.locator('.rcx-sidebar-item__menu').click();
+		await item.locator('.rcx-sidebar-v2-item__menu-wrapper').click();
 	}
 
 	async markItemAsUnread(item: Locator): Promise<void> {
@@ -109,7 +114,7 @@ export class Sidebar {
 
 	// Note: this is different from openChat because queued chats are not searchable
 	getQueuedChat(name: string): Locator {
-		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: new RegExp(`^${name}$`) }).first();
+		return this.sidebar.getByRole('link', { name: new RegExp(`^${name}$`) }).first();
 	}
 
 	async openCreateNewByLabel(name: 'Direct message' | 'Discussion' | 'Channel' | 'Team'): Promise<void> {
@@ -117,15 +122,12 @@ export class Sidebar {
 		await this.page.getByRole('menuitem', { name }).click();
 	}
 
-	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
-		await this.searchSection.getByRole('button', { name: 'Display', exact: true }).click();
-		await this.sidebar.getByRole('menuitemcheckbox', { name: mode }).click();
-		await this.searchSection.click();
-	}
-
 	async createEncryptedChannel(name: string) {
 		await this.openCreateNewByLabel('Channel');
 		await this.createRoomModal.inputChannelName.fill(name);
+		await this.createRoomModal.advancedSettingsAccordion.click();
+		await this.createRoomModal.checkboxEncryption.click();
+		await this.createRoomModal.btnCreate.click();
 	}
 
 	async createPublicChannel(name: string) {

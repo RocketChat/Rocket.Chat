@@ -22,7 +22,7 @@ test.describe.serial('message-composer', () => {
 	});
 
 	test('should have all formatters and the main actions visible on toolbar', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 
 		await expect(poHomeChannel.composerToolbarActions).toHaveCount(12);
@@ -30,13 +30,14 @@ test.describe.serial('message-composer', () => {
 
 	test('should have only the main formatter and the main action', async ({ page }) => {
 		await page.setViewportSize({ width: 768, height: 600 });
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 
 		await expect(poHomeChannel.composerToolbarActions).toHaveCount(5);
 	});
 
 	test('should navigate on toolbar using arrow keys', async ({ page }) => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
+		await poHomeChannel.content.waitForChannel();
 
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('ArrowRight');
@@ -48,7 +49,7 @@ test.describe.serial('message-composer', () => {
 	});
 
 	test('should move the focus away from toolbar using tab key', async ({ page }) => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
@@ -58,9 +59,10 @@ test.describe.serial('message-composer', () => {
 
 	test('should add a link to the selected text', async ({ page }) => {
 		const url = faker.internet.url();
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
+		await poHomeChannel.content.waitForChannel();
+		await poHomeChannel.content.typeMessage('hello composer');
 
-		await page.keyboard.type('hello composer');
 		await page.keyboard.press('Control+A'); // on Windows and Linux
 		await page.keyboard.press('Meta+A'); // on macOS
 		await poHomeChannel.composerToolbar.getByRole('button', { name: 'Link' }).click();
@@ -71,7 +73,7 @@ test.describe.serial('message-composer', () => {
 	});
 
 	test('should select popup item and not send the message when pressing enter', async ({ page }) => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 
 		await test.step('mention popup', async () => {

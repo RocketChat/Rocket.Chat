@@ -63,6 +63,10 @@ export class HomeContent {
 		return this.page.locator('role=button[name="Join"]');
 	}
 
+	getRoomTopic(topic: string): Locator {
+		return this.page.getByRole('note').filter({ hasText: topic });
+	}
+
 	async openRoomInfo(): Promise<void> {
 		await this.channelHeader.locator('button[data-qa-id="ToolBoxAction-info-circled"]').click();
 	}
@@ -81,10 +85,14 @@ export class HomeContent {
 		await this.joinRoom();
 	}
 
-	async sendMessage(text: string): Promise<void> {
+	async typeMessage(text: string): Promise<void> {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
-		await this.page.locator('[name="msg"]').fill(text);
+		await this.page.locator('[name="msg"]').pressSequentially(text);
+	}
+
+	async sendMessage(text: string): Promise<void> {
+		await this.typeMessage(text);
 		await this.page.getByRole('button', { name: 'Send', exact: true }).click();
 	}
 
@@ -416,6 +424,11 @@ export class HomeContent {
 	async sendMessageInThread(text: string): Promise<void> {
 		await this.page.getByRole('dialog').getByRole('textbox', { name: 'Message' }).fill(text);
 		await this.page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true }).click();
+	}
+
+	async waitForPageLoad(): Promise<void> {
+		await this.page.waitForSelector('main');
+		await this.page.waitForSelector('main >> role=heading');
 	}
 
 	get btnClearSelection() {

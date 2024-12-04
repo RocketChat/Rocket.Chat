@@ -106,7 +106,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			});
 
 			await test.step('should allow the agent to take the secondary user chat', async () => {
-				await poHomeOmnichannel.sidenav.getQueuedChat(secondVisitor.name).click();
+				await poHomeOmnichannel.sidebar.getQueuedChat(secondVisitor.name).click();
 				await expect(poHomeOmnichannel.content.btnTakeChat).toBeVisible();
 				await poHomeOmnichannel.content.btnTakeChat.click();
 				await expect(poHomeOmnichannel.content.lastSystemMessageBody).toHaveText('joined the channel');

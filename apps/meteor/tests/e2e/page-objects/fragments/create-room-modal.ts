@@ -26,6 +26,10 @@ export class CreateRoomModal {
 		return this.getModalByRoomType('channel').getByRole('textbox', { name: 'Name' });
 	}
 
+	get inputTeamName(): Locator {
+		return this.getModalByRoomType('team').getByRole('textbox', { name: 'Name' });
+	}
+
 	get inputDirectUsernames(): Locator {
 		return this.getModalByRoomType('direct message').getByRole('textbox');
 	}

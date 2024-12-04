@@ -37,19 +37,19 @@ test.describe.serial('retention-policy', () => {
 		});
 
 		test('should not show prune banner in channel', async () => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.sidebar.openChat(targetChannel);
 
 			await expect(poHomeChannel.content.channelRetentionPolicyWarning).not.toBeVisible();
 		});
 
 		test('should not show prune banner in team', async () => {
-			await poHomeChannel.sidenav.openChat(targetTeam);
+			await poHomeChannel.sidebar.openChat(targetTeam);
 
 			await expect(poHomeChannel.content.channelRetentionPolicyWarning).not.toBeVisible();
 		});
 
 		test('should not show prune section on edit channel', async () => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.sidebar.openChat(targetChannel);
 			await poHomeChannel.tabs.btnRoomInfo.click();
 			await poHomeChannel.tabs.room.btnEdit.click();
 
@@ -70,21 +70,21 @@ test.describe.serial('retention-policy', () => {
 		});
 
 		test('should not show prune banner even with retention policy setting enabled in any type of room', async () => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.sidebar.openChat(targetChannel);
 			await expect(poHomeChannel.content.channelRetentionPolicyWarning).not.toBeVisible();
 
-			await poHomeChannel.sidenav.openChat(targetTeam);
+			await poHomeChannel.sidebar.openChat(targetTeam);
 			await expect(poHomeChannel.content.channelRetentionPolicyWarning).not.toBeVisible();
 
-			await poHomeChannel.sidenav.openChat(targetGroup);
+			await poHomeChannel.sidebar.openChat(targetGroup);
 			await expect(poHomeChannel.content.channelRetentionPolicyWarning).not.toBeVisible();
 
-			await poHomeChannel.sidenav.openChat('user1');
+			await poHomeChannel.sidebar.openChat('user1');
 			await expect(poHomeChannel.content.channelRetentionPolicyWarning).not.toBeVisible();
 		});
 
 		test('should show prune section in edit channel', async () => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.sidebar.openChat(targetChannel);
 			await poHomeChannel.tabs.btnRoomInfo.click();
 			await poHomeChannel.tabs.room.btnEdit.click();
 
@@ -96,7 +96,7 @@ test.describe.serial('retention-policy', () => {
 			test.beforeEach(async ({ browser }) => {
 				const { page } = await createAuxContext(browser, Users.user1);
 				auxContext = { page, poHomeChannel: new HomeChannel(page) };
-				await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
+				await auxContext.poHomeChannel.sidebar.openChat(targetChannel);
 				await auxContext.poHomeChannel.tabs.btnRoomInfo.click();
 				await auxContext.poHomeChannel.tabs.room.btnEdit.click();
 			});
@@ -124,7 +124,7 @@ test.describe.serial('retention-policy', () => {
 			});
 
 			test('should prune old messages checkbox enabled by default in channel and show retention policy banner', async () => {
-				await poHomeChannel.sidenav.openChat(targetChannel);
+				await poHomeChannel.sidebar.openChat(targetChannel);
 				await expect(poHomeChannel.content.channelRetentionPolicyWarning).toBeVisible();
 
 				await poHomeChannel.tabs.btnRoomInfo.click();
@@ -134,7 +134,7 @@ test.describe.serial('retention-policy', () => {
 			});
 
 			test('should prune old messages checkbox enabled by default in team and show retention policy banner', async () => {
-				await poHomeChannel.sidenav.openChat(targetTeam);
+				await poHomeChannel.sidebar.openChat(targetTeam);
 				await expect(poHomeChannel.content.channelRetentionPolicyWarning).toBeVisible();
 
 				await poHomeChannel.tabs.btnRoomInfo.click();
@@ -144,7 +144,7 @@ test.describe.serial('retention-policy', () => {
 			});
 
 			test('should prune old messages checkbox enabled by default in group and show retention policy banner', async () => {
-				await poHomeChannel.sidenav.openChat(targetGroup);
+				await poHomeChannel.sidebar.openChat(targetGroup);
 				await expect(poHomeChannel.content.channelRetentionPolicyWarning).toBeVisible();
 
 				await poHomeChannel.tabs.btnRoomInfo.click();
@@ -154,7 +154,7 @@ test.describe.serial('retention-policy', () => {
 			});
 
 			test('should show retention policy banner in DMs', async () => {
-				await poHomeChannel.sidenav.openChat('user1');
+				await poHomeChannel.sidebar.openChat('user1');
 				await expect(poHomeChannel.content.channelRetentionPolicyWarning).toBeVisible();
 			});
 		});
@@ -168,7 +168,7 @@ test.describe.serial('retention-policy', () => {
 			});
 
 			test.beforeEach(async () => {
-				await poHomeChannel.sidenav.openChat(targetChannel);
+				await poHomeChannel.sidebar.openChat(targetChannel);
 				await poHomeChannel.tabs.btnRoomInfo.click();
 				await poHomeChannel.tabs.room.btnEdit.click();
 				await poHomeChannel.tabs.room.pruneAccordion.click();
