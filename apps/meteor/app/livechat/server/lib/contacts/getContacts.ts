@@ -9,13 +9,15 @@ export type GetContactsParams = {
 	offset: number;
 	sort: Sort;
 	unknown?: boolean;
+	email?: string;
+	phone?: string;
 };
 
 export async function getContacts(params: GetContactsParams): Promise<PaginatedResult<{ contacts: ILivechatContactWithManagerData[] }>> {
-	const { searchText, count, offset, sort, unknown } = params;
+	const { searchText, count, offset, sort, unknown, email, phone } = params;
 
 	const { cursor, totalCount } = LivechatContacts.findPaginatedContacts(
-		{ searchText, unknown },
+		{ searchText, unknown, email, phone },
 		{
 			limit: count,
 			skip: offset,

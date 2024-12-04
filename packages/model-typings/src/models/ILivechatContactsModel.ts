@@ -17,7 +17,7 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	updateById(contactId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<Document | UpdateResult>;
 	addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void>;
 	findPaginatedContacts(
-		search: { searchText?: string; unknown?: boolean },
+		search: { searchText?: string; unknown?: boolean; email?: string; phone?: string },
 		options?: FindOptions<ILivechatContact>,
 	): FindPaginated<FindCursor<ILivechatContact>>;
 	updateLastChatById(
