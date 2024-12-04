@@ -15,6 +15,7 @@ import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
 import { usePermalinkStar } from './usePermalinkStar';
 import { usePinMessageAction } from './usePinMessageAction';
 import { useStarMessageAction } from './useStarMessageAction';
+import { useUnFollowMessageAction } from './useUnFollowMessageAction';
 import { useUnstarMessageAction } from './useUnstarMessageAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -98,6 +99,7 @@ const MessageToolbar = ({
 	useStarMessageAction(message, { room, user });
 	useUnstarMessageAction(message, { room, user });
 	usePermalinkStar(message, { subscription, user });
+	useUnFollowMessageAction(message, { room, user, context });
 
 	useJumpToMessageContextAction(message, {
 		id: 'jump-to-message',
