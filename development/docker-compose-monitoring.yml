@@ -70,6 +70,7 @@ services:
     image: grafana/grafana:11.0.0
     volumes:
       - ./grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./grafana-dashboard-rocketchat-metrics.json:/var/lib/grafana/dashboards/grafana-dashboard-rocketchat-metrics.json:ro
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin

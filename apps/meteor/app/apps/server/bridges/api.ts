@@ -9,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
 import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
+import { metrics } from '../../../metrics/server';
 
 const apiServer = express();
 
@@ -102,6 +103,13 @@ export class AppApisBridge extends ApiBridge {
 
 	private _appApiExecutor(endpoint: IApiEndpoint, appId: string): RequestHandler {
 		return (req: IRequestWithPrivateHash, res: Response): void => {
+			const rocketchatRestApiEnd = metrics.rocketchatRestApi.startTimer({
+				method: req.method.toLowerCase(),
+				version: 'apps',
+				// TODO: Best way to check settings here for the user agent config
+				entrypoint: req.originalUrl,
+			});
+
 			const request: IApiRequest = {
 				method: req.method.toLowerCase() as RequestMethod,
 				headers: req.headers as { [key: string]: string },
@@ -112,7 +120,7 @@ export class AppApisBridge extends ApiBridge {
 				user: req.user && this.orch.getConverters()?.get('users')?.convertToApp(req.user),
 			};
 
-			this.orch
+			void this.orch
 				.getManager()
 				?.getApiManager()
 				.executeApi(appId, endpoint.path, request)
@@ -120,11 +128,16 @@ export class AppApisBridge extends ApiBridge {
 					res.set(headers);
 					res.status(status);
 					res.send(content);
+
+					return status;
 				})
 				.catch((reason) => {
 					// Should we handle this as an error?
 					res.status(500).send(reason.message);
-				});
+
+					return 500;
+				})
+				.then((status) => rocketchatRestApiEnd({ status }));
 		};
 	}
 }
