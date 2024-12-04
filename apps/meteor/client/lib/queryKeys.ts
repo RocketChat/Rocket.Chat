@@ -4,6 +4,7 @@ export const roomsQueryKeys = {
 	all: ['rooms'] as const,
 	room: (rid: IRoom['_id']) => ['rooms', rid] as const,
 	starredMessages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'starred-messages'] as const,
+	pinnedMessages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'pinned-messages'] as const,
 	messages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'messages'] as const,
 	message: (rid: IRoom['_id'], mid: IMessage['_id']) => [...roomsQueryKeys.messages(rid), mid] as const,
 	messageActions: (rid: IRoom['_id'], mid: IMessage['_id']) => [...roomsQueryKeys.message(rid, mid), 'actions'] as const,

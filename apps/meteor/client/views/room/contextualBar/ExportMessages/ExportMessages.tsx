@@ -260,11 +260,8 @@ const ExportMessages = () => {
 											rules={{
 												validate: {
 													validateEmail: (additionalEmails) => {
-														if (additionalEmails === '') {
-															return undefined;
-														}
-
-														if (additionalEmails !== '' && validateEmail(additionalEmails)) {
+														const emails = additionalEmails?.split(',').map((email) => email.trim());
+														if (Array.isArray(emails) && emails.every((email) => validateEmail(email.trim()))) {
 															return undefined;
 														}
 
