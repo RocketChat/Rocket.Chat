@@ -422,6 +422,14 @@ describe('[Direct Messages]', () => {
 			});
 
 			after(async () => {
+				await request
+					.post(api('im.delete'))
+					.set(credentials)
+					.send({
+						roomId: testDM._id,
+					})
+					.expect(200);
+
 				await deleteUser(user2);
 			});
 
