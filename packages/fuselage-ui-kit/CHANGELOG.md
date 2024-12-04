@@ -1,5 +1,18 @@
 # Change Log
 
+## 10.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.3
+  - @rocket.chat/gazzodown@10.0.3
+  - @rocket.chat/ui-contexts@10.0.3
+  - @rocket.chat/ui-avatar@6.0.3
+  - @rocket.chat/ui-video-conf@10.0.3
+  </details>
+
 ## 10.0.2
 
 ### Patch Changes

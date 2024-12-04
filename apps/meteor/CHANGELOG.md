@@ -1,5 +1,41 @@
 # @rocket.chat/meteor
 
+## 6.12.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#34099](https://github.com/RocketChat/Rocket.Chat/pull/34099) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixed an issue that caused clients to not properly receive certain server notifications right after login
+
+- ([#34072](https://github.com/RocketChat/Rocket.Chat/pull/34072) by [@dionisio-bot](https://github.com/dionisio-bot)) fixed an issue that caused the conference call ringer to fail to accept calls if the user logged out and in again
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.3
+  - @rocket.chat/rest-typings@6.12.3
+  - @rocket.chat/license@0.2.9
+  - @rocket.chat/omnichannel-services@0.3.6
+  - @rocket.chat/pdf-worker@0.2.6
+  - @rocket.chat/presence@0.2.9
+  - @rocket.chat/api-client@0.2.9
+  - @rocket.chat/apps@0.1.9
+  - @rocket.chat/core-services@0.6.3
+  - @rocket.chat/cron@0.1.9
+  - @rocket.chat/fuselage-ui-kit@10.0.3
+  - @rocket.chat/gazzodown@10.0.3
+  - @rocket.chat/model-typings@0.7.3
+  - @rocket.chat/ui-contexts@10.0.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@0.2.6
+  - @rocket.chat/ui-theming@0.2.1
+  - @rocket.chat/ui-avatar@6.0.3
+  - @rocket.chat/ui-client@10.0.3
+  - @rocket.chat/ui-video-conf@10.0.3
+  - @rocket.chat/web-ui-registration@10.0.3
+  - @rocket.chat/instance-status@0.1.9
+  </details>
+
 ## 6.12.2
 
 ### Patch Changes
