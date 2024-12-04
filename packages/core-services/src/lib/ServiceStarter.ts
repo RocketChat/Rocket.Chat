@@ -50,7 +50,7 @@ export class ServiceStarter {
 		if (this.currentCall) {
 			return this.lock;
 		}
-		this.lock = this.lock.then(() => this.checkStatus());
+		this.lock = this.checkStatus();
 		return this.lock;
 	}
 
