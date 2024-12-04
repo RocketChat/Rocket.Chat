@@ -1,4 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
+import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -40,6 +41,11 @@ const licenseMock = {
 		licenseMock.removeCb = cb;
 	},
 };
+
+registerModel('IServerEventsModel', {
+	insertOne: () => undefined,
+	createAuditServerEvent: () => undefined,
+} as any);
 
 proxyquire.noCallThru().load('../../../../app/license/server/airGappedRestrictions.ts', {
 	'@rocket.chat/license': {

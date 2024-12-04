@@ -32,7 +32,7 @@ const ConnectionStatusProvider = ({ children }: { children: ComponentChildren })
 				status,
 				connected: status === 'connected',
 				reconnect: () => sdk.connection.reconnect(),
-			} as const),
+			}) as const,
 		[status, sdk],
 	);
 

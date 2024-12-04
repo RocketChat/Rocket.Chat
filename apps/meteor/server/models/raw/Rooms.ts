@@ -26,10 +26,11 @@ import type {
 	UpdateOptions,
 	UpdateResult,
 	ModifyResult,
+	CountDocumentsOptions,
 } from 'mongodb';
 
-import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IRoom>>) {
@@ -203,7 +204,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 								...(discussion ? [{ prid: { $exists: true } }] : []),
 								...(teams ? [{ teamMain: { $exists: true } }] : []),
 							],
-					  }
+						}
 					: {},
 			],
 			...(!discussion ? { prid: { $exists: false } } : {}),
@@ -222,6 +223,17 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		};
 
 		return this.find(query, options);
+	}
+
+	countByTeamId(teamId: ITeam['_id']): Promise<number> {
+		const query: Filter<IRoom> = {
+			teamId,
+			teamMain: {
+				$exists: false,
+			},
+		};
+
+		return this.countDocuments(query);
 	}
 
 	findPaginatedByTeamIdContainingNameAndDefault(
@@ -643,6 +655,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
+	countByBroadcast(options?: CountDocumentsOptions): Promise<number> {
+		return this.countDocuments(
+			{
+				broadcast: true,
+			},
+			options,
+		);
+	}
+
 	setAsFederated(roomId: IRoom['_id']): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { federated: true } });
 	}
@@ -684,6 +705,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
+	countByE2E(options?: CountDocumentsOptions): Promise<number> {
+		return this.countDocuments(
+			{
+				encrypted: true,
+			},
+			options,
+		);
+	}
+
 	findE2ERoomById(roomId: IRoom['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		return this.findOne(
 			{
@@ -696,6 +726,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findRoomsInsideTeams(autoJoin = false): FindCursor<IRoom> {
 		return this.find({
+			teamId: { $exists: true },
+			teamMain: { $exists: false },
+			...(autoJoin && { teamDefault: true }),
+		});
+	}
+
+	countRoomsInsideTeams(autoJoin = false): Promise<number> {
+		return this.countDocuments({
 			teamId: { $exists: true },
 			teamMain: { $exists: false },
 			...(autoJoin && { teamDefault: true }),
@@ -733,7 +771,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 											$in: roomIds,
 										},
 									},
-							  ]
+								]
 							: []),
 					],
 				},
@@ -749,7 +787,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 									},
 								],
 							},
-					  ]
+						]
 					: []),
 			],
 		};
@@ -1115,12 +1153,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 						$set: {
 							sysMes: systemMessages,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							sysMes: '',
 						},
-				  };
+					};
 
 		return this.updateOne(query, update);
 	}
@@ -1293,7 +1331,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				includeFederatedRooms
 					? {
 							$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
-					  }
+						}
 					: { $or: [{ federated: { $exists: false } }, { federated: false }], name },
 			],
 		};
@@ -1350,7 +1388,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 								{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }, nameCondition] },
 								{ federated: true, fname: name },
 							],
-					  }
+						}
 					: { $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }, nameCondition] },
 			],
 		};
@@ -1445,6 +1483,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
+	countGroupDMsByUids(uids: NonNullable<IRoom['uids']>): Promise<number> {
+		return this.countDocuments({
+			usersCount: { $gt: 2 },
+			uids: { $in: uids },
+		});
+	}
+
 	find1On1ByUserId(userId: IRoom['_id'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		return this.find(
 			{
@@ -1457,6 +1502,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findByCreatedOTR(): FindCursor<IRoom> {
 		return this.find({ createdOTR: true });
+	}
+
+	countByCreatedOTR(options?: CountDocumentsOptions): Promise<number> {
+		return this.countDocuments({ createdOTR: true }, options);
 	}
 
 	findByUsernamesOrUids(uids: IRoom['u']['_id'][], usernames: IRoom['u']['username'][]): FindCursor<IRoom> {

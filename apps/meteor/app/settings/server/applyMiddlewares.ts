@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { use } from './Middleware';
 import { settings } from './cached';
 

@@ -1,11 +1,13 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject } from 'react';
 import React, { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import CustomUserStatusRow from './CustomUserStatusRow';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResult from '../../../../components/GenericNoResults';
 import {
@@ -17,7 +19,6 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import CustomUserStatusRow from './CustomUserStatusRow';
 
 type CustomUserStatusProps = {
 	reload: MutableRefObject<() => void>;
@@ -26,7 +27,7 @@ type CustomUserStatusProps = {
 
 // TODO: Missing error state
 const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElement | null => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [text, setText] = useState('');
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'statusType'>('name');
@@ -70,7 +71,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 
 	return (
 		<>
-			<FilterByText onChange={setText} />
+			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			{data.length === 0 && <GenericNoResult />}
 			{data && data.length > 0 && (
 				<>
@@ -91,9 +92,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 						</GenericTableHeader>
 						<GenericTableBody>
 							{isLoading && <GenericTableLoadingTable headerCells={2} />}
-							{data?.map((status) => (
-								<CustomUserStatusRow key={status._id} status={status} onClick={onClick} />
-							))}
+							{data?.map((status) => <CustomUserStatusRow key={status._id} status={status} onClick={onClick} />)}
 						</GenericTableBody>
 					</GenericTable>
 					{isFetched && (

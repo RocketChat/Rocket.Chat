@@ -1,8 +1,9 @@
 import { Modal, Button, Box, Icon } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 type AddMatrixUsersModalProps = {
 	matrixIdVerifiedStatus: Map<string, string>;
@@ -48,7 +49,7 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 			.catch((error) => dispatchToastMessage({ type: 'error', message: error as Error }));
 	};
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Modal>

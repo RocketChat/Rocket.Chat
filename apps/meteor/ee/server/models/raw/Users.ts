@@ -47,7 +47,7 @@ export class UsersEE extends UsersRaw {
 					{
 						$match: { department: { $size: 1 } },
 					},
-			  ]
+				]
 			: [];
 
 		return this.col

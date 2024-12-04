@@ -13,6 +13,10 @@ import type {
 	TransferByData,
 	ILivechatAgent,
 	ILivechatDepartment,
+	IOmnichannelRoomInfo,
+	IOmnichannelInquiryExtraData,
+	IOmnichannelRoomExtraData,
+	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus, OmnichannelSourceType, DEFAULT_SLA_CONFIG, UserStatus } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
@@ -26,11 +30,18 @@ import {
 	Subscriptions,
 	Rooms,
 	Users,
+	LivechatContacts,
 } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { ObjectId } from 'mongodb';
 
+import { Livechat as LivechatTyped } from './LivechatTyped';
+import { queueInquiry, saveQueueInquiry } from './QueueManager';
+import { RoutingManager } from './RoutingManager';
+import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
+import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissingContact';
+import { getOnlineAgents } from './getOnlineAgents';
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
 import { i18n } from '../../../../server/lib/i18n';
@@ -44,9 +55,6 @@ import {
 	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
-import { Livechat as LivechatTyped } from './LivechatTyped';
-import { queueInquiry, saveQueueInquiry } from './QueueManager';
-import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('LivechatHelper');
 export const allowAgentSkipQueue = (agent: SelectedAgent) => {
@@ -59,21 +67,13 @@ export const allowAgentSkipQueue = (agent: SelectedAgent) => {
 
 	return hasRoleAsync(agent.agentId, 'bot');
 };
-export const createLivechatRoom = async <
-	E extends Record<string, unknown> & {
-		sla?: string;
-		customFields?: Record<string, unknown>;
-		source?: OmnichannelSourceType;
-	},
->(
+export const createLivechatRoom = async (
 	rid: string,
-	name: string,
 	guest: ILivechatVisitor,
-	roomInfo: Partial<IOmnichannelRoom> = {},
-	extraData?: E,
+	roomInfo: IOmnichannelRoomInfo = { source: { type: OmnichannelSourceType.OTHER } },
+	extraData?: IOmnichannelRoomExtraData,
 ) => {
 	check(rid, String);
-	check(name, String);
 	check(
 		guest,
 		Match.ObjectIncluding({
@@ -85,7 +85,7 @@ export const createLivechatRoom = async <
 	);
 
 	const extraRoomInfo = await callbacks.run('livechat.beforeRoom', roomInfo, extraData);
-	const { _id, username, token, department: departmentId, status = 'online', contactId } = guest;
+	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
 
 	const { activity } = guest;
@@ -94,13 +94,30 @@ export const createLivechatRoom = async <
 		visitor: { _id, username, departmentId, status, activity },
 	});
 
+	const source = extraRoomInfo.source || roomInfo.source;
+
+	if (settings.get<string>('Livechat_Require_Contact_Verification') === 'always') {
+		await LivechatContacts.updateContactChannel({ visitorId: _id, source }, { verified: false });
+	}
+
+	const contactId = await migrateVisitorIfMissingContact(_id, source);
+	const contact =
+		contactId &&
+		(await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name' | 'channels'>>(contactId, {
+			projection: { name: 1, channels: 1 },
+		}));
+	if (!contact) {
+		throw new Error('error-invalid-contact');
+	}
+	const verified = Boolean(contact.channels.some((channel) => isVerifiedChannelInSource(channel, _id, source)));
+
 	// TODO: Solve `u` missing issue
 	const room: InsertionModel<IOmnichannelRoom> = {
 		_id: rid,
 		msgs: 0,
 		usersCount: 1,
 		lm: newRoomAt,
-		fname: name,
+		fname: contact.name,
 		t: 'l' as const,
 		ts: newRoomAt,
 		departmentId,
@@ -109,12 +126,13 @@ export const createLivechatRoom = async <
 			username,
 			token,
 			status,
-			contactId,
 			...(activity?.length && { activity }),
 		},
+		contactId,
 		cl: false,
 		open: true,
 		waitingResponse: true,
+		verified,
 		// this should be overridden by extraRoomInfo when provided
 		// in case it's not provided, we'll use this "default" type
 		source: {
@@ -162,7 +180,7 @@ export const createLivechatInquiry = async ({
 	guest?: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'department' | 'name' | 'token' | 'activity'>;
 	message?: string;
 	initialStatus?: LivechatInquiryStatus;
-	extraData?: Pick<ILivechatInquiryRecord, 'source'>;
+	extraData?: IOmnichannelInquiryExtraData;
 }) => {
 	check(rid, String);
 	check(name, String);
@@ -403,13 +421,12 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 	await saveQueueInquiry(inquiry);
 
 	// Alert only the online agents of the queued request
-	const onlineAgents = await LivechatTyped.getOnlineAgents(department, agent);
+	const onlineAgents = await getOnlineAgents(department, agent);
 	if (!onlineAgents) {
 		logger.debug('Cannot notify agents of queued inquiry. No online agents found');
 		return;
 	}
 
-	logger.debug(`Notifying ${await onlineAgents.count()} agents of new inquiry`);
 	const notificationUserName = v && (v.name || v.username);
 
 	for await (const agent of onlineAgents) {

@@ -1,9 +1,9 @@
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
 import SidebarFooterDefault from './SidebarFooterDefault';
 import { VoipFooter } from './voip';
+import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
 
 const SidebarFooter = (): ReactElement => {
 	const isCallEnabled = useIsCallEnabled();

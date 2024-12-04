@@ -3,11 +3,14 @@ import { Pagination } from '@rocket.chat/fuselage';
 import { useEffectEvent, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, Dispatch, SetStateAction } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import UsersTableFilters from './UsersTableFilters';
+import UsersTableRow from './UsersTableRow';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -20,8 +23,6 @@ import type { usePagination } from '../../../../components/GenericTable/hooks/us
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import type { AdminUsersTab, UsersFilters, UsersTableSortingOption } from '../AdminUsersPage';
 import { useVoipExtensionPermission } from '../voip/hooks/useVoipExtensionPermission';
-import UsersTableFilters from './UsersTableFilters';
-import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
 	tab: AdminUsersTab;
@@ -44,7 +45,7 @@ const UsersTable = ({
 	sortData,
 	isSeatsCapExceeded,
 }: UsersTableProps): ReactElement | null => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const breakpoints = useBreakpoints();
 
@@ -151,7 +152,10 @@ const UsersTable = ({
 			{isSuccess && data.users.length === 0 && (
 				<GenericNoResults
 					icon='user'
-					title={t('Users_Table_Generic_No_users', t((tab !== 'all' ? tab : '') as TranslationKey))}
+					title={t('Users_Table_Generic_No_users', {
+						postProcess: 'sprintf',
+						sprintf: [tab !== 'all' ? t(tab as TranslationKey) : ''],
+					})}
 					description={t(`Users_Table_no_${tab}_users_description`)}
 				/>
 			)}

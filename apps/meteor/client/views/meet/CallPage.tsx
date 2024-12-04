@@ -4,10 +4,10 @@ import { useTranslation, useStream } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 
+import OngoingCallDuration from './OngoingCallDuration';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { WebRTC } from '../../../app/webrtc/client';
 import { WEB_RTC_EVENTS } from '../../../app/webrtc/lib/constants';
-import OngoingCallDuration from './OngoingCallDuration';
 import './styles.css';
 
 type CallPageProps = {
@@ -60,35 +60,47 @@ const CallPage = ({
 			if (!visitorId) {
 				throw new Error('Call Page - no visitor id');
 			}
-			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId, visitorId as any);
+			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId, visitorId);
 			const isMobileDevice = (): boolean => {
 				if (isLayoutEmbedded) {
 					setCallInIframe(true);
 				}
 				if (window.innerWidth <= 450 && window.innerHeight >= 629 && window.innerHeight <= 900) {
 					setIsLocalMobileDevice(true);
-					webrtcInstance.media = {
-						audio: true,
-						video: {
-							width: { ideal: 440 },
-							height: { ideal: 580 },
-						},
-					};
+					if (webrtcInstance)
+						webrtcInstance.media = {
+							audio: true,
+							video: {
+								width: { ideal: 440 },
+								height: { ideal: 580 },
+							},
+						};
 					return true;
 				}
 				return false;
 			};
 
-			const unsubNotifyUser = subscribeNotifyUser(`${visitorId}/${WEB_RTC_EVENTS.WEB_RTC}`, (type: any, data: any) => {
+			const unsubNotifyUser = subscribeNotifyUser(`${visitorId}/${WEB_RTC_EVENTS.WEB_RTC}`, (type, data) => {
 				if (data.room == null) {
 					return;
 				}
-				webrtcInstance.onUserStream(type, data);
+
+				switch (type) {
+					case 'candidate':
+						webrtcInstance?.onUserStream('candidate', data);
+						break;
+					case 'description':
+						webrtcInstance?.onUserStream('description', data);
+						break;
+					case 'join':
+						webrtcInstance?.onUserStream('join', data);
+						break;
+				}
 			});
 
 			const unsubNotifyRoom = subscribeNotifyRoom(`${roomId}/${WEB_RTC_EVENTS.WEB_RTC}`, (type: any, data: any) => {
 				if (type === 'callStatus' && data.callStatus === 'ended') {
-					webrtcInstance.stop();
+					webrtcInstance?.stop();
 					setStatus(data.callStatus);
 				} else if (type === 'getDeviceType') {
 					sdk.publish('notify-room', [
@@ -130,7 +142,7 @@ const CallPage = ({
 			if (status === 'inProgress') {
 				sdk.publish('notify-room', [`${roomId}/${WEB_RTC_EVENTS.WEB_RTC}`, 'getDeviceType']);
 
-				webrtcInstance.startCall({
+				webrtcInstance?.startCall({
 					audio: true,
 					video: {
 						width: { ideal: 1920 },
@@ -145,10 +157,10 @@ const CallPage = ({
 				if (type === 'callStatus') {
 					switch (data.callStatus) {
 						case 'ended':
-							webrtcInstance.stop();
+							webrtcInstance?.stop();
 							break;
 						case 'inProgress':
-							webrtcInstance.startCall({
+							webrtcInstance?.startCall({
 								audio: true,
 								video: {
 									width: { ideal: 1920 },
@@ -168,10 +180,10 @@ const CallPage = ({
 
 	const toggleButton = (control: any): any => {
 		if (control === 'mic') {
-			WebRTC.getInstanceByRoomId(roomId, visitorToken).toggleAudio();
+			WebRTC.getInstanceByRoomId(roomId, visitorToken)?.toggleAudio();
 			return setIsMicOn(!isMicOn);
 		}
-		WebRTC.getInstanceByRoomId(roomId, visitorToken).toggleVideo();
+		WebRTC.getInstanceByRoomId(roomId, visitorToken)?.toggleVideo();
 		setIsCameraOn(!isCameraOn);
 		sdk.publish('notify-room', [
 			`${roomId}/${WEB_RTC_EVENTS.WEB_RTC}`,
@@ -201,7 +213,7 @@ const CallPage = ({
 						top: '5%',
 						right: '2%',
 					}}
-					className='Self_Video'
+					className='meet__video--self'
 					alignItems='center'
 					backgroundColor='dark'
 				>
@@ -238,7 +250,7 @@ const CallPage = ({
 							square
 							title={isMicOn ? t('Mute_microphone') : t('Unmute_microphone')}
 							onClick={(): any => toggleButton('mic')}
-							className={isMicOn ? 'On' : 'Off'}
+							className={isMicOn ? 'meet__button--on' : 'meet__button--off'}
 							size={Number(buttonSize)}
 						>
 							{isMicOn ? <Icon name='mic' size={iconSize} /> : <Icon name='mic-off' size={iconSize} />}
@@ -248,7 +260,7 @@ const CallPage = ({
 							square
 							title={isCameraOn ? t('Turn_off_video') : t('Turn_on_video')}
 							onClick={(): void => toggleButton('camera')}
-							className={isCameraOn ? 'On' : 'Off'}
+							className={isCameraOn ? 'meet__button--on' : 'meet__button--off'}
 							size={parseInt(buttonSize)}
 						>
 							{isCameraOn ? <Icon name='video' size={iconSize} /> : <Icon name='video-off' size={iconSize} />}
@@ -332,7 +344,7 @@ const CallPage = ({
 								top: '5%',
 								right: '2%',
 							}}
-							className='Self_Video'
+							className='meet__video--self'
 							backgroundColor='dark'
 							alignItems='center'
 						>

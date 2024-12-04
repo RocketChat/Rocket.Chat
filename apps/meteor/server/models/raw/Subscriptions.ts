@@ -33,8 +33,8 @@ import type {
 	ModifyResult,
 } from 'mongodb';
 
-import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 import { BaseRaw } from './BaseRaw';
+import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 
 export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISubscription>>) {
@@ -66,6 +66,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{ key: { 'u._id': 1, 'open': 1, 'department': 1 } },
 			{ key: { rid: 1, ls: 1 } },
 			{ key: { 'u._id': 1, 'autotranslate': 1 } },
+			{ key: { 'v._id': 1, 'open': 1 } },
 		];
 	}
 
@@ -264,6 +265,17 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return Users.find<P>({ _id: { $in: users } }, options || {});
 	}
 
+	async countUsersInRoles(roles: IRole['_id'][], rid: IRoom['_id'] | undefined): Promise<number> {
+		const query = {
+			roles: { $in: roles },
+			...(rid && { rid }),
+		};
+
+		// Ideally, the count of subscriptions would be the same (or really similar) to the count in users
+		// As sub/user/room is a 1:1 relation.
+		return this.countDocuments(query);
+	}
+
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid?: IRoom['_id']): Promise<UpdateResult> {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
@@ -325,6 +337,15 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			't': {
 				$in: types,
 			},
+		};
+
+		return this.find(query, options || {});
+	}
+
+	findOpenByVisitorIds(visitorIds: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		const query = {
+			'open': true,
+			'v._id': { $in: visitorIds },
 		};
 
 		return this.find(query, options || {});
@@ -403,10 +424,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		options: AggregateOptions = {},
 	): Promise<SpotlightUser[]> {
 		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
-		const orStatement = searchFields.reduce((acc, el) => {
-			acc.push({ [el.trim()]: termRegex });
-			return acc;
-		}, [] as { [x: string]: RegExp }[]);
+		const orStatement = searchFields.reduce(
+			(acc, el) => {
+				acc.push({ [el.trim()]: termRegex });
+				return acc;
+			},
+			[] as { [x: string]: RegExp }[],
+		);
 
 		return this.col
 			.aggregate<SpotlightUser>(
@@ -574,6 +598,19 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			$set: {
 				name,
 				fname,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	updateNameAndFnameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document> {
+		const query = { 'v._id': { $in: visitorIds } };
+
+		const update = {
+			$set: {
+				name,
+				fname: name,
 			},
 		};
 
@@ -924,12 +961,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 						$set: {
 							hideMentionStatus,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							hideMentionStatus: 1,
 						},
-				  };
+					};
 
 		return this.updateOne(query, update);
 	}

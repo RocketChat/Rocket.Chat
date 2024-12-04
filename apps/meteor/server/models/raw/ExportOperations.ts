@@ -48,6 +48,15 @@ export class ExportOperationsRaw extends BaseRaw<IExportOperation> implements IE
 		return this.find(query);
 	}
 
+	countAllPendingBeforeMyRequest(requestDay: Date): Promise<number> {
+		const query = {
+			status: { $nin: ['completed', 'skipped'] },
+			createdAt: { $lt: requestDay },
+		};
+
+		return this.countDocuments(query);
+	}
+
 	updateOperation(data: IExportOperation): Promise<UpdateResult> {
 		const update = {
 			$set: {

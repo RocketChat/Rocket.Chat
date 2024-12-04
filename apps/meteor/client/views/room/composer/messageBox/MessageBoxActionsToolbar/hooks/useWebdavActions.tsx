@@ -10,7 +10,7 @@ import AddWebdavAccountModal from '../../../../webdav/AddWebdavAccountModal';
 import WebdavFilePickerModal from '../../../../webdav/WebdavFilePickerModal';
 
 export const useWebdavActions = (): GenericMenuItemProps[] => {
-	const enabled = useSetting<boolean>('Webdav_Integration_Enabled', false);
+	const enabled = useSetting('Webdav_Integration_Enabled', false);
 
 	const { isSuccess, data } = useWebDAVAccountIntegrationsQuery({ enabled });
 
@@ -42,7 +42,7 @@ export const useWebdavActions = (): GenericMenuItemProps[] => {
 					content: account.name,
 					icon: 'cloud-plus' as const,
 					onClick: () => handleOpenWebdav(account),
-			  }))
+				}))
 			: []),
 	];
 };

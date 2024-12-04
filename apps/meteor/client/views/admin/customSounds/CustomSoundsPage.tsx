@@ -1,7 +1,11 @@
 import { Button } from '@rocket.chat/fuselage';
-import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import AddCustomSound from './AddCustomSound';
+import CustomSoundsTable from './CustomSoundsTable';
+import EditCustomSound from './EditCustomSound';
 import {
 	ContextualbarTitle,
 	Contextualbar,
@@ -10,12 +14,9 @@ import {
 	ContextualbarDialog,
 } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
-import AddCustomSound from './AddCustomSound';
-import CustomSoundsTable from './CustomSoundsTable';
-import EditCustomSound from './EditCustomSound';
 
 const CustomSoundsPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const id = useRouteParameter('id');
 	const route = useRoute('custom-sounds');
 	const context = useRouteParameter('context');

@@ -76,6 +76,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	findByUserIdAndTypes(userId: string, types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
+	findOpenByVisitorIds(visitorIds: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+
 	findByRoomIdAndNotAlertOrOpenExcludingUserIds(
 		filter: {
 			roomId: ISubscription['rid'];
@@ -113,6 +115,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	setOpenForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;
 
 	updateNameAndFnameByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document>;
+
+	updateNameAndFnameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document>;
 
 	setGroupE2EKey(_id: string, key: string): Promise<UpdateResult>;
 
@@ -321,4 +325,5 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	countByRoomIdAndNotUserId(rid: string, uid: string): Promise<number>;
 	countByRoomIdWhenUsernameExists(rid: string): Promise<number>;
 	setE2EKeyByUserIdAndRoomId(userId: string, rid: string, key: string): Promise<ModifyResult<ISubscription>>;
+	countUsersInRoles(roles: IRole['_id'][], rid: IRoom['_id'] | undefined): Promise<number>;
 }

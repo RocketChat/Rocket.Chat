@@ -1,4 +1,4 @@
-import type { IServerEvent } from '@rocket.chat/core-typings';
+import type { ExtractDataToParams, IAuditServerActor, IServerEvent, IServerEvents } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -11,4 +11,9 @@ export interface IServerEventsModel extends IBaseModel<IServerEvent> {
 	countFailedAttemptsByIpSince(ip: string, since: Date): Promise<number>;
 	countFailedAttemptsByIp(ip: string): Promise<number>;
 	countFailedAttemptsByUsername(username: string): Promise<number>;
+	createAuditServerEvent<K extends keyof IServerEvents, E extends IServerEvents[K]>(
+		key: K,
+		data: ExtractDataToParams<E>,
+		actor: IAuditServerActor,
+	): Promise<void>;
 }

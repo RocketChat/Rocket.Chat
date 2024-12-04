@@ -196,6 +196,10 @@ API.v1.addRoute(
 			const fileStore = FileUpload.getStore('Uploads');
 			const uploadedFile = await fileStore.insert(details, fileBuffer);
 
+			if ((fields.description?.length ?? 0) > settings.get<number>('Message_MaxAllowedSize')) {
+				throw new Meteor.Error('error-message-size-exceeded');
+			}
+
 			uploadedFile.description = fields.description;
 
 			delete fields.description;
@@ -297,6 +301,10 @@ API.v1.addRoute(
 
 			if (!file) {
 				throw new Meteor.Error('invalid-file');
+			}
+
+			if ((this.bodyParams.description?.length ?? 0) > settings.get<number>('Message_MaxAllowedSize')) {
+				throw new Meteor.Error('error-message-size-exceeded');
 			}
 
 			file.description = this.bodyParams.description;
@@ -434,7 +442,7 @@ API.v1.addRoute(
 			const parent = discussionParent || parentRoom;
 
 			return API.v1.success({
-				room: (await Rooms.findOneByIdOrName(room._id, { projection: fields })) ?? undefined,
+				room: await Rooms.findOneByIdOrName(room._id, { projection: fields }),
 				...(team && { team }),
 				...(parent && { parent }),
 			});
@@ -459,9 +467,14 @@ API.v1.addRoute(
 	},
 );
 
+/*
+TO-DO: 8.0.0 should use the ajv validation
+which will change this endpoint's
+response errors.
+*/
 API.v1.addRoute(
 	'rooms.createDiscussion',
-	{ authRequired: true },
+	{ authRequired: true /* , validateParams: isRoomsCreateDiscussionProps */ },
 	{
 		async post() {
 			// eslint-disable-next-line @typescript-eslint/naming-convention

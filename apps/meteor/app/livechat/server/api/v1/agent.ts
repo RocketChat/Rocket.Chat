@@ -7,6 +7,7 @@ import { API } from '../../../../api/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { RoutingManager } from '../../lib/RoutingManager';
+import { getRequiredDepartment } from '../../lib/departmentsLib';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {
@@ -43,7 +44,7 @@ API.v1.addRoute(
 
 			let { department } = this.queryParams;
 			if (!department) {
-				const requireDepartment = await LivechatTyped.getRequiredDepartment();
+				const requireDepartment = await getRequiredDepartment();
 				if (requireDepartment) {
 					department = requireDepartment._id;
 				}

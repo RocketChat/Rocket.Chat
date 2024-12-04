@@ -15,8 +15,12 @@ import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocke
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler, MouseEvent } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
-import { useSubscription } from 'use-subscription';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
+import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
+import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
+import MessageBoxHint from './MessageBoxHint';
+import MessageBoxReplies from './MessageBoxReplies';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -38,10 +42,6 @@ import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
-import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
-import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
-import MessageBoxHint from './MessageBoxHint';
-import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
@@ -108,8 +108,8 @@ const MessageBox = ({
 	const chat = useChat();
 	const room = useRoom();
 	const t = useTranslation();
-	const e2eEnabled = useSetting<boolean>('E2E_Enable');
-	const unencryptedMessagesAllowed = useSetting<boolean>('E2E_Allow_Unencrypted_Messages');
+	const e2eEnabled = useSetting('E2E_Enable', false);
+	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 
@@ -248,30 +248,27 @@ const MessageBox = ({
 		onTyping?.();
 	});
 
-	const isEditing = useSubscription({
-		getCurrentValue: chat.composer?.editing.get ?? getEmptyFalse,
-		subscribe: chat.composer?.editing.subscribe ?? emptySubscribe,
-	});
+	const isEditing = useSyncExternalStore(chat.composer?.editing.subscribe ?? emptySubscribe, chat.composer?.editing.get ?? getEmptyFalse);
 
-	const isRecordingAudio = useSubscription({
-		getCurrentValue: chat.composer?.recording.get ?? getEmptyFalse,
-		subscribe: chat.composer?.recording.subscribe ?? emptySubscribe,
-	});
+	const isRecordingAudio = useSyncExternalStore(
+		chat.composer?.recording.subscribe ?? emptySubscribe,
+		chat.composer?.recording.get ?? getEmptyFalse,
+	);
 
-	const isMicrophoneDenied = useSubscription({
-		getCurrentValue: chat.composer?.isMicrophoneDenied.get ?? getEmptyFalse,
-		subscribe: chat.composer?.isMicrophoneDenied.subscribe ?? emptySubscribe,
-	});
+	const isMicrophoneDenied = useSyncExternalStore(
+		chat.composer?.isMicrophoneDenied.subscribe ?? emptySubscribe,
+		chat.composer?.isMicrophoneDenied.get ?? getEmptyFalse,
+	);
 
-	const isRecordingVideo = useSubscription({
-		getCurrentValue: chat.composer?.recordingVideo.get ?? getEmptyFalse,
-		subscribe: chat.composer?.recordingVideo.subscribe ?? emptySubscribe,
-	});
+	const isRecordingVideo = useSyncExternalStore(
+		chat.composer?.recordingVideo.subscribe ?? emptySubscribe,
+		chat.composer?.recordingVideo.get ?? getEmptyFalse,
+	);
 
-	const formatters = useSubscription({
-		getCurrentValue: chat.composer?.formatters.get ?? getEmptyArray,
-		subscribe: chat.composer?.formatters.subscribe ?? emptySubscribe,
-	});
+	const formatters = useSyncExternalStore(
+		chat.composer?.formatters.subscribe ?? emptySubscribe,
+		chat.composer?.formatters.get ?? getEmptyArray,
+	);
 
 	const isRecording = isRecordingAudio || isRecordingVideo;
 

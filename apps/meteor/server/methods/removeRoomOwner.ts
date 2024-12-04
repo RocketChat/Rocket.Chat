@@ -1,11 +1,10 @@
 import { api, Message, Team } from '@rocket.chat/core-services';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
+import { Subscriptions, Rooms, Users, Roles } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { getUsersInRole } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
@@ -64,7 +63,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const numOwners = await (await getUsersInRole('owner', rid)).count();
+		const numOwners = await Roles.countUsersInRole('owner', rid);
 
 		if (numOwners === 1) {
 			throw new Meteor.Error('error-remove-last-owner', 'This is the last owner. Please set a new owner before removing this one.', {

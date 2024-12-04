@@ -10,7 +10,9 @@ import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@roc
 
 import { callbacks } from '../../../../lib/callbacks';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
-import { type ILivechatMessage, Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
+import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
+import { getRoomMessages } from '../../../livechat/server/lib/getRoomMessages';
+import type { ILivechatMessage } from '../../../livechat/server/lib/localTypes';
 import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/apps/dist/converters/IAppMessagesConverter' {
@@ -352,7 +354,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			throw new Error('Could not get the message converter to process livechat room messages');
 		}
 
-		const livechatMessages = await LivechatTyped.getRoomMessages({ rid: roomId });
+		const livechatMessages = await getRoomMessages({ rid: roomId });
 		return Promise.all(await livechatMessages.map((message) => messageConverter.convertMessage(message, livechatMessages)).toArray());
 	}
 

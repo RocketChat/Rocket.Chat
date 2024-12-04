@@ -4,13 +4,13 @@ import type { ReactElement, MutableRefObject } from 'react';
 import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import DeviceManagementAdminRow from './DeviceManagementAdminRow';
 import FilterByText from '../../../../components/FilterByText';
 import { GenericTableHeaderCell } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import DeviceManagementTable from '../../../../components/deviceManagement/DeviceManagementTable';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
-import DeviceManagementAdminRow from './DeviceManagementAdminRow';
 
 const sortMapping = {
 	client: 'device.name',
@@ -76,7 +76,7 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Devices_Users')} onChange={setText} />
+			<FilterByText placeholder={t('Search_Devices_Users')} value={text} onChange={(event) => setText(event.target.value)} />
 			<DeviceManagementTable
 				data={data}
 				phase={phase}

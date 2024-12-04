@@ -6,6 +6,8 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
+import AdminUserInfoActions from './AdminUserInfoActions';
+import type { AdminUsersTab } from './AdminUsersPage';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { ContextualbarContent } from '../../../components/Contextualbar';
 import { FormSkeleton } from '../../../components/Skeleton';
@@ -13,8 +15,6 @@ import { UserCardRole } from '../../../components/UserCard';
 import { UserInfo } from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
-import AdminUserInfoActions from './AdminUserInfoActions';
-import type { AdminUsersTab } from './AdminUsersPage';
 
 type AdminUserInfoWithDataProps = {
 	uid: IUser['_id'];

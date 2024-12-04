@@ -4,6 +4,7 @@ import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts
 import { useQuery, hashQueryKey } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 
+import { useRemoveTag } from './useRemoveTag';
 import FilterByText from '../../components/FilterByText';
 import GenericNoResults from '../../components/GenericNoResults';
 import {
@@ -17,12 +18,10 @@ import {
 } from '../../components/GenericTable';
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../components/GenericTable/hooks/useSort';
-import { useRemoveTag } from './useRemoveTag';
 
 const TagsTable = () => {
 	const t = useTranslation();
 	const [filter, setFilter] = useState('');
-	const debouncedFilter = useDebouncedValue(filter, 500);
 	const router = useRouter();
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
@@ -32,15 +31,18 @@ const TagsTable = () => {
 	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/tags/new'));
 	const handleDeleteTag = useRemoveTag();
 
-	const query = useMemo(
-		() => ({
-			viewAll: 'true' as const,
-			text: debouncedFilter,
-			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		}),
-		[debouncedFilter, itemsPerPage, current, sortBy, sortDirection],
+	const query = useDebouncedValue(
+		useMemo(
+			() => ({
+				viewAll: 'true' as const,
+				text: filter,
+				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
+				...(itemsPerPage && { count: itemsPerPage }),
+				...(current && { offset: current }),
+			}),
+			[filter, itemsPerPage, current, sortBy, sortDirection],
+		),
+		500,
 	);
 
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
@@ -69,7 +71,9 @@ const TagsTable = () => {
 
 	return (
 		<>
-			{((isSuccess && data?.tags.length > 0) || queryHasChanged) && <FilterByText onChange={setFilter} />}
+			{((isSuccess && data?.tags.length > 0) || queryHasChanged) && (
+				<FilterByText value={filter} onChange={(event) => setFilter(event.target.value)} />
+			)}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

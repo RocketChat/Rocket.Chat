@@ -1,8 +1,9 @@
 import { RegisterServerPage, RegisterOfflinePage } from '@rocket.chat/onboarding-ui';
-import { useEndpoint, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useMethod } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type { ReactElement, ComponentProps } from 'react';
 import React, { useState } from 'react';
+import { I18nextProvider, useTranslation } from 'react-i18next';
 
 import { useInvalidateLicense } from '../../../hooks/useLicense';
 import { dispatchToastMessage } from '../../../lib/toast';
@@ -14,7 +15,7 @@ const SERVER_OPTIONS = {
 };
 
 const RegisterServerStep = (): ReactElement => {
-	const t = useTranslation();
+	const { t, i18n } = useTranslation();
 	const { currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, completeSetupWizard, saveAgreementData } =
 		useSetupWizardContext();
 	const [serverOption, setServerOption] = useState(SERVER_OPTIONS.REGISTERED);
@@ -81,13 +82,15 @@ const RegisterServerStep = (): ReactElement => {
 	}
 
 	return (
-		<RegisterServerPage
-			onClickRegisterOffline={(): void => setServerOption(SERVER_OPTIONS.OFFLINE)}
-			stepCount={maxSteps}
-			onSubmit={handleRegister}
-			currentStep={currentStep}
-			offline={isError || (!isLoading && offline)}
-		/>
+		<I18nextProvider i18n={i18n} defaultNS='onboarding'>
+			<RegisterServerPage
+				onClickRegisterOffline={(): void => setServerOption(SERVER_OPTIONS.OFFLINE)}
+				stepCount={maxSteps}
+				onSubmit={handleRegister}
+				currentStep={currentStep}
+				offline={isError || (!isLoading && offline)}
+			/>
+		</I18nextProvider>
 	);
 };
 

@@ -1,7 +1,7 @@
 name: Release candidate cut
 on:
   schedule:
-    - cron: '28 0 20 * *' # run at minute 28 to avoid the chance of delay due to high load on GH
+    - cron: '28 12 20 * *' # run at minute 28 to avoid the chance of delay due to high load on GH
 jobs:
   new-release:
     runs-on: ubuntu-latest
@@ -15,7 +15,7 @@ jobs:
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         with:
-          node-version: 20.17.0
+          node-version: 20.18.0
           deno-version: 1.37.1
           cache-modules: true
           install: true

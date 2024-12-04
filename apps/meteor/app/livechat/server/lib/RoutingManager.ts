@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { Message, Omnichannel } from '@rocket.chat/core-services';
+import { Message } from '@rocket.chat/core-services';
 import type {
 	ILivechatInquiryRecord,
 	ILivechatVisitor,
@@ -12,15 +12,11 @@ import type {
 	TransferData,
 } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
-import { settings } from '../../../settings/server';
 import {
 	createLivechatSubscription,
 	dispatchAgentDelegated,
@@ -31,12 +27,14 @@ import {
 	updateChatDepartment,
 	allowAgentSkipQueue,
 } from './Helper';
+import { callbacks } from '../../../../lib/callbacks';
+import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
+import { settings } from '../../../settings/server';
 
 const logger = new Logger('RoutingManager');
 
 type Routing = {
 	methods: Record<string, IRoutingMethod>;
-	startQueue(): Promise<void>;
 	isMethodSet(): boolean;
 	registerMethod(name: string, Method: IRoutingMethodConstructor): void;
 	getMethod(): IRoutingMethod;
@@ -67,16 +65,6 @@ type Routing = {
 
 export const RoutingManager: Routing = {
 	methods: {},
-
-	async startQueue() {
-		const shouldPreventQueueStart = await License.shouldPreventAction('monthlyActiveContacts');
-
-		if (shouldPreventQueueStart) {
-			logger.error('Monthly Active Contacts limit reached. Queue will not start');
-			return;
-		}
-		void (await Omnichannel.getQueueWorker()).shouldStart();
-	},
 
 	isMethodSet() {
 		return settings.get<string>('Livechat_Routing_Method') !== '';

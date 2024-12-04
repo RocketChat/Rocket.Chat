@@ -1,11 +1,13 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import type { RefObject } from 'react';
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import DiscussionsListRow from './DiscussionsListRow';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -17,7 +19,6 @@ import {
 } from '../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
-import DiscussionsListRow from './DiscussionsListRow';
 
 type DiscussionsListProps = {
 	total: number;
@@ -40,8 +41,8 @@ function DiscussionsList({
 	text,
 	onChangeFilter,
 }: DiscussionsListProps) {
-	const t = useTranslation();
-	const showRealNames = useSetting<boolean>('UI_Use_Real_Name') || false;
+	const { t } = useTranslation();
+	const showRealNames = useSetting('UI_Use_Real_Name', false);
 	const inputRef = useAutoFocus(true);
 
 	const onClick = useCallback((e) => {

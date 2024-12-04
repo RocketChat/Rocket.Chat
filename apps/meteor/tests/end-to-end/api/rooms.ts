@@ -550,7 +550,81 @@ describe('[Rooms]', () => {
 					expect(res.body.message.files[0]).to.have.property('name', 'lst-test.lst');
 				});
 		});
+		describe('/rooms.media - Max allowed size', () => {
+			before(async () => updateSetting('Message_MaxAllowedSize', 10));
+			after(async () => updateSetting('Message_MaxAllowedSize', 5000));
+			it('should allow uploading a file with description under the max character limit', async () => {
+				await request
+					.post(api(`rooms.media/${testChannel._id}`))
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('file');
+						expect(res.body.file).to.have.property('_id');
+						expect(res.body.file).to.have.property('url');
 
+						fileNewUrl = res.body.file.url;
+						fileOldUrl = res.body.file.url.replace('/file-upload/', '/ufs/GridFS:Uploads/');
+						fileId = res.body.file._id;
+					});
+
+				await request
+					.post(api(`rooms.mediaConfirm/${testChannel._id}/${fileId}`))
+					.set(credentials)
+					.send({
+						description: '123456789',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message');
+						expect(res.body.message).to.have.property('attachments');
+						expect(res.body.message.attachments).to.be.an('array').of.length(1);
+						expect(res.body.message.attachments[0]).to.have.property('image_type', 'image/png');
+						expect(res.body.message.attachments[0]).to.have.property('title', '1024x1024.png');
+						expect(res.body.message).to.have.property('files');
+						expect(res.body.message.files).to.be.an('array').of.length(2);
+						expect(res.body.message.files[0]).to.have.property('type', 'image/png');
+						expect(res.body.message.files[0]).to.have.property('name', '1024x1024.png');
+					});
+			});
+
+			it('should not allow uploading a file with description over the max character limit', async () => {
+				await request
+					.post(api(`rooms.media/${testChannel._id}`))
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('file');
+						expect(res.body.file).to.have.property('_id');
+						expect(res.body.file).to.have.property('url');
+
+						fileNewUrl = res.body.file.url;
+						fileOldUrl = res.body.file.url.replace('/file-upload/', '/ufs/GridFS:Uploads/');
+						fileId = res.body.file._id;
+					});
+
+				await request
+					.post(api(`rooms.mediaConfirm/${testChannel._id}/${fileId}`))
+					.set(credentials)
+					.send({
+						description: '12345678910',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-message-size-exceeded');
+					});
+			});
+		});
 		it('should not allow uploading a blocked media type to a room', async () => {
 			await updateSetting('FileUpload_MediaTypeBlackList', 'text/plain');
 			await request
