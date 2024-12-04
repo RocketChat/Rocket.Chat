@@ -1005,7 +1005,7 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.contacts[0].unknown).to.be.true;
 		});
 
-		it('should return only contacts that match the searchText using email', async () => {
+		it('should return only contacts that match the searchText when an email is provided', async () => {
 			const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials).query({ searchText: contact.emails[0] });
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
@@ -1015,6 +1015,42 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.contacts[0]._id).to.be.equal(contactId);
 			expect(res.body.contacts[0].name).to.be.equal(contact.name);
 			expect(res.body.contacts[0].emails[0].address).to.be.equal(contact.emails[0]);
+		});
+
+		it('should return only contacts that match the provided email when the email param is provided', async () => {
+			const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials).query({ email: contact.emails[0] });
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contacts).to.be.an('array');
+			expect(res.body.contacts.length).to.be.equal(1);
+			expect(res.body.total).to.be.equal(1);
+			expect(res.body.contacts[0]._id).to.be.equal(contactId);
+			expect(res.body.contacts[0].name).to.be.equal(contact.name);
+			expect(res.body.contacts[0].emails[0].address).to.be.equal(contact.emails[0]);
+		});
+
+		it('should return an empty list when an invalid email is provided along with a valid searchText', async () => {
+			const res = await request
+				.get(api(`omnichannel/contacts.search`))
+				.set(credentials)
+				.query({ email: 'invalid', searchText: contact.name });
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contacts).to.be.an('array');
+			expect(res.body.contacts.length).to.be.equal(0);
+			expect(res.body.total).to.be.equal(0);
+		});
+
+		it('should return an empty list when an invalid searchText is provided along with a valid email', async () => {
+			const res = await request
+				.get(api(`omnichannel/contacts.search`))
+				.set(credentials)
+				.query({ email: contact.emails[0], searchText: 'invalid' });
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contacts).to.be.an('array');
+			expect(res.body.contacts.length).to.be.equal(0);
+			expect(res.body.total).to.be.equal(0);
 		});
 
 		it('should return only contacts that match the searchText using phone number', async () => {
@@ -1027,6 +1063,42 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.contacts[0]._id).to.be.equal(contactId);
 			expect(res.body.contacts[0].name).to.be.equal(contact.name);
 			expect(res.body.contacts[0].phones[0].phoneNumber).to.be.equal(contact.phones[0]);
+		});
+
+		it('should return only contacts that match the provided phone number when the phone param is provided', async () => {
+			const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials).query({ phone: contact.phones[0] });
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contacts).to.be.an('array');
+			expect(res.body.contacts.length).to.be.equal(1);
+			expect(res.body.total).to.be.equal(1);
+			expect(res.body.contacts[0]._id).to.be.equal(contactId);
+			expect(res.body.contacts[0].name).to.be.equal(contact.name);
+			expect(res.body.contacts[0].phones[0].phoneNumber).to.be.equal(contact.phones[0]);
+		});
+
+		it('should return an empty list when an invalid phone is provided along with a valid searchText', async () => {
+			const res = await request
+				.get(api(`omnichannel/contacts.search`))
+				.set(credentials)
+				.query({ phone: 'invalid', searchText: contact.name });
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contacts).to.be.an('array');
+			expect(res.body.contacts.length).to.be.equal(0);
+			expect(res.body.total).to.be.equal(0);
+		});
+
+		it('should return an empty list when an invalid searchText is provided along with a valid phone', async () => {
+			const res = await request
+				.get(api(`omnichannel/contacts.search`))
+				.set(credentials)
+				.query({ phone: contact.phones[0], searchText: 'invalid' });
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contacts).to.be.an('array');
+			expect(res.body.contacts.length).to.be.equal(0);
+			expect(res.body.total).to.be.equal(0);
 		});
 
 		it('should return only contacts that match the searchText using name', async () => {
