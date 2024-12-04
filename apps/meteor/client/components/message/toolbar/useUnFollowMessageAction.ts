@@ -74,5 +74,5 @@ export const useUnFollowMessageAction = (
 		});
 
 		return () => MessageAction.removeButton('unfollow-message');
-	}, [_id, context, message, messageQuery.data, room, threadsEnabled, tmid, toggleFollowingThread, user]);
+	}, [_id, context, message, messageQuery.data, queryClient, room, threadsEnabled, tmid, toggleFollowingThread, user]);
 };
