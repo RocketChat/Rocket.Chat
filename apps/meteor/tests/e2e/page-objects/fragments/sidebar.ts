@@ -6,11 +6,11 @@ import { expect } from '../../utils/test';
 export class Sidebar {
 	private readonly page: Page;
 
-	readonly newRoomModal: CreateRoomModal;
+	readonly createRoomModal: CreateRoomModal;
 
 	constructor(page: Page) {
 		this.page = page;
-		this.newRoomModal = new CreateRoomModal(page);
+		this.createRoomModal = new CreateRoomModal(page);
 	}
 
 	// New navigation locators
@@ -118,13 +118,13 @@ export class Sidebar {
 
 	async createEncryptedChannel(name: string) {
 		await this.openCreateNewByLabel('Channel');
-		await this.newRoomModal.inputChannelName.fill(name);
+		await this.createRoomModal.inputChannelName.fill(name);
 	}
 
 	async createPublicChannel(name: string) {
 		await this.openCreateNewByLabel('Channel');
-		await this.newRoomModal.checkboxPrivate.click();
-		await this.newRoomModal.inputChannelName.fill(name);
-		await this.newRoomModal.btnCreate.click();
+		await this.createRoomModal.checkboxPrivate.click();
+		await this.createRoomModal.inputChannelName.fill(name);
+		await this.createRoomModal.btnCreate.click();
 	}
 }
