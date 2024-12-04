@@ -1053,7 +1053,7 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.total).to.be.equal(0);
 		});
 
-		it('should return only contacts that match the searchText using phone number', async () => {
+		it('should return only contacts that match the searchText when a phone number is provided', async () => {
 			const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials).query({ searchText: contact.phones[0] });
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
