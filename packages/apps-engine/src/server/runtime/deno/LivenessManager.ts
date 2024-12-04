@@ -81,6 +81,7 @@ export class LivenessManager {
         this.pingTimeoutConsecutiveCount = 0;
 
         this.controller.once('ready', () => this.ping());
+        this.subprocess.once('exit', this.handleExit.bind(this));
         this.subprocess.once('error', this.handleError.bind(this));
     }
 
