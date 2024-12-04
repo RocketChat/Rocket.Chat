@@ -81,10 +81,14 @@ export class HomeContent {
 		await this.joinRoom();
 	}
 
-	async sendMessage(text: string): Promise<void> {
+	async typeMessage(text: string): Promise<void> {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
 		await this.page.locator('[name="msg"]').fill(text);
+	}
+
+	async sendMessage(text: string): Promise<void> {
+		await this.typeMessage(text);
 		await this.page.getByRole('button', { name: 'Send', exact: true }).click();
 	}
 

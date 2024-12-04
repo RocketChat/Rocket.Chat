@@ -2,12 +2,14 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
+import { deleteChannel } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
 test.describe.serial('create-channel', () => {
 	let poHomeChannel: HomeChannel;
+	let channelName: string;
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
@@ -15,23 +17,27 @@ test.describe.serial('create-channel', () => {
 		await page.goto('/home');
 	});
 
-	test('expect create a public channel', async ({ page }) => {
-		const channelName = faker.string.uuid();
+	test.beforeEach(async ({ api }) => {
+		await deleteChannel(api, channelName);
+	});
 
-		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.type(channelName);
-		await poHomeChannel.sidenav.checkboxPrivateChannel.click();
-		await poHomeChannel.sidenav.btnCreate.click();
+	test('expect create a public channel', async ({ page }) => {
+		channelName = faker.string.uuid();
+
+		await poHomeChannel.sidebar.openCreateNewByLabel('Channel');
+		await poHomeChannel.createRoomModal.inputChannelName.fill(channelName);
+		await poHomeChannel.createRoomModal.checkboxPrivate.click();
+		await poHomeChannel.createRoomModal.btnCreate.click();
 
 		await expect(page).toHaveURL(`/channel/${channelName}`);
 	});
 
 	test('expect create a private channel', async ({ page }) => {
-		const channelName = faker.string.uuid();
+		channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.type(channelName);
-		await poHomeChannel.sidenav.btnCreate.click();
+		await poHomeChannel.sidebar.openCreateNewByLabel('Channel');
+		await poHomeChannel.createRoomModal.inputChannelName.fill(channelName);
+		await poHomeChannel.createRoomModal.btnCreate.click();
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 	});

@@ -63,22 +63,27 @@ export class Sidebar {
 	}
 
 	getSearchRoomByName(name: string): Locator {
-		return this.searchList.getByRole('link', { name });
+		return this.searchList.getByRole('link', { name, exact: true });
 	}
 
 	getSidebarItemByName(name: string): Locator {
-		return this.channelsList.getByRole('link', { name });
+		return this.channelsList.getByRole('link', { name, exact: true });
+	}
+
+	async waitForReadItem(name: string): Promise<void> {
+		await this.sidebar.locator(`a[aria-label="${name}"][data-unread="false"]`).waitFor();
 	}
 
 	async openChat(name: string): Promise<void> {
 		await this.typeSearch(name);
 		await this.getSearchRoomByName(name).click();
+		await this.waitForChannel();
 	}
 
 	async openItemMenu(item: Locator): Promise<void> {
 		await item.hover();
 		await item.focus();
-		await item.locator('.rcx-sidebar-item__menu').click();
+		await item.locator('.rcx-sidebar-v2-item__menu-wrapper').click();
 	}
 
 	async markItemAsUnread(item: Locator): Promise<void> {
