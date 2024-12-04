@@ -4,13 +4,13 @@ import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { useReactiveQuery } from '../../../../client/hooks/useReactiveQuery';
-import { roomsQueryKeys } from '../../../../client/lib/queryKeys';
-import { useToggleFollowingThreadMutation } from '../../../../client/views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
-import { Messages } from '../../../models/client';
-import { MessageAction } from '../../../ui-utils/client';
-import type { MessageActionContext } from '../../../ui-utils/client/lib/MessageAction';
-import { t } from '../../../utils/lib/i18n';
+import { Messages } from '../../../../app/models/client';
+import { MessageAction } from '../../../../app/ui-utils/client';
+import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
+import { t } from '../../../../app/utils/lib/i18n';
+import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
+import { roomsQueryKeys } from '../../../lib/queryKeys';
+import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
 
 export const useUnFollowMessageAction = (
 	message: IMessage,
