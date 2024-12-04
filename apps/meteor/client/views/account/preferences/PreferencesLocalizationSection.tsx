@@ -12,11 +12,7 @@ const PreferencesLocalizationSection = () => {
 
 	const { control } = useFormContext();
 
-	const languageOptions = useMemo(() => {
-		const mapOptions: SelectOption[] = languages.map(({ key, name }) => [key, name]);
-		mapOptions.sort(([a], [b]) => a.localeCompare(b));
-		return mapOptions;
-	}, [languages]);
+	const languageOptions = useMemo(() => languages.map(({ key, name }): SelectOption => [key, name]), [languages]);
 
 	const languageId = useUniqueId();
 
