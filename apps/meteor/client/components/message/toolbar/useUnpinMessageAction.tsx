@@ -13,7 +13,7 @@ export const useUnpinMessageAction = (
 	const allowPinning = useSetting('Message_AllowPinning');
 	const hasPermission = usePermission('pin-message', room._id);
 
-	const { mutateAsync: unpinMessage } = useUnpinMessageMutation();
+	const { mutate: unpinMessage } = useUnpinMessageMutation();
 
 	useEffect(() => {
 		if (!allowPinning || isOmnichannelRoom(room) || !hasPermission || !message.pinned || !subscription) {
@@ -26,8 +26,8 @@ export const useUnpinMessageAction = (
 			label: 'Unpin',
 			type: 'interaction',
 			context: ['pinned', 'message', 'message-mobile', 'threads', 'direct', 'videoconf', 'videoconf-threads'],
-			async action() {
-				await unpinMessage(message);
+			action() {
+				unpinMessage(message);
 			},
 			order: 2,
 			group: 'menu',

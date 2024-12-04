@@ -1,22 +1,24 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { sdk } from '../../../../app/utils/client/lib/SDKClient';
+import { updatePinMessage } from '../../../lib/mutationEffects/updatePinMessage';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
 
 export const useUnpinMessageMutation = () => {
 	const { t } = useTranslation();
+	const unpinMessage = useEndpoint('POST', '/v1/chat.unPinMessage');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (message: IMessage) => {
-			await sdk.call('unpinMessage', message);
+		mutationFn: async (message: IMessage) => unpinMessage({ messageId: message._id }),
+		onMutate: (message) => {
+			updatePinMessage(message, { pinned: false });
 		},
-		onSuccess: (_data) => {
+		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Message_has_been_unpinned') });
 		},
 		onError: (error) => {
