@@ -435,7 +435,6 @@ describe('[Direct Messages]', () => {
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
-						console.log(res.body);
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('joined', true);
 						expect(res.body).to.have.property('members').and.to.be.a('number').and.to.be.eq(2);
