@@ -17,6 +17,7 @@ import { usePermalinkStar } from './usePermalinkStar';
 import { usePinMessageAction } from './usePinMessageAction';
 import { useStarMessageAction } from './useStarMessageAction';
 import { useUnFollowMessageAction } from './useUnFollowMessageAction';
+import { useUnpinMessageAction } from './useUnpinMessageAction';
 import { useUnstarMessageAction } from './useUnstarMessageAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -96,6 +97,7 @@ const MessageToolbar = ({
 	// TODO: move this to another place
 	useWebDAVMessageAction();
 	useNewDiscussionMessageAction();
+	useUnpinMessageAction(message, { room, subscription });
 	usePinMessageAction(message, { room, subscription });
 	useStarMessageAction(message, { room, user });
 	useUnstarMessageAction(message, { room, user });
