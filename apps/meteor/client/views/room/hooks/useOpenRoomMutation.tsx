@@ -2,6 +2,7 @@ import type { RoomType } from '@rocket.chat/core-typings';
 import { useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 
+import { InvalidUserError } from '../../../lib/errors/InvalidUserError';
 import { updateSubscription } from '../../../lib/mutationEffects/updateSubscription';
 
 const openEndpoints = {
@@ -16,25 +17,21 @@ export const useOpenRoomMutation = ({ type }: { type: RoomType }) => {
 	const openRoom = useEndpoint('POST', openEndpoints[type]);
 	const userId = useUserId();
 
+	if (!userId) {
+		throw new InvalidUserError('Invalid user', { method: 'openRoom' });
+	}
+
 	return useMutation({
 		mutationFn: async ({ roomId }: { roomId: string }) => {
-			if (!userId) {
-				throw new Error('error-invalid-user');
-			}
-
 			await openRoom({ roomId });
 
 			return { userId, roomId };
 		},
 		onMutate: async ({ roomId }) => {
-			if (!userId) {
-				return;
-			}
-
 			return updateSubscription(roomId, userId, { open: true });
 		},
 		onError: async (_, { roomId }, rollbackDocument) => {
-			if (!userId || !rollbackDocument) {
+			if (!rollbackDocument) {
 				return;
 			}
 
