@@ -23,6 +23,10 @@ export class Navbar {
 		return this.pagesToolbar.getByRole('button', { name: 'Home', exact: true });
 	}
 
+	get directoryButton(): Locator {
+		return this.pagesToolbar.getByRole('button', { name: 'Directory', exact: true });
+	}
+
 	async openInstalledApps(): Promise<void> {
 		await this.pagesToolbar.getByRole('button', { name: 'Marketplace', exact: true }).click();
 		await this.pagesToolbar.getByRole('menu').getByRole('menuitem', { name: 'Installed', exact: true }).click();
@@ -40,8 +44,16 @@ export class Navbar {
 		return this.settingsGroup.getByRole('menuitemcheckbox', { name: 'Profile', exact: true });
 	}
 
-	async openWorkspaceSettings(): Promise<void> {
-		await this.settingsGroup.getByRole('button', { name: 'Workspace', exact: true }).click();
+	async openWorkspaceSettingsMenu(): Promise<void> {
+		await this.settingsGroup.getByRole('button', { name: 'Manage', exact: true }).click();
+	}
+
+	get workspaceMenuItem(): Locator {
+		return this.settingsGroup.getByRole('menuitem', { name: 'Workspace', exact: true });
+	}
+
+	get omnichannelMenuItem(): Locator {
+		return this.settingsGroup.getByRole('menuitem', { name: 'Omnichannel', exact: true });
 	}
 
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {

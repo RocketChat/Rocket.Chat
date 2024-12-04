@@ -29,8 +29,7 @@ test.describe.serial('search-discussion', () => {
 	});
 
 	const testDiscussionSearch = async (page: Page) => {
-		await poHomeChannel.sidenav.openSearch();
-		await poHomeChannel.sidenav.inputSearch.type(discussionName);
+		await poHomeChannel.sidebar.typeSearch(discussionName);
 		const targetSearchItem = page.locator('role=listbox').getByText(discussionName).first();
 		await expect(targetSearchItem).toBeVisible();
 	};
