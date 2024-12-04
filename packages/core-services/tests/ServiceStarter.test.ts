@@ -43,9 +43,7 @@ describe('ServiceStarter', () => {
 		const instance = new ServiceStarter(start, stop);
 
 		void instance.start();
-		setImmediate(() => {
-			void instance.start();
-		});
+		void instance.start();
 
 		await instance.wait();
 
@@ -62,15 +60,9 @@ describe('ServiceStarter', () => {
 		const instance = new ServiceStarter(start, stop);
 
 		void instance.start();
-		setImmediate(() => {
-			void instance.start();
-			setImmediate(() => {
-				void instance.start();
-				setImmediate(() => {
-					void instance.start();
-				});
-			});
-		});
+		void instance.start();
+		void instance.start();
+		void instance.start();
 
 		await instance.wait();
 
@@ -87,15 +79,9 @@ describe('ServiceStarter', () => {
 		const instance = new ServiceStarter(start, stop);
 
 		void instance.start();
-		setImmediate(() => {
-			void instance.start();
-			setImmediate(() => {
-				void instance.start();
-				setImmediate(() => {
-					void instance.stop();
-				});
-			});
-		});
+		void instance.start();
+		void instance.start();
+		void instance.stop();
 
 		await instance.wait();
 
