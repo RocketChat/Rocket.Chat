@@ -110,8 +110,6 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 	): FindPaginated<FindCursor<ILivechatContact>> {
 		const { searchText, unknown = false, email, phone } = search;
 		const searchRegex = escapeRegExp(searchText || '');
-		const emailRegex = escapeRegExp(email || searchText || '');
-		const phoneRegex = escapeRegExp(phone || searchText || '');
 		const match: Filter<ILivechatContact & RootFilterOperators<ILivechatContact>> = {
 			...(searchText && {
 				$or: [
@@ -120,8 +118,8 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 					{ 'phones.phoneNumber': { $regex: searchRegex, $options: 'i' } },
 				],
 			}),
-			...(email && { 'emails.address': { $regex: emailRegex, $options: 'i' } }),
-			...(phone && { 'phones.phoneNumber': { $regex: phoneRegex, $options: 'i' } }),
+			...(email && { 'emails.address': email }),
+			...(phone && { 'phones.phoneNumber': phone }),
 			unknown,
 		};
 
