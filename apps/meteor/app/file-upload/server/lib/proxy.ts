@@ -27,7 +27,7 @@ async function handle(req: createServer.IncomingMessage, res: http.ServerRespons
 
 	// Remove store path
 	const parsedUrl = URL.parse(req.url);
-	const path = parsedUrl.pathname?.substr(UploadFS.config.storesPath.length + 1) || '';
+	const path = parsedUrl.pathname?.slice(UploadFS.config.storesPath.length + 1) || '';
 
 	// Get store
 	const regExp = new RegExp('^/([^/?]+)/([^/?]+)$');

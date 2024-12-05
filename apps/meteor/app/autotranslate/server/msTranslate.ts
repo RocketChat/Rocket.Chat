@@ -117,7 +117,7 @@ class MsAutoTranslate extends AutoTranslate {
 		const supportedLanguages = await this.getSupportedLanguages('en');
 		targetLanguages = targetLanguages.map((language) => {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
-				language = language.substr(0, 2);
+				language = language.slice(0, 2);
 			}
 			return language;
 		});

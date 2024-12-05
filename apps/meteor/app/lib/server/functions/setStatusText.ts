@@ -11,7 +11,7 @@ async function _setStatusTextPromise(userId: string, statusText: string): Promis
 		return false;
 	}
 
-	statusText = statusText.trim().substr(0, 120);
+	statusText = statusText.trim().slice(0, 120);
 
 	const user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'statusText'>>(userId, {
 		projection: { username: 1, name: 1, status: 1, roles: 1, statusText: 1 },

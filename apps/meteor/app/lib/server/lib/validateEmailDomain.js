@@ -43,7 +43,7 @@ export const validateEmailDomain = async function (email) {
 		});
 	}
 
-	const emailDomain = email.substr(email.lastIndexOf('@') + 1);
+	const emailDomain = email.slice(email.lastIndexOf('@') + 1);
 
 	if (emailDomainWhiteList.length && !emailDomainWhiteList.includes(emailDomain)) {
 		throw new Meteor.Error('error-invalid-domain', 'The email domain is not in whitelist', {

@@ -123,7 +123,7 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 	for await (let channel of channels) {
 		let record;
 		const channelType = channel[0];
-		channel = channel.substr(1);
+		channel = channel.slice(1);
 
 		switch (channelType) {
 			case '#':

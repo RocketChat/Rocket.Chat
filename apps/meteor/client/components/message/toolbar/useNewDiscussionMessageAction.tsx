@@ -27,7 +27,7 @@ export const useNewDiscussionMessageAction = () => {
 						defaultParentRoom={room?.prid || room?._id}
 						onClose={() => setModal(undefined)}
 						parentMessageId={message._id}
-						nameSuggestion={message?.msg?.substr(0, 140)}
+						nameSuggestion={message?.msg?.slice(0, 140)}
 					/>,
 				);
 			},

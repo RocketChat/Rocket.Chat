@@ -213,7 +213,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 		const supportedLanguages = await this.getSupportedLanguages('en');
 		for await (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
-				language = language.substr(0, 2);
+				language = language.slice(0, 2);
 			}
 			try {
 				const result = await fetch(this.apiEndPointUrl, {
@@ -259,7 +259,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 		const supportedLanguages = await this.getSupportedLanguages('en');
 		for await (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
-				language = language.substr(0, 2);
+				language = language.slice(0, 2);
 			}
 			try {
 				const result = await fetch(this.apiEndPointUrl, {

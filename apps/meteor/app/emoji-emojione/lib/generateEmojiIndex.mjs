@@ -30,7 +30,7 @@ function generateEmojiPicker(data) {
 		if (emoji && emoji.shortname) {
 			const toneIndex = emoji.shortname.indexOf('_tone');
 			if (toneIndex !== -1) {
-				const tone = emoji.shortname.substr(1, toneIndex - 1);
+				const tone = emoji.shortname.slice(1, toneIndex);
 				if (!toneList.includes(tone)) {
 					toneList.push(tone);
 				}

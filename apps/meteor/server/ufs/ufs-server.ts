@@ -51,7 +51,7 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 
 	// Remove store path
 	const parsedUrl = URL.parse(req.url, true);
-	const path = parsedUrl.pathname?.substr(UploadFS.config.storesPath.length + 1);
+	const path = parsedUrl.pathname?.slice(UploadFS.config.storesPath.length + 1);
 
 	if (!path) {
 		next();
@@ -122,7 +122,7 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 
 		// Remove file extension from file Id
 		const index = match[2].indexOf('.');
-		const fileId = index !== -1 ? match[2].substr(0, index) : match[2];
+		const fileId = index !== -1 ? match[2].slice(0, index) : match[2];
 
 		// Get file from database
 		const file = await store.getCollection().findOne({ _id: fileId });
@@ -197,7 +197,7 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 						}
 
 						const total = file.size || 0;
-						const unit = range.substr(0, range.indexOf('='));
+						const unit = range.slice(0, range.indexOf('='));
 
 						if (unit !== 'bytes') {
 							res.writeHead(416);
@@ -206,7 +206,7 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 						}
 
 						const ranges = range
-							.substr(unit.length)
+							.slice(unit.length)
 							.replace(/[^0-9\-,]/, '')
 							.split(',');
 

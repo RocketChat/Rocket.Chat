@@ -314,7 +314,7 @@ export class LDAPConnection {
 					key,
 					type: dataType,
 					length: values[key].length,
-					value: `${values[key].substr(0, 100)}...`,
+					value: `${values[key].slice(0, 100)}...`,
 				});
 				return;
 			}

@@ -10,7 +10,7 @@ export async function initCustomOAuthServices(): Promise<void> {
 			let name = key.replace('Accounts_OAuth_Custom_', '');
 
 			if (name.indexOf('_') > -1) {
-				name = name.replace(name.substr(name.indexOf('_')), '');
+				name = name.replace(name.slice(name.indexOf('_')), '');
 			}
 
 			const serviceKey = `Accounts_OAuth_Custom_${name}`;

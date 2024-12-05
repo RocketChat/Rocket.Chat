@@ -54,7 +54,7 @@ function POP3Client(port, host, options) {
 	var callback = function (resp, data) {
 		if (resp === false) {
 			locked = false;
-			callback = function () {};
+			callback = function () { };
 			self.emit('connect', false, data);
 		} else {
 			// Checking for APOP support
@@ -198,10 +198,10 @@ function POP3Client(port, host, options) {
 		if (debug) console.log('Server: ' + util.inspect(data));
 
 		if (checkResp === true) {
-			if (bufferedData.substr(0, 3) === '+OK') {
+			if (bufferedData.slice(0, 3) === '+OK') {
 				checkResp = false;
 				response = true;
-			} else if (bufferedData.substr(0, 4) === '-ERR') {
+			} else if (bufferedData.slice(0, 4) === '-ERR') {
 				checkResp = false;
 				response = false;
 
@@ -213,7 +213,7 @@ function POP3Client(port, host, options) {
 		}
 
 		if (checkResp === false) {
-			if (multiline === true && (response === false || bufferedData.substr(bufferedData.length - 5) === '\r\n.\r\n')) {
+			if (multiline === true && (response === false || bufferedData.slice(bufferedData.length - 5) === '\r\n.\r\n')) {
 				// Make a copy to avoid race conditions
 				var responseCopy = response;
 				var bufferedDataCopy = bufferedData;
@@ -292,12 +292,12 @@ POP3Client.prototype.login = function (username, password) {
 		self.setCallback(function (resp, data) {
 			if (resp === false) {
 				self.setLocked(false);
-				self.setCallback(function () {});
+				self.setCallback(function () { });
 				self.emit('login', false, data);
 			} else {
 				self.setCallback(function (resp, data) {
 					self.setLocked(false);
-					self.setCallback(function () {});
+					self.setCallback(function () { });
 
 					if (resp !== false) self.setState(2);
 					self.emit('login', resp, data);
@@ -340,7 +340,7 @@ POP3Client.prototype.auth = function (type, username, password) {
 			self.setCallback(function (resp, data) {
 				if (resp === false) self.emit('auth', resp, 'Server responded -ERR to AUTH CRAM-MD5', data);
 				else {
-					var challenge = new Buffer(data.trim().substr(2), 'base64').toString();
+					var challenge = new Buffer(data.trim().slice(2), 'base64').toString();
 					var hmac = crypto.createHmac('md5', password);
 					var response = new Buffer(username + ' ' + hmac.update(challenge).digest('hex')).toString('base64');
 
@@ -388,22 +388,23 @@ POP3Client.prototype.apop = function (username, password) {
 		self.setLocked(true);
 		self.setCallback(function (resp, data) {
 			self.setLocked(false);
-			self.setCallback(function () {});
+			self.setCallback(function () { });
 
 			if (resp === true) self.setState(2);
 			self.emit('apop', resp, data);
 		});
 
 		self.setMultiline(false);
+		const bcrypt = require('bcrypt');
+		const saltRounds = 12;
+		
+		const hash = bcrypt.hashSync(self.data['apop-timestamp'] + password, saltRounds);
+		
 		self.write(
 			'APOP',
-			username +
-				' ' +
-				crypto
-					.createHash('md5')
-					.update(self.data['apop-timestamp'] + password)
-					.digest('hex'),
+			`${username} ${hash}`
 		);
+		
 	}
 };
 
@@ -417,7 +418,7 @@ POP3Client.prototype.stls = function () {
 		self.setLocked(true);
 		self.setCallback(function (resp, data) {
 			self.setLocked(false);
-			self.setCallback(function () {});
+			self.setCallback(function () { });
 
 			if (resp === true) {
 				self.setCallback(function (resp, data) {
@@ -445,14 +446,14 @@ POP3Client.prototype.top = function (msgnumber, lines) {
 		self.setCallback(function (resp, data) {
 			var returnValue = null;
 			self.setLocked(false);
-			self.setCallback(function () {});
+			self.setCallback(function () { });
 
 			if (resp !== false) {
 				returnValue = '';
 				var startOffset = data.indexOf('\r\n', 0) + 2;
 				var endOffset = data.indexOf('\r\n.\r\n', 0) + 2;
 
-				if (endOffset > startOffset) returnValue = data.substr(startOffset, endOffset - startOffset);
+				if (endOffset > startOffset) returnValue = data.slice(startOffset, endOffset);
 			}
 
 			self.emit('top', resp, msgnumber, returnValue, data);
@@ -474,7 +475,7 @@ POP3Client.prototype.list = function (msgnumber) {
 			var returnValue = null;
 			var msgcount = 0;
 			self.setLocked(false);
-			self.setCallback(function () {});
+			self.setCallback(function () { });
 
 			if (resp !== false) {
 				returnValue = [];
@@ -492,7 +493,7 @@ POP3Client.prototype.list = function (msgnumber) {
 					var endOffset = data.indexOf('\r\n.\r\n', 0) + 2;
 
 					if (endOffset > startOffset) {
-						data = data.substr(startOffset, endOffset - startOffset);
+						data = data.slice(startOffset, endOffset);
 
 						while (true) {
 							if (offset > endOffset) break;
@@ -502,7 +503,7 @@ POP3Client.prototype.list = function (msgnumber) {
 							if (newoffset < 0) break;
 
 							msgcount++;
-							listitem = data.substr(offset, newoffset - offset);
+							listitem = data.slice(offset, newoffset);
 							listitem = listitem.split(' ');
 							returnValue[listitem[0]] = listitem[1];
 							offset = newoffset + 2;
@@ -531,7 +532,7 @@ POP3Client.prototype.stat = function () {
 		self.setCallback(function (resp, data) {
 			var returnValue = null;
 			self.setLocked(false);
-			self.setCallback(function () {});
+			self.setCallback(function () { });
 
 			if (resp !== false) {
 				listitem = data.split(' ');
@@ -559,7 +560,7 @@ POP3Client.prototype.uidl = function (msgnumber) {
 		self.setCallback(function (resp, data) {
 			var returnValue = null;
 			self.setLocked(false);
-			self.setCallback(function () {});
+			self.setCallback(function () { });
 
 			if (resp !== false) {
 				returnValue = [];
@@ -576,12 +577,12 @@ POP3Client.prototype.uidl = function (msgnumber) {
 					var endOffset = data.indexOf('\r\n.\r\n', 0) + 2;
 
 					if (endOffset > startOffset) {
-						data = data.substr(startOffset, endOffset - startOffset);
+						data = data.slice(startOffset, endOffset);
 						endOffset -= startOffset;
 
 						while (offset < endOffset) {
 							newoffset = data.indexOf('\r\n', offset);
-							listitem = data.substr(offset, newoffset - offset);
+							listitem = data.slice(offset, newo);
 							listitem = listitem.split(' ');
 							returnValue[listitem[0]] = listitem[1];
 							offset = newoffset + 2;
@@ -610,12 +611,12 @@ POP3Client.prototype.retr = function (msgnumber) {
 		self.setCallback(function (resp, data) {
 			var returnValue = null;
 			self.setLocked(false);
-			self.setCallback(function () {});
+			self.setCallback(function () { });
 
 			if (resp !== false) {
 				var startOffset = data.indexOf('\r\n', 0) + 2;
 				var endOffset = data.indexOf('\r\n.\r\n', 0);
-				returnValue = data.substr(startOffset, endOffset - startOffset);
+				returnValue = data.slice(startOffset, endOffset);
 			}
 
 			self.emit('retr', resp, msgnumber, returnValue, data);
@@ -635,7 +636,7 @@ POP3Client.prototype.dele = function (msgnumber) {
 		self.setLocked(true);
 		self.setCallback(function (resp, data) {
 			self.setLocked(false);
-			self.setCallback(function () {});
+			self.setCallback(function () { });
 			self.emit('dele', resp, msgnumber, data);
 		});
 
@@ -653,7 +654,7 @@ POP3Client.prototype.noop = function () {
 		self.setLocked(true);
 		self.setCallback(function (resp, data) {
 			self.setLocked(false);
-			self.setCallback(function () {});
+			self.setCallback(function () { });
 			self.emit('noop', resp, data);
 		});
 
@@ -671,7 +672,7 @@ POP3Client.prototype.rset = function () {
 		self.setLocked(true);
 		self.setCallback(function (resp, data) {
 			self.setLocked(false);
-			self.setCallback(function () {});
+			self.setCallback(function () { });
 			self.emit('rset', resp, data);
 		});
 
@@ -690,12 +691,12 @@ POP3Client.prototype.capa = function () {
 		self.setCallback(function (resp, data) {
 			var returnValue = null;
 			self.setLocked(false);
-			self.setCallback(function () {});
+			self.setCallback(function () { });
 
 			if (resp === true) {
 				var startOffset = data.indexOf('\r\n', 0) + 2;
 				var endOffset = data.indexOf('\r\n.\r\n', 0);
-				returnValue = data.substr(startOffset, endOffset - startOffset);
+				returnValue = data.slice(startOffset, endOffset);
 				returnValue = returnValue.split('\r\n');
 			}
 
@@ -716,7 +717,7 @@ POP3Client.prototype.quit = function () {
 		self.setLocked(true);
 		self.setCallback(function (resp, data) {
 			self.setLocked(false);
-			self.setCallback(function () {});
+			self.setCallback(function () { });
 
 			self.end();
 			self.emit('quit', resp, data);

@@ -13,7 +13,7 @@ const OngoingCallDuration = ({ counter: defaultCounter = 0 }: OngoingCallDuratio
 
 	return (
 		<Box color='white' textAlign='center'>
-			{new Date(counter * 1000).toISOString().substr(11, 8)}
+			{new Date(counter * 1000).toISOString().slice(11, 19)}
 		</Box>
 	);
 };
