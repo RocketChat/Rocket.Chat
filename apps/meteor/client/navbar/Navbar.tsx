@@ -19,7 +19,7 @@ import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnable
 import { useOmnichannelShowQueueLink } from '../hooks/omnichannel/useOmnichannelShowQueueLink';
 import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 
-const NavBar = () => {
+const Navbar = () => {
 	const t = useTranslation();
 	const user = useUser();
 
@@ -84,4 +84,4 @@ const NavBar = () => {
 	);
 };
 
-export default NavBar;
+export default Navbar;
