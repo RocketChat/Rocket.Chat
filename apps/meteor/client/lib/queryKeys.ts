@@ -10,6 +10,7 @@ export const roomsQueryKeys = {
 	messageActions: (rid: IRoom['_id'], mid: IMessage['_id']) => [...roomsQueryKeys.message(rid, mid), 'actions'] as const,
 	messageActionsWithParameters: (rid: IRoom['_id'], message: IMessage | Serialized<IMessage>) =>
 		[...roomsQueryKeys.messageActions(rid, message._id), message] as const,
+	threads: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'threads'] as const,
 };
 
 export const subscriptionsQueryKeys = {
