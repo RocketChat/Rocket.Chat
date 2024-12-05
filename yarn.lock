@@ -9326,7 +9326,7 @@ __metadata:
     bad-words: "npm:^3.0.4"
     bcrypt: "npm:^5.1.1"
     body-parser: "npm:1.20.3"
-    bson: "npm:^4.7.2"
+    bson: "npm:^6.7.0"
     busboy: "npm:^1.6.0"
     bytebuffer: "npm:5.0.1"
     chai: "npm:^4.5.0"
@@ -13503,13 +13503,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/underscore@npm:^1.13.0":
-  version: 1.13.0
-  resolution: "@types/underscore@npm:1.13.0"
-  checksum: 10/938a6a0a878ce108046601a7cceeec9870428cc565a0c6d7891b7ad39e7570f1f75a1c02bf81baf23c7c7948ef0693d00ccd1a8e05894a52fed4c584a4b7172e
-  languageName: node
-  linkType: hard
-
 "@types/unist@npm:*, @types/unist@npm:^2.0.0, @types/unist@npm:^2.0.2":
   version: 2.0.6
   resolution: "@types/unist@npm:2.0.6"
@@ -16438,6 +16431,13 @@ __metadata:
   dependencies:
     buffer: "npm:^5.6.0"
   checksum: 10/9bc1a5c0e3774d171f291b5d44bcc6dacbdbba14184893eb810a5ca889b0dbcae5e0870fb2c731b069ce8ee77f3ebe3750669ed952d30de6a087baca59359781
+  languageName: node
+  linkType: hard
+
+"bson@npm:^6.7.0":
+  version: 6.7.0
+  resolution: "bson@npm:6.7.0"
+  checksum: 10/d4bc1d9514c67dbcb8451b7be95704e6e7cb262f0d11c938715c21297ab5550b0e2f3badf5480d53c4b3f899a84f2ed8708f3f46cad83ec52059f076aad8e1cd
   languageName: node
   linkType: hard
 
