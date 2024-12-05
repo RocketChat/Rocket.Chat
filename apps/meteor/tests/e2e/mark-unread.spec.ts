@@ -2,6 +2,7 @@ import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
+import { setUserPreferences } from './utils/setUserPreferences';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -23,6 +24,12 @@ test.describe.serial('mark-unread', () => {
 	});
 
 	test.describe('Mark Unread - Sidebar Action', () => {
+		test.beforeEach(async ({ api }) => {
+			await setUserPreferences(api, { sidebarGroupByType: true });
+		});
+		test.afterEach(async ({ api }) => {
+			await setUserPreferences(api, { sidebarGroupByType: false });
+		});
 		test('should not mark empty room as unread', async () => {
 			await poHomeChannel.sidebar.typeSearch(targetChannel);
 			const item = poHomeChannel.sidebar.getSearchRoomByName(targetChannel);
