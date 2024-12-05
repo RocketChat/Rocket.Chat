@@ -56,13 +56,15 @@ export const serveSvgAvatarInRequestedFormat = ({
 	nameOrUsername,
 	req,
 	res,
+	useAllInitials = false,
 }: {
 	nameOrUsername: string;
 	req: IIncomingMessage;
 	res: ServerResponse;
+	useAllInitials?: boolean;
 }) => {
 	const size = getAvatarSizeFromRequest(req);
-	const avatar = renderSVGLetters(nameOrUsername, size);
+	const avatar = renderSVGLetters(nameOrUsername, size, useAllInitials);
 	res.setHeader('Last-Modified', FALLBACK_LAST_MODIFIED);
 
 	const { format } = req.query;
@@ -125,7 +127,9 @@ const getFirstLetter = (name: string) =>
 		.substr(0, 1)
 		.toUpperCase();
 
-export const renderSVGLetters = (username: string, viewSize = 200) => {
+const getInitials = (name: string) => name.split(' ').map(getFirstLetter).join('');
+
+export const renderSVGLetters = (username: string, viewSize = 200, useAllInitials = false) => {
 	let color = '';
 	let initials = '';
 
@@ -134,10 +138,11 @@ export const renderSVGLetters = (username: string, viewSize = 200) => {
 		initials = username;
 	} else {
 		color = getAvatarColor(username);
-		initials = getFirstLetter(username);
+		initials = !useAllInitials ? getFirstLetter(username) : getInitials(username);
 	}
 
-	const fontSize = viewSize / 1.6;
+	const sum = initials.length > 1 ? 0.2 * initials.length : 0;
+	const fontSize = viewSize / (1.6 + sum);
 
 	return `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 ${viewSize} ${viewSize}\">\n<rect width=\"100%\" height=\"100%\" fill=\"${color}\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"'Helvetica', 'Arial', 'Lucida Grande', 'sans-serif'\" font-size="${fontSize}">\n${initials}\n</text>\n</svg>`;
 };
