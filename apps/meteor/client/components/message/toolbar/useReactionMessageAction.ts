@@ -2,9 +2,9 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { IRoom, ISubscription, IUser, IMessage } from '@rocket.chat/core-typings';
 import { useEffect } from 'react';
 
-import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
-import { MessageAction } from '../../ui-utils/client';
-import { sdk } from '../../utils/client/lib/SDKClient';
+import { MessageAction } from '../../../../app/ui-utils/client';
+import { sdk } from '../../../../app/utils/client/lib/SDKClient';
+import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
 export const useReactionMessageAction = (
 	message: IMessage,
