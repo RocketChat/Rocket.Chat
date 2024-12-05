@@ -1,22 +1,11 @@
-import { ContextualbarV2Header, ContextualbarHeader as ContextualbarHeaderComponent } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
+import { ContextualbarV2Header } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import React, { memo } from 'react';
 
 type ContextualbarHeaderProps = {
-	expanded?: boolean;
 	children: ReactNode;
-} & ComponentPropsWithoutRef<typeof ContextualbarHeaderComponent>;
+} & ComponentPropsWithoutRef<typeof ContextualbarV2Header>;
 
-const ContextualbarHeader = ({ expanded, ...props }: ContextualbarHeaderProps) => (
-	<FeaturePreview feature='newNavigation'>
-		<FeaturePreviewOff>
-			<ContextualbarHeaderComponent height={expanded ? '64px' : '56px'} {...props} />
-		</FeaturePreviewOff>
-		<FeaturePreviewOn>
-			<ContextualbarV2Header mbs={-1} {...props} />
-		</FeaturePreviewOn>
-	</FeaturePreview>
-);
+const ContextualbarHeader = (props: ContextualbarHeaderProps) => <ContextualbarV2Header mbs={-1} {...props} />;
 
 export default memo(ContextualbarHeader);
