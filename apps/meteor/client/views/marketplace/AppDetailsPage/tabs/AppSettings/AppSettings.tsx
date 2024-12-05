@@ -8,7 +8,6 @@ import { useAppTranslation } from '../../../hooks/useAppTranslation';
 
 const AppSettings = ({ settings }: { settings: ISettings }) => {
 	const appId = useRouteParameter('id');
-	console.log(appId);
 	const tApp = useAppTranslation(appId || '');
 
 	const groupedSettings = useMemo(() => {
