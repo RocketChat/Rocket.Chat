@@ -63,6 +63,10 @@ export class HomeContent {
 		return this.page.locator('role=button[name="Join"]');
 	}
 
+	getRoomTopic(topic: string): Locator {
+		return this.page.getByRole('note').filter({ hasText: topic });
+	}
+
 	async openRoomInfo(): Promise<void> {
 		await this.channelHeader.locator('button[data-qa-id="ToolBoxAction-info-circled"]').click();
 	}
