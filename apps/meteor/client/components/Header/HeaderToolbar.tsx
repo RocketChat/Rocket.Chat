@@ -1,22 +1,7 @@
-import {
-	FeaturePreview,
-	FeaturePreviewOff,
-	FeaturePreviewOn,
-	HeaderV2Toolbar,
-	HeaderToolbar as HeaderToolbarComponent,
-} from '@rocket.chat/ui-client';
+import { HeaderV2Toolbar } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
 
-const HeaderToolbar = (props: ComponentProps<typeof HeaderToolbarComponent>) => (
-	<FeaturePreview feature='newNavigation'>
-		<FeaturePreviewOff>
-			<HeaderToolbarComponent {...props} />
-		</FeaturePreviewOff>
-		<FeaturePreviewOn>
-			<HeaderV2Toolbar {...props} />
-		</FeaturePreviewOn>
-	</FeaturePreview>
-);
+const HeaderToolbar = (props: ComponentProps<typeof HeaderV2Toolbar>) => <HeaderV2Toolbar {...props} />;
 
 export default memo(HeaderToolbar);
