@@ -51,11 +51,11 @@ export class Sidebar {
 	}
 
 	async waitForChannel(): Promise<void> {
-		await this.page.locator('role=main').waitFor();
-		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
-		await this.page.locator('role=main >> role=list').waitFor();
+		await this.page.getByRole('main').waitFor();
+		await this.page.getByRole('main').getByRole('heading', { level: 1 }).waitFor();
+		await this.page.getByRole('main').getByRole('list', { name: 'Message list' }).waitFor();
 
-		await expect(this.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
+		await expect(this.page.getByRole('main').getByRole('list', { name: 'Message list' })).not.toHaveAttribute('aria-busy', 'true');
 	}
 
 	async typeSearch(name: string): Promise<void> {
@@ -107,7 +107,7 @@ export class Sidebar {
 
 	// Note: this is different from openChat because queued chats are not searchable
 	getQueuedChat(name: string): Locator {
-		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: new RegExp(`^${name}$`) }).first();
+		return this.sidebar.getByRole('link', { name: new RegExp(`^${name}$`) }).first();
 	}
 
 	async openCreateNewByLabel(name: 'Direct message' | 'Discussion' | 'Channel' | 'Team'): Promise<void> {
