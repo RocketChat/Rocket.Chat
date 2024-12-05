@@ -18,15 +18,13 @@ const ComposerSelectMessages = ({ onGetMore }: ComposerMessageProps): ReactEleme
 
 	return (
 		<MessageFooterCallout>
-			<MessageFooterCalloutContent>
-				<div>{countSelected} messages selected</div>
-			</MessageFooterCalloutContent>
+			<MessageFooterCalloutContent textAlign='left'>{t('number_messages_selected', { count: countSelected })}</MessageFooterCalloutContent>
 			<ButtonGroup>
 				<Button small disabled={countSelected === 0} onClick={clearSelection}>
 					{t('Clear_selection')}
 				</Button>
-				<Button small primary disabled={noMessagesAvailable} onClick={onGetMore}>
-					{t(`Batch select ${countAvailable - countSelected} available`)}
+				<Button icon='arrow-up' small primary disabled={noMessagesAvailable} onClick={onGetMore}>
+					{t('Select_number_messages', { count: countAvailable - countSelected })}
 				</Button>
 			</ButtonGroup>
 		</MessageFooterCallout>

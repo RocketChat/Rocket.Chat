@@ -70,3 +70,16 @@ export const useCountSelected = (): number => {
 
 	return useSyncExternalStore(subscribe, getSnapshot);
 };
+
+export const useSelectedMessages = (): string[] => {
+	const { selectedMessageStore } = useContext(SelectedMessageContext);
+
+	const subscribe = useCallback(
+		(callback: () => void): (() => void) => selectedMessageStore.on('change', callback),
+		[selectedMessageStore],
+	);
+
+	const getSnapshot = () => selectedMessageStore.getSelectedMessages();
+
+	return useSyncExternalStore(subscribe, getSnapshot);
+};

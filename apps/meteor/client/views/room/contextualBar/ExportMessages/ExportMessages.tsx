@@ -32,7 +32,7 @@ import {
 } from '../../../../components/Contextualbar';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { SelectedMessageContext } from '../../MessageList/contexts/SelectedMessagesContext';
+import { SelectedMessageContext, useSelectedMessages } from '../../MessageList/contexts/SelectedMessagesContext';
 import { useRoom } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
@@ -102,7 +102,7 @@ const ExportMessages = () => {
 	const downloadExportMutation = useDownloadExportMutation();
 
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
-	const messages = selectedMessageStore.getSelectedMessages();
+	const messages = useSelectedMessages();
 
 	const { type, toUsers } = watch();
 

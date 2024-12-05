@@ -16,9 +16,18 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 > {
 	store = new Set<string>();
 
+	private storeArray = Array.from(this.store);
+
 	availableMessages = new Set<string>();
 
 	isSelecting = false;
+
+	constructor() {
+		super();
+		this.on('change', () => {
+			this.storeArray = Array.from(this.store);
+		});
+	}
 
 	setIsSelecting(isSelecting: boolean): void {
 		this.isSelecting = isSelecting;
@@ -34,7 +43,7 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 	}
 
 	getSelectedMessages(): string[] {
-		return Array.from(this.store);
+		return this.storeArray;
 	}
 
 	toggle(mid: string): void {
