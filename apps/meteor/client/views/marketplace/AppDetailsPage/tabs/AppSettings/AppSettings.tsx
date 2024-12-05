@@ -1,4 +1,4 @@
-import { Box, FieldGroup, Accordion } from '@rocket.chat/fuselage';
+import { Box, FieldGroup, Accordion, AccordionItem } from '@rocket.chat/fuselage';
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
@@ -29,14 +29,14 @@ const AppSettings = ({ settings }: { settings: ISettings }) => {
 	return (
 		<Box display='flex' flexDirection='column' maxWidth='x640' w='full' marginInline='auto'>
 			<Accordion>
-				{groupedSettings.map(([section, sectionSettings]) => (
-					<Accordion.Item key={section} title={tApp(section)} defaultExpanded>
+				{groupedSettings.map(([section, sectionSettings], index) => (
+					<AccordionItem key={section} title={tApp(section)} defaultExpanded={index === 0}>
 						<FieldGroup>
 							{sectionSettings.map((field) => (
 								<AppSetting key={field.id} {...field} />
 							))}
 						</FieldGroup>
-					</Accordion.Item>
+					</AccordionItem>
 				))}
 			</Accordion>
 		</Box>
