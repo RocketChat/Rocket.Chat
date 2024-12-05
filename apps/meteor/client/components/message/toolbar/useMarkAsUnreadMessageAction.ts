@@ -3,8 +3,8 @@ import type { ISubscription, IMessage, IRoom, IUser } from '@rocket.chat/core-ty
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { useMarkAsUnreadMutation } from './hooks/useMarkAsUnreadMutation';
-import { MessageAction } from '../../ui-utils/client';
+import { MessageAction } from '../../../../app/ui-utils/client';
+import { useMarkAsUnreadMutation } from '../hooks/useMarkAsUnreadMutation';
 
 export const useMarkAsUnreadMessageAction = (
 	message: IMessage,

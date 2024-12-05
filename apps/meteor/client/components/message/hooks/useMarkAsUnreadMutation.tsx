@@ -2,8 +2,8 @@ import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 
-import { LegacyRoomManager } from '../../../ui-utils/client';
-import { sdk } from '../../../utils/client/lib/SDKClient';
+import { LegacyRoomManager } from '../../../../app/ui-utils/client';
+import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 
 export const useMarkAsUnreadMutation = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
