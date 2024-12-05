@@ -21,8 +21,9 @@ export const usePinMessageMutation = () => {
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Message_has_been_pinned') });
 		},
-		onError: (error) => {
+		onError: (error, message) => {
 			dispatchToastMessage({ type: 'error', message: error });
+			updatePinMessage(message, { pinned: false });
 		},
 		onSettled: (_data, _error, message) => {
 			queryClient.invalidateQueries(roomsQueryKeys.pinnedMessages(message.rid));
