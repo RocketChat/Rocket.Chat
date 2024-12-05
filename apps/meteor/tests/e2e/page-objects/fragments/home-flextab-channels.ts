@@ -31,11 +31,20 @@ export class HomeFlextabChannels {
 		return this.channelsTab.getByRole('list');
 	}
 
+	get emptyChannelsList(): Locator {
+		return this.channelsTab.getByRole('heading', { name: 'No Channels on this Team' });
+	}
+
 	channelOption(name: string) {
 		return this.channelsTab.locator('li', { hasText: name });
 	}
 
+	async waitForList() {
+		await this.channelsList.waitFor();
+	}
+
 	async openChannelOptionMoreActions(name: string) {
+		await this.waitForList();
 		await this.channelOption(name).hover();
 		await this.channelOption(name).locator('role=button[name="More"]').click();
 	}
