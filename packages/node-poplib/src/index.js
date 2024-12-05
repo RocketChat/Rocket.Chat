@@ -395,15 +395,16 @@ POP3Client.prototype.apop = function (username, password) {
 		});
 
 		self.setMultiline(false);
+		const bcrypt = require('bcrypt');
+		const saltRounds = 12;
+		
+		const hash = bcrypt.hashSync(self.data['apop-timestamp'] + password, saltRounds);
+		
 		self.write(
 			'APOP',
-			username +
-			' ' +
-			crypto
-				.createHash('md5')
-				.update(self.data['apop-timestamp'] + password)
-				.digest('hex'),
+			`${username} ${hash}`
 		);
+		
 	}
 };
 
