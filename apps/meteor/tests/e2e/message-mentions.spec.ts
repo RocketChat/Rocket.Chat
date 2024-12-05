@@ -113,7 +113,7 @@ test.describe.serial('message-mentions', () => {
 		await page.goto('/home');
 	});
 
-	test.only('expect show "all" and "here" options', async () => {
+	test('expect show "all" and "here" options', async () => {
 		await poHomeChannel.sidebar.openChat('general');
 		await poHomeChannel.content.typeMessage('@');
 

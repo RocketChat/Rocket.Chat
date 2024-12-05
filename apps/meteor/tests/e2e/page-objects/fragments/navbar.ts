@@ -1,4 +1,4 @@
-import type { Locator, Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 
 export class Navbar {
 	private readonly page: Page;
@@ -56,14 +56,18 @@ export class Navbar {
 		return this.settingsGroup.getByRole('menuitem', { name: 'Omnichannel', exact: true });
 	}
 
+	get omnichannelToggleStatusaBtn(): Locator {
+		return this.omnichannelToolbar.getByRole('button', { name: 'answer chats' });
+	}
+
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {
 		await this.userProfileMenu.click();
 		await this.settingsGroup.getByRole('menu').getByRole('menuitemcheckbox', { name: status, exact: true }).click();
 	}
 
 	async switchOmnichannelStatus(status: 'offline' | 'online'): Promise<void> {
-		const toggleButton = this.omnichannelToolbar.getByRole('button', { name: 'answer chats' });
-		expect(toggleButton).toBeVisible();
+		const toggleButton = this.omnichannelToggleStatusaBtn;
+		await expect(toggleButton).toBeVisible();
 
 		enum StatusTitleMap {
 			offline = 'Turn on answer chats',
@@ -86,6 +90,6 @@ export class Navbar {
 
 	async logout(): Promise<void> {
 		await this.userProfileMenu.click();
-		await this.settingsGroup.getByRole('menu').getByRole('menuitemcheckbox', { name: 'Locoug', exact: true }).click();
+		await this.settingsGroup.getByRole('menu').getByRole('menuitemcheckbox', { name: 'Logout', exact: true }).click();
 	}
 }

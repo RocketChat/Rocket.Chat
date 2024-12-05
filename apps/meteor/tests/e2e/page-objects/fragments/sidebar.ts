@@ -47,9 +47,9 @@ export class Sidebar {
 	}
 
 	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
-		await this.sidebarSearchSection.getByRole('button', { name: 'Display', exact: true }).click();
-		await this.sidebarSearchSection.getByRole('menuitemcheckbox', { name: mode }).click();
-		await this.sidebarSearchSection.click();
+		await this.searchSection.getByRole('button', { name: 'Display', exact: true }).click();
+		await this.searchSection.getByRole('menuitemcheckbox', { name: mode }).click();
+		await this.searchSection.click();
 	}
 
 	async escSearch(): Promise<void> {
@@ -114,18 +114,12 @@ export class Sidebar {
 
 	// Note: this is different from openChat because queued chats are not searchable
 	getQueuedChat(name: string): Locator {
-		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: new RegExp(`^${name}$`) }).first();
+		return this.sidebar.getByRole('link', { name: new RegExp(`^${name}$`) }).first();
 	}
 
 	async openCreateNewByLabel(name: 'Direct message' | 'Discussion' | 'Channel' | 'Team'): Promise<void> {
 		await this.searchSection.getByRole('button', { name: 'Create new', exact: true }).click();
 		await this.page.getByRole('menuitem', { name }).click();
-	}
-
-	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
-		await this.searchSection.getByRole('button', { name: 'Display', exact: true }).click();
-		await this.sidebar.getByRole('menuitemcheckbox', { name: mode }).click();
-		await this.searchSection.click();
 	}
 
 	async createEncryptedChannel(name: string) {
