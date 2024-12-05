@@ -25,7 +25,6 @@ Meteor.methods<ServerMethods>({
 			dispatchToastMessage({ type: 'error', message: t('error-unpinning-message') });
 			return false;
 		}
-		dispatchToastMessage({ type: 'success', message: t('Message_has_been_unpinned') });
 		Messages.update(
 			{
 				_id: message._id,

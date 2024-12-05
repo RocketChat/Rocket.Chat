@@ -10,11 +10,15 @@ import React, { memo, useMemo, useRef } from 'react';
 
 import MessageActionMenu from './MessageActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
+import { useFollowMessageAction } from './useFollowMessageAction';
 import { useJumpToMessageContextAction } from './useJumpToMessageContextAction';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
 import { usePermalinkStar } from './usePermalinkStar';
 import { usePinMessageAction } from './usePinMessageAction';
+import { useReplyInThreadMessageAction } from './useReplyInThreadMessageAction';
 import { useStarMessageAction } from './useStarMessageAction';
+import { useUnFollowMessageAction } from './useUnFollowMessageAction';
+import { useUnpinMessageAction } from './useUnpinMessageAction';
 import { useUnstarMessageAction } from './useUnstarMessageAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -94,17 +98,19 @@ const MessageToolbar = ({
 	// TODO: move this to another place
 	useWebDAVMessageAction();
 	useNewDiscussionMessageAction();
+	useUnpinMessageAction(message, { room, subscription });
 	usePinMessageAction(message, { room, subscription });
 	useStarMessageAction(message, { room, user });
 	useUnstarMessageAction(message, { room, user });
 	usePermalinkStar(message, { subscription, user });
-
+	useFollowMessageAction(message, { room, user, context });
+	useUnFollowMessageAction(message, { room, user, context });
+	useReplyInThreadMessageAction(message, { room, subscription });
 	useJumpToMessageContextAction(message, {
 		id: 'jump-to-message',
 		order: 100,
 		context: ['mentions', 'threads', 'videoconf-threads', 'message-mobile', 'search'],
 	});
-
 	useJumpToMessageContextAction(message, {
 		id: 'jump-to-pin-message',
 		order: 100,
