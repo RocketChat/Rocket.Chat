@@ -3455,7 +3455,6 @@
   "Message_VideoRecorderEnabledDescription": "'फ़ाइल अपलोड' सेटिंग्स के अंतर्गत 'वीडियो/वेबएम' फ़ाइलों को एक स्वीकृत मीडिया प्रकार होना आवश्यक है।",
   "messages": "संदेशों",
   "Messages": "संदेशों",
-  "Messages_selected": "संदेश चयनित",
   "Messages_sent": "संदेश भेजे गए",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "इनकमिंग वेबहुक पर भेजे गए संदेश यहां पोस्ट किए जाएंगे।",
   "Meta": "मेटा",

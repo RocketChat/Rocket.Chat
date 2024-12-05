@@ -3681,7 +3681,6 @@
   "Message_VideoRecorderEnabledDescription": "Requires 'video/webm' files to be an accepted media type within 'File Upload' settings.",
   "messages": "messages",
   "Messages": "Messages",
-  "Messages_selected": "Messages selected",
   "Messages_sent": "Messages sent",
   "Message_sent": "Message sent",
   "Message_viewed": "Message viewed",
