@@ -19,9 +19,11 @@ import { usePinMessageAction } from './usePinMessageAction';
 import { useReactionMessageAction } from './useReactionMessageAction';
 import { useReplyInThreadMessageAction } from './useReplyInThreadMessageAction';
 import { useStarMessageAction } from './useStarMessageAction';
+import { useTranslateAction } from './useTranslateAction';
 import { useUnFollowMessageAction } from './useUnFollowMessageAction';
 import { useUnpinMessageAction } from './useUnpinMessageAction';
 import { useUnstarMessageAction } from './useUnstarMessageAction';
+import { useViewOriginalTranslationAction } from './useViewOriginalTranslationAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -135,6 +137,8 @@ const MessageToolbar = ({
 	});
 	useReactionMessageAction(message, { user, room, subscription });
 	useMarkAsUnreadMessageAction(message, { user, room, subscription });
+	useTranslateAction(message, { user, room, subscription });
+	useViewOriginalTranslationAction(message, { user, room, subscription });
 
 	const actionsQueryResult = useQuery({
 		queryKey: roomsQueryKeys.messageActionsWithParameters(room._id, message),
