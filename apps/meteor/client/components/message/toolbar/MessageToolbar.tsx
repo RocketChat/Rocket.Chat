@@ -15,6 +15,7 @@ import { useJumpToMessageContextAction } from './useJumpToMessageContextAction';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
 import { usePermalinkStar } from './usePermalinkStar';
 import { usePinMessageAction } from './usePinMessageAction';
+import { useReplyInThreadMessageAction } from './useReplyInThreadMessageAction';
 import { useStarMessageAction } from './useStarMessageAction';
 import { useUnFollowMessageAction } from './useUnFollowMessageAction';
 import { useUnpinMessageAction } from './useUnpinMessageAction';
@@ -104,6 +105,7 @@ const MessageToolbar = ({
 	usePermalinkStar(message, { subscription, user });
 	useFollowMessageAction(message, { room, user, context });
 	useUnFollowMessageAction(message, { room, user, context });
+	useReplyInThreadMessageAction(message, { room, subscription });
 	useJumpToMessageContextAction(message, {
 		id: 'jump-to-message',
 		order: 100,
