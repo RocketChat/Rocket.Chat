@@ -63,6 +63,10 @@ export class HomeContent {
 		return this.page.locator('role=button[name="Join"]');
 	}
 
+	getRoomTopic(topic: string): Locator {
+		return this.page.getByRole('note').filter({ hasText: topic });
+	}
+
 	async openRoomInfo(): Promise<void> {
 		await this.channelHeader.locator('button[data-qa-id="ToolBoxAction-info-circled"]').click();
 	}
@@ -400,9 +404,10 @@ export class HomeContent {
 	}
 
 	async waitForChannel(): Promise<void> {
-		await this.page.locator('role=main').waitFor();
-		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
+		await this.page.getByRole('main').waitFor();
+		await this.page.getByRole('main').getByRole('heading', { level: 1 }).waitFor();
+		await this.page.getByRole('main').getByRole('list', { name: 'Message list' }).waitFor();
 
-		await expect(this.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
+		await expect(this.page.getByRole('main').getByRole('list', { name: 'Message list' })).not.toHaveAttribute('aria-busy', 'true');
 	}
 }
