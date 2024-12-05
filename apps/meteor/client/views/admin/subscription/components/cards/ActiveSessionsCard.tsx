@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useActiveConnections } from '../../../../hooks/useActiveConnections';
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
+import FeatureUsageCardBody from '../FeatureUsageCardBody';
 import UpgradeButton from '../UpgradeButton';
 
 const getLimits = ({ max, current }: { max: number; current: number }) => {
@@ -35,7 +36,9 @@ const ActiveSessionsCard = (): ReactElement => {
 	if (result.isLoading || result.isError) {
 		return (
 			<FeatureUsageCard card={card}>
-				<Skeleton variant='rect' width='x112' height='x224' />
+				<FeatureUsageCardBody justifyContent='flex-start'>
+					<Skeleton variant='rect' width='x112' height='x224' />
+				</FeatureUsageCardBody>
 			</FeatureUsageCard>
 		);
 	}
@@ -56,12 +59,14 @@ const ActiveSessionsCard = (): ReactElement => {
 				isHorizontallyCenteredOnly: true,
 			}}
 		>
-			<Box color='font-secondary-info' textAlign='center'>
-				<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'} mbe={12}>
-					{used} / {total}
+			<FeatureUsageCardBody justifyContent='flex-start'>
+				<Box color='font-secondary-info' textAlign='center'>
+					<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'} mbe={12}>
+						{used} / {total}
+					</Box>
+					{available} {t('ActiveSessions_available')}
 				</Box>
-				{available} {t('ActiveSessions_available')}
-			</Box>
+			</FeatureUsageCardBody>
 		</FeatureUsageCard>
 	);
 };

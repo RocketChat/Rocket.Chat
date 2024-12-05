@@ -7,6 +7,7 @@ import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { useStatistics } from '../../../../hooks/useStatistics';
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
+import FeatureUsageCardBody from '../FeatureUsageCardBody';
 import UpgradeButton from '../UpgradeButton';
 
 const ActiveSessionsPeakCard = (): ReactElement => {
@@ -37,7 +38,9 @@ const ActiveSessionsPeakCard = (): ReactElement => {
 	if (isLoading || maxMonthlyPeakConnections === undefined) {
 		return (
 			<FeatureUsageCard card={card}>
-				<Skeleton variant='rect' width='x112' height='x112' />
+				<FeatureUsageCardBody justifyContent='flex-start'>
+					<Skeleton variant='rect' width='x112' height='x112' />
+				</FeatureUsageCardBody>
 			</FeatureUsageCard>
 		);
 	}
