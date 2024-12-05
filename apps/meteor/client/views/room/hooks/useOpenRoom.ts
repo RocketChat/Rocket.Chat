@@ -97,8 +97,8 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			// update user's room subscription
 			const sub = Subscriptions.findOne({ rid: room._id });
-			if (sub && !sub.open) {
-				await openRoom.mutateAsync({ roomId: room._id });
+			if (!!user?._id && sub && !sub.open) {
+				await openRoom.mutateAsync({ roomId: room._id, userId: user._id });
 			}
 			return { rid: room._id };
 		},

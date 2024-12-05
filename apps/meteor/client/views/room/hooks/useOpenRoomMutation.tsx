@@ -1,8 +1,7 @@
 import type { RoomType } from '@rocket.chat/core-typings';
-import { useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 
-import { InvalidUserError } from '../../../lib/errors/InvalidUserError';
 import { updateSubscription } from '../../../lib/mutationEffects/updateSubscription';
 
 const openEndpoints = {
@@ -13,24 +12,24 @@ const openEndpoints = {
 	l: '/v1/channels.open',
 } as const;
 
+type OpenRoomParams = {
+	roomId: string;
+	userId: string;
+};
+
 export const useOpenRoomMutation = ({ type }: { type: RoomType }) => {
 	const openRoom = useEndpoint('POST', openEndpoints[type]);
-	const userId = useUserId();
-
-	if (!userId) {
-		throw new InvalidUserError('Invalid user', { method: 'openRoom' });
-	}
 
 	return useMutation({
-		mutationFn: async ({ roomId }: { roomId: string }) => {
+		mutationFn: async ({ roomId, userId }: OpenRoomParams) => {
 			await openRoom({ roomId });
 
 			return { userId, roomId };
 		},
-		onMutate: async ({ roomId }) => {
+		onMutate: async ({ roomId, userId }) => {
 			return updateSubscription(roomId, userId, { open: true });
 		},
-		onError: async (_, { roomId }, rollbackDocument) => {
+		onError: async (_, { roomId, userId }, rollbackDocument) => {
 			if (!rollbackDocument) {
 				return;
 			}
