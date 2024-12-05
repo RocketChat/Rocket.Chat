@@ -74,9 +74,7 @@ async function createUsersSubscriptions({
 
 		memberIds.push(member._id);
 
-		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
-
-		extra.open = true;
+		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || { open: true };
 
 		if (room.prid) {
 			extra.prid = room.prid;
