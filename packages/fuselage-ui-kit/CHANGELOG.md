@@ -1,5 +1,18 @@
 # Change Log
 
+## 8.0.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.8
+  - @rocket.chat/gazzodown@8.0.8
+  - @rocket.chat/ui-contexts@8.0.8
+  - @rocket.chat/ui-avatar@4.0.8
+  - @rocket.chat/ui-video-conf@8.0.8
+  </details>
+
 ## 8.0.7
 
 ### Patch Changes
