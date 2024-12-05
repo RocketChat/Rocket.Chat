@@ -56,12 +56,24 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 					'channels.visitor.source.type': 1,
 					'channels.visitor.source.id': 1,
 				},
+				name: 'visitorAssociation',
 				unique: false,
 			},
 			{
 				key: {
-					channels: 1,
+					'channels.field': 1,
+					'channels.value': 1,
+					'channels.verified': 1,
 				},
+				partialFilterExpression: { 'channels.verified': true },
+				name: 'verificationKey',
+				unique: false,
+			},
+			{
+				key: {
+					preRegistration: 1,
+				},
+				sparse: true,
 				unique: false,
 			},
 			{
@@ -77,6 +89,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		const result = await this.insertOne({
 			createdAt: new Date(),
 			...data,
+			preRegistration: !data.channels.length,
 		});
 
 		return result.insertedId;
@@ -85,7 +98,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 	async updateContact(contactId: string, data: Partial<ILivechatContact>, options?: FindOneAndUpdateOptions): Promise<ILivechatContact> {
 		const updatedValue = await this.findOneAndUpdate(
 			{ _id: contactId },
-			{ $set: { ...data, unknown: false } },
+			{ $set: { ...data, unknown: false, ...(data.channels && { preRegistration: !data.channels.length }) } },
 			{ returnDocument: 'after', ...options },
 		);
 		return updatedValue.value as ILivechatContact;
@@ -136,7 +149,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 					],
 				},
 				{
-					channels: [],
+					preRegistration: true,
 				},
 			],
 		};
@@ -168,7 +181,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 	}
 
 	async addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void> {
-		await this.updateOne({ _id: contactId }, { $push: { channels: channel } });
+		await this.updateOne({ _id: contactId }, { $push: { channels: channel }, $set: { preRegistration: false } });
 	}
 
 	async updateLastChatById(

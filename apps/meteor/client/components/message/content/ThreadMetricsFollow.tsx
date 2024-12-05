@@ -4,8 +4,8 @@ import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-context
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
-import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
 import ThreadMetricsBadge from './ThreadMetricsUnreadBadge';
+import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
 
 type ThreadMetricsFollowProps = {
 	following: boolean;

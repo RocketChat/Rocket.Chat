@@ -56,6 +56,7 @@ export class RocketChatSettingsAdapter {
 	}
 
 	public async disableFederation(): Promise<void> {
+		// TODO: audit
 		(await Settings.updateValueById('Federation_Matrix_enabled', false)).modifiedCount &&
 			void notifyOnSettingChangedById('Federation_Matrix_enabled');
 	}
@@ -73,7 +74,8 @@ export class RocketChatSettingsAdapter {
 	}
 
 	public async setConfigurationStatus(status: 'Valid' | 'Invalid'): Promise<void> {
-		const { modifiedCount } = await Settings.updateOne({ _id: 'Federation_Matrix_configuration_status' }, { $set: { value: status } });
+		// TODO: audit
+		const { modifiedCount } = await Settings.updateValueById('Federation_Matrix_configuration_status', status);
 		if (modifiedCount) {
 			void notifyOnSettingChangedById('Federation_Matrix_configuration_status');
 		}

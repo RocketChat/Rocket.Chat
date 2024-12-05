@@ -1,7 +1,7 @@
 {
   "name": "@rocket.chat/uikit-playground",
   "private": true,
-  "version": "0.6.0",
+  "version": "0.6.1-rc.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -30,7 +30,7 @@
     "@rocket.chat/ui-contexts": "workspace:~",
     "codemirror": "^6.0.1",
     "eslint4b-prebuilt": "^6.7.2",
-    "moment": "^2.29.4",
+    "moment": "^2.30.1",
     "rc-scrollbars": "^1.1.6",
     "react": "^17.0.2",
     "react-beautiful-dnd": "^13.1.1",
@@ -51,7 +51,7 @@
     "eslint": "~8.45.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
-    "typescript": "~5.6.3",
+    "typescript": "~5.7.2",
     "vite": "^5.4.11"
   },
   "volta": {

@@ -1,3 +1,5 @@
+import './ServerAudit/IAuditServerSettingEvent';
+
 export * from './Apps';
 export * from './AppOverview';
 export * from './FeaturedApps';

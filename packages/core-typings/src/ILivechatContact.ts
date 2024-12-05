@@ -48,4 +48,8 @@ export interface ILivechatContact extends IRocketChatRecord {
 
 	// Expected string format is YYYY-MM
 	activity?: string[];
+
+	// When preRegistration is true, the contact was added by an admin and it doesn't have any visitor association yet
+	// This contact may then be linked to new visitors that use the same email address or phone number
+	preRegistration?: boolean;
 }

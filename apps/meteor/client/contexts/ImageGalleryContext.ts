@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
-export type ImageGalleryContextValue = {
+type ImageGalleryContextValue = {
 	imageId: string;
 	isOpen: boolean;
 	onClose: () => void;
