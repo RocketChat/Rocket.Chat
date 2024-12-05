@@ -29,13 +29,7 @@ const Favorite = ({ room: { _id, f: favorite = false, t: type, name } }: { room:
 	}
 
 	return (
-		<HeaderState
-			title={favoriteLabel}
-			icon={favorite ? 'star-filled' : 'star'}
-			onClick={handleFavoriteClick}
-			color={favorite ? 'status-font-on-warning' : null}
-			tiny
-		/>
+		<HeaderState title={favoriteLabel} icon={favorite ? 'star-filled' : 'star'} onClick={handleFavoriteClick} warning={favorite} tiny />
 	);
 };
 
