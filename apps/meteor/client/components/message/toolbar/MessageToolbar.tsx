@@ -13,8 +13,7 @@ import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
 import { useFollowMessageAction } from './useFollowMessageAction';
 import { useJumpToMessageContextAction } from './useJumpToMessageContextAction';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
-import { usePermalinkPinned } from './usePermalinkPinned';
-import { usePermalinkStar } from './usePermalinkStar';
+import { usePermalinkAction } from './usePermalinkAction';
 import { usePinMessageAction } from './usePinMessageAction';
 import { useReplyInThreadMessageAction } from './useReplyInThreadMessageAction';
 import { useStarMessageAction } from './useStarMessageAction';
@@ -103,8 +102,15 @@ const MessageToolbar = ({
 	usePinMessageAction(message, { room, subscription });
 	useStarMessageAction(message, { room, user });
 	useUnstarMessageAction(message, { room, user });
-	usePermalinkStar(message, { subscription, user });
-	usePermalinkPinned(message, { subscription });
+	usePermalinkAction(message, { subscription, id: 'permalink-star', context: ['starred'], order: 10 });
+	usePermalinkAction(message, { subscription, id: 'permalink-pinned', context: ['pinned'], order: 5 });
+	usePermalinkAction(message, {
+		subscription,
+		id: 'permalink',
+		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
+		type: 'duplication',
+		order: 5,
+	});
 	useFollowMessageAction(message, { room, user, context });
 	useUnFollowMessageAction(message, { room, user, context });
 	useReplyInThreadMessageAction(message, { room, subscription });
