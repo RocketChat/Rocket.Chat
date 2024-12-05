@@ -95,7 +95,8 @@ export class SAMLUtils {
 		const chars = 'abcdef0123456789';
 		let uniqueID = 'id-';
 		for (let i = 0; i < 20; i++) {
-			uniqueID += chars.substr(Math.floor(Math.random() * 15), 1);
+			let randomNumber = Math.floor(Math.random() * 15);
+			uniqueID += chars.slice(randomNumber, randomNumber + 1);
 		}
 		return uniqueID;
 	}

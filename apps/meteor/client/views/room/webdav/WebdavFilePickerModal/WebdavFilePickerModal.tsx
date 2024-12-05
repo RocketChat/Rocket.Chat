@@ -115,7 +115,7 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 			if (newCurrentFolder[newCurrentFolder.length - 1] === '/') {
 				newCurrentFolder = newCurrentFolder.slice(0, -1);
 			}
-			parentFolder = newCurrentFolder.substr(0, newCurrentFolder.lastIndexOf('/') + 1);
+			parentFolder = newCurrentFolder.slice(0, newCurrentFolder.lastIndexOf('/') + 1);
 		}
 		setCurrentFolder(parentFolder);
 	};

@@ -45,7 +45,7 @@ Meteor.startup(async () => {
 		];
 
 		if (Info.commit && Info.commit.hash) {
-			msg.push(`        Commit Hash: ${Info.commit.hash.substr(0, 10)}`);
+			msg.push(`        Commit Hash: ${Info.commit.hash.slice(0, 10)}`);
 		}
 
 		if (Info.commit && Info.commit.branch) {

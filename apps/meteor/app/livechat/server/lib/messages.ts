@@ -49,7 +49,7 @@ export async function sendOfflineMessage(data: OfflineMessageData) {
 	}
 
 	if (settings.get('Livechat_validate_offline_email')) {
-		const emailDomain = email.substr(email.lastIndexOf('@') + 1);
+		const emailDomain = email.slice(email.lastIndexOf('@') + 1);
 
 		try {
 			await dnsResolveMx(emailDomain);

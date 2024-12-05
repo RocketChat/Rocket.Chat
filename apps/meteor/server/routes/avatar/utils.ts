@@ -122,7 +122,7 @@ export async function userCanAccessAvatar({ headers = {}, query = {} }: IIncomin
 const getFirstLetter = (name: string) =>
 	name
 		.replace(/[^A-Za-z0-9]/g, '')
-		.substr(0, 1)
+		.slice(0, 1)
 		.toUpperCase();
 
 export const renderSVGLetters = (username: string, viewSize = 200) => {

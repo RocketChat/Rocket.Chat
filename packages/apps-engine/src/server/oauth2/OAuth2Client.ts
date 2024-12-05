@@ -33,7 +33,7 @@ export class OAuth2Client implements IOAuth2Client {
     constructor(
         private readonly app: App,
         private readonly config: IOAuth2ClientOptions,
-    ) {}
+    ) { }
 
     public async setup(configuration: IConfigurationExtend): Promise<void> {
         configuration.api.provideApi({
@@ -203,7 +203,7 @@ export class OAuth2Client implements IOAuth2Client {
         const url = await this.app.getAccessors().environmentReader.getServerSettings().getValueById(SITE_URL);
 
         if (url.endsWith('/')) {
-            return url.substr(0, url.length - 1);
+            return url.slice(0, url.length - 1);
         }
         return url;
     }

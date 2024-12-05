@@ -9,7 +9,7 @@ if (Meteor.isServer) {
 	fetch = require('meteor/fetch').fetch;
 }
 
-const NoOp = () => {};
+const NoOp = () => { };
 const urlRE = /\/___cookie___\/set/;
 const rootUrl = Meteor.isServer
 	? process.env.ROOT_URL
@@ -122,9 +122,9 @@ const parse = (str, options) => {
 		if (eqIndx < 0) {
 			return;
 		}
-		key = pair.substr(0, eqIndx).trim();
+		key = pair.slice(0, eqIndx).trim();
 		key = tryDecode(unescape(key), opt.decode || decode);
-		val = pair.substr(++eqIndx, pair.length).trim();
+		val = pair.substr(++eqIndx, pair.length).trim(); // Unsure how to change to slice()
 		if (val[0] === '"') {
 			val = val.slice(1, -1);
 		}
@@ -448,9 +448,8 @@ class __cookies {
 		}
 
 		if (this.runOnServer) {
-			let path = `${
-				window.__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || window.__meteor_runtime_config__.meteorEnv.ROOT_URL_PATH_PREFIX || ''
-			}/___cookie___/set`;
+			let path = `${window.__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || window.__meteor_runtime_config__.meteorEnv.ROOT_URL_PATH_PREFIX || ''
+				}/___cookie___/set`;
 			let query = '';
 
 			if (Meteor.isCordova && this.allowQueryStringCookies) {

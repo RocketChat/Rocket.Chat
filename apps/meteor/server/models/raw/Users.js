@@ -931,7 +931,7 @@ export class UsersRaw extends BaseRaw {
 				statusConnection,
 				...(statusDefault && { statusDefault }),
 				...(statusText && {
-					statusText: String(statusText).trim().substr(0, 120),
+					statusText: String(statusText).trim().slice(0, 120),
 				}),
 			},
 		};
@@ -2753,15 +2753,15 @@ export class UsersRaw extends BaseRaw {
 		const update = {
 			...(bio.trim()
 				? {
-						$set: {
-							bio,
-						},
-					}
+					$set: {
+						bio,
+					},
+				}
 				: {
-						$unset: {
-							bio: 1,
-						},
-					}),
+					$unset: {
+						bio: 1,
+					},
+				}),
 		};
 		return this.updateOne({ _id }, update);
 	}
@@ -2770,15 +2770,15 @@ export class UsersRaw extends BaseRaw {
 		const update = {
 			...(nickname.trim()
 				? {
-						$set: {
-							nickname,
-						},
-					}
+					$set: {
+						nickname,
+					},
+				}
 				: {
-						$unset: {
-							nickname: 1,
-						},
-					}),
+					$unset: {
+						nickname: 1,
+					},
+				}),
 		};
 		return this.updateOne({ _id }, update);
 	}

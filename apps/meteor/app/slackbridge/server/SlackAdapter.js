@@ -660,9 +660,9 @@ export default class SlackAdapter {
 		let index = rocketMsg._id.indexOf('slack-');
 		if (index === 0) {
 			// This is a msg that originated from Slack
-			slackTS = rocketMsg._id.substr(6, rocketMsg._id.length);
+			slackTS = rocketMsg._id.slice(6, rocketMsg._id.length + 6);
 			index = slackTS.indexOf('-');
-			slackTS = slackTS.substr(index + 1, slackTS.length);
+			slackTS = slackTS.slice(index + 1, slackTS.length + index + 1);
 			slackTS = slackTS.replace('-', '.');
 		} else {
 			// This probably originated as a Rocket msg, but has been sent to Slack

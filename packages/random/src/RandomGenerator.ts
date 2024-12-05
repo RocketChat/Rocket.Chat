@@ -99,7 +99,7 @@ export abstract class RandomGenerator {
 	choice<TArrayLike extends unknown[] | string>(arrayOrString: TArrayLike) {
 		const index = Math.floor(this.fraction() * arrayOrString.length);
 		if (typeof arrayOrString === 'string') {
-			return arrayOrString.substr(index, 1);
+			return arrayOrString.slice(index, index + 1);
 		}
 
 		return arrayOrString[index];
