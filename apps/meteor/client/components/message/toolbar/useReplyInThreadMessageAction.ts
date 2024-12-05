@@ -3,7 +3,7 @@ import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useSetting, useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { MessageAction } from '../../../ui-utils/client';
+import { MessageAction } from '../../../../app/ui-utils/client';
 
 export const useReplyInThreadMessageAction = (
 	message: IMessage,
