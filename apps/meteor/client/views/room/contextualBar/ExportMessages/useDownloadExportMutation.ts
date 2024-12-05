@@ -1,13 +1,14 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
+import type { FindOptions } from 'mongodb';
 import { useTranslation } from 'react-i18next';
 
 import { Messages } from '../../../../../app/models/client';
 import { downloadJsonAs } from '../../../../lib/download';
 import { useRoom } from '../../contexts/RoomContext';
 
-const messagesFields = { _id: 1, ts: 1, u: 1, msg: 1, _updatedAt: 1, tlm: 1, replies: 1, tmid: 1 };
+const messagesFields: FindOptions<IMessage> = { projection: { _id: 1, ts: 1, u: 1, msg: 1, _updatedAt: 1, tlm: 1, replies: 1, tmid: 1 } };
 
 export const useDownloadExportMutation = () => {
 	const { t } = useTranslation();
@@ -21,7 +22,7 @@ export const useDownloadExportMutation = () => {
 				{
 					_id: { $in: mids },
 				},
-				{ projection: messagesFields },
+				messagesFields,
 			).fetch();
 
 			const fileData = {
