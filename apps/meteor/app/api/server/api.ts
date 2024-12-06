@@ -12,12 +12,14 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import type { Request, Response } from 'meteor/rocketchat:restivus';
 import { Restivus } from 'meteor/rocketchat:restivus';
+import semver from 'semver';
 import _ from 'underscore';
 
 import type { PermissionsPayload } from './api.helpers';
 import { checkPermissionsForInvocation, checkPermissions, parseDeprecation } from './api.helpers';
 import type {
 	FailureResult,
+	ForbiddenResult,
 	InternalError,
 	NotFoundResult,
 	Operations,
@@ -36,9 +38,15 @@ import { hasPermissionAsync } from '../../authorization/server/functions/hasPerm
 import { notifyOnUserChangeAsync } from '../../lib/server/lib/notifyListener';
 import { metrics } from '../../metrics/server';
 import { settings } from '../../settings/server';
+import { Info } from '../../utils/rocketchat.info';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 
 const logger = new Logger('API');
+
+// We have some breaking changes planned to the API.
+// To avoid conflicts or missing something during the period we are adopting a 'feature flag approach'
+// TODO: MAJOR check if this is still needed
+const applyBreakingChanges = semver.gte(Info.version, '8.0.0');
 
 interface IAPIProperties {
 	useDefaultAuth: boolean;
@@ -298,17 +306,30 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			statusCode: 500,
 			body: {
 				success: false,
-				error: msg || 'Internal error occured',
+				error: msg || 'Internal server error',
 			},
 		};
 	}
 
 	public unauthorized<T>(msg?: T): UnauthorizedResult<T> {
 		return {
-			statusCode: 403,
+			statusCode: 401,
 			body: {
 				success: false,
 				error: msg || 'unauthorized',
+			},
+		};
+	}
+
+	public forbidden<T>(msg?: T): ForbiddenResult<T> {
+		return {
+			statusCode: 403,
+			body: {
+				success: false,
+				// TODO: MAJOR remove 'unauthorized' in favor of 'forbidden'
+				// because of reasons beyond my control we were used to send `unauthorized` to 403 cases, to avoid a breaking change we just adapted here
+				// but thanks to the semver check tests should break as soon we bump to a new version
+				error: msg || (applyBreakingChanges ? 'forbidden' : 'unauthorized'),
 			},
 		};
 	}
@@ -577,13 +598,16 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 							}
 
 							if (!this.user && !settings.get('Accounts_AllowAnonymousRead')) {
-								return {
-									statusCode: 401,
-									body: {
+								const result = api.unauthorized('You must be logged in to do this.');
+								// compatibility with the old API
+								// TODO: MAJOR
+								if (!applyBreakingChanges) {
+									Object.assign(result.body, {
 										status: 'error',
 										message: 'You must be logged in to do this.',
-									},
-								};
+									});
+								}
+								return result;
 							}
 						}
 
@@ -612,18 +636,29 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 									throw new Meteor.Error('invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
 								}
 							}
-							if (
-								shouldVerifyPermissions &&
-								(!this.userId ||
+							if (shouldVerifyPermissions) {
+								if (!this.userId) {
+									if (applyBreakingChanges) {
+										throw new Meteor.Error('error-unauthorized', 'You must be logged in to do this');
+									}
+									throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action');
+								}
+								if (
 									!(await checkPermissionsForInvocation(
 										this.userId,
 										_options.permissionsRequired as PermissionsPayload,
 										this.request.method,
-									)))
-							) {
-								throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
-									permissions: _options.permissionsRequired,
-								});
+									))
+								) {
+									if (applyBreakingChanges) {
+										throw new Meteor.Error('error-forbidden', 'User does not have the permissions required for this action', {
+											permissions: _options.permissionsRequired,
+										});
+									}
+									throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
+										permissions: _options.permissionsRequired,
+									});
+								}
 							}
 
 							const invocation = new DDPCommon.MethodInvocation({
@@ -678,18 +713,26 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 								responseTime: Date.now() - startTime,
 							});
 						} catch (e: any) {
-							const apiMethod: string =
-								{
-									'error-too-many-requests': 'tooManyRequests',
-									'error-unauthorized': 'unauthorized',
-								}[e.error as string] || 'failure';
-
-							result = (API.v1 as Record<string, any>)[apiMethod](
-								typeof e === 'string' ? e : e.message,
-								e.error,
-								process.env.TEST_MODE ? e.stack : undefined,
-								e,
-							);
+							result = ((e: any) => {
+								switch (e.error) {
+									case 'error-too-many-requests':
+										return API.v1.tooManyRequests(typeof e === 'string' ? e : e.message);
+									case 'unauthorized':
+									case 'error-unauthorized':
+										if (applyBreakingChanges) {
+											return API.v1.unauthorized(typeof e === 'string' ? e : e.message);
+										}
+										return API.v1.forbidden(typeof e === 'string' ? e : e.message);
+									case 'forbidden':
+									case 'error-forbidden':
+										if (applyBreakingChanges) {
+											return API.v1.forbidden(typeof e === 'string' ? e : e.message);
+										}
+										return API.v1.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+									default:
+										return API.v1.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+								}
+							})(e);
 
 							log.http({
 								err: e,
@@ -791,8 +834,8 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const self = this;
 
-		(this as APIClass<'/v1'>).addRoute<'/v1/login', { authRequired: false }>(
-			'login' as any,
+		(this as APIClass<'/v1'>).addRoute(
+			'login',
 			{ authRequired: false },
 			{
 				async post() {
@@ -803,58 +846,55 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 						connection: generateConnection(getRequestIP(request) || '', this.request.headers),
 					});
 
-					let auth;
 					try {
-						auth = await DDP._CurrentInvocation.withValue(invocation as any, async () => Meteor.callAsync('login', args));
-					} catch (error: any) {
-						let e = error;
-						if (error.reason === 'User not found') {
-							e = {
-								error: 'Unauthorized',
-								reason: 'Unauthorized',
-							};
+						const auth = await DDP._CurrentInvocation.withValue(invocation as any, async () => Meteor.callAsync('login', args));
+						this.user = await Users.findOne(
+							{
+								_id: auth.id,
+							},
+							{
+								projection: getDefaultUserFields(),
+							},
+						);
+
+						if (!this.user) {
+							return self.unauthorized();
 						}
 
-						return {
-							statusCode: 401,
-							body: {
-								status: 'error',
-								error: e.error,
-								details: e.details,
-								message: e.reason || e.message,
+						this.userId = this.user._id;
+
+						const extraData = self._config.onLoggedIn?.call(this);
+
+						return self.success({
+							status: 'success',
+							data: {
+								userId: this.userId,
+								authToken: auth.token,
+								me: await getUserInfo(this.user || ({} as IUser)),
+								...(extraData && { extra: extraData }),
 							},
-						} as unknown as SuccessResult<Record<string, any>>;
-					}
-
-					this.user = await Users.findOne(
-						{
-							_id: auth.id,
-						},
-						{
-							projection: getDefaultUserFields(),
-						},
-					);
-
-					this.userId = (this.user as unknown as IUser)?._id;
-
-					const response = {
-						status: 'success',
-						data: {
-							userId: this.userId,
-							authToken: auth.token,
-							me: await getUserInfo(this.user || ({} as IUser)),
-						},
-					};
-
-					const extraData = self._config.onLoggedIn?.call(this);
-
-					if (extraData != null) {
-						_.extend(response.data, {
-							extra: extraData,
 						});
-					}
+					} catch (error) {
+						if (!(error instanceof Meteor.Error)) {
+							return self.internalError();
+						}
 
-					return response as unknown as SuccessResult<Record<string, any>>;
+						const result = self.unauthorized();
+
+						if (!applyBreakingChanges) {
+							Object.assign(result.body, {
+								status: 'error',
+								error: error.error,
+								details: error.details,
+								message: error.reason || error.message,
+								...(error.reason === 'User not found' && {
+									error: 'Unauthorized',
+									message: 'Unauthorized',
+								}),
+							});
+						}
+						return result;
+					}
 				},
 			},
 		);
