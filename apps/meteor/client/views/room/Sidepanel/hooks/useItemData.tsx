@@ -1,5 +1,5 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { SidebarV2ItemBadge as SidebarItemBadge, SidebarV2ItemIcon as SidebarItemIcon } from '@rocket.chat/fuselage';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +10,7 @@ import { useAvatarTemplate } from '../../../../sidebarv2/hooks/useAvatarTemplate
 import { useUnreadDisplay } from '../../../../sidebarv2/hooks/useUnreadDisplay';
 
 export const useItemData = (
-	room: ISubscription & IRoom,
+	room: SubscriptionWithRoom,
 	{ openedRoom, viewMode }: { openedRoom: string | undefined; viewMode?: 'extended' | 'medium' | 'condensed' },
 ) => {
 	const { t } = useTranslation();
