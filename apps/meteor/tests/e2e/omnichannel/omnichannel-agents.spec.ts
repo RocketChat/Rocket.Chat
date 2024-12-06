@@ -1,6 +1,7 @@
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelAgents } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
 
@@ -26,9 +27,9 @@ test.describe.serial('OC - Manage Agents', () => {
 	// Ensure that there is no leftover data even if test fails
 	test.afterEach(async ({ api }) => {
 		await api.delete('/livechat/users/agent/user1');
-		await api.post('/settings/Omnichannel_enable_department_removal', { value: true }).then((res) => expect(res.status()).toBe(200));
+		await setSettingValueById(api, 'Omnichannel_enable_department_removal', true);
 		await department.delete();
-		await api.post('/settings/Omnichannel_enable_department_removal', { value: false }).then((res) => expect(res.status()).toBe(200));
+		await setSettingValueById(api, 'Omnichannel_enable_department_removal', false);
 	});
 
 	test('OC - Manage Agents - Add, search and remove using table', async ({ page }) => {

@@ -4,6 +4,7 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelDepartments } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createDepartment, deleteDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
 
@@ -22,12 +23,12 @@ test.describe('OC - Manage Departments', () => {
 
 	test.beforeAll(async ({ api }) => {
 		// turn on department removal
-		await api.post('/settings/Omnichannel_enable_department_removal', { value: true });
+		await setSettingValueById(api, 'Omnichannel_enable_department_removal', true);
 	});
 
 	test.afterAll(async ({ api }) => {
 		// turn off department removal
-		await api.post('/settings/Omnichannel_enable_department_removal', { value: false });
+		await setSettingValueById(api, 'Omnichannel_enable_department_removal', false);
 	});
 
 	test.describe('Create first department', async () => {
@@ -258,8 +259,7 @@ test.describe('OC - Manage Departments', () => {
 			});
 
 			await test.step('expect to disable department removal setting', async () => {
-				const statusCode = (await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status();
-				expect(statusCode).toBe(200);
+				await setSettingValueById(api, 'Omnichannel_enable_department_removal', false);
 			});
 
 			await test.step('expect not to be able to delete department', async () => {
@@ -269,8 +269,7 @@ test.describe('OC - Manage Departments', () => {
 			});
 
 			await test.step('expect to enable department removal setting', async () => {
-				const statusCode = (await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status();
-				expect(statusCode).toBe(200);
+				await setSettingValueById(api, 'Omnichannel_enable_department_removal', true);
 			});
 
 			await test.step('expect to delete department', async () => {

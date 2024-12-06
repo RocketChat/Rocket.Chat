@@ -1,5 +1,6 @@
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
 import { Registration } from './page-objects';
+import { setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
 test.describe.serial('Forget session on window close setting', () => {
@@ -13,7 +14,7 @@ test.describe.serial('Forget session on window close setting', () => {
 
 	test.describe('Setting off', async () => {
 		test.beforeAll(async ({ api }) => {
-			await api.post('/settings/Accounts_ForgetUserSessionOnWindowClose', { value: false });
+			await setSettingValueById(api, 'Accounts_ForgetUserSessionOnWindowClose', false);
 		});
 
 		test('Login using credentials and reload to stay logged in', async ({ page, context }) => {
@@ -33,11 +34,11 @@ test.describe.serial('Forget session on window close setting', () => {
 	// TODO: Fix this test
 	test.describe.skip('Setting on', async () => {
 		test.beforeAll(async ({ api }) => {
-			await api.post('/settings/Accounts_ForgetUserSessionOnWindowClose', { value: true });
+			await setSettingValueById(api, 'Accounts_ForgetUserSessionOnWindowClose', true);
 		});
 
 		test.afterAll(async ({ api }) => {
-			await api.post('/settings/Accounts_ForgetUserSessionOnWindowClose', { value: false });
+			await setSettingValueById(api, 'Accounts_ForgetUserSessionOnWindowClose', false);
 		});
 
 		test('Login using credentials and reload to get logged out', async ({ page, context }) => {

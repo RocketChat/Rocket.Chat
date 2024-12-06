@@ -3,6 +3,7 @@ import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { test, expect } from '../utils/test';
 
 const firstVisitor = createFakeVisitor();
@@ -21,10 +22,10 @@ test.describe('OC - Livechat - Queue Management', () => {
 
 	test.beforeAll(async ({ api, browser }) => {
 		await Promise.all([
-			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
-			api.post('/settings/Livechat_accept_chats_with_no_agents', { value: true }),
-			api.post('/settings/Livechat_waiting_queue', { value: true }),
-			api.post('/settings/Livechat_waiting_queue_message', { value: waitingQueueMessage }),
+			setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection'),
+			setSettingValueById(api, 'Livechat_accept_chats_with_no_agents', true),
+			setSettingValueById(api, 'Livechat_waiting_queue', true),
+			setSettingValueById(api, 'Livechat_waiting_queue_message', waitingQueueMessage),
 			api.post('/livechat/users/agent', { username: 'user1' }),
 		]);
 
@@ -45,9 +46,9 @@ test.describe('OC - Livechat - Queue Management', () => {
 
 	test.afterAll(async ({ api }) => {
 		await Promise.all([
-			api.post('/settings/Livechat_accept_chats_with_no_agents', { value: false }),
-			api.post('/settings/Livechat_waiting_queue', { value: false }),
-			api.post('/settings/Livechat_waiting_queue_message', { value: '' }),
+			setSettingValueById(api, 'Livechat_accept_chats_with_no_agents', false),
+			setSettingValueById(api, 'Livechat_waiting_queue', false),
+			setSettingValueById(api, 'Livechat_waiting_queue_message', ''),
 			api.delete('/livechat/users/agent/user1'),
 		]);
 		await poHomeOmnichannel.page.close();
