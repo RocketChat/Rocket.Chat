@@ -5,11 +5,11 @@ import React, { useEffect } from 'react';
 import { MessageAction } from '../../../../app/ui-utils/client';
 import ReactionListModal from '../../../views/room/modals/ReactionListModal';
 
-export const useShowMessageReactionsAction = ({ reactions = {} }: IMessage) => {
+export const useShowMessageReactionsAction = (message: IMessage) => {
 	const setModal = useSetModal();
 
 	useEffect(() => {
-		if (!reactions) {
+		if (!message.reactions) {
 			return;
 		}
 
@@ -22,7 +22,7 @@ export const useShowMessageReactionsAction = ({ reactions = {} }: IMessage) => {
 			action() {
 				setModal(
 					<ReactionListModal
-						reactions={reactions}
+						reactions={message.reactions ?? {}}
 						onClose={() => {
 							setModal(null);
 						}}
@@ -36,5 +36,5 @@ export const useShowMessageReactionsAction = ({ reactions = {} }: IMessage) => {
 		return () => {
 			MessageAction.removeButton('reaction-list');
 		};
-	}, [reactions, setModal]);
+	}, [message.reactions, setModal]);
 };
