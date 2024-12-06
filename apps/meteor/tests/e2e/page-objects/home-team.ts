@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeFlextab, HomeSidenav } from './fragments';
+import { HomeContent, HomeFlextab, HomeSidenav, Sidebar, Navbar, CreateRoomModal } from './fragments';
 
 export class HomeTeam {
 	private readonly page: Page;
@@ -9,13 +9,22 @@ export class HomeTeam {
 
 	readonly sidenav: HomeSidenav;
 
+	readonly sidebar: Sidebar;
+
+	readonly navbar: Navbar;
+
 	readonly tabs: HomeFlextab;
+
+	readonly createRoomModal: CreateRoomModal;
 
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeContent(page);
 		this.sidenav = new HomeSidenav(page);
+		this.sidebar = new Sidebar(page);
+		this.navbar = new Navbar(page);
 		this.tabs = new HomeFlextab(page);
+		this.createRoomModal = new CreateRoomModal(page);
 	}
 
 	get inputTeamName(): Locator {

@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidebar } from './fragments';
+import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidebar, CreateRoomModal } from './fragments';
 
 export class HomeChannel {
 	public readonly page: Page;
@@ -15,6 +15,8 @@ export class HomeChannel {
 
 	readonly tabs: HomeFlextab;
 
+	readonly createRoomModal: CreateRoomModal;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeContent(page);
@@ -22,6 +24,7 @@ export class HomeChannel {
 		this.sidebar = new Sidebar(page);
 		this.navbar = new Navbar(page);
 		this.tabs = new HomeFlextab(page);
+		this.createRoomModal = new CreateRoomModal(page);
 	}
 
 	get toastSuccess(): Locator {

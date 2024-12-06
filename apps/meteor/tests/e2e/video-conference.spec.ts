@@ -27,7 +27,7 @@ test.describe('video conference', () => {
 	});
 
 	test('expect create video conference in a "targetChannel"', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 
 		await poHomeChannel.content.btnCall.click();
 		await poHomeChannel.content.menuItemVideoCall.click();
@@ -38,13 +38,13 @@ test.describe('video conference', () => {
 	test.describe('test received in a "target channel"', async () => {
 		test.use({ storageState: Users.user2.state });
 		test('verify if user received a invite call from "targetChannel"', async () => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.sidebar.openChat(targetChannel);
 			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 		});
 	});
 
 	test('expect create video conference in a direct', async () => {
-		await poHomeChannel.sidenav.openChat('user2');
+		await poHomeChannel.sidebar.openChat('user2');
 
 		await poHomeChannel.content.btnCall.click();
 		await poHomeChannel.content.menuItemVideoCall.click();
@@ -55,13 +55,13 @@ test.describe('video conference', () => {
 	test.describe('verify if user received from a direct', async () => {
 		test.use({ storageState: Users.user2.state });
 		test('verify if user received a call invite in direct', async () => {
-			await poHomeChannel.sidenav.openChat('user1');
+			await poHomeChannel.sidebar.openChat('user1');
 			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 		});
 	});
 
 	test('expect create video conference in a "targetTeam"', async () => {
-		await poHomeChannel.sidenav.openChat(targetTeam);
+		await poHomeChannel.sidebar.openChat(targetTeam);
 
 		await poHomeChannel.content.btnCall.click();
 		await poHomeChannel.content.menuItemVideoCall.click();
@@ -72,13 +72,13 @@ test.describe('video conference', () => {
 	test.describe('verify if received from a "targetTeam"', async () => {
 		test.use({ storageState: Users.user2.state });
 		test('verify if user received from a "targetTeam"', async () => {
-			await poHomeChannel.sidenav.openChat(targetTeam);
+			await poHomeChannel.sidebar.openChat(targetTeam);
 			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 		});
 	});
 
 	test('expect create video conference in a direct multiple', async () => {
-		await poHomeChannel.sidenav.openChat('rocketchat.internal.admin.test, user2');
+		await poHomeChannel.sidebar.openChat('rocketchat.internal.admin.test, user2');
 
 		await poHomeChannel.content.btnCall.click();
 		await poHomeChannel.content.menuItemVideoCall.click();
@@ -89,13 +89,13 @@ test.describe('video conference', () => {
 	test.describe('received in a direct multiple', async () => {
 		test.use({ storageState: Users.user2.state });
 		test('verify if user received from a multiple', async () => {
-			await poHomeChannel.sidenav.openChat('rocketchat.internal.admin.test, user1');
+			await poHomeChannel.sidebar.openChat('rocketchat.internal.admin.test, user1');
 			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 		});
 	});
 
 	test('expect create video conference not available in a "targetReadOnlyChannel"', async () => {
-		await poHomeChannel.sidenav.openChat(targetReadOnlyChannel);
+		await poHomeChannel.sidebar.openChat(targetReadOnlyChannel);
 
 		await expect(poHomeChannel.content.btnCall).hasAttribute('disabled');
 	});
