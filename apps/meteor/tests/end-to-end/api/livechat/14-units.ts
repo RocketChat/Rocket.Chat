@@ -949,11 +949,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 			});
 			testDepartmentId = testDepartment._id;
 
-			// Deleting a department currently does not decrease its unit's counter. We must adjust this check when this is fixed
 			const updatedUnit = await getUnit(unit._id);
 			expect(updatedUnit).to.have.property('name', unit.name);
 			expect(updatedUnit).to.have.property('numMonitors', 1);
-			expect(updatedUnit).to.have.property('numDepartments', 3);
+			expect(updatedUnit).to.have.property('numDepartments', 2);
 
 			const fullDepartment = await getDepartmentById(testDepartmentId);
 			expect(fullDepartment).to.have.property('parentId', unit._id);
