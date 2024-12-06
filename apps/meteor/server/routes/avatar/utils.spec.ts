@@ -151,7 +151,7 @@ describe('#wasFallbackModified()', () => {
 	});
 });
 
-describe.only('#renderSvgLetters', () => {
+describe('#renderSvgLetters', () => {
 	it('should show capitalized initial letter in the svg', () => {
 		expect(renderSVGLetters('arthur', 16)).to.include('>\nA\n</text>');
 		expect(renderSVGLetters('Bob', 16)).to.include('>\nB\n</text>');
