@@ -125,6 +125,10 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISub
 		};
 	}
 
+	async upsertSubscription(record: ISubscription): Promise<void> {
+		return this.handleRecordEvent('changed', record);
+	}
+
 	protected deserializeFromCache(record: unknown) {
 		const deserialized = super.deserializeFromCache(record);
 
