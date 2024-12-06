@@ -21,7 +21,7 @@ const afterRemoveDepartment = async (options: {
 	});
 	await Promise.all([
 		LivechatDepartment.removeDepartmentFromForwardListById(department._id),
-		LivechatUnit.removeDepartmentFromUnit(department.parentId),
+		...(department.parentId ? [LivechatUnit.removeDepartmentFromUnit(department.parentId)] : []),
 	]);
 
 	return options;
