@@ -176,12 +176,17 @@ describe('#renderSvgLetters', () => {
 	});
 	it('should render more than one letter when useAllInitials is true', () => {
 		expect(renderSVGLetters('arthur void', 16, true)).to.include('>\nAV\n');
+		expect(renderSVGLetters('arthur void jackson', 16, true)).to.include('>\nAVJ\n');
+	});
+	it('should cap generated avatar to 3 letters at most', () => {
+		expect(renderSVGLetters('arthur void jackson billie', 16, true)).to.include('>\nAVJ\n');
+		expect(renderSVGLetters('arthur void jackson billie jean', 16, true)).to.include('>\nAVJ\n');
 	});
 	it('should decrease the font size when username has more than 1 word', () => {
 		expect(renderSVGLetters('arthur void', 200, true)).to.include('font-size="100"');
 	});
-	it('should decrease the font size when username has 4 words', () => {
-		expect(renderSVGLetters('this is four words', 200, true)).to.include('font-size="83.33333333333331"');
+	it('should decrease the font size when username has 3 words', () => {
+		expect(renderSVGLetters('this is three_words', 200, true)).to.include('font-size="80"');
 	});
 });
 
