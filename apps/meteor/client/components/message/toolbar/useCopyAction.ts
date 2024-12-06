@@ -27,7 +27,7 @@ export const useCopyAction = (message: IMessage, { subscription }: { subscriptio
 			label: 'Copy_text',
 			context: ['message', 'message-mobile', 'threads', 'federated'],
 			type: 'duplication',
-			async action(_, { message }) {
+			async action() {
 				const msgText = getMainMessageText(message).msg;
 				await navigator.clipboard.writeText(msgText);
 				dispatchToastMessage({ type: 'success', message: t('Copied') });

@@ -31,7 +31,7 @@ export const useForwardMessageAction = (message: IMessage) => {
 			},
 			order: 0,
 			group: 'message',
-			disabled: () => encrypted,
+			disabled: encrypted,
 		});
 
 		return () => {

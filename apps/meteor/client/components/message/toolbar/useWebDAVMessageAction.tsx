@@ -1,3 +1,4 @@
+import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import React, { useEffect } from 'react';
 
@@ -6,7 +7,7 @@ import { getURL } from '../../../../app/utils/client';
 import { useWebDAVAccountIntegrationsQuery } from '../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
 import SaveToWebdavModal from '../../../views/room/webdav/SaveToWebdavModal';
 
-export const useWebDAVMessageAction = () => {
+export const useWebDAVMessageAction = (message: IMessage, { subscription }: { subscription: ISubscription | undefined }) => {
 	const enabled = useSetting('Webdav_Integration_Enabled', false);
 
 	const { data } = useWebDAVAccountIntegrationsQuery({ enabled });
@@ -14,7 +15,7 @@ export const useWebDAVMessageAction = () => {
 	const setModal = useSetModal();
 
 	useEffect(() => {
-		if (!enabled) {
+		if (!enabled || !subscription || !data?.length || !message.file) {
 			return;
 		}
 
@@ -22,14 +23,18 @@ export const useWebDAVMessageAction = () => {
 			id: 'webdav-upload',
 			icon: 'upload',
 			label: 'Save_To_Webdav',
-			condition: ({ message, subscription }) => {
-				return !!subscription && !!data?.length && !!message.file;
-			},
-			action(_, { message }) {
+			action() {
 				const [attachment] = message.attachments || [];
 				const url = getURL(attachment.title_link as string, { full: true });
 
-				setModal(<SaveToWebdavModal data={{ attachment, url }} onClose={() => setModal(undefined)} />);
+				setModal(
+					<SaveToWebdavModal
+						data={{ attachment, url }}
+						onClose={() => {
+							setModal(null);
+						}}
+					/>,
+				);
 			},
 			order: 100,
 			group: 'menu',
@@ -38,5 +43,5 @@ export const useWebDAVMessageAction = () => {
 		return () => {
 			MessageAction.removeButton('webdav-upload');
 		};
-	}, [data?.length, enabled, setModal]);
+	}, [data?.length, enabled, message.attachments, message.file, setModal, subscription]);
 };

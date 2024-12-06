@@ -1,4 +1,5 @@
 import { type IUIActionButton, type UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useEndpoint, useStream, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
@@ -161,7 +162,7 @@ export const useUserDropdownAppsActionButtons = () => {
 	} as UseQueryResult<GenericMenuItemProps[]>;
 };
 
-export const useMessageActionAppsActionButtons = (context?: MessageActionContext, category?: string) => {
+export const useMessageActionAppsActionButtons = (message: IMessage, context?: MessageActionContext, category?: string) => {
 	const result = useAppActionButtons('messageAction');
 	const actionManager = useUiKitActionManager();
 	const applyButtonFilters = useApplyButtonFilters(category);
@@ -185,13 +186,14 @@ export const useMessageActionAppsActionButtons = (context?: MessageActionContext
 						order: 7,
 						type: 'apps',
 						variant: action.variant,
-						action: (_, params) => {
+						group: 'menu',
+						action: () => {
 							void actionManager
 								.emitInteraction(action.appId, {
 									type: 'actionButton',
-									rid: params.message.rid,
-									tmid: params.message.tmid,
-									mid: params.message._id,
+									rid: message.rid,
+									tmid: message.tmid,
+									mid: message._id,
 									actionId: action.actionId,
 									payload: { context: action.context },
 								})
@@ -211,7 +213,17 @@ export const useMessageActionAppsActionButtons = (context?: MessageActionContext
 
 					return item;
 				}),
-		[actionManager, applyButtonFilters, dispatchToastMessage, filterActionsByContext, result.data, t],
+		[
+			actionManager,
+			applyButtonFilters,
+			dispatchToastMessage,
+			filterActionsByContext,
+			message._id,
+			message.rid,
+			message.tmid,
+			result.data,
+			t,
+		],
 	);
 	return {
 		...result,

@@ -44,6 +44,7 @@ export const useViewOriginalTranslationAction = (
 			label: 'View_original',
 			context: ['message', 'message-mobile', 'threads'],
 			type: 'interaction',
+			group: 'menu',
 			action() {
 				if (!hasTranslations) {
 					AutoTranslate.messageIdsToWait[message._id] = true;

@@ -24,7 +24,6 @@ export const useReplyInDMAction = (
 			icon: 'reply-directly',
 			label: 'Reply_in_direct_message',
 			context: ['message', 'message-mobile', 'threads', 'federated'],
-			role: 'link',
 			type: 'communication',
 			action() {
 				roomCoordinator.openRouteLink(
@@ -49,7 +48,7 @@ export const useReplyInDMAction = (
 			},
 			order: 0,
 			group: 'menu',
-			disabled: () => encrypted,
+			disabled: encrypted,
 		});
 
 		return () => {

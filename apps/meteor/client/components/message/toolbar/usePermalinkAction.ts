@@ -42,7 +42,7 @@ export const usePermalinkAction = (
 			},
 			order,
 			group: 'menu',
-			disabled: () => encrypted,
+			disabled: encrypted,
 		});
 
 		return () => {
