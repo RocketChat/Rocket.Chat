@@ -14,7 +14,7 @@ import type {
 	IndexDescription,
 	DeleteResult,
 	UpdateFilter,
-	ModifyResult,
+	WithId,
 	FindOneAndUpdateOptions,
 } from 'mongodb';
 import { ObjectId } from 'mongodb';
@@ -126,13 +126,13 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		// TODO remove dependency from another model - this logic should be inside a service/function
 		const livechatCount = await Settings.incrementValueById('Livechat_guest_count', 1, { returnDocument: 'after' });
 
-		if (!livechatCount.value) {
+		if (!livechatCount) {
 			throw new Error("Can't find Livechat_guest_count setting");
 		}
 
-		void notifyOnSettingChanged(livechatCount.value);
+		void notifyOnSettingChanged(livechatCount);
 
-		return `guest-${livechatCount.value.value}`;
+		return `guest-${livechatCount.value}`;
 	}
 
 	findByNameRegexWithExceptionsAndConditions<P extends Document = ILivechatVisitor>(
@@ -292,7 +292,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	async updateOneByIdOrToken(
 		update: Partial<ILivechatVisitor>,
 		options?: FindOneAndUpdateOptions,
-	): Promise<ModifyResult<ILivechatVisitor>> {
+	): Promise<null | WithId<ILivechatVisitor>> {
 		let query: Filter<ILivechatVisitor> = {};
 
 		if (update._id) {

@@ -7,7 +7,7 @@
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"eslint": "~8.45.0",
-		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
+		"mongodb": "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch",
 		"prettier": "~3.3.3",
 		"typescript": "~5.7.2"
 	},

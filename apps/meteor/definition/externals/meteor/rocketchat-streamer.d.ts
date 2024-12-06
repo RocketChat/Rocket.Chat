@@ -19,6 +19,30 @@ declare module 'meteor/rocketchat:streamer' {
 			userId?: string;
 			send: (payload: string) => void;
 		};
+
+		onStop(func: Function): void;
+		/**
+		 * Call inside the publish function. Informs the subscriber that an initial, complete snapshot of the record set has been sent.  This will trigger a call on the client to the `onReady`
+		 * callback passed to  `Meteor.subscribe`, if any.
+		 */
+		ready(): void;
+		/**
+		 * Call inside the publish function. Informs the subscriber that a document has been removed from the record set.
+		 * @param collection The name of the collection that the document has been removed from.
+		 * @param id The ID of the document that has been removed.
+		 */
+		removed(collection: string, id: string): void;
+		/**
+		 * Access inside the publish function. The incoming connection for this subscription.
+		 */
+		stop(): void;
+		/**
+		 * Call inside the publish function. Allows subsequent methods or subscriptions for the client of this subscription
+		 * to begin running without waiting for the publishing to become ready.
+		 */
+		unblock(): void;
+		/** Access inside the publish function. The id of the logged-in user, or `null` if no user is logged in. */
+		userId: string | null;
 	}
 
 	type Rule<K extends string = string> = (this: IPublication, eventName: K, ...args: any) => Promise<boolean | object>;

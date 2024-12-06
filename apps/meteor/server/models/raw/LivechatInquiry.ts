@@ -13,7 +13,6 @@ import type {
 	Document,
 	FindOptions,
 	DistinctOptions,
-	ModifyResult,
 	UpdateResult,
 	Filter,
 	DeleteResult,
@@ -21,6 +20,7 @@ import type {
 	FindCursor,
 	UpdateFilter,
 	DeleteOptions,
+	WithId,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -145,18 +145,16 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	}
 
 	async setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null> {
-		const updated = await this.findOneAndUpdate({ _id: inquiryId }, { $set: { department } }, { returnDocument: 'after' });
-		return updated?.value;
+		return this.findOneAndUpdate({ _id: inquiryId }, { $set: { department } }, { returnDocument: 'after' });
 	}
 
 	async setLastMessageByRoomId(rid: ILivechatInquiryRecord['rid'], message: IMessage): Promise<ILivechatInquiryRecord | null> {
-		const updated = await this.findOneAndUpdate({ rid }, { $set: { lastMessage: message } }, { returnDocument: 'after' });
-		return updated?.value;
+		return this.findOneAndUpdate({ rid }, { $set: { lastMessage: message } }, { returnDocument: 'after' });
 	}
 
 	async findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string): Promise<ILivechatInquiryRecord | null> {
 		const date = new Date();
-		const result = await this.findOneAndUpdate(
+		return this.findOneAndUpdate(
 			{
 				status: LivechatInquiryStatus.QUEUED,
 				...(department ? { department } : { department: { $exists: false } }),
@@ -183,8 +181,6 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				sort: getOmniChatSortQuery(queueSortBy),
 			},
 		);
-
-		return result.value;
 	}
 
 	async unlock(inquiryId: string): Promise<UpdateResult> {
@@ -268,11 +264,11 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			.toArray();
 	}
 
-	setSlaForRoom(_rid: string, _data: { estimatedWaitingTimeQueue: number; slaId: string }): Promise<ModifyResult<ILivechatInquiryRecord>> {
+	setSlaForRoom(_rid: string, _data: { estimatedWaitingTimeQueue: number; slaId: string }): Promise<null | WithId<ILivechatInquiryRecord>> {
 		throw new Error('Method not implemented on the community edition.');
 	}
 
-	unsetSlaForRoom(_roomId: string): Promise<ModifyResult<ILivechatInquiryRecord>> {
+	unsetSlaForRoom(_roomId: string): Promise<null | WithId<ILivechatInquiryRecord>> {
 		throw new Error('Method not implemented on the community edition.');
 	}
 
@@ -280,11 +276,11 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		throw new Error('Method not implemented on the community edition.');
 	}
 
-	setPriorityForRoom(_rid: string, _priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<ModifyResult<ILivechatInquiryRecord>> {
+	setPriorityForRoom(_rid: string, _priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<null | WithId<ILivechatInquiryRecord>> {
 		throw new Error('Method not implemented on the community edition.');
 	}
 
-	unsetPriorityForRoom(_rid: string): Promise<ModifyResult<ILivechatInquiryRecord>> {
+	unsetPriorityForRoom(_rid: string): Promise<null | WithId<ILivechatInquiryRecord>> {
 		throw new Error('Method not implemented on the community edition.');
 	}
 
@@ -320,7 +316,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	}
 
 	async queueInquiry(inquiryId: string): Promise<ILivechatInquiryRecord | null> {
-		const result = await this.findOneAndUpdate(
+		return this.findOneAndUpdate(
 			{
 				_id: inquiryId,
 			},
@@ -330,8 +326,6 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			},
 			{ returnDocument: 'after' },
 		);
-
-		return result?.value;
 	}
 
 	queueInquiryAndRemoveDefaultAgent(inquiryId: string): Promise<UpdateResult> {
@@ -414,11 +408,11 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			},
 		);
 
-		if (!result.value) {
+		if (!result) {
 			throw new Error('error-failed-to-set-inquiry-status');
 		}
 
-		return result.value;
+		return result;
 	}
 
 	setNameByRoomId(rid: string, name: string): Promise<UpdateResult> {
@@ -461,8 +455,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	}
 
 	async markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ILivechatInquiryRecord | null> {
-		const updated = await this.findOneAndUpdate({ rid }, { $addToSet: { 'v.activity': period } });
-		return updated?.value;
+		return this.findOneAndUpdate({ rid }, { $addToSet: { 'v.activity': period } });
 	}
 
 	updateNameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document> {
