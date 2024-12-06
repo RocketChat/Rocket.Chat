@@ -5809,6 +5809,7 @@
   "registration.component.form.invalidEmail": "दर्ज किया गया ईमेल अमान्य है",
   "registration.component.form.email": "ईमेल",
   "registration.component.form.emailPlaceholder": "example@example.com",
+  "registration.component.form.passwordPlaceholder": "●●●●●●●●",
   "registration.component.form.password": "पासवर्ड",
   "registration.component.form.divider": "या",
   "registration.component.form.submit": "जमा करना",
