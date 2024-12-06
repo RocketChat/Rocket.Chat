@@ -16,7 +16,6 @@ import '../app/iframe-login/client';
 import '../app/license/client';
 import '../app/lib/client';
 import '../app/livechat-enterprise/client';
-import '../app/message-mark-as-unread/client';
 import '../app/nextcloud/client';
 import '../app/notifications/client';
 import '../app/otr/client';
