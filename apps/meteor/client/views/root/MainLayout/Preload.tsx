@@ -24,7 +24,7 @@ const Preload = ({ children }: { children: ReactNode }): ReactElement => {
 	useEffect(() => {
 		CachedChatSubscription.listen();
 		CachedChatRoom.listen();
-		return () => {};
+		return () => undefined;
 	}, []);
 
 	if (!ready) {

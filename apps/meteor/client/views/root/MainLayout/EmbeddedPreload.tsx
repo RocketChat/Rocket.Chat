@@ -4,7 +4,6 @@ import React, { useEffect } from 'react';
 
 import { CachedChatRoom, CachedChatSubscription } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
-import { CachedCollectionManager } from '../../../../app/ui-cached-collection/client';
 import { mainReady } from '../../../../app/ui-utils/client';
 import { useReactiveVar } from '../../../hooks/useReactiveVar';
 import { isSyncReady } from '../../../lib/userData';
@@ -17,10 +16,6 @@ const EmbeddedPreload = ({ children }: { children: ReactNode }): ReactElement =>
 	const userDataReady = useReactiveVar(isSyncReady);
 
 	const ready = !uid || (userDataReady && subscriptionsReady && settingsReady);
-
-	useEffect(() => {
-		CachedCollectionManager.syncEnabled = ready;
-	}, [ready]);
 
 	useEffect(() => {
 		settings.cachedCollection.listen();
