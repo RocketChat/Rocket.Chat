@@ -10,8 +10,8 @@
 	"main": "dist/index.js",
 	"packageManager": "yarn@3.5.1",
 	"devDependencies": {
-		"@types/node": "~20.16.15",
-		"typescript": "~5.6.3"
+		"@types/node": "~20.17.8",
+		"typescript": "~5.7.2"
 	},
 	"dependencies": {
 		"@actions/core": "^1.11.1",

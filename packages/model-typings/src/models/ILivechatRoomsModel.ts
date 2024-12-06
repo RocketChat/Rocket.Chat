@@ -286,4 +286,5 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		oldContactId: ILivechatContact['_id'],
 		contact: Partial<Pick<ILivechatContact, '_id' | 'name'>>,
 	): Promise<UpdateResult | Document>;
+	findOpenByContactId(contactId: ILivechatContact['_id'], options?: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
 }

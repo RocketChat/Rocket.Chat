@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "7.1.0-develop",
+	"version": "7.2.0-develop",
 	"private": true,
 	"author": {
 		"name": "Rocket.Chat",
@@ -128,7 +128,7 @@
 		"@types/meteor-collection-hooks": "^0.8.9",
 		"@types/mkdirp": "^1.0.2",
 		"@types/mocha": "github:whitecolor/mocha-types",
-		"@types/node": "~20.16.15",
+		"@types/node": "~20.17.8",
 		"@types/node-gcm": "^1.0.5",
 		"@types/node-rsa": "^1.1.4",
 		"@types/nodemailer": "^6.4.16",
@@ -214,7 +214,7 @@
 		"supports-color": "~7.2.0",
 		"template-file": "^6.0.1",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.6.3"
+		"typescript": "~5.7.2"
 	},
 	"dependencies": {
 		"@babel/runtime": "~7.26.0",
@@ -433,7 +433,7 @@
 		"tinykeys": "^1.4.0",
 		"twilio": "^3.84.1",
 		"twit": "^2.2.11",
-		"typia": "~6.11.4",
+		"typia": "~6.12.2",
 		"ua-parser-js": "^1.0.39",
 		"underscore": "^1.13.7",
 		"universal-perf-hooks": "^1.0.1",

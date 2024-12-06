@@ -112,16 +112,7 @@ export type PartialThis = {
 	readonly logger: Logger;
 };
 
-export type UserInfo = IUser & {
-	email?: string;
-	settings: {
-		profile: object;
-		preferences: unknown;
-	};
-	avatarUrl: string;
-};
-
-export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
+type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
 	readonly requestIp: string;
 	urlParams: UrlParams<TPathPattern>;
 	readonly response: Response;
@@ -186,11 +177,11 @@ export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> 
 			body: unknown;
 	  };
 
-export type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
+type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => Promise<ResultFor<TMethod, TPathPattern>>)
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => ResultFor<TMethod, TPathPattern>);
 
-export type Operation<TMethod extends Method, TPathPattern extends PathPattern, TEndpointOptions> =
+type Operation<TMethod extends Method, TPathPattern extends PathPattern, TEndpointOptions> =
 	| Action<TMethod, TPathPattern, TEndpointOptions>
 	| ({
 			action: Action<TMethod, TPathPattern, TEndpointOptions>;
