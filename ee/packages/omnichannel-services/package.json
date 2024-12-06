@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/omnichannel-services",
-	"version": "0.3.6",
+	"version": "0.3.7-rc.1",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
@@ -8,7 +8,7 @@
 		"@types/jest": "~29.5.14",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
-		"typescript": "~5.6.3"
+		"typescript": "~5.7.2"
 	},
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
@@ -21,7 +21,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"@rocket.chat/tools": "workspace:^",
-		"@types/node": "~20.16.15",
+		"@types/node": "~20.17.8",
 		"date-fns": "^2.30.0",
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",
