@@ -180,6 +180,9 @@ describe('#renderSvgLetters', () => {
 	it('should decrease the font size when username has more than 1 word', () => {
 		expect(renderSVGLetters('arthur void', 200, true)).to.include('font-size="100"');
 	});
+	it('should decrease the font size when username has 4 words', () => {
+		expect(renderSVGLetters('this is four words', 200, true)).to.include('font-size="83.33"');
+	});
 });
 
 describe('#setCacheAndDispositionHeaders', () => {
