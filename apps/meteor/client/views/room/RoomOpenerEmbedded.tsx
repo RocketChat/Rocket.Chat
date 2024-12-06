@@ -1,4 +1,4 @@
-import type { RoomType } from '@rocket.chat/core-typings';
+import type { ISubscription, RoomType } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
@@ -52,7 +52,7 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 				if (!subscription) {
 					throw new Error('Room not found');
 				}
-				CachedChatSubscription.collection.upsert({ rid }, subscription);
+				CachedChatSubscription.upsertSubscription(subscription as unknown as ISubscription);
 			},
 		},
 	);
