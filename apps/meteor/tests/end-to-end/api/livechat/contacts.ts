@@ -29,7 +29,7 @@ import { createUser, deleteUser } from '../../../data/users.helper';
 import { expectInvalidParams } from '../../../data/validation.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe.only('LIVECHAT - contacts', () => {
+describe('LIVECHAT - contacts', () => {
 	let agentUser: IUser;
 	let livechatAgent: ILivechatAgent;
 	before((done) => getCredentials(done));
