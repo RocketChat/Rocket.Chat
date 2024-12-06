@@ -18,10 +18,12 @@ const EmbeddedPreload = ({ children }: { children: ReactNode }): ReactElement =>
 	const ready = !uid || (userDataReady && subscriptionsReady && settingsReady);
 
 	useEffect(() => {
-		settings.cachedCollection.listen();
+		mainReady.set(ready);
+	}, [ready]);
+
+	useEffect(() => {
 		CachedChatSubscription.ready.set(true);
 		CachedChatRoom.ready.set(true);
-		mainReady.set(true);
 	}, [ready]);
 
 	if (!ready) {
