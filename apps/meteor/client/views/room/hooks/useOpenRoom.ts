@@ -17,7 +17,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 	const getRoomByTypeAndName = useMethod('getRoomByTypeAndName');
 	const createDirectMessage = useMethod('createDirectMessage');
 	const directRoute = useRoute('direct');
-	const openRoom = useOpenRoomMutation({ type });
+	const openRoom = useOpenRoomMutation();
 
 	const unsubscribeFromRoomOpenedEvent = useRef<() => void>(() => undefined);
 
