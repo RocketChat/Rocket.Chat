@@ -102,6 +102,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				},
 				sparse: true,
 			},
+			{ key: { 'v._id': 1 } },
 		];
 	}
 
@@ -120,6 +121,18 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		const query = {
 			rid,
 		};
+		return this.findOne(query, options);
+	}
+
+	findOneReadyByRoomId<T extends Document = ILivechatInquiryRecord>(
+		rid: string,
+		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
+	): Promise<T | null> {
+		const query = {
+			rid,
+			status: LivechatInquiryStatus.READY,
+		};
+
 		return this.findOne(query, options);
 	}
 
@@ -391,6 +404,23 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
+	async setStatusById(inquiryId: string, status: LivechatInquiryStatus): Promise<ILivechatInquiryRecord> {
+		const result = await this.findOneAndUpdate(
+			{ _id: inquiryId },
+			{ $set: { status } },
+			{
+				upsert: true,
+				returnDocument: 'after',
+			},
+		);
+
+		if (!result.value) {
+			throw new Error('error-failed-to-set-inquiry-status');
+		}
+
+		return result.value;
+	}
+
 	setNameByRoomId(rid: string, name: string): Promise<UpdateResult> {
 		const query = { rid };
 
@@ -433,5 +463,19 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	async markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ILivechatInquiryRecord | null> {
 		const updated = await this.findOneAndUpdate({ rid }, { $addToSet: { 'v.activity': period } });
 		return updated?.value;
+	}
+
+	updateNameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document> {
+		const query = { 'v._id': { $in: visitorIds } };
+
+		const update = {
+			$set: { name },
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	findByVisitorIds(visitorIds: string[], options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord> {
+		return this.find({ 'v._id': { $in: visitorIds } }, options);
 	}
 }

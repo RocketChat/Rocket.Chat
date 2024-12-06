@@ -38,6 +38,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 	});
 
 	after(async () => {

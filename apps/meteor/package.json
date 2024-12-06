@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "7.1.0-develop",
+	"version": "7.2.0-develop",
 	"private": true,
 	"author": {
 		"name": "Rocket.Chat",
@@ -128,8 +128,7 @@
 		"@types/meteor-collection-hooks": "^0.8.9",
 		"@types/mkdirp": "^1.0.2",
 		"@types/mocha": "github:whitecolor/mocha-types",
-		"@types/moment-timezone": "^0.5.30",
-		"@types/node": "~20.16.15",
+		"@types/node": "~20.17.8",
 		"@types/node-gcm": "^1.0.5",
 		"@types/node-rsa": "^1.1.4",
 		"@types/nodemailer": "^6.4.16",
@@ -215,7 +214,7 @@
 		"supports-color": "~7.2.0",
 		"template-file": "^6.0.1",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.6.3"
+		"typescript": "~5.7.2"
 	},
 	"dependencies": {
 		"@babel/runtime": "~7.26.0",
@@ -385,7 +384,7 @@
 		"mime-type": "^4.0.0",
 		"mkdirp": "^1.0.4",
 		"moleculer": "^0.14.35",
-		"moment": "^2.29.4",
+		"moment": "^2.30.1",
 		"moment-timezone": "^0.5.46",
 		"mongo-message-queue": "^1.1.0",
 		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
@@ -429,12 +428,12 @@
 		"strict-uri-encode": "^2.0.0",
 		"string-strip-html": "^7.0.3",
 		"suretype": "~2.4.1",
-		"swiper": "^11.1.14",
+		"swiper": "patch:swiper@npm%3A11.1.14#~/.yarn/patches/swiper-npm-11.1.14-8126fa478a.patch",
 		"textarea-caret": "^3.1.0",
 		"tinykeys": "^1.4.0",
 		"twilio": "^3.84.1",
 		"twit": "^2.2.11",
-		"typia": "~6.11.4",
+		"typia": "~6.12.2",
 		"ua-parser-js": "^1.0.39",
 		"underscore": "^1.13.7",
 		"universal-perf-hooks": "^1.0.1",

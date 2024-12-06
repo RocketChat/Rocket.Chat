@@ -3,19 +3,32 @@ import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket
 import { isThreadMessage, isRoomFederated, isVideoConfMessage, isE2EEMessage } from '@rocket.chat/core-typings';
 import { MessageToolbar as FuselageMessageToolbar, MessageToolbarItem } from '@rocket.chat/fuselage';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
-import { useUser, useSettings, useTranslation, useMethod, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+import { useUser, useSettings, useTranslation, useMethod, useLayoutHiddenActions, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useMemo, useRef } from 'react';
 
 import MessageActionMenu from './MessageActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
+import { useFollowMessageAction } from './useFollowMessageAction';
+import { useJumpToMessageContextAction } from './useJumpToMessageContextAction';
+import { useMarkAsUnreadMessageAction } from './useMarkAsUnreadMessageAction';
+import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
+import { usePermalinkAction } from './usePermalinkAction';
+import { usePinMessageAction } from './usePinMessageAction';
+import { useReactionMessageAction } from './useReactionMessageAction';
+import { useReplyInThreadMessageAction } from './useReplyInThreadMessageAction';
+import { useStarMessageAction } from './useStarMessageAction';
+import { useUnFollowMessageAction } from './useUnFollowMessageAction';
+import { useUnpinMessageAction } from './useUnpinMessageAction';
+import { useUnstarMessageAction } from './useUnstarMessageAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 import { useMessageActionAppsActionButtons } from '../../../hooks/useAppActionButtons';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
+import { roomsQueryKeys } from '../../../lib/queryKeys';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
@@ -82,20 +95,61 @@ const MessageToolbar = ({
 	const starsAction = useMessageActionAppsActionButtons(context, 'ai');
 
 	const { messageToolbox: hiddenActions } = useLayoutHiddenActions();
+	const allowStarring = useSetting('Message_AllowStarring');
 
 	// TODO: move this to another place
 	useWebDAVMessageAction();
+	useNewDiscussionMessageAction();
+	useUnpinMessageAction(message, { room, subscription });
+	usePinMessageAction(message, { room, subscription });
+	useStarMessageAction(message, { room, user });
+	useUnstarMessageAction(message, { room, user });
+	usePermalinkAction(message, { subscription, id: 'permalink-star', context: ['starred'], order: 10 });
+	usePermalinkAction(message, { subscription, id: 'permalink-pinned', context: ['pinned'], order: 5 });
+	usePermalinkAction(message, {
+		subscription,
+		id: 'permalink',
+		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
+		type: 'duplication',
+		order: 5,
+	});
+	useFollowMessageAction(message, { room, user, context });
+	useUnFollowMessageAction(message, { room, user, context });
+	useReplyInThreadMessageAction(message, { room, subscription });
+	useJumpToMessageContextAction(message, {
+		id: 'jump-to-message',
+		order: 100,
+		context: ['mentions', 'threads', 'videoconf-threads', 'message-mobile', 'search'],
+	});
+	useJumpToMessageContextAction(message, {
+		id: 'jump-to-pin-message',
+		order: 100,
+		hidden: !subscription,
+		context: ['pinned', 'direct'],
+	});
+	useJumpToMessageContextAction(message, {
+		id: 'jump-to-star-message',
+		hidden: !allowStarring || !subscription,
+		order: 100,
+		context: ['starred'],
+	});
+	useReactionMessageAction(message, { user, room, subscription });
+	useMarkAsUnreadMessageAction(message, { user, room, subscription });
 
-	const actionsQueryResult = useQuery(['rooms', room._id, 'messages', message._id, 'actions'] as const, async () => {
-		const props = { message, room, user, subscription, settings: mapSettings, chat };
+	const actionsQueryResult = useQuery({
+		queryKey: roomsQueryKeys.messageActionsWithParameters(room._id, message),
+		queryFn: async () => {
+			const props = { message, room, user, subscription, settings: mapSettings, chat };
 
-		const toolboxItems = await MessageAction.getAll(props, context, 'message');
-		const menuItems = await MessageAction.getAll(props, context, 'menu');
+			const toolboxItems = await MessageAction.getAll(props, context, 'message');
+			const menuItems = await MessageAction.getAll(props, context, 'menu');
 
-		return {
-			message: toolboxItems.filter((action) => !hiddenActions.includes(action.id)),
-			menu: menuItems.filter((action) => !(isLayoutEmbedded && action.id === 'reply-directly') && !hiddenActions.includes(action.id)),
-		};
+			return {
+				message: toolboxItems.filter((action) => !hiddenActions.includes(action.id)),
+				menu: menuItems.filter((action) => !(isLayoutEmbedded && action.id === 'reply-directly') && !hiddenActions.includes(action.id)),
+			};
+		},
+		keepPreviousData: true,
 	});
 
 	const toolbox = useRoomToolbox();
