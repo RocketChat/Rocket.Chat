@@ -52,6 +52,7 @@ let createIndexes = async () => {
 			}
 		});
 
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	createIndexes = async () => {};
 };
 
