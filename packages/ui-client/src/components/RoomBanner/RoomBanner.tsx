@@ -10,6 +10,10 @@ const clickable = css`
 	}
 `;
 
+const style = css`
+	background-color: ${Palette.surface['surface-room']};
+`;
+
 export const RoomBanner = ({ onClick, className, ...props }: ComponentProps<typeof Box>) => {
 	const { isMobile } = useLayout();
 
@@ -25,8 +29,7 @@ export const RoomBanner = ({ onClick, className, ...props }: ComponentProps<type
 				alignItems='center'
 				overflow='hidden'
 				flexDirection='row'
-				bg='room'
-				className={[onClick && clickable, ...(Array.isArray(className) ? className : [className])]}
+				className={[style, onClick && clickable, ...(Array.isArray(className) ? className : [className])]}
 				onClick={onClick}
 				tabIndex={onClick ? 0 : -1}
 				role={onClick ? 'button' : 'banner'}
