@@ -1,18 +1,23 @@
-import { type IVoipFreeSwitchService, ServiceClassInternal, VideoConf } from '@rocket.chat/core-services';
-import {
-	VideoConferenceStatus,
-	type FreeSwitchExtension,
-	type IFreeSwitchChannel,
-	type IFreeSwitchChannelUser,
-	type IUser,
-	type IVideoConference,
-	type IVideoConferenceUser,
-	type IVoIPVideoConference,
+import { type IVoipFreeSwitchService, ServiceClassInternal } from '@rocket.chat/core-services';
+import type {
+	DeepPartial,
+	IFreeSwitchEventCall,
+	IFreeSwitchEventCaller,
+	IFreeSwitchEvent,
+	FreeSwitchExtension,
+	IFreeSwitchChannelUser,
+	IUser,
+	IFreeSwitchCall,
+	IFreeSwitchCallEventType,
+	IFreeSwitchCallEvent,
+	AtLeast,
 } from '@rocket.chat/core-typings';
+import { isKnownFreeSwitchEventType } from '@rocket.chat/core-typings';
 import { getDomain, getUserPassword, getExtensionList, getExtensionDetails, listenToEvents } from '@rocket.chat/freeswitch';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { FreeSwitchChannel, Rooms, Users, VideoConference } from '@rocket.chat/models';
-import { wrapExceptions } from '@rocket.chat/tools';
+import { FreeSwitchCall, FreeSwitchEvent, Users } from '@rocket.chat/models';
+import { objectMap, wrapExceptions } from '@rocket.chat/tools';
+import type { WithoutId } from 'mongodb';
 
 import { settings } from '../../../../app/settings/server';
 
@@ -21,6 +26,8 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 
 	public async started(): Promise<void> {
 		try {
+			// #ToDo: Reconnection
+			// #ToDo: Only connect from one rocket.chat instance
 			void listenToEvents(
 				async (...args) => wrapExceptions(() => this.onFreeSwitchEvent(...args)).suppress(),
 				this.getConnectionSettings(),
@@ -57,268 +64,361 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		if (!uniqueId) {
 			return;
 		}
-		const filteredData = Object.fromEntries(Object.entries(data).filter(([_, value]) => value !== undefined)) as Record<string, string>;
-		const allIds = await this.registerChannelEvent(uniqueId, eventName, filteredData);
-		if (allIds.length > 1) {
-			await FreeSwitchChannel.linkUniqueIds(allIds);
-		}
 
-		if (eventName !== 'CHANNEL_DESTROY') {
-			return;
-		}
+		const callIds = [data['Channel-Call-UUID'], data.variable_call_uuid].filter((callId) => Boolean(callId) && callId !== '0') as string[];
+		const event = await this.parseEventData(eventName, data);
 
-		const allChannels = await FreeSwitchChannel.findAllByUniqueIds(allIds).toArray();
-		if (!allChannels.length) {
-			return;
-		}
-		// Do not log the call if any of the channels already has a callId
-		if (allChannels.some((channel) => Boolean(channel.callId))) {
-			return;
-		}
-		// Do not log the call unless at least one of the channels got created
-		if (!allChannels.some((channel) => Boolean(channel.createdAt))) {
-			return;
-		}
-		// Do not log the call until all channels have been destroyed
-		if (allChannels.some((channel) => !channel.destroyed)) {
+		// If for some reason the event had different callIds, save a copy of it for each of them
+		if (callIds.length > 1) {
+			await Promise.all(
+				callIds.map((callId) =>
+					this.registerEvent({
+						...event,
+						call: {
+							...event.call,
+							UUID: callId,
+						},
+					}),
+				),
+			);
 			return;
 		}
 
-		return this.logCallOnVideoConf(allChannels);
+		await this.registerEvent(event);
 	}
 
-	private async buildCallData(channels: IFreeSwitchChannel[]): Promise<InsertionModel<IVoIPVideoConference>> {
-		if (!channels.length) {
-			throw new Error('error-invalid-free-switch-channels');
+	private getDetailedEventName(eventName: string, eventData: Record<string, string>): string {
+		if (eventName === 'CHANNEL_STATE') {
+			return `CHANNEL_STATE=${eventData['Channel-State']}`;
 		}
 
-		const allData = this.mergeAllEventData(channels);
+		if (eventName === 'CHANNEL_CALLSTATE') {
+			return `CHANNEL_CALLSTATE=${eventData['Channel-Call-State']}`;
+		}
 
-		const caller = await this.getCallerFromEvents(allData);
-		const callee = await this.getCalleeFromEvents(allData);
+		return eventName;
+	}
 
-		const users = [caller.user, callee.user].filter((user) => user) as Required<IFreeSwitchChannelUser>['user'][];
-		const createdBy: IVideoConference['createdBy'] = caller?.user
-			? { _id: caller.user._id, name: caller.user.name, username: caller.user.username }
-			: { _id: 'rocket.cat', username: 'rocket.cat', name: 'rocket.cat' };
-
-		const rooms = users.length === 2 ? await Rooms.findDMsByUids(users.map(({ _id }) => _id)).toArray() : [];
-		const rid = rooms.shift()?._id || '';
-
-		const data: Omit<InsertionModel<IVoIPVideoConference>, 'createdAt'> & { createdAt?: Date } = {
-			type: 'voip',
-			rid,
-			users: [...(caller.user ? [{ ...caller.user, ts: new Date() }] : [])],
-			status: VideoConferenceStatus.DECLINED,
-			messages: {},
-			providerName: 'chat.rocket.voip',
-			createdBy,
-			events: {},
-
-			externalId: channels[0].uniqueId,
-
-			callerExtension: caller?.extension,
-			calleeExtension: callee?.extension,
-		};
-
-		for (const channel of channels) {
-			if (channel.createdAt && (!data.createdAt || data.createdAt > channel.createdAt)) {
-				data.createdAt = channel.createdAt;
-				// If this channel was created first, use its uniqueId as the main one
-				data.externalId = channel.uniqueId;
-			}
-			if (channel.endedAt && (!data.endedAt || data.endedAt < channel.endedAt)) {
-				data.endedAt = channel.endedAt;
-			}
-			if (channel.duration && (!data.duration || data.duration < channel.duration)) {
-				data.duration = channel.duration;
-			}
-
-			if (channel.outgoing) {
-				data.events.outgoing = true;
-			}
-			if (channel.placedOnHold) {
-				data.events.hold = true;
-			}
-			if (channel.parked) {
-				data.events.park = true;
-			}
-			if (channel.bridged) {
-				data.events.bridge = true;
-			}
-			if (channel.answered && !data.events.answer) {
-				data.events.answer = true;
-				data.status = VideoConferenceStatus.ENDED;
-				if (callee.user) {
-					data.users.push({
-						...callee.user,
-						ts: new Date(),
-					});
+	private filterOutMissingData<T extends Record<string, any>>(data: T): DeepPartial<T> {
+		return objectMap(
+			data,
+			({ key, value }) => {
+				if (!value || value === '0') {
+					return;
 				}
-			}
-		}
 
-		return {
-			createdAt: new Date(),
-			...data,
-		};
+				if (typeof value === 'object' && !Object.keys(value).length) {
+					return;
+				}
+
+				return { key, value };
+			},
+			true,
+		) as DeepPartial<T>;
 	}
 
-	private async logCallOnVideoConf(channels: IFreeSwitchChannel[]): Promise<void> {
-		const videoConfCall = await this.buildCallData(channels);
-		const callId = await VideoConf.createVoIP(videoConfCall);
+	private async parseEventData(
+		eventName: string,
+		eventData: Record<string, string | undefined>,
+	): Promise<InsertionModel<WithoutId<IFreeSwitchEvent>>> {
+		const filteredData: Record<string, string> = Object.fromEntries(
+			Object.entries(eventData).filter(([_, value]) => value !== undefined),
+		) as Record<string, string>;
 
-		if (!callId) {
-			return;
-		}
-
-		await FreeSwitchChannel.setCallIdByIds(
-			channels.map(({ _id }) => _id),
-			callId,
-		);
-	}
-
-	private async getChannelDataFromEvents(eventName: string, eventData: Record<string, string>): Promise<Partial<IFreeSwitchChannel>> {
-		const lastEventName = eventName === 'CHANNEL_STATE' ? `CHANNEL_STATE=${eventData['Channel-State'] ?? 'none'}` : eventName;
-		const channelState = eventData['Channel-State'];
+		const detaildEventName = this.getDetailedEventName(eventName, filteredData);
+		const state = eventData['Channel-State'];
+		const sequence = eventData['Event-Sequence'];
+		const previousCallState = eventData['Original-Channel-Call-State'];
+		const callState = eventData['Channel-Call-State'];
 		const answerState = eventData['Answer-State'];
 		const hangupCause = eventData['Hangup-Cause'];
 		const direction = eventData['Call-Direction'];
+		const channelName = eventData['Channel-Name'];
 
 		const otherLegUniqueId = eventData['Other-Leg-Unique-ID'];
 		const loopbackLegUniqueId = eventData.variable_other_loopback_leg_uuid;
 		const loopbackFromUniqueId = eventData.variable_other_loopback_from_uuid;
 		const oldUniqueId = eventData['Old-Unique-ID'];
 
-		const referencedIds = [otherLegUniqueId, loopbackLegUniqueId, loopbackFromUniqueId, oldUniqueId].filter((id) => Boolean(id));
+		const channelUniqueId = eventData['Unique-ID'];
+		const referencedIds = [otherLegUniqueId, loopbackLegUniqueId, loopbackFromUniqueId, oldUniqueId].filter((id) =>
+			Boolean(id),
+		) as string[];
+		const timestamp = eventData['Event-Date-Timestamp'];
+		const firedAt = this.parseTimestamp(eventData['Event-Date-Timestamp']);
 
 		const durationStr = eventData.variable_duration;
 		const duration = (durationStr && parseInt(durationStr)) || 0;
 
-		const channel: Partial<IFreeSwitchChannel> = {
-			lastEventName,
-			...(channelState && { channelState }),
-			...(answerState && { answerState }),
-			...(hangupCause && { hangupCause }),
-			...(duration && { duration }),
-			...(direction && { direction }),
-			...(referencedIds.length && { referencedIds }),
-			...(eventName === 'CHANNEL_DESTROY' && { destroyed: true, endedAt: new Date() }),
-			...(eventName === 'CHANNEL_CREATE' && { createdAt: new Date() }),
-			...(eventName === 'CHANNEL_OUTGOING' && { outgoing: true }),
-			...(eventName === 'CHANNEL_HOLD' && { placedOnHold: true }),
-			...(eventName === 'CHANNEL_PARK' && { parked: true }),
-			...(eventName === 'CHANNEL_BRIDGE' && { bridged: true }),
-			...(eventName === 'CHANNEL_ANSWER' && { answered: true }),
+		const call: Partial<IFreeSwitchEventCall> = {
+			UUID: (eventData['Channel-Call-UUID'] !== '0' && eventData['Channel-Call-UUID']) || eventData.variable_call_uuid,
+			answerState,
+			state: callState,
+			previousState: previousCallState,
+			presenceId: eventData['Channel-Presence-ID'],
+			sipId: eventData.variable_sip_call_id,
+			authorized: eventData.variable_sip_authorized,
+			hangupCause,
+			duration,
+
+			from: {
+				user: eventData.variable_sip_from_user,
+				stripped: eventData.variable_sip_from_user_stripped,
+				port: eventData.variable_sip_from_port,
+				uri: eventData.variable_sip_from_uri,
+				host: eventData.variable_sip_from_host,
+				full: eventData.variable_sip_full_from,
+			},
+
+			req: {
+				user: eventData.variable_sip_req_user,
+				port: eventData.variable_sip_req_port,
+				uri: eventData.variable_sip_req_uri,
+				host: eventData.variable_sip_req_host,
+			},
+
+			to: {
+				user: eventData.variable_sip_to_user,
+				port: eventData.variable_sip_to_port,
+				uri: eventData.variable_sip_to_uri,
+				full: eventData.variable_sip_full_to,
+				dialedExtension: eventData.variable_dialed_extension,
+				dialedUser: eventData.variable_dialed_user,
+			},
+
+			contact: {
+				user: eventData.variable_sip_contact_user,
+				uri: eventData.variable_sip_contact_uri,
+				host: eventData.variable_sip_contact_host,
+			},
+
+			via: {
+				full: eventData.variable_sip_full_via,
+				host: eventData.variable_sip_via_host,
+				rport: eventData.variable_sip_via_rport,
+			},
 		};
 
-		return channel;
+		const caller: Partial<IFreeSwitchEventCaller> = {
+			uniqueId: eventData['Caller-Unique-ID'],
+			direction: eventData['Caller-Direction'],
+			username: eventData['Caller-Username'],
+			networkAddr: eventData['Caller-Network-Addr'],
+			ani: eventData['Caller-ANI'],
+			destinationNumber: eventData['Caller-Destination-Number'],
+			source: eventData['Caller-Source'],
+			context: eventData['Caller-Context'],
+			name: eventData['Caller-Caller-ID-Name'],
+			number: eventData['Caller-Caller-ID-Number'],
+			originalCaller: {
+				name: eventData['Caller-Orig-Caller-ID-Name'],
+				number: eventData['Caller-Orig-Caller-ID-Number'],
+			},
+			privacy: {
+				hideName: eventData['Caller-Privacy-Hide-Name'],
+				hideNumber: eventData['Caller-Privacy-Hide-Number'],
+			},
+			channel: {
+				name: eventData['Caller-Channel-Name'],
+				createdTime: eventData['Caller-Channel-Created-Time'],
+			},
+		};
+
+		return this.filterOutMissingData({
+			channelUniqueId,
+			eventName,
+			detaildEventName,
+			sequence,
+			state,
+			previousCallState,
+			callState,
+			timestamp,
+			firedAt,
+			answerState,
+			hangupCause,
+			referencedIds,
+			receivedAt: new Date(),
+			channelName,
+			direction,
+
+			caller,
+			call,
+
+			eventData: filteredData,
+		}) as InsertionModel<WithoutId<IFreeSwitchEvent>>;
 	}
 
-	private mergeAllEventData(channels: IFreeSwitchChannel[]): Record<string, string[]> {
-		const allData: Record<string, string[]> = {};
+	private async getUserFromFreeSwitchIdentifier(identifier: string): Promise<IFreeSwitchChannelUser | null> {
+		const strippedValue = identifier.replace(/\@.*/, '');
 
-		for (const channel of channels) {
-			for (const { data } of channel.events) {
-				for (const key in data) {
-					if (!Object.hasOwnProperty.call(data, key)) {
-						continue;
-					}
+		const user = await Users.findOneByFreeSwitchExtension<Pick<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'>>(
+			strippedValue,
+			{ projection: { _id: 1, name: 1, username: 1, avatarETag: 1 } },
+		);
 
-					if (!allData[key]) {
-						allData[key] = [];
-					}
-
-					if (allData[key].includes(data[key])) {
-						continue;
-					}
-
-					allData[key].push(data[key]);
-				}
-			}
-		}
-
-		return allData;
-	}
-
-	private async getUserFromEvents(
-		eventData: Record<string, string[]>,
-		eventKeys: string[],
-		contextKey?: string,
-	): Promise<IFreeSwitchChannelUser> {
-		const identifiers: string[] = [];
-		let extension: string | undefined;
-
-		for await (const key of eventKeys) {
-			if (!eventData[key]) {
-				continue;
-			}
-
-			for await (const value of eventData[key]) {
-				if (!value || value === '0' || identifiers.includes(value)) {
-					continue;
-				}
-
-				identifiers.push(value);
-				const strippedValue = value.replace(/\@.*/, '');
-				if (!strippedValue) {
-					continue;
-				}
-
-				if (!extension) {
-					extension = strippedValue;
-				}
-
-				const user = await Users.findOneByFreeSwitchExtension<Pick<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'>>(
-					strippedValue,
-					{ projection: { _id: 1, name: 1, username: 1, avatarETag: 1 } },
-				);
-				if (!user) {
-					continue;
-				}
-
-				return {
-					user,
-					extension: strippedValue,
-					...(contextKey && { context: eventData[contextKey]?.[0] }),
-					identifiers,
-				};
-			}
+		if (!user) {
+			return null;
 		}
 
 		return {
-			extension,
-			identifiers,
+			user,
+			extension: strippedValue,
+			identifier,
 		};
 	}
 
-	private async getCallerFromEvents(eventData: Record<string, string[]>): Promise<IFreeSwitchChannelUser> {
-		return this.getUserFromEvents(
-			eventData,
-			['variable_sip_from_user_stripped', 'variable_sip_from_user', 'Caller-Caller-ID-Number'],
-			'variable_user_context',
-		);
+	private parseTimestamp(timestamp: string | undefined): Date | undefined {
+		if (!timestamp || timestamp === '0') {
+			return undefined;
+		}
+
+		const value = parseInt(timestamp);
+		if (Number.isNaN(value)) {
+			return undefined;
+		}
+
+		const timeValue = Math.floor(value / 1000);
+		return new Date(timeValue);
 	}
 
-	private async getCalleeFromEvents(eventData: Record<string, string[]>): Promise<IFreeSwitchChannelUser> {
-		return this.getUserFromEvents(eventData, [
-			'variable_sip_req_user',
-			'variable_sip_to_user',
-			'variable_dialed_extension',
-			'variable_dialed_user',
-			'variable_sip_to_uri',
-		]);
+	private async registerEvent(event: InsertionModel<WithoutId<IFreeSwitchEvent>>): Promise<void> {
+		await FreeSwitchEvent.registerEvent(event);
+
+		if (event.eventName === 'CHANNEL_DESTROY' && event.call?.UUID) {
+			await this.computeCall(event.call?.UUID);
+		}
 	}
 
-	private async registerChannelEvent(uniqueId: string, eventName: string, eventData: Record<string, string>): Promise<string[]> {
-		const channelData = await this.getChannelDataFromEvents(eventName, eventData);
+	private getEventType(event: IFreeSwitchEvent): IFreeSwitchCallEventType {
+		const { eventName, state, callState } = event;
 
-		const state = eventData['Channel-State'];
+		const modifiedEventName = eventName.toUpperCase().replace('CHANNEL_', '').replace('_COMPLETE', '');
 
-		const event = { eventName, state, data: eventData };
-		await FreeSwitchChannel.registerEvent(uniqueId, event, channelData);
+		if (isKnownFreeSwitchEventType(modifiedEventName)) {
+			return modifiedEventName;
+		}
 
-		return [uniqueId, ...(channelData.referencedIds ? channelData.referencedIds : [])];
+		if (modifiedEventName === 'STATE') {
+			if (!state) {
+				return 'OTHER_STATE';
+			}
+
+			const modifiedState = state.toUpperCase().replace('CS_', '');
+			if (isKnownFreeSwitchEventType(modifiedState)) {
+				return modifiedState;
+			}
+		}
+
+		if (modifiedEventName === 'CALLSTATE') {
+			if (!callState) {
+				return 'OTHER_CALL_STATE';
+			}
+
+			const modifiedCallState = callState.toUpperCase().replace('CS_', '');
+			if (isKnownFreeSwitchEventType(modifiedCallState)) {
+				return modifiedCallState;
+			}
+		}
+
+		console.log(modifiedEventName, state, callState);
+
+		return 'OTHER';
+	}
+
+	private async computeCall(callUUID: string): Promise<void> {
+		const allEvents = await FreeSwitchEvent.findAllByCallUUID(callUUID).toArray();
+		const call: InsertionModel<IFreeSwitchCall> = {
+			UUID: callUUID,
+			channels: [],
+			events: [],
+		};
+
+		// Sort events by both sequence and timestamp, but only when they are present
+		const sortedEvents = allEvents.sort((event1: IFreeSwitchEvent, event2: IFreeSwitchEvent) => {
+			if (event1.sequence && event2.sequence) {
+				return event1.sequence.localeCompare(event2.sequence);
+			}
+
+			if (event1.firedAt && event2.firedAt) {
+				return event1.firedAt.valueOf() - event2.firedAt.valueOf();
+			}
+
+			if (event1.sequence || event2.sequence) {
+				return (event1.sequence || '').localeCompare(event2.sequence || '');
+			}
+
+			return (event1.firedAt?.valueOf() || 0) - (event2.firedAt?.valueOf() || 0);
+		});
+
+		for (const event of sortedEvents) {
+			if (event.channelUniqueId && !call.channels.includes(event.channelUniqueId)) {
+				call.channels.push(event.channelUniqueId);
+			}
+
+			const eventType = this.getEventType(event);
+
+			const hasUsefulCallData = Object.keys(event.eventData).some((key) => key.startsWith('variable_'));
+
+			const callEvent = this.filterOutMissingData({
+				type: eventType,
+				caller: event.caller,
+				...(hasUsefulCallData && { call: event.call }),
+
+				otherType: event.eventData['Other-Type'],
+				otherChannelId: event.eventData['Other-Leg-Unique-ID'],
+			}) as AtLeast<IFreeSwitchCallEvent, 'type'>;
+
+			if (call.events[call.events.length - 1]?.type === eventType) {
+				const previousEvent = call.events.pop() as IFreeSwitchCallEvent;
+
+				call.events.push({
+					...previousEvent,
+					...callEvent,
+					caller: {
+						...previousEvent.caller,
+						...callEvent.caller,
+					},
+					...((previousEvent.call || callEvent.call) && {
+						call: {
+							...previousEvent.call,
+							...callEvent.call,
+							from: {
+								...previousEvent.call?.from,
+								...callEvent.call?.from,
+							},
+							req: {
+								...previousEvent.call?.req,
+								...callEvent.call?.req,
+							},
+							to: {
+								...previousEvent.call?.to,
+								...callEvent.call?.to,
+							},
+							contact: {
+								...previousEvent.call?.contact,
+								...callEvent.call?.contact,
+							},
+							via: {
+								...previousEvent.call?.via,
+								...callEvent.call?.via,
+							},
+						},
+					}),
+				});
+				continue;
+			}
+
+			call.events.push({
+				...callEvent,
+				eventName: event.eventName,
+				sequence: event.sequence,
+				channelUniqueId: event.channelUniqueId,
+				timestamp: event.timestamp,
+				firedAt: event.firedAt,
+			});
+		}
+
+		await FreeSwitchCall.registerCall(call);
 	}
 
 	async getDomain(): Promise<string> {
