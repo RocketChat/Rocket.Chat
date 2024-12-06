@@ -29,7 +29,7 @@ import { createUser, deleteUser } from '../../../data/users.helper';
 import { expectInvalidParams } from '../../../data/validation.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe.only('LIVECHAT - contacts', () => {
+describe('LIVECHAT - contacts', () => {
 	let agentUser: IUser;
 	let livechatAgent: ILivechatAgent;
 	before((done) => getCredentials(done));
@@ -144,28 +144,35 @@ describe.only('LIVECHAT - contacts', () => {
 		describe('Custom Fields', () => {
 			let contactId: string;
 			before(async () => {
-				await createCustomField({
-					field: 'cf1',
-					label: 'Custom Field 1',
-					scope: 'visitor',
+				const defaultProps = {
+					scope: 'visitor' as const,
 					visibility: 'public',
 					type: 'input',
-					required: true,
 					regexp: '^[0-9]+$',
 					searchable: true,
 					public: true,
-				});
-				await createCustomField({
-					field: 'cf2',
-					label: 'Custom Field 2',
-					scope: 'visitor',
-					visibility: 'public',
-					type: 'input',
-					required: false,
-					regexp: '^[0-9]+$',
-					searchable: true,
-					public: true,
-				});
+				};
+
+				await Promise.all([
+					createCustomField({
+						...defaultProps,
+						field: 'cf1',
+						label: 'Custom Field 1',
+						required: true,
+					}),
+					createCustomField({
+						...defaultProps,
+						field: 'cf2',
+						label: 'Custom Field 2',
+						required: false,
+					}),
+					createCustomField({
+						...defaultProps,
+						field: 'cfOptional',
+						label: 'Optional Custom Field',
+						required: false,
+					}),
+				]);
 			});
 
 			after(async () => {
@@ -269,6 +276,26 @@ describe.only('LIVECHAT - contacts', () => {
 						contactId,
 						customFields: {
 							cf1: '789',
+							cfOptional: '567',
+						},
+					});
+				expect(updateRes.body).to.have.property('success', true);
+				expect(updateRes.body).to.have.property('contact').that.is.an('object');
+				expect(updateRes.body.contact).to.have.property('_id', contactId);
+				expect(updateRes.body.contact).to.have.property('customFields').that.is.an('object');
+				expect(updateRes.body.contact.customFields).to.have.property('cf1', '789');
+				expect(updateRes.body.contact.customFields).to.have.property('cfOptional', '567');
+				expect(updateRes.body.contact.customFields).to.have.property('cf2', '456');
+			});
+
+			it('should keep a legacy custom field, but remove an optional registered custom field if it is not specified on update', async () => {
+				const updateRes = await request
+					.post(api('omnichannel/contacts.update'))
+					.set(credentials)
+					.send({
+						contactId,
+						customFields: {
+							cf1: '789',
 						},
 					});
 				expect(updateRes.body).to.have.property('success', true);
@@ -277,6 +304,7 @@ describe.only('LIVECHAT - contacts', () => {
 				expect(updateRes.body.contact).to.have.property('customFields').that.is.an('object');
 				expect(updateRes.body.contact.customFields).to.have.property('cf1', '789');
 				expect(updateRes.body.contact.customFields).to.have.property('cf2', '456');
+				expect(updateRes.body.contact.customFields).to.not.have.property('cfOptional');
 			});
 
 			it('should throw an error if trying to update a custom field that is not registered in the workspace and does not exist in the contact', async () => {
