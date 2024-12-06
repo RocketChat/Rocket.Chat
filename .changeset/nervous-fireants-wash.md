@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-Allows server to use all initials to create an SVG avatar when setting is `UI_Use_Full_Name` is true. Previously, even with the setting as true, server was using only the first initial.
+Allows default avatars to be generated with more than one inital (limited to first 3) when setting `Use Full Name Initials to Generate Default Avatar` is true.
