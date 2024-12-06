@@ -42,7 +42,11 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	constructor() {
 		super();
 
-		const transporter = getTransporter({ transporter: process.env.TRANSPORTER, port: process.env.TCP_PORT, extra: process.env.TRANSPORTER_EXTRA });
+		const transporter = getTransporter({
+			transporter: process.env.TRANSPORTER,
+			port: process.env.TCP_PORT,
+			extra: process.env.TRANSPORTER_EXTRA,
+		});
 		this.isTransporterTCP = typeof transporter !== 'string';
 
 		const activeInstances = InstanceStatusRaw.getActiveInstancesAddress()
@@ -63,11 +67,11 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		});
 
 		if (this.isTransporterTCP) {
-			this.broker.localBus.on("$node.connected", (node) => {
+			this.broker.localBus.on('$node.connected', (node) => {
 				console.log(`[${this.broker.nodeID}] connected to ${node.node.id}`);
 			});
 
-			this.broker.localBus.on("$node.disconnected", (node) => {
+			this.broker.localBus.on('$node.disconnected', (node) => {
 				console.log(`[${this.broker.nodeID}] disconnected from ${node.node.id}`);
 			});
 
