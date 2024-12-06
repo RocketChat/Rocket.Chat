@@ -49,9 +49,13 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 			ignoreAdditionalFields: !!notRegisteredCustomFields.length,
 		});
 
-	if (receivedCustomFields && notRegisteredCustomFields.length) {
+	if (receivedCustomFields && customFieldsToUpdate && notRegisteredCustomFields.length) {
 		const allowedCustomFields = [...workspaceAllowedCustomFields, ...notRegisteredCustomFields];
 		validateCustomFields(allowedCustomFields, receivedCustomFields);
+
+		notRegisteredCustomFields.forEach((notRegisteredCustomField) => {
+			customFieldsToUpdate[notRegisteredCustomField._id] = contact.customFields?.[notRegisteredCustomField._id] as string;
+		});
 	}
 
 	const updatedContact = await LivechatContacts.updateContact(contactId, {

@@ -29,7 +29,7 @@ import { createUser, deleteUser } from '../../../data/users.helper';
 import { expectInvalidParams } from '../../../data/validation.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe('LIVECHAT - contacts', () => {
+describe.only('LIVECHAT - contacts', () => {
 	let agentUser: IUser;
 	let livechatAgent: ILivechatAgent;
 	before((done) => getCredentials(done));
@@ -224,7 +224,7 @@ describe('LIVECHAT - contacts', () => {
 				expect(res.body.error).to.be.equal('Invalid value for Custom Field 1 field');
 			});
 
-			it('should remove an old custom field from a contact on update if it is not registered in the workspace anymore', async () => {
+			it('should keep a legacy custom field, but not update it, nor throw an error if it is specified on update', async () => {
 				const createRes = await request
 					.post(api('omnichannel/contacts'))
 					.set(credentials)
@@ -258,7 +258,25 @@ describe('LIVECHAT - contacts', () => {
 				expect(updateRes.body.contact).to.have.property('_id', contactId);
 				expect(updateRes.body.contact).to.have.property('customFields').that.is.an('object');
 				expect(updateRes.body.contact.customFields).to.have.property('cf1', '456');
-				expect(updateRes.body.contact.customFields).to.not.have.property('cf2');
+				expect(updateRes.body.contact.customFields).to.have.property('cf2', '456');
+			});
+
+			it('should keep a legacy custom field and not throw an error if it is not specified on update', async () => {
+				const updateRes = await request
+					.post(api('omnichannel/contacts.update'))
+					.set(credentials)
+					.send({
+						contactId,
+						customFields: {
+							cf1: '789',
+						},
+					});
+				expect(updateRes.body).to.have.property('success', true);
+				expect(updateRes.body).to.have.property('contact').that.is.an('object');
+				expect(updateRes.body.contact).to.have.property('_id', contactId);
+				expect(updateRes.body.contact).to.have.property('customFields').that.is.an('object');
+				expect(updateRes.body.contact.customFields).to.have.property('cf1', '789');
+				expect(updateRes.body.contact.customFields).to.have.property('cf2', '456');
 			});
 
 			it('should throw an error if trying to update a custom field that is not registered in the workspace and does not exist in the contact', async () => {
