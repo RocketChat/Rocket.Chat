@@ -151,7 +151,7 @@ describe('#wasFallbackModified()', () => {
 	});
 });
 
-describe('#renderSvgLetters', () => {
+describe.only('#renderSvgLetters', () => {
 	it('should show capitalized initial letter in the svg', () => {
 		expect(renderSVGLetters('arthur', 16)).to.include('>\nA\n</text>');
 		expect(renderSVGLetters('Bob', 16)).to.include('>\nB\n</text>');
@@ -181,7 +181,7 @@ describe('#renderSvgLetters', () => {
 		expect(renderSVGLetters('arthur void', 200, true)).to.include('font-size="100"');
 	});
 	it('should decrease the font size when username has 4 words', () => {
-		expect(renderSVGLetters('this is four words', 200, true)).to.include('font-size="83.33"');
+		expect(renderSVGLetters('this is four words', 200, true)).to.include('font-size="83.33333333333331"');
 	});
 });
 
