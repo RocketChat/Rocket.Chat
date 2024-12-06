@@ -1408,6 +1408,12 @@ const GETOmnichannelContactsSearchSchema = {
 		searchText: {
 			type: 'string',
 		},
+		email: {
+			type: 'string',
+		},
+		phone: {
+			type: 'string',
+		},
 		unknown: {
 			type: 'boolean',
 		},
