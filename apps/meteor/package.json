@@ -427,7 +427,7 @@
 		"stream-buffers": "^3.0.3",
 		"strict-uri-encode": "^2.0.0",
 		"string-strip-html": "^7.0.3",
-		"suretype": "~2.4.1",
+		"suretype": "~3.3.1",
 		"swiper": "patch:swiper@npm%3A11.1.14#~/.yarn/patches/swiper-npm-11.1.14-8126fa478a.patch",
 		"textarea-caret": "^3.1.0",
 		"tinykeys": "^1.4.0",
