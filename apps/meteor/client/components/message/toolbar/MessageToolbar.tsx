@@ -10,14 +10,23 @@ import React, { memo, useMemo, useRef } from 'react';
 
 import MessageActionMenu from './MessageActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
+import { useCopyAction } from './useCopyAction';
+import { useDeleteMessageAction } from './useDeleteMessageAction';
+import { useEditMessageAction } from './useEditMessageAction';
 import { useFollowMessageAction } from './useFollowMessageAction';
+import { useForwardMessageAction } from './useForwardMessageAction';
 import { useJumpToMessageContextAction } from './useJumpToMessageContextAction';
 import { useMarkAsUnreadMessageAction } from './useMarkAsUnreadMessageAction';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
 import { usePermalinkAction } from './usePermalinkAction';
 import { usePinMessageAction } from './usePinMessageAction';
+import { useQuoteMessageAction } from './useQuoteMessageAction';
 import { useReactionMessageAction } from './useReactionMessageAction';
+import { useReadReceiptsDetailsAction } from './useReadReceiptsDetailsAction';
+import { useReplyInDMAction } from './useReplyInDMAction';
 import { useReplyInThreadMessageAction } from './useReplyInThreadMessageAction';
+import { useReportMessageAction } from './useReportMessageAction';
+import { useShowMessageReactionsAction } from './useShowMessageReactionsAction';
 import { useStarMessageAction } from './useStarMessageAction';
 import { useTranslateAction } from './useTranslateAction';
 import { useUnFollowMessageAction } from './useUnFollowMessageAction';
@@ -139,6 +148,15 @@ const MessageToolbar = ({
 	useMarkAsUnreadMessageAction(message, { user, room, subscription });
 	useTranslateAction(message, { user, room, subscription });
 	useViewOriginalTranslationAction(message, { user, room, subscription });
+	useReplyInDMAction(message, { user, room, subscription });
+	useForwardMessageAction(message);
+	useQuoteMessageAction(message, { subscription });
+	useCopyAction(message, { subscription });
+	useEditMessageAction(message, { user, room, subscription });
+	useDeleteMessageAction(message, { user, room, subscription });
+	useReportMessageAction(message, { user, room, subscription });
+	useShowMessageReactionsAction(message);
+	useReadReceiptsDetailsAction(message);
 
 	const actionsQueryResult = useQuery({
 		queryKey: roomsQueryKeys.messageActionsWithParameters(room._id, message),
