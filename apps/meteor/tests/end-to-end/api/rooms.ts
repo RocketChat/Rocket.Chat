@@ -3317,6 +3317,7 @@ describe('[Rooms]', () => {
 				});
 		});
 	});
+
 	describe('/rooms.isMember', () => {
 		let testChannel: IRoom;
 		let testGroup: IRoom;
@@ -3596,6 +3597,43 @@ describe('[Rooms]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'unauthorized');
+				});
+		});
+	});
+
+	describe('/rooms.open', () => {
+		let room: IRoom;
+
+		before(async () => {
+			room = (await createRoom({ type: 'c', name: `rooms.open.test.${Date.now()}` })).body.channel;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: room._id });
+		});
+
+		it('should open the room', (done) => {
+			void request
+				.post(api('rooms.open'))
+				.set(credentials)
+				.send({ roomId: room._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should fail if roomId is not provided', async () => {
+			await request
+				.post(api('rooms.open'))
+				.set(credentials)
+				.send()
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
 				});
 		});
 	});
