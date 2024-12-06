@@ -24,6 +24,7 @@ import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { appsCountHandler } from './endpoints/appsCountHandler';
+import { appsInfoHandler } from './endpoints/appsInfoHandler';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -84,6 +85,7 @@ export class AppsRestApi {
 
 		this.api.addRoute('actionButtons', ...actionButtonsHandler(this));
 		this.api.addRoute('count', ...appsCountHandler(this));
+		this.api.addRoute('info', ...appsInfoHandler(this));
 
 		this.api.addRoute(
 			'incompatibleModal',
