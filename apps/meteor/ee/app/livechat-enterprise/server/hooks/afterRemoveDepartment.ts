@@ -1,11 +1,11 @@
 import type { AtLeast, ILivechatAgent, ILivechatDepartment } from '@rocket.chat/core-typings';
-import { LivechatDepartment } from '@rocket.chat/models';
+import { LivechatDepartment, LivechatUnit } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
 
 const afterRemoveDepartment = async (options: {
-	department: AtLeast<ILivechatDepartment, '_id' | 'businessHourId'>;
+	department: AtLeast<ILivechatDepartment, '_id' | 'businessHourId' | 'parentId'>;
 	agentsId: ILivechatAgent['_id'][];
 }) => {
 	if (!options?.department) {
@@ -15,8 +15,14 @@ const afterRemoveDepartment = async (options: {
 
 	const { department } = options;
 
-	cbLogger.debug(`Removing department from forward list: ${department._id}`);
-	await LivechatDepartment.removeDepartmentFromForwardListById(department._id);
+	cbLogger.debug({
+		msg: 'Post removal actions on EE code for department',
+		department,
+	});
+	await Promise.all([
+		LivechatDepartment.removeDepartmentFromForwardListById(department._id),
+		...(department.parentId ? [LivechatUnit.decrementDepartmentsCount(department.parentId)] : []),
+	]);
 
 	return options;
 };
