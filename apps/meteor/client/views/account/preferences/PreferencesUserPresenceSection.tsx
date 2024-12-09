@@ -9,7 +9,10 @@ const PreferencesUserPresenceSection = () => {
 	const { register, control } = useFormContext();
 
 	const enableAutoAwayId = useUniqueId();
-	const idleTimeLimit = useUniqueId();
+	const idleTimeLimitH = useUniqueId();
+	const idleTimeLimitM = useUniqueId();
+	const idleTimeLimitS = useUniqueId();
+
 
 	return (
 		<Accordion.Item title={t('User_Presence')}>
@@ -27,9 +30,14 @@ const PreferencesUserPresenceSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={idleTimeLimit}>{t('Idle_Time_Limit')}</FieldLabel>
+					<FieldLabel htmlFor={idleTimeLimitH}>{t('Idle_Time_Limit')}</FieldLabel>
 					<FieldRow>
-						<NumberInput id={idleTimeLimit} {...register('idleTimeLimit')} />
+					<FieldLabel htmlFor="idleTimeLimitH">{t('hours')} </FieldLabel>
+						<NumberInput id={idleTimeLimitH} {...register('idleTimeLimitH')} />
+						<FieldLabel htmlFor="idleTimeLimitM">{t('minutes')} </FieldLabel>
+						<NumberInput id={idleTimeLimitM} {...register('idleTimeLimitM')} max={59} min={0} />
+						<FieldLabel htmlFor="idleTimeLimitS">{t('seconds')} </FieldLabel>
+						<NumberInput id={idleTimeLimitS} {...register('idleTimeLimitS')} max={59} min={0} />
 					</FieldRow>
 				</Field>
 			</FieldGroup>
