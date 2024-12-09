@@ -12,9 +12,11 @@ import MessageActionMenu from './MessageActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
 import { useFollowMessageAction } from './useFollowMessageAction';
 import { useJumpToMessageContextAction } from './useJumpToMessageContextAction';
+import { useMarkAsUnreadMessageAction } from './useMarkAsUnreadMessageAction';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
-import { usePermalinkStar } from './usePermalinkStar';
+import { usePermalinkAction } from './usePermalinkAction';
 import { usePinMessageAction } from './usePinMessageAction';
+import { useReactionMessageAction } from './useReactionMessageAction';
 import { useReplyInThreadMessageAction } from './useReplyInThreadMessageAction';
 import { useStarMessageAction } from './useStarMessageAction';
 import { useUnFollowMessageAction } from './useUnFollowMessageAction';
@@ -102,7 +104,15 @@ const MessageToolbar = ({
 	usePinMessageAction(message, { room, subscription });
 	useStarMessageAction(message, { room, user });
 	useUnstarMessageAction(message, { room, user });
-	usePermalinkStar(message, { subscription, user });
+	usePermalinkAction(message, { subscription, id: 'permalink-star', context: ['starred'], order: 10 });
+	usePermalinkAction(message, { subscription, id: 'permalink-pinned', context: ['pinned'], order: 5 });
+	usePermalinkAction(message, {
+		subscription,
+		id: 'permalink',
+		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
+		type: 'duplication',
+		order: 5,
+	});
 	useFollowMessageAction(message, { room, user, context });
 	useUnFollowMessageAction(message, { room, user, context });
 	useReplyInThreadMessageAction(message, { room, subscription });
@@ -123,6 +133,8 @@ const MessageToolbar = ({
 		order: 100,
 		context: ['starred'],
 	});
+	useReactionMessageAction(message, { user, room, subscription });
+	useMarkAsUnreadMessageAction(message, { user, room, subscription });
 
 	const actionsQueryResult = useQuery({
 		queryKey: roomsQueryKeys.messageActionsWithParameters(room._id, message),
