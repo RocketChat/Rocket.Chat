@@ -79,7 +79,7 @@ async function saveUserProfile(
 		await setUserStatusMethod(this.userId, settings.statusType as UserStatus, undefined);
 	}
 
-	if (user && settings.bio) {
+	if (user && settings.bio !== undefined) {
 		if (typeof settings.bio !== 'string') {
 			throw new Meteor.Error('error-invalid-field', 'bio', {
 				method: 'saveUserProfile',
