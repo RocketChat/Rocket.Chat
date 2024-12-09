@@ -1,10 +1,16 @@
-import type { IImport, IImporterSelection, Serialized } from '@rocket.chat/core-typings';
+import type { IImport, IImporterSelection, IImporterSelectionContact, Serialized } from '@rocket.chat/core-typings';
 import { Badge, Box, Button, ButtonGroup, Margins, ProgressBar, Throbber, Tabs } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, useMemo } from 'react';
 
+import type { ChannelDescriptor } from './ChannelDescriptor';
+import PrepareChannels from './PrepareChannels';
+import PrepareContacts from './PrepareContacts';
+import PrepareUsers from './PrepareUsers';
+import type { UserDescriptor } from './UserDescriptor';
+import { useErrorHandler } from './useErrorHandler';
 import {
 	ProgressStep,
 	ImportWaitingStates,
@@ -15,11 +21,6 @@ import {
 } from '../../../../app/importer/lib/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import type { ChannelDescriptor } from './ChannelDescriptor';
-import PrepareChannels from './PrepareChannels';
-import PrepareUsers from './PrepareUsers';
-import type { UserDescriptor } from './UserDescriptor';
-import { useErrorHandler } from './useErrorHandler';
 
 const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U) =>
 	new Promise<U>((resolve, reject) => {
@@ -47,11 +48,13 @@ function PrepareImportPage() {
 	const [status, setStatus] = useSafely(useState<string | null>(null));
 	const [messageCount, setMessageCount] = useSafely(useState(0));
 	const [users, setUsers] = useState<UserDescriptor[]>([]);
+	const [contacts, setContacts] = useState<IImporterSelectionContact[]>([]);
 	const [channels, setChannels] = useState<ChannelDescriptor[]>([]);
 	const [isImporting, setImporting] = useSafely(useState(false));
 
 	const usersCount = useMemo(() => users.filter(({ do_import }) => do_import).length, [users]);
 	const channelsCount = useMemo(() => channels.filter(({ do_import }) => do_import).length, [channels]);
+	const contactsCount = useMemo(() => contacts.filter(({ do_import }) => do_import).length, [contacts]);
 
 	const router = useRouter();
 
@@ -89,6 +92,7 @@ function PrepareImportPage() {
 				setMessageCount(data.message_count);
 				setUsers(data.users.map((user) => ({ ...user, username: user.username ?? '', do_import: true })));
 				setChannels(data.channels.map((channel) => ({ ...channel, name: channel.name ?? '', do_import: true })));
+				setContacts(data.contacts?.map((contact) => ({ ...contact, name: contact.name ?? '', do_import: true })) || []);
 				setPreparing(false);
 				setProgressRate(null);
 			} catch (error) {
@@ -153,6 +157,7 @@ function PrepareImportPage() {
 		try {
 			const usersToImport = users.filter(({ do_import }) => do_import).map(({ user_id }) => user_id);
 			const channelsToImport = channels.filter(({ do_import }) => do_import).map(({ channel_id }) => channel_id);
+			const contactsToImport = contacts.filter(({ do_import }) => do_import).map(({ id }) => id);
 
 			await startImport({
 				input: {
@@ -163,6 +168,10 @@ function PrepareImportPage() {
 					channels: {
 						all: channels.length > 0 && channelsToImport.length === channels.length,
 						list: (channelsToImport.length !== channels.length && channelsToImport) || undefined,
+					},
+					contacts: {
+						all: contacts.length > 0 && contactsToImport.length === contacts.length,
+						list: (contactsToImport.length !== contacts.length && contactsToImport) || undefined,
 					},
 				},
 			});
@@ -179,8 +188,8 @@ function PrepareImportPage() {
 	const statusDebounced = useDebouncedValue(status, 100);
 
 	const handleMinimumImportData = !!(
-		(!usersCount && !channelsCount && !messageCount) ||
-		(!usersCount && !channelsCount && messageCount !== 0)
+		(!usersCount && !channelsCount && !contactsCount && !messageCount) ||
+		(!usersCount && !channelsCount && !contactsCount && messageCount !== 0)
 	);
 
 	return (
@@ -201,6 +210,9 @@ function PrepareImportPage() {
 						<Tabs flexShrink={0}>
 							<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>
 								{t('Users')} <Badge>{usersCount}</Badge>
+							</Tabs.Item>
+							<Tabs.Item selected={tab === 'contacts'} onClick={handleTabClick('contacts')}>
+								{t('Contacts')} <Badge>{contactsCount}</Badge>
 							</Tabs.Item>
 							<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
 								{t('Channels')} <Badge>{channelsCount}</Badge>
@@ -227,6 +239,9 @@ function PrepareImportPage() {
 							</>
 						)}
 						{!isPreparing && tab === 'users' && <PrepareUsers usersCount={usersCount} users={users} setUsers={setUsers} />}
+						{!isPreparing && tab === 'contacts' && (
+							<PrepareContacts contactsCount={contactsCount} contacts={contacts} setContacts={setContacts} />
+						)}
 						{!isPreparing && tab === 'channels' && (
 							<PrepareChannels channels={channels} channelsCount={channelsCount} setChannels={setChannels} />
 						)}

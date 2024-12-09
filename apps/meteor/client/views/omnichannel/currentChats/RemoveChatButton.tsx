@@ -4,9 +4,8 @@ import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../components/GenericModal';
-import { GenericTableCell } from '../../../components/GenericTable';
 import { useRemoveCurrentChatMutation } from './hooks/useRemoveCurrentChatMutation';
+import GenericModal from '../../../components/GenericModal';
 
 type RemoveChatButtonProps = { _id: string };
 
@@ -32,27 +31,18 @@ const RemoveChatButton = ({ _id }: RemoveChatButtonProps) => {
 			setModal(null);
 		};
 
-		const handleClose = (): void => {
-			setModal(null);
-		};
-
 		setModal(
 			<GenericModal
 				variant='danger'
 				data-qa-id='current-chats-modal-remove'
 				onConfirm={onDeleteAgent}
-				onClose={handleClose}
-				onCancel={handleClose}
+				onCancel={() => setModal(null)}
 				confirmText={t('Delete')}
 			/>,
 		);
 	});
 
-	return (
-		<GenericTableCell maxHeight='x36' fontScale='p2' color='hint' withTruncatedText data-qa='current-chats-cell-delete'>
-			<IconButton small icon='trash' title={t('Remove')} disabled={removeCurrentChatMutation.isLoading} onClick={handleDelete} />
-		</GenericTableCell>
-	);
+	return <IconButton danger small icon='trash' title={t('Remove')} disabled={removeCurrentChatMutation.isLoading} onClick={handleDelete} />;
 };
 
 export default RemoveChatButton;

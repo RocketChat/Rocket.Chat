@@ -6,11 +6,11 @@ import type { ReactElement } from 'react';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import SettingsGroupCard from './SettingsGroupCard';
+import { useSettingsGroups } from './hooks/useSettingsGroups';
 import GenericNoResults from '../../../components/GenericNoResults';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
-import SettingsGroupCard from './SettingsGroupCard';
-import { useSettingsGroups } from './hooks/useSettingsGroups';
 
 const SettingsPage = (): ReactElement => {
 	const { t } = useTranslation();

@@ -1,19 +1,28 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Omnichannel } from '@rocket.chat/core-services';
-import type { ILivechatDepartment, IOmnichannelRoomInfo, IOmnichannelRoomExtraData } from '@rocket.chat/core-typings';
-import {
-	LivechatInquiryStatus,
-	type ILivechatInquiryRecord,
-	type ILivechatVisitor,
-	type IOmnichannelRoom,
-	type SelectedAgent,
+import type {
+	ILivechatDepartment,
+	IOmnichannelRoomInfo,
+	IOmnichannelRoomExtraData,
+	AtLeast,
+	ILivechatInquiryRecord,
+	ILivechatVisitor,
+	IOmnichannelRoom,
+	SelectedAgent,
 } from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
+import { LivechatContacts, LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
+import { Livechat } from './LivechatTyped';
+import { RoutingManager } from './RoutingManager';
+import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
+import { getOnlineAgents } from './getOnlineAgents';
+import { getInquirySortMechanismSetting } from './settings';
 import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { sendNotification } from '../../../lib/server';
@@ -24,11 +33,6 @@ import {
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
-import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
-import { Livechat } from './LivechatTyped';
-import { RoutingManager } from './RoutingManager';
-import { getOnlineAgents } from './getOnlineAgents';
-import { getInquirySortMechanismSetting } from './settings';
 
 const logger = new Logger('QueueManager');
 
@@ -94,8 +98,7 @@ export class QueueManager {
 
 		const inquiryAgent = await RoutingManager.delegateAgent(defaultAgent, inquiry);
 		logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
-		await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
-		const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
+		const dbInquiry = await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
 
 		if (!dbInquiry) {
 			throw new Error('inquiry-not-found');
@@ -118,7 +121,17 @@ export class QueueManager {
 			return this.fnQueueInquiryStatus({ room, agent });
 		}
 
+		const needVerification = ['once', 'always'].includes(settings.get<string>('Livechat_Require_Contact_Verification'));
+
+		if (needVerification && !(await this.isRoomContactVerified(room))) {
+			return LivechatInquiryStatus.VERIFYING;
+		}
+
 		if (!(await Omnichannel.isWithinMACLimit(room))) {
+			return LivechatInquiryStatus.QUEUED;
+		}
+
+		if (settings.get('Livechat_waiting_queue')) {
 			return LivechatInquiryStatus.QUEUED;
 		}
 
@@ -133,16 +146,70 @@ export class QueueManager {
 		return LivechatInquiryStatus.READY;
 	}
 
-	static async queueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
-		if (inquiry.status === 'ready') {
+	static async processNewInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
+		if (inquiry.status === LivechatInquiryStatus.VERIFYING) {
+			logger.debug({ msg: 'Inquiry is waiting for contact verification. Ignoring it', inquiry, defaultAgent });
+
+			if (defaultAgent) {
+				await LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
+			}
+			return;
+		}
+
+		if (inquiry.status === LivechatInquiryStatus.READY) {
+			logger.debug({ msg: 'Inquiry is ready. Delegating', inquiry, defaultAgent });
 			return RoutingManager.delegateInquiry(inquiry, defaultAgent, undefined, room);
 		}
 
-		await callbacks.run('livechat.afterInquiryQueued', inquiry);
+		if (inquiry.status === LivechatInquiryStatus.QUEUED) {
+			await callbacks.run('livechat.afterInquiryQueued', inquiry);
 
-		void callbacks.run('livechat.chatQueued', room);
+			void callbacks.run('livechat.chatQueued', room);
 
-		await this.dispatchInquiryQueued(inquiry, room, defaultAgent);
+			return this.dispatchInquiryQueued(inquiry, room, defaultAgent);
+		}
+	}
+
+	static async verifyInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom) {
+		if (inquiry.status !== LivechatInquiryStatus.VERIFYING) {
+			return;
+		}
+
+		const { defaultAgent: agent } = inquiry;
+
+		const newStatus = await QueueManager.getInquiryStatus({ room, agent });
+
+		if (newStatus === inquiry.status) {
+			throw new Error('error-failed-to-verify-inquiry');
+		}
+
+		const newInquiry = await LivechatInquiry.setStatusById(inquiry._id, newStatus);
+
+		await this.processNewInquiry(newInquiry, room, agent);
+
+		const newRoom = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'servedBy' | 'departmentId'>>(room._id, {
+			projection: { servedBy: 1, departmentId: 1 },
+		});
+
+		if (!newRoom) {
+			logger.error(`Room with id ${room._id} not found after inquiry verification.`);
+			throw new Error('room-not-found');
+		}
+
+		await this.dispatchInquiryPosition(inquiry, newRoom);
+	}
+
+	static async isRoomContactVerified(room: IOmnichannelRoom): Promise<boolean> {
+		if (!room.contactId) {
+			return false;
+		}
+
+		const contact = await LivechatContacts.findOneById(room.contactId, { projection: { channels: 1 } });
+		if (!contact) {
+			return false;
+		}
+
+		return Boolean(contact.channels.some((channel) => isVerifiedChannelInSource(channel, room.v._id, room.source)));
 	}
 
 	static async requestRoom({
@@ -212,9 +279,7 @@ export class QueueManager {
 			}
 		}
 
-		const name = guest.name || guest.username;
-
-		const room = await createLivechatRoom(rid, name, { ...guest, ...(department && { department }) }, roomInfo, {
+		const room = await createLivechatRoom(rid, { ...guest, ...(department && { department }) }, roomInfo, {
 			...extraData,
 			...(Boolean(customFields) && { customFields }),
 		});
@@ -227,7 +292,7 @@ export class QueueManager {
 
 		const inquiry = await createLivechatInquiry({
 			rid,
-			name,
+			name: room.fname,
 			initialStatus: await this.getInquiryStatus({ room, agent: defaultAgent }),
 			guest,
 			message,
@@ -246,16 +311,31 @@ export class QueueManager {
 			void notifyOnSettingChanged(livechatSetting);
 		}
 
-		const newRoom = (await this.queueInquiry(inquiry, room, defaultAgent)) ?? (await LivechatRooms.findOneById(rid));
+		await this.processNewInquiry(inquiry, room, defaultAgent);
+		const newRoom = await LivechatRooms.findOneById(rid);
+
 		if (!newRoom) {
 			logger.error(`Room with id ${rid} not found`);
 			throw new Error('room-not-found');
 		}
 
-		if (!newRoom.servedBy && settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
+		await this.dispatchInquiryPosition(inquiry, newRoom);
+		return newRoom;
+	}
+
+	static async dispatchInquiryPosition(
+		inquiry: ILivechatInquiryRecord,
+		room: AtLeast<IOmnichannelRoom, 'servedBy' | 'departmentId'>,
+	): Promise<void> {
+		if (
+			!room.servedBy &&
+			inquiry.status !== LivechatInquiryStatus.VERIFYING &&
+			settings.get('Livechat_waiting_queue') &&
+			settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')
+		) {
 			const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
 				inquiryId: inquiry._id,
-				department,
+				department: room.departmentId,
 				queueSortBy: getInquirySortMechanismSetting(),
 			});
 
@@ -263,8 +343,6 @@ export class QueueManager {
 				void dispatchInquiryPosition(inq);
 			}
 		}
-
-		return newRoom;
 	}
 
 	static async unarchiveRoom(archivedRoom: IOmnichannelRoom) {
@@ -320,6 +398,10 @@ export class QueueManager {
 	}
 
 	private static dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, agent?: SelectedAgent | null) => {
+		if (RoutingManager.getConfig()?.autoAssignAgent) {
+			return;
+		}
+
 		logger.debug(`Notifying agents of new inquiry ${inquiry._id} queued`);
 
 		const { department, rid, v } = inquiry;

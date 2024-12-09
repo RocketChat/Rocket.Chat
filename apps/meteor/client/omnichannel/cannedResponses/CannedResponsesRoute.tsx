@@ -1,8 +1,8 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import NotAuthorizedPage from '../../views/notAuthorized/NotAuthorizedPage';
 import CannedResponsesPage from './CannedResponsesPage';
+import NotAuthorizedPage from '../../views/notAuthorized/NotAuthorizedPage';
 
 const CannedResponsesRoute = () => {
 	const canViewCannedResponses = usePermission('manage-livechat-canned-responses');

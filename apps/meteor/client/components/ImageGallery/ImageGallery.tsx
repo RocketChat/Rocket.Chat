@@ -5,15 +5,12 @@ import React, { useRef, useState } from 'react';
 import { FocusScope } from 'react-aria';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Keyboard, Navigation, Zoom, A11y } from 'swiper';
-import type { SwiperClass, SwiperRef } from 'swiper/react';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Zoom, Keyboard, A11y } from 'swiper/modules/index.mjs';
+import type { SwiperClass, SwiperRef } from 'swiper/swiper-react';
+import { Swiper, SwiperSlide } from 'swiper/swiper-react.mjs';
 
-// Import Swiper styles
 import 'swiper/swiper.css';
-import 'swiper/modules/navigation/navigation.min.css';
-import 'swiper/modules/keyboard/keyboard.min.css';
-import 'swiper/modules/zoom/zoom.min.css';
+import 'swiper/modules/zoom.css';
 
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
 
@@ -172,10 +169,10 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 						zoom={{ toggle: false }}
 						lazyPreloaderClass='rcx-lazy-preloader'
 						runCallbacksOnInit
-						onKeyPress={(_, keyCode) => String(keyCode) === '27' && onClose()}
+						onKeyPress={(_: SwiperClass, keyCode: string) => String(keyCode) === '27' && onClose()}
 						modules={[Navigation, Zoom, Keyboard, A11y]}
-						onInit={(swiper) => setSwiperInst(swiper)}
-						onSlidesGridLengthChange={(swiper) => {
+						onInit={(swiper: SwiperClass) => setSwiperInst(swiper)}
+						onSlidesGridLengthChange={(swiper: SwiperClass) => {
 							swiper.slideTo(images.length - gridSize, 0);
 							setGridSize(images.length);
 						}}

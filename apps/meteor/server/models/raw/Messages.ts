@@ -29,9 +29,9 @@ import type {
 	ModifyResult,
 } from 'mongodb';
 
+import { BaseRaw } from './BaseRaw';
 import { otrSystemMessages } from '../../../app/otr/lib/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { BaseRaw } from './BaseRaw';
 
 type DeepWritable<T> = T extends (...args: any) => any
 	? T
@@ -898,16 +898,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findForUpdates(roomId: string, timestamp: Date, options?: FindOptions<IMessage>): FindCursor<IMessage> {
+	findForUpdates(roomId: IMessage['rid'], timestamp: { $lt: Date } | { $gt: Date }, options?: FindOptions<IMessage>): FindCursor<IMessage> {
 		const query = {
-			_hidden: {
-				$ne: true,
-			},
 			rid: roomId,
-			_updatedAt: {
-				$gt: timestamp,
-			},
+			_hidden: { $ne: true },
+			_updatedAt: timestamp,
 		};
+
 		return this.find(query, options);
 	}
 

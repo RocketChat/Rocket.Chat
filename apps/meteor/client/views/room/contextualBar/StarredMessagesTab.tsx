@@ -4,29 +4,33 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import MessageListTab from './MessageListTab';
 import { onClientMessageReceived } from '../../../lib/onClientMessageReceived';
+import { roomsQueryKeys } from '../../../lib/queryKeys';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 import { useRoom } from '../contexts/RoomContext';
-import MessageListTab from './MessageListTab';
 
 const StarredMessagesTab = () => {
 	const getStarredMessages = useEndpoint('GET', '/v1/chat.getStarredMessages');
 
 	const room = useRoom();
 
-	const starredMessagesQueryResult = useQuery(['rooms', room._id, 'starred-messages'] as const, async () => {
-		const messages: IMessage[] = [];
+	const starredMessagesQueryResult = useQuery({
+		queryKey: roomsQueryKeys.starredMessages(room._id),
+		queryFn: async () => {
+			const messages: IMessage[] = [];
 
-		for (
-			let offset = 0, result = await getStarredMessages({ roomId: room._id, offset: 0 });
-			result.count > 0;
-			// eslint-disable-next-line no-await-in-loop
-			offset += result.count, result = await getStarredMessages({ roomId: room._id, offset })
-		) {
-			messages.push(...result.messages.map(mapMessageFromApi));
-		}
+			for (
+				let offset = 0, result = await getStarredMessages({ roomId: room._id, offset: 0 });
+				result.count > 0;
+				// eslint-disable-next-line no-await-in-loop
+				offset += result.count, result = await getStarredMessages({ roomId: room._id, offset })
+			) {
+				messages.push(...result.messages.map(mapMessageFromApi));
+			}
 
-		return Promise.all(messages.map(onClientMessageReceived));
+			return Promise.all(messages.map(onClientMessageReceived));
+		},
 	});
 
 	const { t } = useTranslation();

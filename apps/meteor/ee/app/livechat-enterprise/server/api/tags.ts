@@ -1,6 +1,6 @@
+import { findTags, findTagById } from './lib/tags';
 import { API } from '../../../../../app/api/server';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
-import { findTags, findTagById } from './lib/tags';
 
 API.v1.addRoute(
 	'livechat/tags',

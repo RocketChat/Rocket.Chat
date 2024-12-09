@@ -1,13 +1,13 @@
 import type { ILivechatInquiryRecord, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
 import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../hooks/omnichannel/useQueuedInquiries';
-import { useQueryOptions } from './useQueryOptions';
+import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 
 const query = { open: { $ne: false } };
 
@@ -27,15 +27,16 @@ const order = [
 	'Conversations',
 ] as const;
 
-export const useRoomList = ({
-	collapsedGroups,
-}: {
-	collapsedGroups?: string[];
-}): {
+type useRoomListReturnType = {
 	roomList: Array<ISubscription & IRoom>;
 	groupsCount: number[];
 	groupsList: TranslationKey[];
-} => {
+	groupedUnreadInfo: Pick<
+		SubscriptionWithRoom,
+		'userMentions' | 'groupMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'tunreadGroup' | 'alert' | 'hideUnreadStatus'
+	>[];
+};
+export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] }): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
@@ -43,7 +44,7 @@ export const useRoomList = ({
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 
-	const options = useQueryOptions();
+	const options = useSortQueryOptions();
 
 	const rooms = useUserSubscriptions(query, options);
 
@@ -53,7 +54,7 @@ export const useRoomList = ({
 
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 
-	const { groupsCount, groupsList, roomList } = useDebouncedValue(
+	const { groupsCount, groupsList, roomList, groupedUnreadInfo } = useDebouncedValue(
 		useMemo(() => {
 			const isCollapsed = (groupTitle: string) => collapsedGroups?.includes(groupTitle);
 
@@ -77,7 +78,7 @@ export const useRoomList = ({
 					return incomingCall.add(room);
 				}
 
-				if (sidebarShowUnread && (room.alert || room.unread) && !room.hideUnreadStatus) {
+				if (sidebarShowUnread && (room.alert || room.unread || room.tunread?.length) && !room.hideUnreadStatus) {
 					return unread.add(room);
 				}
 
@@ -133,7 +134,7 @@ export const useRoomList = ({
 
 			!sidebarGroupByType && groups.set('Conversations', conversation);
 
-			const { groupsCount, groupsList, roomList } = sidebarOrder.reduce(
+			const { groupsCount, groupsList, roomList, groupedUnreadInfo } = sidebarOrder.reduce(
 				(acc, key) => {
 					const value = groups.get(key);
 
@@ -142,11 +143,39 @@ export const useRoomList = ({
 					}
 
 					acc.groupsList.push(key as TranslationKey);
+
+					const groupedUnreadInfoAcc = {
+						userMentions: 0,
+						groupMentions: 0,
+						tunread: [],
+						tunreadUser: [],
+						unread: 0,
+					};
+
 					if (isCollapsed(key)) {
+						const groupedUnreadInfo = [...value].reduce(
+							(counter, { userMentions, groupMentions, tunread, tunreadUser, unread, alert, hideUnreadStatus }) => {
+								if (hideUnreadStatus) {
+									return counter;
+								}
+
+								counter.userMentions += userMentions || 0;
+								counter.groupMentions += groupMentions || 0;
+								counter.tunread = [...counter.tunread, ...(tunread || [])];
+								counter.tunreadUser = [...counter.tunreadUser, ...(tunreadUser || [])];
+								counter.unread += unread || 0;
+								!unread && !tunread?.length && alert && (counter.unread += 1);
+								return counter;
+							},
+							groupedUnreadInfoAcc,
+						);
+
+						acc.groupedUnreadInfo.push(groupedUnreadInfo);
 						acc.groupsCount.push(0);
 						return acc;
 					}
 
+					acc.groupedUnreadInfo.push(groupedUnreadInfoAcc);
 					acc.groupsCount.push(value.size);
 					acc.roomList.push(...value);
 					return acc;
@@ -155,14 +184,11 @@ export const useRoomList = ({
 					groupsCount: [],
 					groupsList: [],
 					roomList: [],
-				} as {
-					groupsCount: number[];
-					groupsList: TranslationKey[];
-					roomList: Array<ISubscription & IRoom>;
-				},
+					groupedUnreadInfo: [],
+				} as useRoomListReturnType,
 			);
 
-			return { groupsCount, groupsList, roomList };
+			return { groupsCount, groupsList, roomList, groupedUnreadInfo };
 		}, [
 			rooms,
 			showOmnichannel,
@@ -183,5 +209,6 @@ export const useRoomList = ({
 		roomList,
 		groupsCount,
 		groupsList,
+		groupedUnreadInfo,
 	};
 };

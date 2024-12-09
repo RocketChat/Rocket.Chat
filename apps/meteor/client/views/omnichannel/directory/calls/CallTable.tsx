@@ -4,6 +4,7 @@ import { useRoute, useTranslation, useEndpoint, useUserId } from '@rocket.chat/u
 import { useQuery, hashQueryKey } from '@tanstack/react-query';
 import React, { useState, useMemo } from 'react';
 
+import { CallTableRow } from './CallTableRow';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
 import {
@@ -11,11 +12,10 @@ import {
 	GenericTableBody,
 	GenericTableHeader,
 	GenericTableHeaderCell,
-	GenericTableLoadingRow,
+	GenericTableLoadingTable,
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import { CallTableRow } from './CallTableRow';
 
 const CallTable = () => {
 	const t = useTranslation();
@@ -44,8 +44,8 @@ const CallTable = () => {
 	const onRowClick = useMutableCallback((id, token) => {
 		directoryRoute.push(
 			{
-				page: 'calls',
-				bar: 'info',
+				tab: 'calls',
+				context: 'info',
 				id,
 			},
 			{ token },
@@ -105,7 +105,7 @@ const CallTable = () => {
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingRow cols={7} />
+						<GenericTableLoadingTable headerCells={headers.props.children.filter(Boolean).length} />
 					</GenericTableBody>
 				</GenericTable>
 			)}

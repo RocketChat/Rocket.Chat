@@ -2,8 +2,8 @@ import type { MessageAttachmentAction } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useExternalLink } from '../../../../../hooks/useExternalLink';
 import ActionAttachmentButton from './ActionAttachmentButton';
+import { useExternalLink } from '../../../../../hooks/useExternalLink';
 
 type ActionAttachmentProps = MessageAttachmentAction;
 

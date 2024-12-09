@@ -3,14 +3,21 @@ import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ContextType, ReactElement } from 'react';
 import React, { useMemo, memo, useEffect, useCallback } from 'react';
 
-import { ChatSubscription } from '../../../../app/models/client';
-import { RoomHistoryManager } from '../../../../app/ui-utils/client';
+import ComposerPopupProvider from './ComposerPopupProvider';
+import RoomToolboxProvider from './RoomToolboxProvider';
+import UserCardProvider from './UserCardProvider';
+import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
+import { useRoomQuery } from './hooks/useRoomQuery';
+import { useUsersNameChanged } from './hooks/useUsersNameChanged';
+import { Subscriptions } from '../../../../app/models/client';
 import { UserAction } from '../../../../app/ui/client/lib/UserAction';
+import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import { useSidePanelNavigation } from '../../../hooks/useSidePanelNavigation';
 import { RoomManager } from '../../../lib/RoomManager';
+import { subscriptionsQueryKeys } from '../../../lib/queryKeys';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
 import RoomNotFound from '../RoomNotFound';
@@ -18,12 +25,6 @@ import RoomSkeleton from '../RoomSkeleton';
 import { useRoomRolesManagement } from '../body/hooks/useRoomRolesManagement';
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
 import { RoomContext } from '../contexts/RoomContext';
-import ComposerPopupProvider from './ComposerPopupProvider';
-import RoomToolboxProvider from './RoomToolboxProvider';
-import UserCardProvider from './UserCardProvider';
-import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
-import { useRoomQuery } from './hooks/useRoomQuery';
-import { useUsersNameChanged } from './hooks/useUsersNameChanged';
 
 type RoomProviderProps = {
 	children: ReactNode;
@@ -45,7 +46,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		}
 	}, [resultFromLocal.data, resultFromLocal.isSuccess, resultFromServer, router]);
 
-	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
+	const subscriptionQuery = useReactiveQuery(subscriptionsQueryKeys.subscription(rid), () => Subscriptions.findOne({ rid }) ?? null);
 
 	useRedirectOnSettingsChanged(subscriptionQuery.data);
 

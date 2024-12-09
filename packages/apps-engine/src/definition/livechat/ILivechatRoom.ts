@@ -2,6 +2,7 @@ import { RoomType } from '../rooms';
 import type { IRoom } from '../rooms/IRoom';
 import type { IUser } from '../users';
 import type { IDepartment } from './IDepartment';
+import type { ILivechatContact } from './ILivechatContact';
 import type { IVisitor } from './IVisitor';
 
 export enum OmnichannelSourceType {
@@ -9,22 +10,43 @@ export enum OmnichannelSourceType {
     EMAIL = 'email',
     SMS = 'sms',
     APP = 'app',
+    API = 'api',
     OTHER = 'other',
 }
 
-interface IOmnichannelSourceApp {
-    type: 'app';
-    id: string;
+export interface IOmnichannelSource {
+    type: OmnichannelSourceType;
+    // An optional identification of external sources, such as an App
+    id?: string;
     // A human readable alias that goes with the ID, for post analytical purposes
     alias?: string;
     // A label to be shown in the room info
     label?: string;
+    // The sidebar icon
     sidebarIcon?: string;
+    // The default sidebar icon
     defaultIcon?: string;
     // The destination of the message (e.g widget host, email address, whatsapp number, etc)
     destination?: string;
 }
-type OmnichannelSource =
+
+interface IOmnichannelSourceApp {
+    type: 'app';
+    // An optional identification of external sources, such as an App
+    id?: string;
+    // A human readable alias that goes with the ID, for post analytical purposes
+    alias?: string;
+    // A label to be shown in the room info
+    label?: string;
+    // The sidebar icon
+    sidebarIcon?: string;
+    // The default sidebar icon
+    defaultIcon?: string;
+    // The destination of the message (e.g widget host, email address, whatsapp number, etc)
+    destination?: string;
+}
+
+export type OmnichannelSource =
     | {
           type: Exclude<OmnichannelSourceType, 'app'>;
       }
@@ -47,6 +69,7 @@ export interface ILivechatRoom extends IRoom {
     isOpen: boolean;
     closedAt?: Date;
     source?: OmnichannelSource;
+    contact?: ILivechatContact;
 }
 
 export const isLivechatRoom = (room: IRoom): room is ILivechatRoom => {
