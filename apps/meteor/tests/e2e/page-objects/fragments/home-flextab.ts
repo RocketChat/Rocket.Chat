@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { HomeFlextabChannels } from './home-flextab-channels';
+import { HomeFlextabExportMessages } from './home-flextab-exportMessages';
 import { HomeFlextabMembers } from './home-flextab-members';
 import { HomeFlextabNotificationPreferences } from './home-flextab-notificationPreferences';
 import { HomeFlextabRoom } from './home-flextab-room';
@@ -16,12 +17,15 @@ export class HomeFlextab {
 
 	readonly notificationPreferences: HomeFlextabNotificationPreferences;
 
+	readonly exportMessages: HomeFlextabExportMessages;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.members = new HomeFlextabMembers(page);
 		this.room = new HomeFlextabRoom(page);
 		this.channels = new HomeFlextabChannels(page);
 		this.notificationPreferences = new HomeFlextabNotificationPreferences(page);
+		this.exportMessages = new HomeFlextabExportMessages(page);
 	}
 
 	get btnTabMembers(): Locator {
@@ -46,6 +50,10 @@ export class HomeFlextab {
 
 	get btnNotificationPreferences(): Locator {
 		return this.page.locator('role=menuitem[name="Notifications Preferences"]');
+	}
+
+	get btnExportMessages(): Locator {
+		return this.page.locator('role=menuitem[name="Export messages"]');
 	}
 
 	get btnE2EERoomSetupDisableE2E(): Locator {

@@ -2855,7 +2855,6 @@
   "Message_VideoRecorderEnabledDescription": "Krever at video / webm-filer skal være en akseptert medietype i \"Filopplastings\" -innstillinger.",
   "messages": "meldinger",
   "Messages": "meldinger",
-  "Messages_selected": "Meldinger er valgt",
   "Messages_sent": "Meldinger sendt",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "Meldinger som sendes til Incoming WebHook vil bli lagt ut her.",
   "Meta": "Meta",

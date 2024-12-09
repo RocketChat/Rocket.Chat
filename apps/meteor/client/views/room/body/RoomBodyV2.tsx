@@ -97,7 +97,7 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom } = useListIsAtBottom();
 
-	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
+	const { innerRef: getMoreInnerRef, handleGetMore } = useGetMore(room._id, atBottomRef);
 
 	const { wrapperRef: sectionWrapperRef, hideSection, innerRef: sectionScrollRef } = useBannerSection();
 
@@ -285,6 +285,7 @@ const RoomBody = (): ReactElement => {
 									onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 									onNavigateToNextMessage={handleNavigateToNextMessage}
 									onUploadFiles={handleUploadFiles}
+									onGetMore={handleGetMore}
 									// TODO: send previewUrls param
 									// previewUrls={}
 								/>

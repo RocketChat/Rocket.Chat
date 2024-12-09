@@ -44,6 +44,20 @@ export const useToggleSelect = (mid: string): (() => void) => {
 	}, [mid, selectedMessageStore]);
 };
 
+export const useToggleSelectAll = (): (() => void) => {
+	const { selectedMessageStore } = useContext(SelectedMessageContext);
+	return useCallback(() => {
+		selectedMessageStore.toggleAll(Array.from(selectedMessageStore.availableMessages));
+	}, [selectedMessageStore]);
+};
+
+export const useClearSelection = (): (() => void) => {
+	const { selectedMessageStore } = useContext(SelectedMessageContext);
+	return useCallback(() => {
+		selectedMessageStore.clearStore();
+	}, [selectedMessageStore]);
+};
+
 export const useCountSelected = (): number => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 
@@ -53,6 +67,19 @@ export const useCountSelected = (): number => {
 	);
 
 	const getSnapshot = (): number => selectedMessageStore.count();
+
+	return useSyncExternalStore(subscribe, getSnapshot);
+};
+
+export const useSelectedMessages = (): string[] => {
+	const { selectedMessageStore } = useContext(SelectedMessageContext);
+
+	const subscribe = useCallback(
+		(callback: () => void): (() => void) => selectedMessageStore.on('change', callback),
+		[selectedMessageStore],
+	);
+
+	const getSnapshot = () => selectedMessageStore.getSelectedMessages();
 
 	return useSyncExternalStore(subscribe, getSnapshot);
 };

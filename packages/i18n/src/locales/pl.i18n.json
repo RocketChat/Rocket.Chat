@@ -3204,7 +3204,6 @@
   "Message_VideoRecorderEnabledDescription": "Wymaga plików \"wideo / webm\", aby były akceptowanym typem mediów w ustawieniach \"Przesyłanie pliku\".",
   "messages": "Wiadomości",
   "Messages": "Wiadomości",
-  "Messages_selected": "Wybrane wiadomości",
   "Messages_sent": "Wiadomości wysłane",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "Wiadomości, które zostaną przesłane przez WebHook będą publikowane tutaj.",
   "Meta": "Meta",

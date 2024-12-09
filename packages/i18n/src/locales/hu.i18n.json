@@ -3199,7 +3199,6 @@
   "Message_VideoRecorderEnabledDescription": "Azt igényli, hogy a „video/webm” fájlok elfogadott médiatípus legyen a „Fájlfeltöltés” beállításaiban.",
   "messages": "üzenetek",
   "Messages": "Üzenetek",
-  "Messages_selected": "Üzenetek kijelölve",
   "Messages_sent": "Üzenetek elküldve",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "A bejövő webhorogra küldött üzenetek itt lesznek beküldve.",
   "Meta": "Meta",
