@@ -41,6 +41,8 @@ export const useReplyInThreadMessageAction = (
 			group: 'message',
 		});
 
-		return () => MessageAction.removeButton('unfollow-message');
+		return () => {
+			MessageAction.removeButton('reply-in-thread');
+		};
 	}, [message._id, message.tmid, room, route, subscription, threadsEnabled]);
 };
