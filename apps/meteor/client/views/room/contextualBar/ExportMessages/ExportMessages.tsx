@@ -260,6 +260,10 @@ const ExportMessages = () => {
 											rules={{
 												validate: {
 													validateEmail: (additionalEmails) => {
+														if (additionalEmails === '') {
+															return undefined;
+														}
+
 														const emails = additionalEmails?.split(',').map((email) => email.trim());
 														if (Array.isArray(emails) && emails.every((email) => validateEmail(email.trim()))) {
 															return undefined;
@@ -290,7 +294,7 @@ const ExportMessages = () => {
 										/>
 									</FieldRow>
 									{errors?.additionalEmails && (
-										<FieldError aria-live='assertive' id={`${additionalEmailsField}-error`}>
+										<FieldError role='alert' id={`${additionalEmailsField}-error`}>
 											{errors.additionalEmails.message}
 										</FieldError>
 									)}
