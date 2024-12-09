@@ -100,7 +100,7 @@ API.v1.addRoute(
 
 			if (agentId !== this.userId) {
 				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-agents'))) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 
 				// Silent fail for admins when BH is closed
