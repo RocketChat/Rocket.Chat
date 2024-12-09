@@ -1,5 +1,5 @@
 import type { ILivechatPriority } from '@rocket.chat/core-typings';
-import type { FindCursor, ModifyResult } from 'mongodb';
+import type { FindCursor, WithId } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -9,5 +9,5 @@ export interface ILivechatPriorityModel extends IBaseModel<ILivechatPriority> {
 	findByDirty(): FindCursor<Pick<ILivechatPriority, '_id'>>;
 	canResetPriorities(): Promise<boolean>;
 	resetPriorities(ids: ILivechatPriority['_id'][]): Promise<void>;
-	updatePriority(_id: string, reset: boolean, name?: string): Promise<ModifyResult<ILivechatPriority>>;
+	updatePriority(_id: string, reset: boolean, name?: string): Promise<null | WithId<ILivechatPriority>>;
 }

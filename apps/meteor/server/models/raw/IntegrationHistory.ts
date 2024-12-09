@@ -33,7 +33,6 @@ export class IntegrationHistoryRaw extends BaseRaw<IIntegrationHistory> implemen
 		data: Partial<IIntegrationHistory>,
 		options?: FindOneAndUpdateOptions,
 	): Promise<IIntegrationHistory | null> {
-		const response = await this.findOneAndUpdate({ _id }, { $set: data }, { returnDocument: 'after', ...options });
-		return response.value;
+		return this.findOneAndUpdate({ _id }, { $set: data }, { returnDocument: 'after', ...options });
 	}
 }

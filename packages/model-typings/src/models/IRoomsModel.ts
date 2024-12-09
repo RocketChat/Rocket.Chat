@@ -7,8 +7,8 @@ import type {
 	FindOptions,
 	UpdateOptions,
 	UpdateResult,
-	ModifyResult,
 	CountDocumentsOptions,
+	WithId,
 } from 'mongodb';
 
 import type { Updater } from '../updater';
@@ -308,7 +308,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		roomId: string,
 		e2eKeyId: string,
 		e2eQueue?: IRoom['usersWaitingForE2EKeys'],
-	): Promise<ModifyResult<IRoom>>;
+	): Promise<WithId<IRoom> | null>;
 	countGroupDMsByUids(uids: NonNullable<IRoom['uids']>): Promise<number>;
 	countByCreatedOTR(options?: CountDocumentsOptions): Promise<number>;
 	countByBroadcast(options?: CountDocumentsOptions): Promise<number>;
