@@ -98,28 +98,14 @@ const MessageToolbar = ({
 
 	const starsAction = useMessageActionAppsActionButtons(message, context, 'ai');
 
-	const { messageToolbox: hiddenActions } = useLayoutHiddenActions();
-	const allowStarring = useSetting('Message_AllowStarring');
+	const hiddenActions = useLayoutHiddenActions().messageToolbox;
+	const allowStarring = useSetting('Message_AllowStarring', true);
 
 	// TODO: move this to another place
-	useWebDAVMessageAction(message, { subscription });
-	useNewDiscussionMessageAction(message, { user, room, subscription });
-	useUnpinMessageAction(message, { room, subscription });
-	usePinMessageAction(message, { room, subscription });
-	useStarMessageAction(message, { room, user });
-	useUnstarMessageAction(message, { room, user });
-	usePermalinkAction(message, { subscription, id: 'permalink-star', context: ['starred'], order: 10 });
-	usePermalinkAction(message, { subscription, id: 'permalink-pinned', context: ['pinned'], order: 5 });
-	usePermalinkAction(message, {
-		subscription,
-		id: 'permalink',
-		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
-		type: 'duplication',
-		order: 5,
-	});
-	useFollowMessageAction(message, { room, user, context });
-	useUnFollowMessageAction(message, { room, user, context });
+	useReactionMessageAction(message, { user, room, subscription });
+	useQuoteMessageAction(message, { subscription });
 	useReplyInThreadMessageAction(message, { room, subscription });
+	useForwardMessageAction(message);
 	useJumpToMessageContextAction(message, {
 		id: 'jump-to-message',
 		order: 100,
@@ -137,13 +123,28 @@ const MessageToolbar = ({
 		order: 100,
 		context: ['starred'],
 	});
-	useReactionMessageAction(message, { user, room, subscription });
+
+	useWebDAVMessageAction(message, { subscription });
+	useNewDiscussionMessageAction(message, { user, room, subscription });
+	useUnpinMessageAction(message, { room, subscription });
+	usePinMessageAction(message, { room, subscription });
+	useStarMessageAction(message, { room, user });
+	useUnstarMessageAction(message, { room, user });
+	usePermalinkAction(message, { subscription, id: 'permalink-star', context: ['starred'], order: 10 });
+	usePermalinkAction(message, { subscription, id: 'permalink-pinned', context: ['pinned'], order: 5 });
+	usePermalinkAction(message, {
+		subscription,
+		id: 'permalink',
+		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
+		type: 'duplication',
+		order: 5,
+	});
+	useFollowMessageAction(message, { room, user, context });
+	useUnFollowMessageAction(message, { room, user, context });
 	useMarkAsUnreadMessageAction(message, { user, room, subscription });
 	useTranslateAction(message, { user, room, subscription });
 	useViewOriginalTranslationAction(message, { user, room, subscription });
 	useReplyInDMAction(message, { user, room, subscription });
-	useForwardMessageAction(message);
-	useQuoteMessageAction(message, { subscription });
 	useCopyAction(message, { subscription });
 	useEditMessageAction(message, { user, room, subscription });
 	useDeleteMessageAction(message, { user, room, subscription });
