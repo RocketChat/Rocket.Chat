@@ -125,6 +125,9 @@ export class Sidebar {
 	async createEncryptedChannel(name: string) {
 		await this.openCreateNewByLabel('Channel');
 		await this.createRoomModal.inputChannelName.fill(name);
+		await this.createRoomModal.advancedSettingsAccordion.click();
+		await this.createRoomModal.checkboxEncryption.click();
+		await this.createRoomModal.btnCreate.click();
 	}
 
 	async createPublicChannel(name: string) {
