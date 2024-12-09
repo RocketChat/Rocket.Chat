@@ -92,7 +92,7 @@ After initialized, you can access the server at http://localhost:4000
 
 # 💻 Installation
 
-Please see the [requirements documentation](https://docs.rocket.chat/deploy/installing-client-apps/minimum-requirements-for-using-rocket.chat) for system requirements and more information about supported operating systems.
+Please see the [requirements documentation](https://docs.rocket.chat/docs/system-requirements) for system requirements and more information about supported operating systems.
 Please refer to [Install Rocket.Chat](https://rocket.chat/install) to install your Rocket.Chat instance.
 
 # 📱 Mobile Apps
