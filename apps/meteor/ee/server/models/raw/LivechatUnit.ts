@@ -190,15 +190,4 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 	countUnits(): Promise<number> {
 		return this.col.countDocuments({ type: 'u' });
 	}
-
-	removeDepartmentFromUnit(unitId: string): Promise<UpdateResult> {
-		return this.updateOne(
-			{
-				_id: unitId,
-			},
-			{
-				$inc: { numDepartments: -1 },
-			},
-		);
-	}
 }
