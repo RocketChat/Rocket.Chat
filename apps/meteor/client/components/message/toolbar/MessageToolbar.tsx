@@ -12,6 +12,7 @@ import MessageActionMenu from './MessageActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
 import { useFollowMessageAction } from './useFollowMessageAction';
 import { useJumpToMessageContextAction } from './useJumpToMessageContextAction';
+import { useMarkAsUnreadMessageAction } from './useMarkAsUnreadMessageAction';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
 import { usePermalinkAction } from './usePermalinkAction';
 import { usePinMessageAction } from './usePinMessageAction';
@@ -133,6 +134,7 @@ const MessageToolbar = ({
 		context: ['starred'],
 	});
 	useReactionMessageAction(message, { user, room, subscription });
+	useMarkAsUnreadMessageAction(message, { user, room, subscription });
 
 	const actionsQueryResult = useQuery({
 		queryKey: roomsQueryKeys.messageActionsWithParameters(room._id, message),
