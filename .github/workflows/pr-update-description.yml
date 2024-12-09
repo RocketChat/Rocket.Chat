@@ -27,10 +27,12 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@v1.5
-
       - name: Build packages
         run: yarn build
+        env:
+          TURBO_API: ${{ vars.TURBOAPI }}
+          TURBO_TOKEN: ${{ vars.TURBOREMOTEAPIKEY }}
+          TURBO_TEAM: rocket.chat
 
       - name: Update PR description
         uses: ./packages/release-action
