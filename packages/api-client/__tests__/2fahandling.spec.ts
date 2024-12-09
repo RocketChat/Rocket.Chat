@@ -28,7 +28,7 @@ beforeEach(() => {
 
 		if (req.headers.get('x-2fa-code') === 'WRONG_2FA_CODE') {
 			return {
-				status: 400,
+				status: 401,
 				body: JSON.stringify({
 					errorType: 'totp-invalid',
 					message: 'Invalid TOTP provided',
@@ -40,7 +40,7 @@ beforeEach(() => {
 		}
 
 		return {
-			status: 400,
+			status: 401,
 			body: JSON.stringify({
 				errorType: 'totp-required',
 				details: {
@@ -69,7 +69,7 @@ test('if the 2fa handler is not provided, it should throw an error', async () =>
 			throw error;
 		}
 
-		expect(error.status).toBe(400);
+		expect(error.status).toBe(401);
 
 		const body = await error.json();
 
