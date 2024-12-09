@@ -45,7 +45,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 
 	return (
 		<>
-			<ContextualbarHeader expanded>
+			<ContextualbarHeader>
 				<ContextualbarIcon name='phone' />
 				<ContextualbarTitle>{t('Call_Information')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClickClose} />

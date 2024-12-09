@@ -13,7 +13,7 @@ test.describe.serial('Threads', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 	});
 	test('expect thread message preview if alsoSendToChannel checkbox is checked', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('this is a message for reply');
@@ -85,7 +85,7 @@ test.describe.serial('Threads', () => {
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);
 			await page.goto('/home');
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.sidebar.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('this is a message for reply');
 			await page.locator('[data-qa-type="message"]').last().hover();
 			await page.locator('role=button[name="Reply in thread"]').click();

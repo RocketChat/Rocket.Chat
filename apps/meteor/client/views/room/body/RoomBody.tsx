@@ -1,41 +1,38 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
+import type { MouseEventHandler, ReactElement } from 'react';
 import React, { memo, useCallback, useMemo, useRef } from 'react';
 
-import DropTargetOverlay from './DropTargetOverlay';
-import JumpToRecentMessageButton from './JumpToRecentMessageButton';
-import LeaderBar from './LeaderBar';
-import { RoomRoles } from '../../../../app/models/client';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
-import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
-import Announcement from '../Announcement';
 import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
+import DropTargetOverlay from './DropTargetOverlay';
+import JumpToRecentMessageButton from './JumpToRecentMessageButton';
+import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
+import RoomAnnouncement from '../RoomAnnouncement';
 import LoadingMessagesIndicator from './LoadingMessagesIndicator';
 import RetentionPolicyWarning from './RetentionPolicyWarning';
-import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import ComposerContainer from '../composer/ComposerContainer';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
-import { useUserCard } from '../contexts/UserCardContext';
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import RoomForeword from './RoomForeword/RoomForeword';
+import { RoomTopic } from './RoomTopic';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
+import { useBannerSection } from './hooks/useBannerSection';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useGetMore } from './hooks/useGetMore';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
-import { useLeaderBanner } from './hooks/useLeaderBanner';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
@@ -86,8 +83,6 @@ const RoomBody = (): ReactElement => {
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
-	const useRealName = useSetting('UI_Use_Real_Name', false);
-
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
 
 	const {
@@ -104,7 +99,7 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
 
-	const { wrapperRef: leaderBannerWrapperRef, hideLeaderHeader, innerRef: leaderBannerInnerRef } = useLeaderBanner();
+	const { wrapperRef: sectionWrapperRef, hideSection, innerRef: sectionScrollRef } = useBannerSection();
 
 	const {
 		uploads,
@@ -130,14 +125,14 @@ const RoomBody = (): ReactElement => {
 		restoreScrollPositionInnerRef,
 		isAtBottomInnerRef,
 		newMessagesScrollRef,
-		leaderBannerInnerRef,
+		sectionScrollRef,
 		unreadBarInnerRef,
 		getMoreInnerRef,
 
 		messageListRef,
 	);
 
-	const wrapperBoxRefs = useMergedRefs(unreadBarWrapperRef, leaderBannerWrapperRef);
+	const wrapperBoxRefs = useMergedRefs(unreadBarWrapperRef);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat.messageEditing.toPreviousMessage();
@@ -179,43 +174,30 @@ const RoomBody = (): ReactElement => {
 		[toolbox],
 	);
 
-	const { openUserCard, triggerProps } = useUserCard();
-
-	const handleOpenUserCard = useCallback(
-		(event: UIEvent, username: IUser['username']) => {
-			if (!username) {
-				return;
-			}
-
-			openUserCard(event, username);
-		},
-		[openUserCard],
-	);
-
 	useGoToHomeOnRemoved(room, user?._id);
 	useReadMessageWindowEvents();
 	useQuoteMessageByUrl();
 
-	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], () => {
-		const leaderRoomRole = RoomRoles.findOne({
-			'rid': room._id,
-			'roles': 'leader',
-			'u._id': { $ne: user?._id },
-		});
+	const wrapperStyle = css`
+		position: absolute;
+		width: 100%;
+		z-index: 5;
+		top: 0px;
 
-		if (!leaderRoomRole) {
-			return null;
+		&.animated-hidden {
+			top: -88px;
 		}
-
-		return {
-			...leaderRoomRole.u,
-			name: useRealName ? leaderRoomRole.u.name || leaderRoomRole.u.username : leaderRoomRole.u.username,
-		};
-	});
+	`;
 
 	return (
 		<>
-			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
+			<Box position='relative' w='full'>
+				<Box animated className={[wrapperStyle, hideSection && 'animated-hidden'].filter(isTruthy)} ref={sectionWrapperRef}>
+					<RoomTopic room={room} user={user} />
+					{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} announcementDetails={undefined} />}
+				</Box>
+			</Box>
+
 			<Box key={room._id} className={['main-content-flex', listStyle]}>
 				<section
 					role='presentation'
@@ -227,16 +209,6 @@ const RoomBody = (): ReactElement => {
 						<div className='messages-container-main' ref={wrapperBoxRefs} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<Box position='absolute' w='full'>
-								{roomLeader ? (
-									<LeaderBar
-										_id={roomLeader._id}
-										username={roomLeader.username}
-										name={roomLeader.name}
-										visible={!hideLeaderHeader}
-										onAvatarClick={handleOpenUserCard}
-										triggerProps={triggerProps}
-									/>
-								) : null}
 								<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
 									{uploads.map((upload) => (
 										<UploadProgressIndicator
@@ -260,7 +232,7 @@ const RoomBody = (): ReactElement => {
 								<BubbleDate ref={bubbleRef} {...bubbleDate} />
 							</Box>
 
-							<div className={['messages-box', roomLeader && !hideLeaderHeader && 'has-leader'].filter(isTruthy).join(' ')}>
+							<div className={['messages-box'].filter(isTruthy).join(' ')}>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
 								<JumpToRecentMessageButton
 									visible={hasMoreNextMessages}

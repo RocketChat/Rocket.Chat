@@ -30,9 +30,9 @@ test.describe('video conference ringing', () => {
 	});
 
 	test('expect is ringing in direct', async () => {
-		await poHomeChannel.sidenav.openChat('user2');
+		await poHomeChannel.sidebar.openChat('user2');
 
-		await auxContext.poHomeChannel.sidenav.openChat('user1');
+		await auxContext.poHomeChannel.sidebar.openChat('user1');
 		await poHomeChannel.content.btnCall.click();
 		await poHomeChannel.content.menuItemVideoCall.click();
 		await poHomeChannel.content.btnStartVideoCall.click();
