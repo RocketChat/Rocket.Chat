@@ -134,22 +134,23 @@ export default class RocketAdapter {
 			try {
 				if (!slack.getSlackChannel(rocketMessage.rid)) {
 					// This is on a channel that the rocket bot is not subscribed
-					return;
+					continue;
 				}
 				rocketLogger.debug('onRocketMessage', rocketMessage);
 
 				if (rocketMessage.editedAt) {
 					// This is an Edit Event
 					await this.processMessageChanged(rocketMessage, slack);
-					return rocketMessage;
+					continue;
 				}
 				// Ignore messages originating from Slack
 				if (rocketMessage._id.indexOf('slack-') === 0) {
-					return rocketMessage;
+					continue;
 				}
 
 				if (rocketMessage.file) {
-					return this.processFileShare(rocketMessage, slack);
+					await this.processFileShare(rocketMessage, slack);
+					continue;
 				}
 
 				// A new message from Rocket.Chat
