@@ -733,6 +733,7 @@ API.v1.addRoute(
 			});
 
 			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
+			members.sort((a, b) => (a.username ?? "").localeCompare(b.username ?? ""));
 
 			return API.v1.success({
 				members,

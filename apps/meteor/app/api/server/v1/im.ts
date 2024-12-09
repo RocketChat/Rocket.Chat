@@ -359,6 +359,7 @@ API.v1.addRoute(
 			const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept(filter, [], options, searchFields, [extraQuery]);
 
 			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
+			members.sort((a, b) => (a.username ?? "").localeCompare(b.username ?? ""));
 
 			return API.v1.success({
 				members,
