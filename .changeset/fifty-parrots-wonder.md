@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixed an issue where normal direct message rooms could not be created due to invalid federation configuration.
+Fixes an issue preventing the creation of normal direct message rooms due to an invalid federation configuration, allowing proper room creation under standard settings.
