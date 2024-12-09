@@ -4,6 +4,7 @@ import { hashLoginToken } from '@rocket.chat/account-utils';
 import type { IIncomingMessage, IUpload } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
+import DOMPurify from 'dompurify';
 import { Cookies } from 'meteor/ostrio:cookies';
 import sharp from 'sharp';
 import { throttle } from 'underscore';
@@ -119,22 +120,21 @@ export async function userCanAccessAvatar({ headers = {}, query = {} }: IIncomin
 	return isAuthenticated;
 }
 
-const getFirstLetter = (name: string) =>
-	name
-		.replace(/[^A-Za-z0-9]/g, '')
-		.substr(0, 1)
-		.toUpperCase();
+const getFirstLetter = (name: string) => {
+	const sanitizedName = DOMPurify.sanitize(name);
+	return sanitizedName.substring(0, 1).toUpperCase();
+};
 
-export const renderSVGLetters = (username: string, viewSize = 200) => {
+export const renderSVGLetters = (name: string, viewSize = 200) => {
 	let color = '';
 	let initials = '';
 
-	if (username === '?') {
+	if (name === '?') {
 		color = '#000';
-		initials = username;
+		initials = name;
 	} else {
-		color = getAvatarColor(username);
-		initials = getFirstLetter(username);
+		color = getAvatarColor(name);
+		initials = getFirstLetter(name);
 	}
 
 	const fontSize = viewSize / 1.6;
