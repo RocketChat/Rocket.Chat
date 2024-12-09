@@ -282,8 +282,6 @@ export const createLivechatSubscription = async (
 		rid,
 		name,
 		fname: name,
-		lowerCaseName: name.toLowerCase(),
-		lowerCaseFName: name.toLowerCase(),
 		alert: true,
 		open: true,
 		unread: 1,
