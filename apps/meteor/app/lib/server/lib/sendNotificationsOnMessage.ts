@@ -8,7 +8,7 @@ import {
 	type AtLeast,
 } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
-import emojione from 'emojione';
+import emojiToolkit from 'emoji-toolkit';
 import moment from 'moment';
 import type { RootFilterOperators } from 'mongodb';
 
@@ -182,13 +182,13 @@ export const sendNotification = async ({
 			isThread,
 		})
 	) {
-		const messageWithUnicode = message.msg ? emojione.shortnameToUnicode(message.msg) : message.msg;
+		const messageWithUnicode = message.msg ? emojiToolkit.shortnameToUnicode(message.msg) : message.msg;
 		const firstAttachment = message.attachments?.length && message.attachments.shift();
 
 		if (firstAttachment) {
 			firstAttachment.description =
-				typeof firstAttachment.description === 'string' ? emojione.shortnameToUnicode(firstAttachment.description) : undefined;
-			firstAttachment.text = typeof firstAttachment.text === 'string' ? emojione.shortnameToUnicode(firstAttachment.text) : undefined;
+				typeof firstAttachment.description === 'string' ? emojiToolkit.shortnameToUnicode(firstAttachment.description) : undefined;
+			firstAttachment.text = typeof firstAttachment.text === 'string' ? emojiToolkit.shortnameToUnicode(firstAttachment.text) : undefined;
 		}
 
 		const attachments = firstAttachment ? [firstAttachment, ...(message.attachments ?? [])].filter(Boolean) : [];
