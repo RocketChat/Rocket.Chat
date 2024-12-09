@@ -50,7 +50,10 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		this.isTransporterTCP = typeof transporter !== 'string';
 
 		const activeInstances = InstanceStatusRaw.getActiveInstancesAddress()
-			.then((instances) => instances)
+			.then((instances) => {
+				console.info(`Found ${instances.length} active instances`);
+				return instances;
+			})
 			.catch(() => []);
 
 		this.transporter = this.isTransporterTCP
@@ -65,23 +68,6 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			heartbeatTimeout: indexExpire,
 			...getLogger(process.env),
 		});
-
-		if (this.isTransporterTCP) {
-			this.broker.localBus.on('$node.connected', (node) => {
-				console.log(`[${this.broker.nodeID}] connected to ${node.node.id}`);
-			});
-
-			this.broker.localBus.on('$node.disconnected', (node) => {
-				console.log(`[${this.broker.nodeID}] disconnected from ${node.node.id}`);
-			});
-
-			// setInterval(async () => {
-			// 	const nodes: Array<{ id: string }> = await this.broker.call('$node.list', { onlyAvailable: true });
-			// 	const localNode = this.broker.getLocalNodeInfo();
-			// 	console.log(nodes.map((node) => node.id));
-			// 	console.log(localNode.ipList[0], localNode.instanceID, localNode.port);
-			// }, 10000);
-		}
 
 		this.onEvent('license.module', async ({ module, valid }) => {
 			if (module === 'scalability' && valid) {

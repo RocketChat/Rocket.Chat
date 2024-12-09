@@ -19,8 +19,8 @@ export class InstanceStatusRaw extends BaseRaw<IInstanceStatus> implements IInst
 	}
 
 	async getActiveInstancesAddress(): Promise<string[]> {
-		const instances = await this.find({}, { projection: { _id: 1, extraInformation: { host: 1, port: 1 } } }).toArray();
-		return instances.map((instance) => `${instance.extraInformation.host}:${instance.extraInformation.port}/${instance._id}`);
+		const instances = await this.find({}, { projection: { _id: 1, extraInformation: { host: 1, tcpPort: 1 } } }).toArray();
+		return instances.map((instance) => `${instance.extraInformation.host}:${instance.extraInformation.tcpPort}/${instance._id}`);
 	}
 
 	async setDocumentHeartbeat(documentId: string): Promise<UpdateResult> {
