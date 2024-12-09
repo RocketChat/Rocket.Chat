@@ -142,18 +142,37 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		describe('Custom Fields', () => {
+			let contactId: string;
 			before(async () => {
-				await createCustomField({
-					field: 'cf1',
-					label: 'Custom Field 1',
-					scope: 'visitor',
+				const defaultProps = {
+					scope: 'visitor' as const,
 					visibility: 'public',
 					type: 'input',
-					required: true,
 					regexp: '^[0-9]+$',
 					searchable: true,
 					public: true,
-				});
+				};
+
+				await Promise.all([
+					createCustomField({
+						...defaultProps,
+						field: 'cf1',
+						label: 'Custom Field 1',
+						required: true,
+					}),
+					createCustomField({
+						...defaultProps,
+						field: 'cf2',
+						label: 'Custom Field 2',
+						required: false,
+					}),
+					createCustomField({
+						...defaultProps,
+						field: 'cfOptional',
+						label: 'Optional Custom Field',
+						required: false,
+					}),
+				]);
 			});
 
 			after(async () => {
@@ -210,6 +229,98 @@ describe('LIVECHAT - contacts', () => {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
 				expect(res.body.error).to.be.equal('Invalid value for Custom Field 1 field');
+			});
+
+			it('should keep a legacy custom field, but not update it, nor throw an error if it is specified on update', async () => {
+				const createRes = await request
+					.post(api('omnichannel/contacts'))
+					.set(credentials)
+					.send({
+						name: faker.person.fullName(),
+						emails: [faker.internet.email().toLowerCase()],
+						phones: [faker.phone.number()],
+						customFields: {
+							cf1: '123',
+							cf2: '456',
+						},
+					});
+				expect(createRes.body).to.have.property('success', true);
+				expect(createRes.body).to.have.property('contactId').that.is.a('string');
+				contactId = createRes.body.contactId;
+
+				await deleteCustomField('cf2');
+
+				const updateRes = await request
+					.post(api('omnichannel/contacts.update'))
+					.set(credentials)
+					.send({
+						contactId,
+						customFields: {
+							cf1: '456',
+							cf2: '789',
+						},
+					});
+				expect(updateRes.body).to.have.property('success', true);
+				expect(updateRes.body).to.have.property('contact').that.is.an('object');
+				expect(updateRes.body.contact).to.have.property('_id', contactId);
+				expect(updateRes.body.contact).to.have.property('customFields').that.is.an('object');
+				expect(updateRes.body.contact.customFields).to.have.property('cf1', '456');
+				expect(updateRes.body.contact.customFields).to.have.property('cf2', '456');
+			});
+
+			it('should keep a legacy custom field and not throw an error if it is not specified on update', async () => {
+				const updateRes = await request
+					.post(api('omnichannel/contacts.update'))
+					.set(credentials)
+					.send({
+						contactId,
+						customFields: {
+							cf1: '789',
+							cfOptional: '567',
+						},
+					});
+				expect(updateRes.body).to.have.property('success', true);
+				expect(updateRes.body).to.have.property('contact').that.is.an('object');
+				expect(updateRes.body.contact).to.have.property('_id', contactId);
+				expect(updateRes.body.contact).to.have.property('customFields').that.is.an('object');
+				expect(updateRes.body.contact.customFields).to.have.property('cf1', '789');
+				expect(updateRes.body.contact.customFields).to.have.property('cfOptional', '567');
+				expect(updateRes.body.contact.customFields).to.have.property('cf2', '456');
+			});
+
+			it('should keep a legacy custom field, but remove an optional registered custom field if it is not specified on update', async () => {
+				const updateRes = await request
+					.post(api('omnichannel/contacts.update'))
+					.set(credentials)
+					.send({
+						contactId,
+						customFields: {
+							cf1: '789',
+						},
+					});
+				expect(updateRes.body).to.have.property('success', true);
+				expect(updateRes.body).to.have.property('contact').that.is.an('object');
+				expect(updateRes.body.contact).to.have.property('_id', contactId);
+				expect(updateRes.body.contact).to.have.property('customFields').that.is.an('object');
+				expect(updateRes.body.contact.customFields).to.have.property('cf1', '789');
+				expect(updateRes.body.contact.customFields).to.have.property('cf2', '456');
+				expect(updateRes.body.contact.customFields).to.not.have.property('cfOptional');
+			});
+
+			it('should throw an error if trying to update a custom field that is not registered in the workspace and does not exist in the contact', async () => {
+				const updateRes = await request
+					.post(api('omnichannel/contacts.update'))
+					.set(credentials)
+					.send({
+						contactId,
+						customFields: {
+							cf1: '123',
+							cf3: 'invalid',
+						},
+					});
+				expect(updateRes.body).to.have.property('success', false);
+				expect(updateRes.body).to.have.property('error');
+				expect(updateRes.body.error).to.be.equal('Custom field cf3 is not allowed');
 			});
 		});
 
