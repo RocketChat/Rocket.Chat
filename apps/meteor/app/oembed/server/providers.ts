@@ -74,11 +74,6 @@ providers.registerProvider({
 });
 
 providers.registerProvider({
-	urls: [new RegExp('https?://(twitter|x)\\.com/[^/]+/status/\\S+')],
-	endPoint: 'https://publish.twitter.com/oembed',
-});
-
-providers.registerProvider({
 	urls: [new RegExp('https?://(play|open)\\.spotify\\.com/(track|album|playlist|show)/\\S+')],
 	endPoint: 'https://open.spotify.com/oembed',
 });
