@@ -87,7 +87,7 @@ export abstract class BaseRaw<
 		return traceInstanceMethods(this);
 	}
 
-	private pendingIndexes: Promise<void> | undefined;
+	protected pendingIndexes: Promise<void> | undefined;
 
 	public async createIndexes() {
 		const indexes = this.modelIndexes();
@@ -113,7 +113,7 @@ export abstract class BaseRaw<
 	}
 
 	protected modelIndexes(): IndexDescription[] | undefined {
-		return undefined;
+		return [];
 	}
 
 	getCollectionName(): string {
