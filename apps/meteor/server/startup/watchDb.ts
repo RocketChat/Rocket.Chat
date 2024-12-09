@@ -28,5 +28,8 @@ if (!dbWatchersDisabled) {
 }
 
 export function isLastDocDelayed(): boolean {
+	if (dbWatchersDisabled) {
+		return true;
+	}
 	return watcher.isLastDocDelayed();
 }
