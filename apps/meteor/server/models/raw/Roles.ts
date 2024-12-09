@@ -4,7 +4,6 @@ import { Subscriptions, Users } from '@rocket.chat/models';
 import type { Collection, FindCursor, Db, Filter, FindOptions, Document, CountDocumentsOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
 
 export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IRole>>) {
@@ -45,30 +44,6 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 			}
 		}
 		return false;
-	}
-
-	async removeUserRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
-		if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
-			throw new Error('Roles.removeUserRoles method received a role scope instead of a scope value.');
-		}
-
-		for await (const roleId of roles) {
-			const role = await this.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
-
-			if (!role) {
-				continue;
-			}
-
-			if (role.scope === 'Subscriptions' && scope) {
-				const removeRolesResponse = await Subscriptions.removeRolesByUserId(userId, [roleId], scope);
-				if (removeRolesResponse.modifiedCount) {
-					void notifyOnSubscriptionChangedByRoomIdAndUserId(scope, userId);
-				}
-			} else {
-				await Users.removeRolesByUserId(userId, [roleId]);
-			}
-		}
-		return true;
 	}
 
 	async findOneByIdOrName(_idOrName: IRole['_id'] | IRole['name'], options?: undefined): Promise<IRole | null>;
