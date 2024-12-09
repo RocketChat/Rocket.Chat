@@ -7,6 +7,7 @@ import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
 import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
+import { queryClient } from '/client/lib/queryClient';
 
 export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
 	const t = useTranslation();
@@ -28,7 +29,9 @@ export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid
 	const changeLeader = useEndpointAction('POST', `${endpointPrefix}.${changeLeaderEndpoint}`, {
 		successMessage: t(changeLeaderMessage, { username: user.username, role: 'leader' }),
 	});
-	const changeLeaderAction = useMutableCallback(() => changeLeader({ roomId: rid, userId: uid }));
+	const changeLeaderAction = useMutableCallback(() =>
+		changeLeader({ roomId: rid, userId: uid }).then(() => queryClient.invalidateQueries({ queryKey: ['roomRoles'] })),
+	);
 	const changeLeaderOption = useMemo(
 		() =>
 			roomCanSetLeader && userCanSetLeader
