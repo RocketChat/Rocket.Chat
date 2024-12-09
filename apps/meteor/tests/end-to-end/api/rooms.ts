@@ -3621,6 +3621,16 @@ describe('[Rooms]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+				});
+
+			void request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId: room._id })
+				.send()
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.subscription).to.have.property('open', true);
 				})
 				.end(done);
 		});
