@@ -582,7 +582,7 @@ describe('Apps - Video Conferences', () => {
 						});
 				});
 
-				it('should have created the discussion room with hidden subscription flag', async function () {
+				it('should have created a subscription with open = false', async function () {
 					if (!process.env.IS_EE) {
 						this.skip();
 						return;

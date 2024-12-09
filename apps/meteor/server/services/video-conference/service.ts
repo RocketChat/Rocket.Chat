@@ -1193,7 +1193,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async addUserToDiscussion(rid: IRoom['_id'], uid: IUser['_id']): Promise<void> {
 		try {
-			await Room.addUserToRoom(rid, { _id: uid }, undefined, { skipAlertSound: true, skipSystemMessage: true, createAsHidden: true });
+			await Room.addUserToRoom(rid, { _id: uid }, undefined, { skipSystemMessage: true, createAsHidden: true });
 		} catch (error) {
 			// Ignore any errors here so that the subscription doesn't block the user from participating in the conference.
 			logger.error({
