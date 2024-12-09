@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement } from 'react';
-import React, { memo, useCallback, useMemo, useRef } from 'react';
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
 
 import { isTruthy } from '../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
@@ -84,6 +84,7 @@ const RoomBody = (): ReactElement => {
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
+	const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
 
 	const {
 		wrapperRef: unreadBarWrapperRef,
@@ -207,7 +208,7 @@ const RoomBody = (): ReactElement => {
 				>
 					<div className='messages-container-wrapper'>
 						<div className='messages-container-main' ref={wrapperBoxRefs} {...fileUploadTriggerProps}>
-							<DropTargetOverlay {...fileUploadOverlayProps} />
+							<DropTargetOverlay {...fileUploadOverlayProps} setFilesToUplaod={setFilesToUpload} />
 							<Box position='absolute' w='full'>
 								<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
 									{uploads.map((upload) => (
@@ -285,6 +286,8 @@ const RoomBody = (): ReactElement => {
 									onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 									onNavigateToNextMessage={handleNavigateToNextMessage}
 									onUploadFiles={handleUploadFiles}
+									setFilesToUpload={setFilesToUpload}
+									filesToUpload={filesToUpload}
 									// TODO: send previewUrls param
 									// previewUrls={}
 								/>
