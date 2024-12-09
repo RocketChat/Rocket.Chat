@@ -78,6 +78,7 @@ export {
 } from './types/IOmnichannelAnalyticsService';
 
 export { getConnection, getTrashCollection } from './lib/mongo';
+export { ServiceStarter } from './lib/ServiceStarter';
 
 export {
 	AutoUpdateRecord,
