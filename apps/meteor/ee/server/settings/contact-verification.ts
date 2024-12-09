@@ -4,6 +4,31 @@ export const addSettings = async (): Promise<void> => {
 	const omnichannelEnabledQuery = { _id: 'Livechat_enabled', value: true };
 
 	return settingsRegistry.addGroup('Omnichannel', async function () {
+		await this.add('Merged_Contacts_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+
+		await this.add('Resolved_Conflicts_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+
+		await this.add('Contacts_Importer_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+
+		await this.add('Advanced_Contact_Upsell_Views_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+
+		await this.add('Advanced_Contact_Upsell_Clicks_Count', 0, {
+			type: 'int',
+			hidden: true,
+		});
+
 		return this.with(
 			{
 				enterprise: true,
