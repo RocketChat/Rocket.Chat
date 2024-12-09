@@ -60,6 +60,10 @@ const UsersTableRow = ({
 	const registrationStatusText = useMemo(() => {
 		const usersExcludedFromPending = ['bot', 'app'];
 
+		if (!active && lastLogin) {
+			return t('Deactivated');
+		}
+
 		if (federated) {
 			return t('Federated');
 		}
@@ -70,10 +74,6 @@ const UsersTableRow = ({
 
 		if (active && lastLogin) {
 			return t('Active');
-		}
-
-		if (!active && lastLogin) {
-			return t('Deactivated');
 		}
 	}, [active, lastLogin, t, type, federated]);
 
