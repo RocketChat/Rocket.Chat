@@ -7,9 +7,9 @@ import type { ChangeEvent, DragEvent, FormEvent, Key, SyntheticEvent } from 'rea
 import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useErrorHandler } from './useErrorHandler';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
-import { useErrorHandler } from './useErrorHandler';
 
 // TODO: review inner logic
 function NewImportPage() {
@@ -30,7 +30,7 @@ function NewImportPage() {
 	const importerKey = useRouteParameter('importerKey');
 	const importer = useMemo(() => (importers || []).find(({ key }) => key === importerKey), [importerKey, importers]);
 
-	const maxFileSize = useSetting<number>('FileUpload_MaxFileSize') ?? 0;
+	const maxFileSize = useSetting('FileUpload_MaxFileSize', 0);
 
 	const router = useRouter();
 

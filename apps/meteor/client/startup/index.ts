@@ -1,11 +1,9 @@
 import '../lib/rooms/roomTypes';
 import './absoluteUrl';
-import './actionButtons';
 import './afterLogoutCleanUp';
 import './appRoot';
 import './audit';
 import './callbacks';
-import './collections';
 import './customOAuth';
 import './deviceManagement';
 import './e2e';

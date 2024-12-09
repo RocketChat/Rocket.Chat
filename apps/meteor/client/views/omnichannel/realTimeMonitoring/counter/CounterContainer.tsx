@@ -5,11 +5,11 @@ import type { ComponentPropsWithoutRef } from 'react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import CounterItem from './CounterItem';
 import CounterRow from './CounterRow';
+import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 
-export type DataType = {
+type DataType = {
 	title: string;
 	value: number | string;
 }[];

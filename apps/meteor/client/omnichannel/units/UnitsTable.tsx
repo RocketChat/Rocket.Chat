@@ -5,6 +5,7 @@ import { useQuery, hashQueryKey } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useRemoveUnit } from './useRemoveUnit';
 import FilterByText from '../../components/FilterByText';
 import GenericNoResults from '../../components/GenericNoResults/GenericNoResults';
 import {
@@ -18,7 +19,6 @@ import {
 } from '../../components/GenericTable';
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../components/GenericTable/hooks/useSort';
-import { useRemoveUnit } from './useRemoveUnit';
 
 const UnitsTable = () => {
 	const { t } = useTranslation();

@@ -21,7 +21,7 @@ const anon = {
 
 const UserAvatarWithStatus = () => {
 	const user = useUser();
-	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 
 	const { status = !user ? 'online' : 'offline', username, avatarETag } = user || anon;
 

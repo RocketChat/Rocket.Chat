@@ -13,7 +13,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
+import { after, afterEach, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import type { SuccessResult } from '../../../../app/api/server/definition';
@@ -48,6 +48,7 @@ import {
 	updateEEPermission,
 	updatePermission,
 	updateSetting,
+	updateEESetting,
 } from '../../../data/permissions.helper';
 import { adminUsername, password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
@@ -74,6 +75,7 @@ describe('LIVECHAT - rooms', () => {
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
 		await createAgent();
 		await makeAgentAvailable();
 		visitor = await createVisitor();
@@ -1150,6 +1152,19 @@ describe('LIVECHAT - rooms', () => {
 	});
 
 	describe('livechat/upload/:rid', () => {
+		let visitor: ILivechatVisitor | undefined;
+
+		afterEach(() => {
+			if (visitor?.token) {
+				return deleteVisitor(visitor.token);
+			}
+		});
+
+		after(async () => {
+			await updateSetting('FileUpload_Enabled', true);
+			await updateSetting('Livechat_fileupload_enabled', true);
+		});
+
 		it('should throw an error if x-visitor-token header is not present', async () => {
 			await request
 				.post(api('livechat/upload/test'))
@@ -1170,7 +1185,7 @@ describe('LIVECHAT - rooms', () => {
 		});
 
 		it('should throw unauthorized if visitor with token exists but room is invalid', async () => {
-			const visitor = await createVisitor();
+			visitor = await createVisitor();
 			await request
 				.post(api('livechat/upload/test'))
 				.set(credentials)
@@ -1178,11 +1193,10 @@ describe('LIVECHAT - rooms', () => {
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
 				.expect('Content-Type', 'application/json')
 				.expect(403);
-			await deleteVisitor(visitor.token);
 		});
 
 		it('should throw an error if the file is not attached', async () => {
-			const visitor = await createVisitor();
+			visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			await request
 				.post(api(`livechat/upload/${room._id}`))
@@ -1190,12 +1204,11 @@ describe('LIVECHAT - rooms', () => {
 				.set('x-visitor-token', visitor.token)
 				.expect('Content-Type', 'application/json')
 				.expect(400);
-			await deleteVisitor(visitor.token);
 		});
 
 		it('should throw and error if file uploads are enabled but livechat file uploads are disabled', async () => {
 			await updateSetting('Livechat_fileupload_enabled', false);
-			const visitor = await createVisitor();
+			visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			await request
 				.post(api(`livechat/upload/${room._id}`))
@@ -1205,12 +1218,11 @@ describe('LIVECHAT - rooms', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(400);
 			await updateSetting('Livechat_fileupload_enabled', true);
-			await deleteVisitor(visitor.token);
 		});
 
 		it('should throw and error if livechat file uploads are enabled but file uploads are disabled', async () => {
 			await updateSetting('FileUpload_Enabled', false);
-			const visitor = await createVisitor();
+			visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			await request
 				.post(api(`livechat/upload/${room._id}`))
@@ -1220,13 +1232,12 @@ describe('LIVECHAT - rooms', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(400);
 			await updateSetting('FileUpload_Enabled', true);
-			await deleteVisitor(visitor.token);
 		});
 
 		it('should throw and error if both file uploads are disabled', async () => {
 			await updateSetting('Livechat_fileupload_enabled', false);
 			await updateSetting('FileUpload_Enabled', false);
-			const visitor = await createVisitor();
+			visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			await request
 				.post(api(`livechat/upload/${room._id}`))
@@ -1237,14 +1248,12 @@ describe('LIVECHAT - rooms', () => {
 				.expect(400);
 			await updateSetting('FileUpload_Enabled', true);
 			await updateSetting('Livechat_fileupload_enabled', true);
-
-			await deleteVisitor(visitor.token);
 		});
 
 		it('should upload an image on the room if all params are valid', async () => {
 			await updateSetting('FileUpload_Enabled', true);
 			await updateSetting('Livechat_fileupload_enabled', true);
-			const visitor = await createVisitor();
+			visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			await request
 				.post(api(`livechat/upload/${room._id}`))
@@ -1253,11 +1262,10 @@ describe('LIVECHAT - rooms', () => {
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
 				.expect('Content-Type', 'application/json')
 				.expect(200);
-			await deleteVisitor(visitor.token);
 		});
 
 		it('should allow visitor to download file', async () => {
-			const visitor = await createVisitor();
+			visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 
 			const { body } = await request
@@ -1272,12 +1280,11 @@ describe('LIVECHAT - rooms', () => {
 			} = body;
 			const imageUrl = `/file-upload/${_id}/${name}`;
 			await request.get(imageUrl).query({ rc_token: visitor.token, rc_room_type: 'l', rc_rid: room._id }).expect(200);
-			await deleteVisitor(visitor.token);
 			await closeOmnichannelRoom(room._id);
 		});
 
 		it('should allow visitor to download file even after room is closed', async () => {
-			const visitor = await createVisitor();
+			visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			const { body } = await request
 				.post(api(`livechat/upload/${room._id}`))
@@ -1292,11 +1299,10 @@ describe('LIVECHAT - rooms', () => {
 			} = body;
 			const imageUrl = `/file-upload/${_id}/${name}`;
 			await request.get(imageUrl).query({ rc_token: visitor.token, rc_room_type: 'l', rc_rid: room._id }).expect(200);
-			await deleteVisitor(visitor.token);
 		});
 
 		it('should not allow visitor to download a file from a room he didnt create', async () => {
-			const visitor = await createVisitor();
+			visitor = await createVisitor();
 			const visitor2 = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			const { body } = await request
@@ -1313,7 +1319,6 @@ describe('LIVECHAT - rooms', () => {
 			} = body;
 			const imageUrl = `/file-upload/${_id}/${name}`;
 			await request.get(imageUrl).query({ rc_token: visitor2.token, rc_room_type: 'l', rc_rid: room._id }).expect(403);
-			await deleteVisitor(visitor.token);
 			await deleteVisitor(visitor2.token);
 		});
 	});

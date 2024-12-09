@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/ddp-streamer",
 	"private": true,
-	"version": "0.3.9",
+	"version": "0.3.10-rc.1",
 	"description": "Rocket.Chat DDP-Streamer service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -33,14 +33,14 @@
 		"gc-stats": "^1.4.1",
 		"jaeger-client": "^3.19.0",
 		"mem": "^8.1.1",
-		"moleculer": "^0.14.34",
+		"moleculer": "^0.14.35",
 		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
 		"nats": "^2.28.2",
 		"pino": "^8.21.0",
 		"polka": "^0.5.2",
 		"sharp": "^0.33.5",
 		"underscore": "^1.13.7",
-		"uuid": "^11.0.2",
+		"uuid": "^11.0.3",
 		"ws": "^8.18.0"
 	},
 	"devDependencies": {
@@ -50,14 +50,14 @@
 		"@types/ejson": "^2.2.2",
 		"@types/gc-stats": "^1.4.3",
 		"@types/meteor": "^2.9.8",
-		"@types/node": "~20.16.12",
+		"@types/node": "~20.17.8",
 		"@types/polka": "^0.5.7",
-		"@types/uuid": "^8.3.4",
-		"@types/ws": "^8.5.12",
+		"@types/uuid": "^10.0.0",
+		"@types/ws": "^8.5.13",
 		"eslint": "~8.45.0",
 		"pino-pretty": "^7.6.1",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.6.3"
+		"typescript": "~5.7.2"
 	},
 	"main": "./dist/service.js",
 	"files": [

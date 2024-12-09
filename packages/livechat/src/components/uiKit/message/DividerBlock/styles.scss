@@ -1,4 +1,4 @@
-@import '../../../../styles/colors';
+@use '../../../../styles/colors';
 
 .uikit-divider-block {
 	height: 2px;
@@ -6,5 +6,5 @@
 
 	border: 0;
 	border-radius: 2px;
-	background-color: $bg-color-grey;
+	background-color: colors.$bg-color-grey;
 }

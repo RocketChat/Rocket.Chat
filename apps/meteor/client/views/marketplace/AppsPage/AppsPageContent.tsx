@@ -1,18 +1,9 @@
-import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useAppsResult } from '../../../contexts/hooks/useAppsResult';
-import { AsyncStatePhase } from '../../../lib/asyncState';
-import MarketplaceHeader from '../components/MarketplaceHeader';
-import type { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
-import { useCategories } from '../hooks/useCategories';
-import type { appsDataType } from '../hooks/useFilteredApps';
-import { useFilteredApps } from '../hooks/useFilteredApps';
-import { useRadioToggle } from '../hooks/useRadioToggle';
 import AppsFilters from './AppsFilters';
 import AppsPageConnectionError from './AppsPageConnectionError';
 import AppsPageContentBody from './AppsPageContentBody';
@@ -23,13 +14,23 @@ import NoInstalledAppsEmptyState from './NoInstalledAppsEmptyState';
 import NoMarketplaceOrInstalledAppMatchesEmptyState from './NoMarketplaceOrInstalledAppMatchesEmptyState';
 import PrivateEmptyState from './PrivateEmptyState';
 import UnsupportedEmptyState from './UnsupportedEmptyState';
+import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
+import { useAppsResult } from '../../../contexts/hooks/useAppsResult';
+import { AsyncStatePhase } from '../../../lib/asyncState';
+import MarketplaceHeader from '../components/MarketplaceHeader';
+import type { RadioDropDownGroup } from '../definitions/RadioDropDownDefinitions';
+import { useCategories } from '../hooks/useCategories';
+import { useFilteredApps } from '../hooks/useFilteredApps';
+import type { appsDataType } from '../hooks/useFilteredApps';
+import { useRadioToggle } from '../hooks/useRadioToggle';
 
 type AppsContext = 'explore' | 'installed' | 'premium' | 'private' | 'requested';
 
 const AppsPageContent = (): ReactElement => {
 	const { t } = useTranslation();
 	const { marketplaceApps, installedApps, privateApps, reload } = useAppsResult();
-	const [text, setText] = useDebouncedState('', 500);
+	const [text, setText] = useState('');
+	const debouncedText = useDebouncedValue(text, 500);
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const router = useRouter();
@@ -127,7 +128,7 @@ const AppsPageContent = (): ReactElement => {
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
 	const appsResult = useFilteredApps({
 		appsData: getAppsData(),
-		text,
+		text: debouncedText,
 		current,
 		itemsPerPage,
 		categories: useMemo(() => selectedCategories.map(({ label }) => label), [selectedCategories]),

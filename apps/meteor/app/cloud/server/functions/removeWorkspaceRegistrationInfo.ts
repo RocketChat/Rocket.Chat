@@ -1,7 +1,8 @@
 import { Settings, WorkspaceCredentials } from '@rocket.chat/models';
 
-import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+import { updateAuditedBySystem } from '../../../../server/settings/lib/auditedSettingUpdates';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 
 export async function removeWorkspaceRegistrationInfo() {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
@@ -24,10 +25,12 @@ export async function removeWorkspaceRegistrationInfo() {
 
 	const promises = settingsIds.map((settingId) => {
 		if (settingId === 'Show_Setup_Wizard') {
-			return Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+			return updateAuditedBySystem({
+				reason: 'removeWorkspaceRegistrationInfo',
+			})(Settings.updateValueById, 'Show_Setup_Wizard', 'in_progress');
 		}
 
-		return Settings.resetValueById(settingId, null);
+		return updateAuditedBySystem({ reason: 'removeWorkspaceRegistrationInfo' })(Settings.resetValueById, settingId, null);
 	});
 
 	(await Promise.all(promises)).forEach((value, index) => {

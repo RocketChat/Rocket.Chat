@@ -99,4 +99,8 @@ export enum AppMethod {
     EXECUTE_POST_USER_LOGGED_IN = 'executePostUserLoggedIn',
     EXECUTE_POST_USER_LOGGED_OUT = 'executePostUserLoggedOut',
     EXECUTE_POST_USER_STATUS_CHANGED = 'executePostUserStatusChanged',
+    // Runtime specific methods
+    RUNTIME_RESTART = 'runtime:restart',
+    RUNTIME_UNCAUGHT_EXCEPTION = 'runtime:uncaughtException',
+    RUNTIME_UNHANDLED_REJECTION = 'runtime:unhandledRejection',
 }

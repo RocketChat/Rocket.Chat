@@ -1,10 +1,10 @@
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useIsCallReady, useIsCallError } from '../../../contexts/CallContext';
 import { OmnichannelCallToggleError } from './OmnichannelCallToggleError';
 import { OmnichannelCallToggleLoading } from './OmnichannelCallToggleLoading';
 import { OmnichannelCallToggleReady } from './OmnichannelCallToggleReady';
+import { useIsCallReady, useIsCallError } from '../../../contexts/CallContext';
 
 export const OmnichannelCallToggle = ({ ...props }): ReactElement => {
 	const isCallReady = useIsCallReady();

@@ -25,7 +25,7 @@ type MessageSearchProps = {
 const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactElement => {
 	const t = useTranslation();
 	const formatDate = useFormatDate();
-	const pageSize = useSetting<number>('PageSize') ?? 10;
+	const pageSize = useSetting('PageSize', 10);
 	const [limit, setLimit] = useState(pageSize);
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 

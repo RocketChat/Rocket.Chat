@@ -7,9 +7,9 @@ import type { ComponentProps } from 'react';
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useOmnichannelPriorities } from './useOmnichannelPriorities';
 import { dispatchToastMessage } from '../../lib/toast';
 import { PriorityIcon } from '../priorities/PriorityIcon';
-import { useOmnichannelPriorities } from './useOmnichannelPriorities';
 
 export const useOmnichannelPrioritiesMenu = (rid: string): ComponentProps<typeof Menu>['options'] | Record<string, never> => {
 	const { t } = useTranslation();

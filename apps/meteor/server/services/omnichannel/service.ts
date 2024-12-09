@@ -4,10 +4,10 @@ import type { AtLeast, IOmnichannelQueue, IOmnichannelRoom } from '@rocket.chat/
 import { License } from '@rocket.chat/license';
 import moment from 'moment';
 
+import { OmnichannelQueue } from './queue';
 import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../app/settings/server';
-import { OmnichannelQueue } from './queue';
 
 export class OmnichannelService extends ServiceClassInternal implements IOmnichannelService {
 	protected name = 'omnichannel';
@@ -33,11 +33,7 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 	}
 
 	async started() {
-		settings.watch<boolean>('Livechat_enabled', (enabled) => {
-			void (enabled && RoutingManager.isMethodSet() ? this.queueWorker.shouldStart() : this.queueWorker.stop());
-		});
-
-		settings.watch<string>('Livechat_Routing_Method', async () => {
+		settings.watchMultiple(['Livechat_enabled', 'Livechat_Routing_Method'], () => {
 			this.queueWorker.shouldStart();
 		});
 

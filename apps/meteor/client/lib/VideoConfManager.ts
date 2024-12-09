@@ -3,8 +3,8 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { getConfig } from './utils/getConfig';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 
 const debug = !!(getConfig('debug') || getConfig('debug-VideoConf'));
 
@@ -472,6 +472,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 				clearTimeout(call.acceptTimeout);
 			}
 		});
+		this.userId = undefined;
 		this.incomingDirectCalls.clear();
 		this.dismissedCalls.clear();
 		this.currentCallData = undefined;

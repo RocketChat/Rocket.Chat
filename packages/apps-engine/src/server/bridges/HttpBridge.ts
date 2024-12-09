@@ -1,8 +1,8 @@
+import { BaseBridge } from './BaseBridge';
 import type { IHttpRequest, IHttpResponse, RequestMethod } from '../../definition/accessors';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export interface IHttpBridgeRequestInfo {
     appId: string;

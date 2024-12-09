@@ -32,6 +32,8 @@ import type { ChangeEvent } from 'react';
 import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { useEditRoomInitialValues } from './useEditRoomInitialValues';
+import { useEditRoomPermissions } from './useEditRoomPermissions';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
 import {
 	ContextualbarHeader,
@@ -47,8 +49,6 @@ import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { getDirtyFields } from '../../../../../lib/getDirtyFields';
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
-import { useEditRoomInitialValues } from './useEditRoomInitialValues';
-import { useEditRoomPermissions } from './useEditRoomPermissions';
 
 type EditRoomInfoProps = {
 	room: IRoomWithRetentionPolicy;
@@ -83,7 +83,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const roomType = 'prid' in room ? 'discussion' : room.teamMain ? 'team' : 'channel';
 
 	const retentionPolicy = useRetentionPolicy(room);
-	const retentionMaxAgeDefault = msToTimeUnit(TIMEUNIT.days, Number(useSetting<number>(getRetentionSetting(room.t)))) ?? 30;
+	const retentionMaxAgeDefault = msToTimeUnit(TIMEUNIT.days, useSetting(getRetentionSetting(room.t), 2592000000)) ?? 30;
 	const defaultValues = useEditRoomInitialValues(room);
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');

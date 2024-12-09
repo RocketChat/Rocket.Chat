@@ -21,12 +21,12 @@ import React, { useEffect, useContext } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import type { MailExportFormValues } from './ExportMessages';
+import { useRoomExportMutation } from './useRoomExportMutation';
 import { validateEmail } from '../../../../../lib/emailValidator';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../components/Contextualbar';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
-import type { MailExportFormValues } from './ExportMessages';
-import { useRoomExportMutation } from './useRoomExportMutation';
 
 type MailExportFormProps = {
 	formId: string;
@@ -155,11 +155,8 @@ const MailExportForm = ({ formId, rid, onCancel, exportOptions }: MailExportForm
 									rules={{
 										validate: {
 											validateEmail: (additionalEmails) => {
-												if (additionalEmails === '') {
-													return undefined;
-												}
-
-												if (additionalEmails !== '' && validateEmail(additionalEmails)) {
+												const emails = additionalEmails?.split(',').map((email) => email.trim());
+												if (Array.isArray(emails) && emails.every((email) => validateEmail(email.trim()))) {
 													return undefined;
 												}
 

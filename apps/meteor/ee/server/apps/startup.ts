@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings, settingsRegistry } from '../../../app/settings/server';
 import { Apps } from './orchestrator';
+import { settings, settingsRegistry } from '../../../app/settings/server';
 
 Meteor.startup(async function _appServerOrchestrator() {
 	await settingsRegistry.addGroup('General', async function () {

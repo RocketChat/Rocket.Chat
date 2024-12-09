@@ -3,8 +3,8 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useOmnichannelRoom } from '../../contexts/RoomContext';
 import { useResumeChatOnHoldMutation } from './hooks/useResumeChatOnHoldMutation';
+import { useOmnichannelRoom } from '../../contexts/RoomContext';
 
 export const ComposerOmnichannelOnHold = (): ReactElement => {
 	const resumeChatOnHoldMutation = useResumeChatOnHoldMutation();

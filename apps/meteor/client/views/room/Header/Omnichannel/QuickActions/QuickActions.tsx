@@ -3,10 +3,10 @@ import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { HeaderToolbar, HeaderToolbarAction, HeaderToolbarDivider } from '../../../../../components/Header';
-import { useOmnichannelRoom } from '../../../contexts/RoomContext';
 import QuickActionOptions from './QuickActionOptions';
 import { useQuickActions } from './hooks/useQuickActions';
+import { HeaderToolbar, HeaderToolbarAction, HeaderToolbarDivider } from '../../../../../components/Header';
+import { useOmnichannelRoom } from '../../../contexts/RoomContext';
 
 type QuickActionsProps = {
 	className?: ComponentProps<typeof Box>['className'];
@@ -33,10 +33,10 @@ const QuickActions = ({ className }: QuickActionsProps) => {
 				};
 
 				if (options) {
-					return <QuickActionOptions options={options} {...props} key={id} />;
+					return <QuickActionOptions options={options} key={id} {...props} />;
 				}
 
-				return <HeaderToolbarAction {...props} key={id} />;
+				return <HeaderToolbarAction key={id} {...props} />;
 			})}
 			{quickActions.length > 0 && <HeaderToolbarDivider />}
 		</HeaderToolbar>

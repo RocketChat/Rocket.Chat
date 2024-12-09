@@ -1,10 +1,10 @@
 /* eslint-disable new-cap */
 import { expect } from 'chai';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import sinon from 'sinon';
 
-import { OverviewData } from '../../../../../server/services/omnichannel-analytics/OverviewData';
 import { conversations } from './mockData';
+import { OverviewData } from '../../../../../server/services/omnichannel-analytics/OverviewData';
 
 const analytics = (date: { gte: Date; lte: Date }) => {
 	// filter the mockData array with the date param with moment

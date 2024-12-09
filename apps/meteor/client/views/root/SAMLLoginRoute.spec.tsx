@@ -3,8 +3,8 @@ import { render } from '@testing-library/react';
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
 
-import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
 import SAMLLoginRoute from './SAMLLoginRoute';
+import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
 
 const navigateStub = jest.fn();
 

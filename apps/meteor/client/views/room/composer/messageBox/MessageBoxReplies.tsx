@@ -20,7 +20,7 @@ const MessageBoxReplies = (): ReactElement | null => {
 
 	const replies = useSyncExternalStore(chat.composer.quotedMessages.subscribe, chat.composer.quotedMessages.get);
 
-	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
+	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	if (!replies.length) {
 		return null;

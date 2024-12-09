@@ -2,7 +2,7 @@ import { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHo
 import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from '@rocket.chat/apps-engine/client/definition';
 import { Meteor } from 'meteor/meteor';
 
-import { ChatRoom } from '../../app/models/client';
+import { Rooms } from '../../app/models/client';
 import { getUserAvatarURL } from '../../app/utils/client/getUserAvatarURL';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { RoomManager } from '../lib/RoomManager';
@@ -30,7 +30,7 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	}
 
 	async getClientRoomInfo(): Promise<IExternalComponentRoomInfo> {
-		const { name: slugifiedName, _id: id } = ChatRoom.findOne(RoomManager.opened)!;
+		const { name: slugifiedName, _id: id } = Rooms.findOne(RoomManager.opened)!;
 
 		let cachedMembers: IExternalComponentUserInfo[] = [];
 		try {

@@ -37,13 +37,13 @@ type LoginRegisterPayload = {
 export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const { t } = useTranslation();
 
-	const requireNameForRegister = Boolean(useSetting('Accounts_RequireNameForSignUp'));
-	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
-	const manuallyApproveNewUsersRequired = useSetting('Accounts_ManuallyApproveNewUsers');
+	const requireNameForRegister = useSetting('Accounts_RequireNameForSignUp', true);
+	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation', true);
+	const manuallyApproveNewUsersRequired = useSetting('Accounts_ManuallyApproveNewUsers', false);
 
-	const usernameOrEmailPlaceholder = String(useSetting('Accounts_EmailOrUsernamePlaceholder'));
-	const passwordPlaceholder = String(useSetting('Accounts_PasswordPlaceholder'));
-	const passwordConfirmationPlaceholder = String(useSetting('Accounts_ConfirmPasswordPlaceholder'));
+	const usernameOrEmailPlaceholder = useSetting('Accounts_EmailOrUsernamePlaceholder', '');
+	const passwordPlaceholder = useSetting('Accounts_PasswordPlaceholder', '');
+	const passwordConfirmationPlaceholder = useSetting('Accounts_ConfirmPasswordPlaceholder', '');
 
 	const formLabelId = useUniqueId();
 	const passwordVerifierId = useUniqueId();

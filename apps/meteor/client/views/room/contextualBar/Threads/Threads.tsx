@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import Thread from './Thread';
 import ThreadList from './ThreadList';
+import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 const Threads = () => {
 	const { context: tmid } = useRoomToolbox();

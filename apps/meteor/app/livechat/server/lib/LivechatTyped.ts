@@ -13,12 +13,13 @@ import type {
 	TransferData,
 	IOmnichannelAgent,
 	ILivechatInquiryRecord,
-	ILivechatContact,
-	ILivechatContactChannel,
+	UserStatus,
 	IOmnichannelRoomInfo,
 	IOmnichannelRoomExtraData,
+	IOmnichannelSource,
+	ILivechatContactVisitorAssociation,
 } from '@rocket.chat/core-typings';
-import { OmnichannelSourceType, ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
 import {
 	LivechatDepartment,
@@ -37,12 +38,12 @@ import {
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { Filter, ClientSession, MongoError } from 'mongodb';
+import type { Filter, ClientSession } from 'mongodb';
 import UAParser from 'ua-parser-js';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
-import { client } from '../../../../server/database/utils';
+import { client, shouldRetryTransaction } from '../../../../server/database/utils';
 import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
@@ -65,20 +66,14 @@ import {
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
-import { createContact, createContactFromVisitor, isSingleContactEnabled } from './Contacts';
-import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
+import { parseAgentCustomFields, updateDepartmentAgents, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
+import { Visitors, type RegisterGuestType } from './Visitors';
+import { registerGuestData } from './contacts/registerGuestData';
 import { getRequiredDepartment } from './departmentsLib';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor, ILivechatMessage } from './localTypes';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
-
-type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username'>> & {
-	id?: string;
-	connectionData?: any;
-	email?: string;
-	phone?: { number: string };
-};
 
 type AKeyOf<T> = {
 	[K in keyof T]?: T[K];
@@ -163,10 +158,7 @@ class LivechatClass {
 			this.logger.error({ err: e, msg: 'Failed to close room', afterAttempts: attempts });
 			await session.abortTransaction();
 			// Dont propagate transaction errors
-			if (
-				(e as unknown as MongoError)?.errorLabels?.includes('UnknownTransactionCommitResult') ||
-				(e as unknown as MongoError)?.errorLabels?.includes('TransientTransactionError')
-			) {
+			if (shouldRetryTransaction(e)) {
 				if (attempts > 0) {
 					this.logger.debug(`Retrying close room because of transient error. Attempts left: ${attempts}`);
 					return this.closeRoom(params, attempts - 1);
@@ -332,6 +324,16 @@ class LivechatClass {
 		return { room: newRoom, closedBy: closeData.closedBy, removedInquiry: inquiry };
 	}
 
+	private makeVisitorAssociation(visitorId: string, roomInfo: IOmnichannelSource): ILivechatContactVisitorAssociation {
+		return {
+			visitorId,
+			source: {
+				type: roomInfo.type,
+				id: roomInfo.id,
+			},
+		};
+	}
+
 	async createRoom({
 		visitor,
 		message,
@@ -349,6 +351,10 @@ class LivechatClass {
 	}) {
 		if (!settings.get('Livechat_enabled')) {
 			throw new Meteor.Error('error-omnichannel-is-disabled');
+		}
+
+		if (await LivechatContacts.isChannelBlocked(this.makeVisitorAssociation(visitor._id, roomInfo.source))) {
+			throw new Error('error-contact-channel-blocked');
 		}
 
 		const defaultAgent = await callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, visitor);
@@ -375,55 +381,6 @@ class LivechatClass {
 			extraData,
 		});
 
-		if (isSingleContactEnabled()) {
-			let { contactId } = visitor;
-
-			if (!contactId) {
-				const visitorContact = await LivechatVisitors.findOne<
-					Pick<ILivechatVisitor, 'name' | 'contactManager' | 'livechatData' | 'phone' | 'visitorEmails' | 'username' | 'contactId'>
-				>(visitor._id, {
-					projection: {
-						name: 1,
-						contactManager: 1,
-						livechatData: 1,
-						phone: 1,
-						visitorEmails: 1,
-						username: 1,
-						contactId: 1,
-					},
-				});
-
-				contactId = visitorContact?.contactId;
-			}
-
-			if (!contactId) {
-				// ensure that old visitors have a contact
-				contactId = await createContactFromVisitor(visitor);
-			}
-
-			const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'channels'>>(contactId, {
-				projection: { _id: 1, channels: 1 },
-			});
-
-			if (contact) {
-				const channel = contact.channels?.find(
-					(channel: ILivechatContactChannel) => channel.name === roomInfo.source?.type && channel.visitorId === visitor._id,
-				);
-
-				if (!channel) {
-					Livechat.logger.debug(`Adding channel for contact ${contact._id}`);
-
-					await LivechatContacts.addChannel(contact._id, {
-						name: roomInfo.source?.label || roomInfo.source?.type.toString() || OmnichannelSourceType.OTHER,
-						visitorId: visitor._id,
-						blocked: false,
-						verified: false,
-						details: roomInfo.source,
-					});
-				}
-			}
-		}
-
 		Livechat.logger.debug(`Room obtained for visitor ${visitor._id} -> ${room._id}`);
 
 		await Messages.setRoomIdByToken(visitor.token, room._id);
@@ -443,6 +400,10 @@ class LivechatClass {
 		}
 		Livechat.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
 		const room = await LivechatRooms.findOneById(message.rid);
+
+		if (room?.v._id && (await LivechatContacts.isChannelBlocked(this.makeVisitorAssociation(room.v._id, room.source)))) {
+			throw new Error('error-contact-channel-blocked');
+		}
 
 		if (room && !room.open) {
 			Livechat.logger.debug(`Last room for visitor ${guest._id} closed. Creating new one`);
@@ -521,107 +482,14 @@ class LivechatClass {
 		}
 	}
 
-	isValidObject(obj: unknown): obj is Record<string, any> {
-		return typeof obj === 'object' && obj !== null;
-	}
+	async registerGuest(newData: RegisterGuestType): Promise<ILivechatVisitor | null> {
+		const result = await Visitors.registerGuest(newData);
 
-	async registerGuest({
-		id,
-		token,
-		name,
-		phone,
-		email,
-		department,
-		username,
-		connectionData,
-		status = UserStatus.ONLINE,
-	}: RegisterGuestType): Promise<ILivechatVisitor | null> {
-		check(token, String);
-		check(id, Match.Maybe(String));
-
-		Livechat.logger.debug(`New incoming conversation: id: ${id} | token: ${token}`);
-
-		const visitorDataToUpdate: Partial<ILivechatVisitor> & { userAgent?: string; ip?: string; host?: string } = {
-			token,
-			status,
-			...(phone?.number ? { phone: [{ phoneNumber: phone.number }] } : {}),
-			...(name ? { name } : {}),
-		};
-
-		if (email) {
-			const visitorEmail = email.trim().toLowerCase();
-			validateEmail(visitorEmail);
-			visitorDataToUpdate.visitorEmails = [{ address: visitorEmail }];
+		if (result) {
+			await registerGuestData(newData, result);
 		}
 
-		const livechatVisitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
-
-		if (livechatVisitor?.department !== department && department) {
-			Livechat.logger.debug(`Attempt to find a department with id/name ${department}`);
-			const dep = await LivechatDepartment.findOneByIdOrName(department, { projection: { _id: 1 } });
-			if (!dep) {
-				Livechat.logger.debug(`Invalid department provided: ${department}`);
-				throw new Meteor.Error('error-invalid-department', 'The provided department is invalid');
-			}
-			Livechat.logger.debug(`Assigning visitor ${token} to department ${dep._id}`);
-			visitorDataToUpdate.department = dep._id;
-		}
-
-		visitorDataToUpdate.token = livechatVisitor?.token || token;
-
-		let existingUser = null;
-
-		if (livechatVisitor) {
-			Livechat.logger.debug('Found matching user by token');
-			visitorDataToUpdate._id = livechatVisitor._id;
-		} else if (phone?.number && (existingUser = await LivechatVisitors.findOneVisitorByPhone(phone.number))) {
-			Livechat.logger.debug('Found matching user by phone number');
-			visitorDataToUpdate._id = existingUser._id;
-			// Don't change token when matching by phone number, use current visitor token
-			visitorDataToUpdate.token = existingUser.token;
-		} else if (email && (existingUser = await LivechatVisitors.findOneGuestByEmailAddress(email))) {
-			Livechat.logger.debug('Found matching user by email');
-			visitorDataToUpdate._id = existingUser._id;
-		} else if (!livechatVisitor) {
-			Livechat.logger.debug(`No matches found. Attempting to create new user with token ${token}`);
-
-			visitorDataToUpdate._id = id || undefined;
-			visitorDataToUpdate.username = username || (await LivechatVisitors.getNextVisitorUsername());
-			visitorDataToUpdate.status = status;
-			visitorDataToUpdate.ts = new Date();
-
-			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations') && Livechat.isValidObject(connectionData)) {
-				Livechat.logger.debug(`Saving connection data for visitor ${token}`);
-				const { httpHeaders, clientAddress } = connectionData;
-				if (Livechat.isValidObject(httpHeaders)) {
-					visitorDataToUpdate.userAgent = httpHeaders['user-agent'];
-					visitorDataToUpdate.ip = httpHeaders['x-real-ip'] || httpHeaders['x-forwarded-for'] || clientAddress;
-					visitorDataToUpdate.host = httpHeaders?.host;
-				}
-			}
-		}
-
-		if (isSingleContactEnabled()) {
-			const contactId = await createContact({
-				name: name ?? (visitorDataToUpdate.username as string),
-				emails: email ? [email] : [],
-				phones: phone ? [phone.number] : [],
-				unknown: true,
-			});
-			visitorDataToUpdate.contactId = contactId;
-		}
-
-		const upsertedLivechatVisitor = await LivechatVisitors.updateOneByIdOrToken(visitorDataToUpdate, {
-			upsert: true,
-			returnDocument: 'after',
-		});
-
-		if (!upsertedLivechatVisitor.value) {
-			Livechat.logger.debug(`No visitor found after upsert`);
-			return null;
-		}
-
-		return upsertedLivechatVisitor.value;
+		return result;
 	}
 
 	private async getBotAgents(department?: string) {

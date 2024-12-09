@@ -5,6 +5,7 @@ import React from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import PruneMessagesDateTimeRow from './PruneMessagesDateTimeRow';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -14,7 +15,6 @@ import {
 	ContextualbarClose,
 } from '../../../../components/Contextualbar';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
-import PruneMessagesDateTimeRow from './PruneMessagesDateTimeRow';
 
 type PruneMessagesProps = {
 	callOutText?: string;

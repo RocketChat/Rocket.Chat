@@ -5,10 +5,10 @@ import { useQuery } from '@tanstack/react-query';
 import React, { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ContextualbarFooter } from '../../../components/Contextualbar';
-import GenericNoResults from '../../../components/GenericNoResults';
 import MessageContextFooter from './MessageContextFooter';
 import ContextMessage from './helpers/ContextMessage';
+import { ContextualbarFooter } from '../../../components/Contextualbar';
+import GenericNoResults from '../../../components/GenericNoResults';
 
 const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid: string) => void }) => {
 	const { t } = useTranslation();

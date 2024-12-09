@@ -1,9 +1,10 @@
 import { applyLicense } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
 
+import { syncCloudData } from './syncWorkspace/syncCloudData';
+import { updateAuditedBySystem } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
-import { syncCloudData } from './syncWorkspace/syncCloudData';
 
 type SaveRegistrationDataDTO = {
 	workspaceId: string;
@@ -59,7 +60,13 @@ async function saveRegistrationDataBase({
 		{ _id: 'Cloud_Workspace_Registration_Client_Uri', value: registration_client_uri },
 	];
 
-	const promises = [...settingsData.map(({ _id, value }) => Settings.updateValueById(_id, value))];
+	const promises = [
+		...settingsData.map(({ _id, value }) =>
+			updateAuditedBySystem({
+				reason: 'saveRegistrationDataBase',
+			})(Settings.updateValueById, _id, value),
+		),
+	];
 
 	(await Promise.all(promises)).forEach((value, index) => {
 		if (value?.modifiedCount) {
@@ -67,7 +74,10 @@ async function saveRegistrationDataBase({
 		}
 	});
 
-	// TODO: Why is this taking so long that needs a timeout?
+	// Question: Why is this taking so long that needs a timeout?
+	// Answer: we use cache that requires a 'roundtrip' through the db and the application
+	// we need to make sure that the cache is updated before we continue the procedures
+	// we don't actually need to wait a whole second for this, but look this is just a retry mechanism it doesn't mean that actually takes all this time
 	for await (const retry of Array.from({ length: 10 })) {
 		const isSettingsUpdated =
 			settings.get('Register_Server') === true &&

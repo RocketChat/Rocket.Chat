@@ -6,6 +6,7 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ReportReasonCollapsible from './ReportReasonCollapsible';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import Attachments from '../../../../components/message/content/Attachments';
 import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';
@@ -16,7 +17,6 @@ import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
 import MessageReportInfo from '../MessageReportInfo';
 import useDeleteMessage from '../hooks/useDeleteMessage';
 import { useDismissMessageAction } from '../hooks/useDismissMessageAction';
-import ReportReasonCollapsible from './ReportReasonCollapsible';
 
 const ContextMessage = ({
 	message,
@@ -41,7 +41,7 @@ const ContextMessage = ({
 	const formatDateAndTime = useFormatDateAndTime();
 	const formatTime = useFormatTime();
 	const formatDate = useFormatDate();
-	const useRealName = Boolean(useSetting('UI_Use_Real_Name'));
+	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	const name = message.u.name || '';
 	const username = message.u.username || '';
