@@ -94,11 +94,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     private readonly livenessManager: LivenessManager;
 
     // We need to keep the appSource around in case the Deno process needs to be restarted
-    constructor(
-        manager: AppManager,
-        private readonly appPackage: IParseAppPackageResult,
-        private readonly storageItem: IAppStorageItem,
-    ) {
+    constructor(manager: AppManager, private readonly appPackage: IParseAppPackageResult, private readonly storageItem: IAppStorageItem) {
         super();
 
         this.debug = baseDebug.extend(appPackage.info.id);
