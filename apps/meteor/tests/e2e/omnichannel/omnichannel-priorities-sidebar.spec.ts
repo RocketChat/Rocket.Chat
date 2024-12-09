@@ -3,6 +3,7 @@ import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { OmnichannelRoomInfo } from '../page-objects/omnichannel-room-info';
+import { setSettingValueById } from '../utils';
 import { createConversation } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
@@ -20,11 +21,11 @@ test.describe.serial('OC - Priorities [Sidebar]', () => {
 	let poRoomInfo: OmnichannelRoomInfo;
 
 	test.beforeAll(async ({ api }) => {
+		await setSettingValueById(api, 'Livechat_Routing_Method', 'Manual_Selection');
 		(
 			await Promise.all([
 				api.post('/livechat/users/agent', { username: 'user1' }),
 				api.post('/livechat/users/manager', { username: 'user1' }),
-				api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }),
 			])
 		).every((res) => expect(res.status()).toBe(200));
 	});
@@ -44,13 +45,10 @@ test.describe.serial('OC - Priorities [Sidebar]', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		(
-			await Promise.all([
-				api.delete('/livechat/users/agent/user1'),
-				api.delete('/livechat/users/manager/user1'),
-				api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
-			])
-		).every((res) => expect(res.status()).toBe(200));
+		await setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection');
+		(await Promise.all([api.delete('/livechat/users/agent/user1'), api.delete('/livechat/users/manager/user1')])).every((res) =>
+			expect(res.status()).toBe(200),
+		);
 	});
 
 	test('OC - Priorities [Sidebar] - Update conversation priority', async ({ page }) => {

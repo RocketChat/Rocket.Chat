@@ -2,6 +2,7 @@ import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChatEmbedded } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
@@ -61,8 +62,7 @@ test.describe('OC - Livechat - Message list background', async () => {
 		});
 
 		await test.step('expect to change message list background', async () => {
-			const res = await api.post('/settings/Livechat_background', { value: 'rgb(186, 1, 85)' });
-			await expect(res.status()).toBe(200);
+			await setSettingValueById(api, 'Livechat_background', 'rgb(186, 1, 85)');
 
 			await page.reload();
 			await poLiveChat.openLiveChat();
@@ -81,8 +81,7 @@ test.describe('OC - Livechat - Message list background', async () => {
 		});
 
 		await test.step('expect to reset message list background to default', async () => {
-			const res = await api.post('/settings/Livechat_background', { value: '' });
-			await expect(res.status()).toBe(200);
+			await setSettingValueById(api, 'Livechat_background', '');
 
 			await page.reload();
 			await poLiveChat.openLiveChat();

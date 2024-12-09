@@ -4,6 +4,7 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelBusinessHours } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { createBusinessHour } from '../utils/omnichannel/businessHours';
 import { createDepartment } from '../utils/omnichannel/departments';
@@ -23,16 +24,20 @@ test.describe('OC - Business Hours', () => {
 		department = await createDepartment(api);
 		department2 = await createDepartment(api);
 		agent = await createAgent(api, 'user2');
-		await api.post('/settings/Livechat_enable_business_hours', { value: true }).then((res) => expect(res.status()).toBe(200));
-		await api.post('/settings/Livechat_business_hour_type', { value: 'Multiple' }).then((res) => expect(res.status()).toBe(200));
+		await Promise.all([
+			setSettingValueById(api, 'Livechat_enable_business_hours', true),
+			setSettingValueById(api, 'Livechat_business_hour_type', 'Multiple'),
+		]);
 	});
 
 	test.afterAll(async ({ api }) => {
 		await department.delete();
 		await department2.delete();
 		await agent.delete();
-		await api.post('/settings/Livechat_enable_business_hours', { value: false }).then((res) => expect(res.status()).toBe(200));
-		await api.post('/settings/Livechat_business_hour_type', { value: 'Single' }).then((res) => expect(res.status()).toBe(200));
+		await Promise.all([
+			setSettingValueById(api, 'Livechat_enable_business_hours', false),
+			setSettingValueById(api, 'Livechat_business_hour_type', 'Single'),
+		]);
 	});
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
