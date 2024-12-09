@@ -3016,15 +3016,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bugsnag/plugin-react@npm:~7.19.0":
-  version: 7.19.0
-  resolution: "@bugsnag/plugin-react@npm:7.19.0"
+"@bugsnag/plugin-react@npm:~8.1.1":
+  version: 8.1.1
+  resolution: "@bugsnag/plugin-react@npm:8.1.1"
   peerDependencies:
-    "@bugsnag/core": ^7.0.0
+    "@bugsnag/core": ^8.0.0
   peerDependenciesMeta:
     "@bugsnag/core":
       optional: true
-  checksum: 10/5771221af57dfbe42c4e111af1effadce7b0551d94ac1c4063e15d8623c3c237a37e5de5316969799d8122d5a38f8c7595a49f2bafeec51a59ceabd80b1dd3aa
+  checksum: 10/9c791870c363ec1879b0414225c20272c2b61aa4e99a6912bbd51039d61c10dce99bcd05bc19398bd5c657b216dff5b60aed0e6cdc2985eae1619c8355a60117
   languageName: node
   linkType: hard
 
@@ -9141,7 +9141,7 @@ __metadata:
     "@babel/register": "npm:~7.25.9"
     "@babel/runtime": "npm:~7.26.0"
     "@bugsnag/js": "npm:~7.20.2"
-    "@bugsnag/plugin-react": "npm:~7.19.0"
+    "@bugsnag/plugin-react": "npm:~8.1.1"
     "@faker-js/faker": "npm:~8.0.2"
     "@google-cloud/storage": "npm:^6.12.0"
     "@kaciras/deasync": "npm:^1.1.0"
