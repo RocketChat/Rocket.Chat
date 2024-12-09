@@ -19,37 +19,6 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		return options ? this.find(query, options) : this.find(query);
 	}
 
-	async addUserRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
-		if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
-			throw new Error('Roles.addUserRoles method received a role scope instead of a scope value.');
-		}
-
-		if (!Array.isArray(roles)) {
-			roles = [roles];
-			process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.addUserRoles: roles should be an array');
-		}
-
-		for await (const roleId of roles) {
-			const role = await this.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
-
-			if (!role) {
-				process.env.NODE_ENV === 'development' && console.warn(`[WARN] RolesRaw.addUserRoles: role: ${roleId} not found`);
-				continue;
-			}
-
-			if (role.scope === 'Subscriptions' && scope) {
-				// TODO remove dependency from other models - this logic should be inside a function/service
-				const addRolesResponse = await Subscriptions.addRolesByUserId(userId, [role._id], scope);
-				if (addRolesResponse.modifiedCount) {
-					void notifyOnSubscriptionChangedByRoomIdAndUserId(scope, userId);
-				}
-			} else {
-				await Users.addRolesByUserId(userId, [role._id]);
-			}
-		}
-		return true;
-	}
-
 	async isUserInRoles(userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
 		if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
 			throw new Error('Roles.isUserInRoles method received a role scope instead of a scope value.');
