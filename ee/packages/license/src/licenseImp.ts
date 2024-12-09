@@ -20,7 +20,14 @@ import {
 import { overwriteClassOnLicense } from './events/overwriteClassOnLicense';
 import { LicenseManager } from './license';
 import { logger } from './logger';
-import { getExternalModules, getModuleDefinition, getModules, hasModule } from './modules';
+import {
+	getExternalModules,
+	getModuleDefinition,
+	getModules,
+	hasModule,
+	canChangeLicenseModulesForTesting,
+	changeModulesForTesting,
+} from './modules';
 import { showLicense } from './showLicense';
 import { getTags } from './tags';
 import { getCurrentValueForLicenseLimit, setLicenseLimitCounter } from './validation/getCurrentValueForLicenseLimit';
@@ -47,6 +54,8 @@ interface License {
 	onLimitReached: typeof onLimitReached;
 	onBehaviorTriggered: typeof onBehaviorTriggered;
 	revalidateLicense: () => Promise<void>;
+	canChangeLicenseModulesForTesting: typeof canChangeLicenseModulesForTesting;
+	changeModulesForTesting: typeof changeModulesForTesting;
 
 	getInfo: (info: { limits: boolean; currentValues: boolean; license: boolean }) => Promise<LicenseInfo>;
 
@@ -133,6 +142,10 @@ export class LicenseImp extends LicenseManager implements License {
 	onBehaviorTriggered = onBehaviorTriggered;
 
 	onBehaviorToggled = onBehaviorToggled;
+
+	canChangeLicenseModulesForTesting = canChangeLicenseModulesForTesting;
+
+	changeModulesForTesting = changeModulesForTesting;
 
 	// Deprecated:
 	onLicense = onLicense;
