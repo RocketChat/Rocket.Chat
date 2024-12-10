@@ -7,7 +7,7 @@ import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessag
 
 export const useJumpToMessageContextAction = (
 	message: IMessage,
-	{ id, order, hidden, context }: { id: string; order: number; hidden?: boolean; context: MessageActionContext[] },
+	{ id, hidden, context }: { id: string; hidden?: boolean; context: MessageActionContext[] },
 ) => {
 	useEffect(() => {
 		if (hidden) {
@@ -22,12 +22,12 @@ export const useJumpToMessageContextAction = (
 			async action() {
 				setMessageJumpQueryStringParameter(message._id);
 			},
-			order,
+			order: 100,
 			group: 'message',
 		});
 
 		return () => {
 			MessageAction.removeButton(id);
 		};
-	}, [hidden, context, id, message._id, order]);
+	}, [hidden, context, id, message._id]);
 };
