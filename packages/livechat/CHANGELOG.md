@@ -1,5 +1,16 @@
 # @rocket.chat/livechat Change Log
 
+## 1.20.2
+
+### Patch Changes
+
+- ([#34150](https://github.com/RocketChat/Rocket.Chat/pull/34150) by [@dionisio-bot](https://github.com/dionisio-bot)) Prevent apps' subprocesses from crashing on unhandled rejections or uncaught exceptions
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@12.0.1
+  </details>
+
 ## 1.20.1
 
 ### Patch Changes

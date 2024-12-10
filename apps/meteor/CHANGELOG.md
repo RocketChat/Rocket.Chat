@@ -1,5 +1,52 @@
 # @rocket.chat/meteor
 
+## 7.0.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#34152](https://github.com/RocketChat/Rocket.Chat/pull/34152) by [@dionisio-bot](https://github.com/dionisio-bot)) Removes a validation that allowed only the room creator to propagate E2EE room keys. This was causing issues when the rooms were created via apps or some other integration, as the creator may not be online or able to create E2EE keys
+
+- ([#34114](https://github.com/RocketChat/Rocket.Chat/pull/34114) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixed an issue that caused clients to not properly receive certain server notifications right after login
+
+- ([#34035](https://github.com/RocketChat/Rocket.Chat/pull/34035) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes `waiting queue` feature. When `Livechat_waiting_queue` setting is enabled, incoming conversations should be sent to the queue instead of being assigned directly.
+
+- ([#34075](https://github.com/RocketChat/Rocket.Chat/pull/34075) by [@dionisio-bot](https://github.com/dionisio-bot)) fixed an issue that caused the conference call ringer to fail to accept calls if the user logged out and in again
+
+- ([#34150](https://github.com/RocketChat/Rocket.Chat/pull/34150) by [@dionisio-bot](https://github.com/dionisio-bot)) Prevent apps' subprocesses from crashing on unhandled rejections or uncaught exceptions
+
+- <details><summary>Updated dependencies [bef79cd260, 58e1c80f8e, a4ed2de60c, a4ed2de60c]:</summary>
+
+  - @rocket.chat/apps-engine@1.47.1
+  - @rocket.chat/i18n@1.0.1
+  - @rocket.chat/presence@0.2.10
+  - @rocket.chat/apps@0.2.1
+  - @rocket.chat/core-services@0.7.2
+  - @rocket.chat/core-typings@7.0.1
+  - @rocket.chat/fuselage-ui-kit@12.0.1
+  - @rocket.chat/rest-typings@7.0.1
+  - @rocket.chat/ui-contexts@12.0.1
+  - @rocket.chat/web-ui-registration@12.0.1
+  - @rocket.chat/ui-client@12.0.1
+  - @rocket.chat/ui-voip@2.0.1
+  - @rocket.chat/ui-theming@0.4.0
+  - @rocket.chat/gazzodown@12.0.1
+  - @rocket.chat/ui-avatar@8.0.1
+  - @rocket.chat/ui-video-conf@12.0.1
+  - @rocket.chat/license@1.0.1
+  - @rocket.chat/omnichannel-services@0.3.7
+  - @rocket.chat/pdf-worker@0.2.7
+  - @rocket.chat/api-client@0.2.10
+  - @rocket.chat/cron@0.1.10
+  - @rocket.chat/freeswitch@1.0.1
+  - @rocket.chat/model-typings@1.0.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.2
+  - @rocket.chat/models@1.0.1
+  - @rocket.chat/instance-status@0.1.10
+  </details>
+
 ## 7.0.0
 
 ### Major Changes

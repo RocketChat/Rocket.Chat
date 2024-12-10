@@ -1,5 +1,11 @@
 # @rocket.chat/i18n
 
+## 1.0.1
+
+### Patch Changes
+
+- ([#34150](https://github.com/RocketChat/Rocket.Chat/pull/34150) by [@dionisio-bot](https://github.com/dionisio-bot)) Prevent apps' subprocesses from crashing on unhandled rejections or uncaught exceptions
+
 ## 1.0.0
 
 ### Major Changes

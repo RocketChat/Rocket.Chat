@@ -1,5 +1,17 @@
 # @rocket.chat/apps-engine
 
+## 1.47.1
+
+### Patch Changes
+
+- ([#34149](https://github.com/RocketChat/Rocket.Chat/pull/34149) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that would cause apps to appear disabled after a subprocess restart
+
+- ([#34150](https://github.com/RocketChat/Rocket.Chat/pull/34150) by [@dionisio-bot](https://github.com/dionisio-bot)) Prevent apps' subprocesses from crashing on unhandled rejections or uncaught exceptions
+
+- ([#34147](https://github.com/RocketChat/Rocket.Chat/pull/34147) by [@dionisio-bot](https://github.com/dionisio-bot)) Removed the 1 second timeout of `Pre` app events. Now they will follow the "global" configuration
+
+- ([#34147](https://github.com/RocketChat/Rocket.Chat/pull/34147) by [@dionisio-bot](https://github.com/dionisio-bot)) Add support to configure apps runtime timeout via the APPS_ENGINE_RUNTIME_TIMEOUT environment variable
+
 ## 1.47.0
 
 ### Minor Changes
