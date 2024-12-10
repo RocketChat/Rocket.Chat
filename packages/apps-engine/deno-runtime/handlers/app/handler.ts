@@ -19,8 +19,8 @@ import handleOnUpdate from './handleOnUpdate.ts';
 export default async function handleApp(method: string, params: unknown): Promise<Defined | JsonRpcError> {
     const [, appMethod] = method.split(':');
 
-    // We don't want the getStatus method to generate logs, so we handle it separately
     try {
+        // We don't want the getStatus method to generate logs, so we handle it separately
         if (appMethod === 'getStatus') {
             return await handleGetStatus();
         }
