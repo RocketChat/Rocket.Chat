@@ -41,8 +41,8 @@ import { useViewOriginalTranslationAction } from './useViewOriginalTranslationAc
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
-import { useMessageActionAppsActionButtons } from '../../../hooks/useAppActionButtons';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
+import { useMessageActionAppsActionButtons } from '../../../hooks/useMessageActionAppsActionButtons';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
 
 const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
