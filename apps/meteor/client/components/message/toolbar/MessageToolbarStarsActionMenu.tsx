@@ -4,7 +4,7 @@ import type { MouseEvent, ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { MessageActionConditionProps, MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 
 type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order' | 'action'> & {
 	action: (e?: MouseEvent<HTMLElement>) => void;
@@ -19,16 +19,10 @@ type MessageActionSection = {
 type MessageActionMenuProps = {
 	onChangeMenuVisibility: (visible: boolean) => void;
 	options: MessageActionConfigOption[];
-	context: MessageActionConditionProps;
 	isMessageEncrypted: boolean;
 };
 
-const MessageToolbarStarsActionMenu = ({
-	options,
-	onChangeMenuVisibility,
-	context,
-	isMessageEncrypted,
-}: MessageActionMenuProps): ReactElement => {
+const MessageToolbarStarsActionMenu = ({ options, onChangeMenuVisibility, isMessageEncrypted }: MessageActionMenuProps): ReactElement => {
 	const { t } = useTranslation();
 	const id = useUniqueId();
 
@@ -40,9 +34,9 @@ const MessageToolbarStarsActionMenu = ({
 			content: t(option.label),
 			onClick: option.action,
 			type: option.type,
-			...(option.disabled && { disabled: option?.disabled?.(context) }),
-			...(option.disabled &&
-				option?.disabled?.(context) && { tooltip: t('Action_not_available_encrypted_content', { action: t(option.label) }) }),
+			...(typeof option.disabled === 'boolean' && { disabled: option.disabled }),
+			...(typeof option.disabled === 'boolean' &&
+				option.disabled && { tooltip: t('Action_not_available_encrypted_content', { action: t(option.label) }) }),
 		};
 
 		const group = option.type || '';
