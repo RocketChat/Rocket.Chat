@@ -220,4 +220,8 @@ export class OmnichannelLiveChat {
 
 		await this.fileUploadTarget.dispatchEvent('drop', { dataTransfer });
 	}
+
+	queuePosition(position: number): Locator {
+		return this.page.locator(`div[role='alert'] >> text=Your spot is #${position}`);
+	}
 }
