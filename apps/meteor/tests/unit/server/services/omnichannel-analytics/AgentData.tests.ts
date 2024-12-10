@@ -735,7 +735,7 @@ describe('AgentData Analytics', () => {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
 						{
-							servedBy: {
+							responseBy: {
 								username: 'agent 1',
 							},
 							metrics: {
@@ -772,7 +772,7 @@ describe('AgentData Analytics', () => {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
 						{
-							servedBy: {
+							responseBy: {
 								username: 'agent 1',
 							},
 							metrics: {
@@ -782,7 +782,7 @@ describe('AgentData Analytics', () => {
 							},
 						},
 						{
-							servedBy: {
+							responseBy: {
 								username: 'agent 2',
 							},
 							metrics: {
@@ -824,6 +824,9 @@ describe('AgentData Analytics', () => {
 					return [
 						{
 							servedBy: {
+								username: 'agent 3',
+							},
+							responseBy: {
 								username: 'agent 1',
 							},
 							metrics: {
@@ -834,6 +837,9 @@ describe('AgentData Analytics', () => {
 						},
 						{
 							servedBy: {
+								username: 'agent 4',
+							},
+							responseBy: {
 								username: 'agent 2',
 							},
 							metrics: {
@@ -844,6 +850,9 @@ describe('AgentData Analytics', () => {
 						},
 						{
 							servedBy: {
+								username: 'agent 5',
+							},
+							responseBy: {
 								username: 'agent 1',
 							},
 							metrics: {
@@ -879,12 +888,12 @@ describe('AgentData Analytics', () => {
 				],
 			});
 		});
-		it('should ignore conversations not being served by any agent', async () => {
+		it('should ignore conversations not responded by any agent', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
 						{
-							servedBy: undefined,
+							responseBy: undefined,
 							metrics: {
 								response: {
 									ft: 100,
@@ -914,7 +923,7 @@ describe('AgentData Analytics', () => {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
 						{
-							servedBy: {
+							responseBy: {
 								username: 'agent 1',
 							},
 							metrics: undefined,

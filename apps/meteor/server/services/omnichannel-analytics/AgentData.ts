@@ -235,15 +235,15 @@ export class AgentOverviewData {
 			data: [],
 		};
 
-		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
-			if (servedBy && metrics && metrics.response && metrics.response.ft) {
-				if (agentAvgRespTime.has(servedBy.username)) {
-					agentAvgRespTime.set(servedBy.username, {
-						frt: agentAvgRespTime.get(servedBy.username).frt + metrics.response.ft,
-						total: agentAvgRespTime.get(servedBy.username).total + 1,
+		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, responseBy }) => {
+			if (responseBy && metrics && metrics.response && metrics.response.ft) {
+				if (agentAvgRespTime.has(responseBy.username)) {
+					agentAvgRespTime.set(responseBy.username, {
+						frt: agentAvgRespTime.get(responseBy.username).frt + metrics.response.ft,
+						total: agentAvgRespTime.get(responseBy.username).total + 1,
 					});
 				} else {
-					agentAvgRespTime.set(servedBy.username, {
+					agentAvgRespTime.set(responseBy.username, {
 						frt: metrics.response.ft,
 						total: 1,
 					});
