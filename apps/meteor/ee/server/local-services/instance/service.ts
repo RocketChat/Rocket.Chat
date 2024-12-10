@@ -33,41 +33,12 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 	private transporter: Transporters.TCP | Transporters.NATS;
 
-	private isTransporterTCP = true;
-
 	private broker: ServiceBroker;
 
 	private troubleshootDisableInstanceBroadcast = false;
 
 	constructor() {
 		super();
-
-		const transporter = getTransporter({
-			transporter: process.env.TRANSPORTER,
-			port: process.env.TCP_PORT,
-			extra: process.env.TRANSPORTER_EXTRA,
-		});
-		this.isTransporterTCP = typeof transporter !== 'string';
-
-		const activeInstances = InstanceStatusRaw.getActiveInstancesAddress()
-			.then((instances) => {
-				console.info(`Found ${instances.length} active instances`);
-				return instances;
-			})
-			.catch(() => []);
-
-		this.transporter = this.isTransporterTCP
-			? new Transporters.TCP({ ...transporter, urls: activeInstances })
-			: new Transporters.NATS({ url: transporter });
-
-		this.broker = new ServiceBroker({
-			nodeID: InstanceStatus.id(),
-			transporter: this.transporter,
-			serializer: new EJSONSerializer(),
-			heartbeatInterval: defaultPingInterval,
-			heartbeatTimeout: indexExpire,
-			...getLogger(process.env),
-		});
 
 		this.onEvent('license.module', async ({ module, valid }) => {
 			if (module === 'scalability' && valid) {
@@ -98,6 +69,28 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	}
 
 	async created() {
+		const transporter = getTransporter({
+			transporter: process.env.TRANSPORTER,
+			port: process.env.TCP_PORT,
+			extra: process.env.TRANSPORTER_EXTRA,
+		});
+
+		const activeInstances = InstanceStatusRaw.getActiveInstancesAddress();
+
+		this.transporter =
+			typeof transporter !== 'string'
+				? new Transporters.TCP({ ...transporter, urls: activeInstances })
+				: new Transporters.NATS({ url: transporter });
+
+		this.broker = new ServiceBroker({
+			nodeID: InstanceStatus.id(),
+			transporter: this.transporter,
+			serializer: new EJSONSerializer(),
+			heartbeatInterval: defaultPingInterval,
+			heartbeatTimeout: indexExpire,
+			...getLogger(process.env),
+		});
+
 		this.broker.createService({
 			name: 'matrix',
 			events: {

@@ -1,10 +1,12 @@
+import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import { InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';
 import { v4 as uuidv4 } from 'uuid';
 
-export const defaultPingInterval = parseInt(String(process.env.MULTIPLE_INSTANCES_PING_INTERVAL)) || 10; // default to 10s
-export const indexExpire = (parseInt(String(process.env.MULTIPLE_INSTANCES_EXPIRE)) || Math.ceil((defaultPingInterval * 3) / 60)) * 60;
+const defaultPingInterval = parseInt(String(process.env.MULTIPLE_INSTANCES_PING_INTERVAL)) || 10;
+const indexExpire = (parseInt(String(process.env.MULTIPLE_INSTANCES_EXPIRE)) || Math.ceil((defaultPingInterval * 3) / 60)) * 60;
 
 const ID = uuidv4();
+const id = (): IInstanceStatus['_id'] => ID;
 
 const currentInstance = {
 	name: '',
@@ -12,10 +14,6 @@ const currentInstance = {
 };
 
 let pingInterval: NodeJS.Timeout | null;
-
-export function id() {
-	return ID;
-}
 
 function start() {
 	stop();
@@ -52,56 +50,22 @@ let createIndexes = async () => {
 			}
 		});
 
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	createIndexes = async () => {};
+	createIndexes = async () => {
+		// noop
+	};
 };
 
-async function updateInstanceOnDB(instance: any) {
-	try {
-		return InstanceStatusModel.findOneAndUpdate(
-			{ _id: ID },
-			{
-				$set: instance,
-				$currentDate: { _createdAt: true, _updatedAt: true },
-			},
-			{ upsert: true, returnDocument: 'after' },
-		);
-	} catch (e) {
-		return e;
-	}
-}
-
-async function updateConnections(conns: number) {
-	await InstanceStatusModel.updateOne(
-		{
-			_id: ID,
-		},
-		{
-			$set: {
-				'extraInformation.conns': conns,
-			},
-		},
-	);
-}
-
-async function deleteInstanceOnDB() {
-	try {
-		await InstanceStatusModel.deleteOne({ _id: ID });
-	} catch (e) {
-		return e;
-	}
-}
-
-export async function registerInstance(name: string, extraInformation: Record<string, unknown>): Promise<unknown> {
+async function registerInstance(name: string, extraInformation: Partial<IInstanceStatus['extraInformation']>): Promise<unknown> {
 	createIndexes();
 
 	currentInstance.name = name;
 	currentInstance.extraInformation = extraInformation;
 
-	const result = await updateInstanceOnDB({
+	const result = await InstanceStatusModel.upsertInstance({
+		_id: id(),
 		pid: process.pid,
 		name,
-		...(extraInformation && { extraInformation }),
+		extraInformation: extraInformation as IInstanceStatus['extraInformation'],
 	});
 
 	start();
@@ -112,7 +76,7 @@ export async function registerInstance(name: string, extraInformation: Record<st
 
 async function unregisterInstance() {
 	try {
-		const result = await deleteInstanceOnDB();
+		const result = await InstanceStatusModel.removeInstanceById(id());
 		stop();
 		process.removeListener('exit', onExit);
 		return result;
@@ -136,7 +100,6 @@ async function onExit() {
 export const InstanceStatus = {
 	id,
 	registerInstance,
-	updateConnections,
 	defaultPingInterval,
 	indexExpire,
 };
