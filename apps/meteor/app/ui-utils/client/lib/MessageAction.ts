@@ -2,7 +2,7 @@ import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import mem from 'mem';
 
-type MessageActionGroup = 'message' | 'menu';
+type MessageActionGroup = 'menu';
 
 export type MessageActionContext =
 	| 'message'

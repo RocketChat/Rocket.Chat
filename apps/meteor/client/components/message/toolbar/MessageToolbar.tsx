@@ -1,30 +1,35 @@
 import { useToolbar } from '@react-aria/toolbar';
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated, isVideoConfMessage, isE2EEMessage } from '@rocket.chat/core-typings';
-import { MessageToolbar as FuselageMessageToolbar, MessageToolbarItem } from '@rocket.chat/fuselage';
-import { useFeaturePreview } from '@rocket.chat/ui-client';
-import { useUser, useTranslation, useMethod, useLayoutHiddenActions, useSetting } from '@rocket.chat/ui-contexts';
+import { MessageToolbar as FuselageMessageToolbar } from '@rocket.chat/fuselage';
+import { useUser, useTranslation, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ElementType, ReactElement } from 'react';
 import React, { memo, useRef } from 'react';
 
 import MessageActionMenu from './MessageActionMenu';
 import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
+import DefaultItems from './items/DefaultItems';
+import DirectItems from './items/DirectItems';
+import FederatedItems from './items/FederatedItems';
+import MentionsItems from './items/MentionsItems';
+import MobileItems from './items/MobileItems';
+import PinnedItems from './items/PinnedItems';
+import SearchItems from './items/SearchItems';
+import StarredItems from './items/StarredItems';
+import ThreadsItems from './items/ThreadsItems';
+import VideoconfItems from './items/VideoconfItems';
+import VideoconfThreadsItems from './items/VideoconfThreadsItems';
 import { useCopyAction } from './useCopyAction';
 import { useDeleteMessageAction } from './useDeleteMessageAction';
 import { useEditMessageAction } from './useEditMessageAction';
 import { useFollowMessageAction } from './useFollowMessageAction';
-import { useForwardMessageAction } from './useForwardMessageAction';
-import { useJumpToMessageContextAction } from './useJumpToMessageContextAction';
 import { useMarkAsUnreadMessageAction } from './useMarkAsUnreadMessageAction';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
 import { usePermalinkAction } from './usePermalinkAction';
 import { usePinMessageAction } from './usePinMessageAction';
-import { useQuoteMessageAction } from './useQuoteMessageAction';
-import { useReactionMessageAction } from './useReactionMessageAction';
 import { useReadReceiptsDetailsAction } from './useReadReceiptsDetailsAction';
 import { useReplyInDMAction } from './useReplyInDMAction';
-import { useReplyInThreadMessageAction } from './useReplyInThreadMessageAction';
 import { useReportMessageAction } from './useReportMessageAction';
 import { useShowMessageReactionsAction } from './useShowMessageReactionsAction';
 import { useStarMessageAction } from './useStarMessageAction';
@@ -36,11 +41,9 @@ import { useViewOriginalTranslationAction } from './useViewOriginalTranslationAc
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
-import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 import { useMessageActionAppsActionButtons } from '../../../hooks/useAppActionButtons';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
-import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 
 const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
 	if (context) {
@@ -60,6 +63,23 @@ const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActi
 	}
 
 	return 'message';
+};
+
+const itemsByContext: Record<
+	MessageActionContext,
+	ElementType<{ message: IMessage; room: IRoom; subscription: ISubscription | undefined }>
+> = {
+	'message': DefaultItems,
+	'message-mobile': MobileItems,
+	'threads': ThreadsItems,
+	'videoconf': VideoconfItems,
+	'videoconf-threads': VideoconfThreadsItems,
+	'pinned': PinnedItems,
+	'direct': DirectItems,
+	'starred': StarredItems,
+	'mentions': MentionsItems,
+	'federated': FederatedItems,
+	'search': SearchItems,
 };
 
 type MessageToolbarProps = {
@@ -85,41 +105,15 @@ const MessageToolbar = ({
 	const toolbarRef = useRef(null);
 	const { toolbarProps } = useToolbar(props, toolbarRef);
 
-	const quickReactionsEnabled = useFeaturePreview('quickReactions');
-
-	const setReaction = useMethod('setReaction');
-
 	const context = getMessageContext(message, room, messageContext);
-
-	const { quickReactions, addRecentEmoji } = useEmojiPickerData();
 
 	const actionButtonApps = useMessageActionAppsActionButtons(message, context);
 
 	const starsAction = useMessageActionAppsActionButtons(message, context, 'ai');
 
 	const hiddenActions = useLayoutHiddenActions().messageToolbox;
-	const allowStarring = useSetting('Message_AllowStarring', true);
 
 	// TODO: move this to another place
-	useReactionMessageAction(message, { user, room, subscription });
-	useQuoteMessageAction(message, { subscription });
-	useReplyInThreadMessageAction(message, { room, subscription });
-	useForwardMessageAction(message);
-	useJumpToMessageContextAction(message, {
-		id: 'jump-to-message',
-		context: ['mentions', 'threads', 'videoconf-threads', 'message-mobile', 'search'],
-	});
-	useJumpToMessageContextAction(message, {
-		id: 'jump-to-pin-message',
-		hidden: !subscription,
-		context: ['pinned', 'direct'],
-	});
-	useJumpToMessageContextAction(message, {
-		id: 'jump-to-star-message',
-		hidden: !allowStarring || !subscription,
-		context: ['starred'],
-	});
-
 	useWebDAVMessageAction(message, { subscription });
 	useNewDiscussionMessageAction(message, { user, room, subscription });
 	useUnpinMessageAction(message, { room, subscription });
@@ -151,47 +145,24 @@ const MessageToolbar = ({
 	const { isSuccess, data } = useQuery({
 		queryKey: roomsQueryKeys.messageActionsWithParameters(room._id, message),
 		queryFn: async () => {
-			const toolboxItems = await MessageAction.getAll(context, 'message');
 			const menuItems = await MessageAction.getAll(context, 'menu');
 
 			return {
-				message: toolboxItems.filter((action) => !hiddenActions.includes(action.id)),
 				menu: menuItems.filter((action) => !(isLayoutEmbedded && action.id === 'reply-directly') && !hiddenActions.includes(action.id)),
 			};
 		},
 		keepPreviousData: true,
 	});
 
-	if (!data?.message.length && !data?.menu.length) {
+	if (!data?.menu.length) {
 		return null;
 	}
 
-	const isReactionAllowed = data?.message.find(({ id }) => id === 'reaction-message');
-
-	const handleSetReaction = (emoji: string) => {
-		setReaction(`:${emoji}:`, message._id);
-		addRecentEmoji(emoji);
-	};
+	const Items = itemsByContext[context];
 
 	return (
 		<FuselageMessageToolbar ref={toolbarRef} {...toolbarProps} aria-label={t('Message_actions')} {...props}>
-			{quickReactionsEnabled &&
-				isReactionAllowed &&
-				quickReactions.slice(0, 3).map(({ emoji, image }) => {
-					return <EmojiElement small key={emoji} title={emoji} emoji={emoji} image={image} onClick={() => handleSetReaction(emoji)} />;
-				})}
-			{isSuccess &&
-				data.message.map((action) => (
-					<MessageToolbarItem
-						onClick={(e): void => action.action(e)}
-						key={action.id}
-						icon={action.icon}
-						title={action?.disabled ? t('Action_not_available_encrypted_content', { action: t(action.label) }) : t(action.label)}
-						data-qa-id={action.label}
-						data-qa-type='message-action-menu'
-						disabled={action?.disabled}
-					/>
-				))}
+			<Items message={message} room={room} subscription={subscription} />
 			{starsAction.data && starsAction.data.length > 0 && (
 				<MessageToolbarStarsActionMenu
 					options={starsAction.data.map((action) => ({
