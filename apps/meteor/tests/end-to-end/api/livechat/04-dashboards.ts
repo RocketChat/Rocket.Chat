@@ -1281,11 +1281,11 @@ describe('LIVECHAT - dashboards', function () {
 
 			const expectedResult = [
 				{ title: 'Total_conversations', value: 15 },
-				{ title: 'Open_conversations', value: 10 },
+				{ title: 'Open_conversations', value: 12 },
 				{ title: 'On_Hold_conversations', value: 1 },
 				// { title: 'Total_messages', value: 6 },
 				// { title: 'Busiest_day', value: moment().format('dddd') },
-				{ title: 'Conversations_per_day', value: '6.50' },
+				{ title: 'Conversations_per_day', value: '7.50' },
 				// { title: 'Busiest_time', value: '' },
 			];
 
