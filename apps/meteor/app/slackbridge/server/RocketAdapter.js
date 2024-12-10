@@ -207,10 +207,7 @@ export default class RocketAdapter {
 				}
 			}
 
-			const message = `${text} ${fileName}`;
-
-			rocketMessage.msg = message;
-			await slack.postMessage(slack.getSlackChannel(rocketMessage.rid), rocketMessage);
+			await slack.postMessage(slack.getSlackChannel(rocketMessage.rid), { ...rocketMessage, msg: `${text} ${fileName}` });
 		}
 	}
 
