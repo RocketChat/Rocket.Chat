@@ -966,8 +966,11 @@ describe('AgentData Analytics', () => {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
 						{
-							servedBy: {
+							responseBy: {
 								username: 'agent 1',
+							},
+							servedBy: {
+								username: 'agent 2',
 							},
 							metrics: {
 								response: {
@@ -976,8 +979,11 @@ describe('AgentData Analytics', () => {
 							},
 						},
 						{
-							servedBy: {
+							responseBy: {
 								username: 'agent 2',
+							},
+							servedBy: {
+								username: 'agent 3',
 							},
 							metrics: {
 								response: {
@@ -986,8 +992,11 @@ describe('AgentData Analytics', () => {
 							},
 						},
 						{
-							servedBy: {
+							responseBy: {
 								username: 'agent 3',
+							},
+							servedBy: {
+								username: 'agent 4',
 							},
 							metrics: {
 								response: {
@@ -996,8 +1005,11 @@ describe('AgentData Analytics', () => {
 							},
 						},
 						{
-							servedBy: {
+							responseBy: {
 								username: 'agent 4',
+							},
+							servedBy: {
+								username: 'agent 5',
 							},
 							metrics: {
 								response: {
@@ -1006,8 +1018,11 @@ describe('AgentData Analytics', () => {
 							},
 						},
 						{
-							servedBy: {
+							responseBy: {
 								username: 'agent 5',
+							},
+							servedBy: {
+								username: 'agent 6',
 							},
 							metrics: {
 								response: {
@@ -1016,8 +1031,11 @@ describe('AgentData Analytics', () => {
 							},
 						},
 						{
-							servedBy: {
+							responseBy: {
 								username: 'agent 6',
+							},
+							servedBy: {
+								username: 'agent 7',
 							},
 							metrics: {
 								response: {
@@ -1055,7 +1073,7 @@ describe('AgentData Analytics', () => {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
 						{
-							servedBy: {
+							responseBy: {
 								username: 'agent 1',
 							},
 							metrics: {
@@ -1065,7 +1083,7 @@ describe('AgentData Analytics', () => {
 							},
 						},
 						{
-							servedBy: {
+							responseBy: {
 								username: 'agent 2',
 							},
 							metrics: {
@@ -1075,7 +1093,7 @@ describe('AgentData Analytics', () => {
 							},
 						},
 						{
-							servedBy: {
+							responseBy: {
 								username: 'agent 3',
 							},
 							metrics: {
@@ -1085,7 +1103,7 @@ describe('AgentData Analytics', () => {
 							},
 						},
 						{
-							servedBy: {
+							responseBy: {
 								username: 'agent 4',
 							},
 							metrics: {
@@ -1095,7 +1113,7 @@ describe('AgentData Analytics', () => {
 							},
 						},
 						{
-							servedBy: {
+							responseBy: {
 								username: 'agent 5',
 							},
 							metrics: {
@@ -1105,7 +1123,7 @@ describe('AgentData Analytics', () => {
 							},
 						},
 						{
-							servedBy: {
+							responseBy: {
 								username: 'agent 6',
 							},
 							metrics: {
@@ -1115,7 +1133,7 @@ describe('AgentData Analytics', () => {
 							},
 						},
 						{
-							servedBy: {
+							responseBy: {
 								username: 'agent 1',
 							},
 							metrics: {
@@ -1149,10 +1167,10 @@ describe('AgentData Analytics', () => {
 				],
 			});
 		});
-		it('should ignore conversations not being served by any agent', async () => {
+		it('should ignore conversations not responded by any agent', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
-					return [{ servedBy: undefined, metrics: { response: { ft: 100 } } }];
+					return [{ responseBy: undefined, metrics: { response: { ft: 100 } } }];
 				},
 			};
 
@@ -1173,7 +1191,7 @@ describe('AgentData Analytics', () => {
 		it('should ignore conversations with no metrics', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
-					return [{ servedBy: { username: 'agent 1' }, metrics: undefined }];
+					return [{ responseBy: { username: 'agent 1' }, metrics: undefined }];
 				},
 			};
 

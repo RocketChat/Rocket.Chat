@@ -1019,14 +1019,16 @@ describe('LIVECHAT - dashboards', function () {
 
 	describe('[livechat/analytics/agent-overview] - Best first response time', () => {
 		let agent: { credentials: Credentials; user: IUser & { username: string } };
+		let forwardAgent: { credentials: Credentials; user: IUser & { username: string } };
 		let originalBestFirstResponseTimeInSeconds: number;
 		let roomId: string;
 
 		before(async () => {
 			agent = await createAnOnlineAgent();
+			forwardAgent = await createAnOnlineAgent();
 		});
 
-		after(() => deleteUser(agent.user));
+		after(() => Promise.all([deleteUser(agent.user), deleteUser(forwardAgent.user)]));
 
 		it('should return no best response time for an agent if no response has been sent in the period', async () => {
 			await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
@@ -1109,6 +1111,60 @@ describe('LIVECHAT - dashboards', function () {
 			expect(agentData).to.have.property('value');
 			const bestFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
 			expect(bestFirstResponseTimeInSeconds).to.be.equal(originalBestFirstResponseTimeInSeconds);
+		});
+
+		it('should correctly associate best first response time to the first agent who responded the room', async () => {
+			const response = await startANewLivechatRoomAndTakeIt({ agent: forwardAgent.credentials });
+			roomId = response.room._id;
+
+			await sendAgentMessage(roomId, 'first response from agent', forwardAgent.credentials);
+
+			await request
+				.post(api('livechat/room.forward'))
+				.set(credentials)
+				.send({
+					roomId,
+					userId: agent.user._id,
+					comment: 'test comment',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Best_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array');
+
+			// The agent to whom the room has been forwarded shouldn't have their best first response time changed
+			const agentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
+			);
+			expect(agentData).to.not.be.undefined;
+			expect(agentData).to.have.property('name', agent.user.username);
+			expect(agentData).to.have.property('value');
+			const bestFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			expect(bestFirstResponseTimeInSeconds).to.be.equal(originalBestFirstResponseTimeInSeconds);
+
+			// A room's first response time should be attached to the agent who first responded to it even if it has been forwarded
+			const forwardAgentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === forwardAgent.user.username,
+			);
+			expect(forwardAgentData).to.not.be.undefined;
+			expect(forwardAgentData).to.have.property('name', forwardAgent.user.username);
+			expect(forwardAgentData).to.have.property('value');
+			const forwardAgentBestFirstResponseTimeInSeconds = moment.duration(forwardAgentData.value).asSeconds();
+			expect(forwardAgentBestFirstResponseTimeInSeconds).to.be.lessThan(originalBestFirstResponseTimeInSeconds);
 		});
 	});
 
