@@ -41,7 +41,6 @@ import { useMessageActionAppsActionButtons } from '../../../hooks/useAppActionBu
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
-import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 
 const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
 	if (context) {
@@ -108,19 +107,16 @@ const MessageToolbar = ({
 	useForwardMessageAction(message);
 	useJumpToMessageContextAction(message, {
 		id: 'jump-to-message',
-		order: 100,
 		context: ['mentions', 'threads', 'videoconf-threads', 'message-mobile', 'search'],
 	});
 	useJumpToMessageContextAction(message, {
 		id: 'jump-to-pin-message',
-		order: 100,
 		hidden: !subscription,
 		context: ['pinned', 'direct'],
 	});
 	useJumpToMessageContextAction(message, {
 		id: 'jump-to-star-message',
 		hidden: !allowStarring || !subscription,
-		order: 100,
 		context: ['starred'],
 	});
 
@@ -166,9 +162,7 @@ const MessageToolbar = ({
 		keepPreviousData: true,
 	});
 
-	const selecting = useIsSelecting();
-
-	if (selecting || (!data?.message.length && !data?.menu.length)) {
+	if (!data?.message.length && !data?.menu.length) {
 		return null;
 	}
 
