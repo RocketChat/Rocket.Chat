@@ -169,7 +169,9 @@ describe('#userAvatarById()', () => {
 		await userAvatarById(request, response, next);
 
 		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
-		expect(mocks.utils.serveSvgAvatarInRequestedFormat.calledWith({ nameOrUsername: 'Doe', req: request, res: response })).to.be.true;
+		expect(
+			mocks.utils.serveSvgAvatarInRequestedFormat.calledWith({ nameOrUsername: 'Doe', req: request, res: response, useAllInitials: true }),
+		).to.be.true;
 	});
 });
 
@@ -286,6 +288,8 @@ describe('#userAvatarByUsername()', () => {
 		await userAvatarByUsername(request, response, next);
 
 		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
-		expect(mocks.utils.serveSvgAvatarInRequestedFormat.calledWith({ nameOrUsername: 'Doe', req: request, res: response })).to.be.true;
+		expect(
+			mocks.utils.serveSvgAvatarInRequestedFormat.calledWith({ nameOrUsername: 'Doe', req: request, res: response, useAllInitials: true }),
+		).to.be.true;
 	});
 });
