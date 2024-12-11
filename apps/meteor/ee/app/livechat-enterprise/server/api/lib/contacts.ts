@@ -6,7 +6,7 @@ import { Livechat } from '../../../../../../app/livechat/server/lib/LivechatType
 import { i18n } from '../../../../../../server/lib/i18n';
 
 export async function changeContactBlockStatus({ block, visitor }: { visitor: ILivechatContactVisitorAssociation; block: boolean }) {
-	const result = await LivechatContacts.updateContactChannel(visitor, { blocked: block });
+	const result = await LivechatContacts.setChannelBlockStatus(visitor, block);
 
 	if (!result.modifiedCount) {
 		throw new Error('error-contact-not-found');

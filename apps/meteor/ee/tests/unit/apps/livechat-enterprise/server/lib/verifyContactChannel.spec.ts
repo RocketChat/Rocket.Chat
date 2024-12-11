@@ -4,7 +4,10 @@ import sinon from 'sinon';
 
 const modelsMock = {
 	LivechatContacts: {
-		updateContactChannel: sinon.stub(),
+		getUpdater: sinon.stub(),
+		setVerifiedUpdateQuery: sinon.stub(),
+		setFieldAndValueUpdateQuery: sinon.stub(),
+		updateFromUpdaterByAssociation: sinon.stub(),
 	},
 	LivechatRooms: {
 		update: sinon.stub(),
@@ -44,7 +47,10 @@ const { runVerifyContactChannel } = proxyquire.noCallThru().load('../../../../..
 
 describe('verifyContactChannel', () => {
 	beforeEach(() => {
-		modelsMock.LivechatContacts.updateContactChannel.reset();
+		modelsMock.LivechatContacts.getUpdater.reset();
+		modelsMock.LivechatContacts.setVerifiedUpdateQuery.reset();
+		modelsMock.LivechatContacts.setFieldAndValueUpdateQuery.reset();
+		modelsMock.LivechatContacts.updateFromUpdaterByAssociation.reset();
 		modelsMock.LivechatRooms.update.reset();
 		modelsMock.LivechatInquiry.findOneByRoomId.reset();
 		modelsMock.LivechatRooms.findOneById.reset();
@@ -55,6 +61,8 @@ describe('verifyContactChannel', () => {
 		mergeContactsStub.reset();
 		queueManager.processNewInquiry.reset();
 		queueManager.verifyInquiry.reset();
+
+		modelsMock.LivechatContacts.getUpdater.returns({});
 	});
 
 	afterEach(() => {
@@ -68,24 +76,23 @@ describe('verifyContactChannel', () => {
 		await runVerifyContactChannel(() => undefined, {
 			contactId: 'contactId',
 			field: 'field',
-			value: 'value',
+			value: 'Value',
 			visitorId: 'visitorId',
 			roomId: 'roomId',
 		});
 
+		expect(modelsMock.LivechatContacts.getUpdater.calledOnce).to.be.true;
+		expect(modelsMock.LivechatContacts.setVerifiedUpdateQuery.calledOnceWith(true, {})).to.be.true;
+		expect(modelsMock.LivechatContacts.setFieldAndValueUpdateQuery.calledOnceWith('field', 'value', {})).to.be.true;
 		expect(
-			modelsMock.LivechatContacts.updateContactChannel.calledOnceWith(
+			modelsMock.LivechatContacts.updateFromUpdaterByAssociation.calledOnceWith(
 				sinon.match({
 					visitorId: 'visitorId',
 					source: sinon.match({
 						type: 'sms',
 					}),
 				}),
-				sinon.match({
-					verified: true,
-					field: 'field',
-					value: 'value',
-				}),
+				{},
 			),
 		).to.be.true;
 		expect(modelsMock.LivechatRooms.update.calledOnceWith({ _id: 'roomId' }, { $set: { verified: true } })).to.be.true;
@@ -116,21 +123,21 @@ describe('verifyContactChannel', () => {
 			roomId: 'roomId',
 		});
 
+		expect(modelsMock.LivechatContacts.getUpdater.calledOnce).to.be.true;
+		expect(modelsMock.LivechatContacts.setVerifiedUpdateQuery.calledOnceWith(true, {})).to.be.true;
+		expect(modelsMock.LivechatContacts.setFieldAndValueUpdateQuery.calledOnceWith('field', 'value', {})).to.be.true;
 		expect(
-			modelsMock.LivechatContacts.updateContactChannel.calledOnceWith(
+			modelsMock.LivechatContacts.updateFromUpdaterByAssociation.calledOnceWith(
 				sinon.match({
 					visitorId: 'visitorId',
 					source: sinon.match({
 						type: 'sms',
 					}),
 				}),
-				sinon.match({
-					verified: true,
-					field: 'field',
-					value: 'value',
-				}),
+				{},
 			),
 		).to.be.true;
+
 		expect(modelsMock.LivechatRooms.update.calledOnceWith({ _id: 'roomId' }, { $set: { verified: true } })).to.be.true;
 		expect(
 			mergeContactsStub.calledOnceWith(
@@ -160,7 +167,11 @@ describe('verifyContactChannel', () => {
 			}),
 		).to.be.rejectedWith('error-invalid-room');
 
-		expect(modelsMock.LivechatContacts.updateContactChannel.notCalled).to.be.true;
+		expect(modelsMock.LivechatContacts.getUpdater.notCalled).to.be.true;
+		expect(modelsMock.LivechatContacts.setVerifiedUpdateQuery.notCalled).to.be.true;
+		expect(modelsMock.LivechatContacts.setFieldAndValueUpdateQuery.notCalled).to.be.true;
+		expect(modelsMock.LivechatContacts.updateFromUpdaterByAssociation.notCalled).to.be.true;
+
 		expect(modelsMock.LivechatRooms.update.notCalled).to.be.true;
 		expect(mergeContactsStub.notCalled).to.be.true;
 		expect(queueManager.verifyInquiry.notCalled).to.be.true;
@@ -180,21 +191,21 @@ describe('verifyContactChannel', () => {
 			}),
 		).to.be.rejectedWith('error-invalid-inquiry');
 
+		expect(modelsMock.LivechatContacts.getUpdater.calledOnce).to.be.true;
+		expect(modelsMock.LivechatContacts.setVerifiedUpdateQuery.calledOnceWith(true, {})).to.be.true;
+		expect(modelsMock.LivechatContacts.setFieldAndValueUpdateQuery.calledOnceWith('field', 'value', {})).to.be.true;
 		expect(
-			modelsMock.LivechatContacts.updateContactChannel.calledOnceWith(
+			modelsMock.LivechatContacts.updateFromUpdaterByAssociation.calledOnceWith(
 				sinon.match({
 					visitorId: 'visitorId',
 					source: sinon.match({
 						type: 'sms',
 					}),
 				}),
-				sinon.match({
-					verified: true,
-					field: 'field',
-					value: 'value',
-				}),
+				{},
 			),
 		).to.be.true;
+
 		expect(modelsMock.LivechatRooms.update.calledOnceWith({ _id: 'roomId' }, { $set: { verified: true } })).to.be.true;
 		expect(
 			mergeContactsStub.calledOnceWith(
