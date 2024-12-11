@@ -183,6 +183,7 @@ type ChainedCallbackSignatures = {
 	'renderMessage': <T extends IMessage & { html: string }>(message: T) => T;
 	'oembed:beforeGetUrlContent': (data: { urlObj: URL }) => {
 		urlObj: URL;
+		headerOverrides?: { [k: string]: string };
 	};
 	'oembed:afterParseContent': (data: { url: string; meta: OEmbedMeta; headers: { [k: string]: string }; content: OEmbedUrlContent }) => {
 		url: string;
