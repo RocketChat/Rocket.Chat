@@ -76,6 +76,10 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 				sparse: true,
 				unique: false,
 			},
+			{
+				key: { activity: 1 },
+				partialFilterExpression: { activity: { $exists: true } },
+			},
 		];
 	}
 
@@ -248,5 +252,33 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		const updatedContact = await this.findOneAndUpdate({ _id: contactId }, { $addToSet: { emails: { address: email } } });
 
 		return updatedContact.value;
+	}
+
+	isContactActiveOnPeriod(visitor: ILivechatContactVisitorAssociation, period: string): Promise<number> {
+		const query = {
+			...this.makeQueryForVisitor(visitor),
+			activity: period,
+		};
+
+		return this.countDocuments(query);
+	}
+
+	markContactActiveForPeriod(visitor: ILivechatContactVisitorAssociation, period: string): Promise<UpdateResult> {
+		const update = {
+			$push: {
+				activity: {
+					$each: [period],
+					$slice: -12,
+				},
+			},
+		};
+
+		return this.updateOne(this.makeQueryForVisitor(visitor), update);
+	}
+
+	countContactsOnPeriod(period: string): Promise<number> {
+		return this.countDocuments({
+			activity: period,
+		});
 	}
 }
