@@ -3248,6 +3248,12 @@
   "registration.component.form.invalidEmail": "Girilen e-posta geçersiz",
   "registration.component.form.email": "E-posta",
   "registration.component.form.password": "Şifre",
+
+  
+  "registration.component.form.emailPlaceholder": "example@example.com",
+  "registration.component.form.passwordPlaceholder": "Şifre",
+
+
   "registration.component.form.divider": "ya da",
   "registration.component.form.submit": "Gönder",
   "registration.component.form.reasonToJoin": "Katılma Nedeniniz",
