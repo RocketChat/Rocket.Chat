@@ -1,12 +1,8 @@
 import { Emitter } from '@rocket.chat/emitter';
 import type { ReactNode } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { SelectedMessageContext } from '../MessageList/contexts/SelectedMessagesContext';
-import { useMessages } from '../MessageList/hooks/useMessages';
-import { useRoom } from '../contexts/RoomContext';
-
-// data-qa-select
 
 export const selectedMessageStore = new (class SelectMessageStore extends Emitter<
 	{
@@ -16,17 +12,18 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 > {
 	store = new Set<string>();
 
-	private storeArray = Array.from(this.store);
-
 	availableMessages = new Set<string>();
 
 	isSelecting = false;
 
-	constructor() {
-		super();
-		this.on('change', () => {
-			this.storeArray = Array.from(this.store);
-		});
+	addAvailableMessage(mid: string): void {
+		this.availableMessages.add(mid);
+		this.emit('change');
+	}
+
+	removeAvailableMessage(mid: string): void {
+		this.availableMessages.delete(mid);
+		this.emit('change');
 	}
 
 	setIsSelecting(isSelecting: boolean): void {
@@ -43,7 +40,7 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 	}
 
 	getSelectedMessages(): string[] {
-		return this.storeArray;
+		return Array.from(this.store);
 	}
 
 	toggle(mid: string): void {
@@ -58,18 +55,12 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 		this.emit('change');
 	}
 
-	select(mid: string): void {
-		if (this.store.has(mid)) {
-			return;
-		}
-
-		this.store.add(mid);
-		this.emit(mid, true);
-		this.emit('change');
-	}
-
 	count(): number {
 		return this.store.size;
+	}
+
+	availableMessagesCount(): number {
+		return this.availableMessages.size;
 	}
 
 	clearStore(): void {
@@ -86,7 +77,8 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 	}
 
 	toggleAll(mids: string[]): void {
-		mids.forEach((mid) => this.select(mid));
+		this.store = new Set([...this.store, ...mids]);
+		this.emit('change');
 	}
 })();
 
@@ -95,13 +87,6 @@ type SelectedMessagesProviderProps = {
 };
 
 export const SelectedMessagesProvider = ({ children }: SelectedMessagesProviderProps) => {
-	const room = useRoom();
-	const messages = useMessages({ rid: room._id });
-
-	useEffect(() => {
-		selectedMessageStore.availableMessages = new Set(messages.map((message) => message._id));
-	}, [messages]);
-
 	const value = useMemo(
 		() => ({
 			selectedMessageStore,

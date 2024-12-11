@@ -32,7 +32,7 @@ import {
 } from '../../../../components/Contextualbar';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { SelectedMessageContext, useSelectedMessages } from '../../MessageList/contexts/SelectedMessagesContext';
+import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
 import { useRoom } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
@@ -102,7 +102,7 @@ const ExportMessages = () => {
 	const downloadExportMutation = useDownloadExportMutation();
 
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
-	const messages = useSelectedMessages();
+	const messageCount = useCountSelected();
 
 	const { type, toUsers } = watch();
 
@@ -125,10 +125,12 @@ const ExportMessages = () => {
 			setValue('format', 'json');
 		}
 
-		setValue('messagesCount', messages.length);
-	}, [type, setValue, messages.length]);
+		setValue('messagesCount', messageCount);
+	}, [type, setValue, messageCount]);
 
 	const handleExport = async ({ type, toUsers, dateFrom, dateTo, format, subject, additionalEmails }: ExportMessagesFormValues) => {
+		const messages = selectedMessageStore.getSelectedMessages();
+
 		if (type === 'download') {
 			return downloadExportMutation.mutateAsync({
 				mids: messages,

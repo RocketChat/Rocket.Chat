@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext } from 'react';
+import { createContext, useCallback, useContext, useEffect } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { selectedMessageStore } from '../../providers/SelectedMessagesProvider';
@@ -21,7 +21,19 @@ export const useIsSelectedMessage = (mid: string): boolean => {
 
 	const getSnapshot = (): boolean => selectedMessageStore.isSelected(mid);
 
-	return useSyncExternalStore(subscribe, getSnapshot);
+	const isSelected = useSyncExternalStore(subscribe, getSnapshot);
+
+	useEffect(() => {
+		if (isSelected) {
+			return;
+		}
+
+		selectedMessageStore.addAvailableMessage(mid);
+
+		return () => selectedMessageStore.removeAvailableMessage(mid);
+	}, [mid, selectedMessageStore, isSelected]);
+
+	return isSelected;
 };
 
 export const useIsSelecting = (): boolean => {
@@ -71,7 +83,7 @@ export const useCountSelected = (): number => {
 	return useSyncExternalStore(subscribe, getSnapshot);
 };
 
-export const useSelectedMessages = (): string[] => {
+export const useAvailableMessagesCount = () => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 
 	const subscribe = useCallback(
@@ -79,7 +91,7 @@ export const useSelectedMessages = (): string[] => {
 		[selectedMessageStore],
 	);
 
-	const getSnapshot = () => selectedMessageStore.getSelectedMessages();
+	const getSnapshot = () => selectedMessageStore.availableMessagesCount();
 
 	return useSyncExternalStore(subscribe, getSnapshot);
 };

@@ -1,30 +1,30 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { MessageFooterCallout, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
 import type { ReactElement } from 'react';
-import React, { useContext } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { ComposerMessageProps } from './ComposerMessage';
-import { useCountSelected, useClearSelection, SelectedMessageContext } from '../MessageList/contexts/SelectedMessagesContext';
+import { useCountSelected, useClearSelection, useAvailableMessagesCount } from '../MessageList/contexts/SelectedMessagesContext';
 
-const ComposerSelectMessages = ({ onGetMore }: ComposerMessageProps): ReactElement => {
+const ComposerSelectMessages = ({ onClickSelectAll }: ComposerMessageProps): ReactElement => {
 	const { t } = useTranslation();
 
-	const { selectedMessageStore } = useContext(SelectedMessageContext);
 	const clearSelection = useClearSelection();
 	const countSelected = useCountSelected();
-	const countAvailable = selectedMessageStore.availableMessages.size;
-	const noMessagesAvailable = countAvailable <= countSelected;
+	const countAvailable = useAvailableMessagesCount();
 
 	return (
 		<MessageFooterCallout>
-			<MessageFooterCalloutContent textAlign='left'>{t('number_messages_selected', { count: countSelected })}</MessageFooterCalloutContent>
+			<MessageFooterCalloutContent textAlign='left'>
+				{t('__count__messages_selected', { count: countSelected })}
+			</MessageFooterCalloutContent>
 			<ButtonGroup>
 				<Button small disabled={countSelected === 0} onClick={clearSelection}>
 					{t('Clear_selection')}
 				</Button>
-				<Button icon='arrow-up' small primary disabled={noMessagesAvailable} onClick={onGetMore}>
-					{t('Select_number_messages', { count: countAvailable - countSelected })}
+				<Button icon='arrow-up' small primary disabled={countAvailable === 0} onClick={onClickSelectAll}>
+					{t('Select__count__messages', { count: countAvailable })}
 				</Button>
 			</ButtonGroup>
 		</MessageFooterCallout>
