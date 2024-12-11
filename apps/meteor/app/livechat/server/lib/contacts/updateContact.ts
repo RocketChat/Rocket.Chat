@@ -37,10 +37,10 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 	}
 
 	const workspaceAllowedCustomFields = await getAllowedCustomFields();
-	const workspaceAllowedCustomFieldsIds = new Set([...workspaceAllowedCustomFields.map((customField) => customField._id)]);
+	const workspaceAllowedCustomFieldsIds = workspaceAllowedCustomFields.map((customField) => customField._id);
 	const currentCustomFieldsIds = Object.keys(contact.customFields || {});
 	const notRegisteredCustomFields = currentCustomFieldsIds
-		.filter((customFieldId) => !workspaceAllowedCustomFieldsIds.has(customFieldId))
+		.filter((customFieldId) => !workspaceAllowedCustomFieldsIds.includes(customFieldId))
 		.map((customFieldId) => ({ _id: customFieldId }));
 
 	const customFieldsToUpdate =
