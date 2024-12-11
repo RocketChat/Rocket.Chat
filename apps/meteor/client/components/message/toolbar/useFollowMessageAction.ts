@@ -1,6 +1,6 @@
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useSetting, useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
@@ -12,10 +12,8 @@ import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
 import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
 
-export const useFollowMessageAction = (
-	message: IMessage,
-	{ room, user, context }: { room: IRoom; user: IUser | undefined; context: MessageActionContext },
-) => {
+export const useFollowMessageAction = (message: IMessage, { room, context }: { room: IRoom; context: MessageActionContext }) => {
+	const user = useUser();
 	const threadsEnabled = useSetting('Threads_enabled');
 
 	const dispatchToastMessage = useToastMessageDispatch();

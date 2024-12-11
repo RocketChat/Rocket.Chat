@@ -25,7 +25,7 @@ export type MessageActionConfig = {
 	variant?: 'danger' | 'success' | 'warning';
 	label: TranslationKey;
 	order: number;
-	/* @deprecated */
+	/** @deprecated */
 	color?: 'alert';
 	group: MessageActionGroup;
 	context?: MessageActionContext[];

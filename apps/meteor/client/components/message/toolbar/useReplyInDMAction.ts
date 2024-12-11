@@ -1,21 +1,21 @@
-import { type IUser, type IMessage, type ISubscription, type IRoom, isE2EEMessage } from '@rocket.chat/core-typings';
-import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
+import { type IMessage, type ISubscription, type IRoom, isE2EEMessage } from '@rocket.chat/core-typings';
+import { usePermission, useRouter, useUser } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { Rooms, Subscriptions } from '../../../../app/models/client';
 import { MessageAction } from '../../../../app/ui-utils/client';
+import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
-export const useReplyInDMAction = (
-	message: IMessage,
-	{ user, room, subscription }: { user: IUser | undefined; room: IRoom; subscription: ISubscription | undefined },
-) => {
+export const useReplyInDMAction = (message: IMessage, { room, subscription }: { room: IRoom; subscription: ISubscription | undefined }) => {
+	const user = useUser();
 	const router = useRouter();
 	const encrypted = isE2EEMessage(message);
 	const canCreateDM = usePermission('create-d');
+	const isLayoutEmbedded = useEmbeddedLayout();
 
 	useEffect(() => {
-		if (!subscription || room.t === 'd' || room.t === 'l') {
+		if (!subscription || room.t === 'd' || room.t === 'l' || isLayoutEmbedded) {
 			return;
 		}
 
@@ -54,5 +54,5 @@ export const useReplyInDMAction = (
 		return () => {
 			MessageAction.removeButton('reply-directly');
 		};
-	}, [canCreateDM, encrypted, message._id, message.u._id, message.u.username, room.t, router, subscription, user]);
+	}, [canCreateDM, encrypted, isLayoutEmbedded, message._id, message.u._id, message.u.username, room.t, router, subscription, user]);
 };

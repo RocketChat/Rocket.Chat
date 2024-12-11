@@ -1,5 +1,5 @@
-import type { ISubscription, IUser, IRoom, IMessage } from '@rocket.chat/core-typings';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import type { ISubscription, IRoom, IMessage } from '@rocket.chat/core-typings';
+import { useSetModal, useUser } from '@rocket.chat/ui-contexts';
 import React, { useEffect } from 'react';
 
 import { MessageAction } from '../../../../app/ui-utils/client';
@@ -15,8 +15,9 @@ const getMainMessageText = (message: IMessage): IMessage => {
 
 export const useReportMessageAction = (
 	message: IMessage,
-	{ user, room, subscription }: { user: IUser | undefined; room: IRoom; subscription: ISubscription | undefined },
+	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
 ) => {
+	const user = useUser();
 	const setModal = useSetModal();
 
 	const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);

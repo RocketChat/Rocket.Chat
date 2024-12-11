@@ -1,5 +1,6 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import type { ISubscription, IUser, IRoom, IMessage } from '@rocket.chat/core-typings';
+import type { ISubscription, IRoom, IMessage } from '@rocket.chat/core-typings';
+import { useUser } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { MessageAction } from '../../../../app/ui-utils/client';
@@ -8,8 +9,9 @@ import { useChat } from '../../../views/room/contexts/ChatContext';
 
 export const useDeleteMessageAction = (
 	message: IMessage,
-	{ user, room, subscription }: { user: IUser | undefined; room: IRoom; subscription: ISubscription | undefined },
+	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
 ) => {
+	const user = useUser();
 	const chat = useChat();
 
 	useEffect(() => {

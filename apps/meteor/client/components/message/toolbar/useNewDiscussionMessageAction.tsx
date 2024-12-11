@@ -1,5 +1,5 @@
-import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
-import { usePermission, useSetModal, useSetting } from '@rocket.chat/ui-contexts';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { usePermission, useSetModal, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import React, { useEffect } from 'react';
 
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -8,8 +8,9 @@ import CreateDiscussion from '../../CreateDiscussion';
 
 export const useNewDiscussionMessageAction = (
 	message: IMessage,
-	{ user, room, subscription }: { user: IUser | undefined; room: IRoom; subscription: ISubscription | undefined },
+	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
 ) => {
+	const user = useUser();
 	const enabled = useSetting('Discussion_enabled', false);
 
 	const setModal = useSetModal();

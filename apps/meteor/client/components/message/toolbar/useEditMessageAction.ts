@@ -1,6 +1,6 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import type { IRoom, IUser, IMessage, ISubscription } from '@rocket.chat/core-typings';
-import { usePermission, useSetting } from '@rocket.chat/ui-contexts';
+import type { IRoom, IMessage, ISubscription } from '@rocket.chat/core-typings';
+import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import { useEffect } from 'react';
 
@@ -9,8 +9,9 @@ import { useChat } from '../../../views/room/contexts/ChatContext';
 
 export const useEditMessageAction = (
 	message: IMessage,
-	{ user, room, subscription }: { user: IUser | undefined; room: IRoom; subscription: ISubscription | undefined },
+	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
 ) => {
+	const user = useUser();
 	const chat = useChat();
 	const isEditAllowed = useSetting('Message_AllowEditing', true);
 	const canEditMessage = usePermission('edit-message', message.rid);

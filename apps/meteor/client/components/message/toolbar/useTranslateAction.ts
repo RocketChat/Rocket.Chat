@@ -1,5 +1,5 @@
-import type { IUser, IMessage, ISubscription, IRoom } from '@rocket.chat/core-typings';
-import { useMethod, usePermission, useSetting } from '@rocket.chat/ui-contexts';
+import type { IMessage, ISubscription, IRoom } from '@rocket.chat/core-typings';
+import { useMethod, usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo } from 'react';
 
 import { AutoTranslate } from '../../../../app/autotranslate/client';
@@ -10,8 +10,9 @@ import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } 
 
 export const useTranslateAction = (
 	message: IMessage & { autoTranslateShowInverse?: boolean },
-	{ user, room, subscription }: { user: IUser | undefined; room: IRoom; subscription: ISubscription | undefined },
+	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
 ) => {
+	const user = useUser();
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled', false);
 	const canAutoTranslate = usePermission('auto-translate');
 	const translateMessage = useMethod('autoTranslate.translateMessage');

@@ -1,14 +1,11 @@
+import { isE2EEMessage, type IMessage } from '@rocket.chat/core-typings';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
-import type { MouseEvent, ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
-
-type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order' | 'action'> & {
-	action: (e?: MouseEvent<HTMLElement>) => void;
-};
+import { useMessageActionAppsActionButtons } from './useMessageActionAppsActionButtons';
+import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 
 type MessageActionSection = {
 	id: string;
@@ -17,16 +14,23 @@ type MessageActionSection = {
 };
 
 type MessageActionMenuProps = {
+	message: IMessage;
+	context: MessageActionContext;
 	onChangeMenuVisibility: (visible: boolean) => void;
-	options: MessageActionConfigOption[];
-	isMessageEncrypted: boolean;
 };
 
-const MessageToolbarStarsActionMenu = ({ options, onChangeMenuVisibility, isMessageEncrypted }: MessageActionMenuProps): ReactElement => {
+const MessageToolbarStarsActionMenu = ({ message, context, onChangeMenuVisibility }: MessageActionMenuProps) => {
+	const starsAction = useMessageActionAppsActionButtons(message, context, 'ai');
 	const { t } = useTranslation();
 	const id = useUniqueId();
 
-	const groupOptions = options.reduce((acc, option) => {
+	if (!starsAction.data?.length) {
+		return null;
+	}
+
+	const isMessageEncrypted = isE2EEMessage(message);
+
+	const groupOptions = starsAction.data.reduce((acc, option) => {
 		const transformedOption = {
 			variant: option.color === 'alert' ? 'danger' : '',
 			id: option.id,
@@ -68,14 +72,14 @@ const MessageToolbarStarsActionMenu = ({ options, onChangeMenuVisibility, isMess
 
 	return (
 		<GenericMenu
-			onOpenChange={onChangeMenuVisibility}
 			detached
 			icon='stars'
 			title={t('AI_Actions')}
-			data-qa-id='menu'
-			data-qa-type='message-action-menu'
 			sections={groupOptions}
 			placement='bottom-end'
+			data-qa-id='menu'
+			data-qa-type='message-action-stars-menu-options'
+			onOpenChange={onChangeMenuVisibility}
 		/>
 	);
 };
