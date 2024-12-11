@@ -20,9 +20,11 @@ export const addUserToRoom = async function (
 	{
 		skipSystemMessage,
 		skipAlertSound,
+		createAsHidden = false,
 	}: {
 		skipSystemMessage?: boolean;
 		skipAlertSound?: boolean;
+		createAsHidden?: boolean;
 	} = {},
 ): Promise<boolean | undefined> {
 	const now = new Date();
@@ -84,8 +86,8 @@ export const addUserToRoom = async function (
 
 	const { insertedId } = await Subscriptions.createWithRoomAndUser(room, userToBeAdded as IUser, {
 		ts: now,
-		open: true,
-		alert: !skipAlertSound,
+		open: !createAsHidden,
+		alert: createAsHidden ? false : !skipAlertSound,
 		unread: 1,
 		userMentions: 1,
 		groupMentions: 0,

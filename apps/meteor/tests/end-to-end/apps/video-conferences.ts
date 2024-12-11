@@ -581,6 +581,33 @@ describe('Apps - Video Conferences', () => {
 								.that.satisfies((msg: string) => msg.includes('Chat History'));
 						});
 				});
+
+				it('should have created a subscription with open = false', async function () {
+					if (!process.env.IS_EE) {
+						this.skip();
+						return;
+					}
+
+					await request
+						.get(api('subscriptions.getOne'))
+						.set(credentials)
+						.query({
+							roomId: discussionRid,
+						})
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('subscription').and.to.be.an('object');
+							expect(res.body.subscription).to.have.a.property('rid').equal(discussionRid);
+							expect(res.body.subscription)
+								.to.have.a.property('fname')
+								.that.is.a('string')
+								.that.satisfies((msg: string) => !msg.startsWith('Chat History'))
+								.that.satisfies((msg: string) => msg.includes('Chat History'));
+							expect(res.body.subscription).to.have.a.property('open', false);
+							expect(res.body.subscription).to.have.a.property('alert', false);
+						});
+				});
 			});
 
 			describe('[Persistent Chat provider with the persistent chat feature enabled and custom discussion names]', () => {
