@@ -474,6 +474,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 		const activeModules = getModules.call(this);
 		const externalModules = getExternalModules.call(this);
 		const license = this.getLicense();
+
 		// Get all limits present in the license and their current value
 		const limits = Object.fromEntries(
 			(includeLimits &&
