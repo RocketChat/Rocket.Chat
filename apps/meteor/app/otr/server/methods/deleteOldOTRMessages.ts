@@ -3,6 +3,8 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Subscriptions, ReadReceipts } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { otrSystemMessages } from '../../lib/constants';
+
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
@@ -27,7 +29,11 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await Messages.deleteOldOTRMessages(roomId, now);
+		await Messages.deleteOldOTRMessages(roomId, now, [
+			otrSystemMessages.USER_JOINED_OTR,
+			otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
+			otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
+		]);
 		await ReadReceipts.removeOTRReceiptsUntilDate(roomId, now);
 	},
 });

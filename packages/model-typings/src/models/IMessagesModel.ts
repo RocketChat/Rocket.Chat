@@ -137,7 +137,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		extraData?: Partial<IMessage>,
 	): Promise<InsertOneResult<IMessage>>;
 	unsetReactions(messageId: string): Promise<UpdateResult>;
-	deleteOldOTRMessages(roomId: string, ts: Date): Promise<DeleteResult>;
+	deleteOldOTRMessages(roomId: string, ts: Date, types: IMessage['t'][]): Promise<DeleteResult>;
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult>;
 	addAttachmentTranslations(messageId: string, attachmentIndex: string, translations: Record<string, string>): Promise<UpdateResult>;
 	setImportFileRocketChatAttachment(

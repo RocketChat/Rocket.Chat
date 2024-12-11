@@ -1,9 +1,8 @@
-import { registerModel } from '@rocket.chat/models';
+import { registerModel, BaseRaw } from '@rocket.chat/models';
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 import sinon from 'sinon';
 
-import { BaseRaw } from '../../../../../../server/models/raw/BaseRaw';
 import { BeforeSaveCannedResponse } from '../../../../../server/hooks/messages/BeforeSaveCannedResponse';
 
 const createMessage = (msg?: string, extra: any = {}) => ({

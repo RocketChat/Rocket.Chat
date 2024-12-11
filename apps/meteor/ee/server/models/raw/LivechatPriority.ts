@@ -1,9 +1,8 @@
 import type { ILivechatPriority } from '@rocket.chat/core-typings';
 import type { ILivechatPriorityModel } from '@rocket.chat/model-typings';
+import { BaseRaw } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Db, UpdateFilter, ModifyResult, IndexDescription, FindCursor } from 'mongodb';
-
-import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
 // TODO need to define type for LivechatPriority object
 export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements ILivechatPriorityModel {

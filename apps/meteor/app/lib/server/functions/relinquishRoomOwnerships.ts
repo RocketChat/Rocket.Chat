@@ -1,6 +1,7 @@
-import { Messages, Roles, Rooms, Subscriptions, ReadReceipts } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions, ReadReceipts } from '@rocket.chat/models';
 
 import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
+import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { FileUpload } from '../../../file-upload/server';
 import { notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
@@ -29,7 +30,7 @@ export const relinquishRoomOwnerships = async function (
 	const changeOwner = subscribedRooms.filter(({ shouldChangeOwner }) => shouldChangeOwner);
 
 	for await (const { newOwner, rid } of changeOwner) {
-		newOwner && (await Roles.addUserRoles(newOwner, ['owner'], rid));
+		newOwner && (await addUserRolesAsync(newOwner, ['owner'], rid));
 	}
 
 	const roomIdsToRemove: string[] = subscribedRooms.filter(({ shouldBeRemoved }) => shouldBeRemoved).map(({ rid }) => rid);

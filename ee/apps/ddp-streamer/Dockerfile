@@ -53,6 +53,12 @@ COPY ./ee/packages/license/dist packages/license/dist
 COPY ./packages/instance-status/package.json packages/instance-status/package.json
 COPY ./packages/instance-status/dist packages/instance-status/dist
 
+COPY ./packages/random/package.json packages/random/package.json
+COPY ./packages/random/dist packages/random/dist
+
+COPY ./packages/sha256/package.json packages/sha256/package.json
+COPY ./packages/sha256/dist packages/sha256/dist
+
 COPY ./packages/tracing/package.json packages/tracing/package.json
 COPY ./packages/tracing/dist packages/tracing/dist
 

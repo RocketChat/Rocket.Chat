@@ -5,6 +5,7 @@ import { isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRolePr
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { getUsersInRolePaginated } from '../../../authorization/server/functions/getUsersInRole';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
@@ -221,7 +222,7 @@ API.v1.addRoute(
 				}
 			}
 
-			await Roles.removeUserRoles(user._id, [role._id], scope);
+			await removeUserFromRolesAsync(user._id, [role._id], scope);
 
 			if (settings.get('UI_DisplayRoles')) {
 				void api.broadcast('user.roleUpdate', {

@@ -53,6 +53,12 @@ COPY ./ee/packages/omnichannel-services/dist ee/packages/omnichannel-services/di
 COPY ./ee/packages/pdf-worker/package.json ee/packages/pdf-worker/package.json
 COPY ./ee/packages/pdf-worker/dist ee/packages/pdf-worker/dist
 
+COPY ./packages/random/package.json packages/random/package.json
+COPY ./packages/random/dist packages/random/dist
+
+COPY ./packages/sha256/package.json packages/sha256/package.json
+COPY ./packages/sha256/dist packages/sha256/dist
+
 COPY ./packages/tools/package.json packages/tools/package.json
 COPY ./packages/tools/dist packages/tools/dist
 
