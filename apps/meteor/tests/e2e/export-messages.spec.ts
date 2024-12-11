@@ -22,7 +22,7 @@ test.describe.serial('export-messages', () => {
 	});
 
 	test('should all export methods be available in targetChannel', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
 		await expect(poHomeChannel.tabs.exportMessages.sendEmailMethod).not.toBeDisabled();
@@ -34,7 +34,7 @@ test.describe.serial('export-messages', () => {
 	});
 
 	test('should display an error when trying to send email without filling to users or to additional emails', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello world');
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
@@ -48,7 +48,7 @@ test.describe.serial('export-messages', () => {
 	});
 
 	test('should display an error when trying to send email without selecting any message', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
 
@@ -59,7 +59,7 @@ test.describe.serial('export-messages', () => {
 	});
 
 	test('should be able to send messages after closing export messages', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
 

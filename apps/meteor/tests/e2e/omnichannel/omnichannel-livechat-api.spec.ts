@@ -355,11 +355,8 @@ test.describe('OC - Livechat API', () => {
 				await test.step('Expect chat not be transferred', async () => {
 					await poLiveChat.page.evaluate((depId) => window.RocketChat.livechat.setDepartment(depId), depId);
 
-					await poAuxContext2.page.locator('role=navigation >> role=button[name=Search]').click();
-					await poAuxContext2.page.locator('role=search >> role=searchbox').fill(registerGuestVisitor.name);
-					await expect(
-						poAuxContext2.page.locator(`role=search >> role=listbox >> role=link >> text="${registerGuestVisitor.name}"`),
-					).not.toBeVisible();
+					await poAuxContext2.poHomeOmnichannel.sidebar.typeSearch(registerGuestVisitor.name);
+					await expect(poAuxContext2.poHomeOmnichannel.sidebar.getSearchRoomByName(registerGuestVisitor.name)).not.toBeVisible();
 				});
 
 				await test.step('Expect registered guest to still be in dep1', async () => {
@@ -385,21 +382,12 @@ test.describe('OC - Livechat API', () => {
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
 
 				await test.step('Expect registered guest to be in dep2', async () => {
-					await poAuxContext2.page.locator('role=navigation >> role=button[name=Search]').click();
-					await poAuxContext2.page.locator('role=search >> role=searchbox').fill(registerGuestVisitor.name);
-					await poAuxContext2.page.locator(`role=search >> role=listbox >> role=link >> text="${registerGuestVisitor.name}"`).click();
-					await poAuxContext2.page.locator('role=main').waitFor();
-					await poAuxContext2.page.locator('role=main >> role=heading[level=1]').waitFor();
-					await expect(poAuxContext2.page.locator('role=main >> .rcx-skeleton')).toHaveCount(0);
-					await expect(poAuxContext2.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
+					await poAuxContext2.poHomeOmnichannel.sidebar.openChat(registerGuestVisitor.name);
 				});
 
 				await test.step('Expect registered guest not to be in dep1', async () => {
-					await poAuxContext.page.locator('role=navigation >> role=button[name=Search]').click();
-					await poAuxContext.page.locator('role=search >> role=searchbox').fill(registerGuestVisitor.name);
-					await expect(
-						poAuxContext.page.locator(`role=search >> role=listbox >> role=link >> text="${registerGuestVisitor.name}"`),
-					).not.toBeVisible();
+					await poAuxContext.poHomeOmnichannel.sidebar.typeSearch(registerGuestVisitor.name);
+					await expect(poAuxContext.poHomeOmnichannel.sidebar.getSearchRoomByName(registerGuestVisitor.name)).not.toBeVisible();
 				});
 			});
 		});
@@ -446,11 +434,8 @@ test.describe('OC - Livechat API', () => {
 				await test.step('Expect chat to be transferred', async () => {
 					await poLiveChat.page.evaluate((depId) => window.RocketChat.livechat.transferChat(depId), depId);
 
-					await poAuxContext2.page.locator('role=navigation >> role=button[name=Search]').click();
-					await poAuxContext2.page.locator('role=search >> role=searchbox').fill(registerGuestVisitor.name);
-					await expect(
-						poAuxContext2.page.locator(`role=search >> role=listbox >> role=link >> text="${registerGuestVisitor.name}"`),
-					).toBeVisible();
+					await poAuxContext2.poHomeOmnichannel.sidebar.typeSearch(registerGuestVisitor.name);
+					await expect(poAuxContext2.poHomeOmnichannel.sidebar.getSearchRoomByName(registerGuestVisitor.name)).toBeVisible();
 				});
 			});
 		});
