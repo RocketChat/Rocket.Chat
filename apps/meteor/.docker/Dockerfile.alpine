@@ -27,8 +27,11 @@ ENV DEPLOY_METHOD=docker \
     Accounts_AvatarStorePath=/app/uploads
 
 RUN set -x \
-    && apk add --no-cache --virtual .fetch-deps python3 make g++ py3-setuptools libc6-compat \
-    && cd /app/bundle/programs/server \
+    && apk add --no-cache --virtual .fetch-deps python3 make g++ py3-setuptools libc6-compat
+
+USER rocketchat
+
+RUN cd /app/bundle/programs/server \
     && npm install --omit=dev --unsafe-perm \
     # Start hack for sharp...
     && rm -rf npm/node_modules/sharp \
@@ -44,8 +47,13 @@ RUN set -x \
     # # End hack for isolated-vm
     && cd /app/bundle/programs/server/npm \
     && npm rebuild bcrypt --build-from-source \
-    && npm cache clear --force \
-    && apk del .fetch-deps
+    && npm cache clear --force
+
+USER root
+
+RUN apk del .fetch-deps
+
+USER rocketchat
 
 # TODO: remove hack once upstream builds are fixed
 COPY --chown=rocketchat:rocketchat matrix-sdk-crypto.linux-x64-musl.node /app/bundle/programs/server/npm/node_modules/@matrix-org/matrix-sdk-crypto-nodejs
@@ -56,7 +64,5 @@ VOLUME /app/uploads
 WORKDIR /app/bundle
 
 EXPOSE 3000
-
-USER rocketchat
 
 CMD ["node", "main.js"]
