@@ -35,7 +35,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 	const uploadFile = (
 		file: File,
 		extraData?: Pick<IMessage, 't' | 'e2e'> & { description?: string },
-		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
+		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
 		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
 	) => {
 		chat.uploads.send(
@@ -99,8 +99,10 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					const encryptedFile = await e2eRoom.encryptFile(file);
 
 					if (encryptedFile) {
-						const getContent = async (_id: string, fileUrl: string): Promise<IE2EEMessage['content']> => {
+						const getContent = async (filesId: string[], filesUrl: string[]): Promise<IE2EEMessage['content']> => {
 							const attachments = [];
+							const _id = filesId[0];
+							const fileUrl = filesUrl[0];
 
 							const attachment: FileAttachmentProps = {
 								title: file.name,
