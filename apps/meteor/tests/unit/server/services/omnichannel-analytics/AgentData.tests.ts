@@ -818,7 +818,7 @@ describe('AgentData Analytics', () => {
 				],
 			});
 		});
-		it('should calculate correctly when agents have multiple conversations', async () => {
+		it('should associate average first response time with the agent who first responded to the room', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
@@ -888,11 +888,105 @@ describe('AgentData Analytics', () => {
 				],
 			});
 		});
+		it('should calculate correctly when agents have multiple conversations', async () => {
+			const modelMock = {
+				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
+					return [
+						{
+							responseBy: {
+								username: 'agent 1',
+							},
+							metrics: {
+								response: {
+									ft: 100,
+								},
+							},
+						},
+						{
+							responseBy: {
+								username: 'agent 2',
+							},
+							metrics: {
+								response: {
+									ft: 200,
+								},
+							},
+						},
+						{
+							responseBy: {
+								username: 'agent 1',
+							},
+							metrics: {
+								response: {
+									ft: 200,
+								},
+							},
+						},
+					];
+				},
+			};
+
+			const agentOverview = new AgentOverviewData(modelMock as any);
+
+			const result = await agentOverview.Avg_first_response_time(moment(), moment(), 'departmentId');
+
+			expect(result).to.be.deep.equal({
+				data: [
+					{
+						name: 'agent 1',
+						value: '00:02:30',
+					},
+					{
+						name: 'agent 2',
+						value: '00:03:20',
+					},
+				],
+				head: [
+					{
+						name: 'Agent',
+					},
+					{ name: 'Avg_first_response_time' },
+				],
+			});
+		});
 		it('should ignore conversations not responded by any agent', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
 						{
+							responseBy: undefined,
+							metrics: {
+								response: {
+									ft: 100,
+								},
+							},
+						},
+					];
+				},
+			};
+
+			const agentOverview = new AgentOverviewData(modelMock as any);
+
+			const result = await agentOverview.Avg_first_response_time(moment(), moment(), 'departmentId');
+
+			expect(result).to.be.deep.equal({
+				data: [],
+				head: [
+					{
+						name: 'Agent',
+					},
+					{ name: 'Avg_first_response_time' },
+				],
+			});
+		});
+		it('should ignore conversations served, but not responded by any agent', async () => {
+			const modelMock = {
+				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
+					return [
+						{
+							servedBy: {
+								username: 'agent 1',
+							},
 							responseBy: undefined,
 							metrics: {
 								response: {
@@ -971,6 +1065,95 @@ describe('AgentData Analytics', () => {
 			});
 		});
 		it('should return an ConversationData object with data when model call returns data', async () => {
+			const modelMock = {
+				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
+					return [
+						{
+							responseBy: {
+								username: 'agent 1',
+							},
+							metrics: {
+								response: {
+									ft: 100,
+								},
+							},
+						},
+						{
+							responseBy: {
+								username: 'agent 2',
+							},
+							metrics: {
+								response: {
+									ft: 200,
+								},
+							},
+						},
+						{
+							responseBy: {
+								username: 'agent 3',
+							},
+							metrics: {
+								response: {
+									ft: 50,
+								},
+							},
+						},
+						{
+							responseBy: {
+								username: 'agent 4',
+							},
+							metrics: {
+								response: {
+									ft: 150,
+								},
+							},
+						},
+						{
+							responseBy: {
+								username: 'agent 5',
+							},
+							metrics: {
+								response: {
+									ft: 250,
+								},
+							},
+						},
+						{
+							responseBy: {
+								username: 'agent 6',
+							},
+							metrics: {
+								response: {
+									ft: 300,
+								},
+							},
+						},
+					];
+				},
+			};
+
+			const agentOverview = new AgentOverviewData(modelMock as any);
+
+			const result = await agentOverview.Best_first_response_time(moment(), moment(), 'departmentId');
+
+			expect(result).to.be.deep.equal({
+				data: [
+					{ name: 'agent 1', value: '00:01:40' },
+					{ name: 'agent 2', value: '00:03:20' },
+					{ name: 'agent 3', value: '00:00:50' },
+					{ name: 'agent 4', value: '00:02:30' },
+					{ name: 'agent 5', value: '00:04:10' },
+					{ name: 'agent 6', value: '00:05:00' },
+				],
+				head: [
+					{
+						name: 'Agent',
+					},
+					{ name: 'Best_first_response_time' },
+				],
+			});
+		});
+		it('should associate best first response time with the agent who first responded to the room', async () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [
@@ -1180,6 +1363,27 @@ describe('AgentData Analytics', () => {
 			const modelMock = {
 				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
 					return [{ responseBy: undefined, metrics: { response: { ft: 100 } } }];
+				},
+			};
+
+			const agentOverview = new AgentOverviewData(modelMock as any);
+
+			const result = await agentOverview.Best_first_response_time(moment(), moment(), 'departmentId');
+
+			expect(result).to.be.deep.equal({
+				data: [],
+				head: [
+					{
+						name: 'Agent',
+					},
+					{ name: 'Best_first_response_time' },
+				],
+			});
+		});
+		it('should ignore conversations served, but not responded by any agent', async () => {
+			const modelMock = {
+				getAnalyticsMetricsBetweenDate(_params: ILivechatRoomsModel['getAnalyticsMetricsBetweenDate']) {
+					return [{ servedBy: { username: 'agent1' }, responseBy: undefined, metrics: { response: { ft: 100 } } }];
 				},
 			};
 
