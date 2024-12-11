@@ -3,6 +3,8 @@ import { camelCase } from 'change-case';
 
 import { callbacks } from '../../../lib/callbacks';
 import { SystemLogger } from '../../../server/lib/logger/system';
+import { settings } from '../../settings/server';
+import { Info } from '../../utils/rocketchat.info';
 
 class Providers {
 	private providers: OEmbedProvider[];
@@ -11,11 +13,18 @@ class Providers {
 		this.providers = [];
 	}
 
-	static getConsumerUrl(provider: OEmbedProvider, url: string): string {
+	static getConsumerUrl(provider: OEmbedProvider, url: string): string | undefined {
+		if (!provider.endPoint) {
+			return;
+		}
 		const urlObj = new URL(provider.endPoint);
 		urlObj.searchParams.set('url', url);
 
 		return urlObj.toString();
+	}
+
+	static getCustomHeaders(provider: OEmbedProvider): { [k: string]: string } {
+		return provider.getHeaderOverrides?.() || {};
 	}
 
 	registerProvider(provider: OEmbedProvider): number {
@@ -74,6 +83,15 @@ providers.registerProvider({
 });
 
 providers.registerProvider({
+	urls: [new RegExp('https?://(twitter|x)\\.com/[^/]+/status/\\S+')],
+	getHeaderOverrides: () => {
+		return {
+			'User-Agent': `${settings.get('API_Embed_UserAgent')} Rocket.Chat/${Info.version} Googlebot/2.1`,
+		};
+	},
+});
+
+providers.registerProvider({
 	urls: [new RegExp('https?://(play|open)\\.spotify\\.com/(track|album|playlist|show)/\\S+')],
 	endPoint: 'https://open.spotify.com/oembed',
 });
@@ -99,7 +117,12 @@ callbacks.add(
 
 		const consumerUrl = Providers.getConsumerUrl(provider, url);
 
-		return { ...data, urlObj: new URL(consumerUrl) };
+		const headerOverrides = Providers.getCustomHeaders(provider);
+		if (!consumerUrl) {
+			return { ...data, headerOverrides };
+		}
+
+		return { ...data, headerOverrides, urlObj: new URL(consumerUrl) };
 	},
 	callbacks.priority.MEDIUM,
 	'oembed-providers-before',
