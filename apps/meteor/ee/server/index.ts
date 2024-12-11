@@ -12,7 +12,7 @@ import './requestSeatsRoute';
 import './configuration/index';
 import './local-services/ldap/service';
 import './methods/getReadReceipts';
-import './apps/startup';
 import './patches';
 
+export * from './apps/startup';
 export { registerEEBroker } from './startup';
