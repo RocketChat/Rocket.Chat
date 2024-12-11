@@ -6,6 +6,7 @@ import { expect, test } from '../utils/test';
 test.use({ storageState: Users.admin.state });
 
 test.describe.serial('Private apps upload', () => {
+	test.skip(true, 'Marketplace apps rely on third party server connections that can have instability and cause flaky tests');
 	let poMarketplace: Marketplace;
 
 	test.beforeEach(async ({ page }) => {
