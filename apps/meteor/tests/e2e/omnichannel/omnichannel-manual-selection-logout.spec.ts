@@ -4,6 +4,7 @@ import { DEFAULT_USER_CREDENTIALS } from '../config/constants';
 import injectInitialData from '../fixtures/inject-initial-data';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { createConversation } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
@@ -16,8 +17,7 @@ test.describe('OC - Manual Selection After Relogin', () => {
 
 	// Change routing method to manual selection
 	test.beforeAll(async ({ api }) => {
-		const res = await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' });
-		expect(res.status()).toBe(200);
+		await setSettingValueById(api, 'Livechat_Routing_Method', 'Manual_Selection');
 	});
 
 	// Create agent and make it available
@@ -43,7 +43,7 @@ test.describe('OC - Manual Selection After Relogin', () => {
 	// Delete all data
 	test.afterAll(async ({ api }) => {
 		await agent.delete();
-		await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' });
+		await setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection');
 		await injectInitialData();
 	});
 

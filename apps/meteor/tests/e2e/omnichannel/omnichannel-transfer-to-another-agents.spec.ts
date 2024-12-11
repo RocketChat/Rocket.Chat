@@ -3,6 +3,7 @@ import type { Page } from '@playwright/test';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { createManager } from '../utils/omnichannel/managers';
 import { createConversation } from '../utils/omnichannel/rooms';
@@ -23,7 +24,7 @@ test.describe('OC - Chat transfers [Agent role]', () => {
 
 	// Livechat when agent idle
 	test.beforeAll(async ({ api }) => {
-		await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200));
+		await setSettingValueById(api, 'Livechat_enabled_when_agent_idle', false);
 	});
 
 	// Create agent sessions
@@ -40,7 +41,7 @@ test.describe('OC - Chat transfers [Agent role]', () => {
 			...conversations.map((conversation) => conversation.delete()),
 			...agents.map((agent) => agent.delete()),
 			...managers.map((manager) => manager.delete()),
-			api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }).then((res) => expect(res.status()).toBe(200)),
+			setSettingValueById(api, 'Livechat_enabled_when_agent_idle', true),
 		]);
 	});
 

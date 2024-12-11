@@ -6,6 +6,7 @@ import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChatEmbedded } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
@@ -232,7 +233,7 @@ test.describe('OC - Livechat API', () => {
 
 			await addAgentToDepartment(api, { department: departmentA, agentId: agent.data._id });
 			await addAgentToDepartment(api, { department: departmentB, agentId: agent2.data._id });
-			expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
+			await setSettingValueById(api, 'Livechat_offline_email', 'test@testing.com');
 		});
 
 		test.beforeEach(async ({ browser }, testInfo) => {
@@ -263,9 +264,9 @@ test.describe('OC - Livechat API', () => {
 			await agent.delete();
 			await agent2.delete();
 
-			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status()).toBe(200);
+			await setSettingValueById(api, 'Omnichannel_enable_department_removal', true);
 			await Promise.all([...departments.map((department) => department.delete())]);
-			await expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status()).toBe(200);
+			await setSettingValueById(api, 'Omnichannel_enable_department_removal', false);
 		});
 
 		// clearBusinessUnit
@@ -697,7 +698,7 @@ test.describe('OC - Livechat API', () => {
 
 		test.beforeAll(async ({ api }) => {
 			agent = await createAgent(api, 'user1');
-			expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
+			await setSettingValueById(api, 'Livechat_offline_email', 'test@testing.com');
 		});
 
 		test.beforeEach(async ({ browser }, testInfo) => {

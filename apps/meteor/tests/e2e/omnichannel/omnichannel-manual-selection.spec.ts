@@ -3,6 +3,7 @@ import type { Page } from '@playwright/test';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { createConversation } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
@@ -16,8 +17,7 @@ test.describe('OC - Manual Selection', () => {
 
 	// Change routing method to manual selection
 	test.beforeAll(async ({ api }) => {
-		const res = await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' });
-		expect(res.status()).toBe(200);
+		await setSettingValueById(api, 'Livechat_Routing_Method', 'Manual_Selection');
 	});
 
 	// Create agent and make it available
@@ -44,10 +44,7 @@ test.describe('OC - Manual Selection', () => {
 	});
 	// Delete all data
 	test.afterAll(async ({ api }) => {
-		await Promise.all([
-			...agents.map((agent) => agent.delete()),
-			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
-		]);
+		await Promise.all([...agents.map((agent) => agent.delete()), setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection')]);
 	});
 
 	test('OC - Manual Selection - Queue', async ({ page, api }) => {

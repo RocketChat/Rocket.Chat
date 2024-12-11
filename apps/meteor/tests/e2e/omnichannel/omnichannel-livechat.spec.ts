@@ -123,13 +123,13 @@ test.describe.serial('OC - Livechat - Visitors closing the room is disabled', ()
 	});
 
 	test.beforeAll(async ({ browser, api }) => {
-		await setSettingValueById(api, 'Livechat_allow_visitor_closing_chat', false);
+		await setSettingValueById(api, 'Omnichannel_allow_visitors_to_close_conversation', false);
 		const { page: omniPage } = await createAuxContext(browser, Users.user1, '/', true);
 		poHomeOmnichannel = new HomeOmnichannel(omniPage);
 	});
 
 	test.afterAll(async ({ api }) => {
-		await setSettingValueById(api, 'Livechat_allow_visitor_closing_chat', true);
+		await setSettingValueById(api, 'Omnichannel_allow_visitors_to_close_conversation', true);
 		await api.delete('/livechat/users/agent/user1');
 		await poLiveChat.page.close();
 	});
@@ -169,7 +169,7 @@ test.describe.serial('OC - Livechat - Resub after close room', () => {
 	});
 
 	test.beforeAll(async ({ browser, api }) => {
-		await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: true });
+		await setSettingValueById(api, 'Livechat_clear_local_storage_when_chat_ended', true);
 		const { page: omniPage } = await createAuxContext(browser, Users.user1, '/', true);
 		poHomeOmnichannel = new HomeOmnichannel(omniPage);
 
@@ -180,7 +180,7 @@ test.describe.serial('OC - Livechat - Resub after close room', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false });
+		await setSettingValueById(api, 'Livechat_clear_local_storage_when_chat_ended', false);
 		await api.delete('/livechat/users/agent/user1');
 		await poLiveChat.page.close();
 		await poHomeOmnichannel.page.close();
@@ -322,8 +322,10 @@ test.describe('OC - Livechat - Livechat_Display_Offline_Form', () => {
 	const message = 'This form is not available';
 
 	test.beforeAll(async ({ api }) => {
-		await api.post('/settings/Livechat_display_offline_form', { value: false });
-		await api.post('/settings/Livechat_offline_form_unavailable', { value: message });
+		await Promise.all([
+			setSettingValueById(api, 'Livechat_display_offline_form', false),
+			setSettingValueById(api, 'Livechat_offline_form_unavailable', message),
+		]);
 	});
 
 	test.beforeEach(async ({ page, api }) => {
@@ -332,8 +334,10 @@ test.describe('OC - Livechat - Livechat_Display_Offline_Form', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.post('/settings/Livechat_display_offline_form', { value: true });
-		await api.post('/settings/Livechat_offline_form_unavailable', { value: '' });
+		await Promise.all([
+			setSettingValueById(api, 'Livechat_display_offline_form', true),
+			setSettingValueById(api, 'Livechat_offline_form_unavailable', ''),
+		]);
 	});
 
 	test('OC - Livechat - Livechat_Display_Offline_Form false', async () => {
