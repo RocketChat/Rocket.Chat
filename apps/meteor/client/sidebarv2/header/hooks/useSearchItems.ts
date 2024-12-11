@@ -1,5 +1,5 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useMethod, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -16,7 +16,7 @@ const options = {
 	limit: LIMIT,
 } as const;
 
-export const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRoom)[] | undefined, Error> => {
+export const useSearchItems = (filterText: string): UseQueryResult<SubscriptionWithRoom[] | undefined, Error> => {
 	const [, mention, name] = useMemo(() => filterText.match(/(@|#)?(.*)/i) || [], [filterText]);
 	const query = useMemo(() => {
 		const filterRegex = new RegExp(escapeRegExp(name), 'i');
