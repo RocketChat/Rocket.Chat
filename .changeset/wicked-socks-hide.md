@@ -1,7 +1,7 @@
 ---
-"@rocket.chat/meteor": patch
-"@rocket.chat/core-typings": patch
-"@rocket.chat/rest-typings": patch
+"@rocket.chat/meteor": minor
+"@rocket.chat/core-typings": minor
+"@rocket.chat/rest-typings": minor
 ---
 
-feat: Added new callout in the subscription page to inform users of subscription upgrade eligibility when applicable.
+Add new callout in the subscription page to inform users of subscription upgrade eligibility when applicable.
