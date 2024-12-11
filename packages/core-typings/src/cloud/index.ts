@@ -9,4 +9,4 @@ export {
 	WorkspaceCommsResponsePayload,
 	WorkspaceInteractionResponsePayload,
 } from './WorkspaceSyncPayload';
-export { CloudSyncAnnouncement } from './CloudSyncAnnouncement';
+export { ICloudSyncAnnouncement } from './CloudSyncAnnouncement';
