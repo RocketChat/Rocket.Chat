@@ -67,9 +67,8 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 		const type = announcement?.surface === 'banner' ? 'banner.close' : 'modal.close';
 
 		// for viewClosed we just need to let Cloud know that the banner was closed, no need to wait for the response
-		setImmediate(async () => {
-			await this.handlePayload(payload);
-		});
+
+		void this.handlePayload(payload);
 
 		return {
 			type,

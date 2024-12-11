@@ -1,4 +1,4 @@
-import type { LicenseInfo } from '@rocket.chat/core-typings';
+import type { LicenseInfo, Cloud } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
@@ -43,6 +43,7 @@ export type LicensesEndpoints = {
 	'/v1/licenses.info': {
 		GET: (params: licensesInfoProps) => {
 			license: LicenseInfo;
+			cloudSyncAnnouncement?: Cloud.ICloudSyncAnnouncement;
 		};
 	};
 	'/v1/licenses.add': {
