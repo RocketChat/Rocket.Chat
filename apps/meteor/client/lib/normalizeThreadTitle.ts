@@ -2,11 +2,11 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
-import { emojiParser } from '../../../emoji/client/emojiParser';
-import { filterMarkdown } from '../../../markdown/lib/markdown';
-import { MentionsParser } from '../../../mentions/lib/MentionsParser';
-import { Users } from '../../../models/client';
-import { settings } from '../../../settings/client';
+import { emojiParser } from '../../app/emoji/client/emojiParser';
+import { filterMarkdown } from '../../app/markdown/lib/markdown';
+import { MentionsParser } from '../../app/mentions/lib/MentionsParser';
+import { Users } from '../../app/models/client';
+import { settings } from '../../app/settings/client';
 
 export function normalizeThreadTitle({ ...message }: Readonly<IMessage>) {
 	if (message.msg) {
