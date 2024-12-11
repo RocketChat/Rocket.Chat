@@ -1,8 +1,6 @@
 import { readFile } from 'fs/promises';
 import path from 'path';
 
-import { getExecOutput } from '@actions/exec';
-
 import { readPackageJson } from './utils';
 
 export async function getMongoVersion(cwd: string) {
@@ -27,14 +25,11 @@ export async function getNodeNpmVersions(cwd: string): Promise<{ node: string; y
 	return packageJson.engines;
 }
 
-export async function getAppsEngineVersion() {
+export async function getAppsEngineVersion(cwd: string) {
 	try {
-		const result = await getExecOutput('yarn why @rocket.chat/apps-engine --json');
+		const result = await readPackageJson(path.join(cwd, 'packages/apps-engine'));
 
-		const match = result.stdout.match(/"@rocket\.chat\/meteor@workspace:apps\/meteor".*"@rocket\.chat\/apps\-engine@[^#]+#npm:([^"]+)"/);
-		if (match) {
-			return match[1];
-		}
+		return result.version ?? 'Not Available';
 	} catch (e) {
 		console.error(e);
 	}
