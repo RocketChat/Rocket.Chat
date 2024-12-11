@@ -238,7 +238,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		date: { gte: Date; lte: Date },
 		data?: { departmentId?: string },
 		extraQuery?: Filter<IOmnichannelRoom>,
-	): FindCursor<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs'>>;
+	): FindCursor<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'responseBy' | 'metrics' | 'msgs'>>;
 	getAnalyticsMetricsBetweenDateWithMessages(
 		t: string,
 		date: { gte: Date; lte: Date },
