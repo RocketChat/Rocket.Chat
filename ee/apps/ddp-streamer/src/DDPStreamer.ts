@@ -2,7 +2,7 @@ import crypto from 'crypto';
 
 import { MeteorService, Presence, ServiceClass } from '@rocket.chat/core-services';
 import { InstanceStatus } from '@rocket.chat/instance-status';
-import { Users } from '@rocket.chat/models';
+import { Users, InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';
 import polka from 'polka';
 import { throttle } from 'underscore';
 import WebSocket from 'ws';
@@ -66,7 +66,7 @@ export class DDPStreamer extends ServiceClass {
 
 	// update connections count every 30 seconds
 	updateConnections = throttle(() => {
-		InstanceStatus.updateConnections(this.wss?.clients.size ?? 0);
+		InstanceStatusModel.updateConnections(InstanceStatus.id(), this.wss?.clients.size ?? 0);
 	}, 30000);
 
 	async created(): Promise<void> {
