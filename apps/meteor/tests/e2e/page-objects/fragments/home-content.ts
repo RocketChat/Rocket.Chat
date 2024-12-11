@@ -425,4 +425,9 @@ export class HomeContent {
 		await this.page.getByRole('dialog').getByRole('textbox', { name: 'Message' }).fill(text);
 		await this.page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true }).click();
 	}
+
+	async waitForPageLoad(): Promise<void> {
+		await this.page.waitForSelector('main');
+		await this.page.waitForSelector('main >> role=heading');
+	}
 }

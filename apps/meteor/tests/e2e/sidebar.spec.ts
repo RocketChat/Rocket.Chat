@@ -14,9 +14,9 @@ test.describe.serial('sidebar', () => {
 	});
 
 	test('should navigate on sidebar toolbar using arrow keys', async ({ page }) => {
+		await poHomeDiscussion.content.waitForPageLoad();
 		await poHomeDiscussion.navbar.homeButton.focus();
 		await page.keyboard.press('ArrowRight');
-
 		await expect(poHomeDiscussion.navbar.directoryButton).toBeFocused();
 	});
 
