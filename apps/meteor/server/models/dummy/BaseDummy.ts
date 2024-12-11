@@ -15,7 +15,6 @@ import type {
 	InsertManyResult,
 	InsertOneOptions,
 	InsertOneResult,
-	ModifyResult,
 	UpdateFilter,
 	UpdateOptions,
 	UpdateResult,
@@ -53,18 +52,12 @@ export class BaseDummy<
 		return this.collectionName;
 	}
 
-	async findOneAndDelete(): Promise<ModifyResult<T>> {
-		return {
-			value: null,
-			ok: 1,
-		};
+	async findOneAndDelete(): Promise<T | null> {
+		return null;
 	}
 
-	async findOneAndUpdate(): Promise<ModifyResult<T>> {
-		return {
-			value: null,
-			ok: 1,
-		};
+	async findOneAndUpdate(): Promise<T | null> {
+		return null;
 	}
 
 	findOneById(_id: T['_id'], options?: FindOptions<T> | undefined): Promise<T | null>;

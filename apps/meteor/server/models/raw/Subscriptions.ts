@@ -30,7 +30,7 @@ import type {
 	AggregationCursor,
 	CountDocumentsOptions,
 	DeleteOptions,
-	ModifyResult,
+	WithId,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -629,13 +629,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
-	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<ModifyResult<ISubscription>> {
+	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<null | WithId<ISubscription>> {
 		const query = { rid, 'u._id': uid };
 		const update = { $set: { E2ESuggestedKey: key } };
 		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
 	}
 
-	setE2EKeyByUserIdAndRoomId(userId: string, rid: string, key: string): Promise<ModifyResult<ISubscription>> {
+	setE2EKeyByUserIdAndRoomId(userId: string, rid: string, key: string): Promise<null | WithId<ISubscription>> {
 		const query = { rid, 'u._id': userId };
 		const update = { $set: { E2EKey: key } };
 
@@ -647,7 +647,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		rid: string,
 		key: string,
 		suggestedOldRoomKeys?: ISubscription['suggestedOldRoomKeys'],
-	): Promise<ModifyResult<ISubscription>> {
+	): Promise<null | WithId<ISubscription>> {
 		const query = { rid, 'u._id': uid };
 		const update = { $set: { E2ESuggestedKey: key, ...(suggestedOldRoomKeys && { suggestedOldRoomKeys }) } };
 		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
@@ -900,7 +900,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				[notificationPrefOrigin]: 1,
 			};
 		} else {
-			// @ts-expect-error TODO: fix this
 			update.$set = {
 				[notificationField]: notificationPref.value,
 				[notificationPrefOrigin]: notificationPref.origin,
@@ -1237,12 +1236,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	findByRoomIdAndUserIdsOrAllMessages(roomId: string, userIds: string[]): FindCursor<ISubscription> {
-		const query = {
+		return this.find({
 			rid: roomId,
 			$or: [{ 'u._id': { $in: userIds } }, { emailNotifications: 'all' }],
-		};
-
-		return this.find(query);
+		});
 	}
 
 	findByRoomIdWhenUserIdExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
@@ -1772,7 +1769,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		const update: UpdateFilter<ISubscription> = {
-			// @ts-expect-error - :(
 			$set: {
 				[notificationField]: userPref,
 				[notificationOriginField]: 'user',
@@ -1927,7 +1923,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'u._id': userId,
 		};
 
-		const { value: doc } = await this.findOneAndDelete(query);
+		const doc = await this.findOneAndDelete(query);
 
 		if (doc) {
 			await Rooms.incUsersCountById(roomId, -1);

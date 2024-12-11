@@ -97,6 +97,6 @@ export class NotificationQueueRaw extends BaseRaw<INotification> implements INot
 			},
 		);
 
-		return result.value;
+		return result;
 	}
 }
