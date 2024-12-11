@@ -11,7 +11,7 @@ import { createToken } from './random';
 import { loadMessages } from './room';
 import Triggers from './triggers';
 
-const evaluateChangesAndLoadConfigByFields = async (fn: () => Promise<void>) => {
+export const evaluateChangesAndLoadConfigByFields = async (fn: () => Promise<void>) => {
 	const oldStore = JSON.parse(
 		JSON.stringify({
 			user: store.state.user || {},
@@ -42,7 +42,7 @@ const evaluateChangesAndLoadConfigByFields = async (fn: () => Promise<void>) => 
 	}
 };
 
-const createOrUpdateGuest = async (guest: StoreState['guest']) => {
+export const createOrUpdateGuest = async (guest: StoreState['guest']) => {
 	if (!guest) {
 		return;
 	}
