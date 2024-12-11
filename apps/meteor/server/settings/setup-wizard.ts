@@ -1343,7 +1343,7 @@ export const createSetupWSettings = () =>
 				secret: true,
 			});
 			await this.add('Cloud_Sync_Announcement_Payload', 'null', {
-				type: 'string', // tODO: replace setting type string for object once is implemented.
+				type: 'string', // TODO: replace setting type string for object once is implemented.
 				hidden: true,
 				secret: true,
 			});
