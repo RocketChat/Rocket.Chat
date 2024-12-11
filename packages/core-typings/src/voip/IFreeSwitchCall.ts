@@ -1,10 +1,14 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
+import type { IUser } from '../IUser';
 import type { IFreeSwitchEventCall, IFreeSwitchEventCaller } from './IFreeSwitchEvent';
 
 export interface IFreeSwitchCall extends IRocketChatRecord {
 	UUID: string;
 	channels: string[];
 	events: IFreeSwitchCallEvent[];
+	from?: Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>;
+	to?: Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>;
+	forwardedFrom?: Omit<IFreeSwitchCall, 'events'>[];
 }
 
 const knownEventTypes = [

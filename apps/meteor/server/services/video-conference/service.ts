@@ -31,6 +31,7 @@ import {
 	isLivechatVideoConference,
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
+import type { InsertionModel } from '@rocket.chat/model-typings';
 import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
@@ -58,7 +59,6 @@ import { isRoomCompatibleWithVideoConfRinging } from '../../lib/isRoomCompatible
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
-import { InsertionModel } from '@rocket.chat/model-typings';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -461,8 +461,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return true;
 	}
 
-	public async createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id']> {
-		return wrapExceptions(async () => VideoConferenceModel.createVoIP(data)).catch((e) => {
+	public async createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined> {
+		return wrapExceptions<string | undefined>(async () => VideoConferenceModel.createVoIP(data)).catch((e) => {
 			logger.error({
 				name: 'Error on VideoConf.createVoIP',
 				error: e,

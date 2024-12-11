@@ -5,8 +5,6 @@ import type {
 	IFreeSwitchEventCaller,
 	IFreeSwitchEvent,
 	FreeSwitchExtension,
-	IFreeSwitchChannelUser,
-	IUser,
 	IFreeSwitchCall,
 	IFreeSwitchCallEventType,
 	IFreeSwitchCallEvent,
@@ -248,25 +246,6 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		}) as InsertionModel<WithoutId<IFreeSwitchEvent>>;
 	}
 
-	private async getUserFromFreeSwitchIdentifier(identifier: string): Promise<IFreeSwitchChannelUser | null> {
-		const strippedValue = identifier.replace(/\@.*/, '');
-
-		const user = await Users.findOneByFreeSwitchExtension<Pick<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'>>(
-			strippedValue,
-			{ projection: { _id: 1, name: 1, username: 1, avatarETag: 1 } },
-		);
-
-		if (!user) {
-			return null;
-		}
-
-		return {
-			user,
-			extension: strippedValue,
-			identifier,
-		};
-	}
-
 	private parseTimestamp(timestamp: string | undefined): Date | undefined {
 		if (!timestamp || timestamp === '0') {
 			return undefined;
@@ -320,9 +299,39 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			}
 		}
 
-		console.log(modifiedEventName, state, callState);
-
 		return 'OTHER';
+	}
+
+	private identifyCallerFromEvent(event: IFreeSwitchEvent): string {
+		if (event.call?.from?.user) {
+			return event.call.from.user;
+		}
+
+		if (event.caller?.username) {
+			return event.caller.username;
+		}
+
+		if (event.caller?.number) {
+			return event.caller.number;
+		}
+
+		if (event.caller?.ani) {
+			return event.caller.ani;
+		}
+
+		return '';
+	}
+
+	private identifyCalleeFromEvent(event: IFreeSwitchEvent): string {
+		if (event.call?.to?.dialedExtension) {
+			return event.call.to.dialedExtension;
+		}
+
+		if (event.call?.to?.dialedUser) {
+			return event.call.to.dialedUser;
+		}
+
+		return '';
 	}
 
 	private async computeCall(callUUID: string): Promise<void> {
@@ -350,12 +359,16 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			return (event1.firedAt?.valueOf() || 0) - (event2.firedAt?.valueOf() || 0);
 		});
 
+		const fromUser = new Set<string>();
+		const toUser = new Set<string>();
 		for (const event of sortedEvents) {
 			if (event.channelUniqueId && !call.channels.includes(event.channelUniqueId)) {
 				call.channels.push(event.channelUniqueId);
 			}
 
 			const eventType = this.getEventType(event);
+			fromUser.add(this.identifyCallerFromEvent(event));
+			toUser.add(this.identifyCalleeFromEvent(event));
 
 			const hasUsefulCallData = Object.keys(event.eventData).some((key) => key.startsWith('variable_'));
 
@@ -418,6 +431,51 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			});
 		}
 
+		// A call has 2 channels at max
+		// If it has 3 channels, it's a forwarded call
+		if (call.channels.length === 3) {
+			const originalCalls = await FreeSwitchCall.findAllByChannelUniqueIds(call.channels, { projection: { events: 0 } }).toArray();
+			if (originalCalls.length) {
+				call.forwardedFrom = originalCalls;
+			}
+		}
+
+		if (fromUser.size) {
+			const callerIds = [...fromUser].filter((e) => !!e);
+			const user = await Users.findOneByFreeSwitchExtensions(callerIds);
+
+			if (user) {
+				call.from = {
+					_id: user._id,
+					username: user.username,
+					name: user.name,
+					avatarETag: user.avatarETag,
+				};
+			}
+		}
+
+		if (toUser.size) {
+			const calleeIds = [...toUser].filter((e) => !!e);
+			const user = await Users.findOneByFreeSwitchExtensions(calleeIds);
+			if (user) {
+				call.to = {
+					_id: user._id,
+					username: user.username,
+					name: user.name,
+					avatarETag: user.avatarETag,
+				};
+			}
+		}
+
+		if (!call.from || !call.to) {
+			console.log({
+				msg: 'Ignoring call not originated by a Rocket.Chat user',
+				call: JSON.stringify(call),
+				fromUser,
+				toUser,
+			});
+			return;
+		}
 		await FreeSwitchCall.registerCall(call);
 	}
 
