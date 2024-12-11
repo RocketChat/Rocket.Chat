@@ -1,4 +1,14 @@
-import type { IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IUploadWithUser, IIntegration, ISubscription } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	IRoom,
+	ITeam,
+	IGetRoomRoles,
+	IUser,
+	IUploadWithUser,
+	IIntegration,
+	ISubscription,
+	IRole,
+} from '@rocket.chat/core-typings';
 
 import type { GroupsAddAllProps } from './GroupsAddAllProps';
 import type { GroupsAddLeaderProps } from './GroupsAddLeaderProps';
@@ -18,6 +28,7 @@ import type { GroupsInviteProps } from './GroupsInviteProps';
 import type { GroupsKickProps } from './GroupsKickProps';
 import type { GroupsLeaveProps } from './GroupsLeaveProps';
 import type { GroupsListProps } from './GroupsListProps';
+import type { GroupsMembersOrderedByRoleProps } from './GroupsMembersByOrderedRole';
 import type { GroupsMembersProps } from './GroupsMembersProps';
 import type { GroupsMessagesProps } from './GroupsMessagesProps';
 import type { GroupsModeratorsProps } from './GroupsModeratorsProps';
@@ -52,6 +63,11 @@ export type GroupsEndpoints = {
 			members: IUser[];
 			total: number;
 		};
+	};
+	'/v1/groups.membersOrderedByRole': {
+		GET: (params: GroupsMembersOrderedByRoleProps) => PaginatedResult<{
+			members: IUser & { roles: IRole['_id'][] }[];
+		}>;
 	};
 	'/v1/groups.history': {
 		GET: (params: GroupsHistoryProps) => PaginatedResult<{

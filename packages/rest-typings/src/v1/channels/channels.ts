@@ -1,4 +1,4 @@
-import type { IUploadWithUser, IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IIntegration } from '@rocket.chat/core-typings';
+import type { IUploadWithUser, IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IIntegration, IRole } from '@rocket.chat/core-typings';
 
 import type { ChannelsAddAllProps } from './ChannelsAddAllProps';
 import type { ChannelsArchiveProps } from './ChannelsArchiveProps';
@@ -14,6 +14,7 @@ import type { ChannelsJoinProps } from './ChannelsJoinProps';
 import type { ChannelsKickProps } from './ChannelsKickProps';
 import type { ChannelsLeaveProps } from './ChannelsLeaveProps';
 import type { ChannelsListProps } from './ChannelsListProps';
+import type { ChannelsMembersOrderedByRoleProps } from './ChannelsMembersByOrderedRole';
 import type { ChannelsMessagesProps } from './ChannelsMessagesProps';
 import type { ChannelsModeratorsProps } from './ChannelsModeratorsProps';
 import type { ChannelsOnlineProps } from './ChannelsOnlineProps';
@@ -50,6 +51,11 @@ export type ChannelsEndpoints = {
 			>,
 		) => PaginatedResult<{
 			members: IUser[];
+		}>;
+	};
+	'/v1/channels.membersOrderedByRole': {
+		GET: (params: ChannelsMembersOrderedByRoleProps) => PaginatedResult<{
+			members: IUser & { roles: IRole['_id'] }[];
 		}>;
 	};
 	'/v1/channels.history': {
