@@ -37,17 +37,17 @@ test.describe('Omnichannel close chat', () => {
 			await page.goto('/livechat');
 			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newVisitor, false);
-			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
+			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_visitor');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeOmnichannel.sidebar.openChat(newVisitor.name);
 		});
 
 		await test.step('Expect to be able to close an omnichannel to conversation', async () => {
 			await agent.poHomeOmnichannel.content.btnCloseChat.click();
-			await agent.poHomeOmnichannel.content.inputModalClosingComment.type('any_comment');
+			await agent.poHomeOmnichannel.content.inputModalClosingComment.fill('any_comment');
 			await agent.poHomeOmnichannel.content.btnModalConfirm.click();
 			await expect(agent.poHomeOmnichannel.toastSuccess).toBeVisible();
 		});

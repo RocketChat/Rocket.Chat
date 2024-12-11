@@ -6,4 +6,5 @@ export * from './omnichannel-sidenav';
 export * from './omnichannel-close-chat-modal';
 export * from './navbar';
 export * from './sidebar';
+export * from './create-room-modal';
 export * from './sidepanel';

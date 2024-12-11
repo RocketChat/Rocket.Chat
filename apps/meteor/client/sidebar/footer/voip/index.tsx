@@ -16,7 +16,7 @@ import {
 } from '../../../contexts/CallContext';
 import { useVoipFooterMenu } from '../../../hooks/useVoipFooterMenu';
 import SidebarFooterDefault from '../SidebarFooterDefault';
-import { VoipFooter as VoipFooterComponent } from './VoipFooter';
+import VoipFooterComponent from './VoipFooter';
 
 export const VoipFooter = (): ReactElement | null => {
 	const { t } = useTranslation();

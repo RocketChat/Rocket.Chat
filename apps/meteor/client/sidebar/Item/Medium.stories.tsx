@@ -8,7 +8,7 @@ import Medium from './Medium';
 import * as Status from '../../components/UserStatus';
 
 export default {
-	title: 'Sidebar/Medium',
+	title: 'SidebarV2/Medium',
 	component: Medium,
 	args: {
 		title: 'John Doe',

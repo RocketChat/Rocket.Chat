@@ -21,7 +21,7 @@ test.describe.serial('message-actions', () => {
 		poHomeChannel = new HomeChannel(page);
 		poHomeDiscussion = new HomeDiscussion(page);
 		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 	});
 	test('expect reply the message in direct', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('this is a message for reply in direct');
@@ -150,7 +150,7 @@ test.describe.serial('message-actions', () => {
 		await poHomeDiscussion.inputName.fill(discussionName);
 		await createButton.click();
 		await expect(page.locator('header h1')).toHaveText(discussionName);
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 		// Should fail if more than one discussion has been created
 		await expect(poHomeChannel.content.getMessageByText(discussionName)).toHaveCount(1);
 	});
@@ -195,7 +195,7 @@ test.describe.serial('message-actions', () => {
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);
 			await page.goto('/home');
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.sidebar.openChat(targetChannel);
 		});
 		test('expect reply the message in direct', async ({ page }) => {
 			await poHomeChannel.content.sendMessage('this is a message for reply in direct');
@@ -211,7 +211,7 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.sendMessage(message);
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await poHomeChannel.sidebar.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
 	});
 
@@ -220,7 +220,7 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.sendMessage(message);
 		await poHomeChannel.content.forwardMessage(forwardTeam);
 
-		await poHomeChannel.sidenav.openChat(forwardTeam);
+		await poHomeChannel.sidebar.openChat(forwardTeam);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
 	});
 
@@ -232,7 +232,7 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.sendMessage(message);
 		await poHomeChannel.content.forwardMessage(direct);
 
-		await poHomeChannel.sidenav.openChat(ADMIN_CREDENTIALS.username);
+		await poHomeChannel.sidebar.openChat(ADMIN_CREDENTIALS.username);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
 	});
 
@@ -244,7 +244,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await poHomeChannel.sidebar.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
@@ -256,7 +256,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await poHomeChannel.sidebar.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
@@ -268,7 +268,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await poHomeChannel.sidebar.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
@@ -280,7 +280,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await poHomeChannel.sidebar.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
@@ -292,7 +292,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await poHomeChannel.sidebar.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 });

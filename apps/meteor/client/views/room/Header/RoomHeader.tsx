@@ -12,12 +12,10 @@ import RoomToolbox from './RoomToolbox';
 import Encrypted from './icons/Encrypted';
 import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
-import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderSubtitle, HeaderToolbar } from '../../../components/Header';
-import MarkdownText from '../../../components/MarkdownText';
+import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderToolbar } from '../../../components/Header';
 
 export type RoomHeaderProps = {
 	room: IRoom;
-	topic?: string;
 	slots: {
 		start?: unknown;
 		preContent?: unknown;
@@ -33,14 +31,14 @@ export type RoomHeaderProps = {
 	roomToolbox?: JSX.Element;
 };
 
-const RoomHeader = ({ room, topic = '', slots = {}, roomToolbox }: RoomHeaderProps) => {
+const RoomHeader = ({ room, slots = {}, roomToolbox }: RoomHeaderProps) => {
 	const { t } = useTranslation();
 
 	return (
 		<Header>
 			{slots?.start}
 			<HeaderAvatar>
-				<RoomAvatar room={room} />
+				<RoomAvatar room={room} size='x28' />
 			</HeaderAvatar>
 			{slots?.preContent}
 			<HeaderContent>
@@ -54,13 +52,6 @@ const RoomHeader = ({ room, topic = '', slots = {}, roomToolbox }: RoomHeaderPro
 					<Translate room={room} />
 					{slots?.insideContent}
 				</HeaderContentRow>
-				{topic && (
-					<HeaderContentRow>
-						<HeaderSubtitle is='h2'>
-							<MarkdownText pi={2} parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />
-						</HeaderSubtitle>
-					</HeaderContentRow>
-				)}
 			</HeaderContent>
 			{slots?.posContent}
 			<Suspense fallback={null}>
