@@ -302,7 +302,7 @@ API.v1.addRoute(
 		async post() {
 			const { rid, e2eKey, e2eKeyId } = this.bodyParams;
 			if (!(await hasPermissionAsync(this.userId, 'toggle-room-e2e-encryption', rid))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 			if (LockMap.has(rid)) {
 				throw new Error('error-e2e-key-reset-in-progress');
