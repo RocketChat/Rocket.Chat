@@ -4,4 +4,4 @@
 "@rocket.chat/rest-typings": minor
 ---
 
-Add new callout in the subscription page to inform users of subscription upgrade eligibility when applicable.
+Adds a new callout in the subscription page to inform users of subscription upgrade eligibility when applicable.

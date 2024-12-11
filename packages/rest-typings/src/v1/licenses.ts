@@ -43,7 +43,7 @@ export type LicensesEndpoints = {
 	'/v1/licenses.info': {
 		GET: (params: licensesInfoProps) => {
 			license: LicenseInfo;
-			cloudSyncAnnouncement?: Cloud.CloudSyncAnnouncement;
+			cloudSyncAnnouncement?: Cloud.ICloudSyncAnnouncement;
 		};
 	};
 	'/v1/licenses.add': {
