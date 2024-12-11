@@ -27,6 +27,7 @@
 		"lint": "yarn stylelint && yarn eslint",
 		"eslint": "NODE_OPTIONS=\"--max-old-space-size=8192\" eslint --ext .js,.jsx,.ts,.tsx .  --cache",
 		"eslint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix --cache",
+		"eslint:fix:branch": "eslint --ext .js,.jsx,.ts,.tsx --fix --cache $(git diff develop --name-only --relative ./)",
 		"obj:dev": "TEST_MODE=true yarn dev",
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\"",
 		"stylelint:fix": "stylelint --fix \"app/**/*.css\" \"client/**/*.css\"",
