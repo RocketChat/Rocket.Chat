@@ -38,18 +38,21 @@ const MessageActionMenu = ({ options, onChangeMenuVisibility, context, isMessage
 			...(option.disabled &&
 				option?.disabled?.(context) && { tooltip: t('Action_not_available_encrypted_content', { action: t(option.label) }) }),
 		}))
-		.reduce((acc, option) => {
-			const group = option.type ? option.type : '';
-			const section = acc.find((section: { id: string }) => section.id === group);
-			if (section) {
-				section.items.push(option);
-				return acc;
-			}
-			const newSection = { id: group, title: group === 'apps' ? t('Apps') : '', items: [option] };
-			acc.push(newSection);
+		.reduce(
+			(acc, option) => {
+				const group = option.type ? option.type : '';
+				const section = acc.find((section: { id: string }) => section.id === group);
+				if (section) {
+					section.items.push(option);
+					return acc;
+				}
+				const newSection = { id: group, title: group === 'apps' ? t('Apps') : '', items: [option] };
+				acc.push(newSection);
 
-			return acc;
-		}, [] as unknown as MessageActionSection[])
+				return acc;
+			},
+			[] as unknown as MessageActionSection[],
+		)
 		.map((section) => {
 			if (section.id !== 'apps') {
 				return section;

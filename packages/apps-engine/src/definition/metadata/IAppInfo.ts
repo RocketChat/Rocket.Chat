@@ -1,6 +1,6 @@
-import type { IPermission } from '../permissions/IPermission';
 import type { AppInterface } from './AppInterface';
 import type { IAppAuthorInfo } from './IAppAuthorInfo';
+import type { IPermission } from '../permissions/IPermission';
 
 export interface IAppInfo {
     id: string;
@@ -17,4 +17,5 @@ export interface IAppInfo {
     iconFileContent?: string;
     essentials?: Array<AppInterface>;
     permissions?: Array<IPermission>;
+    addon?: string;
 }

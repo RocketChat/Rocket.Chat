@@ -5,11 +5,11 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 import ChangePassword from './ChangePassword';
 import EndToEnd from './EndToEnd';
 import TwoFactorEmail from './TwoFactorEmail';
 import TwoFactorTOTP from './TwoFactorTOTP';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 
 const passwordDefaultValues = { password: '', confirmationPassword: '' };
 
@@ -62,8 +62,8 @@ const AccountSecurityPage = (): ReactElement => {
 						)}
 						{e2eEnabled && (
 							<Accordion.Item
-								title={t('E2E Encryption')}
-								aria-label={t('E2E Encryption')}
+								title={t('End-to-end_encryption')}
+								aria-label={t('End-to-end_encryption')}
 								defaultExpanded={!twoFactorEnabled}
 								data-qa-type='e2e-encryption-section'
 							>

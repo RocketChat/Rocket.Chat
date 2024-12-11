@@ -2,11 +2,11 @@ import { api } from '@rocket.chat/core-services';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { i18n } from './i18n';
+import { isUserIdFederated } from './isUserIdFederated';
 import { notifyOnUserChange, notifyOnSubscriptionChangedByUserId } from '../../app/lib/server/lib/notifyListener';
 import * as Mailer from '../../app/mailer/server/api';
 import { settings } from '../../app/settings/server';
-import { i18n } from './i18n';
-import { isUserIdFederated } from './isUserIdFederated';
 
 const sendResetNotification = async function (uid: string): Promise<void> {
 	const user = await Users.findOneById(uid, {});

@@ -19,8 +19,8 @@ import type {
 } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
-import { notifyOnSettingChanged } from '../../../app/lib/server/lib/notifyListener';
 import { BaseRaw } from './BaseRaw';
+import { notifyOnSettingChanged } from '../../../app/lib/server/lib/notifyListener';
 
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements ILivechatVisitorsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatVisitor>>) {
@@ -49,7 +49,11 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query);
 	}
 
-	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null> {
+	async findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null> {
+		if (!emailAddress) {
+			return null;
+		}
+
 		const query = {
 			'visitorEmails.address': String(emailAddress).toLowerCase(),
 		};
@@ -105,7 +109,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query, options);
 	}
 
-	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): FindCursor<ILivechatVisitor> {
+	countVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): Promise<number> {
 		const query = {
 			disabled: { $ne: true },
 			_updatedAt: {
@@ -115,7 +119,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			...(department && department !== 'undefined' && { department }),
 		};
 
-		return this.find(query, { projection: { _id: 1 } });
+		return this.countDocuments(query);
 	}
 
 	async getNextVisitorUsername(): Promise<string> {
@@ -197,7 +201,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 							{
 								'phone.phoneNumber': emailOrPhone,
 							},
-					  ]
+						]
 					: []),
 				...(nameOrUsername
 					? [
@@ -207,7 +211,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 							{
 								username: nameOrUsername,
 							},
-					  ]
+						]
 					: []),
 				...allowedCustomFields.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })),
 			],

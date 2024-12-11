@@ -5,6 +5,7 @@ import { useQuery, hashQueryKey } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
+import RemoveSlaButton from './RemoveSlaButton';
 import FilterByText from '../../components/FilterByText';
 import GenericNoResults from '../../components/GenericNoResults/GenericNoResults';
 import {
@@ -18,26 +19,27 @@ import {
 } from '../../components/GenericTable';
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../components/GenericTable/hooks/useSort';
-import RemoveSlaButton from './RemoveSlaButton';
 
 const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	const t = useTranslation();
 	const router = useRouter();
 
 	const [filter, setFilter] = useState('');
-	const debouncedFilter = useDebouncedValue(filter, 500);
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description' | 'dueTimeInMinutes'>('name');
 
-	const query = useMemo(
-		() => ({
-			text: debouncedFilter,
-			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		}),
-		[debouncedFilter, itemsPerPage, current, sortBy, sortDirection],
+	const query = useDebouncedValue(
+		useMemo(
+			() => ({
+				text: filter,
+				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
+				...(itemsPerPage && { count: itemsPerPage }),
+				...(current && { offset: current }),
+			}),
+			[filter, itemsPerPage, current, sortBy, sortDirection],
+		),
+		500,
 	);
 
 	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
@@ -84,7 +86,9 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	return (
 		<>
-			{((isSuccess && data?.sla.length > 0) || queryHasChanged) && <FilterByText onChange={setFilter} />}
+			{((isSuccess && data?.sla.length > 0) || queryHasChanged) && (
+				<FilterByText value={filter} onChange={(event) => setFilter(event.target.value)} />
+			)}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

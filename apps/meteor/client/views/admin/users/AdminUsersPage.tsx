@@ -1,14 +1,25 @@
 import type { LicenseInfo } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, Callout, ContextualbarIcon, Icon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Callout, ContextualbarIcon, Icon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import { usePermission, useRouteParameter, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans } from 'react-i18next';
 
+import AdminInviteUsers from './AdminInviteUsers';
+import AdminUserCreated from './AdminUserCreated';
+import AdminUserForm from './AdminUserForm';
+import AdminUserFormWithData from './AdminUserFormWithData';
+import AdminUserInfoWithData from './AdminUserInfoWithData';
+import AdminUserUpgrade from './AdminUserUpgrade';
+import UsersPageHeaderContent from './UsersPageHeaderContent';
+import UsersTable from './UsersTable';
+import useFilteredUsers from './hooks/useFilteredUsers';
+import usePendingUsersCount from './hooks/usePendingUsersCount';
+import { useSeatsCap } from './useSeatsCap';
 import {
 	Contextualbar,
 	ContextualbarHeader,
@@ -22,26 +33,15 @@ import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useLicenseLimitsByBehavior } from '../../../hooks/useLicenseLimitsByBehavior';
 import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
 import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
-import AdminInviteUsers from './AdminInviteUsers';
-import AdminUserCreated from './AdminUserCreated';
-import AdminUserForm from './AdminUserForm';
-import AdminUserFormWithData from './AdminUserFormWithData';
-import AdminUserInfoWithData from './AdminUserInfoWithData';
-import AdminUserUpgrade from './AdminUserUpgrade';
-import UserPageHeaderContentWithSeatsCap from './UserPageHeaderContentWithSeatsCap';
-import UsersTable from './UsersTable';
-import useFilteredUsers from './hooks/useFilteredUsers';
-import usePendingUsersCount from './hooks/usePendingUsersCount';
-import { useSeatsCap } from './useSeatsCap';
 
 export type UsersFilters = {
 	text: string;
 	roles: OptionProp[];
 };
 
-export type AdminUserTab = 'all' | 'active' | 'deactivated' | 'pending';
+export type AdminUsersTab = 'all' | 'active' | 'deactivated' | 'pending';
 
-export type UsersTableSortingOptions = 'name' | 'username' | 'emails.address' | 'status' | 'active';
+export type UsersTableSortingOption = 'name' | 'username' | 'emails.address' | 'status' | 'active' | 'freeSwitchExtension';
 
 const AdminUsersPage = (): ReactElement => {
 	const t = useTranslation();
@@ -56,18 +56,15 @@ const AdminUsersPage = (): ReactElement => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
-	const canCreateUser = usePermission('create-user');
-	const canBulkCreateUser = usePermission('bulk-register-user');
-
 	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
 
 	const getRoles = useEndpoint('GET', '/v1/roles.list');
 	const { data, error } = useQuery(['roles'], async () => getRoles());
 
 	const paginationData = usePagination();
-	const sortData = useSort<UsersTableSortingOptions>('name');
+	const sortData = useSort<UsersTableSortingOption>('name');
 
-	const [tab, setTab] = useState<AdminUserTab>('all');
+	const [tab, setTab] = useState<AdminUsersTab>('all');
 	const [userFilters, setUserFilters] = useState<UsersFilters>({ text: '', roles: [] });
 
 	const searchTerm = useDebouncedValue(userFilters.text, 500);
@@ -89,7 +86,7 @@ const AdminUsersPage = (): ReactElement => {
 		filteredUsersQueryResult?.refetch();
 	};
 
-	const handleTabChange = (tab: AdminUserTab) => {
+	const handleTabChange = (tab: AdminUsersTab) => {
 		setTab(tab);
 
 		paginationData.setCurrent(0);
@@ -111,22 +108,7 @@ const AdminUsersPage = (): ReactElement => {
 		<Page flexDirection='row'>
 			<Page>
 				<PageHeader title={t('Users')}>
-					{seatsCap && seatsCap.maxActiveUsers < Number.POSITIVE_INFINITY ? (
-						<UserPageHeaderContentWithSeatsCap isSeatsCapExceeded={isSeatsCapExceeded} {...seatsCap} />
-					) : (
-						<ButtonGroup>
-							{canBulkCreateUser && (
-								<Button icon='mail' onClick={() => router.navigate('/admin/users/invite')} disabled={isSeatsCapExceeded}>
-									{t('Invite')}
-								</Button>
-							)}
-							{canCreateUser && (
-								<Button icon='user-plus' onClick={() => router.navigate('/admin/users/new')} disabled={isSeatsCapExceeded}>
-									{t('New_user')}
-								</Button>
-							)}
-						</ButtonGroup>
-					)}
+					<UsersPageHeaderContent isSeatsCapExceeded={isSeatsCapExceeded} seatsCap={seatsCap} />
 				</PageHeader>
 				{preventAction?.includes('activeUsers') && (
 					<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} mbe={19} mi={24}>
@@ -165,12 +147,12 @@ const AdminUsersPage = (): ReactElement => {
 					<UsersTable
 						filteredUsersQueryResult={filteredUsersQueryResult}
 						setUserFilters={setUserFilters}
-						onReload={handleReload}
 						paginationData={paginationData}
 						sortData={sortData}
 						tab={tab}
 						isSeatsCapExceeded={isSeatsCapExceeded}
 						roleData={data}
+						onReload={handleReload}
 					/>
 				</PageContent>
 			</Page>

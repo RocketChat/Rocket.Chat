@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import MessageBlocks from '.';
@@ -13,7 +13,7 @@ export default {
 	decorators: [(storyFn) => <PopoverContainer children={storyFn()} />],
 } satisfies Meta<ComponentProps<typeof MessageBlocks>>;
 
-export const WithBlocks: Story<ComponentProps<typeof MessageBlocks>> = () => (
+export const WithBlocks: StoryFn<ComponentProps<typeof MessageBlocks>> = () => (
 	<MessageBlocks
 		blocks={[
 			{

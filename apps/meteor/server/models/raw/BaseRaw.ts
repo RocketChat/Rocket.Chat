@@ -1,3 +1,4 @@
+import { traceInstanceMethods } from '@rocket.chat/core-services';
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
 import type { Updater } from '@rocket.chat/models';
@@ -27,6 +28,7 @@ import type {
 	DeleteResult,
 	DeleteOptions,
 	FindOneAndDeleteOptions,
+	CountDocumentsOptions,
 } from 'mongodb';
 
 import { setUpdatedAt } from './setUpdatedAt';
@@ -35,7 +37,7 @@ const warnFields =
 	process.env.NODE_ENV !== 'production' || process.env.SHOW_WARNINGS === 'true'
 		? (...rest: any): void => {
 				console.warn(...rest, new Error().stack);
-		  }
+			}
 		: new Function();
 
 type ModelOptions = {
@@ -68,16 +70,21 @@ export abstract class BaseRaw<
 	 * @param trash Trash collection instance
 	 * @param options Model options
 	 */
-	constructor(private db: Db, protected name: string, protected trash?: Collection<TDeleted>, private options?: ModelOptions) {
+	constructor(
+		private db: Db,
+		protected name: string,
+		protected trash?: Collection<TDeleted>,
+		private options?: ModelOptions,
+	) {
 		this.collectionName = options?.collectionNameResolver ? options.collectionNameResolver(name) : getCollectionName(name);
 
 		this.col = this.db.collection(this.collectionName, options?.collection || {});
 
-		void this.createIndexes().catch((e) => {
-			console.warn(`Some indexes for collection '${this.collectionName}' could not be created:\n\t${e.message}`);
-		});
+		void this.createIndexes();
 
 		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
+
+		return traceInstanceMethods(this);
 	}
 
 	private pendingIndexes: Promise<void> | undefined;
@@ -93,7 +100,9 @@ export abstract class BaseRaw<
 				await this.pendingIndexes;
 			}
 
-			this.pendingIndexes = this.col.createIndexes(indexes) as unknown as Promise<void>;
+			this.pendingIndexes = this.col.createIndexes(indexes).catch((e) => {
+				console.warn(`Some indexes for collection '${this.collectionName}' could not be created:\n\t${e.message}`);
+			}) as unknown as Promise<void>;
 
 			void this.pendingIndexes.finally(() => {
 				this.pendingIndexes = undefined;
@@ -494,7 +503,10 @@ export abstract class BaseRaw<
 		return this.col.watch(pipeline);
 	}
 
-	countDocuments(query: Filter<T>): Promise<number> {
+	countDocuments(query: Filter<T>, options?: CountDocumentsOptions): Promise<number> {
+		if (options) {
+			return this.col.countDocuments(query, options);
+		}
 		return this.col.countDocuments(query);
 	}
 

@@ -1,19 +1,17 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
-import FilterByText from '../../../../components/FilterByText';
 import DateRangePicker from './DateRangePicker';
+import FilterByText from '../../../../components/FilterByText';
 
 type ModerationFilterProps = {
+	text: string;
 	setText: (text: string) => void;
 	setDateRange: (dateRange: { start: string; end: string }) => void;
 };
 
-const ModerationFilter = ({ setText, setDateRange }: ModerationFilterProps) => {
-	const { t } = useTranslation();
-
+const ModerationFilter = ({ text, setText, setDateRange }: ModerationFilterProps) => {
 	return (
-		<FilterByText shouldAutoFocus placeholder={t('Search')} onChange={setText}>
+		<FilterByText shouldAutoFocus value={text} onChange={(event) => setText(event.target.value)}>
 			<DateRangePicker onChange={setDateRange} />
 		</FilterByText>
 	);

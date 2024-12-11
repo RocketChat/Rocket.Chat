@@ -11,7 +11,12 @@ import FeaturedAppsSections from './FeaturedAppsSections';
 type AppsPageContentBodyProps = {
 	isMarketplace: boolean;
 	isFiltered: boolean;
-	appsResult?: { items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult & { allApps: App[] } & { totalAppsLength: number };
+	appsResult?: PaginatedResult<{
+		items: App[];
+		shouldShowSearchText: boolean;
+		allApps: App[];
+		totalAppsLength: number;
+	}>;
 	itemsPerPage: 25 | 50 | 100;
 	current: number;
 	onSetItemsPerPage: React.Dispatch<React.SetStateAction<25 | 50 | 100>>;

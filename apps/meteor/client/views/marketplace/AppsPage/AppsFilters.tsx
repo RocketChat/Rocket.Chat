@@ -12,10 +12,8 @@ import type { CategoryDropDownListProps, CategoryOnSelected, selectedCategoriesL
 import type { RadioDropDownGroup, RadioDropDownOnSelected } from '../definitions/RadioDropDownDefinitions';
 
 type AppsFiltersProps = {
-	setText: React.Dispatch<React.SetStateAction<string>> & {
-		flush: () => void;
-		cancel: () => void;
-	};
+	text: string;
+	setText: (text: string) => void;
 	freePaidFilterStructure: RadioDropDownGroup;
 	freePaidFilterOnSelected: RadioDropDownOnSelected;
 	categories: CategoryDropDownListProps['categories'];
@@ -30,6 +28,7 @@ type AppsFiltersProps = {
 };
 
 const AppsFilters = ({
+	text,
 	setText,
 	freePaidFilterStructure,
 	freePaidFilterOnSelected,
@@ -59,8 +58,8 @@ const AppsFilters = ({
 	const fixFiltersSize = breakpoints.includes('lg') ? { maxWidth: 'x200', minWidth: 'x200' } : null;
 
 	return (
-		<Box pi={24} mbe={4}>
-			<FilterByText placeholder={appsSearchPlaceholders[context]} onChange={setText}>
+		<Box pi={24}>
+			<FilterByText value={text} onChange={(event) => setText(event.target.value)} placeholder={appsSearchPlaceholders[context]}>
 				{!isPrivateAppsPage && (
 					<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
 				)}

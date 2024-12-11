@@ -1,6 +1,6 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
 import type { LivechatRoomEvents } from '@rocket.chat/ddp-client';
-import mitt from 'mitt';
+import { Emitter } from '@rocket.chat/emitter';
 
 import { isDefined } from './helpers/isDefined';
 import type { HooksWidgetAPI } from './lib/hooks';
@@ -11,7 +11,7 @@ type InternalWidgetAPI = {
 	ready: () => void;
 	minimizeWindow: () => void;
 	restoreWindow: () => void;
-	openPopout: () => void;
+	openPopout: (token?: string) => void;
 	openWidget: () => void;
 	resizeWidget: (height: number) => void;
 	removeWidget: () => void;
@@ -79,7 +79,7 @@ export const VALID_CALLBACKS = [
 
 const VALID_SYSTEM_MESSAGES = ['uj', 'ul', 'livechat-close', 'livechat-started', 'livechat_transfer_history'];
 
-const callbacks = mitt();
+const callbacks = new Emitter();
 
 function registerCallback(eventName: string, fn: () => unknown) {
 	if (VALID_CALLBACKS.indexOf(eventName) === -1) {
@@ -98,7 +98,9 @@ function emitCallback(eventName: string, data?: unknown) {
 }
 
 function clearAllCallbacks() {
-	callbacks.all.clear();
+	callbacks.events().forEach((callback) => {
+		callbacks.off(callback, () => undefined);
+	});
 }
 
 // hooks
@@ -482,7 +484,7 @@ const api: InternalWidgetAPI = {
 		openWidget();
 	},
 
-	openPopout() {
+	openPopout(token = '') {
 		closeWidget();
 		if (!config.url) {
 			throw new Error('Config.url is not set!');
@@ -492,6 +494,14 @@ const api: InternalWidgetAPI = {
 			'livechat-popout',
 			`width=${WIDGET_OPEN_WIDTH}, height=${widgetHeight}, toolbars=no`,
 		);
+
+		const data = {
+			src: 'rocketchat',
+			fn: 'setGuestToken',
+			args: [token],
+		};
+
+		api.popup?.postMessage(data, '*');
 		api.popup?.focus();
 	},
 

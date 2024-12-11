@@ -66,6 +66,7 @@ export class UsersRaw extends BaseRaw {
 			{ key: { openBusinessHours: 1 }, sparse: true },
 			{ key: { statusLivechat: 1 }, sparse: true },
 			{ key: { extension: 1 }, sparse: true, unique: true },
+			{ key: { freeSwitchExtension: 1 }, sparse: true, unique: true },
 			{ key: { language: 1 }, sparse: true },
 			{ key: { 'active': 1, 'services.email2fa.enabled': 1 }, sparse: true }, // used by statistics
 			{ key: { 'active': 1, 'services.totp.enabled': 1 }, sparse: true }, // used by statistics
@@ -93,6 +94,10 @@ export class UsersRaw extends BaseRaw {
 				sparse: true,
 				name: 'username_insensitive',
 				collation: { locale: 'en', strength: 2, caseLevel: false },
+			},
+			{
+				key: { active: 1, lastLogin: 1 },
+				partialFilterExpression: { active: true, lastLogin: { $exists: true } },
 			},
 		];
 	}
@@ -132,6 +137,16 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.find(query, options);
+	}
+
+	countUsersInRoles(roles) {
+		roles = [].concat(roles);
+
+		const query = {
+			roles: { $in: roles },
+		};
+
+		return this.countDocuments(query);
 	}
 
 	findPaginatedUsersInRoles(roles, options) {
@@ -713,8 +728,10 @@ export class UsersRaw extends BaseRaw {
 						$nin: exceptions,
 					},
 				},
+				{
+					...conditions,
+				},
 			],
-			...conditions,
 		};
 
 		return this.find(query, options);
@@ -1436,6 +1453,17 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query);
 	}
 
+	countOnlineUserFromList(userList, isLivechatEnabledWhenAgentIdle) {
+		// TODO: Create class Agent
+		const username = {
+			$in: [].concat(userList),
+		};
+
+		const query = queryStatusAgentOnline({ username }, isLivechatEnabledWhenAgentIdle);
+
+		return this.countDocuments(query);
+	}
+
 	findOneOnlineAgentByUserList(userList, options, isLivechatEnabledWhenAgentIdle) {
 		// TODO:: Create class Agent
 		const username = {
@@ -1465,6 +1493,22 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.find(query);
+	}
+
+	countBotAgents(usernameList) {
+		// TODO:: Create class Agent
+		const query = {
+			roles: {
+				$all: ['bot', 'livechat-agent'],
+			},
+			...(usernameList && {
+				username: {
+					$in: [].concat(usernameList),
+				},
+			}),
+		};
+
+		return this.countDocuments(query);
 	}
 
 	removeAllRoomsByUserId(_id) {
@@ -2432,6 +2476,34 @@ export class UsersRaw extends BaseRaw {
 		});
 	}
 
+	findOneByFreeSwitchExtension(freeSwitchExtension, options = {}) {
+		return this.findOne(
+			{
+				freeSwitchExtension,
+			},
+			options,
+		);
+	}
+
+	findAssignedFreeSwitchExtensions() {
+		return this.findUsersWithAssignedFreeSwitchExtensions({
+			projection: {
+				freeSwitchExtension: 1,
+			},
+		}).map(({ freeSwitchExtension }) => freeSwitchExtension);
+	}
+
+	findUsersWithAssignedFreeSwitchExtensions(options = {}) {
+		return this.find(
+			{
+				freeSwitchExtension: {
+					$exists: 1,
+				},
+			},
+			options,
+		);
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
@@ -2684,12 +2756,12 @@ export class UsersRaw extends BaseRaw {
 						$set: {
 							bio,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							bio: 1,
 						},
-				  }),
+					}),
 		};
 		return this.updateOne({ _id }, update);
 	}
@@ -2701,12 +2773,12 @@ export class UsersRaw extends BaseRaw {
 						$set: {
 							nickname,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							nickname: 1,
 						},
-				  }),
+					}),
 		};
 		return this.updateOne({ _id }, update);
 	}
@@ -2905,6 +2977,17 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
+	async setFreeSwitchExtension(_id, extension) {
+		return this.updateOne(
+			{
+				_id,
+			},
+			{
+				...(extension ? { $set: { freeSwitchExtension: extension } } : { $unset: { freeSwitchExtension: 1 } }),
+			},
+		);
+	}
+
 	// INSERT
 	create(data) {
 		const user = {
@@ -3030,6 +3113,16 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.find(query, options);
+	}
+
+	countAllUsersWithPendingAvatar() {
+		const query = {
+			_pendingAvatarUrl: {
+				$exists: true,
+			},
+		};
+
+		return this.countDocuments(query);
 	}
 
 	updateCustomFieldsById(userId, customFields) {

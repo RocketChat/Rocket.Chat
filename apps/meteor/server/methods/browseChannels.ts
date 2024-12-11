@@ -116,7 +116,7 @@ const getChannelsAndGroups = async (
 	};
 };
 
-const getChannelsCountForTeam = mem((teamId) => Rooms.findByTeamId(teamId, { projection: { _id: 1 } }).count(), {
+const getChannelsCountForTeam = mem((teamId) => Rooms.countByTeamId(teamId), {
 	maxAge: 2000,
 });
 
@@ -163,9 +163,7 @@ const getTeams = async (
 		},
 	);
 	const results = await Promise.all(
-		(
-			await cursor.toArray()
-		).map(async (room) => ({
+		(await cursor.toArray()).map(async (room) => ({
 			...room,
 			roomsCount: await getChannelsCountForTeam(room.teamId),
 		})),

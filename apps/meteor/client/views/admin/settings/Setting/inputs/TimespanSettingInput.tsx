@@ -72,7 +72,7 @@ function TimespanSettingInput({
 
 	const timeUnitOptions = useMemo(() => {
 		return Object.entries(TIMEUNIT).map<readonly [TIMEUNIT, string]>(([label, value]) => [value, i18n.exists(label) ? t(label) : label]); // todo translate
-	}, [i18n, t]);
+	}, [t]);
 
 	const handleResetButtonClick = () => {
 		onResetButtonClick?.();

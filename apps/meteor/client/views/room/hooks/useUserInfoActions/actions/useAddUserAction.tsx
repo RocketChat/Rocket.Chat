@@ -86,7 +86,7 @@ export const useAddUserAction = (
 						icon: 'user-plus' as const,
 						onClick: addUserOptionAction,
 						type: 'management' as const,
-				  }
+					}
 				: undefined,
 		[roomCanInvite, userCanAdd, room.archived, t, addUserOptionAction],
 	);

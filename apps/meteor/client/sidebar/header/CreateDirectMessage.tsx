@@ -11,7 +11,7 @@ import { goToRoomById } from '../../lib/utils/goToRoomById';
 
 const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 	const t = useTranslation();
-	const directMaxUsers = useSetting<number>('DirectMesssage_maxUsers') || 1;
+	const directMaxUsers = useSetting('DirectMesssage_maxUsers', 1);
 	const membersFieldId = useUniqueId();
 	const dispatchToastMessage = useToastMessageDispatch();
 

@@ -10,9 +10,10 @@ import { router } from '../../../../client/providers/RouterProvider';
 import { stripTags } from '../../../../lib/utils/stringUtils';
 import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
 import { e2e } from '../../../e2e/client';
-import { ChatSubscription } from '../../../models/client';
+import { Subscriptions } from '../../../models/client';
 import { getUserPreference } from '../../../utils/client';
 import { getUserAvatarURL } from '../../../utils/client/getUserAvatarURL';
+import { getUserNotificationsSoundVolume } from '../../../utils/client/getUserNotificationsSoundVolume';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 declare global {
@@ -176,13 +177,13 @@ class KonchatNotification {
 
 		const userId = Meteor.userId();
 		const newMessageNotification = getUserPreference<string>(userId, 'newMessageNotification');
-		const audioVolume = getUserPreference(userId, 'notificationsSoundVolume', 100);
+		const audioVolume = getUserNotificationsSoundVolume(userId);
 
 		if (!rid) {
 			return;
 		}
 
-		const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
+		const sub = Subscriptions.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
 
 		if (!sub || sub.audioNotificationValue === 'none') {
 			return;

@@ -3,10 +3,10 @@
  */
 
 import { LicenseImp } from '../src';
+import { MockedLicenseBuilder, getReadyLicenseManager } from './MockedLicenseBuilder';
 import { DuplicatedLicenseError } from '../src/errors/DuplicatedLicenseError';
 import { InvalidLicenseError } from '../src/errors/InvalidLicenseError';
 import { NotReadyForValidation } from '../src/errors/NotReadyForValidation';
-import { MockedLicenseBuilder, getReadyLicenseManager } from './MockedLicenseBuilder';
 
 // Same license used on ci tasks so no I didnt leak it
 const VALID_LICENSE =
@@ -140,16 +140,18 @@ describe('License set license procedures', () => {
 			const mocked = new MockedLicenseBuilder();
 			const oldToken = await mocked.sign();
 
-			const newToken = await mocked.withGratedModules(['livechat-enterprise']).sign();
+			const newToken = await mocked.withGratedModules(['livechat-enterprise', 'chat.rocket.test-addon']).sign();
 
 			await expect(license.setLicense(oldToken)).resolves.toBe(true);
 			expect(license.hasValidLicense()).toBe(true);
 
 			expect(license.hasModule('livechat-enterprise')).toBe(false);
+			expect(license.hasModule('chat.rocket.test-addon')).toBe(false);
 
 			await expect(license.setLicense(newToken)).resolves.toBe(true);
 			expect(license.hasValidLicense()).toBe(true);
 			expect(license.hasModule('livechat-enterprise')).toBe(true);
+			expect(license.hasModule('chat.rocket.test-addon')).toBe(true);
 		});
 
 		it('should call a validated event after set a valid license', async () => {

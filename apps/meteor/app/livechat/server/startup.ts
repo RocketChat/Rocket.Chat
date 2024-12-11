@@ -5,6 +5,10 @@ import { LivechatRooms } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
+import { businessHourManager } from './business-hour';
+import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
+import { Livechat as LivechatTyped } from './lib/LivechatTyped';
+import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
 import { callbacks } from '../../../lib/callbacks';
 import { beforeLeaveRoomCallback } from '../../../lib/callbacks/beforeLeaveRoomCallback';
 import { i18n } from '../../../server/lib/i18n';
@@ -12,11 +16,6 @@ import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { notifyOnUserChange } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
-import { businessHourManager } from './business-hour';
-import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
-import { Livechat as LivechatTyped } from './lib/LivechatTyped';
-import { RoutingManager } from './lib/RoutingManager';
-import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
 import './roomAccessValidator.internalService';
 
 const logger = new Logger('LivechatStartup');
@@ -78,13 +77,9 @@ Meteor.startup(async () => {
 		process.env.TEST_MODE === 'true'
 			? {
 					debounce: 10,
-			  }
+				}
 			: undefined,
 	);
-
-	settings.watch<string>('Livechat_Routing_Method', () => {
-		void RoutingManager.startQueue();
-	});
 
 	// Remove when accounts.onLogout is async
 	Accounts.onLogout(({ user }: { user?: IUser }) => {

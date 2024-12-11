@@ -1,20 +1,20 @@
 {
 	"name": "@rocket.chat/ui-avatar",
-	"version": "7.0.0-rc.1",
+	"version": "9.0.0-rc.1",
 	"private": true,
 	"devDependencies": {
-		"@babel/core": "~7.22.20",
-		"@rocket.chat/fuselage": "^0.59.1",
+		"@babel/core": "~7.26.0",
+		"@rocket.chat/fuselage": "^0.59.4",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@types/react": "~17.0.80",
 		"@types/react-dom": "~17.0.25",
 		"eslint": "~8.45.0",
-		"eslint-plugin-react": "~7.32.2",
-		"eslint-plugin-react-hooks": "~4.6.2",
-		"eslint-plugin-storybook": "~0.6.15",
-		"eslint-plugin-testing-library": "~5.11.1",
+		"eslint-plugin-react": "~7.37.2",
+		"eslint-plugin-react-hooks": "~5.0.0",
+		"eslint-plugin-storybook": "~0.11.0",
+		"eslint-plugin-testing-library": "~6.4.0",
 		"react": "^17.0.2",
-		"typescript": "~5.5.4"
+		"typescript": "~5.7.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -30,7 +30,7 @@
 	],
 	"peerDependencies": {
 		"@rocket.chat/fuselage": "*",
-		"@rocket.chat/ui-contexts": "11.0.0-rc.1",
+		"@rocket.chat/ui-contexts": "13.0.0-rc.1",
 		"react": "~17.0.2"
 	},
 	"volta": {
