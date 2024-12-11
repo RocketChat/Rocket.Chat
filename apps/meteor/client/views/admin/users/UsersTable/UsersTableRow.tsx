@@ -42,9 +42,31 @@ const UsersTableRow = ({
 }: UsersTableRowProps): ReactElement => {
 	const { t } = useTranslation();
 
-	const { _id, emails, username = '', name = '', roles, status, active, avatarETag, lastLogin, type, freeSwitchExtension } = user;
+	const {
+		_id,
+		emails,
+		username = '',
+		name = '',
+		roles,
+		status,
+		active,
+		avatarETag,
+		lastLogin,
+		type,
+		freeSwitchExtension,
+		federated,
+	} = user;
+
 	const registrationStatusText = useMemo(() => {
 		const usersExcludedFromPending = ['bot', 'app'];
+
+		if (!active && lastLogin) {
+			return t('Deactivated');
+		}
+
+		if (federated) {
+			return t('Federated');
+		}
 
 		if (!lastLogin && !usersExcludedFromPending.includes(type)) {
 			return t('Pending');
@@ -53,11 +75,7 @@ const UsersTableRow = ({
 		if (active && lastLogin) {
 			return t('Active');
 		}
-
-		if (!active && lastLogin) {
-			return t('Deactivated');
-		}
-	}, [active, lastLogin, t, type]);
+	}, [active, lastLogin, t, type, federated]);
 
 	const roleNames = (roles || [])
 		.map((roleId) => (Roles.findOne(roleId, { fields: { name: 1 } }) as IRole | undefined)?.name)
