@@ -119,32 +119,6 @@ Meteor.startup(async () => {
 	});
 
 	MessageAction.addButton({
-		id: 'permalink',
-		icon: 'permalink',
-		label: 'Copy_link',
-		// classes: 'clipboard',
-		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
-		type: 'duplication',
-		async action(_, { message }) {
-			try {
-				const permalink = await getPermaLink(message._id);
-				await navigator.clipboard.writeText(permalink);
-				dispatchToastMessage({ type: 'success', message: t('Copied') });
-			} catch (e) {
-				dispatchToastMessage({ type: 'error', message: e });
-			}
-		},
-		condition({ subscription }) {
-			return !!subscription;
-		},
-		order: 5,
-		group: 'menu',
-		disabled({ message }) {
-			return isE2EEMessage(message);
-		},
-	});
-
-	MessageAction.addButton({
 		id: 'copy',
 		icon: 'copy',
 		label: 'Copy_text',
