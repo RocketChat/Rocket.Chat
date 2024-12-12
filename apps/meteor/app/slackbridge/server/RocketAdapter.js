@@ -62,8 +62,9 @@ export default class RocketAdapter {
 			try {
 				if (!slack.getSlackChannel(rocketMessageDeleted.rid)) {
 					// This is on a channel that the rocket bot is not subscribed on this slack server
-					return;
+					continue;
 				}
+
 				rocketLogger.debug('onRocketMessageDelete', rocketMessageDeleted);
 				await slack.postDeleteMessage(rocketMessageDeleted);
 			} catch (err) {
@@ -264,7 +265,7 @@ export default class RocketAdapter {
 
 		for await (const slack of this.slackAdapters) {
 			if (addedRoom) {
-				return;
+				continue;
 			}
 
 			const slackChannel = await slack.slackAPI.getRoomInfo(slackChannelID);
@@ -272,7 +273,7 @@ export default class RocketAdapter {
 				const members = await slack.slackAPI.getMembers(slackChannelID);
 				if (!members) {
 					rocketLogger.error('Could not fetch room members');
-					return;
+					continue;
 				}
 
 				const rocketRoom = await Rooms.findOneByName(slackChannel.name);
@@ -286,7 +287,7 @@ export default class RocketAdapter {
 
 					if (!rocketUserCreator) {
 						rocketLogger.error({ msg: 'Could not fetch room creator information', creator: slackChannel.creator });
-						return;
+						continue;
 					}
 
 					try {
