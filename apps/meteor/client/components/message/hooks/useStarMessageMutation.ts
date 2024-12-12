@@ -27,7 +27,6 @@ export const useStarMessageMutation = () => {
 		},
 		onSettled: (_data, _error, message) => {
 			queryClient.invalidateQueries(roomsQueryKeys.starredMessages(message.rid));
-			queryClient.invalidateQueries(roomsQueryKeys.messageActions(message.rid, message._id));
 		},
 	});
 };
