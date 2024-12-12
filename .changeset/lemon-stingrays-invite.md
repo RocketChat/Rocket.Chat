@@ -6,4 +6,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-created a history of VoIP calls
+Allows Rocket.Chat to store call events.
