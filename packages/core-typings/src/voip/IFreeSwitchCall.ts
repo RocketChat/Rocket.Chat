@@ -9,7 +9,7 @@ export interface IFreeSwitchCall extends IRocketChatRecord {
 	from?: Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>;
 	to?: Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>;
 	forwardedFrom?: Omit<IFreeSwitchCall, 'events'>[];
-	direction: 'internal' | 'external_inbound' | 'external_outbound';
+	direction?: 'internal' | 'external_inbound' | 'external_outbound';
 }
 
 const knownEventTypes = [
