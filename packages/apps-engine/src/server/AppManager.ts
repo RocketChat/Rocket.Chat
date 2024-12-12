@@ -1033,6 +1033,10 @@ export class AppManager {
             result = false;
 
             await app.setStatus(status, silenceStatus);
+
+            // If some error has happened in initialization, like license or installations invalidation
+            // we need to store this on the DB regardless of what the parameter requests
+            saveToDb = true;
         }
 
         if (saveToDb) {
@@ -1111,6 +1115,10 @@ export class AppManager {
             }
 
             console.error(e);
+
+            // If some error has happened during enabling, like license or installations invalidation
+            // we need to store this on the DB regardless of what the parameter requests
+            saveToDb = true;
         }
 
         if (enable) {
