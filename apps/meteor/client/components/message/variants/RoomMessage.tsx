@@ -110,7 +110,7 @@ const RoomMessage = ({
 					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
 				)}
 			</MessageContainer>
-			{!message.private && message?.e2e !== 'pending' && <MessageToolbarHolder message={message} context={context} />}
+			{!message.private && message?.e2e !== 'pending' && !selecting && <MessageToolbarHolder message={message} context={context} />}
 		</Message>
 	);
 };
