@@ -63,13 +63,14 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			return;
 		}
 
-		const callIds = [data['Channel-Call-UUID'], data.variable_call_uuid].filter((callId) => Boolean(callId) && callId !== '0') as string[];
+		// Using a set to avoid duplicates
+		const callIds = new Set<string>([data['Channel-Call-UUID'], data.variable_call_uuid].filter((callId) => Boolean(callId) && callId !== '0') as string[]);
 		const event = await this.parseEventData(eventName, data);
 
 		// If for some reason the event had different callIds, save a copy of it for each of them
-		if (callIds.length > 1) {
+		if (callIds.size > 1) {
 			await Promise.all(
-				callIds.map((callId) =>
+				callIds.values().map((callId) =>
 					this.registerEvent({
 						...event,
 						call: {
@@ -334,6 +335,10 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		return '';
 	}
 
+	private isImportantEvent(event: IFreeSwitchEvent): boolean {
+		return Object.keys(event).some((key) => key.startsWith('variable_'));
+	}
+
 	private async computeCall(callUUID: string): Promise<void> {
 		const allEvents = await FreeSwitchEvent.findAllByCallUUID(callUUID).toArray();
 		const call: InsertionModel<IFreeSwitchCall> = {
@@ -370,7 +375,7 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			fromUser.add(this.identifyCallerFromEvent(event));
 			toUser.add(this.identifyCalleeFromEvent(event));
 
-			const hasUsefulCallData = Object.keys(event.eventData).some((key) => key.startsWith('variable_'));
+			const hasUsefulCallData = this.isImportantEvent(event);
 
 			const callEvent = this.filterOutMissingData({
 				type: eventType,
@@ -467,15 +472,18 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			}
 		}
 
-		if (!call.from || !call.to) {
-			console.log({
-				msg: 'Ignoring call not originated by a Rocket.Chat user',
-				call: JSON.stringify(call),
-				fromUser,
-				toUser,
-			});
-			return;
+		if (call.from && call.to) {
+			call.direction = 'internal';
 		}
+
+		if (call.from && !call.to) {
+			call.direction = 'external_outbound';
+		}
+
+		if (!call.from && call.to) {
+			call.direction = 'external_inbound';
+		}
+
 		await FreeSwitchCall.registerCall(call);
 	}
 

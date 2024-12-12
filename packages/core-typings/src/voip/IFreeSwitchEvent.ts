@@ -1,11 +1,5 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 
-// export interface IFreeSwitchChannelUser {
-// 	extension?: string;
-// 	user?: Pick<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'>;
-// 	identifier: string;
-// }
-
 export interface IFreeSwitchEvent extends IRocketChatRecord {
 	channelUniqueId?: string;
 	eventName: string;

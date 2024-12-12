@@ -10,10 +10,7 @@ export class FreeSwitchCallRaw extends BaseRaw<IFreeSwitchCall> implements IFree
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [
-			{ key: { UUID: 1 }, unique: false },
-			{ key: { channels: 1 }, unique: false },
-		];
+		return [{ key: { UUID: 1 } }, { key: { channels: 1 } }];
 	}
 
 	public async registerCall(call: WithoutId<InsertionModel<IFreeSwitchCall>>): Promise<void> {

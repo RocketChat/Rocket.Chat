@@ -13,7 +13,7 @@ export class FreeSwitchEventRaw extends BaseRaw<IFreeSwitchEvent> implements IFr
 		return [
 			{ key: { channelUniqueId: 1, sequence: 1 }, unique: false },
 			// Allow 15 days of events to be saved
-			{ key: { updatedAt: 1 }, expireAfterSeconds: 30 * 24 * 60 * 15 },
+			{ key: { _updatedAt: 1 }, expireAfterSeconds: 30 * 24 * 60 * 15 },
 		];
 	}
 
