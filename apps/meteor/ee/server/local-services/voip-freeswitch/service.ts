@@ -368,6 +368,7 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 
 		const fromUser = new Set<string>();
 		const toUser = new Set<string>();
+		let isVoicemailCall = false;
 		for (const event of sortedEvents) {
 			if (event.channelUniqueId && !call.channels.includes(event.channelUniqueId)) {
 				call.channels.push(event.channelUniqueId);
@@ -376,6 +377,10 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			const eventType = this.getEventType(event);
 			fromUser.add(this.identifyCallerFromEvent(event));
 			toUser.add(this.identifyCalleeFromEvent(event));
+
+			// when a call enters the voicemail, we receive one/or many events with the channelName = loopback/voicemail-x
+			// where X appears to be a letter
+			isVoicemailCall = event.channelName?.includes('voicemail') || isVoicemailCall;
 
 			const hasUsefulCallData = this.isImportantEvent(event);
 
@@ -439,8 +444,8 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		}
 
 		// A call has 2 channels at max
-		// If it has 3 channels, it's a forwarded call
-		if (call.channels.length === 3) {
+		// If it has 3 or more channels, it's a forwarded call
+		if (call.channels.length >= 3) {
 			const originalCalls = await FreeSwitchCall.findAllByChannelUniqueIds(call.channels, { projection: { events: 0 } }).toArray();
 			if (originalCalls.length) {
 				call.forwardedFrom = originalCalls;
@@ -474,16 +479,24 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			}
 		}
 
+		// Call originated from us but destination and destination is another user = internal
 		if (call.from && call.to) {
 			call.direction = 'internal';
 		}
 
+		// Call originated from us but destination is not on server = external outbound
 		if (call.from && !call.to) {
 			call.direction = 'external_outbound';
 		}
 
+		// Call originated from a user outside server but received by a user in our side = external inbound
 		if (!call.from && call.to) {
 			call.direction = 'external_inbound';
+		}
+
+		// Call ended up in voicemail of another user = voicemail
+		if (isVoicemailCall) {
+			call.voicemail = true;
 		}
 
 		await FreeSwitchCall.registerCall(call);
