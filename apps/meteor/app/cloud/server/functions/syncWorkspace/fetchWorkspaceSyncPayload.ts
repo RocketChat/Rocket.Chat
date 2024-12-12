@@ -30,12 +30,8 @@ export async function fetchWorkspaceSyncPayload({
 	});
 
 	if (!response.ok) {
-		try {
-			const { error } = await response.json();
-			throw new CloudWorkspaceConnectionError(`Failed to connect to Rocket.Chat Cloud: ${error}`);
-		} catch (error) {
-			throw new CloudWorkspaceConnectionError(`Failed to connect to Rocket.Chat Cloud: ${response.statusText}`);
-		}
+		const { error } = await response.json();
+		throw new CloudWorkspaceConnectionError(`Failed to connect to Rocket.Chat Cloud: ${error}`);
 	}
 
 	const payload = await response.json();
