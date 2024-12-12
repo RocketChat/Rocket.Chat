@@ -64,7 +64,9 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		}
 
 		// Using a set to avoid duplicates
-		const callIds = new Set<string>([data['Channel-Call-UUID'], data.variable_call_uuid].filter((callId) => Boolean(callId) && callId !== '0') as string[]);
+		const callIds = new Set<string>(
+			[data['Channel-Call-UUID'], data.variable_call_uuid].filter((callId) => Boolean(callId) && callId !== '0') as string[],
+		);
 		const event = await this.parseEventData(eventName, data);
 
 		// If for some reason the event had different callIds, save a copy of it for each of them
