@@ -2005,6 +2005,50 @@ describe('[Chat]', () => {
 				})
 				.end(done);
 		});
+
+		describe('when deleting a thread message', () => {
+			let otherUser: TestUser<IUser>;
+			let otherUserCredentials: Credentials;
+			let parentThreadId: IMessage['_id'];
+
+			before(async () => {
+				otherUser = await createUser();
+				otherUserCredentials = await login(otherUser.username, password);
+				parentThreadId = (await sendSimpleMessage({ roomId: testChannel._id })).body.message._id;
+			});
+
+			after(() => Promise.all([deleteUser(otherUser), deleteMessage({ msgId: parentThreadId, roomId: testChannel._id })]));
+
+			it('should reset the unread counter if the message was removed', async () => {
+				const { body } = await sendSimpleMessage({ roomId: testChannel._id, tmid: parentThreadId, userCredentials: otherUserCredentials });
+				const msgId = body.message._id;
+				await request
+					.post(api('chat.delete'))
+					.set(credentials)
+					.send({
+						roomId: testChannel._id,
+						msgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.subscription).to.have.property('tunread');
+						expect(res.body.subscription.tunread).to.be.an('array');
+						expect(res.body.subscription.tunread).to.deep.equal([]);
+					});
+			});
+		});
 	});
 
 	describe('/chat.search', () => {

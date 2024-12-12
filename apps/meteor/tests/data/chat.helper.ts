@@ -7,10 +7,12 @@ export const sendSimpleMessage = ({
 	roomId,
 	text = 'test message',
 	tmid,
+	userCredentials = credentials,
 }: {
 	roomId: IRoom['_id'];
 	text?: string;
 	tmid?: IMessage['_id'];
+	userCredentials?: Credentials;
 }) => {
 	if (!roomId) {
 		throw new Error('"roomId" is required in "sendSimpleMessage" test helper');
@@ -28,7 +30,7 @@ export const sendSimpleMessage = ({
 		message.tmid = tmid;
 	}
 
-	return request.post(api('chat.sendMessage')).set(credentials).send({ message });
+	return request.post(api('chat.sendMessage')).set(userCredentials).send({ message });
 };
 
 export const sendMessage = ({
