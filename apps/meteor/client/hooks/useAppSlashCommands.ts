@@ -42,7 +42,7 @@ export const useAppSlashCommands = () => {
 			let allCommands: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview' | 'appId'>[] = [];
 			let hasMore = true;
 			let offset = 0;
-			const count = 1; // Adjust as per API's max limit or default value
+			const count = 50;
 
 			while (hasMore) {
 				// eslint-disable-next-line no-await-in-loop
