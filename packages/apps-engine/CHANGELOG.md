@@ -1,5 +1,11 @@
 # @rocket.chat/apps-engine
 
+## 1.47.2
+
+### Patch Changes
+
+- ([#34173](https://github.com/RocketChat/Rocket.Chat/pull/34173) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes the subprocess restarting routine failing to correctly restart apps in some cases
+
 ## 1.47.1
 
 ### Patch Changes

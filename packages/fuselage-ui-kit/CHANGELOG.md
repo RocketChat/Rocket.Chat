@@ -1,5 +1,19 @@
 # Change Log
 
+## 12.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [6da9df690b]:</summary>
+
+  - @rocket.chat/apps-engine@1.47.2
+  - @rocket.chat/core-typings@7.0.2
+  - @rocket.chat/gazzodown@12.0.2
+  - @rocket.chat/ui-contexts@12.0.2
+  - @rocket.chat/ui-avatar@8.0.2
+  - @rocket.chat/ui-video-conf@12.0.2
+  </details>
+
 ## 12.0.1
 
 ### Patch Changes
