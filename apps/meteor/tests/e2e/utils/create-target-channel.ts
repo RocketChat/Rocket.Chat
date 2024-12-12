@@ -19,6 +19,10 @@ export async function deleteChannel(api: BaseTest['api'], roomName: string): Pro
 	await api.post('/channels.delete', { roomName });
 }
 
+export async function deletePrivateChannel(api: BaseTest['api'], roomName: string): Promise<void> {
+	await api.post('/groups.delete', { roomName });
+}
+
 export async function createTargetPrivateChannel(api: BaseTest['api'], options?: Omit<GroupsCreateProps, 'name'>): Promise<string> {
 	const name = faker.string.uuid();
 	await api.post('/groups.create', { name, ...options });
