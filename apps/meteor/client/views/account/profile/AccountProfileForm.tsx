@@ -153,7 +153,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 								username={username}
 								setAvatarObj={onChange}
 								disabled={!allowUserAvatarChange}
-								profileAvatar={value}
+								avatarValue={value}
 							/>
 						)}
 					/>

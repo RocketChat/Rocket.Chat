@@ -19,10 +19,10 @@ type UserAvatarEditorProps = {
 	setAvatarObj: (obj: AvatarObject) => void;
 	disabled?: boolean;
 	etag: IUser['avatarETag'];
-	profileAvatar?: AvatarObject;
+	avatarValue?: AvatarObject;
 };
 
-function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, etag, profileAvatar }: UserAvatarEditorProps): ReactElement {
+function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, etag, avatarValue }: UserAvatarEditorProps): ReactElement {
 	const { t } = useTranslation();
 	const rotateImages = useSetting('FileUpload_RotateImages');
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
@@ -91,7 +91,13 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 				/>
 				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis={4}>
 					<Box display='flex' flexDirection='row' mbs='none'>
-						<Button square disabled={!profileAvatar || disabled} mi={4} title={t('Accounts_SetDefaultAvatar')} onClick={clickReset}>
+						<Button
+							square
+							disabled={avatarValue === 'reset' || disabled}
+							mi={4}
+							title={t('Accounts_SetDefaultAvatar')}
+							onClick={clickReset}
+						>
 							<Avatar url={`/avatar/%40${username}`} />
 						</Button>
 						<IconButton icon='upload' secondary disabled={disabled} title={t('Upload')} mi={4} onClick={clickUpload} />
