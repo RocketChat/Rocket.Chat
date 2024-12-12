@@ -1,8 +1,8 @@
 import type { ISubscription, IRoom, IMessage } from '@rocket.chat/core-typings';
 import { useSetModal, useUser } from '@rocket.chat/ui-contexts';
-import React, { useEffect } from 'react';
+import React from 'react';
 
-import { MessageAction } from '../../../../app/ui-utils/client';
+import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ReportMessageModal from '../../../views/room/modals/ReportMessageModal';
 
@@ -16,44 +16,38 @@ const getMainMessageText = (message: IMessage): IMessage => {
 export const useReportMessageAction = (
 	message: IMessage,
 	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
-) => {
+): MessageActionConfig | null => {
 	const user = useUser();
 	const setModal = useSetModal();
 
 	const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
 
-	useEffect(() => {
-		if (!subscription) {
-			return;
-		}
+	if (!subscription) {
+		return null;
+	}
 
-		if (isLivechatRoom || message.u._id === user?._id) {
-			return;
-		}
+	if (isLivechatRoom || message.u._id === user?._id) {
+		return null;
+	}
 
-		MessageAction.addButton({
-			id: 'report-message',
-			icon: 'report',
-			label: 'Report',
-			context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
-			color: 'alert',
-			type: 'management',
-			action() {
-				setModal(
-					<ReportMessageModal
-						message={getMainMessageText(message)}
-						onClose={() => {
-							setModal(null);
-						}}
-					/>,
-				);
-			},
-			order: 9,
-			group: 'menu',
-		});
-
-		return () => {
-			MessageAction.removeButton('report-message');
-		};
-	}, [isLivechatRoom, message, setModal, subscription, user?._id]);
+	return {
+		id: 'report-message',
+		icon: 'report',
+		label: 'Report',
+		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
+		color: 'alert',
+		type: 'management',
+		action() {
+			setModal(
+				<ReportMessageModal
+					message={getMainMessageText(message)}
+					onClose={() => {
+						setModal(null);
+					}}
+				/>,
+			);
+		},
+		order: 9,
+		group: 'menu',
+	};
 };

@@ -1,43 +1,37 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
-import React, { useEffect } from 'react';
+import React from 'react';
 
-import { MessageAction } from '../../../../app/ui-utils/client';
+import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import ReadReceiptsModal from '../../../views/room/modals/ReadReceiptsModal';
 
-export const useReadReceiptsDetailsAction = (message: IMessage) => {
+export const useReadReceiptsDetailsAction = (message: IMessage): MessageActionConfig | null => {
 	const setModal = useSetModal();
 
 	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Enabled', false);
 	const readReceiptsStoreUsers = useSetting('Message_Read_Receipt_Store_Users', false);
 
-	useEffect(() => {
-		if (!readReceiptsEnabled || !readReceiptsStoreUsers) {
-			return;
-		}
+	if (!readReceiptsEnabled || !readReceiptsStoreUsers) {
+		return null;
+	}
 
-		MessageAction.addButton({
-			id: 'receipt-detail',
-			icon: 'check-double',
-			label: 'Read_Receipts',
-			context: ['starred', 'message', 'message-mobile', 'threads', 'videoconf', 'videoconf-threads'],
-			type: 'duplication',
-			action() {
-				setModal(
-					<ReadReceiptsModal
-						messageId={message._id}
-						onClose={() => {
-							setModal(null);
-						}}
-					/>,
-				);
-			},
-			order: 10,
-			group: 'menu',
-		});
-
-		return () => {
-			MessageAction.removeButton('receipt-detail');
-		};
-	}, [message._id, readReceiptsEnabled, readReceiptsStoreUsers, setModal]);
+	return {
+		id: 'receipt-detail',
+		icon: 'check-double',
+		label: 'Read_Receipts',
+		context: ['starred', 'message', 'message-mobile', 'threads', 'videoconf', 'videoconf-threads'],
+		type: 'duplication',
+		action() {
+			setModal(
+				<ReadReceiptsModal
+					messageId={message._id}
+					onClose={() => {
+						setModal(null);
+					}}
+				/>,
+			);
+		},
+		order: 10,
+		group: 'menu',
+	};
 };

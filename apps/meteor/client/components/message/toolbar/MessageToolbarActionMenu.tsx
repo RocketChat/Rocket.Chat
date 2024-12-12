@@ -2,7 +2,6 @@ import { isE2EEMessage, type IMessage, type IRoom, type ISubscription } from '@r
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,8 +25,8 @@ import { useUnpinMessageAction } from './useUnpinMessageAction';
 import { useUnstarMessageAction } from './useUnstarMessageAction';
 import { useViewOriginalTranslationAction } from './useViewOriginalTranslationAction';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
-import { MessageAction, type MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
-import { roomsQueryKeys } from '../../../lib/queryKeys';
+import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
+import { isTruthy } from '../../../../lib/isTruthy';
 
 type MessageActionSection = {
 	id: string;
@@ -45,58 +44,55 @@ type MessageToolbarActionMenuProps = {
 
 const MessageToolbarActionMenu = ({ message, context, room, subscription, onChangeMenuVisibility }: MessageToolbarActionMenuProps) => {
 	// TODO: move this to another place
-	useWebDAVMessageAction(message, { subscription });
-	useNewDiscussionMessageAction(message, { room, subscription });
-	useUnpinMessageAction(message, { room, subscription });
-	usePinMessageAction(message, { room, subscription });
-	useStarMessageAction(message, { room });
-	useUnstarMessageAction(message, { room });
-	usePermalinkAction(message, { id: 'permalink-star', subscription, context: ['starred'], order: 10 });
-	usePermalinkAction(message, { id: 'permalink-pinned', subscription, context: ['pinned'], order: 5 });
-	usePermalinkAction(message, {
-		id: 'permalink',
-		subscription,
-		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
-		type: 'duplication',
-		order: 5,
-	});
-	useFollowMessageAction(message, { room, context });
-	useUnFollowMessageAction(message, { room, context });
-	useMarkAsUnreadMessageAction(message, { room, subscription });
-	useTranslateAction(message, { room, subscription });
-	useViewOriginalTranslationAction(message, { room, subscription });
-	useReplyInDMAction(message, { room, subscription });
-	useCopyAction(message, { subscription });
-	useEditMessageAction(message, { room, subscription });
-	useDeleteMessageAction(message, { room, subscription });
-	useReportMessageAction(message, { room, subscription });
-	useShowMessageReactionsAction(message);
-	useReadReceiptsDetailsAction(message);
+	const menuItems = [
+		useWebDAVMessageAction(message, { subscription }),
+		useNewDiscussionMessageAction(message, { room, subscription }),
+		useUnpinMessageAction(message, { room, subscription }),
+		usePinMessageAction(message, { room, subscription }),
+		useStarMessageAction(message, { room }),
+		useUnstarMessageAction(message, { room }),
+		usePermalinkAction(message, { id: 'permalink-star', context: ['starred'], order: 10 }),
+		usePermalinkAction(message, { id: 'permalink-pinned', context: ['pinned'], order: 5 }),
+		usePermalinkAction(message, {
+			id: 'permalink',
+			context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
+			type: 'duplication',
+			order: 5,
+		}),
+		useFollowMessageAction(message, { room, context }),
+		useUnFollowMessageAction(message, { room, context }),
+		useMarkAsUnreadMessageAction(message, { room, subscription }),
+		useTranslateAction(message, { room, subscription }),
+		useViewOriginalTranslationAction(message, { room, subscription }),
+		useReplyInDMAction(message, { room, subscription }),
+		useCopyAction(message, { subscription }),
+		useEditMessageAction(message, { room, subscription }),
+		useDeleteMessageAction(message, { room, subscription }),
+		useReportMessageAction(message, { room, subscription }),
+		useShowMessageReactionsAction(message),
+		useReadReceiptsDetailsAction(message),
+	];
 
 	const hiddenActions = useLayoutHiddenActions().messageToolbox;
-	const { isSuccess, data } = useQuery({
-		queryKey: roomsQueryKeys.messageActionsWithParameters(room._id, message),
-		queryFn: async () => {
-			const menuItems = await MessageAction.getAll(context, 'menu');
-			return menuItems.filter((action) => !hiddenActions.includes(action.id));
-		},
-		keepPreviousData: true,
-	});
+	const data = menuItems
+		.filter(isTruthy)
+		.filter((button) => button.group === 'menu')
+		.filter((button) => !button.context || button.context.includes(context))
+		.filter((action) => !hiddenActions.includes(action.id))
+		.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
 	const actionButtonApps = useMessageActionAppsActionButtons(message, context);
 
 	const id = useUniqueId();
 	const { t } = useTranslation();
 
-	if (!isSuccess || data.length === 0) {
+	if (data.length === 0) {
 		return null;
 	}
 
-	const options = [...data, ...(actionButtonApps.data ?? [])];
-
 	const isMessageEncrypted = isE2EEMessage(message);
 
-	const groupOptions = options
+	const groupOptions = [...data, ...(actionButtonApps.data ?? [])]
 		.map((option) => ({
 			variant: option.color === 'alert' ? 'danger' : '',
 			id: option.id,
@@ -108,21 +104,18 @@ const MessageToolbarActionMenu = ({ message, context, room, subscription, onChan
 			...(typeof option.disabled === 'boolean' &&
 				option.disabled && { tooltip: t('Action_not_available_encrypted_content', { action: t(option.label) }) }),
 		}))
-		.reduce(
-			(acc, option) => {
-				const group = option.type ? option.type : '';
-				const section = acc.find((section: { id: string }) => section.id === group);
-				if (section) {
-					section.items.push(option);
-					return acc;
-				}
-				const newSection = { id: group, title: group === 'apps' ? t('Apps') : '', items: [option] };
-				acc.push(newSection);
-
+		.reduce((acc, option) => {
+			const group = option.type ? option.type : '';
+			const section = acc.find((section: { id: string }) => section.id === group);
+			if (section) {
+				section.items.push(option);
 				return acc;
-			},
-			[] as unknown as MessageActionSection[],
-		)
+			}
+			const newSection = { id: group, title: group === 'apps' ? t('Apps') : '', items: [option] };
+			acc.push(newSection);
+
+			return acc;
+		}, [] as MessageActionSection[])
 		.map((section) => {
 			if (section.id !== 'apps') {
 				return section;

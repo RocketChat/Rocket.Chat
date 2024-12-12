@@ -1,52 +1,54 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ISubscription, IRoom, IMessage } from '@rocket.chat/core-typings';
 import { useUser } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
-import { MessageAction } from '../../../../app/ui-utils/client';
+import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { useChat } from '../../../views/room/contexts/ChatContext';
 
 export const useDeleteMessageAction = (
 	message: IMessage,
 	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
-) => {
+): MessageActionConfig | null => {
 	const user = useUser();
 	const chat = useChat();
 
-	useEffect(() => {
-		if (!subscription) {
-			return;
-		}
+	const { data: condition = false } = useQuery({
+		queryKey: ['delete-message', message] as const,
+		queryFn: async () => {
+			if (!subscription) {
+				return false;
+			}
 
-		MessageAction.addButton({
-			id: 'delete-message',
-			icon: 'trash',
-			label: 'Delete',
-			context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
-			color: 'alert',
-			type: 'management',
-			async action() {
-				await chat?.flows.requestMessageDeletion(message);
-			},
-			condition() {
-				if (isRoomFederated(room)) {
-					return message.u._id === user?._id;
-				}
+			if (isRoomFederated(room)) {
+				return message.u._id === user?._id;
+			}
 
-				const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
-				if (isLivechatRoom) {
-					return false;
-				}
+			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
+				return false;
+			}
 
-				return chat?.data.canDeleteMessage(message) ?? false;
-			},
-			order: 10,
-			group: 'menu',
-		});
+			return chat?.data.canDeleteMessage(message) ?? false;
+		},
+	});
 
-		return () => {
-			MessageAction.removeButton('delete-message');
-		};
-	}, [chat?.data, chat?.flows, message, room, subscription, user?._id]);
+	if (!condition) {
+		return null;
+	}
+
+	return {
+		id: 'delete-message',
+		icon: 'trash',
+		label: 'Delete',
+		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
+		color: 'alert',
+		type: 'management',
+		async action() {
+			await chat?.flows.requestMessageDeletion(message);
+		},
+		order: 10,
+		group: 'menu',
+	};
 };

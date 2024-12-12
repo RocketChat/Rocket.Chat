@@ -1,9 +1,8 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { MessageAction } from '../../../../app/ui-utils/client';
+import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 
 const getMainMessageText = (message: IMessage): IMessage => {
 	const newMessage = { ...message };
@@ -12,32 +11,29 @@ const getMainMessageText = (message: IMessage): IMessage => {
 	return { ...newMessage };
 };
 
-export const useCopyAction = (message: IMessage, { subscription }: { subscription: ISubscription | undefined }) => {
+export const useCopyAction = (
+	message: IMessage,
+	{ subscription }: { subscription: ISubscription | undefined },
+): MessageActionConfig | null => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	useEffect(() => {
-		if (!subscription) {
-			return;
-		}
+	if (!subscription) {
+		return null;
+	}
 
-		MessageAction.addButton({
-			id: 'copy',
-			icon: 'copy',
-			label: 'Copy_text',
-			context: ['message', 'message-mobile', 'threads', 'federated'],
-			type: 'duplication',
-			async action() {
-				const msgText = getMainMessageText(message).msg;
-				await navigator.clipboard.writeText(msgText);
-				dispatchToastMessage({ type: 'success', message: t('Copied') });
-			},
-			order: 6,
-			group: 'menu',
-		});
-
-		return () => {
-			MessageAction.removeButton('copy');
-		};
-	}, [dispatchToastMessage, message, subscription, t]);
+	return {
+		id: 'copy',
+		icon: 'copy',
+		label: 'Copy_text',
+		context: ['message', 'message-mobile', 'threads', 'federated'],
+		type: 'duplication',
+		async action() {
+			const msgText = getMainMessageText(message).msg;
+			await navigator.clipboard.writeText(msgText);
+			dispatchToastMessage({ type: 'success', message: t('Copied') });
+		},
+		order: 6,
+		group: 'menu',
+	};
 };

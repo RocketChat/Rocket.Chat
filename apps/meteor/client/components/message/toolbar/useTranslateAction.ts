@@ -1,17 +1,17 @@
 import type { IMessage, ISubscription, IRoom } from '@rocket.chat/core-typings';
 import { useMethod, usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { AutoTranslate } from '../../../../app/autotranslate/client';
 import { Messages } from '../../../../app/models/client';
-import { MessageAction } from '../../../../app/ui-utils/client';
+import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from '../../../views/room/MessageList/lib/autoTranslate';
 
 export const useTranslateAction = (
 	message: IMessage & { autoTranslateShowInverse?: boolean },
 	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
-) => {
+): MessageActionConfig | null => {
 	const user = useUser();
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled', false);
 	const canAutoTranslate = usePermission('auto-translate');
@@ -26,50 +26,34 @@ export const useTranslateAction = (
 		[message, language],
 	);
 
-	useEffect(() => {
-		if (!autoTranslateEnabled || !canAutoTranslate || !user) {
-			return;
-		}
+	if (!autoTranslateEnabled || !canAutoTranslate || !user) {
+		return null;
+	}
 
-		const isLivechatRoom = roomCoordinator.isLivechatRoom(room?.t);
-		const isDifferentUser = message?.u && message.u._id !== user._id;
-		const autoTranslationActive = subscription?.autoTranslate || isLivechatRoom;
+	const isLivechatRoom = roomCoordinator.isLivechatRoom(room?.t);
+	const isDifferentUser = message?.u && message.u._id !== user._id;
+	const autoTranslationActive = subscription?.autoTranslate || isLivechatRoom;
 
-		if (!message.autoTranslateShowInverse && (!isDifferentUser || !autoTranslationActive || hasTranslations)) {
-			return;
-		}
+	if (!message.autoTranslateShowInverse && (!isDifferentUser || !autoTranslationActive || hasTranslations)) {
+		return null;
+	}
 
-		MessageAction.addButton({
-			id: 'translate',
-			icon: 'language',
-			label: 'Translate',
-			context: ['message', 'message-mobile', 'threads'],
-			type: 'interaction',
-			group: 'menu',
-			action() {
-				if (!hasTranslations) {
-					AutoTranslate.messageIdsToWait[message._id] = true;
-					Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
-					void translateMessage(message, language);
-				}
-				const action = 'autoTranslateShowInverse' in message ? '$unset' : '$set';
-				Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
-			},
-			order: 90,
-		});
-
-		return () => {
-			MessageAction.removeButton('translate');
-		};
-	}, [
-		autoTranslateEnabled,
-		canAutoTranslate,
-		hasTranslations,
-		language,
-		message,
-		room?.t,
-		subscription?.autoTranslate,
-		translateMessage,
-		user,
-	]);
+	return {
+		id: 'translate',
+		icon: 'language',
+		label: 'Translate',
+		context: ['message', 'message-mobile', 'threads'],
+		type: 'interaction',
+		group: 'menu',
+		action() {
+			if (!hasTranslations) {
+				AutoTranslate.messageIdsToWait[message._id] = true;
+				Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
+				void translateMessage(message, language);
+			}
+			const action = 'autoTranslateShowInverse' in message ? '$unset' : '$set';
+			Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
+		},
+		order: 90,
+	};
 };

@@ -1,24 +1,22 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useSetting, useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
-import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
 
 import { Messages } from '../../../../app/models/client';
-import { MessageAction } from '../../../../app/ui-utils/client';
-import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionContext, MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { t } from '../../../../app/utils/lib/i18n';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
 import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
 
-export const useFollowMessageAction = (message: IMessage, { room, context }: { room: IRoom; context: MessageActionContext }) => {
+export const useFollowMessageAction = (
+	message: IMessage,
+	{ room, context }: { room: IRoom; context: MessageActionContext },
+): MessageActionConfig | null => {
 	const user = useUser();
 	const threadsEnabled = useSetting('Threads_enabled');
 
 	const dispatchToastMessage = useToastMessageDispatch();
-
-	const queryClient = useQueryClient();
 
 	const { mutate: toggleFollowingThread } = useToggleFollowingThreadMutation({
 		onSuccess: () => {
@@ -34,40 +32,36 @@ export const useFollowMessageAction = (message: IMessage, { room, context }: { r
 		Messages.findOne({ _id: tmid || _id }, { fields: { replies: 1 } }),
 	);
 
-	useEffect(() => {
-		if (!message || !threadsEnabled || isOmnichannelRoom(room)) {
-			return;
+	if (!message || !threadsEnabled || isOmnichannelRoom(room)) {
+		return null;
+	}
+
+	let { replies = [] } = message;
+	if (tmid || context) {
+		const parentMessage = messageQuery.data;
+		if (parentMessage) {
+			replies = parentMessage.replies || [];
 		}
+	}
 
-		let { replies = [] } = message;
-		if (tmid || context) {
-			const parentMessage = messageQuery.data;
-			if (parentMessage) {
-				replies = parentMessage.replies || [];
-			}
-		}
+	if (!user?._id) {
+		return null;
+	}
 
-		if (!user?._id) {
-			return;
-		}
+	if (replies.includes(user._id)) {
+		return null;
+	}
 
-		if ((replies as string[]).includes(user._id)) {
-			return;
-		}
-
-		MessageAction.addButton({
-			id: 'follow-message',
-			icon: 'bell',
-			label: 'Follow_message',
-			type: 'interaction',
-			context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
-			action() {
-				toggleFollowingThread({ tmid: tmid || _id, follow: true, rid: room._id });
-			},
-			order: 1,
-			group: 'menu',
-		});
-
-		return () => MessageAction.removeButton('follow-message');
-	}, [_id, context, message, messageQuery, messageQuery.data, queryClient, room, threadsEnabled, tmid, toggleFollowingThread, user]);
+	return {
+		id: 'follow-message',
+		icon: 'bell',
+		label: 'Follow_message',
+		type: 'interaction',
+		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
+		action() {
+			toggleFollowingThread({ tmid: tmid || _id, follow: true, rid: room._id });
+		},
+		order: 1,
+		group: 'menu',
+	};
 };
