@@ -5,7 +5,7 @@ import { type Readable, EventEmitter } from 'stream';
 import debugFactory from 'debug';
 import * as jsonrpc from 'jsonrpc-lite';
 
-import { AppStatus } from '../../../definition/AppStatus';
+import { AppStatus, AppStatusUtils } from '../../../definition/AppStatus';
 import type { AppMethod } from '../../../definition/metadata';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
@@ -285,6 +285,10 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
             await this.sendRequest({ method: 'app:initialize' });
             await this.sendRequest({ method: 'app:setStatus', params: [this.storageItem.status] });
+
+            if (AppStatusUtils.isEnabled(this.storageItem.status)) {
+                await this.sendRequest({ method: 'app:onEnable' });
+            }
 
             this.state = 'ready';
 
