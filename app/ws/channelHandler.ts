@@ -63,10 +63,10 @@ const subscribe = (userId: string, connectionId: string): void => {
 	// TODO: subscribe to all channels
 };
 
-setInterval(() => {
-	console.log(channelListeners);
-	console.log(connectionToChannels);
-}, 5000);
+// setInterval(() => {
+// 	console.log(channelListeners);
+// 	console.log(connectionToChannels);
+// }, 5000);
 
 const unsubscribe = (userId: string, connectionId: string): void => {
 	console.log(`Unsubscribing connectionId: ${ connectionId }, userId: ${ userId }`);

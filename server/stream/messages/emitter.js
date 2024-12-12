@@ -6,15 +6,16 @@ import { settings } from '../../../app/settings';
 
 import { MY_MESSAGE } from '.';
 
-
 import redis from '/app/redis/redis';
+import { redisMessageHandlers } from '/app/redis/handleRedisMessage';
+import { publishToRedis } from '/app/redis/redisPublisher';
 
 
 Meteor.startup(function() {
-	function publishMessage(type, record) {
+	function publishMessage(type, record) { 
+		 
 		if (record._hidden !== true && (record.imported == null)) {
 			const UI_Use_Real_Name = settings.get('UI_Use_Real_Name') === true;
-
 			if (record.u && record.u._id && UI_Use_Real_Name) {
 				const user = Users.findOneById(record.u._id);
 				record.u.name = user && user.name;
@@ -42,9 +43,8 @@ Meteor.startup(function() {
 		}
 	};
 
-	const redisMessageHandle = (channel, redisObj) => {
-		const data = JSON.stringify(redisObj);
-		return handleMessage('inserted', data, data._id);
+	const redisMessageHandle = (data) => {
+		return handleMessage(data.clientAction, data, data._id);
 	};
 
 
@@ -54,6 +54,15 @@ Meteor.startup(function() {
 		});
 	} else {
 		console.log('redis on message');
-		redis.on('message', redisMessageHandle);
+		Messages.on('change', function({ clientAction, id, data/* , oplog*/ }) {
+			const newdata = {
+				...data,
+				ns: 'rocketchat_message', 
+				clientAction,
+			}
+			publishToRedis(`room-${data.rid}`, newdata);
+		});
+	//	redis.on('message', redisMessageHandle);
 	}
+	redisMessageHandlers['rocketchat_message'] = redisMessageHandle;
 });
