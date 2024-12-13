@@ -56,6 +56,9 @@ export const useAppSlashCommands = () => {
 		},
 		{
 			enabled: !!uid,
+			onSuccess(data) {
+				data.forEach((command) => slashCommands.add(command));
+			},
 		},
 	);
 };
