@@ -1004,6 +1004,8 @@ describe('LIVECHAT - dashboards', function () {
 					expect(res.body).to.have.property('success', true);
 				});
 
+			await sendAgentMessage(roomId, 'first response from forwarded agent', agent.credentials);
+
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 			const result = await request
 				.get(api('livechat/analytics/agent-overview'))
@@ -1186,6 +1188,8 @@ describe('LIVECHAT - dashboards', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				});
+
+			await sendAgentMessage(roomId, 'first response from forwarded agent', agent.credentials);
 
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 			const result = await request
