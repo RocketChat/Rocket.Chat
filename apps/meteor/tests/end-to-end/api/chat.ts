@@ -1,5 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IMessage, IRoom, ISubscription, IThreadMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
@@ -2035,16 +2035,18 @@ describe('[Chat]', () => {
 						expect(res.body).to.have.property('success', true);
 					});
 
-				const userWhoCreatedTheThreadSubscription = await getSubscriptionByRoomId(testChannel._id);
-				const userWhoDeletedTheThreadSubscription = await getSubscriptionByRoomId(testChannel._id, otherUserCredentials);
-				const expectThreadUnreadToBeEmpty = (subscription: ISubscription) => {
-					expect(subscription).to.have.property('tunread');
-					expect(subscription.tunread).to.be.an('array');
-					expect(subscription.tunread).to.deep.equal([]);
-				};
+				const [userWhoCreatedTheThreadSubscription, userWhoDeletedTheThreadSubscription] = await Promise.all([
+					getSubscriptionByRoomId(testChannel._id),
+					getSubscriptionByRoomId(testChannel._id, otherUserCredentials),
+				]);
 
-				expectThreadUnreadToBeEmpty(userWhoCreatedTheThreadSubscription);
-				expectThreadUnreadToBeEmpty(userWhoDeletedTheThreadSubscription);
+				expect(userWhoCreatedTheThreadSubscription).to.have.property('tunread');
+				expect(userWhoCreatedTheThreadSubscription.tunread).to.be.an('array');
+				expect(userWhoCreatedTheThreadSubscription.tunread).to.deep.equal([]);
+
+				// The user who deleted the thread should not have the thread marked as unread, since
+				// there was never a message in the thread that was not read by the user
+				expect(userWhoDeletedTheThreadSubscription).to.not.have.property('tunread');
 			});
 		});
 	});
