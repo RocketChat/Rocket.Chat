@@ -1,47 +1,42 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import type { ISubscription, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { useRouter } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
+import type { ISubscription, IMessage, IRoom } from '@rocket.chat/core-typings';
+import { useRouter, useUser } from '@rocket.chat/ui-contexts';
 
-import { MessageAction } from '../../../../app/ui-utils/client';
+import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useMarkAsUnreadMutation } from '../hooks/useMarkAsUnreadMutation';
 
 export const useMarkAsUnreadMessageAction = (
 	message: IMessage,
-	{ user, room, subscription }: { user: IUser | undefined; room: IRoom; subscription: ISubscription | undefined },
-) => {
+	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
+): MessageActionConfig | null => {
+	const user = useUser();
 	const { mutateAsync: markAsUnread } = useMarkAsUnreadMutation();
 
 	const router = useRouter();
 
-	useEffect(() => {
-		if (isOmnichannelRoom(room) || !user) {
-			return;
-		}
+	if (isOmnichannelRoom(room) || !user) {
+		return null;
+	}
 
-		if (!subscription) {
-			return;
-		}
+	if (!subscription) {
+		return null;
+	}
 
-		if (message.u._id === user._id) {
-			return;
-		}
+	if (message.u._id === user._id) {
+		return null;
+	}
 
-		MessageAction.addButton({
-			id: 'mark-message-as-unread',
-			icon: 'flag',
-			label: 'Mark_unread',
-			context: ['message', 'message-mobile', 'threads'],
-			type: 'interaction',
-			async action() {
-				router.navigate('/home');
-				await markAsUnread({ message, subscription });
-			},
-			order: 4,
-			group: 'menu',
-		});
-		return () => {
-			MessageAction.removeButton('mark-message-as-unread');
-		};
-	}, [markAsUnread, message, room, router, subscription, user]);
+	return {
+		id: 'mark-message-as-unread',
+		icon: 'flag',
+		label: 'Mark_unread',
+		context: ['message', 'message-mobile', 'threads'],
+		type: 'interaction',
+		async action() {
+			router.navigate('/home');
+			await markAsUnread({ message, subscription });
+		},
+		order: 4,
+		group: 'menu',
+	};
 };
