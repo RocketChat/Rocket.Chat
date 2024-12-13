@@ -1,6 +1,6 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { api, Message } from '@rocket.chat/core-services';
-import type { AtLeast, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { isThreadMessage, type AtLeast, type IMessage, type IRoom, type IThreadMessage, type IUser } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Uploads, Users, ReadReceipts, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -8,7 +8,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { notifyOnRoomChangedById, notifyOnMessageChange, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnMessageChange, notifyOnSubscriptionChangedByRoomIdAndUserIds } from '../lib/notifyListener';
 
 export const deleteMessageValidatingPermission = async (message: AtLeast<IMessage, '_id'>, userId: IUser['_id']): Promise<void> => {
 	if (!message?._id) {
@@ -50,8 +50,8 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		}
 	}
 
-	if (deletedMsg?.tmid) {
-		await deleteThreadMessage(deletedMsg as Required<Pick<IMessage, 'tmid'>>, user, room);
+	if (deletedMsg && isThreadMessage(deletedMsg)) {
+		await deleteThreadMessage(deletedMsg, user, room);
 	}
 
 	const files = (message.files || [message.file]).filter(Boolean); // Keep compatibility with old messages
@@ -108,19 +108,20 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	}
 }
 
-async function deleteThreadMessage(message: Required<Pick<IMessage, 'tmid'>>, user: IUser, room: IRoom | null): Promise<void> {
-	await Messages.decreaseReplyCountById(message.tmid, -1);
+async function deleteThreadMessage(message: IThreadMessage, user: IUser, room: IRoom | null): Promise<void> {
+	const { value: updatedParentMessage } = await Messages.decreaseReplyCountById(message.tmid, -1);
 
 	if (room) {
 		const { modifiedCount } = await Subscriptions.removeUnreadThreadsByRoomId(room._id, [message.tmid]);
 		if (modifiedCount > 0) {
-			void notifyOnSubscriptionChangedByRoomIdAndUserId(room._id, user._id);
+			const userIdsThatAreWatchingTheThread = [...new Set([user._id, ...(message.replies || [])])];
+			void notifyOnSubscriptionChangedByRoomIdAndUserIds(room._id, userIdsThatAreWatchingTheThread);
 		}
 	}
 
-	// Check if this was the last reply in the thread
-	const thread = await Messages.findOneById(message.tmid, { projection: { tcount: 1 } });
-	if (thread?.tcount === 0) {
+	// If we could not find the parent message, there is no need to notify whoever is listening
+	// about the change in the parent message
+	if (updatedParentMessage && updatedParentMessage.tcount === 0) {
 		void notifyOnMessageChange({
 			id: message.tmid,
 		});

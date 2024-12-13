@@ -1,5 +1,5 @@
 ---
-"@rocket.chat/meteor": minor
+"@rocket.chat/meteor": patch
 ---
 
-Fixes an issue where removing the only thread message of a message would show as if there were unread messages.
+Fixes an issue where removing the only message of a thread would keep the unread thread messages badge
