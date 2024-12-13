@@ -1,5 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IMessage, IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IThreadMessage, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
@@ -9,7 +9,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { createRoom, deleteRoom, getSubscriptionByRoomId } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
@@ -2034,19 +2034,17 @@ describe('[Chat]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 					});
-				await request
-					.get(api('subscriptions.getOne'))
-					.set(credentials)
-					.query({
-						roomId: testChannel._id,
-					})
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body.subscription).to.have.property('tunread');
-						expect(res.body.subscription.tunread).to.be.an('array');
-						expect(res.body.subscription.tunread).to.deep.equal([]);
-					});
+
+				const userWhoCreatedTheThreadSubscription = await getSubscriptionByRoomId(testChannel._id);
+				const userWhoDeletedTheThreadSubscription = await getSubscriptionByRoomId(testChannel._id, otherUserCredentials);
+				const expectThreadUnreadToBeEmpty = (subscription: ISubscription) => {
+					expect(subscription).to.have.property('tunread');
+					expect(subscription.tunread).to.be.an('array');
+					expect(subscription.tunread).to.deep.equal([]);
+				};
+
+				expectThreadUnreadToBeEmpty(userWhoCreatedTheThreadSubscription);
+				expectThreadUnreadToBeEmpty(userWhoDeletedTheThreadSubscription);
 			});
 		});
 	});
