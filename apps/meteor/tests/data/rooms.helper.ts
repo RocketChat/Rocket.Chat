@@ -1,5 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 
 import { api, credentials, request } from './api-data';
 
@@ -108,3 +108,14 @@ export function actionRoom({ action, type, roomId, overrideCredentials = credent
 
 export const deleteRoom = ({ type, roomId }: { type: ActionRoomParams['type']; roomId: IRoom['_id'] }) =>
 	actionRoom({ action: 'delete', type, roomId, overrideCredentials: credentials });
+
+export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = credentials): Promise<ISubscription> =>
+	new Promise((resolve) => {
+		void request
+			.get(api('subscriptions.getOne'))
+			.set(userCredentials)
+			.query({ roomId })
+			.end((_err, res) => {
+				resolve(res.body.subscription);
+			});
+	});
