@@ -44,7 +44,7 @@ describe('MAC', () => {
 			visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 
-			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.v.contactId });
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.contactId });
 			expect(res.body.contact.channels[0].visitor.visitorId).to.be.equal(visitor._id);
 			expect(res.body.contact).not.to.have.property('activity');
 		});
@@ -66,7 +66,7 @@ describe('MAC', () => {
 
 			await sendAgentMessage(room._id);
 
-			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.v.contactId });
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.contactId });
 			expect(res.body.contact.channels[0].visitor.visitorId).to.be.equal(multipleContactsVisitor._id);
 			expect(res.body.contact).to.have.property('activity').that.is.an('array').with.lengthOf(1);
 			expect(res.body.contact.activity[0]).to.equal(moment.utc().format('YYYY-MM'));
@@ -88,7 +88,7 @@ describe('MAC', () => {
 
 			await sendAgentMessage(room._id);
 
-			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.v.contactId });
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.contactId });
 			expect(res.body.contact.channels[0].visitor.visitorId).to.be.equal(multipleContactsVisitor._id);
 			expect(res.body.contact).to.have.property('activity').that.is.an('array').with.lengthOf(1);
 			expect(res.body.contact.activity[0]).to.equal(moment.utc().format('YYYY-MM'));
@@ -117,7 +117,7 @@ describe('MAC', () => {
 			visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			await sendAgentMessage(room._id);
-			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.v.contactId });
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.contactId });
 
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);

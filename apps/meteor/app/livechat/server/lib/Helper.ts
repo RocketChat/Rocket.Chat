@@ -27,7 +27,6 @@ import {
 	LivechatInquiry,
 	LivechatRooms,
 	LivechatDepartment,
-	LivechatContacts,
 	Subscriptions,
 	Rooms,
 	Users,
