@@ -1,5 +1,5 @@
 import type { AtLeast, ISubscription } from '@rocket.chat/core-typings';
-import { useRouter, useStream, useUser, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useRouter, useStream, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
 
 import { useEmbeddedLayout } from './useEmbeddedLayout';
@@ -10,7 +10,6 @@ import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
 export const useNotifyUser = () => {
 	const user = useUser();
-	const userId = useUserId();
 	const router = useRouter();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const notifyUserStream = useStream('notify-user');
@@ -48,11 +47,11 @@ export const useNotifyUser = () => {
 	);
 
 	useEffect(() => {
-		if (!userId) {
+		if (!user?._id) {
 			return;
 		}
 
-		const unsubNotification = notifyUserStream(`${userId}/notification`, (notification) => {
+		const unsubNotification = notifyUserStream(`${user._id}/notification`, (notification) => {
 			const openedRoomId = ['channel', 'group', 'direct'].includes(router.getRouteName() || '') ? RoomManager.opened : undefined;
 
 			const hasFocus = document.hasFocus();
@@ -77,7 +76,7 @@ export const useNotifyUser = () => {
 			notifyNewMessageAudio(notification.payload.rid);
 		});
 
-		const unsubSubs = notifyUserStream(`${userId}/subscriptions-changed`, (action, sub) => {
+		const unsubSubs = notifyUserStream(`${user._id}/subscriptions-changed`, (action, sub) => {
 			if (action === 'removed') {
 				return;
 			}
@@ -85,7 +84,7 @@ export const useNotifyUser = () => {
 			void notifyNewRoom(sub);
 		});
 
-		CachedChatSubscription.collection.find().observe({
+		const handle = CachedChatSubscription.collection.find().observe({
 			changed: (sub) => {
 				void notifyNewRoom(sub);
 			},
@@ -94,6 +93,7 @@ export const useNotifyUser = () => {
 		return () => {
 			unsubNotification();
 			unsubSubs();
+			handle.stop();
 		};
-	}, [isLayoutEmbedded, notifyNewMessageAudio, notifyNewRoom, notifyUserStream, router, userId]);
+	}, [isLayoutEmbedded, notifyNewMessageAudio, notifyNewRoom, notifyUserStream, router, user?._id]);
 };
