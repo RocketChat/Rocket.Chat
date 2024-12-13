@@ -1,5 +1,5 @@
 import type { AtLeast, ISubscription } from '@rocket.chat/core-typings';
-import { useRouter, useStream, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useRouter, useStream, useUser, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
 
 import { useEmbeddedLayout } from './useEmbeddedLayout';
@@ -10,6 +10,7 @@ import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
 export const useNotifyUser = () => {
 	const user = useUser();
+	const userId = useUserId();
 	const router = useRouter();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const notifyUserStream = useStream('notify-user');
@@ -47,11 +48,11 @@ export const useNotifyUser = () => {
 	);
 
 	useEffect(() => {
-		if (!user?._id) {
+		if (!userId) {
 			return;
 		}
 
-		notifyUserStream(`${user?._id}/notification`, (notification) => {
+		const unsubNotification = notifyUserStream(`${userId}/notification`, (notification) => {
 			const openedRoomId = ['channel', 'group', 'direct'].includes(router.getRouteName() || '') ? RoomManager.opened : undefined;
 
 			const hasFocus = document.hasFocus();
@@ -76,7 +77,7 @@ export const useNotifyUser = () => {
 			notifyNewMessageAudio(notification.payload.rid);
 		});
 
-		notifyUserStream(`${user?._id}/subscriptions-changed`, (action, sub) => {
+		const unsubSubs = notifyUserStream(`${userId}/subscriptions-changed`, (action, sub) => {
 			if (action === 'removed') {
 				return;
 			}
@@ -89,5 +90,10 @@ export const useNotifyUser = () => {
 				void notifyNewRoom(sub);
 			},
 		});
-	}, [isLayoutEmbedded, notifyNewMessageAudio, notifyNewRoom, notifyUserStream, router, user?._id]);
+
+		return () => {
+			unsubNotification();
+			unsubSubs();
+		};
+	}, [isLayoutEmbedded, notifyNewMessageAudio, notifyNewRoom, notifyUserStream, router, userId]);
 };
