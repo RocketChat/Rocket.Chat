@@ -244,6 +244,26 @@ const MessageBox = ({
 					event.stopPropagation();
 					input.setSelectionRange(input.value.length, input.value.length);
 				}
+
+				return;
+			}
+
+			case 'ArrowLeft': {
+				if (event.altKey) {
+					event.preventDefault();
+					event.stopPropagation();
+					input.setSelectionRange(0, 0);
+				}
+
+				return;
+			}
+
+			case 'ArrowRight': {
+				if (event.altKey) {
+					event.preventDefault();
+					event.stopPropagation();
+					input.setSelectionRange(input.value.length, input.value.length);
+				}
 			}
 		}
 
