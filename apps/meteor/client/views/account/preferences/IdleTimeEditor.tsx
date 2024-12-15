@@ -32,23 +32,23 @@ const IdleTimeEditor = ({ onChangeTime }: IdleTimeEditorProps) => {
 
 	useEffect(() => {
 		handleFinalSecondCount();
-	}, [hours, minutes, seconds]) 
+	}, [hours, minutes, seconds]);
 
-    function handleFinalSecondCount() {
-        setFinalSecondCount(hours * 3600 + minutes * 60 + seconds);
-        onChangeTime(finalSecondCount);
-    }
+	function handleFinalSecondCount() {
+		setFinalSecondCount(hours * 3600 + minutes * 60 + seconds);
+		onChangeTime(finalSecondCount);
+	}
 
-  return (
-    <FieldRow>
-		<FieldLabel htmlFor={idleTimeLimitHrs}>{t('Hours')}</FieldLabel>
-		<NumberInput value={hours} onChange={handleHours} id='idleTimeLimitHrs'/>
-		<FieldLabel htmlFor={idleTimeLimitMin}>{t('minutes')}</FieldLabel>
-	    <NumberInput value={minutes} onChange={handleMinutes} id='idleTimeLimitMin' max={59} min={0} />
-		<FieldLabel htmlFor={idleTimeLimitSec}>{t('seconds')}</FieldLabel>
-		<NumberInput value={seconds} onChange={handleSeconds} id='idleTimeLimitSec' max={59} min={0} />
-	</FieldRow>
-  )
-}
+	return (
+		<FieldRow>
+			<FieldLabel htmlFor={idleTimeLimitHrs}>{t('Hours')}</FieldLabel>
+			<NumberInput value={hours} onChange={handleHours} id='idleTimeLimitHrs'/>
+			<FieldLabel htmlFor={idleTimeLimitMin}>{t('minutes')}</FieldLabel>
+	    	<NumberInput value={minutes} onChange={handleMinutes} id='idleTimeLimitMin' max={59} min={0} />
+			<FieldLabel htmlFor={idleTimeLimitSec}>{t('seconds')}</FieldLabel>
+			<NumberInput value={seconds} onChange={handleSeconds} id='idleTimeLimitSec' max={59} min={0} />
+		</FieldRow>
+	);
+};
 
 export default IdleTimeEditor;
