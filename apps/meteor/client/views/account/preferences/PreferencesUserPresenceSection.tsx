@@ -1,15 +1,17 @@
 import { Accordion, Field, FieldLabel, FieldRow, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+
 import IdleTimeEditor from './IdleTimeEditor';
 
 const PreferencesUserPresenceSection = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { control } = useFormContext();
 
 	const enableAutoAwayId = useUniqueId();
+
 	return (
 		<Accordion.Item title={t('User_Presence')}>
 			<FieldGroup>
