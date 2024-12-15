@@ -158,8 +158,9 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 	}
 
 	if (settings.idleTimeLimit != null && settings.idleTimeLimit < 60) {
-		throw new Meteor.Error('invalid-idle-time-limit-value', 'Idle time limit must be at least 1 minutes.');
+		throw new Meteor.Error('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
 	}
+
 	await Users.setPreferences(user._id, settings);
 
 	const diff = (Object.keys(settings) as (keyof UserPreferences)[]).reduce<Record<string, any>>((data, key) => {
