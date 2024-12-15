@@ -4,9 +4,7 @@ export type AccountPreferencesData = {
 	language?: string;
 	dontAskAgainList?: string[];
 	enableAutoAway?: boolean;
-	idleTimeLimitH?: number;
-	idleTimeLimitM?: number;
-	idleTimeLimitS?: number;
+	idleTimeLimit?: number;
 	desktopNotificationRequireInteraction?: boolean;
 	desktopNotifications?: string;
 	pushNotifications?: string;
@@ -47,10 +45,8 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 	const userDontAskAgainList = useUserPreference<{ action: string; label: string }[]>('dontAskAgainList') || [];
 	const dontAskAgainList = userDontAskAgainList.map(({ action }) => action);
 	const enableAutoAway = useUserPreference<boolean>('enableAutoAway');
-	const idleTimeLimitH = useUserPreference<number>('idleTimeLimitH');
-	const idleTimeLimitM = useUserPreference<number>('idleTimeLimitM');
-	const idleTimeLimitS = useUserPreference<number>('idleTimeLimitS');
-	
+	const idleTimeLimit = useUserPreference<number>('idleTimeLimit');
+
 	const desktopNotificationRequireInteraction = useUserPreference<boolean>('desktopNotificationRequireInteraction');
 	const desktopNotifications = useUserPreference<string>('desktopNotifications');
 	const pushNotifications = useUserPreference<string>('pushNotifications');
@@ -85,9 +81,7 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 		language,
 		dontAskAgainList,
 		enableAutoAway,
-		idleTimeLimitH,
-		idleTimeLimitM,
-		idleTimeLimitS,
+		idleTimeLimit,
 		desktopNotificationRequireInteraction,
 		desktopNotifications,
 		pushNotifications,

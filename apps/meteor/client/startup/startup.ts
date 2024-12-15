@@ -48,14 +48,7 @@ Meteor.startup(() => {
 		}
 
 		if (getUserPreference(user, 'enableAutoAway')) {
-			const idleTimeLimitH = (getUserPreference(user, 'idleTimeLimitH') as number | null | undefined) || 0;
-
-			const idleTimeLimitM = (getUserPreference(user, 'idleTimeLimitM') as number | null | undefined) || 5;
-
-			const idleTimeLimitS = (getUserPreference(user, 'idleTimeLimitS') as number | null | undefined) || 0;
-
-			const idleTimeLimit = (idleTimeLimitH) * 3600 + (idleTimeLimitM)* 60 + (idleTimeLimitS);
- 
+			const idleTimeLimit = (getUserPreference(user, 'idleTimeLimit') as number | null | undefined) || 300;			
 			UserPresence.awayTime = idleTimeLimit * 1000;
 		} else {
 			delete UserPresence.awayTime;

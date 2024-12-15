@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Enhanced userPresence options making it more human readable.
+Added input fields so the user can specify exactly the time of the enableAutoAway preference in hours, minutes and seconds.
