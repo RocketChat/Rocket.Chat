@@ -3,8 +3,11 @@ import { Notifications } from '../../../../notifications/server';
 import { CONSTANTS } from '../../../lib';
 import Permissions from '../../../../models/server/models/Permissions';
 import { clearCache } from '../../functions/hasPermission';
+import { settings } from '/app/settings/server';
+import { publishToRedis } from '/app/redis/redisPublisher';
+import { redisMessageHandlers } from '/app/redis/handleRedisMessage';
 
-Permissions.on('change', ({ clientAction, id, data, diff }) => {
+const handlePermissions = (clientAction, id, data, diff) => {
 	if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
 		// avoid useless changes
 		return;
@@ -25,7 +28,7 @@ Permissions.on('change', ({ clientAction, id, data, diff }) => {
 	Notifications.notifyLoggedInThisInstance(
 		'permissions-changed',
 		clientAction,
-		data,
+		data
 	);
 
 	if (data.level && data.level === CONSTANTS.SETTINGS_LEVEL) {
@@ -39,4 +42,24 @@ Permissions.on('change', ({ clientAction, id, data, diff }) => {
 			setting,
 		);
 	}
-});
+};
+
+const handlePermissionsRedis = (data) =>
+	handlePermissions(data.clientAction, data._id, data, data.diff);
+
+if (settings.get('Use_Oplog_As_Real_Time')) {
+	Permissions.on('change', ({ clientAction, id, data, diff }) => {
+		handlePermissions(clientAction, id, data, diff);
+	});
+} else {
+	Permissions.on('change', ({ clientAction, id, data, diff }) => {
+		data = data || Permissions.findOneById(id);
+		const newdata = {
+			...data,
+			ns: 'rocketchat_permissions',
+			clientAction,
+		};
+		publishToRedis(`all`, newdata);
+	});
+}
+redisMessageHandlers['rocketchat_permissions'] = handlePermissionsRedis;
