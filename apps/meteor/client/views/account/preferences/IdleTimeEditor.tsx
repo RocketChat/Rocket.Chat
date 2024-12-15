@@ -42,11 +42,11 @@ const IdleTimeEditor = ({ onChangeTime }: IdleTimeEditorProps) => {
 	return (
 		<FieldRow>
 			<FieldLabel htmlFor={idleTimeLimitHrs}>{t('Hours')}</FieldLabel>
-			<NumberInput value={hours} onChange={handleHours} id='idleTimeLimitHrs'/>
+			<NumberInput value={hours} onChange={handleHours} id={idleTimeLimitHrs} />
 			<FieldLabel htmlFor={idleTimeLimitMin}>{t('minutes')}</FieldLabel>
-	    	<NumberInput value={minutes} onChange={handleMinutes} id='idleTimeLimitMin' max={59} min={0} />
+	    	<NumberInput value={minutes} onChange={handleMinutes} id={idleTimeLimitMin} max={59} min={0} />
 			<FieldLabel htmlFor={idleTimeLimitSec}>{t('seconds')}</FieldLabel>
-			<NumberInput value={seconds} onChange={handleSeconds} id='idleTimeLimitSec' max={59} min={0} />
+			<NumberInput value={seconds} onChange={handleSeconds} id={idleTimeLimitSec} max={59} min={0} />
 		</FieldRow>
 	);
 };

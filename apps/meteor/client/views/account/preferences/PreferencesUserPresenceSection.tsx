@@ -32,9 +32,7 @@ const PreferencesUserPresenceSection = () => {
 					<Controller
 						name='idleTimeLimit'
 						control={control}
-						render={({ field: { onChange } }) => (
-							<IdleTimeEditor onChangeTime={onChange} />
-						)}
+						render={({ field: { onChange } }) => <IdleTimeEditor onChangeTime={onChange} />}
 					/>
 				</Field>
 			</FieldGroup>
