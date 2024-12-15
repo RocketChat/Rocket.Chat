@@ -318,7 +318,13 @@ API.v1.addRoute(
 			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
 
 			const message = await Messages.getMessageByFileIdAndUsername(file._id, this.userId);
-
+            if(message){
+			  await Uploads.update({ _id: file._id }, {
+			     	$set: {
+				    	messageId: message._id, 
+				    },
+			    });
+		    }
 			return API.v1.success({
 				message,
 			});

@@ -20,6 +20,7 @@ export interface IUpload {
     uploadedAt: Date;
     store: StoreType;
     room: IRoom;
+    messageId: string;
     visitor?: IVisitor;
     user?: IUser;
 }
