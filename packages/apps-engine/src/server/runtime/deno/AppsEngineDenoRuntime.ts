@@ -5,6 +5,10 @@ import { type Readable, EventEmitter } from 'stream';
 import debugFactory from 'debug';
 import * as jsonrpc from 'jsonrpc-lite';
 
+import { LivenessManager } from './LivenessManager';
+import { ProcessMessenger } from './ProcessMessenger';
+import { bundleLegacyApp } from './bundler';
+import { decoder } from './codec';
 import { AppStatus, AppStatusUtils } from '../../../definition/AppStatus';
 import type { AppMethod } from '../../../definition/metadata';
 import type { AppManager } from '../../AppManager';
@@ -13,10 +17,6 @@ import type { IParseAppPackageResult } from '../../compiler';
 import { AppConsole, type ILoggerStorageEntry } from '../../logging';
 import type { AppAccessorManager, AppApiManager } from '../../managers';
 import type { AppLogStorage, IAppStorageItem } from '../../storage';
-import { LivenessManager } from './LivenessManager';
-import { ProcessMessenger } from './ProcessMessenger';
-import { bundleLegacyApp } from './bundler';
-import { decoder } from './codec';
 
 const baseDebug = debugFactory('appsEngine:runtime:deno');
 
@@ -107,7 +107,11 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     private readonly livenessManager: LivenessManager;
 
     // We need to keep the appSource around in case the Deno process needs to be restarted
-    constructor(manager: AppManager, private readonly appPackage: IParseAppPackageResult, private readonly storageItem: IAppStorageItem) {
+    constructor(
+        manager: AppManager,
+        private readonly appPackage: IParseAppPackageResult,
+        private readonly storageItem: IAppStorageItem,
+    ) {
         super();
 
         this.debug = baseDebug.extend(appPackage.info.id);
@@ -639,6 +643,12 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     }
 
     private async parseError(chunk: Buffer): Promise<void> {
-        console.error('Subprocess stderr', chunk.toString());
+        try {
+            const data = JSON.parse(chunk.toString());
+
+            this.debug('Metrics received from subprocess: %o', data);
+        } catch (e) {
+            console.error('Subprocess stderr', chunk.toString());
+        }
     }
 }
