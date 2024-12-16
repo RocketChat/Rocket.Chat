@@ -102,6 +102,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				},
 				sparse: true,
 			},
+			{ key: { 'v._id': 1 } },
 		];
 	}
 
@@ -462,5 +463,19 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	async markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ILivechatInquiryRecord | null> {
 		const updated = await this.findOneAndUpdate({ rid }, { $addToSet: { 'v.activity': period } });
 		return updated?.value;
+	}
+
+	updateNameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document> {
+		const query = { 'v._id': { $in: visitorIds } };
+
+		const update = {
+			$set: { name },
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	findByVisitorIds(visitorIds: string[], options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord> {
+		return this.find({ 'v._id': { $in: visitorIds } }, options);
 	}
 }
