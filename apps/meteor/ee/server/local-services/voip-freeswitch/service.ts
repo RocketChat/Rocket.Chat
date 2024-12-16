@@ -241,10 +241,8 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			receivedAt: new Date(),
 			channelName,
 			direction,
-
 			caller,
 			call,
-
 			eventData: filteredData,
 		}) as InsertionModel<WithoutId<IFreeSwitchEvent>>;
 	}
