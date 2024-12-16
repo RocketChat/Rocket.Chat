@@ -1,6 +1,7 @@
-import type { AtLeast, ISubscription } from '@rocket.chat/core-typings';
+import type { AtLeast, INotificationDesktop, ISubscription } from '@rocket.chat/core-typings';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouter, useStream, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { useEmbeddedLayout } from './useEmbeddedLayout';
 import { CachedChatSubscription } from '../../app/models/client';
@@ -15,69 +16,52 @@ export const useNotifyUser = () => {
 	const notifyUserStream = useStream('notify-user');
 	const muteFocusedConversations = useUserPreference('muteFocusedConversations');
 
-	const notifyNewRoom = useCallback(
-		async (sub: AtLeast<ISubscription, 'rid'>): Promise<void> => {
-			if (!user || user.status === 'busy') {
-				return;
-			}
+	const notifyNewRoom = useEffectEvent(async (sub: AtLeast<ISubscription, 'rid'>): Promise<void> => {
+		if (!user || user.status === 'busy') {
+			return;
+		}
 
-			if ((!router.getRouteParameters().name || router.getRouteParameters().name !== sub.name) && !sub.ls && sub.alert === true) {
-				KonchatNotification.newRoom(sub.rid);
-			}
-		},
-		[router, user],
-	);
+		if ((!router.getRouteParameters().name || router.getRouteParameters().name !== sub.name) && !sub.ls && sub.alert === true) {
+			KonchatNotification.newRoom(sub.rid);
+		}
+	});
 
-	const notifyNewMessageAudio = useCallback(
-		(rid?: string) => {
-			const hasFocus = document.hasFocus();
-			const messageIsInOpenedRoom = RoomManager.opened === rid;
+	const notifyNewMessageAudioAndDesktop = useEffectEvent((notification: INotificationDesktop) => {
+		const hasFocus = document.hasFocus();
 
-			if (isLayoutEmbedded) {
-				if (!hasFocus && messageIsInOpenedRoom) {
-					// Play a notification sound
-					void KonchatNotification.newMessage(rid);
-				}
-			} else if (!hasFocus || !messageIsInOpenedRoom || !muteFocusedConversations) {
+		const openedRoomId = ['channel', 'group', 'direct'].includes(router.getRouteName() || '') ? RoomManager.opened : undefined;
+
+		const { rid } = notification.payload;
+		const messageIsInOpenedRoom = openedRoomId === rid;
+
+		fireGlobalEvent('notification', {
+			notification,
+			fromOpenedRoom: messageIsInOpenedRoom,
+			hasFocus,
+		});
+
+		if (isLayoutEmbedded) {
+			if (!hasFocus && messageIsInOpenedRoom) {
 				// Play a notification sound
 				void KonchatNotification.newMessage(rid);
+				void KonchatNotification.showDesktop(notification);
 			}
-		},
-		[isLayoutEmbedded, muteFocusedConversations],
-	);
+		} else if (!hasFocus || !messageIsInOpenedRoom || !muteFocusedConversations) {
+			// Play a notification sound
+			void KonchatNotification.newMessage(rid);
+			void KonchatNotification.showDesktop(notification);
+		}
+	});
 
 	useEffect(() => {
 		if (!user?._id) {
 			return;
 		}
 
-		const unsubNotification = notifyUserStream(`${user._id}/notification`, (notification) => {
-			const openedRoomId = ['channel', 'group', 'direct'].includes(router.getRouteName() || '') ? RoomManager.opened : undefined;
-
-			const hasFocus = document.hasFocus();
-			const messageIsInOpenedRoom = openedRoomId === notification.payload.rid;
-
-			fireGlobalEvent('notification', {
-				notification,
-				fromOpenedRoom: messageIsInOpenedRoom,
-				hasFocus,
-			});
-
-			if (isLayoutEmbedded) {
-				if (!hasFocus && messageIsInOpenedRoom) {
-					// Show a notification.
-					KonchatNotification.showDesktop(notification);
-				}
-			} else if (!hasFocus || !messageIsInOpenedRoom) {
-				// Show a notification.
-				KonchatNotification.showDesktop(notification);
-			}
-
-			notifyNewMessageAudio(notification.payload.rid);
-		});
+		const unsubNotification = notifyUserStream(`${user._id}/notification`, notifyNewMessageAudioAndDesktop);
 
 		const unsubSubs = notifyUserStream(`${user._id}/subscriptions-changed`, (action, sub) => {
-			if (action === 'removed') {
+			if (action !== 'inserted') {
 				return;
 			}
 
@@ -95,5 +79,5 @@ export const useNotifyUser = () => {
 			unsubSubs();
 			handle.stop();
 		};
-	}, [isLayoutEmbedded, notifyNewMessageAudio, notifyNewRoom, notifyUserStream, router, user?._id]);
+	}, [isLayoutEmbedded, notifyNewMessageAudioAndDesktop, notifyNewRoom, notifyUserStream, router, user?._id]);
 };
