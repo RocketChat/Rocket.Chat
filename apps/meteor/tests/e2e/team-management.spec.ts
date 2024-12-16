@@ -11,7 +11,6 @@ test.describe.serial('teams-management', () => {
 	let poHomeTeam: HomeTeam;
 	let targetChannel: string;
 	const targetTeam = faker.string.uuid();
-	const targetTeamName = faker.string.uuid();
 	const targetTeamNonPrivate = faker.string.uuid();
 	const targetTeamReadOnly = faker.string.uuid();
 	const targetGroupNameInTeam = faker.string.uuid();
@@ -24,7 +23,6 @@ test.describe.serial('teams-management', () => {
 	test.afterAll(async ({ api }) => {
 		await deleteChannel(api, targetChannel);
 		await deleteTeam(api, targetTeam);
-		await deleteTeam(api, targetTeamName);
 		await deleteTeam(api, targetTeamNonPrivate);
 		await deleteTeam(api, targetTeamReadOnly);
 		await deleteChannel(api, targetChannelNameInTeam);
@@ -273,7 +271,7 @@ test.describe.serial('teams-management', () => {
 	}) => {
 		expect((await api.post('/permissions.update', { permissions: [{ _id: 'delete-team-group', roles: ['owner'] }] })).status()).toBe(200);
 
-		await poHomeTeam.sidebar.openChat(targetTeamName);
+		await poHomeTeam.sidebar.openChat(targetTeam);
 		await poHomeTeam.tabs.btnChannels.click();
 		await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetGroupNameInTeam);
 		await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Delete' })).toBeVisible();

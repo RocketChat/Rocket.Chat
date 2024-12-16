@@ -43,8 +43,13 @@ export class HomeFlextabChannels {
 		await this.channelsList.waitFor();
 	}
 
-	async openChannelOptionMoreActions(name: string) {
+	async waitForListItem() {
 		await this.waitForList();
+		await this.channelsList.getByRole('listitem').first().waitFor();
+	}
+
+	async openChannelOptionMoreActions(name: string) {
+		await this.waitForListItem();
 		await this.channelOption(name).hover();
 		await this.channelOption(name).locator('role=button[name="More"]').click();
 	}
