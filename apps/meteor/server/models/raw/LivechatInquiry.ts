@@ -12,7 +12,6 @@ import type {
 	Db,
 	Document,
 	FindOptions,
-	DistinctOptions,
 	ModifyResult,
 	UpdateResult,
 	Filter,
@@ -21,6 +20,7 @@ import type {
 	FindCursor,
 	UpdateFilter,
 	DeleteOptions,
+	AggregateOptions,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -140,8 +140,20 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.find({ 'v.token': token }, { projection: { _id: 1 } });
 	}
 
-	getDistinctQueuedDepartments(options: DistinctOptions): Promise<(string | undefined)[]> {
-		return this.col.distinct('department', { status: LivechatInquiryStatus.QUEUED }, options);
+	getDistinctQueuedDepartments(options: AggregateOptions): Promise<{ _id: string | null }[]> {
+		return this.col
+			.aggregate<{ _id: string | null }>(
+				[
+					{ $match: { status: LivechatInquiryStatus.QUEUED } },
+					{
+						$group: {
+							_id: '$department',
+						},
+					},
+				],
+				options,
+			)
+			.toArray();
 	}
 
 	async setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null> {
@@ -154,7 +166,10 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return updated?.value;
 	}
 
-	async findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string): Promise<ILivechatInquiryRecord | null> {
+	async findNextAndLock(
+		queueSortBy: OmnichannelSortingMechanismSettingType,
+		department?: string | null,
+	): Promise<ILivechatInquiryRecord | null> {
 		const date = new Date();
 		const result = await this.findOneAndUpdate(
 			{
