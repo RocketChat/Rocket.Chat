@@ -4,7 +4,7 @@ export function convertSubObjectsIntoPaths(object: Record<string, any>, parentPa
 			const value = object[key];
 			const fullKey = parentPath ? `${parentPath}.${key}` : key;
 
-			if (typeof value === 'object') {
+			if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
 				const flattened = convertSubObjectsIntoPaths(value, fullKey);
 
 				return Object.keys(flattened).map((newKey) => [newKey, flattened[newKey]]);
