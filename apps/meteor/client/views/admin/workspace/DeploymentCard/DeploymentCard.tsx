@@ -33,7 +33,7 @@ const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, in
 		<Card data-qa-id='deployment-card' height='full'>
 			<CardBody flexDirection='column'>
 				<WorkspaceCardSection>
-					<WorkspaceCardSectionTitle title={t('Deployment')} variant='h4' titleToContentGap={20} />
+					<WorkspaceCardSectionTitle title={t('Deployment')} variant='h4' />
 				</WorkspaceCardSection>
 				<Margins blockEnd={8}>
 					<WorkspaceCardSection>

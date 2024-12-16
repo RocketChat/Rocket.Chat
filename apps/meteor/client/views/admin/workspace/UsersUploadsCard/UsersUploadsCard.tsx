@@ -33,7 +33,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps): ReactElement =
 			<CardBody flexDirection='column'>
 				<Margins blockEnd={24}>
 					<WorkspaceCardSection>
-						<WorkspaceCardSectionTitle title={t('Users')} variant='h4' titleToContentGap={20} />
+						<WorkspaceCardSectionTitle title={t('Users')} variant='h4' />
 
 						<WorkspaceCardTextSeparator label={t('Online')} status='online' value={statistics.onlineUsers} />
 						<WorkspaceCardTextSeparator label={t('Busy')} status='busy' value={statistics.busyUsers} />
@@ -42,7 +42,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps): ReactElement =
 						<WorkspaceCardTextSeparator label={t('Total')} value={statistics.totalUsers} />
 					</WorkspaceCardSection>
 					<WorkspaceCardSection>
-						<WorkspaceCardSectionTitle title={t('Types')} variant='h4' titleToContentGap={20} />
+						<WorkspaceCardSectionTitle title={t('Types')} variant='h4' />
 
 						<WorkspaceCardTextSeparator label={t('Users_Connected')} value={statistics.totalConnectedUsers} />
 						<WorkspaceCardTextSeparator label={t('Stats_Active_Users')} value={statistics.activeUsers} />
@@ -52,7 +52,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps): ReactElement =
 					</WorkspaceCardSection>
 
 					<WorkspaceCardSection>
-						<WorkspaceCardSectionTitle title={t('Uploads')} variant='h4' titleToContentGap={20} />
+						<WorkspaceCardSectionTitle title={t('Uploads')} variant='h4' />
 
 						<WorkspaceCardTextSeparator label={t('Stats_Total_Uploads')} value={statistics.uploadsTotal} />
 						<WorkspaceCardTextSeparator label={t('Stats_Total_Uploads_Size')} value={formatMemorySize(statistics.uploadsTotalSize)} />

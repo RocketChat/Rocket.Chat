@@ -18,7 +18,7 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 	return (
 		<Card height='full'>
 			<WorkspaceCardSection>
-				<WorkspaceCardSectionTitle title={t('Total_rooms')} variant='h4' titleToContentGap={20} />
+				<WorkspaceCardSectionTitle title={t('Total_rooms')} variant='h4' />
 
 				<WorkspaceCardTextSeparator label={t('Channels')} icon='hash' value={statistics.totalChannels} />
 				<WorkspaceCardTextSeparator label={t('Private_Groups')} icon='lock' value={statistics.totalPrivateGroups} />
@@ -29,7 +29,7 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps): ReactElement
 			</WorkspaceCardSection>
 
 			<WorkspaceCardSection>
-				<WorkspaceCardSectionTitle title={t('Messages')} variant='h4' titleToContentGap={20} />
+				<WorkspaceCardSectionTitle title={t('Messages')} variant='h4' />
 				<WorkspaceCardTextSeparator label={t('Stats_Total_Messages_Channel')} icon='hash' value={statistics.totalChannelMessages} />
 				<WorkspaceCardTextSeparator
 					label={t('Stats_Total_Messages_PrivateGroup')}

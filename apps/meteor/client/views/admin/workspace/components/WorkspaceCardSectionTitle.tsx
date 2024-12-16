@@ -4,11 +4,10 @@ import React from 'react';
 type WorkspaceCardSectionTitleProps = {
 	variant?: 'p2b' | 'h4';
 	title: string;
-	titleToContentGap?: number;
 };
 
-const WorkspaceCardSectionTitle = ({ variant = 'p2b', title, titleToContentGap = 0 }: WorkspaceCardSectionTitleProps) => (
-	<Box fontScale={variant} marginBlockEnd={titleToContentGap}>
+const WorkspaceCardSectionTitle = ({ variant = 'p2b', title }: WorkspaceCardSectionTitleProps) => (
+	<Box fontScale={variant} marginBlockEnd={variant === 'h4' ? 20 : 0}>
 		{title}
 	</Box>
 );
