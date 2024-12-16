@@ -287,7 +287,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
             logger.info('Successfully restarted app subprocess');
         } catch (e) {
-            logger.error("Failed to restart app's subprocess", { error: e });
+            logger.error("Failed to restart app's subprocess", { error: e.message || e });
         } finally {
             await this.logStorage.storeEntries(AppConsole.toStorageEntry(this.getAppId(), logger));
         }
