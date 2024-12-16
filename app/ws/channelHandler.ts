@@ -5,6 +5,8 @@ import redis from '../redis/redis';
 
 const channelListeners: Map<string, Set<string>> = new Map();
 const connectionToChannels: Map<string, Set<string>> = new Map();
+const userConnections: Map<string, Set<string>> = new Map();
+
 // TODO-Hi: Add a map to store user to connectionId mapping
 const locks = new Map<string, Mutex>();
 
@@ -64,28 +66,30 @@ const subscribe = (userId: string, connectionId: string): void => {
 	const channels: Set<string> = new Set(Subscriptions.findByUserId(userId, { rid: 1 }).map(({ rid }: { rid: string }) => `room-${ rid }`));
 	channels.add(`user-${ userId }`);
 
+	userConnections.set(userId, (userConnections.get(userId) || new Set()).add(connectionId));
 	channels.forEach((channel: string) => {
 		console.log('SUBSCRIBING TO ', channel);
 		redis.subscribe(channel); // TODO-Hi: What to do if the subsribe fails
 	});
 	addToMap(connectionId, channels);
-
-	// TODO: subscribe to all channels
 };
 
 // setInterval(() => {
 // 	console.log(channelListeners);
 // 	console.log(connectionToChannels);
+// 	console.log(userConnections);
 // }, 5000);
 
 const unsubscribe = (userId: string, connectionId: string): void => {
 	console.log(`Unsubscribing connectionId: ${ connectionId }, userId: ${ userId }`);
 	updateConnectionChannels(connectionId);
+	userConnections.get(userId)?.delete(connectionId);
 	connectionToChannels.delete(connectionId); // TODO-Hi: Maybe had debounce/something to handle user refreshes
 };
 // TODO-Hi: Add isalive
 // TODO-Hi: Check in carosulle
-
+// TODO-Hi: Check race-condition on critical sections
+// TODO-Hi: Check with or if we should find the object in message subscriptions
 const ChannelHandler = { subscribe, unsubscribe };
 
 export default ChannelHandler;
