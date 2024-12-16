@@ -13,7 +13,6 @@ export type CardProps = {
 	title: string;
 	infoText?: ReactNode;
 	upgradeButton?: ReactNode;
-	isHorizontallyCenteredOnly?: boolean;
 };
 
 const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps): ReactElement => {

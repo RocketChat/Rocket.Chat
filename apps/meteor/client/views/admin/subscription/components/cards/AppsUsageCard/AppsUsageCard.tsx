@@ -52,7 +52,6 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 				components={{ 1: <ExternalLink to={PRICING_LINK}>premium plans</ExternalLink> }}
 			/>
 		),
-		isHorizontallyCenteredOnly: true,
 
 		...(marketplaceAppsAboveWarning && {
 			upgradeButton: (

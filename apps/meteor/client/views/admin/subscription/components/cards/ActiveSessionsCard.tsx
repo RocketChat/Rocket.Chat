@@ -56,7 +56,6 @@ const ActiveSessionsCard = (): ReactElement => {
 						</UpgradeButton>
 					),
 				}),
-				isHorizontallyCenteredOnly: true,
 			}}
 		>
 			<FeatureUsageCardBody justifyContent='flex-start'>

@@ -32,7 +32,6 @@ const ActiveSessionsPeakCard = (): ReactElement => {
 				</UpgradeButton>
 			),
 		}),
-		isHorizontallyCenteredOnly: true,
 	};
 
 	if (isLoading || maxMonthlyPeakConnections === undefined) {
