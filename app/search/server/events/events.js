@@ -17,7 +17,7 @@ class EventService {
 	}
 }
 
-const eventService = new EventService();
+export const eventService = new EventService();
 
 /**
  * Listen to message changes via Hooks

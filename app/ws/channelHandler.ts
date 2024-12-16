@@ -65,8 +65,7 @@ const subscribe = (userId: string, connectionId: string): void => {
 };
 
 // setInterval(() => {
-// 	console.log(channelListeners);
-// 	console.log(connectionToChannels);
+// isRedisHealthy()
 // }, 5000);
 
 const unsubscribe = (userId: string, connectionId: string): void => {
