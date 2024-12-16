@@ -3,7 +3,7 @@ import { Mutex } from 'async-mutex';
 import { Subscriptions } from '../models/server';
 import redis from '../redis/redis';
 
-const channelListeners: Map<string, number> = new Map();
+const channelListeners: Map<string, Set<string>> = new Map();
 const connectionToChannels: Map<string, Set<string>> = new Map();
 // TODO-Hi: Add a map to store user to connectionId mapping
 const locks = new Map<string, Mutex>();
@@ -33,7 +33,7 @@ const addToMap = (connectionId: string, channels: Set<string>): void => {
 
 	channels.forEach(async (channel: string) => {
 		const release = await acquireLock(channel);
-		channelListeners.set(channel, (channelListeners.get(channel) || 0) + 1);
+		channelListeners.set(channel, (channelListeners.get(channel) || new Set()).add(connectionId));
 		release();
 	});
 };
@@ -44,14 +44,14 @@ const updateConnectionChannels = (connectionId: string): void => {
 	connectionChannels?.forEach(async (channel: string) => {
 		const release = await acquireLock(channel);
 		try {
-			const listeners = channelListeners.get(channel) as number;
-			console.log('listeners ', listeners);
-			if (listeners === 1) {
+			const listeningConnections = channelListeners.get(channel);
+			console.log('listeners ', listeningConnections);
+			if (listeningConnections?.size === 1) {
 				console.log(`Unsubscribing to channel: ${ channel }`);
 				channelListeners.delete(channel);
 				redis.unsubscribe(channel);
 			} else {
-				channelListeners.set(channel, listeners - 1);
+				listeningConnections?.delete(connectionId);
 			}
 		} finally {
 			release();
