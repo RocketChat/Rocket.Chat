@@ -3,18 +3,21 @@ import { Rooms, Subscriptions } from '../../../app/models';
 import { Notifications } from '../../../app/notifications';
 
 import { fields } from '.';
+import { settings } from '/app/settings/server';
+import { redisMessageHandlers } from '/app/redis/handleRedisMessage';
+import { publishToRedis } from '/app/redis/redisPublisher';
 
 const getSubscriptions = (id) => {
 	const fields = { 'u._id': 1 };
 	return Subscriptions.trashFind({ rid: id }, { fields });
 };
 
-Rooms.on('change', ({ clientAction, id, data }) => {
+const handleRoom = (clientAction, id, data) => {
 	switch (clientAction) {
 		case 'updated':
 		case 'inserted':
 			// Override data cuz we do not publish all fields
-			data = Rooms.findOneById(id, { fields });
+			data = data || Rooms.findOneById(id, { fields });
 			break;
 
 		case 'removed':
@@ -31,7 +34,7 @@ Rooms.on('change', ({ clientAction, id, data }) => {
 				u._id,
 				'rooms-changed',
 				clientAction,
-				data,
+				data
 			);
 		});
 	}
@@ -39,4 +42,23 @@ Rooms.on('change', ({ clientAction, id, data }) => {
 	Notifications.streamUser.__emit(id, clientAction, data);
 
 	emitRoomDataEvent(id, data);
-});
+};
+
+const redisRoomHandle = (data) => handleRoom(data.clientAction, data._id, data);
+if (settings.get('Use_Oplog_As_Real_Time')) {
+	Rooms.on('change', ({ clientAction, id, data }) => {
+		handleRoom(clientAction, id, data);
+	});
+} else {
+	Rooms.on('change', ({ clientAction, id, data }) => {
+		data = data || Rooms.findOneById(id, { fields });
+		const newdata = {
+			...data,
+			ns: 'rocketchat_room',
+			clientAction,
+		};
+		publishToRedis(`room-${id}`, newdata);
+	});
+}
+
+redisMessageHandlers['rocketchat_room'] = redisRoomHandle;

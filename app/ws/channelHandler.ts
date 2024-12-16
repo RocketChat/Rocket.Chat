@@ -63,8 +63,10 @@ const updateConnectionChannels = (connectionId: string): void => {
 
 const subscribe = (userId: string, connectionId: string): void => {
 	console.log('Subscribing to ', userId);
+
 	const channels: Set<string> = new Set(Subscriptions.findByUserId(userId, { rid: 1 }).map(({ rid }: { rid: string }) => `room-${ rid }`));
 	channels.add(`user-${ userId }`);
+	channels.add('all');
 
 	userConnections.set(userId, (userConnections.get(userId) || new Set()).add(connectionId));
 	channels.forEach((channel: string) => {
@@ -74,11 +76,11 @@ const subscribe = (userId: string, connectionId: string): void => {
 	addToMap(connectionId, channels);
 };
 
-// setInterval(() => {
-// 	console.log(channelListeners);
-// 	console.log(connectionToChannels);
-// 	console.log(userConnections);
-// }, 5000);
+setInterval(() => {
+	console.log(channelListeners);
+	console.log(connectionToChannels);
+	console.log(userConnections);
+}, 5000);
 
 const unsubscribe = (userId: string, connectionId: string): void => {
 	console.log(`Unsubscribing connectionId: ${ connectionId }, userId: ${ userId }`);
