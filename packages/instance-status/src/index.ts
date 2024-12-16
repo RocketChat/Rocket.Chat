@@ -85,6 +85,10 @@ async function unregisterInstance() {
 	}
 }
 
+async function updateConnections(connections: number) {
+	await InstanceStatusModel.updateConnections(id(), connections);
+}
+
 async function ping() {
 	const result = await InstanceStatusModel.setDocumentHeartbeat(ID);
 
@@ -98,8 +102,9 @@ async function onExit() {
 }
 
 export const InstanceStatus = {
-	id,
-	registerInstance,
 	defaultPingInterval,
+	id,
 	indexExpire,
+	registerInstance,
+	updateConnections,
 };
