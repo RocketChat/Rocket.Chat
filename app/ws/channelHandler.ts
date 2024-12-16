@@ -53,6 +53,7 @@ const subscribe = (userId: string, connectionId: string): void => {
 	console.log('Subscribing to ', userId);
 	const channels = Subscriptions.findByUserId(userId, { rid: 1 }).map(({ rid }: { rid: string }) => `room-${ rid }`);
 	channels.push(`user-${ userId }`);
+	channels.push('all');
 
 	channels.forEach((channel: string) => {
 		console.log('SUBSCRIBING TO ', channel);
@@ -64,8 +65,7 @@ const subscribe = (userId: string, connectionId: string): void => {
 };
 
 // setInterval(() => {
-// 	console.log(channelListeners);
-// 	console.log(connectionToChannels);
+// isRedisHealthy()
 // }, 5000);
 
 const unsubscribe = (userId: string, connectionId: string): void => {
