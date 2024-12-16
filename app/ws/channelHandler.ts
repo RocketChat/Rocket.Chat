@@ -4,11 +4,12 @@ import { Subscriptions } from '../models/server';
 import redis from '../redis/redis';
 
 const channelListeners: Map<string, number> = new Map();
-const connectionToChannels: Map<string, string[]> = new Map(); // TODO-Hi: Change to a Set and check if the complexity if fine
+const connectionToChannels: Map<string, Set<string>> = new Map();
+// TODO-Hi: Add a map to store user to connectionId mapping
 const locks = new Map<string, Mutex>();
 
-async function acquireLock(key: string): Promise<() => void> {
-	if (!locks.has(key)) {
+async function acquireLock(key: string): Promise<() => void> { // TODO-Hi: Move to a separate file
+	if (!locks.has(key)) { // TODO-Hi: Check if we need to acquire lock after changing channelListeners
 		locks.set(key, new Mutex());
 	}
 
@@ -19,8 +20,17 @@ async function acquireLock(key: string): Promise<() => void> {
 }
 
 
-const addToMap = (connectionId: string, channels: string[]): void => {
-	connectionToChannels.set(connectionId, (connectionToChannels.get(connectionId) || []).concat(channels));
+const addToMap = (connectionId: string, channels: Set<string>): void => {
+	const connectionChannels = connectionToChannels.get(connectionId);
+	if (!connectionChannels) {
+		connectionToChannels.set(connectionId, channels);
+	} else {
+		channels.forEach((channel: string) => {
+			connectionChannels.add(channel);
+		});
+		connectionToChannels.set(connectionId, connectionChannels);
+	}
+
 	channels.forEach(async (channel: string) => {
 		const release = await acquireLock(channel);
 		channelListeners.set(channel, (channelListeners.get(channel) || 0) + 1);
@@ -51,8 +61,8 @@ const updateConnectionChannels = (connectionId: string): void => {
 
 const subscribe = (userId: string, connectionId: string): void => {
 	console.log('Subscribing to ', userId);
-	const channels = Subscriptions.findByUserId(userId, { rid: 1 }).map(({ rid }: { rid: string }) => `room-${ rid }`);
-	channels.push(`user-${ userId }`);
+	const channels: Set<string> = new Set(Subscriptions.findByUserId(userId, { rid: 1 }).map(({ rid }: { rid: string }) => `room-${ rid }`));
+	channels.add(`user-${ userId }`);
 
 	channels.forEach((channel: string) => {
 		console.log('SUBSCRIBING TO ', channel);
