@@ -15,6 +15,12 @@ Meteor.startup(() => {
 				public: false,
 				i18nLabel: 'Redis URL',
 			});
+			this.add('Delay_On_Client_Disconnection', 3000, {
+				type: 'int',
+				public: false,
+				i18nLabel: 'Remove binding on client disconnection in ms',
+				i18nDescription: 'Remove binding on client disconnection To prevent unsub/sub unneccesary on client refreshes',
+			});
 		});
 	});
 });
