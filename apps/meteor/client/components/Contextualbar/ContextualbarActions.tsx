@@ -1,7 +1,4 @@
-import { ContextualbarV2Actions } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
-import React, { memo } from 'react';
-
-const ContextualbarActions = (props: ComponentProps<typeof ContextualbarV2Actions>) => <ContextualbarV2Actions {...props} />;
+import { ContextualbarV2Actions as ContextualbarActions } from '@rocket.chat/fuselage';
+import { memo } from 'react';
 
 export default memo(ContextualbarActions);
