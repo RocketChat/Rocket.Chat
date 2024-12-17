@@ -10,8 +10,11 @@ import { configureLoginServices } from './configuration';
 import { configureLogLevel } from './configureLogLevel';
 import { registerServices } from './services/startup';
 import { startup } from './startup';
+import { configureBoilerplate } from './startup/configureBoilerplate';
+import { configureDirectReply } from './startup/configureDirectReply';
 import { startLicense } from '../ee/app/license/server/startup';
 import { registerEEBroker } from '../ee/server';
+import { configureSMTP } from './startup/configureSMTP';
 import { configurePushNotifications } from './startup/pushNotification';
 import { settings } from '../app/settings/server';
 import { startFederationService } from '../ee/server/startup/services';
@@ -30,4 +33,11 @@ await Promise.all([configureLogLevel(), registerServices(), registerEEBroker(), 
 
 await startLicense();
 
-await Promise.all([configureLoginServices(), startFederationService(), configurePushNotifications(settings)]);
+await Promise.all([configureLoginServices(), startFederationService()]);
+
+await Promise.all([
+	configurePushNotifications(settings),
+	configureBoilerplate(settings),
+	configureDirectReply(settings),
+	configureSMTP(settings),
+]);
