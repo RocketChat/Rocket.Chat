@@ -11,7 +11,7 @@ const userConnections: Map<string, Set<string>> = new Map();
 const locks = new Map<string, Mutex>();
 
 async function acquireLock(key: string): Promise<() => void> { // TODO-Hi: Move to a separate file
-	if (!locks.has(key)) { // TODO-Hi: Check if we need to acquire lock after changing channelListeners
+	if (!locks.has(key)) {
 		locks.set(key, new Mutex());
 	}
 
