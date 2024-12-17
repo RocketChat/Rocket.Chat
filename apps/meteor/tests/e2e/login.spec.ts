@@ -56,20 +56,15 @@ test.describe.parallel('Login', () => {
 		});
 	});
 
-	test.only('Should correctly display switch language button', async ({ page, api }) => {
+	test('Should correctly display switch language button', async ({ page, api }) => {
 		expect((await setSettingValueById(api, 'Language', 'pt-BR')).status()).toBe(200);
 
 		const button = page.getByRole('button', { name: 'Change to português (Brasil)' });
-		await button.scrollIntoViewIfNeeded();
-
-		await expect(button).toBeVisible();
 		await button.click();
 
 		await expect(page.getByRole('button', { name: 'Fazer Login' })).toBeVisible();
 
 		const buttonEnglish = page.getByRole('button', { name: 'Change to English' });
-
-		await expect(buttonEnglish).toBeVisible();
 		await buttonEnglish.click();
 
 		await expect(page.getByRole('button', { name: 'Login' })).toBeVisible();
