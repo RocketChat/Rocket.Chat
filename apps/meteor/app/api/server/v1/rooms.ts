@@ -10,6 +10,7 @@ import {
 	isRoomsIsMemberProps,
 	isRoomsCleanHistoryProps,
 	isRoomsOpenProps,
+	isRoomsMembersOrderedByRoleProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -17,6 +18,7 @@ import { isTruthy } from '../../../../lib/isTruthy';
 import { omit } from '../../../../lib/utils/omit';
 import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
+import { findUsersOfRoomOrderedByRole } from '../../../../server/lib/findUsersOfRoomOrderedByRole';
 import { openRoom } from '../../../../server/lib/openRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
@@ -853,6 +855,45 @@ API.v1.addRoute(
 				});
 			}
 			return API.v1.forbidden();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.membersOrderedByRole',
+	{ authRequired: true, validateParams: isRoomsMembersOrderedByRoleProps },
+	{
+		async get() {
+			const findResult = await findRoomByIdOrName({
+				params: this.queryParams,
+				checkedArchived: false,
+			});
+
+			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
+				return API.v1.unauthorized();
+			}
+
+			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
+			const { sort = {} } = await this.parseJsonQuery();
+
+			const { status, filter, rolesOrder = ['owner', 'moderator'] } = this.queryParams;
+
+			const { members, total } = await findUsersOfRoomOrderedByRole({
+				rid: findResult._id,
+				...(status && { status: { $in: status } }),
+				skip,
+				limit,
+				filter,
+				...(sort?.username && { sort: { username: sort.username } }),
+				rolesInOrder: rolesOrder,
+			});
+
+			return API.v1.success({
+				members,
+				count: members.length,
+				offset: skip,
+				total,
+			});
 		},
 	},
 );

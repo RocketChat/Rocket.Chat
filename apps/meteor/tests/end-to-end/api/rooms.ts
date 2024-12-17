@@ -3,6 +3,7 @@ import path from 'path';
 
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IMessage, IRoom, ITeam, IUpload, IUser, ImageAttachmentProps, SettingValue } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { assert, expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
@@ -3631,6 +3632,181 @@ describe('[Rooms]', () => {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 				});
+		});
+	});
+
+	describe('[/rooms.membersOrderedByRole]', () => {
+		let testChannel: IRoom;
+		let ownerUser: IUser;
+		let moderatorUser: IUser;
+		let memberUser1: IUser;
+		let memberUser2: IUser;
+
+		let ownerCredentials: { 'X-Auth-Token': string; 'X-User-Id': string };
+
+		before(async () => {
+			[ownerUser, moderatorUser, memberUser1, memberUser2] = await Promise.all([
+				createUser({ username: `a_${Random.id()}`, roles: ['admin'] }),
+				createUser({ username: `b_${Random.id()}` }),
+				createUser({ username: `c_${Random.id()}` }),
+				createUser({ username: `d_${Random.id()}` }),
+			]);
+
+			ownerCredentials = await login(ownerUser.username, password);
+
+			// Create a public channel
+			const roomCreationResponse = await createRoom({
+				type: 'c',
+				name: `rooms.membersOrderedByRole.test.${Date.now()}`,
+				credentials: ownerCredentials,
+			});
+			testChannel = roomCreationResponse.body.channel;
+
+			await Promise.all(
+				[moderatorUser._id, memberUser1._id, memberUser2._id].map((userId) =>
+					request
+						.post(api('channels.invite'))
+						.set(ownerCredentials)
+						.send({
+							roomId: testChannel._id,
+							userId,
+						})
+						.expect(200),
+				),
+			);
+
+			await request
+				.post(api('channels.addModerator'))
+				.set(ownerCredentials)
+				.send({
+					roomId: testChannel._id,
+					userId: moderatorUser._id,
+				})
+				.expect(200);
+		});
+
+		after(async () => {
+			await Promise.all([ownerUser, moderatorUser, memberUser1, memberUser2].map((user) => deleteUser(user)));
+		});
+
+		it('should return a list of members ordered by owner, moderator, then members by default', async () => {
+			const response = await request
+				.get(api('rooms.membersOrderedByRole'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(response.body).to.have.property('success', true);
+			expect(response.body.members).to.be.an('array');
+
+			// We expect Owner first, then Moderator, then Members
+			// The endpoint defaults to rolesInOrder = ["owner", "moderator"]
+			const [first, second, ...rest] = response.body.members;
+			expect(first.username).to.equal(ownerUser.username);
+			expect(second.username).to.equal(moderatorUser.username);
+
+			const memberUsernames = rest.map((m: any) => m.username);
+			expect(memberUsernames).to.include(memberUser1.username);
+			expect(memberUsernames).to.include(memberUser2.username);
+
+			expect(response.body).to.have.property('total');
+			expect(response.body.total).to.be.gte(4);
+		});
+
+		it('should allow custom role order', async () => {
+			// Switch role order: moderator, owner
+			// This should display moderator first, then owner, then members
+			const response = await request
+				.get(api('rooms.membersOrderedByRole'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					rolesOrder: ['moderator', 'owner'],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(response.body).to.have.property('success', true);
+			const [first, second, ...rest] = response.body.members;
+			expect(first.username).to.equal(moderatorUser.username); // now moderator first
+			expect(second.username).to.equal(ownerUser.username); // owner second
+			expect(rest.map((m: any) => m.username)).to.include(memberUser1.username);
+			expect(rest.map((m: any) => m.username)).to.include(memberUser2.username);
+		});
+
+		it('should support pagination', async () => {
+			const response = await request
+				.get(api('rooms.membersOrderedByRole'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					count: 2,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(response.body).to.have.property('success', true);
+			expect(response.body.members).to.have.lengthOf(2);
+			expect(response.body.total).to.be.gte(4);
+		});
+
+		it('should return matched members when using filter param', async () => {
+			const response = await request
+				.get(api(`rooms.membersOrderedByRole`))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					filter: memberUser1.username,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(response.body).to.have.property('success', true);
+			expect(response.body.members).to.have.lengthOf(1);
+			expect(response.body.members[0]).have.property('username', memberUser1.username);
+		});
+
+		it('should return empty list if no matches (e.g., filter by status that no one has)', async () => {
+			const response = await request
+				.get(api(`rooms.membersOrderedByRole`))
+				.set(credentials)
+				.query({
+					'roomId': testChannel._id,
+					'status[]': 'SomeRandomStatus',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(response.body).to.have.property('success', true);
+			expect(response.body.members).to.be.an.empty('array');
+		});
+
+		it('should support custom sorting by username descending', async () => {
+			const response = await request
+				.get(api('rooms.membersOrderedByRole'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					sort: JSON.stringify({ username: -1 }),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(response.body).to.have.property('success', true);
+			const usernames = response.body.members.map((m: any) => m.username);
+
+			const expected = [
+				ownerUser.username, // since owner
+				moderatorUser.username, // since moderator
+				memberUser2.username,
+				memberUser1.username,
+			];
+
+			expect(usernames).to.deep.equal(expected);
 		});
 	});
 });
