@@ -45,6 +45,10 @@ test.describe.serial('feature preview', () => {
 				sidebarViewMode: 'Medium',
 				featuresPreview: [
 					{
+						name: 'newNavigation',
+						value: true,
+					},
+					{
 						name: 'sidepanelNavigation',
 						value: true,
 					},
@@ -58,6 +62,10 @@ test.describe.serial('feature preview', () => {
 			await setUserPreferences(api, {
 				sidebarViewMode: 'Medium',
 				featuresPreview: [
+					{
+						name: 'newNavigation',
+						value: false,
+					},
 					{
 						name: 'sidepanelNavigation',
 						value: false,
