@@ -155,7 +155,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 			return;
 		}
 		setQueueNotification((prev) => new Set([...prev, rid]));
-		return KonchatNotification.newRoom(rid);
+		return KonchatNotification.newRoom();
 	});
 
 	const contextValue = useMemo<OmnichannelContextValue>(() => {
