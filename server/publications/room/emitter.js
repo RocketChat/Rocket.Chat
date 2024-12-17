@@ -45,6 +45,7 @@ const handleRoom = (clientAction, id, data) => {
 	emitRoomDataEvent(id, data);
 };
 
+const redisRoomHandle = (data) => handleRoom(data.clientAction, data._id, data);
 if (settings.get('Use_Oplog_As_Real_Time')) {
 	Rooms.on('change', ({ clientAction, id, data }) => {
 		handleRoom(clientAction, id, data);
@@ -61,4 +62,4 @@ if (settings.get('Use_Oplog_As_Real_Time')) {
 	});
 }
 
-redisMessageHandlers.rocketchat_room = (data) => handleRoom(data.clientAction, data._id, data);
+redisMessageHandlers.rocketchat_room = redisRoomHandle;

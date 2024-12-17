@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 import { fields } from '.';
 
 import { msgStream } from '../../../app/lib/server/lib/msgStream';
@@ -8,7 +10,7 @@ import { redisMessageHandlers } from '/app/redis/handleRedisMessage';
 import { publishToRedis } from '/app/redis/redisPublisher';
 import { settings } from '/app/settings/server';
 
-const handleSubscriptionChange = (clientAction, id, data) => {
+const handleSubscriptionChange = Meteor.bindEnvironment((clientAction, id, data) => {
 	switch (clientAction) {
 		case 'inserted':
 		case 'updated':
@@ -31,22 +33,27 @@ const handleSubscriptionChange = (clientAction, id, data) => {
 		clientAction,
 		data,
 	);
+});
+
+const handleRedis = (data) => {
+	handleSubscriptionChange(data.clientAction, data._id, data);
 };
 
 if (settings.get('Use_Oplog_As_Real_Time')) {
 	Subscriptions.on('change', ({ clientAction, id, data }) => {
-		handleSubscriptionChange(data.clientAction, data._id, data);
+		handleSubscriptionChange(data.clientAction, data._id, data); // TODO-Hi: Check what happens if only new subscription has sent to the client, or when only a room insertion has sent to the client
 	});
 } else {
 	Subscriptions.on('change', ({ clientAction, id, data }) => {
-		data = data || Subscriptions.findOneById(id, { fields });
+		data = Subscriptions.findOneById(id, { fields }); // must query to get u._id for the desired channel
+
 		const newdata = {
 			...data,
 			ns: 'rocketchat_subscription',
 			clientAction,
 		};
-		publishToRedis(`user-${ data.u._id }`, newdata);
+		publishToRedis(`user-${ data?.u?._id }`, newdata);
 	});
 }
 
-redisMessageHandlers.rocketchat_subscription = (data) => handleSubscriptionChange(data.clientAction, data._id, data);
+redisMessageHandlers.rocketchat_subscription = handleRedis;
