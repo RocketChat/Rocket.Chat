@@ -10,7 +10,7 @@ class LoginStream extends Meteor.Streamer {
 		console.log(publication?.id, publication?._session?.id);
 		publication.onStop(() => {
 			console.log('Publication onStop', connectionId);
-			ChannelHandler.unsubscribe(Meteor.userId(), connectionId);
+			ChannelHandler.onDisconnect(Meteor.userId(), connectionId);
 		});
 	}
 }
@@ -23,7 +23,7 @@ loginStream.allowRead(function(eventName, extraData) {
 	const user = Users.findOneByIdAndLoginToken(userId, token);
 	if (!user) { return false; }
 
-	ChannelHandler.subscribe(userId, this.connection.id);
+	ChannelHandler.onLogin(userId, this.connection.id);
 	return true;
 }); // TODO-Hi: think what do it in client if the sub wasn't completed
 

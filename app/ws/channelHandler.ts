@@ -3,7 +3,7 @@ import redis from '../redis/redis';
 import { settings } from '../settings/server';
 import { removeConnectionId, updateMappingsOnSub } from './connectionMappings';
 
-const subscribe = (userId: string, connectionId: string): void => {
+const onLogin = (userId: string, connectionId: string): void => {
 	console.log('Subscribing to ', userId);
 
 	const channels: Set<string> = new Set(Subscriptions.findByUserId(userId, { rid: 1 }).map(({ rid }: { rid: string }) => `room-${ rid }`));
@@ -16,7 +16,7 @@ const subscribe = (userId: string, connectionId: string): void => {
 	updateMappingsOnSub(connectionId, channels, userId);
 };
 
-const unsubscribe = (userId: string, connectionId: string): void => {
+const onDisconnect = (userId: string, connectionId: string): void => {
 	console.log(`Unsubscribing connectionId: ${ connectionId }, userId: ${ userId }`);
 	setTimeout(() => { // this is to prevent unncessary channels unsub then sub on client refreshes
 		removeConnectionId(connectionId, userId);
@@ -26,6 +26,6 @@ const unsubscribe = (userId: string, connectionId: string): void => {
 // TODO-Hi: Check in carosulle
 // TODO-Hi: Check race-condition on critical sections
 // TODO-Hi: Check with or if we should find the object in message subscriptions
-const ChannelHandler = { subscribe, unsubscribe };
+const ChannelHandler = { onLogin, onDisconnect };
 
 export default ChannelHandler;
