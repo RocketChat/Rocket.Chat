@@ -1,15 +1,15 @@
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useClearUnreadAllMessagesMutation } from './useClearUnreadAllMessagesMutation';
 import GenericModal from '../../../components/GenericModal';
 import { imperativeModal } from '../../../lib/imperativeModal';
-import { router } from '/client/providers/RouterProvider';
 
 export const useEscapeKeyStroke = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
+	const router = useRouter();
 
 	const clearUnreadAllMessagesMutation = useClearUnreadAllMessagesMutation({
 		onError: (error) => {
