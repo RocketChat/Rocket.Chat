@@ -33,8 +33,8 @@ test.describe.serial('feature preview', () => {
 	test('should show "Message" and "Navigation" feature sections', async ({ page }) => {
 		await page.goto('/account/feature-preview');
 
-		await expect(page.getByRole('button', { name: 'Message' })).toBeVisible();
-		await expect(page.getByRole('button', { name: 'Navigation' })).toBeVisible();
+		await expect(page.getByRole('button', { name: 'Message', exact: true })).toBeVisible();
+		await expect(page.getByRole('button', { name: 'Navigation', exact: true })).toBeVisible();
 	});
 
 	test.describe('Sidepanel', () => {
@@ -122,6 +122,7 @@ test.describe.serial('feature preview', () => {
 			await page.goto('/home');
 			const message = 'hello world';
 
+			await poHomeChannel.content.waitForPageLoad();
 			await poHomeChannel.sidebar.setDisplayMode('Extended');
 			await poHomeChannel.sidebar.openChat(sidepanelTeam);
 			await poHomeChannel.content.sendMessage(message);
@@ -133,6 +134,7 @@ test.describe.serial('feature preview', () => {
 			const message = 'hello > world';
 			const parsedWrong = 'hello &gt; world';
 
+			await poHomeChannel.content.waitForPageLoad();
 			await poHomeChannel.sidebar.setDisplayMode('Extended');
 			await poHomeChannel.sidebar.openChat(sidepanelTeam);
 			await poHomeChannel.content.sendMessage(message);
