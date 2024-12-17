@@ -33,6 +33,9 @@ const {
 	'meteor/check': {
 		check: sinon.stub(),
 	},
+	'../../app/lib/server/methods/getChannelHistory': {
+		getChannelHistory: sinon.stub(),
+	},
 	'meteor/meteor': {
 		'Meteor': {
 			methods: sinon.stub(),
