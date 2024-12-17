@@ -158,7 +158,7 @@ export class LivenessManager {
 
     private handleError(err: Error) {
         this.debug('App has failed to start.`', err);
-        this.restartProcess(err.message);
+        this.restartProcess();
     }
 
     private handleExit(exitCode: number, signal: string) {
