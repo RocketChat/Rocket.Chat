@@ -11,7 +11,7 @@ import type { UIHelper as _UIHelper } from '@rocket.chat/apps-engine/server/misc
 import type { RoomType as _RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType.ts';
 import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.ts';
 
-import * as Messenger from '../../messenger.ts';
+import * as Messenger from '../../../messenger/mod.ts';
 
 import { MessageBuilder } from '../builders/MessageBuilder.ts';
 import { RoomBuilder } from '../builders/RoomBuilder.ts';

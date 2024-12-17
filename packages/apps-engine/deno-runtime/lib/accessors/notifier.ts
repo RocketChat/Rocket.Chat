@@ -6,7 +6,7 @@ import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { MessageBuilder } from './builders/MessageBuilder.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import * as Messenger from '../messenger.ts';
+import * as Messenger from '../../messenger/mod.ts';
 import { require } from "../require.ts";
 
 const { TypingScope } = require('@rocket.chat/apps-engine/definition/accessors/INotifier.js') as {

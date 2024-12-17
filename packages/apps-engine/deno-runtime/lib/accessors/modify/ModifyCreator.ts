@@ -16,7 +16,7 @@ import type { RoomType as _RoomType } from '@rocket.chat/apps-engine/definition/
 import type { ILivechatMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/ILivechatMessageBuilder.ts';
 import type { UIHelper as _UIHelper } from '@rocket.chat/apps-engine/server/misc/UIHelper.ts';
 
-import * as Messenger from '../../messenger.ts';
+import * as Messenger from '../../../messenger/mod.ts';
 
 import { BlockBuilder } from '../builders/BlockBuilder.ts';
 import { MessageBuilder } from '../builders/MessageBuilder.ts';
@@ -91,7 +91,7 @@ export class ModifyCreator implements IModifyCreator {
         return new Proxy(
             { __kind: 'getEmailCreator' },
             {
-                get: (_target: unknown, prop: string) => 
+                get: (_target: unknown, prop: string) =>
                         (...params: unknown[]) =>
                             prop === 'toJSON'
                                 ? {}
@@ -111,7 +111,7 @@ export class ModifyCreator implements IModifyCreator {
         return new Proxy(
             { __kind: 'getContactCreator' },
             {
-                get: (_target: unknown, prop: string) => 
+                get: (_target: unknown, prop: string) =>
                         (...params: unknown[]) =>
                             prop === 'toJSON'
                                 ? {}

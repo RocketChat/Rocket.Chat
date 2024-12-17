@@ -7,7 +7,7 @@ import type {
 import type { IPersistence } from "@rocket.chat/apps-engine/definition/accessors/IPersistence.ts";
 import type { IRead } from "@rocket.chat/apps-engine/definition/accessors/IRead.ts";
 
-import * as Messenger from '../messenger.ts';
+import * as Messenger from '../../messenger/mod.ts';
 import { AppObjectRegistry } from "../../AppObjectRegistry.ts";
 
 type RequestMethod = 'get' | 'post' | 'put' | 'head' | 'delete' | 'patch';

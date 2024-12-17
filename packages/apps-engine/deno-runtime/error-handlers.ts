@@ -1,4 +1,4 @@
-import * as Messenger from './lib/messenger.ts';
+import * as Messenger from './messenger/mod.ts';
 
 export function unhandledRejectionListener(event: PromiseRejectionEvent) {
     event.preventDefault();

@@ -11,7 +11,7 @@ if (!Deno.args.includes('--subprocess')) {
 import { JsonRpcError } from 'jsonrpc-lite';
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 
-import * as Messenger from './lib/messenger.ts';
+import * as Messenger from './messenger/mod.ts';
 import { decoder } from './lib/codec.ts';
 import { AppObjectRegistry } from './AppObjectRegistry.ts';
 import { Logger } from './lib/logger.ts';

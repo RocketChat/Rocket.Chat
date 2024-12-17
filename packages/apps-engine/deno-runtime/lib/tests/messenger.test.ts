@@ -1,8 +1,9 @@
 import { assertEquals, assertObjectMatch } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 import { afterAll, beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
-import { spy } from 'https://deno.land/std@0.203.0/testing/mock.ts';
+import { Spy, spy } from 'https://deno.land/std@0.203.0/testing/mock.ts';
 
-import * as Messenger from '../messenger.ts';
+import { JsonRpc } from "jsonrpc-lite";
+import * as Messenger from '../../messenger/mod.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { Logger } from '../logger.ts';
 
@@ -20,7 +21,7 @@ describe('Messenger', () => {
     });
 
     it('should add logs to success responses', async () => {
-        const theSpy = spy(Messenger.Queue, 'enqueue');
+        const theSpy = spy(Messenger.Queue, 'enqueue') as Spy<typeof Messenger.Queue, [message: JsonRpc], void>;
 
         const logger = AppObjectRegistry.get<Logger>('logger') as Logger;
 
@@ -56,7 +57,7 @@ describe('Messenger', () => {
     });
 
     it('should add logs to error responses', async () => {
-        const theSpy = spy(Messenger.Queue, 'enqueue');
+        const theSpy = spy(Messenger.Queue, 'enqueue') as Spy<typeof Messenger.Queue, [message: JsonRpc], void>;
 
         const logger = AppObjectRegistry.get<Logger>('logger') as Logger;
 

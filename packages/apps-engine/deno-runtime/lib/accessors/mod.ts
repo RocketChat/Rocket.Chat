@@ -16,7 +16,7 @@ import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/vid
 
 import { Http } from './http.ts';
 import { HttpExtend } from './extenders/HttpExtender.ts';
-import * as Messenger from '../messenger.ts';
+import * as Messenger from '../../messenger/mod.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { ModifyCreator } from './modify/ModifyCreator.ts';
 import { ModifyUpdater } from './modify/ModifyUpdater.ts';

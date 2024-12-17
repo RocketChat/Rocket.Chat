@@ -8,7 +8,7 @@ import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoC
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
 import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.ts';
 
-import * as Messenger from '../../messenger.ts';
+import * as Messenger from '../../../messenger/mod.ts';
 import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
 import { MessageExtender } from '../extenders/MessageExtender.ts';
 import { RoomExtender } from '../extenders/RoomExtender.ts';
