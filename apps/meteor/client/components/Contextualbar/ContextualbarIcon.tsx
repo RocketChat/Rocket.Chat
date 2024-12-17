@@ -1,7 +1,4 @@
-import { ContextualbarV2Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
-import React, { memo } from 'react';
-
-const ContextualbarIcon = (props: ComponentProps<typeof ContextualbarV2Icon>) => <ContextualbarV2Icon {...props} />;
+import { ContextualbarV2Icon as ContextualbarIcon } from '@rocket.chat/fuselage';
+import { memo } from 'react';
 
 export default memo(ContextualbarIcon);
