@@ -1,10 +1,14 @@
-import { Notifications } from '../../../app/notifications';
-import { Subscriptions } from '../../../app/models';
-import { msgStream } from '../../../app/lib/server/lib/msgStream';
-
 import { fields } from '.';
 
-Subscriptions.on('change', ({ clientAction, id, data }) => {
+import { msgStream } from '../../../app/lib/server/lib/msgStream';
+import { Subscriptions } from '../../../app/models';
+import { Notifications } from '../../../app/notifications';
+
+import { redisMessageHandlers } from '/app/redis/handleRedisMessage';
+import { publishToRedis } from '/app/redis/redisPublisher';
+import { settings } from '/app/settings/server';
+
+const handleSubscriptionChange = (clientAction, id, data) => {
 	switch (clientAction) {
 		case 'inserted':
 		case 'updated':
@@ -27,4 +31,22 @@ Subscriptions.on('change', ({ clientAction, id, data }) => {
 		clientAction,
 		data,
 	);
-});
+};
+
+if (settings.get('Use_Oplog_As_Real_Time')) {
+	Subscriptions.on('change', ({ clientAction, id, data }) => {
+		handleSubscriptionChange(data.clientAction, data._id, data);
+	});
+} else {
+	Subscriptions.on('change', ({ clientAction, id, data }) => {
+		data = data || Subscriptions.findOneById(id, { fields });
+		const newdata = {
+			...data,
+			ns: 'rocketchat_subscription',
+			clientAction,
+		};
+		publishToRedis(`user-${ data.u._id }`, newdata);
+	});
+}
+
+redisMessageHandlers.rocketchat_subscription = (data) => handleSubscriptionChange(data.clientAction, data._id, data);
