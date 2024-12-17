@@ -1,27 +1,29 @@
 import { type IVoipFreeSwitchService, ServiceClassInternal } from '@rocket.chat/core-services';
-import type { FreeSwitchExtension, ISetting, SettingValue } from '@rocket.chat/core-typings';
+import type { FreeSwitchExtension } from '@rocket.chat/core-typings';
 import { getDomain, getUserPassword, getExtensionList, getExtensionDetails } from '@rocket.chat/freeswitch';
+
+import { settings } from '../../../../app/settings/server';
 
 export class VoipFreeSwitchService extends ServiceClassInternal implements IVoipFreeSwitchService {
 	protected name = 'voip-freeswitch';
 
-	constructor(private getSetting: <T extends SettingValue = SettingValue>(id: ISetting['_id']) => T) {
+	constructor() {
 		super();
 	}
 
 	private getConnectionSettings(): { host: string; port: number; password: string; timeout: number } {
-		if (!this.getSetting('VoIP_TeamCollab_Enabled') && !process.env.FREESWITCHIP) {
+		if (!settings.get('VoIP_TeamCollab_Enabled') && !process.env.FREESWITCHIP) {
 			throw new Error('VoIP is disabled.');
 		}
 
-		const host = process.env.FREESWITCHIP || this.getSetting<string>('VoIP_TeamCollab_FreeSwitch_Host');
+		const host = process.env.FREESWITCHIP || settings.get<string>('VoIP_TeamCollab_FreeSwitch_Host');
 		if (!host) {
 			throw new Error('VoIP is not properly configured.');
 		}
 
-		const port = this.getSetting<number>('VoIP_TeamCollab_FreeSwitch_Port') || 8021;
-		const timeout = this.getSetting<number>('VoIP_TeamCollab_FreeSwitch_Timeout') || 3000;
-		const password = this.getSetting<string>('VoIP_TeamCollab_FreeSwitch_Password');
+		const port = settings.get<number>('VoIP_TeamCollab_FreeSwitch_Port') || 8021;
+		const timeout = settings.get<number>('VoIP_TeamCollab_FreeSwitch_Timeout') || 3000;
+		const password = settings.get<string>('VoIP_TeamCollab_FreeSwitch_Password');
 
 		return {
 			host,
