@@ -233,7 +233,7 @@ test.describe.serial('teams-management', () => {
 		await page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' }).click();
 		await poHomeTeam.tabs.channels.confirmRemoveChannel();
 
-		await expect(poHomeTeam.tabs.channels.channelsTab).not.toContainText(targetChannel);
+		await expect(poHomeTeam.tabs.channels.channelsTab).not.toContainText(targetGroupNameInTeam);
 	});
 
 	test('should not allow deleting a targetGroup from targetTeam if the group owner does not have the delete-team-group permission', async ({
