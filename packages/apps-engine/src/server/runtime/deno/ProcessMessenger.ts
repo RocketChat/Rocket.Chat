@@ -1,4 +1,4 @@
-import { ChildProcess } from 'child_process';
+import type { ChildProcess } from 'child_process';
 
 import type { JsonRpc } from 'jsonrpc-lite';
 
@@ -33,7 +33,7 @@ export class ProcessMessenger {
     }
 
     private switchStrategy() {
-        if (this.deno instanceof ChildProcess) {
+        if (this.deno?.stdin?.writable) {
             this._sendStrategy = this.strategySend.bind(this);
 
             // Get a clean encoder

@@ -59,6 +59,10 @@ export const Queue = new (class Queue {
         this.queue.push(encoder.encode(message));
         this.processQueue();
     }
+
+    public getCurrentSize() {
+        return this.queue.length;
+    }
 });
 
 export const Transport = new (class Transporter {
