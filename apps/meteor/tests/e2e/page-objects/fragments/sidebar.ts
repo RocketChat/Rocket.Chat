@@ -42,6 +42,12 @@ export class Sidebar {
 		return this.sidebarSearchSection.getByRole('searchbox');
 	}
 
+	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
+		await this.sidebarSearchSection.getByRole('button', { name: 'Display', exact: true }).click();
+		await this.sidebarSearchSection.getByRole('menuitemcheckbox', { name: mode }).click();
+		await this.sidebarSearchSection.click();
+	}
+
 	async escSearch(): Promise<void> {
 		await this.page.keyboard.press('Escape');
 	}
@@ -49,9 +55,10 @@ export class Sidebar {
 	async waitForChannel(): Promise<void> {
 		await this.page.locator('role=main').waitFor();
 		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
-		await this.page.locator('role=main >> role=list').waitFor();
+		const messageList = this.page.getByRole('main').getByRole('list', { name: 'Message list', exact: true });
+		await messageList.waitFor();
 
-		await expect(this.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
+		await expect(messageList).not.toHaveAttribute('aria-busy', 'true');
 	}
 
 	async typeSearch(name: string): Promise<void> {

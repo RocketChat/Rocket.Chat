@@ -235,15 +235,15 @@ export class AgentOverviewData {
 			data: [],
 		};
 
-		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
-			if (servedBy && metrics && metrics.response && metrics.response.ft) {
-				if (agentAvgRespTime.has(servedBy.username)) {
-					agentAvgRespTime.set(servedBy.username, {
-						frt: agentAvgRespTime.get(servedBy.username).frt + metrics.response.ft,
-						total: agentAvgRespTime.get(servedBy.username).total + 1,
+		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, responseBy }) => {
+			if (responseBy && metrics && metrics.response && metrics.response.ft) {
+				if (agentAvgRespTime.has(responseBy.username)) {
+					agentAvgRespTime.set(responseBy.username, {
+						frt: agentAvgRespTime.get(responseBy.username).frt + metrics.response.ft,
+						total: agentAvgRespTime.get(responseBy.username).total + 1,
 					});
 				} else {
-					agentAvgRespTime.set(servedBy.username, {
+					agentAvgRespTime.set(responseBy.username, {
 						frt: metrics.response.ft,
 						total: 1,
 					});
@@ -267,7 +267,7 @@ export class AgentOverviewData {
 	}
 
 	async Best_first_response_time(from: moment.Moment, to: moment.Moment, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
-		const agentFirstRespTime = new Map(); // stores avg response time for each agent
+		const agentFirstRespTime = new Map(); // stores best response time for each agent
 		const date = {
 			gte: from.toDate(),
 			lte: to.toDate(),
@@ -285,12 +285,12 @@ export class AgentOverviewData {
 			data: [],
 		};
 
-		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
-			if (servedBy && metrics && metrics.response && metrics.response.ft) {
-				if (agentFirstRespTime.has(servedBy.username)) {
-					agentFirstRespTime.set(servedBy.username, Math.min(agentFirstRespTime.get(servedBy.username), metrics.response.ft));
+		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, responseBy }) => {
+			if (responseBy && metrics && metrics.response && metrics.response.ft) {
+				if (agentFirstRespTime.has(responseBy.username)) {
+					agentFirstRespTime.set(responseBy.username, Math.min(agentFirstRespTime.get(responseBy.username), metrics.response.ft));
 				} else {
-					agentFirstRespTime.set(servedBy.username, metrics.response.ft);
+					agentFirstRespTime.set(responseBy.username, metrics.response.ft);
 				}
 			}
 		});
