@@ -16,7 +16,8 @@ export type OEmbedUrlContent = {
 
 export type OEmbedProvider = {
 	urls: RegExp[];
-	endPoint: string;
+	endPoint?: string;
+	getHeaderOverrides?: () => { [k: string]: string };
 };
 
 export type OEmbedUrlContentResult = {

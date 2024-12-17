@@ -7,6 +7,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { Document, FindCursor, FindOneAndUpdateOptions, FindOptions, UpdateFilter, UpdateOptions, UpdateResult } from 'mongodb';
 
+import type { Updater } from '../updater';
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 
 export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
@@ -31,10 +32,9 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 		options?: FindOptions<ILivechatContact>,
 	): Promise<T | null>;
 	isChannelBlocked(visitor: ILivechatContactVisitorAssociation): Promise<boolean>;
-	updateContactChannel(
+	updateFromUpdaterByAssociation(
 		visitor: ILivechatContactVisitorAssociation,
-		data: Partial<ILivechatContactChannel>,
-		contactData?: Partial<Omit<ILivechatContact, 'channels'>>,
+		contactUpdater: Updater<ILivechatContact>,
 		options?: UpdateOptions,
 	): Promise<UpdateResult>;
 	findSimilarVerifiedContacts(
@@ -44,5 +44,9 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	): Promise<ILivechatContact[]>;
 	findAllByVisitorId(visitorId: string): FindCursor<ILivechatContact>;
 	addEmail(contactId: string, email: string): Promise<ILivechatContact | null>;
+	setChannelBlockStatus(visitor: ILivechatContactVisitorAssociation, blocked: boolean): Promise<UpdateResult>;
+	setChannelVerifiedStatus(visitor: ILivechatContactVisitorAssociation, verified: boolean): Promise<UpdateResult>;
+	setVerifiedUpdateQuery(verified: boolean, contactUpdater: Updater<ILivechatContact>): Updater<ILivechatContact>;
+	setFieldAndValueUpdateQuery(field: string, value: string, contactUpdater: Updater<ILivechatContact>): Updater<ILivechatContact>;
 	countByContactInfo({ contactId, email, phone }: { contactId?: string; email?: string; phone?: string }): Promise<number>;
 }
