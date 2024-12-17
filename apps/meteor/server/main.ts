@@ -5,7 +5,6 @@ import './models/startup';
  * and the startup should be done in parallel
  */
 import './settings';
-import '../app/settings/server';
 
 import { configureLoginServices } from './configuration';
 import { configureLogLevel } from './configureLogLevel';
@@ -13,6 +12,8 @@ import { registerServices } from './services/startup';
 import { startup } from './startup';
 import { startLicense } from '../ee/app/license/server/startup';
 import { registerEEBroker } from '../ee/server';
+import { configurePushNotifications } from './startup/pushNotification';
+import { settings } from '../app/settings/server';
 import { startFederationService } from '../ee/server/startup/services';
 
 import './routes';
@@ -29,4 +30,4 @@ await Promise.all([configureLogLevel(), registerServices(), registerEEBroker(), 
 
 await startLicense();
 
-await Promise.all([configureLoginServices(), startFederationService()]);
+await Promise.all([configureLoginServices(), startFederationService(), configurePushNotifications(settings)]);
