@@ -119,4 +119,8 @@ export class AccountProfile {
 	getCheckboxByLabelText(name: string): Locator {
 		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name }) });
 	}
+
+	get btnSaveChanges(): Locator {
+		return this.page.getByRole('button', { name: 'Save changes', exact: true });
+	}
 }
