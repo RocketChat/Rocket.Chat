@@ -50,4 +50,10 @@ test.describe.parallel('Login', () => {
 			await expect(poUtils.mainContent).toBeVisible();
 		});
 	});
+
+	test('Should correctly display switch language button', async ({ page }) => {
+		test.use({ locale: 'pt-BR' });
+
+		await expect(page.getByText('Change to Default')).toBeVisible();
+	});
 });
