@@ -1,7 +1,7 @@
 import { Subscriptions } from '../models/server';
 import redis from '../redis/redis';
 import { settings } from '../settings/server';
-import { removeConnectionId, updateMappingsOnSub } from './connectionMappings';
+import { insertChannelToMapping, removeConnectionId, updateMappingsOnSub } from './connectionMappings';
 
 const onLogin = (userId: string, connectionId: string): void => {
 	console.log('Subscribing to ', userId);
@@ -23,9 +23,14 @@ const onDisconnect = (userId: string, connectionId: string): void => {
 	}, settings.get('Delay_On_Client_Disconnection') as number);
 };
 
+const addChannel = (channel: string, userId: string): void => {
+	redis.subscribe(channel); // TODO-Hi: What to do if the subsribe fails
+	insertChannelToMapping(channel, userId);
+};
+
 // TODO-Hi: Check in carosulle
 // TODO-Hi: Check race-condition on critical sections
 // TODO-Hi: Check with or if we should find the object in message subscriptions
-const ChannelHandler = { onLogin, onDisconnect };
+const ChannelHandler = { onLogin, onDisconnect, addChannel };
 
 export default ChannelHandler;

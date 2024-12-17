@@ -19,7 +19,6 @@ redis.on('message', (channel: string, msg: string) => {
 	const { ns } = message as { ns: keyof IRedisHandlers};
 	const handler = redisMessageHandlers[ns];
 
-	console.log(Object.keys(redisMessageHandlers));
 	if (handler) {
 		return handler(message);
 	}

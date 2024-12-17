@@ -1,5 +1,5 @@
 import redis from '../redis/redis';
-import { acquireLock } from './channelLocks';
+import { acquireLock, acquireLocks, lockUser } from './channelLocks';
 
 const channelListeners: Map<string, Set<string>> = new Map();
 const connectionToChannels: Map<string, Set<string>> = new Map();
@@ -46,10 +46,32 @@ const decreaseChannelsBinding = (connectionId: string): void => {
 	});
 };
 
-const removeConnectionId = (connectionId: string, userId: string): void => {
-	decreaseChannelsBinding(connectionId);
-	userConnections.get(userId)?.delete(connectionId);
-	connectionToChannels.delete(connectionId); // TODO-Hi: Maybe had debounce/something to handle user refreshes
+const removeConnectionId = async (connectionId: string, userId: string): Promise<void> => {
+	const release = await lockUser(userId);
+	try {
+		decreaseChannelsBinding(connectionId);
+		userConnections.get(userId)?.delete(connectionId);
+		connectionToChannels.delete(connectionId); // TODO-Hi: Maybe had debounce/something to handle user refreshes
+	} finally {
+		release();
+	}
+};
+
+const insertChannelToMapping = async (channel: string, userId: string): Promise<void> => {
+	const releases = await acquireLocks([`user-${ userId }`, channel]);
+	try {
+		const userConnectionsSet = userConnections.get(userId);
+		if (!userConnectionsSet) {
+			return;
+		}
+		userConnectionsSet.forEach((connectionId: string) => {
+			const boundChannels = connectionToChannels.get(connectionId) as Set<string>;
+			boundChannels.add(channel);
+			channelListeners.get(channel)?.add(connectionId);
+		});
+	} finally {
+		Promise.all(releases.map((release) => release()));
+	}
 };
 
 setInterval(() => {
@@ -58,4 +80,4 @@ setInterval(() => {
 	console.log(userConnections);
 }, 5000);
 
-export { removeConnectionId, updateMappingsOnSub, userConnections };
+export { insertChannelToMapping, removeConnectionId, updateMappingsOnSub };
