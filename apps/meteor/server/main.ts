@@ -12,6 +12,7 @@ import { registerServices } from './services/startup';
 import { startup } from './startup';
 import { configureBoilerplate } from './startup/configureBoilerplate';
 import { configureDirectReply } from './startup/configureDirectReply';
+import { configureIRC } from './startup/configureIRC';
 import { configureFederation } from './startup/settings';
 import { startLicense } from '../ee/app/license/server/startup';
 import { registerEEBroker } from '../ee/server';
@@ -42,4 +43,5 @@ await Promise.all([
 	configureDirectReply(settings),
 	configureSMTP(settings),
 	configureFederation(settings),
+	configureIRC(settings),
 ]);
