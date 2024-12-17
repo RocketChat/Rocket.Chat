@@ -16,6 +16,7 @@ import { configureIRC } from './startup/configureIRC';
 import { configureFederation } from './startup/settings';
 import { startLicense } from '../ee/app/license/server/startup';
 import { registerEEBroker } from '../ee/server';
+import { configureAssets } from './startup/configureAssets';
 import { configureSMTP } from './startup/configureSMTP';
 import { configurePushNotifications } from './startup/pushNotification';
 import { settings } from '../app/settings/server';
@@ -38,6 +39,7 @@ await startLicense();
 await Promise.all([configureLoginServices(), startFederationService()]);
 
 await Promise.all([
+	configureAssets(settings),
 	configurePushNotifications(settings),
 	configureBoilerplate(settings),
 	configureDirectReply(settings),
