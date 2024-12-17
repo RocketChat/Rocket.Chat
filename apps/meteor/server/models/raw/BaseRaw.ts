@@ -124,9 +124,9 @@ export abstract class BaseRaw<
 		return new UpdaterImpl<T>();
 	}
 
-	public updateFromUpdater(query: Filter<T>, updater: Updater<T>): Promise<UpdateResult> {
+	public updateFromUpdater(query: Filter<T>, updater: Updater<T>, options: UpdateOptions = {}): Promise<UpdateResult> {
 		const updateFilter = updater.getUpdateFilter();
-		return this.updateOne(query, updateFilter).catch((e) => {
+		return this.updateOne(query, updateFilter, options).catch((e) => {
 			console.warn(e, updateFilter);
 			return Promise.reject(e);
 		});
