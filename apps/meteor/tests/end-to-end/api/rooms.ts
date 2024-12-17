@@ -3686,6 +3686,7 @@ describe('[Rooms]', () => {
 		});
 
 		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
 			await Promise.all([ownerUser, moderatorUser, memberUser1, memberUser2].map((user) => deleteUser(user)));
 		});
 
