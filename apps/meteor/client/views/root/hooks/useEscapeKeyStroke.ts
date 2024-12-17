@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useClearUnreadAllMessagesMutation } from './useClearUnreadAllMessagesMutation';
 import GenericModal from '../../../components/GenericModal';
 import { imperativeModal } from '../../../lib/imperativeModal';
+import { router } from '/client/providers/RouterProvider';
 
 export const useEscapeKeyStroke = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -48,4 +49,23 @@ export const useEscapeKeyStroke = () => {
 			document.body.removeEventListener('keydown', handleKeyDown);
 		};
 	}, [clearUnreadAllMessagesMutation.mutate, dispatchToastMessage, t]);
+
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key !== 'a' || !event.ctrlKey === true) {
+				return;
+			}
+
+			event.preventDefault();
+			event.stopPropagation();
+
+			router.navigate('/home');
+		};
+
+		window.addEventListener('keydown', handleKeyDown);
+
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+		};
+	}, [router]);
 };
