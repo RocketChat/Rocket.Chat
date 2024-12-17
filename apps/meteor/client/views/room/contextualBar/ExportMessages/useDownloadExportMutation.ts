@@ -20,7 +20,7 @@ export const useDownloadExportMutation = () => {
 		mutationFn: async ({ mids }: { mids: IMessage['_id'][] }) => {
 			const messages = Messages.find(
 				{
-					_id: { $in: mids },
+					$or: [{ _id: { $in: mids } }, { tmid: { $in: mids } }],
 				},
 				messagesFields,
 			).fetch();
@@ -28,14 +28,14 @@ export const useDownloadExportMutation = () => {
 			const fileData = {
 				roomId: room._id,
 				roomName: room.fname || room.name,
-				messages,
-				exportDate: new Date().toISOString(),
 				userExport: {
 					id: user?._id,
 					username: user?.username,
 					name: user?.name,
 					roles: user?.roles,
 				},
+				exportDate: new Date().toISOString(),
+				messages,
 			};
 
 			return downloadJsonAs(fileData, `exportedMessages-${new Date().toISOString()}`);
