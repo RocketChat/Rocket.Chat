@@ -12,6 +12,7 @@ import { registerServices } from './services/startup';
 import { startup } from './startup';
 import { configureBoilerplate } from './startup/configureBoilerplate';
 import { configureDirectReply } from './startup/configureDirectReply';
+import { configureFederation } from './startup/settings';
 import { startLicense } from '../ee/app/license/server/startup';
 import { registerEEBroker } from '../ee/server';
 import { configureSMTP } from './startup/configureSMTP';
@@ -40,4 +41,5 @@ await Promise.all([
 	configureBoilerplate(settings),
 	configureDirectReply(settings),
 	configureSMTP(settings),
+	configureFederation(settings),
 ]);
