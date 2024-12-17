@@ -1,7 +1,7 @@
 import { Subscriptions } from '../models/server';
 import redis from '../redis/redis';
 import { settings } from '../settings/server';
-import { insertChannelToMapping, removeConnectionId, updateMappingsOnSub } from './connectionMappings';
+import { decreaseChannelListenerCountOnUser, insertChannelToMapping, removeConnectionId, updateMappingsOnSub } from './connectionMappings';
 
 const onLogin = (userId: string, connectionId: string): void => {
 	console.log('Subscribing to ', userId);
@@ -24,13 +24,17 @@ const onDisconnect = (userId: string, connectionId: string): void => {
 };
 
 const addChannel = (channel: string, userId: string): void => {
-	redis.subscribe(channel); // TODO-Hi: What to do if the subsribe fails
 	insertChannelToMapping(channel, userId);
+};
+
+const removeUserBindToRoom = (roomId: string, userId: string): void => {
+	const channel = `room-${ roomId }`;
+	decreaseChannelListenerCountOnUser(channel, userId);
 };
 
 // TODO-Hi: Check in carosulle
 // TODO-Hi: Check race-condition on critical sections
 // TODO-Hi: Check with or if we should find the object in message subscriptions
-const ChannelHandler = { onLogin, onDisconnect, addChannel };
+const ChannelHandler = { onLogin, onDisconnect, addChannel, removeUserBindToRoom };
 
 export default ChannelHandler;
