@@ -29,7 +29,6 @@ const models = {
 		unlockAll: Sinon.stub(),
 		findNextAndLock: Sinon.stub(),
 		getDistinctQueuedDepartments: Sinon.stub(),
-		unlockAndQueue: Sinon.stub(),
 		unlock: Sinon.stub(),
 		removeByRoomId: Sinon.stub(),
 		takeInquiry: Sinon.stub(),
@@ -117,7 +116,6 @@ describe('Omnichannel Queue processor', () => {
 		beforeEach(() => {
 			models.LivechatInquiry.findNextAndLock.resetHistory();
 			models.LivechatInquiry.takeInquiry.resetHistory();
-			models.LivechatInquiry.unlockAndQueue.resetHistory();
 			models.LivechatInquiry.unlock.resetHistory();
 			queueLogger.error.resetHistory();
 			queueLogger.info.resetHistory();
@@ -129,7 +127,6 @@ describe('Omnichannel Queue processor', () => {
 		after(() => {
 			models.LivechatInquiry.findNextAndLock.reset();
 			models.LivechatInquiry.takeInquiry.reset();
-			models.LivechatInquiry.unlockAndQueue.reset();
 			models.LivechatInquiry.unlock.reset();
 			queueLogger.error.reset();
 			queueLogger.info.reset();
@@ -154,7 +151,7 @@ describe('Omnichannel Queue processor', () => {
 			expect(models.LivechatInquiry.findNextAndLock.calledOnce).to.be.true;
 			expect(queue.processWaitingQueue.calledOnce).to.be.true;
 		});
-		it('should call unlockAndRequeue when the inquiry could not be processed', async () => {
+		it('should call unlock when the inquiry could not be processed', async () => {
 			models.LivechatInquiry.findNextAndLock.returns(mockedInquiry);
 
 			const queue = new OmnichannelQueue();
@@ -163,7 +160,7 @@ describe('Omnichannel Queue processor', () => {
 			await queue.checkQueue();
 
 			expect(queue.processWaitingQueue.calledOnce).to.be.true;
-			expect(models.LivechatInquiry.unlockAndQueue.calledOnce).to.be.true;
+			expect(models.LivechatInquiry.unlock.calledOnce).to.be.true;
 		});
 		it('should unlock the inquiry when it was processed succesfully', async () => {
 			models.LivechatInquiry.findNextAndLock.returns(mockedInquiry);

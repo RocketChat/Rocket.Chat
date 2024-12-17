@@ -23,7 +23,6 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	setLastMessageByRoomId(rid: ILivechatInquiryRecord['rid'], message: IMessage): Promise<ILivechatInquiryRecord | null>;
 	findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string | null): Promise<ILivechatInquiryRecord | null>;
 	unlock(inquiryId: string): Promise<UpdateResult>;
-	unlockAndQueue(inquiryId: string): Promise<UpdateResult>;
 	unlockAll(): Promise<UpdateResult | Document>;
 	getCurrentSortedQueueAsync(props: {
 		inquiryId?: string;

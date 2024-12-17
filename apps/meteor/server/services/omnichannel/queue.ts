@@ -114,12 +114,8 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 			const result = await this.processWaitingQueue(queue, nextInquiry as InquiryWithAgentInfo);
 
 			if (!result) {
-				// Note: this removes the "one-shot" behavior of queue, allowing it to take a conversation again in the future
-				// And sorting them by _updatedAt: -1 will make it so that the oldest inquiries are taken first
-				// preventing us from playing with the same inquiry over and over again
 				queueLogger.debug(`Inquiry ${nextInquiry._id} not taken. Unlocking and re-queueing`);
-				const updatedQueue = await LivechatInquiry.unlockAndQueue(nextInquiry._id);
-				return updatedQueue;
+				return await LivechatInquiry.unlock(nextInquiry._id);
 			}
 
 			queueLogger.debug(`Inquiry ${nextInquiry._id} taken successfully. Unlocking`);
