@@ -24,7 +24,7 @@ declare module 'meteor/webapp' {
 
 let templatePromise: Promise<void> | void;
 export async function setInlineScriptsAllowed(allowed: boolean): Promise<void> {
-	templatePromise = WebApp.setInlineScriptsAllowed(!allowed);
+	templatePromise = WebAppInternals.setInlineScriptsAllowed(!allowed);
 }
 
 WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
