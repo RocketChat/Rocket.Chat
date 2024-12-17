@@ -1,11 +1,26 @@
-import redis from './redis';
 import superjson from 'superjson';
-export const redisMessageHandlers: object = {};
+
+import redis from './redis';
+
+interface IRedisHandlers {
+	rocketchat_message: Function;
+	rocketchat_subscription: Function;
+	rocketchat_room: Function;
+	rocketchat_settings: Function;
+	users: Function;
+}
+
+export const redisMessageHandlers: Partial<IRedisHandlers> = {};
 
 redis.on('message', (channel: string, msg: string) => {
-  console.log('new message from redis');
-  
-  const message = superjson.parse(msg);
-  const ns = message.ns; 
-  return redisMessageHandlers[ns](message);
+	console.log('new message from redis');
+
+	const message = superjson.parse(msg);
+	const { ns } = message as { ns: keyof IRedisHandlers};
+	const handler = redisMessageHandlers[ns];
+
+	console.log(Object.keys(redisMessageHandlers));
+	if (handler) {
+		return handler(message);
+	}
 });
