@@ -1444,6 +1444,7 @@ const GETOmnichannelContactsCheckExistenceSchema = {
 			properties: {
 				email: {
 					type: 'string',
+					format: 'basic_email',
 					nullable: false,
 					isNotEmpty: true,
 				},
