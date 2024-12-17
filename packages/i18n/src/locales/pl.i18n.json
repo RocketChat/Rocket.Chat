@@ -26,7 +26,6 @@
   "__roomName__encryption_keys_need_to_be_updated": "{{roomName}} klucze szyfrowania muszą zostać zaktualizowane, aby umożliwić dostęp. Aby tak się stało, inny członek pokoju musi być online.",
   "removed__username__as__role_": "usunięto {{username}} jako {{role}}",
   "set__username__as__role_": "ustaw {{username}} jako {{role}}",
-  "sequential_message": "komunikat sekwencyjny",
   "This_room_encryption_has_been_enabled_by__username_": "Użytkownik {{username}} włączył szyfrowanie w tym pokoju",
   "This_room_encryption_has_been_disabled_by__username_": "Użytkownik {{username}} wyłączył szyfrowanie w tym pokoju",
   "Third_party_login": "Logowanie przez stronę trzecią",

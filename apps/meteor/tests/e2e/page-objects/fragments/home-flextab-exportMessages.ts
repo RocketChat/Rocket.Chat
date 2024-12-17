@@ -26,4 +26,8 @@ export class HomeFlextabExportMessages {
 	get btnSend() {
 		return this.page.locator('role=button[name="Send"]');
 	}
+
+	get btnCancel() {
+		return this.page.locator('role=button[name="Cancel"]');
+	}
 }

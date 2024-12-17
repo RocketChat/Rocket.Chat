@@ -388,7 +388,7 @@ export class HomeContent {
 	}
 
 	getSystemMessageByText(text: string): Locator {
-		return this.page.locator('[aria-roledescription="system message"]', { hasText: text });
+		return this.page.locator('[role="listitem"][aria-roledescription="system message"]', { hasText: text });
 	}
 
 	getMessageByText(text: string): Locator {

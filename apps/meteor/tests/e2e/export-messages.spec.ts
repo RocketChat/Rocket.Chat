@@ -49,7 +49,6 @@ test.describe.serial('export-messages', () => {
 
 	test('should display an error when trying to send email without selecting any email', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.content.sendMessage('hello world');
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
 
@@ -57,5 +56,17 @@ test.describe.serial('export-messages', () => {
 		await poHomeChannel.tabs.exportMessages.btnSend.click();
 
 		await expect(poUtils.getAlertByText(`You haven't selected any messages`)).toBeVisible();
+	});
+
+	test('should be able to send messages after closing export messages', async () => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.tabs.kebab.click({ force: true });
+		await poHomeChannel.tabs.btnExportMessages.click();
+
+		await poHomeChannel.content.getMessageByText('hello world').click();
+		await poHomeChannel.tabs.exportMessages.btnCancel.click();
+		await poHomeChannel.content.sendMessage('hello export');
+
+		await expect(poHomeChannel.content.getMessageByText('hello export')).toBeVisible();
 	});
 });
