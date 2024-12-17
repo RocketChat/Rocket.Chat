@@ -14,6 +14,7 @@ import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from '
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
+import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
@@ -149,14 +150,23 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		}, [manuallySelected, omnichannelPoolMaxIncoming, omnichannelSortingMechanism]),
 	);
 
+	useEffect(() => {
+		const observer = LivechatInquiry.find(
+			{ status: LivechatInquiryStatus.QUEUED },
+			{
+				sort: getOmniChatSortQuery(omnichannelSortingMechanism),
+				limit: omnichannelPoolMaxIncoming,
+			},
+		).observe({
+			added: (_inquiry) => {
+				KonchatNotification.newRoom();
+			},
+		});
+
+		return () => observer.stop();
+	}, [omnichannelPoolMaxIncoming, omnichannelSortingMechanism]);
+
 	useOmnichannelContinuousSoundNotification(queue ?? []);
-	// queue?.map(({ rid }) => {
-	// 	if (queueNotification.has(rid)) {
-	// 		return;
-	// 	}
-	// 	setQueueNotification((prev) => new Set([...prev, rid]));
-	// 	return KonchatNotification.newRoom();
-	// });
 
 	const contextValue = useMemo<OmnichannelContextValue>(() => {
 		if (!enabled) {
