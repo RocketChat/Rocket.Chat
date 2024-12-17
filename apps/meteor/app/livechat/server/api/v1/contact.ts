@@ -173,13 +173,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { contactId, visitor, email, phone } = this.queryParams;
-			const filter = {
-				...(email && { 'emails.address': email }),
-				...(phone && { 'phones.phoneNumber': phone }),
-				...(contactId && { _id: contactId }),
-			};
 
-			const contact = await (visitor ? getContactByChannel(visitor) : LivechatContacts.countDocuments(filter));
+			const contact = await (visitor ? getContactByChannel(visitor) : LivechatContacts.countByContactInfo({ contactId, email, phone }));
 
 			return API.v1.success({ exists: !!contact });
 		},

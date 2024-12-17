@@ -249,4 +249,14 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 
 		return updatedContact.value;
 	}
+
+	countByContactInfo({ contactId, email, phone }: { contactId?: string; email?: string; phone?: string }): Promise<number> {
+		const filter = {
+			...(email && { 'emails.address': email }),
+			...(phone && { 'phones.phoneNumber': phone }),
+			...(contactId && { _id: contactId }),
+		};
+
+		return this.countDocuments(filter);
+	}
 }
