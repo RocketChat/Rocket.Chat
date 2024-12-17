@@ -1032,7 +1032,7 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should confirm a contact does not exist when checking by email', async () => {
-			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ email: 'invalid-email' });
+			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ email: 'invalid-email@example.com' });
 
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
