@@ -3,7 +3,6 @@ import type { ReactNode } from 'react';
 import React, { useEffect } from 'react';
 
 import { CustomSounds } from '../../app/custom-sounds/client/lib/CustomSounds';
-import { useContinuousSoundNotification } from '../hooks/useContinuousSoundNotification';
 
 type CustomSoundProviderProps = {
 	children?: ReactNode;
@@ -17,8 +16,6 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 		}
 		void CustomSounds.fetchCustomSoundList();
 	}, [userId]);
-
-	useContinuousSoundNotification();
 
 	const streamAll = useStream('notify-all');
 
