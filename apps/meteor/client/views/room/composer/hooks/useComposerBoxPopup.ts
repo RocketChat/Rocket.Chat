@@ -135,7 +135,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 				return result;
 			}
 			const filter = value.match(selector);
-			return filter && triggerLength < filter[0].length;
+			return filter && triggerLength < filter[0].length - 1;
 		});
 		setPopup(configuration);
 		if (!configuration) {
