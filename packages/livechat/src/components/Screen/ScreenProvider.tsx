@@ -151,11 +151,11 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		if (token && typeof token === 'string') {
 			if (registrationForm && !name && !email) {
 				dispatch({ token });
-			} else {
-				await evaluateChangesAndLoadConfigByFields(async () => {
-					await createOrUpdateGuest({ token });
-				});
+				return;
 			}
+			await evaluateChangesAndLoadConfigByFields(async () => {
+				await createOrUpdateGuest({ token });
+			});
 		}
 	}, [dispatch, email, name, registrationForm]);
 
