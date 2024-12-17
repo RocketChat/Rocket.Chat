@@ -82,6 +82,7 @@ export class LivenessManager {
 
         this.controller.once('ready', () => this.ping());
         this.subprocess.once('exit', this.handleExit.bind(this));
+        this.subprocess.once('error', this.handleError.bind(this));
     }
 
     /**
@@ -155,6 +156,11 @@ export class LivenessManager {
         this.messenger.send(COMMAND_PING);
     }
 
+    private handleError(err: Error) {
+        this.debug('App has failed to start.`', err);
+        this.restartProcess();
+    }
+
     private handleExit(exitCode: number, signal: string) {
         this.pingAbortController.emit('abort');
 
@@ -174,21 +180,22 @@ export class LivenessManager {
         this.restartProcess();
     }
 
-    private restartProcess() {
+    private async restartProcess() {
         if (this.restartCount >= this.options.maxRestarts) {
             this.debug('Limit of restarts reached (%d). Aborting restart...', this.options.maxRestarts);
             this.controller.stopApp();
             return;
         }
 
-        this.pingTimeoutConsecutiveCount = 0;
-        this.restartCount++;
         this.restartLog.push({
             restartedAt: new Date(),
             source: 'liveness-manager',
             pid: this.subprocess.pid,
         });
 
-        this.controller.restartApp();
+        await this.controller.restartApp();
+
+        this.pingTimeoutConsecutiveCount = 0;
+        this.restartCount++;
     }
 }
