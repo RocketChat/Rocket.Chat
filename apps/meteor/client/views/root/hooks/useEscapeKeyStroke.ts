@@ -52,7 +52,7 @@ export const useEscapeKeyStroke = () => {
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key !== 'a' || !event.ctrlKey === true) {
+			if (event.key !== 'h' || !event.ctrlKey === true) {
 				return;
 			}
 
