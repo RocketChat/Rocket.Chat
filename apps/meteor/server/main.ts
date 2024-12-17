@@ -13,6 +13,7 @@ import { registerServices } from './services/startup';
 import { startup } from './startup';
 import { configureBoilerplate } from './startup/configureBoilerplate';
 import { configureCDN } from './startup/configureCDN';
+import { configureCORS } from './startup/configureCORS';
 import { configureDirectReply } from './startup/configureDirectReply';
 import { configureIRC } from './startup/configureIRC';
 import { configureFederation } from './startup/settings';
@@ -42,6 +43,7 @@ await Promise.all([configureLoginServices(), startFederationService()]);
 
 await Promise.all([
 	configureAssets(settings),
+	configureCORS(settings),
 	configureCDN(settings),
 	configurePushNotifications(settings),
 	configureBoilerplate(settings),
