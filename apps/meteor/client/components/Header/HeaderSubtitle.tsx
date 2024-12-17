@@ -1,7 +1,4 @@
-import { HeaderV2Subtitle } from '@rocket.chat/ui-client';
-import type { ComponentProps } from 'react';
-import React, { memo } from 'react';
-
-const HeaderSubtitle = (props: ComponentProps<typeof HeaderV2Subtitle>) => <HeaderV2Subtitle {...props} />;
+import { HeaderV2Subtitle as HeaderSubtitle } from '@rocket.chat/ui-client';
+import { memo } from 'react';
 
 export default memo(HeaderSubtitle);

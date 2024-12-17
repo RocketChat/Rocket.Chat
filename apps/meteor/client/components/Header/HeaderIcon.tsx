@@ -1,7 +1,4 @@
-import { HeaderV2Icon } from '@rocket.chat/ui-client';
-import type { ComponentProps } from 'react';
-import React, { memo } from 'react';
-
-const HeaderIcon = (props: ComponentProps<typeof HeaderV2Icon>) => <HeaderV2Icon {...props} />;
+import { HeaderV2Icon as HeaderIcon } from '@rocket.chat/ui-client';
+import { memo } from 'react';
 
 export default memo(HeaderIcon);

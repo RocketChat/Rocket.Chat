@@ -1,7 +1,4 @@
-import { HeaderV2Tag } from '@rocket.chat/ui-client';
-import type { ComponentProps } from 'react';
-import React, { memo } from 'react';
-
-const HeaderTag = (props: ComponentProps<typeof HeaderV2Tag>) => <HeaderV2Tag {...props} />;
+import { HeaderV2Tag as HeaderTag } from '@rocket.chat/ui-client';
+import { memo } from 'react';
 
 export default memo(HeaderTag);

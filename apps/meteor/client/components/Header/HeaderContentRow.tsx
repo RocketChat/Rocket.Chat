@@ -1,7 +1,4 @@
-import { HeaderV2ContentRow } from '@rocket.chat/ui-client';
-import type { ComponentProps } from 'react';
-import React, { memo } from 'react';
-
-const HeaderContentRow = (props: ComponentProps<typeof HeaderV2ContentRow>) => <HeaderV2ContentRow {...props} />;
+import { HeaderV2ContentRow as HeaderContentRow } from '@rocket.chat/ui-client';
+import { memo } from 'react';
 
 export default memo(HeaderContentRow);

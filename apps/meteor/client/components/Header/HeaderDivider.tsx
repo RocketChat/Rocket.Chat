@@ -1,6 +1,4 @@
-import { HeaderV2Divider } from '@rocket.chat/ui-client';
-import React, { memo } from 'react';
-
-const HeaderDivider = () => <HeaderV2Divider />;
+import { HeaderV2Divider as HeaderDivider } from '@rocket.chat/ui-client';
+import { memo } from 'react';
 
 export default memo(HeaderDivider);

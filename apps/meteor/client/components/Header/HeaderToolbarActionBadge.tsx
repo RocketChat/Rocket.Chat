@@ -1,7 +1,4 @@
-import { HeaderV2ToolbarActionBadge } from '@rocket.chat/ui-client';
-import type { ComponentProps } from 'react';
-import React, { memo } from 'react';
-
-const HeaderToolbarActionBadge = (props: ComponentProps<typeof HeaderV2ToolbarActionBadge>) => <HeaderV2ToolbarActionBadge {...props} />;
+import { HeaderV2ToolbarActionBadge as HeaderToolbarActionBadge } from '@rocket.chat/ui-client';
+import { memo } from 'react';
 
 export default memo(HeaderToolbarActionBadge);
