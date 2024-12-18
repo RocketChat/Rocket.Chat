@@ -69,7 +69,7 @@ export const useNotifyUser = () => {
 		});
 
 		const handle = CachedChatSubscription.collection.find().observe({
-			changed: (sub) => {
+			added: (sub) => {
 				void notifyNewRoom(sub);
 			},
 		});
