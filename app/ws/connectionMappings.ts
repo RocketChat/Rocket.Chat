@@ -21,6 +21,9 @@ const updateMappingsOnSub = (connectionId: string, channels: Set<string>, userId
 	channels.forEach(async (channel: string) => {
 		const release = await acquireLock(channel);
 		channelListeners.set(channel, (channelListeners.get(channel) || new Set()).add(connectionId));
+		if (channelListeners.get(channel)?.size === 1) {
+			redis.subscribe(channel);
+		}
 		release();
 	});
 };
