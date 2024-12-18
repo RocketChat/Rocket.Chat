@@ -19,6 +19,7 @@ const cookie = new Cookies();
 
 export const MAX_SVG_AVATAR_SIZE = 1024;
 export const MIN_SVG_AVATAR_SIZE = 16;
+const MAX_SVG_AVATAR_INITIALS = 3;
 
 export const serveAvatarFile = (file: IUpload, req: IIncomingMessage, res: ServerResponse, next: NextFunction) => {
 	res.setHeader('Content-Security-Policy', "default-src 'none'");
@@ -57,13 +58,15 @@ export const serveSvgAvatarInRequestedFormat = ({
 	nameOrUsername,
 	req,
 	res,
+	useAllInitials = false,
 }: {
 	nameOrUsername: string;
 	req: IIncomingMessage;
 	res: ServerResponse;
+	useAllInitials?: boolean;
 }) => {
 	const size = getAvatarSizeFromRequest(req);
-	const avatar = renderSVGLetters(nameOrUsername, size);
+	const avatar = renderSVGLetters(nameOrUsername, size, useAllInitials);
 	res.setHeader('Last-Modified', FALLBACK_LAST_MODIFIED);
 
 	const { format } = req.query;
@@ -125,7 +128,9 @@ const getFirstLetter = (name: string) => {
 	return sanitizedName.substring(0, 1).toUpperCase();
 };
 
-export const renderSVGLetters = (name: string, viewSize = 200) => {
+const getInitials = (name: string) => name.split(' ').slice(0, MAX_SVG_AVATAR_INITIALS).map(getFirstLetter).join('');
+
+export const renderSVGLetters = (name: string, viewSize = 200, useAllInitials = false) => {
 	let color = '';
 	let initials = '';
 
@@ -134,10 +139,11 @@ export const renderSVGLetters = (name: string, viewSize = 200) => {
 		initials = name;
 	} else {
 		color = getAvatarColor(name);
-		initials = getFirstLetter(name);
+		initials = !useAllInitials ? getFirstLetter(name) : getInitials(name);
 	}
 
-	const fontSize = viewSize / 1.6;
+	const reductionFactor = initials.length > 1 ? Math.pow(initials.length, 2) / 10 : 0;
+	const fontSize = viewSize / (1.6 + reductionFactor);
 
 	return `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 ${viewSize} ${viewSize}\">\n<rect width=\"100%\" height=\"100%\" fill=\"${color}\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"'Helvetica', 'Arial', 'Lucida Grande', 'sans-serif'\" font-size="${fontSize}">\n${initials}\n</text>\n</svg>`;
 };

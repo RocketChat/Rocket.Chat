@@ -160,6 +160,7 @@ export class RocketChatSettingsAdapter {
 				'sender_localpart': registrationFile.botName,
 				'namespaces': registrationFile.listenTo,
 				'de.sorunome.msc2409.push_ephemeral': registrationFile.enableEphemeralEvents,
+				'use_appservice_legacy_authorization': true,
 			}),
 		);
 	}

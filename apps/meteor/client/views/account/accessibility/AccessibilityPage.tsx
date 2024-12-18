@@ -3,6 +3,7 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	FieldDescription,
 	Accordion,
+	AccordionItem,
 	Box,
 	Button,
 	ButtonGroup,
@@ -109,7 +110,7 @@ const AccessibilityPage = () => {
 						</ul>
 					</Box>
 					<Accordion>
-						<Accordion.Item defaultExpanded={true} title={t('Theme')}>
+						<AccordionItem defaultExpanded={true} title={t('Theme')}>
 							{themes.map(({ id, title, description }, index) => {
 								return (
 									<Field key={id} pbe={themes.length - 1 ? undefined : 'x28'} pbs={index === 0 ? undefined : 'x28'}>
@@ -131,8 +132,8 @@ const AccessibilityPage = () => {
 									</Field>
 								);
 							})}
-						</Accordion.Item>
-						<Accordion.Item title={t('Adjustable_layout')}>
+						</AccordionItem>
+						<AccordionItem title={t('Adjustable_layout')}>
 							<FieldGroup>
 								<Field>
 									<FieldLabel htmlFor={fontSizeId} mbe={12}>
@@ -220,7 +221,7 @@ const AccessibilityPage = () => {
 									</Field>
 								)}
 							</FieldGroup>
-						</Accordion.Item>
+						</AccordionItem>
 					</Accordion>
 				</Box>
 			</PageScrollableContentWithShadow>
