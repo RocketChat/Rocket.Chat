@@ -254,8 +254,7 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidepanel.getExtendedItem(sidepanelTeam, message)).toBeVisible();
 		});
 
-		// remove .fail after fix
-		test.fail('should escape special characters on item subtitle', async ({ page }) => {
+		test('should escape special characters on item subtitle', async ({ page }) => {
 			await page.goto('/home');
 			const message = 'hello > world';
 			const parsedWrong = 'hello &gt; world';
