@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-fix: Update banner not showing the new version number
+Fixes an issue where the update banner wasn't showing the new version number
