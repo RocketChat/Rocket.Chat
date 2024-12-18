@@ -1,22 +1,18 @@
 import redis from '../redis/redis';
 import { acquireLock } from './channelLocks';
 
-const channelListeners: Map<string, Set<string>> = new Map();
-const connectionToChannels: Map<string, Set<string>> = new Map();
-const userConnections: Map<string, Set<string>> = new Map();
+type ConnectionId = string;
+type ChannelName = string;
+type UserId = string;
+
+const channelListeners: Map<ChannelName, Set<ConnectionId>> = new Map(); // the most important one, which declares if a redis channel should be subscribed or not
+const connectionToChannels: Map<ConnectionId, Set<ChannelName>> = new Map(); // for supporting updating due to client connection disconnects
+const userConnections: Map<UserId, Set<ConnectionId>> = new Map(); // mapping of userId to connectionIds to support handling inserting/deleting rooms on real-time
 
 const updateMappingsOnSub = (connectionId: string, channels: Set<string>, userId: string): void => {
 	userConnections.set(userId, (userConnections.get(userId) || new Set()).add(connectionId));
 
-	const connectionChannels = connectionToChannels.get(connectionId);
-	if (!connectionChannels) {
-		connectionToChannels.set(connectionId, channels);
-	} else {
-		channels.forEach((channel: string) => {
-			connectionChannels.add(channel);
-		});
-		connectionToChannels.set(connectionId, connectionChannels);
-	}
+	connectionToChannels.set(connectionId, channels);
 
 	channels.forEach(async (channel: string) => {
 		const release = await acquireLock(channel);
@@ -53,9 +49,9 @@ const removeConnectionId = (connectionId: string, userId: string): void => {
 };
 
 setInterval(() => {
-	console.log(channelListeners);
+	// console.log(channelListeners);
 	console.log(connectionToChannels);
-	console.log(userConnections);
+	// console.log(userConnections);
 }, 5000);
 
 export { removeConnectionId, updateMappingsOnSub, userConnections };
