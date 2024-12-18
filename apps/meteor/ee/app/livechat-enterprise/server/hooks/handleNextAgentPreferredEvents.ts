@@ -18,12 +18,15 @@ const normalizeDefaultAgent = (agent?: Pick<IUser, '_id' | 'username'> | null): 
 	return { agentId, username };
 };
 
-const getDefaultAgent = async (username?: string): Promise<SelectedAgent | null> => {
-	if (!username) {
+const getDefaultAgent = async ({ username, id }: { username?: string; id?: string }): Promise<SelectedAgent | null> => {
+	if (!username && !id) {
 		return null;
 	}
 
-	return normalizeDefaultAgent(await Users.findOneOnlineAgentByUserList(username, { projection: { _id: 1, username: 1 } }));
+	if (id) {
+		return normalizeDefaultAgent(await Users.findOneOnlineAgentById(id, { projection: { _id: 1, username: 1 } }));
+	}
+	return normalizeDefaultAgent(await Users.findOneOnlineAgentByUserList(username || [], { projection: { _id: 1, username: 1 } }));
 };
 
 settings.watch<boolean>('Livechat_last_chatted_agent_routing', (value) => {
@@ -104,8 +107,12 @@ callbacks.add(
 		const contact = await LivechatContacts.findOneByVisitor(visitor, { projection: { contactManager: 1 } });
 
 		const { lastAgent, token, contactManager } = guest;
-		const contactManagerUsername = contact?.contactManager || contactManager?.username;
-		const guestManager = contactManager?.username && contactManagerPreferred && getDefaultAgent(contactManagerUsername);
+		const contactManagerUsernameOrId = contact?.contactManager || contactManager?.username;
+		const guestManager =
+			contactManagerUsernameOrId &&
+			contactManagerPreferred &&
+			(await getDefaultAgent({ username: contactManager?.username, id: contact?.contactManager }));
+
 		if (guestManager) {
 			return guestManager;
 		}
@@ -114,7 +121,7 @@ callbacks.add(
 			return defaultAgent;
 		}
 
-		const guestAgent = lastAgent?.username && getDefaultAgent(lastAgent?.username);
+		const guestAgent = lastAgent?.username && getDefaultAgent({ username: lastAgent?.username });
 		if (guestAgent) {
 			return guestAgent;
 		}
