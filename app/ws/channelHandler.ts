@@ -18,10 +18,6 @@ const onDisconnect = (userId: string, connectionId: string): void => {
 	}, settings.get('Delay_On_Client_Disconnection') as number);
 };
 
-const addChannel = (channel: string, userId: string): void => {
-	insertChannelToMapping(channel, userId);
-};
-
 const removeUserBindToRoom = (roomId: string, userId: string): void => {
 	const channel = `room-${ roomId }`;
 	decreaseChannelListenerCountOnUser(channel, userId);
@@ -30,6 +26,6 @@ const removeUserBindToRoom = (roomId: string, userId: string): void => {
 // TODO-Hi: Check in carosulle
 // TODO-Hi: Check race-condition on critical sections
 // TODO-Hi: Check with or if we should find the object in message subscriptions
-const ChannelHandler = { onLogin, onDisconnect, addChannel, removeUserBindToRoom };
+const ChannelHandler = { onLogin, onDisconnect, addChannel: insertChannelToMapping, removeUserBindToRoom };
 
 export default ChannelHandler;
