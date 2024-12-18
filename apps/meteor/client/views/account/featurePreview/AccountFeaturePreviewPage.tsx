@@ -57,8 +57,9 @@ const AccountFeaturePreviewPage = () => {
 	const { featuresPreview } = watch();
 
 	const handleSave = async () => {
+		const featuresToBeSaved = featuresPreview.map((feature) => ({ name: feature.name, value: feature.value }));
 		try {
-			await setUserPreferences({ data: { featuresPreview } });
+			await setUserPreferences({ data: { featuresPreview: featuresToBeSaved } });
 			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
