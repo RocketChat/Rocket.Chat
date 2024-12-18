@@ -1,11 +1,12 @@
-import { emitRoomDataEvent } from '../../stream/rooms';
 import { Rooms, Subscriptions } from '../../../app/models';
 import { Notifications } from '../../../app/notifications';
+import { emitRoomDataEvent } from '../../stream/rooms';
 
 import { fields } from '.';
-import { settings } from '/app/settings/server';
+
 import { redisMessageHandlers } from '/app/redis/handleRedisMessage';
 import { publishToRedis } from '/app/redis/redisPublisher';
+import { settings } from '/app/settings/server';
 
 const getSubscriptions = (id) => {
 	const fields = { 'u._id': 1 };
@@ -34,7 +35,7 @@ const handleRoom = (clientAction, id, data) => {
 				u._id,
 				'rooms-changed',
 				clientAction,
-				data
+				data,
 			);
 		});
 	}
@@ -57,8 +58,8 @@ if (settings.get('Use_Oplog_As_Real_Time')) {
 			ns: 'rocketchat_room',
 			clientAction,
 		};
-		publishToRedis(`room-${id}`, newdata);
+		publishToRedis(`room-${ id }`, newdata);
 	});
 }
 
-redisMessageHandlers['rocketchat_room'] = redisRoomHandle;
+redisMessageHandlers.rocketchat_room = redisRoomHandle;

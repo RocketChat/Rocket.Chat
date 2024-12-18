@@ -1,5 +1,5 @@
 import redis from '../redis/redis';
-import { acquireLock } from './channelLocks';
+import { acquireLock, acquireLocks, lockUser } from './channelLocks';
 
 type ConnectionId = string;
 type ChannelName = string;
@@ -26,28 +26,35 @@ const updateMappingsOnSub = (connectionId: string, channels: Set<string>, userId
 	channels.forEach(async (channel: string) => {
 		const release = await acquireLock(channel);
 		channelListeners.set(channel, (channelListeners.get(channel) || new Set()).add(connectionId));
+		if (channelListeners.get(channel)?.size === 1) {
+			redis.subscribe(channel);
+		}
 		release();
 	});
 };
 
-const decreaseChannelsBinding = (connectionId: string): void => {
+const decreaseConnectionIdFromChannelBindCount = async (channel: string, connectionId: string): Promise<void> => {
+	const release = await acquireLock(channel);
+	try {
+		const listeningConnections = channelListeners.get(channel);
+		console.log('listeners ', listeningConnections, channel, connectionId);
+		if (listeningConnections?.size === 1) {
+			console.log(`Unsubscribing to channel: ${ channel }`);
+			channelListeners.delete(channel);
+			redis.unsubscribe(channel);
+		} else {
+				listeningConnections?.delete(connectionId);
+		}
+	} finally {
+		release();
+	}
+};
+
+const removeConnectionIdBinding = (connectionId: string): void => {
 	const connectionChannels = connectionToChannels.get(connectionId);
 	console.log('connectionChannels: ', connectionChannels);
 	connectionChannels?.forEach(async (channel: string) => {
-		const release = await acquireLock(channel);
-		try {
-			const listeningConnections = channelListeners.get(channel);
-			console.log('listeners ', listeningConnections);
-			if (listeningConnections?.size === 1) {
-				console.log(`Unsubscribing to channel: ${ channel }`);
-				channelListeners.delete(channel);
-				redis.unsubscribe(channel);
-			} else {
-				listeningConnections?.delete(connectionId);
-			}
-		} finally {
-			release();
-		}
+		decreaseConnectionIdFromChannelBindCount(channel, connectionId);
 	});
 };
 
@@ -60,17 +67,52 @@ const removeConnectionFromUserConns = (userId: string, connectionId: string): vo
 	}
 };
 
+const decreaseChannelListenerCountOnUser = async (channel: string, userId: string): Promise<void> => {
+	const releases = await acquireLocks([`user-${ userId }`, channel]);
+	try {
+		const userConnectionsSet = userConnections.get(userId);
+		userConnectionsSet?.forEach((connectionId: string) => {
+			decreaseConnectionIdFromChannelBindCount(channel, connectionId);
+		});
+	} finally {
+		Promise.all(releases.map((release) => release()));
+	}
+};
 
-const removeConnectionId = (connectionId: string, userId: string): void => {
-	decreaseChannelsBinding(connectionId);
-	removeConnectionFromUserConns(userId, connectionId);
-	connectionToChannels.delete(connectionId); // TODO-Hi: Maybe had debounce/something to handle user refreshes
+const removeConnectionId = async (connectionId: string, userId: string): Promise<void> => {
+	const release = await lockUser(userId);
+	try {
+		removeConnectionIdBinding(connectionId);
+		removeConnectionFromUserConns(userId, connectionId);
+
+		connectionToChannels.delete(connectionId); // TODO-Hi: Maybe had debounce/something to handle user refreshes
+	} finally {
+		release();
+	}
+};
+
+const addChannelOnCreate = async (channel: string, userId: string): Promise<void> => {
+	const releases = await acquireLocks([`user-${ userId }`, channel]);
+	try {
+		const userConnectionsSet = userConnections.get(userId);
+		userConnectionsSet?.forEach((connectionId: string) => {
+			const boundChannels = connectionToChannels.get(connectionId) as Set<string>;
+			boundChannels.add(channel);
+
+			channelListeners.set(channel, (channelListeners.get(channel) || new Set()).add(connectionId));
+			if (channelListeners.get(channel)?.size === 1) {
+				redis.subscribe(channel);
+			}
+		});
+	} finally {
+		Promise.all(releases.map((release) => release()));
+	}
 };
 
 setInterval(() => {
-	// console.log(channelListeners);
-	console.log(connectionToChannels);
-	// console.log(userConnections);
+	console.log('channelListeners: ', channelListeners);
+	console.log('connectionToChannels: ', connectionToChannels);
+	console.log('userConnections: ', userConnections);
 }, 5000);
 
-export { removeConnectionId, updateMappingsOnSub, userConnections };
+export { addChannelOnCreate, decreaseChannelListenerCountOnUser, removeConnectionId, updateMappingsOnSub };
