@@ -1,22 +1,27 @@
 import redis from '../redis/redis';
 import { acquireLock, acquireLocks, lockUser } from './channelLocks';
 
-const channelListeners: Map<string, Set<string>> = new Map();
-const connectionToChannels: Map<string, Set<string>> = new Map();
-const userConnections: Map<string, Set<string>> = new Map();
+type ConnectionId = string;
+type ChannelName = string;
+type UserId = string;
+
+const channelListeners: Map<ChannelName, Set<ConnectionId>> = new Map(); // the most important one, which declares if a redis channel should be subscribed or not
+const connectionToChannels: Map<ConnectionId, Set<ChannelName>> = new Map(); // for supporting updating due to client connection disconnects
+const userConnections: Map<UserId, Set<ConnectionId>> = new Map(); // mapping of userId to connectionIds to support handling inserting/deleting rooms on real-time
+
+const addConnIdToUsersMap = (userId: string, connectionId: string): void => {
+	const userCurrConns = userConnections.get(userId);
+	if (userCurrConns) {
+		userCurrConns.add(connectionId);
+	} else {
+		userConnections.set(userId, new Set([connectionId]));
+	}
+};
 
 const updateMappingsOnSub = (connectionId: string, channels: Set<string>, userId: string): void => {
-	userConnections.set(userId, (userConnections.get(userId) || new Set()).add(connectionId));
+	addConnIdToUsersMap(userId, connectionId);
 
-	const connectionChannels = connectionToChannels.get(connectionId);
-	if (!connectionChannels) {
-		connectionToChannels.set(connectionId, channels);
-	} else {
-		channels.forEach((channel: string) => {
-			connectionChannels.add(channel);
-		});
-		connectionToChannels.set(connectionId, connectionChannels);
-	}
+	connectionToChannels.set(connectionId, channels);
 
 	channels.forEach(async (channel: string) => {
 		const release = await acquireLock(channel);
@@ -53,6 +58,15 @@ const removeConnectionIdBinding = (connectionId: string): void => {
 	});
 };
 
+const removeConnectionFromUserConns = (userId: string, connectionId: string): void => {
+	const userCurrConnections = userConnections.get(userId);
+	if (userCurrConnections?.size === 1) {
+		userConnections.delete(userId);
+	} else {
+		userCurrConnections?.delete(connectionId);
+	}
+};
+
 const decreaseChannelListenerCountOnUser = async (channel: string, userId: string): Promise<void> => {
 	const releases = await acquireLocks([`user-${ userId }`, channel]);
 	try {
@@ -69,10 +83,7 @@ const removeConnectionId = async (connectionId: string, userId: string): Promise
 	const release = await lockUser(userId);
 	try {
 		removeConnectionIdBinding(connectionId);
-		userConnections.get(userId)?.delete(connectionId);
-		if (userConnections.get(userId)?.size === 0) {
-			userConnections.delete(userId);
-		}
+		removeConnectionFromUserConns(userId, connectionId);
 
 		connectionToChannels.delete(connectionId); // TODO-Hi: Maybe had debounce/something to handle user refreshes
 	} finally {
