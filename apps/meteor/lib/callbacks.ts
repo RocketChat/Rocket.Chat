@@ -24,6 +24,7 @@ import type {
 	IOmnichannelRoomInfo,
 	IOmnichannelInquiryExtraData,
 	IOmnichannelRoomExtraData,
+	ILivechatContactVisitorAssociation,
 } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
@@ -118,7 +119,7 @@ type ChainedCallbackSignatures = {
 	) => Promise<T>;
 
 	'livechat.beforeRouteChat': (inquiry: ILivechatInquiryRecord, agent?: { agentId: string; username: string }) => ILivechatInquiryRecord;
-	'livechat.checkDefaultAgentOnNewRoom': (agent: SelectedAgent, visitor?: ILivechatVisitor) => SelectedAgent | null;
+	'livechat.checkDefaultAgentOnNewRoom': (agent: SelectedAgent, visitor?: ILivechatContactVisitorAssociation) => SelectedAgent | null;
 
 	'livechat.onLoadForwardDepartmentRestrictions': (params: { departmentId: string }) => Record<string, unknown>;
 

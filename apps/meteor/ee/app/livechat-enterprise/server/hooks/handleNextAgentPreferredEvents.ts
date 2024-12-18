@@ -1,5 +1,5 @@
 import type { IUser, SelectedAgent } from '@rocket.chat/core-typings';
-import { LivechatVisitors, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatContacts, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 
 import { notifyOnLivechatInquiryChanged } from '../../../../../app/lib/server/lib/notifyListener';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
@@ -88,12 +88,12 @@ settings.watch<boolean>('Omnichannel_contact_manager_routing', (value) => {
 
 callbacks.add(
 	'livechat.checkDefaultAgentOnNewRoom',
-	async (defaultAgent, defaultGuest) => {
-		if (defaultAgent || !defaultGuest) {
+	async (defaultAgent, visitor) => {
+		if (defaultAgent || !visitor) {
 			return defaultAgent;
 		}
 
-		const { _id: guestId } = defaultGuest;
+		const { visitorId: guestId } = visitor;
 		const guest = await LivechatVisitors.findOneEnabledById(guestId, {
 			projection: { lastAgent: 1, token: 1, contactManager: 1 },
 		});
@@ -101,8 +101,11 @@ callbacks.add(
 			return defaultAgent;
 		}
 
+		const contact = await LivechatContacts.findOneByVisitor(visitor, { projection: { contactManager: 1 } });
+
 		const { lastAgent, token, contactManager } = guest;
-		const guestManager = contactManager?.username && contactManagerPreferred && getDefaultAgent(contactManager?.username);
+		const contactManagerUsername = contact?.contactManager || contactManager?.username;
+		const guestManager = contactManager?.username && contactManagerPreferred && getDefaultAgent(contactManagerUsername);
 		if (guestManager) {
 			return guestManager;
 		}
