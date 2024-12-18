@@ -14,7 +14,7 @@ import ChannelHandler from '/app/ws/channelHandler';
 const handleSubscriptionChange = Meteor.bindEnvironment((clientAction, id, data) => {
 	switch (clientAction) {
 		case 'inserted':
-			ChannelHandler.addChannel(`room-${ data.rid }`, data.u._id);
+			ChannelHandler.addChannelOnCreate(`room-${ data.rid }`, data.u._id);
 		case 'updated':
 			// Override data cuz we do not publish all fields
 			data = Subscriptions.findOneById(id, { fields });

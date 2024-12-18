@@ -80,7 +80,7 @@ const removeConnectionId = async (connectionId: string, userId: string): Promise
 	}
 };
 
-const insertChannelToMapping = async (channel: string, userId: string): Promise<void> => {
+const addChannelOnCreate = async (channel: string, userId: string): Promise<void> => {
 	const releases = await acquireLocks([`user-${ userId }`, channel]);
 	try {
 		const userConnectionsSet = userConnections.get(userId);
@@ -104,4 +104,4 @@ setInterval(() => {
 	console.log('userConnections: ', userConnections);
 }, 5000);
 
-export { decreaseChannelListenerCountOnUser, insertChannelToMapping, removeConnectionId, updateMappingsOnSub };
+export { addChannelOnCreate, decreaseChannelListenerCountOnUser, removeConnectionId, updateMappingsOnSub };

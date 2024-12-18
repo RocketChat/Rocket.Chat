@@ -1,6 +1,6 @@
 import { Subscriptions } from '../models/server';
 import { settings } from '../settings/server';
-import { decreaseChannelListenerCountOnUser, insertChannelToMapping, removeConnectionId, updateMappingsOnSub } from './connectionMappings';
+import { addChannelOnCreate, decreaseChannelListenerCountOnUser, removeConnectionId, updateMappingsOnSub } from './connectionMappings';
 import './createRoomsTest';
 
 const onLogin = (userId: string, connectionId: string): void => {
@@ -26,6 +26,6 @@ const removeUserBindToRoom = (roomId: string, userId: string): void => {
 // TODO-Hi: Check in carosulle
 // TODO-Hi: Check race-condition on critical sections
 // TODO-Hi: Check with or if we should find the object in message subscriptions
-const ChannelHandler = { onLogin, onDisconnect, addChannel: insertChannelToMapping, removeUserBindToRoom };
+const ChannelHandler = { onLogin, onDisconnect, addChannelOnCreate, removeUserBindToRoom };
 
 export default ChannelHandler;
