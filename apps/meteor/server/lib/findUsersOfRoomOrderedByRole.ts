@@ -51,35 +51,36 @@ export async function findUsersOfRoomOrderedByRole({
 		userLookupPipeline.push({ $match: { status } });
 	}
 
-	userLookupPipeline.push({
-		$match: {
-			$and: [
-				{
-					active: true,
-					username: {
-						$exists: true,
-						...(exceptions.length > 0 && { $nin: exceptions }),
+	userLookupPipeline.push(
+		{
+			$match: {
+				$and: [
+					{
+						active: true,
+						username: {
+							$exists: true,
+							...(exceptions.length > 0 && { $nin: exceptions }),
+						},
+						...(filter && orStmt.length > 0 && { $or: orStmt }),
 					},
-					...(filter && orStmt.length > 0 && { $or: orStmt }),
-				},
-				...extraQuery,
-			],
+					...extraQuery,
+				],
+			},
 		},
-	});
-
-	userLookupPipeline.push({
-		$project: {
-			_id: 1,
-			username: 1,
-			name: 1,
-			nickname: 1,
-			status: 1,
-			avatarETag: 1,
-			_updatedAt: 1,
-			federated: 1,
-			statusConnection: 1,
+		{
+			$project: {
+				_id: 1,
+				username: 1,
+				name: 1,
+				nickname: 1,
+				status: 1,
+				avatarETag: 1,
+				_updatedAt: 1,
+				federated: 1,
+				statusConnection: 1,
+			},
 		},
-	});
+	);
 
 	const defaultPriority = rolesInOrder.length + 1;
 
