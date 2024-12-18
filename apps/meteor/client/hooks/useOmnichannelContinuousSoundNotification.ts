@@ -16,7 +16,7 @@ export const useOmnichannelContinuousSoundNotification = <T>(queue: T[]) => {
 
 	const continuousCustomSoundId = newRoomNotification && `${newRoomNotification}-continuous`;
 
-	const hasUnreadRoom = userSubscriptions.length > 0 && queue.length > 0;
+	const hasUnreadRoom = userSubscriptions.length > 0 || queue.length > 0;
 
 	useEffect(() => {
 		let audio: ICustomSound;
