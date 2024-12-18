@@ -16,11 +16,15 @@ const redis = new Redis({
 });
 console.log('Running redis startup');
 
-redis.on('connect', () => {
-	redis.subscribe('all').catch(() => {
-		console.log("Couldn't sub to all channel");
-	}).then(() => { hasSubbedToAllChannel = true; });
+redis.on('connect', async () => {
 	console.log('Connected to Redis');
+	try {
+		await redis.subscribe('all');
+		await redis.subscribe('user-status');
+		hasSubbedToAllChannel = true;
+	} catch (err) {
+		console.log("Couldn't sub to public channels ", err);
+	}
 });
 
 redis.on('error', (err) => {
