@@ -1,6 +1,6 @@
 import { Media, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
+import { Messages, Rooms, Users, Uploads, Subscriptions, Roles } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
 	isGETRoomsNameExists,
@@ -869,6 +869,10 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
+			if (!(await canAccessRoomAsync(findResult, this.user))) {
+				return API.v1.notFound('The required "roomId" or "roomName" param provided does not match any room');
+			}
+
 			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
 				return API.v1.unauthorized();
 			}
@@ -876,7 +880,23 @@ API.v1.addRoute(
 			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
 			const { sort = {} } = await this.parseJsonQuery();
 
-			const { status, filter, rolesOrder = ['owner', 'moderator'] } = this.queryParams;
+			const { status, filter, rolesOrder } = this.queryParams;
+
+			if (rolesOrder) {
+				const roles = await Promise.all(
+					await Roles.find({
+						scope: 'Subscriptions',
+						_id: { $in: rolesOrder },
+					}).toArray(),
+				);
+
+				const rolesIds = roles.map(({ _id }) => _id);
+				rolesOrder.forEach((providedRole) => {
+					if (!rolesIds.includes(providedRole)) {
+						throw new Error(`role "${providedRole}" not found`);
+					}
+				});
+			}
 
 			const { members, total } = await findUsersOfRoomOrderedByRole({
 				rid: findResult._id,
@@ -885,7 +905,7 @@ API.v1.addRoute(
 				limit,
 				filter,
 				...(sort?.username && { sort: { username: sort.username } }),
-				rolesInOrder: rolesOrder,
+				rolesInOrder: rolesOrder || ['owner', 'moderator'],
 			});
 
 			return API.v1.success({
