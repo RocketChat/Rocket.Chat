@@ -9,8 +9,11 @@ const channelListeners: Map<ChannelName, Set<ConnectionId>> = new Map(); // the 
 const connectionToChannels: Map<ConnectionId, Set<ChannelName>> = new Map(); // for supporting updating due to client connection disconnects
 const userConnections: Map<UserId, Set<ConnectionId>> = new Map(); // mapping of userId to connectionIds to support handling inserting/deleting rooms on real-time
 
-const updateMappingsOnSub = (connectionId: string, channels: Set<string>, userId: string): void => {
+const addConnIdToUsersMap = (userId: string, connectionId: string): Map<string, Set<string>> =>
 	userConnections.set(userId, (userConnections.get(userId) || new Set()).add(connectionId));
+
+const updateMappingsOnSub = (connectionId: string, channels: Set<string>, userId: string): void => {
+	addConnIdToUsersMap(userId, connectionId);
 
 	connectionToChannels.set(connectionId, channels);
 
@@ -42,9 +45,19 @@ const decreaseChannelsBinding = (connectionId: string): void => {
 	});
 };
 
+const removeConnectionFromUserConns = (userId: string, connectionId: string): void => {
+	const userCurrConnections = userConnections.get(userId);
+	if (userCurrConnections?.size === 1) {
+		userConnections.delete(userId);
+	} else {
+		userCurrConnections?.delete(connectionId);
+	}
+};
+
+
 const removeConnectionId = (connectionId: string, userId: string): void => {
 	decreaseChannelsBinding(connectionId);
-	userConnections.get(userId)?.delete(connectionId);
+	removeConnectionFromUserConns(userId, connectionId);
 	connectionToChannels.delete(connectionId); // TODO-Hi: Maybe had debounce/something to handle user refreshes
 };
 
