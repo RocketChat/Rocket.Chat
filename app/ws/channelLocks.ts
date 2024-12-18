@@ -13,5 +13,16 @@ async function acquireLock(key: string): Promise<() => void> { // TODO-Hi: Move 
 	return release;
 }
 
+async function lockUser(userId: string): Promise<() => void> {
+	return acquireLock(`user-${ userId }`);
+}
 
-export { acquireLock };
+/* Always acquire locks in the same order to avoid deadlocks!
+   first acquire the lock for the user and then the lock for the channel
+*/
+async function acquireLocks(keys: string[]): Promise<(() => void)[]> {
+	const releases = await Promise.all(keys.map((key) => acquireLock(key)));
+	return releases;
+}
+
+export { acquireLock, acquireLocks, lockUser };
