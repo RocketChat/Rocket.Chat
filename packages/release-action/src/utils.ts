@@ -109,7 +109,7 @@ Bump ${pkgName} version.
 
 export async function getEngineVersionsMd(cwd: string) {
 	const { node } = await getNodeNpmVersions(cwd);
-	const appsEngine = await getAppsEngineVersion();
+	const appsEngine = await getAppsEngineVersion(cwd);
 	const mongo = await getMongoVersion(cwd);
 
 	return `### Engine versions
