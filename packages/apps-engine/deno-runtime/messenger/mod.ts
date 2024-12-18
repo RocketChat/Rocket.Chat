@@ -1,10 +1,7 @@
-import { writeAll } from "https://deno.land/std@0.216.0/io/write_all.ts";
-
 import * as jsonrpc from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../AppObjectRegistry.ts';
-import type { Logger } from './logger.ts';
-import { encoder } from './codec.ts';
+import type { Logger } from '../lib/logger.ts';
 
 export type RequestDescriptor = Pick<jsonrpc.RequestObject, 'method' | 'params'>;
 
@@ -29,70 +26,9 @@ export function isErrorResponse(message: jsonrpc.JsonRpc): message is jsonrpc.Er
     return message instanceof jsonrpc.ErrorObject;
 }
 
-const COMMAND_PONG = '_zPONG';
+export const COMMAND_PONG = '_zPONG';
 
 export const RPCResponseObserver = new EventTarget();
-
-export const Queue = new (class Queue {
-    private queue: Uint8Array[] = [];
-    private isProcessing = false;
-
-    private async processQueue() {
-        if (this.isProcessing) {
-            return;
-        }
-
-        this.isProcessing = true;
-
-        while (this.queue.length) {
-            const message = this.queue.shift();
-
-            if (message) {
-                await Transport.send(message);
-            }
-        }
-
-        this.isProcessing = false;
-    }
-
-    public enqueue(message: jsonrpc.JsonRpc | typeof COMMAND_PONG) {
-        this.queue.push(encoder.encode(message));
-        this.processQueue();
-    }
-
-    public getCurrentSize() {
-        return this.queue.length;
-    }
-});
-
-export const Transport = new (class Transporter {
-    private selectedTransport: Transporter['stdoutTransport'] | Transporter['noopTransport'];
-
-    constructor() {
-        this.selectedTransport = this.stdoutTransport.bind(this);
-    }
-
-    private async stdoutTransport(message: Uint8Array): Promise<void> {
-        await writeAll(Deno.stdout, message);
-    }
-
-    private async noopTransport(_message: Uint8Array): Promise<void> {}
-
-    public selectTransport(transport: 'stdout' | 'noop'): void {
-        switch (transport) {
-            case 'stdout':
-                this.selectedTransport = this.stdoutTransport.bind(this);
-                break;
-            case 'noop':
-                this.selectedTransport = this.noopTransport.bind(this);
-                break;
-        }
-    }
-
-    public send(message: Uint8Array): Promise<void> {
-        return this.selectedTransport(message);
-    }
-})();
 
 export function parseMessage(message: string | Record<string, unknown>) {
     let parsed: jsonrpc.IParsedObject | jsonrpc.IParsedObject[];
