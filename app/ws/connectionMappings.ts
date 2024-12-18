@@ -9,8 +9,14 @@ const channelListeners: Map<ChannelName, Set<ConnectionId>> = new Map(); // the 
 const connectionToChannels: Map<ConnectionId, Set<ChannelName>> = new Map(); // for supporting updating due to client connection disconnects
 const userConnections: Map<UserId, Set<ConnectionId>> = new Map(); // mapping of userId to connectionIds to support handling inserting/deleting rooms on real-time
 
-const addConnIdToUsersMap = (userId: string, connectionId: string): Map<string, Set<string>> =>
-	userConnections.set(userId, (userConnections.get(userId) || new Set()).add(connectionId));
+const addConnIdToUsersMap = (userId: string, connectionId: string): void => {
+	const userCurrConns = userConnections.get(userId);
+	if (userCurrConns) {
+		userCurrConns.add(connectionId);
+	} else {
+		userConnections.set(userId, new Set([connectionId]));
+	}
+};
 
 const updateMappingsOnSub = (connectionId: string, channels: Set<string>, userId: string): void => {
 	addConnIdToUsersMap(userId, connectionId);
