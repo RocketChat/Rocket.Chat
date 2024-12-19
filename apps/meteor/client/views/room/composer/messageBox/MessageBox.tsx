@@ -61,6 +61,10 @@ const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: Forma
 
 	const key = event.key.toLowerCase();
 
+	if (isCmdOrCtrlPressed && key === 'b') {
+		event.preventDefault();
+	}
+
 	const formatter = formattingButtons.find((formatter) => 'command' in formatter && formatter.command === key);
 
 	if (!formatter || !('pattern' in formatter)) {
