@@ -5,7 +5,6 @@ export type FeaturesAvailable =
 	| 'navigationBar'
 	| 'enable-timestamp-message-parser'
 	| 'contextualbarResizable'
-	| 'newNavigation'
 	| 'sidepanelNavigation';
 
 export type FeaturePreviewProps = {
@@ -61,25 +60,12 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		enabled: true,
 	},
 	{
-		name: 'newNavigation',
-		i18n: 'New_navigation',
-		description: 'New_navigation_description',
-		group: 'Navigation',
-		imageUrl: 'images/featurePreview/enhanced-navigation.png',
-		value: false,
-		enabled: true,
-	},
-	{
 		name: 'sidepanelNavigation',
 		i18n: 'Sidepanel_navigation',
 		description: 'Sidepanel_navigation_description',
 		group: 'Navigation',
 		value: false,
 		enabled: true,
-		enableQuery: {
-			name: 'newNavigation',
-			value: true,
-		},
 	},
 ];
 
