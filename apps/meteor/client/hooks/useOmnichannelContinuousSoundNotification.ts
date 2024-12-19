@@ -6,7 +6,7 @@ import { useUserSoundPreferences } from './useUserSoundPreferences';
 import { CustomSounds } from '../../app/custom-sounds/client/lib/CustomSounds';
 
 const query = { t: 'l', ls: { $exists: false }, open: true };
-export const useContinuousSoundNotification = () => {
+export const useOmnichannelContinuousSoundNotification = <T>(queue: T[]) => {
 	const userSubscriptions = useUserSubscriptions(query);
 
 	const playNewRoomSoundContinuously = useSetting('Livechat_continuous_sound_notification_new_livechat_room');
@@ -15,6 +15,8 @@ export const useContinuousSoundNotification = () => {
 	const { notificationsSoundVolume } = useUserSoundPreferences();
 
 	const continuousCustomSoundId = newRoomNotification && `${newRoomNotification}-continuous`;
+
+	const hasUnreadRoom = userSubscriptions.length > 0 || queue.length > 0;
 
 	useEffect(() => {
 		let audio: ICustomSound;
@@ -39,7 +41,7 @@ export const useContinuousSoundNotification = () => {
 			return;
 		}
 
-		if (userSubscriptions.length === 0) {
+		if (!hasUnreadRoom) {
 			CustomSounds.pause(continuousCustomSoundId);
 			return;
 		}
@@ -48,5 +50,5 @@ export const useContinuousSoundNotification = () => {
 			volume: notificationsSoundVolume,
 			loop: true,
 		});
-	}, [continuousCustomSoundId, playNewRoomSoundContinuously, userSubscriptions, notificationsSoundVolume]);
+	}, [continuousCustomSoundId, playNewRoomSoundContinuously, userSubscriptions, notificationsSoundVolume, hasUnreadRoom]);
 };
