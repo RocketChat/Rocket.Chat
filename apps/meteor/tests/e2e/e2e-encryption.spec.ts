@@ -6,6 +6,7 @@ import { createAuxContext } from './fixtures/createAuxContext';
 import injectInitialData from './fixtures/inject-initial-data';
 import { Users, storeState, restoreState } from './fixtures/userStates';
 import { AccountProfile, HomeChannel } from './page-objects';
+import { deletePrivateChannel } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -14,11 +15,13 @@ test.describe.serial('e2e-encryption initial setup', () => {
 	let poAccountProfile: AccountProfile;
 	let poHomeChannel: HomeChannel;
 	let password: string;
+	let channelName: string;
 	const newPassword = 'new password';
 
 	test.beforeEach(async ({ page }) => {
 		poAccountProfile = new AccountProfile(page);
 		poHomeChannel = new HomeChannel(page);
+		channelName = faker.string.uuid();
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -32,6 +35,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 	});
 
 	test.afterEach(async ({ api }) => {
+		await deletePrivateChannel(api, channelName);
 		await api.recreateContext();
 	});
 
@@ -60,7 +64,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await expect(page.locator('role=banner >> text="Save your encryption password"')).not.toBeVisible();
 
-		await poHomeChannel.sidenav.logout();
+		await poHomeChannel.navbar.logout();
 
 		await page.locator('role=button[name="Login"]').waitFor();
 
@@ -92,7 +96,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await poAccountProfile.btnClose.click();
 
-		await poHomeChannel.sidenav.logout();
+		await poHomeChannel.navbar.logout();
 
 		await page.locator('role=button[name="Login"]').waitFor();
 
@@ -119,9 +123,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 	test('expect placeholder text in place of encrypted message', async ({ page }) => {
 		await page.goto('/home');
 
-		const channelName = faker.string.uuid();
-
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await poHomeChannel.sidebar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -135,12 +137,12 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
 		// Logout and login
-		await poHomeChannel.sidenav.logout();
+		await poHomeChannel.navbar.logout();
 		await page.locator('role=button[name="Login"]').waitFor();
 		await injectInitialData();
 		await restoreState(page, Users.admin, { except: ['private_key', 'public_key'] });
 
-		await poHomeChannel.sidenav.openChat(channelName);
+		await poHomeChannel.sidebar.openChat(channelName);
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
@@ -157,12 +159,9 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		page,
 	}) => {
 		await page.goto('/home');
+		await poHomeChannel.sidebar.createEncryptedChannel(channelName);
 
-		const channelName = faker.string.uuid();
-
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
-
-		await poHomeChannel.sidenav.openChat(channelName);
+		await poHomeChannel.sidebar.openChat(channelName);
 
 		await poHomeChannel.content.dragAndDropTxtFile();
 		await poHomeChannel.content.descriptionInput.fill('any_description');
@@ -215,14 +214,14 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		});
 
 		// Logout to remove e2ee keys
-		await poHomeChannel.sidenav.logout();
+		await poHomeChannel.navbar.logout();
 
 		// Login again
 		await page.locator('role=button[name="Login"]').waitFor();
 		await injectInitialData();
 		await restoreState(page, Users.admin, { except: ['private_key', 'public_key'] });
 
-		await poHomeChannel.sidenav.openChat(channelName);
+		await poHomeChannel.sidebar.openChat(channelName);
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
@@ -233,16 +232,24 @@ test.describe.serial('e2e-encryption initial setup', () => {
 	});
 });
 
+// fix channels not being deleted afterEach
 test.describe.serial('e2e-encryption', () => {
 	let poHomeChannel: HomeChannel;
+	let channelName: string;
 
 	test.use({ storageState: Users.userE2EE.state });
 
 	test.beforeEach(async ({ page, api }) => {
+		channelName = faker.string.uuid();
+
 		await api.post('/settings/E2E_Enable', { value: true });
 
 		poHomeChannel = new HomeChannel(page);
 		await page.goto('/home');
+	});
+
+	test.afterEach(async ({ api }) => {
+		await deletePrivateChannel(api, channelName);
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -255,9 +262,7 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
-		const channelName = faker.string.uuid();
-
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await poHomeChannel.sidebar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -299,9 +304,7 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test('expect create a private encrypted channel and send a encrypted thread message', async ({ page }) => {
-		const channelName = faker.string.uuid();
-
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await poHomeChannel.sidebar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -333,9 +336,7 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test('expect create a private encrypted channel and check disabled message menu actions on an encrypted message', async ({ page }) => {
-		const channelName = faker.string.uuid();
-
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await poHomeChannel.sidebar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -358,11 +359,9 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test('expect create a private channel, encrypt it and send an encrypted message', async ({ page }) => {
-		const channelName = faker.string.uuid();
-
-		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-		await poHomeChannel.sidenav.btnCreate.click();
+		await poHomeChannel.sidebar.openCreateNewByLabel('Channel');
+		await poHomeChannel.createRoomModal.inputChannelName.fill(channelName);
+		await poHomeChannel.createRoomModal.btnCreate.click();
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -386,9 +385,7 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test('expect create a encrypted private channel and mention user', async ({ page }) => {
-		const channelName = faker.string.uuid();
-
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await poHomeChannel.sidebar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -398,7 +395,7 @@ test.describe.serial('e2e-encryption', () => {
 
 		await poHomeChannel.content.sendMessage('hello @user1');
 
-		const userMention = await page.getByRole('button', {
+		const userMention = page.getByRole('button', {
 			name: 'user1',
 		});
 
@@ -406,9 +403,7 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test('expect create a encrypted private channel, mention a channel and navigate to it', async ({ page }) => {
-		const channelName = faker.string.uuid();
-
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await poHomeChannel.sidebar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -430,9 +425,7 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test('expect create a encrypted private channel, mention a channel and user', async ({ page }) => {
-		const channelName = faker.string.uuid();
-
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await poHomeChannel.sidebar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -455,11 +448,9 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test('should encrypted field be available on edit room', async ({ page }) => {
-		const channelName = faker.string.uuid();
-
-		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-		await poHomeChannel.sidenav.btnCreate.click();
+		await poHomeChannel.sidebar.openCreateNewByLabel('Channel');
+		await poHomeChannel.createRoomModal.inputChannelName.fill(channelName);
+		await poHomeChannel.createRoomModal.btnCreate.click();
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -475,12 +466,12 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test('expect create a Direct message, encrypt it and attempt to enable OTR', async ({ page }) => {
-		await poHomeChannel.sidenav.openNewByLabel('Direct message');
-		await poHomeChannel.sidenav.inputDirectUsername.click();
+		await poHomeChannel.sidebar.openCreateNewByLabel('Direct message');
+		await poHomeChannel.createRoomModal.inputDirectUsernames.click();
 		await page.keyboard.type('user2');
 		await page.waitForTimeout(1000);
 		await page.keyboard.press('Enter');
-		await poHomeChannel.sidenav.btnCreate.click();
+		await poHomeChannel.createRoomModal.btnCreate.click();
 
 		await expect(page).toHaveURL(`/direct/user2${Users.userE2EE.data.username}`);
 
@@ -510,13 +501,11 @@ test.describe.serial('e2e-encryption', () => {
 
 		test('File and description encryption', async ({ page }) => {
 			await test.step('create an encrypted channel', async () => {
-				const channelName = faker.string.uuid();
-
-				await poHomeChannel.sidenav.openNewByLabel('Channel');
-				await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-				await poHomeChannel.sidenav.advancedSettingsAccordion.click();
-				await poHomeChannel.sidenav.checkboxEncryption.click();
-				await poHomeChannel.sidenav.btnCreate.click();
+				await poHomeChannel.sidebar.openCreateNewByLabel('Channel');
+				await poHomeChannel.createRoomModal.inputChannelName.fill(channelName);
+				await poHomeChannel.createRoomModal.advancedSettingsAccordion.click();
+				await poHomeChannel.createRoomModal.checkboxEncryption.click();
+				await poHomeChannel.createRoomModal.btnCreate.click();
 
 				await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -539,13 +528,11 @@ test.describe.serial('e2e-encryption', () => {
 
 		test('File encryption with whitelisted and blacklisted media types', async ({ page, api }) => {
 			await test.step('create an encrypted room', async () => {
-				const channelName = faker.string.uuid();
-
-				await poHomeChannel.sidenav.openNewByLabel('Channel');
-				await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-				await poHomeChannel.sidenav.advancedSettingsAccordion.click();
-				await poHomeChannel.sidenav.checkboxEncryption.click();
-				await poHomeChannel.sidenav.btnCreate.click();
+				await poHomeChannel.sidebar.openCreateNewByLabel('Channel');
+				await poHomeChannel.createRoomModal.inputChannelName.fill(channelName);
+				await poHomeChannel.createRoomModal.advancedSettingsAccordion.click();
+				await poHomeChannel.createRoomModal.checkboxEncryption.click();
+				await poHomeChannel.createRoomModal.btnCreate.click();
 
 				await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -609,13 +596,11 @@ test.describe.serial('e2e-encryption', () => {
 
 			test('Upload file without encryption in e2ee room', async ({ page }) => {
 				await test.step('create an encrypted channel', async () => {
-					const channelName = faker.string.uuid();
-
-					await poHomeChannel.sidenav.openNewByLabel('Channel');
-					await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-					await poHomeChannel.sidenav.advancedSettingsAccordion.click();
-					await poHomeChannel.sidenav.checkboxEncryption.click();
-					await poHomeChannel.sidenav.btnCreate.click();
+					await poHomeChannel.sidebar.openCreateNewByLabel('Channel');
+					await poHomeChannel.createRoomModal.inputChannelName.fill(channelName);
+					await poHomeChannel.createRoomModal.advancedSettingsAccordion.click();
+					await poHomeChannel.createRoomModal.checkboxEncryption.click();
+					await poHomeChannel.createRoomModal.btnCreate.click();
 
 					await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -647,9 +632,8 @@ test.describe.serial('e2e-encryption', () => {
 
 	test('expect slash commands to be enabled in an e2ee room', async ({ page }) => {
 		test.skip(!IS_EE, 'Premium Only');
-		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await poHomeChannel.sidebar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -690,9 +674,7 @@ test.describe.serial('e2e-encryption', () => {
 		});
 
 		test('expect slash commands to be disabled in an e2ee room', async ({ page }) => {
-			const channelName = faker.string.uuid();
-
-			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+			await poHomeChannel.sidebar.createEncryptedChannel(channelName);
 
 			await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -713,15 +695,13 @@ test.describe.serial('e2e-encryption', () => {
 	test('expect create a private channel, send unecrypted messages, encrypt the channel and delete the last message and check the last message in the sidebar', async ({
 		page,
 	}) => {
-		const channelName = faker.string.uuid();
-
 		// Enable Sidebar Extended display mode
-		await poHomeChannel.sidenav.setDisplayMode('Extended');
+		await poHomeChannel.sidebar.setDisplayMode('Extended');
 
 		// Create private channel
-		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-		await poHomeChannel.sidenav.btnCreate.click();
+		await poHomeChannel.sidebar.openCreateNewByLabel('Channel');
+		await poHomeChannel.createRoomModal.inputChannelName.fill(channelName);
+		await poHomeChannel.createRoomModal.btnCreate.click();
 		await expect(page).toHaveURL(`/group/${channelName}`);
 		await expect(poHomeChannel.toastSuccess).toBeVisible();
 		await poHomeChannel.dismissToast();
@@ -752,15 +732,13 @@ test.describe.serial('e2e-encryption', () => {
 		await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger').click();
 
 		// Check last message in the sidebar
-		const sidebarChannel = await poHomeChannel.sidenav.getSidebarItemByName(channelName);
+		const sidebarChannel = poHomeChannel.sidebar.getSidebarItemByName(channelName);
 		await expect(sidebarChannel).toBeVisible();
-		await expect(sidebarChannel.locator('span')).toContainText(encriptedMessage1);
+		await expect(sidebarChannel.filter({ hasText: encriptedMessage1 })).toBeVisible();
 	});
 
 	test('expect create a private encrypted channel and pin/star an encrypted message', async ({ page }) => {
-		const channelName = faker.string.uuid();
-
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await poHomeChannel.sidebar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -838,8 +816,11 @@ test.describe.serial('e2ee room setup', () => {
 	let poAccountProfile: AccountProfile;
 	let poHomeChannel: HomeChannel;
 	let e2eePassword: string;
+	let channelName: string;
 
 	test.beforeEach(async ({ page }) => {
+		channelName = faker.string.uuid();
+
 		poAccountProfile = new AccountProfile(page);
 		poHomeChannel = new HomeChannel(page);
 	});
@@ -855,6 +836,7 @@ test.describe.serial('e2ee room setup', () => {
 	});
 
 	test.afterEach(async ({ api }) => {
+		await deletePrivateChannel(api, channelName);
 		await api.recreateContext();
 	});
 
@@ -872,13 +854,11 @@ test.describe.serial('e2ee room setup', () => {
 
 		await expect(page.locator('role=banner >> text="Save your encryption password"')).toBeVisible();
 
-		const channelName = faker.string.uuid();
-
-		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-		await poHomeChannel.sidenav.advancedSettingsAccordion.click();
-		await poHomeChannel.sidenav.checkboxEncryption.click();
-		await poHomeChannel.sidenav.btnCreate.click();
+		await poHomeChannel.sidebar.openCreateNewByLabel('Channel');
+		await poHomeChannel.createRoomModal.inputChannelName.fill(channelName);
+		await poHomeChannel.createRoomModal.advancedSettingsAccordion.click();
+		await poHomeChannel.createRoomModal.checkboxEncryption.click();
+		await poHomeChannel.createRoomModal.btnCreate.click();
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -916,20 +896,18 @@ test.describe.serial('e2ee room setup', () => {
 		await page.goto('/home');
 
 		// Logout to remove e2ee keys
-		await poHomeChannel.sidenav.logout();
+		await poHomeChannel.navbar.logout();
 
 		await page.locator('role=button[name="Login"]').waitFor();
 
 		await injectInitialData();
 		await restoreState(page, Users.admin, { except: ['private_key', 'public_key'] });
 
-		const channelName = faker.string.uuid();
-
-		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-		await poHomeChannel.sidenav.advancedSettingsAccordion.click();
-		await poHomeChannel.sidenav.checkboxEncryption.click();
-		await poHomeChannel.sidenav.btnCreate.click();
+		await poHomeChannel.sidebar.openCreateNewByLabel('Channel');
+		await poHomeChannel.createRoomModal.inputChannelName.fill(channelName);
+		await poHomeChannel.createRoomModal.advancedSettingsAccordion.click();
+		await poHomeChannel.createRoomModal.checkboxEncryption.click();
+		await poHomeChannel.createRoomModal.btnCreate.click();
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -971,13 +949,11 @@ test.describe.serial('e2ee room setup', () => {
 	test('expect waiting for room keys state', async ({ page }) => {
 		await page.goto('/home');
 
-		const channelName = faker.string.uuid();
-
-		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-		await poHomeChannel.sidenav.advancedSettingsAccordion.click();
-		await poHomeChannel.sidenav.checkboxEncryption.click();
-		await poHomeChannel.sidenav.btnCreate.click();
+		await poHomeChannel.sidebar.openCreateNewByLabel('Channel');
+		await poHomeChannel.createRoomModal.inputChannelName.fill(channelName);
+		await poHomeChannel.createRoomModal.advancedSettingsAccordion.click();
+		await poHomeChannel.createRoomModal.checkboxEncryption.click();
+		await poHomeChannel.createRoomModal.btnCreate.click();
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -990,8 +966,8 @@ test.describe.serial('e2ee room setup', () => {
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
-		await poHomeChannel.sidenav.userProfileMenu.click();
-		await poHomeChannel.sidenav.accountProfileOption.click();
+		await poHomeChannel.navbar.userProfileMenu.click();
+		await poHomeChannel.navbar.accountProfileOption.click();
 
 		await page.locator('role=navigation >> a:has-text("Security")').click();
 
@@ -1007,9 +983,9 @@ test.describe.serial('e2ee room setup', () => {
 		await injectInitialData();
 		await restoreState(page, Users.admin);
 
-		await page.locator('role=navigation >> role=button[name=Search]').click();
-		await page.locator('role=search >> role=searchbox').fill(channelName);
-		await page.locator(`role=search >> role=listbox >> role=link >> text="${channelName}"`).click();
+		await poHomeChannel.sidebar.typeSearch(channelName);
+		await poHomeChannel.sidebar.getSearchRoomByName(channelName).click();
+		await poHomeChannel.content.waitForPageLoad();
 
 		await page.locator('role=button[name="Save E2EE password"]').click();
 		await page.locator('#modal-root >> button:has-text("I saved my password")').click();
@@ -1024,13 +1000,22 @@ test.describe.serial('e2ee room setup', () => {
 	});
 });
 
+// fix channels not being deleted afterEach
 test.describe('e2ee support legacy formats', () => {
 	test.use({ storageState: Users.userE2EE.state });
 
 	let poHomeChannel: HomeChannel;
+	let channelName: string;
 
 	test.beforeEach(async ({ page }) => {
+		channelName = faker.string.uuid();
+
 		poHomeChannel = new HomeChannel(page);
+	});
+
+	test.afterEach(async ({ api }) => {
+		await deletePrivateChannel(api, channelName);
+		await api.recreateContext();
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -1047,9 +1032,7 @@ test.describe('e2ee support legacy formats', () => {
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page, request }) => {
 		await page.goto('/home');
 
-		const channelName = faker.string.uuid();
-
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await poHomeChannel.sidebar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 

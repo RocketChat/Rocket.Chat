@@ -1,21 +1,4 @@
-import {
-	FeaturePreview,
-	FeaturePreviewOff,
-	FeaturePreviewOn,
-	HeaderV2Divider,
-	HeaderDivider as HeaderDividerComponent,
-} from '@rocket.chat/ui-client';
-import React, { memo } from 'react';
-
-const HeaderDivider = () => (
-	<FeaturePreview feature='newNavigation'>
-		<FeaturePreviewOff>
-			<HeaderDividerComponent />
-		</FeaturePreviewOff>
-		<FeaturePreviewOn>
-			<HeaderV2Divider />
-		</FeaturePreviewOn>
-	</FeaturePreview>
-);
+import { HeaderV2Divider as HeaderDivider } from '@rocket.chat/ui-client';
+import { memo } from 'react';
 
 export default memo(HeaderDivider);

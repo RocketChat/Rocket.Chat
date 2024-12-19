@@ -49,7 +49,7 @@ test.describe('Omnichannel close inquiry', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeOmnichannel.sidenav.getQueuedChat(newVisitor.name).click();
+			await agent.poHomeOmnichannel.sidebar.getQueuedChat(newVisitor.name).click();
 			await expect(agent.poHomeOmnichannel.content.btnTakeChat).toBeVisible();
 		});
 
@@ -61,7 +61,8 @@ test.describe('Omnichannel close inquiry', () => {
 		});
 
 		await test.step('Expect to inquiry be closed when navigate back', async () => {
-			await agent.poHomeOmnichannel.sidenav.openAdministrationByLabel('Omnichannel');
+			await agent.poHomeOmnichannel.navbar.openWorkspaceSettingsMenu();
+			await agent.poHomeOmnichannel.navbar.omnichannelMenuItem.click();
 			await agent.poHomeOmnichannel.omnisidenav.linkCurrentChats.click();
 			await agent.poHomeOmnichannel.currentChats.findRowByName(newVisitor.name).click();
 			await expect(agent.poHomeOmnichannel.content.btnTakeChat).not.toBeVisible();

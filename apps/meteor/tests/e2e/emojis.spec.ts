@@ -20,7 +20,7 @@ test.describe.serial('emoji', () => {
 	});
 
 	test('expect pick and send grinning emoji', async ({ page }) => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 		await poHomeChannel.content.pickEmoji('grinning');
 		await page.keyboard.press('Enter');
 
@@ -28,7 +28,7 @@ test.describe.serial('emoji', () => {
 	});
 
 	test('expect send emoji via text', async ({ page }) => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage(':innocent:');
 		await page.keyboard.press('Enter');
 
@@ -36,7 +36,7 @@ test.describe.serial('emoji', () => {
 	});
 
 	test('expect render special characters and numbers properly', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 
 		await poHomeChannel.content.sendMessage('® © ™ # *');
 		await expect(poHomeChannel.content.lastUserMessage).toContainText('® © ™ # *');

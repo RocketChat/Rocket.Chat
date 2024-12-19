@@ -9,13 +9,17 @@ import { useForm, Controller } from 'react-hook-form';
 import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
 
-const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
+type CreateDirectMessageProps = { onClose: () => void };
+
+const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 	const t = useTranslation();
 	const directMaxUsers = useSetting('DirectMesssage_maxUsers', 1);
-	const membersFieldId = useUniqueId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const createDirectAction = useEndpoint('POST', '/v1/dm.create');
+
+	const membersFieldId = useUniqueId();
+	const createDirectFormId = useUniqueId();
 
 	const {
 		control,
@@ -41,9 +45,12 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 	};
 
 	return (
-		<Modal data-qa='create-direct-modal' wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}>
+		<Modal
+			aria-labelledby={`${createDirectFormId}-title`}
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
+		>
 			<Modal.Header>
-				<Modal.Title>{t('Create_direct_message')}</Modal.Title>
+				<Modal.Title id={`${createDirectFormId}-title`}>{t('Create_direct_message')}</Modal.Title>
 				<Modal.Close tabIndex={-1} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content mbe={2}>

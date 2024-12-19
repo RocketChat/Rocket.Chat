@@ -64,7 +64,7 @@ test.describe('OC - Livechat - Avatar visibility', async () => {
 		});
 
 		await test.step('expect to send a message as agent', async () => {
-			await poAuxContext.poHomeOmnichannel.sidenav.openChat(visitor.name);
+			await poAuxContext.poHomeOmnichannel.sidebar.openChat(visitor.name);
 			await poAuxContext.poHomeOmnichannel.content.sendMessage('this_is_a_test_message_from_agent');
 			await expect(poLiveChat.txtChatMessage('this_is_a_test_message_from_agent')).toBeVisible();
 		});
@@ -88,7 +88,7 @@ test.describe('OC - Livechat - Avatar visibility', async () => {
 		});
 
 		await test.step('should close the conversation', async () => {
-			await poAuxContext.poHomeOmnichannel.sidenav.openChat(visitor.name);
+			await poAuxContext.poHomeOmnichannel.sidebar.openChat(visitor.name);
 			await poAuxContext.poHomeOmnichannel.content.btnCloseChat.click();
 			await poAuxContext.poHomeOmnichannel.content.closeChatModal.inputComment.fill('this_is_a_test_comment');
 			await poAuxContext.poHomeOmnichannel.content.closeChatModal.btnConfirm.click();
