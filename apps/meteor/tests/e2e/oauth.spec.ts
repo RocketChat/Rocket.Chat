@@ -11,7 +11,7 @@ test.describe('OAuth', () => {
 
 	test('Login Page', async ({ page, api }) => {
 		await test.step('expect OAuth button to be visible', async () => {
-			await expect((await setSettingValueById(api, 'Accounts_OAuth_Google', true)).status()).toBe(200);
+			await setSettingValueById(api, 'Accounts_OAuth_Google', true);
 			await page.waitForTimeout(5000);
 
 			await page.goto('/home');
@@ -20,7 +20,7 @@ test.describe('OAuth', () => {
 		});
 
 		await test.step('expect Custom OAuth button to be visible', async () => {
-			await expect((await setSettingValueById(api, 'Accounts_OAuth_Custom-Test', true)).status()).toBe(200);
+			await setSettingValueById(api, 'Accounts_OAuth_Custom-Test', true);
 			await page.waitForTimeout(5000);
 			await page.goto('/home');
 
@@ -33,7 +33,7 @@ test.describe('OAuth', () => {
 		});
 
 		await test.step('expect OAuth button to not be visible', async () => {
-			await expect((await setSettingValueById(api, 'Accounts_OAuth_Google', false)).status()).toBe(200);
+			await setSettingValueById(api, 'Accounts_OAuth_Google', false);
 			await page.waitForTimeout(5000);
 
 			await page.goto('/home');
@@ -41,7 +41,7 @@ test.describe('OAuth', () => {
 		});
 
 		await test.step('expect Custom OAuth button to not be visible', async () => {
-			await expect((await setSettingValueById(api, 'Accounts_OAuth_Custom-Test', false)).status()).toBe(200);
+			await setSettingValueById(api, 'Accounts_OAuth_Custom-Test', false);
 			await page.waitForTimeout(5000);
 
 			await page.goto('/home');
