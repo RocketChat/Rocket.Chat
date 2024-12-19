@@ -4,6 +4,7 @@ import { useCallback, useContext, useEffect, useState } from 'preact/hooks';
 import { parse } from 'query-string';
 
 import { isActiveSession } from '../../helpers/isActiveSession';
+import { createOrUpdateGuest, evaluateChangesAndLoadConfigByFields } from '../../lib/hooks';
 import { loadConfig } from '../../lib/main';
 import { parentCall } from '../../lib/parentCall';
 import { loadMessages } from '../../lib/room';
@@ -76,7 +77,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 	} = useContext(StoreContext);
 	const { department, name, email } = iframe.guest || {};
 	const { color, position: configPosition, background } = config.theme || {};
-	const { livechatLogo, hideWatermark = false } = config.settings || {};
+	const { livechatLogo, hideWatermark = false, registrationForm } = config.settings || {};
 
 	const {
 		color: customColor,
@@ -137,15 +138,26 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 
 	const dismissNotification = () => !isActiveSession();
 
-	const checkPoppedOutWindow = useCallback(() => {
+	const checkPoppedOutWindow = useCallback(async () => {
 		// Checking if the window is poppedOut and setting parent minimized if yes for the restore purpose
 		const poppedOut = parse(window.location.search).mode === 'popout';
+		const { token = '' } = parse(window.location.search);
 		setPopedOut(poppedOut);
 
 		if (poppedOut) {
 			dispatch({ minimized: false, undocked: true });
 		}
-	}, [dispatch]);
+
+		if (token && typeof token === 'string') {
+			if (registrationForm && !name && !email) {
+				dispatch({ token });
+				return;
+			}
+			await evaluateChangesAndLoadConfigByFields(async () => {
+				await createOrUpdateGuest({ token });
+			});
+		}
+	}, [dispatch, email, name, registrationForm]);
 
 	useEffect(() => {
 		checkPoppedOutWindow();

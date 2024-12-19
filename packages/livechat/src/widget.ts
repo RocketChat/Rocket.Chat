@@ -489,20 +489,13 @@ const api: InternalWidgetAPI = {
 		if (!config.url) {
 			throw new Error('Config.url is not set!');
 		}
+		const urlToken = token && `&token=${token}`;
+
 		api.popup = window.open(
-			`${config.url}${config.url.lastIndexOf('?') > -1 ? '&' : '?'}mode=popout`,
+			`${config.url}${config.url.lastIndexOf('?') > -1 ? '&' : '?'}mode=popout${urlToken}`,
 			'livechat-popout',
 			`width=${WIDGET_OPEN_WIDTH}, height=${widgetHeight}, toolbars=no`,
 		);
-
-		const data = {
-			src: 'rocketchat',
-			fn: 'setGuestToken',
-			args: [token],
-		};
-
-		api.popup?.postMessage(data, '*');
-		api.popup?.focus();
 	},
 
 	removeWidget() {
