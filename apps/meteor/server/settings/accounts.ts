@@ -879,4 +879,21 @@ export const createAccountSettings = () =>
 				i18nDescription: 'Password_History_Amount_Description',
 			});
 		});
+
+		await this.section('Password_Expiration', async function () {
+			await this.add('Accounts_Password_Expiration_Enabled', false, {
+				type: 'boolean',
+				i18nDescription: 'Accounts_Password_Expiration_Enabled_Description',
+			});
+
+			await this.add('Accounts_Password_Expiration_Lifetime', 30, {
+				type: 'int',
+				i18nDescription: 'Accounts_Password_Expiration_Lifetime_Description',
+			});
+
+			// await this.add('Accounts_Password_Expiration_Expire', 'expire_passwords', {
+			// 	type: 'action',
+			// 	actionText: 'Accounts_Password_Expiration_Expire_Action',
+			// });
+		});
 	});
