@@ -43,14 +43,14 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 						e.preventDefault();
 						e.stopPropagation();
 
-						roomFocusManager.focusFirst({
+						roomFocusManager?.focusFirst({
 							from: document.getElementsByClassName('rcx-room-header')[0],
 						});
 					} else if (isThreadMessage(e.target) || isSystemMessage(e.target) || isMessageToolbarAction(e.target)) {
 						e.preventDefault();
 						e.stopPropagation();
 
-						roomFocusManager.focusNext({
+						roomFocusManager?.focusNext({
 							accept: (node) => node.tagName === 'TEXTAREA',
 						});
 					}
