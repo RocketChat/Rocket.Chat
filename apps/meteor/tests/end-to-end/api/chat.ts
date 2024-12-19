@@ -1,15 +1,15 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IMessage, IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IThreadMessage, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
+import { followMessage, sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { addUserToRoom, createRoom, deleteRoom, getSubscriptionByRoomId } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
@@ -2004,6 +2004,52 @@ describe('[Chat]', () => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
+		});
+
+		describe('when deleting a thread message', () => {
+			let otherUser: TestUser<IUser>;
+			let otherUserCredentials: Credentials;
+			let parentThreadId: IMessage['_id'];
+
+			before(async () => {
+				const username = `user${+new Date()}`;
+				otherUser = await createUser({ username });
+				otherUserCredentials = await login(otherUser.username, password);
+				parentThreadId = (await sendSimpleMessage({ roomId: testChannel._id })).body.message._id;
+				await addUserToRoom({ rid: testChannel._id, usernames: [otherUser.username] });
+			});
+
+			after(() => Promise.all([deleteUser(otherUser), deleteMessage({ msgId: parentThreadId, roomId: testChannel._id })]));
+
+			const expectNoUnreadThreadMessages = (s: ISubscription) => {
+				expect(s).to.have.property('tunread');
+				expect(s.tunread).to.be.an('array');
+				expect(s.tunread).to.deep.equal([]);
+			};
+
+			it('should reset the unread counter if the message was removed', async () => {
+				const { body } = await sendSimpleMessage({ roomId: testChannel._id, tmid: parentThreadId, userCredentials: otherUserCredentials });
+				const childrenMessageId = body.message._id;
+
+				await followMessage({ msgId: parentThreadId, requestCredentials: otherUserCredentials });
+				await deleteMessage({ msgId: childrenMessageId, roomId: testChannel._id });
+
+				const userWhoCreatedTheThreadSubscription = await getSubscriptionByRoomId(testChannel._id);
+
+				expectNoUnreadThreadMessages(userWhoCreatedTheThreadSubscription);
+			});
+
+			it('should reset the unread counter of users who followed the thread', async () => {
+				const { body } = await sendSimpleMessage({ roomId: testChannel._id, tmid: parentThreadId });
+				const childrenMessageId = body.message._id;
+
+				await followMessage({ msgId: parentThreadId, requestCredentials: otherUserCredentials });
+				await deleteMessage({ msgId: childrenMessageId, roomId: testChannel._id });
+
+				const userWhoWasFollowingTheThreadSubscription = await getSubscriptionByRoomId(testChannel._id, otherUserCredentials);
+
+				expectNoUnreadThreadMessages(userWhoWasFollowingTheThreadSubscription);
+			});
 		});
 	});
 
