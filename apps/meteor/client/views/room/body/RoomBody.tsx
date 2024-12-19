@@ -103,7 +103,7 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom } = useListIsAtBottom();
 
-	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
+	const { innerRef: getMoreInnerRef, loadMorePreviousMessages } = useGetMore(room._id, atBottomRef);
 
 	const { wrapperRef: leaderBannerWrapperRef, hideLeaderHeader, innerRef: leaderBannerInnerRef } = useLeaderBanner();
 
@@ -215,6 +215,16 @@ const RoomBody = (): ReactElement => {
 		};
 	});
 
+	const handleScroll = useCallback((event: UIEvent<HTMLElement>) => {
+		const element = event.target as HTMLElement;
+		const scrollTop = element.scrollTop;
+		
+		// Load more messages when scrolling near the top
+		if (scrollTop < 100 && hasMorePreviousMessages && !isLoadingMoreMessages) {
+			loadMorePreviousMessages();
+		}
+	}, [hasMorePreviousMessages, isLoadingMoreMessages, loadMorePreviousMessages]);
+
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
@@ -285,23 +295,36 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<CustomScrollbars ref={innerRef}>
+										<CustomScrollbars 
+											ref={innerRef}
+											onScroll={handleScroll}
+										>
 											<ul className='messages-list' aria-label={t('Message_list')} aria-busy={isLoadingMoreMessages}>
 												{canPreview ? (
 													<>
 														{hasMorePreviousMessages ? (
-															<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
+															<li className='load-more'>
+																{isLoadingMoreMessages ? (
+																	<LoadingMessagesIndicator />
+																) : (
+																	<button onClick={loadMorePreviousMessages}>
+																		{t('Load_more')}
+																	</button>
+																)}
+															</li>
 														) : (
 															<li>
 																<RoomForeword user={user} room={room} />
 																{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
 															</li>
 														)}
+														<MessageList rid={room._id} messageListRef={innerBoxRef} />
+														{hasMoreNextMessages ? (
+															<li className='load-more'>
+																{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}
+															</li>
+														) : null}
 													</>
-												) : null}
-												<MessageList rid={room._id} messageListRef={innerBoxRef} />
-												{hasMoreNextMessages ? (
-													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}
 											</ul>
 										</CustomScrollbars>
