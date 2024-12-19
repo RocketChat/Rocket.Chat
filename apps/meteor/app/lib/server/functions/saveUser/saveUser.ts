@@ -21,6 +21,7 @@ import { saveNewUser } from './saveNewUser';
 import { sendPasswordEmail } from './sendUserEmail';
 import { validateUserData } from './validateUserData';
 import { validateUserEditing } from './validateUserEditing';
+import { asyncLocalStorage } from '../../../../../server/lib/auditServerEvents/userChanged';
 
 export type SaveUserData = {
 	_id?: IUser['_id'];
@@ -49,6 +50,12 @@ export type SaveUserData = {
 
 export const saveUser = async function (userId: IUser['_id'], userData: SaveUserData) {
 	const oldUserData = userData._id && (await Users.findOneById(userData._id));
+
+	const auditStore = asyncLocalStorage.getStore();
+	if (oldUserData) {
+		auditStore?.insertPrevious(oldUserData);
+	}
+
 	if (oldUserData && isUserFederated(oldUserData)) {
 		throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
 	}
@@ -69,6 +76,7 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 			sendPassword = true;
 		}
 
+		auditStore?.insertBoth({ password: '**********' }, { password: 'random' });
 		delete userData.setRandomPassword;
 	}
 
@@ -92,15 +100,21 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 				method: 'saveUser',
 			});
 		}
+		auditStore?.insertBoth(
+			{ username: oldUserData?.username, name: oldUserData?.name },
+			{ username: userData.username, name: userData.name },
+		);
 	}
 
 	if (typeof userData.statusText === 'string') {
 		await setStatusText(userData._id, userData.statusText);
+		auditStore?.insertBoth({ statusText: oldUserData?.statusText }, { statusText: userData.statusText });
 	}
 
 	if (userData.email) {
 		const shouldSendVerificationEmailToUser = userData.verified !== true;
 		await setEmail(userData._id, userData.email, shouldSendVerificationEmailToUser);
+		auditStore?.insertBoth({ email: oldUserData?.email }, { email: userData.email });
 	}
 
 	if (
@@ -109,6 +123,9 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 		passwordPolicy.validate(userData.password)
 	) {
 		await Accounts.setPasswordAsync(userData._id, userData.password.trim());
+		if (sendPassword) {
+			auditStore?.insertBoth({ password: '**********' }, { password: 'manual' });
+		}
 	} else {
 		sendPassword = false;
 	}
@@ -144,6 +161,7 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 	}
 
 	await Users.updateOne({ _id: userData._id }, updateUser as UpdateFilter<IUser>);
+	auditStore?.insertCurrent(updateUser.$set as Partial<IUser>);
 
 	// App IPostUserUpdated event hook
 	const userUpdated = await Users.findOneById(userData._id);
