@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-It hides the export feature for rooms running OTR session
+Disables export messages feature for rooms with an active OTR session
