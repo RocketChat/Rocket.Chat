@@ -47,7 +47,7 @@ test.describe.serial('export-messages', () => {
 		).toBeVisible();
 	});
 
-	test('should display an error when trying to send email without selecting any email', async () => {
+	test('should display an error when trying to send email without selecting any message', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
