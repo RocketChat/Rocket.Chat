@@ -1,4 +1,4 @@
-import { type IVoipFreeSwitchService, ServiceClassInternal } from '@rocket.chat/core-services';
+import { type IVoipFreeSwitchService, ServiceClassInternal, ServiceStarter } from '@rocket.chat/core-services';
 import type {
 	DeepPartial,
 	IFreeSwitchEventCall,
@@ -16,13 +16,38 @@ import type { InsertionModel } from '@rocket.chat/model-typings';
 import { FreeSwitchCall, FreeSwitchEvent, Users } from '@rocket.chat/models';
 import { objectMap, wrapExceptions } from '@rocket.chat/tools';
 import type { WithoutId } from 'mongodb';
+import { MongoError } from 'mongodb';
 
 import { settings } from '../../../../app/settings/server';
 
 export class VoipFreeSwitchService extends ServiceClassInternal implements IVoipFreeSwitchService {
 	protected name = 'voip-freeswitch';
 
+	private serviceStarter: ServiceStarter;
+
+	constructor() {
+		super();
+
+		this.serviceStarter = new ServiceStarter(() => Promise.resolve(this.startEvents()));
+	}
+
+	private listening = false;
+
 	public async started(): Promise<void> {
+		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
+			if (setting._id === 'VoIP_TeamCollab_Enabled' && setting.value === true) {
+				void this.serviceStarter.start();
+			}
+		});
+
+		void this.serviceStarter.start();
+	}
+
+	private startEvents(): void {
+		if (this.listening) {
+			return;
+		}
+
 		try {
 			// #ToDo: Reconnection
 			// #ToDo: Only connect from one rocket.chat instance
@@ -30,8 +55,9 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 				async (...args) => wrapExceptions(() => this.onFreeSwitchEvent(...args)).suppress(),
 				this.getConnectionSettings(),
 			);
-		} catch (error) {
-			console.error(error);
+			this.listening = true;
+		} catch (_e) {
+			this.listening = false;
 		}
 	}
 
@@ -262,10 +288,18 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 	}
 
 	private async registerEvent(event: InsertionModel<WithoutId<IFreeSwitchEvent>>): Promise<void> {
-		await FreeSwitchEvent.registerEvent(event);
+		try {
+			await FreeSwitchEvent.registerEvent(event);
+			if (event.eventName === 'CHANNEL_DESTROY' && event.call?.UUID) {
+				await this.computeCall(event.call?.UUID);
+			}
+		} catch (error) {
+			// avoid logging that an event was duplicated from mongo
+			if (error instanceof MongoError && error.code === 11000) {
+				return;
+			}
 
-		if (event.eventName === 'CHANNEL_DESTROY' && event.call?.UUID) {
-			await this.computeCall(event.call?.UUID);
+			console.error(error);
 		}
 	}
 
@@ -441,15 +475,6 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			});
 		}
 
-		// A call has 2 channels at max
-		// If it has 3 or more channels, it's a forwarded call
-		if (call.channels.length >= 3) {
-			const originalCalls = await FreeSwitchCall.findAllByChannelUniqueIds(call.channels, { projection: { events: 0 } }).toArray();
-			if (originalCalls.length) {
-				call.forwardedFrom = originalCalls;
-			}
-		}
-
 		if (fromUser.size) {
 			const callerIds = [...fromUser].filter((e) => !!e);
 			const user = await Users.findOneByFreeSwitchExtensions(callerIds);
@@ -477,6 +502,15 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			}
 		}
 
+		// A call has 2 channels at max
+		// If it has 3 or more channels, it's a forwarded call
+		if (call.channels.length >= 3) {
+			const originalCalls = await FreeSwitchCall.findAllByChannelUniqueIds(call.channels, { projection: { events: 0 } }).toArray();
+			if (originalCalls.length) {
+				call.forwardedFrom = originalCalls;
+			}
+		}
+
 		// Call originated from us but destination and destination is another user = internal
 		if (call.from && call.to) {
 			call.direction = 'internal';
@@ -497,7 +531,34 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			call.voicemail = true;
 		}
 
+		call.duration = this.computeCallDuration(call);
+
 		await FreeSwitchCall.registerCall(call);
+	}
+
+	private computeCallDuration(call: InsertionModel<IFreeSwitchCall>): number {
+		if (!call.events.length) {
+			return 0;
+		}
+
+		const channelAnswerEvent = call.events.find((e) => e.eventName === 'CHANNEL_ANSWER');
+		if (!channelAnswerEvent?.timestamp) {
+			return 0;
+		}
+
+		const channelHangupEvent = call.events.find((e) => e.eventName === 'CHANNEL_HANGUP_COMPLETE');
+		if (!channelHangupEvent?.timestamp) {
+			// We dont have a hangup but we have an answer, assume hangup is === destroy time
+			return new Date().getTime() - new Date(this.toMillis(channelAnswerEvent.timestamp)).getTime();
+		}
+
+		return (
+			new Date(this.toMillis(channelHangupEvent.timestamp)).getTime() - new Date(this.toMillis(channelAnswerEvent.timestamp)).getTime()
+		);
+	}
+
+	private toMillis(microseconds: string): number {
+		return Math.floor(Number(microseconds) / 1000);
 	}
 
 	async getDomain(): Promise<string> {

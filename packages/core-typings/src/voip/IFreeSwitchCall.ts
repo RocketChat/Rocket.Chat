@@ -11,6 +11,7 @@ export interface IFreeSwitchCall extends IRocketChatRecord {
 	forwardedFrom?: Omit<IFreeSwitchCall, 'events'>[];
 	direction?: 'internal' | 'external_inbound' | 'external_outbound';
 	voicemail?: boolean;
+	duration?: number;
 }
 
 const knownEventTypes = [

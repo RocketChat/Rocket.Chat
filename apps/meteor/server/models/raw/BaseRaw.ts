@@ -231,10 +231,6 @@ export abstract class BaseRaw<
 		};
 	}
 
-	exists(query: Filter<T>): Promise<boolean> {
-		return this.col.find(query, { limit: 1, batchSize: 1, projection: { _id: 1 } }).hasNext();
-	}
-
 	/**
 	 * @deprecated use {@link updateOne} or {@link updateAny} instead
 	 */
