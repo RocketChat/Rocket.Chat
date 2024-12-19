@@ -7,7 +7,7 @@ import type { ProcessMessenger } from './ProcessMessenger';
 const COMMAND_PING = '_zPING';
 
 const defaultOptions: LivenessManager['options'] = {
-    pingRequestTimeout: 10000,
+    pingRequestTimeout: 1000,
     pingFrequencyInMS: 10000,
     consecutiveTimeoutLimit: 4,
     maxRestarts: Infinity,
