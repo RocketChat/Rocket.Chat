@@ -40,12 +40,12 @@ test.describe('Omnichannel Canned Responses Sidebar', () => {
 			await page.goto('/livechat');
 			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newVisitor, false);
-			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
+			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_visitor');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeChannel.sidebar.openChat(newVisitor.name);
 		});
 
 		await test.step('Expect to be able to open canned responses sidebar and creation', async () => {

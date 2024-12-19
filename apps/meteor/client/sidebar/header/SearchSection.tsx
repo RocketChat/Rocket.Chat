@@ -24,6 +24,19 @@ const wrapperStyle = css`
 	background-color: ${Palette.surface['surface-sidebar']};
 `;
 
+declare global {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Window {
+		opera?: string;
+	}
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Navigator {
+		userAgentData?: {
+			mobile: boolean;
+		};
+	}
+}
+
 const mobileCheck = function () {
 	let check = false;
 	(function (a: string) {

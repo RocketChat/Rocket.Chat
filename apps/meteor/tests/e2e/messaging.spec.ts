@@ -23,7 +23,7 @@ test.describe.serial('Messaging', () => {
 	});
 
 	test('should navigate on messages using keyboard', async ({ page }) => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('msg1');
 		await poHomeChannel.content.sendMessage('msg2');
 
@@ -79,7 +79,7 @@ test.describe.serial('Messaging', () => {
 	});
 
 	test('should navigate properly on the user card', async ({ page }) => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 
 		// open UserCard
 		await page.keyboard.press('Shift+Tab');
@@ -105,7 +105,7 @@ test.describe.serial('Messaging', () => {
 	});
 
 	test('should not restore focus on the last focused if it was triggered by click', async ({ page }) => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 		await page.locator('[data-qa-type="message"]:has-text("msg1")').click();
 		await poHomeChannel.composer.click();
 		await page.keyboard.press('Shift+Tab');
@@ -114,14 +114,14 @@ test.describe.serial('Messaging', () => {
 	});
 
 	test('should not focus on the last message when focusing by click', async ({ page }) => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 		await page.locator('[data-qa-type="message"]:has-text("msg1")').click();
 
 		await expect(page.locator('[data-qa-type="message"]').last()).not.toBeFocused();
 	});
 
 	test('should focus the latest message when moving the focus on the list and theres no previous focus', async ({ page }) => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.sidebar.openChat(targetChannel);
 		await page.getByRole('button', { name: targetChannel }).first().focus();
 
 		// move focus to the list
@@ -151,9 +151,9 @@ test.describe.serial('Messaging', () => {
 		});
 
 		test('expect show "hello word" in both contexts (targetChannel)', async () => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.sidebar.openChat(targetChannel);
 
-			await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
+			await auxContext.poHomeChannel.sidebar.openChat(targetChannel);
 
 			await poHomeChannel.content.sendMessage('hello world');
 
@@ -164,8 +164,8 @@ test.describe.serial('Messaging', () => {
 		});
 
 		test('expect show "hello word" in both contexts (direct)', async () => {
-			await poHomeChannel.sidenav.openChat('user2');
-			await auxContext.poHomeChannel.sidenav.openChat('user1');
+			await poHomeChannel.sidebar.openChat('user2');
+			await auxContext.poHomeChannel.sidebar.openChat('user1');
 
 			await poHomeChannel.content.sendMessage('hello world');
 

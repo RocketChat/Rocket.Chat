@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeOmnichannelContent, HomeSidenav, HomeFlextab, OmnichannelSidenav } from './fragments';
+import { HomeOmnichannelContent, HomeSidenav, HomeFlextab, OmnichannelSidenav, Sidebar, Navbar } from './fragments';
 import { OmnichannelAgents } from './omnichannel-agents';
 import { OmnichannelCannedResponses } from './omnichannel-canned-responses';
 import { OmnichannelContacts } from './omnichannel-contacts-list';
@@ -16,6 +16,10 @@ export class HomeOmnichannel {
 	readonly content: HomeOmnichannelContent;
 
 	readonly sidenav: HomeSidenav;
+
+	readonly sidebar: Sidebar;
+
+	readonly navbar: Navbar;
 
 	readonly tabs: HomeFlextab;
 
@@ -41,6 +45,8 @@ export class HomeOmnichannel {
 		this.page = page;
 		this.content = new HomeOmnichannelContent(page);
 		this.sidenav = new HomeSidenav(page);
+		this.sidebar = new Sidebar(page);
+		this.navbar = new Navbar(page);
 		this.tabs = new HomeFlextab(page);
 		this.triggers = new OmnichannelTriggers(page);
 		this.omnisidenav = new OmnichannelSidenav(page);

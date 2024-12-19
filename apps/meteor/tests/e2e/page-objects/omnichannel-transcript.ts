@@ -21,7 +21,7 @@ export class OmnichannelTranscript {
 	}
 
 	get contactCenter(): Locator {
-		return this.page.locator('//button[@data-tooltip="Contact Center"]');
+		return this.page.getByRole('button', { name: 'Contact Center', exact: true });
 	}
 
 	get contactCenterChats(): Locator {
