@@ -119,7 +119,7 @@ callbacks.add(
 			return undefined;
 		}
 
-		const guestAgent = lastAgent?.username && getDefaultAgent({ username: lastAgent?.username });
+		const guestAgent = lastAgent?.username && getDefaultAgent({ username: lastAgent.username });
 		if (guestAgent) {
 			return guestAgent;
 		}
