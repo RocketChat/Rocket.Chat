@@ -45,14 +45,16 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@v1.5
-
       - name: Restore turbo build
         uses: actions/download-artifact@v4
         with:
           name: turbo-build
           path: .turbo/cache
       - name: Unit Test
+        env:
+          TURBO_API: ${{ vars.TURBOAPI }}
+          TURBO_TOKEN: ${{ vars.TURBOREMOTEAPIKEY }}
+          TURBO_TEAM: rocket.chat
         run: yarn testunit
 
       - uses: codecov/codecov-action@v3
