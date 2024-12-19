@@ -4,11 +4,11 @@ import { Box, Menu, Icon } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import React, { memo, useEffect } from 'react';
-
 import { getURL } from '../../../../../../app/utils/client';
 import { download, downloadAs } from '../../../../../lib/download';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useMessageDeletionIsAllowed } from '../hooks/useMessageDeletionIsAllowed';
+import { setMessageJumpQueryStringParameter } from '/client/lib/utils/setMessageJumpQueryStringParameter';
 
 type FileItemMenuProps = {
 	fileData: IUpload;
@@ -47,6 +47,19 @@ const FileItemMenu = ({ fileData, onClickDelete }: FileItemMenuProps) => {
 	);
 
 	const menuOptions = {
+		...(fileData.messageId && {
+			jumpToFile: {
+				label: (
+					<Box display='flex' alignItems='center'>
+						<Icon mie={4} name='jump' size='x16' />
+						{t('Jump_to_message')}
+					</Box>
+				),
+				action: () => {
+					setMessageJumpQueryStringParameter(fileData.messageId ?? null);
+				},
+			},
+		}),
 		downLoad: {
 			label: (
 				<Box display='flex' alignItems='center'>
