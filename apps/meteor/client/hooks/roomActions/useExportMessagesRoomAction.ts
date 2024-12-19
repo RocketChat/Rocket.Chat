@@ -11,7 +11,7 @@ export const useExportMessagesRoomAction = () => {
 	const permitted = usePermission('mail-messages', room._id);
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
-		if (!permitted) {
+		if (!permitted || room.createdOTR) {
 			return undefined;
 		}
 
@@ -26,5 +26,5 @@ export const useExportMessagesRoomAction = () => {
 			order: 12,
 			type: 'communication',
 		};
-	}, [permitted]);
+	}, [permitted, room.createdOTR]);
 };
