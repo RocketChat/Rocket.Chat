@@ -119,7 +119,10 @@ type ChainedCallbackSignatures = {
 	) => Promise<T>;
 
 	'livechat.beforeRouteChat': (inquiry: ILivechatInquiryRecord, agent?: { agentId: string; username: string }) => ILivechatInquiryRecord;
-	'livechat.checkDefaultAgentOnNewRoom': (visitorId?: string, source?: IOmnichannelSource) => SelectedAgent | undefined;
+	'livechat.checkDefaultAgentOnNewRoom': (
+		defaultAgent?: SelectedAgent,
+		params?: { visitorId?: string; source?: IOmnichannelSource },
+	) => SelectedAgent | undefined;
 
 	'livechat.onLoadForwardDepartmentRestrictions': (params: { departmentId: string }) => Record<string, unknown>;
 

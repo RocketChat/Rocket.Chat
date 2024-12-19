@@ -92,9 +92,9 @@ settings.watch<boolean>('Omnichannel_contact_manager_routing', (value) => {
 
 callbacks.add(
 	'livechat.checkDefaultAgentOnNewRoom',
-	async (visitorId, source) => {
-		if (!visitorId || !source) {
-			return undefined;
+	async (defaultAgent, { visitorId, source } = {}) => {
+		if (defaultAgent || !visitorId || !source) {
+			return defaultAgent;
 		}
 
 		const guest = await LivechatVisitors.findOneEnabledById(visitorId, {
@@ -138,7 +138,7 @@ callbacks.add(
 		const lastRoomAgent = normalizeDefaultAgent(
 			await Users.findOneOnlineAgentByUserList(usernameByRoom, { projection: { _id: 1, username: 1 } }),
 		);
-		return lastRoomAgent ?? undefined;
+		return lastRoomAgent;
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-check-default-agent-new-room',
