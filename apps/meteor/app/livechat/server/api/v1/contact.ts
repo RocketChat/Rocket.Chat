@@ -6,6 +6,7 @@ import {
 	isGETOmnichannelContactHistoryProps,
 	isGETOmnichannelContactsChannelsProps,
 	isGETOmnichannelContactsSearchProps,
+	isGETOmnichannelContactsCheckExistenceProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
@@ -162,6 +163,20 @@ API.v1.addRoute(
 			const result = await getContacts({ ...query, offset, count, sort });
 
 			return API.v1.success(result);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'omnichannel/contacts.checkExistence',
+	{ authRequired: true, permissionsRequired: ['view-livechat-contact'], validateParams: isGETOmnichannelContactsCheckExistenceProps },
+	{
+		async get() {
+			const { contactId, visitor, email, phone } = this.queryParams;
+
+			const contact = await (visitor ? getContactByChannel(visitor) : LivechatContacts.countByContactInfo({ contactId, email, phone }));
+
+			return API.v1.success({ exists: !!contact });
 		},
 	},
 );

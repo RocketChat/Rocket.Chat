@@ -1,4 +1,4 @@
-import { Accordion, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, Tag, ToggleSwitch } from '@rocket.chat/fuselage';
+import { AccordionItem, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, Tag, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, usePermission, useSetting } from '@rocket.chat/ui-contexts';
 import React from 'react';
@@ -22,7 +22,7 @@ const PreferencesConversationTranscript = () => {
 	const omnichannelTranscriptEmail = useUniqueId();
 
 	return (
-		<Accordion.Item defaultExpanded title={t('Conversational_transcript')}>
+		<AccordionItem defaultExpanded title={t('Conversational_transcript')}>
 			<FieldGroup>
 				<Field>
 					<FieldRow>
@@ -56,7 +56,7 @@ const PreferencesConversationTranscript = () => {
 					<FieldHint>{t('Accounts_Default_User_Preferences_omnichannelTranscriptEmail_Description')}</FieldHint>
 				</Field>
 			</FieldGroup>
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 

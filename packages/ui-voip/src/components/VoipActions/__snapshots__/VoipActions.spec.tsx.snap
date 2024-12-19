@@ -9,7 +9,7 @@ exports[`renders IncomingActions without crashing 1`] = `
     >
       <button
         aria-label="Decline"
-        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
         title="Decline"
         type="button"
       >
@@ -22,7 +22,7 @@ exports[`renders IncomingActions without crashing 1`] = `
       </button>
       <button
         aria-label="Turn_off_microphone"
-        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
         disabled=""
         title="Turn_off_microphone"
         type="button"
@@ -36,7 +36,7 @@ exports[`renders IncomingActions without crashing 1`] = `
       </button>
       <button
         aria-label="Open_Dialpad"
-        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
         disabled=""
         title="Open_Dialpad"
         type="button"
@@ -50,7 +50,7 @@ exports[`renders IncomingActions without crashing 1`] = `
       </button>
       <button
         aria-label="Transfer_call"
-        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
         disabled=""
         title="Transfer_call"
         type="button"
@@ -64,7 +64,7 @@ exports[`renders IncomingActions without crashing 1`] = `
       </button>
       <button
         aria-label="Accept"
-        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-success rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-success rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
         title="Accept"
         type="button"
       >
@@ -89,7 +89,7 @@ exports[`renders OngoingActions without crashing 1`] = `
     >
       <button
         aria-label="Turn_off_microphone"
-        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
         title="Turn_off_microphone"
         type="button"
       >
@@ -102,7 +102,7 @@ exports[`renders OngoingActions without crashing 1`] = `
       </button>
       <button
         aria-label="Hold"
-        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
         title="Hold"
         type="button"
       >
@@ -115,7 +115,7 @@ exports[`renders OngoingActions without crashing 1`] = `
       </button>
       <button
         aria-label="Open_Dialpad"
-        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
         title="Open_Dialpad"
         type="button"
       >
@@ -128,7 +128,7 @@ exports[`renders OngoingActions without crashing 1`] = `
       </button>
       <button
         aria-label="Transfer_call"
-        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
         title="Transfer_call"
         type="button"
       >
@@ -141,7 +141,7 @@ exports[`renders OngoingActions without crashing 1`] = `
       </button>
       <button
         aria-label="End_call"
-        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
         title="End_call"
         type="button"
       >
@@ -166,7 +166,7 @@ exports[`renders OutgoingActions without crashing 1`] = `
     >
       <button
         aria-label="Turn_off_microphone"
-        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
         disabled=""
         title="Turn_off_microphone"
         type="button"
@@ -180,7 +180,7 @@ exports[`renders OutgoingActions without crashing 1`] = `
       </button>
       <button
         aria-label="Hold"
-        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
         disabled=""
         title="Hold"
         type="button"
@@ -194,7 +194,7 @@ exports[`renders OutgoingActions without crashing 1`] = `
       </button>
       <button
         aria-label="Open_Dialpad"
-        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
         disabled=""
         title="Open_Dialpad"
         type="button"
@@ -208,7 +208,7 @@ exports[`renders OutgoingActions without crashing 1`] = `
       </button>
       <button
         aria-label="Transfer_call"
-        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
         disabled=""
         title="Transfer_call"
         type="button"
@@ -222,7 +222,7 @@ exports[`renders OutgoingActions without crashing 1`] = `
       </button>
       <button
         aria-label="End_call"
-        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+        class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
         title="End_call"
         type="button"
       >

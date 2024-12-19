@@ -1,2 +1,1 @@
 import './konchatNotifications';
-import './notification';

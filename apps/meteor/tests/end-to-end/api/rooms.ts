@@ -1255,21 +1255,7 @@ describe('[Rooms]', () => {
 		let testChannel: IRoom;
 		let testGroup: IRoom;
 		let testDM: IRoom;
-		const expectedKeys = [
-			'_id',
-			'name',
-			'fname',
-			't',
-			'msgs',
-			'usersCount',
-			'u',
-			'customFields',
-			'ts',
-			'ro',
-			'sysMes',
-			'default',
-			'_updatedAt',
-		];
+		const expectedKeys = ['_id', 'name', 'fname', 't', 'msgs', 'usersCount', 'u', 'ts', 'ro', 'sysMes', 'default', '_updatedAt'];
 		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
 		const testGroupName = `group.test.${Date.now()}-${Math.random()}`;
 		let user: TestUser<IUser>;

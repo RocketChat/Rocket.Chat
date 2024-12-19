@@ -185,7 +185,7 @@ function NewImportPage() {
 		undefined;
 
 	return (
-		<Page className='page-settings'>
+		<Page>
 			<PageHeader title={t('Import_New_File')} onClickBack={() => router.navigate('/admin/import')}>
 				<ButtonGroup>
 					{importer && (

@@ -19,6 +19,7 @@ import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
 import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
+import { useOmnichannelContinuousSoundNotification } from '../hooks/useOmnichannelContinuousSoundNotification';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { useShouldPreventAction } from '../hooks/useShouldPreventAction';
 
@@ -62,7 +63,6 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	const getRoutingConfig = useMethod('livechat:getRoutingConfig');
 
 	const [routeConfig, setRouteConfig] = useSafely(useState<OmichannelRoutingConfig | undefined>(undefined));
-	const [queueNotification, setQueueNotification] = useState(new Set());
 
 	const accessible = hasAccess && omniChannelEnabled;
 	const iceServersSetting: any = useSetting('WebRTC_Servers');
@@ -150,13 +150,23 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		}, [manuallySelected, omnichannelPoolMaxIncoming, omnichannelSortingMechanism]),
 	);
 
-	queue?.map(({ rid }) => {
-		if (queueNotification.has(rid)) {
-			return;
-		}
-		setQueueNotification((prev) => new Set([...prev, rid]));
-		return KonchatNotification.newRoom(rid);
-	});
+	useEffect(() => {
+		const observer = LivechatInquiry.find(
+			{ status: LivechatInquiryStatus.QUEUED },
+			{
+				sort: getOmniChatSortQuery(omnichannelSortingMechanism),
+				limit: omnichannelPoolMaxIncoming,
+			},
+		).observe({
+			added: (_inquiry) => {
+				KonchatNotification.newRoom();
+			},
+		});
+
+		return () => observer.stop();
+	}, [omnichannelPoolMaxIncoming, omnichannelSortingMechanism]);
+
+	useOmnichannelContinuousSoundNotification(queue ?? []);
 
 	const contextValue = useMemo<OmnichannelContextValue>(() => {
 		if (!enabled) {

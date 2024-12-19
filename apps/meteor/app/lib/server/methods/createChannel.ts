@@ -25,7 +25,7 @@ export const createChannelMethod = async (
 	name: string,
 	members: string[],
 	readOnly = false,
-	customFields: Record<string, any> = {},
+	customFields?: Record<string, any>,
 	extraData: Record<string, any> = {},
 	excludeSelf = false,
 ) => {
@@ -53,7 +53,7 @@ export const createChannelMethod = async (
 	}
 
 	return createRoom('c', name, user, members, excludeSelf, readOnly, {
-		customFields,
+		...(customFields && Object.keys(customFields).length && { customFields }),
 		...extraData,
 	});
 };

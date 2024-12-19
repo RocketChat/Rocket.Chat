@@ -14,6 +14,7 @@ export const subscriptionFields = {
 	roles: 1,
 	unread: 1,
 	prid: 1,
+	customFields: 1,
 	userMentions: 1,
 	groupMentions: 1,
 	archived: 1,

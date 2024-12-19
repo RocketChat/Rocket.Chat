@@ -59,7 +59,7 @@ exports[`renders CallEnded without crashing 1`] = `
                 @haylie.george
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -68,7 +68,7 @@ exports[`renders CallEnded without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -77,7 +77,7 @@ exports[`renders CallEnded without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -126,7 +126,7 @@ exports[`renders CallEnded without crashing 1`] = `
                 >
                   <button
                     aria-label="info"
-                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
                     type="button"
                   >
                     <i
@@ -266,7 +266,7 @@ exports[`renders CallEndedDM without crashing 1`] = `
                 @haylie.george
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -275,7 +275,7 @@ exports[`renders CallEndedDM without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -284,7 +284,7 @@ exports[`renders CallEndedDM without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -333,7 +333,7 @@ exports[`renders CallEndedDM without crashing 1`] = `
                 >
                   <button
                     aria-label="info"
-                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
                     type="button"
                   >
                     <i
@@ -436,7 +436,7 @@ exports[`renders CallOngoing without crashing 1`] = `
                 @haylie.george
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -445,7 +445,7 @@ exports[`renders CallOngoing without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -454,7 +454,7 @@ exports[`renders CallOngoing without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -503,7 +503,7 @@ exports[`renders CallOngoing without crashing 1`] = `
                 >
                   <button
                     aria-label="info"
-                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
                     type="button"
                   >
                     <i
@@ -653,7 +653,7 @@ exports[`renders CallingDM without crashing 1`] = `
                 @haylie.george
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -662,7 +662,7 @@ exports[`renders CallingDM without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -671,7 +671,7 @@ exports[`renders CallingDM without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -720,7 +720,7 @@ exports[`renders CallingDM without crashing 1`] = `
                 >
                   <button
                     aria-label="info"
-                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
                     type="button"
                   >
                     <i
@@ -823,7 +823,7 @@ exports[`renders Loading without crashing 1`] = `
                 @haylie.george
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -832,7 +832,7 @@ exports[`renders Loading without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -841,7 +841,7 @@ exports[`renders Loading without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -866,14 +866,14 @@ exports[`renders Loading without crashing 1`] = `
                 class="rcx-box rcx-box--full rcx-css-1s5wk2a"
               >
                 <span
-                  class="rcx-box rcx-box--full rcx-skeleton--text rcx-skeleton rcx-css-el6yni"
+                  class="rcx-skeleton rcx-skeleton--text rcx-css-el6yni"
                 />
               </div>
               <div
                 class="rcx-box rcx-box--full rcx-css-i71qf8"
               >
                 <span
-                  class="rcx-box rcx-box--full rcx-skeleton--text rcx-skeleton rcx-css-el6yni"
+                  class="rcx-skeleton rcx-skeleton--text rcx-css-el6yni"
                 />
               </div>
             </div>

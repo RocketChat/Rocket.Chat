@@ -27,7 +27,12 @@ export const useUserBanners = () => {
 		banners.open({
 			id: firstBanner.id,
 			title: i18n.exists(firstBanner.title) ? t(firstBanner.title) : firstBanner.title,
-			text: i18n.exists(firstBanner.text) ? t(firstBanner.text, firstBanner.textArguments) : firstBanner.text,
+			text: i18n.exists(firstBanner.text)
+				? t(firstBanner.text, {
+						postProcess: 'sprintf',
+						sprintf: firstBanner.textArguments,
+					})
+				: firstBanner.text,
 			modifiers: firstBanner.modifiers,
 			action() {
 				if (firstBanner.link) {

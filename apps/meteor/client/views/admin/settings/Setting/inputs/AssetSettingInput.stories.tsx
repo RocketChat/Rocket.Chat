@@ -10,7 +10,7 @@ export default {
 	decorators: [
 		(fn) => (
 			<div>
-				<div className='page-settings'>
+				<div>
 					<Field>{fn()}</Field>
 				</div>
 			</div>
