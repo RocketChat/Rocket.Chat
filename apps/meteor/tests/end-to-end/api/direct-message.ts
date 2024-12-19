@@ -618,6 +618,25 @@ describe('[Direct Messages]', () => {
 					expect(res.body).to.have.property('total', 1);
 				});
 		});
+
+		it('should return messages sorted by timestamp in ascending order', async () => {
+			await request
+				.get(api('im.messages'))
+				.set(testUserCredentials)
+				.query({
+					roomId: testUserDMRoom._id,
+					sort: '{"ts":1}',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.be.an('array').and.to.have.length.greaterThan(0);
+
+					const timestamps = res.body.messages.map((message: any) => message.ts);
+					expect(timestamps).to.eql(timestamps.slice().sort((a: string, b: string) => new Date(a).getTime() - new Date(b).getTime()));
+				});
+		});
 	});
 
 	describe('/im.messages.others', () => {
