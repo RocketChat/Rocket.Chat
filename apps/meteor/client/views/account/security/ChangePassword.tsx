@@ -3,7 +3,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes } from 'react';
-import React from 'react';
+import React,{useEffect} from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -23,11 +23,14 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 		watch,
 		formState: { errors },
 		handleSubmit,
+		setError,
+		clearErrors,
 		reset,
 		control,
 	} = useFormContext<PasswordFieldValues>();
 
 	const password = watch('password');
+	const confirmationPassword=watch('confirmationPassword')
 	const passwordIsValid = useValidatePassword(password);
 	const { allowPasswordChange } = useAllowPasswordChange();
 
@@ -43,7 +46,14 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
-
+	useEffect(() => {
+		if (confirmationPassword && password !== confirmationPassword) {
+			setError('confirmationPassword', { type: 'validate', message: t('Passwords_do_not_match') });
+		} else {
+			clearErrors('confirmationPassword');
+		}
+	}, [password, confirmationPassword, setError, clearErrors, t]);
+	
 	return (
 		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
 			<FieldGroup>
