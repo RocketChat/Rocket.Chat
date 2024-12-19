@@ -84,13 +84,11 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			},
 			{
 				key: { 'channels.blocked': 1 },
-				partialFilterExpression: { 'channels.blocked': { $exists: true } },
-				unique: false,
+				sparse: true,
 			},
 			{
 				key: { 'channels.verified': 1 },
-				partialFilterExpression: { 'channels.verified': { $exists: true } },
-				unique: false,
+				sparse: true,
 			},
 			{
 				key: { unknown: 1 },
