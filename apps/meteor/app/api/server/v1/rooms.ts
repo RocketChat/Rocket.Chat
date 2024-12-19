@@ -1,6 +1,6 @@
 import { Media, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
+import { Messages, Rooms, Users, Uploads, Subscriptions, Roles } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
 	isGETRoomsNameExists,
@@ -10,6 +10,7 @@ import {
 	isRoomsIsMemberProps,
 	isRoomsCleanHistoryProps,
 	isRoomsOpenProps,
+	isRoomsMembersOrderedByRoleProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -17,6 +18,7 @@ import { isTruthy } from '../../../../lib/isTruthy';
 import { omit } from '../../../../lib/utils/omit';
 import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
+import { findUsersOfRoomOrderedByRole } from '../../../../server/lib/findUsersOfRoomOrderedByRole';
 import { openRoom } from '../../../../server/lib/openRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
@@ -856,6 +858,65 @@ API.v1.addRoute(
 				});
 			}
 			return API.v1.unauthorized();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.membersOrderedByRole',
+	{ authRequired: true, validateParams: isRoomsMembersOrderedByRoleProps },
+	{
+		async get() {
+			const findResult = await findRoomByIdOrName({
+				params: this.queryParams,
+				checkedArchived: false,
+			});
+
+			if (!(await canAccessRoomAsync(findResult, this.user))) {
+				return API.v1.notFound('The required "roomId" or "roomName" param provided does not match any room');
+			}
+
+			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
+				return API.v1.unauthorized();
+			}
+
+			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
+			const { sort = {} } = await this.parseJsonQuery();
+
+			const { status, filter, rolesOrder } = this.queryParams;
+
+			if (rolesOrder) {
+				const roles = await Promise.all(
+					await Roles.find({
+						scope: 'Subscriptions',
+						_id: { $in: rolesOrder },
+					}).toArray(),
+				);
+
+				const rolesIds = roles.map(({ _id }) => _id);
+				rolesOrder.forEach((providedRole) => {
+					if (!rolesIds.includes(providedRole)) {
+						throw new Error(`role "${providedRole}" not found`);
+					}
+				});
+			}
+
+			const { members, total } = await findUsersOfRoomOrderedByRole({
+				rid: findResult._id,
+				...(status && { status: { $in: status } }),
+				skip,
+				limit,
+				filter,
+				...(sort?.username && { sort: { username: sort.username } }),
+				rolesInOrder: rolesOrder || ['owner', 'moderator'],
+			});
+
+			return API.v1.success({
+				members,
+				count: members.length,
+				offset: skip,
+				total,
+			});
 		},
 	},
 );
