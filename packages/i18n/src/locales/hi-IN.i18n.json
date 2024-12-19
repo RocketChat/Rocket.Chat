@@ -5792,7 +5792,7 @@
   "registration.component.login": "लॉग इन करें",
   "registration.component.login.userNotFound": "उपयोगकर्ता नहीं मिला",
   "registration.component.login.incorrectPassword": "गलत पासवर्ड",
-  "registration.component.switchLanguage": "<1>{{name}}</1> में बदलें",
+  "registration.component.switchLanguage": "<2>{{name}}</2> में बदलें",
   "registration.component.resetPassword": "पासवर्ड रीसेट",
   "registration.component.form.emailOrUsername": "ईमेल या उपयोगकर्ता का नाम",
   "registration.component.form.username": "उपयोगकर्ता नाम",
