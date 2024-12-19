@@ -1,4 +1,4 @@
-import { writeAll } from "https://deno.land/std@0.216.0/io/write_all.ts";
+import { writeAll } from 'https://deno.land/std@0.216.0/io/write_all.ts';
 
 import * as jsonrpc from 'jsonrpc-lite';
 
@@ -38,21 +38,28 @@ export const Queue = new (class Queue {
     private isProcessing = false;
 
     private async processQueue() {
-        if (this.isProcessing) {
-            return;
-        }
-
-        this.isProcessing = true;
-
-        while (this.queue.length) {
-            const message = this.queue.shift();
-
-            if (message) {
-                await Transport.send(message);
+        try {
+            if (this.isProcessing) {
+                return;
             }
-        }
 
-        this.isProcessing = false;
+            this.isProcessing = true;
+
+            while (this.queue.length) {
+                const [message] = this.queue;
+
+                if (message) {
+                    await Transport.send(message);
+                }
+                this.queue.shift();
+            }
+
+            this.isProcessing = false;
+        } catch (error) {
+            throw error;
+        } finally {
+            this.isProcessing = false;
+        }
     }
 
     public enqueue(message: jsonrpc.JsonRpc | typeof COMMAND_PONG) {
@@ -63,7 +70,7 @@ export const Queue = new (class Queue {
     public getCurrentSize() {
         return this.queue.length;
     }
-});
+})();
 
 export const Transport = new (class Transporter {
     private selectedTransport: Transporter['stdoutTransport'] | Transporter['noopTransport'];
