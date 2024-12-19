@@ -4650,7 +4650,7 @@
   "Username_doesnt_exist": "Логин `%s` не существует.",
   "Username_ended_the_OTR_session": "{{username}} завершил конфиденциальную беседу",
   "Username_invalid": "<strong>%s</strong> недопустимое имя пользователя, <br/>> используйте только буквы, цифры, точки, дефисы и подчеркивания",
-  "Username_is_already_in_here": "\"@%s\" уже здесь.",
+  "Username_is_already_in_here": "`@%s` уже здесь.",
   "Username_Placeholder": "Пожалуйста, введите логин...",
   "Username_title": "Зарегистрировать логин",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "{{username}} хочет начать конфиденциальную беседу. Принять?",
