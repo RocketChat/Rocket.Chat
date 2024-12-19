@@ -5,7 +5,16 @@ import type {
 	ILivechatContactVisitorAssociation,
 	ILivechatVisitor,
 } from '@rocket.chat/core-typings';
-import type { Document, FindCursor, FindOneAndUpdateOptions, FindOptions, UpdateFilter, UpdateOptions, UpdateResult } from 'mongodb';
+import type {
+	AggregationCursor,
+	Document,
+	FindCursor,
+	FindOneAndUpdateOptions,
+	FindOptions,
+	UpdateFilter,
+	UpdateOptions,
+	UpdateResult,
+} from 'mongodb';
 
 import type { Updater } from '../updater';
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
@@ -49,4 +58,10 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	setVerifiedUpdateQuery(verified: boolean, contactUpdater: Updater<ILivechatContact>): Updater<ILivechatContact>;
 	setFieldAndValueUpdateQuery(field: string, value: string, contactUpdater: Updater<ILivechatContact>): Updater<ILivechatContact>;
 	countByContactInfo({ contactId, email, phone }: { contactId?: string; email?: string; phone?: string }): Promise<number>;
+	countUnknown(): Promise<number>;
+	countBlocked(): Promise<number>;
+	countFullyBlocked(): Promise<number>;
+	countVerified(): Promise<number>;
+	countContactsWithoutChannels(): Promise<number>;
+	getStatistics(): AggregationCursor<{ totalConflicts: number; avgChannelsPerContact: number }>;
 }
