@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: rharkor/caching-for-turbo@v1.5
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -23,6 +22,10 @@ jobs:
           install: true
 
       - name: Build
+        env:
+          TURBO_API: ${{ vars.TURBOAPI }}
+          TURBO_TOKEN: ${{ vars.TURBOREMOTEAPIKEY }}
+          TURBO_TEAM: rocket.chat
         run: |
           yarn turbo run build-preview
           yarn turbo run .:build-preview-move
