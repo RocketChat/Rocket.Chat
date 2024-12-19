@@ -9335,7 +9335,7 @@ __metadata:
     chalk: "npm:^4.1.2"
     change-case: "npm:^4.1.2"
     chart.js: "npm:^3.9.1"
-    codemirror: "npm:^5.65.18"
+    codemirror: "npm:^6.0.1"
     colorette: "npm:^2.0.20"
     colors: "npm:^1.4.0"
     connect: "npm:^3.7.0"
@@ -17502,13 +17502,6 @@ __metadata:
   version: 0.0.230
   resolution: "code-error-fragment@npm:0.0.230"
   checksum: 10/6c5e800d6d70b30938cc85a2fc2c6069f028eadb58bceb65716b995ce6228c99906302f2c438ba50115fd81a1ee15dd95dc7d317b16a6c590e311ac7e50613f3
-  languageName: node
-  linkType: hard
-
-"codemirror@npm:^5.65.18":
-  version: 5.65.18
-  resolution: "codemirror@npm:5.65.18"
-  checksum: 10/223a3b3a5b50f5dfa9bb26318a67935c6e38320075a10189156695e88690ac376f31caecb6cf80b3ee4b8ca6f5542a0ba040c0be2e6d2b213fe13c01160ec1f7
   languageName: node
   linkType: hard
 
