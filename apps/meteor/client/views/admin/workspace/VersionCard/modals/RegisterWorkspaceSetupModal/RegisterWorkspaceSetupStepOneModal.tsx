@@ -1,9 +1,9 @@
 import { Modal, Box, Field, FieldLabel, FieldRow, TextInput, CheckBox, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React from 'react';
-import { Trans } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 
 import WorkspaceRegistrationModal from '../RegisterWorkspaceModal';
 
@@ -32,7 +32,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
 	...props
 }: Props) => {
 	const setModal = useSetModal();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const createRegistrationIntent = useEndpoint('POST', '/v1/cloud.createRegistrationIntent');

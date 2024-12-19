@@ -1,9 +1,9 @@
+import { RoomBuilder } from './RoomBuilder';
 import type { IDiscussionBuilder } from '../../definition/accessors';
 import type { IMessage } from '../../definition/messages';
 import { RocketChatAssociationModel } from '../../definition/metadata';
 import { RoomType } from '../../definition/rooms';
 import type { IRoom } from '../../definition/rooms/IRoom';
-import { RoomBuilder } from './RoomBuilder';
 
 export class DiscussionBuilder extends RoomBuilder implements IDiscussionBuilder {
     public kind: RocketChatAssociationModel.DISCUSSION;

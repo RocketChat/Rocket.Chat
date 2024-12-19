@@ -1,16 +1,17 @@
 import { Box, Grid, GridItem } from '@rocket.chat/fuselage';
-import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { AgentsSection, ChannelsSection, DepartmentsSection, StatusSection, TagsSection } from './sections';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../components/Page';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import NotAuthorizedPage from '../../views/notAuthorized/NotAuthorizedPage';
-import { AgentsSection, ChannelsSection, DepartmentsSection, StatusSection, TagsSection } from './sections';
 
 const BREAKPOINTS = { xs: 4, sm: 8, md: 8, lg: 12, xl: 6 } as const;
 
 const ReportsPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const hasPermission = usePermission('view-livechat-reports');
 	const isEnterprise = useHasLicenseModule('livechat-enterprise');

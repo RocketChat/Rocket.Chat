@@ -1,5 +1,5 @@
 import { Omnichannel } from '@rocket.chat/core-services';
-import type { ILivechatAgent, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IOmnichannelInquiryExtraData, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, Messages } from '@rocket.chat/models';
 import {
@@ -8,7 +8,6 @@ import {
 	isPOSTLivechatRoomTransferParams,
 	isPOSTLivechatRoomSurveyParams,
 	isLiveChatRoomJoinProps,
-	isPUTLivechatRoomVisitorParams,
 	isLiveChatRoomSaveInfoProps,
 	isPOSTLivechatRoomCloseByUserParams,
 } from '@rocket.chat/rest-typings';
@@ -18,16 +17,15 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 import { API } from '../../../../api/server';
 import { isWidget } from '../../../../api/server/helpers/isWidget';
-import { canAccessRoomAsync, roomAccessAttributes } from '../../../../authorization/server';
+import { canAccessRoomAsync } from '../../../../authorization/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
 import { closeLivechatRoom } from '../../../../lib/server/functions/closeLivechatRoom';
 import { settings as rcSettings } from '../../../../settings/server';
 import { normalizeTransferredByData } from '../../lib/Helper';
-import type { CloseRoomParams } from '../../lib/LivechatTyped';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import type { CloseRoomParams } from '../../lib/localTypes';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
-import { findVisitorInfo } from '../lib/visitors';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 
@@ -76,11 +74,18 @@ API.v1.addRoute(
 
 				const roomInfo = {
 					source: {
-						type: isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+						...(isWidget(this.request.headers)
+							? { type: OmnichannelSourceType.WIDGET, destination: this.request.headers.host }
+							: { type: OmnichannelSourceType.API }),
 					},
 				};
 
-				const newRoom = await LivechatTyped.createRoom({ visitor: guest, roomInfo, agent, extraData: extraParams });
+				const newRoom = await LivechatTyped.createRoom({
+					visitor: guest,
+					roomInfo,
+					agent,
+					extraData: extraParams as IOmnichannelInquiryExtraData,
+				});
 
 				return API.v1.success({
 					room: newRoom,
@@ -159,7 +164,7 @@ API.v1.addRoute(
 					const visitorEmail = visitor.visitorEmails?.[0]?.address;
 
 					const language = servingAgent.language || rcSettings.get<string>('Language') || 'en';
-					const t = (s: string): string => i18n.t(s, { lng: language });
+					const t = i18n.getFixedT(language);
 					const subject = t('Transcript_of_your_livechat_conversation');
 
 					options.emailTranscript = {
@@ -324,47 +329,6 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'livechat/room.visitor',
-	{
-		authRequired: true,
-		permissionsRequired: ['change-livechat-room-visitor'],
-		validateParams: isPUTLivechatRoomVisitorParams,
-		deprecation: {
-			version: '7.0.0',
-		},
-	},
-	{
-		async put() {
-			// This endpoint is deprecated and will be removed in future versions.
-			const { rid, newVisitorId, oldVisitorId } = this.bodyParams;
-
-			const { visitor } = await findVisitorInfo({ visitorId: newVisitorId });
-			if (!visitor) {
-				throw new Error('invalid-visitor');
-			}
-
-			const room = await LivechatRooms.findOneById(rid, { projection: { ...roomAccessAttributes, _id: 1, t: 1, v: 1 } }); // TODO: check _id
-			if (!room) {
-				throw new Error('invalid-room');
-			}
-
-			const { v: { _id: roomVisitorId = undefined } = {} } = room; // TODO: v it will be undefined
-			if (roomVisitorId !== oldVisitorId) {
-				throw new Error('invalid-room-visitor');
-			}
-
-			const roomAfterChange = await LivechatTyped.changeRoomVisitor(this.userId, room, visitor);
-
-			if (!roomAfterChange) {
-				return API.v1.failure();
-			}
-
-			return API.v1.success({ room: roomAfterChange });
 		},
 	},
 );

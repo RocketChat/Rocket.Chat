@@ -1,10 +1,10 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
+import AddLinkComposerActionModal from './AddLinkComposerActionModal';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import { settings } from '../../../settings/client';
-import AddLinkComposerActionModal from './AddLinkComposerActionModal';
 
 type FormattingButtonDefault = { label: TranslationKey; condition?: () => boolean };
 
@@ -44,7 +44,7 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		command: 'i',
 	},
 	{
-		label: 'Strike',
+		label: 'Strikethrough',
 		icon: 'strike',
 		pattern: '~{{text}}~',
 	},
@@ -54,7 +54,7 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		pattern: '`{{text}}`',
 	},
 	{
-		label: 'Multi_line',
+		label: 'Multi_line_code',
 		icon: 'multiline',
 		pattern: '```\n{{text}}\n``` ',
 	},

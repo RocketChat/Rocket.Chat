@@ -4,21 +4,10 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
+import NotificationPreferences from './NotificationPreferences';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
-import NotificationPreferences from './NotificationPreferences';
-
-export type NotificationFormValues = {
-	turnOn: boolean;
-	muteGroupMentions: boolean;
-	showCounter: boolean;
-	showMentions: boolean;
-	desktopAlert: string;
-	desktopSound: string;
-	mobileAlert: string;
-	emailAlert: string;
-};
 
 const NotificationPreferencesWithData = (): ReactElement => {
 	const t = useTranslation();

@@ -3,10 +3,10 @@ import { ILivechatAgentStatus, LivechatBusinessHourTypes } from '@rocket.chat/co
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 import moment from 'moment';
 
-import { notifyOnUserChangeAsync } from '../../../lib/server/lib/notifyListener';
-import { businessHourLogger } from '../lib/logger';
 import { createDefaultBusinessHourRow } from './LivechatBusinessHours';
 import { filterBusinessHoursThatMustBeOpened } from './filterBusinessHoursThatMustBeOpened';
+import { notifyOnUserChangeAsync } from '../../../lib/server/lib/notifyListener';
+import { businessHourLogger } from '../lib/logger';
 
 export { filterBusinessHoursThatMustBeOpened };
 

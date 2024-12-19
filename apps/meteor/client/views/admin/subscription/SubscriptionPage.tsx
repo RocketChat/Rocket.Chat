@@ -1,14 +1,10 @@
-import { Accordion, Box, Button, ButtonGroup, Callout, Grid } from '@rocket.chat/fuselage';
+import { Accordion, AccordionItem, Box, Button, ButtonGroup, Callout, Grid } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useSearchParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { t } from 'i18next';
 import React, { memo, useCallback, useEffect } from 'react';
 import tinykeys from 'tinykeys';
 
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import { useInvalidateLicense, useLicense } from '../../../hooks/useLicense';
-import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 import { SubscriptionCalloutLimits } from './SubscriptionCalloutLimits';
 import SubscriptionPageSkeleton from './SubscriptionPageSkeleton';
 import UpgradeButton from './components/UpgradeButton';
@@ -23,8 +19,15 @@ import MACCard from './components/cards/MACCard';
 import PlanCard from './components/cards/PlanCard';
 import PlanCardCommunity from './components/cards/PlanCard/PlanCardCommunity';
 import SeatsCard from './components/cards/SeatsCard';
-import { useRemoveLicense } from './hooks/useRemoveLicense';
+import { useCancelSubscriptionModal } from './hooks/useCancelSubscriptionModal';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
+import UiKitSubscriptionLicense from './surface/UiKitSubscriptionLicense';
+import { Page, PageScrollableContentWithShadow } from '../../../components/Page';
+import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
+import PageHeaderNoShadow from '../../../components/Page/PageHeaderNoShadow';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import { useInvalidateLicense, useLicenseWithCloudAnnouncement } from '../../../hooks/useLicense';
+import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 
 function useShowLicense() {
 	const [showLicenseTab, setShowLicenseTab] = useSessionStorage('admin:showLicenseTab', false);
@@ -48,7 +51,7 @@ const SubscriptionPage = () => {
 	const router = useRouter();
 	const { data: enterpriseData } = useIsEnterprise();
 	const { isRegistered } = useRegistrationStatus();
-	const { data: licensesData, isLoading: isLicenseLoading } = useLicense({ loadValues: true });
+	const { data: licensesData, isLoading: isLicenseLoading } = useLicenseWithCloudAnnouncement({ loadValues: true });
 	const syncLicenseUpdate = useWorkspaceSync();
 	const invalidateLicenseQuery = useInvalidateLicense();
 
@@ -56,7 +59,7 @@ const SubscriptionPage = () => {
 
 	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isLoading, 10000);
 
-	const { license, limits, activeModules = [] } = licensesData || {};
+	const { license, limits, activeModules = [], cloudSyncAnnouncement } = licensesData || {};
 	const { isEnterprise = true } = enterpriseData || {};
 
 	const getKeyLimit = (key: 'monthlyActiveContacts' | 'activeUsers') => {
@@ -69,6 +72,8 @@ const SubscriptionPage = () => {
 
 	const macLimit = getKeyLimit('monthlyActiveContacts');
 	const seatsLimit = getKeyLimit('activeUsers');
+
+	const { isLoading: isCancelSubscriptionLoading, open: openCancelSubscriptionModal } = useCancelSubscriptionModal();
 
 	const handleSyncLicenseUpdate = useCallback(() => {
 		syncLicenseUpdate.mutate(undefined, {
@@ -95,11 +100,9 @@ const SubscriptionPage = () => {
 		}
 	}, [handleSyncLicenseUpdate, router, subscriptionSuccess, syncLicenseUpdate.isIdle]);
 
-	const removeLicense = useRemoveLicense();
-
 	return (
 		<Page bg='tint'>
-			<PageHeader title={t('Subscription')}>
+			<PageHeaderNoShadow title={t('Subscription')}>
 				<ButtonGroup>
 					{isRegistered && (
 						<Button loading={syncLicenseUpdate.isLoading} icon='reload' onClick={() => handleSyncLicenseUpdate()}>
@@ -110,7 +113,12 @@ const SubscriptionPage = () => {
 						{t(isEnterprise ? 'Manage_subscription' : 'Upgrade')}
 					</UpgradeButton>
 				</ButtonGroup>
-			</PageHeader>
+			</PageHeaderNoShadow>
+			{cloudSyncAnnouncement && (
+				<PageBlockWithBorder>
+					<UiKitSubscriptionLicense key='license' initialView={cloudSyncAnnouncement} />
+				</PageBlockWithBorder>
+			)}
 			<PageScrollableContentWithShadow p={16}>
 				{(showSubscriptionCallout || syncLicenseUpdate.isLoading) && (
 					<Callout type='info' title={t('Sync_license_update_Callout_Title')} m={8}>
@@ -123,9 +131,9 @@ const SubscriptionPage = () => {
 					<>
 						{showLicense && (
 							<Accordion>
-								<Accordion.Item title={t('License')}>
+								<AccordionItem title={t('License')}>
 									<pre>{JSON.stringify(licensesData, null, 2)}</pre>
-								</Accordion.Item>
+								</AccordionItem>
 							</Accordion>
 						)}
 						<Box marginBlock='none' marginInline='auto' width='full' color='default'>
@@ -177,7 +185,7 @@ const SubscriptionPage = () => {
 							</Grid>
 							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise}>
 								{Boolean(licensesData?.license?.information.cancellable) && (
-									<Button loading={removeLicense.isLoading} secondary danger onClick={() => removeLicense.mutate()}>
+									<Button loading={isCancelSubscriptionLoading} secondary danger onClick={openCancelSubscriptionModal}>
 										{t('Cancel_subscription')}
 									</Button>
 								)}

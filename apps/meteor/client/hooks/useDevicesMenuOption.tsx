@@ -1,10 +1,11 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import DeviceSettingsModal from '../voip/modals/DeviceSettingsModal';
 import { useHasLicenseModule } from './useHasLicenseModule';
+import DeviceSettingsModal from '../voip/modals/DeviceSettingsModal';
 
 type DevicesMenuOption = {
 	type?: 'option' | 'heading' | 'divider';
@@ -14,7 +15,7 @@ type DevicesMenuOption = {
 
 export const useDevicesMenuOption = (): DevicesMenuOption | null => {
 	const isEnterprise = useHasLicenseModule('voip-enterprise');
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 
 	const option = {

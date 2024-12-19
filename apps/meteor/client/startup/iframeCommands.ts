@@ -19,10 +19,13 @@ const commands = {
 		}
 		const newUrl = new URL(`${rtrim(baseURI, '/')}/${ltrim(data.path, '/')}`);
 
-		const newParams = Array.from(newUrl.searchParams.entries()).reduce((ret, [key, value]) => {
-			ret[key] = value;
-			return ret;
-		}, {} as Record<string, string>);
+		const newParams = Array.from(newUrl.searchParams.entries()).reduce(
+			(ret, [key, value]) => {
+				ret[key] = value;
+				return ret;
+			},
+			{} as Record<string, string>,
+		);
 
 		const newPath = newUrl.pathname.replace(
 			new RegExp(`^${escapeRegExp(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX)}`),

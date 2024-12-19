@@ -52,7 +52,7 @@ export class HomeContent {
 	}
 
 	get encryptedRoomHeaderIcon(): Locator {
-		return this.page.locator('.rcx-room-header button > i.rcx-icon--name-key');
+		return this.page.locator('.rcx-room-header i.rcx-icon--name-key');
 	}
 
 	get lastIgnoredUserMessage(): Locator {
@@ -85,7 +85,7 @@ export class HomeContent {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
 		await this.page.locator('[name="msg"]').fill(text);
-		await this.page.getByLabel('Send').click();
+		await this.page.getByRole('button', { name: 'Send', exact: true }).click();
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
@@ -211,7 +211,7 @@ export class HomeContent {
 	}
 
 	get btnContactEdit(): Locator {
-		return this.page.locator('.rcx-vertical-bar button:has-text("Edit")');
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Edit', exact: true });
 	}
 
 	get inputModalClosingComment(): Locator {
@@ -323,7 +323,10 @@ export class HomeContent {
 	}
 
 	async toggleAlsoSendThreadToChannel(isChecked: boolean): Promise<void> {
-		await this.page.getByRole('dialog').locator('[name="alsoSendThreadToChannel"]').setChecked(isChecked);
+		await this.page
+			.getByRole('dialog')
+			.locator('label', { has: this.page.getByRole('checkbox', { name: 'Also send to channel' }) })
+			.setChecked(isChecked);
 	}
 
 	get lastSystemMessageBody(): Locator {
@@ -391,10 +394,27 @@ export class HomeContent {
 		return this.page.locator('[aria-roledescription="system message"]', { hasText: text });
 	}
 
+	getMessageByText(text: string): Locator {
+		return this.page.locator('[role="listitem"][aria-roledescription="message"]', { hasText: text });
+	}
+
 	async waitForChannel(): Promise<void> {
 		await this.page.locator('role=main').waitFor();
 		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
+		const messageList = this.page.getByRole('main').getByRole('list', { name: 'Message list', exact: true });
+		await messageList.waitFor();
 
-		await expect(this.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
+		await expect(messageList).not.toHaveAttribute('aria-busy', 'true');
+	}
+
+	async openReplyInThread(): Promise<void> {
+		await this.page.locator('[data-qa-type="message"]').last().hover();
+		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="Reply in thread"]').waitFor();
+		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="Reply in thread"]').click();
+	}
+
+	async sendMessageInThread(text: string): Promise<void> {
+		await this.page.getByRole('dialog').getByRole('textbox', { name: 'Message' }).fill(text);
+		await this.page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true }).click();
 	}
 }

@@ -1,14 +1,14 @@
 import { GenericMenu } from '@rocket.chat/ui-client';
 import React, { useMemo } from 'react';
 
-import HeaderToolbarAction from '../../../components/Header/HeaderToolbarAction';
-import type { RoomToolboxActionConfig } from '../../../views/room/contexts/RoomToolboxContext';
 import useVideoConfMenuOptions from './useVideoConfMenuOptions';
 import useVoipMenuOptions from './useVoipMenuOptions';
+import HeaderToolbarAction from '../../../components/Header/HeaderToolbarAction';
+import type { RoomToolboxActionConfig } from '../../../views/room/contexts/RoomToolboxContext';
 
 export const useStartCallRoomAction = () => {
-	const voipCall = useVideoConfMenuOptions();
-	const videoCall = useVoipMenuOptions();
+	const videoCall = useVideoConfMenuOptions();
+	const voipCall = useVoipMenuOptions();
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!videoCall.allowed && !voipCall.allowed) {

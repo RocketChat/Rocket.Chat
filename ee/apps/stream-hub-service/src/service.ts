@@ -1,16 +1,19 @@
 import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import { broker } from '@rocket.chat/network-broker';
+import { startTracing } from '@rocket.chat/tracing';
 import polka from 'polka';
 
+import { StreamHub } from './StreamHub';
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
 import { DatabaseWatcher } from '../../../../apps/meteor/server/database/DatabaseWatcher';
-import { StreamHub } from './StreamHub';
 
 const PORT = process.env.PORT || 3035;
 
 (async () => {
-	const db = await getConnection();
+	const { db, client } = await getConnection();
+
+	startTracing({ service: 'stream-hub-service', db: client });
 
 	registerServiceModels(db, await getTrashCollection());
 

@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeSidenav, HomeFlextab } from './fragments';
+import { HomeContent, HomeSidenav, HomeFlextab, Navbar, Sidebar, Sidepanel } from './fragments';
 
 export class HomeChannel {
 	public readonly page: Page;
@@ -9,12 +9,21 @@ export class HomeChannel {
 
 	readonly sidenav: HomeSidenav;
 
+	readonly sidebar: Sidebar;
+
+	readonly sidepanel: Sidepanel;
+
+	readonly navbar: Navbar;
+
 	readonly tabs: HomeFlextab;
 
 	constructor(page: Page) {
 		this.page = page;
 		this.content = new HomeContent(page);
 		this.sidenav = new HomeSidenav(page);
+		this.sidebar = new Sidebar(page);
+		this.sidepanel = new Sidepanel(page);
+		this.navbar = new Navbar(page);
 		this.tabs = new HomeFlextab(page);
 	}
 

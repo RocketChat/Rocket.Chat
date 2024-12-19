@@ -48,7 +48,7 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 					title: t('Video_call'),
 					icon: 'video',
 					onClick: action,
-			  }
+				}
 			: undefined;
 	}, [
 		room,

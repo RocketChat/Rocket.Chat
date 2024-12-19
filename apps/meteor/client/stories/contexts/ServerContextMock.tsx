@@ -45,7 +45,7 @@ type Operations = {
 							fn: (
 								params: void extends OperationParams<TMethod, TPathPattern> ? void : OperationParams<TMethod, TPathPattern>,
 							) => Promise<void extends OperationResult<TMethod, TPathPattern> ? Serialized<OperationResult<TMethod, TPathPattern>> : void>;
-					  }
+						}
 					: never
 				: never
 			: never
@@ -80,7 +80,11 @@ const ServerContextMock = ({
 
 		const absoluteURL: ServerContextValue['absoluteUrl'] = (path): string => {
 			logAction('absoluteUrl', path);
-			return new URL(path, baseURL).toString();
+			try {
+				return new URL(path, baseURL).toString();
+			} catch (e) {
+				return path;
+			}
 		};
 
 		const mockedEndpoints = Object.entries(callEndpoint).map(

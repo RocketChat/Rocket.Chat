@@ -1,11 +1,12 @@
 import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ContextualbarSection } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import FileItem from './components/FileItem';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -15,7 +16,6 @@ import {
 	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
-import FileItem from './components/FileItem';
 
 type RoomFilesProps = {
 	loading: boolean;
@@ -42,7 +42,7 @@ const RoomFiles = ({
 	onClickClose,
 	onClickDelete,
 }: RoomFilesProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const options: SelectOption[] = useMemo(
 		() => [

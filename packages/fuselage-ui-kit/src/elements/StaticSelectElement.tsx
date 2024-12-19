@@ -22,14 +22,14 @@ const StaticSelectElement = ({
         option.value,
         fromTextObjectToString(option.text) ?? '',
       ]),
-    [block.options, fromTextObjectToString]
+    [block.options, fromTextObjectToString],
   );
 
   const handleChange = useCallback(
     (value: string) => {
       action({ target: { value } });
     },
-    [action]
+    [action],
   );
 
   return (

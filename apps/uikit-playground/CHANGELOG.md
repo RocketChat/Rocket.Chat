@@ -1,5 +1,209 @@
 # @rocket.chat/uikit-playground
 
+## 0.6.1-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.1
+  - @rocket.chat/fuselage-ui-kit@13.0.0-rc.1
+  - @rocket.chat/ui-contexts@13.0.0-rc.1
+  - @rocket.chat/ui-avatar@9.0.0-rc.1
+  </details>
+
+## 0.6.1-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [80e36bfc3938775eb26aa5576f1b9b98896e1cc4, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0]:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@13.0.0-rc.0
+  - @rocket.chat/ui-contexts@13.0.0-rc.0
+  - @rocket.chat/ui-avatar@9.0.0-rc.0
+  </details>
+
+## 0.6.0
+
+### Minor Changes
+
+- ([#33592](https://github.com/RocketChat/Rocket.Chat/pull/33592)) Adds ability to collapse/expand sidebar groups
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [bcacbb1cee, 9274cf4586, b338807d76, 3ea02d3cc1, e3629e065b, 03d148524b, 81998f3450, 509143d6dd]:</summary>
+
+  - @rocket.chat/core-typings@7.0.0
+  - @rocket.chat/fuselage-ui-kit@12.0.0
+  - @rocket.chat/ui-avatar@8.0.0
+  - @rocket.chat/ui-contexts@12.0.0
+  </details>
+
+## 0.6.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.6
+  - @rocket.chat/fuselage-ui-kit@12.0.0-rc.6
+  - @rocket.chat/ui-contexts@12.0.0-rc.6
+  - @rocket.chat/ui-avatar@8.0.0-rc.6
+  </details>
+
+## 0.6.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@12.0.0-rc.5
+  - @rocket.chat/fuselage-ui-kit@12.0.0-rc.5
+  - @rocket.chat/ui-avatar@8.0.0-rc.5
+  - @rocket.chat/core-typings@7.0.0-rc.5
+  </details>
+
+## 0.6.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.4
+  - @rocket.chat/fuselage-ui-kit@12.0.0-rc.4
+  - @rocket.chat/ui-contexts@12.0.0-rc.4
+  - @rocket.chat/ui-avatar@8.0.0-rc.4
+  </details>
+
+## 0.6.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.3
+  - @rocket.chat/fuselage-ui-kit@12.0.0-rc.3
+  - @rocket.chat/ui-contexts@12.0.0-rc.3
+  - @rocket.chat/ui-avatar@8.0.0-rc.3
+  </details>
+
+## 0.6.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.2
+  - @rocket.chat/fuselage-ui-kit@12.0.0-rc.2
+  - @rocket.chat/ui-contexts@12.0.0-rc.2
+  - @rocket.chat/ui-avatar@8.0.0-rc.2
+  </details>
+
+## 0.6.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.1
+  - @rocket.chat/fuselage-ui-kit@12.0.0-rc.1
+  - @rocket.chat/ui-contexts@12.0.0-rc.1
+  - @rocket.chat/ui-avatar@8.0.0-rc.1
+  </details>
+
+## 0.6.0-rc.0
+
+### Minor Changes
+
+- ([#33592](https://github.com/RocketChat/Rocket.Chat/pull/33592)) Adds ability to collapse/expand sidebar groups
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7726d68374, bcacbb1cee, 9274cf4586, b338807d76, 3ea02d3cc1, e3629e065b, 03d148524b, 81998f3450, 509143d6dd]:</summary>
+
+  - @rocket.chat/core-typings@7.0.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@12.0.0-rc.0
+  - @rocket.chat/ui-avatar@8.0.0-rc.0
+  - @rocket.chat/ui-contexts@12.0.0-rc.0
+  </details>
+
+## 0.5.0
+
+### Minor Changes
+
+- ([#32821](https://github.com/RocketChat/Rocket.Chat/pull/32821)) Replaced new `SidebarV2` components under feature preview
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [599762739a, 274f4f5881, cd0d50016e, 78e6ba4820, 927710d778, 12d6307998]:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@11.0.0
+  - @rocket.chat/core-typings@6.13.0
+  - @rocket.chat/ui-avatar@7.0.0
+  - @rocket.chat/ui-contexts@11.0.0
+  </details>
+
+## 0.5.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.6
+  - @rocket.chat/fuselage-ui-kit@11.0.0-rc.6
+  - @rocket.chat/ui-contexts@11.0.0-rc.6
+  - @rocket.chat/ui-avatar@7.0.0-rc.6
+  </details>
+
+## 0.5.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.5
+  - @rocket.chat/fuselage-ui-kit@11.0.0-rc.5
+  - @rocket.chat/ui-contexts@11.0.0-rc.5
+  - @rocket.chat/ui-avatar@7.0.0-rc.5
+  </details>
+
+## 0.5.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.4
+  - @rocket.chat/fuselage-ui-kit@11.0.0-rc.4
+  - @rocket.chat/ui-contexts@11.0.0-rc.4
+  - @rocket.chat/ui-avatar@7.0.0-rc.4
+  </details>
+
+## 0.5.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.3
+  - @rocket.chat/fuselage-ui-kit@11.0.0-rc.3
+  - @rocket.chat/ui-contexts@11.0.0-rc.3
+  - @rocket.chat/ui-avatar@7.0.0-rc.3
+  </details>
+
+## 0.5.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.2
+  - @rocket.chat/fuselage-ui-kit@11.0.0-rc.2
+  - @rocket.chat/ui-contexts@11.0.0-rc.2
+  - @rocket.chat/ui-avatar@7.0.0-rc.2
+  </details>
+
 ## 0.5.0-rc.1
 
 ### Patch Changes

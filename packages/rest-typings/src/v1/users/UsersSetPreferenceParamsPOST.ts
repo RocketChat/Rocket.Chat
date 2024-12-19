@@ -19,7 +19,9 @@ export type UsersSetPreferencesParamsPOST = {
 		autoImageLoad?: boolean;
 		emailNotificationMode?: string;
 		unreadAlert?: boolean;
+		masterVolume?: number;
 		notificationsSoundVolume?: number;
+		voipRingerVolume?: number;
 		desktopNotifications?: string;
 		pushNotifications?: string;
 		enableAutoAway?: boolean;
@@ -110,7 +112,15 @@ const UsersSetPreferencesParamsPostSchema = {
 					type: 'boolean',
 					nullable: true,
 				},
+				masterVolume: {
+					type: 'number',
+					nullable: true,
+				},
 				notificationsSoundVolume: {
+					type: 'number',
+					nullable: true,
+				},
+				voipRingerVolume: {
 					type: 'number',
 					nullable: true,
 				},

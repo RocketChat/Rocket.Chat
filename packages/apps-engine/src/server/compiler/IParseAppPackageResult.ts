@@ -1,5 +1,5 @@
-import type { IAppInfo } from '../../definition/metadata';
 import type { AppImplements } from './AppImplements';
+import type { IAppInfo } from '../../definition/metadata';
 
 export interface IParseAppPackageResult {
     info: IAppInfo;

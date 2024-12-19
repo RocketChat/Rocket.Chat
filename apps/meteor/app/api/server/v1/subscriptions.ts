@@ -35,7 +35,7 @@ API.v1.addRoute(
 					? {
 							update: result,
 							remove: [],
-					  }
+						}
 					: result,
 			);
 		},

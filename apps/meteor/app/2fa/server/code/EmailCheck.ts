@@ -4,10 +4,10 @@ import { Random } from '@rocket.chat/random';
 import bcrypt from 'bcrypt';
 import { Accounts } from 'meteor/accounts-base';
 
+import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 import { i18n } from '../../../../server/lib/i18n';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 
 export class EmailCheck implements ICodeCheck {
 	public readonly name = 'email';
@@ -38,7 +38,7 @@ export class EmailCheck implements ICodeCheck {
 	private async send2FAEmail(address: string, random: string, user: IUser): Promise<void> {
 		const language = user.language || settings.get('Language') || 'en';
 
-		const t = (s: string): string => i18n.t(s, { lng: language });
+		const t = i18n.getFixedT(language);
 
 		await Mailer.send({
 			to: address,

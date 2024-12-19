@@ -1,9 +1,51 @@
-import type { ILivechatContact } from '@rocket.chat/core-typings';
-import type { FindCursor, FindOptions } from 'mongodb';
+import type {
+	AtLeast,
+	ILivechatContact,
+	ILivechatContactChannel,
+	ILivechatContactVisitorAssociation,
+	ILivechatVisitor,
+} from '@rocket.chat/core-typings';
+import type { Document, FindCursor, FindOneAndUpdateOptions, FindOptions, UpdateFilter, UpdateOptions, UpdateResult } from 'mongodb';
 
-import type { FindPaginated, IBaseModel } from './IBaseModel';
+import type { Updater } from '../updater';
+import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 
 export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
-	updateContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact>;
-	findPaginatedContacts(searchText?: string, options?: FindOptions): FindPaginated<FindCursor<ILivechatContact>>;
+	insertContact(
+		data: InsertionModel<Omit<ILivechatContact, 'createdAt'>> & { createdAt?: ILivechatContact['createdAt'] },
+	): Promise<ILivechatContact['_id']>;
+	updateContact(contactId: string, data: Partial<ILivechatContact>, options?: FindOneAndUpdateOptions): Promise<ILivechatContact>;
+	updateById(contactId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<Document | UpdateResult>;
+	addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void>;
+	findPaginatedContacts(
+		search: { searchText?: string; unknown?: boolean },
+		options?: FindOptions<ILivechatContact>,
+	): FindPaginated<FindCursor<ILivechatContact>>;
+	updateLastChatById(
+		contactId: string,
+		visitor: ILivechatContactVisitorAssociation,
+		lastChat: ILivechatContact['lastChat'],
+	): Promise<UpdateResult>;
+	findContactMatchingVisitor(visitor: AtLeast<ILivechatVisitor, 'visitorEmails' | 'phone'>): Promise<ILivechatContact | null>;
+	findOneByVisitor<T extends Document = ILivechatContact>(
+		visitor: ILivechatContactVisitorAssociation,
+		options?: FindOptions<ILivechatContact>,
+	): Promise<T | null>;
+	isChannelBlocked(visitor: ILivechatContactVisitorAssociation): Promise<boolean>;
+	updateFromUpdaterByAssociation(
+		visitor: ILivechatContactVisitorAssociation,
+		contactUpdater: Updater<ILivechatContact>,
+		options?: UpdateOptions,
+	): Promise<UpdateResult>;
+	findSimilarVerifiedContacts(
+		channel: Pick<ILivechatContactChannel, 'field' | 'value'>,
+		originalContactId: string,
+		options?: FindOptions<ILivechatContact>,
+	): Promise<ILivechatContact[]>;
+	findAllByVisitorId(visitorId: string): FindCursor<ILivechatContact>;
+	addEmail(contactId: string, email: string): Promise<ILivechatContact | null>;
+	setChannelBlockStatus(visitor: ILivechatContactVisitorAssociation, blocked: boolean): Promise<UpdateResult>;
+	setChannelVerifiedStatus(visitor: ILivechatContactVisitorAssociation, verified: boolean): Promise<UpdateResult>;
+	setVerifiedUpdateQuery(verified: boolean, contactUpdater: Updater<ILivechatContact>): Updater<ILivechatContact>;
+	setFieldAndValueUpdateQuery(field: string, value: string, contactUpdater: Updater<ILivechatContact>): Updater<ILivechatContact>;
 }

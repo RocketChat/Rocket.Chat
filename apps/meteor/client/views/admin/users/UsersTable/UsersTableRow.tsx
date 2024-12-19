@@ -3,9 +3,9 @@ import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, Menu, Option } from '@rocket.chat/fuselage';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Roles } from '../../../../../app/models/client/models/Roles';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
@@ -17,34 +17,56 @@ import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
 import { useResetE2EEKeyAction } from '../hooks/useResetE2EEKeyAction';
 import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
 import { useSendWelcomeEmailMutation } from '../hooks/useSendWelcomeEmailMutation';
-import { useVoipExtensionAction } from '../hooks/useVoipExtensionAction';
+import { useVoipExtensionAction } from '../voip/hooks/useVoipExtensionAction';
 
 type UsersTableRowProps = {
 	user: Serialized<DefaultUserInfo>;
-	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
+	tab: AdminUsersTab;
 	isMobile: boolean;
 	isLaptop: boolean;
 	onReload: () => void;
-	tab: AdminUsersTab;
+	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
 	isSeatsCapExceeded: boolean;
 	showVoipExtension: boolean;
 };
 
 const UsersTableRow = ({
 	user,
-	onClick,
-	onReload,
+	tab,
 	isMobile,
 	isLaptop,
-	tab,
 	isSeatsCapExceeded,
 	showVoipExtension,
+	onClick,
+	onReload,
 }: UsersTableRowProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
-	const { _id, emails, username = '', name = '', roles, status, active, avatarETag, lastLogin, type, freeSwitchExtension } = user;
+	const {
+		_id,
+		emails,
+		username = '',
+		name = '',
+		roles,
+		status,
+		active,
+		avatarETag,
+		lastLogin,
+		type,
+		freeSwitchExtension,
+		federated,
+	} = user;
+
 	const registrationStatusText = useMemo(() => {
 		const usersExcludedFromPending = ['bot', 'app'];
+
+		if (!active && lastLogin) {
+			return t('Deactivated');
+		}
+
+		if (federated) {
+			return t('Federated');
+		}
 
 		if (!lastLogin && !usersExcludedFromPending.includes(type)) {
 			return t('Pending');
@@ -53,11 +75,7 @@ const UsersTableRow = ({
 		if (active && lastLogin) {
 			return t('Active');
 		}
-
-		if (!active && lastLogin) {
-			return t('Deactivated');
-		}
-	}, [active, lastLogin, t, type]);
+	}, [active, lastLogin, t, type, federated]);
 
 	const roleNames = (roles || [])
 		.map((roleId) => (Roles.findOne(roleId, { fields: { name: 1 } }) as IRole | undefined)?.name)
@@ -75,7 +93,12 @@ const UsersTableRow = ({
 	const resetTOTPAction = useResetTOTPAction(userId);
 	const resetE2EKeyAction = useResetE2EEKeyAction(userId);
 	const resendWelcomeEmail = useSendWelcomeEmailMutation();
-	const voipExtensionAction = useVoipExtensionAction({ extension: freeSwitchExtension, username, name });
+	const voipExtensionAction = useVoipExtensionAction({
+		enabled: showVoipExtension,
+		extension: freeSwitchExtension,
+		username,
+		name,
+	});
 
 	const isNotPendingDeactivatedNorFederated = tab !== 'pending' && tab !== 'deactivated' && !isFederatedUser;
 	const menuOptions = useMemo(
@@ -173,7 +196,7 @@ const UsersTableRow = ({
 				</GenericTableCell>
 			)}
 
-			{tab === 'all' && showVoipExtension && username && (
+			{tab === 'all' && showVoipExtension && (
 				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 					{freeSwitchExtension || t('Not_assigned')}
 				</GenericTableCell>

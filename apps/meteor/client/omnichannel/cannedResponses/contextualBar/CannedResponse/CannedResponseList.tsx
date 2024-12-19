@@ -1,11 +1,13 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, ContextualbarEmptyContent, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Dispatch, FormEventHandler, MouseEvent, ReactElement, SetStateAction } from 'react';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import Item from './Item';
+import WrapCannedResponse from './WrapCannedResponse';
 import {
 	ContextualbarHeader,
 	ContextualbarTitle,
@@ -16,8 +18,6 @@ import {
 } from '../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import { useRoomToolbox } from '../../../../views/room/contexts/RoomToolboxContext';
-import Item from './Item';
-import WrapCannedResponse from './WrapCannedResponse';
 
 type CannedResponseListProps = {
 	loadMoreItems: (start: number, end: number) => void;
@@ -54,7 +54,7 @@ const CannedResponseList = ({
 	onClickUse,
 	reload,
 }: CannedResponseListProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const inputRef = useAutoFocus<HTMLInputElement>(true);
 
 	const { context: cannedId } = useRoomToolbox();

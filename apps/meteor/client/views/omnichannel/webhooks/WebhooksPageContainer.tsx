@@ -1,13 +1,14 @@
 import type { ISetting, Serialized, SettingValue } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
-import { useEndpoint, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import WebhooksPage from './WebhooksPage';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
-import WebhooksPage from './WebhooksPage';
 
 const reduceSettings = (settings: Serialized<ISetting>[]) =>
 	settings.reduce<Record<string, SettingValue>>((acc, { _id, value }) => {
@@ -16,7 +17,7 @@ const reduceSettings = (settings: Serialized<ISetting>[]) =>
 	}, {});
 
 const WebhooksPageContainer = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const getIntegrationsSettings = useEndpoint('GET', '/v1/livechat/integrations.settings');
 

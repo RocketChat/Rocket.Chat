@@ -3,10 +3,11 @@ import type {
 	IImportMessageRecord,
 	IImportRecord,
 	IImportUserRecord,
+	IImportContactRecord,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import type { IImportDataModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, IndexDescription } from 'mongodb';
+import type { Collection, FindCursor, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -67,6 +68,22 @@ export class ImportDataRaw extends BaseRaw<IImportRecord> implements IImportData
 		).toArray();
 	}
 
+	getAllContactsForSelection(): Promise<IImportContactRecord[]> {
+		return this.find<IImportContactRecord>(
+			{
+				dataType: 'contact',
+			},
+			{
+				projection: {
+					'data.importIds': 1,
+					'data.name': 1,
+					'data.phones': 1,
+					'data.emails': 1,
+				},
+			},
+		).toArray();
+	}
+
 	async checkIfDirectMessagesExists(): Promise<boolean> {
 		return (
 			(await this.col.countDocuments({
@@ -101,16 +118,5 @@ export class ImportDataRaw extends BaseRaw<IImportRecord> implements IImportData
 		);
 
 		return channel?.data?.importIds?.shift();
-	}
-
-	findDMForImportedUsers(...users: Array<string>): Promise<IImportChannelRecord | null> {
-		const query: Filter<IImportRecord> = {
-			'dataType': 'channel',
-			'data.users': {
-				$all: users,
-			},
-		};
-
-		return this.findOne<IImportChannelRecord>(query);
 	}
 }

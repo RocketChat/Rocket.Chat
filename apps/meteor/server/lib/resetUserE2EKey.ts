@@ -2,11 +2,11 @@ import { api } from '@rocket.chat/core-services';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { i18n } from './i18n';
+import { isUserIdFederated } from './isUserIdFederated';
 import { notifyOnUserChange, notifyOnSubscriptionChangedByUserId } from '../../app/lib/server/lib/notifyListener';
 import * as Mailer from '../../app/mailer/server/api';
 import { settings } from '../../app/settings/server';
-import { i18n } from './i18n';
-import { isUserIdFederated } from './isUserIdFederated';
 
 const sendResetNotification = async function (uid: string): Promise<void> {
 	const user = await Users.findOneById(uid, {});
@@ -20,7 +20,7 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 		return;
 	}
 
-	const t = (s: string): string => i18n.t(s, { lng: language });
+	const t = i18n.getFixedT(language);
 	const text = `
 	${t('Your_e2e_key_has_been_reset')}
 

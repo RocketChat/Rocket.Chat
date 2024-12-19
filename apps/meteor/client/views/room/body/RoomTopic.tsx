@@ -23,7 +23,7 @@ export const RoomTopic = ({ room, user }: RoomTopicProps) => {
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 	const directUserData = usePresence(directUserId);
-	const useRealName = useSetting('UI_Use_Real_Name') as boolean;
+	const useRealName = useSetting('UI_Use_Real_Name', false);
 	const router = useRouter();
 
 	const currentRoute = router.getLocationPathname();
@@ -51,7 +51,7 @@ export const RoomTopic = ({ room, user }: RoomTopicProps) => {
 	if (!topic && !roomLeader) return null;
 
 	return (
-		<RoomBanner className='rcx-header-section' role='note'>
+		<RoomBanner className='rcx-header-section rcx-topic-section' role='note'>
 			<RoomBannerContent>
 				{roomLeader && !topic && canEdit ? (
 					<Box is='a' href={href}>

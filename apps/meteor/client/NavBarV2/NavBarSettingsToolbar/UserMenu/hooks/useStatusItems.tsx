@@ -5,13 +5,13 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
 import { callbacks } from '../../../../../lib/callbacks';
 import MarkdownText from '../../../../components/MarkdownText';
 import { UserStatus } from '../../../../components/UserStatus';
 import { userStatuses } from '../../../../lib/userStatuses';
 import type { UserStatusDescriptor } from '../../../../lib/userStatuses';
 import { useStatusDisabledModal } from '../../../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
-import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
 
 export const useStatusItems = (): GenericMenuItemProps[] => {
 	// We should lift this up to somewhere else if we want to use it in other places
@@ -79,7 +79,7 @@ export const useStatusItems = (): GenericMenuItemProps[] => {
 							</Box>
 						),
 					},
-			  ]
+				]
 			: []),
 		...(statuses ?? []),
 		{ id: 'custom-status', icon: 'emoji', content: t('Custom_Status'), onClick: handleCustomStatus, disabled: presenceDisabled },

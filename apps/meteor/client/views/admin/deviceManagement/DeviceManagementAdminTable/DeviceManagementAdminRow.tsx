@@ -1,8 +1,9 @@
 import { Box, Menu, Option } from '@rocket.chat/fuselage';
 import { useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, ReactElement } from 'react';
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import DeviceIcon from '../../../../components/deviceManagement/DeviceIcon';
@@ -32,7 +33,7 @@ const DeviceManagementAdminRow = ({
 	rcVersion,
 	onReload,
 }: DeviceRowProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const deviceManagementRouter = useRoute('device-management');
 	const formatDateAndTime = useFormatDateAndTime();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');

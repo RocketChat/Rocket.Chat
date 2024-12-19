@@ -95,6 +95,10 @@ export class UsersRaw extends BaseRaw {
 				name: 'username_insensitive',
 				collation: { locale: 'en', strength: 2, caseLevel: false },
 			},
+			{
+				key: { active: 1, lastLogin: 1 },
+				partialFilterExpression: { active: true, lastLogin: { $exists: true } },
+			},
 		];
 	}
 
@@ -133,6 +137,16 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.find(query, options);
+	}
+
+	countUsersInRoles(roles) {
+		roles = [].concat(roles);
+
+		const query = {
+			roles: { $in: roles },
+		};
+
+		return this.countDocuments(query);
 	}
 
 	findPaginatedUsersInRoles(roles, options) {
@@ -1439,6 +1453,17 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query);
 	}
 
+	countOnlineUserFromList(userList, isLivechatEnabledWhenAgentIdle) {
+		// TODO: Create class Agent
+		const username = {
+			$in: [].concat(userList),
+		};
+
+		const query = queryStatusAgentOnline({ username }, isLivechatEnabledWhenAgentIdle);
+
+		return this.countDocuments(query);
+	}
+
 	findOneOnlineAgentByUserList(userList, options, isLivechatEnabledWhenAgentIdle) {
 		// TODO:: Create class Agent
 		const username = {
@@ -1468,6 +1493,22 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.find(query);
+	}
+
+	countBotAgents(usernameList) {
+		// TODO:: Create class Agent
+		const query = {
+			roles: {
+				$all: ['bot', 'livechat-agent'],
+			},
+			...(usernameList && {
+				username: {
+					$in: [].concat(usernameList),
+				},
+			}),
+		};
+
+		return this.countDocuments(query);
 	}
 
 	removeAllRoomsByUserId(_id) {
@@ -2715,12 +2756,12 @@ export class UsersRaw extends BaseRaw {
 						$set: {
 							bio,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							bio: 1,
 						},
-				  }),
+					}),
 		};
 		return this.updateOne({ _id }, update);
 	}
@@ -2732,12 +2773,12 @@ export class UsersRaw extends BaseRaw {
 						$set: {
 							nickname,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							nickname: 1,
 						},
-				  }),
+					}),
 		};
 		return this.updateOne({ _id }, update);
 	}
@@ -3072,6 +3113,16 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.find(query, options);
+	}
+
+	countAllUsersWithPendingAvatar() {
+		const query = {
+			_pendingAvatarUrl: {
+				$exists: true,
+			},
+		};
+
+		return this.countDocuments(query);
 	}
 
 	updateCustomFieldsById(userId, customFields) {

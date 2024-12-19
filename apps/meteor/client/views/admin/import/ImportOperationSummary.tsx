@@ -1,8 +1,9 @@
 import type { Serialized } from '@rocket.chat/core-typings';
 import { TableRow, TableCell } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
 	ImportWaitingStates,
@@ -24,6 +25,7 @@ type ImportOperationSummaryProps = {
 		users?: number;
 		channels?: number;
 		messages?: number;
+		contacts?: number;
 		total?: number;
 	};
 	valid?: boolean;
@@ -37,10 +39,10 @@ function ImportOperationSummary({
 	file = '',
 	user,
 	small,
-	count: { users = 0, channels = 0, messages = 0, total = 0 } = {},
+	count: { users = 0, channels = 0, messages = 0, total = 0, contacts = 0 } = {},
 	valid,
 }: ImportOperationSummaryProps) {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 
 	const fileName = useMemo(() => {
@@ -89,7 +91,7 @@ function ImportOperationSummary({
 				role: 'link',
 				action: true,
 				onClick: handleClick,
-		  }
+			}
 		: {};
 
 	return (
@@ -101,6 +103,7 @@ function ImportOperationSummary({
 					<TableCell>{status && t(status.replace('importer_', 'importer_status_') as TranslationKey)}</TableCell>
 					<TableCell>{fileName}</TableCell>
 					<TableCell align='center'>{users}</TableCell>
+					<TableCell align='center'>{contacts}</TableCell>
 					<TableCell align='center'>{channels}</TableCell>
 					<TableCell align='center'>{messages}</TableCell>
 					<TableCell align='center'>{total}</TableCell>

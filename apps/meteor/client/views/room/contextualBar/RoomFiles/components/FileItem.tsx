@@ -3,11 +3,11 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useDownloadFromServiceWorker } from '../../../../../hooks/useDownloadFromServiceWorker';
-import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import FileItemIcon from './FileItemIcon';
 import FileItemMenu from './FileItemMenu';
 import ImageItem from './ImageItem';
+import { useDownloadFromServiceWorker } from '../../../../../hooks/useDownloadFromServiceWorker';
+import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 
 const hoverClass = css`
 	&:hover {

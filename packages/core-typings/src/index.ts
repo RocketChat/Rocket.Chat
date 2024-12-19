@@ -1,3 +1,5 @@
+import './ServerAudit/IAuditServerSettingEvent';
+
 export * from './Apps';
 export * from './AppOverview';
 export * from './FeaturedApps';
@@ -42,6 +44,7 @@ export * from './IUserStatus';
 export * from './IUser';
 
 export * from './ee/IAuditLog';
+export * from './ee/IWorkspaceCredentials';
 
 export * from './import';
 export * from './IIncomingMessage';

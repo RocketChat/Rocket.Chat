@@ -1,18 +1,18 @@
-import type { SettingId, ISetting, GroupId, SectionName, TabId } from '@rocket.chat/core-typings';
+import type { ISetting } from '@rocket.chat/core-typings';
 import { createContext } from 'react';
 
 export type SettingsContextQuery = {
-	readonly _id?: SettingId[] | RegExp;
-	readonly group?: GroupId;
-	readonly section?: SectionName;
-	readonly tab?: TabId;
+	readonly _id?: ISetting['_id'][] | RegExp;
+	readonly group?: ISetting['_id'];
+	readonly section?: string;
+	readonly tab?: ISetting['_id'];
 };
 
 export type SettingsContextValue = {
 	readonly hasPrivateAccess: boolean;
 	readonly isLoading: boolean;
 	readonly querySetting: (
-		_id: SettingId,
+		_id: ISetting['_id'],
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISetting | undefined];
 	readonly querySettings: (
 		query: SettingsContextQuery,

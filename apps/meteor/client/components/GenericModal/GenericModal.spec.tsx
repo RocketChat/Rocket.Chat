@@ -4,8 +4,8 @@ import userEvent from '@testing-library/user-event';
 import type { ReactElement } from 'react';
 import React, { Suspense } from 'react';
 
-import ModalProviderWithRegion from '../../providers/ModalProvider/ModalProviderWithRegion';
 import GenericModal from './GenericModal';
+import ModalProviderWithRegion from '../../providers/ModalProvider/ModalProviderWithRegion';
 
 const renderModal = (modalElement: ReactElement) => {
 	const {

@@ -1,6 +1,7 @@
 import type { IEmailInboxPayload } from '@rocket.chat/core-typings';
 import {
 	Accordion,
+	AccordionItem,
 	Button,
 	ButtonGroup,
 	TextInput,
@@ -18,10 +19,11 @@ import {
 	FieldHint,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
@@ -29,7 +31,7 @@ import GenericModal from '../../../components/GenericModal';
 import { PageScrollableContentWithShadow } from '../../../components/Page';
 
 const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const router = useRoute('admin-email-inboxes');
@@ -45,7 +47,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 		handleSubmit,
 		formState: { errors, isDirty },
 	} = useForm({
-		defaultValues: {
+		values: {
 			active: inboxData?.active ?? true,
 			name: inboxData?.name,
 			email: inboxData?.email,
@@ -190,7 +192,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 		<PageScrollableContentWithShadow>
 			<Box maxWidth='x600' w='full' alignSelf='center'>
 				<Accordion>
-					<Accordion.Item defaultExpanded title={t('Inbox_Info')}>
+					<AccordionItem defaultExpanded title={t('Inbox_Info')}>
 						<FieldGroup>
 							<Field>
 								<FieldRow>
@@ -303,8 +305,8 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 								<FieldHint id={`${departmentField}-hint`}>{t('Only_Members_Selected_Department_Can_View_Channel')}</FieldHint>
 							</Field>
 						</FieldGroup>
-					</Accordion.Item>
-					<Accordion.Item defaultExpanded={!inboxData?._id} title={t('Configure_Outgoing_Mail_SMTP')}>
+					</AccordionItem>
+					<AccordionItem defaultExpanded={!inboxData?._id} title={t('Configure_Outgoing_Mail_SMTP')}>
 						<FieldGroup>
 							<Field>
 								<FieldLabel htmlFor={smtpServerField} required>
@@ -425,8 +427,8 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 								</FieldRow>
 							</Field>
 						</FieldGroup>
-					</Accordion.Item>
-					<Accordion.Item defaultExpanded={!inboxData?._id} title={t('Configure_Incoming_Mail_IMAP')}>
+					</AccordionItem>
+					<AccordionItem defaultExpanded={!inboxData?._id} title={t('Configure_Incoming_Mail_IMAP')}>
 						<FieldGroup>
 							<Field>
 								<FieldLabel htmlFor={imapServerField} required>
@@ -574,7 +576,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 								</FieldRow>
 							</Field>
 						</FieldGroup>
-					</Accordion.Item>
+					</AccordionItem>
 					<Field>
 						<FieldRow>
 							<ButtonGroup stretch>

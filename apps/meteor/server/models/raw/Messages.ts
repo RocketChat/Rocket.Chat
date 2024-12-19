@@ -29,15 +29,15 @@ import type {
 	ModifyResult,
 } from 'mongodb';
 
+import { BaseRaw } from './BaseRaw';
 import { otrSystemMessages } from '../../../app/otr/lib/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { BaseRaw } from './BaseRaw';
 
 type DeepWritable<T> = T extends (...args: any) => any
 	? T
 	: {
 			-readonly [P in keyof T]: DeepWritable<T[P]>;
-	  };
+		};
 
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
@@ -539,6 +539,16 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
+	countPinned(options?: CountDocumentsOptions): Promise<number> {
+		const query: Filter<IMessage> = {
+			t: { $ne: 'rm' as MessageTypesValues },
+			_hidden: { $ne: true },
+			pinned: true,
+		};
+
+		return this.countDocuments(query, options);
+	}
+
 	findPaginatedPinnedByRoom(roomId: IMessage['rid'], options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
 		const query: Filter<IMessage> = {
 			t: { $ne: 'rm' },
@@ -557,6 +567,15 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 
 		return this.find(query, options);
+	}
+
+	countStarred(options?: CountDocumentsOptions): Promise<number> {
+		const query: Filter<IMessage> = {
+			'_hidden': { $ne: true },
+			'starred._id': { $exists: true },
+		};
+
+		return this.countDocuments(query, options);
 	}
 
 	async setFederationReactionEventId(username: string, _id: string, reaction: string, federationEventId: string): Promise<void> {
@@ -879,16 +898,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findForUpdates(roomId: string, timestamp: Date, options?: FindOptions<IMessage>): FindCursor<IMessage> {
+	findForUpdates(roomId: IMessage['rid'], timestamp: { $lt: Date } | { $gt: Date }, options?: FindOptions<IMessage>): FindCursor<IMessage> {
 		const query = {
-			_hidden: {
-				$ne: true,
-			},
 			rid: roomId,
-			_updatedAt: {
-				$gt: timestamp,
-			},
+			_hidden: { $ne: true },
+			_updatedAt: timestamp,
 		};
+
 		return this.find(query, options);
 	}
 

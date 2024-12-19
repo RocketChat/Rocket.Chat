@@ -1,8 +1,10 @@
 import { Pagination, States, StatesIcon, StatesActions, StatesAction, StatesTitle } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 
+import BusinessHoursRow from './BusinessHoursRow';
 import FilterByText from '../../components/FilterByText';
 import GenericNoResults from '../../components/GenericNoResults';
 import {
@@ -13,7 +15,6 @@ import {
 	GenericTableLoadingRow,
 } from '../../components/GenericTable';
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
-import BusinessHoursRow from './BusinessHoursRow';
 
 const BusinessHoursTable = () => {
 	const t = useTranslation();
@@ -21,13 +22,16 @@ const BusinessHoursTable = () => {
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
-	const query = useMemo(
-		() => ({
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-			name: text,
-		}),
-		[itemsPerPage, current, text],
+	const query = useDebouncedValue(
+		useMemo(
+			() => ({
+				name: text,
+				...(itemsPerPage && { count: itemsPerPage }),
+				...(current && { offset: current }),
+			}),
+			[text, itemsPerPage, current],
+		),
+		500,
 	);
 
 	const getBusinessHours = useEndpoint('GET', '/v1/livechat/business-hours');
@@ -47,7 +51,7 @@ const BusinessHoursTable = () => {
 
 	return (
 		<>
-			<FilterByText onChange={setText} />
+			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -62,9 +66,7 @@ const BusinessHoursTable = () => {
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{data?.businessHours.map((businessHour) => (
-								<BusinessHoursRow key={businessHour._id} {...businessHour} />
-							))}
+							{data?.businessHours.map((businessHour) => <BusinessHoursRow key={businessHour._id} {...businessHour} />)}
 						</GenericTableBody>
 					</GenericTable>
 					<Pagination

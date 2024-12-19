@@ -16,8 +16,8 @@ import type {
 	AggregationCursor,
 } from 'mongodb';
 
-import { notifyOnLivechatDepartmentAgentChangedByDepartmentId } from '../../../app/lib/server/lib/notifyListener';
 import { BaseRaw } from './BaseRaw';
+import { notifyOnLivechatDepartmentAgentChangedByDepartmentId } from '../../../app/lib/server/lib/notifyListener';
 
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implements ILivechatDepartmentModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartment>>) {
