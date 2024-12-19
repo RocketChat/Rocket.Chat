@@ -27,15 +27,18 @@ const validateMaxChats = async ({
 	};
 }) => {
 	if (!inquiry?._id || !agent?.agentId) {
+		cbLogger.debug('No inquiry or agent provided');
 		throw new Error('No inquiry or agent provided');
 	}
 	const { agentId } = agent;
 
 	if (!(await Livechat.checkOnlineAgents(undefined, agent))) {
+		cbLogger.debug('Provided agent is not online');
 		throw new Error('Provided agent is not online');
 	}
 
 	if (!settings.get('Livechat_waiting_queue')) {
+		cbLogger.info(`Chat can be taken by Agent ${agentId}: waiting queue is disabled`);
 		return agent;
 	}
 
@@ -58,11 +61,14 @@ const validateMaxChats = async ({
 
 	const user = await Users.getAgentAndAmountOngoingChats(agentId);
 	if (!user) {
+		cbLogger.debug({ msg: 'No valid agent found', agentId });
 		throw new Error('No valid agent found');
 	}
 
 	const { queueInfo: { chats = 0 } = {} } = user;
 	const maxChats = typeof maxNumberSimultaneousChat === 'number' ? maxNumberSimultaneousChat : parseInt(maxNumberSimultaneousChat, 10);
+
+	cbLogger.debug({ msg: 'Validating agent is within max number of chats', agentId, user, maxChats });
 	if (maxChats <= chats) {
 		await callbacks.run('livechat.onMaxNumberSimultaneousChatsReached', inquiry);
 		throw new Error('error-max-number-simultaneous-chats-reached');
