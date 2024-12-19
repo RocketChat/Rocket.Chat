@@ -52,6 +52,8 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		OmnichannelSortingMechanismSettingType.Timestamp,
 	);
 
+	const lastQueueSize = useRef(0);
+
 	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
 	const hasAccess = usePermission('view-l-room');
 	const canViewOmnichannelQueue = usePermission('view-livechat-queue');
@@ -151,20 +153,11 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	);
 
 	useEffect(() => {
-		const observer = LivechatInquiry.find(
-			{ status: LivechatInquiryStatus.QUEUED },
-			{
-				sort: getOmniChatSortQuery(omnichannelSortingMechanism),
-				limit: omnichannelPoolMaxIncoming,
-			},
-		).observe({
-			added: (_inquiry) => {
-				KonchatNotification.newRoom();
-			},
-		});
-
-		return () => observer.stop();
-	}, [omnichannelPoolMaxIncoming, omnichannelSortingMechanism]);
+		if (lastQueueSize.current < (queue?.length ?? 0)) {
+			KonchatNotification.newRoom();
+		}
+		lastQueueSize.current = queue?.length ?? 0;
+	}, [queue?.length]);
 
 	useOmnichannelContinuousSoundNotification(queue ?? []);
 
