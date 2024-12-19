@@ -1,7 +1,7 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 
-import { api, credentials, request } from './api-data';
+import { api, credentials, methodCall, request } from './api-data';
 
 type CreateRoomParams = {
 	name?: IRoom['name'];
@@ -119,3 +119,25 @@ export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = 
 				resolve(res.body.subscription);
 			});
 	});
+
+export const addUserToRoom = ({
+	usernames,
+	rid,
+	userCredentials,
+}: {
+	usernames: string[];
+	rid: IRoom['_id'];
+	userCredentials?: Credentials;
+}) => {
+	return request
+		.post(methodCall('addUsersToRoom'))
+		.set(userCredentials ?? credentials)
+		.send({
+			message: JSON.stringify({
+				method: 'addUsersToRoom',
+				params: [{ rid, users: usernames }],
+				id: 'id',
+				msg: 'method',
+			}),
+		});
+};
