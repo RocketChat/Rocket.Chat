@@ -64,7 +64,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		formState: { errors },
 	} = useFormContext<AccountProfileFormValues>();
 
-	const { email, avatar, username } = watch();
+	const { email, avatar, username, name: userFullName } = watch();
 
 	const previousEmail = user ? getUserEmailAddress(user) : '';
 	const previousUsername = user?.username || '';
@@ -150,6 +150,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							<UserAvatarEditor
 								etag={user?.avatarETag}
 								currentUsername={user?.username}
+								name={userFullName}
 								username={username}
 								setAvatarObj={onChange}
 								disabled={!allowUserAvatarChange}
