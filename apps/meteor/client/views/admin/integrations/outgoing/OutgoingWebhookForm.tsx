@@ -518,7 +518,7 @@ const OutgoingWebhookForm = () => {
 											)}
 										/>
 									</FieldRow>
-									<FieldHint id={`${runOnEditsField}-hint`}>{t('Integration_Run_When_Message_Is_Edited_Description')}</FieldHint>
+									<FieldHint id={`${runOnEditsField}-hint`} dangerouslySetInnerHTML={{ __html: t('Integration_Run_When_Message_Is_Edited_Description') }} />
 								</Field>
 							</FieldGroup>
 						)}
