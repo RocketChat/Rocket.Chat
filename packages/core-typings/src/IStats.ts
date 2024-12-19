@@ -221,6 +221,10 @@ export interface IStats {
 			channels: boolean;
 			groups: boolean;
 			teams: boolean;
+			persistentChat: boolean;
+		};
+		discussions: {
+			total: number;
 		};
 	};
 	totalSubscriptionRoles: number;
