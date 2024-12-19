@@ -49,10 +49,9 @@ Free for 30 days. Afterward, choose between continuing to host on our secure clo
 
 You can follow these instructions to setup a dev environment:
 
-- Install **Node 20.x (LTS)** either [manually](https://nodejs.org/dist/latest-v20.x/) or using a tool like [nvm](https://github.com/creationix/nvm) or [volta](https://volta.sh/) (recommended)
-- Install **Meteor** ([version here](apps/meteor/.meteor/release)): https://docs.meteor.com/about/install.html
+- Install **Node 14.x (LTS)** either [manually](https://nodejs.org/dist/latest-v14.x/) or using a tool like [nvm](https://github.com/creationix/nvm) or [volta](https://volta.sh/) (recommended)
+- Install **Meteor** ([version here](apps/meteor/.meteor/release)): https://www.meteor.com/developers/install
 - Install **yarn**: https://yarnpkg.com/getting-started/install
-- Install **Deno 1.x**: https://docs.deno.com/runtime/fundamentals/installation/
 - Clone this repo: `git clone https://github.com/RocketChat/Rocket.Chat.git`
 - Run `yarn` to install dependencies
 
@@ -67,10 +66,6 @@ yarn dsv # run only meteor (front and back) with pre-built packages
 ```
 
 After initialized, you can access the server at http://localhost:3000
-
-More details at: [Developer Docs](https://developer.rocket.chat/v1/docs/server-environment-setup)
-PS: For Windows you MUST use WSL2 and have +12Gb RAM
-
 
 # Gitpod Setup
 
@@ -88,7 +83,7 @@ yarn turbo run ms
 
 After initialized, you can access the server at http://localhost:4000
 
-> ⚠️ Check more detailed information in the [Rocket.Chat Environment Setup](https://developer.rocket.chat/docs/server-environment-setup) guide
+> ⚠️ Check more detailed information in the [Rocket.Chat Environment Setup](https://developer.rocket.chat/rocket.chat/rocket-chat-environment-setup) guide
 
 # 💻 Installation
 
@@ -129,6 +124,29 @@ Join [#support](https://open.rocket.chat/channel/support) and [#general](https:/
 # 👥 Contributions
 
 Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://developer.rocket.chat/contribute-to-rocket.chat/ways-to-contribute) page for more details.
+
+# 🚀 CodeBase guide
+
+To make contributing to Rocket.Chat easier for new developers, we've introduced RC.Guided.Tours.
+
+<b>About RC.Guided.Tours:</b>
+
+• Purpose: Simplify the onboarding process for new contributors to the Rocket.Chat codebase.
+
+• Target Audience: Developers who are new to the Rocket.Chat project.
+
+• Benefits:
+      
+1. Provides an interactive, step-by-step tour of the codebase.
+       
+2. Helps contributors quickly understand crucial parts of the code, empowering them to make impactful contributions sooner.
+
+<b>Powered by CodeTour</b>: RC.Guided.Tours leverages the CodeTour extension for Visual Studio Code, enabling guided walkthroughs of files and workflows directly in the IDE.
+
+<b>Get Started</b>
+
+Explore RC.Guided.Tours today to enhance your onboarding experience:
+<b>[RC.Guided.Tours](https://github.com/RocketChat/RC.Guided.Tours)</b>
 
 
 ## 💼 Become a Rocketeer
