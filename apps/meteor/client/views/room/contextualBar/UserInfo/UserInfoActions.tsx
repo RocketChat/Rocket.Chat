@@ -70,7 +70,11 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 	if (isLoading) {
 		return <Skeleton w='full' />;
 	}
-	return <ButtonGroup align='center'>{actions}</ButtonGroup>;
+	return (
+		<ButtonGroup wrap align='start'>
+			{actions}
+		</ButtonGroup>
+	);
 };
 
 export default UserInfoActions;
