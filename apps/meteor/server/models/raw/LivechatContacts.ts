@@ -292,26 +292,29 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 	}
 
 	countUnknown(): Promise<number> {
-		return this.countDocuments({ unknown: true });
+		return this.countDocuments({ unknown: true }, { readPreference: readSecondaryPreferred() });
 	}
 
 	countBlocked(): Promise<number> {
-		return this.countDocuments({ 'channels.blocked': true });
+		return this.countDocuments({ 'channels.blocked': true }, { readPreference: readSecondaryPreferred() });
 	}
 
 	countFullyBlocked(): Promise<number> {
-		return this.countDocuments({
-			'channels.blocked': true,
-			'channels': { $not: { $elemMatch: { $or: [{ blocked: false }, { blocked: { $exists: false } }] } } },
-		});
+		return this.countDocuments(
+			{
+				'channels.blocked': true,
+				'channels': { $not: { $elemMatch: { $or: [{ blocked: false }, { blocked: { $exists: false } }] } } },
+			},
+			{ readPreference: readSecondaryPreferred() },
+		);
 	}
 
 	countVerified(): Promise<number> {
-		return this.countDocuments({ 'channels.verified': true });
+		return this.countDocuments({ 'channels.verified': true }, { readPreference: readSecondaryPreferred() });
 	}
 
 	countContactsWithoutChannels(): Promise<number> {
-		return this.countDocuments({ channels: { $size: 0 } });
+		return this.countDocuments({ channels: { $size: 0 } }, { readPreference: readSecondaryPreferred() });
 	}
 
 	getStatistics(): AggregationCursor<{ totalConflicts: number; avgChannelsPerContact: number }> {
