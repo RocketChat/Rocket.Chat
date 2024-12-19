@@ -616,6 +616,24 @@ const roomsOpenSchema = {
 
 export const isRoomsOpenProps = ajv.compile<RoomsOpenProps>(roomsOpenSchema);
 
+type RoomsCloseProps = {
+	roomId: string;
+};
+
+const roomsCloseSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isRoomsCloseProps = ajv.compile<RoomsCloseProps>(roomsCloseSchema);
+
 export type RoomsEndpoints = {
 	'/v1/rooms.autocomplete.channelAndPrivate': {
 		GET: (params: RoomsAutoCompleteChannelAndPrivateProps) => {
@@ -785,5 +803,9 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.open': {
 		POST: (params: RoomsOpenProps) => void;
+	};
+
+	'/v1/rooms.close': {
+		POST: (params: RoomsCloseProps) => void;
 	};
 };
