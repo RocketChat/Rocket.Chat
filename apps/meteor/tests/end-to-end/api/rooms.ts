@@ -1255,21 +1255,7 @@ describe('[Rooms]', () => {
 		let testChannel: IRoom;
 		let testGroup: IRoom;
 		let testDM: IRoom;
-		const expectedKeys = [
-			'_id',
-			'name',
-			'fname',
-			't',
-			'msgs',
-			'usersCount',
-			'u',
-			'customFields',
-			'ts',
-			'ro',
-			'sysMes',
-			'default',
-			'_updatedAt',
-		];
+		const expectedKeys = ['_id', 'name', 'fname', 't', 'msgs', 'usersCount', 'u', 'ts', 'ro', 'sysMes', 'default', '_updatedAt'];
 		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
 		const testGroupName = `group.test.${Date.now()}-${Math.random()}`;
 		let user: TestUser<IUser>;
@@ -3317,6 +3303,7 @@ describe('[Rooms]', () => {
 				});
 		});
 	});
+
 	describe('/rooms.isMember', () => {
 		let testChannel: IRoom;
 		let testGroup: IRoom;
@@ -3596,6 +3583,53 @@ describe('[Rooms]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'unauthorized');
+				});
+		});
+	});
+
+	describe('/rooms.open', () => {
+		let room: IRoom;
+
+		before(async () => {
+			room = (await createRoom({ type: 'c', name: `rooms.open.test.${Date.now()}` })).body.channel;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: room._id });
+		});
+
+		it('should open the room', (done) => {
+			void request
+				.post(api('rooms.open'))
+				.set(credentials)
+				.send({ roomId: room._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			void request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId: room._id })
+				.send()
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.subscription).to.have.property('open', true);
+				})
+				.end(done);
+		});
+
+		it('should fail if roomId is not provided', async () => {
+			await request
+				.post(api('rooms.open'))
+				.set(credentials)
+				.send()
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
 				});
 		});
 	});

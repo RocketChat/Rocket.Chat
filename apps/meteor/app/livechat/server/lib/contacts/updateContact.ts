@@ -25,9 +25,12 @@ export type UpdateContactParams = {
 export async function updateContact(params: UpdateContactParams): Promise<ILivechatContact> {
 	const { contactId, name, emails, phones, customFields: receivedCustomFields, contactManager, channels, wipeConflicts } = params;
 
-	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name' | 'conflictingFields'>>(contactId, {
-		projection: { _id: 1, name: 1, conflictingFields: 1 },
-	});
+	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name' | 'customFields' | 'conflictingFields'>>(
+		contactId,
+		{
+			projection: { _id: 1, name: 1, customFields: 1, conflictingFields: 1 },
+		},
+	);
 
 	if (!contact) {
 		throw new Error('error-contact-not-found');
@@ -46,7 +49,27 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		}
 	}
 
-	const customFields = receivedCustomFields && validateCustomFields(await getAllowedCustomFields(), receivedCustomFields);
+	const workspaceAllowedCustomFields = await getAllowedCustomFields();
+	const workspaceAllowedCustomFieldsIds = workspaceAllowedCustomFields.map((customField) => customField._id);
+	const currentCustomFieldsIds = Object.keys(contact.customFields || {});
+	const notRegisteredCustomFields = currentCustomFieldsIds
+		.filter((customFieldId) => !workspaceAllowedCustomFieldsIds.includes(customFieldId))
+		.map((customFieldId) => ({ _id: customFieldId }));
+
+	const customFieldsToUpdate =
+		receivedCustomFields &&
+		validateCustomFields(workspaceAllowedCustomFields, receivedCustomFields, {
+			ignoreAdditionalFields: !!notRegisteredCustomFields.length,
+		});
+
+	if (receivedCustomFields && customFieldsToUpdate && notRegisteredCustomFields.length) {
+		const allowedCustomFields = [...workspaceAllowedCustomFields, ...notRegisteredCustomFields];
+		validateCustomFields(allowedCustomFields, receivedCustomFields);
+
+		notRegisteredCustomFields.forEach((notRegisteredCustomField) => {
+			customFieldsToUpdate[notRegisteredCustomField._id] = contact.customFields?.[notRegisteredCustomField._id] as string;
+		});
+	}
 
 	const updatedContact = await LivechatContacts.updateContact(contactId, {
 		name,
@@ -54,7 +77,7 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		phones: phones?.map((phoneNumber) => ({ phoneNumber })),
 		contactManager,
 		channels,
-		customFields,
+		customFields: customFieldsToUpdate,
 		...(wipeConflicts && { conflictingFields: [] }),
 	});
 

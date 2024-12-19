@@ -279,8 +279,17 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		it('should execute the callback when everything is correct', () => {
 			const stub = sinon.stub();
 			FederationHooks.canCreateDirectMessageFromUI(stub);
+			isFederationEnabled.returns(true);
 			hooks['federation-v2-can-create-direct-message-from-ui-ce']([]);
 			expect(stub.calledWith([])).to.be.true;
+		});
+
+		it('should not execute callback or throw error when federation is disabled', () => {
+			const stub = sinon.stub();
+			FederationHooks.canCreateDirectMessageFromUI(stub);
+			isFederationEnabled.returns(false);
+			hooks['federation-v2-can-create-direct-message-from-ui-ce']([]);
+			expect(stub.calledWith([])).to.be.false;
 		});
 	});
 
