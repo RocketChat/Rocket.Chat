@@ -396,8 +396,6 @@ void (async () => {
 	}
 })();
 
-settings.watchByRegex(/^Assets_/, (key, value) => RocketChatAssets.processAsset(key, value));
-
 Meteor.startup(() => {
 	setTimeout(() => {
 		process.emit('message', {
