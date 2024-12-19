@@ -44,7 +44,7 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		command: 'i',
 	},
 	{
-		label: 'Strike',
+		label: 'Strikethrough',
 		icon: 'strike',
 		pattern: '~{{text}}~',
 	},
@@ -54,7 +54,7 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		pattern: '`{{text}}`',
 	},
 	{
-		label: 'Multi_line',
+		label: 'Multi_line_code',
 		icon: 'multiline',
 		pattern: '```\n{{text}}\n``` ',
 	},

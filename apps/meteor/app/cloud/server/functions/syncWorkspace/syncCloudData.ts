@@ -1,57 +1,14 @@
-import type { Cloud, Serialized } from '@rocket.chat/core-typings';
 import { DuplicatedLicenseError } from '@rocket.chat/license';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { v, compile } from 'suretype';
+import { Settings } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { CloudWorkspaceAccessError } from '../../../../../lib/errors/CloudWorkspaceAccessError';
-import { CloudWorkspaceConnectionError } from '../../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/CloudWorkspaceRegistrationError';
 import { SystemLogger } from '../../../../../server/lib/logger/system';
-import { settings } from '../../../../settings/server';
 import { buildWorkspaceRegistrationData } from '../buildRegistrationData';
 import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from '../getWorkspaceAccessToken';
 import { retrieveRegistrationStatus } from '../retrieveRegistrationStatus';
-
-const workspaceSyncPayloadSchema = v.object({
-	workspaceId: v.string().required(),
-	publicKey: v.string(),
-	license: v.string().required(),
-});
-
-const assertWorkspaceSyncPayload = compile(workspaceSyncPayloadSchema);
-
-const fetchWorkspaceSyncPayload = async ({
-	token,
-	data,
-}: {
-	token: string;
-	data: Cloud.WorkspaceSyncRequestPayload;
-}): Promise<Serialized<Cloud.WorkspaceSyncResponse>> => {
-	const workspaceRegistrationClientUri = settings.get<string>('Cloud_Workspace_Registration_Client_Uri');
-	const response = await fetch(`${workspaceRegistrationClientUri}/sync`, {
-		method: 'POST',
-		headers: {
-			Authorization: `Bearer ${token}`,
-		},
-		body: data,
-	});
-
-	if (!response.ok) {
-		try {
-			const { error } = await response.json();
-			throw new CloudWorkspaceConnectionError(`Failed to connect to Rocket.Chat Cloud: ${error}`);
-		} catch (error) {
-			throw new CloudWorkspaceConnectionError(`Failed to connect to Rocket.Chat Cloud: ${response.statusText}`);
-		}
-	}
-
-	const payload = await response.json();
-
-	assertWorkspaceSyncPayload(payload);
-
-	return payload;
-};
+import { fetchWorkspaceSyncPayload } from './fetchWorkspaceSyncPayload';
 
 export async function syncCloudData() {
 	try {
@@ -67,10 +24,16 @@ export async function syncCloudData() {
 
 		const workspaceRegistrationData = await buildWorkspaceRegistrationData(undefined);
 
-		const { license, removeLicense = false } = await fetchWorkspaceSyncPayload({
+		const {
+			license,
+			removeLicense = false,
+			cloudSyncAnnouncement,
+		} = await fetchWorkspaceSyncPayload({
 			token,
 			data: workspaceRegistrationData,
 		});
+
+		await Settings.updateValueById('Cloud_Sync_Announcement_Payload', JSON.stringify(cloudSyncAnnouncement ?? null));
 
 		if (removeLicense) {
 			await callbacks.run('workspaceLicenseRemoved');

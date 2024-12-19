@@ -37,6 +37,7 @@ import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
+import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
 
 const RoomBody = (): ReactElement => {
@@ -111,6 +112,7 @@ const RoomBody = (): ReactElement => {
 	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition(room._id);
 
 	const { messageListRef } = useMessageListNavigation();
+	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
 
 	const { handleNewMessageButtonClick, handleJumpToRecentButtonClick, handleComposerResize, hasNewMessages, newMessagesScrollRef } =
 		useHasNewMessages(room._id, user?._id, atBottomRef, {
@@ -128,7 +130,7 @@ const RoomBody = (): ReactElement => {
 		sectionScrollRef,
 		unreadBarInnerRef,
 		getMoreInnerRef,
-
+		selectAndScrollRef,
 		messageListRef,
 	);
 
@@ -285,6 +287,7 @@ const RoomBody = (): ReactElement => {
 									onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 									onNavigateToNextMessage={handleNavigateToNextMessage}
 									onUploadFiles={handleUploadFiles}
+									onClickSelectAll={selectAllAndScrollToTop}
 									// TODO: send previewUrls param
 									// previewUrls={}
 								/>
