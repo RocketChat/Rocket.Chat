@@ -21,9 +21,11 @@ import type {
 	UpdateFilter,
 	UpdateOptions,
 	FindOneAndUpdateOptions,
+	AggregationCursor,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements ILivechatContactsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatContact>>) {
@@ -74,6 +76,22 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 					preRegistration: 1,
 				},
 				sparse: true,
+				unique: false,
+			},
+			{
+				key: { channels: 1 },
+				unique: false,
+			},
+			{
+				key: { 'channels.blocked': 1 },
+				sparse: true,
+			},
+			{
+				key: { 'channels.verified': 1 },
+				sparse: true,
+			},
+			{
+				key: { unknown: 1 },
 				unique: false,
 			},
 		];
@@ -271,5 +289,50 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		};
 
 		return this.countDocuments(filter);
+	}
+
+	countUnknown(): Promise<number> {
+		return this.countDocuments({ unknown: true }, { readPreference: readSecondaryPreferred() });
+	}
+
+	countBlocked(): Promise<number> {
+		return this.countDocuments({ 'channels.blocked': true }, { readPreference: readSecondaryPreferred() });
+	}
+
+	countFullyBlocked(): Promise<number> {
+		return this.countDocuments(
+			{
+				'channels.blocked': true,
+				'channels': { $not: { $elemMatch: { $or: [{ blocked: false }, { blocked: { $exists: false } }] } } },
+			},
+			{ readPreference: readSecondaryPreferred() },
+		);
+	}
+
+	countVerified(): Promise<number> {
+		return this.countDocuments({ 'channels.verified': true }, { readPreference: readSecondaryPreferred() });
+	}
+
+	countContactsWithoutChannels(): Promise<number> {
+		return this.countDocuments({ channels: { $size: 0 } }, { readPreference: readSecondaryPreferred() });
+	}
+
+	getStatistics(): AggregationCursor<{ totalConflicts: number; avgChannelsPerContact: number }> {
+		return this.col.aggregate<{ totalConflicts: number; avgChannelsPerContact: number }>(
+			[
+				{
+					$group: {
+						_id: null,
+						totalConflicts: {
+							$sum: { $size: { $cond: [{ $isArray: '$conflictingFields' }, '$conflictingFields', []] } },
+						},
+						avgChannelsPerContact: {
+							$avg: { $size: { $cond: [{ $isArray: '$channels' }, '$channels', []] } },
+						},
+					},
+				},
+			],
+			{ allowDiskUse: true, readPreference: readSecondaryPreferred() },
+		);
 	}
 }
