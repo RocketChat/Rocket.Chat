@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage, ITeam } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage, ITeam, IRole } from '@rocket.chat/core-typings';
 
 import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -615,6 +615,60 @@ const roomsOpenSchema = {
 };
 
 export const isRoomsOpenProps = ajv.compile<RoomsOpenProps>(roomsOpenSchema);
+type MembersOrderedByRoleProps = {
+	roomId?: IRoom['_id'];
+	roomName?: IRoom['name'];
+	status?: string[];
+	filter?: string;
+	rolesOrder?: IRole['_id'][];
+};
+
+export type RoomsMembersOrderedByRoleProps = PaginatedRequest<MembersOrderedByRoleProps>;
+
+const membersOrderedByRoleRolePropsSchema = {
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		roomName: {
+			type: 'string',
+		},
+		rolesOrder: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
+		},
+		status: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
+		},
+		filter: {
+			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'integer',
+			nullable: true,
+		},
+		offset: {
+			type: 'integer',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+	additionalProperties: false,
+};
+
+export const isRoomsMembersOrderedByRoleProps = ajv.compile<RoomsMembersOrderedByRoleProps>(membersOrderedByRoleRolePropsSchema);
 
 export type RoomsEndpoints = {
 	'/v1/rooms.autocomplete.channelAndPrivate': {
@@ -785,5 +839,11 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.open': {
 		POST: (params: RoomsOpenProps) => void;
+	};
+
+	'/v1/rooms.membersOrderedByRole': {
+		GET: (params: RoomsMembersOrderedByRoleProps) => PaginatedResult<{
+			members: IUser & { roles: IRole['_id'] }[];
+		}>;
 	};
 };
