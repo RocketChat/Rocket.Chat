@@ -3319,7 +3319,6 @@
   "Message_VideoRecorderEnabledDescription": "Vaatii 'video/webm'-tiedostot hyväksytyksi mediatyypiksi 'Tiedoston lataus'-asetuksissa.",
   "messages": "viestit",
   "Messages": "Viestit",
-  "Messages_selected": "Valitut viestit",
   "Messages_sent": "Lähetetyt viestit",
   "Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here": "Saapuvaan WebHookiin lähetetyt viestit julkaistaan tässä.",
   "Meta": "Meta",
