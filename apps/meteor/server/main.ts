@@ -12,7 +12,7 @@ import { configureLogLevel } from './configureLogLevel';
 import { registerServices } from './services/startup';
 import { startup } from './startup';
 import { startLicense } from '../ee/app/license/server/startup';
-import { registerEEBroker } from '../ee/server';
+import { registerEEBroker, startupApp } from '../ee/server';
 import { startFederationService } from '../ee/server/startup/services';
 
 import './routes';
@@ -28,5 +28,7 @@ import './features/EmailInbox/index';
 await Promise.all([configureLogLevel(), registerServices(), registerEEBroker(), startup()]);
 
 await startLicense();
+
+await startupApp();
 
 await Promise.all([configureLoginServices(), startFederationService()]);

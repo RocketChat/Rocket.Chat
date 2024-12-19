@@ -1,5 +1,4 @@
 import '../../app/authorization/server';
-import './apps';
 import './audit';
 import './deviceManagement';
 import './engagementDashboard';
