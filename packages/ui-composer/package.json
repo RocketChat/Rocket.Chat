@@ -21,7 +21,7 @@
 		"@babel/core": "~7.26.0",
 		"@react-aria/toolbar": "^3.0.0-nightly.5042",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/fuselage": "^0.59.4",
+		"@rocket.chat/fuselage": "^0.60.0",
 		"@rocket.chat/icons": "~0.39.0",
 		"@storybook/addon-actions": "^8.4.4",
 		"@storybook/addon-docs": "^8.4.4",
