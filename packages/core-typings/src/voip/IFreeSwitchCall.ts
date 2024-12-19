@@ -6,8 +6,8 @@ export interface IFreeSwitchCall extends IRocketChatRecord {
 	UUID: string;
 	channels: string[];
 	events: IFreeSwitchCallEvent[];
-	from?: Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>;
-	to?: Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>;
+	from?: Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag' | 'freeSwitchExtension'>;
+	to?: Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag' | 'freeSwitchExtension'>;
 	forwardedFrom?: Omit<IFreeSwitchCall, 'events'>[];
 	direction?: 'internal' | 'external_inbound' | 'external_outbound';
 	voicemail?: boolean;
