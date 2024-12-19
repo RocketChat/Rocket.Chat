@@ -477,7 +477,9 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 
 		if (fromUser.size) {
 			const callerIds = [...fromUser].filter((e) => !!e);
-			const user = await Users.findOneByFreeSwitchExtensions(callerIds, { projection: { _id: 1, username: 1, name: 1, avatarETag: 1, freeSwitchExtension: 1 } });
+			const user = await Users.findOneByFreeSwitchExtensions(callerIds, {
+				projection: { _id: 1, username: 1, name: 1, avatarETag: 1, freeSwitchExtension: 1 },
+			});
 
 			if (user) {
 				call.from = {
@@ -492,7 +494,9 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 
 		if (toUser.size) {
 			const calleeIds = [...toUser].filter((e) => !!e);
-			const user = await Users.findOneByFreeSwitchExtensions(calleeIds, { projection: { _id: 1, username: 1, name: 1, avatarETag: 1, freeSwitchExtension: 1 } });
+			const user = await Users.findOneByFreeSwitchExtensions(calleeIds, {
+				projection: { _id: 1, username: 1, name: 1, avatarETag: 1, freeSwitchExtension: 1 },
+			});
 			if (user) {
 				call.to = {
 					_id: user._id,
