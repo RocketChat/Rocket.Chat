@@ -10,6 +10,7 @@ import {
 	isRoomsIsMemberProps,
 	isRoomsCleanHistoryProps,
 	isRoomsOpenProps,
+	isRoomsCloseProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -18,6 +19,7 @@ import { omit } from '../../../../lib/utils/omit';
 import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { openRoom } from '../../../../server/lib/openRoom';
+import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -904,6 +906,20 @@ API.v1.addRoute(
 			const { roomId } = this.bodyParams;
 
 			await openRoom(this.userId, roomId);
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.close',
+	{ authRequired: true, validateParams: isRoomsCloseProps },
+	{
+		async post() {
+			const { roomId } = this.bodyParams;
+
+			await hideRoomMethod(this.userId, roomId);
 
 			return API.v1.success();
 		},
