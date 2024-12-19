@@ -35,6 +35,7 @@ import { saveRoomSettings } from '../../../channel-settings/server/methods/saveR
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { addUsersToRoomMethod } from '../../../lib/server/methods/addUsersToRoom';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
+import { getChannelHistory } from '../../../lib/server/methods/getChannelHistory';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -162,10 +163,11 @@ API.v1.addRoute(
 
 			const { count = 20, offset = 0 } = await getPaginationItems(this.queryParams);
 
-			const result = await Meteor.callAsync('getChannelHistory', {
+			const result = await getChannelHistory({
 				rid: findResult._id,
+				fromUserId: this.userId,
 				latest: latest ? new Date(latest) : new Date(),
-				oldest: oldest && new Date(oldest),
+				oldest: oldest ? new Date(oldest) : undefined,
 				inclusive: inclusive === 'true',
 				offset,
 				count,
