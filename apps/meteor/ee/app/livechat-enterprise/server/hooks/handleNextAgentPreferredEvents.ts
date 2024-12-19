@@ -3,24 +3,25 @@ import { LivechatVisitors, LivechatContacts, LivechatInquiry, LivechatRooms, Use
 
 import { notifyOnLivechatInquiryChanged } from '../../../../../app/lib/server/lib/notifyListener';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
+import { migrateVisitorIfMissingContact } from '../../../../../app/livechat/server/lib/contacts/migrateVisitorIfMissingContact';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 
 let contactManagerPreferred = false;
 let lastChattedAgentPreferred = false;
 
-const normalizeDefaultAgent = (agent?: Pick<IUser, '_id' | 'username'> | null): SelectedAgent | null => {
+const normalizeDefaultAgent = (agent?: Pick<IUser, '_id' | 'username'> | null): SelectedAgent | undefined => {
 	if (!agent) {
-		return null;
+		return undefined;
 	}
 
 	const { _id: agentId, username } = agent;
 	return { agentId, username };
 };
 
-const getDefaultAgent = async ({ username, id }: { username?: string; id?: string }): Promise<SelectedAgent | null> => {
+const getDefaultAgent = async ({ username, id }: { username?: string; id?: string }): Promise<SelectedAgent | undefined> => {
 	if (!username && !id) {
-		return null;
+		return undefined;
 	}
 
 	if (id) {
@@ -91,34 +92,31 @@ settings.watch<boolean>('Omnichannel_contact_manager_routing', (value) => {
 
 callbacks.add(
 	'livechat.checkDefaultAgentOnNewRoom',
-	async (defaultAgent, visitor) => {
-		if (defaultAgent || !visitor) {
-			return defaultAgent;
+	async (visitorId, source) => {
+		if (!visitorId || !source) {
+			return undefined;
 		}
 
-		const { visitorId: guestId } = visitor;
-		const guest = await LivechatVisitors.findOneEnabledById(guestId, {
+		const guest = await LivechatVisitors.findOneEnabledById(visitorId, {
 			projection: { lastAgent: 1, token: 1, contactManager: 1 },
 		});
 		if (!guest) {
-			return defaultAgent;
+			return undefined;
 		}
 
-		const contact = await LivechatContacts.findOneByVisitor(visitor, { projection: { contactManager: 1 } });
+		const contactId = await migrateVisitorIfMissingContact(visitorId, source);
+		const contact = contactId ? await LivechatContacts.findOneById(contactId, { projection: { contactManager: 1 } }) : null;
 
-		const { lastAgent, token, contactManager } = guest;
-		const contactManagerUsernameOrId = contact?.contactManager || contactManager?.username;
-		const guestManager =
-			contactManagerUsernameOrId &&
-			contactManagerPreferred &&
-			(await getDefaultAgent({ username: contactManager?.username, id: contact?.contactManager }));
+		const { lastAgent, token } = guest;
+		const contactManagerId = contact?.contactManager;
+		const guestManager = contactManagerId && contactManagerPreferred && getDefaultAgent({ id: contact?.contactManager });
 
 		if (guestManager) {
 			return guestManager;
 		}
 
 		if (!lastChattedAgentPreferred) {
-			return defaultAgent;
+			return undefined;
 		}
 
 		const guestAgent = lastAgent?.username && getDefaultAgent({ username: lastAgent?.username });
@@ -130,19 +128,19 @@ callbacks.add(
 			projection: { servedBy: 1 },
 		});
 		if (!room?.servedBy) {
-			return defaultAgent;
+			return undefined;
 		}
 
 		const {
 			servedBy: { username: usernameByRoom },
 		} = room;
 		if (!usernameByRoom) {
-			return defaultAgent;
+			return undefined;
 		}
 		const lastRoomAgent = normalizeDefaultAgent(
 			await Users.findOneOnlineAgentByUserList(usernameByRoom, { projection: { _id: 1, username: 1 } }),
 		);
-		return lastRoomAgent ?? defaultAgent;
+		return lastRoomAgent ?? undefined;
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-check-default-agent-new-room',
