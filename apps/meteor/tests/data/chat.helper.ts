@@ -89,3 +89,10 @@ export const getMessageById = ({ msgId }: { msgId: IMessage['_id'] }) => {
 			});
 	});
 };
+
+export const followMessage = ({ msgId, requestCredentials }: { msgId: IMessage['_id']; requestCredentials?: Credentials }) => {
+	return request
+		.post(api('chat.followMessage'))
+		.set(requestCredentials ?? credentials)
+		.send({ mid: msgId });
+};
