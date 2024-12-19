@@ -88,6 +88,11 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
     private state: 'uninitialized' | 'ready' | 'invalid' | 'restarting' | 'unknown' | 'stopped';
 
+    /**
+     * Incremental id that keeps track of how many times we've spawned a process for this app
+     */
+    private spawnId = 0;
+
     private readonly debug: debug.Debugger;
 
     private readonly options = {
@@ -149,6 +154,8 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
                 denoWrapperPath,
                 '--subprocess',
                 this.appPackage.info.id,
+                '--spawnId',
+                String(this.spawnId++),
             ];
 
             // If the app doesn't request any permissions, it gets the default set of permissions, which includes "networking"
