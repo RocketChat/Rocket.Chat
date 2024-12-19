@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
+import FeatureUsageCardBody from '../FeatureUsageCardBody';
 import UpgradeButton from '../UpgradeButton';
 import UsagePieGraph from '../UsagePieGraph';
 
@@ -57,7 +58,9 @@ const MACCard = ({
 
 	return (
 		<FeatureUsageCard card={card}>
-			<UsagePieGraph label={message} used={pieGraph.used} total={pieGraph.total} color={color} />
+			<FeatureUsageCardBody>
+				<UsagePieGraph label={message} used={pieGraph.used} total={pieGraph.total} color={color} />
+			</FeatureUsageCardBody>
 		</FeatureUsageCard>
 	);
 };
