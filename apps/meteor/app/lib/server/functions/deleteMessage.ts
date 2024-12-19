@@ -114,13 +114,15 @@ async function deleteThreadMessage(message: IThreadMessage, user: IUser, room: I
 	if (room) {
 		const { modifiedCount } = await Subscriptions.removeUnreadThreadsByRoomId(room._id, [message.tmid]);
 		if (modifiedCount > 0) {
+			// The replies array contains the ids of all the users that are following the thread (everyone that is involved + the ones who are following)
+			// Technically, user._id is already in the message.replies array, but since we don't have any strong
+			// guarantees of it, we are adding again to make sure it is there.
 			const userIdsThatAreWatchingTheThread = [...new Set([user._id, ...(message.replies || [])])];
+			// So they can decrement the unread threads count
 			void notifyOnSubscriptionChangedByRoomIdAndUserIds(room._id, userIdsThatAreWatchingTheThread);
 		}
 	}
 
-	// If we could not find the parent message, there is no need to notify whoever is listening
-	// about the change in the parent message
 	if (updatedParentMessage && updatedParentMessage.tcount === 0) {
 		void notifyOnMessageChange({
 			id: message.tmid,
