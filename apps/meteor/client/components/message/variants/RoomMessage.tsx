@@ -67,7 +67,7 @@ const RoomMessage = ({
 			ref={messageRef}
 			id={message._id}
 			role='listitem'
-			aria-roledescription={sequential ? t('sequential_message') : t('message')}
+			aria-roledescription={t('message')}
 			tabIndex={0}
 			aria-labelledby={`${message._id}-displayName ${message._id}-time ${message._id}-content ${message._id}-read-status`}
 			onClick={selecting ? toggleSelected : undefined}
@@ -110,7 +110,7 @@ const RoomMessage = ({
 					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
 				)}
 			</MessageContainer>
-			{!message.private && message?.e2e !== 'pending' && <MessageToolbarHolder message={message} context={context} />}
+			{!message.private && message?.e2e !== 'pending' && !selecting && <MessageToolbarHolder message={message} context={context} />}
 		</Message>
 	);
 };

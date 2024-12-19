@@ -14,7 +14,7 @@ const SettingsGroupPageSkeleton = () => (
 					<Skeleton />
 					<Skeleton width='75%' />
 				</Box>
-				<Accordion className='page-settings'>
+				<Accordion>
 					<SettingsSectionSkeleton />
 				</Accordion>
 			</Box>

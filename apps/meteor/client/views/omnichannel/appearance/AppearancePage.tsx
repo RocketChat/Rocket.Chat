@@ -57,7 +57,9 @@ const AppearancePage = ({ settings }: { settings: Serialized<ISetting>[] }) => {
 	const currentData = watch();
 
 	const handleSave = useMutableCallback(async (data) => {
-		const mappedAppearance = Object.entries(data).map(([_id, value]) => ({ _id, value })) as {
+		const mappedAppearance = Object.entries(data)
+			.map(([_id, value]) => ({ _id, value }))
+			.filter((item) => item.value !== undefined) as {
 			_id: string;
 			value: string | boolean | number;
 		}[];
