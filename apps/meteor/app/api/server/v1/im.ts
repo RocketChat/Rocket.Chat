@@ -135,7 +135,7 @@ API.v1.addRoute(
 			} else {
 				const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 				if (!canAccess) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 
 				const { subscription: subs } = await findDirectMessageRoom({ roomId }, this.userId);
@@ -181,14 +181,14 @@ API.v1.addRoute(
 
 			if (ruserId) {
 				if (!access) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 				user = ruserId;
 			}
 			const canAccess = await canAccessRoomIdAsync(roomId, user);
 
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { room, subscription } = await findDirectMessageRoom({ roomId }, user);
@@ -238,7 +238,7 @@ API.v1.addRoute(
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const ourQuery = query ? { rid: room._id, ...query } : { rid: room._id };
@@ -289,7 +289,7 @@ API.v1.addRoute(
 			const result = await Meteor.callAsync('getChannelHistory', objectParams);
 
 			if (!result) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			return API.v1.success(result);
@@ -309,7 +309,7 @@ API.v1.addRoute(
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -384,7 +384,7 @@ API.v1.addRoute(
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -547,7 +547,7 @@ API.v1.addRoute(
 			}
 			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { room, subscription } = await findDirectMessageRoom({ roomId }, this.userId);
@@ -574,7 +574,7 @@ API.v1.addRoute(
 
 			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { room } = await findDirectMessageRoom({ roomId }, this.userId);
