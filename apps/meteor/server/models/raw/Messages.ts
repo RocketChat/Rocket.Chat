@@ -1779,13 +1779,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.col.countDocuments(query);
 	}
 
-	decreaseReplyCountById(_id: string, inc = -1): Promise<UpdateResult> {
+	decreaseReplyCountById(_id: string, inc = -1): Promise<ModifyResult<IMessage>> {
 		const query = { _id };
 		const update: UpdateFilter<IMessage> = {
 			$inc: {
 				tcount: inc,
 			},
 		};
-		return this.updateOne(query, update);
+		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
 	}
 }
