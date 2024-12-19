@@ -105,12 +105,9 @@ callbacks.add(
 		}
 
 		const contactId = await migrateVisitorIfMissingContact(visitorId, source);
-		const contact = contactId ? await LivechatContacts.findOneById(contactId, { projection: { contactManager: 1 } }) : null;
+		const contact = contactId ? await LivechatContacts.findOneById(contactId, { projection: { contactManager: 1 } }) : undefined;
 
-		const { lastAgent, token } = guest;
-		const contactManagerId = contact?.contactManager;
-		const guestManager = contactManagerId && contactManagerPreferred && getDefaultAgent({ id: contact?.contactManager });
-
+		const guestManager = contactManagerPreferred && (await getDefaultAgent({ id: contact?.contactManager }));
 		if (guestManager) {
 			return guestManager;
 		}
@@ -119,7 +116,8 @@ callbacks.add(
 			return undefined;
 		}
 
-		const guestAgent = lastAgent?.username && getDefaultAgent({ username: lastAgent.username });
+		const { lastAgent, token } = guest;
+		const guestAgent = await getDefaultAgent({ username: lastAgent?.username });
 		if (guestAgent) {
 			return guestAgent;
 		}

@@ -357,7 +357,7 @@ class LivechatClass {
 			throw new Error('error-contact-channel-blocked');
 		}
 
-		const defaultAgent = agent || (await callbacks.run('livechat.checkDefaultAgentOnNewRoom', visitor._id, roomInfo.source));
+		const defaultAgent = agent && (await callbacks.run('livechat.checkDefaultAgentOnNewRoom', visitor._id, roomInfo.source));
 		// if no department selected verify if there is at least one active and pick the first
 		if (!defaultAgent && !visitor.department) {
 			const department = await getRequiredDepartment();
