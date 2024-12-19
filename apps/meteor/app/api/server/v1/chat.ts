@@ -13,6 +13,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
 import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
+import { getMessageHistory } from '../../../../server/publications/messages';
 import { roomAccessAttributes } from '../../../authorization/server';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
@@ -100,17 +101,20 @@ API.v1.addRoute(
 				...(type && { type }),
 			};
 
-			const result = await Meteor.callAsync('messages/get', roomId, getMessagesQuery);
+			const result = await getMessageHistory(roomId, this.userId, getMessagesQuery);
 
 			if (!result) {
 				return API.v1.failure();
 			}
+			if (typeof result === 'boolean') {
+				return API.v1.success({ result: {} });
+			}
 
 			return API.v1.success({
 				result: {
-					...(result.updated && { updated: await normalizeMessagesForUser(result.updated, this.userId) }),
-					...(result.deleted && { deleted: result.deleted }),
-					...(result.cursor && { cursor: result.cursor }),
+					updated: 'updated' in result ? await normalizeMessagesForUser(result.updated, this.userId) : [],
+					deleted: 'deleted' in result ? result.deleted : [],
+					cursor: 'cursor' in result ? result.cursor : undefined,
 				},
 			});
 		},
