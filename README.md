@@ -146,3 +146,38 @@ We're hiring developers, support people, and product managers all the time. Plea
 ## 🗒️ Credits
 
 - Emoji provided graciously by [JoyPixels](https://www.joypixels.com).
+
+
+## ❓ FAQ
+- Q: Can I use Rocket.Chat for free?
+- A: Yes! Rocket.Chat offers a free version for self-hosting and a 30-day trial.
+
+
+- Q: How can I set up Rocket.Chat on my local server
+- A: Click [server](https://www.rocket.chat/install) then install suitible option for your machine
+
+
+- Q:  YN0000: · Yarn 4.5.3
+  ➤ YN0000: ┌ Project validation
+
+  ➤ YN0000: │ The current Node version v22.11.0 does not satisfy the required version 20.18.0.
+
+  ➤ YN0000: └ Completed
+
+  ➤ YN0000: · Failed with errors in 0s 15ms
+
+
+    I can not solve this issue on my fedora machine. What can I do ? 
+
+- Q: install nvm 20.18.0 again
+
+  ---
+  nvm install 20.18.0
+  ---
+
+    then
+
+  ---
+  nvm use 20.18.0
+  ---
+
