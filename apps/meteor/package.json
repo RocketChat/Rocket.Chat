@@ -219,7 +219,7 @@
 	"dependencies": {
 		"@babel/runtime": "~7.26.0",
 		"@bugsnag/js": "~7.20.2",
-		"@bugsnag/plugin-react": "~7.19.0",
+		"@bugsnag/plugin-react": "~8.1.1",
 		"@google-cloud/storage": "^6.12.0",
 		"@kaciras/deasync": "^1.1.0",
 		"@nivo/bar": "0.88.0",
