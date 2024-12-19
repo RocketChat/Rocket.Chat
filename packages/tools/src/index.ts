@@ -1,5 +1,7 @@
+export * from './convertSubObjectsIntoPaths';
 export * from './getObjectKeys';
 export * from './normalizeLanguage';
+export * from './objectMap';
 export * from './pick';
 export * from './stream';
 export * from './timezone';
