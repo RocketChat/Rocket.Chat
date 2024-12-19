@@ -165,7 +165,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const file = await getUploadFormData(
@@ -226,7 +226,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const file = await getUploadFormData(
@@ -297,7 +297,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const file = await Uploads.findOneById(this.urlParams.fileId);
@@ -559,7 +559,7 @@ API.v1.addRoute(
 			});
 
 			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			let initialImage: IUpload | null = null;
@@ -855,7 +855,7 @@ API.v1.addRoute(
 					isMember: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0,
 				});
 			}
-			return API.v1.unauthorized();
+			return API.v1.forbidden();
 		},
 	},
 );
