@@ -13,6 +13,8 @@ const redis = new Redis({
 	db: 0, // Redis database index
 	autoResubscribe: true,
 	maxRetriesPerRequest: 3,
+	enableOfflineQueue: true,
+	connectTimeout: 10000,  
 });
 console.log('Running redis startup');
 
