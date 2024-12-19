@@ -9,7 +9,7 @@ import { useReactiveVar } from '../../../hooks/useReactiveVar';
 import { isSyncReady } from '../../../lib/userData';
 import PageLoading from '../PageLoading';
 
-const Preload = ({ children }: { children: ReactNode }): ReactElement => {
+const EmbeddedPreload = ({ children }: { children: ReactNode }): ReactElement => {
 	const uid = useUserId();
 	const subscriptionsReady = useReactiveVar(CachedChatSubscription.ready);
 	const settingsReady = useReactiveVar(settings.cachedCollection.ready);
@@ -22,9 +22,9 @@ const Preload = ({ children }: { children: ReactNode }): ReactElement => {
 	}, [ready]);
 
 	useEffect(() => {
-		CachedChatSubscription.listen();
-		CachedChatRoom.listen();
-	}, []);
+		CachedChatSubscription.ready.set(true);
+		CachedChatRoom.ready.set(true);
+	}, [ready]);
 
 	if (!ready) {
 		return <PageLoading />;
@@ -33,4 +33,4 @@ const Preload = ({ children }: { children: ReactNode }): ReactElement => {
 	return <>{children}</>;
 };
 
-export default Preload;
+export default EmbeddedPreload;

@@ -49,7 +49,7 @@ exports[`renders ErrorCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1gr9o58"
           >
             <label
-              class="rcx-box rcx-box--full rcx-label  rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-1nolsce"
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-1nolsce"
             >
               <input
                 aria-label="Phone_number"
@@ -368,7 +368,7 @@ exports[`renders ErrorCall without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button  rcx-button-group__item rcx-css-t3n91h"
+            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button rcx-button-group__item rcx-css-t3n91h"
             disabled=""
             type="button"
           >
@@ -450,7 +450,7 @@ exports[`renders IncomingCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1gr9o58"
           >
             <label
-              class="rcx-box rcx-box--full rcx-label  rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-1nolsce"
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-1nolsce"
             >
               <input
                 aria-label="Phone_number"
@@ -769,7 +769,7 @@ exports[`renders IncomingCall without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button  rcx-button-group__item rcx-css-t3n91h"
+            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button rcx-button-group__item rcx-css-t3n91h"
             disabled=""
             type="button"
           >
@@ -851,7 +851,7 @@ exports[`renders OngoingCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1gr9o58"
           >
             <label
-              class="rcx-box rcx-box--full rcx-label  rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-1nolsce"
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-1nolsce"
             >
               <input
                 aria-label="Phone_number"
@@ -1170,7 +1170,7 @@ exports[`renders OngoingCall without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button  rcx-button-group__item rcx-css-t3n91h"
+            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button rcx-button-group__item rcx-css-t3n91h"
             disabled=""
             type="button"
           >
@@ -1252,7 +1252,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1gr9o58"
           >
             <label
-              class="rcx-box rcx-box--full rcx-label  rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-1nolsce"
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-1nolsce"
             >
               <input
                 aria-label="Phone_number"
@@ -1571,7 +1571,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button  rcx-button-group__item rcx-css-t3n91h"
+            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button rcx-button-group__item rcx-css-t3n91h"
             disabled=""
             type="button"
           >

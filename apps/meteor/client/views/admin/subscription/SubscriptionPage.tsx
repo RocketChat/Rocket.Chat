@@ -1,4 +1,4 @@
-import { Accordion, Box, Button, ButtonGroup, Callout, Grid } from '@rocket.chat/fuselage';
+import { Accordion, AccordionItem, Box, Button, ButtonGroup, Callout, Grid } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useSearchParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { t } from 'i18next';
@@ -131,9 +131,9 @@ const SubscriptionPage = () => {
 					<>
 						{showLicense && (
 							<Accordion>
-								<Accordion.Item title={t('License')}>
+								<AccordionItem title={t('License')}>
 									<pre>{JSON.stringify(licensesData, null, 2)}</pre>
-								</Accordion.Item>
+								</AccordionItem>
 							</Accordion>
 						)}
 						<Box marginBlock='none' marginInline='auto' width='full' color='default'>
