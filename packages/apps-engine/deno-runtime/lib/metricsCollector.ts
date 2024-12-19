@@ -3,6 +3,7 @@ import { Queue } from "./messenger.ts";
 
 export function collectMetrics() {
     return {
+        pid: Deno.pid,
         queueSize: Queue.getCurrentSize(),
     }
 };
@@ -15,6 +16,16 @@ export async function sendMetrics() {
     await writeAll(Deno.stderr, encoder.encode(JSON.stringify(metrics)));
 }
 
-export function startMetricsReport() {
-    setInterval(sendMetrics, 5000);
+let intervalId: number;
+
+export function startMetricsReport(frequencyInMs = 5000) {
+    if (intervalId) {
+        throw new Error('There is already an active metrics report');
+    }
+
+    intervalId = setInterval(sendMetrics, frequencyInMs);
+}
+
+export function abortMetricsReport() {
+    clearInterval(intervalId);
 }

@@ -7,10 +7,11 @@ import type { ProcessMessenger } from './ProcessMessenger';
 const COMMAND_PING = '_zPING';
 
 const defaultOptions: LivenessManager['options'] = {
-    pingRequestTimeout: 10000,
+    pingRequestTimeout: 1000,
     pingFrequencyInMS: 10000,
     consecutiveTimeoutLimit: 4,
     maxRestarts: Infinity,
+    restartAttemptDelayInMS: 1000,
 };
 
 /**
@@ -36,6 +37,9 @@ export class LivenessManager {
 
         // Limit of times we can try to restart a process
         maxRestarts: number;
+
+        // Time to delay the next restart attempt after a failed one
+        restartAttemptDelayInMS: number;
     };
 
     private subprocess: ChildProcess;
@@ -198,7 +202,12 @@ export class LivenessManager {
             pid: this.subprocess.pid,
         });
 
-        await this.controller.restartApp();
+        try {
+            await this.controller.restartApp();
+        } catch (e) {
+            this.debug('Restart attempt failed. Retrying in %dms', this.options.restartAttemptDelayInMS);
+            setTimeout(() => this.restartProcess('Failed restart attempt'), this.options.restartAttemptDelayInMS);
+        }
 
         this.pingTimeoutConsecutiveCount = 0;
         this.restartCount++;
