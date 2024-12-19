@@ -47,11 +47,12 @@ export const runMergeContacts = async (
 	if (value) {
 		void notifyOnSettingChanged(value);
 	}
-	logger.info(
-		`${deletedCount} contacts (ids: ${JSON.stringify(similarContactIds)}) have been deleted and merged with contact with id ${
-			originalContact._id
-		}`,
-	);
+	logger.info({
+		msg: 'contacts have been deleted and merged with a contact',
+		similarContactIds,
+		deletedCount,
+		originalContactId: originalContact._id,
+	});
 
 	logger.debug({ msg: 'Updating rooms with new contact id', contactId });
 	await LivechatRooms.updateMergedContactIds(similarContactIds, contactId, { session });
