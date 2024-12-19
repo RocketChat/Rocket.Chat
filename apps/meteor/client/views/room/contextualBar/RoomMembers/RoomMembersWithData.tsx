@@ -44,7 +44,6 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	});
 
 	const debouncedText = useDebouncedValue(text, 800);
-
 	const { data, fetchNextPage, isLoading, refetch, hasNextPage } = useMembersList(
 		useMemo(() => ({ rid, type, limit: 50, debouncedText, roomType: room?.t as validRoomType }), [rid, type, debouncedText, room?.t]),
 	);
