@@ -152,7 +152,7 @@ const SettingsGroupPage = ({
 							</Box>
 						)}
 
-						<Accordion className='page-settings'>{children}</Accordion>
+						<Accordion>{children}</Accordion>
 					</Box>
 				</PageScrollableContentWithShadow>
 			)}

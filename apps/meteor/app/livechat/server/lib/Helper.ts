@@ -90,7 +90,7 @@ export const createLivechatRoom = async (
 	const source = extraRoomInfo.source || roomInfo.source;
 
 	if (settings.get<string>('Livechat_Require_Contact_Verification') === 'always') {
-		await LivechatContacts.updateContactChannel({ visitorId: _id, source }, { verified: false });
+		await LivechatContacts.setChannelVerifiedStatus({ visitorId: _id, source }, false);
 	}
 
 	const contactId = await migrateVisitorIfMissingContact(_id, source);

@@ -9,6 +9,7 @@ import {
 	isRoomsExportProps,
 	isRoomsIsMemberProps,
 	isRoomsCleanHistoryProps,
+	isRoomsOpenProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -16,6 +17,7 @@ import { isTruthy } from '../../../../lib/isTruthy';
 import { omit } from '../../../../lib/utils/omit';
 import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
+import { openRoom } from '../../../../server/lib/openRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -32,7 +34,6 @@ import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessag
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
-import { maybeMigrateLivechatRoom } from '../lib/maybeMigrateLivechatRoom';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -442,10 +443,8 @@ API.v1.addRoute(
 			const { team, parentRoom } = await Team.getRoomInfo(room);
 			const parent = discussionParent || parentRoom;
 
-			const options = { projection: fields };
-
 			return API.v1.success({
-				room: (await maybeMigrateLivechatRoom(await Rooms.findOneByIdOrName(room._id, options), options)) ?? undefined,
+				room: await Rooms.findOneByIdOrName(room._id, { projection: fields }),
 				...(team && { team }),
 				...(parent && { parent }),
 			});
@@ -888,6 +887,20 @@ API.v1.addRoute(
 			}
 
 			await unmuteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.open',
+	{ authRequired: true, validateParams: isRoomsOpenProps },
+	{
+		async post() {
+			const { roomId } = this.bodyParams;
+
+			await openRoom(this.userId, roomId);
 
 			return API.v1.success();
 		},
