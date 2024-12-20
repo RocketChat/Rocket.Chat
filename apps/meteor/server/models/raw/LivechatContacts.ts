@@ -82,6 +82,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 				key: { activity: 1 },
 				sparse: true,
 			},
+			{
 				key: { channels: 1 },
 				unique: false,
 			},
