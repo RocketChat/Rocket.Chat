@@ -4231,6 +4231,7 @@
   "others": "others",
   "Others": "Others",
   "OTR": "OTR",
+  "OTR_messages_cannot_be_exported": "OTR messages cannot be exported",
   "OTR_unavailable_for_federation": "OTR is unavailable for federated rooms",
   "OTR_Description": "Off-the-record chats are secure, private and disappear once ended.",
   "OTR_Chat_Declined_Title": "OTR Chat invite Declined",
