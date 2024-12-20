@@ -44,7 +44,7 @@ export const takeInquiry = async (
 		});
 	}
 
-	const user = await Users.findOneOnlineAgentById(userId, {}, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
+	const user = await Users.findOneOnlineAgentById(userId, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 	if (!user) {
 		throw new Meteor.Error('error-agent-status-service-offline', 'Agent status is offline or Omnichannel service is not active', {
 			method: 'livechat:takeInquiry',

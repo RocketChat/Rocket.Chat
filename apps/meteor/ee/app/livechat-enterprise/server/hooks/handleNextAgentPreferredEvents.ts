@@ -25,7 +25,7 @@ const getDefaultAgent = async ({ username, id }: { username?: string; id?: strin
 	}
 
 	if (id) {
-		return normalizeDefaultAgent(await Users.findOneOnlineAgentById(id, { projection: { _id: 1, username: 1 } }));
+		return normalizeDefaultAgent(await Users.findOneOnlineAgentById(id, undefined, { projection: { _id: 1, username: 1 } }));
 	}
 	return normalizeDefaultAgent(await Users.findOneOnlineAgentByUserList(username || [], { projection: { _id: 1, username: 1 } }));
 };
