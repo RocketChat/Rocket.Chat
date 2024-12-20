@@ -1002,7 +1002,6 @@ describe('LIVECHAT - contacts', () => {
 
 	describe('[GET] omnichannel/contacts.checkExistence', () => {
 		let contactId: string;
-		let association: ILivechatContactVisitorAssociation;
 		let roomId: string;
 
 		const email = faker.internet.email().toLowerCase();
@@ -1027,13 +1026,6 @@ describe('LIVECHAT - contacts', () => {
 
 			const room = await createLivechatRoom(visitor.token);
 			roomId = room._id;
-			association = {
-				visitorId: visitor._id,
-				source: {
-					type: room.source.type,
-					id: room.source.id,
-				},
-			};
 		});
 
 		after(async () => Promise.all([restorePermissionToRoles('view-livechat-contact'), closeOmnichannelRoom(roomId)]));
