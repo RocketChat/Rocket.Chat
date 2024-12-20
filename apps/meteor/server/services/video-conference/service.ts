@@ -462,12 +462,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	public async createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined> {
-		return wrapExceptions(async () => VideoConferenceModel.createVoIP(data)).catch((e) => {
+		return wrapExceptions(async () => VideoConferenceModel.createVoIP(data)).catch((err) => {
 			logger.error({
 				name: 'Error on VideoConf.createVoIP',
-				error: e,
+				err,
 			});
-			throw e;
+			throw err;
 		});
 	}
 

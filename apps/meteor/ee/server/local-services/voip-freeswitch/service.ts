@@ -29,17 +29,16 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		super();
 
 		this.serviceStarter = new ServiceStarter(() => Promise.resolve(this.startEvents()));
-	}
-
-	private listening = false;
-
-	public async started(): Promise<void> {
 		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
 			if (setting._id === 'VoIP_TeamCollab_Enabled' && setting.value === true) {
 				void this.serviceStarter.start();
 			}
 		});
+	}
 
+	private listening = false;
+
+	public async started(): Promise<void> {
 		void this.serviceStarter.start();
 	}
 
@@ -299,7 +298,7 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 				return;
 			}
 
-			console.error(error);
+			throw error;
 		}
 	}
 
@@ -552,19 +551,23 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			return 0;
 		}
 
+		const answer = this.parseTimestamp(channelAnswerEvent.timestamp);
+		if (!answer) {
+			return 0;
+		}
+
 		const channelHangupEvent = call.events.find((e) => e.eventName === 'CHANNEL_HANGUP_COMPLETE');
 		if (!channelHangupEvent?.timestamp) {
 			// We dont have a hangup but we have an answer, assume hangup is === destroy time
-			return new Date().getTime() - new Date(this.toMillis(channelAnswerEvent.timestamp)).getTime();
+			return new Date().getTime() - answer.getTime();
 		}
 
-		return (
-			new Date(this.toMillis(channelHangupEvent.timestamp)).getTime() - new Date(this.toMillis(channelAnswerEvent.timestamp)).getTime()
-		);
-	}
+		const hangup = this.parseTimestamp(channelHangupEvent.timestamp);
+		if (!hangup) {
+			return 0;
+		}
 
-	private toMillis(microseconds: string): number {
-		return Math.floor(Number(microseconds) / 1000);
+		return hangup.getTime() - answer.getTime();
 	}
 
 	async getDomain(): Promise<string> {
