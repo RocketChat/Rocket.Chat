@@ -2,11 +2,11 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { HeaderSubtitle } from '@rocket.chat/ui-client';
 import type { UIEvent } from 'react';
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { HeaderSubtitle } from '../../../components/Header';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { useUserCard } from '../contexts/UserCardContext';
