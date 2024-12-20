@@ -29,7 +29,6 @@ import type {
 	SMSProviderResponse,
 	ILivechatTriggerActionResponse,
 	ILivechatContact,
-	ILivechatContactVisitorAssociation,
 	ILivechatContactChannel,
 	IUser,
 } from '@rocket.chat/core-typings';
@@ -1336,7 +1335,7 @@ const POSTUpdateOmnichannelContactsSchema = {
 
 export const isPOSTUpdateOmnichannelContactsProps = ajv.compile<POSTUpdateOmnichannelContactsProps>(POSTUpdateOmnichannelContactsSchema);
 
-type GETOmnichannelContactsProps = { contactId?: string; visitor?: ILivechatContactVisitorAssociation };
+type GETOmnichannelContactsProps = { contactId?: string };
 
 export const ContactVisitorAssociationSchema = {
 	type: 'object',
@@ -1410,7 +1409,6 @@ type GETOmnichannelContactsCheckExistenceProps = {
 	contactId?: string;
 	email?: string;
 	phone?: string;
-	visitor?: ILivechatContactVisitorAssociation;
 };
 
 const GETOmnichannelContactsCheckExistenceSchema = {
@@ -1450,14 +1448,6 @@ const GETOmnichannelContactsCheckExistenceSchema = {
 				},
 			},
 			required: ['phone'],
-			additionalProperties: false,
-		},
-		{
-			type: 'object',
-			properties: {
-				visitor: ContactVisitorAssociationSchema,
-			},
-			required: ['visitor'],
 			additionalProperties: false,
 		},
 	],

@@ -1054,14 +1054,6 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body).to.have.property('exists', false);
 		});
 
-		it('should confirm a contact exists when checking by visitor association', async () => {
-			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ visitor: association });
-
-			expect(res.status).to.be.equal(200);
-			expect(res.body).to.have.property('success', true);
-			expect(res.body).to.have.property('exists', true);
-		});
-
 		it('should confirm a contact does not exist when checking by visitor association', async () => {
 			const res = await request
 				.get(api(`omnichannel/contacts.checkExistence`))
@@ -1132,13 +1124,9 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should return an error if more than one field is provided', async () => {
-			const res = await request
-				.get(api(`omnichannel/contacts.checkExistence`))
-				.set(credentials)
-				.query({ contactId, visitor: association, email, phone });
+			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ contactId, email, phone });
 
 			expectInvalidParams(res, [
-				'must NOT have additional properties',
 				'must NOT have additional properties',
 				'must NOT have additional properties',
 				'must NOT have additional properties',
