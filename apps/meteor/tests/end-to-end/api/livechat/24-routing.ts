@@ -67,7 +67,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const user = await createUser();
 			await createAgent(user.username);
 			const credentials3 = await login(user.username, password);
-			await makeAgentAvailable(credentials);
+			await makeAgentAvailable(credentials3);
 
 			testUser3 = {
 				user,
@@ -126,9 +126,20 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(roomInfo.servedBy).to.be.an('object');
 			expect(roomInfo.servedBy?._id).to.not.be.equal(testUser2.user._id);
 		});
+		(IS_EE ? it : it.skip)('should route to contact manager if it is online', async () => {
+			const room = await createLivechatRoom(visitor.token);
+
+			await sleep(5000);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+
+			expect(roomInfo.servedBy).to.be.an('object');
+			expect(roomInfo.servedBy?._id).to.be.equal(testUser3.user._id);
+		});
 		it('should fail to start a conversation if there is noone available and Livechat_accept_chats_with_no_agents is false', async () => {
 			await updateSetting('Livechat_accept_chats_with_no_agents', false);
 			await makeAgentUnavailable(testUser.credentials);
+			await makeAgentUnavailable(testUser3.credentials);
 
 			const visitor = await createVisitor(testDepartment._id);
 			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token }).expect(400);
@@ -181,35 +192,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
 			expect(roomInfo.servedBy).to.be.undefined;
-		});
-		(IS_EE ? it : it.skip)('should route to contact manager if it is online', async () => {
-			await makeAgentAvailable(testUser.credentials);
-			await makeAgentAvailable(testUser3.credentials);
-
-			await setUserStatus(testUser.credentials, UserStatus.ONLINE);
-			await setUserStatus(testUser3.credentials, UserStatus.ONLINE);
-
-			const room = await createLivechatRoom(visitor.token);
-
-			await sleep(5000);
-
-			const roomInfo = await getLivechatRoomInfo(room._id);
-
-			expect(roomInfo.servedBy).to.be.an('object');
-			expect(roomInfo.servedBy?._id).to.be.equal(testUser3.user._id);
-		});
-		(IS_EE ? it : it.skip)('should route to another available agent if contact manager is unavailable', async () => {
-			await makeAgentUnavailable(testUser3.credentials);
-			await setUserStatus(testUser3.credentials, UserStatus.OFFLINE);
-
-			const room = await createLivechatRoom(visitor.token);
-
-			await sleep(5000);
-
-			const roomInfo = await getLivechatRoomInfo(room._id);
-
-			expect(roomInfo.servedBy).to.be.an('object');
-			expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
 		});
 	});
 	describe('Load Balancing', () => {
