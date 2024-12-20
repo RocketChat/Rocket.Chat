@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, FieldLabel, FieldRow, Select, FieldGroup, ToggleSwitch, FieldHint, Slider } from '@rocket.chat/fuselage';
+import { AccordionItem, Field, FieldLabel, FieldRow, Select, FieldGroup, ToggleSwitch, FieldHint, Slider } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useCustomSound } from '@rocket.chat/ui-contexts';
 import React from 'react';
@@ -21,7 +21,7 @@ const PreferencesSoundSection = () => {
 	const voipRingerVolumeId = useUniqueId();
 
 	return (
-		<Accordion.Item title={t('Sound')}>
+		<AccordionItem title={t('Sound')}>
 			<FieldGroup>
 				<Field>
 					<FieldLabel aria-describedby={`${masterVolumeId}-hint`}>{t('Master_volume')}</FieldLabel>
@@ -150,7 +150,7 @@ const PreferencesSoundSection = () => {
 					</FieldRow>
 				</Field>
 			</FieldGroup>
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 
