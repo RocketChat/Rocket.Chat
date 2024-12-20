@@ -74,9 +74,9 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 			userData.password = generatePassword();
 			userData.requirePasswordChange = true;
 			sendPassword = true;
+			auditStore?.insertBoth({ password: '**********' }, { password: 'random' });
 		}
 
-		auditStore?.insertBoth({ password: '**********' }, { password: 'random' });
 		delete userData.setRandomPassword;
 	}
 
@@ -123,7 +123,7 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 		passwordPolicy.validate(userData.password)
 	) {
 		await Accounts.setPasswordAsync(userData._id, userData.password.trim());
-		if (sendPassword) {
+		if (!sendPassword) {
 			auditStore?.insertBoth({ password: '**********' }, { password: 'manual' });
 		}
 	} else {

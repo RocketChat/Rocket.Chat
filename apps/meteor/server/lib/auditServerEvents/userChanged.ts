@@ -15,6 +15,7 @@ type ChangeRecord<T extends IUser[keyof IUser] = IUserWithExtraLogData[keyof IUs
 };
 
 type UserChangeMap<T extends keyof IUser = keyof IUser, U extends IUser[T] = IUser[T]> = Map<T, ChangeRecord<U>>;
+
 class UserChangedLogStore {
 	private changes: UserChangeMap;
 
@@ -43,7 +44,9 @@ class UserChangedLogStore {
 
 			if (property) {
 				this.changes.set(key as keyof IUser, { ...property, ...build(value) });
+				return;
 			}
+			this.changes.set(key as keyof IUser, { ...build(value) });
 		});
 	};
 
@@ -61,7 +64,10 @@ class UserChangedLogStore {
 	}
 
 	public buildEvent(): IServerEvents['user.changed'] {
-		return ['user.changed', this.actor, ...this.changes.entries().map(([key, value]) => ({ id: key, ...value }))];
+		const logEntries = Array.from(this.changes.entries()).filter(([, data]) => {
+			return data.hasOwnProperty('previous') && data.hasOwnProperty('current') && data.previous !== data.current;
+		});
+		return ['user.changed', Object.fromEntries(logEntries), this.actor];
 	}
 }
 
@@ -77,7 +83,8 @@ export const auditUserChangeByUser = <T extends (store: typeof asyncLocalStorage
 			void fn(asyncLocalStorage)
 				.then(resolve)
 				.finally(() => {
-					void ServerEvents.createAuditServerEvent(...store.buildEvent());
+					const event = store.buildEvent();
+					void ServerEvents.createAuditServerEvent(...event);
 				});
 		});
 	});

@@ -126,6 +126,7 @@ API.v1.addRoute(
 					} = this.bodyParams;
 
 					await Meteor.callAsync('setUserActiveStatus', userId, active, Boolean(confirmRelinquish));
+					store?.insertBoth({ active }, { active });
 				}
 				const { fields } = await this.parseJsonQuery();
 
