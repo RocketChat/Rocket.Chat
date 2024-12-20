@@ -13,6 +13,7 @@ import {
 	isRoomsOpenProps,
 	isRoomsMembersOrderedByRoleProps,
 } from '@rocket.chat/rest-typings';
+import { MembershipCache } from 'matrix-appservice-bridge';
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
@@ -901,6 +902,10 @@ API.v1.addRoute(
 				limit,
 				filter,
 				sort,
+			});
+
+			members.forEach((member) => {
+				console.log(member.roles);
 			});
 
 			return API.v1.success({

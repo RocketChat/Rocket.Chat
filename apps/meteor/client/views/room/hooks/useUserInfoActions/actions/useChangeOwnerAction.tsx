@@ -58,7 +58,12 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	const setModal = useSetModal();
 	const { _id: loggedUserId = '' } = useUser() || {};
 	const loggedUserIsOwner = useUserHasRoomRole(loggedUserId, rid, 'owner');
+<<<<<<< HEAD
 	const dispatchToastMessage = useToastMessageDispatch();
+=======
+	const closeModal = useCallback(() => setModal(null), [setModal]);
+	const queryClient = useQueryClient();
+>>>>>>> 89ab3a4f1b (feat: Room roles visibility in members panel)
 
 	if (!room) {
 		throw Error('Room not provided');
@@ -86,12 +91,29 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 		},
 	});
 
+<<<<<<< HEAD
 	const handleChangeOwner = useCallback(() => {
 		if (!isRoomFederated(room)) {
 			return toggleOwnerMutation.mutateAsync({ roomId: rid, userId: uid });
 		}
 
 		const changingOwnRole = uid === loggedUserId;
+=======
+	const handleConfirm = useCallback(async () => {
+		await changeOwner({ roomId: rid, userId: uid });
+		queryClient.invalidateQueries({ queryKey: ['members'] });
+		closeModal();
+	}, [changeOwner, rid, uid, queryClient, closeModal]);
+
+	const handleChangeOwner = useCallback(
+		async ({ userId }) => {
+			if (!isRoomFederated(room)) {
+				await changeOwner({ roomId: rid, userId: uid });
+				queryClient.invalidateQueries({ queryKey: ['members'] });
+				return;
+			}
+			const changingOwnRole = userId === loggedUserId;
+>>>>>>> 89ab3a4f1b (feat: Room roles visibility in members panel)
 
 		const closeModal = () => {
 			setModal(null);
@@ -102,6 +124,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 			closeModal();
 		};
 
+<<<<<<< HEAD
 		if (changingOwnRole && loggedUserIsOwner) {
 			return setModal(
 				getWarningModalForFederatedRooms(
@@ -130,6 +153,12 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	}, [room, loggedUserId, loggedUserIsOwner, toggleOwnerMutation, rid, uid, t, setModal]);
 
 	const changeOwnerAction = useEffectEvent(async () => handleChangeOwner());
+=======
+			changeOwner({ roomId: rid, userId: uid });
+		},
+		[room, loggedUserId, loggedUserIsOwner, changeOwner, rid, uid, queryClient, setModal, closeModal, handleConfirm, t],
+	);
+>>>>>>> 89ab3a4f1b (feat: Room roles visibility in members panel)
 
 	const changeOwnerOption = useMemo(
 		() =>

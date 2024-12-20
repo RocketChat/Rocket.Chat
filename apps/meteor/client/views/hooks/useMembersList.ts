@@ -11,8 +11,8 @@ type MembersListOptions = {
 
 const endpointsByRoomType = {
 	d: '/v1/im.members',
-	p: '/v1/groups.members',
-	c: '/v1/channels.members',
+	p: '/v1/rooms.membersOrderedByRole',
+	c: '/v1/rooms.membersOrderedByRole',
 } as const;
 
 export const useMembersList = (options: MembersListOptions) => {
@@ -27,6 +27,7 @@ export const useMembersList = (options: MembersListOptions) => {
 				roomId: options.rid,
 				offset: start,
 				count: 20,
+				rolesOrder: ['owner', 'moderator'],
 				...(options.debouncedText && { filter: options.debouncedText }),
 				...(options.type !== 'all' && { status: [options.type] }),
 			});
