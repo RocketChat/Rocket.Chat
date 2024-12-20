@@ -1,9 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Throbber } from '@rocket.chat/fuselage';
+import { Box, Icon, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
 import type { ReactElement } from 'react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { AudioRecorder } from '../../../../app/ui/client/lib/recorderjs/AudioRecorder';
@@ -100,43 +100,25 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 		};
 	}, [handleUnmount, handleRecord]);
 
-	const stateClass = useMemo(() => {
-		if (recordingRoomId && recordingRoomId !== rid) {
-			return 'rc-message-box__audio-message--busy';
-		}
-
-		return state && `rc-message-box__audio-message--${state}`;
-	}, [recordingRoomId, rid, state]);
-
 	if (isMicrophoneDenied) {
 		return null;
 	}
 
 	return (
-		<Box position='absolute' pi={4} pb={12} className={`rc-message-box__audio-message ${stateClass}`}>
+		<Box display='flex' position='absolute' color='default' pi={4} pb={12}>
 			{state === 'recording' && (
 				<>
-					<MessageComposerAction
-						icon='circle-cross'
-						className='rc-message-box__icon rc-message-box__audio-message-cancel'
-						onClick={handleCancelButtonClick}
-					/>
-					<Box className='rc-message-box__audio-message-timer' color='default'>
-						<span className='rc-message-box__audio-message-timer-dot'></span>
-						<span className='rc-message-box__audio-message-timer-text'>{time}</span>
+					<MessageComposerAction icon='circle-cross' title={t('Cancel_recording')} onClick={handleCancelButtonClick} />
+					<Box display='flex' alignItems='center' mi={4} justifyContent='center'>
+						<Icon name='rec' color='red' />
+						<Box fontScale='p2' mis={4} is='span' minWidth='x40'>
+							{time}
+						</Box>
 					</Box>
-					<MessageComposerAction
-						icon='circle-check'
-						className='rc-message-box__icon rc-message-box__audio-message-done'
-						onClick={handleDoneButtonClick}
-					/>
+					<MessageComposerAction icon='circle-check' title={t('Finish_recording')} onClick={handleDoneButtonClick} />
 				</>
 			)}
-			{state === 'loading' && (
-				<div className='rc-message-box__icon'>
-					<Throbber inheritColor size='x12' />
-				</div>
-			)}
+			{state === 'loading' && <Throbber inheritColor size='x12' />}
 		</Box>
 	);
 };

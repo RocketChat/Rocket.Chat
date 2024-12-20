@@ -31,7 +31,7 @@ export class ChatMessages implements ChatAPI {
 
 	public composer: ComposerAPI | undefined;
 
-	public setComposerAPI = (composer: ComposerAPI): void => {
+	public setComposerAPI = (composer?: ComposerAPI): void => {
 		this.composer?.release();
 		this.composer = composer;
 	};

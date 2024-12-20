@@ -195,9 +195,9 @@ API.v1.addRoute(
 
 			lm = room?.lm ? new Date(room.lm).toISOString() : new Date(room._updatedAt).toISOString(); // lm is the last message timestamp
 
-			if (subscription?.open) {
+			if (subscription) {
+				unreads = subscription.unread ?? null;
 				if (subscription.ls && room.msgs) {
-					unreads = subscription.unread;
 					unreadsFrom = new Date(subscription.ls).toISOString(); // last read timestamp
 				}
 				userMentions = subscription.userMentions;

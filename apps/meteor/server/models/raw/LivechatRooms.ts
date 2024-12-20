@@ -80,6 +80,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { 'tags.0': 1, 'ts': 1 }, partialFilterExpression: { 'tags.0': { $exists: true }, 't': 'l' } },
 			{ key: { servedBy: 1, ts: 1 }, partialFilterExpression: { servedBy: { $exists: true }, t: 'l' } },
 			{ key: { 'v.activity': 1, 'ts': 1 }, partialFilterExpression: { 'v.activity': { $exists: true }, 't': 'l' } },
+			{ key: { contactId: 1 }, partialFilterExpression: { contactId: { $exists: true }, t: 'l' } },
 		];
 	}
 
@@ -2146,7 +2147,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		return this.find(query, {
-			projection: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 },
+			projection: { ts: 1, departmentId: 1, open: 1, servedBy: 1, responseBy: 1, metrics: 1, msgs: 1 },
 		});
 	}
 
@@ -2816,5 +2817,9 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		options?: FindOptions;
 	}): FindPaginated<FindCursor<IOmnichannelRoom>> {
 		throw new Error('Method not implemented.');
+	}
+
+	findOpenByContactId(contactId: ILivechatContact['_id'], options?: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom> {
+		return this.find({ open: true, contactId }, options);
 	}
 }

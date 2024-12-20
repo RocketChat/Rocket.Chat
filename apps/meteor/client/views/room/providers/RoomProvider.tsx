@@ -17,6 +17,7 @@ import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import { useSidePanelNavigation } from '../../../hooks/useSidePanelNavigation';
 import { RoomManager } from '../../../lib/RoomManager';
+import { subscriptionsQueryKeys } from '../../../lib/queryKeys';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
 import RoomNotFound from '../RoomNotFound';
@@ -45,7 +46,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		}
 	}, [resultFromLocal.data, resultFromLocal.isSuccess, resultFromServer, router]);
 
-	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => Subscriptions.findOne({ rid }) ?? null);
+	const subscriptionQuery = useReactiveQuery(subscriptionsQueryKeys.subscription(rid), () => Subscriptions.findOne({ rid }) ?? null);
 
 	useRedirectOnSettingsChanged(subscriptionQuery.data);
 

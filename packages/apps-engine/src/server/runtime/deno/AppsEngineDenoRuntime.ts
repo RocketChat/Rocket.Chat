@@ -9,7 +9,8 @@ import { LivenessManager } from './LivenessManager';
 import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
 import { decoder } from './codec';
-import { AppStatus } from '../../../definition/AppStatus';
+import { AppStatus, AppStatusUtils } from '../../../definition/AppStatus';
+import type { AppMethod } from '../../../definition/metadata';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
 import type { IParseAppPackageResult } from '../../compiler';
@@ -87,6 +88,11 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
     private state: 'uninitialized' | 'ready' | 'invalid' | 'restarting' | 'unknown' | 'stopped';
 
+    /**
+     * Incremental id that keeps track of how many times we've spawned a process for this app
+     */
+    private spawnId = 0;
+
     private readonly debug: debug.Debugger;
 
     private readonly options = {
@@ -148,6 +154,8 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
                 denoWrapperPath,
                 '--subprocess',
                 this.appPackage.info.id,
+                '--spawnId',
+                String(this.spawnId++),
             ];
 
             // If the app doesn't request any permissions, it gets the default set of permissions, which includes "networking"
@@ -286,11 +294,16 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
             await this.sendRequest({ method: 'app:initialize' });
             await this.sendRequest({ method: 'app:setStatus', params: [this.storageItem.status] });
 
+            if (AppStatusUtils.isEnabled(this.storageItem.status)) {
+                await this.sendRequest({ method: 'app:onEnable' });
+            }
+
             this.state = 'ready';
 
             logger.info('Successfully restarted app subprocess');
         } catch (e) {
-            logger.error("Failed to restart app's subprocess", { error: e });
+            logger.error("Failed to restart app's subprocess", { error: e.message || e });
+            throw e;
         } finally {
             await this.logStorage.storeEntries(AppConsole.toStorageEntry(this.getAppId(), logger));
         }
@@ -317,18 +330,24 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     }
 
     private waitUntilReady(): Promise<void> {
+        if (this.state === 'ready') {
+            return;
+        }
+
         return new Promise((resolve, reject) => {
-            const timeoutId = setTimeout(() => reject(new Error(`[${this.getAppId()}] Timeout: app process not ready`)), this.options.timeout);
+            let timeoutId: NodeJS.Timeout;
 
-            if (this.state === 'ready') {
+            const handler = () => {
                 clearTimeout(timeoutId);
-                return resolve();
-            }
+                resolve();
+            };
 
-            this.once('ready', () => {
-                clearTimeout(timeoutId);
-                return resolve();
-            });
+            timeoutId = setTimeout(() => {
+                this.off('ready', handler);
+                reject(new Error(`[${this.getAppId()}] Timeout: app process not ready`));
+            }, this.options.timeout);
+
+            this.once('ready', handler);
         });
     }
 
@@ -367,7 +386,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
         this.deno.stderr.on('data', this.parseError.bind(this));
         this.deno.on('error', (err) => {
             this.state = 'invalid';
-            console.error('Failed to startup Deno subprocess', err);
+            console.error(`Failed to startup Deno subprocess for app ${this.getAppId()}`, err);
         });
         this.once('ready', this.onReady.bind(this));
         this.parseStdout(this.deno.stdout);
@@ -544,10 +563,26 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
             case 'log':
                 console.log('SUBPROCESS LOG', message);
                 break;
+            case 'unhandledRejection':
+            case 'uncaughtException':
+                await this.logUnhandledError(`runtime:${method}`, message);
+                break;
             default:
                 console.warn('Unrecognized method from sub process');
                 break;
         }
+    }
+
+    private async logUnhandledError(
+        method: `${AppMethod.RUNTIME_UNCAUGHT_EXCEPTION | AppMethod.RUNTIME_UNHANDLED_REJECTION}`,
+        message: jsonrpc.IParsedObjectRequest | jsonrpc.IParsedObjectNotification,
+    ) {
+        this.debug('Unhandled error of type "%s" caught in subprocess', method);
+
+        const logger = new AppConsole(method);
+        logger.error(message.payload);
+
+        await this.logStorage.storeEntries(AppConsole.toStorageEntry(this.getAppId(), logger));
     }
 
     private async handleResultMessage(message: jsonrpc.IParsedObjectError | jsonrpc.IParsedObjectSuccess): Promise<void> {
@@ -616,6 +651,12 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     }
 
     private async parseError(chunk: Buffer): Promise<void> {
-        console.error('Subprocess stderr', chunk.toString());
+        try {
+            const data = JSON.parse(chunk.toString());
+
+            this.debug('Metrics received from subprocess: %o', data);
+        } catch (e) {
+            console.error('Subprocess stderr', chunk.toString());
+        }
     }
 }

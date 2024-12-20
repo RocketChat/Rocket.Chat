@@ -63,7 +63,7 @@ export type FieldExpression<T> = {
 	$comment?: string;
 };
 
-export type Flatten<T> = T extends unknown[] ? T[0] : T;
+type Flatten<T> = T extends unknown[] ? T[0] : T;
 
 export type Query<T> = {
 	[P in keyof T]?: Flatten<T[P]> | RegExp | FieldExpression<Flatten<T[P]>>;
