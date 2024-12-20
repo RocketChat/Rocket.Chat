@@ -37,7 +37,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		let testUser2: { user: IUser; credentials: Credentials };
 		let testUser3: { user: IUser; credentials: Credentials };
 		let testDepartment: ILivechatDepartment;
-		let visitor: ILivechatVisitor;
+		let visitorEmail: string;
 
 		before(async () => {
 			const user = await createUser();
@@ -80,7 +80,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await updateSetting('Livechat_assign_new_conversation_to_bot', true);
 
 			const visitorName = faker.person.fullName();
-			const visitorEmail = faker.internet.email().toLowerCase();
+			visitorEmail = faker.internet.email().toLowerCase();
 			await request
 				.post(api('omnichannel/contacts'))
 				.set(credentials)
@@ -90,8 +90,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 					phones: [],
 					contactManager: testUser3.user._id,
 				});
-
-			visitor = await createVisitor(testDepartment._id, visitorName, visitorEmail);
 		});
 
 		after(async () =>
@@ -129,6 +127,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		(IS_EE ? it : it.skip)(
 			'should route to contact manager if it is online and Livechat_assign_new_conversation_to_bot is enabled',
 			async () => {
+				const visitor = await createVisitor(testDepartment._id, faker.person.fullName(), visitorEmail);
 				const room = await createLivechatRoom(visitor.token);
 
 				await sleep(5000);
@@ -196,6 +195,21 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const roomInfo = await getLivechatRoomInfo(room._id);
 			expect(roomInfo.servedBy).to.be.undefined;
 		});
+		(IS_EE ? it : it.skip)(
+			'should route to another available agent if contact manager is unavailable and Livechat_assign_new_conversation_to_bot is enabled',
+			async () => {
+				await makeAgentAvailable(testUser.credentials);
+				const visitor = await createVisitor(testDepartment._id, faker.person.fullName(), visitorEmail);
+				const room = await createLivechatRoom(visitor.token);
+
+				await sleep(5000);
+
+				const roomInfo = await getLivechatRoomInfo(room._id);
+
+				expect(roomInfo.servedBy).to.be.an('object');
+				expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
+			},
+		);
 	});
 	describe('Load Balancing', () => {
 		before(async () => {
