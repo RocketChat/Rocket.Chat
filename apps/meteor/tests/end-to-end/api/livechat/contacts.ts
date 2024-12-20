@@ -1002,7 +1002,6 @@ describe('LIVECHAT - contacts', () => {
 
 	describe('[GET] omnichannel/contacts.checkExistence', () => {
 		let contactId: string;
-		let association: ILivechatContactVisitorAssociation;
 		let roomId: string;
 
 		const email = faker.internet.email().toLowerCase();
@@ -1027,13 +1026,6 @@ describe('LIVECHAT - contacts', () => {
 
 			const room = await createLivechatRoom(visitor.token);
 			roomId = room._id;
-			association = {
-				visitorId: visitor._id,
-				source: {
-					type: room.source.type,
-					id: room.source.id,
-				},
-			};
 		});
 
 		after(async () => Promise.all([restorePermissionToRoles('view-livechat-contact'), closeOmnichannelRoom(roomId)]));
@@ -1048,25 +1040,6 @@ describe('LIVECHAT - contacts', () => {
 
 		it('should confirm a contact does not exist when checking by contact id', async () => {
 			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ contactId: 'invalid-contact-id' });
-
-			expect(res.status).to.be.equal(200);
-			expect(res.body).to.have.property('success', true);
-			expect(res.body).to.have.property('exists', false);
-		});
-
-		it('should confirm a contact exists when checking by visitor association', async () => {
-			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ visitor: association });
-
-			expect(res.status).to.be.equal(200);
-			expect(res.body).to.have.property('success', true);
-			expect(res.body).to.have.property('exists', true);
-		});
-
-		it('should confirm a contact does not exist when checking by visitor association', async () => {
-			const res = await request
-				.get(api(`omnichannel/contacts.checkExistence`))
-				.set(credentials)
-				.query({ visitor: { ...association, visitorId: 'invalid-id' } });
 
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
@@ -1126,19 +1099,14 @@ describe('LIVECHAT - contacts', () => {
 				"must have required property 'contactId'",
 				"must have required property 'email'",
 				"must have required property 'phone'",
-				"must have required property 'visitor'",
 				'must match exactly one schema in oneOf [invalid-params]',
 			]);
 		});
 
 		it('should return an error if more than one field is provided', async () => {
-			const res = await request
-				.get(api(`omnichannel/contacts.checkExistence`))
-				.set(credentials)
-				.query({ contactId, visitor: association, email, phone });
+			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ contactId, email, phone });
 
 			expectInvalidParams(res, [
-				'must NOT have additional properties',
 				'must NOT have additional properties',
 				'must NOT have additional properties',
 				'must NOT have additional properties',
