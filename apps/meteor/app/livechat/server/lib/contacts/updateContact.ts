@@ -1,5 +1,5 @@
 import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/core-typings';
-import { LivechatContacts, LivechatInquiry, LivechatRooms, Subscriptions } from '@rocket.chat/models';
+import { LivechatContacts, LivechatInquiry, LivechatRooms, Settings, Subscriptions } from '@rocket.chat/models';
 
 import { getAllowedCustomFields } from './getAllowedCustomFields';
 import { validateContactManager } from './validateContactManager';
@@ -8,6 +8,7 @@ import {
 	notifyOnSubscriptionChangedByVisitorIds,
 	notifyOnRoomChangedByContactId,
 	notifyOnLivechatInquiryChangedByVisitorIds,
+	notifyOnSettingChanged,
 } from '../../../../lib/server/lib/notifyListener';
 
 export type UpdateContactParams = {
@@ -24,9 +25,12 @@ export type UpdateContactParams = {
 export async function updateContact(params: UpdateContactParams): Promise<ILivechatContact> {
 	const { contactId, name, emails, phones, customFields: receivedCustomFields, contactManager, channels, wipeConflicts } = params;
 
-	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name' | 'customFields'>>(contactId, {
-		projection: { _id: 1, name: 1, customFields: 1 },
-	});
+	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name' | 'customFields' | 'conflictingFields'>>(
+		contactId,
+		{
+			projection: { _id: 1, name: 1, customFields: 1, conflictingFields: 1 },
+		},
+	);
 
 	if (!contact) {
 		throw new Error('error-contact-not-found');
@@ -34,6 +38,15 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 
 	if (contactManager) {
 		await validateContactManager(contactManager);
+	}
+
+	if (wipeConflicts && contact.conflictingFields?.length) {
+		const { value } = await Settings.incrementValueById('Resolved_Conflicts_Count', contact.conflictingFields.length, {
+			returnDocument: 'after',
+		});
+		if (value) {
+			void notifyOnSettingChanged(value);
+		}
 	}
 
 	const workspaceAllowedCustomFields = await getAllowedCustomFields();
