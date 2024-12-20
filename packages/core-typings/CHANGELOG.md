@@ -1,5 +1,26 @@
 # @rocket.chat/core-typings
 
+## 7.1.0
+
+### Minor Changes
+
+- ([#32727](https://github.com/RocketChat/Rocket.Chat/pull/32727)) These changes aims to add:
+  - A brand-new omnichannel contact profile
+  - The ability to communicate with known contacts only
+  - Communicate with verified contacts only
+  - Merge verified contacts across different channels
+  - Block contact channels
+  - Resolve conflicting contact information when registered via different channels
+  - An advanced contact center filters
+
+### Patch Changes
+
+- ([#32991](https://github.com/RocketChat/Rocket.Chat/pull/32991)) Fixes an issue where updating custom emojis didn’t work as expected, ensuring that uploaded emojis now update correctly and display without any caching problems.
+
+## 7.1.0-rc.3
+
+## 7.1.0-rc.2
+
 ## 7.1.0-rc.1
 
 ## 7.1.0-rc.0
