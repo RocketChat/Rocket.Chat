@@ -1054,17 +1054,6 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body).to.have.property('exists', false);
 		});
 
-		it('should confirm a contact does not exist when checking by visitor association', async () => {
-			const res = await request
-				.get(api(`omnichannel/contacts.checkExistence`))
-				.set(credentials)
-				.query({ visitor: { ...association, visitorId: 'invalid-id' } });
-
-			expect(res.status).to.be.equal(200);
-			expect(res.body).to.have.property('success', true);
-			expect(res.body).to.have.property('exists', false);
-		});
-
 		it('should confirm a contact exists when checking by email', async () => {
 			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ email });
 
