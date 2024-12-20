@@ -4475,7 +4475,7 @@
   "registration.component.login": "Logg inn",
   "registration.component.login.userNotFound": "Bruker ikke funnet",
   "registration.component.login.incorrectPassword": "feil passord",
-  "registration.component.switchLanguage": "Bytt til <1>{{name}}</1>",
+  "registration.component.switchLanguage": "Bytt til <2>{{name}}</2>",
   "registration.component.resetPassword": "Tilbakestilling av passord",
   "registration.component.form.username": "Brukernavn",
   "registration.component.form.name": "Navn",
