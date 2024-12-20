@@ -55,8 +55,10 @@ const RoomMessage = ({
 	const { openUserCard, triggerProps } = useUserCard();
 
 	const selecting = useIsSelecting();
+	const isOTRMessage = message.t === 'otr' || message.t === 'otr-ack';
+
 	const toggleSelected = useToggleSelect(message._id);
-	const selected = useIsSelectedMessage(message._id);
+	const selected = useIsSelectedMessage(message._id, isOTRMessage);
 
 	useCountSelected();
 
@@ -70,7 +72,7 @@ const RoomMessage = ({
 			aria-roledescription={t('message')}
 			tabIndex={0}
 			aria-labelledby={`${message._id}-displayName ${message._id}-time ${message._id}-content ${message._id}-read-status`}
-			onClick={selecting ? toggleSelected : undefined}
+			onClick={selecting && !isOTRMessage ? toggleSelected : undefined}
 			isSelected={selected}
 			isEditing={editing}
 			isPending={message.temp}
@@ -99,7 +101,7 @@ const RoomMessage = ({
 						{...triggerProps}
 					/>
 				)}
-				{selecting && <CheckBox checked={selected} onChange={toggleSelected} />}
+				{selecting && <CheckBox disabled={isOTRMessage} checked={selected} onChange={toggleSelected} />}
 				{sequential && <StatusIndicators message={message} />}
 			</MessageLeftContainer>
 			<MessageContainer>
