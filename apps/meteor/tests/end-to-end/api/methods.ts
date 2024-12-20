@@ -2082,6 +2082,32 @@ describe('Meteor.methods', () => {
 				})
 				.end(done);
 		});
+
+		it('should accept message sent by js.SDK', (done) => {
+			void request
+				.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [{ rid, msg: 'test message', bot: { i: 'js.SDK' } }],
+						id: 1000,
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+
+					const data = JSON.parse(res.body.message);
+
+					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data.result).to.have.a.property('bot').that.is.an('object');
+					expect(data.result.bot).to.have.a.property('i', 'js.SDK');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[@updateMessage]', () => {

@@ -171,11 +171,11 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-contact'], validateParams: isGETOmnichannelContactsCheckExistenceProps },
 	{
 		async get() {
-			const { contactId, visitor, email, phone } = this.queryParams;
+			const { contactId, email, phone } = this.queryParams;
 
-			const contact = await (visitor ? getContactByChannel(visitor) : LivechatContacts.countByContactInfo({ contactId, email, phone }));
+			const contact = await LivechatContacts.countByContactInfo({ contactId, email, phone });
 
-			return API.v1.success({ exists: !!contact });
+			return API.v1.success({ exists: contact > 0 });
 		},
 	},
 );
