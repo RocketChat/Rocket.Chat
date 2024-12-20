@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import type { Credentials } from '@rocket.chat/api-client';
 import type {
 	ILivechatAgent,
 	ILivechatVisitor,
@@ -18,9 +19,11 @@ import {
 	createLivechatRoomWidget,
 	createVisitor,
 	deleteVisitor,
+	fetchInquiry,
 	getLivechatRoomInfo,
+	startANewLivechatRoomAndTakeIt,
 } from '../../../data/livechat/rooms';
-import { removeAgent } from '../../../data/livechat/users';
+import { createAnOnlineAgent, removeAgent } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser, deleteUser } from '../../../data/users.helper';
 import { expectInvalidParams } from '../../../data/validation.helper';
@@ -139,18 +142,37 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		describe('Custom Fields', () => {
+			let contactId: string;
 			before(async () => {
-				await createCustomField({
-					field: 'cf1',
-					label: 'Custom Field 1',
-					scope: 'visitor',
+				const defaultProps = {
+					scope: 'visitor' as const,
 					visibility: 'public',
 					type: 'input',
-					required: true,
 					regexp: '^[0-9]+$',
 					searchable: true,
 					public: true,
-				});
+				};
+
+				await Promise.all([
+					createCustomField({
+						...defaultProps,
+						field: 'cf1',
+						label: 'Custom Field 1',
+						required: true,
+					}),
+					createCustomField({
+						...defaultProps,
+						field: 'cf2',
+						label: 'Custom Field 2',
+						required: false,
+					}),
+					createCustomField({
+						...defaultProps,
+						field: 'cfOptional',
+						label: 'Optional Custom Field',
+						required: false,
+					}),
+				]);
 			});
 
 			after(async () => {
@@ -207,6 +229,98 @@ describe('LIVECHAT - contacts', () => {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
 				expect(res.body.error).to.be.equal('Invalid value for Custom Field 1 field');
+			});
+
+			it('should keep a legacy custom field, but not update it, nor throw an error if it is specified on update', async () => {
+				const createRes = await request
+					.post(api('omnichannel/contacts'))
+					.set(credentials)
+					.send({
+						name: faker.person.fullName(),
+						emails: [faker.internet.email().toLowerCase()],
+						phones: [faker.phone.number()],
+						customFields: {
+							cf1: '123',
+							cf2: '456',
+						},
+					});
+				expect(createRes.body).to.have.property('success', true);
+				expect(createRes.body).to.have.property('contactId').that.is.a('string');
+				contactId = createRes.body.contactId;
+
+				await deleteCustomField('cf2');
+
+				const updateRes = await request
+					.post(api('omnichannel/contacts.update'))
+					.set(credentials)
+					.send({
+						contactId,
+						customFields: {
+							cf1: '456',
+							cf2: '789',
+						},
+					});
+				expect(updateRes.body).to.have.property('success', true);
+				expect(updateRes.body).to.have.property('contact').that.is.an('object');
+				expect(updateRes.body.contact).to.have.property('_id', contactId);
+				expect(updateRes.body.contact).to.have.property('customFields').that.is.an('object');
+				expect(updateRes.body.contact.customFields).to.have.property('cf1', '456');
+				expect(updateRes.body.contact.customFields).to.have.property('cf2', '456');
+			});
+
+			it('should keep a legacy custom field and not throw an error if it is not specified on update', async () => {
+				const updateRes = await request
+					.post(api('omnichannel/contacts.update'))
+					.set(credentials)
+					.send({
+						contactId,
+						customFields: {
+							cf1: '789',
+							cfOptional: '567',
+						},
+					});
+				expect(updateRes.body).to.have.property('success', true);
+				expect(updateRes.body).to.have.property('contact').that.is.an('object');
+				expect(updateRes.body.contact).to.have.property('_id', contactId);
+				expect(updateRes.body.contact).to.have.property('customFields').that.is.an('object');
+				expect(updateRes.body.contact.customFields).to.have.property('cf1', '789');
+				expect(updateRes.body.contact.customFields).to.have.property('cfOptional', '567');
+				expect(updateRes.body.contact.customFields).to.have.property('cf2', '456');
+			});
+
+			it('should keep a legacy custom field, but remove an optional registered custom field if it is not specified on update', async () => {
+				const updateRes = await request
+					.post(api('omnichannel/contacts.update'))
+					.set(credentials)
+					.send({
+						contactId,
+						customFields: {
+							cf1: '789',
+						},
+					});
+				expect(updateRes.body).to.have.property('success', true);
+				expect(updateRes.body).to.have.property('contact').that.is.an('object');
+				expect(updateRes.body.contact).to.have.property('_id', contactId);
+				expect(updateRes.body.contact).to.have.property('customFields').that.is.an('object');
+				expect(updateRes.body.contact.customFields).to.have.property('cf1', '789');
+				expect(updateRes.body.contact.customFields).to.have.property('cf2', '456');
+				expect(updateRes.body.contact.customFields).to.not.have.property('cfOptional');
+			});
+
+			it('should throw an error if trying to update a custom field that is not registered in the workspace and does not exist in the contact', async () => {
+				const updateRes = await request
+					.post(api('omnichannel/contacts.update'))
+					.set(credentials)
+					.send({
+						contactId,
+						customFields: {
+							cf1: '123',
+							cf3: 'invalid',
+						},
+					});
+				expect(updateRes.body).to.have.property('success', false);
+				expect(updateRes.body).to.have.property('error');
+				expect(updateRes.body.error).to.be.equal('Custom field cf3 is not allowed');
 			});
 		});
 
@@ -595,12 +709,16 @@ describe('LIVECHAT - contacts', () => {
 	});
 
 	describe('Contact Rooms', () => {
+		let agent: { credentials: Credentials; user: IUser & { username: string } };
+
 		before(async () => {
 			await updatePermission('view-livechat-contact', ['admin']);
+			agent = await createAnOnlineAgent();
 		});
 
 		after(async () => {
 			await restorePermissionToRoles('view-livechat-contact');
+			await deleteUser(agent.user);
 		});
 
 		it('should create a contact and assign it to the room', async () => {
@@ -650,6 +768,53 @@ describe('LIVECHAT - contacts', () => {
 			const sameRoom = await createLivechatRoom(visitor.token, { rid: room._id });
 			expect(sameRoom._id).to.be.equal(room._id);
 			expect(sameRoom.fname).to.be.equal('New Contact Name');
+		});
+
+		it('should update room subscriptions when a contact name changes', async () => {
+			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			const { room, visitor } = response;
+			const newName = faker.person.fullName();
+
+			expect(room).to.have.property('contactId').that.is.a('string');
+			expect(room.fname).to.be.equal(visitor.name);
+
+			const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
+				contactId: room.contactId,
+				name: newName,
+			});
+
+			expect(res.status).to.be.equal(200);
+
+			const sameRoom = await createLivechatRoom(visitor.token, { rid: room._id });
+			expect(sameRoom._id).to.be.equal(room._id);
+			expect(sameRoom.fname).to.be.equal(newName);
+
+			const subscriptionResponse = await request
+				.get(api('subscriptions.getOne'))
+				.set(agent.credentials)
+				.query({ roomId: room._id })
+				.expect('Content-Type', 'application/json');
+			const { subscription } = subscriptionResponse.body;
+			expect(subscription).to.have.property('v').that.is.an('object');
+			expect(subscription.v).to.have.property('_id', visitor._id);
+			expect(subscription).to.have.property('name', newName);
+			expect(subscription).to.have.property('fname', newName);
+		});
+
+		it('should update inquiry when a contact name changes', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			expect(room).to.have.property('contactId').that.is.a('string');
+			expect(room.fname).to.not.be.equal('New Contact Name');
+
+			const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
+				contactId: room.contactId,
+				name: 'Edited Contact Name Inquiry',
+			});
+			expect(res.status).to.be.equal(200);
+
+			const roomInquiry = await fetchInquiry(room._id);
+			expect(roomInquiry).to.have.property('name', 'Edited Contact Name Inquiry');
 		});
 	});
 
@@ -893,6 +1058,153 @@ describe('LIVECHAT - contacts', () => {
 				expect(res.body.contact).to.have.property('_id', contactId2);
 				expect(res.body.contact).to.not.have.property('lastChat');
 			});
+		});
+	});
+
+	describe('[GET] omnichannel/contacts.checkExistence', () => {
+		let contactId: string;
+		let association: ILivechatContactVisitorAssociation;
+		let roomId: string;
+
+		const email = faker.internet.email().toLowerCase();
+		const phone = faker.phone.number();
+
+		const contact = {
+			name: faker.person.fullName(),
+			emails: [email],
+			phones: [phone],
+			contactManager: agentUser?._id,
+		};
+
+		before(async () => {
+			await updatePermission('view-livechat-contact', ['admin']);
+			const { body } = await request
+				.post(api('omnichannel/contacts'))
+				.set(credentials)
+				.send({ ...contact });
+			contactId = body.contactId;
+
+			const visitor = await createVisitor(undefined, contact.name, email, phone);
+
+			const room = await createLivechatRoom(visitor.token);
+			roomId = room._id;
+			association = {
+				visitorId: visitor._id,
+				source: {
+					type: room.source.type,
+					id: room.source.id,
+				},
+			};
+		});
+
+		after(async () => Promise.all([restorePermissionToRoles('view-livechat-contact'), closeOmnichannelRoom(roomId)]));
+
+		it('should confirm a contact exists when checking by contact id', async () => {
+			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ contactId });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('exists', true);
+		});
+
+		it('should confirm a contact does not exist when checking by contact id', async () => {
+			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ contactId: 'invalid-contact-id' });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('exists', false);
+		});
+
+		it('should confirm a contact exists when checking by visitor association', async () => {
+			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ visitor: association });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('exists', true);
+		});
+
+		it('should confirm a contact does not exist when checking by visitor association', async () => {
+			const res = await request
+				.get(api(`omnichannel/contacts.checkExistence`))
+				.set(credentials)
+				.query({ visitor: { ...association, visitorId: 'invalid-id' } });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('exists', false);
+		});
+
+		it('should confirm a contact exists when checking by email', async () => {
+			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ email });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('exists', true);
+		});
+
+		it('should confirm a contact does not exist when checking by email', async () => {
+			const res = await request
+				.get(api(`omnichannel/contacts.checkExistence`))
+				.set(credentials)
+				.query({ email: 'invalid-email@example.com' });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('exists', false);
+		});
+
+		it('should confirm a contact exists when checking by phone', async () => {
+			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ phone });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('exists', true);
+		});
+
+		it('should confirm a contact does not exist when checking by phone', async () => {
+			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ phone: 'invalid-phone' });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('exists', false);
+		});
+
+		it("should return an error if user doesn't have 'view-livechat-contact' permission", async () => {
+			await removePermissionFromAllRoles('view-livechat-contact');
+
+			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ contactId });
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+
+			await restorePermissionToRoles('view-livechat-contact');
+		});
+
+		it('should return an error if all query params are missing', async () => {
+			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials);
+
+			expectInvalidParams(res, [
+				"must have required property 'contactId'",
+				"must have required property 'email'",
+				"must have required property 'phone'",
+				"must have required property 'visitor'",
+				'must match exactly one schema in oneOf [invalid-params]',
+			]);
+		});
+
+		it('should return an error if more than one field is provided', async () => {
+			const res = await request
+				.get(api(`omnichannel/contacts.checkExistence`))
+				.set(credentials)
+				.query({ contactId, visitor: association, email, phone });
+
+			expectInvalidParams(res, [
+				'must NOT have additional properties',
+				'must NOT have additional properties',
+				'must NOT have additional properties',
+				'must NOT have additional properties',
+				'must match exactly one schema in oneOf [invalid-params]',
+			]);
 		});
 	});
 
