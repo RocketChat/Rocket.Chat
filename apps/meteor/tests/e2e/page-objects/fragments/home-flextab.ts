@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { HomeFlextabChannels } from './home-flextab-channels';
+import { HomeFlextabExportMessages } from './home-flextab-exportMessages';
 import { HomeFlextabMembers } from './home-flextab-members';
 import { HomeFlextabNotificationPreferences } from './home-flextab-notificationPreferences';
 import { HomeFlextabOtr } from './home-flextab-otr';
@@ -19,6 +20,8 @@ export class HomeFlextab {
 
 	readonly otr: HomeFlextabOtr;
 
+	readonly exportMessages: HomeFlextabExportMessages;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.members = new HomeFlextabMembers(page);
@@ -26,6 +29,7 @@ export class HomeFlextab {
 		this.channels = new HomeFlextabChannels(page);
 		this.notificationPreferences = new HomeFlextabNotificationPreferences(page);
 		this.otr = new HomeFlextabOtr(page);
+		this.exportMessages = new HomeFlextabExportMessages(page);
 	}
 
 	get btnTabMembers(): Locator {
@@ -52,6 +56,10 @@ export class HomeFlextab {
 		return this.page.locator('role=menuitem[name="Notifications Preferences"]');
 	}
 
+	get btnExportMessages(): Locator {
+		return this.page.locator('role=menuitem[name="Export messages"]');
+	}
+
 	get btnE2EERoomSetupDisableE2E(): Locator {
 		return this.page.locator('[data-qa-id=ToolBoxAction-key]');
 	}
@@ -66,10 +74,6 @@ export class HomeFlextab {
 
 	get btnEnableOTR(): Locator {
 		return this.page.locator('role=menuitem[name="OTR"]');
-	}
-
-	get btnExportMessages(): Locator {
-		return this.page.locator('role=menuitem[name="Export Messages"]');
 	}
 
 	get flexTabViewThreadMessage(): Locator {

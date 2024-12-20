@@ -231,6 +231,20 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		);
 		await expect(poHomeChannel.content.nthMessage(0).locator('.rcx-icon--name-key')).toBeVisible();
 	});
+
+	test('should display only the download file method when exporting messages in an e2ee room', async ({ page }) => {
+		await page.goto('/home');
+		const channelName = faker.string.uuid();
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await expect(page).toHaveURL(`/group/${channelName}`);
+
+		await poHomeChannel.dismissToast();
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.tabs.kebab.click({ force: true });
+		await poHomeChannel.tabs.btnExportMessages.click();
+		await expect(poHomeChannel.tabs.exportMessages.downloadFileMethod).toBeVisible();
+	});
 });
 
 test.describe.serial('e2e-encryption', () => {
