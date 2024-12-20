@@ -126,16 +126,19 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(roomInfo.servedBy).to.be.an('object');
 			expect(roomInfo.servedBy?._id).to.not.be.equal(testUser2.user._id);
 		});
-		(IS_EE ? it : it.skip)('should route to contact manager if it is online', async () => {
-			const room = await createLivechatRoom(visitor.token);
+		(IS_EE ? it : it.skip)(
+			'should route to contact manager if it is online and Livechat_assign_new_conversation_to_bot is enabled',
+			async () => {
+				const room = await createLivechatRoom(visitor.token);
 
-			await sleep(5000);
+				await sleep(5000);
 
-			const roomInfo = await getLivechatRoomInfo(room._id);
+				const roomInfo = await getLivechatRoomInfo(room._id);
 
-			expect(roomInfo.servedBy).to.be.an('object');
-			expect(roomInfo.servedBy?._id).to.be.equal(testUser3.user._id);
-		});
+				expect(roomInfo.servedBy).to.be.an('object');
+				expect(roomInfo.servedBy?._id).to.be.equal(testUser3.user._id);
+			},
+		);
 		it('should fail to start a conversation if there is noone available and Livechat_accept_chats_with_no_agents is false', async () => {
 			await updateSetting('Livechat_accept_chats_with_no_agents', false);
 			await makeAgentUnavailable(testUser.credentials);
