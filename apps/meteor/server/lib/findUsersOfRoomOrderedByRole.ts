@@ -45,42 +45,25 @@ export async function findUsersOfRoomOrderedByRole({
 		...(sort || defaultSort),
 	};
 
-	const userLookupPipeline: Document[] = [{ $match: { $expr: { $eq: ['$_id', '$$userId'] } } }];
-
-	if (status) {
-		userLookupPipeline.push({ $match: { status } });
-	}
-
-	userLookupPipeline.push(
+	const userLookupPipeline: Document[] = [
 		{
 			$match: {
 				$and: [
 					{
+						$expr: { $eq: ['$_id', '$$userId'] },
 						active: true,
 						username: {
 							$exists: true,
 							...(exceptions.length > 0 && { $nin: exceptions }),
 						},
+						...(status && { status }),
 						...(filter && orStmt.length > 0 && { $or: orStmt }),
 					},
 					...extraQuery,
 				],
 			},
 		},
-		{
-			$project: {
-				_id: 1,
-				username: 1,
-				name: 1,
-				nickname: 1,
-				status: 1,
-				avatarETag: 1,
-				_updatedAt: 1,
-				federated: 1,
-				statusConnection: 1,
-			},
-		},
-	);
+	];
 
 	const defaultPriority = rolesInOrder.length + 1;
 
@@ -99,91 +82,84 @@ export async function findUsersOfRoomOrderedByRole({
 			},
 		},
 		{ $unwind: '$userDetails' },
-		{
-			$addFields: {
-				primaryRole: {
-					$reduce: {
-						input: '$roles',
-						initialValue: { role: null, priority: defaultPriority },
-						in: {
-							$let: {
-								vars: {
-									currentPriority: {
-										$switch: {
-											branches,
-											default: defaultPriority,
+	];
+
+	const membersResult = Subscriptions.col.aggregate(
+		[
+			{ $match: { rid } },
+			...filteredPipeline,
+			{
+				$addFields: {
+					primaryRole: {
+						$reduce: {
+							input: '$roles',
+							initialValue: { role: null, priority: defaultPriority },
+							in: {
+								$let: {
+									vars: {
+										currentPriority: {
+											$switch: {
+												branches,
+												default: defaultPriority,
+											},
 										},
 									},
-								},
-								in: {
-									$cond: [
-										{
-											$and: [{ $in: ['$$this', rolesInOrder] }, { $lt: ['$$currentPriority', '$$value.priority'] }],
-										},
-										{ role: '$$this', priority: '$$currentPriority' },
-										'$$value',
-									],
+									in: {
+										$cond: [
+											{
+												$and: [{ $in: ['$$this', rolesInOrder] }, { $lt: ['$$currentPriority', '$$value.priority'] }],
+											},
+											{ role: '$$this', priority: '$$currentPriority' },
+											'$$value',
+										],
+									},
 								},
 							},
 						},
 					},
 				},
 			},
-		},
-		{
-			$addFields: {
-				rolePriority: { $ifNull: ['$primaryRole.priority', defaultPriority] },
+			{
+				$addFields: {
+					rolePriority: { $ifNull: ['$primaryRole.priority', defaultPriority] },
+				},
 			},
-		},
-		{
-			$project: {
-				_id: '$userDetails._id',
-				rid: 1,
-				roles: 1,
-				primaryRole: '$primaryRole.role',
-				rolePriority: 1,
-				username: '$userDetails.username',
-				name: '$userDetails.name',
-				nickname: '$userDetails.nickname',
-				status: '$userDetails.status',
-				avatarETag: '$userDetails.avatarETag',
-				_updatedAt: '$userDetails._updatedAt',
-				federated: '$userDetails.federated',
-				statusConnection: '$userDetails.statusConnection',
+			{
+				$project: {
+					_id: '$userDetails._id',
+					rid: 1,
+					roles: 1,
+					primaryRole: '$primaryRole.role',
+					rolePriority: 1,
+					username: '$userDetails.username',
+					name: '$userDetails.name',
+					nickname: '$userDetails.nickname',
+					status: '$userDetails.status',
+					avatarETag: '$userDetails.avatarETag',
+					_updatedAt: '$userDetails._updatedAt',
+					federated: '$userDetails.federated',
+					statusConnection: '$userDetails.statusConnection',
+				},
 			},
+			{ $sort: sortCriteria },
+			...(skip > 0 ? [{ $skip: skip }] : []),
+			...(limit > 0 ? [{ $limit: limit }] : []),
+		],
+		{
+			allowDiskUse: true,
 		},
-	];
+	);
 
-	const facetPipeline: Document[] = [
-		{ $match: { rid } },
-		{
-			$facet: {
-				totalCount: [{ $match: { rid } }, ...filteredPipeline, { $count: 'total' }],
-				members: [
-					{ $match: { rid } },
-					...filteredPipeline,
-					{ $sort: sortCriteria },
-					...(skip > 0 ? [{ $skip: skip }] : []),
-					...(limit > 0 ? [{ $limit: limit }] : []),
-				],
-			},
-		},
-		{
-			$project: {
-				members: 1,
-				totalCount: { $arrayElemAt: ['$totalCount.total', 0] },
-			},
-		},
-	];
+	const totalResult = Subscriptions.col.aggregate([{ $match: { rid } }, ...filteredPipeline, { $count: 'total' }], { allowDiskUse: true });
 
-	const [result] = await Subscriptions.col.aggregate(facetPipeline, { allowDiskUse: true }).toArray();
+	const [members, [{ totalCount }]] = await Promise.all([membersResult.toArray(), totalResult.toArray()]);
 
 	return {
-		members: result.members.map((member: any) => {
+		members: members.map((member: any) => {
 			delete member.primaryRole;
 			delete member.rolePriority;
 			return member;
 		}),
-		total: result.totalCount,
+		total: totalCount,
 	};
 }
