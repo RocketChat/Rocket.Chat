@@ -271,7 +271,7 @@ export class AppManager {
                 const prl = new ProxiedApp(this, item, {
                     // Maybe we should have an "EmptyRuntime" class for this?
                     getStatus() {
-                        return AppStatus.COMPILER_ERROR_DISABLED;
+                        return Promise.resolve(AppStatus.COMPILER_ERROR_DISABLED);
                     },
                 } as unknown as DenoRuntimeSubprocessController);
 
