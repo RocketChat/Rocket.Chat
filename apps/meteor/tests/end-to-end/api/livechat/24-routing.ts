@@ -99,7 +99,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				deleteUser(testUser.user),
 				deleteUser(testUser2.user),
 				deleteUser(testUser3.user),
-				updateSetting('Livechat_assign_new_conversation_to_bot', true),
+				updateSetting('Livechat_assign_new_conversation_to_bot', false),
 			]),
 		);
 
