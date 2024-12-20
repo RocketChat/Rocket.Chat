@@ -1099,7 +1099,6 @@ describe('LIVECHAT - contacts', () => {
 				"must have required property 'contactId'",
 				"must have required property 'email'",
 				"must have required property 'phone'",
-				"must have required property 'visitor'",
 				'must match exactly one schema in oneOf [invalid-params]',
 			]);
 		});
