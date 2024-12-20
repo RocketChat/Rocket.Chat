@@ -1,4 +1,4 @@
-import type { ILivechatContactChannel } from '@rocket.chat/core-typings';
+import type { ILivechatContactChannel, IVisitorLastChat } from '@rocket.chat/core-typings';
 import { LivechatContacts } from '@rocket.chat/models';
 
 import { getAllowedCustomFields } from './getAllowedCustomFields';
@@ -11,9 +11,11 @@ export type CreateContactParams = {
 	phones?: string[];
 	unknown: boolean;
 	customFields?: Record<string, string | unknown>;
+	lastChat?: IVisitorLastChat;
 	contactManager?: string;
 	channels?: ILivechatContactChannel[];
 	importIds?: string[];
+	shouldValidateCustomFields?: boolean;
 };
 
 export async function createContact({
@@ -21,17 +23,20 @@ export async function createContact({
 	emails,
 	phones,
 	customFields: receivedCustomFields = {},
+	lastChat,
 	contactManager,
 	channels = [],
 	unknown,
 	importIds,
+	shouldValidateCustomFields = true,
 }: CreateContactParams): Promise<string> {
 	if (contactManager) {
 		await validateContactManager(contactManager);
 	}
 
-	const allowedCustomFields = await getAllowedCustomFields();
-	const customFields = validateCustomFields(allowedCustomFields, receivedCustomFields);
+	const customFields = shouldValidateCustomFields
+		? validateCustomFields(await getAllowedCustomFields(), receivedCustomFields)
+		: receivedCustomFields;
 
 	return LivechatContacts.insertContact({
 		name,
@@ -40,6 +45,7 @@ export async function createContact({
 		contactManager,
 		channels,
 		customFields,
+		lastChat,
 		unknown,
 		...(importIds?.length && { importIds }),
 	});

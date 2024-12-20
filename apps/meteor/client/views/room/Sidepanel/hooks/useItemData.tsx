@@ -1,5 +1,5 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { SidebarV2ItemBadge as SidebarItemBadge, SidebarV2ItemIcon as SidebarItemIcon } from '@rocket.chat/fuselage';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +10,7 @@ import { useAvatarTemplate } from '../../../../sidebarv2/hooks/useAvatarTemplate
 import { useUnreadDisplay } from '../../../../sidebarv2/hooks/useUnreadDisplay';
 
 export const useItemData = (
-	room: ISubscription & IRoom,
+	room: SubscriptionWithRoom,
 	{ openedRoom, viewMode }: { openedRoom: string | undefined; viewMode?: 'extended' | 'medium' | 'condensed' },
 ) => {
 	const { t } = useTranslation();
@@ -23,7 +23,7 @@ export const useItemData = (
 		[highlighted, room],
 	);
 	const time = 'lastMessage' in room ? room.lastMessage?.ts : undefined;
-	const message = viewMode === 'extended' && getMessage(room, room.lastMessage, t);
+	const message = viewMode === 'extended' ? getMessage(room, room.lastMessage, t) : undefined;
 
 	const badges = useMemo(
 		() => (
@@ -42,16 +42,15 @@ export const useItemData = (
 		() => ({
 			unread: highlighted,
 			selected: room.rid === openedRoom,
-			t,
 			href: roomCoordinator.getRouteLink(room.t, room) || '',
 			title: roomCoordinator.getRoomName(room.t, room) || '',
 			icon,
 			time,
 			badges,
 			avatar: AvatarTemplate && <AvatarTemplate {...room} />,
-			subtitle: message,
+			subtitle: message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null,
 		}),
-		[AvatarTemplate, badges, highlighted, icon, message, openedRoom, room, t, time],
+		[AvatarTemplate, badges, highlighted, icon, message, openedRoom, room, time],
 	);
 
 	return itemData;

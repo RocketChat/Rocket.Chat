@@ -4,6 +4,7 @@ import {
 	TextInput,
 	ToggleSwitch,
 	Accordion,
+	AccordionItem,
 	FieldGroup,
 	InputBox,
 	TextAreaInput,
@@ -18,7 +19,7 @@ import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import FieldLabel from './AppearanceFieldLabel';
+import AppearanceFieldLabel from './AppearanceFieldLabel';
 import MarkdownText from '../../../components/MarkdownText';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
@@ -56,13 +57,13 @@ const AppearanceForm = () => {
 
 	return (
 		<Accordion>
-			<Accordion.Item defaultExpanded title={t('General')}>
+			<AccordionItem defaultExpanded title={t('General')}>
 				<FieldGroup>
 					<Field>
 						<FieldRow>
-							<FieldLabel premium htmlFor={livechatHideWatermarkField}>
+							<AppearanceFieldLabel premium htmlFor={livechatHideWatermarkField}>
 								{t('Livechat_hide_watermark')}
-							</FieldLabel>
+							</AppearanceFieldLabel>
 							<Controller
 								name='Livechat_hide_watermark'
 								control={control}
@@ -72,11 +73,10 @@ const AppearanceForm = () => {
 							/>
 						</FieldRow>
 					</Field>
-
 					<Field>
-						<FieldLabel premium htmlFor={livechatBackgroundField}>
+						<AppearanceFieldLabel premium htmlFor={livechatBackgroundField}>
 							{t('Livechat_background')}
-						</FieldLabel>
+						</AppearanceFieldLabel>
 						<FieldRow>
 							<Controller
 								name='Livechat_background'
@@ -92,9 +92,9 @@ const AppearanceForm = () => {
 					</Field>
 
 					<Field>
-						<FieldLabel premium htmlFor={livechatWidgetPositionField}>
+						<AppearanceFieldLabel premium htmlFor={livechatWidgetPositionField}>
 							{t('Livechat_widget_position_on_the_screen')}
-						</FieldLabel>
+						</AppearanceFieldLabel>
 						<FieldRow>
 							<Controller
 								name='Livechat_widget_position'
@@ -116,9 +116,9 @@ const AppearanceForm = () => {
 					</Field>
 
 					<Field>
-						<FieldLabel premium htmlFor={livechatHideSystemMessagesField}>
+						<AppearanceFieldLabel premium htmlFor={livechatHideSystemMessagesField}>
 							{t('Livechat_hide_system_messages')}
-						</FieldLabel>
+						</AppearanceFieldLabel>
 						<FieldRow>
 							<Controller
 								name='Livechat_hide_system_messages'
@@ -143,9 +143,9 @@ const AppearanceForm = () => {
 					</Field>
 					<Field>
 						<FieldRow>
-							<FieldLabel htmlFor={omnichannelVisitorsCanCloseConversationField}>
+							<AppearanceFieldLabel htmlFor={omnichannelVisitorsCanCloseConversationField}>
 								{t('Omnichannel_allow_visitors_to_close_conversation')}
-							</FieldLabel>
+							</AppearanceFieldLabel>
 							<Controller
 								name='Omnichannel_allow_visitors_to_close_conversation'
 								control={control}
@@ -156,12 +156,12 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Accordion.Item>
+			</AccordionItem>
 
-			<Accordion.Item defaultExpanded title={t('Livechat_online')}>
+			<AccordionItem defaultExpanded title={t('Livechat_online')}>
 				<FieldGroup>
 					<Field>
-						<FieldLabel htmlFor={livechatTitleField}>{t('Title')}</FieldLabel>
+						<AppearanceFieldLabel htmlFor={livechatTitleField}>{t('Title')}</AppearanceFieldLabel>
 						<FieldRow>
 							<Controller
 								name='Livechat_title'
@@ -171,7 +171,7 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={livechatTitleColorField}>{t('Title_bar_color')}</FieldLabel>
+						<AppearanceFieldLabel htmlFor={livechatTitleColorField}>{t('Title_bar_color')}</AppearanceFieldLabel>
 						<FieldRow>
 							<Controller
 								name='Livechat_title_color'
@@ -182,7 +182,9 @@ const AppearanceForm = () => {
 					</Field>
 					<Field>
 						<FieldRow>
-							<FieldLabel htmlFor={livechatEnableMessageCharacterLimit}>{t('Livechat_enable_message_character_limit')}</FieldLabel>
+							<AppearanceFieldLabel htmlFor={livechatEnableMessageCharacterLimit}>
+								{t('Livechat_enable_message_character_limit')}
+							</AppearanceFieldLabel>
 							<Controller
 								name='Livechat_enable_message_character_limit'
 								control={control}
@@ -193,7 +195,7 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={livechatMessageCharacterLimit}>{t('Message_Characther_Limit')}</FieldLabel>
+						<AppearanceFieldLabel htmlFor={livechatMessageCharacterLimit}>{t('Message_Characther_Limit')}</AppearanceFieldLabel>
 						<FieldRow>
 							<Controller
 								name='Livechat_message_character_limit'
@@ -212,7 +214,7 @@ const AppearanceForm = () => {
 					</Field>
 					<Field>
 						<FieldRow>
-							<FieldLabel htmlFor={livechatShowAgentInfo}>{t('Show_agent_info')}</FieldLabel>
+							<AppearanceFieldLabel htmlFor={livechatShowAgentInfo}>{t('Show_agent_info')}</AppearanceFieldLabel>
 							<Controller
 								name='Livechat_show_agent_info'
 								control={control}
@@ -222,7 +224,7 @@ const AppearanceForm = () => {
 					</Field>
 					<Field>
 						<FieldRow>
-							<FieldLabel htmlFor={livechatShowAgentEmail}>{t('Show_agent_email')}</FieldLabel>
+							<AppearanceFieldLabel htmlFor={livechatShowAgentEmail}>{t('Show_agent_email')}</AppearanceFieldLabel>
 							<Controller
 								name='Livechat_show_agent_email'
 								control={control}
@@ -231,13 +233,13 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Accordion.Item>
+			</AccordionItem>
 
-			<Accordion.Item title={t('Livechat_offline')}>
+			<AccordionItem title={t('Livechat_offline')}>
 				<FieldGroup>
 					<Field>
 						<FieldRow>
-							<FieldLabel htmlFor={livechatDisplayOfflineForm}>{t('Display_offline_form')}</FieldLabel>
+							<AppearanceFieldLabel htmlFor={livechatDisplayOfflineForm}>{t('Display_offline_form')}</AppearanceFieldLabel>
 							<Controller
 								name='Livechat_display_offline_form'
 								control={control}
@@ -246,7 +248,9 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={livechatOfflineFormUnavailableField}>{t('Offline_form_unavailable_message')}</FieldLabel>
+						<AppearanceFieldLabel htmlFor={livechatOfflineFormUnavailableField}>
+							{t('Offline_form_unavailable_message')}
+						</AppearanceFieldLabel>
 						<FieldRow>
 							<Controller
 								name='Livechat_offline_form_unavailable'
@@ -256,7 +260,7 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={livechatOfflineMessageField}>{t('Offline_message')}</FieldLabel>
+						<AppearanceFieldLabel htmlFor={livechatOfflineMessageField}>{t('Offline_message')}</AppearanceFieldLabel>
 						<FieldRow>
 							<Controller
 								name='Livechat_offline_message'
@@ -266,7 +270,7 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={livechatOfflineTitleField}>{t('Title_offline')}</FieldLabel>
+						<AppearanceFieldLabel htmlFor={livechatOfflineTitleField}>{t('Title_offline')}</AppearanceFieldLabel>
 						<FieldRow>
 							<Controller
 								name='Livechat_offline_title'
@@ -276,7 +280,7 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={livechatOfflineTitleColorField}>{t('Title_bar_color_offline')}</FieldLabel>
+						<AppearanceFieldLabel htmlFor={livechatOfflineTitleColorField}>{t('Title_bar_color_offline')}</AppearanceFieldLabel>
 						<FieldRow>
 							<Controller
 								name='Livechat_offline_title_color'
@@ -286,7 +290,7 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={livechatOfflineEmailField}>{t('Email_address_to_send_offline_messages')}</FieldLabel>
+						<AppearanceFieldLabel htmlFor={livechatOfflineEmailField}>{t('Email_address_to_send_offline_messages')}</AppearanceFieldLabel>
 						<FieldRow>
 							<Controller
 								name='Livechat_offline_email'
@@ -296,7 +300,7 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={livechatOfflineSuccessMessageField}>{t('Offline_success_message')}</FieldLabel>
+						<AppearanceFieldLabel htmlFor={livechatOfflineSuccessMessageField}>{t('Offline_success_message')}</AppearanceFieldLabel>
 						<FieldRow>
 							<Controller
 								name='Livechat_offline_success_message'
@@ -306,13 +310,13 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Accordion.Item>
+			</AccordionItem>
 
-			<Accordion.Item title={t('Livechat_registration_form')}>
+			<AccordionItem title={t('Livechat_registration_form')}>
 				<FieldGroup>
 					<Field>
 						<FieldRow>
-							<FieldLabel htmlFor={livechatRegistrationForm}>{t('Enabled')}</FieldLabel>
+							<AppearanceFieldLabel htmlFor={livechatRegistrationForm}>{t('Enabled')}</AppearanceFieldLabel>
 							<Controller
 								name='Livechat_registration_form'
 								control={control}
@@ -322,7 +326,7 @@ const AppearanceForm = () => {
 					</Field>
 					<Field>
 						<FieldRow>
-							<FieldLabel htmlFor={livechatNameFieldRegistrationForm}>{t('Show_name_field')}</FieldLabel>
+							<AppearanceFieldLabel htmlFor={livechatNameFieldRegistrationForm}>{t('Show_name_field')}</AppearanceFieldLabel>
 							<Controller
 								name='Livechat_name_field_registration_form'
 								control={control}
@@ -334,7 +338,7 @@ const AppearanceForm = () => {
 					</Field>
 					<Field>
 						<FieldRow>
-							<FieldLabel htmlFor={livechatEmailFieldRegistrationForm}>{t('Show_email_field')}</FieldLabel>
+							<AppearanceFieldLabel htmlFor={livechatEmailFieldRegistrationForm}>{t('Show_email_field')}</AppearanceFieldLabel>
 							<Controller
 								name='Livechat_email_field_registration_form'
 								control={control}
@@ -345,7 +349,9 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={livechatRegistrationFormMessageField}>{t('Livechat_registration_form_message')}</FieldLabel>
+						<AppearanceFieldLabel htmlFor={livechatRegistrationFormMessageField}>
+							{t('Livechat_registration_form_message')}
+						</AppearanceFieldLabel>
 						<FieldRow>
 							<Controller
 								name='Livechat_registration_form_message'
@@ -357,12 +363,14 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Accordion.Item>
+			</AccordionItem>
 
-			<Accordion.Item title={t('Conversation_finished')}>
+			<AccordionItem title={t('Conversation_finished')}>
 				<FieldGroup>
 					<Field>
-						<FieldLabel htmlFor={livechatConversationFinishedMessageField}>{t('Conversation_finished_message')}</FieldLabel>
+						<AppearanceFieldLabel htmlFor={livechatConversationFinishedMessageField}>
+							{t('Conversation_finished_message')}
+						</AppearanceFieldLabel>
 						<FieldRow>
 							<Controller
 								name='Livechat_conversation_finished_message'
@@ -374,7 +382,7 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 					<Field>
-						<FieldLabel htmlFor={livechatConversationFinishedTextField}>{t('Conversation_finished_text')}</FieldLabel>
+						<AppearanceFieldLabel htmlFor={livechatConversationFinishedTextField}>{t('Conversation_finished_text')}</AppearanceFieldLabel>
 						<FieldRow>
 							<Controller
 								name='Livechat_conversation_finished_text'
@@ -386,7 +394,7 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Accordion.Item>
+			</AccordionItem>
 		</Accordion>
 	);
 };

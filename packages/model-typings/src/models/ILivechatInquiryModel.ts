@@ -48,4 +48,6 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ILivechatInquiryRecord | null>;
 	findIdsByVisitorToken(token: ILivechatInquiryRecord['v']['token']): FindCursor<ILivechatInquiryRecord>;
 	setStatusById(inquiryId: string, status: LivechatInquiryStatus): Promise<ILivechatInquiryRecord>;
+	updateNameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document>;
+	findByVisitorIds(visitorIds: string[], options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord>;
 }
