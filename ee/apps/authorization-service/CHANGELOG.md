@@ -1,5 +1,49 @@
 # @rocket.chat/authorization-service
 
+## 0.4.10
+
+### Patch Changes
+
+- ([#33596](https://github.com/RocketChat/Rocket.Chat/pull/33596)) Bump meteor to 3.0.4 and Node version to 20.18.0
+
+- <details><summary>Updated dependencies [80e36bfc3938775eb26aa5576f1b9b98896e1cc4, e7edeac3bdd22da0a04b8e873d5a008e249fb4be, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0, 63ccadc012499e004445ad6bc6cd2ff777aecbd1]:</summary>
+
+  - @rocket.chat/model-typings@1.1.0
+  - @rocket.chat/core-typings@7.1.0
+  - @rocket.chat/rest-typings@7.1.0
+  - @rocket.chat/core-services@0.7.2
+  - @rocket.chat/models@1.0.1
+  - @rocket.chat/network-broker@0.1.2
+  </details>
+
+## 0.4.10-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.3
+  - @rocket.chat/rest-typings@7.1.0-rc.3
+  - @rocket.chat/core-services@0.7.2-rc.3
+  - @rocket.chat/model-typings@1.1.0-rc.3
+  - @rocket.chat/network-broker@0.1.2-rc.3
+  - @rocket.chat/models@1.0.1-rc.3
+  </details>
+
+## 0.4.10-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.2
+  - @rocket.chat/rest-typings@7.1.0-rc.2
+  - @rocket.chat/core-services@0.7.2-rc.2
+  - @rocket.chat/model-typings@1.1.0-rc.2
+  - @rocket.chat/network-broker@0.1.2-rc.2
+  - @rocket.chat/models@1.0.1-rc.2
+  </details>
+
 ## 0.4.10-rc.1
 
 ### Patch Changes
