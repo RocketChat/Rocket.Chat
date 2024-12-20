@@ -15,7 +15,7 @@ test.describe.serial('OTR', () => {
 		await page.goto('/home');
 	});
 
-	test('should hide export messages for rooms with OTR enabled', async ({ browser }) => {
+	test('should not allow export OTR messages', async ({ browser }) => {
 		const user1Page = await browser.newPage({ storageState: Users.user1.state });
 		const user1Channel = new HomeChannel(user1Page);
 
@@ -35,8 +35,11 @@ test.describe.serial('OTR', () => {
 			await user1Channel.tabs.otr.btnAcceptOTR.click();
 		});
 
+		await poHomeChannel.content.sendMessage('hello OTR');
 		await poHomeChannel.tabs.kebab.click({ force: true });
-		await expect(poHomeChannel.tabs.btnExportMessages).not.toBeVisible();
+		await poHomeChannel.tabs.btnExportMessages.click();
+		await poHomeChannel.content.getMessageByText('hello OTR').click();
+		await expect(poHomeChannel.content.btnClearSelection).toBeDisabled();
 
 		await user1Page.close();
 	});
