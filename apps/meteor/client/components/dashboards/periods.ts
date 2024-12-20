@@ -71,7 +71,7 @@ const periods = [
 	},
 	{
 		key: 'last year',
-		label: label('Last_year'),
+		label: label('This_year'),
 		range: lastNDays(moment().dayOfYear()),
 	},
 ] as const;
