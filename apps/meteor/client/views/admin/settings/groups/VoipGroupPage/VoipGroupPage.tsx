@@ -57,7 +57,7 @@ function VoipGroupPage({ _id, onClickBack, ...group }: VoipGroupPageProps) {
 			) : (
 				<PageScrollableContentWithShadow>
 					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
-						<Accordion className='page-settings'>
+						<Accordion>
 							{sections.map((sectionName) => (
 								<SettingsSection key={sectionName || ''} groupId={_id} sectionName={sectionName} currentTab={tab} solo={false} />
 							))}

@@ -7,6 +7,7 @@ import {
 	StatesIcon,
 	StatesTitle,
 	Accordion,
+	AccordionItem,
 	Field,
 	FieldGroup,
 	FieldLabel,
@@ -95,7 +96,7 @@ const AccountFeaturePreviewPage = () => {
 							</Box>
 							<Accordion>
 								{grouppedFeaturesPreview?.map(([group, features], index) => (
-									<Accordion.Item defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
+									<AccordionItem defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
 										<FieldGroup>
 											{features.map((feature) => (
 												<Fragment key={feature.name}>
@@ -116,7 +117,7 @@ const AccountFeaturePreviewPage = () => {
 												</Fragment>
 											))}
 										</FieldGroup>
-									</Accordion.Item>
+									</AccordionItem>
 								))}
 							</Accordion>
 						</>

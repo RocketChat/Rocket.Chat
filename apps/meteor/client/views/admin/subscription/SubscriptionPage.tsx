@@ -1,4 +1,4 @@
-import { Accordion, Box, Button, ButtonGroup, Callout, Grid } from '@rocket.chat/fuselage';
+import { Accordion, AccordionItem, Box, Button, ButtonGroup, Callout, Grid } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useSearchParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { t } from 'i18next';
@@ -131,23 +131,24 @@ const SubscriptionPage = () => {
 					<>
 						{showLicense && (
 							<Accordion>
-								<Accordion.Item title={t('License')}>
+								<AccordionItem title={t('License')}>
 									<pre>{JSON.stringify(licensesData, null, 2)}</pre>
-								</Accordion.Item>
+								</AccordionItem>
 							</Accordion>
 						)}
 						<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 							<Grid m={0}>
-								<Grid.Item lg={4} xs={4} p={8}>
+								<Grid.Item lg={4} xs={4} p={8} minHeight={260}>
 									{license && <PlanCard licenseInformation={license.information} licenseLimits={{ activeUsers: seatsLimit }} />}
 									{!license && <PlanCardCommunity />}
 								</Grid.Item>
-								<Grid.Item lg={8} xs={4} p={8}>
+
+								<Grid.Item lg={8} xs={4} p={8} minHeight={260}>
 									<FeaturesCard activeModules={activeModules} isEnterprise={isEnterprise} />
 								</Grid.Item>
 
 								{seatsLimit.value !== undefined && (
-									<Grid.Item lg={6} xs={4} p={8}>
+									<Grid.Item lg={6} xs={4} p={8} minHeight={260}>
 										{seatsLimit.max !== Infinity ? (
 											<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={licensesData?.trial} />
 										) : (
@@ -157,7 +158,7 @@ const SubscriptionPage = () => {
 								)}
 
 								{macLimit.value !== undefined && (
-									<Grid.Item lg={6} xs={4} p={8}>
+									<Grid.Item lg={6} xs={4} p={8} minHeight={260}>
 										{macLimit.max !== Infinity ? (
 											<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={licensesData?.trial} />
 										) : (
@@ -169,15 +170,15 @@ const SubscriptionPage = () => {
 								{!license && (
 									<>
 										{limits?.marketplaceApps !== undefined && (
-											<Grid.Item lg={4} xs={4} p={8}>
+											<Grid.Item lg={4} xs={4} p={8} minHeight={260}>
 												<AppsUsageCard privateAppsLimit={limits?.privateApps} marketplaceAppsLimit={limits.marketplaceApps} />
 											</Grid.Item>
 										)}
 
-										<Grid.Item lg={4} xs={4} p={8}>
+										<Grid.Item lg={4} xs={4} p={8} minHeight={260}>
 											<ActiveSessionsCard />
 										</Grid.Item>
-										<Grid.Item lg={4} xs={4} p={8}>
+										<Grid.Item lg={4} xs={4} p={8} minHeight={260}>
 											<ActiveSessionsPeakCard />
 										</Grid.Item>
 									</>

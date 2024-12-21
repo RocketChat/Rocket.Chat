@@ -29,7 +29,6 @@ import type {
 	SMSProviderResponse,
 	ILivechatTriggerActionResponse,
 	ILivechatContact,
-	ILivechatContactVisitorAssociation,
 	ILivechatContactChannel,
 	IUser,
 } from '@rocket.chat/core-typings';
@@ -1336,7 +1335,7 @@ const POSTUpdateOmnichannelContactsSchema = {
 
 export const isPOSTUpdateOmnichannelContactsProps = ajv.compile<POSTUpdateOmnichannelContactsProps>(POSTUpdateOmnichannelContactsSchema);
 
-type GETOmnichannelContactsProps = { contactId?: string; visitor?: ILivechatContactVisitorAssociation };
+type GETOmnichannelContactsProps = { contactId?: string };
 
 export const ContactVisitorAssociationSchema = {
 	type: 'object',
@@ -1362,28 +1361,16 @@ export const ContactVisitorAssociationSchema = {
 };
 
 const GETOmnichannelContactsSchema = {
-	oneOf: [
-		{
-			type: 'object',
-			properties: {
-				contactId: {
-					type: 'string',
-					nullable: false,
-					isNotEmpty: true,
-				},
-			},
-			required: ['contactId'],
-			additionalProperties: false,
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+			nullable: false,
+			isNotEmpty: true,
 		},
-		{
-			type: 'object',
-			properties: {
-				visitor: ContactVisitorAssociationSchema,
-			},
-			required: ['visitor'],
-			additionalProperties: false,
-		},
-	],
+	},
+	required: ['contactId'],
+	additionalProperties: false,
 };
 
 export const isGETOmnichannelContactsProps = ajv.compile<GETOmnichannelContactsProps>(GETOmnichannelContactsSchema);
@@ -1417,6 +1404,58 @@ const GETOmnichannelContactsSearchSchema = {
 };
 
 export const isGETOmnichannelContactsSearchProps = ajv.compile<GETOmnichannelContactsSearchProps>(GETOmnichannelContactsSearchSchema);
+
+type GETOmnichannelContactsCheckExistenceProps = {
+	contactId?: string;
+	email?: string;
+	phone?: string;
+};
+
+const GETOmnichannelContactsCheckExistenceSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				contactId: {
+					type: 'string',
+					nullable: false,
+					isNotEmpty: true,
+				},
+			},
+			required: ['contactId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				email: {
+					type: 'string',
+					format: 'basic_email',
+					nullable: false,
+					isNotEmpty: true,
+				},
+			},
+			required: ['email'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				phone: {
+					type: 'string',
+					nullable: false,
+					isNotEmpty: true,
+				},
+			},
+			required: ['phone'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isGETOmnichannelContactsCheckExistenceProps = ajv.compile<GETOmnichannelContactsCheckExistenceProps>(
+	GETOmnichannelContactsCheckExistenceSchema,
+);
 
 type GETOmnichannelContactHistoryProps = PaginatedRequest<{
 	contactId: string;
@@ -3866,6 +3905,9 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/omnichannel/contacts.search': {
 		GET: (params: GETOmnichannelContactsSearchProps) => PaginatedResult<{ contacts: ILivechatContactWithManagerData[] }>;
+	};
+	'/v1/omnichannel/contacts.checkExistence': {
+		GET: (params: GETOmnichannelContactsCheckExistenceProps) => { exists: boolean };
 	};
 	'/v1/omnichannel/contacts.history': {
 		GET: (params: GETOmnichannelContactHistoryProps) => PaginatedResult<{ history: ContactSearchChatsResult[] }>;
