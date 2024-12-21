@@ -24,7 +24,7 @@ export const useChangeLeaderAction = (user: Pick<IUser, '_id' | 'username'>, rid
 
 	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const changeLeaderEndpoint = isLeader ? 'removeLeader' : 'addLeader';
-	const changeLeaderMessage = isLeader ? 'removed__username__as__role_' : 'set__username__as__role_';
+	const changeLeaderMessage = isLeader ? 'set__username__as__role_' : 'removed__username__as__role_';
 	const changeLeader = useEndpointAction('POST', `${endpointPrefix}.${changeLeaderEndpoint}`, {
 		successMessage: t(changeLeaderMessage, { username: user.username, role: 'leader' }),
 	});

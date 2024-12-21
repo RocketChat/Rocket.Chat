@@ -56,8 +56,8 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const changeModeratorEndpoint = isModerator ? 'removeModerator' : 'addModerator';
 	const changeModeratorMessage = isModerator
-		? 'User__username__removed_from__room_name__moderators'
-		: 'User__username__is_now_a_moderator_of__room_name_';
+		? 'User__username__is_now_a_moderator_of__room_name_'
+		: 'User__username__removed_from__room_name__moderators';
 
 	const changeModerator = useEndpointAction('POST', `${endpointPrefix}.${changeModeratorEndpoint}`, {
 		successMessage: t(changeModeratorMessage, { username: user.username, room_name: roomName }),

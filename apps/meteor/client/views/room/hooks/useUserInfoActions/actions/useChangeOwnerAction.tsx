@@ -53,7 +53,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 
 	const endpointPrefix = room.t === 'p' ? '/v1/groups' : '/v1/channels';
 	const changeOwnerEndpoint = isOwner ? 'removeOwner' : 'addOwner';
-	const changeOwnerMessage = isOwner ? 'User__username__removed_from__room_name__owners' : 'User__username__is_now_an_owner_of__room_name_';
+	const changeOwnerMessage = isOwner ? 'User__username__is_now_an_owner_of__room_name_' : 'User__username__removed_from__room_name__owners';
 	const changeOwner = useEndpointAction('POST', `${endpointPrefix}.${changeOwnerEndpoint}`, {
 		successMessage: t(changeOwnerMessage, { username: user.username, room_name: roomName }),
 	});
