@@ -1,5 +1,6 @@
 import type { DeviceContextValue } from '@rocket.chat/ui-contexts';
 import { DeviceContext } from '@rocket.chat/ui-contexts';
+import type { ReactNode } from 'react';
 import React from 'react';
 
 const mockDeviceContextValue: DeviceContextValue = {
@@ -13,7 +14,7 @@ const mockDeviceContextValue: DeviceContextValue = {
 };
 
 type MockedDeviceContextProps = Partial<DeviceContextValue> & {
-	children: React.ReactNode;
+	children: ReactNode;
 };
 
 export const MockedDeviceContext = ({ children, ...props }: MockedDeviceContextProps) => {

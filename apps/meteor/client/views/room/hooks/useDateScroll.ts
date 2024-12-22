@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import type { MutableRefObject } from 'react';
+import type { CSSProperties, MutableRefObject } from 'react';
 import { useCallback, useRef, useState } from 'react';
 
 import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
@@ -16,7 +16,7 @@ export type BubbleDateProps = {
 	bubbleDate: string | undefined;
 	bubbleDateClassName?: ReturnType<typeof css>;
 	showBubble: boolean;
-	bubbleDateStyle?: React.CSSProperties;
+	bubbleDateStyle?: CSSProperties;
 };
 
 export const useDateScroll = (margin = 8): useDateScrollReturn => {
@@ -24,7 +24,7 @@ export const useDateScroll = (margin = 8): useDateScrollReturn => {
 		useState<{
 			date: string;
 			show: boolean;
-			style?: React.CSSProperties;
+			style?: CSSProperties;
 			bubbleDateClassName?: ReturnType<typeof css>;
 			offset: number;
 		}>({

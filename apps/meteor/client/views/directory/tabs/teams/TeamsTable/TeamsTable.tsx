@@ -3,6 +3,7 @@ import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesActio
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import React, { useMemo, useState } from 'react';
 
 import TeamsTableRow from './TeamsTableRow';
@@ -60,8 +61,8 @@ const TeamsTable = () => {
 	const { data, isFetched, isLoading, isError, refetch } = useQuery(['getDirectoryData', query], () => getDirectoryData(query));
 
 	const onClick = useMemo(
-		() => (name: IRoom['name'], type: IRoom['t']) => (e: React.KeyboardEvent | React.MouseEvent) => {
-			if (name && (e.type === 'click' || (e as React.KeyboardEvent).key === 'Enter')) {
+		() => (name: IRoom['name'], type: IRoom['t']) => (e: KeyboardEvent | MouseEvent) => {
+			if (name && (e.type === 'click' || (e as KeyboardEvent).key === 'Enter')) {
 				type === 'c' ? channelsRoute.push({ name }) : groupsRoute.push({ name });
 			}
 		},

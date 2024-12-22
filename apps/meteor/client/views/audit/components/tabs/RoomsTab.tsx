@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, Icon } from '@rocket.chat/fuselage';
+import type { Dispatch, SetStateAction } from 'react';
 import React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { useController } from 'react-hook-form';
@@ -10,7 +11,7 @@ import type { AuditFields } from '../../hooks/useAuditForm';
 
 type RoomsTabProps = {
 	form: UseFormReturn<AuditFields>;
-	setSelectedRoom: React.Dispatch<React.SetStateAction<IRoom | undefined>>;
+	setSelectedRoom: Dispatch<SetStateAction<IRoom | undefined>>;
 };
 
 const RoomsTab = ({ form: { control }, setSelectedRoom }: RoomsTabProps) => {

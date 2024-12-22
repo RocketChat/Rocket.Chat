@@ -1,5 +1,5 @@
 import { Box, Icon, MessageBody } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import type { ReactElement, SyntheticEvent } from 'react';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +10,7 @@ type IgnoredContentProps = {
 const IgnoredContent = ({ onShowMessageIgnored }: IgnoredContentProps): ReactElement => {
 	const { t } = useTranslation();
 
-	const showMessageIgnored = (event: React.SyntheticEvent): void => {
+	const showMessageIgnored = (event: SyntheticEvent): void => {
 		event.stopPropagation();
 
 		onShowMessageIgnored();

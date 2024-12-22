@@ -1,4 +1,5 @@
 import { AuthorizationContext } from '@rocket.chat/ui-contexts';
+import type { ReactNode } from 'react';
 import React from 'react';
 
 export const MockedAuthorizationContext = ({
@@ -8,7 +9,7 @@ export const MockedAuthorizationContext = ({
 }: {
 	permissions: string[];
 	roles?: string[];
-	children: React.ReactNode;
+	children: ReactNode;
 }) => {
 	return (
 		<AuthorizationContext.Provider
