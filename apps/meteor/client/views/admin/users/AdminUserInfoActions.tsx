@@ -1,17 +1,18 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { ButtonGroup, Menu, Option } from '@rocket.chat/fuselage';
-import { useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { UserInfoAction } from '../../../components/UserInfo';
-import { useActionSpread } from '../../hooks/useActionSpread';
 import type { AdminUsersTab } from './AdminUsersPage';
 import { useChangeAdminStatusAction } from './hooks/useChangeAdminStatusAction';
 import { useChangeUserStatusAction } from './hooks/useChangeUserStatusAction';
 import { useDeleteUserAction } from './hooks/useDeleteUserAction';
 import { useResetE2EEKeyAction } from './hooks/useResetE2EEKeyAction';
 import { useResetTOTPAction } from './hooks/useResetTOTPAction';
+import { UserInfoAction } from '../../../components/UserInfo';
+import { useActionSpread } from '../../hooks/useActionSpread';
 
 type AdminUserInfoActionsProps = {
 	username: IUser['username'];
@@ -35,7 +36,7 @@ const AdminUserInfoActions = ({
 	onChange,
 	onReload,
 }: AdminUserInfoActionsProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const directRoute = useRoute('direct');
 	const userRoute = useRoute('admin-users');
 	const canDirectMessage = usePermission('create-d');

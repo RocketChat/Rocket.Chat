@@ -23,6 +23,7 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 Meteor.methods<ServerMethods>({
+	// eslint-disable-next-line complexity
 	async updateIncomingIntegration(integrationId, integration) {
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -67,8 +68,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const oldScriptEngine = currentIntegration.scriptEngine ?? 'vm2';
-		const scriptEngine = integration.scriptEngine ?? oldScriptEngine;
+		const oldScriptEngine = currentIntegration.scriptEngine;
+		const scriptEngine = integration.scriptEngine ?? oldScriptEngine ?? 'isolated-vm';
 		if (
 			integration.script?.trim() &&
 			(scriptEngine !== oldScriptEngine || integration.script?.trim() !== currentIntegration.script?.trim())
@@ -175,13 +176,14 @@ Meteor.methods<ServerMethods>({
 					emoji: integration.emoji,
 					alias: integration.alias,
 					channel: channels,
+					...('username' in integration && { username: integration.username }),
 					...(isFrozen
 						? {}
 						: {
 								script: integration.script,
 								scriptEnabled: integration.scriptEnabled,
 								scriptEngine,
-						  }),
+							}),
 					...(typeof integration.overrideDestinationChannelEnabled !== 'undefined' && {
 						overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
 					}),

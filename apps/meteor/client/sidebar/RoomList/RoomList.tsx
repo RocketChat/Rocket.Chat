@@ -2,11 +2,15 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useUserPreference, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import RoomListRow from './RoomListRow';
+import RoomListRowWrapper from './RoomListRowWrapper';
+import RoomListWrapper from './RoomListWrapper';
 import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
@@ -14,14 +18,11 @@ import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
-import RoomListRow from './RoomListRow';
-import RoomListRowWrapper from './RoomListRowWrapper';
-import RoomListWrapper from './RoomListWrapper';
 
 const computeItemKey = (index: number, room: IRoom): IRoom['_id'] | number => room._id || index;
 
 const RoomList = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const isAnonymous = !useUserId();
 	const roomsList = useRoomList();
 	const avatarTemplate = useAvatarTemplate();

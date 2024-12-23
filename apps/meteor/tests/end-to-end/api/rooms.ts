@@ -550,7 +550,81 @@ describe('[Rooms]', () => {
 					expect(res.body.message.files[0]).to.have.property('name', 'lst-test.lst');
 				});
 		});
+		describe('/rooms.media - Max allowed size', () => {
+			before(async () => updateSetting('Message_MaxAllowedSize', 10));
+			after(async () => updateSetting('Message_MaxAllowedSize', 5000));
+			it('should allow uploading a file with description under the max character limit', async () => {
+				await request
+					.post(api(`rooms.media/${testChannel._id}`))
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('file');
+						expect(res.body.file).to.have.property('_id');
+						expect(res.body.file).to.have.property('url');
 
+						fileNewUrl = res.body.file.url;
+						fileOldUrl = res.body.file.url.replace('/file-upload/', '/ufs/GridFS:Uploads/');
+						fileId = res.body.file._id;
+					});
+
+				await request
+					.post(api(`rooms.mediaConfirm/${testChannel._id}/${fileId}`))
+					.set(credentials)
+					.send({
+						description: '123456789',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message');
+						expect(res.body.message).to.have.property('attachments');
+						expect(res.body.message.attachments).to.be.an('array').of.length(1);
+						expect(res.body.message.attachments[0]).to.have.property('image_type', 'image/png');
+						expect(res.body.message.attachments[0]).to.have.property('title', '1024x1024.png');
+						expect(res.body.message).to.have.property('files');
+						expect(res.body.message.files).to.be.an('array').of.length(2);
+						expect(res.body.message.files[0]).to.have.property('type', 'image/png');
+						expect(res.body.message.files[0]).to.have.property('name', '1024x1024.png');
+					});
+			});
+
+			it('should not allow uploading a file with description over the max character limit', async () => {
+				await request
+					.post(api(`rooms.media/${testChannel._id}`))
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('file');
+						expect(res.body.file).to.have.property('_id');
+						expect(res.body.file).to.have.property('url');
+
+						fileNewUrl = res.body.file.url;
+						fileOldUrl = res.body.file.url.replace('/file-upload/', '/ufs/GridFS:Uploads/');
+						fileId = res.body.file._id;
+					});
+
+				await request
+					.post(api(`rooms.mediaConfirm/${testChannel._id}/${fileId}`))
+					.set(credentials)
+					.send({
+						description: '12345678910',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-message-size-exceeded');
+					});
+			});
+		});
 		it('should not allow uploading a blocked media type to a room', async () => {
 			await updateSetting('FileUpload_MediaTypeBlackList', 'text/plain');
 			await request
@@ -941,7 +1015,22 @@ describe('[Rooms]', () => {
 				.end(done);
 		});
 
-		it('should return an error when send an invalid room', (done) => {
+		it('should return false if this room name does not exist', (done) => {
+			void request
+				.get(api('rooms.nameExists'))
+				.set(credentials)
+				.query({
+					roomName: 'foo',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', false);
+				})
+				.end(done);
+		});
+
+		it('should return an error when the require parameter (roomName) is not provided', (done) => {
 			void request
 				.get(api('rooms.nameExists'))
 				.set(credentials)
@@ -1166,21 +1255,7 @@ describe('[Rooms]', () => {
 		let testChannel: IRoom;
 		let testGroup: IRoom;
 		let testDM: IRoom;
-		const expectedKeys = [
-			'_id',
-			'name',
-			'fname',
-			't',
-			'msgs',
-			'usersCount',
-			'u',
-			'customFields',
-			'ts',
-			'ro',
-			'sysMes',
-			'default',
-			'_updatedAt',
-		];
+		const expectedKeys = ['_id', 'name', 'fname', 't', 'msgs', 'usersCount', 'u', 'ts', 'ro', 'sysMes', 'default', '_updatedAt'];
 		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
 		const testGroupName = `group.test.${Date.now()}-${Math.random()}`;
 		let user: TestUser<IUser>;
@@ -1272,23 +1347,6 @@ describe('[Rooms]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
-				})
-				.end(done);
-		});
-		it('should return name and _id of public channel when it has the "fields" query parameter limiting by name', (done) => {
-			void request
-				.get(api('rooms.info'))
-				.set(credentials)
-				.query({
-					roomId: testChannel._id,
-					fields: JSON.stringify({ name: 1 }),
-				})
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('room').and.to.be.an('object');
-					expect(res.body.room).to.have.property('name').and.to.be.equal(testChannelName);
-					expect(res.body.room).to.have.all.keys(['_id', 'name']);
 				})
 				.end(done);
 		});
@@ -2678,13 +2736,7 @@ describe('[Rooms]', () => {
 			testUserCreds = await login(user.username, password);
 		});
 
-		const uploadFile = async ({
-			roomId,
-			file,
-		}: {
-			roomId: IRoom['_id'];
-			file: Blob | Buffer | fs.ReadStream | string | boolean | number;
-		}) => {
+		const uploadFile = async ({ roomId, file }: { roomId: IRoom['_id']; file: Buffer | fs.ReadStream | string | boolean | number }) => {
 			const { body } = await request
 				.post(api(`rooms.upload/${roomId}`))
 				.set(credentials)
@@ -3251,6 +3303,7 @@ describe('[Rooms]', () => {
 				});
 		});
 	});
+
 	describe('/rooms.isMember', () => {
 		let testChannel: IRoom;
 		let testGroup: IRoom;
@@ -3530,6 +3583,53 @@ describe('[Rooms]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'unauthorized');
+				});
+		});
+	});
+
+	describe('/rooms.open', () => {
+		let room: IRoom;
+
+		before(async () => {
+			room = (await createRoom({ type: 'c', name: `rooms.open.test.${Date.now()}` })).body.channel;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: room._id });
+		});
+
+		it('should open the room', (done) => {
+			void request
+				.post(api('rooms.open'))
+				.set(credentials)
+				.send({ roomId: room._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			void request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId: room._id })
+				.send()
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.subscription).to.have.property('open', true);
+				})
+				.end(done);
+		});
+
+		it('should fail if roomId is not provided', async () => {
+			await request
+				.post(api('rooms.open'))
+				.set(credentials)
+				.send()
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
 				});
 		});
 	});

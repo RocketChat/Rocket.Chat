@@ -1,7 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import { License } from '@rocket.chat/license';
 
-import { settings } from '../../../app/settings/server/cached';
 import { isRunningMs } from '../../../server/lib/isRunningMs';
 import { FederationService } from '../../../server/services/federation/service';
 import { LicenseService } from '../../app/license/server/license.internalService';
@@ -19,24 +18,26 @@ api.registerService(new LDAPEEService());
 api.registerService(new LicenseService());
 api.registerService(new MessageReadsService());
 api.registerService(new OmnichannelEE());
-api.registerService(new VoipFreeSwitchService((id) => settings.get(id)));
+api.registerService(new VoipFreeSwitchService());
 
 // when not running micro services we want to start up the instance intercom
 if (!isRunningMs()) {
 	api.registerService(new InstanceService());
 }
 
-let federationService: FederationService;
+export const startFederationService = async (): Promise<void> => {
+	let federationService: FederationService;
 
-if (!License.hasValidLicense()) {
-	federationService = await FederationService.createFederationService();
-	api.registerService(federationService);
-}
-
-void License.onLicense('federation', async () => {
-	const federationServiceEE = await FederationServiceEE.createFederationService();
-	if (federationService) {
-		await api.destroyService(federationService);
+	if (!License.hasValidLicense()) {
+		federationService = await FederationService.createFederationService();
+		api.registerService(federationService);
 	}
-	api.registerService(federationServiceEE);
-});
+
+	void License.onLicense('federation', async () => {
+		const federationServiceEE = await FederationServiceEE.createFederationService();
+		if (federationService) {
+			await api.destroyService(federationService);
+		}
+		api.registerService(federationServiceEE);
+	});
+};

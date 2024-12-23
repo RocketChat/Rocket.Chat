@@ -1,8 +1,9 @@
 import { AdminInfoPage } from '@rocket.chat/onboarding-ui';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import React from 'react';
+import { I18nextProvider, useTranslation } from 'react-i18next';
 
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
@@ -12,7 +13,7 @@ const hasBlockedName = (username: string): boolean =>
 	!!usernameBlackList.length && usernameBlackList.some((restrictedUsername) => restrictedUsername.test(escapeRegExp(username).trim()));
 
 const AdminInfoStep = (): ReactElement => {
-	const t = useTranslation();
+	const { t, i18n } = useTranslation();
 	const regexpForUsernameValidation = useSetting('UTF8_User_Names_Validation');
 	const usernameRegExp = new RegExp(`^${regexpForUsernameValidation}$`);
 
@@ -32,15 +33,17 @@ const AdminInfoStep = (): ReactElement => {
 	};
 
 	return (
-		<AdminInfoPage
-			validatePassword={(password): boolean => password.length > 0}
-			passwordRulesHint=''
-			validateUsername={validateUsername}
-			validateEmail={validateEmail}
-			currentStep={currentStep}
-			stepCount={maxSteps}
-			onSubmit={handleSubmit}
-		/>
+		<I18nextProvider i18n={i18n} defaultNS='onboarding'>
+			<AdminInfoPage
+				validatePassword={(password): boolean => password.length > 0}
+				passwordRulesHint=''
+				validateUsername={validateUsername}
+				validateEmail={validateEmail}
+				currentStep={currentStep}
+				stepCount={maxSteps}
+				onSubmit={handleSubmit}
+			/>
+		</I18nextProvider>
 	);
 };
 

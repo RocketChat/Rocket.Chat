@@ -1,12 +1,13 @@
 import type { IMessage, ReadReceipt } from '@rocket.chat/core-typings';
-import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import ReadReceiptRow from './ReadReceiptRow';
 import GenericModal from '../../../../components/GenericModal';
 import GenericModalSkeleton from '../../../../components/GenericModal/GenericModalSkeleton';
-import ReadReceiptRow from './ReadReceiptRow';
 
 type ReadReceiptsModalProps = {
 	messageId: IMessage['_id'];
@@ -14,7 +15,7 @@ type ReadReceiptsModalProps = {
 };
 
 const ReadReceiptsModal = ({ messageId, onClose }: ReadReceiptsModalProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const getReadReceipts = useMethod('getReadReceipts');
@@ -40,7 +41,7 @@ const ReadReceiptsModal = ({ messageId, onClose }: ReadReceiptsModalProps): Reac
 			{readReceipts.length > 0 && (
 				<div role='list'>
 					{readReceipts.map((receipt) => (
-						<ReadReceiptRow {...receipt} key={receipt._id} />
+						<ReadReceiptRow key={receipt._id} {...receipt} />
 					))}
 				</div>
 			)}

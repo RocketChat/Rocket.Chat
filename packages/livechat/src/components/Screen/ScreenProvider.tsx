@@ -4,7 +4,10 @@ import { useCallback, useContext, useEffect, useState } from 'preact/hooks';
 import { parse } from 'query-string';
 
 import { isActiveSession } from '../../helpers/isActiveSession';
+import { createOrUpdateGuest, evaluateChangesAndLoadConfigByFields } from '../../lib/hooks';
+import { loadConfig } from '../../lib/main';
 import { parentCall } from '../../lib/parentCall';
+import { loadMessages } from '../../lib/room';
 import Triggers from '../../lib/triggers';
 import { StoreContext } from '../../store';
 
@@ -24,7 +27,7 @@ export type ScreenContextValue = {
 	onEnableNotifications: () => unknown;
 	onDisableNotifications: () => unknown;
 	onMinimize: () => unknown;
-	onRestore: () => unknown;
+	onRestore: () => Promise<void>;
 	onOpenWindow: () => unknown;
 	onDismissAlert: () => unknown;
 	dismissNotification: () => void;
@@ -55,7 +58,7 @@ export const ScreenContext = createContext<ScreenContextValue>({
 	onEnableNotifications: () => undefined,
 	onDisableNotifications: () => undefined,
 	onMinimize: () => undefined,
-	onRestore: () => undefined,
+	onRestore: async () => undefined,
 	onOpenWindow: () => undefined,
 } as ScreenContextValue);
 
@@ -74,7 +77,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 	} = useContext(StoreContext);
 	const { department, name, email } = iframe.guest || {};
 	const { color, position: configPosition, background } = config.theme || {};
-	const { livechatLogo, hideWatermark = false } = config.settings || {};
+	const { livechatLogo, hideWatermark = false, registrationForm } = config.settings || {};
 
 	const {
 		color: customColor,
@@ -109,26 +112,23 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		dispatch({ minimized: true });
 	};
 
-	const handleRestore = () => {
+	const handleRestore = async () => {
 		parentCall('restoreWindow');
-		const dispatchRestore = () => dispatch({ minimized: false, undocked: false });
-
-		const dispatchEvent = () => {
-			dispatchRestore();
-			store.off('storageSynced', dispatchEvent);
-		};
 
 		if (undocked) {
-			store.on('storageSynced', dispatchEvent);
-		} else {
-			dispatchRestore();
+			// Cross-tab communication will not work here due cross origin (usually the widget parent and the RC server will have different urls)
+			// So we manually update the widget to get the messages and actions done while undocked
+			await loadConfig();
+			await loadMessages();
 		}
+
+		dispatch({ minimized: false, undocked: false });
 
 		Triggers.callbacks?.emit('chat-opened-by-visitor');
 	};
 
 	const handleOpenWindow = () => {
-		parentCall('openPopout');
+		parentCall('openPopout', store.token);
 		dispatch({ undocked: true, minimized: false });
 	};
 
@@ -138,15 +138,26 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 
 	const dismissNotification = () => !isActiveSession();
 
-	const checkPoppedOutWindow = useCallback(() => {
+	const checkPoppedOutWindow = useCallback(async () => {
 		// Checking if the window is poppedOut and setting parent minimized if yes for the restore purpose
 		const poppedOut = parse(window.location.search).mode === 'popout';
+		const { token = '' } = parse(window.location.search);
 		setPopedOut(poppedOut);
 
 		if (poppedOut) {
-			dispatch({ minimized: false });
+			dispatch({ minimized: false, undocked: true });
 		}
-	}, [dispatch]);
+
+		if (token && typeof token === 'string') {
+			if (registrationForm && !name && !email) {
+				dispatch({ token });
+				return;
+			}
+			await evaluateChangesAndLoadConfigByFields(async () => {
+				await createOrUpdateGuest({ token });
+			});
+		}
+	}, [dispatch, email, name, registrationForm]);
 
 	useEffect(() => {
 		checkPoppedOutWindow();
@@ -167,7 +178,7 @@ export const ScreenProvider: FunctionalComponent = ({ children }) => {
 		notificationsEnabled: sound?.enabled,
 		minimized: !poppedOut && (minimized || undocked),
 		expanded: !minimized && expanded,
-		windowed: !minimized && poppedOut,
+		windowed: poppedOut,
 		livechatLogo,
 		hideWatermark,
 		sound,

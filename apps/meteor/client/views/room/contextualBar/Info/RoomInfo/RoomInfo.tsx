@@ -2,9 +2,10 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Callout, IconButton } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import RoomInfoActions from './RoomInfoActions';
 import {
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
@@ -28,7 +29,6 @@ import MarkdownText from '../../../../../components/MarkdownText';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 import { useRoomActions } from '../hooks/useRoomActions';
 import { useSplitRoomActions } from '../hooks/useSplitRoomActions';
-import RoomInfoActions from './RoomInfoActions';
 
 type RoomInfoProps = {
 	room: IRoom;
@@ -41,7 +41,7 @@ type RoomInfoProps = {
 };
 
 const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onClickEdit, resetState }: RoomInfoProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { name, fname, description, topic, archived, broadcast, announcement } = room;
 	const roomTitle = fname || name;
 	const isDiscussion = 'prid' in room;

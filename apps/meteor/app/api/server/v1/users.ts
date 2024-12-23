@@ -155,7 +155,7 @@ API.v1.addRoute(
 				: {
 						twoFactorCode: userData.typedPassword,
 						twoFactorMethod: 'password',
-				  };
+					};
 
 			await Meteor.callAsync('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions);
 
@@ -235,7 +235,7 @@ API.v1.addRoute(
 			})();
 
 			if (!user) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			if (this.bodyParams.avatarUrl) {
@@ -324,13 +324,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.delete',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['delete-user'] },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'delete-user'))) {
-				return API.v1.unauthorized();
-			}
-
 			const user = await getUserFromParams(this.bodyParams);
 			const { confirmRelinquish = false } = this.bodyParams;
 
@@ -365,16 +361,15 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.setActiveStatus',
-	{ authRequired: true, validateParams: isUserSetActiveStatusParamsPOST },
+	{
+		authRequired: true,
+		validateParams: isUserSetActiveStatusParamsPOST,
+		permissionsRequired: {
+			POST: { permissions: ['edit-other-user-active-status', 'manage-moderation-actions'], operation: 'hasAny' },
+		},
+	},
 	{
 		async post() {
-			if (
-				!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status')) &&
-				!(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
-			) {
-				return API.v1.unauthorized();
-			}
-
 			const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
 			await Meteor.callAsync('setUserActiveStatus', userId, activeStatus, confirmRelinquish);
 
@@ -391,13 +386,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.deactivateIdle',
-	{ authRequired: true, validateParams: isUserDeactivateIdleParamsPOST },
+	{ authRequired: true, validateParams: isUserDeactivateIdleParamsPOST, permissionsRequired: ['edit-other-user-active-status'] },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status'))) {
-				return API.v1.unauthorized();
-			}
-
 			const { daysIdle, role = 'user' } = this.bodyParams;
 
 			const lastLoggedIn = new Date();
@@ -418,8 +409,6 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isUsersInfoParamsGetProps },
 	{
 		async get() {
-			const { fields } = await this.parseJsonQuery();
-
 			const searchTerms: [string, 'id' | 'username' | 'importId'] | false =
 				('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
 				('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
@@ -435,7 +424,7 @@ API.v1.addRoute(
 				return API.v1.failure('User not found.');
 			}
 			const myself = user._id === this.userId;
-			if (fields.userRooms === 1 && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
+			if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
 				return API.v1.success({
 					user: {
 						...user,
@@ -469,18 +458,15 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		queryOperations: ['$or', '$and'],
+		permissionsRequired: ['view-d-room'],
 	},
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-d-room'))) {
-				return API.v1.unauthorized();
-			}
-
 			if (
 				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
 				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
 			) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -526,7 +512,7 @@ API.v1.addRoute(
 							{
 								$limit: count,
 							},
-					  ]
+						]
 					: [];
 
 			const result = await Users.col
@@ -589,7 +575,7 @@ API.v1.addRoute(
 				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
 				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
 			) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -726,7 +712,7 @@ API.v1.addRoute(
 
 			const data = await generateAccessToken(this.userId, user._id);
 
-			return data ? API.v1.success({ data }) : API.v1.unauthorized();
+			return data ? API.v1.success({ data }) : API.v1.forbidden();
 		},
 	},
 );
@@ -835,13 +821,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.getPersonalAccessTokens',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['create-personal-access-tokens'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'create-personal-access-tokens'))) {
-				throw new Meteor.Error('not-authorized', 'Not Authorized');
-			}
-
 			const user = (await Users.getLoginTokensByUserId(this.userId).toArray())[0] as unknown as IUser | undefined;
 
 			const isPersonalAccessToken = (loginToken: ILoginToken | IPersonalAccessToken): loginToken is IPersonalAccessToken =>
@@ -1219,7 +1201,7 @@ API.v1.addRoute(
 			const userId = this.bodyParams.userId || this.userId;
 
 			if (userId !== this.userId && !(await hasPermissionAsync(this.userId, 'logout-other-user'))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			// this method logs the user out automatically, if successful returns 1, otherwise 0
@@ -1296,7 +1278,7 @@ API.v1.addRoute(
 			})();
 
 			if (!user) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			// TODO refactor to not update the user twice (one inside of `setStatusText` and then later just the status + statusDefault)

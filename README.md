@@ -49,7 +49,7 @@ Free for 30 days. Afterward, choose between continuing to host on our secure clo
 
 You can follow these instructions to setup a dev environment:
 
-- Install **Node 14.x (LTS)** either [manually](https://nodejs.org/dist/latest-v14.x/) or using a tool like [nvm](https://github.com/creationix/nvm) or [volta](https://volta.sh/) (recommended)
+- Install **Node 20.x (LTS)** either [manually](https://nodejs.org/dist/latest-v20.x/) or using a tool like [nvm](https://github.com/creationix/nvm) or [volta](https://volta.sh/) (recommended)
 - Install **Meteor** ([version here](apps/meteor/.meteor/release)): https://docs.meteor.com/about/install.html
 - Install **yarn**: https://yarnpkg.com/getting-started/install
 - Install **Deno 1.x**: https://docs.deno.com/runtime/fundamentals/installation/
@@ -88,7 +88,7 @@ yarn turbo run ms
 
 After initialized, you can access the server at http://localhost:4000
 
-> ⚠️ Check more detailed information in the [Rocket.Chat Environment Setup](https://developer.rocket.chat/rocket.chat/rocket-chat-environment-setup) guide
+> ⚠️ Check more detailed information in the [Rocket.Chat Environment Setup](https://developer.rocket.chat/docs/server-environment-setup) guide
 
 # 💻 Installation
 

@@ -1,12 +1,11 @@
 import { Messages, SmarshHistory, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-import moment from 'moment';
-import 'moment-timezone';
+import moment from 'moment-timezone';
 
+import { sendEmail } from './sendEmail';
 import { i18n } from '../../../../server/lib/i18n';
 import { settings } from '../../../settings/server';
 import { MessageTypes } from '../../../ui-utils/server';
-import { sendEmail } from './sendEmail';
 
 const start =
 	'<table style="width: 100%; border: 1px solid; border-collapse: collapse; table-layout: fixed; margin-top: 10px; font-size: 12px; word-break: break-word;"><tbody>';

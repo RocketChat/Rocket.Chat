@@ -9,6 +9,8 @@ type ContextualbarResizableProps = { defaultWidth: string } & ComponentProps<typ
 
 const ContextualbarResizable = ({ defaultWidth, children, ...props }: ContextualbarResizableProps) => {
 	const [contextualbarWidth, setContextualbarWidth] = useLocalStorage('contextualbarWidth', defaultWidth);
+	const [expanded] = useLocalStorage('expand-threads', false);
+
 	const handleStyle = css`
 		height: 100%;
 		&:hover {
@@ -29,7 +31,7 @@ const ContextualbarResizable = ({ defaultWidth, children, ...props }: Contextual
 			minWidth={defaultWidth}
 			maxWidth='50%'
 			minHeight='100%'
-			handleStyles={{ left: { width: '3px', zIndex: '5', left: 0 } }}
+			handleStyles={{ left: { width: '3px', zIndex: expanded ? 5 : 99, left: 0 } }}
 			handleComponent={{ left: <Box className={handleStyle} /> }}
 		>
 			{children}

@@ -19,7 +19,7 @@ type HeaderProps = {
 const Header = ({ room }: HeaderProps): ReactElement | null => {
 	const { isMobile, isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
 	const encrypted = Boolean(room.encrypted);
-	const unencryptedMessagesAllowed = useSetting<boolean>('E2E_Allow_Unencrypted_Messages');
+	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const shouldDisplayE2EESetup = encrypted && !unencryptedMessagesAllowed;
 
 	const slots = useMemo(

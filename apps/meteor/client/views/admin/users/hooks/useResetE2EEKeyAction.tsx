@@ -36,6 +36,6 @@ export const useResetE2EEKeyAction = (userId: IUser['_id']): Action | undefined 
 				icon: 'key',
 				label: t('Reset_E2E_Key'),
 				action: confirmResetE2EEKey,
-		  }
+			}
 		: undefined;
 };

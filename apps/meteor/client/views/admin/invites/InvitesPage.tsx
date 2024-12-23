@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
+import InviteRow from './InviteRow';
 import GenericModal from '../../../components/GenericModal';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
@@ -15,7 +16,6 @@ import {
 	GenericTableLoadingTable,
 } from '../../../components/GenericTable';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
-import InviteRow from './InviteRow';
 
 const InvitesPage = (): ReactElement => {
 	const t = useTranslation();

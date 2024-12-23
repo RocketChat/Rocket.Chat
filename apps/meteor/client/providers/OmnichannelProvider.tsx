@@ -1,8 +1,9 @@
-import type {
-	IOmnichannelAgent,
-	OmichannelRoutingConfig,
+import {
+	type IOmnichannelAgent,
+	type OmichannelRoutingConfig,
 	OmnichannelSortingMechanismSettingType,
-	ILivechatInquiryRecord,
+	type ILivechatInquiryRecord,
+	LivechatInquiryStatus,
 } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useUser, useSetting, usePermission, useMethod, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
@@ -18,6 +19,7 @@ import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
 import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
+import { useOmnichannelContinuousSoundNotification } from '../hooks/useOmnichannelContinuousSoundNotification';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { useShouldPreventAction } from '../hooks/useShouldPreventAction';
 
@@ -41,11 +43,16 @@ type OmnichannelProviderProps = {
 };
 
 const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
-	const omniChannelEnabled = useSetting('Livechat_enabled') as boolean;
-	const omnichannelRouting = useSetting('Livechat_Routing_Method');
-	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link') as boolean;
-	const omnichannelPoolMaxIncoming = useSetting<number>('Livechat_guest_pool_max_number_incoming_livechats_displayed') ?? 0;
-	const omnichannelSortingMechanism = useSetting('Omnichannel_sorting_mechanism') as OmnichannelSortingMechanismSettingType;
+	const omniChannelEnabled = useSetting('Livechat_enabled', true);
+	const omnichannelRouting = useSetting('Livechat_Routing_Method', 'Auto_Selection');
+	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link', false);
+	const omnichannelPoolMaxIncoming = useSetting('Livechat_guest_pool_max_number_incoming_livechats_displayed', 0);
+	const omnichannelSortingMechanism = useSetting<OmnichannelSortingMechanismSettingType>(
+		'Omnichannel_sorting_mechanism',
+		OmnichannelSortingMechanismSettingType.Timestamp,
+	);
+
+	const lastQueueSize = useRef(0);
 
 	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
 	const hasAccess = usePermission('view-l-room');
@@ -58,7 +65,6 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	const getRoutingConfig = useMethod('livechat:getRoutingConfig');
 
 	const [routeConfig, setRouteConfig] = useSafely(useState<OmichannelRoutingConfig | undefined>(undefined));
-	const [queueNotification, setQueueNotification] = useState(new Set());
 
 	const accessible = hasAccess && omniChannelEnabled;
 	const iceServersSetting: any = useSetting('WebRTC_Servers');
@@ -137,7 +143,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 			}
 
 			return LivechatInquiry.find(
-				{ status: 'queued' },
+				{ status: LivechatInquiryStatus.QUEUED },
 				{
 					sort: getOmniChatSortQuery(omnichannelSortingMechanism),
 					limit: omnichannelPoolMaxIncoming,
@@ -146,13 +152,14 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		}, [manuallySelected, omnichannelPoolMaxIncoming, omnichannelSortingMechanism]),
 	);
 
-	queue?.map(({ rid }) => {
-		if (queueNotification.has(rid)) {
-			return;
+	useEffect(() => {
+		if (lastQueueSize.current < (queue?.length ?? 0)) {
+			KonchatNotification.newRoom();
 		}
-		setQueueNotification((prev) => new Set([...prev, rid]));
-		return KonchatNotification.newRoom(rid);
-	});
+		lastQueueSize.current = queue?.length ?? 0;
+	}, [queue?.length]);
+
+	useOmnichannelContinuousSoundNotification(queue ?? []);
 
 	const contextValue = useMemo<OmnichannelContextValue>(() => {
 		if (!enabled) {
@@ -190,7 +197,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 				? {
 						enabled: true,
 						queue,
-				  }
+					}
 				: { enabled: false },
 			showOmnichannelQueueLink: showOmnichannelQueueLink && !!agentAvailable,
 			livechatPriorities,

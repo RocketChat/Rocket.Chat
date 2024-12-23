@@ -6,7 +6,10 @@ import type { IUser } from '../../definition/users';
 import type { AppBridges } from '../bridges';
 
 export class LivechatCreator implements ILivechatCreator {
-    constructor(private readonly bridges: AppBridges, private readonly appId: string) {}
+    constructor(
+        private readonly bridges: AppBridges,
+        private readonly appId: string,
+    ) {}
 
     public createRoom(visitor: IVisitor, agent: IUser, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {
         return this.bridges.getLivechatBridge().doCreateRoom(visitor, agent, this.appId, extraParams);

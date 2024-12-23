@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 export type BaseAvatarProps = Omit<AvatarProps, 'is'>;
 
-const BaseAvatar = ({ url, onLoad, onError, ...props }: BaseAvatarProps) => {
+const BaseAvatar = ({ url, onLoad, onError, size, ...props }: BaseAvatarProps) => {
 	const [unloaded, setUnloaded] = useState(false);
 	const prevUrl = usePrevious(url);
 
@@ -21,10 +21,10 @@ const BaseAvatar = ({ url, onLoad, onError, ...props }: BaseAvatarProps) => {
 	});
 
 	if (unloaded && url === prevUrl) {
-		return <Skeleton aria-hidden='true' variant='rect' {...props} />;
+		return <Skeleton aria-hidden='true' variant='rect' width={size} height={size} {...props} />;
 	}
 
-	return <Avatar aria-hidden='true' onLoad={handleLoad} onError={handleError} url={url} {...props} />;
+	return <Avatar aria-hidden='true' onLoad={handleLoad} onError={handleError} url={url} size={size} {...props} />;
 };
 
 export default BaseAvatar;

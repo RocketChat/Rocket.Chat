@@ -6,14 +6,14 @@ import { useMethod, useToastMessageDispatch, useTranslation, useSetModal } from 
 import type { ReactElement, MouseEvent } from 'react';
 import React, { useState, useEffect, useCallback } from 'react';
 
-import { fileUploadIsValidContentType } from '../../../../../app/utils/client';
-import FilterByText from '../../../../components/FilterByText';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import FileUploadModal from '../../modals/FileUploadModal';
 import FilePickerBreadcrumbs from './FilePickerBreadcrumbs';
 import WebdavFilePickerGrid from './WebdavFilePickerGrid';
 import WebdavFilePickerTable from './WebdavFilePickerTable';
 import { sortWebdavNodes } from './lib/sortWebdavNodes';
+import { fileUploadIsValidContentType } from '../../../../../app/utils/client';
+import FilterByText from '../../../../components/FilterByText';
+import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import FileUploadModal from '../../modals/FileUploadModal';
 
 export type WebdavSortOptions = 'name' | 'size' | 'dataModified';
 
@@ -36,7 +36,7 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 	const [parentFolders, setParentFolders] = useState<string[]>([]);
 	const [webdavNodes, setWebdavNodes] = useState<IWebdavNode[]>([]);
 	const [filterText, setFilterText] = useState('');
-	const debouncedFilter = useDebouncedValue(filterText, 500);
+	const debouncedFilter = useDebouncedValue('', 500);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const showFilePreviews = useMutableCallback(async (accountId, nodes) => {
@@ -196,7 +196,7 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 					</Box>
 				</Box>
 				<Box display='flex' flexDirection='column'>
-					<FilterByText onChange={setFilterText}>
+					<FilterByText value={filterText} onChange={(event) => setFilterText(event.target.value)}>
 						{typeView === 'grid' && (
 							<Select value={sortBy} onChange={(value): void => handleSort(value as WebdavSortOptions)} options={options} />
 						)}

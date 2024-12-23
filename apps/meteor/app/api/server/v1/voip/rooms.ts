@@ -171,7 +171,7 @@ API.v1.addRoute(
 			const hasAgentAccess =
 				(await hasPermissionAsync(this.userId, 'view-l-room')) && agents?.includes(this.userId) && agents?.length === 1;
 			if (!hasAdminAccess && !hasAgentAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const createdAt = parseAndValidate('createdAt', createdAtParam);

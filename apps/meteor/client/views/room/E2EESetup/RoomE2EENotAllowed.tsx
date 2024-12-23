@@ -10,9 +10,10 @@ import {
 	StatesTitle,
 } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const DOCS_URL = 'https://go.rocket.chat/i/e2ee-guide';
 
@@ -26,7 +27,7 @@ type RoomE2EENotAllowedProps = {
 
 const RoomE2EENotAllowed = ({ title, subTitle, action, btnText, icon }: RoomE2EENotAllowedProps): ReactElement => {
 	const router = useRouter();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const handleGoHomeClick = () => {
 		router.navigate('/home');
 	};

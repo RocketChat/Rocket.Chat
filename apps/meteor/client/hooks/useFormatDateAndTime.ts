@@ -9,7 +9,7 @@ type UseFormatDateAndTimeParams = {
 
 export const useFormatDateAndTime = ({ withSeconds }: UseFormatDateAndTimeParams = {}): ((input: MomentInput) => string) => {
 	const clockMode = useUserPreference('clockMode');
-	const format = useSetting('Message_TimeAndDateFormat') as string;
+	const format = useSetting('Message_TimeAndDateFormat', 'LLL');
 
 	return useCallback(
 		(time) => {

@@ -74,11 +74,9 @@ export class FederationHooks {
 		callbacks.add(
 			'federation.beforeCreateDirectMessage',
 			async (members: IUser[]): Promise<void> => {
-				if (!members) {
+				if (!members || !isFederationEnabled()) {
 					return;
 				}
-
-				throwIfFederationNotEnabledOrNotReady();
 
 				await callback(members);
 			},

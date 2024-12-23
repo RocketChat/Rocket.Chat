@@ -1,9 +1,15 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
-import { isChatReportMessageProps, isChatGetURLPreviewProps } from '@rocket.chat/rest-typings';
+import {
+	isChatReportMessageProps,
+	isChatGetURLPreviewProps,
+	isChatUpdateProps,
+	isChatGetThreadsListProps,
+	isChatDeleteProps,
+	isChatSyncMessagesProps,
+} from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
@@ -15,6 +21,8 @@ import { deleteMessageValidatingPermission } from '../../../lib/server/functions
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage';
+import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
+import { pinMessage } from '../../../message-pin/server/pinMessage';
 import { OEmbed } from '../../../oembed/server/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { settings } from '../../../settings/server';
@@ -26,18 +34,9 @@ import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } f
 
 API.v1.addRoute(
 	'chat.delete',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatDeleteProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					msgId: String,
-					roomId: String,
-					asUser: Match.Maybe(Boolean),
-				}),
-			);
-
 			const msg = await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
 
 			if (!msg) {
@@ -76,22 +75,32 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.syncMessages',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatSyncMessagesProps },
 	{
 		async get() {
-			const { roomId, lastUpdate } = this.queryParams;
+			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams;
 
 			if (!roomId) {
-				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
+				throw new Meteor.Error('error-param-required', 'The required "roomId" query param is missing');
 			}
 
-			if (!lastUpdate) {
-				throw new Meteor.Error('error-lastUpdate-param-not-provided', 'The required "lastUpdate" query param is missing.');
-			} else if (isNaN(Date.parse(lastUpdate))) {
-				throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
+			if (!lastUpdate && !type) {
+				throw new Meteor.Error('error-param-required', 'The "type" or "lastUpdate" parameters must be provided');
 			}
 
-			const result = await Meteor.callAsync('messages/get', roomId, { lastUpdate: new Date(lastUpdate) });
+			if (lastUpdate && isNaN(Date.parse(lastUpdate))) {
+				throw new Meteor.Error('error-lastUpdate-param-invalid', 'The "lastUpdate" query parameter must be a valid date');
+			}
+
+			const getMessagesQuery = {
+				...(lastUpdate && { lastUpdate: new Date(lastUpdate) }),
+				...(next && { next }),
+				...(previous && { previous }),
+				...(count && { count }),
+				...(type && { type }),
+			};
+
+			const result = await Meteor.callAsync('messages/get', roomId, getMessagesQuery);
 
 			if (!result) {
 				return API.v1.failure();
@@ -99,8 +108,9 @@ API.v1.addRoute(
 
 			return API.v1.success({
 				result: {
-					updated: await normalizeMessagesForUser(result.updated, this.userId),
-					deleted: result.deleted,
+					...(result.updated && { updated: await normalizeMessagesForUser(result.updated, this.userId) }),
+					...(result.deleted && { deleted: result.deleted }),
+					...(result.cursor && { cursor: result.cursor }),
 				},
 			});
 		},
@@ -148,7 +158,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			const pinnedMessage = await Meteor.callAsync('pinMessage', msg);
+			const pinnedMessage = await pinMessage(msg, this.userId);
 
 			const [message] = await normalizeMessagesForUser([pinnedMessage], this.userId);
 
@@ -164,7 +174,22 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const messageReturn = (await processWebhookMessage(this.bodyParams, this.user))[0];
+			const { text, attachments } = this.bodyParams;
+			const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
+
+			if (text && text.length > maxAllowedSize) {
+				return API.v1.failure('error-message-size-exceeded');
+			}
+
+			if (attachments && attachments.length > 0) {
+				for (const attachment of attachments) {
+					if (attachment.text && attachment.text.length > maxAllowedSize) {
+						return API.v1.failure('error-message-size-exceeded');
+					}
+				}
+			}
+
+			const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
 
 			if (!messageReturn) {
 				return API.v1.failure('unknown-error');
@@ -222,7 +247,9 @@ API.v1.addRoute(
 				throw new Error("Cannot send system messages using 'chat.sendMessage'");
 			}
 
-			const sent = await executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, this.bodyParams.previewUrls);
+			const sent = await applyAirGappedRestrictionsValidation(() =>
+				executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, this.bodyParams.previewUrls),
+			);
 			const [message] = await normalizeMessagesForUser([sent], this.userId);
 
 			return API.v1.success({
@@ -308,20 +335,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.update',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatUpdateProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					roomId: String,
-					msgId: String,
-					text: String, // Using text to be consistant with chat.postMessage
-					customFields: Match.Maybe(Object),
-					previewUrls: Match.Maybe([String]),
-				}),
-			);
-
 			const msg = await Messages.findOneById(this.bodyParams.msgId);
 
 			// Ensure the message exists
@@ -333,16 +349,20 @@ API.v1.addRoute(
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
 
+			const msgFromBody = this.bodyParams.text;
+
 			// Permission checks are already done in the updateMessage method, so no need to duplicate them
-			await executeUpdateMessage(
-				this.userId,
-				{
-					_id: msg._id,
-					msg: this.bodyParams.text,
-					rid: msg.rid,
-					customFields: this.bodyParams.customFields as Record<string, any> | undefined,
-				},
-				this.bodyParams.previewUrls,
+			await applyAirGappedRestrictionsValidation(() =>
+				executeUpdateMessage(
+					this.userId,
+					{
+						_id: msg._id,
+						msg: msgFromBody,
+						rid: msg.rid,
+						customFields: this.bodyParams.customFields as Record<string, any> | undefined,
+					},
+					this.bodyParams.previewUrls,
+				),
 			);
 
 			const updatedMessage = await Messages.findOneById(msg._id);
@@ -504,13 +524,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getThreadsList',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatGetThreadsListProps },
 	{
 		async get() {
 			const { rid, type, text } = this.queryParams;
-			check(rid, String);
-			check(type, Match.Maybe(String));
-			check(text, Match.Maybe(String));
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
@@ -533,7 +550,7 @@ API.v1.addRoute(
 			};
 
 			const threadQuery = { ...query, ...typeThread, rid: room._id, tcount: { $exists: true } };
-			const { cursor, totalCount } = await Messages.findPaginated(threadQuery, {
+			const { cursor, totalCount } = await Messages.findPaginated<IThreadMainMessage>(threadQuery, {
 				sort: sort || { tlm: -1 },
 				skip: offset,
 				limit: count,

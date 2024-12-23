@@ -33,6 +33,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
+import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
+import PasswordFieldSkeleton from './PasswordFieldSkeleton';
+import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { validateEmail } from '../../../../lib/emailValidator';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
@@ -40,10 +44,6 @@ import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
-import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
-import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
-import PasswordFieldSkeleton from './PasswordFieldSkeleton';
-import { useSmtpQuery } from './hooks/useSmtpQuery';
 
 type AdminUserFormProps = {
 	userData?: Serialized<IUser>;
@@ -94,7 +94,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const queryClient = useQueryClient();
 
 	const customFieldsMetadata = useAccountsCustomFields();
-	const defaultRoles = useSetting<string>('Accounts_Registration_Users_Default_Roles') || '';
+	const defaultRoles = useSetting('Accounts_Registration_Users_Default_Roles', '');
 	const isVerificationNeeded = useSetting('Accounts_EmailVerification');
 	const defaultUserRoles = parseCSV(defaultRoles);
 
@@ -119,7 +119,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		mode: 'onBlur',
 	});
 
-	const { avatar, username, setRandomPassword, password } = watch();
+	const { avatar, username, setRandomPassword, password, name: userFullName } = watch();
 
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');
@@ -208,6 +208,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										username={username}
 										etag={userData?.avatarETag}
 										setAvatarObj={onChange}
+										name={userFullName}
 									/>
 								)}
 							/>

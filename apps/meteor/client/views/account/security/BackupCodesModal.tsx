@@ -1,6 +1,6 @@
 import { Box, Button, Modal } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import TextCopy from '../../../components/TextCopy';
 
@@ -10,7 +10,7 @@ type BackupCodesModalProps = {
 };
 
 const BackupCodesModal = ({ codes, onClose, ...props }: BackupCodesModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const codesText = useMemo(() => codes.join(' '), [codes]);
 

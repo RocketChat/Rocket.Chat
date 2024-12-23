@@ -113,7 +113,7 @@ const AssignExtensionModal = ({ defaultExtension, defaultUsername, onClose }: As
 					</Field>
 
 					<Field>
-						<FieldLabel htmlFor={freeExtensionNumberId}>{t('Free_Extension_Numbers')}</FieldLabel>
+						<FieldLabel htmlFor={freeExtensionNumberId}>{t('Available_extensions')}</FieldLabel>
 						<FieldRow>
 							<Controller
 								control={control}

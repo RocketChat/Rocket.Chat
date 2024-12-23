@@ -5,10 +5,20 @@ import type {
 	IUser,
 	IRoom,
 	RocketChatRecordDeleted,
+	IVoIPVideoConference,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
-import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, IndexDescription, Collection, Db, FindOptions } from 'mongodb';
+import type {
+	FindCursor,
+	UpdateOptions,
+	UpdateFilter,
+	UpdateResult,
+	IndexDescription,
+	Collection,
+	Db,
+	CountDocumentsOptions,
+} from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -63,15 +73,15 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	public async countByTypeAndStatus(
 		type: VideoConference['type'],
 		status: VideoConferenceStatus,
-		options: FindOptions<VideoConference>,
+		options: CountDocumentsOptions,
 	): Promise<number> {
-		return this.find(
+		return this.countDocuments(
 			{
 				type,
 				status,
 			},
 			options,
-		).count();
+		);
 	}
 
 	public async createDirect({
@@ -125,6 +135,13 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		};
 
 		return (await this.insertOne(call)).insertedId;
+	}
+
+	public async createVoIP(call: InsertionModel<IVoIPVideoConference>): Promise<string | undefined> {
+		const { externalId, ...data } = call;
+
+		const doc = await this.findOneAndUpdate({ externalId }, { $set: data }, { upsert: true, returnDocument: 'after' });
+		return doc.value?._id;
 	}
 
 	public updateOneById(
@@ -181,12 +198,12 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 						$set: {
 							providerData,
 						},
-				  }
+					}
 				: {
 						$unset: {
 							providerData: 1 as const,
 						},
-				  }),
+					}),
 		});
 	}
 

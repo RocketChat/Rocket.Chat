@@ -13,6 +13,8 @@ import type {
 	IExportOperationsModel,
 	IFederationKeysModel,
 	IFederationServersModel,
+	IFreeSwitchCallModel,
+	IFreeSwitchEventModel,
 	IInstanceStatusModel,
 	IIntegrationHistoryModel,
 	IIntegrationsModel,
@@ -79,6 +81,7 @@ import type {
 	ICronHistoryModel,
 	IMigrationsModel,
 	IModerationReportsModel,
+	IWorkspaceCredentialsModel,
 } from '@rocket.chat/model-typings';
 
 import { proxify } from './proxify';
@@ -110,6 +113,8 @@ export const ExportOperations = proxify<IExportOperationsModel>('IExportOperatio
 export const FederationServers = proxify<IFederationServersModel>('IFederationServersModel');
 export const FederationKeys = proxify<IFederationKeysModel>('IFederationKeysModel');
 export const FederationRoomEvents = proxify<IFederationRoomEventsModel>('IFederationRoomEventsModel');
+export const FreeSwitchCall = proxify<IFreeSwitchCallModel>('IFreeSwitchCallModel');
+export const FreeSwitchEvent = proxify<IFreeSwitchEventModel>('IFreeSwitchEventModel');
 export const ImportData = proxify<IImportDataModel>('IImportDataModel');
 export const Imports = proxify<IImportsModel>('IImportsModel');
 export const InstanceStatus = proxify<IInstanceStatusModel>('IInstanceStatusModel');
@@ -173,3 +178,4 @@ export const AuditLog = proxify<IAuditLogModel>('IAuditLogModel');
 export const CronHistory = proxify<ICronHistoryModel>('ICronHistoryModel');
 export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
+export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorkspaceCredentialsModel');

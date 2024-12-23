@@ -4,9 +4,9 @@ import { useDocumentTitle } from '@rocket.chat/ui-client';
 import type { KeyboardEvent } from 'react';
 import React from 'react';
 
+import HeaderIconWithRoom from './HeaderIconWithRoom';
 import { HeaderTitle, HeaderTitleButton } from '../../../components/Header';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
-import HeaderIconWithRoom from './HeaderIconWithRoom';
 
 type RoomTitleProps = { room: IRoom };
 

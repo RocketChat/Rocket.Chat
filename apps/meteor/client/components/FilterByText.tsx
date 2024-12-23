@@ -1,27 +1,22 @@
 import { Box, Icon, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, FormEvent, HTMLAttributes } from 'react';
-import React, { forwardRef, memo, useCallback, useState } from 'react';
+import type { ChangeEvent, ComponentPropsWithoutRef, FormEvent } from 'react';
+import React, { forwardRef, memo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
-type FilterByTextProps = {
-	onChange: (filter: string) => void;
+// TODO: consider changing the type of TextInput's `onChange` to (event: ChangeEvent<HTMLInputElement>) => void
+type FilterByTextProps = Omit<ComponentPropsWithoutRef<typeof TextInput>, 'onChange'> & {
 	shouldAutoFocus?: boolean;
-} & Omit<HTMLAttributes<HTMLInputElement>, 'is' | 'onChange'>;
+	onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+};
 
 const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function FilterByText(
-	{ placeholder, onChange: setFilter, shouldAutoFocus = false, children, ...props },
+	{ placeholder, shouldAutoFocus = false, children, ...props },
 	ref,
 ) {
-	const t = useTranslation();
-	const [text, setText] = useState('');
+	const { t } = useTranslation();
 	const autoFocusRef = useAutoFocus(shouldAutoFocus);
 	const mergedRefs = useMergedRefs(ref, autoFocusRef);
-
-	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-		setText(event.currentTarget.value);
-		setFilter(event.currentTarget.value);
-	};
 
 	const handleFormSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -35,8 +30,6 @@ const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function Fi
 					placeholder={placeholder ?? t('Search')}
 					ref={mergedRefs}
 					addon={<Icon name='magnifier' size='x20' />}
-					onChange={handleInputChange}
-					value={text}
 					flexGrow={2}
 					minWidth='x220'
 					aria-label={placeholder ?? t('Search')}

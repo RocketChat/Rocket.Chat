@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import { isExternal, getBaseURI } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import dompurify from 'dompurify';
 import { marked } from 'marked';
 import type { ComponentProps } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { renderMessageEmoji } from '../lib/utils/renderMessageEmoji';
 
@@ -23,10 +23,10 @@ const inlineWithoutBreaks = new marked.Renderer();
 const walkTokens = (token: marked.Token) => {
 	const boldPattern = /^\*[^*]+\*$|^\*\*[^*]+\*\*$/;
 	const italicPattern = /^__(?=\S)([\s\S]*?\S)__(?!_)|^_(?=\S)([\s\S]*?\S)_(?!_)/;
-	if (boldPattern.test(token.raw)) {
-		token.type = 'strong';
-	} else if (italicPattern.test(token.raw)) {
-		token.type = 'em';
+	if (boldPattern.test(token.raw) && token.type === 'em') {
+		token.type = 'strong' as 'em';
+	} else if (italicPattern.test(token.raw) && token.type === 'strong') {
+		token.type = 'em' as 'strong';
 	}
 };
 
@@ -95,7 +95,7 @@ const MarkdownText = ({
 	...props
 }: MarkdownTextProps) => {
 	const sanitizer = dompurify.sanitize;
-	const t = useTranslation();
+	const { t } = useTranslation();
 	let markedOptions: marked.MarkedOptions;
 
 	const schemes = 'http,https,notes,ftp,ftps,tel,mailto,sms,cid';
@@ -123,7 +123,7 @@ const MarkdownText = ({
 					// We are using the old emoji parser here. This could come
 					// with additional processing use, but is the workaround available right now.
 					// Should be replaced in the future with the new parser.
-					return renderMessageEmoji({ html: markedHtml });
+					return renderMessageEmoji(markedHtml);
 				}
 
 				return markedHtml;
@@ -132,7 +132,7 @@ const MarkdownText = ({
 
 		// Add a hook to make all external links open a new window
 		dompurify.addHook('afterSanitizeAttributes', (node) => {
-			if ('target' in node) {
+			if (isElement(node) && 'target' in node) {
 				const href = node.getAttribute('href') || '';
 
 				node.setAttribute('title', `${t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
@@ -156,5 +156,7 @@ const MarkdownText = ({
 		/>
 	) : null;
 };
+
+const isElement = (node: Node): node is Element => node.nodeType === Node.ELEMENT_NODE;
 
 export default MarkdownText;

@@ -33,7 +33,7 @@ import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { checkUsernameAvailability } from '../../../app/lib/server/functions/checkUsernameAvailability';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
-import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedByRoomIdAndUserId, notifyOnRoomChangedById } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
 
 export class TeamService extends ServiceClassInternal implements ITeamService {
@@ -66,7 +66,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				? []
 				: await Users.findActiveByIdsOrUsernames(members, {
 						projection: { username: 1 },
-				  }).toArray();
+					}).toArray();
 		const memberUsernames = membersResult.map(({ username }) => username);
 		const memberIds = membersResult.map(({ _id }) => _id);
 
@@ -130,6 +130,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			if (room.id) {
 				await Message.saveSystemMessage('user-converted-to-team', roomId, team.name, createdBy);
 			}
+
+			void notifyOnRoomChangedById(roomId, 'inserted');
 
 			return {
 				_id: teamId,
@@ -251,12 +253,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const results: ITeamInfo[] = [];
 		for await (const record of records) {
-			const rooms = Rooms.findByTeamId(record._id);
-			const users = TeamMember.findByTeamId(record._id);
 			results.push({
 				...record,
-				rooms: await rooms.count(),
-				numberOfUsers: await users.count(),
+				rooms: await Rooms.countByTeamId(record._id),
+				numberOfUsers: await TeamMember.countByTeamId(record._id),
 			});
 		}
 
@@ -279,12 +279,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const results: ITeamInfo[] = [];
 		for await (const record of records) {
-			const rooms = Rooms.findByTeamId(record._id);
-			const users = TeamMember.findByTeamId(record._id);
 			results.push({
 				...record,
-				rooms: await rooms.count(),
-				numberOfUsers: await users.count(),
+				rooms: await Rooms.countByTeamId(record._id),
+				numberOfUsers: await TeamMember.countByTeamId(record._id),
 			});
 		}
 
@@ -368,6 +366,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		await Rooms.setTeamByIds(rids, teamId);
+		void notifyOnRoomChangedById(rids, 'updated');
 		return validRooms;
 	}
 
@@ -410,6 +409,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		delete room.teamId;
 		delete room.teamDefault;
 		await Rooms.unsetTeamById(room._id);
+		void notifyOnRoomChangedById(room._id, 'updated');
 
 		if (room.t === 'c') {
 			await Message.saveSystemMessage('user-removed-room-from-team', team.roomId, room.name || '', user);
@@ -593,9 +593,13 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		let teamRoomIds: string[];
 
 		if (showCanDeleteOnly) {
+			const canDeleteTeamChannel = await Authorization.hasPermission(userId, 'delete-team-channel', team.roomId);
+			const canDeleteTeamGroup = await Authorization.hasPermission(userId, 'delete-team-group', team.roomId);
 			for await (const room of teamRooms) {
-				const roomType = room.t;
-				const canDeleteRoom = await Authorization.hasPermission(userId, roomType === 'c' ? 'delete-c' : 'delete-p', room._id);
+				const isPublicRoom = room.t === 'c';
+				const canDeleteTeamRoom = isPublicRoom ? canDeleteTeamChannel : canDeleteTeamGroup;
+				const canDeleteRoom =
+					canDeleteTeamRoom && (await Authorization.hasPermission(userId, isPublicRoom ? 'delete-c' : 'delete-p', room._id));
 				room.userCanDelete = canDeleteRoom;
 			}
 
@@ -793,8 +797,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 			if (existingMember) {
 				if (existingMember.roles?.includes('owner')) {
-					const owners = TeamMember.findByTeamIdAndRole(team._id, 'owner');
-					const totalOwners = await owners.count();
+					const totalOwners = await TeamMember.countByTeamIdAndRole(team._id, 'owner');
 					if (totalOwners === 1) {
 						throw new Error('last-owner-can-not-be-removed');
 					}
@@ -811,7 +814,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 					uid !== member.userId && byUser
 						? {
 								byUser,
-						  }
+							}
 						: undefined,
 				);
 			}
@@ -998,9 +1001,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	async getStatistics(): Promise<ITeamStats> {
 		return {
-			totalTeams: await Team.find({}).count(),
-			totalRoomsInsideTeams: await Rooms.findRoomsInsideTeams().count(),
-			totalDefaultRoomsInsideTeams: await Rooms.findRoomsInsideTeams(true).count(),
+			totalTeams: await Team.estimatedDocumentCount(),
+			totalRoomsInsideTeams: await Rooms.countRoomsInsideTeams(),
+			totalDefaultRoomsInsideTeams: await Rooms.countRoomsInsideTeams(true),
 		};
 	}
 
