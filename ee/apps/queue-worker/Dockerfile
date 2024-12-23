@@ -81,7 +81,16 @@ RUN apk update && \
     apk --no-cache --virtual build-dependencies add g++ python3 make py3-setuptools && \
     yarn workspaces focus --production && \
     rm -rf /var/cache/apk/* && \
-    apk del build-dependencies
+    apk del build-dependencies && \
+    apk add --no-cache --virtual .usermod shadow && \
+    groupmod -n rocketchat nogroup && \
+    useradd -u 65533 -r -g rocketchat rocketchat && \
+    apk del .usermod && \
+    apk del build-dependencies && \
+    cd /app && \
+    chown -R rocketchat:rocketchat *
+
+USER rocketchat
 
 EXPOSE 3000 9458
 
