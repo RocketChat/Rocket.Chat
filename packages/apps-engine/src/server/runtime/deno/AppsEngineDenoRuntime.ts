@@ -88,6 +88,11 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
     private state: 'uninitialized' | 'ready' | 'invalid' | 'restarting' | 'unknown' | 'stopped';
 
+    /**
+     * Incremental id that keeps track of how many times we've spawned a process for this app
+     */
+    private spawnId = 0;
+
     private readonly debug: debug.Debugger;
 
     private readonly options = {
@@ -149,6 +154,8 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
                 denoWrapperPath,
                 '--subprocess',
                 this.appPackage.info.id,
+                '--spawnId',
+                String(this.spawnId++),
             ];
 
             // If the app doesn't request any permissions, it gets the default set of permissions, which includes "networking"
@@ -295,7 +302,8 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
             logger.info('Successfully restarted app subprocess');
         } catch (e) {
-            logger.error("Failed to restart app's subprocess", { error: e });
+            logger.error("Failed to restart app's subprocess", { error: e.message || e });
+            throw e;
         } finally {
             await this.logStorage.storeEntries(AppConsole.toStorageEntry(this.getAppId(), logger));
         }
@@ -322,18 +330,24 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     }
 
     private waitUntilReady(): Promise<void> {
+        if (this.state === 'ready') {
+            return;
+        }
+
         return new Promise((resolve, reject) => {
-            const timeoutId = setTimeout(() => reject(new Error(`[${this.getAppId()}] Timeout: app process not ready`)), this.options.timeout);
+            let timeoutId: NodeJS.Timeout;
 
-            if (this.state === 'ready') {
+            const handler = () => {
                 clearTimeout(timeoutId);
-                return resolve();
-            }
+                resolve();
+            };
 
-            this.once('ready', () => {
-                clearTimeout(timeoutId);
-                return resolve();
-            });
+            timeoutId = setTimeout(() => {
+                this.off('ready', handler);
+                reject(new Error(`[${this.getAppId()}] Timeout: app process not ready`));
+            }, this.options.timeout);
+
+            this.once('ready', handler);
         });
     }
 
@@ -637,6 +651,12 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     }
 
     private async parseError(chunk: Buffer): Promise<void> {
-        console.error('Subprocess stderr', chunk.toString());
+        try {
+            const data = JSON.parse(chunk.toString());
+
+            this.debug('Metrics received from subprocess: %o', data);
+        } catch (e) {
+            console.error('Subprocess stderr', chunk.toString());
+        }
     }
 }
