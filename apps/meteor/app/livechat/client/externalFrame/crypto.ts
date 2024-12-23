@@ -1,4 +1,4 @@
-function ab2str(buf: ArrayBuffer): string {
+function ab2str(buf: ArrayLike<number> | ArrayBuffer): string {
 	return String.fromCharCode(...new Uint16Array(buf));
 }
 

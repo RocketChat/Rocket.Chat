@@ -16,7 +16,7 @@ import { useVideoMessageAction } from './hooks/useVideoMessageAction';
 import { useWebdavActions } from './hooks/useWebdavActions';
 import { messageBox } from '../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../lib/isTruthy';
-import { useMessageboxAppsActionButtons } from '../../../../../hooks/useAppActionButtons';
+import { useMessageboxAppsActionButtons } from '../../../../../hooks/useMessageboxAppsActionButtons';
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom } from '../../../contexts/RoomContext';
 

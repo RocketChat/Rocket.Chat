@@ -386,7 +386,7 @@ API.v1.addRoute(
 				(!room.servedBy || room.servedBy._id !== this.userId) &&
 				!(await hasPermissionAsync(this.userId, 'save-others-livechat-room-info'))
 			) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			if (room.sms) {
