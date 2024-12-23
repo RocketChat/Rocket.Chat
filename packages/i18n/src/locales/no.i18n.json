@@ -4325,7 +4325,6 @@
   "onboarding.page.awaitingConfirmation.subtitle": "Vi har sendt deg en e-post til {{emailAddress}} med en bekreftelseslenke. Vennligst bekreft at sikkerhetskoden nedenfor samsvarer med den i e-posten.",
   "view-livechat-manager": "Se Livechat Manager",
   "view-livechat-manager_description": "Tillatelse til å vise andre livechat-ledere",
-  "view-livechat-rooms": "Se Livechat-rom",
   "view-livechat-rooms_description": "Tillatelse til å vise andre livechat kanaler",
   "view-logs": "Se logger",
   "view-logs_description": "Tillatelse til å vise serverloggene",
