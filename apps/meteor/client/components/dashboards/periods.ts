@@ -70,7 +70,7 @@ const periods = [
 		range: lastNDays(getLast6Months()),
 	},
 	{
-		key: 'last year',
+		key: 'this year',
 		label: label('This_year'),
 		range: lastNDays(moment().dayOfYear()),
 	},
