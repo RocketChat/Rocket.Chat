@@ -185,7 +185,7 @@ API.v1.addRoute(
 
 				// Disable custom scripts in cloud trials to prevent phishing campaigns
 				if (disableCustomScripts() && /^Custom_Script_/.test(this.urlParams._id)) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 
 				// allow special handling of particular setting types
