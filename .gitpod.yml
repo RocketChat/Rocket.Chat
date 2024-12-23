@@ -12,14 +12,7 @@ ports:
     visibility: public
     onOpen: open-preview 
 
-github:
-  prebuilds:
-    master: true
-    pullRequests: true
-    pullRequestsFromForks: true
-    addCheck: true
-    addComment: true
-    addBadge: true
+# Prebuilds configuration has been moved to Project Settings in the Gitpod dashboard.
 
 vscode:
   extensions:
