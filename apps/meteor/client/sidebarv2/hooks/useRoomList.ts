@@ -1,4 +1,4 @@
-import type { ILivechatInquiryRecord, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
@@ -28,7 +28,7 @@ const order = [
 ] as const;
 
 type useRoomListReturnType = {
-	roomList: Array<ISubscription & IRoom>;
+	roomList: Array<SubscriptionWithRoom>;
 	groupsCount: number[];
 	groupsList: TranslationKey[];
 	groupedUnreadInfo: Pick<

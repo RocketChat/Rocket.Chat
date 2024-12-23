@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/freeswitch",
-	"version": "1.0.1-rc.1",
+	"version": "1.0.1",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
