@@ -4,18 +4,23 @@ LABEL maintainer="buildmaster@rocket.chat"
 
 ENV LANG=C.UTF-8
 
-# `nobody` user/group is historically reserved for NFS.
+# `nogroup` group is historically reserved for NFS.
 # We don't use any NFS related tools in this image.
-# For the same reason of NFS using the uid, we can also use it as long as there are no conflicts in terms of running processes with the same euid (which is 1 in our case).
-# While 65534 raw uid/gid could be used, renaming nobody to rocketchat here for maximum compatibility with older debian image.
-# More info on nobody - https://wiki.ubuntu.com/nobody
+# For the same reason of NFS using the gid, we can also use it as long as there are no conflicts in terms of running processes with the same egid (which is 1 in our case).
+# While 65533 raw gid could be used, renaming nogroup to rocketchat here for maximum compatibility with older debian image.
+# More info on nobody/nogroup - https://wiki.ubuntu.com/nobody
+# Debian wiki - https://wiki.debian.org/SystemGroups
+# "daemon: Some unprivileged daemons that need to write to files on disk run as daemon.daemon (e.g., portmap, atd, probably others).
+#  Daemons that don't need to own any files can run as nobody.nogroup instead,
+#  and more complex or security conscious daemons run as dedicated users.
+#  The daemon user is also handy for locally installed daemons."
 RUN apk add --no-cache deno ttf-dejavu \
-	&& apk add --no-cache --virtual .usermod shadow \
-	&& usermod -l rocketchat nobody \
-	&& groupmod -n rocketchat nobody \
-	&& apk del .usermod
+    && apk add --no-cache --virtual .usermod shadow \
+    && groupmod -n rocketchat nogroup \
+    && useradd -u 65533 -r -g rocketchat rocketchat \
+    && apk del .usermod
 
-ADD --chown=rocketchat:rocketchat . /app
+COPY --chown=rocketchat:rocketchat . /app
 
 # needs a mongo instance - defaults to container linking with alias 'mongo'
 ENV DEPLOY_METHOD=docker \
@@ -32,20 +37,19 @@ RUN set -x \
 USER rocketchat
 
 RUN cd /app/bundle/programs/server \
-    && npm install --omit=dev --unsafe-perm \
-    # Start hack for sharp...
-    && rm -rf npm/node_modules/sharp \
-    && npm install sharp@0.32.6 \
+    && npm install --omit=dev \
+    &&  cd /app/bundle/programs/server && rm -rf npm/node_modules/sharp \
+    && npm install sharp@0.32.6 --no-save \
     && mv node_modules/sharp npm/node_modules/sharp \
+    # End hack for sharp
+    # Start hack for isolated-vm...
+    && rm -rf npm/node_modules/isolated-vm \
+    && npm install isolated-vm@4.6.0 --no-save \
+    && mv node_modules/isolated-vm npm/node_modules/isolated-vm \
+    # End hack for isolated-vm
     && cd /app/bundle/programs/server/npm/node_modules/@vector-im/matrix-bot-sdk \
     && npm install \
-    # End hack for sharp
-    # # Start hack for isolated-vm...
-    # && rm -rf npm/node_modules/isolated-vm \
-    # && npm install isolated-vm@4.6.0 \
-    # && mv node_modules/isolated-vm npm/node_modules/isolated-vm \
-    # # End hack for isolated-vm
-    && cd /app/bundle/programs/server/npm \
+    &&   cd /app/bundle/programs/server/npm \
     && npm rebuild bcrypt --build-from-source \
     && npm cache clear --force
 
@@ -56,8 +60,8 @@ RUN apk del .fetch-deps
 USER rocketchat
 
 # TODO: remove hack once upstream builds are fixed
-COPY --chown=rocketchat:rocketchat matrix-sdk-crypto.linux-x64-musl.node /app/bundle/programs/server/npm/node_modules/@matrix-org/matrix-sdk-crypto-nodejs
-COPY --chown=rocketchat:rocketchat matrix-sdk-crypto.linux-x64-musl.node /app/bundle/programs/server/npm/node_modules/@vector-im/matrix-bot-sdk/node_modules/@matrix-org/matrix-sdk-crypto-nodejs
+# COPY --chown=rocketchat:rocketchat matrix-sdk-crypto.linux-x64-musl.node /app/bundle/programs/server/npm/node_modules/@matrix-org/matrix-sdk-crypto-nodejs
+# COPY --chown=rocketchat:rocketchat matrix-sdk-crypto.linux-x64-musl.node /app/bundle/programs/server/npm/node_modules/@vector-im/matrix-bot-sdk/node_modules/@matrix-org/matrix-sdk-crypto-nodejs
 
 VOLUME /app/uploads
 
