@@ -1657,11 +1657,11 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query);
 	}
 
-	findOneOnlineAgentById(_id, isLivechatEnabledWhenAgentIdle) {
+	findOneOnlineAgentById(_id, isLivechatEnabledWhenAgentIdle, options) {
 		// TODO: Create class Agent
 		const query = queryStatusAgentOnline({ _id }, isLivechatEnabledWhenAgentIdle);
 
-		return this.findOne(query);
+		return this.findOne(query, options);
 	}
 
 	findAgents() {
