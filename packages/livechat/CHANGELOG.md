@@ -1,5 +1,40 @@
 # @rocket.chat/livechat Change Log
 
+## 1.21.0
+
+### Minor Changes
+
+- ([#33997](https://github.com/RocketChat/Rocket.Chat/pull/33997)) Prevent apps' subprocesses from crashing on unhandled rejections or uncaught exceptions
+
+### Patch Changes
+
+- ([#33911](https://github.com/RocketChat/Rocket.Chat/pull/33911)) Fixes the 'Finish Chat' option in Livechat appearing before the conversation is started, which caused the action to fail.
+
+- ([#33944](https://github.com/RocketChat/Rocket.Chat/pull/33944)) Fixes livechat popout mode not working correctly in cross domain situations
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@13.0.0
+  </details>
+
+## 1.21.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@13.0.0-rc.3
+  </details>
+
+## 1.21.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@13.0.0-rc.2
+  </details>
+
 ## 1.21.0-rc.1
 
 ### Patch Changes

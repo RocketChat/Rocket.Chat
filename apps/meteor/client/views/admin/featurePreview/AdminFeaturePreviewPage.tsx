@@ -4,6 +4,7 @@ import {
 	Box,
 	ToggleSwitch,
 	Accordion,
+	AccordionItem,
 	Field,
 	FieldGroup,
 	FieldLabel,
@@ -86,7 +87,7 @@ const AdminFeaturePreviewPage = () => {
 					</Box>
 					<Accordion>
 						{grouppedFeaturesPreview?.map(([group, features], index) => (
-							<Accordion.Item defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
+							<AccordionItem defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
 								<FieldGroup>
 									{features.map((feature) => (
 										<Fragment key={feature.name}>
@@ -107,7 +108,7 @@ const AdminFeaturePreviewPage = () => {
 										</Fragment>
 									))}
 								</FieldGroup>
-							</Accordion.Item>
+							</AccordionItem>
 						))}
 					</Accordion>
 				</Box>

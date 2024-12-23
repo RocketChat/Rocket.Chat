@@ -29,20 +29,10 @@ async function _verifyContactChannel(
 		session.startTransaction();
 		logger.debug({ msg: 'Start verifying contact channel', contactId, visitorId, roomId });
 
-		await LivechatContacts.updateContactChannel(
-			{
-				visitorId,
-				source: room.source,
-			},
-			{
-				verified: true,
-				verifiedAt: new Date(),
-				field,
-				value: value.toLowerCase(),
-			},
-			{},
-			{ session },
-		);
+		const updater = LivechatContacts.getUpdater();
+		LivechatContacts.setVerifiedUpdateQuery(true, updater);
+		LivechatContacts.setFieldAndValueUpdateQuery(field, value.toLowerCase(), updater);
+		await LivechatContacts.updateFromUpdaterByAssociation({ visitorId, source: room.source }, updater, { session });
 
 		await LivechatRooms.update({ _id: roomId }, { $set: { verified: true } }, { session });
 		logger.debug({ msg: 'Merging contacts', contactId, visitorId, roomId });
