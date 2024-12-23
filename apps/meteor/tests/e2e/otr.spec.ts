@@ -25,7 +25,7 @@ test.describe.serial('OTR', () => {
 		});
 
 		await test.step('invite OTR with user1', async () => {
-			await poHomeChannel.sidenav.openChat(Users.user1.data.username);
+			await poHomeChannel.sidebar.openChat(Users.user1.data.username);
 			await poHomeChannel.tabs.kebab.click({ force: true });
 			await poHomeChannel.tabs.btnEnableOTR.click({ force: true });
 			await poHomeChannel.tabs.otr.btnStartOTR.click();
