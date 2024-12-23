@@ -598,6 +598,24 @@ const roomsCleanHistorySchema = {
 
 export const isRoomsCleanHistoryProps = ajv.compile<RoomsCleanHistoryProps>(roomsCleanHistorySchema);
 
+type RoomsOpenProps = {
+	roomId: string;
+};
+
+const roomsOpenSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isRoomsOpenProps = ajv.compile<RoomsOpenProps>(roomsOpenSchema);
+
 export type RoomsEndpoints = {
 	'/v1/rooms.autocomplete.channelAndPrivate': {
 		GET: (params: RoomsAutoCompleteChannelAndPrivateProps) => {
@@ -763,5 +781,9 @@ export type RoomsEndpoints = {
 		GET: (params: RoomsImagesProps) => PaginatedResult<{
 			files: IUpload[];
 		}>;
+	};
+
+	'/v1/rooms.open': {
+		POST: (params: RoomsOpenProps) => void;
 	};
 };

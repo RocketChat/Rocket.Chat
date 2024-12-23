@@ -8,17 +8,17 @@ import { roomsQueryKeys } from '../../../lib/queryKeys';
 
 export const usePinMessageMutation = () => {
 	const { t } = useTranslation();
-	const pinMessageEndpoint = useEndpoint('POST', '/v1/chat.pinMessage');
+	const pinMessage = useEndpoint('POST', '/v1/chat.pinMessage');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (message: IMessage) => pinMessageEndpoint({ messageId: message._id }),
+		mutationFn: async (message: IMessage) => pinMessage({ messageId: message._id }),
 		onMutate: (message) => {
 			updatePinMessage(message, { pinned: true });
 		},
-		onSuccess: (_data) => {
+		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Message_has_been_pinned') });
 		},
 		onError: (error, message) => {
@@ -27,7 +27,6 @@ export const usePinMessageMutation = () => {
 		},
 		onSettled: (_data, _error, message) => {
 			queryClient.invalidateQueries(roomsQueryKeys.pinnedMessages(message.rid));
-			queryClient.invalidateQueries(roomsQueryKeys.messageActions(message.rid, message._id));
 		},
 	});
 };
