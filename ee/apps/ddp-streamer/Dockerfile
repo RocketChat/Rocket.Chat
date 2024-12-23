@@ -82,10 +82,8 @@ RUN apk update && \
     apk add --no-cache --virtual .usermod shadow && \
     groupmod -n rocketchat nogroup && \
     useradd -u 65533 -r -g rocketchat rocketchat && \
-    apk del .usermod && \
-    apk del build-dependencies && \
-    cd /app && \
-    chown -R rocketchat:rocketchat *
+    apk del build-dependencies .usermod && \
+    chown -R rocketchat:rocketchat /app
 
 USER rocketchat
 
