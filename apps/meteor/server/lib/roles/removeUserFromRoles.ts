@@ -1,6 +1,6 @@
 import { MeteorError } from '@rocket.chat/core-services';
 import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
-import { Users, Subscriptions } from '@rocket.chat/models';
+import { Users, Subscriptions, Roles } from '@rocket.chat/models';
 
 import { validateRoleList } from './validateRoleList';
 import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
@@ -24,8 +24,7 @@ export const removeUserFromRolesAsync = async (userId: IUser['_id'], roles: IRol
 	}
 
 	for await (const roleId of roles) {
-		const role = await Subscriptions.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
-
+		const role = await Roles.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
 		if (!role) {
 			continue;
 		}
