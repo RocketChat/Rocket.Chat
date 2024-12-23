@@ -11,7 +11,7 @@ export const SelectedMessageContext = createContext({
 	selectedMessageStore,
 } as SelectMessageContextValue);
 
-export const useIsSelectedMessage = (mid: string): boolean => {
+export const useIsSelectedMessage = (mid: string, omit?: boolean): boolean => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 
 	const subscribe = useCallback(
@@ -24,14 +24,14 @@ export const useIsSelectedMessage = (mid: string): boolean => {
 	const isSelected = useSyncExternalStore(subscribe, getSnapshot);
 
 	useEffect(() => {
-		if (isSelected) {
+		if (isSelected || omit) {
 			return;
 		}
 
 		selectedMessageStore.addAvailableMessage(mid);
 
 		return () => selectedMessageStore.removeAvailableMessage(mid);
-	}, [mid, selectedMessageStore, isSelected]);
+	}, [mid, selectedMessageStore, isSelected, omit]);
 
 	return isSelected;
 };

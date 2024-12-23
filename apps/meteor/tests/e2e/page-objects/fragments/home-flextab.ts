@@ -4,6 +4,7 @@ import { HomeFlextabChannels } from './home-flextab-channels';
 import { HomeFlextabExportMessages } from './home-flextab-exportMessages';
 import { HomeFlextabMembers } from './home-flextab-members';
 import { HomeFlextabNotificationPreferences } from './home-flextab-notificationPreferences';
+import { HomeFlextabOtr } from './home-flextab-otr';
 import { HomeFlextabRoom } from './home-flextab-room';
 
 export class HomeFlextab {
@@ -17,6 +18,8 @@ export class HomeFlextab {
 
 	readonly notificationPreferences: HomeFlextabNotificationPreferences;
 
+	readonly otr: HomeFlextabOtr;
+
 	readonly exportMessages: HomeFlextabExportMessages;
 
 	constructor(page: Page) {
@@ -25,6 +28,7 @@ export class HomeFlextab {
 		this.room = new HomeFlextabRoom(page);
 		this.channels = new HomeFlextabChannels(page);
 		this.notificationPreferences = new HomeFlextabNotificationPreferences(page);
+		this.otr = new HomeFlextabOtr(page);
 		this.exportMessages = new HomeFlextabExportMessages(page);
 	}
 

@@ -40,7 +40,12 @@ export const userAvatarByUsername = async function (request: IncomingMessage, re
 
 	// if request starts with @ always return the svg letters
 	if (requestUsername[0] === '@') {
-		serveSvgAvatarInRequestedFormat({ nameOrUsername: requestUsername.slice(1), req, res });
+		serveSvgAvatarInRequestedFormat({
+			nameOrUsername: requestUsername.slice(1),
+			req,
+			res,
+			useAllInitials: settings.get('UI_Use_Name_Avatar'),
+		});
 		return;
 	}
 
