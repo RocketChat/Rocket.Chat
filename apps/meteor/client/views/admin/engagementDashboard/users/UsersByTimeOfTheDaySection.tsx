@@ -1,3 +1,4 @@
+import type { ComputedCell, DefaultHeatMapDatum } from '@nivo/heatmap';
 import { ResponsiveHeatMapCanvas } from '@nivo/heatmap';
 import { Box, Flex, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
@@ -63,7 +64,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 	}, [data, isLoading, utc]);
 
 	const tooltip = useCallback(
-		({ cell }): ReactElement => {
+		({ cell }: { cell: ComputedCell<DefaultHeatMapDatum> }) => {
 			return (
 				<Tooltip>
 					{moment(cell.data.x).format('ddd')}{' '}

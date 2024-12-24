@@ -298,7 +298,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	]);
 
 	const incompatibleIconName = useCallback(
-		(app, action) => {
+		(app: App, action: 'subscribe' | 'install' | 'update') => {
 			if (!app.versionIncompatible) {
 				if (action === 'update') {
 					return 'refresh';

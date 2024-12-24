@@ -25,7 +25,7 @@ const EmailInboxTable = (): ReactElement => {
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'email' | 'active'>('name');
 
 	const onClick = useCallback(
-		(_id) => (): void => {
+		(_id: string) => (): void => {
 			router.push({
 				context: 'edit',
 				_id,

@@ -30,7 +30,7 @@ const OAuthAppsTable = (): ReactElement => {
 	const router = useRoute('admin-oauth-apps');
 
 	const onClick = useCallback(
-		(_id) => (): void =>
+		(_id: string) => (): void =>
 			router.push({
 				context: 'edit',
 				id: _id,

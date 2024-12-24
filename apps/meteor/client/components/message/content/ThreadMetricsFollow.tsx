@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageMetricsItem, MessageMetricsFollowing } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { MouseEvent, ReactElement } from 'react';
 import { useCallback } from 'react';
 
 import ThreadMetricsBadge from './ThreadMetricsUnreadBadge';
@@ -27,7 +27,7 @@ const ThreadMetricsFollow = ({ following, mid, rid, unread, mention, all }: Thre
 	});
 
 	const handleFollow = useCallback(
-		(e) => {
+		(e: MouseEvent) => {
 			e.preventDefault();
 			e.stopPropagation();
 			toggleFollowingThreadMutation.mutate({ rid, tmid: mid, follow: !following });

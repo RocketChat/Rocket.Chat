@@ -123,7 +123,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 	}, [setModal, deleteAction, _id, dispatchToastMessage, t, onChange, close]);
 
 	const handleChangeAliases = useCallback(
-		(e) => {
+		(e: ChangeEvent<HTMLInputElement>) => {
 			if (e.currentTarget.value !== name) {
 				setErrors((prevState) => ({ ...prevState, aliases: false }));
 			}

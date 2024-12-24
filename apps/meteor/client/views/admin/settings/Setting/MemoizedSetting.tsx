@@ -54,7 +54,7 @@ type MemoizedSettingProps = {
 	value?: SettingValue;
 	editor?: SettingEditor;
 	onChangeValue?: (value: SettingValue) => void;
-	onChangeEditor?: (value: unknown) => void;
+	onChangeEditor?: (value: SettingEditor) => void;
 	onResetButtonClick?: () => void;
 	className?: string;
 	invisible?: boolean;

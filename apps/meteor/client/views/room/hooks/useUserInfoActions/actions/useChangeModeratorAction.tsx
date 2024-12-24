@@ -94,7 +94,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 	});
 
 	const handleChangeModerator = useCallback(
-		({ userId }) => {
+		({ userId }: { userId: string }) => {
 			if (!isRoomFederated(room)) {
 				return toggleModerator.mutateAsync({ roomId: rid, userId: uid });
 			}
@@ -147,7 +147,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 		[setModal, loggedUserId, loggedUserIsModerator, loggedUserIsOwner, t, rid, uid, toggleModerator, room],
 	);
 
-	const changeModeratorAction = useEffectEvent(() => handleChangeModerator({ roomId: rid, userId: uid }));
+	const changeModeratorAction = useEffectEvent(() => handleChangeModerator({ userId: uid }));
 
 	const changeModeratorOption = useMemo(
 		() =>

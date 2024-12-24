@@ -17,7 +17,7 @@ const PrepareChannels = ({ channels, channelsCount, setChannels }: PrepareChanne
 	const [current, setCurrent] = useState(0);
 	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
 	const showingResultsLabel = useCallback(
-		({ count, current, itemsPerPage }) =>
+		({ count, current, itemsPerPage }: { count: number; current: number; itemsPerPage: 25 | 50 | 100 }) =>
 			t('Showing_results_of', { postProcess: 'sprintf', sprintf: [current + 1, Math.min(current + itemsPerPage, count), count] }),
 		[t],
 	);

@@ -64,7 +64,7 @@ const ForwardChatModal = ({
 	const { phase: departmentsPhase, items: departments, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
 	const endReached = useCallback(
-		(start) => {
+		(start: number) => {
 			if (departmentsPhase !== AsyncStatePhase.LOADING) {
 				loadMoreDepartments(start, Math.min(50, departmentsTotal));
 			}

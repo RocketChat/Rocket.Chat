@@ -64,7 +64,7 @@ const AccountProfilePage = (): ReactElement => {
 	}, [logoutOtherClients, dispatchToastMessage, t]);
 
 	const handleConfirmOwnerChange = useCallback(
-		(passwordOrUsername, shouldChangeOwner, shouldBeRemoved) => {
+		(passwordOrUsername: string, shouldChangeOwner: string[], shouldBeRemoved: string[]) => {
 			const handleConfirm = async (): Promise<void> => {
 				try {
 					await deleteOwnAccount({ password: SHA256(passwordOrUsername), confirmRelinquish: true });

@@ -1,3 +1,4 @@
+import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
 import { Callout, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
@@ -172,8 +173,8 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 	});
 
 	const renderRow = useCallback(
-		(room) => {
-			const { _id, fname, servedBy, ts, lm, department, open, onHold, priorityWeight } = room;
+		(room: IOmnichannelRoomWithDepartment) => {
+			const { _id, fname, servedBy, ts, lm, department, open = false, onHold = false, priorityWeight } = room;
 			const getStatusText = (open: boolean, onHold: boolean, servedBy: boolean): string => {
 				if (!open) return t('Closed');
 				if (open && !servedBy) return t('Queued');

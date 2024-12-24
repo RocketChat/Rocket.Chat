@@ -58,7 +58,7 @@ const AccountTokensTable = (): ReactElement => {
 	);
 
 	const handleRegenerate = useCallback(
-		(name) => {
+		(name: string) => {
 			const onConfirm: () => Promise<void> = async () => {
 				try {
 					setModal(null);
@@ -100,7 +100,7 @@ const AccountTokensTable = (): ReactElement => {
 	);
 
 	const handleRemove = useCallback(
-		(name) => {
+		(name: string) => {
 			const onConfirm: () => Promise<void> = async () => {
 				try {
 					await removeToken({ tokenName: name });

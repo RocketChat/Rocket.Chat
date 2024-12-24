@@ -44,7 +44,7 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 	};
 
 	const onClick = useCallback(
-		(rid) => (): void =>
+		(rid: string) => (): void =>
 			router.navigate({
 				name: 'admin-rooms',
 				params: {

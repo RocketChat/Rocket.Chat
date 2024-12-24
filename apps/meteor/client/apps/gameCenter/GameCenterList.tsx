@@ -20,7 +20,7 @@ const GameCenterList = ({ handleClose, handleOpenGame, games, isLoading }: IGame
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const handleInvitePlayer = useCallback(
-		(game) => {
+		(game: IGame) => {
 			const handleClose = (): void => {
 				setModal(null);
 			};
