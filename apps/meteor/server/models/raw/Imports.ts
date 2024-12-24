@@ -3,7 +3,6 @@ import type { IImportsModel } from '@rocket.chat/model-typings';
 import type { Db, Document, FindCursor, FindOptions, UpdateResult, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { ensureArray } from '../../../lib/utils/arrayUtils';
 
 export class ImportsModel extends BaseRaw<IImport> implements IImportsModel {
 	constructor(db: Db) {
@@ -38,10 +37,6 @@ export class ImportsModel extends BaseRaw<IImport> implements IImportsModel {
 
 	invalidateOperationsExceptId(id: string): Promise<UpdateResult | Document> {
 		return this.updateMany({ valid: { $ne: false }, _id: { $ne: id } }, { $set: { valid: false } });
-	}
-
-	invalidateOperationsNotInStatus(status: IImport['status'] | IImport['status'][]): Promise<UpdateResult | Document> {
-		return this.updateMany({ valid: { $ne: false }, status: { $nin: ensureArray(status) } }, { $set: { valid: false } });
 	}
 
 	findAllPendingOperations(options: FindOptions<IImport> = {}): FindCursor<IImport> {
