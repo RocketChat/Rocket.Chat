@@ -33,6 +33,7 @@ import {
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
+import { getOmniChatSortQuery } from '../../lib/inquiries';
 
 const logger = new Logger('QueueManager');
 
@@ -336,7 +337,7 @@ export class QueueManager {
 			const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
 				inquiryId: inquiry._id,
 				department: room.departmentId,
-				queueSortBy: getInquirySortMechanismSetting(),
+				queueSortBy: getOmniChatSortQuery(getInquirySortMechanismSetting()),
 			});
 
 			if (inq) {
