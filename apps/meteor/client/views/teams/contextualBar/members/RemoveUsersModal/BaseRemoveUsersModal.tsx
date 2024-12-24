@@ -39,7 +39,7 @@ const BaseRemoveUsersModal = ({
 
 	const eligibleRooms = rooms?.filter(({ isLastOwner }) => !isLastOwner);
 
-	const onChangeRoomSelection = useCallback((room) => {
+	const onChangeRoomSelection = useCallback((room: Serialized<IRoom>) => {
 		setSelectedRooms((selectedRooms) => {
 			if (selectedRooms[room._id]) {
 				delete selectedRooms[room._id];

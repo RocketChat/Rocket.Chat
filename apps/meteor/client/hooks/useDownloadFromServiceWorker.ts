@@ -52,9 +52,9 @@ export const useDownloadFromServiceWorker = (href: string, title?: string) => {
 
 	return {
 		disabled: !controller,
-		onContextMenu: useCallback((e) => e.preventDefault(), []),
+		onContextMenu: useCallback((e: MouseEvent) => e.preventDefault(), []),
 		onClick: useCallback(
-			(e: MouseEvent<HTMLElement>) => {
+			(e: MouseEvent) => {
 				e.preventDefault();
 
 				forAttachmentDownload(uid, href, controller);

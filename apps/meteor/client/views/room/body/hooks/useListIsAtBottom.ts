@@ -20,7 +20,7 @@ export const useListIsAtBottom = () => {
 		}
 	}, [atBottomRef, sendToBottom]);
 
-	const isAtBottom = useCallback((threshold = 0) => {
+	const isAtBottom = useCallback<(threshold?: number) => boolean>((threshold = 0) => {
 		if (!innerBoxRef.current) {
 			return true;
 		}

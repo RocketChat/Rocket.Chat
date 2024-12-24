@@ -28,7 +28,14 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const previousSound = useMemo(() => data || {}, [data]);
 
 	const [name, setName] = useState(() => data?.name ?? '');
-	const [sound, setSound] = useState(() => data);
+	const [sound, setSound] = useState<
+		| {
+				_id: string;
+				name: string;
+				extension?: string;
+		  }
+		| File
+	>(() => data);
 
 	useEffect(() => {
 		setName(previousName || '');
@@ -39,7 +46,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const uploadCustomSound = useMethod('uploadCustomSound');
 	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
 
-	const handleChangeFile = useCallback((soundFile) => {
+	const handleChangeFile = useCallback((soundFile: File) => {
 		setSound(soundFile);
 	}, []);
 

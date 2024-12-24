@@ -24,7 +24,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const uploadCustomSound = useMethod('uploadCustomSound');
 	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
 
-	const handleChangeFile = useCallback((soundFile) => {
+	const handleChangeFile = useCallback((soundFile: File) => {
 		setSound(soundFile);
 	}, []);
 

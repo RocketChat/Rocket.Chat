@@ -27,7 +27,7 @@ const LeaveTeamModal = ({ rooms, onCancel, onConfirm }: LeaveTeamModalProps): Re
 	const handleContinue = useCallback(() => setStep(LEAVE_TEAM_STEPS.CONFIRM_LEAVE), []);
 	const handleReturn = useCallback(() => setStep(LEAVE_TEAM_STEPS.LIST_ROOMS), []);
 
-	const onChangeRoomSelection = useCallback((room) => {
+	const onChangeRoomSelection = useCallback((room: Serialized<IRoom>) => {
 		setSelectedRooms((selectedRooms) => {
 			if (selectedRooms[room._id]) {
 				delete selectedRooms[room._id];

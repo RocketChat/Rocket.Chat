@@ -2,7 +2,7 @@ import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
 import { useCallback, useMemo, useState } from 'react';
-import type { Dispatch, ReactElement, SetStateAction } from 'react';
+import type { Dispatch, FormEvent, ReactElement, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const initialRoomTypeFilterStructure = [
@@ -76,7 +76,7 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 	return (
 		<Box
 			is='form'
-			onSubmit={useCallback((e) => e.preventDefault(), [])}
+			onSubmit={useCallback((e: FormEvent) => e.preventDefault(), [])}
 			mb='x8'
 			display='flex'
 			flexWrap='wrap'

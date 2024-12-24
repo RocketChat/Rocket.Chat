@@ -56,7 +56,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [setCurrentStep]);
 	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [setCurrentStep]);
-	const goToStep = useCallback((step) => setCurrentStep(() => step), [setCurrentStep]);
+	const goToStep = useCallback((step: number) => setCurrentStep(() => step), [setCurrentStep]);
 
 	const _validateEmail = useCallback(
 		(email: string): true | string => {

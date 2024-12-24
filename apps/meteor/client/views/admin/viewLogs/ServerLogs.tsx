@@ -56,7 +56,7 @@ const ServerLogs = (): ReactElement => {
 
 	const [newLogsVisible, setNewLogsVisible] = useState(false);
 
-	const isAtBottom = useCallback((scrollThreshold = 0) => {
+	const isAtBottom = useCallback<(scrollThreshold?: number) => boolean>((scrollThreshold = 0) => {
 		const wrapper = wrapperRef.current;
 
 		if (!wrapper) {

@@ -34,7 +34,7 @@ const OmnichannelDirectoryPage = () => {
 		[router],
 	);
 
-	const handleTabClick = useCallback((tab) => router.navigate({ name: 'omnichannel-directory', params: { tab } }), [router]);
+	const handleTabClick = useCallback((tab: string) => router.navigate({ name: 'omnichannel-directory', params: { tab } }), [router]);
 
 	return (
 		<ChatsProvider>
