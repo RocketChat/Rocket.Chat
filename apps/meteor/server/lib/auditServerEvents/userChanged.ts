@@ -1,23 +1,41 @@
 import { AsyncLocalStorage } from 'async_hooks';
 
-import type { IAuditServerUserActor, IServerEvents, IUser } from '@rocket.chat/core-typings';
+import type {
+	IAuditServerUserActor,
+	IServerEvents,
+	IServerEventAuditedUser,
+	ExtractDataToParams,
+	IUser,
+	DeepPartial,
+} from '@rocket.chat/core-typings';
 import { ServerEvents } from '@rocket.chat/models';
 
 export const asyncLocalStorage = new AsyncLocalStorage<UserChangedLogStore>();
 
-// some properties are not in type `IUser` but can be changed
-type IUserWithExtraLogData = IUser & {
-	password?: string;
-};
-type ChangeRecord<T extends IUser[keyof IUser] = IUserWithExtraLogData[keyof IUser]> = {
-	previous?: T;
-	current?: T;
+type AuditedUserEventData<T extends keyof IServerEventAuditedUser = keyof IServerEventAuditedUser> = {
+	[K in T]: {
+		key: K;
+		value: {
+			previous?: IServerEventAuditedUser[K];
+			current?: IServerEventAuditedUser[K];
+		};
+	};
+}[T];
+
+type UserChangeMap = Map<AuditedUserEventData['key'], AuditedUserEventData>;
+
+const isServerEventData = (data: AuditedUserEventData['value']): data is Required<AuditedUserEventData['value']> => {
+	return data.hasOwnProperty('previous') && data.hasOwnProperty('current') && Object.keys(data).length === 2;
 };
 
-type UserChangeMap<T extends keyof IUser = keyof IUser, U extends IUser[T] = IUser[T]> = Map<T, ChangeRecord<U>>;
+type Entries<T> = {
+	[K in keyof T]: [K, T[K]];
+}[keyof T][];
 
 class UserChangedLogStore {
 	private changes: UserChangeMap;
+
+	private changedUser: Pick<IUser, '_id' | 'username'> | undefined;
 
 	private actor: IAuditServerUserActor;
 
@@ -26,48 +44,79 @@ class UserChangedLogStore {
 	constructor(type: IAuditServerUserActor['type'] = 'user') {
 		this.changes = new Map();
 		this.actorType = type;
-		// this.previous = new Map<keyof IUser, IUser[keyof IUser]>();
-		// this.current = new Map<keyof IUser, IUser[keyof IUser]>();
-		// this.actor = actor;
 	}
 
 	public setActor(actor: Omit<IAuditServerUserActor, 'type'>) {
 		this.actor = { ...actor, type: this.actorType };
 	}
 
-	public insertChangeRecord = (
-		record: Partial<IUserWithExtraLogData>,
-		build: (record: IUserWithExtraLogData[keyof IUserWithExtraLogData]) => ChangeRecord,
-	) => {
-		Object.entries(record).forEach(([key, value]) => {
-			const property = this.changes.get(key as keyof IUser);
+	public setUser(user: Pick<IUser, '_id' | 'username'>) {
+		this.changedUser = user;
+	}
 
+	private insertChangeRecords(_: undefined, record: Partial<IServerEventAuditedUser>): void;
+
+	private insertChangeRecords(record: DeepPartial<IServerEventAuditedUser>, _: undefined): void;
+
+	private insertChangeRecords(...args: [prev?: DeepPartial<IServerEventAuditedUser>, curr?: Partial<IServerEventAuditedUser>]): void {
+		const denominator = args[0] ? 'previous' : 'current';
+		const record = args[0] || args[1];
+
+		if (!record) return;
+
+		(Object.entries(record) as Entries<IServerEventAuditedUser>).forEach((entry) => {
+			if (!entry) return;
+			const [key, recordValue] = entry;
+
+			const property = this.changes.get(key);
 			if (property) {
-				this.changes.set(key as keyof IUser, { ...property, ...build(value) });
+				const value = {
+					...property.value,
+					[denominator]: recordValue,
+				};
+				this.changes.set(key, { key, value } as AuditedUserEventData);
 				return;
 			}
-			this.changes.set(key as keyof IUser, { ...build(value) });
+			const value = {
+				[denominator]: recordValue,
+			};
+			this.changes.set(key, { value, key } as AuditedUserEventData);
 		});
-	};
-
-	public insertPrevious(previous: Partial<IUserWithExtraLogData>) {
-		this.insertChangeRecord(previous, (value) => ({ previous: value }));
 	}
 
-	public insertCurrent(current: Partial<IUserWithExtraLogData>) {
-		this.insertChangeRecord(current, (value) => ({ current: value }));
+	private getServerEventData(): ExtractDataToParams<IServerEvents['user.changed']> {
+		const filtered = Array.from(this.changes.entries()).filter(
+			([, { value }]) => isServerEventData(value) && value.previous !== value.current,
+		);
+
+		const data = filtered.reduce(
+			(acc, [key, { value }]) => {
+				return {
+					previous: { ...acc.previous, ...{ [key]: value.previous } },
+					current: { ...acc.current, ...{ [key]: value.current } },
+				};
+			},
+			{ previous: {}, current: {} },
+		);
+
+		return Object.assign(data, { user: { _id: this.changedUser?._id || '', username: this.changedUser?.username } });
 	}
 
-	public insertBoth(previous: Partial<IUserWithExtraLogData>, current: Partial<IUserWithExtraLogData>) {
+	public insertPrevious(previous: DeepPartial<IServerEventAuditedUser>) {
+		this.insertChangeRecords(previous, undefined);
+	}
+
+	public insertCurrent(current: Partial<IServerEventAuditedUser>) {
+		this.insertChangeRecords(undefined, current);
+	}
+
+	public insertBoth(previous: Partial<IServerEventAuditedUser>, current: Partial<IServerEventAuditedUser>) {
 		this.insertPrevious(previous);
 		this.insertCurrent(current);
 	}
 
-	public buildEvent(): IServerEvents['user.changed'] {
-		const logEntries = Array.from(this.changes.entries()).filter(([, data]) => {
-			return data.hasOwnProperty('previous') && data.hasOwnProperty('current') && data.previous !== data.current;
-		});
-		return ['user.changed', Object.fromEntries(logEntries), this.actor];
+	public buildEvent(): ['user.changed', ExtractDataToParams<IServerEvents['user.changed']>, IAuditServerUserActor] {
+		return ['user.changed', this.getServerEventData(), this.actor];
 	}
 }
 
@@ -75,8 +124,6 @@ export const auditUserChangeByUser = <T extends (store: typeof asyncLocalStorage
 	fn: T,
 ): Promise<ReturnType<T>> => {
 	const store = new UserChangedLogStore();
-
-	// const originalFn = injectStore(asyncLocalStorage);
 
 	return new Promise<ReturnType<typeof fn>>((resolve) => {
 		asyncLocalStorage.run(store, () => {
@@ -89,127 +136,3 @@ export const auditUserChangeByUser = <T extends (store: typeof asyncLocalStorage
 		});
 	});
 };
-
-// export const auditUserChangeByUser = <F extends OriginalFunction>(
-// 	injectStore: (store: typeof asyncLocalStorage) => F,
-// ): Promise<ReturnType<F>> => {
-// 	const originalFn = injectStore(asyncLocalStorage);
-
-// 	const store = new UserChangedLogStore();
-// 	return new Promise<ReturnType<F>>((resolve) => {
-// 		asyncLocalStorage.run(store, () => {
-// 			void originalFn()
-// 				.then(resolve)
-// 				.finally(() => {
-// 					void ServerEvents.createAuditServerEvent(...store.buildEvent());
-// 				});
-// 		});
-// 	});
-// };
-// const auditByUser = (actor: Omit<IAuditServerUserActor, 'type'>) => {
-// 	return (fn: (...args: any[]) => any, ...args: any[]) => {
-// 		return wrapStore(
-// 			{
-// 				type: 'user',
-// 				...actor,
-// 			},
-// 			() => fn(...args),
-// 		);
-// 	};
-// };
-
-// export const resetAuditedSettingByUser =
-// 	(actor: Omit<IAuditServerUserActor, 'type'>) =>
-// 	<F extends (key: ISetting['_id']) => any>(fn: F, key: ISetting['_id']): ReturnType<F> => {
-// 		const { value, packageValue } = settings.getSetting(key) ?? {};
-
-// 		void ServerEvents.createAuditServerEvent(
-// 			'settings.changed',
-// 			{
-// 				id: key,
-// 				previous: value,
-// 				current: packageValue,
-// 			},
-// 			{
-// 				type: 'user',
-// 				...actor,
-// 			},
-// 		);
-// 		return fn(key);
-// 	};
-
-// export const updateAuditedByUser =
-// 	(actor: Omit<IAuditServerUserActor, 'type'>) =>
-// 	<K extends ISetting['_id'], T extends ISetting['value'], F extends (_id: K, value: T, ...args: any[]) => any>(
-// 		fn: F,
-// 		...args: Parameters<F>
-// 	): ReturnType<F> => {
-// 		const [key, value, ...rest] = args;
-// 		const setting = settings.getSetting(key);
-
-// 		const previous = setting?.value;
-
-// 		void ServerEvents.createAuditServerEvent(
-// 			'settings.changed',
-// 			{
-// 				id: key,
-// 				previous,
-// 				current: value,
-// 			},
-// 			{
-// 				type: 'user',
-// 				...actor,
-// 			},
-// 		);
-// 		return fn(key, value, ...rest);
-// 	};
-
-// export const updateAuditedBySystem =
-// 	(actor: Omit<IAuditServerSystemActor, 'type'>) =>
-// 	<T extends ISetting['value'], F extends (_id: ISetting['_id'], value: T, ...args: any[]) => any>(
-// 		fn: F,
-// 		...args: Parameters<F>
-// 	): ReturnType<F> => {
-// 		const [key, value, ...rest] = args;
-// 		const setting = settings.getSetting(key);
-
-// 		const previous = setting?.value;
-
-// 		void ServerEvents.createAuditServerEvent(
-// 			'settings.changed',
-// 			{
-// 				id: key,
-// 				previous,
-// 				current: value,
-// 			},
-// 			{
-// 				type: 'system',
-// 				...actor,
-// 			},
-// 		);
-// 		return fn(key, value, ...rest);
-// 	};
-
-// export const updateAuditedByApp =
-// 	<T extends ISetting['value'], F extends (_id: ISetting['_id'], value: T, ...args: any[]) => any>(
-// 		actor: Omit<IAuditServerAppActor, 'type'>,
-// 	) =>
-// 	(fn: F, ...args: Parameters<F>): ReturnType<F> => {
-// 		const [key, value, ...rest] = args;
-// 		const setting = settings.getSetting(key);
-
-// 		const previous = setting?.value;
-// 		void ServerEvents.createAuditServerEvent(
-// 			'settings.changed',
-// 			{
-// 				id: key,
-// 				previous,
-// 				current: value,
-// 			},
-// 			{
-// 				type: 'app',
-// 				...actor,
-// 			},
-// 		);
-// 		return fn(key, value, ...rest);
-// 	};

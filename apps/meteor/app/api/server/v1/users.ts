@@ -131,9 +131,11 @@ API.v1.addRoute(
 				const { fields } = await this.parseJsonQuery();
 
 				const user = await Users.findOneById(this.bodyParams.userId, { projection: fields });
+
 				if (!user) {
 					return API.v1.failure('User not found');
 				}
+				store?.insertCurrent({ customFields: user?.customFields });
 
 				return API.v1.success({ user });
 			});

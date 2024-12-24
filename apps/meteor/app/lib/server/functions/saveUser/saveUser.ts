@@ -49,12 +49,9 @@ export type SaveUserData = {
 };
 
 export const saveUser = async function (userId: IUser['_id'], userData: SaveUserData) {
-	const oldUserData = userData._id && (await Users.findOneById(userData._id));
+	const oldUserData = userData._id ? await Users.findOneById(userData._id) : undefined;
 
 	const auditStore = asyncLocalStorage.getStore();
-	if (oldUserData) {
-		auditStore?.insertPrevious(oldUserData);
-	}
 
 	if (oldUserData && isUserFederated(oldUserData)) {
 		throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
@@ -86,6 +83,9 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 
 	await validateUserEditing(userId, userData as RequiredField<SaveUserData, '_id'>);
 
+	auditStore?.setUser({ _id: userData._id, username: oldUserData?.username });
+	auditStore?.insertPrevious({ customFields: oldUserData?.customFields });
+
 	// update user
 	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
 		if (
@@ -114,7 +114,7 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 	if (userData.email) {
 		const shouldSendVerificationEmailToUser = userData.verified !== true;
 		await setEmail(userData._id, userData.email, shouldSendVerificationEmailToUser);
-		auditStore?.insertBoth({ email: oldUserData?.email }, { email: userData.email });
+		auditStore?.insertBoth({ emails: oldUserData?.emails }, { emails: [{ address: userData.email, verified: userData.verified }] });
 	}
 
 	if (
@@ -136,21 +136,32 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 	};
 
 	handleBio(updateUser, userData.bio);
+	auditStore?.insertBoth({ bio: oldUserData?.bio }, { bio: userData.bio });
+
 	handleNickname(updateUser, userData.nickname);
+	auditStore?.insertBoth({ nickname: oldUserData?.nickname }, { nickname: userData.nickname });
 
 	if (userData.roles) {
 		updateUser.$set.roles = userData.roles;
+		auditStore?.insertBoth({ roles: oldUserData?.roles }, { roles: userData.roles });
 	}
+
 	if (userData.settings) {
 		updateUser.$set.settings = { preferences: userData.settings.preferences };
+		auditStore?.insertBoth({ settings: oldUserData?.settings }, { settings: { ...oldUserData?.settings, ...userData.settings } } as any);
 	}
 
 	if (userData.language) {
 		updateUser.$set.language = userData.language;
+		auditStore?.insertBoth({ language: oldUserData?.language }, { language: userData.language });
 	}
 
 	if (typeof userData.requirePasswordChange !== 'undefined') {
 		updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
+		auditStore?.insertBoth(
+			{ requirePasswordChange: oldUserData?.requirePasswordChange },
+			{ requirePasswordChange: userData.requirePasswordChange },
+		);
 		if (!userData.requirePasswordChange) {
 			updateUser.$unset.requirePasswordChangeReason = 1;
 		}
@@ -161,7 +172,6 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 	}
 
 	await Users.updateOne({ _id: userData._id }, updateUser as UpdateFilter<IUser>);
-	auditStore?.insertCurrent(updateUser.$set as Partial<IUser>);
 
 	// App IPostUserUpdated event hook
 	const userUpdated = await Users.findOneById(userData._id);
