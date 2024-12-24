@@ -12,7 +12,7 @@ export class LicenseService extends ServiceClassInternal implements ILicense {
 	constructor() {
 		super();
 
-		License.onValidateLicense((): void => {
+		License.onValidateLicense(async (): Promise<void> => {
 			if (!License.hasValidLicense()) {
 				return;
 			}
