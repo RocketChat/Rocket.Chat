@@ -92,6 +92,7 @@ async function createUsersSubscriptions({
 			extraData: {
 				...extra,
 				...autoTranslateConfig,
+				...getDefaultSubscriptionPref(member),
 			},
 		});
 	}
