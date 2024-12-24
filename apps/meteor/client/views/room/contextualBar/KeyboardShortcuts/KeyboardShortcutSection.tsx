@@ -1,6 +1,5 @@
 import { Box, Divider, Margins } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 type KeyboardShortcutSectionProps = {
 	title: string;

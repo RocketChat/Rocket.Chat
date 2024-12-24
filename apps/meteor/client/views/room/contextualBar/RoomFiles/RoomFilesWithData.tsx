@@ -1,5 +1,5 @@
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
 import RoomFiles from './RoomFiles';
 import { useDeleteFile } from './hooks/useDeleteFile';

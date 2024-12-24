@@ -10,7 +10,7 @@ import {
 	useEndpoint,
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { useConfirmOwnerChanges } from './useConfirmOwnerChanges';
 import GenericModal from '../../../../components/GenericModal';

@@ -1,6 +1,6 @@
 import { ModalContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export const MockedModalContext = ({ children }: { children: ReactNode }) => {
 	const [currentModal, setCurrentModal] = useState<ReactNode>(null);

@@ -1,5 +1,4 @@
 import type { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 
 import KeyboardShortcutsWithData from './KeyboardShortcutsWithData';
 import { Contextualbar } from '../../../../components/Contextualbar';

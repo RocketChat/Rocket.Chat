@@ -1,7 +1,6 @@
 import { isOmnichannelRoom, type IMessage, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useMethod } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEmojiPickerData } from '../../../../../contexts/EmojiPickerContext';

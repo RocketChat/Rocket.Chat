@@ -1,7 +1,7 @@
 import { useEndpoint, useRoute, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import GenericNoResults from '../../../components/GenericNoResults';
 import {

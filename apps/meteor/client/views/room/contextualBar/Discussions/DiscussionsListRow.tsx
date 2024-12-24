@@ -1,6 +1,6 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import type { MouseEvent } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import DiscussionsListItem from './components/DiscussionsListItem';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';

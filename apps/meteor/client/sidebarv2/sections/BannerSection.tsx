@@ -1,6 +1,5 @@
 import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useRole, useSetting } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import AirGappedRestrictionBanner from './AirGappedRestrictionBanner/AirGappedRestrictionBanner';
 import StatusDisabledBanner from './StatusDisabledBanner';

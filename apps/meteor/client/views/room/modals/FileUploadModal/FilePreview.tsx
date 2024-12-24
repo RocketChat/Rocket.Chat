@@ -1,5 +1,4 @@
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import GenericPreview from './GenericPreview';
 import MediaPreview from './MediaPreview';

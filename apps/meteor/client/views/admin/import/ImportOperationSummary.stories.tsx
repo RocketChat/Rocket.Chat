@@ -1,7 +1,6 @@
 import { Table, TableBody } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 import type { ComponentType } from 'react';
-import React from 'react';
 
 import ImportOperationSummary from './ImportOperationSummary';
 import ImportOperationSummarySkeleton from './ImportOperationSummarySkeleton';

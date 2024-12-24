@@ -1,7 +1,7 @@
 import { Dropdown as DropdownMobile } from '@rocket.chat/fuselage';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ForwardedRef, ReactNode, RefObject } from 'react';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 
 import EmojiPickerDesktopDropdown from './EmojiPickerDesktopDropdown';
 

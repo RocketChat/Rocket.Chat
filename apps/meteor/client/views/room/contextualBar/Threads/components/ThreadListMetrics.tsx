@@ -2,7 +2,6 @@ import { MessageMetricsItem, MessageBlock, MessageMetrics, MessageMetricsItemIco
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import ThreadMetricsParticipants from '../../../../../components/message/content/ThreadMetricsParticipants';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';

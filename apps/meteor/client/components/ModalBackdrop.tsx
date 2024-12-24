@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { MouseEvent, ReactElement, ReactNode, RefObject } from 'react';
-import React, { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 const useEscapeKey = (onDismiss: (() => void) | undefined): void => {
 	useEffect(() => {

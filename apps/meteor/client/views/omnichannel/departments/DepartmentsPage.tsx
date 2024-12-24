@@ -1,7 +1,6 @@
 import { Tabs, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import DepartmentsTableV2 from './DepartmentsTable';
 import EditDepartmentWithData from './EditDepartmentWithData';

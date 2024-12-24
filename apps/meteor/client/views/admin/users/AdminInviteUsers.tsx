@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useSendInvitationEmailMutation } from './hooks/useSendInvitationEmailMutation';
 import { useSmtpQuery } from './hooks/useSmtpQuery';

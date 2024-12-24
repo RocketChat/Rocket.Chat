@@ -1,5 +1,5 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import type { Control, UseFormRegister } from 'react-hook-form';
 import { useWatch, useFieldArray } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';

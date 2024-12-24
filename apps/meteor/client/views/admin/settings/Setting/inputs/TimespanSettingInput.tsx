@@ -1,6 +1,6 @@
 import { Field, FieldLabel, FieldRow, InputBox, Select } from '@rocket.chat/fuselage';
 import type { FormEventHandler, ReactElement } from 'react';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { TIMEUNIT, timeUnitToMs, msToTimeUnit } from '../../../../../lib/convertTimeUnit';

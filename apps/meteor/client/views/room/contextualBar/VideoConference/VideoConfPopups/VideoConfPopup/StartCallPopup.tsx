@@ -13,7 +13,7 @@ import {
 	VideoConfPopupFooterButtons,
 } from '@rocket.chat/ui-video-conf';
 import type { KeyboardEvent, ReactElement } from 'react';
-import React, { useCallback, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';

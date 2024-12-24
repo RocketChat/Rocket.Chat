@@ -1,5 +1,4 @@
 import type { ComponentProps, ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Action from '../Action';

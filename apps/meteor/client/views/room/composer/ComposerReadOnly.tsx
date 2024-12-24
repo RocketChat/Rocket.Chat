@@ -3,7 +3,6 @@ import { MessageFooterCallout, MessageFooterCalloutContent } from '@rocket.chat/
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { dispatchToastMessage } from '../../../lib/toast';

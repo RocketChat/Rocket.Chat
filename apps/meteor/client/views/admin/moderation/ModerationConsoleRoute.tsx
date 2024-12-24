@@ -1,5 +1,5 @@
 import { usePermission, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import ModerationConsolePage from './ModerationConsolePage';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';

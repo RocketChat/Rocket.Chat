@@ -1,6 +1,5 @@
 import { Accordion, AccordionItem, Box, Button } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';

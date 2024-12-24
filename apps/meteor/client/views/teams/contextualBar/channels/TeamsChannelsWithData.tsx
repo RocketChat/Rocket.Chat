@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage, useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, usePermission, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import AddExistingModal from './AddExistingModal';
 import TeamsChannels from './TeamsChannels';

@@ -1,6 +1,6 @@
 import { IconButton, useCursor, PositionAnimated, Options } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { useMemo, useRef, useCallback, useEffect } from 'react';
+import { useMemo, useRef, useCallback, useEffect } from 'react';
 
 import ToneItem from './ToneItem';
 

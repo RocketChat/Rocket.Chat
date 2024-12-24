@@ -1,7 +1,7 @@
 import type { IVoipRoom, Serialized } from '@rocket.chat/core-typings';
 import moment from 'moment';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';

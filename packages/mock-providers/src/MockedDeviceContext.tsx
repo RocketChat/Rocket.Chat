@@ -1,7 +1,6 @@
 import type { DeviceContextValue } from '@rocket.chat/ui-contexts';
 import { DeviceContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import React from 'react';
 
 const mockDeviceContextValue: DeviceContextValue = {
 	enabled: true,

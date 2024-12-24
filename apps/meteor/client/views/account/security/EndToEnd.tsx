@@ -3,7 +3,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useLogout } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { e2e } from '../../../../app/e2e/client/rocketchat.e2e';

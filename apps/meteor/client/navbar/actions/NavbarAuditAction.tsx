@@ -1,7 +1,6 @@
 import { GenericMenu, useHandleMenuAction } from '@rocket.chat/ui-client';
 import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes } from 'react';
-import React from 'react';
 
 import { NavbarAction } from '../../components/Navbar';
 import { useAuditItems } from '../../sidebar/header/actions/hooks/useAuditItems';

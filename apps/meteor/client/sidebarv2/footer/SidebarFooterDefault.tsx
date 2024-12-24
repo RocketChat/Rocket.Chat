@@ -3,7 +3,6 @@ import { Box, SidebarDivider, Palette, SidebarFooter as Footer } from '@rocket.c
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useThemeMode } from '@rocket.chat/ui-theming';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { SidebarFooterWatermark } from './SidebarFooterWatermark';
 

@@ -3,7 +3,7 @@ import { IconButton } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent } from 'react';
-import React, { memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRemoveBusinessHour } from './useRemoveBusinessHour';

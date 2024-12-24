@@ -2,7 +2,7 @@ import { Box, FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, Bu
 import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, SyntheticEvent } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../GenericModal';

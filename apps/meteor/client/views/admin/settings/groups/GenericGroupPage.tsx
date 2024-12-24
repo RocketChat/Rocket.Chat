@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import SettingsGroupPage from '../SettingsGroupPage';
 import Section from '../SettingsSection';

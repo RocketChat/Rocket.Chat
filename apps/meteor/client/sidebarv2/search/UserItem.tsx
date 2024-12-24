@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { SidebarV2ItemIcon } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import { ReactiveUserStatus } from '../../components/UserStatus';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';

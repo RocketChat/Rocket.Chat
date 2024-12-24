@@ -1,5 +1,4 @@
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { HeaderToolbarAction } from '../../../../components/Header';

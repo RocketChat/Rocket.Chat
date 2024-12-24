@@ -1,5 +1,5 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import React, { Suspense, lazy, useCallback, useMemo } from 'react';
+import { Suspense, lazy, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useIsVoipEnterprise } from '../contexts/CallContext';

@@ -1,7 +1,6 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { CheckBox, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
 
 import { GenericTableRow, GenericTableCell } from '../../../../../../components/GenericTable';
 import { RoomIcon } from '../../../../../../components/RoomIcon';

@@ -1,6 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
-import React from 'react';
 
 type SanitizeProps = {
 	html: string;

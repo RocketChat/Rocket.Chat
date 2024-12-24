@@ -2,7 +2,6 @@ import type { IEmailInboxPayload } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericTableCell } from '../../../components/GenericTable';

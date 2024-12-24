@@ -1,6 +1,6 @@
 import { useRouteParameter, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import AppDetailsPage from './AppDetailsPage';
 import AppInstallPage from './AppInstallPage';

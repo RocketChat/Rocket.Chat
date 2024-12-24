@@ -2,7 +2,7 @@ import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitl
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useMemo, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 
 import SendTestButton from './SendTestButton';
 import GenericNoResults from '../../../components/GenericNoResults';

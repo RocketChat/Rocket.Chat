@@ -1,7 +1,6 @@
 import { Button } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation, useAllPermissions, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import PageHeader from '../../components/Page/PageHeader';
 

@@ -1,7 +1,7 @@
 import { useMutableCallback, useStableArray } from '@rocket.chat/fuselage-hooks';
 import { useUserId, useSetting, useRouter, useRouteParameter, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { useRoom } from '../contexts/RoomContext';
 import { RoomToolboxContext } from '../contexts/RoomToolboxContext';

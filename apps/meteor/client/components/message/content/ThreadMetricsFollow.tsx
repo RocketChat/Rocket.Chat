@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageMetricsItem, MessageMetricsFollowing } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import ThreadMetricsBadge from './ThreadMetricsUnreadBadge';
 import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';

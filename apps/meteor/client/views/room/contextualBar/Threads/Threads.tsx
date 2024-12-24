@@ -1,5 +1,3 @@
-import React from 'react';
-
 import Thread from './Thread';
 import ThreadList from './ThreadList';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';

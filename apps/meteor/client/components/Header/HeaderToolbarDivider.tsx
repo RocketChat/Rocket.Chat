@@ -5,7 +5,7 @@ import {
 	HeaderV2ToolbarDivider,
 	HeaderToolbarDivider as HeaderToolbarDividerComponent,
 } from '@rocket.chat/ui-client';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 const HeaderToolbarDivider = () => (
 	<FeaturePreview feature='newNavigation'>

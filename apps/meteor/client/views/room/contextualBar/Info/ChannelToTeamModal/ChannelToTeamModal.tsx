@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import ChannelToTeamConfirmation from './ChannelToTeamConfirmation';
 import ChannelToTeamSelection from './ChannelToTeamSelection';

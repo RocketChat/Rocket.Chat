@@ -1,5 +1,3 @@
-import React from 'react';
-
 import MonitorsPage from './MonitorsPage';
 import PageSkeleton from '../../components/PageSkeleton';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';

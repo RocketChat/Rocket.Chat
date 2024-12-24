@@ -3,7 +3,7 @@ import { Box, Pagination, States, StatesSubtitle, StatesTitle } from '@rocket.ch
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, SetStateAction } from 'react';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppRequestItem from './AppRequestItem';

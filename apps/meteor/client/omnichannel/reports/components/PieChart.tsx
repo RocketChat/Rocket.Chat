@@ -2,7 +2,6 @@ import { Pie } from '@nivo/pie';
 import { Tooltip } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
-import React from 'react';
 
 import { REPORTS_CHARTS_THEME } from './constants';
 

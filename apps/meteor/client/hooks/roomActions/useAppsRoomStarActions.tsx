@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { GenericMenu, HeaderToolbarAction } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { UiKitTriggerTimeoutError } from '../../../app/ui-message/client/UiKitTriggerTimeoutError';

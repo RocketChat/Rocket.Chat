@@ -1,7 +1,7 @@
 import { ToastBarProvider, useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { ToastMessagesContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { getErrorMessage } from '../lib/errorHandling';
 import { dispatchToastMessage, subscribeToToastMessages } from '../lib/toast';

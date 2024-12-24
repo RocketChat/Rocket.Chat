@@ -1,6 +1,5 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useRouter, useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import TagEdit from './TagEdit';
 import TagEditWithData from './TagEditWithData';

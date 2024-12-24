@@ -1,5 +1,4 @@
 import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import ContactInfo from '../contactInfo/ContactInfo';
 import ContactInfoError from '../contactInfo/ContactInfoError';

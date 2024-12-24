@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import React from 'react';
 
 import AdminSidebar from './sidebar/AdminSidebar';
 import SidebarPortal from '../../sidebar/SidebarPortal';

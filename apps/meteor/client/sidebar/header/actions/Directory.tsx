@@ -2,7 +2,6 @@ import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRouter, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
-import React from 'react';
 
 type DirectoryProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 

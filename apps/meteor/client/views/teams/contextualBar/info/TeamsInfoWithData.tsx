@@ -1,6 +1,6 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import TeamsInfo from './TeamsInfo';
 import { useRoom } from '../../../room/contexts/RoomContext';

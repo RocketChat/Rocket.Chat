@@ -1,6 +1,6 @@
 import { EmojiPickerNotFound } from '@rocket.chat/ui-client';
 import type { MouseEvent } from 'react';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { VirtuosoGridHandle } from 'react-virtuoso';
 import { VirtuosoGrid } from 'react-virtuoso';

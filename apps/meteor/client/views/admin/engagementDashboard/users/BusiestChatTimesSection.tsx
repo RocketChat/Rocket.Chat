@@ -1,6 +1,6 @@
 import { Select } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';

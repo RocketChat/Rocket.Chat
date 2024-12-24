@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type { Ref } from 'react';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 
 const SearchingResultWrapper = forwardRef(function SearchingResultWrapper(props, ref: Ref<HTMLDivElement>) {
 	const searchResultWrapperStyle = css`

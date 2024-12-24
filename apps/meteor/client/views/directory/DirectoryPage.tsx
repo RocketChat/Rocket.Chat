@@ -1,7 +1,7 @@
 import { Tabs } from '@rocket.chat/fuselage';
 import { useRouter, useRouteParameter, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageContent } from '../../components/Page';

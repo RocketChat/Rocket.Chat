@@ -2,7 +2,7 @@ import { IconButton, Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ReactElement } from 'react';
-import React, { memo, useState } from 'react';
+import { memo, useState } from 'react';
 
 type CondensedProps = {
 	title: ReactElement | string;

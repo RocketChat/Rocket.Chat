@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import React, { lazy } from 'react';
+import { lazy } from 'react';
 
 import { hasAllPermission } from '../../app/authorization/client';
 import { appLayout } from '../lib/appLayout';

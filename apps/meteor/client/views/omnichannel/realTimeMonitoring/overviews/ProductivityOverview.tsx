@@ -1,7 +1,6 @@
 import type { Box } from '@rocket.chat/fuselage';
 import type { OperationParams } from '@rocket.chat/rest-typings';
 import type { ComponentPropsWithoutRef, MutableRefObject } from 'react';
-import React from 'react';
 
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import CounterContainer from '../counter/CounterContainer';

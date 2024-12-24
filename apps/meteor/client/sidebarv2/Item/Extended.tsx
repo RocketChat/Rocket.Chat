@@ -12,7 +12,7 @@ import {
 import { useEffectEvent, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { HTMLAttributes, ReactNode } from 'react';
-import React, { memo, useState } from 'react';
+import { memo, useState } from 'react';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 

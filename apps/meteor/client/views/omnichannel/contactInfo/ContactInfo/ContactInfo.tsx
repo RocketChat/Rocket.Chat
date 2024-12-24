@@ -2,7 +2,6 @@ import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Callout, IconButton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { usePermission, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ReviewContactModal from './ReviewContactModal';

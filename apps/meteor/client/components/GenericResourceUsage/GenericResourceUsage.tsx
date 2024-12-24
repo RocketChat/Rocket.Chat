@@ -1,7 +1,6 @@
 import { Box, ProgressBar } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
-import React from 'react';
 
 const GenericResourceUsage = ({
 	title,

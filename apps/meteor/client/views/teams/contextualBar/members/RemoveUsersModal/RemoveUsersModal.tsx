@@ -1,5 +1,5 @@
 import type { Serialized, IRoom } from '@rocket.chat/core-typings';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import BaseRemoveUsersModal from './BaseRemoveUsersModal';
 import GenericModalSkeleton from '../../../../../components/GenericModal/GenericModalSkeleton';

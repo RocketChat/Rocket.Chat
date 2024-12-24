@@ -1,7 +1,7 @@
 import type { Button } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { useRef, useCallback } from 'react';
+import { useRef, useCallback } from 'react';
 
 import type { CategoryDropdownItem, CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
 import { isValidReference } from '../../helpers/isValidReference';

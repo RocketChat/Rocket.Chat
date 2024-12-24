@@ -1,7 +1,6 @@
 import type { IAuditLog, IRoom } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import type { Dispatch, SetStateAction } from 'react';
-import React from 'react';
 import { useController } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 

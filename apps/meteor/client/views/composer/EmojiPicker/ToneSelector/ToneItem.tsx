@@ -1,5 +1,4 @@
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
 
 const ToneItem = ({ tone }: { tone: number }) => {
 	let toneEmoji;

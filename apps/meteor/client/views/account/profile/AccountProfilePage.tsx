@@ -12,7 +12,7 @@ import {
 	useSetting,
 } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import AccountProfileForm from './AccountProfileForm';

@@ -2,7 +2,6 @@ import type { MessageQuoteAttachment, IMessage } from '@rocket.chat/core-typings
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';

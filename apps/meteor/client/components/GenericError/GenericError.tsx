@@ -1,6 +1,5 @@
 import { Box, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 type GenericErrorProps = {

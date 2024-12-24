@@ -2,7 +2,6 @@ import { Button, Modal, Field, FieldGroup, FieldLabel, FieldRow, TextInput } fro
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useUser } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 type RemoveExtensionModalProps = {

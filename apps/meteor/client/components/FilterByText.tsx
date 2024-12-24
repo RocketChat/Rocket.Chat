@@ -1,7 +1,7 @@
 import { Box, Icon, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import type { ChangeEvent, ComponentPropsWithoutRef, FormEvent } from 'react';
-import React, { forwardRef, memo, useCallback } from 'react';
+import { forwardRef, memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // TODO: consider changing the type of TextInput's `onChange` to (event: ChangeEvent<HTMLInputElement>) => void

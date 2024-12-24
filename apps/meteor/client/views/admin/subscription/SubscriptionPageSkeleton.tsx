@@ -1,5 +1,5 @@
 import { Box, Grid, Skeleton } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 const SubscriptionPageSkeleton = () => (
 	<Box marginBlock='none' marginInline='auto' width='full' color='default'>

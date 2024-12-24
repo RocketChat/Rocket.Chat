@@ -1,7 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EditRoom from './EditRoom';

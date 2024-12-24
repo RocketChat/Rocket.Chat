@@ -1,7 +1,7 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useCustomSound } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';

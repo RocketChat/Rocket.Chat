@@ -1,7 +1,6 @@
 import { isE2EEMessage, type IMessage } from '@rocket.chat/core-typings';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useMessageActionAppsActionButtons } from './useMessageActionAppsActionButtons';

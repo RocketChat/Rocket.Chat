@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 import type { ReactElement } from 'react';
-import React, { lazy } from 'react';
+import { lazy } from 'react';
 
 const ConnectionStatusBar = lazy(() => import('../components/connectionStatus/ConnectionStatusBar'));
 const BannerRegion = lazy(() => import('../views/banners/BannerRegion'));

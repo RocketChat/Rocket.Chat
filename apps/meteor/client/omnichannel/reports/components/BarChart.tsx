@@ -2,7 +2,7 @@ import type { BarCustomLayerProps, BarDatum } from '@nivo/bar';
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Palette, Tooltip } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactNode } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { REPORTS_CHARTS_THEME } from './constants';
 

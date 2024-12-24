@@ -1,6 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppsList from '../AppsList';

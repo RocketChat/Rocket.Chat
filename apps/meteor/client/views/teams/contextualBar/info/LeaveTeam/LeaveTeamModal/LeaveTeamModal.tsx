@@ -1,7 +1,7 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
-import React, { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
 import LeaveTeamModalChannels from './LeaveTeamModalChannels';
 import LeaveTeamModalConfirmation from './LeaveTeamModalConfirmation';

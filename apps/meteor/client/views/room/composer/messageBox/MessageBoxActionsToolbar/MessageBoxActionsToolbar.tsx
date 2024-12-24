@@ -6,7 +6,7 @@ import { MessageComposerAction, MessageComposerActionsDivider } from '@rocket.ch
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEvent } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import { useAudioMessageAction } from './hooks/useAudioMessageAction';
 import { useCreateDiscussionAction } from './hooks/useCreateDiscussionAction';

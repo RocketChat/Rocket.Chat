@@ -1,7 +1,6 @@
 import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import React from 'react';
 
 import FileItemIcon from './FileItemIcon';
 import FileItemMenu from './FileItemMenu';

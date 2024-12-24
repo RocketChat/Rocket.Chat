@@ -26,7 +26,7 @@ import {
 	usePermissionWithScopedRoles,
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useEncryptedRoomDescription } from './hooks/useEncryptedRoomDescription';

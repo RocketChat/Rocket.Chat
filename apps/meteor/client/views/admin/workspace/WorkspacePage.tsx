@@ -1,7 +1,7 @@
 import type { IWorkspaceInfo, IStats } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Callout, CardGrid } from '@rocket.chat/fuselage';
 import type { IInstance } from '@rocket.chat/rest-typings';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DeploymentCard from './DeploymentCard/DeploymentCard';

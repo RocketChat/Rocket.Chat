@@ -1,7 +1,6 @@
 import { AccordionItem, Box } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';

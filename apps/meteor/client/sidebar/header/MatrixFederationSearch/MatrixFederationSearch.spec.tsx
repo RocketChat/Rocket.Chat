@@ -1,7 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { VirtuosoMockContext } from 'react-virtuoso';
 
 import MatrixFederationSearch from './MatrixFederationSearch';

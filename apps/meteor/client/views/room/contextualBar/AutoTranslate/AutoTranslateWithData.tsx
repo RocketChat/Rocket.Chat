@@ -1,7 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLanguage } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo, useEffect, useState, memo } from 'react';
+import { useMemo, useEffect, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoTranslate from './AutoTranslate';

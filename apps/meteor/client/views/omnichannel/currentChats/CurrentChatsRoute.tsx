@@ -1,6 +1,6 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import type { ReactElement } from 'react';
 
 import CurrentChatsPage from './CurrentChatsPage';

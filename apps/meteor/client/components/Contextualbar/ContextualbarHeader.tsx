@@ -1,7 +1,7 @@
 import { ContextualbarV2Header, ContextualbarHeader as ContextualbarHeaderComponent } from '@rocket.chat/fuselage';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 type ContextualbarHeaderProps = {
 	expanded?: boolean;

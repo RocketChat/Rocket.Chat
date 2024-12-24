@@ -4,7 +4,7 @@ import type { Method, OperationParams, OperationResult, PathPattern, UrlParams }
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export const MockedServerContext = ({
 	handleRequest,

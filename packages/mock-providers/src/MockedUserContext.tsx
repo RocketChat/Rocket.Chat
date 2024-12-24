@@ -1,5 +1,4 @@
 import { UserContext } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import type { ContextType, ReactNode } from 'react';
 
 const userContextValue: ContextType<typeof UserContext> = {

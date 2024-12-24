@@ -1,7 +1,6 @@
 import { Badge } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import type { ComponentProps } from 'react';
 
 const getBadgeVariantAndTitle = (

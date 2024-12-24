@@ -5,7 +5,7 @@ import type { UploadResult } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
 import type { ContextType, ReactElement, ReactNode } from 'react';
-import React, { useContext, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 
 const logAction = action('ServerContext');
 

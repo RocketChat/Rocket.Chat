@@ -2,7 +2,7 @@ import { AutoComplete, Option } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { memo, useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 
 type VisitorAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
 

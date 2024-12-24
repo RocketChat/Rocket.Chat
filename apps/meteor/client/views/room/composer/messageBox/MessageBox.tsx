@@ -14,7 +14,7 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler, MouseEvent } from 'react';
-import React, { memo, useRef, useReducer, useCallback } from 'react';
+import { memo, useRef, useReducer, useCallback } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';

@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Tabs, TabsItem, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/fuselage';
 import { useTranslation, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import UserMessages from './UserMessages';
 import UserReportInfo from './UserReports/UserReportInfo';

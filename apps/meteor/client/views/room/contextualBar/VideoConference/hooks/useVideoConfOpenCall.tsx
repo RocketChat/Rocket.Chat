@@ -1,5 +1,5 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import VideoConfBlockModal from '../VideoConfBlockModal';
 

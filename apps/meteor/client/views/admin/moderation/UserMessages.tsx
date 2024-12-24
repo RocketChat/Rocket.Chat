@@ -2,7 +2,7 @@ import { Box, Callout, Message, StatesAction, StatesActions, StatesIcon, StatesT
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MessageContextFooter from './MessageContextFooter';

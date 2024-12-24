@@ -2,7 +2,6 @@ import type { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.c
 import { Button, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EditBusinessHours from './EditBusinessHours';

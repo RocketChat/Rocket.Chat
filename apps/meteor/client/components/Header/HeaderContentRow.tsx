@@ -6,7 +6,7 @@ import {
 	HeaderContentRow as HeaderContentRowComponent,
 } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 const HeaderContentRow = (props: ComponentProps<typeof HeaderContentRowComponent>) => (
 	<FeaturePreview feature='newNavigation'>

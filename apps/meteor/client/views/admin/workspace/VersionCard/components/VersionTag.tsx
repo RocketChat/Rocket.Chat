@@ -1,5 +1,4 @@
 import { Tag } from '@rocket.chat/fuselage';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 export type VersionStatus = 'outdated' | 'latest' | 'available_version' | undefined;

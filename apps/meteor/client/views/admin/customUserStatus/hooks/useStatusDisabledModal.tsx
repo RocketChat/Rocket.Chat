@@ -1,6 +1,5 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRole, useRoute, useSetModal } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import CustomUserStatusDisabledModal from '../CustomUserStatusDisabledModal';
 
