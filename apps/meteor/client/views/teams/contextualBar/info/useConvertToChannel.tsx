@@ -7,20 +7,24 @@ import { useTranslation } from 'react-i18next';
 import ConvertToChannelModal from './ConvertToChannelModal';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 
-export const useConvertToChannel = (room: IRoom) => {
+export const useConvertToChannel = ({ _id, teamId }: IRoom) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const userId = useUserId();
-	const canEdit = usePermission('edit-team-channel', room._id);
+	const canEdit = usePermission('edit-team-channel', _id);
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const convertTeamToChannel = useEndpointAction('POST', '/v1/teams.convertToChannel');
 
 	const onClickConvertToChannel = useEffectEvent(() => {
+		if (!userId || !teamId) {
+			throw new Error('Invalid teamId or userId');
+		}
+
 		const onConfirm = async (roomsToRemove: { [key: string]: Serialized<IRoom> }) => {
 			try {
 				await convertTeamToChannel({
-					teamId: room.teamId!,
+					teamId,
 					roomsToRemove: Object.keys(roomsToRemove),
 				});
 
@@ -37,8 +41,8 @@ export const useConvertToChannel = (room: IRoom) => {
 				onClose={() => setModal(null)}
 				onCancel={() => setModal(null)}
 				onConfirm={onConfirm}
-				teamId={room.teamId!}
-				userId={userId!}
+				teamId={teamId}
+				userId={userId}
 			/>,
 		);
 	});
