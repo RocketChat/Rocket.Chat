@@ -4,9 +4,6 @@ import type { IFederationRoomEventsModel } from '@rocket.chat/model-typings';
 import type { Db, DeleteResult, IndexDescription } from 'mongodb';
 
 import { FederationEventsModel } from './FederationEvents';
-import { contextDefinitions } from '../../../app/federation/server/lib/context';
-
-const { type, contextQuery } = contextDefinitions.ROOM;
 
 export class FederationRoomEvents extends FederationEventsModel implements IFederationRoomEventsModel {
 	constructor(db: Db) {
@@ -19,11 +16,11 @@ export class FederationRoomEvents extends FederationEventsModel implements IFede
 
 	// @ts-expect-error - TODO: Bad extends
 	async createGenesisEvent(origin: string, room: IRoom): Promise<Omit<IFederationEvent, '_updatedAt'>> {
-		return super.createGenesisEvent(origin, contextQuery(room._id), { contextType: type, room });
+		return super.createGenesisEvent(origin, { roomId: room._id }, { contextType: 'room', room });
 	}
 
 	async createDeleteRoomEvent(origin: string, roomId: string): Promise<Omit<IFederationEvent, '_updatedAt'>> {
-		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_DELETE, { roomId });
+		return super.createEvent(origin, { roomId }, eventTypes.ROOM_DELETE, { roomId });
 	}
 
 	async createAddUserEvent(
@@ -33,7 +30,7 @@ export class FederationRoomEvents extends FederationEventsModel implements IFede
 		subscription: ISubscription,
 		domainsAfterAdd: string[],
 	): Promise<Omit<IFederationEvent, '_updatedAt'>> {
-		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_ADD_USER, {
+		return super.createEvent(origin, { roomId }, eventTypes.ROOM_ADD_USER, {
 			roomId,
 			user,
 			subscription,
@@ -47,7 +44,7 @@ export class FederationRoomEvents extends FederationEventsModel implements IFede
 		user: IUser,
 		domainsAfterRemoval: string[],
 	): Promise<Omit<IFederationEvent, '_updatedAt'>> {
-		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_REMOVE_USER, {
+		return super.createEvent(origin, { roomId }, eventTypes.ROOM_REMOVE_USER, {
 			roomId,
 			user,
 			domainsAfterRemoval,
@@ -60,7 +57,7 @@ export class FederationRoomEvents extends FederationEventsModel implements IFede
 		user: IUser,
 		domainsAfterLeave: string[],
 	): Promise<Omit<IFederationEvent, '_updatedAt'>> {
-		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_USER_LEFT, {
+		return super.createEvent(origin, { roomId }, eventTypes.ROOM_USER_LEFT, {
 			roomId,
 			user,
 			domainsAfterLeave,
@@ -68,7 +65,7 @@ export class FederationRoomEvents extends FederationEventsModel implements IFede
 	}
 
 	async createMessageEvent(origin: string, roomId: string, message: string): Promise<Omit<IFederationEvent, '_updatedAt'>> {
-		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_MESSAGE, { message });
+		return super.createEvent(origin, { roomId }, eventTypes.ROOM_MESSAGE, { message });
 	}
 
 	async createEditMessageEvent(
@@ -82,13 +79,13 @@ export class FederationRoomEvents extends FederationEventsModel implements IFede
 			federation: originalMessage.federation,
 		};
 
-		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_EDIT_MESSAGE, {
+		return super.createEvent(origin, { roomId }, eventTypes.ROOM_EDIT_MESSAGE, {
 			message,
 		});
 	}
 
 	async createDeleteMessageEvent(origin: string, roomId: string, messageId: string): Promise<Omit<IFederationEvent, '_updatedAt'>> {
-		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_DELETE_MESSAGE, {
+		return super.createEvent(origin, { roomId }, eventTypes.ROOM_DELETE_MESSAGE, {
 			roomId,
 			messageId,
 		});
@@ -101,7 +98,7 @@ export class FederationRoomEvents extends FederationEventsModel implements IFede
 		username: string,
 		reaction: string,
 	): Promise<Omit<IFederationEvent, '_updatedAt'>> {
-		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_SET_MESSAGE_REACTION, {
+		return super.createEvent(origin, { roomId }, eventTypes.ROOM_SET_MESSAGE_REACTION, {
 			roomId,
 			messageId,
 			username,
@@ -116,7 +113,7 @@ export class FederationRoomEvents extends FederationEventsModel implements IFede
 		username: string,
 		reaction: string,
 	): Promise<Omit<IFederationEvent, '_updatedAt'>> {
-		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_UNSET_MESSAGE_REACTION, {
+		return super.createEvent(origin, { roomId }, eventTypes.ROOM_UNSET_MESSAGE_REACTION, {
 			roomId,
 			messageId,
 			username,
@@ -125,20 +122,20 @@ export class FederationRoomEvents extends FederationEventsModel implements IFede
 	}
 
 	async createMuteUserEvent(origin: string, roomId: string, user: IUser): Promise<Omit<IFederationEvent, '_updatedAt'>> {
-		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_MUTE_USER, {
+		return super.createEvent(origin, { roomId }, eventTypes.ROOM_MUTE_USER, {
 			roomId,
 			user,
 		});
 	}
 
 	async createUnmuteUserEvent(origin: string, roomId: string, user: IUser): Promise<Omit<IFederationEvent, '_updatedAt'>> {
-		return super.createEvent(origin, contextQuery(roomId), eventTypes.ROOM_UNMUTE_USER, {
+		return super.createEvent(origin, { roomId }, eventTypes.ROOM_UNMUTE_USER, {
 			roomId,
 			user,
 		});
 	}
 
 	async removeRoomEvents(roomId: string): Promise<DeleteResult> {
-		return super.removeContextEvents(contextQuery(roomId));
+		return super.removeContextEvents({ roomId });
 	}
 }
