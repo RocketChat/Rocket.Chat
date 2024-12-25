@@ -17,7 +17,7 @@ const AppsUsageCardSection = ({ title, tip, appsCount, appsMaxCount, warningThre
 	const labelId = useUniqueId();
 
 	return (
-		<Box fontScale='c1' mb={12} title={tip}>
+		<Box fontScale='c1' mb={12} title={tip} display='flex' flexDirection='column' width='100%'>
 			<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
 				<div id={labelId}>{title}</div>
 

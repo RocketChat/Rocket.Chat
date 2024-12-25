@@ -126,6 +126,10 @@ export async function saveDepartment(
 		await updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
 	}
 
+	if (department?.enabled !== departmentData.enabled) {
+		void notifyOnLivechatDepartmentAgentChangedByDepartmentId(departmentDB._id, department ? 'updated' : 'inserted');
+	}
+
 	// Disable event
 	if (department?.enabled && !departmentDB?.enabled) {
 		await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
@@ -231,8 +235,8 @@ export async function setDepartmentForGuest({ token, department }: { token: stri
 export async function removeDepartment(departmentId: string) {
 	livechatLogger.debug(`Removing department: ${departmentId}`);
 
-	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'businessHourId'>>(departmentId, {
-		projection: { _id: 1, businessHourId: 1 },
+	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'businessHourId' | 'parentId'>>(departmentId, {
+		projection: { _id: 1, businessHourId: 1, parentId: 1 },
 	});
 	if (!department) {
 		throw new Error('error-department-not-found');

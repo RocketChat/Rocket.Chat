@@ -7,28 +7,20 @@ export class HomeFlextabRoom {
 		this.page = page;
 	}
 
-	get roomInfoTab(): Locator {
-		return this.page.getByRole('dialog', { exact: true });
-	}
-
 	get btnEdit(): Locator {
 		return this.page.locator('role=button[name="Edit"]');
+	}
+
+	get btnLeave(): Locator {
+		return this.page.locator('role=button[name="Leave"]');
 	}
 
 	get btnMore(): Locator {
 		return this.page.locator('role=button[name="More"]');
 	}
 
-	get btnLeave(): Locator {
-		return this.roomInfoTab.locator('role=button[name="Leave"]');
-	}
-
-	get btnDelete(): Locator {
-		return this.roomInfoTab.locator('role=button[name="Delete"]');
-	}
-
 	getMoreOption(option: string) {
-		return this.roomInfoTab.locator(`role=menuitem[name="${option}"]`);
+		return this.page.locator(`role=menuitem[name="${option}"]`);
 	}
 
 	get confirmLeaveModal(): Locator {
@@ -121,5 +113,18 @@ export class HomeFlextabRoom {
 
 	get checkboxIgnoreThreads(): Locator {
 		return this.page.getByRole('dialog').locator('label', { has: this.page.getByRole('checkbox', { name: 'Do not prune Threads' }) });
+	}
+
+	get checkboxChannels(): Locator {
+		return this.page.getByRole('dialog').locator('label', { has: this.page.getByRole('checkbox', { name: 'Channels' }) });
+	}
+
+	get checkboxDiscussions(): Locator {
+		return this.page.getByRole('dialog').locator('label', { has: this.page.getByRole('checkbox', { name: 'Discussions' }) });
+	}
+
+	async toggleSidepanelItems() {
+		await this.checkboxChannels.click();
+		await this.checkboxDiscussions.click();
 	}
 }
