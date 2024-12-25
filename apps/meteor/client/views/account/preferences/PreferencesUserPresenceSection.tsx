@@ -1,4 +1,4 @@
-import { Accordion, AccordionItem, Field, FieldLabel, FieldRow, NumberInput, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
+import { AccordionItem, Field, FieldLabel, FieldRow, NumberInput, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -13,7 +13,7 @@ const PreferencesUserPresenceSection = () => {
 	const enableAutoAwayId = useUniqueId();
 
 	return (
-		<Accordion.Item title={t('User_Presence')}>
+		<AccordionItem title={t('User_Presence')}>
 			<FieldGroup>
 				<Field>
 					<FieldRow>
@@ -36,7 +36,7 @@ const PreferencesUserPresenceSection = () => {
 					/>
 				</Field>
 			</FieldGroup>
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 
