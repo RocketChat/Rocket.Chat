@@ -3,7 +3,7 @@ import { Icon } from '@rocket.chat/fuselage';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../components/GenericModal';
+import GenericModal from '../../../../../../components/GenericModal';
 
 type SecondStepsProps = {
 	onClose: () => void;

@@ -34,7 +34,6 @@ import type {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 
 export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISubscription>>) {
@@ -1856,7 +1855,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				name: user.name,
 			},
 			...(room.prid && { prid: room.prid }),
-			...getDefaultSubscriptionPref(user),
 			...extraData,
 		};
 
@@ -1894,7 +1892,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				name: user.name,
 			},
 			...(room.prid && { prid: room.prid }),
-			...getDefaultSubscriptionPref(user),
 			...extraData,
 		}));
 

@@ -33,7 +33,6 @@ import type {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { getValue } from '../../../app/settings/server/raw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 /**
@@ -220,11 +219,13 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		start,
 		end,
 		departmentId,
+		inactivityTimeout,
 		onlyCount = false,
 		options = {},
 	}: {
 		start: Date;
 		end: Date;
+		inactivityTimeout: number;
 		departmentId?: string;
 		onlyCount?: boolean;
 		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
@@ -233,7 +234,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			$match: {
 				't': 'l',
 				'metrics.visitorInactivity': {
-					$gte: await getValue('Livechat_visitor_inactivity_timeout'),
+					$gte: inactivityTimeout,
 				},
 				'ts': { $gte: new Date(start) },
 				'closedAt': { $lte: new Date(end) },
@@ -275,12 +276,14 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	async findPercentageOfAbandonedRooms({
 		start,
 		end,
+		inactivityTimeout,
 		departmentId,
 		onlyCount = false,
 		options = {},
 	}: {
 		start: Date;
 		end: Date;
+		inactivityTimeout: number;
 		departmentId?: string;
 		onlyCount?: boolean;
 		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
@@ -305,8 +308,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 								$and: [
 									{ $ifNull: ['$metrics.visitorInactivity', false] },
 									{
-										// TODO: move these calls to outside model
-										$gte: ['$metrics.visitorInactivity', await getValue('Livechat_visitor_inactivity_timeout')],
+										$gte: ['$metrics.visitorInactivity', inactivityTimeout],
 									},
 								],
 							},

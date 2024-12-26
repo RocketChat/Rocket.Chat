@@ -126,6 +126,10 @@ export async function saveDepartment(
 		await updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
 	}
 
+	if (department?.enabled !== departmentData.enabled) {
+		void notifyOnLivechatDepartmentAgentChangedByDepartmentId(departmentDB._id, department ? 'updated' : 'inserted');
+	}
+
 	// Disable event
 	if (department?.enabled && !departmentDB?.enabled) {
 		await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
