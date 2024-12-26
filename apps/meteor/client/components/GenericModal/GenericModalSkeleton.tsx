@@ -1,6 +1,5 @@
 import { Skeleton } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
-import React from 'react';
 
 import GenericModal from './GenericModal';
 

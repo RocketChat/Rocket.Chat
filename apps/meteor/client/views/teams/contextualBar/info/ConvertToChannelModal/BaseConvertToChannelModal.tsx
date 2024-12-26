@@ -1,6 +1,6 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 import FirstStep from './ModalSteps/FirstStep';
 import SecondStep from './ModalSteps/SecondStep';
@@ -33,7 +33,7 @@ const BaseConvertToChannelModal = ({
 
 	const eligibleRooms = rooms;
 
-	const onChangeRoomSelection = useCallback((room) => {
+	const onChangeRoomSelection = useCallback((room: Serialized<IRoom>) => {
 		setSelectedRooms((selectedRooms) => {
 			if (selectedRooms[room._id]) {
 				delete selectedRooms[room._id];

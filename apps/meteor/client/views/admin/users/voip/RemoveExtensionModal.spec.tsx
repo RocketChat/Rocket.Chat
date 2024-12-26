@@ -1,6 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, waitFor } from '@testing-library/react';
-import React from 'react';
 
 import '@testing-library/jest-dom';
 import RemoveExtensionModal from './RemoveExtensionModal';

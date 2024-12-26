@@ -1,7 +1,7 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRoute } from '@rocket.chat/ui-contexts';
-import React, { useRef, useCallback } from 'react';
+import { useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SlaEditWithData from './SlaEditWithData';

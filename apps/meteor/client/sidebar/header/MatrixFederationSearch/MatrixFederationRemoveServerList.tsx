@@ -2,7 +2,6 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Option, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React from 'react';
 
 type MatrixFederationRemoveServerListProps = {
 	servers: Array<{ name: string; default: boolean; local: boolean }>;

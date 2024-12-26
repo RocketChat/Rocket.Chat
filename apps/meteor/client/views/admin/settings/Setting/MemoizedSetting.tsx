@@ -1,7 +1,7 @@
 import type { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { Box, Callout, Field, FieldHint, Margins } from '@rocket.chat/fuselage';
 import type { ElementType, ReactElement, ReactNode } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import ActionSettingInput from './inputs/ActionSettingInput';
 import AssetSettingInput from './inputs/AssetSettingInput';
@@ -54,7 +54,7 @@ type MemoizedSettingProps = {
 	value?: SettingValue;
 	editor?: SettingEditor;
 	onChangeValue?: (value: SettingValue) => void;
-	onChangeEditor?: (value: unknown) => void;
+	onChangeEditor?: (value: SettingEditor) => void;
 	onResetButtonClick?: () => void;
 	className?: string;
 	invisible?: boolean;

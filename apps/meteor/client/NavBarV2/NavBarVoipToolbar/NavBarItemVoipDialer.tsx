@@ -3,7 +3,7 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import { useVoipDialer, useVoipState } from '@rocket.chat/ui-voip';
 import type { HTMLAttributes } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type NavBarItemVoipDialerProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {

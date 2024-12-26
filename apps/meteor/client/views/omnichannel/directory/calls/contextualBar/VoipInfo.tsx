@@ -3,7 +3,7 @@ import { Box, Icon, Chip, ButtonGroup } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import moment from 'moment';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { InfoField } from './InfoField';

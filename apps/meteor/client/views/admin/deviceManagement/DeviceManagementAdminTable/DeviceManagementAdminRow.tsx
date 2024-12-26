@@ -2,7 +2,7 @@ import { Box, Menu, Option } from '@rocket.chat/fuselage';
 import { useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';

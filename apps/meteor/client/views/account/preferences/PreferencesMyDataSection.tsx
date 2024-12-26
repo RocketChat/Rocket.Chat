@@ -1,6 +1,6 @@
 import { AccordionItem, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MyDataModal from './MyDataModal';

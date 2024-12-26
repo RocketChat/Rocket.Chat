@@ -2,7 +2,6 @@ import type { ILivechatTag } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 
 import TagEdit from './TagEdit';
 import { ContextualbarSkeleton } from '../../components/Contextualbar';

@@ -1,6 +1,6 @@
 import { usePermission, useRouter, useSetModal, useCurrentModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DeviceManagementAdminPage from './DeviceManagementAdminPage';

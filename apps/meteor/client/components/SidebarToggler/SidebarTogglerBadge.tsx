@@ -1,6 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Badge } from '@rocket.chat/fuselage';
-import React from 'react';
 
 const SidebarTogglerBadge = ({ children }: { children?: unknown }) => (
 	<Box

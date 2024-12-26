@@ -1,7 +1,7 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import type { HTMLAttributes } from 'react';
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import tinykeys from 'tinykeys';
 
 import SearchList from '../../search/SearchList';

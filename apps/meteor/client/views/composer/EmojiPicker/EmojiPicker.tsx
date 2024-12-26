@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useRoute } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, KeyboardEvent, MouseEvent, RefObject } from 'react';
-import React, { useLayoutEffect, useState, useEffect, useRef } from 'react';
+import { useLayoutEffect, useState, useEffect, useRef } from 'react';
 import type { VirtuosoHandle } from 'react-virtuoso';
 
 import CategoriesResult from './CategoriesResult';

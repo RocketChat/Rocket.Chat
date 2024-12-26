@@ -1,6 +1,5 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import React from 'react';
 
 import { RoomActivityIcon } from '../../omnichannel/components/RoomActivityIcon';
 import { useOmnichannelPriorities } from '../../omnichannel/hooks/useOmnichannelPriorities';

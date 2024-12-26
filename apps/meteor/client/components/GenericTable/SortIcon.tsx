@@ -1,5 +1,4 @@
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
 
 type SortIconProps = {
 	direction?: 'asc' | 'desc';

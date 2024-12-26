@@ -2,7 +2,7 @@ import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitl
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useMemo, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 
 import SendTestButton from './SendTestButton';
 import GenericNoResults from '../../../components/GenericNoResults';
@@ -25,7 +25,7 @@ const EmailInboxTable = (): ReactElement => {
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'email' | 'active'>('name');
 
 	const onClick = useCallback(
-		(_id) => (): void => {
+		(_id: string) => (): void => {
 			router.push({
 				context: 'edit',
 				_id,

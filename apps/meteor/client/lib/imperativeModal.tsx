@@ -1,5 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
-import React, { Suspense, createElement } from 'react';
+import { Suspense, createElement } from 'react';
 import type { ComponentProps, ComponentType, ReactNode } from 'react';
 
 import { modalStore } from '../providers/ModalProvider/ModalStore';

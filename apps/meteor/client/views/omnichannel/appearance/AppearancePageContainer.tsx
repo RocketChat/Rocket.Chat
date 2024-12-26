@@ -1,6 +1,5 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppearancePage from './AppearancePage';

@@ -2,7 +2,7 @@ import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { storeQueryFunction } from './storeQueryFunction';
 import { AppClientOrchestratorInstance } from '../../apps/orchestrator';

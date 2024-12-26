@@ -1,6 +1,5 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
-import React from 'react';
 
 type NavbarProps = {
 	children?: ReactNode;

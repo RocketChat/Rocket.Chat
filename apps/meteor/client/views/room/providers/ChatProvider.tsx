@@ -1,5 +1,4 @@
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
 
 import { ChatContext } from '../contexts/ChatContext';
 import { useRoom } from '../contexts/RoomContext';

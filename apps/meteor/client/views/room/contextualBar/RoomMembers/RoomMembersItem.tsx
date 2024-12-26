@@ -13,7 +13,7 @@ import {
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement, MouseEvent } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import UserActions from './RoomMembersActions';
 import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';

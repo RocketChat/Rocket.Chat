@@ -1,6 +1,6 @@
 import { Box, CheckBox, Option, Tile } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 
 import type { CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
 

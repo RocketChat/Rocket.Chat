@@ -11,7 +11,7 @@ import {
 	useTranslation,
 	useRouter,
 } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 
 import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
 import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';

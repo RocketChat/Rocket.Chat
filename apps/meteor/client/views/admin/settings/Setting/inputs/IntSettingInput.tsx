@@ -1,6 +1,5 @@
 import { Field, FieldLabel, FieldRow, InputBox } from '@rocket.chat/fuselage';
 import type { FormEventHandler, ReactElement } from 'react';
-import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';

@@ -2,7 +2,6 @@ import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Butt
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import OutlookEventItem from './OutlookEventItem';

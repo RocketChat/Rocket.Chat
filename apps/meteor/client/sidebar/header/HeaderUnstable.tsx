@@ -1,7 +1,7 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SidebarHeaderToolbar from './SidebarHeaderToolbar';

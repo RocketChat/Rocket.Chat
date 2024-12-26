@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const useFormatDuration = (): ((duration: number) => string) => {
+export const useFormatDuration = () => {
 	const { t } = useTranslation();
 
 	return useCallback(
-		(duration) => {
+		(duration: number) => {
 			const days = Math.floor(duration / 86400);
 			const hours = Math.floor((duration % 86400) / 3600);
 			const minutes = Math.floor(((duration % 86400) % 3600) / 60);

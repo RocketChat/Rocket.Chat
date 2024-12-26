@@ -1,6 +1,5 @@
 import { Box, Icon, IconButton, Tag } from '@rocket.chat/fuselage';
 import type { ReactElement, MouseEvent } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 type FilePickerBreadcrumbsProps = {

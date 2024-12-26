@@ -6,7 +6,7 @@ import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import type { FilterOperators } from 'mongodb';
 import type { MutableRefObject, ReactNode } from 'react';
-import React, { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import { createReactiveSubscriptionFactory } from '../../../lib/createReactiveSubscriptionFactory';
 import type { EditableSetting, EditableSettingsContextValue } from '../EditableSettingsContext';

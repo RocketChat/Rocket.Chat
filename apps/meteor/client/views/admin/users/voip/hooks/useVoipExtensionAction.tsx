@@ -1,6 +1,5 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { Action } from '../../../../hooks/useActionSpread';

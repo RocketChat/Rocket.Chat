@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import ModalProvider from './ModalProvider';
 import ModalRegion from '../../views/modal/ModalRegion';

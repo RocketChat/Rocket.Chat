@@ -3,7 +3,7 @@ import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React, { memo, useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import CannedResponseForm from './components/cannedResponseForm';

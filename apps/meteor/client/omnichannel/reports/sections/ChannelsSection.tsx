@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { PieChart, ReportCard } from '../components';
 import { COLORS } from '../components/constants';

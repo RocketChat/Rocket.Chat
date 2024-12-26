@@ -1,7 +1,6 @@
 import { Box, Margins } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import LegendSymbol from './LegendSymbol';
 import { monochromaticColors, polychromaticColors } from './colors';

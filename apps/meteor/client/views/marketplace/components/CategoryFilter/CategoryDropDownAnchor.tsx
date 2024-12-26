@@ -2,7 +2,7 @@ import type { Button } from '@rocket.chat/fuselage';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import colorTokens from '@rocket.chat/fuselage-tokens/colors.json';
 import type { ComponentProps, MouseEventHandler } from 'react';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type CategoryDropDownAnchorProps = { selectedCategoriesCount: number; onClick?: MouseEventHandler<HTMLElement> } & ComponentProps<

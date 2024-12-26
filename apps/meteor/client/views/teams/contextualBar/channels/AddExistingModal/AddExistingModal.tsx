@@ -1,6 +1,6 @@
 import { Box, Button, Field, FieldLabel, Modal } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { memo, useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 

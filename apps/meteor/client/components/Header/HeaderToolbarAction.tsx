@@ -6,7 +6,7 @@ import {
 	HeaderToolbarAction as HeaderToolbarActionComponent,
 } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
-import React, { forwardRef, memo } from 'react';
+import { forwardRef, memo } from 'react';
 
 const HeaderToolbarAction = forwardRef<HTMLButtonElement, ComponentProps<typeof HeaderToolbarActionComponent>>(
 	function HeaderToolbarAction(props, ref) {

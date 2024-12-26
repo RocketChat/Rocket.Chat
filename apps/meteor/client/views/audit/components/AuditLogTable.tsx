@@ -2,7 +2,7 @@ import { Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useTranslation, useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import AuditLogEntry from './AuditLogEntry';
 import GenericNoResults from '../../../components/GenericNoResults';

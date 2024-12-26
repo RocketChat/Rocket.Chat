@@ -1,5 +1,4 @@
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import EditIncomingWebhook from './incoming/EditIncomingWebhook';
 import EditOutgoingWebhook from './outgoing/EditOutgoingWebhook';

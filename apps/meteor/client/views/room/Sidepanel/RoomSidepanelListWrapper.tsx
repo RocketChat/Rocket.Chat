@@ -1,7 +1,7 @@
 import { SidepanelList } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import type { ForwardedRef, HTMLAttributes } from 'react';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSidebarListNavigation } from '../../../sidebar/RoomList/useSidebarListNavigation';

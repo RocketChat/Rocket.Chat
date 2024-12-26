@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import AutoCompleteTagsMultiple from '../tags/AutoCompleteTagsMultiple';
 

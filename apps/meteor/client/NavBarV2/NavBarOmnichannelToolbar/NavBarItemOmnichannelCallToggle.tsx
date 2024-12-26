@@ -1,5 +1,4 @@
 import type { ComponentPropsWithoutRef } from 'react';
-import React from 'react';
 
 import NavBarItemOmnichannelCallToggleError from './NavBarItemOmnichannelCallToggleError';
 import NavBarItemOmnichannelCallToggleLoading from './NavBarItemOmnichannelCallToggleLoading';

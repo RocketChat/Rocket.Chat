@@ -9,7 +9,6 @@ import {
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getFileExtension } from '../../../../../../lib/utils/getFileExtension';

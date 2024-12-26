@@ -1,7 +1,7 @@
 import { States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 

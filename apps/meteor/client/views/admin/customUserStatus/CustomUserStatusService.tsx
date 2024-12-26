@@ -13,7 +13,6 @@ import {
 } from '@rocket.chat/fuselage';
 import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { ContextualbarContent, ContextualbarFooter } from '../../../components/Contextualbar';

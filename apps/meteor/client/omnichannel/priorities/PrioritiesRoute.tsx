@@ -1,6 +1,5 @@
 import { usePermission, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { PrioritiesPage } from './PrioritiesPage';
 import NotAuthorizedPage from '../../views/notAuthorized/NotAuthorizedPage';

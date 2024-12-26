@@ -2,7 +2,6 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement } from 'react';
-import React from 'react';
 
 import { ReactiveUserStatus } from '../components/UserStatus';
 

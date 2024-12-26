@@ -1,5 +1,4 @@
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import ChatsFiltersContextualBar from './chats/ChatsFiltersContextualBar';
 import ContactHistoryMessagesList from '../contactHistory/MessageList/ContactHistoryMessagesList';

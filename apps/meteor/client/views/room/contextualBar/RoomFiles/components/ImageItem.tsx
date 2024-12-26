@@ -1,5 +1,4 @@
 import { Avatar, Box } from '@rocket.chat/fuselage';
-import React from 'react';
 
 type ImageItemProps = {
 	id: string;

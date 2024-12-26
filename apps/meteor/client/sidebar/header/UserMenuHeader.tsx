@@ -2,7 +2,6 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Margins } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../components/MarkdownText';

@@ -2,7 +2,7 @@ import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitl
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import { hashQueryKey } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ContactTableRow from './ContactTableRow';

@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import SidebarItemsAssembler from '../../../components/Sidebar/SidebarItemsAssembler';

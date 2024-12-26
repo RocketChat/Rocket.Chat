@@ -1,5 +1,4 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import React from 'react';
 
 import ParentRoom from './ParentRoom';
 import { HeaderTagSkeleton } from '../../../components/Header';

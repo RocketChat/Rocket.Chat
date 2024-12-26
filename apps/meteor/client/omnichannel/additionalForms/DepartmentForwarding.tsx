@@ -2,7 +2,7 @@ import { Field, FieldLabel, FieldRow, FieldHint, Box, PaginatedMultiSelectFilter
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useDepartmentsList } from '../../components/Omnichannel/hooks/useDepartmentsList';

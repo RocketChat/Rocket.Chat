@@ -3,7 +3,7 @@ import { Box, Icon, Palette, StatusBullet } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';

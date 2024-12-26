@@ -1,6 +1,5 @@
 import { Field, FieldLabel, FieldRow, Flex, InputBox, Skeleton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 const SettingSkeleton = (): ReactElement => (
 	<Field>

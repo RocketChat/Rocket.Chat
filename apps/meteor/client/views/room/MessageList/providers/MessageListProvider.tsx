@@ -1,7 +1,7 @@
 import { isThreadMainMessage } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
-import type { ReactNode } from 'react';
-import React, { useMemo, memo } from 'react';
+import type { ReactNode, RefObject } from 'react';
+import { useMemo, memo } from 'react';
 
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
@@ -15,7 +15,7 @@ import { useLoadSurroundingMessages } from '../hooks/useLoadSurroundingMessages'
 
 type MessageListProviderProps = {
 	children: ReactNode;
-	messageListRef?: React.RefObject<HTMLElement>;
+	messageListRef?: RefObject<HTMLElement>;
 	attachmentDimension?: {
 		width?: number;
 		height?: number;

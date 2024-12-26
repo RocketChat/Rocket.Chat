@@ -3,8 +3,8 @@ import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, Menu, Option } from '@rocket.chat/fuselage';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import type { ReactElement, MouseEvent, KeyboardEvent } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Roles } from '../../../../../app/models/client/models/Roles';
@@ -25,7 +25,7 @@ type UsersTableRowProps = {
 	isMobile: boolean;
 	isLaptop: boolean;
 	onReload: () => void;
-	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
+	onClick: (id: IUser['_id'], e: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>) => void;
 	isSeatsCapExceeded: boolean;
 	showVoipExtension: boolean;
 };
@@ -150,14 +150,7 @@ const UsersTableRow = ({
 	const handleResendWelcomeEmail = () => resendWelcomeEmail.mutateAsync({ email: emails?.[0].address });
 
 	return (
-		<GenericTableRow
-			onKeyDown={(e): void => onClick(_id, e)}
-			onClick={(e): void => onClick(_id, e)}
-			tabIndex={0}
-			role='link'
-			action
-			qa-user-id={_id}
-		>
+		<GenericTableRow onKeyDown={(e) => onClick(_id, e)} onClick={(e) => onClick(_id, e)} tabIndex={0} role='link' action qa-user-id={_id}>
 			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={isMobile || isLaptop ? 'x28' : 'x40'} username={username} etag={avatarETag} />}

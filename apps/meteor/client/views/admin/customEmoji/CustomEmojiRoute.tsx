@@ -1,7 +1,7 @@
 import { Button } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AddCustomEmoji from './AddCustomEmoji';

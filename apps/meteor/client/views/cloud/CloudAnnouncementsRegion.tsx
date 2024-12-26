@@ -1,7 +1,7 @@
 import { BannerPlatform } from '@rocket.chat/core-typings';
 import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import CloudAnnouncementHandler from './CloudAnnouncementHandler';
 

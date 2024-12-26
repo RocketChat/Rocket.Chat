@@ -2,7 +2,7 @@ import { RegisterServerPage, RegisterOfflinePage } from '@rocket.chat/onboarding
 import { useEndpoint, useMethod } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type { ReactElement, ComponentProps } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
 import { useInvalidateLicense } from '../../../hooks/useLicense';

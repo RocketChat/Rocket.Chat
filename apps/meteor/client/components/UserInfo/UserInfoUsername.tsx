@@ -1,7 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Box } from '@rocket.chat/fuselage';
 import type { ReactElement, ComponentProps } from 'react';
-import React from 'react';
 
 import { UserCardUsername } from '../UserCard';
 

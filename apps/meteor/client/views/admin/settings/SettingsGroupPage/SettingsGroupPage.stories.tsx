@@ -1,5 +1,4 @@
 import type { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 
 import SettingsGroupPage from './SettingsGroupPage';
 import SettingsGroupPageSkeleton from './SettingsGroupPageSkeleton';

@@ -1,6 +1,6 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import UserItem from './UserItem';
 import SideBarItemTemplateWithData from '../RoomList/SideBarItemTemplateWithData';

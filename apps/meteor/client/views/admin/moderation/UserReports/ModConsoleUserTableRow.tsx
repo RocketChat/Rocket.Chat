@@ -1,5 +1,4 @@
 import type { IUser, UserReport, Serialized } from '@rocket.chat/core-typings';
-import React from 'react';
 
 import ModConsoleUserActions from './ModConsoleUserActions';
 import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';

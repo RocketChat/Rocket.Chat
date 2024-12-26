@@ -1,7 +1,7 @@
 import type { Button } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { useCallback, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 import type { RadioDropDownProps } from '../../definitions/RadioDropDownDefinitions';
 import { isValidReference } from '../../helpers/isValidReference';
@@ -15,8 +15,8 @@ const RadioDropDown = ({ group, onSelected, ...props }: RadioDropDownProps & Com
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
 	const onClose = useCallback(
-		(e) => {
-			if (isValidReference(reference, e)) {
+		(e: MouseEvent) => {
+			if (isValidReference(reference, e as { target: Node | null })) {
 				toggleCollapsed(false);
 				return;
 			}

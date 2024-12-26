@@ -1,6 +1,6 @@
 import { Box, Modal } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const iframeMsgListener = (confirm: (data: any) => void, cancel: () => void) => (e: MessageEvent<any>) => {

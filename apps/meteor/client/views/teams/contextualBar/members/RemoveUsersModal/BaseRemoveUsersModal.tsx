@@ -1,7 +1,7 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 import RemoveUsersFirstStep from './RemoveUsersFirstStep';
 import RemoveUsersSecondStep from './RemoveUsersSecondStep';
@@ -39,7 +39,7 @@ const BaseRemoveUsersModal = ({
 
 	const eligibleRooms = rooms?.filter(({ isLastOwner }) => !isLastOwner);
 
-	const onChangeRoomSelection = useCallback((room) => {
+	const onChangeRoomSelection = useCallback((room: Serialized<IRoom>) => {
 		setSelectedRooms((selectedRooms) => {
 			if (selectedRooms[room._id]) {
 				delete selectedRooms[room._id];

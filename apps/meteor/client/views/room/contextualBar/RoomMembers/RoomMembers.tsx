@@ -4,7 +4,7 @@ import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout } 
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import RoomMembersRow from './RoomMembersRow';

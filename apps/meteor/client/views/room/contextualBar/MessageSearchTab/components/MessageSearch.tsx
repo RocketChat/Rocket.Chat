@@ -1,7 +1,7 @@
 import { Box, MessageDivider } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { Fragment, memo, useState } from 'react';
+import { Fragment, memo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { MessageTypes } from '../../../../../../app/ui-utils/client';

@@ -3,7 +3,7 @@ import { isQuoteAttachment, isE2EEMessage } from '@rocket.chat/core-typings';
 import { PreviewMarkup } from '@rocket.chat/gazzodown';
 import type { Root } from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GazzodownText from '../../../GazzodownText';

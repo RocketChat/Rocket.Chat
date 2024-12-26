@@ -1,6 +1,5 @@
 import { Button, ButtonGroup, ContextualbarEmptyContent, ContextualbarFooter } from '@rocket.chat/fuselage';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';

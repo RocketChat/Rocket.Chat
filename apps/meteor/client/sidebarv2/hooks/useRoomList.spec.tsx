@@ -1,7 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
-import React from 'react';
 
 import { useRoomList } from './useRoomList';
 import { createFakeRoom, createFakeSubscription, createFakeUser } from '../../../tests/mocks/data';

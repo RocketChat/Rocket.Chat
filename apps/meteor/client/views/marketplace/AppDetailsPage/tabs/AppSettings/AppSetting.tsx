@@ -2,7 +2,7 @@ import type { ISettingSelectValue } from '@rocket.chat/apps-engine/definition/se
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings/ISetting';
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import MarkdownText from '../../../../../components/MarkdownText';

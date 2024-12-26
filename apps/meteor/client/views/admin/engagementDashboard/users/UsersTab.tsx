@@ -1,7 +1,6 @@
 import { Box, Flex } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EngagementDashboardCard from '../EngagementDashboardCard';

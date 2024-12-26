@@ -1,6 +1,5 @@
 import { type IMessage, type ISubscription, type IRoom, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useRouter, useSetting } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MessageToolbarItem from '../../MessageToolbarItem';

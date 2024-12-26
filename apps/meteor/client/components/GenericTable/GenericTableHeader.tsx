@@ -1,6 +1,5 @@
 import { TableHead } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
-import React from 'react';
 
 import { GenericTableRow } from './GenericTableRow';
 

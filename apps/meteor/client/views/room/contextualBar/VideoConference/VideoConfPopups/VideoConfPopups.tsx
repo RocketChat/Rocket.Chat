@@ -1,7 +1,7 @@
 import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { VideoConfPopupBackdrop } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { FocusScope } from 'react-aria';
 
 import VideoConfPopup from './VideoConfPopup';
