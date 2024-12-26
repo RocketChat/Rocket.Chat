@@ -420,6 +420,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				channels: settings.get<boolean>('VideoConf_Enable_Channels'),
 				groups: settings.get<boolean>('VideoConf_Enable_Groups'),
 				teams: settings.get<boolean>('VideoConf_Enable_Teams'),
+				persistentChat: settings.get<boolean>('VideoConf_Enable_Persistent_Chat'),
+			},
+			discussions: {
+				total: await VideoConferenceModel.countDiscussions(options),
 			},
 		};
 	}

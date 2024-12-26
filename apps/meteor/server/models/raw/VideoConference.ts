@@ -84,6 +84,17 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		);
 	}
 
+	public async countDiscussions(options?: FindOptions<VideoConference>): Promise<number> {
+		return this.find(
+			{
+				discussionRid: {
+					$exists: true,
+				},
+			},
+			options || {},
+		).count();
+	}
+
 	public async createDirect({
 		providerName,
 		...callDetails
