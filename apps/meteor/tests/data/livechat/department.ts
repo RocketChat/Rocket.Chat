@@ -46,6 +46,7 @@ export const createDepartmentWithMethod = ({
 	initialAgents = [],
 	allowReceiveForwardOffline = false,
 	fallbackForwardDepartment,
+	departmentsAllowedToForward,
 	name,
 	departmentUnit,
 	userCredentials = credentials,
@@ -54,6 +55,7 @@ export const createDepartmentWithMethod = ({
 	initialAgents?: { agentId: string; username: string }[];
 	allowReceiveForwardOffline?: boolean;
 	fallbackForwardDepartment?: string;
+	departmentsAllowedToForward?: string[];
 	name?: string;
 	departmentUnit?: { _id?: string };
 	userCredentials?: Credentials;
@@ -77,6 +79,7 @@ export const createDepartmentWithMethod = ({
 							description: 'created from api',
 							allowReceiveForwardOffline,
 							fallbackForwardDepartment,
+							departmentsAllowedToForward,
 						},
 						initialAgents,
 						departmentUnit,
@@ -149,9 +152,11 @@ export const addOrRemoveAgentFromDepartment = async (
 export const createDepartmentWithAnOfflineAgent = async ({
 	allowReceiveForwardOffline = false,
 	fallbackForwardDepartment,
+	departmentsAllowedToForward,
 }: {
 	allowReceiveForwardOffline?: boolean;
 	fallbackForwardDepartment?: string;
+	departmentsAllowedToForward?: string[];
 }): Promise<{
 	department: ILivechatDepartment;
 	agent: {
@@ -164,6 +169,7 @@ export const createDepartmentWithAnOfflineAgent = async ({
 	const department = (await createDepartmentWithMethod({
 		allowReceiveForwardOffline,
 		fallbackForwardDepartment,
+		departmentsAllowedToForward,
 	})) as ILivechatDepartment;
 
 	await addOrRemoveAgentFromDepartment(department._id, { agentId: user._id, username: user.username }, true);
