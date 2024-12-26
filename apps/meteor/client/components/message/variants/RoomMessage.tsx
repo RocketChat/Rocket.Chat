@@ -3,8 +3,8 @@ import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rock
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement } from 'react';
-import React, { memo } from 'react';
+import type { ComponentProps, MouseEventHandler, ReactElement } from 'react';
+import React, { memo, useState } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
@@ -64,6 +64,13 @@ const RoomMessage = ({
 
 	const messageRef = useJumpToMessage(message._id);
 
+	const [isToolbarMenuOpen, setIsToolbarMenuOpen] = useState(false);
+
+	const handleRightClick: MouseEventHandler = (e) => {
+		e.preventDefault();
+		setIsToolbarMenuOpen(!isToolbarMenuOpen);
+	};
+
 	return (
 		<Message
 			ref={messageRef}
@@ -73,6 +80,7 @@ const RoomMessage = ({
 			tabIndex={0}
 			aria-labelledby={`${message._id}-displayName ${message._id}-time ${message._id}-content ${message._id}-read-status`}
 			onClick={selecting && !isOTRMessage ? toggleSelected : undefined}
+			onContextMenu={window.RocketChatDesktop ? handleRightClick : undefined}
 			isSelected={selected}
 			isEditing={editing}
 			isPending={message.temp}
@@ -112,7 +120,14 @@ const RoomMessage = ({
 					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
 				)}
 			</MessageContainer>
-			{!message.private && message?.e2e !== 'pending' && !selecting && <MessageToolbarHolder message={message} context={context} />}
+			{!message.private && message?.e2e !== 'pending' && !selecting && (
+				<MessageToolbarHolder
+					message={message}
+					context={context}
+					isToolbarMenuOpen={isToolbarMenuOpen}
+					setIsToolbarMenuOpen={setIsToolbarMenuOpen}
+				/>
+			)}
 		</Message>
 	);
 };
