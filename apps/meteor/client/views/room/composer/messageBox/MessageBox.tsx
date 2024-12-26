@@ -1,4 +1,4 @@
-/* eslint-disable complexity */
+
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler, MouseEvent } from 'react';
+import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler, KeyboardEventHandler, MouseEvent } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
@@ -185,17 +185,17 @@ const MessageBox = ({
 		}
 	};
 
-	const handler = useMutableCallback((event: KeyboardEvent) => {
+	const handler = useMutableCallback((event) => {
 		const { which: keyCode } = event;
-
 		const input = event.target as HTMLTextAreaElement;
-
+	
 		const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
-
+	
+		
 		if (isSubmitKey) {
 			const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
 			const isSending = (sendOnEnter && !withModifier) || (!sendOnEnter && withModifier);
-
+	
 			event.preventDefault();
 			if (!isSending) {
 				chat.composer?.insertNewLine();
@@ -204,53 +204,94 @@ const MessageBox = ({
 			handleSendMessage();
 			return false;
 		}
-
+	
+		
 		if (chat.composer && handleFormattingShortcut(event, [...formattingButtons], chat.composer)) {
 			return;
 		}
-
+	
+		
 		if (event.shiftKey || event.ctrlKey || event.metaKey) {
 			return;
 		}
-
+	
+		
 		switch (event.key) {
 			case 'Escape': {
 				closeEditing(event);
 				if (!input.value.trim()) onEscape?.();
 				return;
 			}
-
+	
+			
 			case 'ArrowUp': {
-				if (input.selectionEnd === 0) {
+				const cursorPosition = input.selectionEnd;
+				if (cursorPosition === 0) {
 					event.preventDefault();
 					event.stopPropagation();
-
+	
 					onNavigateToPreviousMessage?.();
-
+	
+					
 					if (event.altKey) {
 						input.setSelectionRange(0, 0);
 					}
-				}
-
-				return;
-			}
-
-			case 'ArrowDown': {
-				if (input.selectionEnd === input.value.length) {
-					event.preventDefault();
-					event.stopPropagation();
-
-					onNavigateToNextMessage?.();
-
-					if (event.altKey) {
-						input.setSelectionRange(input.value.length, input.value.length);
+				} else {
+					
+					if (cursorPosition > 0) {
+						const prevChar = input.value.charAt(cursorPosition - 1);
+	
+						
+						if (prevChar === ":") {
+							const beforePrevChar = input.value.charAt(cursorPosition - 2);
+							if (beforePrevChar === ":") {
+								input.setSelectionRange(cursorPosition - 2, cursorPosition);
+							}
+						}
 					}
 				}
+	
+				return;
+			}
+	
+			
+			case 'ArrowDown': {
+				const cursorPosition = input.selectionEnd;
+				const inputLength = input.value.length;
+	
+				
+				if (cursorPosition === inputLength) {
+					event.preventDefault();
+					event.stopPropagation();
+	
+					onNavigateToNextMessage?.();
+	
+					
+					if (event.altKey) {
+						input.setSelectionRange(inputLength, inputLength);
+					}
+				}
+	
+				
+				else if (cursorPosition > 0 && cursorPosition === inputLength - 1) {
+					const prevChar = input.value.charAt(cursorPosition - 1);
+					if (prevChar === ":") {
+						const beforePrevChar = input.value.charAt(cursorPosition - 2);
+						if (beforePrevChar === ":") {
+							input.setSelectionRange(cursorPosition - 2, cursorPosition);
+						}
+					}
+				}
+	
+				return;
 			}
 		}
-
+	
+		
 		onTyping?.();
 	});
+	
+
 
 	const isEditing = useSyncExternalStore(chat.composer?.editing.subscribe ?? emptySubscribe, chat.composer?.editing.get ?? getEmptyFalse);
 
