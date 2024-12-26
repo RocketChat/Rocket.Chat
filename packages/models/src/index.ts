@@ -124,7 +124,7 @@ export function getCollectionName(name: string): string {
 
 export * from './modelClasses';
 
-// export * from './dummy/ReadReceipts';
+export * from './dummy/ReadReceipts';
 
 export { registerModel } from './proxify';
 export { type Updater, UpdaterImpl } from './updater';

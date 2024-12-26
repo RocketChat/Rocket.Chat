@@ -4,7 +4,7 @@ import {
 	AppsLogsModel,
 	AppsModel,
 	AppsPersistenceModel,
-	AppsTokensModel,
+	AppsTokensRaw,
 	AvatarsRaw,
 	BannersDismissRaw,
 	BannersRaw,
