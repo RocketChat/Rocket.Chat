@@ -1,4 +1,4 @@
-import { tracerActiveSpan } from '@rocket.chat/tracing';
+import { tracerActiveSpan } from '.';
 
 const getArguments = (args: any[]): any[] => {
 	return args.map((arg) => {

@@ -1,8 +1,8 @@
-import { traceInstanceMethods } from '@rocket.chat/core-services';
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
 import type { Updater } from '@rocket.chat/models';
 import { getCollectionName, UpdaterImpl } from '@rocket.chat/models';
+import { traceInstanceMethods } from '@rocket.chat/tracing';
 import { ObjectId } from 'mongodb';
 import type {
 	BulkWriteOptions,

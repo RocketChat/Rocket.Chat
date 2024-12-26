@@ -51,7 +51,6 @@ import type { IVoipFreeSwitchService } from './types/IVoipFreeSwitchService';
 import type { IVoipService } from './types/IVoipService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
-export { traceInstanceMethods } from './lib/asyncMethodCallContext';
 export { MeteorError, isMeteorError } from './MeteorError';
 export { api } from './api';
 export { EventSignatures } from './events/Events';
