@@ -12,7 +12,6 @@ import type {
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import type { ISessionsModel } from '@rocket.chat/model-typings';
-import { getCollectionName } from '@rocket.chat/models';
 import type { PaginatedResult, WithItemCount } from '@rocket.chat/rest-typings';
 import type {
 	AggregationCursor,
@@ -28,6 +27,7 @@ import type {
 	OptionalId,
 } from 'mongodb';
 
+import { getCollectionName } from '../index';
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 

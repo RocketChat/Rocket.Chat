@@ -5,7 +5,7 @@ import type { Db, DeleteResult, IndexDescription } from 'mongodb';
 
 import { FederationEventsModel } from './FederationEvents';
 
-export class FederationRoomEvents extends FederationEventsModel implements IFederationRoomEventsModel {
+export class FederationRoomEventsRaw extends FederationEventsModel implements IFederationRoomEventsModel {
 	constructor(db: Db) {
 		super(db, 'federation_room_events');
 	}

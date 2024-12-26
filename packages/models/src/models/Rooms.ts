@@ -9,8 +9,6 @@ import type {
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IRoomsModel, IChannelsWithNumberOfMessagesBetweenDate } from '@rocket.chat/model-typings';
-import { Subscriptions } from '@rocket.chat/models';
-import type { Updater } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	AggregationCursor,
@@ -29,8 +27,10 @@ import type {
 	CountDocumentsOptions,
 } from 'mongodb';
 
+import { Subscriptions } from '../index';
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
+import type { Updater } from '../updater';
 
 export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IRoom>>) {

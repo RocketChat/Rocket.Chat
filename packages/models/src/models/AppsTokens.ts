@@ -4,7 +4,7 @@ import type { Db } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
-export class AppsTokens extends BaseRaw<IAppsTokens> implements IAppsTokensModel {
+export class AppsTokensRaw extends BaseRaw<IAppsTokens> implements IAppsTokensModel {
 	constructor(db: Db) {
 		super(db, '_raix_push_app_tokens', undefined, { collectionNameResolver: (name) => name });
 	}

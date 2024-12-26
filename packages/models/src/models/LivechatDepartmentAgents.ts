@@ -1,6 +1,5 @@
 import type { ILivechatDepartmentAgents, RocketChatRecordDeleted, IUser } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
-import { Users } from '@rocket.chat/models';
 import type {
 	Collection,
 	FindCursor,
@@ -15,6 +14,7 @@ import type {
 	AggregationCursor,
 } from 'mongodb';
 
+import { Users } from '../index';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgents> implements ILivechatDepartmentAgentsModel {

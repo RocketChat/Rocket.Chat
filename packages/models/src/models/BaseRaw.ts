@@ -1,7 +1,5 @@
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
-import type { Updater } from '@rocket.chat/models';
-import { getCollectionName, UpdaterImpl } from '@rocket.chat/models';
 import { traceInstanceMethods } from '@rocket.chat/tracing';
 import { ObjectId } from 'mongodb';
 import type {
@@ -31,6 +29,8 @@ import type {
 	CountDocumentsOptions,
 } from 'mongodb';
 
+import { getCollectionName, UpdaterImpl } from '..';
+import type { Updater } from '../updater';
 import { setUpdatedAt } from './setUpdatedAt';
 
 const warnFields =
@@ -53,7 +53,7 @@ export abstract class BaseRaw<
 	TDeleted extends RocketChatRecordDeleted<T> = RocketChatRecordDeleted<T>,
 > implements IBaseModel<T, C, TDeleted>
 {
-	public readonly defaultFields: C;
+	public readonly defaultFields: C | undefined;
 
 	public readonly col: Collection<T>;
 

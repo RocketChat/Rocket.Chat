@@ -14,8 +14,6 @@ import type {
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatRoomsModel } from '@rocket.chat/model-typings';
-import type { Updater } from '@rocket.chat/models';
-import { Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	Db,
@@ -32,6 +30,8 @@ import type {
 	UpdateOptions,
 } from 'mongodb';
 
+import { Settings } from '../index';
+import type { Updater } from '../updater';
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
