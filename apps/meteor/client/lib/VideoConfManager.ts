@@ -472,6 +472,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 				clearTimeout(call.acceptTimeout);
 			}
 		});
+		this.userId = undefined;
 		this.incomingDirectCalls.clear();
 		this.dismissedCalls.clear();
 		this.currentCallData = undefined;
