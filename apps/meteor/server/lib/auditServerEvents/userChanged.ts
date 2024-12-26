@@ -125,10 +125,11 @@ export const auditUserChangeByUser = <T extends (store: typeof asyncLocalStorage
 ): Promise<ReturnType<T>> => {
 	const store = new UserChangedLogStore();
 
-	return new Promise<ReturnType<typeof fn>>((resolve) => {
+	return new Promise<ReturnType<typeof fn>>((resolve, reject) => {
 		asyncLocalStorage.run(store, () => {
 			void fn(asyncLocalStorage)
 				.then(resolve)
+				.catch(reject)
 				.finally(() => {
 					const event = store.buildEvent();
 					void ServerEvents.createAuditServerEvent(...event);
