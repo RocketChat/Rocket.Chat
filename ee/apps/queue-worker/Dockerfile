@@ -47,6 +47,12 @@ COPY ./ee/packages/network-broker/dist ee/packages/network-broker/dist
 COPY ./ee/packages/license/package.json packages/license/package.json
 COPY ./ee/packages/license/dist packages/license/dist
 
+COPY ./packages/random/package.json packages/random/package.json
+COPY ./packages/random/dist packages/random/dist
+
+COPY ./packages/sha256/package.json packages/sha256/package.json
+COPY ./packages/sha256/dist packages/sha256/dist
+
 COPY ./ee/packages/omnichannel-services/package.json ee/packages/omnichannel-services/package.json
 COPY ./ee/packages/omnichannel-services/dist ee/packages/omnichannel-services/dist
 
