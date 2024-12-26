@@ -378,7 +378,8 @@ test.describe.serial('teams-management', () => {
 	test('should delete targetTeamNonPrivate', async () => {
 		await poHomeTeam.sidenav.openChat(targetTeamNonPrivate);
 		await poHomeTeam.tabs.btnRoomInfo.click();
-		await poHomeTeam.tabs.room.btnDelete.click();
+		await poHomeTeam.tabs.room.btnMore.click();
+		await poHomeTeam.tabs.room.getMoreOption('Delete').click();
 		await expect(poHomeTeam.tabs.room.confirmDeleteTeamModal).toBeVisible();
 
 		await poHomeTeam.tabs.room.confirmDeleteTeam();
@@ -406,11 +407,11 @@ test.describe.serial('teams-management', () => {
 		await expect(poHomeTeam.tabs.members.memberOption('user1')).not.toBeVisible();
 	});
 
-	test('should convert team into a channel', async ({ page }) => {
+	test('should convert team into a channel', async () => {
 		await poHomeTeam.sidenav.openChat(targetTeam);
 		await poHomeTeam.tabs.btnRoomInfo.click();
 		await poHomeTeam.tabs.room.btnMore.click();
-		await page.getByRole('listbox', { exact: true }).getByRole('option', { name: 'Convert to Channel' }).click();
+		await poHomeTeam.tabs.room.getMoreOption('Convert to Channel').click();
 		await expect(poHomeTeam.tabs.room.confirmConvertModal).toBeVisible();
 
 		await poHomeTeam.tabs.room.confirmConvert();
