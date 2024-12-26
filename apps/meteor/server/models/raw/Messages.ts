@@ -1,3 +1,4 @@
+import { OtrSystemMessagesValues } from '@rocket.chat/core-typings';
 import type {
 	ILivechatDepartment,
 	IMessage,
@@ -30,7 +31,6 @@ import type {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { otrSystemMessages } from '../../../app/otr/lib/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 type DeepWritable<T> = T extends (...args: any) => any
@@ -699,12 +699,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const query: Filter<IMessage> = {
 			rid: roomId,
 			t: {
-				$in: [
-					'otr',
-					otrSystemMessages.USER_JOINED_OTR,
-					otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
-					otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
-				],
+				$in: ['otr', ...OtrSystemMessagesValues],
 			},
 			ts: { $lte: ts },
 		};
