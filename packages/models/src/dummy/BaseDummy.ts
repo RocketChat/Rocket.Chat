@@ -1,7 +1,5 @@
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { DefaultFields, FindPaginated, IBaseModel, InsertionModel, ResultFields } from '@rocket.chat/model-typings';
-import { getCollectionName, UpdaterImpl } from '@rocket.chat/models';
-import type { Updater } from '@rocket.chat/models';
 import type {
 	BulkWriteOptions,
 	ChangeStream,
@@ -21,6 +19,9 @@ import type {
 	UpdateResult,
 	WithId,
 } from 'mongodb';
+
+import { getCollectionName, UpdaterImpl } from '../index';
+import type { Updater } from '../updater';
 
 export class BaseDummy<
 	T extends { _id: string },
