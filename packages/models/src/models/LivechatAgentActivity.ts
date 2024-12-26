@@ -4,7 +4,7 @@ import moment from 'moment';
 import type { AggregationCursor, Collection, Document, FindCursor, Db, ModifyResult, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
 export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> implements ILivechatAgentActivityModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatAgentActivity>>) {

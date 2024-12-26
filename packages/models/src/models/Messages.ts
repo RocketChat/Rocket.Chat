@@ -31,7 +31,7 @@ import type {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
 type DeepWritable<T> = T extends (...args: any) => any
 	? T

@@ -29,7 +29,7 @@ import type {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
 type DestructuredDate = { year: number; month: number; day: number };
 type DestructuredDateWithType = {
