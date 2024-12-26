@@ -40,9 +40,17 @@ type MessageToolbarActionMenuProps = {
 	room: IRoom;
 	subscription: ISubscription | undefined;
 	onChangeMenuVisibility: (visible: boolean) => void;
+	isToolbarMenuOpen: boolean;
 };
 
-const MessageToolbarActionMenu = ({ message, context, room, subscription, onChangeMenuVisibility }: MessageToolbarActionMenuProps) => {
+const MessageToolbarActionMenu = ({
+	message,
+	context,
+	room,
+	subscription,
+	onChangeMenuVisibility,
+	isToolbarMenuOpen,
+}: MessageToolbarActionMenuProps) => {
 	// TODO: move this to another place
 	const menuItems = [
 		useWebDAVMessageAction(message, { subscription }),
@@ -150,6 +158,7 @@ const MessageToolbarActionMenu = ({ message, context, room, subscription, onChan
 			data-qa-type='message-action-menu-options'
 			sections={groupOptions}
 			placement='bottom-end'
+			isOpen={isToolbarMenuOpen}
 		/>
 	);
 };

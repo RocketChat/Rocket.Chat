@@ -64,6 +64,7 @@ type MessageToolbarProps = {
 	room: IRoom;
 	subscription?: ISubscription;
 	onChangeMenuVisibility: (visible: boolean) => void;
+	isToolbarMenuOpen: boolean;
 } & ComponentProps<typeof FuselageMessageToolbar>;
 
 const MessageToolbar = ({
@@ -72,6 +73,7 @@ const MessageToolbar = ({
 	room,
 	subscription,
 	onChangeMenuVisibility,
+	isToolbarMenuOpen,
 	...props
 }: MessageToolbarProps): ReactElement | null => {
 	const t = useTranslation();
@@ -93,6 +95,7 @@ const MessageToolbar = ({
 				room={room}
 				subscription={subscription}
 				onChangeMenuVisibility={onChangeMenuVisibility}
+				isToolbarMenuOpen={isToolbarMenuOpen}
 			/>
 		</FuselageMessageToolbar>
 	);
