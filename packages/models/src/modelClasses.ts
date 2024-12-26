@@ -30,6 +30,7 @@ export * from './models/LivechatCustomField';
 export * from './models/LivechatDepartment';
 export * from './models/LivechatDepartmentAgents';
 export * from './models/LivechatInquiry';
+export * from './models/LivechatPriority';
 export * from './models/LivechatRooms';
 export * from './models/LivechatTrigger';
 export * from './models/LivechatVisitors';

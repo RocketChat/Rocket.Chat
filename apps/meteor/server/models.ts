@@ -33,6 +33,7 @@ import {
 	LivechatDepartmentAgentsRaw,
 	LivechatDepartmentRaw,
 	LivechatInquiryRaw,
+	LivechatPriorityRaw,
 	LivechatRoomsRaw,
 	LivechatTriggerRaw,
 	LivechatVisitorsRaw,
@@ -121,6 +122,7 @@ registerModel(
 	new LivechatInquiryRaw(db, trashCollection as Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>),
 );
 registerModel('ILivechatRoomsModel', new LivechatRoomsRaw(db, trashCollection));
+registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));
 registerModel('ILivechatTriggerModel', new LivechatTriggerRaw(db));
 registerModel('ILivechatVisitorsModel', new LivechatVisitorsRaw(db));
 registerModel('ILoginServiceConfigurationModel', new LoginServiceConfigurationRaw(db));

@@ -105,6 +105,7 @@ import {
 	EmailInboxRaw,
 	PbxEventsRaw,
 	LivechatRoomsRaw,
+	LivechatPriorityRaw,
 	UploadsRaw,
 	LivechatVisitorsRaw,
 	RolesRaw,
@@ -244,7 +245,7 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('IIntegrationsModel', () => new IntegrationsRaw(db));
 	registerModel('IEmailInboxModel', () => new EmailInboxRaw(db));
 	registerModel('IPbxEventsModel', () => new PbxEventsRaw(db));
-	// registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));
+	registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));
 	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
 	registerModel('IUploadsModel', () => new UploadsRaw(db));
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
