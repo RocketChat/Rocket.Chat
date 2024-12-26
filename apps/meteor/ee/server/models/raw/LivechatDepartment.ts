@@ -1,6 +1,6 @@
 import type { ILivechatDepartment, RocketChatRecordDeleted, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
-import { LivechatUnit } from '@rocket.chat/models';
+import { LivechatUnit, LivechatDepartmentRaw } from '@rocket.chat/models';
 import type {
 	Collection,
 	DeleteResult,
@@ -13,8 +13,6 @@ import type {
 	Db,
 	AggregationCursor,
 } from 'mongodb';
-
-import { LivechatDepartmentRaw } from '../../../../server/models/raw/LivechatDepartment';
 
 declare module '@rocket.chat/model-typings' {
 	interface ILivechatDepartmentModel {

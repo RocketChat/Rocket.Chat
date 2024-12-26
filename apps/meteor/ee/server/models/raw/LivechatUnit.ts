@@ -1,9 +1,8 @@
 import type { IOmnichannelBusinessUnit, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatUnitModel } from '@rocket.chat/model-typings';
-import { LivechatUnitMonitors, LivechatDepartment, LivechatRooms } from '@rocket.chat/models';
+import { LivechatUnitMonitors, LivechatDepartment, LivechatRooms, BaseRaw } from '@rocket.chat/models';
 import type { FindOptions, Filter, FindCursor, Db, FilterOperators, UpdateResult, DeleteResult, Document, UpdateFilter } from 'mongodb';
 
-import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 import { getUnitsFromUser } from '../../../app/livechat-enterprise/server/lib/units';
 
 const addQueryRestrictions = async (originalQuery: Filter<IOmnichannelBusinessUnit> = {}) => {

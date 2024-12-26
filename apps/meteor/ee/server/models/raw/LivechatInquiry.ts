@@ -1,9 +1,8 @@
 import type { ILivechatInquiryRecord, ILivechatPriority } from '@rocket.chat/core-typings';
 import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
+import { LivechatInquiryRaw } from '@rocket.chat/models';
 import type { ModifyResult, UpdateResult, Document } from 'mongodb';
-
-import { LivechatInquiryRaw } from '../../../../server/models/raw/LivechatInquiry';
 
 declare module '@rocket.chat/model-typings' {
 	interface ILivechatInquiryModel {
