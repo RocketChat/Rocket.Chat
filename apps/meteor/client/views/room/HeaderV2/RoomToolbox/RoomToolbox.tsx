@@ -27,11 +27,12 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const toolbox = useRoomToolbox();
 	const { actions, openTab } = toolbox;
 
+	const normalActions = actions.filter((action) => !action.featured && action.type !== 'apps');
 	const featuredActions = actions.filter((action) => action.featured);
-	const normalActions = actions.filter((action) => !action.featured);
+	const appsActions = actions.filter((action) => action.type === 'apps');
 	const visibleActions = !roomToolboxExpanded ? [] : normalActions.slice(0, 6);
 
-	const hiddenActions = (!roomToolboxExpanded ? actions : normalActions.slice(6))
+	const hiddenActions = (!roomToolboxExpanded ? actions : [...appsActions, ...normalActions.slice(6)])
 		.filter((item) => !item.disabled && !item.featured)
 		.map((item) => ({
 			'key': item.id,
@@ -57,6 +58,8 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 
 			return acc;
 		}, [] as MenuActionsProps);
+
+	const showKebabMenu = hiddenActions.length > 0;
 
 	const renderDefaultToolboxItem: RoomToolboxActionConfig['renderToolboxItem'] = useEffectEvent(
 		({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }) => {
@@ -92,9 +95,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 			{featuredActions.map(mapToToolboxItem)}
 			{featuredActions.length > 0 && <HeaderToolbarDivider />}
 			{visibleActions.map(mapToToolboxItem)}
-			{(normalActions.length > 6 || !roomToolboxExpanded) && !!hiddenActions.length && (
-				<GenericMenu title={t('Options')} data-qa-id='ToolBox-Menu' sections={hiddenActions} placement='bottom-end' />
-			)}
+			{showKebabMenu && <GenericMenu title={t('Options')} data-qa-id='ToolBox-Menu' sections={hiddenActions} placement='bottom-end' />}
 		</>
 	);
 };
