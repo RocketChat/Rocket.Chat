@@ -1,6 +1,5 @@
 import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
 import { Box, Bubble, MessageDivider } from '@rocket.chat/fuselage';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SystemMessage from '../../../../../components/message/variants/SystemMessage';

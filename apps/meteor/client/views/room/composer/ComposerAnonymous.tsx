@@ -9,7 +9,6 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 const ComposerAnonymous = (): ReactElement => {
 	const t = useTranslation();

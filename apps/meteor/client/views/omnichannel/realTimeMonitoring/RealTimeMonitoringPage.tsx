@@ -2,7 +2,7 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Select, Margins, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { MutableRefObject } from 'react';
-import React, { useRef, useState, useMemo, useEffect, Fragment } from 'react';
+import { useRef, useState, useMemo, useEffect, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';

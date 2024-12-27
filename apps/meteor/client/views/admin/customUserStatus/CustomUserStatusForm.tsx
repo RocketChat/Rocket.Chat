@@ -4,7 +4,7 @@ import { FieldGroup, Button, ButtonGroup, TextInput, Field, FieldLabel, FieldRow
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRoute, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';

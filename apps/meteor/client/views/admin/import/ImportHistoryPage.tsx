@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Table, TableHead, TableCell, TableRow, TableBody }
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import ImportOperationSummary from './ImportOperationSummary';
 import ImportOperationSummarySkeleton from './ImportOperationSummarySkeleton';

@@ -29,7 +29,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';

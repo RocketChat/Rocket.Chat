@@ -1,7 +1,7 @@
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { createElement, lazy, memo, Suspense } from 'react';
+import { createElement, lazy, memo, Suspense } from 'react';
 import { FocusScope } from 'react-aria';
 import { ErrorBoundary } from 'react-error-boundary';
 

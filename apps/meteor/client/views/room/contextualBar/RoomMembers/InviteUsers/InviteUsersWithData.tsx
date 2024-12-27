@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import InviteUsers from './InviteUsers';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';

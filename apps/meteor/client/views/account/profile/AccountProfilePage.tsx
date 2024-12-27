@@ -12,7 +12,7 @@ import {
 	useSetting,
 } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import AccountProfileForm from './AccountProfileForm';
@@ -64,7 +64,7 @@ const AccountProfilePage = (): ReactElement => {
 	}, [logoutOtherClients, dispatchToastMessage, t]);
 
 	const handleConfirmOwnerChange = useCallback(
-		(passwordOrUsername, shouldChangeOwner, shouldBeRemoved) => {
+		(passwordOrUsername: string, shouldChangeOwner: string[], shouldBeRemoved: string[]) => {
 			const handleConfirm = async (): Promise<void> => {
 				try {
 					await deleteOwnAccount({ password: SHA256(passwordOrUsername), confirmRelinquish: true });

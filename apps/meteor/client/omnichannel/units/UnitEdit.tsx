@@ -17,7 +17,7 @@ import {
 import { useMutableCallback, useDebouncedValue, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useRemoveUnit } from './useRemoveUnit';

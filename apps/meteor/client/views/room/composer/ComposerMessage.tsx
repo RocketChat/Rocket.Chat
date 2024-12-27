@@ -1,7 +1,7 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React, { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 
 import ComposerSkeleton from './ComposerSkeleton';
 import { LegacyRoomManager } from '../../../../app/ui-utils/client';

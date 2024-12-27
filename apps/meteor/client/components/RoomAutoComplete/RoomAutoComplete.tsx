@@ -4,8 +4,8 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ComponentProps, ReactElement } from 'react';
-import React, { memo, useMemo, useState } from 'react';
+import type { ComponentProps, Dispatch, ReactElement, SetStateAction } from 'react';
+import { memo, useMemo, useState } from 'react';
 
 const generateQuery = (
 	term = '',
@@ -16,7 +16,7 @@ const generateQuery = (
 type RoomAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
 	scope?: 'admin' | 'regular';
 	renderRoomIcon?: (props: { encrypted: IRoom['encrypted']; type: IRoom['t'] }) => ReactElement | null;
-	setSelectedRoom?: React.Dispatch<React.SetStateAction<IRoom | undefined>>;
+	setSelectedRoom?: Dispatch<SetStateAction<IRoom | undefined>>;
 };
 
 const AVATAR_SIZE = 'x20';

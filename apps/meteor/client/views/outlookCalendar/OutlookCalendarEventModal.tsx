@@ -1,7 +1,6 @@
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
-import React from 'react';
 
 import OutlookEventItemContent from './OutlookEventsList/OutlookEventItemContent';
 import { useOutlookOpenCall } from './hooks/useOutlookOpenCall';
