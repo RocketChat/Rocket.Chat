@@ -1,9 +1,9 @@
 import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
+import { DatabaseWatcher } from '@rocket.chat/models';
 import { MongoInternals } from 'meteor/mongo';
 
 import { metrics } from '../../app/metrics/server/lib/metrics';
-import { DatabaseWatcher } from '../database/DatabaseWatcher';
 import { db } from '../database/utils';
 import { SystemLogger } from '../lib/logger/system';
 import { initWatchers } from '../modules/watchers/watchers.module';

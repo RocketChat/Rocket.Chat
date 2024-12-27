@@ -124,6 +124,7 @@ export function getCollectionName(name: string): string {
 }
 
 export * from './modelClasses';
+export * from './DatabaseWatcher';
 
 export * from './dummy/ReadReceipts';
 

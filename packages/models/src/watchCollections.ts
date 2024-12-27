@@ -1,4 +1,5 @@
 import { dbWatchersDisabled } from '@rocket.chat/core-services';
+
 import {
 	Messages,
 	Users,
@@ -16,7 +17,7 @@ import {
 	PbxEvents,
 	Permissions,
 	LivechatPriority,
-} from '@rocket.chat/models';
+} from './index';
 
 const { DBWATCHER_EXCLUDE_COLLECTIONS = '', DBWATCHER_ONLY_COLLECTIONS = '' } = process.env;
 
