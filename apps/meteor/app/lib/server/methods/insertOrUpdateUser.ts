@@ -18,6 +18,7 @@ Meteor.methods<ServerMethods>({
 		methodDeprecationLogger.method('insertOrUpdateUser', '8.0.0');
 
 		check(userData, Object);
+
 		const userId = Meteor.userId();
 
 		if (!userId) {
