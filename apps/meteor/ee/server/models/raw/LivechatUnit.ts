@@ -1,9 +1,8 @@
 import type { IOmnichannelBusinessUnit, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatUnitModel } from '@rocket.chat/model-typings';
-import { LivechatUnitMonitors, LivechatDepartment, LivechatRooms } from '@rocket.chat/models';
+import { LivechatUnitMonitors, LivechatDepartment, LivechatRooms, BaseRaw } from '@rocket.chat/models';
 import type { FindOptions, Filter, FindCursor, Db, FilterOperators, UpdateResult, DeleteResult, Document, UpdateFilter } from 'mongodb';
 
-import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 import { getUnitsFromUser } from '../../../app/livechat-enterprise/server/lib/units';
 
 const addQueryRestrictions = async (originalQuery: Filter<IOmnichannelBusinessUnit> = {}) => {
@@ -11,7 +10,6 @@ const addQueryRestrictions = async (originalQuery: Filter<IOmnichannelBusinessUn
 
 	const units = await getUnitsFromUser();
 	if (Array.isArray(units)) {
-		query.ancestors = { $in: units };
 		const expressions = query.$and || [];
 		const condition = { $or: [{ ancestors: { $in: units } }, { _id: { $in: units } }] };
 		query.$and = [condition, ...expressions];
@@ -109,28 +107,12 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		// remove other departments
 		for await (const departmentId of savedDepartments) {
 			if (!departmentsToSave.includes(departmentId)) {
-				await LivechatDepartment.updateOne(
-					{ _id: departmentId },
-					{
-						$set: {
-							parentId: null,
-							ancestors: null,
-						},
-					},
-				);
+				await LivechatDepartment.removeDepartmentFromUnit(departmentId);
 			}
 		}
 
 		for await (const departmentId of departmentsToSave) {
-			await LivechatDepartment.updateOne(
-				{ _id: departmentId },
-				{
-					$set: {
-						parentId: _id,
-						ancestors,
-					},
-				},
-			);
+			await LivechatDepartment.addDepartmentToUnit(departmentId, _id, ancestors);
 		}
 
 		await LivechatRooms.associateRoomsWithDepartmentToUnit(departmentsToSave, _id);
@@ -152,6 +134,14 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		};
 
 		return this.updateMany(query, update);
+	}
+
+	incrementDepartmentsCount(_id: string): Promise<UpdateResult | Document> {
+		return this.updateOne({ _id }, { $inc: { numDepartments: 1 } });
+	}
+
+	decrementDepartmentsCount(_id: string): Promise<UpdateResult | Document> {
+		return this.updateOne({ _id }, { $inc: { numDepartments: -1 } });
 	}
 
 	async removeById(_id: string): Promise<DeleteResult> {

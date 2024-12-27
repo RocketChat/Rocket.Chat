@@ -1,7 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useState, useMemo, useEffect } from 'react';
-import type { Unsubscribe } from 'use-subscription';
+import { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { VideoConfPopupPayload } from '../contexts/VideoConfContext';
 import { VideoConfContext } from '../contexts/VideoConfContext';
@@ -13,6 +14,11 @@ import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConferenc
 const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactElement => {
 	const [outgoing, setOutgoing] = useState<VideoConfPopupPayload | undefined>();
 	const handleOpenCall = useVideoConfOpenCall();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const { t } = useTranslation();
+	const logLevel = useSetting<number>('Log_Level', 0);
+
+	useEffect(() => VideoConfManager.setLogLevel(logLevel), [logLevel]);
 
 	useEffect(
 		() =>
@@ -20,6 +26,15 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 				handleOpenCall(props.url, props.providerName);
 			}),
 		[handleOpenCall],
+	);
+
+	useEffect(
+		() =>
+			VideoConfManager.on('error', (props) => {
+				const message = t(props.error?.startsWith('error-') ? props.error : 'error-videoconf-unexpected');
+				dispatchToastMessage({ type: 'error', message });
+			}),
+		[dispatchToastMessage, t],
 	);
 
 	useEffect(() => {
@@ -42,24 +57,24 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 			abortCall: (): void => VideoConfManager.abortCall(),
 			setPreferences: (prefs: Partial<(typeof VideoConfManager)['preferences']>): void => VideoConfManager.setPreferences(prefs),
 			queryIncomingCalls: {
-				getCurrentValue: (): DirectCallData[] => VideoConfManager.getIncomingDirectCalls(),
-				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('incoming/changed', cb),
+				getSnapshot: (): DirectCallData[] => VideoConfManager.getIncomingDirectCalls(),
+				subscribe: (cb: () => void) => VideoConfManager.on('incoming/changed', cb),
 			},
 			queryRinging: {
-				getCurrentValue: (): boolean => VideoConfManager.isRinging(),
-				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('ringing/changed', cb),
+				getSnapshot: (): boolean => VideoConfManager.isRinging(),
+				subscribe: (cb: () => void) => VideoConfManager.on('ringing/changed', cb),
 			},
 			queryCalling: {
-				getCurrentValue: (): boolean => VideoConfManager.isCalling(),
-				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('calling/changed', cb),
+				getSnapshot: (): boolean => VideoConfManager.isCalling(),
+				subscribe: (cb: () => void) => VideoConfManager.on('calling/changed', cb),
 			},
 			queryCapabilities: {
-				getCurrentValue: (): ProviderCapabilities => VideoConfManager.capabilities,
-				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('capabilities/changed', cb),
+				getSnapshot: (): ProviderCapabilities => VideoConfManager.capabilities,
+				subscribe: (cb: () => void) => VideoConfManager.on('capabilities/changed', cb),
 			},
 			queryPreferences: {
-				getCurrentValue: (): CallPreferences => VideoConfManager.preferences,
-				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('preference/changed', cb),
+				getSnapshot: (): CallPreferences => VideoConfManager.preferences,
+				subscribe: (cb: () => void) => VideoConfManager.on('preference/changed', cb),
 			},
 		}),
 		[],

@@ -1,6 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useOutsideClick, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
 	VideoConfPopupHeader,
@@ -13,12 +12,13 @@ import {
 	VideoConfPopupTitle,
 	VideoConfPopupFooterButtons,
 } from '@rocket.chat/ui-video-conf';
-import type { KeyboardEvent, ReactElement } from 'react';
-import React, { useCallback, useRef } from 'react';
+import type { ReactElement } from 'react';
+import { useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 import { useVideoConfSetPreferences, useVideoConfCapabilities, useVideoConfPreferences } from '../../../../../../contexts/VideoConfContext';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
-import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 
 type StartCallPopupProps = {
 	id: string;
@@ -29,8 +29,8 @@ type StartCallPopupProps = {
 };
 
 const StartCallPopup = ({ id, loading, room, onClose, onConfirm }: StartCallPopupProps): ReactElement => {
-	const t = useTranslation();
-	const ref = useRef(null);
+	const { t } = useTranslation();
+	const ref = useRef<HTMLElement | null>(null);
 	useOutsideClick([ref], !loading ? onClose : () => undefined);
 
 	const setPreferences = useVideoConfSetPreferences();
@@ -51,7 +51,7 @@ const StartCallPopup = ({ id, loading, room, onClose, onConfirm }: StartCallPopu
 	});
 
 	const callbackRef = useCallback(
-		(node) => {
+		(node: HTMLElement | null) => {
 			if (!node) {
 				return;
 			}

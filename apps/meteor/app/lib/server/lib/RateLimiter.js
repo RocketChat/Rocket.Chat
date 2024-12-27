@@ -94,7 +94,7 @@ export const RateLimiterClass = new (class {
 			name: methodName,
 		};
 		Object.entries(matchers).forEach(([key, matcher]) => {
-			match[key] = (...args) => Promise.await(matcher(...args));
+			match[key] = (...args) => matcher(...args);
 		});
 		return DDPRateLimiter.addRule(match, numRequests, timeInterval);
 	}

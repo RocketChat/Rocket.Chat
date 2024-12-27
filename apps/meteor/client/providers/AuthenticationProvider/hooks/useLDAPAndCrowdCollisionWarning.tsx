@@ -5,8 +5,8 @@ import { useEffect } from 'react';
 import type { LoginMethods } from '../AuthenticationProvider';
 
 export function useLDAPAndCrowdCollisionWarning() {
-	const isLdapEnabled = useSetting<boolean>('LDAP_Enable');
-	const isCrowdEnabled = useSetting<boolean>('CROWD_Enable');
+	const isLdapEnabled = useSetting('LDAP_Enable', false);
+	const isCrowdEnabled = useSetting('CROWD_Enable', false);
 
 	const loginMethod: LoginMethods = (isLdapEnabled && 'loginWithLDAP') || (isCrowdEnabled && 'loginWithCrowd') || 'loginWithPassword';
 

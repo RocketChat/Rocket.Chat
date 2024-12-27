@@ -1,9 +1,9 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import IframeModal from '../IframeModal';
-import { handleAPIError } from '../helpers/handleAPIError';
 import { useAppsOrchestration } from './useAppsOrchestration';
+import { handleAPIError } from '../helpers/handleAPIError';
 
 export const useOpenIncompatibleModal = () => {
 	const setModal = useSetModal();

@@ -16,6 +16,7 @@ async function updateSetting(id: string, value: SettingValue | null): Promise<vo
 		if (setting === undefined) {
 			await settingsRegistry.add(id, value);
 		} else {
+			// TODO: audit
 			(await Settings.updateValueById(id, value)).modifiedCount && void notifyOnSettingChangedById(id);
 		}
 	} else {

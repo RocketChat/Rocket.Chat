@@ -75,11 +75,12 @@ test.describe.parallel('administration', () => {
 
 		test('expect create a user', async () => {
 			await poAdmin.tabs.users.btnNewUser.click();
+			await poAdmin.tabs.users.inputEmail.type(faker.internet.email());
 			await poAdmin.tabs.users.inputName.type(faker.person.firstName());
 			await poAdmin.tabs.users.inputUserName.type(faker.internet.userName());
-			await poAdmin.tabs.users.inputEmail.type(faker.internet.email());
-			await poAdmin.tabs.users.checkboxVerified.click();
+			await poAdmin.tabs.users.inputSetManually.click();
 			await poAdmin.tabs.users.inputPassword.type('any_password');
+			await poAdmin.tabs.users.inputConfirmPassword.type('any_password');
 			await expect(poAdmin.tabs.users.userRole).toBeVisible();
 			await poAdmin.tabs.users.btnSave.click();
 		});
@@ -97,8 +98,9 @@ test.describe.parallel('administration', () => {
 			await poAdmin.tabs.users.inputName.type(faker.person.firstName());
 			await poAdmin.tabs.users.inputUserName.type(username);
 			await poAdmin.tabs.users.inputEmail.type(faker.internet.email());
-			await poAdmin.tabs.users.checkboxVerified.click();
+			await poAdmin.tabs.users.inputSetManually.click();
 			await poAdmin.tabs.users.inputPassword.type('any_password');
+			await poAdmin.tabs.users.inputConfirmPassword.type('any_password');
 			await expect(poAdmin.tabs.users.userRole).toBeVisible();
 			await expect(poAdmin.tabs.users.joinDefaultChannels).toBeVisible();
 			await poAdmin.tabs.users.btnSave.click();
@@ -173,6 +175,7 @@ test.describe.parallel('administration', () => {
 				await poAdmin.getRoomRow(targetChannel).click();
 				await poAdmin.favoriteLabel.click();
 				await poAdmin.btnSave.click();
+				await expect(poAdmin.btnSave).not.toBeVisible();
 
 				await poAdmin.getRoomRow(targetChannel).click();
 				await expect(poAdmin.favoriteInput).toBeChecked();
@@ -317,36 +320,6 @@ test.describe.parallel('administration', () => {
 			await poUtils.btnModalConfirmDelete.click();
 
 			await expect(poAdmin.getIntegrationByName(incomingIntegrationName)).not.toBeVisible();
-		});
-	});
-
-	test.describe('Settings', () => {
-		test.describe('General', () => {
-			test.beforeEach(async ({ page }) => {
-				await page.goto('/admin/settings/General');
-			});
-
-			test.afterAll(async ({ api }) => {
-				await setSettingValueById(api, 'Language', 'en');
-			});
-
-			test('expect be able to reset a setting after a change', async () => {
-				await poAdmin.inputSiteURL.type('any_text');
-				await poAdmin.btnResetSiteURL.click();
-			});
-		});
-
-		test.describe('Layout', () => {
-			test.beforeEach(async ({ page }) => {
-				await page.goto('/admin/settings/Layout');
-			});
-
-			test('should code mirror full screen be displayed correctly', async ({ page }) => {
-				await poAdmin.getAccordionBtnByName('Custom CSS').click();
-				await poAdmin.btnFullScreen.click();
-
-				await expect(page.getByRole('code')).toHaveCSS('width', '920px');
-			});
 		});
 	});
 });

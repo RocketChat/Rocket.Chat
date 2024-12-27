@@ -1,13 +1,13 @@
 import { LicenseImp } from '.';
-import { MockedLicenseBuilder, getReadyLicenseManager } from '../__tests__/MockedLicenseBuilder';
 import { getAppsConfig } from './deprecated';
+import { MockedLicenseBuilder, getReadyLicenseManager } from '../__tests__/MockedLicenseBuilder';
 
 describe('Marketplace Restrictions', () => {
 	it('should respect the default if there is no license applied', async () => {
 		const LicenseManager = new LicenseImp();
 
 		expect(getAppsConfig.call(LicenseManager)).toEqual({
-			maxPrivateApps: 3,
+			maxPrivateApps: 0,
 			maxMarketplaceApps: 5,
 		});
 	});

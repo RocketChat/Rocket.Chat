@@ -79,4 +79,12 @@ export class HomeFlextabMembers {
 	async unignoreUser(username: string) {
 		await this.ignoreUserAction('Unignore', username);
 	}
+
+	get confirmRemoveUserModal() {
+		return this.page.getByRole('dialog', { name: 'Confirmation', exact: true });
+	}
+
+	async confirmRemoveUser() {
+		return this.confirmRemoveUserModal.getByRole('button', { name: 'Remove', exact: true }).click();
+	}
 }

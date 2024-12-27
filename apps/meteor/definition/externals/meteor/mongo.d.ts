@@ -16,6 +16,7 @@ declare module 'meteor/mongo' {
 
 	interface MongoConnection {
 		db: mongodb.Db;
+		client: mongodb.MongoClient;
 		_oplogHandle: OplogHandle;
 		rawCollection(name: string): mongodb.Collection;
 	}

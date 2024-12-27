@@ -32,7 +32,7 @@ export const useChannelsList = ({ period, offset, count }: UseChannelsListOption
 						...response,
 						start,
 						end,
-				  }
+					}
 				: undefined;
 		},
 		{

@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import DateInput from '.';
@@ -29,7 +29,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof DateInput>>;
 
-const Template: Story<ComponentProps<typeof DateInput>> = (args) => <DateInput {...args} />;
+const Template: StoryFn<ComponentProps<typeof DateInput>> = (args) => <DateInput {...args} />;
 
 export const Default = Template.bind({});
 Default.storyName = 'default';

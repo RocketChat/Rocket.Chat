@@ -25,7 +25,7 @@ export const useUsersByTimeOfTheDay = ({ period, utc }: UseUsersByTimeOfTheDayOp
 						...response,
 						start,
 						end,
-				  }
+					}
 				: undefined;
 		},
 		{

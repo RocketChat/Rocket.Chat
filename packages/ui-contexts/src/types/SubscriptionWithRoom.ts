@@ -9,7 +9,6 @@ export type SubscriptionWithRoom = ISubscription &
 		| 'announcement'
 		| 'avatarETag'
 		| 'lastMessage'
-		| 'streamingOptions'
 		| 'uids'
 		| 'usernames'
 		| 'usersCount'

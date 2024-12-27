@@ -15,14 +15,17 @@ import type {
 	IEmailInbox,
 	IIntegrationHistory,
 	AtLeast,
+	ISubscription,
 	ISettingColor,
 	IUser,
 	IMessage,
 	SettingValue,
 	MessageTypesValues,
+	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import {
 	Rooms,
+	LivechatRooms,
 	Permissions,
 	Settings,
 	PbxEvents,
@@ -30,6 +33,7 @@ import {
 	Integrations,
 	LoginServiceConfiguration,
 	IntegrationHistory,
+	Subscriptions,
 	LivechatInquiry,
 	LivechatDepartmentAgents,
 	Users,
@@ -37,6 +41,7 @@ import {
 } from '@rocket.chat/models';
 import mem from 'mem';
 
+import { subscriptionFields } from '../../../../lib/publishFields';
 import { shouldHideSystemMessage } from '../../../../server/lib/systemMessage/hideSystemMessage';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
@@ -81,6 +86,16 @@ export const notifyOnRoomChangedByUsernamesOrUids = withDbWatcherCheck(
 		for await (const item of items) {
 			void api.broadcast('watch.rooms', { clientAction, room: item });
 		}
+	},
+);
+
+export const notifyOnRoomChangedByContactId = withDbWatcherCheck(
+	async <T extends ILivechatContact>(contactId: T['_id'], clientAction: ClientAction = 'updated'): Promise<void> => {
+		const cursor = LivechatRooms.findOpenByContactId(contactId);
+
+		void cursor.forEach((room) => {
+			void api.broadcast('watch.rooms', { clientAction, room });
+		});
 	},
 );
 
@@ -245,6 +260,20 @@ export const notifyOnLivechatInquiryChangedById = withDbWatcherCheck(
 		}
 
 		void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+	},
+);
+
+export const notifyOnLivechatInquiryChangedByVisitorIds = withDbWatcherCheck(
+	async (
+		visitorIds: ILivechatInquiryRecord['v']['_id'][],
+		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+		diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: Date; takenAt: Date }>,
+	): Promise<void> => {
+		const cursor = LivechatInquiry.findByVisitorIds(visitorIds);
+
+		void cursor.forEach((inquiry) => {
+			void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+		});
 	},
 );
 
@@ -461,12 +490,138 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 }
 
 export const notifyOnMessageChange = withDbWatcherCheck(async ({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<void> => {
-	if (!dbWatchersDisabled) {
-		return;
-	}
 	const message = await getMessageToBroadcast({ id, data });
 	if (!message) {
 		return;
 	}
 	void api.broadcast('watch.messages', { message });
 });
+
+export const notifyOnSubscriptionChanged = withDbWatcherCheck(
+	async (subscription: ISubscription, clientAction: ClientAction = 'updated'): Promise<void> => {
+		void api.broadcast('watch.subscriptions', { clientAction, subscription });
+	},
+);
+
+export const notifyOnSubscriptionChangedByRoomIdAndUserId = withDbWatcherCheck(
+	async (
+		rid: ISubscription['rid'],
+		uid: ISubscription['u']['_id'],
+		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+	): Promise<void> => {
+		const cursor = Subscriptions.findByUserIdAndRoomIds(uid, [rid], { projection: subscriptionFields });
+
+		void cursor.forEach((subscription) => {
+			void api.broadcast('watch.subscriptions', { clientAction, subscription });
+		});
+	},
+);
+
+export const notifyOnSubscriptionChangedById = withDbWatcherCheck(
+	async (id: ISubscription['_id'], clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
+		const subscription = await Subscriptions.findOneById(id);
+		if (!subscription) {
+			return;
+		}
+
+		void api.broadcast('watch.subscriptions', { clientAction, subscription });
+	},
+);
+
+export const notifyOnSubscriptionChangedByUserPreferences = withDbWatcherCheck(
+	async (
+		uid: ISubscription['u']['_id'],
+		notificationOriginField: keyof ISubscription,
+		originFieldNotEqualValue: 'user' | 'subscription',
+		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+	): Promise<void> => {
+		const cursor = Subscriptions.findByUserPreferences(uid, notificationOriginField, originFieldNotEqualValue, {
+			projection: subscriptionFields,
+		});
+
+		void cursor.forEach((subscription) => {
+			void api.broadcast('watch.subscriptions', { clientAction, subscription });
+		});
+	},
+);
+
+export const notifyOnSubscriptionChangedByRoomId = withDbWatcherCheck(
+	async (rid: ISubscription['rid'], clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
+		const cursor = Subscriptions.findByRoomId(rid, { projection: subscriptionFields });
+
+		void cursor.forEach((subscription) => {
+			void api.broadcast('watch.subscriptions', { clientAction, subscription });
+		});
+	},
+);
+
+export const notifyOnSubscriptionChangedByAutoTranslateAndUserId = withDbWatcherCheck(
+	async (uid: ISubscription['u']['_id'], clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
+		const cursor = Subscriptions.findByAutoTranslateAndUserId(uid, true, { projection: subscriptionFields });
+
+		void cursor.forEach((subscription) => {
+			void api.broadcast('watch.subscriptions', { clientAction, subscription });
+		});
+	},
+);
+
+export const notifyOnSubscriptionChangedByUserIdAndRoomType = withDbWatcherCheck(
+	async (
+		uid: ISubscription['u']['_id'],
+		t: ISubscription['t'],
+		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+	): Promise<void> => {
+		const cursor = Subscriptions.findByUserIdAndRoomType(uid, t, { projection: subscriptionFields });
+
+		void cursor.forEach((subscription) => {
+			void api.broadcast('watch.subscriptions', { clientAction, subscription });
+		});
+	},
+);
+
+export const notifyOnSubscriptionChangedByVisitorIds = withDbWatcherCheck(
+	async (
+		visitorIds: Exclude<ISubscription['v'], undefined>['_id'][],
+		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+	): Promise<void> => {
+		const cursor = Subscriptions.findOpenByVisitorIds(visitorIds, { projection: subscriptionFields });
+
+		void cursor.forEach((subscription) => {
+			void api.broadcast('watch.subscriptions', { clientAction, subscription });
+		});
+	},
+);
+
+export const notifyOnSubscriptionChangedByNameAndRoomType = withDbWatcherCheck(
+	async (filter: Partial<Pick<ISubscription, 'name' | 't'>>, clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
+		const cursor = Subscriptions.findByNameAndRoomType(filter, { projection: subscriptionFields });
+
+		void cursor.forEach((subscription) => {
+			void api.broadcast('watch.subscriptions', { clientAction, subscription });
+		});
+	},
+);
+
+export const notifyOnSubscriptionChangedByUserId = withDbWatcherCheck(
+	async (uid: ISubscription['u']['_id'], clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
+		const cursor = Subscriptions.findByUserId(uid, { projection: subscriptionFields });
+
+		void cursor.forEach((subscription) => {
+			void api.broadcast('watch.subscriptions', { clientAction, subscription });
+		});
+	},
+);
+
+export const notifyOnSubscriptionChangedByRoomIdAndUserIds = withDbWatcherCheck(
+	async (
+		rid: ISubscription['rid'],
+		uids: ISubscription['u']['_id'][],
+		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+	): Promise<void> => {
+		const cursor = Subscriptions.findByRoomIdAndUserIds(rid, uids, { projection: subscriptionFields });
+
+		void cursor.forEach((subscription) => {
+			void api.broadcast('watch.subscriptions', { clientAction, subscription });
+		});
+	},
+);

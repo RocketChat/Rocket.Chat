@@ -2,7 +2,7 @@ import type { Serialized } from '@rocket.chat/core-typings';
 import type { Method, PathPattern, OperationParams, UrlParams, OperationResult } from '@rocket.chat/rest-typings';
 import type { EndpointFunction } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import type { ContextType, ReactNode } from 'react';
 
 type RegisterEndpoint = <TMethod extends Method, TPathPattern extends PathPattern>(
@@ -69,14 +69,14 @@ const contextValue = {
 	getStream,
 };
 
-type ServerProviderProps = {
+type ServerProviderMockProps = {
 	children?: ReactNode;
 	callEndpoint?: ContextType<typeof ServerContext>['callEndpoint'];
 };
 
-const ServerProvider = ({ children, callEndpoint }: ServerProviderProps) => {
+const ServerProviderMock = ({ children, callEndpoint }: ServerProviderMockProps) => {
 	const value = useMemo(() => ({ ...contextValue, callEndpoint: callEndpoint ?? contextValue.callEndpoint }), [callEndpoint]);
 	return <ServerContext.Provider children={children} value={value} />;
 };
 
-export default ServerProvider;
+export default ServerProviderMock;

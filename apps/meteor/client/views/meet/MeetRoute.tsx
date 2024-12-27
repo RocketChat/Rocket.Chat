@@ -1,11 +1,10 @@
 import { useEndpoint, useRouter, useSearchParameter, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import MeetPage from './MeetPage';
 import { VisitorDoesNotExistError } from '../../lib/errors/VisitorDoesNotExistError';
 import PageLoading from '../root/PageLoading';
-import MeetPage from './MeetPage';
 
 const MeetRoute = () => {
 	const router = useRouter();

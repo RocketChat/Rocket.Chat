@@ -1,6 +1,5 @@
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation, useRoute, useRouter, useAtLeastOnePermission, usePermission } from '@rocket.chat/ui-contexts';
-
-import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 
 const ADMIN_PERMISSIONS = [
 	'view-statistics',

@@ -24,7 +24,7 @@ export const useActiveUsers = ({ utc }: UseActiveUsersOptions) => {
 						...response,
 						start,
 						end,
-				  }
+					}
 				: undefined;
 		},
 		{

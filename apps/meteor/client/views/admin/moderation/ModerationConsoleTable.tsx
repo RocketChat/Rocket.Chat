@@ -2,9 +2,11 @@ import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ModerationConsoleTableRow from './ModerationConsoleTableRow';
+import ModerationFilter from './helpers/ModerationFilter';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -15,8 +17,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import ModerationConsoleTableRow from './ModerationConsoleTableRow';
-import ModerationFilter from './helpers/ModerationFilter';
 
 // TODO: Missing error state
 const ModerationConsoleTable = () => {
@@ -100,7 +100,7 @@ const ModerationConsoleTable = () => {
 
 	return (
 		<>
-			<ModerationFilter setText={setText} setDateRange={setDateRange} />
+			<ModerationFilter text={text} setText={setText} setDateRange={setDateRange} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

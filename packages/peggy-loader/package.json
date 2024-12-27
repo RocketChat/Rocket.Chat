@@ -1,6 +1,6 @@
 {
   "name": "@rocket.chat/peggy-loader",
-  "version": "0.31.25",
+  "version": "0.31.27",
   "description": "Peggy loader for webpack",
   "keywords": [
     "peggy",
@@ -31,7 +31,7 @@
     "build": "run-s .:build:clean .:build:esm .:build:cjs",
     ".:build:clean": "rimraf dist",
     ".:build:esm": "tsc -p tsconfig.json",
-    ".:build:cjs": "tsc -p tsconfig-cjs.json",
+    ".:build:cjs": "tsc -p tsconfig.cjs.json",
     "lint": "eslint src"
   },
   "bugs": {
@@ -44,14 +44,16 @@
   "devDependencies": {
     "@rocket.chat/eslint-config": "workspace:~",
     "@rocket.chat/prettier-config": "~0.31.25",
-    "@types/node": "~14.18.42",
+    "@types/node": "~20.17.8",
     "eslint": "~8.45.0",
     "npm-run-all": "^4.1.5",
-    "peggy": "3.0.2",
-    "prettier": "~2.8.7",
-    "rimraf": "^3.0.2",
-    "ts-jest": "~29.1.0",
-    "typescript": "~5.3.3",
-    "webpack": "~5.78.0"
+    "peggy": "4.1.1",
+    "prettier": "~3.3.3",
+    "rimraf": "^6.0.1",
+    "typescript": "~5.7.2",
+    "webpack": "~5.96.1"
+  },
+  "volta": {
+    "extends": "../../package.json"
   }
 }

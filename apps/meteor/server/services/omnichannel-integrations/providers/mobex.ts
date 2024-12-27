@@ -1,6 +1,7 @@
 import { Base64 } from '@rocket.chat/base64';
 import type { ISMSProvider, ServiceData, SMSProviderResult, SMSProviderResponse } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import type { Request } from 'express';
 
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../lib/logger/system';
@@ -194,6 +195,10 @@ export class Mobex implements ISMSProvider {
 			},
 			body: 'ACK/Jasmin',
 		};
+	}
+
+	validateRequest(_request: Request): boolean {
+		return true;
 	}
 
 	error(error: Error & { reason?: string }): SMSProviderResponse {

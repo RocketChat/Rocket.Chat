@@ -3,7 +3,6 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
-import type { ISaveUserDataParams } from '../functions/saveUser';
 import { saveUser } from '../functions/saveUser';
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
@@ -27,6 +26,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return saveUser(userId, userData as ISaveUserDataParams);
+		return saveUser(userId, userData);
 	}),
 });

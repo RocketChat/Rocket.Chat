@@ -7,17 +7,17 @@ import { useUserPreference, useUserSubscriptions, useSetting, useTranslation, us
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject, SetStateAction, Dispatch, FormEventHandler, Ref, MouseEventHandler } from 'react';
-import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
+import { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
 import type { VirtuosoHandle } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
+import Row from './Row';
 import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
 import { getConfig } from '../../lib/utils/getConfig';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
-import Row from './Row';
 
 const mobileCheck = function () {
 	let check = false;

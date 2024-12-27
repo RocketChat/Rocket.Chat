@@ -5,7 +5,6 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { useVideoConfJoinCall } from '../../../../../contexts/VideoConfContext';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
@@ -25,7 +24,7 @@ const VideoConfListItem = ({
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();
-	const showRealName = Boolean(useSetting('UI_Use_Real_Name'));
+	const showRealName = useSetting('UI_Use_Real_Name', false);
 
 	const {
 		_id: callId,

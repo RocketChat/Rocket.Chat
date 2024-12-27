@@ -1,13 +1,13 @@
-@import '../../../styles/colors';
-@import '../../../styles/helpers';
-@import '../../../styles/variables';
+@use '../../../styles/colors';
+@use '../../../styles/helpers';
+@use '../../../styles/variables';
 
 $typing-dots-dot-size: 8px;
 $typing-dots-dot-margin: 0 2px;
-$typing-dots-dot-color: $color-text-grey;
-$typing-dots-dot-highlight-color: $bg-color-grey;
-$typing-dots-dot-animation-time: 3 * $default-time-animation;
-$typing-dots-dot-animation-delay-gap: $default-time-animation;
+$typing-dots-dot-color: colors.$color-text-grey;
+$typing-dots-dot-highlight-color: colors.$bg-color-grey;
+$typing-dots-dot-animation-time: 3 * variables.$default-time-animation;
+$typing-dots-dot-animation-delay-gap: variables.$default-time-animation;
 
 .typing-dots {
 	text-align: center;
@@ -35,7 +35,7 @@ $typing-dots-dot-animation-delay-gap: $default-time-animation;
 	}
 }
 
-@include keyframes('typing-dots__indicator') {
+@include helpers.keyframes('typing-dots__indicator') {
 	0% {
 		background-color: $typing-dots-dot-color;
 	}

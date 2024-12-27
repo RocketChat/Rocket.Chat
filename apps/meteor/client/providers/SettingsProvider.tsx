@@ -3,7 +3,7 @@ import type { SettingsContextValue } from '@rocket.chat/ui-contexts';
 import { SettingsContext, useAtLeastOnePermission, useMethod } from '@rocket.chat/ui-contexts';
 import { Tracker } from 'meteor/tracker';
 import type { ReactNode } from 'react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
 import { queryClient } from '../lib/queryClient';
@@ -74,7 +74,7 @@ const SettingsProvider = ({ children, privileged = false }: SettingsProviderProp
 									? { section: query.section }
 									: {
 											$or: [{ section: { $exists: false } }, { section: undefined }],
-									  })),
+										})),
 						},
 						{
 							sort: {

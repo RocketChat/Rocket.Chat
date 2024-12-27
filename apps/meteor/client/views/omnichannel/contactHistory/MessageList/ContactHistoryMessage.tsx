@@ -16,10 +16,11 @@ import {
 	MessageSystemName,
 	MessageSystemBody,
 	MessageSystemTimestamp,
+	Bubble,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
+import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
@@ -38,7 +39,7 @@ type ContactHistoryMessageProps = {
 };
 
 const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }: ContactHistoryMessageProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { triggerProps, openUserCard } = useUserCard();
 
 	const format = useFormatDate();
@@ -79,7 +80,13 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 
 	return (
 		<>
-			{isNewDay && <MessageDivider>{format(message.ts)}</MessageDivider>}
+			{isNewDay && (
+				<MessageDivider>
+					<Bubble small secondary>
+						{format(message.ts)}
+					</Bubble>
+				</MessageDivider>
+			)}
 			<MessageTemplate isPending={message.temp} sequential={sequential} role='listitem' data-qa='chat-history-message'>
 				<MessageLeftContainer>
 					{!sequential && message.u.username && showUserAvatar && (
@@ -95,7 +102,6 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 					)}
 					{sequential && <StatusIndicators message={message} />}
 				</MessageLeftContainer>
-
 				<MessageContainer>
 					{!sequential && (
 						<MessageHeaderTemplate>

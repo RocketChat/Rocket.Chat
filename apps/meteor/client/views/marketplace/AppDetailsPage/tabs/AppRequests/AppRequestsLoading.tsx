@@ -1,6 +1,5 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 const AppRequestsLoading = (): ReactElement => {
 	const appRequestsLoading = Array.from({ length: 5 }, (_, i) => (

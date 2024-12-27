@@ -7,6 +7,8 @@ import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
+import { SAMLServiceProvider } from './ServiceProvider';
+import { SAMLUtils } from './Utils';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
@@ -18,8 +20,6 @@ import { i18n } from '../../../utils/lib/i18n';
 import type { ISAMLAction } from '../definition/ISAMLAction';
 import type { ISAMLUser } from '../definition/ISAMLUser';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
-import { SAMLServiceProvider } from './ServiceProvider';
-import { SAMLUtils } from './Utils';
 
 const showErrorMessage = function (res: ServerResponse, err: string): void {
 	res.writeHead(200, {
@@ -163,7 +163,7 @@ export class SAML {
 				}
 			}
 
-			const userId = Accounts.insertUserDoc({}, newUser);
+			const userId = await Accounts.insertUserDoc({}, newUser);
 			user = await Users.findOneById(userId);
 
 			if (user && userObject.channels && channelsAttributeUpdate !== true) {
@@ -267,7 +267,7 @@ export class SAML {
 				throw new Meteor.Error('Unable to process Logout Request: missing request data.');
 			}
 
-			let timeoutHandler: NodeJS.Timer | null = null;
+			let timeoutHandler: NodeJS.Timeout | undefined = undefined;
 			const redirect = (url?: string | undefined): void => {
 				if (!timeoutHandler) {
 					// If the handler is null, then we already ended the response;
@@ -275,7 +275,7 @@ export class SAML {
 				}
 
 				clearTimeout(timeoutHandler);
-				timeoutHandler = null;
+				timeoutHandler = undefined;
 
 				res.writeHead(302, {
 					Location: url || Meteor.absoluteUrl(),

@@ -6,6 +6,7 @@ import { isPOSTLivechatTranscriptParams, isPOSTLivechatTranscriptRequestParams }
 import { i18n } from '../../../../../server/lib/i18n';
 import { API } from '../../../../api/server';
 import { Livechat } from '../../lib/LivechatTyped';
+import { sendTranscript } from '../../lib/sendTranscript';
 
 API.v1.addRoute(
 	'livechat/transcript',
@@ -13,7 +14,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { token, rid, email } = this.bodyParams;
-			if (!(await Livechat.sendTranscript({ token, rid, email }))) {
+			if (!(await sendTranscript({ token, rid, email }))) {
 				return API.v1.failure({ message: i18n.t('Error_sending_livechat_transcript') });
 			}
 

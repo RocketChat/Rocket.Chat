@@ -6,7 +6,7 @@ import { getFederationDomain } from '../lib/getFederationDomain';
 import { clientLogger } from '../lib/logger';
 import { normalizers } from '../normalizers';
 
-async function afterSaveMessage(message, room) {
+async function afterSaveMessage(message, { room }) {
 	// If there are not federated users on this room, ignore it
 	if (!hasExternalDomain(room)) {
 		return message;

@@ -1,15 +1,14 @@
 import { Accordion, Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import AppLogsItem from './AppLogsItem';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useLogs } from '../../../hooks/useLogs';
-import AppLogsItem from './AppLogsItem';
 
 const AppLogs = ({ id }: { id: string }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const { data, isSuccess, isError, isLoading } = useLogs(id);
 

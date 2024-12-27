@@ -1,9 +1,8 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { Contextualbar } from '../../../../components/Contextualbar';
 import PruneMessages from './PruneMessages';
+import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
 	title: 'Room/Contextual Bar/PruneMessages',
@@ -27,9 +26,9 @@ export default {
 			);
 		},
 	],
-} as ComponentMeta<typeof PruneMessages>;
+} satisfies Meta<typeof PruneMessages>;
 
-const Template: ComponentStory<typeof PruneMessages> = (args) => <PruneMessages {...args} />;
+const Template: StoryFn<typeof PruneMessages> = (args) => <PruneMessages {...args} />;
 
 export const Default = Template.bind({});
 

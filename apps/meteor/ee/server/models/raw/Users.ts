@@ -1,8 +1,8 @@
 import type { RocketChatRecordDeleted, IUser } from '@rocket.chat/core-typings';
+import { UsersRaw } from '@rocket.chat/models';
 import type { Db, Collection } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
-import { UsersRaw } from '../../../../server/models/raw/Users';
 
 type AgentMetadata = {
 	'agentId'?: string;
@@ -47,7 +47,7 @@ export class UsersEE extends UsersRaw {
 					{
 						$match: { department: { $size: 1 } },
 					},
-			  ]
+				]
 			: [];
 
 		return this.col

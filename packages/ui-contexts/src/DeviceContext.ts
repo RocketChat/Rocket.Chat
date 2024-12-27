@@ -6,10 +6,6 @@ export type Device = {
 	type: string;
 };
 
-export interface IExperimentalHTMLAudioElement extends HTMLAudioElement {
-	setSinkId: (sinkId: string) => void;
-}
-
 type EnabledDeviceContextValue = {
 	enabled: true;
 	availableAudioOutputDevices: Device[];
@@ -18,7 +14,7 @@ type EnabledDeviceContextValue = {
 	selectedAudioOutputDevice?: Device;
 	selectedAudioInputDevice?: Device;
 	// selectedVideoInputDevice?: Device;
-	setAudioOutputDevice: (data: { outputDevice: Device; HTMLAudioElement: IExperimentalHTMLAudioElement }) => void;
+	setAudioOutputDevice: (data: { outputDevice: Device; HTMLAudioElement: HTMLAudioElement }) => void;
 	setAudioInputDevice: (device: Device) => void;
 	// setVideoInputDevice: (device: Device) => void;
 };

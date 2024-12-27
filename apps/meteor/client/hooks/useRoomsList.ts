@@ -2,9 +2,9 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
-import { RecordList } from '../lib/lists/RecordList';
 import { useScrollableRecordList } from './lists/useScrollableRecordList';
 import { useComponentDidUpdate } from './useComponentDidUpdate';
+import { RecordList } from '../lib/lists/RecordList';
 
 type RoomListOptions = {
 	text: string;

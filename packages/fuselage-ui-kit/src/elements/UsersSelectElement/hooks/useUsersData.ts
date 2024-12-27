@@ -20,12 +20,12 @@ export const useUsersData = ({ filter }: useUsersDataProps) => {
         (item): UserAutoCompleteOptionType => ({
           value: item.username,
           label: item.name || item.username,
-        })
+        }),
       );
 
       return options || [];
     },
-    { keepPreviousData: true }
+    { keepPreviousData: true },
   );
 
   return data;

@@ -1,8 +1,9 @@
 import { Callout } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import EditInviteLink from './EditInviteLink';
+import InviteLink from './InviteLink';
 import {
 	ContextualbarHeader,
 	ContextualbarTitle,
@@ -10,8 +11,6 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 } from '../../../../../components/Contextualbar';
-import EditInviteLink from './EditInviteLink';
-import InviteLink from './InviteLink';
 
 type InviteUsersProps = {
 	onClickBackMembers?: () => void;
@@ -38,7 +37,7 @@ const InviteUsers = ({
 	linkText,
 	error,
 }: InviteUsersProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<>

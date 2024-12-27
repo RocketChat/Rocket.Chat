@@ -3,6 +3,8 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { roomsQueryKeys } from '../../../../../lib/queryKeys';
+
 // TODO: its core should be moved to the ChatContext
 
 type UseToggleFollowingThreadMutationVariables = {
@@ -31,7 +33,8 @@ export const useToggleFollowingThreadMutation = (
 		{
 			...options,
 			onSuccess: async (data, variables, context) => {
-				await queryClient.invalidateQueries(['rooms', variables.rid, 'threads']);
+				await queryClient.invalidateQueries(roomsQueryKeys.threads(variables.rid));
+				await queryClient.invalidateQueries(roomsQueryKeys.message(variables.rid, variables.tmid));
 				return options?.onSuccess?.(data, variables, context);
 			},
 		},

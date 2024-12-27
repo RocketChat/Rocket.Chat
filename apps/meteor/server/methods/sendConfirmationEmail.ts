@@ -2,6 +2,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
@@ -31,3 +32,15 @@ Meteor.methods<ServerMethods>({
 		}
 	},
 });
+
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'sendConfirmationEmail',
+		userId() {
+			return true;
+		},
+	},
+	5,
+	60000,
+);

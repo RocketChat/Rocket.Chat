@@ -56,6 +56,8 @@ export interface IStats {
 	totalDirectMessages: number;
 	totalDiscussionsMessages: number;
 	totalLivechatMessages: number;
+	totalLivechatRoomsWithPriority: number;
+	totalLivechatRoomsWithDepartment: number;
 	totalTriggers: number;
 	totalMessages: number;
 	federatedServers: number;
@@ -177,7 +179,6 @@ export interface IStats {
 	dashboardCount: number;
 	joinJitsiButton: number;
 	totalBroadcastRooms: number;
-	totalRoomsWithActiveLivestream: number;
 	totalTriggeredEmails: number;
 	totalRoomsWithStarred: number;
 	totalRoomsWithPinned: number;
@@ -236,4 +237,20 @@ export interface IStats {
 	webRTCEnabledForOmnichannel: boolean;
 	omnichannelWebRTCCalls: number;
 	statsToken?: string;
+	contactVerification: {
+		totalContacts: number;
+		totalUnknownContacts: number;
+		totalMergedContacts: number;
+		totalConflicts: number;
+		totalResolvedConflicts: number;
+		totalBlockedContacts: number;
+		totalPartiallyBlockedContacts: number;
+		totalFullyBlockedContacts: number;
+		totalVerifiedContacts: number;
+		avgChannelsPerContact: number;
+		totalContactsWithoutChannels: number;
+		totalImportedContacts: number;
+		totalUpsellViews: number;
+		totalUpsellClicks: number;
+	};
 }

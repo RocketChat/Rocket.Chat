@@ -3,10 +3,10 @@ import { cronJobs } from '@rocket.chat/cron';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
 import { BusinessHourManager } from './BusinessHourManager';
 import { DefaultBusinessHour } from './Default';
 import { SingleBusinessHourBehavior } from './Single';
+import { callbacks } from '../../../../lib/callbacks';
 
 export const businessHourManager = new BusinessHourManager(cronJobs);
 

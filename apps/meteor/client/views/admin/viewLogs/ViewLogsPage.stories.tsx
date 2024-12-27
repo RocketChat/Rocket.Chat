@@ -1,6 +1,5 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
 
 import ViewLogsPage from './ViewLogsPage';
 
@@ -12,13 +11,9 @@ export default {
 		controls: { hideNoControlsWarning: true },
 	},
 	decorators: [
-		(fn: () => ReactNode): ReactElement => (
-			<div className='rc-old' style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-				{fn()}
-			</div>
-		),
+		(fn: () => ReactNode): ReactElement => <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>{fn()}</div>,
 	],
-} as ComponentMeta<typeof ViewLogsPage>;
+} satisfies Meta<typeof ViewLogsPage>;
 
-export const Default: ComponentStory<typeof ViewLogsPage> = () => <ViewLogsPage />;
+export const Default: StoryFn<typeof ViewLogsPage> = () => <ViewLogsPage />;
 Default.storyName = 'ViewLogsPage';

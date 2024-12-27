@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { useEndpoint, useSetModal, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useUserDisplayName } from '../../../../../hooks/useUserDisplayName';
@@ -48,7 +48,7 @@ export const useReportUser = (user: Pick<IUser, '_id' | 'username' | 'name'>): U
 					onClick: action,
 					type: 'moderation' as const,
 					variant: 'danger' as const,
-			  }
+				}
 			: undefined;
 	}, [ownUserId, uid, t, setModal, username, reportUserMutation.mutate, displayName]);
 

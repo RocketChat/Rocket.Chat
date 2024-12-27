@@ -1,9 +1,9 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, Serialized } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { usePermission, useSetModal, useTranslation, useUser, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
@@ -50,7 +50,7 @@ export const useRemoveUserAction = (
 	});
 
 	const removeUserOptionAction = useMutableCallback(() => {
-		const handleRemoveFromTeam = async (rooms: IRoom[]): Promise<void> => {
+		const handleRemoveFromTeam = async (rooms: Record<string, Serialized<IRoom>>): Promise<void> => {
 			if (room.teamId) {
 				const roomKeys = Object.keys(rooms);
 				await removeFromTeam({
@@ -97,7 +97,7 @@ export const useRemoveUserAction = (
 						onClick: removeUserOptionAction,
 						type: 'moderation' as const,
 						variant: 'danger' as const,
-				  }
+					}
 				: undefined,
 		[room, roomCanRemove, userCanRemove, removeUserOptionAction, t],
 	);

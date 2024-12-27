@@ -1,8 +1,9 @@
 import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useTranslation, useUserPreference, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
+import OutlookSettingItem from './OutlookSettingItem';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -12,7 +13,6 @@ import {
 	ContextualbarFooter,
 } from '../../../components/Contextualbar';
 import { useOutlookAuthentication, useOutlookAuthenticationMutationLogout } from '../hooks/useOutlookAuthentication';
-import OutlookSettingItem from './OutlookSettingItem';
 
 type OutlookSettingsListProps = {
 	onClose: () => void;

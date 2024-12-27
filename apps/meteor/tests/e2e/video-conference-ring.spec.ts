@@ -34,12 +34,13 @@ test.describe('video conference ringing', () => {
 
 		await auxContext.poHomeChannel.sidenav.openChat('user1');
 		await poHomeChannel.content.btnCall.click();
-		await poHomeChannel.content.btnStartCall.click();
+		await poHomeChannel.content.menuItemVideoCall.click();
+		await poHomeChannel.content.btnStartVideoCall.click();
 
-		await expect(poHomeChannel.content.ringCallText('Calling')).toBeVisible();
-		await expect(auxContext.poHomeChannel.content.ringCallText('Incoming call from')).toBeVisible();
+		await expect(poHomeChannel.content.videoConfRingCallText('Calling')).toBeVisible();
+		await expect(auxContext.poHomeChannel.content.videoConfRingCallText('Incoming call from')).toBeVisible();
 
-		await auxContext.poHomeChannel.content.btnDeclineCall.click();
+		await auxContext.poHomeChannel.content.btnDeclineVideoCall.click();
 
 		await auxContext.page.close();
 	});

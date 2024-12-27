@@ -4,22 +4,22 @@ import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
-import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import { handleAPIError } from '../helpers/handleAPIError';
-import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetailsPageHeader from './AppDetailsPageHeader';
 import AppDetailsPageLoading from './AppDetailsPageLoading';
 import AppDetailsPageTabs from './AppDetailsPageTabs';
+import { handleAPIError } from '../helpers/handleAPIError';
+import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetails from './tabs/AppDetails';
 import AppLogs from './tabs/AppLogs';
 import AppReleases from './tabs/AppReleases';
 import AppRequests from './tabs/AppRequests/AppRequests';
 import AppSecurity from './tabs/AppSecurity/AppSecurity';
 import AppSettings from './tabs/AppSettings';
+import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
+import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 
 const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const t = useTranslation();

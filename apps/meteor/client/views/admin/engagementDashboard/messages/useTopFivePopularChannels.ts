@@ -25,7 +25,7 @@ export const useTopFivePopularChannels = ({ period }: UseTopFivePopularChannelsO
 						...response,
 						start,
 						end,
-				  }
+					}
 				: undefined;
 		},
 		{

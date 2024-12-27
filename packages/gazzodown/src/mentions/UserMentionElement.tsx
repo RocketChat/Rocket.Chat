@@ -1,6 +1,6 @@
 import { Message } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { memo, ReactElement, useContext, useMemo, KeyboardEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
@@ -12,7 +12,7 @@ const handleUserMention = (mention: string | undefined, withSymbol: boolean | un
 	withSymbol ? `@${mention}` : mention;
 
 const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { resolveUserMention, onUserMentionClick, ownUserId, useRealName, showMentionSymbol, triggerProps } =
 		useContext(MarkupInteractionContext);
 

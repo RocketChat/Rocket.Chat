@@ -1,5 +1,6 @@
-export interface ILivechatDepartmentAgents {
-	_id: string;
+import type { IRocketChatRecord } from './IRocketChatRecord';
+
+export interface ILivechatDepartmentAgents extends IRocketChatRecord {
 	departmentId: string;
 	departmentEnabled: boolean;
 	agentId: string;

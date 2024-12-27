@@ -19,7 +19,10 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 
 	private queueStarted = false;
 
-	constructor(private readonly db: Db, loggerClass: typeof Logger) {
+	constructor(
+		private readonly db: Db,
+		loggerClass: typeof Logger,
+	) {
 		super();
 
 		// eslint-disable-next-line new-cap
@@ -76,7 +79,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 		this.logger.info(`Processing queue item ${queueItem._id} for work`);
 		this.logger.info(`Queue item is trying to call ${queueItem.message.to}`);
 		try {
-			await api.waitAndCall(queueItem.message.to, [queueItem.message]);
+			await api.call(queueItem.message.to, [queueItem.message]);
 			this.logger.info(`Queue item ${queueItem._id} completed`);
 			return 'Completed' as const;
 		} catch (err: unknown) {

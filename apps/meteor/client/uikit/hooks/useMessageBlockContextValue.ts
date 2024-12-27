@@ -3,6 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import type { ContextType } from 'react';
 
+import { useUiKitActionManager } from './useUiKitActionManager';
 import {
 	useVideoConfDispatchOutgoing,
 	useVideoConfIsCalling,
@@ -12,7 +13,6 @@ import {
 	useVideoConfSetPreferences,
 } from '../../contexts/VideoConfContext';
 import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
-import { useUiKitActionManager } from './useUiKitActionManager';
 
 export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_id']): ContextType<typeof UiKitContext> => {
 	const joinCall = useVideoConfJoinCall();

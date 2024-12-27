@@ -1,19 +1,19 @@
 /* eslint-disable complexity */
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Message, Team } from '@rocket.chat/core-services';
+import { Federation, FederationEE, License, Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { createDirectRoom } from './createDirectRoom';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
-import { notifyOnRoomChanged } from '../lib/notifyListener';
-import { createDirectRoom } from './createDirectRoom';
+import { notifyOnRoomChanged, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
 
 const isValidName = (name: unknown): name is string => {
 	return typeof name === 'string' && name.trim().length > 0;
@@ -47,7 +47,11 @@ async function createUsersSubscriptions({
 			...getDefaultSubscriptionPref(owner),
 		};
 
-		await Subscriptions.createWithRoomAndUser(room, owner, extra);
+		const { insertedId } = await Subscriptions.createWithRoomAndUser(room, owner, extra);
+
+		if (insertedId) {
+			await notifyOnRoomChanged(room, 'inserted');
+		}
 
 		return;
 	}
@@ -70,9 +74,7 @@ async function createUsersSubscriptions({
 
 		memberIds.push(member._id);
 
-		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
-
-		extra.open = true;
+		const extra: Partial<ISubscriptionExtraData> = { open: true, ...options?.subscriptionExtra };
 
 		if (room.prid) {
 			extra.prid = room.prid;
@@ -90,6 +92,7 @@ async function createUsersSubscriptions({
 			extraData: {
 				...extra,
 				...autoTranslateConfig,
+				...getDefaultSubscriptionPref(member),
 			},
 		});
 	}
@@ -98,7 +101,9 @@ async function createUsersSubscriptions({
 		await Users.addRoomByUserIds(memberIds, room._id);
 	}
 
-	await Subscriptions.createWithRoomAndManyUsers(room, subs);
+	const { insertedIds } = await Subscriptions.createWithRoomAndManyUsers(room, subs);
+
+	Object.values(insertedIds).forEach((subId) => notifyOnSubscriptionChangedById(subId, 'inserted'));
 
 	await Rooms.incUsersCountById(room._id, subs.length);
 }
@@ -112,6 +117,7 @@ export const createRoom = async <T extends RoomType>(
 	readOnly?: boolean,
 	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
+	sidepanel?: ICreateRoomParams['sidepanel'],
 ): Promise<
 	ICreatedRoom & {
 		rid: string;
@@ -187,6 +193,7 @@ export const createRoom = async <T extends RoomType>(
 		},
 		ts: now,
 		ro: readOnly === true,
+		sidepanel,
 	};
 
 	if (teamId) {
@@ -222,6 +229,13 @@ export const createRoom = async <T extends RoomType>(
 		Object.assign(roomProps, eventResult);
 	}
 
+	const shouldBeHandledByFederation = roomProps.federated === true || owner.username.includes(':');
+
+	if (shouldBeHandledByFederation) {
+		const federation = (await License.hasValidLicense()) ? FederationEE : Federation;
+		await federation.beforeCreateRoom(roomProps);
+	}
+
 	if (type === 'c') {
 		await callbacks.run('beforeCreateChannel', owner, roomProps);
 	}
@@ -229,8 +243,6 @@ export const createRoom = async <T extends RoomType>(
 	const room = await Rooms.createWithFullRoomData(roomProps);
 
 	void notifyOnRoomChanged(room, 'inserted');
-
-	const shouldBeHandledByFederation = room.federated === true || owner.username.includes(':');
 
 	await createUsersSubscriptions({ room, members, now, owner, options, shouldBeHandledByFederation });
 

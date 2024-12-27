@@ -1,7 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { HeaderIcon } from '../../../components/Header';
 import { OmnichannelRoomIcon } from '../../../components/RoomIcon/OmnichannelRoomIcon';
@@ -14,7 +13,7 @@ type HeaderIconWithRoomProps = {
 const HeaderIconWithRoom = ({ room }: HeaderIconWithRoomProps): ReactElement => {
 	const icon = useRoomIcon(room);
 	if (isOmnichannelRoom(room)) {
-		return <OmnichannelRoomIcon room={room} size='x20' placement='default' />;
+		return <OmnichannelRoomIcon source={room.source} status={room.v?.status} size='x20' />;
 	}
 
 	return <HeaderIcon icon={icon} />;

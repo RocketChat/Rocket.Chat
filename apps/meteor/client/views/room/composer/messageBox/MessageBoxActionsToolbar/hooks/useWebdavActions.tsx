@@ -1,16 +1,15 @@
 import type { IWebdavAccountIntegration } from '@rocket.chat/core-typings';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { GenericMenuItemProps } from '../../../../../../components/GenericMenu/GenericMenuItem';
 import { useWebDAVAccountIntegrationsQuery } from '../../../../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
 import { useChat } from '../../../../contexts/ChatContext';
 import AddWebdavAccountModal from '../../../../webdav/AddWebdavAccountModal';
 import WebdavFilePickerModal from '../../../../webdav/WebdavFilePickerModal';
 
 export const useWebdavActions = (): GenericMenuItemProps[] => {
-	const enabled = useSetting<boolean>('Webdav_Integration_Enabled', false);
+	const enabled = useSetting('Webdav_Integration_Enabled', false);
 
 	const { isSuccess, data } = useWebDAVAccountIntegrationsQuery({ enabled });
 
@@ -42,7 +41,7 @@ export const useWebdavActions = (): GenericMenuItemProps[] => {
 					content: account.name,
 					icon: 'cloud-plus' as const,
 					onClick: () => handleOpenWebdav(account),
-			  }))
+				}))
 			: []),
 	];
 };

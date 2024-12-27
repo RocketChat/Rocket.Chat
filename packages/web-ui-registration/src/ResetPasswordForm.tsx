@@ -56,7 +56,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 						<FieldRow>
 							<TextInput
 								{...register('email', {
-									required: t('registration.component.form.requiredField'),
+									required: t('Required_field', { field: t('registration.component.form.email') }),
 									pattern: {
 										value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
 										message: t('registration.page.resetPassword.errors.invalidEmail'),

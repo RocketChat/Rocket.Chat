@@ -7,14 +7,8 @@ export async function findAgentDepartments({
 }: {
 	enabledDepartmentsOnly?: boolean;
 	agentId: string;
-}): Promise<{ departments: ILivechatDepartmentAgents[] }> {
-	if (enabledDepartmentsOnly) {
-		return {
-			departments: await LivechatDepartmentAgents.findActiveDepartmentsByAgentId(agentId).toArray(),
-		};
-	}
-
+}): Promise<{ departments: (ILivechatDepartmentAgents & { departmentName: string })[] }> {
 	return {
-		departments: await LivechatDepartmentAgents.find({ agentId }).toArray(),
+		departments: await LivechatDepartmentAgents.findDepartmentsOfAgent(agentId, enabledDepartmentsOnly).toArray(),
 	};
 }

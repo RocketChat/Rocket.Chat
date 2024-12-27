@@ -1,15 +1,15 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLanguage } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo, useEffect, useState, memo } from 'react';
+import { useMemo, useEffect, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import AutoTranslate from './AutoTranslate';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { dispatchToastMessage } from '../../../../lib/toast';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
-import AutoTranslate from './AutoTranslate';
 
 const AutoTranslateWithData = (): ReactElement => {
 	const room = useRoom();

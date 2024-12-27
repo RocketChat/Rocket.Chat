@@ -1,5 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import { Contextualbar } from '../Contextualbar';
 import * as Status from '../UserStatus';
@@ -13,9 +12,9 @@ export default {
 		actions: { argTypesRegex: '^on.*' },
 	},
 	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
-} as ComponentMeta<typeof UserInfo>;
+} satisfies Meta<typeof UserInfo>;
 
-const Template: ComponentStory<typeof UserInfo> = (args) => <UserInfo {...args} />;
+const Template: StoryFn<typeof UserInfo> = (args) => <UserInfo {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {

@@ -245,6 +245,57 @@ export class AppRoomBridge extends RoomBridge {
 		return users.map((user: ICoreUser) => userConverter.convertToApp(user));
 	}
 
+	protected async getUnreadByUser(roomId: string, uid: string, options: GetMessagesOptions, appId: string): Promise<Array<IMessageRaw>> {
+		this.orch.debugLog(`The App ${appId} is getting the unread messages for the user: "${uid}" in the room: "${roomId}"`);
+
+		const messageConverter = this.orch.getConverters()?.get('messages');
+		if (!messageConverter) {
+			throw new Error('Message converter not found');
+		}
+
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, uid, { projection: { ls: 1 } });
+
+		if (!subscription) {
+			const errorMessage = `No subscription found for user with ID "${uid}" in room with ID "${roomId}". This means the user is not subscribed to the room.`;
+			this.orch.debugLog(errorMessage);
+			throw new Error('User not subscribed to room');
+		}
+
+		const lastSeen = subscription?.ls;
+		if (!lastSeen) {
+			return [];
+		}
+
+		const sort: Sort = options.sort?.createdAt ? { ts: options.sort.createdAt } : { ts: 1 };
+
+		const cursor = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, lastSeen, new Date(), [], {
+			...options,
+			sort,
+		});
+
+		const messages = await cursor.toArray();
+		return Promise.all(messages.map((msg) => messageConverter.convertMessageRaw(msg)));
+	}
+
+	protected async getUserUnreadMessageCount(roomId: string, uid: string, appId: string): Promise<number> {
+		this.orch.debugLog(`The App ${appId} is getting the unread messages count of the room: "${roomId}" for the user: "${uid}"`);
+
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, uid, { projection: { ls: 1 } });
+
+		if (!subscription) {
+			const errorMessage = `No subscription found for user with ID "${uid}" in room with ID "${roomId}". This means the user is not subscribed to the room.`;
+			this.orch.debugLog(errorMessage);
+			throw new Error('User not subscribed to room');
+		}
+
+		const lastSeen = subscription?.ls;
+		if (!lastSeen) {
+			return 0;
+		}
+
+		return Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, lastSeen, new Date(), []);
+	}
+
 	protected async removeUsers(roomId: string, usernames: Array<string>, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is removing users ${usernames} from room id: ${roomId}`);
 		if (!roomId) {

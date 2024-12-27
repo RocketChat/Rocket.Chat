@@ -14,10 +14,11 @@ import {
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
 import { settings } from '../../../settings/server';
@@ -26,6 +27,7 @@ import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+
 // TODO: Refact or remove
 
 type findDirectMessageRoomProps =
@@ -107,7 +109,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
-			await Meteor.callAsync('eraseRoom', room._id);
+			await eraseRoom(room._id, this.userId);
 
 			return API.v1.success();
 		},
@@ -133,7 +135,7 @@ API.v1.addRoute(
 			} else {
 				const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 				if (!canAccess) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 
 				const { subscription: subs } = await findDirectMessageRoom({ roomId }, this.userId);
@@ -179,23 +181,23 @@ API.v1.addRoute(
 
 			if (ruserId) {
 				if (!access) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 				user = ruserId;
 			}
 			const canAccess = await canAccessRoomIdAsync(roomId, user);
 
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { room, subscription } = await findDirectMessageRoom({ roomId }, user);
 
 			lm = room?.lm ? new Date(room.lm).toISOString() : new Date(room._updatedAt).toISOString(); // lm is the last message timestamp
 
-			if (subscription?.open) {
+			if (subscription) {
+				unreads = subscription.unread ?? null;
 				if (subscription.ls && room.msgs) {
-					unreads = subscription.unread;
 					unreadsFrom = new Date(subscription.ls).toISOString(); // last read timestamp
 				}
 				userMentions = subscription.userMentions;
@@ -236,7 +238,7 @@ API.v1.addRoute(
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const ourQuery = query ? { rid: room._id, ...query } : { rid: room._id };
@@ -287,7 +289,7 @@ API.v1.addRoute(
 			const result = await Meteor.callAsync('getChannelHistory', objectParams);
 
 			if (!result) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			return API.v1.success(result);
@@ -307,7 +309,7 @@ API.v1.addRoute(
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -327,8 +329,23 @@ API.v1.addRoute(
 				...(status && { status: { $in: status } }),
 			};
 
+			const canSeeExtension = await hasAtLeastOnePermissionAsync(
+				this.userId,
+				['view-full-other-user-info', 'view-user-voip-extension'],
+				room._id,
+			);
+
 			const options = {
-				projection: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1, federated: 1 },
+				projection: {
+					_id: 1,
+					username: 1,
+					name: 1,
+					status: 1,
+					statusText: 1,
+					utcOffset: 1,
+					federated: 1,
+					...(canSeeExtension && { freeSwitchExtension: 1 }),
+				},
 				skip: offset,
 				limit: count,
 				sort: {
@@ -361,17 +378,28 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { room } = await findDirectMessageRoom(this.queryParams, this.userId);
+			const { roomId, username, mentionIds, starredIds, pinned } = this.queryParams;
+
+			const { room } = await findDirectMessageRoom({ ...(roomId ? { roomId } : { username }) }, this.userId);
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
-			const ourQuery = { rid: room._id, ...query };
+			const parseIds = (ids: string | undefined, field: string) =>
+				typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
+
+			const ourQuery = {
+				rid: room._id,
+				...query,
+				...parseIds(mentionIds, 'mentions._id'),
+				...parseIds(starredIds, 'starred._id'),
+				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
+			};
 			const sortObj = { ts: sort?.ts ?? -1 };
 
 			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
@@ -395,17 +423,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	['dm.messages.others', 'im.messages.others'],
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-room-administration'] },
 	{
 		async get() {
 			if (settings.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
 				throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
 					route: '/api/v1/im.messages.others',
 				});
-			}
-
-			if (!(await hasPermissionAsync(this.userId, 'view-room-administration'))) {
-				return API.v1.unauthorized();
 			}
 
 			const { roomId } = this.queryParams;
@@ -483,13 +507,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	['dm.list.everyone', 'im.list.everyone'],
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-room-administration'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-room-administration'))) {
-				return API.v1.unauthorized();
-			}
-
 			const { offset, count }: { offset: number; count: number } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
@@ -527,7 +547,7 @@ API.v1.addRoute(
 			}
 			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { room, subscription } = await findDirectMessageRoom({ roomId }, this.userId);
@@ -554,7 +574,7 @@ API.v1.addRoute(
 
 			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 			if (!canAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { room } = await findDirectMessageRoom({ roomId }, this.userId);

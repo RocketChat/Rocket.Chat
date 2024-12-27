@@ -248,9 +248,8 @@ export type AppsEndpoints = {
 							version: string;
 							permissionsGranted?: IPermission[];
 							url?: string;
-							downloadOnly?: boolean;
 					  }
-					| { url: string; downloadOnly?: boolean },
+					| { url: string },
 			):
 				| {
 						app: App;

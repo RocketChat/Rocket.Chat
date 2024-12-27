@@ -1,10 +1,5 @@
 import readline from 'readline';
-import fs from 'fs';
-import { promisify } from 'util';
-
-const rmdir = promisify(fs.rmdir);
-const unlink = promisify(fs.unlink);
-const rename = promisify(fs.rename);
+import fs from 'fs/promises';
 
 const removeOptions = { maxRetries: 3, recursive: true };
 
@@ -15,15 +10,15 @@ const rl = readline.createInterface({
 
 const fossify = async () => {
 	console.log('Removing Premium Apps and Packages...');
-	await rmdir('./ee', removeOptions);
+	await fs.rmdir('./ee', removeOptions);
 
 	console.log('Removing Premium code in the main app...');
-	await rmdir('./apps/meteor/ee', removeOptions);
+	await fs.rmdir('./apps/meteor/ee', removeOptions);
 
 	console.log('Replacing main files...');
-	await unlink('./apps/meteor/server/ee.ts');
+	await fs.unlink('./apps/meteor/server/ee.ts');
 
-	await rename('./apps/meteor/server/foss.ts', './apps/meteor/server/ee.ts');
+	await fs.rename('./apps/meteor/server/foss.ts', './apps/meteor/server/ee.ts');
 
 	console.log('Done.');
 };

@@ -6,6 +6,8 @@ import { isGETAgentNextToken, isPOSTLivechatAgentStatusProps } from '@rocket.cha
 import { API } from '../../../../api/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { RoutingManager } from '../../lib/RoutingManager';
+import { getRequiredDepartment } from '../../lib/departmentsLib';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {
@@ -42,13 +44,13 @@ API.v1.addRoute(
 
 			let { department } = this.queryParams;
 			if (!department) {
-				const requireDepartment = await LivechatTyped.getRequiredDepartment();
+				const requireDepartment = await getRequiredDepartment();
 				if (requireDepartment) {
 					department = requireDepartment._id;
 				}
 			}
 
-			const agentData = await LivechatTyped.getNextAgent(department);
+			const agentData = await RoutingManager.getNextAgent(department);
 			if (!agentData) {
 				throw new Error('agent-not-found');
 			}
@@ -98,7 +100,7 @@ API.v1.addRoute(
 
 			if (agentId !== this.userId) {
 				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-agents'))) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 
 				// Silent fail for admins when BH is closed

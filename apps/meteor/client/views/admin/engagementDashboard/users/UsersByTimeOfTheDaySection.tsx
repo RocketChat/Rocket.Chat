@@ -1,10 +1,11 @@
+import type { ComputedCell, DefaultHeatMapDatum } from '@nivo/heatmap';
 import { ResponsiveHeatMapCanvas } from '@nivo/heatmap';
 import { Box, Flex, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
@@ -23,7 +24,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 
 	const { data, isLoading } = useUsersByTimeOfTheDay({ period, utc });
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [dates, values] = useMemo(() => {
 		if (!data || isLoading) {
@@ -63,7 +64,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 	}, [data, isLoading, utc]);
 
 	const tooltip = useCallback(
-		({ cell }): ReactElement => {
+		({ cell }: { cell: ComputedCell<DefaultHeatMapDatum> }) => {
 			return (
 				<Tooltip>
 					{moment(cell.data.x).format('ddd')}{' '}

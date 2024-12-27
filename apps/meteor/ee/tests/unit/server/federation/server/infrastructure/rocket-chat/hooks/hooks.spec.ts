@@ -3,7 +3,7 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const remove = sinon.stub();
-const get = sinon.stub();
+const throwIfFederationNotEnabledOrNotReady = sinon.stub();
 const hooks: Record<string, any> = {};
 
 const { FederationHooksEE } = proxyquire
@@ -28,20 +28,19 @@ const { FederationHooksEE } = proxyquire
 				},
 			},
 		},
-		'../../../../../../../app/settings/server': {
-			settings: { get },
+		'../../../../../../../server/services/federation/utils': {
+			throwIfFederationNotEnabledOrNotReady,
 		},
 	});
 
 describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 	afterEach(() => {
 		remove.reset();
-		get.reset();
+		throwIfFederationNotEnabledOrNotReady.reset();
 	});
 
 	describe('#onFederatedRoomCreated()', () => {
 		it('should NOT execute the callback if no room was provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onFederatedRoomCreated(stub);
 			hooks['federation-v2-after-create-room']();
@@ -49,7 +48,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if the provided room is not federated', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onFederatedRoomCreated(stub);
 			hooks['federation-v2-after-create-room']({});
@@ -57,7 +55,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no params were provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onFederatedRoomCreated(stub);
 			hooks['federation-v2-after-create-room']({ federated: true });
@@ -65,7 +62,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no owner was provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onFederatedRoomCreated(stub);
 			hooks['federation-v2-after-create-room']({ federated: true }, {});
@@ -73,7 +69,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no member list was provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onFederatedRoomCreated(stub);
 			hooks['federation-v2-after-create-room']({ federated: true }, { owner: 'owner' });
@@ -81,15 +76,18 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if federation module was disabled', () => {
-			get.returns(false);
+			const error = new Error();
+			throwIfFederationNotEnabledOrNotReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.onFederatedRoomCreated(stub);
-			hooks['federation-v2-after-create-room']({ federated: true }, { owner: 'owner', originalMemberList: [] });
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
+			expect(
+				hooks['federation-v2-after-create-room']({ federated: true }, { owner: 'owner', originalMemberList: [] }),
+			).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
 		});
 
 		it('should execute the callback when everything is correct', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onFederatedRoomCreated(stub);
 			hooks['federation-v2-after-create-room']({ federated: true }, { owner: 'owner', originalMemberList: [] });
@@ -99,7 +97,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 
 	describe('#onUsersAddedToARoom() - afterAddedToRoom', () => {
 		it('should NOT execute the callback if no room was provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
 			hooks['federation-v2-after-add-user-to-a-room']();
@@ -107,7 +104,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if the provided room is not federated', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
 			hooks['federation-v2-after-add-user-to-a-room']({}, {});
@@ -115,7 +111,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no params were provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
 			hooks['federation-v2-after-add-user-to-a-room']({}, { federated: true });
@@ -123,7 +118,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no user was provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
 			hooks['federation-v2-after-add-user-to-a-room']({}, { federated: true }, {});
@@ -131,15 +125,18 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if federation module was disabled', () => {
-			get.returns(false);
+			const error = new Error();
+			throwIfFederationNotEnabledOrNotReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
-			hooks['federation-v2-after-add-user-to-a-room']({ user: 'user', inviter: 'inviter' }, { federated: true });
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
+			expect(
+				hooks['federation-v2-after-add-user-to-a-room']({ user: 'user', inviter: 'inviter' }, { federated: true }),
+			).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
 		});
 
 		it('should execute the callback when everything is correct', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
 			hooks['federation-v2-after-add-user-to-a-room']({ user: 'user', inviter: 'inviter' }, { federated: true });
@@ -147,7 +144,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should execute the callback even if there is no inviter (when auto-joining)', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
 			hooks['federation-v2-after-add-user-to-a-room']({ user: 'user' }, { federated: true });
@@ -156,7 +152,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 	});
 	describe('#onUsersAddedToARoom() - federation.onAddUsersToARoom', () => {
 		it('should NOT execute the callback if no room was provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
 			hooks['federation-v2-on-add-users-to-a-room']();
@@ -164,7 +159,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if the provided room is not federated', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
 			hooks['federation-v2-on-add-users-to-a-room']({}, {});
@@ -172,7 +166,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no params were provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
 			hooks['federation-v2-on-add-users-to-a-room']({}, { federated: true });
@@ -180,7 +173,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no user was provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
 			hooks['federation-v2-on-add-users-to-a-room']({}, { federated: true }, {});
@@ -188,7 +180,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no inviter was provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
 			hooks['federation-v2-on-add-users-to-a-room']({ invitees: ['user'] }, { federated: true });
@@ -196,15 +187,18 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if federation module was disabled', () => {
-			get.returns(false);
+			const error = new Error();
+			throwIfFederationNotEnabledOrNotReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
-			hooks['federation-v2-on-add-users-to-a-room']({ invitees: ['user'], inviter: 'inviter' }, { federated: true });
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
+			expect(
+				hooks['federation-v2-on-add-users-to-a-room']({ invitees: ['user'], inviter: 'inviter' }, { federated: true }),
+			).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
 		});
 
 		it('should execute the callback when everything is correct', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
 			hooks['federation-v2-on-add-users-to-a-room']({ invitees: ['user'], inviter: 'inviter' }, { federated: true });
@@ -214,7 +208,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 
 	describe('#onDirectMessageRoomCreated()', () => {
 		it('should NOT execute the callback if no room was provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onDirectMessageRoomCreated(stub);
 			hooks['federation-v2-after-create-direct-message-room']();
@@ -222,7 +215,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if the provided room is not federated', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onDirectMessageRoomCreated(stub);
 			hooks['federation-v2-after-create-direct-message-room']({}, {});
@@ -230,7 +222,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no params were provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onDirectMessageRoomCreated(stub);
 			hooks['federation-v2-after-create-direct-message-room']({ federated: true });
@@ -238,7 +229,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no members was provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onDirectMessageRoomCreated(stub);
 			hooks['federation-v2-after-create-direct-message-room']({ federated: true });
@@ -246,7 +236,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no creatorId was provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onDirectMessageRoomCreated(stub);
 			hooks['federation-v2-after-create-direct-message-room']({ federated: true }, { members: [] });
@@ -254,15 +243,18 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if federation module was disabled', () => {
-			get.returns(false);
+			const error = new Error();
+			throwIfFederationNotEnabledOrNotReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.onDirectMessageRoomCreated(stub);
-			hooks['federation-v2-after-create-direct-message-room']({ federated: true }, { creatorId: 'creatorId', members: [] });
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
+			expect(
+				hooks['federation-v2-after-create-direct-message-room']({ federated: true }, { creatorId: 'creatorId', members: [] }),
+			).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
 		});
 
 		it('should execute the callback when everything is correct', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.onDirectMessageRoomCreated(stub);
 			hooks['federation-v2-after-create-direct-message-room']({ federated: true }, { creatorId: 'creatorId', members: [] });
@@ -272,7 +264,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 
 	describe('#beforeDirectMessageRoomCreate()', () => {
 		it('should NOT execute the callback if no members was provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.beforeDirectMessageRoomCreate(stub);
 			hooks['federation-v2-before-create-direct-message-room']();
@@ -280,15 +271,16 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if federation module was disabled', () => {
-			get.returns(false);
+			const error = new Error();
+			throwIfFederationNotEnabledOrNotReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.beforeDirectMessageRoomCreate(stub);
-			hooks['federation-v2-before-create-direct-message-room']([]);
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
+			expect(hooks['federation-v2-before-create-direct-message-room']([])).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
 		});
 
 		it('should execute the callback when everything is correct', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.beforeDirectMessageRoomCreate(stub);
 			hooks['federation-v2-before-create-direct-message-room']([]);
@@ -298,7 +290,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 
 	describe('#beforeAddUserToARoom()', () => {
 		it('should NOT execute the callback if no room was provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.beforeAddUserToARoom(stub);
 			hooks['federation-v2-before-add-user-to-the-room']();
@@ -306,7 +297,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if the provided room is not federated', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.beforeAddUserToARoom(stub);
 			hooks['federation-v2-before-add-user-to-the-room']({}, {});
@@ -314,7 +304,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no params were provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.beforeAddUserToARoom(stub);
 			hooks['federation-v2-before-add-user-to-the-room']({}, { federated: true });
@@ -322,7 +311,6 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no user was provided', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.beforeAddUserToARoom(stub);
 			hooks['federation-v2-before-add-user-to-the-room']({}, { federated: true }, {});
@@ -330,15 +318,18 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if federation module was disabled', () => {
-			get.returns(false);
+			const error = new Error();
+			throwIfFederationNotEnabledOrNotReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.beforeAddUserToARoom(stub);
-			hooks['federation-v2-before-add-user-to-the-room']({ user: 'user', inviter: 'inviter' }, { federated: true });
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
+			expect(
+				hooks['federation-v2-before-add-user-to-the-room']({ user: 'user', inviter: 'inviter' }, { federated: true }),
+			).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
 		});
 
 		it('should execute the callback when everything is correct', () => {
-			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooksEE.beforeAddUserToARoom(stub);
 			hooks['federation-v2-before-add-user-to-the-room']({ user: 'user', inviter: 'inviter' }, { federated: true });

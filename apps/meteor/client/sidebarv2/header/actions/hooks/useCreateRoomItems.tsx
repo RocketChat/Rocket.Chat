@@ -1,7 +1,7 @@
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 
 import CreateDiscussion from '../../../../components/CreateDiscussion';
-import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import CreateChannelModal from '../../CreateChannelModal';
 import CreateDirectMessage from '../../CreateDirectMessage';
 import CreateTeamModal from '../../CreateTeamModal';

@@ -20,7 +20,7 @@ import {
 import { useDebouncedValue, useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { validateEmail } from '../../../../lib/emailValidator';
@@ -258,7 +258,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 									flexGrow={1}
 									error={errors.name?.message as string}
 									placeholder={t('Name')}
-									{...register('name', { required: t('The_field_is_required', 'name') })}
+									{...register('name', { required: t('Required_field', { field: t('Name') }) })}
 								/>
 							</FieldRow>
 							{errors.name && (
@@ -296,7 +296,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 									addon={<Icon name='mail' size='x20' />}
 									placeholder={t('Email')}
 									{...register('email', {
-										required: t('The_field_is_required', 'email'),
+										required: t('Required_field', { field: t('Email') }),
 										validate: (email) => validateEmail(email) || t('error-invalid-email-address'),
 									})}
 									aria-describedby={`${emailField}-error`}
@@ -442,7 +442,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								<Controller
 									control={control}
 									name='chatClosingTags'
-									rules={{ required: t('The_field_is_required', 'tags') }}
+									rules={{ required: t('Required_field', 'tags') }}
 									render={({ field: { value, onChange } }) => (
 										<DepartmentTags
 											id={chatClosingTagsField}

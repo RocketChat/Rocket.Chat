@@ -1,4 +1,12 @@
-import type { IMessage, IRoom, MessageAttachment, ReadReceipt, OtrSystemMessages, MessageUrl } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	IRoom,
+	MessageAttachment,
+	ReadReceipt,
+	OtrSystemMessages,
+	MessageUrl,
+	IThreadMainMessage,
+} from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -255,8 +263,9 @@ export const isChatReportMessageProps = ajv.compile<ChatReportMessage>(ChatRepor
 
 type ChatGetThreadsList = PaginatedRequest<{
 	rid: IRoom['_id'];
-	type: 'unread' | 'following' | 'all';
+	type?: 'unread' | 'following';
 	text?: string;
+	fields?: string;
 }>;
 
 const ChatGetThreadsListSchema = {
@@ -267,6 +276,7 @@ const ChatGetThreadsListSchema = {
 		},
 		type: {
 			type: 'string',
+			enum: ['following', 'unread'],
 			nullable: true,
 		},
 		text: {
@@ -279,6 +289,18 @@ const ChatGetThreadsListSchema = {
 		},
 		count: {
 			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+		fields: {
+			type: 'string',
 			nullable: true,
 		},
 	},
@@ -591,7 +613,11 @@ export const isChatGetMentionedMessagesProps = ajv.compile<GetMentionedMessages>
 
 type ChatSyncMessages = {
 	roomId: IRoom['_id'];
-	lastUpdate: string;
+	lastUpdate?: string;
+	count?: number;
+	next?: string;
+	previous?: string;
+	type?: 'UPDATED' | 'DELETED';
 };
 
 const ChatSyncMessagesSchema = {
@@ -602,9 +628,27 @@ const ChatSyncMessagesSchema = {
 		},
 		lastUpdate: {
 			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		next: {
+			type: 'string',
+			nullable: true,
+		},
+		previous: {
+			type: 'string',
+			nullable: true,
+		},
+		type: {
+			type: 'string',
+			enum: ['UPDATED', 'DELETED'],
+			nullable: true,
 		},
 	},
-	required: ['roomId', 'lastUpdate'],
+	required: ['roomId'],
 	additionalProperties: false,
 };
 
@@ -885,7 +929,7 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.getThreadsList': {
 		GET: (params: ChatGetThreadsList) => {
-			threads: IMessage[];
+			threads: IThreadMainMessage[];
 			total: number;
 		};
 	};
@@ -952,6 +996,10 @@ export type ChatEndpoints = {
 			result: {
 				updated: IMessage[];
 				deleted: IMessage[];
+				cursor: {
+					next: string | null;
+					previous: string | null;
+				};
 			};
 		};
 	};

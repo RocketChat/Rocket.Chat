@@ -13,7 +13,7 @@ export const useCurrentRoutePath = () => {
 					name,
 					params: router.getRouteParameters(),
 					search: router.getSearchParameters(),
-			  })
+				})
 			: undefined;
 	}, [router]);
 

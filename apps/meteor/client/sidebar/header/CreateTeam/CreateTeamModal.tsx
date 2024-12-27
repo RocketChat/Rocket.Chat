@@ -25,7 +25,7 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { memo, useEffect, useMemo } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
@@ -181,7 +181,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								id={nameId}
 								aria-invalid={errors.name ? 'true' : 'false'}
 								{...register('name', {
-									required: t('error-the-field-is-required', { field: t('Name') }),
+									required: t('Required_field', { field: t('Name') }),
 									validate: (value) => validateTeamName(value),
 								})}
 								addon={<Icon size='x20' name={isPrivate ? 'team-lock' : 'team'} />}

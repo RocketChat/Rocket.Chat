@@ -30,12 +30,12 @@ const events = {
 
 const invalidateRoomQueries = async (rid: string) => {
 	await queryClient.invalidateQueries(['rooms', { reference: rid, type: 'l' }]);
-	await queryClient.removeQueries(['rooms', rid]);
-	await queryClient.removeQueries(['/v1/rooms.info', rid]);
+	queryClient.removeQueries(['rooms', rid]);
+	queryClient.removeQueries(['/v1/rooms.info', rid]);
 };
 
 const removeInquiry = async (inquiry: ILivechatInquiryRecord) => {
-	await LivechatInquiry.remove(inquiry._id);
+	LivechatInquiry.remove(inquiry._id);
 	return queryClient.invalidateQueries(['rooms', { reference: inquiry.rid, type: 'l' }]);
 };
 

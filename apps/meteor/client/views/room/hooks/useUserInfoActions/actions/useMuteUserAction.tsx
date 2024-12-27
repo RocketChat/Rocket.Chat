@@ -11,7 +11,7 @@ import {
 	useUserSubscription,
 	useEndpoint,
 } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
@@ -105,7 +105,7 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 					icon: isMuted ? ('mic' as const) : ('mic-off' as const),
 					onClick: action,
 					type: 'management' as UserInfoActionType,
-			  }
+				}
 			: undefined;
 	}, [
 		closeModal,

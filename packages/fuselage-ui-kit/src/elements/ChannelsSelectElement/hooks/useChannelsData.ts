@@ -6,7 +6,7 @@ type useChannelsDataProps = {
 };
 
 const generateQuery = (
-  term = ''
+  term = '',
 ): {
   selector: string;
 } => ({ selector: JSON.stringify({ name: term }) });
@@ -14,7 +14,7 @@ const generateQuery = (
 export const useChannelsData = ({ filter }: useChannelsDataProps) => {
   const getRooms = useEndpoint(
     'GET',
-    '/v1/rooms.autocomplete.channelAndPrivate'
+    '/v1/rooms.autocomplete.channelAndPrivate',
   );
 
   const { data } = useQuery(
@@ -26,14 +26,14 @@ export const useChannelsData = ({ filter }: useChannelsDataProps) => {
         ({ fname, name, _id, avatarETag, t }) => ({
           value: _id,
           label: { name: name || fname, avatarETag, type: t },
-        })
+        }),
       );
 
       return options || [];
     },
     {
       keepPreviousData: true,
-    }
+    },
   );
 
   return data;

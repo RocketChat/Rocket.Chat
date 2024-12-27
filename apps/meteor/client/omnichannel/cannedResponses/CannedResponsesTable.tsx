@@ -3,8 +3,10 @@ import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hoo
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashQueryKey } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
+import CannedResponseFilter from './CannedResponseFilter';
+import { useRemoveCannedResponse } from './useRemoveCannedResponse';
 import GenericNoResults from '../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -18,8 +20,6 @@ import {
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../components/GenericTable/hooks/useSort';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
-import CannedResponseFilter from './CannedResponseFilter';
-import { useRemoveCannedResponse } from './useRemoveCannedResponse';
 
 type Scope = 'global' | 'department' | 'user';
 

@@ -54,8 +54,8 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('invalid_integration', '[methods] updateOutgoingIntegration -> integration not found');
 		}
 
-		const oldScriptEngine = currentIntegration.scriptEngine ?? 'vm2';
-		const scriptEngine = integration.scriptEngine ?? oldScriptEngine;
+		const oldScriptEngine = currentIntegration.scriptEngine;
+		const scriptEngine = integration.scriptEngine ?? oldScriptEngine ?? 'isolated-vm';
 		if (
 			integration.script?.trim() &&
 			(scriptEngine !== oldScriptEngine || integration.script?.trim() !== currentIntegration.script?.trim())
@@ -91,7 +91,7 @@ Meteor.methods<ServerMethods>({
 								scriptEnabled: integration.scriptEnabled,
 								scriptEngine,
 								...(integration.scriptCompiled ? { scriptCompiled: integration.scriptCompiled } : { scriptError: integration.scriptError }),
-						  }),
+							}),
 					triggerWords: integration.triggerWords,
 					retryFailedCalls: integration.retryFailedCalls,
 					retryCount: integration.retryCount,
@@ -107,7 +107,7 @@ Meteor.methods<ServerMethods>({
 							$unset: {
 								...(integration.scriptCompiled ? { scriptError: 1 as const } : { scriptCompiled: 1 as const }),
 							},
-					  }),
+						}),
 			},
 		);
 

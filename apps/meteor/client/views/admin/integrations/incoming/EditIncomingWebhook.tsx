@@ -2,15 +2,15 @@ import type { IIncomingIntegration, Serialized } from '@rocket.chat/core-typings
 import { Button, ButtonGroup, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useTranslation, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
+import IncomingWebhookForm from './IncomingWebhookForm';
 import GenericModal from '../../../../components/GenericModal';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../../components/Page';
 import { useCreateIntegration } from '../hooks/useCreateIntegration';
 import { useDeleteIntegration } from '../hooks/useDeleteIntegration';
 import { useUpdateIntegration } from '../hooks/useUpdateIntegration';
-import IncomingWebhookForm from './IncomingWebhookForm';
 
 const getInitialValue = (webhookData: Serialized<IIncomingIntegration> | undefined) => ({
 	enabled: webhookData?.enabled ?? true,

@@ -1,4 +1,4 @@
-FROM node:14.21.3 as build
+FROM node:20.18.0 as build
 
 WORKDIR /app
 
@@ -28,7 +28,7 @@ COPY ./tsconfig.base.json .
 RUN yarn workspace @rocket.chat/core-typings run build \
     && yarn workspace @rocket.chat/rest-typings run build
 
-FROM node:14.21.3-alpine
+FROM node:20.18.0-alpine3.20
 
 ARG SERVICE
 
@@ -69,7 +69,7 @@ ENV NODE_ENV=production \
 WORKDIR /app/apps/meteor/ee/server/services
 
 RUN apk update && \
-    apk --no-cache --virtual build-dependencies add g++ python3 make && \
+    apk --no-cache --virtual build-dependencies add g++ python3 make py3-setuptools && \
     yarn workspaces focus --production && \
     rm -rf /var/cache/apk/* && \
     apk del build-dependencies

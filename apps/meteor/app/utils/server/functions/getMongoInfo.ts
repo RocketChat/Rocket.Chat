@@ -7,7 +7,6 @@ function getOplogInfo(): { oplogEnabled: boolean; mongo: MongoConnection } {
 
 	const oplogEnabled = isWatcherRunning();
 
-	// @ts-expect-error - You're drunk ts
 	return { oplogEnabled, mongo };
 }
 

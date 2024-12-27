@@ -1,21 +1,14 @@
-import type { IRoom, IMessage } from '@rocket.chat/core-typings';
-import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { isEditedMessage } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { ReadReceipt } from '../../../../server/lib/message-read-receipt/ReadReceipt';
 
 callbacks.add(
 	'afterSaveMessage',
-	async (message: IMessage, room: IRoom) => {
+	async (message, { room }) => {
 		// skips this callback if the message was edited
 		if (isEditedMessage(message)) {
 			return message;
-		}
-
-		if (!isOmnichannelRoom(room) || !room.closedAt) {
-			// set subscription as read right after message was sent
-			await Subscriptions.setAsReadByRoomIdAndUserId(room._id, message.u._id);
 		}
 
 		// mark message as read as well

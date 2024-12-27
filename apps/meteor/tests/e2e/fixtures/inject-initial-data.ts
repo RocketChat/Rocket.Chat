@@ -66,6 +66,10 @@ export default async function injectInitialData() {
 				_id: 'Accounts_OAuth_Google',
 				value: false,
 			},
+			{
+				_id: 'Livechat_Require_Contact_Verification',
+				value: 'never',
+			},
 		].map((setting) =>
 			connection
 				.db()

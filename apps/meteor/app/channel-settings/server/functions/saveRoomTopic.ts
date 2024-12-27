@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, Room } from '@rocket.chat/core-services';
 import { Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -19,6 +19,10 @@ export const saveRoomTopic = async function (
 			function: 'RocketChat.saveRoomTopic',
 		});
 	}
+
+	const room = await Rooms.findOneById(rid);
+
+	await Room.beforeTopicChange(room!);
 
 	const update = await Rooms.setTopicById(rid, roomTopic);
 	if (update && sendMessage) {

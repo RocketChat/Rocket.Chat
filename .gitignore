@@ -29,6 +29,7 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+storybook-static
 # turbo
 .turbo
 
@@ -47,6 +48,14 @@ yarn-error.log*
 .history
 .envrc
 
+.preview
+
 *.sublime-workspace
 
 **/.vim/
+
+data/
+registration.yaml
+
+storybook-static
+development/tempo-data/

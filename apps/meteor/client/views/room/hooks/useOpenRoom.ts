@@ -3,6 +3,7 @@ import { useMethod, useRoute, useSetting, useUser } from '@rocket.chat/ui-contex
 import { useQuery } from '@tanstack/react-query';
 import { useRef } from 'react';
 
+import { useOpenRoomMutation } from './useOpenRoomMutation';
 import { roomFields } from '../../../../lib/publishFields';
 import { omit } from '../../../../lib/utils/omit';
 import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
@@ -12,11 +13,11 @@ import { queryClient } from '../../../lib/queryClient';
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
-	const allowAnonymousRead = useSetting<boolean>('Accounts_AllowAnonymousRead') ?? true;
+	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', true);
 	const getRoomByTypeAndName = useMethod('getRoomByTypeAndName');
 	const createDirectMessage = useMethod('createDirectMessage');
-	const openRoom = useMethod('openRoom');
 	const directRoute = useRoute('direct');
+	const openRoom = useOpenRoomMutation();
 
 	const unsubscribeFromRoomOpenedEvent = useRef<() => void>(() => undefined);
 
@@ -38,9 +39,9 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 				try {
 					const { rid } = await createDirectMessage(...reference.split(', '));
-					const { ChatSubscription } = await import('../../../../app/models/client');
+					const { Subscriptions } = await import('../../../../app/models/client');
 					const { waitUntilFind } = await import('../../../lib/utils/waitUntilFind');
-					await waitUntilFind(() => ChatSubscription.findOne({ rid }));
+					await waitUntilFind(() => Subscriptions.findOne({ rid }));
 					directRoute.push({ rid }, (prev) => prev);
 				} catch (error) {
 					throw new RoomNotFoundError(undefined, { type, reference });
@@ -64,10 +65,10 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				}
 			}
 
-			const { ChatRoom, ChatSubscription } = await import('../../../../app/models/client');
+			const { Rooms, Subscriptions } = await import('../../../../app/models/client');
 
-			ChatRoom.upsert({ _id: roomData._id }, { $set, $unset });
-			const room = ChatRoom.findOne({ _id: roomData._id });
+			Rooms.upsert({ _id: roomData._id }, { $set, $unset });
+			const room = Rooms.findOne({ _id: roomData._id });
 
 			if (!room) {
 				throw new TypeError('room is undefined');
@@ -95,9 +96,9 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			}
 
 			// update user's room subscription
-			const sub = ChatSubscription.findOne({ rid: room._id });
-			if (sub && !sub.open) {
-				await openRoom(room._id);
+			const sub = Subscriptions.findOne({ rid: room._id });
+			if (!!user?._id && sub && !sub.open) {
+				await openRoom.mutateAsync({ roomId: room._id, userId: user._id });
 			}
 			return { rid: room._id };
 		},
@@ -105,9 +106,9 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			retry: 0,
 			onError: async (error) => {
 				if (['l', 'v'].includes(type) && error instanceof RoomNotFoundError) {
-					const { ChatRoom } = await import('../../../../app/models/client');
+					const { Rooms } = await import('../../../../app/models/client');
 
-					ChatRoom.remove(reference);
+					Rooms.remove(reference);
 					queryClient.removeQueries(['rooms', reference]);
 					queryClient.removeQueries(['/v1/rooms.info', reference]);
 				}

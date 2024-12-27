@@ -1,10 +1,5 @@
-import type {
-	IMessage,
-	ILivechatInquiryRecord,
-	LivechatInquiryStatus,
-	OmnichannelSortingMechanismSettingType,
-} from '@rocket.chat/core-typings';
-import type { FindOptions, DistinctOptions, Document, UpdateResult, DeleteResult, FindCursor } from 'mongodb';
+import type { IMessage, ILivechatInquiryRecord, LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import type { FindOptions, DistinctOptions, Document, UpdateResult, DeleteResult, FindCursor, DeleteOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -14,19 +9,23 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 		rid: string,
 		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
 	): Promise<T | null>;
+	findOneReadyByRoomId<T extends Document = ILivechatInquiryRecord>(
+		rid: string,
+		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
+	): Promise<T | null>;
 	getDistinctQueuedDepartments(options: DistinctOptions): Promise<(string | undefined)[]>;
 	setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null>;
 	setLastMessageByRoomId(rid: ILivechatInquiryRecord['rid'], message: IMessage): Promise<ILivechatInquiryRecord | null>;
-	findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string): Promise<ILivechatInquiryRecord | null>;
+	findNextAndLock(queueSortBy: FindOptions<ILivechatInquiryRecord>['sort'], department?: string): Promise<ILivechatInquiryRecord | null>;
 	unlock(inquiryId: string): Promise<UpdateResult>;
 	unlockAndQueue(inquiryId: string): Promise<UpdateResult>;
 	unlockAll(): Promise<UpdateResult | Document>;
 	getCurrentSortedQueueAsync(props: {
 		inquiryId?: string;
 		department?: string;
-		queueSortBy: OmnichannelSortingMechanismSettingType;
+		queueSortBy: FindOptions<ILivechatInquiryRecord>['sort'];
 	}): Promise<(Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number })[]>;
-	removeByRoomId(rid: string): Promise<DeleteResult>;
+	removeByRoomId(rid: string, options?: DeleteOptions): Promise<DeleteResult>;
 	getQueuedInquiries(options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord>;
 	takeInquiry(inquiryId: string): Promise<void>;
 	openInquiry(inquiryId: string): Promise<UpdateResult>;
@@ -43,4 +42,7 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	removeByVisitorToken(token: string): Promise<void>;
 	markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ILivechatInquiryRecord | null>;
 	findIdsByVisitorToken(token: ILivechatInquiryRecord['v']['token']): FindCursor<ILivechatInquiryRecord>;
+	setStatusById(inquiryId: string, status: LivechatInquiryStatus): Promise<ILivechatInquiryRecord>;
+	updateNameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document>;
+	findByVisitorIds(visitorIds: string[], options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord>;
 }

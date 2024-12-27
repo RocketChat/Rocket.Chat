@@ -24,7 +24,7 @@ export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivi
 				? {
 						...response,
 						day,
-				  }
+					}
 				: undefined;
 		},
 		{

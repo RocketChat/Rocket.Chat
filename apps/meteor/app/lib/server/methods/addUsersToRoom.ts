@@ -98,14 +98,11 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 					return;
 				}
 				void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
-					msg: i18n.t(
-						'Username_is_already_in_here',
-						{
-							postProcess: 'sprintf',
-							sprintf: [newUser.username],
-						},
-						user?.language,
-					),
+					msg: i18n.t('Username_is_already_in_here', {
+						postProcess: 'sprintf',
+						sprintf: [newUser.username],
+						lng: user?.language,
+					}),
 				});
 			}
 		}),

@@ -1,21 +1,15 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
-
-import FilterByText from '../../../../components/FilterByText';
 import DateRangePicker from './DateRangePicker';
+import FilterByText from '../../../../components/FilterByText';
 
 type ModerationFilterProps = {
+	text: string;
 	setText: (text: string) => void;
 	setDateRange: (dateRange: { start: string; end: string }) => void;
 };
 
-const ModerationFilter = ({ setText, setDateRange }: ModerationFilterProps) => {
-	const t = useTranslation();
-
-	const handleChange = useCallback(({ text }): void => setText(text), [setText]);
-
+const ModerationFilter = ({ text, setText, setDateRange }: ModerationFilterProps) => {
 	return (
-		<FilterByText shouldAutoFocus placeholder={t('Search')} onChange={handleChange}>
+		<FilterByText shouldAutoFocus value={text} onChange={(event) => setText(event.target.value)}>
 			<DateRangePicker onChange={setDateRange} />
 		</FilterByText>
 	);

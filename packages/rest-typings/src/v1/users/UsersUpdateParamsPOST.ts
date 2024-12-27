@@ -17,7 +17,6 @@ export type UsersUpdateParamsPOST = {
 		nickname?: string;
 		statusText?: string;
 		roles?: string[];
-		joinDefaultChannels?: boolean;
 		requirePasswordChange?: boolean;
 		setRandomPassword?: boolean;
 		sendWelcomeEmail?: boolean;
@@ -35,6 +34,7 @@ const UsersUpdateParamsPostSchema = {
 	properties: {
 		userId: {
 			type: 'string',
+			minLength: 1,
 		},
 		confirmRelinquish: {
 			type: 'boolean',
@@ -79,10 +79,6 @@ const UsersUpdateParamsPostSchema = {
 					items: {
 						type: 'string',
 					},
-					nullable: true,
-				},
-				joinDefaultChannels: {
-					type: 'boolean',
 					nullable: true,
 				},
 				requirePasswordChange: {

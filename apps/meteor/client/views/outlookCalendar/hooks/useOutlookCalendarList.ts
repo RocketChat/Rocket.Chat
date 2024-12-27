@@ -1,8 +1,8 @@
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { syncOutlookEvents } from '../lib/syncOutlookEvents';
 import { useOutlookAuthenticationMutation } from './useOutlookAuthentication';
+import { syncOutlookEvents } from '../lib/syncOutlookEvents';
 
 export const useOutlookCalendarListForToday = () => {
 	return useOutlookCalendarList(new Date());

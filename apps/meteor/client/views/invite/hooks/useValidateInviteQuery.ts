@@ -1,10 +1,11 @@
-import { useEndpoint, useSessionDispatch, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSessionDispatch, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import { useInviteTokenMutation } from './useInviteTokenMutation';
 
 export const useValidateInviteQuery = (userId: string | null, token: string | undefined) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const registrationForm = useSetting('Accounts_RegistrationForm');
 

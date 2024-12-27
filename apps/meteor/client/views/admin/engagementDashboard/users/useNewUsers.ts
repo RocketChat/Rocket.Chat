@@ -22,7 +22,7 @@ export const useNewUsers = ({ period, utc }: { period: Period['key']; utc: boole
 						...response,
 						start,
 						end,
-				  }
+					}
 				: undefined;
 		},
 		{

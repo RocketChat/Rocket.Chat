@@ -8,6 +8,7 @@ import type { UpdateResult, Document } from 'mongodb';
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import { i18n } from '../../../../server/lib/i18n';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { notifyOnSubscriptionChangedByRoomId } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 
 export const saveRoomType = async function (
@@ -41,9 +42,14 @@ export const saveRoomType = async function (
 		});
 	}
 
-	const result = (await Rooms.setTypeById(rid, roomType)) && (await Subscriptions.updateTypeByRoomId(rid, roomType));
+	const result = await Promise.all([Rooms.setTypeById(rid, roomType), Subscriptions.updateTypeByRoomId(rid, roomType)]);
+
 	if (!result) {
 		return result;
+	}
+
+	if (result[1]?.modifiedCount) {
+		void notifyOnSubscriptionChangedByRoomId(rid);
 	}
 
 	if (sendMessage) {
@@ -59,5 +65,6 @@ export const saveRoomType = async function (
 		}
 		await Message.saveSystemMessage('room_changed_privacy', rid, message, user);
 	}
+
 	return result;
 };

@@ -1,22 +1,21 @@
 import { Box } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
-import { Contextualbar } from '../../../../components/Contextualbar';
 import CannedResponseList from './CannedResponseList';
+import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
-	title: 'Enterprise/Omnichannel/CannedResponseList',
+	title: 'Omnichannel/CannedResponseList',
 	component: CannedResponseList,
 	parameters: {
 		actions: {
 			argTypesRegex: '^on.*',
 		},
 	},
-} as ComponentMeta<typeof CannedResponseList>;
+} satisfies Meta<typeof CannedResponseList>;
 
-export const Default: ComponentStory<typeof CannedResponseList> = (args) => <CannedResponseList {...args} />;
+export const Default: StoryFn<typeof CannedResponseList> = (args) => <CannedResponseList {...args} />;
 Default.storyName = 'CannedResponseList';
 Default.args = {
 	options: [

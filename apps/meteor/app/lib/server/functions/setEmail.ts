@@ -1,3 +1,5 @@
+import type { IUser } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
@@ -37,7 +39,7 @@ const _sendEmailChangeNotification = async function (to: string, newEmail: strin
 	}
 };
 
-const _setEmail = async function (userId: string, email: string, shouldSendVerificationEmail = true) {
+const _setEmail = async function (userId: string, email: string, shouldSendVerificationEmail = true, updater?: Updater<IUser>) {
 	email = email.trim();
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
@@ -74,7 +76,12 @@ const _setEmail = async function (userId: string, email: string, shouldSendVerif
 	}
 
 	// Set new email
-	await Users.setEmail(user?._id, email);
+	if (updater) {
+		updater.set('emails', [{ address: email, verified: false }]);
+	} else {
+		await Users.setEmail(user?._id, email);
+	}
+
 	const result = {
 		...user,
 		email,

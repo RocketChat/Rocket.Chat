@@ -18,7 +18,6 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { goToRoomById } from '../../lib/utils/goToRoomById';
@@ -46,7 +45,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 	const t = useTranslation();
 
 	const {
-		formState: { isSubmitting, isValidating, errors },
+		formState: { errors },
 		handleSubmit,
 		control,
 		watch,
@@ -120,7 +119,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 								<Controller
 									control={control}
 									name='parentRoom'
-									rules={{ required: t('error-the-field-is-required', { field: t('Discussion_target_channel') }) }}
+									rules={{ required: t('Required_field', { field: t('Discussion_target_channel') }) }}
 									render={({ field: { name, onBlur, onChange, value } }) => (
 										<RoomAutoComplete
 											name={name}
@@ -152,7 +151,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 							<Controller
 								name='name'
 								control={control}
-								rules={{ required: t('Field_required') }}
+								rules={{ required: t('Required_field', { field: t('Name') }) }}
 								render={({ field }) => (
 									<TextInput
 										id={discussionNameId}
@@ -246,7 +245,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button type='submit' primary loading={isSubmitting || isValidating}>
+					<Button type='submit' primary loading={createDiscussionMutation.isLoading}>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

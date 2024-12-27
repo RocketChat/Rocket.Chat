@@ -13,7 +13,6 @@ import {
 } from '@rocket.chat/fuselage';
 import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { ContextualbarContent, ContextualbarFooter } from '../../../components/Contextualbar';
@@ -23,7 +22,7 @@ import { useActiveConnections } from '../../hooks/useActiveConnections';
 const CustomUserStatusService = () => {
 	const { t } = useTranslation();
 	const result = useActiveConnections();
-	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 	const togglePresenceServiceEndpoint = useEndpoint('POST', '/v1/presence.enableBroadcast');
 	const disablePresenceService = useMutation(() => togglePresenceServiceEndpoint());
 	const { data: license, isLoading: licenseIsLoading } = useIsEnterprise();

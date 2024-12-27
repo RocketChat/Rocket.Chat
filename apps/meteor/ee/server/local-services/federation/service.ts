@@ -1,7 +1,11 @@
-import type { IFederationServiceEE, IFederationJoinExternalPublicRoomInput } from '@rocket.chat/core-services';
+import type {
+	IFederationServiceEE,
+	IFederationJoinExternalPublicRoomInput,
+	FederationConfigurationStatus,
+} from '@rocket.chat/core-services';
+import type { IRoom } from '@rocket.chat/core-typings';
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
 
-import { AbstractFederationService } from '../../../../server/services/federation/service';
 import type { FederationUserServiceEE } from './application/UserService';
 import type { FederationDirectMessageRoomServiceSender } from './application/room/sender/DirectMessageRoomServiceSender';
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
@@ -11,6 +15,7 @@ import { FederationFactoryEE } from './infrastructure/Factory';
 import type { RocketChatRoomAdapterEE } from './infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatUserAdapterEE } from './infrastructure/rocket-chat/adapters/User';
 import { FederationRoomSenderConverterEE } from './infrastructure/rocket-chat/converters/RoomSender';
+import { AbstractFederationService } from '../../../../server/services/federation/service';
 
 abstract class AbstractBaseFederationServiceEE extends AbstractFederationService {
 	protected internalUserServiceEE: FederationUserServiceEE;
@@ -128,7 +133,7 @@ abstract class AbstractBaseFederationServiceEE extends AbstractFederationService
 		await super.cleanUpHandlers();
 	}
 
-	public async created(): Promise<void> {
+	public async started(): Promise<void> {
 		await super.setupFederation();
 		await this.startFederation();
 	}
@@ -208,11 +213,35 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 		return federationService;
 	}
 
-	async created(): Promise<void> {
-		return super.created();
+	async started(): Promise<void> {
+		return super.started();
 	}
 
 	async stopped(): Promise<void> {
 		return super.stopped();
+	}
+
+	public async verifyConfiguration(): Promise<void> {
+		return super.verifyConfiguration();
+	}
+
+	public async markConfigurationValid(): Promise<void> {
+		return super.markConfigurationValid();
+	}
+
+	public async markConfigurationInvalid(): Promise<void> {
+		return super.markConfigurationInvalid();
+	}
+
+	public async configurationStatus(): Promise<FederationConfigurationStatus> {
+		return super.configurationStatus();
+	}
+
+	public async beforeCreateRoom(room: Partial<IRoom>): Promise<void> {
+		return super.beforeCreateRoom(room);
+	}
+
+	async deactivateRemoteUser(userId: string): Promise<void> {
+		return super.deactivateRemoteUser(userId);
 	}
 }
