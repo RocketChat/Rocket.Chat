@@ -48,7 +48,7 @@ export class GridFSStore extends UploadFS.Store {
 
 		this.delete = async function (fileId) {
 			const collectionName = `${options.collectionName}.files`;
-			const file = await db.collection(collectionName).findOne({ _id: fileId });
+			const file = await db.collection(collectionName).findOne({ _id: fileId as any });
 
 			if (file) {
 				await mongoStore.delete(fileId as unknown as ObjectId);
