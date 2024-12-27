@@ -1,6 +1,6 @@
 import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import type { IInstanceStatusModel } from '@rocket.chat/model-typings';
-import type { Db, ModifyResult, UpdateResult, DeleteResult } from 'mongodb';
+import type { Db, UpdateResult, DeleteResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -31,7 +31,7 @@ export class InstanceStatusRaw extends BaseRaw<IInstanceStatus> implements IInst
 		return this.updateOne({ _id: documentId }, { $currentDate: { _updatedAt: true } });
 	}
 
-	async upsertInstance(instance: Partial<IInstanceStatus>): Promise<ModifyResult<IInstanceStatus>> {
+	async upsertInstance(instance: Partial<IInstanceStatus>): Promise<IInstanceStatus | null> {
 		return this.findOneAndUpdate(
 			{
 				_id: instance._id,

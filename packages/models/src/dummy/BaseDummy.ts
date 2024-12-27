@@ -53,11 +53,11 @@ export class BaseDummy<
 		return this.collectionName;
 	}
 
-	async findOneAndDelete(): Promise<T | null> {
+	async findOneAndDelete(): Promise<WithId<T> | null> {
 		return null;
 	}
 
-	async findOneAndUpdate(): Promise<T | null> {
+	async findOneAndUpdate(): Promise<WithId<T> | null> {
 		return null;
 	}
 

@@ -290,7 +290,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	removeThreadFollowerByThreadId(tmid: string, userId: string): Promise<UpdateResult>;
 
 	findThreadsByRoomId(rid: string, skip: number, limit: number): FindCursor<IMessage>;
-	decreaseReplyCountById(_id: string, inc?: number): Promise<ModifyResult<IMessage>>;
+	decreaseReplyCountById(_id: string, inc?: number): Promise<IMessage | null>;
 	countPinned(options?: CountDocumentsOptions): Promise<number>;
 	countStarred(options?: CountDocumentsOptions): Promise<number>;
 }
