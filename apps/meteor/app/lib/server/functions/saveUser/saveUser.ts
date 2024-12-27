@@ -104,7 +104,7 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 
 	if (userData.email) {
 		const shouldSendVerificationEmailToUser = userData.verified !== true;
-		await setEmail(userData._id, userData.email, shouldSendVerificationEmailToUser, updater);
+		await setEmail(userData._id, userData.email, shouldSendVerificationEmailToUser, userData.verified === true, updater);
 	}
 
 	if (
@@ -138,7 +138,7 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 		}
 	}
 
-	if (typeof userData.verified === 'boolean') {
+	if (typeof userData.verified === 'boolean' && !userData.email) {
 		updater.set('emails.0.verified', userData.verified);
 	}
 

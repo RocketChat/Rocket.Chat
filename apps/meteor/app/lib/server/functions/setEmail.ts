@@ -39,7 +39,13 @@ const _sendEmailChangeNotification = async function (to: string, newEmail: strin
 	}
 };
 
-const _setEmail = async function (userId: string, email: string, shouldSendVerificationEmail = true, updater?: Updater<IUser>) {
+const _setEmail = async function (
+	userId: string,
+	email: string,
+	shouldSendVerificationEmail = true,
+	verified = false,
+	updater?: Updater<IUser>,
+) {
 	email = email.trim();
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
@@ -77,9 +83,9 @@ const _setEmail = async function (userId: string, email: string, shouldSendVerif
 
 	// Set new email
 	if (updater) {
-		updater.set('emails', [{ address: email, verified: false }]);
+		updater.set('emails', [{ address: email, verified }]);
 	} else {
-		await Users.setEmail(user?._id, email);
+		await Users.setEmail(user?._id, email, verified);
 	}
 
 	const result = {
