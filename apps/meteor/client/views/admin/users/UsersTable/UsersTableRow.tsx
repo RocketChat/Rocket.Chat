@@ -1,9 +1,10 @@
 import { UserStatus as Status } from '@rocket.chat/core-typings';
 import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, Button, Menu, Option } from '@rocket.chat/fuselage';
+import { Box, Button } from '@rocket.chat/fuselage';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import type { ReactElement, MouseEvent, KeyboardEvent } from 'react';
+import { GenericMenu } from '@rocket.chat/ui-client';
+import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -101,38 +102,26 @@ const UsersTableRow = ({
 	});
 
 	const isNotPendingDeactivatedNorFederated = tab !== 'pending' && tab !== 'deactivated' && !isFederatedUser;
-	const menuOptions = useMemo(
+	const actions = useMemo(
 		() => ({
 			...(voipExtensionAction && {
-				voipExtensionAction: {
-					label: { label: voipExtensionAction.label, icon: voipExtensionAction.icon },
-					action: voipExtensionAction.action,
-				},
+				voipExtensionAction,
 			}),
 			...(isNotPendingDeactivatedNorFederated &&
 				changeAdminStatusAction && {
-					makeAdmin: {
-						label: { label: changeAdminStatusAction.label, icon: changeAdminStatusAction.icon },
-						action: changeAdminStatusAction.action,
-					},
+					changeAdminStatusAction,
 				}),
 			...(isNotPendingDeactivatedNorFederated &&
 				resetE2EKeyAction && {
-					resetE2EKey: { label: { label: resetE2EKeyAction.label, icon: resetE2EKeyAction.icon }, action: resetE2EKeyAction.action },
+					resetE2EKeyAction,
 				}),
-			...(isNotPendingDeactivatedNorFederated &&
-				resetTOTPAction && {
-					resetTOTP: { label: { label: resetTOTPAction.label, icon: resetTOTPAction.icon }, action: resetTOTPAction.action },
-				}),
+			...(isNotPendingDeactivatedNorFederated && resetTOTPAction && { resetTOTPAction }),
 			...(changeUserStatusAction &&
 				!isFederatedUser && {
-					changeActiveStatus: {
-						label: { label: changeUserStatusAction.label, icon: changeUserStatusAction.icon },
-						action: changeUserStatusAction.action,
-					},
+					changeUserStatusAction,
 				}),
 			...(deleteUserAction && {
-				delete: { label: { label: deleteUserAction.label, icon: deleteUserAction.icon }, action: deleteUserAction.action },
+				deleteUserAction,
 			}),
 		}),
 		[
@@ -146,6 +135,14 @@ const UsersTableRow = ({
 			voipExtensionAction,
 		],
 	);
+
+	const menuOptions = Object.entries(actions).map(([_key, item]) => {
+		return {
+			...item,
+			id: item.content || item.title || '',
+			content: item.content || item.title,
+		};
+	});
 
 	const handleResendWelcomeEmail = () => resendWelcomeEmail.mutateAsync({ email: emails?.[0].address });
 
@@ -208,25 +205,13 @@ const UsersTableRow = ({
 									{t('Resend_welcome_email')}
 								</Button>
 							) : (
-								<Button small primary onClick={changeUserStatusAction?.action} disabled={isSeatsCapExceeded}>
+								<Button small primary onClick={changeUserStatusAction?.onClick} disabled={isSeatsCapExceeded}>
 									{t('Activate')}
 								</Button>
 							)}
 						</>
 					)}
-
-					<Menu
-						mi={4}
-						placement='bottom-start'
-						flexShrink={0}
-						key='menu'
-						aria-label={t('More_actions')}
-						title={t('More_actions')}
-						renderItem={({ label: { label, icon }, ...props }): ReactElement => (
-							<Option label={label} title={label} icon={icon} variant={label === 'Delete' ? 'danger' : ''} {...props} />
-						)}
-						options={menuOptions}
-					/>
+					<GenericMenu detached title={t('More_actions')} sections={[{ title: '', items: menuOptions }]} placement='bottom-end' />
 				</Box>
 			</GenericTableCell>
 		</GenericTableRow>
