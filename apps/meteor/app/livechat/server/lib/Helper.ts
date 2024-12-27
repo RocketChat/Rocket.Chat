@@ -157,14 +157,14 @@ export const createLivechatRoom = async (
 		},
 	);
 
-	if (!result.value) {
+	if (!result) {
 		throw new Error('Room not created');
 	}
 
 	await callbacks.run('livechat.newRoom', room);
 	await Message.saveSystemMessageAndNotifyUser('livechat-started', rid, '', { _id, username }, { groupable: false, token: guest.token });
 
-	return result.value as IOmnichannelRoom;
+	return result;
 };
 
 export const createLivechatInquiry = async ({
