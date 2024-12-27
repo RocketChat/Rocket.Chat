@@ -3,6 +3,7 @@
 	"description": "The Ultimate Open Source WebChat Platform",
 	"version": "7.2.0-develop",
 	"private": true,
+	"type": "commonjs",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
