@@ -72,7 +72,7 @@ export const createLivechatRoom = async (
 	guest: ILivechatVisitor,
 	roomInfo: IOmnichannelRoomInfo = { source: { type: OmnichannelSourceType.OTHER } },
 	extraData?: IOmnichannelRoomExtraData,
-) => {
+): Promise<IOmnichannelRoom> => {
 	check(rid, String);
 	check(
 		guest,
@@ -164,7 +164,7 @@ export const createLivechatRoom = async (
 	await callbacks.run('livechat.newRoom', room);
 	await Message.saveSystemMessageAndNotifyUser('livechat-started', rid, '', { _id, username }, { groupable: false, token: guest.token });
 
-	return result;
+	return result as IOmnichannelRoom;
 };
 
 export const createLivechatInquiry = async ({
@@ -239,11 +239,11 @@ export const createLivechatInquiry = async ({
 	);
 	logger.debug(`Inquiry ${result} created for visitor ${_id}`);
 
-	if (!result.value) {
+	if (!result) {
 		throw new Error('Inquiry not created');
 	}
 
-	return result.value as ILivechatInquiryRecord;
+	return result;
 };
 
 export const createLivechatSubscription = async (
