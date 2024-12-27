@@ -1,6 +1,5 @@
-import { dbWatchersDisabled } from '@rocket.chat/core-services';
-
 import {
+	dbWatchersDisabled,
 	Messages,
 	Users,
 	Subscriptions,
