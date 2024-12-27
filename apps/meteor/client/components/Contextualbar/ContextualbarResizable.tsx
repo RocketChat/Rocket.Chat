@@ -3,7 +3,6 @@ import { Palette, Box } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { Resizable } from 're-resizable';
 import type { ComponentProps } from 'react';
-import React from 'react';
 
 type ContextualbarResizableProps = { defaultWidth: string } & ComponentProps<typeof Resizable>;
 

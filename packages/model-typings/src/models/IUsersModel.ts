@@ -263,7 +263,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOnlineAgents(agentId?: string): FindCursor<ILivechatAgent>;
 	countOnlineAgents(agentId: string): Promise<number>;
 	findOneBotAgent(): Promise<ILivechatAgent | null>;
-	findOneOnlineAgentById(agentId: string, isLivechatEnabledWhenAgentIdle?: boolean): Promise<ILivechatAgent | null>;
+	findOneOnlineAgentById(
+		agentId: string,
+		isLivechatEnabledWhenAgentIdle?: boolean,
+		options?: FindOptions<IUser>,
+	): Promise<ILivechatAgent | null>;
 	findAgents(): FindCursor<ILivechatAgent>;
 	countAgents(): Promise<number>;
 	getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<IUser>): Promise<{ agentId: string; username: string } | null>;

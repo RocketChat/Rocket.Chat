@@ -1,6 +1,5 @@
 import { Accordion, AccordionItem } from '@rocket.chat/fuselage';
 import type { IInstance } from '@rocket.chat/rest-typings';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DescriptionList from './DescriptionList';

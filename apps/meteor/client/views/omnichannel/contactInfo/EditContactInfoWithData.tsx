@@ -1,7 +1,6 @@
 import { ContextualbarContent } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 
 import ContactInfoError from './ContactInfoError';
 import EditContactInfo from './EditContactInfo';

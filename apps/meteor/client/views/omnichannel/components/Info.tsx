@@ -1,7 +1,6 @@
 import type { cssFn } from '@rocket.chat/css-in-js';
 import { css } from '@rocket.chat/css-in-js';
 import type { CSSProperties, ReactNode } from 'react';
-import React from 'react';
 
 import { UserCardInfo } from '../../../components/UserCard';
 

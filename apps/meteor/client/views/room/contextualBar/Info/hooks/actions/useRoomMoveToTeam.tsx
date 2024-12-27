@@ -2,7 +2,6 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import ChannelToTeamModal from '../../ChannelToTeamModal';
 import { useCanEditRoom } from '../useCanEditRoom';

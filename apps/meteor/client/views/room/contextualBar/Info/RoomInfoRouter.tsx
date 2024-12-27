@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import EditRoomInfoWithData from './EditRoomInfo';
 import RoomInfo from './RoomInfo';

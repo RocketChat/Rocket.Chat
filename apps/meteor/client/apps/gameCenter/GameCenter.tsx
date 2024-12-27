@@ -1,6 +1,6 @@
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { ReactElement } from 'react';
 
 import GameCenterContainer from './GameCenterContainer';

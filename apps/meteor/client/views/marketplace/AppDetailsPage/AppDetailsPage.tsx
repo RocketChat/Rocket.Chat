@@ -4,7 +4,7 @@ import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import AppDetailsPageHeader from './AppDetailsPageHeader';
