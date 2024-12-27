@@ -296,6 +296,7 @@
 		"@slack/bolt": "^4.1.0",
 		"@slack/rtm-api": "^7.0.1",
 		"@tanstack/react-query": "patch:@tanstack/react-query@npm%3A5.60.5#~/.yarn/patches/@tanstack-react-query-npm-5.60.5-04c500b172.patch",
+		"@types/meteor": "^2.9.8",
 		"@vector-im/matrix-bot-sdk": "0.7.1-element.6",
 		"@xmldom/xmldom": "^0.8.10",
 		"adm-zip": "0.5.16",

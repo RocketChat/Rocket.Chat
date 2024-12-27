@@ -8410,6 +8410,7 @@ __metadata:
     "@types/lodash.get": "npm:^4.4.9"
     "@types/mailparser": "npm:^3.4.5"
     "@types/marked": "npm:^4.3.2"
+    "@types/meteor": "npm:^2.9.8"
     "@types/meteor-collection-hooks": "npm:^0.8.9"
     "@types/mkdirp": "npm:^1.0.2"
     "@types/mocha": "github:whitecolor/mocha-types"
@@ -11740,6 +11741,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/jquery@npm:*":
+  version: 3.5.32
+  resolution: "@types/jquery@npm:3.5.32"
+  dependencies:
+    "@types/sizzle": "npm:*"
+  checksum: 10/2c67cac338828870ead5c5e608f5fa5ab8101598ed4572cf49b58c342adffe8918d2e2fc94d7954e6b98a889cef8c3f4e6f44b8fecb75e80854b0f9cf9dd18a1
+  languageName: node
+  linkType: hard
+
 "@types/js-yaml@npm:^4.0.9":
   version: 4.0.9
   resolution: "@types/js-yaml@npm:4.0.9"
@@ -11970,6 +11980,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/meteor@npm:^2.9.8":
+  version: 2.9.8
+  resolution: "@types/meteor@npm:2.9.8"
+  dependencies:
+    "@types/connect": "npm:*"
+    "@types/jquery": "npm:*"
+    "@types/node": "npm:*"
+    "@types/nodemailer": "npm:*"
+    "@types/react": "npm:*"
+    "@types/underscore": "npm:*"
+    mongodb: "npm:^4.3.1"
+  checksum: 10/6d61e1227aaef3af9993f037ca2c37ef3a901c0891bbb8bb74c1fbb59f1339280a044ae24ce3946ea981f559c85d28f7055f038bc845dcb7a5511f869792e7e1
+  languageName: node
+  linkType: hard
+
 "@types/methods@npm:^1.1.4":
   version: 1.1.4
   resolution: "@types/methods@npm:1.1.4"
@@ -12137,6 +12162,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~6.19.2"
   checksum: 10/e3e968b327abc70fd437a223f8950dd4436047e954aa7db09abde5df1f58a5c49f33d6f14524e256d09719e1960d22bf072d62e4bda7375f7895a092c7eb2f9d
+  languageName: node
+  linkType: hard
+
+"@types/nodemailer@npm:*":
+  version: 6.4.17
+  resolution: "@types/nodemailer@npm:6.4.17"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10/bd090c9a81f15ee5e1e2123de1004593bacc24d385460dd56c51ec657d61dc1cfd4f44fc71baac060a1abcb487aef5027509e0afd646e7118d7a8a13a95bad9d
   languageName: node
   linkType: hard
 
@@ -12454,6 +12488,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/sizzle@npm:*":
+  version: 2.3.9
+  resolution: "@types/sizzle@npm:2.3.9"
+  checksum: 10/413811a79e7e9f1d8f47e6047ae0aea1530449d612304cdda1c30018e3d053b8544861ec2c70bdeca75a0a010192e6bb78efc6fb4caaafdd65c4eee90066686a
+  languageName: node
+  linkType: hard
+
 "@types/sockjs@npm:^0.3.36":
   version: 0.3.36
   resolution: "@types/sockjs@npm:0.3.36"
@@ -12591,7 +12632,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/underscore@npm:^1.13.0":
+"@types/underscore@npm:*, @types/underscore@npm:^1.13.0":
   version: 1.13.0
   resolution: "@types/underscore@npm:1.13.0"
   checksum: 10/938a6a0a878ce108046601a7cceeec9870428cc565a0c6d7891b7ad39e7570f1f75a1c02bf81baf23c7c7948ef0693d00ccd1a8e05894a52fed4c584a4b7172e
