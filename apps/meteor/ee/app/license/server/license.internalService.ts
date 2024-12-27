@@ -13,6 +13,10 @@ export class LicenseService extends ServiceClassInternal implements ILicense {
 		super();
 
 		License.onValidateLicense(async (): Promise<void> => {
+			if (!License.hasValidLicense()) {
+				return;
+			}
+
 			void api.broadcast('authorization.guestPermissions', guestPermissions);
 			void resetEnterprisePermissions();
 		});

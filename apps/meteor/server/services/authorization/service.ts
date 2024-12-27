@@ -35,7 +35,6 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		this.onEvent('permission.changed', clearCache);
 		this.onEvent('authorization.guestPermissions', (permissions: string[]) => {
 			AuthorizationUtils.addRolePermissionWhiteList('guest', permissions);
-			clearCache();
 		});
 	}
 
