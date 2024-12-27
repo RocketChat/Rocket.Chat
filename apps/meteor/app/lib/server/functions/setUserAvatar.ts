@@ -149,7 +149,7 @@ export async function setUserAvatar(
 			}
 
 			return {
-				buffer: dataURI instanceof Buffer ? dataURI : Buffer.from(dataURI, 'binary'),
+				buffer: typeof dataURI === 'string' ? Buffer.from(dataURI, 'binary') : dataURI,
 				type: contentType,
 			};
 		}

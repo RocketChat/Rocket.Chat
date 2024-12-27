@@ -1,7 +1,6 @@
 import type { DefaultError, Query } from '@tanstack/react-query';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import React from 'react';
 
 import { dispatchToastMessage } from '../../lib/toast';
 

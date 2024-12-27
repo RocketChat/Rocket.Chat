@@ -2,7 +2,6 @@ import { Box, Margins, ButtonGroup, ContextualbarSkeleton } from '@rocket.chat/f
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { HTMLAttributes } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {

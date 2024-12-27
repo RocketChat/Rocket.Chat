@@ -1,7 +1,6 @@
 import { Box, Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
 import { useAtLeastOnePermission, useEndpoint, useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { isSameChannel } from '../../../../../app/livechat/lib/isSameChannel';

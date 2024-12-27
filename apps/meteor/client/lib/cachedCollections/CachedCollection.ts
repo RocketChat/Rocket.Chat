@@ -69,23 +69,6 @@ export class CachedCollection<T extends { _id: string }, U = T> {
 			: () => undefined;
 
 		CachedCollectionManager.register(this);
-
-		if (!userRelated) {
-			void this.init();
-			return;
-		}
-
-		if (process.env.NODE_ENV === 'test') {
-			return;
-		}
-
-		onLoggedIn(() => {
-			void this.init();
-		});
-
-		Accounts.onLogout(() => {
-			this.ready.set(false);
-		});
 	}
 
 	protected get eventName(): `${Name}-changed` | `${string}/${Name}-changed` {
@@ -239,23 +222,27 @@ export class CachedCollection<T extends { _id: string }, U = T> {
 	async setupListener() {
 		sdk.stream(this.eventType, [this.eventName], (async (action: 'removed' | 'changed', record: any) => {
 			this.log('record received', action, record);
-			const newRecord = this.handleReceived(record, action);
+			await this.handleRecordEvent(action, record);
+		}) as (...args: unknown[]) => void);
+	}
 
-			if (!hasId(newRecord)) {
+	protected async handleRecordEvent(action: 'removed' | 'changed', record: any) {
+		const newRecord = this.handleReceived(record, action);
+
+		if (!hasId(newRecord)) {
+			return;
+		}
+
+		if (action === 'removed') {
+			this.collection.remove(newRecord._id);
+		} else {
+			const { _id } = newRecord;
+			if (!_id) {
 				return;
 			}
-
-			if (action === 'removed') {
-				this.collection.remove(newRecord._id);
-			} else {
-				const { _id } = newRecord;
-				if (!_id) {
-					return;
-				}
-				this.collection.upsert({ _id } as any, newRecord);
-			}
-			await this.save();
-		}) as (...args: unknown[]) => void);
+			this.collection.upsert({ _id } as any, newRecord);
+		}
+		await this.save();
 	}
 
 	trySync(delay = 10) {
@@ -368,4 +355,23 @@ export class CachedCollection<T extends { _id: string }, U = T> {
 	}
 
 	private reconnectionComputation: Tracker.Computation | undefined;
+
+	listen() {
+		if (!this.userRelated) {
+			void this.init();
+			return;
+		}
+
+		if (process.env.NODE_ENV === 'test') {
+			return;
+		}
+
+		onLoggedIn(() => {
+			void this.init();
+		});
+
+		Accounts.onLogout(() => {
+			this.ready.set(false);
+		});
+	}
 }

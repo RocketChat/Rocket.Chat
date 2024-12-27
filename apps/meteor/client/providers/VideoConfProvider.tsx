@@ -1,6 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { VideoConfPopupPayload } from '../contexts/VideoConfContext';
 import { VideoConfContext } from '../contexts/VideoConfContext';
@@ -12,6 +14,11 @@ import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConferenc
 const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactElement => {
 	const [outgoing, setOutgoing] = useState<VideoConfPopupPayload | undefined>();
 	const handleOpenCall = useVideoConfOpenCall();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const { t } = useTranslation();
+	const logLevel = useSetting<number>('Log_Level', 0);
+
+	useEffect(() => VideoConfManager.setLogLevel(logLevel), [logLevel]);
 
 	useEffect(
 		() =>
@@ -19,6 +26,15 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 				handleOpenCall(props.url, props.providerName);
 			}),
 		[handleOpenCall],
+	);
+
+	useEffect(
+		() =>
+			VideoConfManager.on('error', (props) => {
+				const message = t(props.error?.startsWith('error-') ? props.error : 'error-videoconf-unexpected');
+				dispatchToastMessage({ type: 'error', message });
+			}),
+		[dispatchToastMessage, t],
 	);
 
 	useEffect(() => {

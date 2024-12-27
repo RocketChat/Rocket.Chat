@@ -1,6 +1,5 @@
 import type { IStats } from '@rocket.chat/core-typings';
 import type { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 
 import DeploymentCard from './DeploymentCard';
 

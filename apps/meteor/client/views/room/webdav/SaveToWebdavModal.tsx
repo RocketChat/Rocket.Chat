@@ -4,7 +4,7 @@ import { Modal, Box, Button, FieldGroup, Field, FieldLabel, FieldRow, FieldError
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -57,13 +57,11 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 		fileRequest.current.onload = async (): Promise<void> => {
 			const arrayBuffer = fileRequest.current?.response;
 			if (arrayBuffer) {
-				const fileData = new Uint8Array(arrayBuffer);
-
 				try {
 					if (!title) {
 						throw new Error('File name is required');
 					}
-					const response = await uploadFileToWebdav(accountId, fileData, title);
+					const response = await uploadFileToWebdav(accountId, arrayBuffer, title);
 					if (!response.success) {
 						throw new Error(response.message ? t(response.message) : 'Error uploading file');
 					}

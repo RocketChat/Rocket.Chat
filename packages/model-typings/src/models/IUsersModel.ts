@@ -263,7 +263,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOnlineAgents(agentId?: string): FindCursor<ILivechatAgent>;
 	countOnlineAgents(agentId: string): Promise<number>;
 	findOneBotAgent(): Promise<ILivechatAgent | null>;
-	findOneOnlineAgentById(agentId: string, isLivechatEnabledWhenAgentIdle?: boolean): Promise<ILivechatAgent | null>;
+	findOneOnlineAgentById(
+		agentId: string,
+		isLivechatEnabledWhenAgentIdle?: boolean,
+		options?: FindOptions<IUser>,
+	): Promise<ILivechatAgent | null>;
 	findAgents(): FindCursor<ILivechatAgent>;
 	countAgents(): Promise<number>;
 	getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<IUser>): Promise<{ agentId: string; username: string } | null>;
@@ -405,6 +409,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findAgentsAvailableWithoutBusinessHours(userIds: string[] | null): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
 	updateLivechatStatusByAgentIds(userIds: string[], status: ILivechatAgentStatus): Promise<UpdateResult>;
 	findOneByFreeSwitchExtension<T = IUser>(extension: string, options?: FindOptions<IUser>): Promise<T | null>;
+	findOneByFreeSwitchExtensions<T = IUser>(extensions: string[], options?: FindOptions<IUser>): Promise<T | null>;
 	setFreeSwitchExtension(userId: string, extension: string | undefined): Promise<UpdateResult>;
 	findAssignedFreeSwitchExtensions(): FindCursor<string>;
 	findUsersWithAssignedFreeSwitchExtensions<T = IUser>(options?: FindOptions<IUser>): FindCursor<T>;

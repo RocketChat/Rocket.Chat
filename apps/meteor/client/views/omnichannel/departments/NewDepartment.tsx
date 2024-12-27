@@ -1,7 +1,7 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EditDepartment from './EditDepartment';

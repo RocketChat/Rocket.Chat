@@ -1,8 +1,7 @@
 import type { IIntegrationHistory, Serialized } from '@rocket.chat/core-typings';
-import { Button, Icon, Box, Accordion, Field, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Button, Icon, Box, AccordionItem, Field, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useMethod } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { outgoingEvents } from '../../../../../../app/integrations/lib/outgoingEvents';
@@ -51,7 +50,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 	const errorStackCode = useHighlightedCode('json', JSON.stringify(errorStack || '', null, 2));
 
 	return (
-		<Accordion.Item
+		<AccordionItem
 			title={
 				<Box display='inline-flex' w='full' flexDirection='row' justifyContent='space-between'>
 					<Box display='flex' flexDirection='row' alignItems='center'>
@@ -200,7 +199,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 					</Field>
 				)}
 			</FieldGroup>
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 

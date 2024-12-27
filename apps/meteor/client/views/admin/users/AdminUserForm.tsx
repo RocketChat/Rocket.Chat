@@ -30,7 +30,7 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
@@ -119,7 +119,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		mode: 'onBlur',
 	});
 
-	const { avatar, username, setRandomPassword, password } = watch();
+	const { avatar, username, setRandomPassword, password, name: userFullName } = watch();
 
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');
@@ -209,6 +209,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										username={username}
 										etag={userData?.avatarETag}
 										setAvatarObj={onChange}
+										name={userFullName}
 									/>
 								)}
 							/>

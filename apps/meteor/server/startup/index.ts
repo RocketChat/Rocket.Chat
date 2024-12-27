@@ -1,6 +1,6 @@
 import './appcache';
 import './callbacks';
-import './cron';
+import { startCronJobs } from './cron';
 import './initialData';
 import './serverRunning';
 import './coreApps';
@@ -13,6 +13,8 @@ import { isRunningMs } from '../lib/isRunningMs';
 
 export const startup = async () => {
 	await performMigrationProcedure();
+
+	setImmediate(() => startCronJobs());
 	// only starts network broker if running in micro services mode
 	if (!isRunningMs()) {
 		require('./localServices');

@@ -11,7 +11,7 @@ import {
 	useRouter,
 } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactNode } from 'react';
-import React, { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
 
 import { useAppInstallationHandler } from './useAppInstallationHandler';
@@ -298,7 +298,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	]);
 
 	const incompatibleIconName = useCallback(
-		(app, action) => {
+		(app: App, action: 'subscribe' | 'install' | 'update') => {
 			if (!app.versionIncompatible) {
 				if (action === 'update') {
 					return 'refresh';

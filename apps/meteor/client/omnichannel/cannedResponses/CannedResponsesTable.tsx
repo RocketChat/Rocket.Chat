@@ -2,8 +2,8 @@ import { Box, IconButton, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashKey } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { hashKey, useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 
 import CannedResponseFilter from './CannedResponseFilter';
 import { useRemoveCannedResponse } from './useRemoveCannedResponse';

@@ -2,7 +2,6 @@ import { Button, ButtonGroup, Field, FieldLabel, FieldRow, InputBox, Select, Tex
 import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 

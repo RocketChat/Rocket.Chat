@@ -1,7 +1,6 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import React from 'react';
 
 import AddMatrixUsersModal from './AddMatrixUsersModal';
 

@@ -27,7 +27,6 @@ export const useUnstarMessageMutation = () => {
 		},
 		onSettled: (_data, _error, message) => {
 			queryClient.invalidateQueries({ queryKey: roomsQueryKeys.starredMessages(message.rid) });
-			queryClient.invalidateQueries({ queryKey: roomsQueryKeys.messageActions(message.rid, message._id) });
 		},
 	});
 };

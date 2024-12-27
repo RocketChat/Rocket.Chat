@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ReactElement, ContextType } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail } from '../../../../lib/emailValidator';
@@ -56,7 +56,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [setCurrentStep]);
 	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [setCurrentStep]);
-	const goToStep = useCallback((step) => setCurrentStep(() => step), [setCurrentStep]);
+	const goToStep = useCallback((step: number) => setCurrentStep(() => step), [setCurrentStep]);
 
 	const _validateEmail = useCallback(
 		(email: string): true | string => {

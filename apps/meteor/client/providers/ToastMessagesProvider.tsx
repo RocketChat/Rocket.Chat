@@ -3,7 +3,7 @@ import { ToastMessagesContext } from '@rocket.chat/ui-contexts';
 import type { DefaultError, Query } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { getErrorMessage } from '../lib/errorHandling';
 import { dispatchToastMessage, subscribeToToastMessages } from '../lib/toast';

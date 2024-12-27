@@ -2,8 +2,8 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
-import React, { memo, useCallback, useMemo, useRef } from 'react';
+import type { MouseEvent, ReactElement, UIEvent } from 'react';
+import { memo, useCallback, useMemo, useRef } from 'react';
 
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
@@ -40,6 +40,7 @@ import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
+import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
 
 const RoomBody = (): ReactElement => {
@@ -116,6 +117,7 @@ const RoomBody = (): ReactElement => {
 	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition(room._id);
 
 	const { messageListRef } = useMessageListNavigation();
+	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
 
 	const { handleNewMessageButtonClick, handleJumpToRecentButtonClick, handleComposerResize, hasNewMessages, newMessagesScrollRef } =
 		useHasNewMessages(room._id, user?._id, atBottomRef, {
@@ -133,7 +135,7 @@ const RoomBody = (): ReactElement => {
 		leaderBannerInnerRef,
 		unreadBarInnerRef,
 		getMoreInnerRef,
-
+		selectAndScrollRef,
 		messageListRef,
 	);
 
@@ -147,8 +149,8 @@ const RoomBody = (): ReactElement => {
 		chat.messageEditing.toNextMessage();
 	}, [chat.messageEditing]);
 
-	const handleCloseFlexTab: MouseEventHandler<HTMLElement> = useCallback(
-		(e): void => {
+	const handleCloseFlexTab = useCallback(
+		(e: MouseEvent<HTMLElement>): void => {
 			/*
 			 * check if the element is a button or anchor
 			 * it considers the role as well
@@ -313,6 +315,7 @@ const RoomBody = (): ReactElement => {
 									onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 									onNavigateToNextMessage={handleNavigateToNextMessage}
 									onUploadFiles={handleUploadFiles}
+									onClickSelectAll={selectAllAndScrollToTop}
 									// TODO: send previewUrls param
 									// previewUrls={}
 								/>
