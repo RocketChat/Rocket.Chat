@@ -13,7 +13,7 @@ export const useParameters = (): Exclude<UseQueryResult<SetupWizardParameters, E
 
 	return useQuery({
 		queryKey: ['setupWizard/parameters'],
-		...getSetupWizardParameters,
+		queryFn: getSetupWizardParameters,
 		initialData: {
 			settings: [],
 			serverAlreadyRegistered: false,
