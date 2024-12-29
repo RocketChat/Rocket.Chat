@@ -51,7 +51,7 @@ describe('Message Broadcast Tests', () => {
 
 		const proxyMock = proxyquire.noPreserveCache().load('../../../../../../app/lib/server/lib/notifyListener', {
 			'@rocket.chat/models': modelsStubs(false),
-			'@rocket.chat/core-services': coreStubs(false),
+			'@rocket.chat/core-services': coreStubs(),
 			'mem': memStub,
 		});
 
