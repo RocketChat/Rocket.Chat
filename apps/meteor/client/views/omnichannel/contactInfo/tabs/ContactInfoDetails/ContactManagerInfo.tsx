@@ -12,7 +12,7 @@ const ContactManagerInfo = ({ userId }: ContactManagerInfoProps) => {
 	const { t } = useTranslation();
 
 	const getContactManagerByUsername = useEndpoint('GET', '/v1/users.info');
-	const { data, isPending, isError } = useQuery({
+	const { data, isLoading, isSuccess, isError } = useQuery({
 		queryKey: ['getContactManagerByUserId', userId],
 		queryFn: async () => getContactManagerByUsername({ userId }),
 	});
@@ -24,8 +24,8 @@ const ContactManagerInfo = ({ userId }: ContactManagerInfoProps) => {
 	return (
 		<Box>
 			<Box mbe={4}>{t('Contact_Manager')}</Box>
-			{isPending && <Skeleton />}
-			{!isPending && (
+			{isLoading && <Skeleton />}
+			{isSuccess && (
 				<Box display='flex' alignItems='center'>
 					{data.user.username && <UserAvatar size='x18' username={data.user.username} />}
 					<Box mi={8}>

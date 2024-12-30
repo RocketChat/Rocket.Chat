@@ -47,7 +47,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 
 	const getCustomUserStatus = useEndpoint('GET', '/v1/custom-user-status.list');
 
-	const { data, isPending, refetch, isFetched } = useQuery({
+	const { data, isLoading, refetch, isFetched } = useQuery({
 		queryKey: ['custom-user-statuses', query],
 
 		queryFn: async () => {
@@ -89,7 +89,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 							</GenericTableHeaderCell>
 						</GenericTableHeader>
 						<GenericTableBody>
-							{isPending && <GenericTableLoadingTable headerCells={2} />}
+							{isLoading && <GenericTableLoadingTable headerCells={2} />}
 							{data?.map((status) => <CustomUserStatusRow key={status._id} status={status} onClick={onClick} />)}
 						</GenericTableBody>
 					</GenericTable>

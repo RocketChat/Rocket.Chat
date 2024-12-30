@@ -17,13 +17,13 @@ type EditDepartmentWithDataProps = {
 const EditDepartmentWithData = ({ id, title }: EditDepartmentWithDataProps) => {
 	const { t } = useTranslation();
 	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: id ?? '' });
-	const { data, isInitialLoading, isError } = useQuery({
+	const { data, isLoading, isError } = useQuery({
 		queryKey: ['/v1/livechat/department/:_id', id],
 		queryFn: () => getDepartment(params),
 		enabled: !!id,
 	});
 
-	if (isInitialLoading) {
+	if (isLoading) {
 		return <FormSkeleton padding='1.5rem 1rem' maxWidth='37.5rem' margin='0 auto' />;
 	}
 

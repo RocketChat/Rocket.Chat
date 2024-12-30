@@ -52,7 +52,7 @@ const ModConsoleUsersTable = () => {
 
 	const getReports = useEndpoint('GET', '/v1/moderation.userReports');
 
-	const { data, isPending, isSuccess, isError, refetch } = useQuery({
+	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
 		queryKey: ['moderation', 'userReports', 'fetchAll', query],
 		queryFn: () => getReports(query),
 		placeholderData: keepPreviousData,
@@ -101,10 +101,10 @@ const ModConsoleUsersTable = () => {
 	return (
 		<>
 			<ModerationFilter text={text} setText={setText} setDateRange={setDateRange} />
-			{isPending && (
+			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
-					<GenericTableBody>{isPending && <GenericTableLoadingTable headerCells={6} />}</GenericTableBody>
+					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={6} />}</GenericTableBody>
 				</GenericTable>
 			)}
 			{isSuccess && data.reports.length > 0 && (

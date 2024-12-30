@@ -50,7 +50,7 @@ function ContactTable() {
 		}),
 	);
 
-	const { data, isPending, isError, isSuccess, refetch } = useCurrentContacts(query);
+	const { data, isLoading, isError, isSuccess, refetch } = useCurrentContacts(query);
 
 	const [defaultQuery] = useState(hashKey([query]));
 	const queryHasChanged = defaultQuery !== hashKey([query]);
@@ -100,7 +100,7 @@ function ContactTable() {
 					</Button>
 				</FilterByText>
 			)}
-			{isPending && (
+			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

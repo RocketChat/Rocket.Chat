@@ -12,7 +12,7 @@ const AppReleases = ({ id }: { id: App['id'] }): ReactElement => {
 	const getVersions = useEndpoint('GET', '/apps/:id/versions', { id });
 	const { t } = useTranslation();
 
-	const { data, isPending, isFetched } = useQuery({
+	const { data, isLoading, isFetched } = useQuery({
 		queryKey: ['apps', id, 'versions'],
 		queryFn: async () => {
 			const { apps } = await getVersions();
@@ -30,7 +30,7 @@ const AppReleases = ({ id }: { id: App['id'] }): ReactElement => {
 	return (
 		<>
 			<Accordion width='100%' alignSelf='center'>
-				{isPending && <AccordionLoading />}
+				{isLoading && <AccordionLoading />}
 				{isFetched && <>{data?.map((release) => <AppReleasesItem release={release} key={release.version} />)}</>}
 			</Accordion>
 		</>

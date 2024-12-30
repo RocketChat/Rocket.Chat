@@ -22,7 +22,7 @@ const OAuthAppsTable = (): ReactElement => {
 	const uid = { uid: useUserId() || '' };
 
 	const getOauthApps = useEndpoint('GET', '/v1/oauth-apps.list');
-	const { data, isPending, isSuccess } = useQuery({
+	const { data, isLoading, isSuccess } = useQuery({
 		queryKey: ['oauth-apps', { uid }],
 
 		queryFn: async () => {
@@ -52,7 +52,7 @@ const OAuthAppsTable = (): ReactElement => {
 
 	return (
 		<>
-			{isPending && (
+			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

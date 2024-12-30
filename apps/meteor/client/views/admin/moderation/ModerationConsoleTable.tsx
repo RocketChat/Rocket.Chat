@@ -53,7 +53,7 @@ const ModerationConsoleTable = () => {
 
 	const getReports = useEndpoint('GET', '/v1/moderation.reportsByUsers');
 
-	const { data, isPending, isSuccess } = useQuery({
+	const { data, isLoading, isSuccess } = useQuery({
 		queryKey: ['moderation', 'msgReports', 'fetchAll', query],
 		queryFn: async () => getReports(query),
 		meta: {
@@ -101,10 +101,10 @@ const ModerationConsoleTable = () => {
 	return (
 		<>
 			<ModerationFilter text={text} setText={setText} setDateRange={setDateRange} />
-			{isPending && (
+			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
-					<GenericTableBody>{isPending && <GenericTableLoadingTable headerCells={6} />}</GenericTableBody>
+					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={6} />}</GenericTableBody>
 				</GenericTable>
 			)}
 			{isSuccess && data.reports.length > 0 && (

@@ -162,7 +162,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 		[customFields, itemsPerPage, params, sortBy, sortDirection, current],
 	);
 
-	const { data, isPending, isSuccess } = useCurrentChats(query);
+	const { data, isLoading, isSuccess } = useCurrentChats(query);
 
 	const [defaultQuery] = useState(hashKey([query]));
 	const queryHasChanged = defaultQuery !== hashKey([query]);
@@ -341,7 +341,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 							linkText={t('Learn_more_about_current_chats')}
 						/>
 					)}
-					{isPending && (
+					{isLoading && (
 						<GenericTable>
 							<GenericTableHeader>{headers}</GenericTableHeader>
 							<GenericTableBody>

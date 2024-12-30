@@ -56,7 +56,7 @@ const CannedResponsesTable = () => {
 	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
-	const { data, isPending, isSuccess } = useQuery({
+	const { data, isLoading, isSuccess } = useQuery({
 		queryKey: ['getCannedResponses', query],
 		queryFn: () => getCannedResponses(query),
 		refetchOnWindowFocus: false,
@@ -127,7 +127,7 @@ const CannedResponsesTable = () => {
 					setText={setText}
 				/>
 			)}
-			{isPending && (
+			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

@@ -78,7 +78,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 
 	const {
 		data: { priorities = [] } = {},
-		isInitialLoading: isLoadingPriorities,
+		isLoading: isLoadingPriorities,
 		isError: isErrorPriorities,
 	} = useQuery({
 		queryKey: ['/v1/livechat/priorities'],

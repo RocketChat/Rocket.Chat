@@ -17,7 +17,7 @@ const UnitEditWithData = ({ unitId }: { unitId: IOmnichannelBusinessUnit['_id'] 
 	const {
 		data: unitData,
 		isError,
-		isPending,
+		isLoading,
 	} = useQuery({
 		queryKey: ['livechat-getUnitById', unitId],
 		queryFn: async () => getUnitById(),
@@ -26,7 +26,7 @@ const UnitEditWithData = ({ unitId }: { unitId: IOmnichannelBusinessUnit['_id'] 
 	const {
 		data: unitMonitors,
 		isError: unitMonitorsError,
-		isPending: unitMonitorsLoading,
+		isLoading: unitMonitorsLoading,
 	} = useQuery({
 		queryKey: ['livechat-getMonitorsByUnitId', unitId],
 		queryFn: async () => getMonitorsByUnitId({ unitId }),
@@ -35,14 +35,14 @@ const UnitEditWithData = ({ unitId }: { unitId: IOmnichannelBusinessUnit['_id'] 
 	const {
 		data: unitDepartments,
 		isError: unitDepartmentsError,
-		isPending: unitDepartmentsLoading,
+		isLoading: unitDepartmentsLoading,
 	} = useQuery({
 		queryKey: ['livechat-getDepartmentsByUnitId', unitId],
 		queryFn: async () => getDepartmentsByUnitId({ unitId }),
 		refetchOnWindowFocus: false,
 	});
 
-	if (isPending || unitMonitorsLoading || unitDepartmentsLoading) {
+	if (isLoading || unitMonitorsLoading || unitDepartmentsLoading) {
 		return <ContextualbarSkeleton />;
 	}
 

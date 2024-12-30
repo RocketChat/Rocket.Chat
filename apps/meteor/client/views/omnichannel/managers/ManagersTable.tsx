@@ -45,7 +45,7 @@ const ManagersTable = () => {
 	);
 
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
-	const { data, isPending, isSuccess, refetch } = useQuery({
+	const { data, isLoading, isSuccess, refetch } = useQuery({
 		queryKey: ['omnichannel', 'managers', 'livechat-manager', query],
 
 		queryFn: async () => getManagers(query),
@@ -83,7 +83,7 @@ const ManagersTable = () => {
 			{((isSuccess && data?.users.length > 0) || queryHasChanged) && (
 				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
-			{isPending && (
+			{isLoading && (
 				<GenericTable aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
@@ -102,7 +102,7 @@ const ManagersTable = () => {
 			)}
 			{isSuccess && data.users.length > 0 && (
 				<>
-					<GenericTable aria-busy={isPending} aria-label={t('Managers')}>
+					<GenericTable aria-busy={isLoading} aria-label={t('Managers')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.users.map((user) => (

@@ -33,7 +33,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 	const {
 		data: report,
 		refetch: reloadUsersReports,
-		isPending,
+		isLoading,
 		isSuccess,
 		isError,
 		dataUpdatedAt,
@@ -73,7 +73,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 	return (
 		<>
 			<ContextualbarScrollableContent>
-				{isPending && <ContextualbarSkeleton />}
+				{isLoading && <ContextualbarSkeleton />}
 				{isSuccess && report.reports.length > 0 && (
 					<>
 						{report.user ? (

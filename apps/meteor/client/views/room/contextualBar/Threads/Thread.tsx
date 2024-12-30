@@ -103,7 +103,7 @@ const Thread = ({ tmid }: ThreadProps) => {
 				>
 					<ContextualbarHeader expanded={expanded}>
 						<ContextualbarBack onClick={handleGoBack} />
-						{(mainMessageQueryResult.isPending && <Skeleton width='100%' />) ||
+						{(mainMessageQueryResult.isLoading && <Skeleton width='100%' />) ||
 							(mainMessageQueryResult.isSuccess && <ThreadTitle mainMessage={mainMessageQueryResult.data} />) ||
 							null}
 						<ContextualbarActions>
@@ -124,7 +124,7 @@ const Thread = ({ tmid }: ThreadProps) => {
 						</ContextualbarActions>
 					</ContextualbarHeader>
 
-					{(mainMessageQueryResult.isPending && <ThreadSkeleton />) ||
+					{(mainMessageQueryResult.isLoading && <ThreadSkeleton />) ||
 						(mainMessageQueryResult.isSuccess && (
 							<ChatProvider tmid={tmid}>
 								<ThreadChat mainMessage={mainMessageQueryResult.data} />

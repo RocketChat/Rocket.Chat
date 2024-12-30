@@ -13,7 +13,7 @@ const EditDepartmentWithAllowedForwardData = ({ data, ...props }: Omit<EditDepar
 
 	const {
 		data: allowedToForwardData,
-		isInitialLoading,
+		isLoading,
 		isError,
 	} = useQuery({
 		queryKey: ['/v1/livechat/department.listByIds', data?.department?.departmentsAllowedToForward],
@@ -24,7 +24,7 @@ const EditDepartmentWithAllowedForwardData = ({ data, ...props }: Omit<EditDepar
 			}),
 	});
 
-	if (isInitialLoading) {
+	if (isLoading) {
 		return <FormSkeleton />;
 	}
 

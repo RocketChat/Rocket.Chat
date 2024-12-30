@@ -11,13 +11,13 @@ type RoomForewordUsernameListItemProps = {
 };
 
 const RoomForewordUsernameListItem = ({ username, href, useRealName }: RoomForewordUsernameListItemProps) => {
-	const { data, isPending, isError } = useUserInfoQuery({ username });
+	const { data, isLoading, isError, isSuccess } = useUserInfoQuery({ username });
 
 	return (
 		<Tag icon={<Icon name='user' size='x20' />} data-username={username} large href={href}>
-			{isPending && <Skeleton variant='rect' />}
-			{!isPending && isError && username}
-			{!isPending && !isError && getUserDisplayName(data?.user?.name, username, useRealName)}
+			{isLoading && <Skeleton variant='rect' />}
+			{isError && username}
+			{isSuccess && getUserDisplayName(data?.user?.name, username, useRealName)}
 		</Tag>
 	);
 };

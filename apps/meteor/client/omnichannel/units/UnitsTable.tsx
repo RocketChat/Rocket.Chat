@@ -42,7 +42,7 @@ const UnitsTable = () => {
 	);
 
 	const getUnits = useEndpoint('GET', '/v1/livechat/units');
-	const { isSuccess, isPending, data } = useQuery({
+	const { isSuccess, isLoading, data } = useQuery({
 		queryKey: ['livechat-units', query],
 		queryFn: async () => getUnits(query),
 	});
@@ -77,7 +77,7 @@ const UnitsTable = () => {
 			{((isSuccess && data?.units.length > 0) || queryHasChanged) && (
 				<FilterByText value={filter} onChange={(event) => setFilter(event.target.value)} />
 			)}
-			{isPending && (
+			{isLoading && (
 				<GenericTable aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
@@ -99,7 +99,7 @@ const UnitsTable = () => {
 			)}
 			{isSuccess && data?.units.length > 0 && (
 				<>
-					<GenericTable aria-busy={isPending}>
+					<GenericTable aria-busy={isLoading}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.units.map(({ _id, name, visibility }) => (

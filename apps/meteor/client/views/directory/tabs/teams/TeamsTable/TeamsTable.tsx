@@ -58,7 +58,7 @@ const TeamsTable = () => {
 
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
 	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'teams');
-	const { data, isFetched, isPending, isError, refetch } = useQuery({
+	const { data, isFetched, isLoading, isError, refetch } = useQuery({
 		queryKey: ['getDirectoryData', query],
 		queryFn: () => getDirectoryData(query),
 	});
@@ -75,7 +75,7 @@ const TeamsTable = () => {
 	return (
 		<>
 			<FilterByText placeholder={t('Teams_Search_teams')} value={text} onChange={(event) => setText(event.target.value)} />
-			{isPending && (
+			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

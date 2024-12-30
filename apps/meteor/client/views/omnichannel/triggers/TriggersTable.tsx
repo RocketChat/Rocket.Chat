@@ -29,7 +29,7 @@ const TriggersTable = () => {
 	const query = useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]);
 
 	const getTriggers = useEndpoint('GET', '/v1/livechat/triggers');
-	const { data, refetch, isSuccess, isPending, isError } = useQuery({
+	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
 		queryKey: ['livechat-triggers', query],
 		queryFn: async () => getTriggers(query),
 	});
@@ -48,7 +48,7 @@ const TriggersTable = () => {
 
 	return (
 		<>
-			{isPending && (
+			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

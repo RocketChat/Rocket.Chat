@@ -44,7 +44,7 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 
 	const queryClient = useQueryClient();
 
-	const { isLoading: isLicenseInformationLoading, data: { license, limits } = {} } = useLicense({ loadValues: true });
+	const { isPending: isLicenseInformationLoading, data: { license, limits } = {} } = useLicense({ loadValues: true });
 	const isEnterprise = isLicenseInformationLoading ? undefined : !!license;
 
 	const invalidateAppsCountQuery = useInvalidateAppsCountQueryCallback();
@@ -106,7 +106,7 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 		refetchOnMount: 'always',
 	});
 
-	const { isLoading: isMarketplaceDataLoading, data: marketplaceData } = useQuery({
+	const { isPending: isMarketplaceDataLoading, data: marketplaceData } = useQuery({
 		queryKey: ['marketplace', 'apps-stored', instance.data, marketplace.data],
 		queryFn: () => storeQueryFunction(marketplace, instance),
 		enabled: marketplace.isFetched && instance.isFetched,

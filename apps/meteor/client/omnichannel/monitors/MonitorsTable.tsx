@@ -68,7 +68,7 @@ const MonitorsTable = () => {
 		500,
 	);
 
-	const { data, refetch, isPending, isSuccess, isError } = useQuery({
+	const { data, refetch, isLoading, isSuccess, isError } = useQuery({
 		queryKey: ['omnichannel', 'monitors', query],
 		queryFn: () => getMonitors(query),
 	});
@@ -150,7 +150,7 @@ const MonitorsTable = () => {
 			{((isSuccess && data?.monitors.length > 0) || queryHasChanged) && (
 				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
-			{isPending && (
+			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
@@ -170,7 +170,7 @@ const MonitorsTable = () => {
 			)}
 			{isSuccess && data.monitors.length > 0 && (
 				<>
-					<GenericTable aria-busy={isPending} aria-live='assertive' data-qa-id='manage-monitors-table'>
+					<GenericTable aria-busy={isLoading} aria-live='assertive' data-qa-id='manage-monitors-table'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.monitors?.map((monitor) => (
