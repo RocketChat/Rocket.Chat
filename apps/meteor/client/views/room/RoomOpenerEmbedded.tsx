@@ -11,6 +11,7 @@ import RoomSkeleton from './RoomSkeleton';
 import RoomSidepanel from './Sidepanel/RoomSidepanel';
 import { useOpenRoom } from './hooks/useOpenRoom';
 import { CachedChatSubscription } from '../../../app/models/client';
+import { LegacyRoomManager } from '../../../app/ui-utils/client';
 import { FeaturePreviewSidePanelNavigation } from '../../components/FeaturePreviewSidePanelNavigation';
 import { Header } from '../../components/Header';
 import { getErrorMessage } from '../../lib/errorHandling';
@@ -53,6 +54,7 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 					throw new Error('Room not found');
 				}
 				CachedChatSubscription.upsertSubscription(subscription as unknown as ISubscription);
+				LegacyRoomManager.computation.invalidate();
 			},
 		},
 	);
