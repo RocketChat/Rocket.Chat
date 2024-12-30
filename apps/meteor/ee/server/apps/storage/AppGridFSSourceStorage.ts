@@ -2,7 +2,6 @@ import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { AppSourceStorage } from '@rocket.chat/apps-engine/server/storage';
 import { MongoInternals } from 'meteor/mongo';
 import { NpmModuleMongodb } from 'meteor/npm-mongo';
-import type { GridFSBucketWriteStream } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
 import { streamToBuffer } from '../../../../app/file-upload/server/lib/streamToBuffer';
@@ -26,10 +25,10 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 	public async store(item: IAppStorageItem, zip: Buffer): Promise<string> {
 		return new Promise((resolve, reject) => {
 			const filename = this.itemToFilename(item);
-			const writeStream: GridFSBucketWriteStream = this.bucket
+			const writeStream: NpmModuleMongodb.GridFSBucketWriteStream = this.bucket
 				.openUploadStream(filename)
 				.on('finish', () => resolve(this.idToPath(writeStream.id)))
-				.on('error', (error) => reject(error));
+				.on('error', (error: any) => reject(error));
 
 			writeStream.write(zip);
 			writeStream.end();
@@ -43,7 +42,7 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 	public async update(item: IAppStorageItem, zip: Buffer): Promise<string> {
 		return new Promise((resolve, reject) => {
 			const fileId = this.itemToFilename(item);
-			const writeStream: GridFSBucketWriteStream = this.bucket
+			const writeStream: NpmModuleMongodb.GridFSBucketWriteStream = this.bucket
 				.openUploadStream(fileId)
 				.on('finish', () => {
 					resolve(this.idToPath(writeStream.id));
@@ -52,7 +51,7 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 					this.remove(item).catch(() => {});
 				})
 
-				.on('error', (error) => reject(error));
+				.on('error', (error: any) => reject(error));
 
 			writeStream.write(zip);
 			writeStream.end();
@@ -77,7 +76,7 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 		return `${item.info.nameSlug}-${item.info.version}.package`;
 	}
 
-	private idToPath(id: GridFSBucketWriteStream['id']): string {
+	private idToPath(id: NpmModuleMongodb.GridFSBucketWriteStream['id']): string {
 		return this.pathPrefix + id;
 	}
 

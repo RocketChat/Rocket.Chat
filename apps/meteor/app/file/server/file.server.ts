@@ -9,7 +9,6 @@ import { MongoInternals } from 'meteor/mongo';
 import { NpmModuleMongodb } from 'meteor/npm-mongo';
 import mime from 'mime-type/with-db';
 import mkdirp from 'mkdirp';
-import type { GridFSBucketReadStream } from 'mongodb';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -29,7 +28,7 @@ interface IRocketChatFileStore {
 
 	getFileWithReadStream(fileName: string): Promise<
 		| {
-				readStream: GridFSBucketReadStream | ReadStream;
+				readStream: NpmModuleMongodb.GridFSBucketReadStream | ReadStream;
 				contentType?: string;
 				length: number;
 				uploadDate?: Date;
