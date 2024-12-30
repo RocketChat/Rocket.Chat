@@ -1,5 +1,5 @@
 import { HeroLayout, HeroLayoutTitle } from '@rocket.chat/layout';
-import { useRouteParameter, useSessionDispatch, useSetting, useUserId } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,30 +14,17 @@ const InvitePage = (): ReactElement => {
 
 	const token = useRouteParameter('hash');
 	const userId = useUserId();
-	const { isPending, data: isValidInvite } = useValidateInviteQuery(token);
+	const { isLoading, data: isValidInvite } = useValidateInviteQuery(userId, token);
 
 	const getInviteRoomMutation = useInviteTokenMutation();
 
-	const registrationForm = useSetting('Accounts_RegistrationForm');
-	const setLoginDefaultState = useSessionDispatch('loginDefaultState');
-
 	useEffect(() => {
-		if (isValidInvite) {
-			if (registrationForm !== 'Disabled') {
-				setLoginDefaultState('invite-register');
-			} else {
-				setLoginDefaultState('login');
-			}
-
-			if (!token || !isValidInvite || !userId) {
-				return;
-			}
-
+		if (userId && token) {
 			getInviteRoomMutation(token);
 		}
-	}, [getInviteRoomMutation, isValidInvite, registrationForm, setLoginDefaultState, token, userId]);
+	}, [getInviteRoomMutation, token, userId]);
 
-	if (isPending) {
+	if (isLoading) {
 		return <PageLoading />;
 	}
 
