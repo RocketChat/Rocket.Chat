@@ -5,7 +5,9 @@ import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AdminUserForm from './AdminUserForm';
+import { isTruthy } from '../../../../lib/isTruthy';
 import { FormSkeleton } from '../../../components/Skeleton';
+import type { UserInfoQueryData } from '../../../hooks/useUserInfoQuery';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 
 type AdminUserFormWithDataProps = {
@@ -16,9 +18,19 @@ type AdminUserFormWithDataProps = {
 	roleError: unknown;
 };
 
+const filterUnavailableRoles = (availableRoles: IRole[] | undefined) => (data: UserInfoQueryData) => {
+	if (!availableRoles) {
+		return data;
+	}
+	return {
+		...data,
+		user: { ...data.user, roles: data.user.roles.filter((role: string) => isTruthy(availableRoles.find(({ _id }) => _id === role))) },
+	};
+};
+
 const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: AdminUserFormWithDataProps): ReactElement => {
 	const { t } = useTranslation();
-	const { data, isLoading, isError, refetch } = useUserInfoQuery({ userId: uid });
+	const { data, isLoading, isError, refetch } = useUserInfoQuery({ userId: uid }, { select: filterUnavailableRoles(roleData?.roles) });
 
 	const handleReload = useEffectEvent(() => {
 		onReload();
