@@ -2,6 +2,7 @@ import { type IUIActionButton, type UIActionButtonContext } from '@rocket.chat/a
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Tracker } from 'meteor/tracker';
 import { useEffect } from 'react';
 
 export const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${appId}/${actionId}`;
