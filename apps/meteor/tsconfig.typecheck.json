@@ -6,7 +6,8 @@
 		"incremental": true,
 		"allowImportingTsExtensions": true,
 		"paths": {
-			"mongodb": ["node_modules/mongodb"]
+			"mongodb": ["node_modules/mongodb"],
+			"meteor/*": ["./node_modules/@types/meteor/*", ".meteor/local/types/packages.d.ts"]
 		}
 	},
 	"exclude": [".meteor", "./packages", "./imports/client", "./ee/server/services", "public/", "private"]
