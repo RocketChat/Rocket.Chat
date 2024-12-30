@@ -41,6 +41,26 @@ export const useAppActionButtons = <TContext extends `${UIActionButtonContext}`>
 			return;
 		}
 
+		// Setup Tracker to listen to Meteor's status changes
+		const statusTracker = Tracker.autorun(() => {
+			const isOffline = !Meteor.status().connected;
+			if (isOffline) {
+				// Invalidate cache when the user goes offline
+				invalidate();
+			}
+		});
+
+		// Cleanup on unmount
+		return () => {
+			statusTracker.stop();
+		};
+	}, [uid, invalidate]);
+
+	useEffect(() => {
+		if (!uid) {
+			return;
+		}
+
 		return apps('apps', ([key]) => {
 			if (['actions/changed'].includes(key)) {
 				invalidate();
