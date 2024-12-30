@@ -66,9 +66,7 @@ class GridFS implements IRocketChatFileStore {
 
 	createWriteStream(fileName: string, contentType: string) {
 		const ws = this.bucket.openUploadStream(fileName, {
-			metadata: {
-				contentType,
-			},
+			contentType,
 		});
 
 		ws.on('close', () => {
@@ -83,6 +81,7 @@ class GridFS implements IRocketChatFileStore {
 
 	async getFileWithReadStream(fileName: string) {
 		const file = await this.findOne(fileName);
+		console.log('getFileWithReadStream', file);
 		if (!file) {
 			return;
 		}
