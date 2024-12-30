@@ -31,7 +31,7 @@
 		"obj:dev": "TEST_MODE=true yarn dev",
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\"",
 		"stylelint:fix": "stylelint --fix \"app/**/*.css\" \"client/**/*.css\"",
-		"typecheck": "cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" tsc -p tsconfig.typecheck.json",
+		"typecheck": "cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" tsc --noEmit --skipLibCheck",
 		"coverage": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' nyc -r html mocha --config ./.mocharc.js",
 		"test:e2e": "playwright test",
 		"test:e2e:federation": "playwright test --config=playwright-federation.config.ts",
