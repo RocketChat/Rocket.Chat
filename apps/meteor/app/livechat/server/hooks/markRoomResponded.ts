@@ -18,7 +18,7 @@ export async function markRoomResponded(
 		isSystemMessage(message) ||
 		isEditedMessage(message) ||
 		isMessageFromVisitor(message) ||
-		((await isMessageFromBot(message)) && settings.get<boolean>(''))
+		((await isMessageFromBot(message)) && settings.get<boolean>('Omnichannel_Metrics_Ignore_Automatic_Messages'))
 	) {
 		return;
 	}
