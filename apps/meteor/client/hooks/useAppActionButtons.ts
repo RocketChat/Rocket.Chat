@@ -42,16 +42,14 @@ export const useAppActionButtons = <TContext extends `${UIActionButtonContext}`>
 			return;
 		}
 
-		// Setup Tracker to listen to Meteor's status changes
+		// Setup Tracker to listen to Meteor's status changes, so we can invalidate the query when the connection is lost
 		const statusTracker = Tracker.autorun(() => {
 			const isOffline = !Meteor.status().connected;
 			if (isOffline) {
-				// Invalidate cache when the user goes offline
 				invalidate();
 			}
 		});
 
-		// Cleanup on unmount
 		return () => {
 			statusTracker.stop();
 		};
