@@ -3,7 +3,6 @@ import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, Margins, Bo
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useController, useForm } from 'react-hook-form';
 
 import { ContextualbarScrollableContent } from '../../components/Contextualbar';

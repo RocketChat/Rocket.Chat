@@ -1,7 +1,7 @@
 import { HeroLayout, HeroLayoutTitle } from '@rocket.chat/layout';
 import { useRouteParameter, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import LoginPage from '../root/MainLayout/LoginPage';

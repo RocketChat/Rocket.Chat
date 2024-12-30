@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Callout, Margins, States, StatesIcon, StatesSubtitle, StatesTitle, Tabs } from '@rocket.chat/fuselage';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AuditForm from './components/AuditForm';

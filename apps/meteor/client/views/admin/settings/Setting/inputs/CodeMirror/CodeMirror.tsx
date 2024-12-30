@@ -1,7 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Editor, EditorFromTextArea } from 'codemirror';
 import type { ReactElement } from 'react';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const defaultGutters = ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'];
 

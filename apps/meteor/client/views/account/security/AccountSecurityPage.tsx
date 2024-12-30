@@ -1,8 +1,7 @@
-import { Box, Accordion, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Box, Accordion, AccordionItem, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import ChangePassword from './ChangePassword';
@@ -47,28 +46,28 @@ const AccountSecurityPage = (): ReactElement => {
 					{allowPasswordChange && (
 						<FormProvider {...methods}>
 							<Accordion>
-								<Accordion.Item title={t('Password')} defaultExpanded>
+								<AccordionItem title={t('Password')} defaultExpanded>
 									<ChangePassword id={passwordFormId} />
-								</Accordion.Item>
+								</AccordionItem>
 							</Accordion>
 						</FormProvider>
 					)}
 					<Accordion>
 						{(twoFactorTOTP || showEmailTwoFactor) && twoFactorEnabled && (
-							<Accordion.Item title={t('Two Factor Authentication')}>
+							<AccordionItem title={t('Two Factor Authentication')}>
 								{twoFactorTOTP && <TwoFactorTOTP />}
 								{showEmailTwoFactor && <TwoFactorEmail />}
-							</Accordion.Item>
+							</AccordionItem>
 						)}
 						{e2eEnabled && (
-							<Accordion.Item
+							<AccordionItem
 								title={t('End-to-end_encryption')}
 								aria-label={t('End-to-end_encryption')}
 								defaultExpanded={!twoFactorEnabled}
 								data-qa-type='e2e-encryption-section'
 							>
 								<EndToEnd />
-							</Accordion.Item>
+							</AccordionItem>
 						)}
 					</Accordion>
 				</Box>

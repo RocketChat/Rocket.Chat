@@ -22,7 +22,7 @@ export const useNotifyUser = () => {
 		}
 
 		if ((!router.getRouteParameters().name || router.getRouteParameters().name !== sub.name) && !sub.ls && sub.alert === true) {
-			KonchatNotification.newRoom(sub.rid);
+			KonchatNotification.newRoom();
 		}
 	});
 
@@ -69,7 +69,7 @@ export const useNotifyUser = () => {
 		});
 
 		const handle = CachedChatSubscription.collection.find().observe({
-			changed: (sub) => {
+			added: (sub) => {
 				void notifyNewRoom(sub);
 			},
 		});

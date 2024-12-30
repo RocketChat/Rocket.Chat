@@ -4,7 +4,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
@@ -19,10 +19,12 @@ type UserAvatarEditorProps = {
 	setAvatarObj: (obj: AvatarObject) => void;
 	disabled?: boolean;
 	etag: IUser['avatarETag'];
+	name: IUser['name'];
 };
 
-function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, etag }: UserAvatarEditorProps): ReactElement {
+function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disabled, etag }: UserAvatarEditorProps): ReactElement {
 	const { t } = useTranslation();
+	const useFullNameForDefaultAvatar = useSetting('UI_Use_Name_Avatar');
 	const rotateImages = useSetting('FileUpload_RotateImages');
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState<string>();
@@ -53,7 +55,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 	};
 
 	const clickReset = (): void => {
-		setNewAvatarSource(`/avatar/%40${username}`);
+		setNewAvatarSource(`/avatar/%40${useFullNameForDefaultAvatar ? name : username}`);
 		setAvatarObj('reset');
 	};
 
@@ -91,7 +93,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis={4}>
 					<Box display='flex' flexDirection='row' mbs='none'>
 						<Button square disabled={disabled} mi={4} title={t('Accounts_SetDefaultAvatar')} onClick={clickReset}>
-							<Avatar url={`/avatar/%40${username}`} />
+							<Avatar url={`/avatar/%40${useFullNameForDefaultAvatar ? name : username}`} />
 						</Button>
 						<IconButton icon='upload' secondary disabled={disabled} title={t('Upload')} mi={4} onClick={clickUpload} />
 						<IconButton

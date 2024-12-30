@@ -1,6 +1,5 @@
 import { PaletteStyleTag } from '@rocket.chat/fuselage';
 import { useThemeMode } from '@rocket.chat/ui-theming';
-import React from 'react';
 
 import { codeBlock } from '../lib/codeBlockStyles';
 

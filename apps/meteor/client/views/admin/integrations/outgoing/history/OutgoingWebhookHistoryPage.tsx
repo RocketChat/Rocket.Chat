@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Pagination } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useRouteParameter, useMethod, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
-import React, { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 import HistoryContent from './HistoryContent';
 import { sdk } from '../../../../../../app/utils/client/lib/SDKClient';

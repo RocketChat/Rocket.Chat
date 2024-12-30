@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageToolbarWrapper } from '@rocket.chat/fuselage';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { Suspense, lazy, memo, useState } from 'react';
+import { Suspense, lazy, memo, useState } from 'react';
 
 import type { MessageActionContext } from '../../../app/ui-utils/client/lib/MessageAction';
 import { useChat } from '../../views/room/contexts/ChatContext';

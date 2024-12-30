@@ -1,6 +1,6 @@
 import { Box, Card, CardTitle, CardBody, CardCol, CardRow } from '@rocket.chat/fuselage';
 import type { ReactElement, ComponentProps } from 'react';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 
 import { ReportCardContent } from './ReportCardContent';
 import DownloadDataButton from '../../../components/dashboards/DownloadDataButton';

@@ -16,7 +16,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAutoComplete } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useMethod, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, hashQueryKey } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import FilterByText from '../../components/FilterByText';
 import GenericModal from '../../components/GenericModal';
