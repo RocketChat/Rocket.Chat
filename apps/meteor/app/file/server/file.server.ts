@@ -2,14 +2,14 @@ import type { ReadStream } from 'fs';
 import fs from 'fs';
 import fsp from 'fs/promises';
 import path from 'path';
-import stream from 'stream';
+import { Readable } from 'stream';
 
 import type { ObjectId } from 'bson';
 import { MongoInternals } from 'meteor/mongo';
+import { NpmModuleMongodb } from 'meteor/npm-mongo';
 import mime from 'mime-type/with-db';
 import mkdirp from 'mkdirp';
 import type { GridFSBucketReadStream } from 'mongodb';
-import { GridFSBucket } from 'mongodb';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -45,12 +45,12 @@ interface IRocketChatFileStore {
 class GridFS implements IRocketChatFileStore {
 	private name: string;
 
-	private bucket: GridFSBucket;
+	private bucket: NpmModuleMongodb.GridFSBucket;
 
 	constructor({ name = 'file' } = {}) {
 		this.name = name;
 
-		this.bucket = new GridFSBucket(db, { bucketName: this.name });
+		this.bucket = new NpmModuleMongodb.GridFSBucket(db as any, { bucketName: this.name });
 	}
 
 	private async findOne(filename: string) {
@@ -67,7 +67,9 @@ class GridFS implements IRocketChatFileStore {
 
 	createWriteStream(fileName: string, contentType: string) {
 		const ws = this.bucket.openUploadStream(fileName, {
-			contentType,
+			metadata: {
+				contentType,
+			},
 		});
 
 		ws.on('close', () => {
@@ -207,9 +209,7 @@ class FileSystem implements IRocketChatFileStore {
 
 export const RocketChatFile = {
 	bufferToStream(buffer: Buffer) {
-		const bufferStream = new stream.PassThrough();
-		bufferStream.end(buffer);
-		return bufferStream;
+		return Readable.from(buffer);
 	},
 
 	dataURIParse(dataURI: string | Buffer) {
