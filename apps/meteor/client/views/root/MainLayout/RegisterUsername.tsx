@@ -14,12 +14,11 @@ import {
 	useMethod,
 	useAccountsCustomFields,
 } from '@rocket.chat/ui-contexts';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import MarkdownText from '../../../components/MarkdownText';
-import { queryClient } from '../../../lib/queryClient';
 
 type RegisterUsernamePayload = {
 	username: Exclude<IUser['username'], undefined>;
@@ -65,6 +64,8 @@ const RegisterUsername = () => {
 			setValue('username', data.result);
 		}
 	});
+
+	const queryClient = useQueryClient();
 
 	const registerUsernameMutation = useMutation({
 		mutationFn: async (data: RegisterUsernamePayload) => {

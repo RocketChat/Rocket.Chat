@@ -15,7 +15,7 @@ import {
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAutoComplete } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useMethod, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
-import { useMutation, useQuery, hashKey } from '@tanstack/react-query';
+import { useMutation, useQuery, hashKey, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import FilterByText from '../../components/FilterByText';
@@ -32,7 +32,6 @@ import {
 } from '../../components/GenericTable';
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../components/GenericTable/hooks/useSort';
-import { queryClient } from '../../lib/queryClient';
 
 const MonitorsTable = () => {
 	const t = useTranslation();
@@ -75,6 +74,8 @@ const MonitorsTable = () => {
 
 	const [defaultQuery] = useState(hashKey([query]));
 	const queryHasChanged = defaultQuery !== hashKey([query]);
+
+	const queryClient = useQueryClient();
 
 	const addMutation = useMutation({
 		mutationFn: async (username: string) => {
