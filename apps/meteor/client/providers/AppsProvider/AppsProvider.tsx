@@ -117,11 +117,6 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 
 	useEffect(() => {
 		if (instance.data && marketplace.data) {
-			console.log('----------- AppsProvider -----------');
-			console.log('marketplace', marketplace);
-			console.log('instance', instance);
-			console.log('\n\n');
-
 			queryClient.invalidateQueries({
 				queryKey: ['marketplace', 'apps-stored'],
 			});
