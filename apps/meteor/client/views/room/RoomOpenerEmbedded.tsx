@@ -1,16 +1,17 @@
 import type { ISubscription, RoomType } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomSkeleton from './RoomSkeleton';
 import RoomSidepanel from './Sidepanel/RoomSidepanel';
 import { useOpenRoom } from './hooks/useOpenRoom';
 import { CachedChatSubscription } from '../../../app/models/client';
+import { LegacyRoomManager } from '../../../app/ui-utils/client';
 import { FeaturePreviewSidePanelNavigation } from '../../components/FeaturePreviewSidePanelNavigation';
 import { Header } from '../../components/Header';
 import { getErrorMessage } from '../../lib/errorHandling';
@@ -33,11 +34,14 @@ const isDirectOrOmnichannelRoom = (type: RoomType) => type === 'd' || type === '
 
 const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement => {
 	const { data, error, isSuccess, isError, isLoading } = useOpenRoom({ type, reference });
+	const uid = useUserId();
 
 	const getSubscription = useEndpoint('GET', '/v1/subscriptions.getOne');
 
+	const subscribeToNotifyUser = useStream('notify-user');
+
 	const rid = data?.rid;
-	useQuery(
+	const { refetch } = useQuery(
 		['subscriptions', rid],
 		() => {
 			if (!rid) {
@@ -53,9 +57,25 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 					throw new Error('Room not found');
 				}
 				CachedChatSubscription.upsertSubscription(subscription as unknown as ISubscription);
+				LegacyRoomManager.computation.invalidate();
 			},
 		},
 	);
+
+	useEffect(() => {
+		if (!uid) {
+			return;
+		}
+		return subscribeToNotifyUser(`${uid}/subscriptions-changed`, (event, sub) => {
+			if (event !== 'inserted') {
+				return;
+			}
+
+			if (sub.rid === rid) {
+				refetch();
+			}
+		});
+	}, [refetch, rid, subscribeToNotifyUser, uid]);
 
 	const { t } = useTranslation();
 

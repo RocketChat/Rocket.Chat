@@ -39,9 +39,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 				try {
 					const { rid } = await createDirectMessage(...reference.split(', '));
-					const { Subscriptions } = await import('../../../../app/models/client');
-					const { waitUntilFind } = await import('../../../lib/utils/waitUntilFind');
-					await waitUntilFind(() => Subscriptions.findOne({ rid }));
+
 					directRoute.push({ rid }, (prev) => prev);
 				} catch (error) {
 					throw new RoomNotFoundError(undefined, { type, reference });
