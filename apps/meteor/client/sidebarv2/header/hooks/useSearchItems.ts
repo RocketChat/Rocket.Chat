@@ -16,6 +16,7 @@ const options = {
 	limit: LIMIT,
 } as const;
 
+// FIXME: the return type is UTTERLY wrong, but I'm not sure what it should be
 export const useSearchItems = (filterText: string): UseQueryResult<SubscriptionWithRoom[] | undefined, Error> => {
 	const [, mention, name] = useMemo(() => filterText.match(/(@|#)?(.*)/i) || [], [filterText]);
 	const query = useMemo(() => {
@@ -108,6 +109,6 @@ export const useSearchItems = (filterText: string): UseQueryResult<SubscriptionW
 		},
 
 		staleTime: 60_000,
-		placeholderData: localRooms,
+		placeholderData: (previousData) => previousData ?? localRooms,
 	});
 };
