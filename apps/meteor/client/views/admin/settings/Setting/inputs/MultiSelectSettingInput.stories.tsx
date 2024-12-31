@@ -1,7 +1,6 @@
 import { Field } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 
 import type { valuesOption } from './MultiSelectSettingInput';
 import MultiSelectSettingInput from './MultiSelectSettingInput';

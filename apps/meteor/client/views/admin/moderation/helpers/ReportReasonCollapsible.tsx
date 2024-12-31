@@ -1,6 +1,5 @@
 import { Box, Button } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 

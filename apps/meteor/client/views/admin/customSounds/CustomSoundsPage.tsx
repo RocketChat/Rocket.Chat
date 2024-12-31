@@ -1,6 +1,6 @@
 import { Button } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AddCustomSound from './AddCustomSound';
@@ -24,7 +24,7 @@ const CustomSoundsPage = () => {
 	const reload = useRef(() => null);
 
 	const handleItemClick = useCallback(
-		(_id) => (): void => {
+		(_id: string) => (): void => {
 			route.push({
 				context: 'edit',
 				id: _id,

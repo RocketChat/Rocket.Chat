@@ -3,7 +3,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, TextInput, Palette, SidebarV2Section, IconButton } from '@rocket.chat/fuselage';
 import { useMergedRefs, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FocusScope } from 'react-aria';
 import { useForm } from 'react-hook-form';
 import tinykeys from 'tinykeys';

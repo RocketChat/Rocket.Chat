@@ -1,5 +1,4 @@
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import HomePageHeader from './HomePageHeader';
 import CustomContentCard from './cards/CustomContentCard';

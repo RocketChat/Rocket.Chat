@@ -1,5 +1,4 @@
 import { Badge, Skeleton } from '@rocket.chat/fuselage';
-import React from 'react';
 
 import { useAppRequestStats } from '../hooks/useAppRequestStats';
 

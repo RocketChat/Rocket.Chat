@@ -2,7 +2,6 @@ import { Box, FieldError, FieldLabel, FieldRow, PasswordInput, ToggleSwitch } fr
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import type { Control, FieldErrors } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';

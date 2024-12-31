@@ -3,7 +3,7 @@ import { Button, Card, CardBody, CardControls, Margins } from '@rocket.chat/fuse
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useFormatMemorySize } from '../../../../hooks/useFormatMemorySize';
