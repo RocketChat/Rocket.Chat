@@ -12,6 +12,13 @@ type CustomUserStatusRowProps = {
 	onClick: (id: string) => void;
 };
 
+const statusOptions: Record<string, string> = {
+	online: 'Online',
+	busy: 'Busy',
+	away: 'Away',
+	offline: 'Offline',
+};
+
 const CustomUserStatusRow = ({ status, onClick }: CustomUserStatusRowProps): ReactElement => {
 	const { _id, name, statusType } = status;
 	const { t } = useTranslation();
@@ -30,7 +37,7 @@ const CustomUserStatusRow = ({ status, onClick }: CustomUserStatusRowProps): Rea
 				<MarkdownText content={name} parseEmoji={true} variant='inline' />
 			</GenericTableCell>
 			<GenericTableCell fontScale='p2' color='default' style={style}>
-				{t(statusType)}
+				{t(statusOptions[statusType])}
 			</GenericTableCell>
 		</GenericTableRow>
 	);
