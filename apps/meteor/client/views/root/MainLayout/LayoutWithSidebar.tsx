@@ -1,11 +1,19 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useLayout, useSetting, useCurrentModal, useRoute, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, version } from 'react';
 
 import AccessibilityShortcut from './AccessibilityShortcut';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
 import Sidebar from '../../../sidebar';
+
+const inertBooleanSupported = Number(version.split('.')[0]) >= 19;
+
+/**
+ * Before version 19, react JSX treats empty string "" as truthy for inert prop.
+ * @see {@link https://stackoverflow.com/questions/72720469}
+ * */
+const isInert = inertBooleanSupported ? (x: boolean) => x : (x: boolean) => (x ? '' : undefined);
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
@@ -44,7 +52,10 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 			bg='surface-light'
 			id='rocket-chat'
 			className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
-			aria-hidden={Boolean(modal)}
+			// @types/react does not recognize the "inert" prop as of now
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			inert={isInert(Boolean(modal))}
 		>
 			<AccessibilityShortcut />
 			<MainLayoutStyleTags />
