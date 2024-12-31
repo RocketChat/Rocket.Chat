@@ -2,7 +2,7 @@ import { Skeleton, TextInput, Callout } from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 

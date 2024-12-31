@@ -1,5 +1,5 @@
 import type { ComponentPropsWithoutRef } from 'react';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 import PageContext from './PageContext';
 import PageScrollableContent from './PageScrollableContent';

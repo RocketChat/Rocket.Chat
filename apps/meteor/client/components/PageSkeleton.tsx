@@ -1,6 +1,5 @@
 import { Box, Button, ButtonGroup, Skeleton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { Page, PageHeader, PageContent } from './Page';
 

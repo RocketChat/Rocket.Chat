@@ -1,5 +1,4 @@
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import KeyboardShortcuts from './KeyboardShortcuts';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';

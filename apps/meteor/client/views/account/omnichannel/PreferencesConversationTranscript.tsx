@@ -1,7 +1,6 @@
 import { AccordionItem, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, Tag, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, usePermission, useSetting } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';

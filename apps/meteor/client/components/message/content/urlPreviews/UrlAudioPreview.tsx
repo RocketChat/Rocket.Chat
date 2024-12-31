@@ -1,6 +1,5 @@
 import { AudioPlayer } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import type { UrlPreviewMetadata } from './UrlPreviewMetadata';
 

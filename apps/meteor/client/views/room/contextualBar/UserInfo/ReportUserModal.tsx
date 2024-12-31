@@ -2,7 +2,6 @@ import { Box, FieldGroup, Field, FieldLabel, FieldRow, FieldError, TextAreaInput
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps } from 'react';
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 

@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Avatar } from '@rocket.chat/fuselage';
-import React from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 
 import { GenericTableRow, GenericTableCell } from '../../../../../components/GenericTable';
 import MarkdownText from '../../../../../components/MarkdownText';
@@ -10,7 +10,7 @@ import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import RoomTags from '../../../RoomTags';
 
 type TeamsTableRowProps = {
-	onClick: (name: IRoom['name'], type: IRoom['t']) => (e: React.KeyboardEvent | React.MouseEvent) => void;
+	onClick: (name: IRoom['name'], type: IRoom['t']) => (e: KeyboardEvent | MouseEvent) => void;
 	team: IRoom & { roomsCount: number };
 	mediaQuery: boolean;
 };

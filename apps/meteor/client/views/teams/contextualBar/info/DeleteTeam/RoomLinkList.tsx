@@ -1,5 +1,5 @@
 import type { Serialized, IRoom } from '@rocket.chat/core-typings';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 

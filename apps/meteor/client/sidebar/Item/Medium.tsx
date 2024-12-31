@@ -1,17 +1,18 @@
 import { Sidebar, IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
-import React, { memo, useState } from 'react';
+import type { ReactNode } from 'react';
+import { memo, useState } from 'react';
 
 type MediumProps = {
-	title: React.ReactNode;
-	titleIcon?: React.ReactNode;
-	avatar: React.ReactNode | boolean;
+	title: ReactNode;
+	titleIcon?: ReactNode;
+	avatar: ReactNode;
 	icon?: string;
-	actions?: React.ReactNode;
+	actions?: ReactNode;
 	href?: string;
 	unread?: boolean;
-	menu?: () => React.ReactNode;
-	badges?: React.ReactNode;
+	menu?: () => ReactNode;
+	badges?: ReactNode;
 	selected?: boolean;
 	menuOptions?: any;
 };

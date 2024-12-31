@@ -1,6 +1,5 @@
 import { FieldLabel, FieldHint, FieldRow, Field } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import CodeMirror from './CodeMirror';

@@ -1,6 +1,5 @@
 import { useEndpoint, useRouter, useSearchParameter, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MeetPage from './MeetPage';
