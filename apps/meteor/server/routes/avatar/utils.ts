@@ -151,7 +151,7 @@ export const renderSVGLetters = (username: string, viewSize = 200, useAllInitial
 const getCacheTime = (cacheTime: number) => cacheTime || settings.get('Accounts_AvatarCacheTime');
 
 export function setCacheAndDispositionHeaders(req: IIncomingMessage, res: ServerResponse) {
-	const cacheTime = getCacheTime(req.query.gcTime);
+	const cacheTime = getCacheTime(req.query.cacheTime);
 	res.setHeader('Cache-Control', `public, max-age=${cacheTime}`);
 	res.setHeader('Content-Disposition', 'inline');
 }
