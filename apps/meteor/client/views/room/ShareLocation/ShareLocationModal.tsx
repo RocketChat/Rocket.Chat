@@ -17,15 +17,15 @@ type ShareLocationModalProps = {
 const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToast = useToastMessageDispatch();
-	const { data: permissionData, isLoading: permissionLoading } = useQuery({
+	const { data: permissionState, isLoading: permissionLoading } = useQuery({
 		queryKey: ['geolocationPermission'],
-		...getGeolocationPermission,
+		queryFn: getGeolocationPermission,
 	});
 	const { data: positionData } = useQuery({
-		queryKey: ['geolocationPosition', permissionData],
+		queryKey: ['geolocationPosition', permissionState],
 
 		queryFn: async () => {
-			if (permissionLoading || permissionData === 'prompt' || permissionData === 'denied') {
+			if (permissionLoading || permissionState === 'prompt' || permissionState === 'denied') {
 				return;
 			}
 			return getGeolocationPosition();
@@ -68,7 +68,7 @@ const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): Re
 		}
 	};
 
-	if (permissionLoading || permissionData === 'prompt') {
+	if (permissionLoading || permissionState === 'prompt') {
 		return (
 			<GenericModal
 				title={t('You_will_be_asked_for_permissions')}
@@ -80,7 +80,7 @@ const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): Re
 		);
 	}
 
-	if (permissionData === 'denied' || !positionData) {
+	if (permissionState === 'denied' || !positionData) {
 		return (
 			<GenericModal title={t('Cannot_share_your_location')} confirmText={t('Ok')} onConfirm={onClose} onClose={onClose}>
 				{t('The_necessary_browser_permissions_for_location_sharing_are_not_granted')}
