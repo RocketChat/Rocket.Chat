@@ -653,7 +653,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
                 }
             }
         } catch (e) {
-            console.error( `[${this.getAppId()}]`, e);
+            console.error(`[${this.getAppId()}]`, e);
             this.emit('error', new Error('DECODE_ERROR'));
         }
     }
