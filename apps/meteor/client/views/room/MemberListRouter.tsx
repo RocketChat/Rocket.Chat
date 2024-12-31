@@ -1,6 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import { useRoom } from './contexts/RoomContext';
 import { useRoomToolbox } from './contexts/RoomToolboxContext';

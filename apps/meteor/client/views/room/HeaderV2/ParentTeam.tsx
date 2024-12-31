@@ -2,7 +2,6 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 
 import { HeaderTag, HeaderTagIcon, HeaderTagSkeleton } from '../../../components/Header';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';

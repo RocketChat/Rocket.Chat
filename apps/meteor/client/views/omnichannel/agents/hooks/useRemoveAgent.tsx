@@ -2,7 +2,6 @@ import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 

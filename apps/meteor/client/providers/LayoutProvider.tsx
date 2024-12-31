@@ -1,7 +1,7 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { LayoutContext, useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import React, { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 const hiddenActionsDefaultValue = {
 	roomToolbox: [],

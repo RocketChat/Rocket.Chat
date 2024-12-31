@@ -1,5 +1,4 @@
 import { SidebarBanner } from '@rocket.chat/fuselage';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useStatusDisabledModal } from '../../views/admin/customUserStatus/hooks/useStatusDisabledModal';

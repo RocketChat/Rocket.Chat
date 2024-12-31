@@ -4,7 +4,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form } from '@rocket.chat/layout';
 import { useLogout, useRoute } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
-import React, { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import CurrentUserDisplay from './CurrentUserDisplay';

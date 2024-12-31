@@ -1,6 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Icon, Tag, Skeleton } from '@rocket.chat/fuselage';
-import React from 'react';
 
 import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';
 import { useUserInfoQuery } from '../../../../hooks/useUserInfoQuery';

@@ -2,7 +2,6 @@ import type { IOmnichannelGenericRoom, IVisitor } from '@rocket.chat/core-typing
 import { Avatar, Box } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FormSkeleton } from './FormSkeleton';

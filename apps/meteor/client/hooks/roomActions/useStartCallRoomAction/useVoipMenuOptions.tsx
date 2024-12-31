@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { useVoipAPI, useVoipState } from '@rocket.chat/ui-voip';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useMediaPermissions } from '../../../views/room/composer/messageBox/hooks/useMediaPermissions';

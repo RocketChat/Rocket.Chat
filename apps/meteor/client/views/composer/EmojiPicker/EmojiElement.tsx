@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { IconButton } from '@rocket.chat/fuselage';
 import type { MouseEvent, AllHTMLAttributes } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import type { EmojiItem } from '../../../../app/emoji/client';
 import { usePreviewEmoji } from '../../../contexts/EmojiPickerContext';

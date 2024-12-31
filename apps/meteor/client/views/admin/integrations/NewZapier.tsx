@@ -1,5 +1,5 @@
 import { Box, Skeleton, Margins, Callout } from '@rocket.chat/fuselage';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const blogSpotStyleScriptImport = (src: string) =>

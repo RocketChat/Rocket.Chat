@@ -4,7 +4,7 @@ import { FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomSkeleton from './RoomSkeleton';

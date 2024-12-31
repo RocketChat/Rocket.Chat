@@ -1,6 +1,5 @@
 import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 
 import { ContextualbarSkeleton } from '../../../../components/Contextualbar';
 import ContactInfoError from '../ContactInfoError';
