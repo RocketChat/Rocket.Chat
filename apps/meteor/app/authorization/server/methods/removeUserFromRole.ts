@@ -4,6 +4,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Roles, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
 import { hasPermissionAsync } from '../functions/hasPermission';
@@ -79,7 +80,7 @@ Meteor.methods<ServerMethods>({
 			}
 		}
 
-		const remove = await Roles.removeUserRoles(user._id, [role._id], scope);
+		const remove = await removeUserFromRolesAsync(user._id, [role._id], scope);
 		const event = {
 			type: 'removed',
 			_id: role._id,

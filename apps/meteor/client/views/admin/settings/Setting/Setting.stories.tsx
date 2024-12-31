@@ -15,13 +15,6 @@ export default {
 			argTypesRegex: '^on.*',
 		},
 	},
-	decorators: [
-		(fn) => (
-			<div>
-				<div className='page-settings'>{fn()}</div>
-			</div>
-		),
-	],
 } satisfies Meta<typeof Setting>;
 
 export const Default: StoryFn<typeof MemoizedSetting> = (args) => <MemoizedSetting {...args} />;

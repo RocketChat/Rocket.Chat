@@ -20,7 +20,6 @@ import type {
 import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { notifyOnSettingChanged } from '../../../app/lib/server/lib/notifyListener';
 
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements ILivechatVisitorsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatVisitor>>) {
@@ -129,8 +128,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		if (!livechatCount.value) {
 			throw new Error("Can't find Livechat_guest_count setting");
 		}
-
-		void notifyOnSettingChanged(livechatCount.value);
 
 		return `guest-${livechatCount.value.value}`;
 	}

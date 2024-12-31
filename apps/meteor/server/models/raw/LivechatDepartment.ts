@@ -17,7 +17,6 @@ import type {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { notifyOnLivechatDepartmentAgentChangedByDepartmentId } from '../../../app/lib/server/lib/notifyListener';
 
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implements ILivechatDepartmentModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartment>>) {
@@ -260,7 +259,6 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 
 		if (current?.enabled !== data.enabled) {
 			await LivechatDepartmentAgents.setDepartmentEnabledByDepartmentId(_id, data.enabled);
-			void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id, current ? 'updated' : 'inserted');
 		}
 
 		const latestDept = await this.findOneById(_id);

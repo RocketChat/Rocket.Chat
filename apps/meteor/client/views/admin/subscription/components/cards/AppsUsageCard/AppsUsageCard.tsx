@@ -8,6 +8,7 @@ import AppsUsageCardSection from './AppsUsageCardSection';
 import { PRICING_LINK } from '../../../utils/links';
 import type { CardProps } from '../../FeatureUsageCard';
 import FeatureUsageCard from '../../FeatureUsageCard';
+import FeatureUsageCardBody from '../../FeatureUsageCardBody';
 import UpgradeButton from '../../UpgradeButton';
 
 // Magic numbers
@@ -27,7 +28,9 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 		// FIXME: not accessible enough
 		return (
 			<FeatureUsageCard card={{ title: t('Apps') }}>
-				<Skeleton variant='rect' width='x112' height='x112' role='presentation' />
+				<FeatureUsageCardBody justifyContent='flex-start'>
+					<Skeleton variant='rect' width='x112' height='x224' role='presentation' />
+				</FeatureUsageCardBody>
 			</FeatureUsageCard>
 		);
 	}
@@ -61,20 +64,22 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 
 	return (
 		<FeatureUsageCard card={card}>
-			<AppsUsageCardSection
-				title={t('Marketplace_apps')}
-				appsCount={marketplaceAppsCount}
-				appsMaxCount={marketplaceAppsMaxCount}
-				warningThreshold={defaultWarningThreshold}
-			/>
+			<FeatureUsageCardBody justifyContent='flex-start'>
+				<AppsUsageCardSection
+					title={t('Marketplace_apps')}
+					appsCount={marketplaceAppsCount}
+					appsMaxCount={marketplaceAppsMaxCount}
+					warningThreshold={defaultWarningThreshold}
+				/>
 
-			<AppsUsageCardSection
-				title={t('Private_apps')}
-				tip={privateAppsMaxCount === 0 ? t('Private_apps_premium_message') : undefined}
-				appsCount={privateAppsCount}
-				appsMaxCount={privateAppsMaxCount}
-				warningThreshold={defaultWarningThreshold}
-			/>
+				<AppsUsageCardSection
+					title={t('Private_apps')}
+					tip={privateAppsMaxCount === 0 ? t('Private_apps_premium_message') : undefined}
+					appsCount={privateAppsCount}
+					appsMaxCount={privateAppsMaxCount}
+					warningThreshold={defaultWarningThreshold}
+				/>
+			</FeatureUsageCardBody>
 		</FeatureUsageCard>
 	);
 };

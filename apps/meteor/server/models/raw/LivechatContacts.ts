@@ -6,7 +6,7 @@ import type {
 	ILivechatVisitor,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import type { FindPaginated, ILivechatContactsModel, InsertionModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, ILivechatContactsModel, InsertionModel, Updater } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	Document,
@@ -21,9 +21,11 @@ import type {
 	UpdateFilter,
 	UpdateOptions,
 	FindOneAndUpdateOptions,
+	AggregationCursor,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements ILivechatContactsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatContact>>) {
@@ -74,6 +76,22 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 					preRegistration: 1,
 				},
 				sparse: true,
+				unique: false,
+			},
+			{
+				key: { channels: 1 },
+				unique: false,
+			},
+			{
+				key: { 'channels.blocked': 1 },
+				sparse: true,
+			},
+			{
+				key: { 'channels.verified': 1 },
+				sparse: true,
+			},
+			{
+				key: { unknown: 1 },
 				unique: false,
 			},
 		];
@@ -198,24 +216,37 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return Boolean(await this.findOne(this.makeQueryForVisitor(visitor, { blocked: true }), { projection: { _id: 1 } }));
 	}
 
-	async updateContactChannel(
+	setChannelBlockStatus(visitor: ILivechatContactVisitorAssociation, blocked: boolean): Promise<UpdateResult> {
+		return this.updateOne(this.makeQueryForVisitor(visitor), { $set: { 'channels.$.blocked': blocked } });
+	}
+
+	setChannelVerifiedStatus(visitor: ILivechatContactVisitorAssociation, verified: boolean): Promise<UpdateResult> {
+		return this.updateOne(this.makeQueryForVisitor(visitor), {
+			$set: {
+				'channels.$.verified': verified,
+				...(verified && { 'channels.$.verifiedAt': new Date() }),
+			},
+		});
+	}
+
+	setVerifiedUpdateQuery(verified: boolean, contactUpdater: Updater<ILivechatContact>): Updater<ILivechatContact> {
+		if (verified) {
+			contactUpdater.set('channels.$.verifiedAt', new Date());
+		}
+		return contactUpdater.set('channels.$.verified', verified);
+	}
+
+	setFieldAndValueUpdateQuery(field: string, value: string, contactUpdater: Updater<ILivechatContact>): Updater<ILivechatContact> {
+		contactUpdater.set('channels.$.field', field);
+		return contactUpdater.set('channels.$.value', value);
+	}
+
+	updateFromUpdaterByAssociation(
 		visitor: ILivechatContactVisitorAssociation,
-		data: Partial<ILivechatContactChannel>,
-		contactData?: Partial<Omit<ILivechatContact, 'channels'>>,
+		contactUpdater: Updater<ILivechatContact>,
 		options: UpdateOptions = {},
 	): Promise<UpdateResult> {
-		return this.updateOne(
-			this.makeQueryForVisitor(visitor),
-			{
-				$set: {
-					...contactData,
-					...(Object.fromEntries(
-						Object.keys(data).map((key) => [`channels.$.${key}`, data[key as keyof ILivechatContactChannel]]),
-					) as UpdateFilter<ILivechatContact>['$set']),
-				},
-			},
-			options,
-		);
+		return this.updateFromUpdater(this.makeQueryForVisitor(visitor), contactUpdater, options);
 	}
 
 	async findSimilarVerifiedContacts(
@@ -248,5 +279,60 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		const updatedContact = await this.findOneAndUpdate({ _id: contactId }, { $addToSet: { emails: { address: email } } });
 
 		return updatedContact.value;
+	}
+
+	countByContactInfo({ contactId, email, phone }: { contactId?: string; email?: string; phone?: string }): Promise<number> {
+		const filter = {
+			...(email && { 'emails.address': email }),
+			...(phone && { 'phones.phoneNumber': phone }),
+			...(contactId && { _id: contactId }),
+		};
+
+		return this.countDocuments(filter);
+	}
+
+	countUnknown(): Promise<number> {
+		return this.countDocuments({ unknown: true }, { readPreference: readSecondaryPreferred() });
+	}
+
+	countBlocked(): Promise<number> {
+		return this.countDocuments({ 'channels.blocked': true }, { readPreference: readSecondaryPreferred() });
+	}
+
+	countFullyBlocked(): Promise<number> {
+		return this.countDocuments(
+			{
+				'channels.blocked': true,
+				'channels': { $not: { $elemMatch: { $or: [{ blocked: false }, { blocked: { $exists: false } }] } } },
+			},
+			{ readPreference: readSecondaryPreferred() },
+		);
+	}
+
+	countVerified(): Promise<number> {
+		return this.countDocuments({ 'channels.verified': true }, { readPreference: readSecondaryPreferred() });
+	}
+
+	countContactsWithoutChannels(): Promise<number> {
+		return this.countDocuments({ channels: { $size: 0 } }, { readPreference: readSecondaryPreferred() });
+	}
+
+	getStatistics(): AggregationCursor<{ totalConflicts: number; avgChannelsPerContact: number }> {
+		return this.col.aggregate<{ totalConflicts: number; avgChannelsPerContact: number }>(
+			[
+				{
+					$group: {
+						_id: null,
+						totalConflicts: {
+							$sum: { $size: { $cond: [{ $isArray: '$conflictingFields' }, '$conflictingFields', []] } },
+						},
+						avgChannelsPerContact: {
+							$avg: { $size: { $cond: [{ $isArray: '$channels' }, '$channels', []] } },
+						},
+					},
+				},
+			],
+			{ allowDiskUse: true, readPreference: readSecondaryPreferred() },
+		);
 	}
 }

@@ -1,10 +1,4 @@
-import type {
-	ILivechatInquiryRecord,
-	IMessage,
-	RocketChatRecordDeleted,
-	OmnichannelSortingMechanismSettingType,
-	ILivechatPriority,
-} from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord, IMessage, RocketChatRecordDeleted, ILivechatPriority } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
 import type {
@@ -24,7 +18,6 @@ import type {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
@@ -154,7 +147,10 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return updated?.value;
 	}
 
-	async findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string): Promise<ILivechatInquiryRecord | null> {
+	async findNextAndLock(
+		queueSortBy: FindOptions<ILivechatInquiryRecord>['sort'],
+		department?: string,
+	): Promise<ILivechatInquiryRecord | null> {
 		const date = new Date();
 		const result = await this.findOneAndUpdate(
 			{
@@ -180,7 +176,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				},
 			},
 			{
-				sort: getOmniChatSortQuery(queueSortBy),
+				sort: queueSortBy,
 			},
 		);
 
@@ -212,7 +208,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	}: {
 		inquiryId?: string;
 		department?: string;
-		queueSortBy: OmnichannelSortingMechanismSettingType;
+		queueSortBy: FindOptions<ILivechatInquiryRecord>['sort'];
 	}): Promise<(Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number })[]> {
 		const filter: Filter<ILivechatInquiryRecord>[] = [
 			{
@@ -221,7 +217,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 					...(department && { department }),
 				},
 			},
-			{ $sort: getOmniChatSortQuery(queueSortBy) },
+			{ $sort: queueSortBy },
 			{
 				$group: {
 					_id: 1,

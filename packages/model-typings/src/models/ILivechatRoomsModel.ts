@@ -38,9 +38,13 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	getQueueMetrics(params: { departmentId: any; agentId: any; includeOfflineAgents: any; options?: any }): any;
 
-	findAllNumberOfAbandonedRooms(params: Period & WithDepartment & WithOnlyCount & WithOptions): Promise<any>;
+	findAllNumberOfAbandonedRooms(
+		params: Period & WithDepartment & WithOnlyCount & WithOptions & { inactivityTimeout: number },
+	): Promise<any>;
 
-	findPercentageOfAbandonedRooms(params: Period & WithDepartment & WithOnlyCount & WithOptions): Promise<any>;
+	findPercentageOfAbandonedRooms(
+		params: Period & WithDepartment & WithOnlyCount & WithOptions & { inactivityTimeout: number },
+	): Promise<any>;
 
 	findAllAverageOfChatDurationTime(params: Period & WithDepartment & WithOnlyCount & WithOptions): any;
 
@@ -238,7 +242,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		date: { gte: Date; lte: Date },
 		data?: { departmentId?: string },
 		extraQuery?: Filter<IOmnichannelRoom>,
-	): FindCursor<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs'>>;
+	): FindCursor<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'responseBy' | 'metrics' | 'msgs'>>;
 	getAnalyticsMetricsBetweenDateWithMessages(
 		t: string,
 		date: { gte: Date; lte: Date },

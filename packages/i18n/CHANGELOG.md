@@ -1,5 +1,35 @@
 # @rocket.chat/i18n
 
+## 1.1.0
+
+### Minor Changes
+
+- ([#32906](https://github.com/RocketChat/Rocket.Chat/pull/32906)) Improves thread metrics featuring user avatars, better titles and repositioned elements.
+
+- ([#32727](https://github.com/RocketChat/Rocket.Chat/pull/32727)) These changes aims to add:
+  - A brand-new omnichannel contact profile
+  - The ability to communicate with known contacts only
+  - Communicate with verified contacts only
+  - Merge verified contacts across different channels
+  - Block contact channels
+  - Resolve conflicting contact information when registered via different channels
+  - An advanced contact center filters
+- ([#33920](https://github.com/RocketChat/Rocket.Chat/pull/33920)) Improves the customizability of the naming of automatic Persistent video calls discussions, allowing the date of the call to be in different parts of the name, using the `[date]` keyword.
+
+- ([#33997](https://github.com/RocketChat/Rocket.Chat/pull/33997)) Prevent apps' subprocesses from crashing on unhandled rejections or uncaught exceptions
+
+- ([#33814](https://github.com/RocketChat/Rocket.Chat/pull/33814)) Adds a confirmation modal to the cancel subscription action
+
+- ([#33949](https://github.com/RocketChat/Rocket.Chat/pull/33949)) Disables the possiblity to upload exempted apps
+
+### Patch Changes
+
+- ([#33218](https://github.com/RocketChat/Rocket.Chat/pull/33218)) Fixes message character limit not being applied to file upload descriptions
+
+- ([#33902](https://github.com/RocketChat/Rocket.Chat/pull/33902)) Adds "Master volume" and "Call ringer volume" to the user preferences sound section.
+
+- ([#33880](https://github.com/RocketChat/Rocket.Chat/pull/33880)) Updates VoIP field labels from 'Free Extension Numbers' to 'Available Extensions' to better describe the field's purpose and improve clarity.
+
 ## 1.1.0-rc.0
 
 ### Minor Changes

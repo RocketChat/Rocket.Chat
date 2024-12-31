@@ -131,7 +131,11 @@ const MessageBox = ({
 
 	const callbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {
-			if (node === null || chat.composer) {
+			if (node === null && chat.composer) {
+				return chat.setComposerAPI();
+			}
+
+			if (chat.composer) {
 				return;
 			}
 			chat.setComposerAPI(createComposerAPI(node, storageID));

@@ -72,7 +72,7 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 					</>
 				)}
 			</MessageNameContainer>
-			{shouldShowRolesList && <MessageRoles roles={roles} isBot={message.bot} />}
+			{shouldShowRolesList && <MessageRoles roles={roles} isBot={!!message.bot} />}
 			<MessageTimestamp id={`${message._id}-time`} title={formatDateAndTime(message.ts)}>
 				{formatTime(message.ts)}
 			</MessageTimestamp>

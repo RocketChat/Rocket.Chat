@@ -4,6 +4,7 @@ import {
 	TextInput,
 	ToggleSwitch,
 	Accordion,
+	AccordionItem,
 	FieldGroup,
 	InputBox,
 	TextAreaInput,
@@ -56,7 +57,7 @@ const AppearanceForm = () => {
 
 	return (
 		<Accordion>
-			<Accordion.Item defaultExpanded title={t('General')}>
+			<AccordionItem defaultExpanded title={t('General')}>
 				<FieldGroup>
 					<Field>
 						<FieldRow>
@@ -155,9 +156,9 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Accordion.Item>
+			</AccordionItem>
 
-			<Accordion.Item defaultExpanded title={t('Livechat_online')}>
+			<AccordionItem defaultExpanded title={t('Livechat_online')}>
 				<FieldGroup>
 					<Field>
 						<AppearanceFieldLabel htmlFor={livechatTitleField}>{t('Title')}</AppearanceFieldLabel>
@@ -232,9 +233,9 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Accordion.Item>
+			</AccordionItem>
 
-			<Accordion.Item title={t('Livechat_offline')}>
+			<AccordionItem title={t('Livechat_offline')}>
 				<FieldGroup>
 					<Field>
 						<FieldRow>
@@ -309,9 +310,9 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Accordion.Item>
+			</AccordionItem>
 
-			<Accordion.Item title={t('Livechat_registration_form')}>
+			<AccordionItem title={t('Livechat_registration_form')}>
 				<FieldGroup>
 					<Field>
 						<FieldRow>
@@ -362,9 +363,9 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Accordion.Item>
+			</AccordionItem>
 
-			<Accordion.Item title={t('Conversation_finished')}>
+			<AccordionItem title={t('Conversation_finished')}>
 				<FieldGroup>
 					<Field>
 						<AppearanceFieldLabel htmlFor={livechatConversationFinishedMessageField}>
@@ -393,7 +394,7 @@ const AppearanceForm = () => {
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Accordion.Item>
+			</AccordionItem>
 		</Accordion>
 	);
 };

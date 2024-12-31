@@ -46,7 +46,7 @@ const subscribeToRouteChange = (onRouteChange: () => void): (() => void) => {
 	};
 };
 
-const getLocationPathname = () => FlowRouter.current().path as LocationPathname;
+const getLocationPathname = () => FlowRouter.current().path.replace(/\?.*/, '') as LocationPathname;
 
 const getLocationSearch = () => location.search as LocationSearch;
 

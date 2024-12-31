@@ -35,9 +35,9 @@ const FormattingToolbarDropdown = ({ composer, items, disabled }: FormattingTool
 		};
 	});
 
-	const sections = [{ title: t('Message_Formatting_Toolbox'), items: formattingItems }];
+	const sections = [{ title: t('Message_Formatting_toolbox'), items: formattingItems }];
 
-	return <GenericMenu title={t('Message_Formatting_Toolbox')} disabled={disabled} detached icon='meatballs' sections={sections} />;
+	return <GenericMenu title={t('Message_Formatting_toolbox')} disabled={disabled} detached icon='meatballs' sections={sections} />;
 };
 
 export default FormattingToolbarDropdown;
