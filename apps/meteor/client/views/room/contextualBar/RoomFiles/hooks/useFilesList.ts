@@ -1,4 +1,5 @@
 import { Base64 } from '@rocket.chat/base64';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { useUserRoom, useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -97,8 +98,17 @@ export const useFilesList = (
 		useMemo(() => parseInt(`${getConfig('discussionListSize', 10)}`), []),
 	);
 
+	const onMessage = useCallback(
+		(message: IMessage) => {
+			if (message?.files) {
+				loadMoreItems(0);
+			}
+		},
+		[loadMoreItems],
+	);
+
 	// TODO: chapter day : frontend create useStreamUpdatesForUploadList
-	useStreamUpdatesForMessageList(filesList as unknown as MessageList, uid, options.rid || null);
+	useStreamUpdatesForMessageList(filesList as unknown as MessageList, uid, options.rid || null, onMessage);
 
 	return {
 		reload,
