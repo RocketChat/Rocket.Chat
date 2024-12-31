@@ -106,6 +106,7 @@ export const ActionForm = ({ control, trigger, index, ...props }: SendMessageFor
 				</FieldRow>
 				{actionHint && <FieldHint>{t(actionHint)}</FieldHint>}
 			</Field>
+
 			<ActionFormFields control={control} trigger={trigger} index={index} />
 		</FieldGroup>
 	);
