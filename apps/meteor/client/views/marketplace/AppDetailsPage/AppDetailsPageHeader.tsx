@@ -3,7 +3,6 @@ import { Box, Tag } from '@rocket.chat/fuselage';
 import { AppAvatar } from '@rocket.chat/ui-avatar';
 import moment from 'moment';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppMenu from '../AppMenu';

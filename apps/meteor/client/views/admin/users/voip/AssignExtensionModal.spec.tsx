@@ -4,7 +4,6 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 
 import AssignExtensionModal from './AssignExtensionModal';
 

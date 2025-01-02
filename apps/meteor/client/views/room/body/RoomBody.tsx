@@ -2,8 +2,8 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
-import React, { memo, useCallback, useMemo, useRef } from 'react';
+import type { MouseEvent, ReactElement, UIEvent } from 'react';
+import { memo, useCallback, useMemo, useRef } from 'react';
 
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
@@ -149,8 +149,8 @@ const RoomBody = (): ReactElement => {
 		chat.messageEditing.toNextMessage();
 	}, [chat.messageEditing]);
 
-	const handleCloseFlexTab: MouseEventHandler<HTMLElement> = useCallback(
-		(e): void => {
+	const handleCloseFlexTab = useCallback(
+		(e: MouseEvent<HTMLElement>): void => {
 			/*
 			 * check if the element is a button or anchor
 			 * it considers the role as well

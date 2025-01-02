@@ -1,7 +1,6 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../components/GenericModal';
@@ -18,7 +17,9 @@ export const useRemoveCustomField = () => {
 			try {
 				await removeCustomField(id);
 				dispatchToastMessage({ type: 'success', message: t('Custom_Field_Removed') });
-				queryClient.invalidateQueries(['livechat-customFields']);
+				queryClient.invalidateQueries({
+					queryKey: ['livechat-customFields'],
+				});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

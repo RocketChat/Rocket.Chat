@@ -2,7 +2,6 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Option, OptionDescription } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 type UserAutoCompleteMultipleOptionProps = {
 	label: {

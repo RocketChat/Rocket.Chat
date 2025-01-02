@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericResourceUsage, GenericResourceUsageSkeleton } from '../../../components/GenericResourceUsage';
@@ -9,7 +8,7 @@ const CustomUserActiveConnections = () => {
 
 	const result = useActiveConnections();
 
-	if (result.isLoading || result.isError) {
+	if (result.isPending || result.isError) {
 		return <GenericResourceUsageSkeleton title={t('Active_connections')} />;
 	}
 

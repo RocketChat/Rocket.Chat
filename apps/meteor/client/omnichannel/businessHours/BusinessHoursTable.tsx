@@ -2,7 +2,7 @@ import { Pagination, States, StatesIcon, StatesActions, StatesAction, StatesTitl
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import BusinessHoursRow from './BusinessHoursRow';
 import FilterByText from '../../components/FilterByText';
@@ -35,9 +35,11 @@ const BusinessHoursTable = () => {
 	);
 
 	const getBusinessHours = useEndpoint('GET', '/v1/livechat/business-hours');
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery(['livechat-getBusinessHours', query], async () =>
-		getBusinessHours(query),
-	);
+	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
+		queryKey: ['livechat-getBusinessHours', query],
+
+		queryFn: async () => getBusinessHours(query),
+	});
 
 	const headers = (
 		<>

@@ -2,7 +2,7 @@ import { Accordion, AccordionItem, Box, Button, ButtonGroup, Callout, Grid } fro
 import { useDebouncedValue, useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useSearchParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { t } from 'i18next';
-import React, { memo, useCallback, useEffect } from 'react';
+import { memo, useCallback, useEffect } from 'react';
 import tinykeys from 'tinykeys';
 
 import { SubscriptionCalloutLimits } from './SubscriptionCalloutLimits';
@@ -57,7 +57,7 @@ const SubscriptionPage = () => {
 
 	const subscriptionSuccess = useSearchParameter('subscriptionSuccess');
 
-	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isLoading, 10000);
+	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isPending, 10000);
 
 	const { license, limits, activeModules = [], cloudSyncAnnouncement } = licensesData || {};
 	const { isEnterprise = true } = enterpriseData || {};
@@ -105,7 +105,7 @@ const SubscriptionPage = () => {
 			<PageHeaderNoShadow title={t('Subscription')}>
 				<ButtonGroup>
 					{isRegistered && (
-						<Button loading={syncLicenseUpdate.isLoading} icon='reload' onClick={() => handleSyncLicenseUpdate()}>
+						<Button loading={syncLicenseUpdate.isPending} icon='reload' onClick={() => handleSyncLicenseUpdate()}>
 							{t('Sync_license_update')}
 						</Button>
 					)}
@@ -120,7 +120,7 @@ const SubscriptionPage = () => {
 				</PageBlockWithBorder>
 			)}
 			<PageScrollableContentWithShadow p={16}>
-				{(showSubscriptionCallout || syncLicenseUpdate.isLoading) && (
+				{(showSubscriptionCallout || syncLicenseUpdate.isPending) && (
 					<Callout type='info' title={t('Sync_license_update_Callout_Title')} m={8}>
 						{t('Sync_license_update_Callout')}
 					</Callout>
@@ -138,16 +138,17 @@ const SubscriptionPage = () => {
 						)}
 						<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 							<Grid m={0}>
-								<Grid.Item lg={4} xs={4} p={8}>
+								<Grid.Item lg={4} xs={4} p={8} minHeight={260}>
 									{license && <PlanCard licenseInformation={license.information} licenseLimits={{ activeUsers: seatsLimit }} />}
 									{!license && <PlanCardCommunity />}
 								</Grid.Item>
-								<Grid.Item lg={8} xs={4} p={8}>
+
+								<Grid.Item lg={8} xs={4} p={8} minHeight={260}>
 									<FeaturesCard activeModules={activeModules} isEnterprise={isEnterprise} />
 								</Grid.Item>
 
 								{seatsLimit.value !== undefined && (
-									<Grid.Item lg={6} xs={4} p={8}>
+									<Grid.Item lg={6} xs={4} p={8} minHeight={260}>
 										{seatsLimit.max !== Infinity ? (
 											<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={licensesData?.trial} />
 										) : (
@@ -157,7 +158,7 @@ const SubscriptionPage = () => {
 								)}
 
 								{macLimit.value !== undefined && (
-									<Grid.Item lg={6} xs={4} p={8}>
+									<Grid.Item lg={6} xs={4} p={8} minHeight={260}>
 										{macLimit.max !== Infinity ? (
 											<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={licensesData?.trial} />
 										) : (
@@ -169,15 +170,15 @@ const SubscriptionPage = () => {
 								{!license && (
 									<>
 										{limits?.marketplaceApps !== undefined && (
-											<Grid.Item lg={4} xs={4} p={8}>
+											<Grid.Item lg={4} xs={4} p={8} minHeight={260}>
 												<AppsUsageCard privateAppsLimit={limits?.privateApps} marketplaceAppsLimit={limits.marketplaceApps} />
 											</Grid.Item>
 										)}
 
-										<Grid.Item lg={4} xs={4} p={8}>
+										<Grid.Item lg={4} xs={4} p={8} minHeight={260}>
 											<ActiveSessionsCard />
 										</Grid.Item>
-										<Grid.Item lg={4} xs={4} p={8}>
+										<Grid.Item lg={4} xs={4} p={8} minHeight={260}>
 											<ActiveSessionsPeakCard />
 										</Grid.Item>
 									</>
