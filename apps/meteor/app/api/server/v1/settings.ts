@@ -12,7 +12,7 @@ import {
 	isSettingsUpdatePropsActions,
 	isSettingsUpdatePropsColor,
 	isSettingsPublicWithPaginationProps,
-    isSettingsGetParams,
+	isSettingsGetParams,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
