@@ -1,7 +1,6 @@
 import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
 import { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHost';
 import type { IExternalComponentRoomInfo } from '@rocket.chat/apps-engine/client/definition';
-import React from 'react';
 import type { ReactNode } from 'react';
 
 import { AppsOrchestratorContext, type IAppsOrchestrator } from '../../../client/views/marketplace/AppsOrchestratorContext';

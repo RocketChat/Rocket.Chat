@@ -9,14 +9,14 @@ import {
 	useEndpoint,
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
 import type { ReactElement, ContextType } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail } from '../../../../lib/emailValidator';
 import { useInvalidateLicense } from '../../../hooks/useLicense';
-import { queryClient } from '../../../lib/queryClient';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 import { useParameters } from '../hooks/useParameters';
 import { useStepRouting } from '../hooks/useStepRouting';
@@ -56,7 +56,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [setCurrentStep]);
 	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [setCurrentStep]);
-	const goToStep = useCallback((step) => setCurrentStep(() => step), [setCurrentStep]);
+	const goToStep = useCallback((step: number) => setCurrentStep(() => step), [setCurrentStep]);
 
 	const _validateEmail = useCallback(
 		(email: string): true | string => {
@@ -152,11 +152,13 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		[dispatchSettings],
 	);
 
+	const queryClient = useQueryClient();
+
 	const registerServer: HandleRegisterServer = useMutableCallback(async ({ email, resend = false }): Promise<void> => {
 		try {
 			const { intentData } = await createRegistrationIntent({ resend, email });
 			invalidateLicenseQuery(100);
-			queryClient.invalidateQueries(['getRegistrationStatus']);
+			queryClient.invalidateQueries({ queryKey: ['getRegistrationStatus'] });
 
 			setSetupWizardData((prevState) => ({
 				...prevState,

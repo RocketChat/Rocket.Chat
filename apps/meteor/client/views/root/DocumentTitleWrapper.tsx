@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import React, { useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 
 import { useUnreadMessages } from './hooks/useUnreadMessages';
 

@@ -2,7 +2,6 @@ import type { App } from '@rocket.chat/core-typings';
 import { Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppDetailsPageTab } from '../hooks/useAppDetailsPageTab';

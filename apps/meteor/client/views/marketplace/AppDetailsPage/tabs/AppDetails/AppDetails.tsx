@@ -2,7 +2,6 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Callout, Chip, Margins, Skeleton } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppDetailsAPIs from './AppDetailsAPIs';

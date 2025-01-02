@@ -1,7 +1,7 @@
 import type { App, AppPermission } from '@rocket.chat/core-typings';
 import { useRouter, useSetModal, useUpload } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useAppsCountQuery } from './useAppsCountQuery';
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';

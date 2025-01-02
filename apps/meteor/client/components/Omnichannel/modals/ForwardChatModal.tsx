@@ -15,7 +15,7 @@ import {
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -64,7 +64,7 @@ const ForwardChatModal = ({
 	const { phase: departmentsPhase, items: departments, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
 	const endReached = useCallback(
-		(start) => {
+		(start: number) => {
 			if (departmentsPhase !== AsyncStatePhase.LOADING) {
 				loadMoreDepartments(start, Math.min(50, departmentsTotal));
 			}

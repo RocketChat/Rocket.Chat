@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useQuery } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useController, useForm, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 

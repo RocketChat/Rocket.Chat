@@ -1,5 +1,4 @@
 import { Box, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
-import React from 'react';
 
 import AppDetailsPageLayout from './AppDetailsPageLayout';
 

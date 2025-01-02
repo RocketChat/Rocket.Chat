@@ -10,7 +10,6 @@ import {
 	StatesAction,
 } from '@rocket.chat/fuselage';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 type NoInstalledAppMatchesEmptyStateprops = {

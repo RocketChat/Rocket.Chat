@@ -5,7 +5,7 @@ import { useMarketplaceQuery } from './useMarketplaceQuery';
 import { marketplaceQueryKeys } from '../queryKeys';
 
 export const useFeaturedApps = () => {
-	const { isLoading, isError, error, data } = useMarketplaceQuery();
+	const { isPending, isError, error, data } = useMarketplaceQuery();
 	const featuredApps = useEndpoint('GET', '/apps/featured-apps');
 
 	return useQuery({
@@ -15,7 +15,7 @@ export const useFeaturedApps = () => {
 				throw error;
 			}
 
-			if (isLoading) {
+			if (isPending) {
 				throw new Error('Unexpected state');
 			}
 
@@ -34,6 +34,6 @@ export const useFeaturedApps = () => {
 			});
 		},
 		staleTime: 10_000,
-		enabled: !isLoading,
+		enabled: !isPending,
 	});
 };

@@ -1,5 +1,4 @@
 import { Skeleton, Box } from '@rocket.chat/fuselage';
-import React from 'react';
 
 const SkeletonAppsPageContent = () => {
 	const loadingRows = Array.from({ length: 3 }, (_, i) => <Skeleton key={i} height='x56' mbe={8} width='100%' variant='rect' />);

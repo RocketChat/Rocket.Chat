@@ -1,5 +1,4 @@
 import { ExternalLink } from '@rocket.chat/ui-client';
-import React from 'react';
 
 import { normalizeUrl } from './normalizeUrl';
 

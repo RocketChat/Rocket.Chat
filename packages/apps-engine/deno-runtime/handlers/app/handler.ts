@@ -19,41 +19,41 @@ import handleOnUpdate from './handleOnUpdate.ts';
 export default async function handleApp(method: string, params: unknown): Promise<Defined | JsonRpcError> {
     const [, appMethod] = method.split(':');
 
-    // We don't want the getStatus method to generate logs, so we handle it separately
-    if (appMethod === 'getStatus') {
-        return handleGetStatus();
-    }
-
-    // `app` will be undefined if the method here is "app:construct"
-    const app = AppObjectRegistry.get<App>('app');
-
-    app?.getLogger().debug(`'${appMethod}' is being called...`);
-
-    if (uikitInteractions.includes(appMethod)) {
-        return handleUIKitInteraction(appMethod, params).then((result) => {
-            if (result instanceof JsonRpcError) {
-                app?.getLogger().debug(`'${appMethod}' was unsuccessful.`, result.message);
-            } else {
-                app?.getLogger().debug(`'${appMethod}' was successfully called! The result is:`, result);
-            }
-
-            return result;
-        });
-    }
-
-    if (appMethod.startsWith('check') || appMethod.startsWith('execute')) {
-        return handleListener(appMethod, params).then((result) => {
-            if (result instanceof JsonRpcError) {
-                app?.getLogger().debug(`'${appMethod}' was unsuccessful.`, result.message);
-            } else {
-                app?.getLogger().debug(`'${appMethod}' was successfully called! The result is:`, result);
-            }
-
-            return result;
-        });
-    }
-
     try {
+        // We don't want the getStatus method to generate logs, so we handle it separately
+        if (appMethod === 'getStatus') {
+            return await handleGetStatus();
+        }
+
+        // `app` will be undefined if the method here is "app:construct"
+        const app = AppObjectRegistry.get<App>('app');
+
+        app?.getLogger().debug(`'${appMethod}' is being called...`);
+
+        if (uikitInteractions.includes(appMethod)) {
+            return handleUIKitInteraction(appMethod, params).then((result) => {
+                if (result instanceof JsonRpcError) {
+                    app?.getLogger().debug(`'${appMethod}' was unsuccessful.`, result.message);
+                } else {
+                    app?.getLogger().debug(`'${appMethod}' was successfully called! The result is:`, result);
+                }
+
+                return result;
+            });
+        }
+
+        if (appMethod.startsWith('check') || appMethod.startsWith('execute')) {
+            return handleListener(appMethod, params).then((result) => {
+                if (result instanceof JsonRpcError) {
+                    app?.getLogger().debug(`'${appMethod}' was unsuccessful.`, result.message);
+                } else {
+                    app?.getLogger().debug(`'${appMethod}' was successfully called! The result is:`, result);
+                }
+
+                return result;
+            });
+        }
+
         let result: Defined | JsonRpcError;
 
         switch (appMethod) {

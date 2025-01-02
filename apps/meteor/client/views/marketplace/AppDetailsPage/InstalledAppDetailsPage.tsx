@@ -2,7 +2,6 @@ import type { App, SettingValue } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 

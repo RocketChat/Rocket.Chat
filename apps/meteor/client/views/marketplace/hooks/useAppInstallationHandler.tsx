@@ -1,7 +1,7 @@
 import type { App } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { useAppsCountQuery } from './useAppsCountQuery';
 import { useAppsOrchestrator } from './useAppsOrchestrator';

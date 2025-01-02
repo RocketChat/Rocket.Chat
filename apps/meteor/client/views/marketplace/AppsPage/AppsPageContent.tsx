@@ -1,5 +1,4 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
 
 import AppsPageConnectionError from './AppsPageConnectionError';
 import DefaultAppsPageContent from './DefaultAppsPageContent';
@@ -25,7 +24,7 @@ const AppsPageContent = () => {
 
 	const paginationProps = usePaginationState();
 
-	const { isLoading, isError, data, error } = useFilteredAppsQuery({
+	const { isPending, isError, data, error } = useFilteredAppsQuery({
 		text,
 		purchaseType,
 		status,
@@ -35,7 +34,7 @@ const AppsPageContent = () => {
 		count: paginationProps.itemsPerPage,
 	});
 
-	if (isLoading) {
+	if (isPending) {
 		return <SkeletonAppsPageContent />;
 	}
 

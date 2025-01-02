@@ -2,7 +2,7 @@ import type { RoomType } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomSkeleton from './RoomSkeleton';

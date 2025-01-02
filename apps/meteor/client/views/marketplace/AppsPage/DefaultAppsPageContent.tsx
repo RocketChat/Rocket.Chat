@@ -2,7 +2,7 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { Dispatch, SetStateAction } from 'react';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppsList from '../AppsList';

@@ -3,7 +3,7 @@ import { Button, Box, TextInput, Field, FieldLabel, FieldRow } from '@rocket.cha
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
-import React, { memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import BaseGroupPage from './BaseGroupPage';

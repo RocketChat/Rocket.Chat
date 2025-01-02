@@ -1,6 +1,6 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Button, Modal, Skeleton } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../components/MarkdownText';

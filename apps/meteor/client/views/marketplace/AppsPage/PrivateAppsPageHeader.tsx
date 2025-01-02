@@ -1,6 +1,5 @@
 import { Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
 import { usePermission, useRouter, useSetModal } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericResourceUsageSkeleton } from '../../../components/GenericResourceUsage';
@@ -24,7 +23,7 @@ const PrivateAppsPageHeader = () => {
 	const setModal = useSetModal();
 	const privateAppsEnabled = usePrivateAppsEnabled();
 
-	const { isError, isLoading, data } = useAppsCountQuery('private');
+	const { isError, isPending, data } = useAppsCountQuery('private');
 
 	const handleUploadAppButtonClick = () => {
 		if (!privateAppsEnabled) {
@@ -47,7 +46,7 @@ const PrivateAppsPageHeader = () => {
 		return null;
 	}
 
-	if (isLoading) {
+	if (isPending) {
 		return (
 			<PageHeader title={t(`Apps_context_private`)}>
 				<GenericResourceUsageSkeleton mi={16} />

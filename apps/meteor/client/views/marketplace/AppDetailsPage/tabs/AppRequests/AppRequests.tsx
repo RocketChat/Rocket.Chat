@@ -1,7 +1,7 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppRequestItem from './AppRequestItem';

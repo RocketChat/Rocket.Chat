@@ -62,7 +62,7 @@ export const useSetAppStatusMutation = (app: App) => {
 			revert?.();
 		},
 		onSettled: () => {
-			queryClient.invalidateQueries(marketplaceQueryKeys.apps({ canManageApps: true }));
+			queryClient.invalidateQueries({ queryKey: marketplaceQueryKeys.apps({ canManageApps: true }) });
 		},
 	});
 };

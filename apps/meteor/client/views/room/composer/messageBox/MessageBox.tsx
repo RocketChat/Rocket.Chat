@@ -14,7 +14,7 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler, MouseEvent } from 'react';
-import React, { memo, useRef, useReducer, useCallback } from 'react';
+import { memo, useRef, useReducer, useCallback } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
@@ -131,7 +131,11 @@ const MessageBox = ({
 
 	const callbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {
-			if (node === null || chat.composer) {
+			if (node === null && chat.composer) {
+				return chat.setComposerAPI();
+			}
+
+			if (chat.composer) {
 				return;
 			}
 			chat.setComposerAPI(createComposerAPI(node, storageID));
@@ -280,7 +284,9 @@ const MessageBox = ({
 
 	const format = useFormatDateAndTime();
 
-	const joinMutation = useMutation(async () => onJoin?.());
+	const joinMutation = useMutation({
+		mutationFn: async () => onJoin?.(),
+	});
 
 	const handlePaste: ClipboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
 		const { clipboardData } = event;
@@ -429,7 +435,7 @@ const MessageBox = ({
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (
-							<MessageComposerButton primary onClick={onJoin} loading={joinMutation.isLoading}>
+							<MessageComposerButton primary onClick={onJoin} loading={joinMutation.isPending}>
 								{t('Join')}
 							</MessageComposerButton>
 						)}

@@ -1,5 +1,3 @@
-import React from 'react';
-
 import DefaultAppsPageHeader from './DefaultAppsPageHeader';
 import PrivateAppsPageHeader from './PrivateAppsPageHeader';
 import { useMarketplaceContext } from '../hooks/useMarketplaceContext';

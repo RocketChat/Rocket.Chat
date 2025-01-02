@@ -6,19 +6,7 @@ import { type UseQueryOptions, useQuery } from '@tanstack/react-query';
 import { marketplaceQueryKeys } from '../queryKeys';
 
 type UseAppSettingsQueryOptions<TData = Serialized<Record<string, ISetting>>> = Omit<
-	UseQueryOptions<
-		Serialized<Record<string, ISetting>>,
-		Error,
-		TData,
-		readonly [
-			'marketplace',
-			'apps',
-			{
-				readonly appId: string;
-			},
-			'settings',
-		]
-	>,
+	UseQueryOptions<Serialized<Record<string, ISetting>>, Error, TData, ReturnType<typeof marketplaceQueryKeys.app.settings>>,
 	'queryKey' | 'queryFn'
 >;
 

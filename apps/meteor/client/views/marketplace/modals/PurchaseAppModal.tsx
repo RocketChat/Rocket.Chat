@@ -1,6 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 
 import type { IAppsOrchestrator } from '../AppsOrchestratorContext';
 import IframeModal from '../IframeModal';

@@ -1,7 +1,6 @@
 import type { App } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 
 import IframeModal from '../IframeModal';
 import { useSyncAppMutation } from '../hooks/useSyncAppMutation';

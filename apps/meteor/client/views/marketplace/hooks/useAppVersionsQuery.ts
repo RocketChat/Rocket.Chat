@@ -21,5 +21,8 @@ export const useAppVersionsQuery = (appId: string) => {
 			return apps;
 		},
 		staleTime: 10_000,
+		meta: {
+			apiErrorToastMessage: true,
+		},
 	});
 };

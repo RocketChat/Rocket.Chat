@@ -1,5 +1,4 @@
 import type { App } from '@rocket.chat/core-typings';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import WarningModal from '../../../components/WarningModal';

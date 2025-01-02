@@ -1,6 +1,6 @@
 import { useAtLeastOnePermission, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import React, { Suspense, useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 
 import MarketPlaceSidebar from './MarketplaceSidebar';
 import PageSkeleton from '../../components/PageSkeleton';

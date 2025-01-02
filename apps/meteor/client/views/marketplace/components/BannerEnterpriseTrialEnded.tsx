@@ -1,7 +1,6 @@
 import { Banner, Icon } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useSetting } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 const BannerEnterpriseTrialEnded = () => {

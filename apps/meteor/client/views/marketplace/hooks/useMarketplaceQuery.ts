@@ -1,7 +1,7 @@
 import type { App } from '@rocket.chat/core-typings';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { useAppsOrchestrator } from './useAppsOrchestrator';
 import { MarketplaceUnsupportedVersionError } from '../lib/MarketplaceUnsupportedVersionError';
@@ -52,7 +52,7 @@ export const useMarketplaceQuery = <TData = QueryData>(options?: UseMarketplaceQ
 
 			return { marketplace, installed, private: _private };
 		},
-		keepPreviousData: true,
+		placeholderData: keepPreviousData,
 		staleTime: Infinity,
 		...options,
 	});

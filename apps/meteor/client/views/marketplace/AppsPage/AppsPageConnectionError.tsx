@@ -1,6 +1,5 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useQueryClient } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { marketplaceQueryKeys } from '../queryKeys';
@@ -10,7 +9,7 @@ const AppsPageContentError = () => {
 	const queryClient = useQueryClient();
 
 	const handleReloadClick = () => {
-		queryClient.invalidateQueries(marketplaceQueryKeys.all);
+		queryClient.invalidateQueries({ queryKey: marketplaceQueryKeys.all });
 	};
 
 	return (

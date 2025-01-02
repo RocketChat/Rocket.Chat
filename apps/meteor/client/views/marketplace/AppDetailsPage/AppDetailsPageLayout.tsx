@@ -2,7 +2,6 @@ import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';

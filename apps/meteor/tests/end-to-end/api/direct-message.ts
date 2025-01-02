@@ -343,26 +343,117 @@ describe('[Direct Messages]', () => {
 			.end(done);
 	});
 
-	it('/im.counters', (done) => {
-		void request
-			.get(api('im.counters'))
-			.set(credentials)
-			.query({
-				roomId: directMessage._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('joined', true);
-				expect(res.body).to.have.property('members');
-				expect(res.body).to.have.property('unreads');
-				expect(res.body).to.have.property('unreadsFrom');
-				expect(res.body).to.have.property('msgs');
-				expect(res.body).to.have.property('latest');
-				expect(res.body).to.have.property('userMentions');
-			})
-			.end(done);
+	describe('/im.counters', () => {
+		it('should require auth', async () => {
+			await request
+				.get(api('im.counters'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+		it('should require a roomId', async () => {
+			await request
+				.get(api('im.counters'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+		it('should work with all params right', (done) => {
+			void request
+				.get(api('im.counters'))
+				.set(credentials)
+				.query({
+					roomId: directMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('joined', true);
+					expect(res.body).to.have.property('members');
+					expect(res.body).to.have.property('unreads');
+					expect(res.body).to.have.property('unreadsFrom');
+					expect(res.body).to.have.property('msgs');
+					expect(res.body).to.have.property('latest');
+					expect(res.body).to.have.property('userMentions');
+				})
+				.end(done);
+		});
+
+		describe('with valid room id', () => {
+			let testDM: IRoom & { rid: IRoom['_id'] };
+			let user2: TestUser<IUser>;
+			let userCreds: Credentials;
+
+			before(async () => {
+				user2 = await createUser();
+				userCreds = await login(user2.username, password);
+				await request
+					.post(api('im.create'))
+					.set(credentials)
+					.send({
+						username: user2.username,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						testDM = res.body.room;
+					});
+
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							text: 'Sample message',
+							rid: testDM._id,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
+
+			after(async () => {
+				await request
+					.post(api('im.delete'))
+					.set(credentials)
+					.send({
+						roomId: testDM._id,
+					})
+					.expect(200);
+
+				await deleteUser(user2);
+			});
+
+			it('should properly return counters before opening the dm', async () => {
+				await request
+					.get(api('im.counters'))
+					.set(userCreds)
+					.query({
+						roomId: testDM._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('joined', true);
+						expect(res.body).to.have.property('members').and.to.be.a('number').and.to.be.eq(2);
+						expect(res.body).to.have.property('unreads').and.to.be.a('number').and.to.be.eq(1);
+						expect(res.body).to.have.property('unreadsFrom');
+						expect(res.body).to.have.property('msgs').and.to.be.a('number').and.to.be.eq(1);
+						expect(res.body).to.have.property('latest');
+						expect(res.body).to.have.property('userMentions').and.to.be.a('number').and.to.be.eq(0);
+					});
+			});
+		});
 	});
 
 	describe('[/im.files]', async () => {

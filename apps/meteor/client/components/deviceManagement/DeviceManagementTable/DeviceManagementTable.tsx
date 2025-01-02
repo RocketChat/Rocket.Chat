@@ -2,7 +2,6 @@ import type { DeviceManagementSession, DeviceManagementPopulatedSession, Seriali
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { ComponentProps, ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { AsyncStatePhase } from '../../../lib/asyncState';

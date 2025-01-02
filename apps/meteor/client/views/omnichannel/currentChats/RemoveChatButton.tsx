@@ -1,7 +1,6 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRemoveCurrentChatMutation } from './hooks/useRemoveCurrentChatMutation';
@@ -42,7 +41,7 @@ const RemoveChatButton = ({ _id }: RemoveChatButtonProps) => {
 		);
 	});
 
-	return <IconButton danger small icon='trash' title={t('Remove')} disabled={removeCurrentChatMutation.isLoading} onClick={handleDelete} />;
+	return <IconButton danger small icon='trash' title={t('Remove')} disabled={removeCurrentChatMutation.isPending} onClick={handleDelete} />;
 };
 
 export default RemoveChatButton;

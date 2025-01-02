@@ -1,5 +1,4 @@
 import type { App } from '@rocket.chat/core-typings';
-import React from 'react';
 
 import InstalledAppDetailsPage from './InstalledAppDetailsPage';
 import MarketplaceAppDetailsPage from './MarketplaceAppDetailsPage';
@@ -11,9 +10,9 @@ type AppDetailsPageProps = {
 };
 
 const AppDetailsPage = ({ id: appId }: AppDetailsPageProps) => {
-	const { isLoading, isError, error, data: app } = useAppQuery(appId);
+	const { isPending, isError, error, data: app } = useAppQuery(appId);
 
-	if (isLoading) {
+	if (isPending) {
 		return <SkeletonAppDetailsPage />;
 	}
 

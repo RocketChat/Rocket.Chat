@@ -3,7 +3,7 @@ import { Field, FieldLabel, FieldRow, TextInput, ButtonGroup, Button } from '@ro
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
@@ -50,8 +50,8 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 
 	const saveRoom = useEndpoint('POST', '/v1/livechat/room.saveInfo');
 
-	const { data: slaPolicies, isInitialLoading: isSlaPoliciesLoading } = useSlaPolicies();
-	const { data: customFieldsMetadata, isInitialLoading: isCustomFieldsLoading } = useCustomFieldsMetadata({
+	const { data: slaPolicies, isLoading: isSlaPoliciesLoading } = useSlaPolicies();
+	const { data: customFieldsMetadata, isLoading: isCustomFieldsLoading } = useCustomFieldsMetadata({
 		scope: 'room',
 		enabled: canViewCustomFields,
 	});
@@ -94,7 +94,9 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 
 			try {
 				await saveRoom({ guestData, roomData });
-				await queryClient.invalidateQueries(['/v1/rooms.info', room._id]);
+				await queryClient.invalidateQueries({
+					queryKey: ['/v1/rooms.info', room._id],
+				});
 
 				dispatchToastMessage({ type: 'success', message: t('Saved') });
 				reload?.();

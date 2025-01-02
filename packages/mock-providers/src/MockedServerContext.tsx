@@ -3,7 +3,8 @@ import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } fro
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React from 'react';
+import type { ReactNode } from 'react';
+import { useState } from 'react';
 
 export const MockedServerContext = ({
 	handleRequest,
@@ -20,11 +21,11 @@ export const MockedServerContext = ({
 		methodName: MethodName,
 		...args: ServerMethodParameters<MethodName>
 	) => Promise<ServerMethodReturn<MethodName>>;
-	children: React.ReactNode;
+	children: ReactNode;
 
 	isEnterprise?: boolean;
 }): any => {
-	const [queryClient] = React.useState(() => new QueryClient());
+	const [queryClient] = useState(() => new QueryClient());
 	return (
 		<ServerContext.Provider
 			value={

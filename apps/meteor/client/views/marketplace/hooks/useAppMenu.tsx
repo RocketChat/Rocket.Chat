@@ -4,7 +4,7 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactNode } from 'react';
-import React, { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import semver from 'semver';
 
@@ -174,7 +174,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	});
 
 	const incompatibleIconName = useCallback(
-		(app, action) => {
+		(app: App, action: 'subscribe' | 'install' | 'update') => {
 			if (!app.versionIncompatible) {
 				if (action === 'update') {
 					return 'refresh';
@@ -364,5 +364,5 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		t,
 	]);
 
-	return { isLoading: isLoading || setAppStatusMutation.isLoading, sections };
+	return { isLoading: isLoading || setAppStatusMutation.isPending, sections };
 };

@@ -1,6 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import IncompatibleModal from './IncompatibleModal';

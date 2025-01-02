@@ -2,7 +2,6 @@ import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
 import { useRoute } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';
 import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/OmnichannelRoomIcon';

@@ -1,7 +1,6 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Tag } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 type BundleChipsProps = {

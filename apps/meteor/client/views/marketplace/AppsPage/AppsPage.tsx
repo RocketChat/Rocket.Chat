@@ -1,4 +1,3 @@
-import React from 'react';
 import { FormProvider } from 'react-hook-form';
 
 import AppsPageContent from './AppsPageContent';

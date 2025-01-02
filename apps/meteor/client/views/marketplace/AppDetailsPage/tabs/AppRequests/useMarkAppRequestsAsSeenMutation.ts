@@ -17,7 +17,7 @@ export const useMarkAppRequestsAsSeenMutation = () => {
 		},
 		retry: false,
 		onSuccess: () => {
-			queryClient.invalidateQueries(marketplaceQueryKeys.all);
+			queryClient.invalidateQueries({ queryKey: marketplaceQueryKeys.all });
 		},
 	});
 };

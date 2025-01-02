@@ -16,7 +16,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
@@ -156,10 +156,10 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 					</Button>
 					<Button
 						onClick={() => testWebhook.mutateAsync()}
-						disabled={canTest || testWebhook.isLoading}
+						disabled={canTest || testWebhook.isPending}
 						title={canTest ? t('Webhook_URL_not_set') : ''}
 					>
-						{testWebhook.isLoading ? t('Sending') : t('Send_Test')}
+						{testWebhook.isPending ? t('Sending') : t('Send_Test')}
 					</Button>
 					<Button primary onClick={handleSubmit(handleSave)} loading={isSubmitting} disabled={!isDirty}>
 						{t('Save')}

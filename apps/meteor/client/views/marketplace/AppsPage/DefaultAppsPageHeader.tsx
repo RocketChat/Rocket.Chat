@@ -1,6 +1,5 @@
 import { Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
 import { usePermission, useSetModal } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericResourceUsageSkeleton } from '../../../components/GenericResourceUsage';
@@ -23,7 +22,7 @@ const DefaultAppsPageHeader = () => {
 	const canManageApps = usePermission('manage-apps');
 	const setModal = useSetModal();
 
-	const { isError, isLoading, data } = useAppsCountQuery(context);
+	const { isError, isPending, data } = useAppsCountQuery(context);
 
 	if (isError) {
 		return null;
@@ -41,7 +40,7 @@ const DefaultAppsPageHeader = () => {
 		);
 	}
 
-	if (isLoading) {
+	if (isPending) {
 		return (
 			<PageHeader title={t(`Apps_context_${context}`)}>
 				<GenericResourceUsageSkeleton mi={16} />

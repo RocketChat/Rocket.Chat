@@ -1,6 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Accordion } from '@rocket.chat/fuselage';
-import React from 'react';
 
 import AppReleasesItem from './AppReleasesItem';
 import AccordionLoading from '../../../components/AccordionLoading';

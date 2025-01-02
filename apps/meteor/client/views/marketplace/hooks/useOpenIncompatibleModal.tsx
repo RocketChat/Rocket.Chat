@@ -1,5 +1,5 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import { useAppsOrchestrator } from './useAppsOrchestrator';
 import IncompatibleModal from '../modals/IncompatibleModal';

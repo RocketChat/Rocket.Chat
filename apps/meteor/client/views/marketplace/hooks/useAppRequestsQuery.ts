@@ -12,6 +12,6 @@ export const useAppRequestsQuery = (appId: string, { offset, limit }: { offset?:
 			const { data, meta } = await fetchAppRequests({ appId, offset, limit });
 			return { data: data ?? [], meta };
 		},
-		cacheTime: 0,
+		gcTime: 0,
 	});
 };

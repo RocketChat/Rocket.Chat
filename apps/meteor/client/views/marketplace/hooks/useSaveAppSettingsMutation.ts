@@ -36,7 +36,7 @@ export const useSaveAppSettingsMutation = (appId: App['id']) => {
 			await appsOrchestrator.setAppSettings(appId, data);
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries(marketplaceQueryKeys.app.settings(appId));
+			queryClient.invalidateQueries({ queryKey: marketplaceQueryKeys.app.settings(appId) });
 			dispatchToastMessage({ type: 'success', message: `${app?.name} settings saved succesfully` });
 		},
 		onError: (error) => handleAPIError(error),

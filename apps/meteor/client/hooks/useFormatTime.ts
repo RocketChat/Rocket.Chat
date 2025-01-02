@@ -1,16 +1,17 @@
 import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
+import type { MomentInput } from 'moment';
 import moment from 'moment';
 import { useCallback } from 'react';
 
 const dayFormat = ['h:mm A', 'H:mm'] as const;
 
-export const useFormatTime = (): ((input: moment.MomentInput) => string) => {
+export const useFormatTime = () => {
 	const clockMode = useUserPreference<1 | 2>('clockMode');
 	const format = useSetting('Message_TimeFormat', 'LT');
 	const sameDay = clockMode !== undefined ? dayFormat[clockMode - 1] : format;
 
 	return useCallback(
-		(time) => {
+		(time: MomentInput) => {
 			switch (clockMode) {
 				case 1:
 				case 2:

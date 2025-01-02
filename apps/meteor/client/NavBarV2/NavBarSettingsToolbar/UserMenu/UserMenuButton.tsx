@@ -3,7 +3,7 @@ import { Box, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting, useUser } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef, ForwardedRef } from 'react';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 
 import { UserStatus } from '../../../components/UserStatus';
 

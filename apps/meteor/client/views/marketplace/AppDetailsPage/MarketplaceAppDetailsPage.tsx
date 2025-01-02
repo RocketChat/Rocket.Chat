@@ -1,5 +1,4 @@
 import type { App } from '@rocket.chat/core-typings';
-import React from 'react';
 
 import AppDetailsPageHeader from './AppDetailsPageHeader';
 import AppDetailsPageLayout from './AppDetailsPageLayout';

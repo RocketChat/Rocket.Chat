@@ -1,5 +1,5 @@
 import type { ReactElement, ContextType, ReactNode } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import * as messageHighlightSubscription from './messageHighlightSubscription';

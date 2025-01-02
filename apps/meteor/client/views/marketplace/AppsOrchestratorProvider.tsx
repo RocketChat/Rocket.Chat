@@ -2,7 +2,7 @@ import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useStream } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { AppsOrchestratorContext } from './AppsOrchestratorContext';
 import { marketplaceQueryKeys } from './queryKeys';
@@ -18,7 +18,7 @@ const AppsOrchestratorProvider = ({ children }: AppsOrchestratorProviderProps) =
 
 	const invalidate = useDebouncedCallback(
 		() => {
-			queryClient.invalidateQueries(marketplaceQueryKeys.all);
+			queryClient.invalidateQueries({ queryKey: marketplaceQueryKeys.all });
 		},
 		100,
 		[],
