@@ -153,7 +153,8 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			await eventStats({
 				params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
 			});
-			queryClient.invalidateQueries(['pendingUsersCount'], {
+			queryClient.invalidateQueries({
+				queryKey: ['pendingUsersCount'],
 				refetchType: 'all',
 			});
 			router.navigate(`/admin/users/created/${_id}`);

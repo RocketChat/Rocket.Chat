@@ -13,9 +13,9 @@ type PriorityFieldProps = {
 
 const PriorityField = ({ id }: PriorityFieldProps) => {
 	const { t } = useTranslation();
-	const { data, isInitialLoading, isError } = usePriorityInfo(id);
+	const { data, isLoading, isError } = usePriorityInfo(id);
 
-	if (isInitialLoading) {
+	if (isLoading) {
 		return <FormSkeleton />;
 	}
 

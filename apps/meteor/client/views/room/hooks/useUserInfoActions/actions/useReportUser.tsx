@@ -18,17 +18,17 @@ export const useReportUser = (user: Pick<IUser, '_id' | 'username' | 'name'>): U
 	const displayName = useUserDisplayName({ username, name });
 
 	const reportUser = useEndpoint('POST', '/v1/moderation.reportUser');
-	const reportUserMutation = useMutation(
-		['reportUser', uid],
-		async (description: string) => {
+	const reportUserMutation = useMutation({
+		mutationKey: ['reportUser', uid],
+
+		mutationFn: async (description: string) => {
 			reportUser({ description, userId: uid });
 		},
-		{
-			onSuccess: () => dispatchToastMessage({ type: 'success', message: t('Report_has_been_sent') }),
-			onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
-			onSettled: () => setModal(),
-		},
-	);
+
+		onSuccess: () => dispatchToastMessage({ type: 'success', message: t('Report_has_been_sent') }),
+		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
+		onSettled: () => setModal(),
+	});
 
 	const openReportUserModal = useMemo(() => {
 		const action = () =>
