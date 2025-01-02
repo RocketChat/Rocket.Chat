@@ -409,6 +409,35 @@ test.describe('SAML', () => {
 		});
 	});
 
+	test('Respect redirectUrl on multiple parallel logins', async ({ page, browser }) => {
+		const page2 = await browser.newPage({ storageState: Users.samluser2.state });
+		const poRegistration2 = new Registration(page2);
+
+		await page2.goto(`/home`);
+		await expect(page2).toHaveURL('/home');
+		await expect(page2.getByRole('button', { name: 'User menu' })).not.toBeVisible();
+
+		await page.goto(`/invite/${inviteId}`);
+		await page.getByRole('link', { name: 'Back to Login' }).click();
+
+		await poRegistration.btnLoginWithSaml.click();
+		await expect(page).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
+
+		await poRegistration2.btnLoginWithSaml.click();
+		await expect(page2).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
+
+		await page.getByLabel('Username').fill('samluser1');
+		await page.getByLabel('Password').fill('password');
+		await page.locator('role=button[name="Login"]').click();
+
+		await page2.getByLabel('Username').fill('samluser2');
+		await page2.getByLabel('Password').fill('password');
+		await page2.locator('role=button[name="Login"]').click();
+
+		await expect(page).toHaveURL(`/group/${targetInviteGroupName}`);
+		await expect(page2).toHaveURL('/home');
+	});
+
 	test.fixme('User Merge - By Custom Identifier', async () => {
 		// Test user merge with a custom identifier configured in the fieldmap
 	});
