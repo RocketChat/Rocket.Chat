@@ -25,6 +25,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
+import { auditUserChangeByUser } from '../../../../server/lib/auditServerEvents/userChanged';
 import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
@@ -95,35 +96,49 @@ API.v1.addRoute(
 	{ authRequired: true, twoFactorRequired: true, validateParams: isUsersUpdateParamsPOST },
 	{
 		async post() {
-			const userData = { _id: this.bodyParams.userId, ...this.bodyParams.data };
+			return auditUserChangeByUser(async (asyncStore) => {
+				const store = asyncStore.getStore();
 
-			if (userData.name && !validateNameChars(userData.name)) {
-				return API.v1.failure('Name contains invalid characters');
-			}
+				store?.setActor({
+					_id: this.bodyParams.userId,
+					ip: this.requestIp,
+					useragent: this.request.headers['user-agent'] || '',
+					username: (await Meteor.userAsync())?.username || '',
+				});
 
-			await saveUser(this.userId, userData);
+				const userData = { _id: this.bodyParams.userId, ...this.bodyParams.data };
 
-			if (this.bodyParams.data.customFields) {
-				await saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
-			}
+				if (userData.name && !validateNameChars(userData.name)) {
+					return API.v1.failure('Name contains invalid characters');
+				}
 
-			if (typeof this.bodyParams.data.active !== 'undefined') {
-				const {
-					userId,
-					data: { active },
-					confirmRelinquish,
-				} = this.bodyParams;
+				await saveUser(this.userId, userData);
 
-				await Meteor.callAsync('setUserActiveStatus', userId, active, Boolean(confirmRelinquish));
-			}
-			const { fields } = await this.parseJsonQuery();
+				if (this.bodyParams.data.customFields) {
+					await saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
+				}
 
-			const user = await Users.findOneById(this.bodyParams.userId, { projection: fields });
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
+				if (typeof this.bodyParams.data.active !== 'undefined') {
+					const {
+						userId,
+						data: { active },
+						confirmRelinquish,
+					} = this.bodyParams;
 
-			return API.v1.success({ user });
+					await Meteor.callAsync('setUserActiveStatus', userId, active, Boolean(confirmRelinquish));
+					store?.insertBoth({ active }, { active });
+				}
+				const { fields } = await this.parseJsonQuery();
+
+				const user = await Users.findOneById(this.bodyParams.userId, { projection: fields });
+
+				if (!user) {
+					return API.v1.failure('User not found');
+				}
+				store?.insertCurrent({ customFields: user?.customFields });
+
+				return API.v1.success({ user });
+			});
 		},
 	},
 );
