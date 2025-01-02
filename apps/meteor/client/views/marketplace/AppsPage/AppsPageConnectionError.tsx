@@ -1,9 +1,16 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-const AppsPageContentError = ({ onButtonClick }: { onButtonClick: () => void }): ReactElement => {
+import { marketplaceQueryKeys } from '../queryKeys';
+
+const AppsPageContentError = () => {
 	const { t } = useTranslation();
+	const queryClient = useQueryClient();
+
+	const handleReloadClick = () => {
+		queryClient.invalidateQueries({ queryKey: marketplaceQueryKeys.all });
+	};
 
 	return (
 		<Box mbs={20}>
@@ -12,7 +19,7 @@ const AppsPageContentError = ({ onButtonClick }: { onButtonClick: () => void }):
 				<StatesTitle>{t('Connection_error')}</StatesTitle>
 				<StatesSubtitle>{t('Marketplace_error')}</StatesSubtitle>
 				<StatesActions>
-					<StatesAction icon='reload' onClick={onButtonClick}>
+					<StatesAction icon='reload' onClick={handleReloadClick}>
 						{t('Reload_page')}
 					</StatesAction>
 				</StatesActions>

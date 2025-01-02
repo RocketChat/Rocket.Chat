@@ -3,7 +3,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
 import AppMenu from './AppMenu';
-import { mockedAppsContext } from '../../../tests/mocks/client/marketplace';
+import { mockedAppsOrchestratorContext } from '../../../tests/mocks/client/marketplace';
 import { createFakeApp } from '../../../tests/mocks/data';
 
 describe('without app details', () => {
@@ -20,7 +20,7 @@ describe('without app details', () => {
 					totalMarketplaceEnabled: faker.number.int({ min: 0 }),
 					totalPrivateEnabled: faker.number.int({ min: 0 }),
 				}))
-				.wrap(mockedAppsContext)
+				.wrap(mockedAppsOrchestratorContext)
 				.build(),
 		});
 

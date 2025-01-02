@@ -1,9 +1,7 @@
-import { useContext } from 'react';
-
-import { AppsContext } from '../../../contexts/AppsContext';
+import { useLicense } from '../../../hooks/useLicense';
 
 export const usePrivateAppsEnabled = () => {
-	const { privateAppsEnabled } = useContext(AppsContext);
+	const { data: { limits } = {} } = useLicense({ loadValues: true });
 
-	return privateAppsEnabled;
+	return (limits?.privateApps?.max ?? 0) !== 0;
 };

@@ -1,5 +1,6 @@
+import type { App } from '@rocket.chat/core-typings';
+
 import { appStatusSpanProps } from '../helpers';
-import type { App } from '../types';
 
 export const filterAppsByEnabled = (app: App): boolean => {
 	const appStatus = appStatusSpanProps(app)?.label;

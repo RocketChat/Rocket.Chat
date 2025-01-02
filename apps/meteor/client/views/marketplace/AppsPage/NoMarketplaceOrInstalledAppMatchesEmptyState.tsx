@@ -9,15 +9,13 @@ import {
 	StatesSuggestionText,
 	StatesTitle,
 } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type NoMarketplaceOrInstalledAppMatchesEmptyStateProps = { shouldShowSearchText: boolean; text: string };
+type NoMarketplaceOrInstalledAppMatchesEmptyStateProps = {
+	searchText: string;
+};
 
-const NoMarketplaceOrInstalledAppMatchesEmptyState = ({
-	shouldShowSearchText,
-	text,
-}: NoMarketplaceOrInstalledAppMatchesEmptyStateProps): ReactElement => {
+const NoMarketplaceOrInstalledAppMatchesEmptyState = ({ searchText }: NoMarketplaceOrInstalledAppMatchesEmptyStateProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -25,9 +23,9 @@ const NoMarketplaceOrInstalledAppMatchesEmptyState = ({
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('No_app_matches')}</StatesTitle>
-				{shouldShowSearchText && (
+				{searchText && (
 					<StatesSubtitle>
-						{t('No_marketplace_matches_for')}: <strong>"{text}"</strong>
+						{t('No_marketplace_matches_for')}: <strong>"{searchText}"</strong>
 					</StatesSubtitle>
 				)}
 				<StatesSuggestion>

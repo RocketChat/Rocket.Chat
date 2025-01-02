@@ -166,7 +166,7 @@ export const appButtonProps = ({
 	};
 };
 
-export const appIncompatibleStatusProps = (): appStatusSpanResponseProps => ({
+const appIncompatibleStatusProps = (): appStatusSpanResponseProps => ({
 	icon: 'check',
 	label: 'Incompatible',
 	tooltipText: t('App_version_incompatible_tooltip'),

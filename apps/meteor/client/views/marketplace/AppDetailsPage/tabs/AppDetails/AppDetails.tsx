@@ -1,59 +1,37 @@
-import { Box, Button, Callout, Chip, Margins } from '@rocket.chat/fuselage';
-import { ExternalLink } from '@rocket.chat/ui-client';
+import type { App } from '@rocket.chat/core-typings';
+import { Box, Button, Callout, Chip, Margins, Skeleton } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 
 import AppDetailsAPIs from './AppDetailsAPIs';
-import { normalizeUrl } from './normalizeUrl';
-import { useExternalLink } from '../../../../../hooks/useExternalLink';
+import NormalizedLink from './NormalizedLink';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { GET_ADDONS_LINK } from '../../../../admin/subscription/utils/links';
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
-import type { AppInfo } from '../../../definitions/AppInfo';
+import { useAppScreenshotsQuery } from '../../../hooks/useAppScreenshotsQuery';
 import { purifyOptions } from '../../../lib/purifyOptions';
 
 type AppDetailsProps = {
-	app: AppInfo;
+	app: App;
 };
 
 const AppDetails = ({ app }: AppDetailsProps) => {
+	const { isLoading: isScreenshotsLoading, isSuccess: isScreenshotsSuccess, data: screenshots } = useAppScreenshotsQuery(app.id);
+
 	const { t } = useTranslation();
-	const {
-		author: { homepage, support } = {},
-		detailedDescription,
-		description,
-		categories = [],
-		screenshots,
-		apis,
-		documentationUrl: documentation,
-		addon,
-		installedAddon,
-		installed,
-	} = app;
-
-	const isMarkdown = detailedDescription && Object.keys(detailedDescription).length !== 0 && detailedDescription.rendered;
-	const isCarouselVisible = screenshots && Boolean(screenshots.length);
-
-	const normalizedHomepageUrl = homepage ? normalizeUrl(homepage) : undefined;
-	const normalizedSupportUrl = support ? normalizeUrl(support) : undefined;
-	const normalizedDocumentationUrl = documentation ? normalizeUrl(documentation) : undefined;
-
-	const appAddon = installed ? installedAddon : addon;
-
+	const appAddon = app.installed ? app.installedAddon : app.addon;
 	const workspaceHasAddon = useHasLicenseModule(appAddon);
 
-	const openExternalLink = useExternalLink();
-
 	return (
-		<Box mbs='36px' maxWidth='x640' w='full' marginInline='auto' color='default'>
-			{appAddon && !workspaceHasAddon && (
+		<Box mbs={36} maxWidth='x640' w='full' marginInline='auto' color='default'>
+			{app.addon && !workspaceHasAddon && (
 				<Callout
 					mb={16}
 					title={t('Subscription_add-on_required')}
 					type='info'
 					actions={
-						<Button small onClick={() => openExternalLink(GET_ADDONS_LINK)}>
+						<Button is='a' target='_blank' rel='noopener noreferrer' small href={GET_ADDONS_LINK}>
 							{t('Contact_sales')}
 						</Button>
 					}
@@ -61,6 +39,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 					{t('App_cannot_be_enabled_without_add-on')}
 				</Callout>
 			)}
+
 			{app.licenseValidation && (
 				<>
 					{Object.entries(app.licenseValidation.warnings).map(([key]) => (
@@ -79,7 +58,10 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 
 			<Box display='flex' flexDirection='column'>
 				<Margins block={16}>
-					{isCarouselVisible && <ScreenshotCarouselAnchor screenshots={screenshots} />}
+					{isScreenshotsLoading && (
+						<Skeleton variant='rect' width='100%' maxWidth={640} height={0} paddingBlockEnd={`${(540 / 960) * 100}%`} />
+					)}
+					{isScreenshotsSuccess && screenshots.length > 0 && <ScreenshotCarouselAnchor screenshots={screenshots} />}
 
 					<Box is='section'>
 						<Box fontScale='h4' mbe={8} color='titles-labels'>
@@ -87,58 +69,64 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 						</Box>
 						<Box
 							dangerouslySetInnerHTML={{
-								__html: isMarkdown
-									? DOMPurify.sanitize(detailedDescription.rendered, purifyOptions)
-									: DOMPurify.sanitize(description, purifyOptions),
+								__html:
+									typeof app.detailedDescription === 'object' && app.detailedDescription !== null && 'rendered' in app.detailedDescription
+										? DOMPurify.sanitize(app.detailedDescription.rendered, purifyOptions)
+										: DOMPurify.sanitize(app.description, purifyOptions),
 							}}
 							withRichContent
 						/>
 					</Box>
 
-					<Box is='section'>
-						<Box fontScale='h4' mbe={8} color='titles-labels'>
-							{t('Categories')}
+					{app.categories && (
+						<Box is='section'>
+							<Box fontScale='h4' mbe={8} color='titles-labels'>
+								{t('Categories')}
+							</Box>
+							<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='start' alignItems='center'>
+								{app.categories.map((category) => (
+									<Chip key={category} textTransform='uppercase' m={4}>
+										{category}
+									</Chip>
+								))}
+							</Box>
 						</Box>
-						<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='start' alignItems='center'>
-							{categories?.map((current) => (
-								<Chip key={current} textTransform='uppercase' m={4}>
-									{current}
-								</Chip>
-							))}
-						</Box>
-					</Box>
+					)}
 
 					<Box is='section'>
 						<Box fontScale='h4' mbe={8}>
 							{t('Contact')}
 						</Box>
 						<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap' mbe={24}>
-							<Box display='flex' flexDirection='column' mie={12} flexGrow={1}>
-								<Box fontScale='h4' color='hint'>
-									{t('Author_Site')}
+							{app.author.homepage && (
+								<Box display='flex' flexDirection='column' mie={12} flexGrow={1}>
+									<Box fontScale='h4' color='hint'>
+										{t('Author_Site')}
+									</Box>
+									<NormalizedLink href={app.author.homepage} />
 								</Box>
-								{normalizedHomepageUrl ? <ExternalLink to={normalizedHomepageUrl}>{homepage}</ExternalLink> : homepage}
-							</Box>
-							<Box display='flex' flexDirection='column' flexGrow={1}>
-								<Box fontScale='h4' color='hint'>
-									{t('Support')}
+							)}
+							{app.author.support && (
+								<Box display='flex' flexDirection='column' flexGrow={1}>
+									<Box fontScale='h4' color='hint'>
+										{t('Support')}
+									</Box>
+									<NormalizedLink href={app.author.support} />
 								</Box>
-								{normalizedSupportUrl ? <ExternalLink to={normalizedSupportUrl}>{support}</ExternalLink> : support}
-							</Box>
+							)}
 						</Box>
-						<>
-							<Box fontScale='h4' color='hint'>
-								{t('Documentation')}
-							</Box>
-							{normalizedDocumentationUrl ? <ExternalLink to={normalizedDocumentationUrl}>{documentation}</ExternalLink> : documentation}
-						</>
+
+						{app.documentationUrl && (
+							<>
+								<Box fontScale='h4' color='hint'>
+									{t('Documentation')}
+								</Box>
+								<NormalizedLink href={app.documentationUrl} />
+							</>
+						)}
 					</Box>
 
-					{apis?.length ? (
-						<Box is='section'>
-							<AppDetailsAPIs apis={apis || []} />
-						</Box>
-					) : null}
+					{app?.installed && <AppDetailsAPIs appId={app.id} />}
 				</Margins>
 			</Box>
 		</Box>

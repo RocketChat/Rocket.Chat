@@ -1,4 +1,5 @@
-import type { App } from '../types';
+import type { App } from '@rocket.chat/core-typings';
+
 import { filterAppsByCategories } from './filterAppsByCategories';
 
 describe('filterAppsByCategories', () => {

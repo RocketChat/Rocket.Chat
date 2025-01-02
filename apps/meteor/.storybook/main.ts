@@ -27,6 +27,7 @@ export default {
 				'react$': require.resolve('../../../node_modules/react'),
 				// 'react/jsx-runtime': require.resolve('../../../node_modules/react/jsx-runtime'),
 				'@tanstack/react-query': require.resolve('../../../node_modules/@tanstack/react-query'),
+				'react-i18next': require.resolve('../../../node_modules/react-i18next'),
 				'swiper/swiper.css$': 'swiper/css',
 				'swiper/modules/navigation/navigation.min.css$': 'swiper/css/navigation',
 				'swiper/modules/keyboard/keyboard.min.css$': 'swiper/css/keyboard',

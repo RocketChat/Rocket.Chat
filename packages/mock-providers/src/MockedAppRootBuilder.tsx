@@ -2,6 +2,7 @@ import type { ISetting, IUser, Serialized, SettingValue } from '@rocket.chat/cor
 import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
+import en from '@rocket.chat/i18n/src/locales/en.i18n.json';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { Device, ModalContextValue, SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import {
@@ -368,9 +369,9 @@ export class MockedAppRootBuilder {
 		lng: 'en',
 		fallbackLng: 'en',
 		ns: ['core'],
+		defaultNS: 'core',
 		nsSeparator: '.',
 		partialBundledLanguages: true,
-		defaultNS: 'core',
 		interpolation: {
 			escapeValue: false,
 		},
@@ -391,6 +392,17 @@ export class MockedAppRootBuilder {
 		}
 
 		this.i18n.on('initialized', addResources);
+		return this;
+	}
+
+	withDefaultTranslations(): this {
+		if (this.i18n.isInitialized) {
+			this.i18n.addResourceBundle('en', 'core', en);
+		}
+
+		this.i18n.on('initialized', () => {
+			this.i18n.addResourceBundle('en', 'core', en);
+		});
 		return this;
 	}
 

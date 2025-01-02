@@ -64,7 +64,7 @@ export type AppsEndpoints = {
 
 	'/apps/:id/settings': {
 		GET: () => {
-			settings: ISetting[];
+			settings: Record<ISetting['id'], ISetting>;
 		};
 		POST: (params: { settings: ISetting[] }) => { updated: ISetting[]; success: boolean };
 	};
@@ -78,7 +78,7 @@ export type AppsEndpoints = {
 
 	'/apps/:id/screenshots': {
 		GET: () => {
-			screenshots: AppScreenshot[];
+			screenshots: AppScreenshot[] | null;
 		};
 	};
 
@@ -103,7 +103,7 @@ export type AppsEndpoints = {
 
 	'/apps/:id/apis': {
 		GET: () => {
-			apis: IApiEndpointMetadata[];
+			apis: IApiEndpointMetadata[] | null;
 		};
 	};
 

@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useAppsOrchestrator } from './useAppsOrchestrator';
 import { useCategoryFlatList } from './useCategoryFlatList';
 import { useCategoryToggle } from './useCategoryToggle';
-import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import type {
 	CategoryDropDownGroups,
 	CategoryDropdownItem,
@@ -16,10 +16,11 @@ import { handleAPIError } from '../helpers/handleAPIError';
 export const useCategories = (): [CategoryDropDownGroups, selectedCategoriesList, selectedCategoriesList, CategoryOnSelected] => {
 	const { t } = useTranslation();
 	const [categories, setCategories] = useState<CategoryDropDownListProps['categories']>([]);
+	const appsOrchestrator = useAppsOrchestrator();
 
 	const fetchCategories = useCallback(async (): Promise<void> => {
 		try {
-			const fetchedCategories = await AppClientOrchestratorInstance.getCategories();
+			const fetchedCategories = await appsOrchestrator.getCategories();
 
 			const mappedCategories = fetchedCategories
 				.filter((currentCategory) => !currentCategory.hidden)
@@ -64,5 +65,6 @@ export const useCategories = (): [CategoryDropDownGroups, selectedCategoriesList
 		() => flatCategories.filter((category) => Boolean(category.checked)),
 		[flatCategories],
 	) as (CategoryDropdownItem & { checked: true })[];
+
 	return [categories, selectedCategories, originalSize === selectedCategories.length ? [] : selectedCategories, onSelected];
 };

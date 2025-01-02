@@ -1,19 +1,15 @@
-import type { AppPermission } from '@rocket.chat/core-typings';
+import type { App } from '@rocket.chat/core-typings';
 import { Box, Margins } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppSecurityLabel from './AppSecurityLabel';
 import AppPermissionsList from '../../../components/AppPermissionsList';
 
 type AppSecurityProps = {
-	privacyPolicySummary?: string;
-	appPermissions?: AppPermission[];
-	tosLink?: string;
-	privacyLink?: string;
+	app: App;
 };
 
-const AppSecurity = ({ privacyPolicySummary, appPermissions, tosLink, privacyLink }: AppSecurityProps): ReactElement => {
+const AppSecurity = ({ app }: AppSecurityProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -23,27 +19,27 @@ const AppSecurity = ({ privacyPolicySummary, appPermissions, tosLink, privacyLin
 					<Box is='section'>
 						<AppSecurityLabel>{t('Privacy_summary')}</AppSecurityLabel>
 						<Box is='p' lineHeight='x20'>
-							{privacyPolicySummary?.length && privacyPolicySummary}
+							{app.privacyPolicySummary?.length && app.privacyPolicySummary}
 						</Box>
 					</Box>
 
 					<Box is='section'>
 						<AppSecurityLabel>{t('Permissions')}</AppSecurityLabel>
 						<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} mis={24}>
-							<AppPermissionsList appPermissions={appPermissions} />
+							<AppPermissionsList appPermissions={app.permissions} />
 						</Box>
 					</Box>
 
 					<Box is='section'>
 						<AppSecurityLabel>{t('Policies')}</AppSecurityLabel>
 						<Box display='flex' flexDirection='column'>
-							{tosLink && (
-								<Box is='a' href={tosLink} target='_blank'>
+							{app.tosLink && (
+								<Box is='a' href={app.tosLink} target='_blank'>
 									{t('Terms_of_use')}
 								</Box>
 							)}
-							{privacyLink && (
-								<Box is='a' href={privacyLink} target='_blank'>
+							{app.privacyLink && (
+								<Box is='a' href={app.privacyLink} target='_blank'>
 									{t('Privacy_policy')}
 								</Box>
 							)}

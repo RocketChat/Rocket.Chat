@@ -1,21 +1,20 @@
 import type { App, AppPermission } from '@rocket.chat/core-typings';
 import { useRouter, useSetModal, useUpload } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 
+import { useAppsCountQuery } from './useAppsCountQuery';
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
-import { useAppsReload } from '../../../contexts/hooks/useAppsReload';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import AppExemptModal from '../AppExemptModal';
 import AppPermissionsReviewModal from '../AppPermissionsReviewModal';
 import AppUpdateModal from '../AppUpdateModal';
-import { useAppsCountQuery } from './useAppsCountQuery';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { handleInstallError } from '../helpers/handleInstallError';
 import { getManifestFromZippedApp } from '../lib/getManifestFromZippedApp';
+import { marketplaceQueryKeys } from '../queryKeys';
 
 export const useInstallApp = (file: File): { install: () => void; isInstalling: boolean } => {
-	const reloadAppsList = useAppsReload();
 	const setModal = useSetModal();
 
 	const router = useRouter();
@@ -28,9 +27,9 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 
 	const [isInstalling, setInstalling] = useState(false);
 
-	const { mutate: sendFile } = useMutation({
-		mutationKey: ['apps/installPrivateApp'],
+	const queryClient = useQueryClient();
 
+	const { mutate: sendFile } = useMutation({
 		mutationFn: ({ permissionsGranted, appFile, appId }: { permissionsGranted: AppPermission[]; appFile: File; appId?: string }) => {
 			const fileData = new FormData();
 			fileData.append('app', appFile, appFile.name);
@@ -42,7 +41,6 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 
 			return uploadAppEndpoint(fileData) as any;
 		},
-
 		onSuccess: (data: { app: App }) => {
 			router.navigate({
 				name: 'marketplace',
@@ -53,15 +51,13 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 				},
 			});
 		},
-
 		onError: (e) => {
 			handleAPIError(e);
 		},
-
 		onSettled: () => {
 			setInstalling(false);
 			setModal(null);
-			reloadAppsList();
+			queryClient.refetchQueries({ queryKey: marketplaceQueryKeys.all, exact: false });
 		},
 	});
 

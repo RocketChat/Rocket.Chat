@@ -9,31 +9,37 @@ import {
 	StatesActions,
 	StatesAction,
 } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-type NoInstalledAppMatchesEmptyStateProps = {
-	shouldShowSearchText: boolean;
-	text: string;
-	onButtonClick: () => void;
+type NoInstalledAppMatchesEmptyStateprops = {
+	searchText: string;
 };
 
-const NoInstalledAppMatchesEmptyState = ({
-	shouldShowSearchText,
-	text,
-	onButtonClick,
-}: NoInstalledAppMatchesEmptyStateProps): ReactElement => {
+const NoInstalledAppMatchesEmptyState = ({ searchText }: NoInstalledAppMatchesEmptyStateprops) => {
 	const { t } = useTranslation();
+
+	const router = useRouter();
+
+	const handleButtonClick = () => {
+		router.navigate({
+			name: 'marketplace',
+			params: {
+				context: 'explore',
+				page: 'list',
+			},
+		});
+	};
 
 	return (
 		<Box mbs={20}>
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('No_installed_app_matches')}</StatesTitle>
-				{shouldShowSearchText && (
+				{searchText && (
 					<StatesSubtitle>
 						<span>
-							{t('No_app_matches_for')} <strong>"{text}"</strong>
+							{t('No_app_matches_for')} <strong>"{searchText}"</strong>
 						</span>
 					</StatesSubtitle>
 				)}
@@ -41,7 +47,7 @@ const NoInstalledAppMatchesEmptyState = ({
 					<StatesSuggestionText>{t('Try_searching_in_the_marketplace_instead')}</StatesSuggestionText>
 				</StatesSuggestion>
 				<StatesActions>
-					<StatesAction onClick={onButtonClick}>{t('Search_on_marketplace')}</StatesAction>
+					<StatesAction onClick={handleButtonClick}>{t('Search_on_marketplace')}</StatesAction>
 				</StatesActions>
 			</States>
 		</Box>

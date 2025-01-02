@@ -1,7 +1,7 @@
 import type { App, AppPermission } from '@rocket.chat/core-typings';
 import { useMutation } from '@tanstack/react-query';
 
-import { useAppsOrchestration } from './useAppsOrchestration';
+import { useAppsOrchestrator } from './useAppsOrchestrator';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { warnAppInstall } from '../helpers/warnAppInstall';
 import { warnStatusChange } from '../helpers/warnStatusChange';
@@ -15,11 +15,7 @@ type UpdateAppParams = App & {
 };
 
 export const useMarketplaceActions = () => {
-	const appsOrchestrator = useAppsOrchestration();
-
-	if (!appsOrchestrator) {
-		throw new Error('Apps orchestrator is not available');
-	}
+	const appsOrchestrator = useAppsOrchestrator();
 
 	const installAppMutation = useMutation({
 		mutationFn: ({ id, marketplaceVersion, permissionsGranted }: InstallAppParams) =>

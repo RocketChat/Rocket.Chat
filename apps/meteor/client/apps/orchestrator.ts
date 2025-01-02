@@ -2,14 +2,13 @@ import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManag
 import type { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHost';
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import type { Serialized } from '@rocket.chat/core-typings';
+import type { Serialized, App } from '@rocket.chat/core-typings';
 
 import type { IAppExternalURL, ICategory } from './@types/IOrchestrator';
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 import { hasAtLeastOnePermission } from '../../app/authorization/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { dispatchToastMessage } from '../lib/toast';
-import type { App } from '../views/marketplace/types';
 
 const isErrorObject = (e: unknown): e is { error: string } =>
 	typeof e === 'object' && e !== null && 'error' in e && typeof e.error === 'string';
@@ -74,7 +73,7 @@ class AppClientOrchestrator {
 			return { apps: [], error: 'Invalid response from API' };
 		}
 
-		const apps = (result as App[]).map((app: App) => {
+		const apps = result.map((app: App): App => {
 			const { latest, appRequestStats, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt, bundledIn, requestedEndUser } = app;
 			return {
 				...latest,
@@ -86,6 +85,7 @@ class AppClientOrchestrator {
 				modifiedAt,
 				bundledIn,
 				requestedEndUser,
+				latest,
 			};
 		});
 
