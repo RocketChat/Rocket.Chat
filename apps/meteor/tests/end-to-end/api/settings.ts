@@ -1,4 +1,4 @@
-import type { ISetting, LoginServiceConfiguration } from '@rocket.chat/core-typings';
+import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
