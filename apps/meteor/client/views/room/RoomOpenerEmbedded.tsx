@@ -4,7 +4,7 @@ import { FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomSkeleton from './RoomSkeleton';
@@ -37,25 +37,24 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 	const getSubscription = useEndpoint('GET', '/v1/subscriptions.getOne');
 
 	const rid = data?.rid;
-	useQuery(
-		['subscriptions', rid],
-		() => {
+	const { data: subscription } = useQuery({
+		queryKey: ['subscriptions', rid] as const,
+		queryFn: () => {
 			if (!rid) {
 				throw new Error('Room not found');
 			}
 			return getSubscription({ roomId: rid });
 		},
-		{
-			enabled: !!rid,
-			suspense: true,
-			onSuccess({ subscription }) {
-				if (!subscription) {
-					throw new Error('Room not found');
-				}
-				CachedChatSubscription.upsertSubscription(subscription as unknown as ISubscription);
-			},
-		},
-	);
+		enabled: !!rid,
+	});
+
+	useEffect(() => {
+		if (!subscription) {
+			return;
+		}
+
+		CachedChatSubscription.upsertSubscription(subscription as unknown as ISubscription);
+	}, [subscription]);
 
 	const { t } = useTranslation();
 

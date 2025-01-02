@@ -59,7 +59,10 @@ const AdminUsersPage = (): ReactElement => {
 	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
 
 	const getRoles = useEndpoint('GET', '/v1/roles.list');
-	const { data, error } = useQuery(['roles'], async () => getRoles());
+	const { data, error } = useQuery({
+		queryKey: ['roles'],
+		queryFn: async () => getRoles(),
+	});
 
 	const paginationData = usePagination();
 	const sortData = useSort<UsersTableSortingOption>('name');

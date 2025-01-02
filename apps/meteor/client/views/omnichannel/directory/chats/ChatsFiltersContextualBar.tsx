@@ -29,7 +29,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 
 	const allCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
-	const { data } = useQuery(['livechat/custom-fields'], async () => allCustomFields());
+	const { data } = useQuery({ queryKey: ['livechat/custom-fields'], queryFn: async () => allCustomFields() });
 	const contactCustomFields = data?.customFields.filter((customField) => customField.scope !== 'visitor');
 
 	const { filtersQuery, setFiltersQuery, resetFiltersQuery, hasAppliedFilters } = useChatsContext();
@@ -49,7 +49,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 
 	const handleSubmitFilters = (data: ChatsFiltersQuery) => {
 		setFiltersQuery(({ guest }) => ({ ...data, guest }));
-		queryClient.invalidateQueries(['current-chats']);
+		queryClient.invalidateQueries({ queryKey: ['current-chats'] });
 	};
 
 	const handleResetFilters = () => {

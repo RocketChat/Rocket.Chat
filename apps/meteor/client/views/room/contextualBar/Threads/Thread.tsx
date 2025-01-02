@@ -117,7 +117,7 @@ const Thread = ({ tmid }: ThreadProps) => {
 							<ContextualbarAction
 								name={following ? 'bell' : 'bell-off'}
 								title={following ? t('Following') : t('Not_Following')}
-								disabled={!mainMessageQueryResult.isSuccess || toggleFollowingMutation.isLoading}
+								disabled={!mainMessageQueryResult.isSuccess || toggleFollowingMutation.isPending}
 								onClick={handleToggleFollowing}
 							/>
 							<ContextualbarClose onClick={handleClose} />

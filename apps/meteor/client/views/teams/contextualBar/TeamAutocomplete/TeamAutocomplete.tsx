@@ -11,7 +11,10 @@ const TeamAutocomplete = ({ value, onChange, ...props }: TeamAutocompleteProps) 
 	const [filter, setFilter] = useState('');
 
 	const teamsAutoCompleteEndpoint = useEndpoint('GET', '/v1/teams.autocomplete');
-	const { data, isSuccess } = useQuery(['teamsAutoComplete', filter], async () => teamsAutoCompleteEndpoint({ name: filter }));
+	const { data, isSuccess } = useQuery({
+		queryKey: ['teamsAutoComplete', filter],
+		queryFn: async () => teamsAutoCompleteEndpoint({ name: filter }),
+	});
 
 	const options = useMemo(
 		() =>

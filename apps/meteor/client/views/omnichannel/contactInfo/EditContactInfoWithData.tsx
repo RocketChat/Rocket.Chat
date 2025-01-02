@@ -14,9 +14,12 @@ type EditContactInfoWithDataProps = {
 
 const EditContactInfoWithData = ({ id, onClose, onCancel }: EditContactInfoWithDataProps) => {
 	const getContactEndpoint = useEndpoint('GET', '/v1/omnichannel/contacts.get');
-	const { data, isLoading, isError } = useQuery(['getContactById', id], async () => getContactEndpoint({ contactId: id }));
+	const { data, isPending, isError } = useQuery({
+		queryKey: ['getContactById', id],
+		queryFn: async () => getContactEndpoint({ contactId: id }),
+	});
 
-	if (isLoading) {
+	if (isPending) {
 		return (
 			<ContextualbarContent>
 				<FormSkeleton />

@@ -1,5 +1,5 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 type useChannelsDataProps = {
   filter: string;
@@ -17,9 +17,10 @@ export const useChannelsData = ({ filter }: useChannelsDataProps) => {
     '/v1/rooms.autocomplete.channelAndPrivate',
   );
 
-  const { data } = useQuery(
-    ['rooms.autocomplete.channelAndPrivate', filter],
-    async () => {
+  const { data } = useQuery({
+    queryKey: ['rooms.autocomplete.channelAndPrivate', filter],
+
+    queryFn: async () => {
       const channels = await getRooms(generateQuery(filter));
 
       const options = channels.items.map(
@@ -31,10 +32,9 @@ export const useChannelsData = ({ filter }: useChannelsDataProps) => {
 
       return options || [];
     },
-    {
-      keepPreviousData: true,
-    },
-  );
+
+    placeholderData: keepPreviousData,
+  });
 
   return data;
 };
