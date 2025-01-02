@@ -2577,13 +2577,13 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne({ _id }, update);
 	}
 
-	setEmail(_id, email) {
+	setEmail(_id, email, verified = false) {
 		const update = {
 			$set: {
 				emails: [
 					{
 						address: email,
-						verified: false,
+						verified,
 					},
 				],
 			},
