@@ -74,11 +74,11 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 			}
 		};
 
-		setModal(() => (
+		setModal(
 			<GenericModal variant='danger' onConfirm={handleDelete} onCancel={handleCancel} onClose={handleCancel} confirmText={t('Delete')}>
 				{t('Custom_User_Status_Delete_Warning')}
-			</GenericModal>
-		));
+			</GenericModal>,
+		);
 	}, [_id, route, deleteStatus, dispatchToastMessage, onReload, setModal, t]);
 
 	const presenceOptions: SelectOption[] = [
