@@ -1,5 +1,11 @@
 # @rocket.chat/mock-providers
 
+## 0.1.6-rc.1
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
 ## 0.1.6-rc.0
 
 ### Patch Changes

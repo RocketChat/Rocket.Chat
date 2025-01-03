@@ -1,5 +1,16 @@
 # @rocket.chat/models
 
+## 1.1.0-rc.2
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@1.2.0-rc.2
+  </details>
+
 ## 1.1.0-rc.1
 
 ### Patch Changes

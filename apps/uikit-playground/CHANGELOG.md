@@ -1,5 +1,19 @@
 # @rocket.chat/uikit-playground
 
+## 0.6.2-rc.2
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- <details><summary>Updated dependencies [c43220dcd8c1df86a6143d6553964ad2173903b3]:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@14.0.0-rc.2
+  - @rocket.chat/ui-contexts@14.0.0-rc.2
+  - @rocket.chat/core-typings@7.2.0-rc.2
+  - @rocket.chat/ui-avatar@10.0.0-rc.2
+  </details>
+
 ## 0.6.2-rc.1
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @rocket.chat/ui-contexts
 
+## 14.0.0-rc.2
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.0-rc.2
+  - @rocket.chat/rest-typings@7.2.0-rc.2
+  - @rocket.chat/ddp-client@0.3.11-rc.2
+  </details>
+
 ## 14.0.0-rc.1
 
 ### Patch Changes

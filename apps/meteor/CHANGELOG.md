@@ -1,5 +1,45 @@
 # @rocket.chat/meteor
 
+## 7.2.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- <details><summary>Updated dependencies [c43220dcd8c1df86a6143d6553964ad2173903b3]:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@14.0.0-rc.2
+  - @rocket.chat/ui-theming@0.4.1-rc.1
+  - @rocket.chat/apps-engine@1.48.1-rc.1
+  - @rocket.chat/ui-composer@0.5.0-rc.1
+  - @rocket.chat/ui-contexts@14.0.0-rc.2
+  - @rocket.chat/ui-client@14.0.0-rc.2
+  - @rocket.chat/models@1.1.0-rc.2
+  - @rocket.chat/sha256@1.0.11-rc.0
+  - @rocket.chat/ui-voip@4.0.0-rc.2
+  - @rocket.chat/web-ui-registration@14.0.0-rc.2
+  - @rocket.chat/presence@0.2.11-rc.2
+  - @rocket.chat/apps@0.2.2-rc.2
+  - @rocket.chat/core-services@0.7.3-rc.2
+  - @rocket.chat/core-typings@7.2.0-rc.2
+  - @rocket.chat/rest-typings@7.2.0-rc.2
+  - @rocket.chat/gazzodown@14.0.0-rc.2
+  - @rocket.chat/ui-avatar@10.0.0-rc.2
+  - @rocket.chat/ui-video-conf@14.0.0-rc.2
+  - @rocket.chat/omnichannel-services@0.3.8-rc.2
+  - @rocket.chat/cron@0.1.11-rc.2
+  - @rocket.chat/instance-status@0.1.11-rc.2
+  - @rocket.chat/network-broker@0.1.3-rc.2
+  - @rocket.chat/license@1.0.2-rc.2
+  - @rocket.chat/pdf-worker@0.2.8-rc.2
+  - @rocket.chat/api-client@0.2.11-rc.2
+  - @rocket.chat/freeswitch@1.1.0-rc.2
+  - @rocket.chat/model-typings@1.2.0-rc.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
 ## 7.2.0-rc.1
 
 ### Patch Changes
