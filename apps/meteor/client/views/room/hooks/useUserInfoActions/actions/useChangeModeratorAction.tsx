@@ -107,7 +107,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 
 			const changingOwnRole = userId === loggedUserId;
 			if (changingOwnRole && loggedUserIsModerator) {
-				return setModal(() =>
+				return setModal(
 					getWarningModalForFederatedRooms(
 						closeModal,
 						handleConfirm,
@@ -119,7 +119,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 			}
 
 			if (changingOwnRole && loggedUserIsOwner) {
-				return setModal(() =>
+				return setModal(
 					getWarningModalForFederatedRooms(
 						closeModal,
 						handleConfirm,
@@ -131,7 +131,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 			}
 
 			if (!changingOwnRole && loggedUserIsModerator) {
-				return setModal(() =>
+				return setModal(
 					getWarningModalForFederatedRooms(
 						closeModal,
 						handleConfirm,

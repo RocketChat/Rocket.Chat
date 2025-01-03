@@ -115,11 +115,11 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 
 		const handleCancel = (): void => setModal(null);
 
-		setModal(() => (
+		setModal(
 			<GenericModal variant='danger' onConfirm={handleDelete} onCancel={handleCancel} onClose={handleCancel} confirmText={t('Delete')}>
 				{t('Custom_Sound_Delete_Warning')}
-			</GenericModal>
-		));
+			</GenericModal>,
+		);
 	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange, setModal, t]);
 
 	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');

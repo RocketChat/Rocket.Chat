@@ -24,7 +24,7 @@ const GameCenterList = ({ handleClose, handleOpenGame, games, isLoading }: IGame
 			const handleClose = (): void => {
 				setModal(null);
 			};
-			setModal(() => <GameCenterInvitePlayersModal onClose={handleClose} game={game} />);
+			setModal(<GameCenterInvitePlayersModal onClose={handleClose} game={game} />);
 		},
 		[setModal],
 	);
