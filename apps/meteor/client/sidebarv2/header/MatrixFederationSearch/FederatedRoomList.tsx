@@ -24,36 +24,37 @@ const FederatedRoomList = ({ serverName, roomName, count }: FederatedRoomListPro
 	const setModal = useSetModal();
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { data, isLoading, isFetchingNextPage, fetchNextPage } = useInfiniteFederationSearchPublicRooms(serverName, roomName, count);
+	const { data, isPending, isFetchingNextPage, fetchNextPage } = useInfiniteFederationSearchPublicRooms(serverName, roomName, count);
 
-	const { mutate: onClickJoin, isLoading: isLoadingMutation } = useMutation(
-		['federation/joinExternalPublicRoom'],
-		async ({ id, pageToken }: IFederationPublicRooms) => {
+	const { mutate: onClickJoin, isPending: isLoadingMutation } = useMutation({
+		mutationKey: ['federation/joinExternalPublicRoom'],
+
+		mutationFn: async ({ id, pageToken }: IFederationPublicRooms) => {
 			return joinExternalPublicRoom({ externalRoomId: id as `!${string}:${string}`, roomName, pageToken });
 		},
-		{
-			onSuccess: (_, data) => {
-				dispatchToastMessage({
-					type: 'success',
-					message: t('Your_request_to_join__roomName__has_been_made_it_could_take_up_to_15_minutes_to_be_processed', {
-						roomName: data.name,
-					}),
-				});
-				setModal(null);
-			},
-			onError: (error, { id }) => {
-				if (error instanceof Error && error.message === 'already-joined') {
-					setModal(null);
-					roomCoordinator.openRouteLink('c', { rid: id });
-					return;
-				}
 
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+		onSuccess: (_, data) => {
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Your_request_to_join__roomName__has_been_made_it_could_take_up_to_15_minutes_to_be_processed', {
+					roomName: data.name,
+				}),
+			});
+			setModal(null);
 		},
-	);
 
-	if (isLoading) {
+		onError: (error, { id }) => {
+			if (error instanceof Error && error.message === 'already-joined') {
+				setModal(null);
+				roomCoordinator.openRouteLink('c', { rid: id });
+				return;
+			}
+
+			dispatchToastMessage({ type: 'error', message: error });
+		},
+	});
+
+	if (isPending) {
 		return <Throbber />;
 	}
 
@@ -70,7 +71,7 @@ const FederatedRoomList = ({ serverName, roomName, count }: FederatedRoomListPro
 					Scroller: VirtuosoScrollbars,
 					EmptyPlaceholder: FederatedRoomListEmptyPlaceholder,
 				}}
-				endReached={isLoading || isFetchingNextPage ? () => undefined : () => fetchNextPage()}
+				endReached={isPending || isFetchingNextPage ? () => undefined : () => fetchNextPage()}
 				itemContent={(_, room) => (
 					<FederatedRoomListItem onClickJoin={() => onClickJoin(room)} {...room} disabled={isLoadingMutation} key={room.id} />
 				)}

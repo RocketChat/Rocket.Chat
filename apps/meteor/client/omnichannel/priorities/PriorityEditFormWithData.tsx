@@ -13,9 +13,9 @@ type PriorityEditFormWithDataProps = Omit<PriorityEditFormProps, 'data'> & {
 
 function PriorityEditFormWithData({ priorityId, ...props }: PriorityEditFormWithDataProps): ReactElement {
 	const { t } = useTranslation();
-	const { data, isInitialLoading, isError } = usePriorityInfo(priorityId);
+	const { data, isLoading, isError } = usePriorityInfo(priorityId);
 
-	if (isInitialLoading) {
+	if (isLoading) {
 		return <FormSkeleton />;
 	}
 

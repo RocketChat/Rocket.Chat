@@ -198,7 +198,9 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			} else {
 				await saveDepartmentInfo(id ?? null, payload, agentList);
 			}
-			queryClient.invalidateQueries(['/v1/livechat/department/:_id', id]);
+			queryClient.invalidateQueries({
+				queryKey: ['/v1/livechat/department/:_id', id],
+			});
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			router.navigate('/omnichannel/departments');
 		} catch (error) {

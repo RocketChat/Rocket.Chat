@@ -78,9 +78,11 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 
 	const {
 		data: { priorities = [] } = {},
-		isInitialLoading: isLoadingPriorities,
+		isLoading: isLoadingPriorities,
 		isError: isErrorPriorities,
-	} = useQuery(['/v1/livechat/priorities'], () => getPriorities({ sort: JSON.stringify({ sortItem: 1 }) }), {
+	} = useQuery({
+		queryKey: ['/v1/livechat/priorities'],
+		queryFn: () => getPriorities({ sort: JSON.stringify({ sortItem: 1 }) }),
 		staleTime: Infinity,
 		enabled: isPrioritiesEnabled,
 	});
@@ -93,7 +95,9 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		}
 
 		return subscribe('omnichannel.priority-changed', () => {
-			queryClient.invalidateQueries(['/v1/livechat/priorities']);
+			queryClient.invalidateQueries({
+				queryKey: ['/v1/livechat/priorities'],
+			});
 		});
 	}, [isPrioritiesEnabled, queryClient, subscribe]);
 

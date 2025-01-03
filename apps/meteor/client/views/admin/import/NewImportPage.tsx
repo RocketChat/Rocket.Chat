@@ -21,7 +21,9 @@ function NewImportPage() {
 	const [fileType, setFileType] = useSafely(useState('upload'));
 
 	const listImportersEndpoint = useEndpoint('GET', '/v1/importers.list');
-	const { data: importers, isLoading: isLoadingImporters } = useQuery(['importers'], async () => listImportersEndpoint(), {
+	const { data: importers, isPending: isLoadingImporters } = useQuery({
+		queryKey: ['importers'],
+		queryFn: async () => listImportersEndpoint(),
 		refetchOnWindowFocus: false,
 	});
 

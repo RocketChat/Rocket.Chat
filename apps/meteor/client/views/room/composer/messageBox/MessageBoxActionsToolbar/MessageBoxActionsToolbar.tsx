@@ -81,8 +81,8 @@ const MessageBoxActionsToolbar = ({
 	createNew.push(allActions.createDiscussionAction);
 
 	if (variant === 'small') {
-		featured.push(allActions.audioMessageAction);
-		createNew.push(allActions.videoMessageAction, allActions.fileUploadAction);
+		featured.push(allActions.audioMessageAction, allActions.fileUploadAction);
+		createNew.push(allActions.videoMessageAction);
 	} else {
 		featured.push(allActions.audioMessageAction, allActions.videoMessageAction, allActions.fileUploadAction);
 	}
