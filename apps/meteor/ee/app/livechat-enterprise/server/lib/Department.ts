@@ -17,7 +17,7 @@ export const findAllDepartmentsAvailable = async (
 
 	let query: Filter<ILivechatDepartment> = {
 		type: { $ne: 'u' },
-		$or: [{ ancestors: { $in: [[unitId], []] } }, { ancestors: { $exists: false } }],
+		$or: [{ ancestors: { $in: [[unitId], undefined, []] } }, { ancestors: { $exists: false } }],
 		...(text && { name: filterReg }),
 	};
 
