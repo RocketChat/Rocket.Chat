@@ -9,14 +9,14 @@ import { LivenessManager } from './LivenessManager';
 import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
 import { decoder } from './codec';
-import { AppStatus } from '../../../definition/AppStatus';
+import { AppStatus, AppStatusUtils } from '../../../definition/AppStatus';
+import type { AppMethod } from '../../../definition/metadata';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
 import type { IParseAppPackageResult } from '../../compiler';
 import { AppConsole, type ILoggerStorageEntry } from '../../logging';
 import type { AppAccessorManager, AppApiManager } from '../../managers';
 import type { AppLogStorage, IAppStorageItem } from '../../storage';
-import { AppMethod } from '../../../definition/metadata';
 
 const baseDebug = debugFactory('appsEngine:runtime:deno');
 
@@ -286,6 +286,10 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
             await this.sendRequest({ method: 'app:initialize' });
             await this.sendRequest({ method: 'app:setStatus', params: [this.storageItem.status] });
+
+            if (AppStatusUtils.isEnabled(this.storageItem.status)) {
+                await this.sendRequest({ method: 'app:onEnable' });
+            }
 
             this.state = 'ready';
 
