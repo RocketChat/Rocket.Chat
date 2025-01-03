@@ -1,7 +1,7 @@
 import type { ILivechatAgentActivity, IServiceHistory, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatAgentActivityModel } from '@rocket.chat/model-typings';
 import moment from 'moment';
-import type { AggregationCursor, Collection, Document, FindCursor, Db, ModifyResult, IndexDescription, UpdateResult } from 'mongodb';
+import type { AggregationCursor, Collection, Document, FindCursor, Db, WithId, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
@@ -21,11 +21,11 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 
 	async createOrUpdate(
 		data: Partial<Pick<ILivechatAgentActivity, 'date' | 'agentId' | 'lastStartedAt'>> = {},
-	): Promise<ModifyResult<ILivechatAgentActivity> | undefined> {
+	): Promise<null | WithId<ILivechatAgentActivity>> {
 		const { date, agentId, lastStartedAt } = data;
 
 		if (!date || !agentId) {
-			return;
+			return null;
 		}
 
 		return this.findOneAndUpdate(

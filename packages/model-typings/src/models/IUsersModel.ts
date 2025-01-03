@@ -17,7 +17,7 @@ import type {
 	Filter,
 	InsertOneResult,
 	DeleteResult,
-	ModifyResult,
+	WithId,
 	UpdateOptions,
 } from 'mongodb';
 
@@ -404,7 +404,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<{ sortedResults: (T & { departments: string[] })[]; totalCount: { total: number }[] }[]>;
 	countByRole(roleName: string): Promise<number>;
 	removeEmailCodeOfUserId(userId: string): Promise<UpdateResult>;
-	incrementInvalidEmailCodeAttempt(userId: string): Promise<ModifyResult<IUser>>;
+	incrementInvalidEmailCodeAttempt(userId: string): Promise<WithId<IUser> | null>;
 	findOnlineButNotAvailableAgents(userIds: string[] | null): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
 	findAgentsAvailableWithoutBusinessHours(userIds: string[] | null): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
 	updateLivechatStatusByAgentIds(userIds: string[], status: ILivechatAgentStatus): Promise<UpdateResult>;
