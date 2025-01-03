@@ -16,7 +16,7 @@ import type { AppLogStorage, IAppStorageItem } from '../../storage';
 import { LivenessManager } from './LivenessManager';
 import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
-import { decoder } from './codec';
+import { newDecoder } from './codec';
 
 const baseDebug = debugFactory('appsEngine:runtime:deno');
 
@@ -112,7 +112,11 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     private readonly livenessManager: LivenessManager;
 
     // We need to keep the appSource around in case the Deno process needs to be restarted
-    constructor(manager: AppManager, private readonly appPackage: IParseAppPackageResult, private readonly storageItem: IAppStorageItem) {
+    constructor(
+        manager: AppManager,
+        private readonly appPackage: IParseAppPackageResult,
+        private readonly storageItem: IAppStorageItem,
+    ) {
         super();
 
         this.debug = baseDebug.extend(appPackage.info.id);
@@ -388,6 +392,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
             console.error(`Failed to startup Deno subprocess for app ${this.getAppId()}`, err);
         });
         this.once('ready', this.onReady.bind(this));
+
         this.parseStdout(this.deno.stdout);
     }
 
@@ -609,43 +614,50 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     }
 
     private async parseStdout(stream: Readable): Promise<void> {
-        for await (const message of decoder.decodeStream(stream)) {
-            this.debug('Received message from subprocess %o', message);
-            try {
-                // Process PONG resonse first as it is not JSON RPC
-                if (message === COMMAND_PONG) {
-                    this.emit('pong');
-                    continue;
+        try {
+            for await (const message of newDecoder().decodeStream(stream)) {
+                this.debug('Received message from subprocess %o', message);
+                try {
+                    // Process PONG resonse first as it is not JSON RPC
+                    if (message === COMMAND_PONG) {
+                        this.emit('pong');
+                        continue;
+                    }
+
+                    const JSONRPCMessage = jsonrpc.parseObject(message);
+
+                    if (Array.isArray(JSONRPCMessage)) {
+                        throw new Error('Invalid message format');
+                    }
+
+                    if (JSONRPCMessage.type === 'request' || JSONRPCMessage.type === 'notification') {
+                        this.handleIncomingMessage(JSONRPCMessage).catch((reason) =>
+                            console.error(`[${this.getAppId()}] Error executing handler`, reason, message),
+                        );
+                        continue;
+                    }
+
+                    if (JSONRPCMessage.type === 'success' || JSONRPCMessage.type === 'error') {
+                        this.handleResultMessage(JSONRPCMessage).catch((reason) =>
+                            console.error(`[${this.getAppId()}] Error executing handler`, reason, message),
+                        );
+                        continue;
+                    }
+
+                    console.error('Unrecognized message type', JSONRPCMessage);
+                } catch (e) {
+                    // SyntaxError is thrown when the message is not a valid JSON
+                    if (e instanceof SyntaxError) {
+                        console.error(`[${this.getAppId()}] Failed to parse message`);
+                        continue;
+                    }
+
+                    console.error(`[${this.getAppId()}] Error executing handler`, e, message);
                 }
-
-                const JSONRPCMessage = jsonrpc.parseObject(message);
-
-                if (Array.isArray(JSONRPCMessage)) {
-                    throw new Error('Invalid message format');
-                }
-
-                if (JSONRPCMessage.type === 'request' || JSONRPCMessage.type === 'notification') {
-                    this.handleIncomingMessage(JSONRPCMessage).catch((reason) =>
-                        console.error(`[${this.getAppId()}] Error executing handler`, reason, message),
-                    );
-                    continue;
-                }
-
-                if (JSONRPCMessage.type === 'success' || JSONRPCMessage.type === 'error') {
-                    this.handleResultMessage(JSONRPCMessage).catch((reason) => console.error(`[${this.getAppId()}] Error executing handler`, reason, message));
-                    continue;
-                }
-
-                console.error('Unrecognized message type', JSONRPCMessage);
-            } catch (e) {
-                // SyntaxError is thrown when the message is not a valid JSON
-                if (e instanceof SyntaxError) {
-                    console.error(`[${this.getAppId()}] Failed to parse message`);
-                    continue;
-                }
-
-                console.error(`[${this.getAppId()}] Error executing handler`, e, message);
             }
+        } catch (e) {
+            console.error(`[${this.getAppId()}]`, e);
+            this.emit('error', new Error('DECODE_ERROR'));
         }
     }
 
@@ -653,7 +665,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
         try {
             const data = JSON.parse(chunk.toString());
 
-            this.debug('Metrics received from subprocess: %o', data);
+            this.debug('Metrics received from subprocess (via stderr): %o', data);
         } catch (e) {
             console.error('Subprocess stderr', chunk.toString());
         }
