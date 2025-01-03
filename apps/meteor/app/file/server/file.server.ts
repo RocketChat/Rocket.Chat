@@ -81,7 +81,6 @@ class GridFS implements IRocketChatFileStore {
 
 	async getFileWithReadStream(fileName: string) {
 		const file = await this.findOne(fileName);
-		console.log('getFileWithReadStream', file);
 		if (!file) {
 			return;
 		}
