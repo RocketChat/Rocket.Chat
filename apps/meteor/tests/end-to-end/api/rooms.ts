@@ -4204,4 +4204,56 @@ describe('[Rooms]', () => {
 			});
 		});
 	});
+
+	describe('/rooms.close', () => {
+		let room: IRoom;
+		const roomName = `rooms.close.test.${Date.now()}`;
+
+		before(async () => {
+			room = (await createRoom({ type: 'c', name: roomName })).body.channel;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: room._id });
+		});
+
+		it('should close the room', (done) => {
+			void request
+				.post(api('rooms.close'))
+				.set(credentials)
+				.send({ roomId: room._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should be already closed', (done) => {
+			void request
+				.post(api('rooms.close'))
+				.set(credentials)
+				.send({ roomId: room._id })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', `The room, ${roomName}, is already closed`);
+				})
+				.end(done);
+		});
+
+		it('should fail if roomId is not provided', async () => {
+			await request
+				.post(api('rooms.close'))
+				.set(credentials)
+				.send()
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+	});
 });
