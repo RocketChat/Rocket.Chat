@@ -21,7 +21,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 	const [errors, setErrors] = useState({ name: false, emoji: false, aliases: false });
 
 	const setEmojiPreview = useCallback(
-		async (file) => {
+		async (file: Blob) => {
 			setEmojiFile(file);
 			setNewEmojiPreview(URL.createObjectURL(file));
 			setErrors((prevState) => ({ ...prevState, emoji: false }));
