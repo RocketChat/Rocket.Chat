@@ -972,6 +972,26 @@ API.v1.addRoute(
 		async post() {
 			const { roomId } = this.bodyParams;
 
+			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
+				return API.v1.unauthorized();
+			}
+
+			const user = await Users.findOneById(this.userId, { projections: { username: 1 } });
+
+			if (!user) {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'rooms.close' });
+			}
+
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
+
+			if (!subscription) {
+				return API.v1.failure(`The user is not subscribed to the room`);
+			}
+
+			if (!subscription.open) {
+				return API.v1.failure(`The room, ${subscription.name}, is already closed`);
+			}
+
 			await hideRoomMethod(this.userId, roomId);
 
 			return API.v1.success();
