@@ -57,14 +57,7 @@ const SettingsPublicWithPaginationSchema = {
 
 export const isSettingsPublicWithPaginationProps = ajv.compile<SettingsPublicWithPaginationProps>(SettingsPublicWithPaginationSchema);
 
-type SettingsGetParams = {
-	includeDefaults?: boolean;
-	count?: number;
-	offset?: number;
-	sort?: string;
-	fields?: string;
-	query?: string;
-};
+type SettingsGetParams = PaginatedRequest<{ includeDefaults?: boolean; query?: string }>;
 
 const SettingsGetSchema = {
 	type: 'object',
