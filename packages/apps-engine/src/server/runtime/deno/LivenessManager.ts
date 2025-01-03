@@ -67,6 +67,13 @@ export class LivenessManager {
         this.pingAbortController = new EventEmitter();
 
         this.options = Object.assign({}, defaultOptions, options);
+
+        this.controller.on('ready', () => this.ping());
+        this.controller.on('error', async (reason) => {
+            if (reason instanceof Error && reason.message.startsWith('DECODE_ERROR')) {
+                await this.restartProcess('Decode error', 'controller');
+            }
+        })
     }
 
     public getRuntimeData() {
@@ -84,7 +91,6 @@ export class LivenessManager {
 
         this.pingTimeoutConsecutiveCount = 0;
 
-        this.controller.once('ready', () => this.ping());
         this.subprocess.once('exit', this.handleExit.bind(this));
     }
 
@@ -182,7 +188,7 @@ export class LivenessManager {
         this.restartProcess(reason);
     }
 
-    private async restartProcess(reason: string) {
+    private async restartProcess(reason: string, source = 'liveness-manager') {
         if (this.restartCount >= this.options.maxRestarts) {
             this.debug('Limit of restarts reached (%d). Aborting restart...', this.options.maxRestarts);
             this.controller.stopApp();
@@ -193,8 +199,8 @@ export class LivenessManager {
         this.restartCount++;
         this.restartLog.push({
             reason,
+            source,
             restartedAt: new Date(),
-            source: 'liveness-manager',
             pid: this.subprocess.pid,
         });
 

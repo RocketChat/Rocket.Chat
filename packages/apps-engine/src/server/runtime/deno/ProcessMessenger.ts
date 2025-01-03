@@ -2,10 +2,12 @@ import { ChildProcess } from 'child_process';
 
 import type { JsonRpc } from 'jsonrpc-lite';
 
-import { encoder } from './codec';
+import { type Encoder, newEncoder } from './codec';
 
 export class ProcessMessenger {
-    private deno: ChildProcess;
+    private deno: ChildProcess | undefined;
+
+    private encoder: Encoder | undefined;
 
     private _sendStrategy: (message: JsonRpc) => void;
 
@@ -25,6 +27,7 @@ export class ProcessMessenger {
 
     public clearReceiver() {
         delete this.deno;
+        delete this.encoder;
 
         this.switchStrategy();
     }
@@ -32,6 +35,9 @@ export class ProcessMessenger {
     private switchStrategy() {
         if (this.deno instanceof ChildProcess) {
             this._sendStrategy = this.strategySend.bind(this);
+
+            // Get a clean encoder
+            this.encoder = newEncoder();
         } else {
             this._sendStrategy = this.strategyError.bind(this);
         }
@@ -43,6 +49,6 @@ export class ProcessMessenger {
 
     private strategySend(message: JsonRpc) {
         this.debug('Sending message to subprocess %o', message);
-        this.deno.stdin.write(encoder.encode(message));
+        this.deno.stdin.write(this.encoder.encode(message));
     }
 }
