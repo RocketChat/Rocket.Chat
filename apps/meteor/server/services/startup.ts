@@ -31,13 +31,14 @@ import { UserService } from './user/service';
 import { VideoConfService } from './video-conference/service';
 import { VoipAsteriskService } from './voip-asterisk/service';
 import { SettingsService } from './settings/service';
+import { StartupEEService } from '../../ee/app/license/server/startup';
 import { startFederationService } from '../../ee/server/startup/services';
 
 export const registerServices = async (): Promise<void> => {
 	const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 	api.registerService(new SettingsService());
-	api.registerService(new OmnichannelIntegrationService());
+	api.registerService(new StartupEEService(), ['settings']);
 	api.registerService(new AppsEngineService(), []);
 	api.registerService(new AnalyticsService(), []);
 	api.registerService(new AuthorizationLivechat(), []);
