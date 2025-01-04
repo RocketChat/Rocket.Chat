@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 
+import { Logger } from '@rocket.chat/logger';
 import { InstanceStatus } from '@rocket.chat/models';
 import { injectCurrentContext, tracerActiveSpan } from '@rocket.chat/tracing';
 
@@ -8,6 +9,10 @@ import type { EventSignatures } from './events/Events';
 import type { IBroker, IBrokerNode } from './types/IBroker';
 import type { ServiceClass, IServiceClass } from './types/ServiceClass';
 
+type ExtendedServiceClass = { instance: IServiceClass; dependencies: string[]; isStarted: boolean };
+
+const logger = new Logger('LocalBroker');
+
 export class LocalBroker implements IBroker {
 	private started = false;
 
@@ -15,7 +20,7 @@ export class LocalBroker implements IBroker {
 
 	private events = new EventEmitter();
 
-	private services = new Set<IServiceClass>();
+	private services = new Map<string, ExtendedServiceClass>();
 
 	async call(method: string, data: any): Promise<any> {
 		return tracerActiveSpan(
@@ -45,6 +50,7 @@ export class LocalBroker implements IBroker {
 			instance.constructor?.name === 'Object'
 				? Object.getOwnPropertyNames(instance)
 				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
+
 		for (const method of methods) {
 			if (method === 'constructor') {
 				continue;
@@ -56,10 +62,8 @@ export class LocalBroker implements IBroker {
 		await instance.stopped();
 	}
 
-	createService(instance: IServiceClass): void {
-		const namespace = instance.getName();
-
-		this.services.add(instance);
+	createService(instance: IServiceClass, serviceDependencies?: string[]): void {
+		const namespace = instance.getName() ?? '';
 
 		instance.created();
 
@@ -69,16 +73,20 @@ export class LocalBroker implements IBroker {
 			instance.constructor?.name === 'Object'
 				? Object.getOwnPropertyNames(instance)
 				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
+
 		for (const method of methods) {
 			if (method === 'constructor') {
 				continue;
 			}
 			const i = instance as any;
-
 			this.methods.set(`${namespace}.${method}`, i[method].bind(i));
 		}
+
 		if (this.started) {
 			void instance.started();
+			this.services.set(namespace, { instance, dependencies: serviceDependencies ?? [], isStarted: true });
+		} else {
+			this.services.set(namespace, { instance, dependencies: serviceDependencies ?? [], isStarted: false });
 		}
 	}
 
@@ -111,8 +119,30 @@ export class LocalBroker implements IBroker {
 		return instances.map(({ _id }) => ({ id: _id, available: true }));
 	}
 
+	private async startService(service: ExtendedServiceClass): Promise<void> {
+		if (service?.isStarted) {
+			logger.debug(`Service ${service.instance.getName()} already started`);
+			return;
+		}
+
+		for await (const dependency of service?.dependencies ?? []) {
+			const dependencyService = this.services.get(dependency);
+			if (!dependencyService) {
+				throw new Error(`Dependency ${dependency} not found`);
+			}
+			logger.debug(`Starting dependency ${dependency} from ${service.instance.getName()}`);
+			await this.startService(dependencyService);
+		}
+
+		await service.instance.started();
+		this.services.set(service.instance.getName() ?? '', { ...service, isStarted: true });
+		logger.debug(`Service ${service.instance.getName()} started with ${service.dependencies.length} dependencies`);
+	}
+
 	async start(): Promise<void> {
-		await Promise.all([...this.services].map((service) => service.started()));
-		this.started = true;
+		for await (const service of this.services.values()) {
+			await this.startService(service);
+		}
+		logger.debug(`Started ${this.services.size} services`);
 	}
 }
