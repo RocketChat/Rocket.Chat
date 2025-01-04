@@ -22,6 +22,8 @@ export class LocalBroker implements IBroker {
 
 	private services = new Map<string, ExtendedServiceClass>();
 
+	private defaultDependencies = ['settings'];
+
 	async call(method: string, data: any): Promise<any> {
 		return tracerActiveSpan(
 			`action ${method}`,
@@ -62,8 +64,9 @@ export class LocalBroker implements IBroker {
 		await instance.stopped();
 	}
 
-	createService(instance: IServiceClass, serviceDependencies?: string[]): void {
+	createService(instance: IServiceClass, serviceDependencies: string[] = []): void {
 		const namespace = instance.getName() ?? '';
+		const dependencies = [...serviceDependencies, ...this.defaultDependencies].filter((dependency) => dependency !== namespace);
 
 		instance.created();
 
@@ -84,9 +87,9 @@ export class LocalBroker implements IBroker {
 
 		if (this.started) {
 			void instance.started();
-			this.services.set(namespace, { instance, dependencies: serviceDependencies ?? [], isStarted: true });
+			this.services.set(namespace, { instance, dependencies, isStarted: true });
 		} else {
-			this.services.set(namespace, { instance, dependencies: serviceDependencies ?? [], isStarted: false });
+			this.services.set(namespace, { instance, dependencies, isStarted: false });
 		}
 	}
 
@@ -128,7 +131,7 @@ export class LocalBroker implements IBroker {
 		for await (const dependency of service?.dependencies ?? []) {
 			const dependencyService = this.services.get(dependency);
 			if (!dependencyService) {
-				throw new Error(`Dependency ${dependency} not found`);
+				throw new Error(`Dependency service ${dependency} not found`);
 			}
 			logger.debug(`Starting dependency ${dependency} from ${service.instance.getName()}`);
 			await this.startService(dependencyService);
@@ -143,6 +146,7 @@ export class LocalBroker implements IBroker {
 		for await (const service of this.services.values()) {
 			await this.startService(service);
 		}
+
 		logger.debug(`Started ${this.services.size} services`);
 	}
 }
