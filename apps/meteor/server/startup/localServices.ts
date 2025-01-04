@@ -9,4 +9,3 @@ broker.onBroadcast((eventName: string, args: unknown[]) => {
 });
 
 api.setBroker(broker);
-void api.start();

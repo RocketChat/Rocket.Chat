@@ -78,4 +78,6 @@ export const registerServices = async (): Promise<void> => {
 		api.registerService(new QueueWorker(db, Logger));
 		api.registerService(new OmnichannelTranscript(Logger));
 	}
+
+	await api.start();
 };

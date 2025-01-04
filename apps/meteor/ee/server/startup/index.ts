@@ -15,7 +15,7 @@ export const registerEEBroker = async (): Promise<void> => {
 		const { broker } = await import('@rocket.chat/network-broker');
 
 		api.setBroker(broker);
-		void api.start();
+		// void api.start();
 	} else {
 		require('./presence');
 	}
