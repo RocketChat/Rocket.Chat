@@ -23,7 +23,6 @@ import { OmnichannelVoipService } from './omnichannel-voip/service';
 import { PushService } from './push/service';
 import { RoomService } from './room/service';
 import { SAUMonitorService } from './sauMonitor/service';
-import { SettingsService } from './settings/service';
 import { TeamService } from './team/service';
 import { TranslationService } from './translation/service';
 import { UiKitCoreAppService } from './uikit-core-app/service';
@@ -31,37 +30,44 @@ import { UploadService } from './upload/service';
 import { UserService } from './user/service';
 import { VideoConfService } from './video-conference/service';
 import { VoipAsteriskService } from './voip-asterisk/service';
+import { SettingsService } from './settings/service';
+import { startFederationService } from '../../ee/server/startup/services';
 
 export const registerServices = async (): Promise<void> => {
 	const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
-	api.registerService(new AppsEngineService());
-	api.registerService(new AnalyticsService());
-	api.registerService(new AuthorizationLivechat());
-	api.registerService(new BannerService());
-	api.registerService(new CalendarService());
-	api.registerService(new LDAPService());
-	api.registerService(new MediaService());
-	api.registerService(new MeteorService());
-	api.registerService(new NPSService());
-	api.registerService(new RoomService());
-	api.registerService(new SAUMonitorService());
-	api.registerService(new VoipAsteriskService(db));
-	api.registerService(new OmnichannelService());
-	api.registerService(new OmnichannelVoipService());
-	api.registerService(new TeamService());
-	api.registerService(new UiKitCoreAppService());
-	api.registerService(new PushService());
-	api.registerService(new DeviceManagementService());
-	api.registerService(new VideoConfService());
-	api.registerService(new UploadService());
-	api.registerService(new MessageService());
-	api.registerService(new TranslationService());
 	api.registerService(new SettingsService());
 	api.registerService(new OmnichannelIntegrationService());
-	api.registerService(new ImportService());
-	api.registerService(new OmnichannelAnalyticsService());
-	api.registerService(new UserService());
+	api.registerService(new AppsEngineService(), []);
+	api.registerService(new AnalyticsService(), []);
+	api.registerService(new AuthorizationLivechat(), []);
+	api.registerService(new BannerService(), []);
+	api.registerService(new CalendarService(), ['settings']);
+	api.registerService(new LDAPService(), ['settings']);
+
+	api.registerService(new MediaService(), ['settings']);
+	api.registerService(new MeteorService(), ['settings']);
+	api.registerService(new NPSService(), ['settings']);
+	api.registerService(new RoomService(), ['settings']);
+	api.registerService(new SAUMonitorService(), ['settings']);
+	api.registerService(new VoipAsteriskService(db), ['settings']);
+	api.registerService(new OmnichannelService(), ['settings']);
+	api.registerService(new OmnichannelVoipService(), ['settings']);
+	api.registerService(new TeamService(), ['settings']);
+	api.registerService(new UiKitCoreAppService(), ['settings']);
+	api.registerService(new PushService(), ['settings']);
+	api.registerService(new DeviceManagementService(), ['settings']);
+	api.registerService(new VideoConfService(), ['settings']);
+	api.registerService(new UploadService(), ['settings']);
+	api.registerService(new MessageService(), ['settings']);
+	api.registerService(new TranslationService(), ['settings']);
+	api.registerService(new OmnichannelIntegrationService(), ['settings']);
+	api.registerService(new ImportService(), ['settings']);
+	api.registerService(new OmnichannelAnalyticsService(), ['settings']);
+	api.registerService(new UserService(), ['settings']);
+
+	// FIXME: This should be removed
+	await startFederationService();
 
 	// if the process is running in micro services mode we don't need to register services that will run separately
 	if (!isRunningMs()) {
@@ -69,14 +75,14 @@ export const registerServices = async (): Promise<void> => {
 
 		const { Authorization } = await import('./authorization/service');
 
-		api.registerService(new Presence());
-		api.registerService(new Authorization());
+		api.registerService(new Presence(), ['settings']);
+		api.registerService(new Authorization(), ['settings']);
 
 		// Run EE services defined outside of the main repo
 		// Otherwise, monolith would ignore them :(
 		// Always register the service and manage licensing inside the service (tbd)
-		api.registerService(new QueueWorker(db, Logger));
-		api.registerService(new OmnichannelTranscript(Logger));
+		api.registerService(new QueueWorker(db, Logger), ['settings']);
+		api.registerService(new OmnichannelTranscript(Logger), ['settings']);
 	}
 
 	await api.start();

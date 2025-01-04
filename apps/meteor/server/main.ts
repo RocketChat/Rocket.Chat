@@ -1,32 +1,33 @@
 import './tracing';
 import './startup/database';
 import './startup/broker';
- * ./settings uses top level await, in theory the settings creation
- * and the startup should be done in parallel
- */
-import './settings';
-import '../app/settings/server';
 
-import { configureLoginServices } from './configuration';
-import { configureLogLevel } from './configureLogLevel';
-import { registerServices } from './services/startup';
-import { startup } from './startup';
-import { startLicense } from '../ee/app/license/server/startup';
-import { registerEEBroker } from '../ee/server';
-import { startFederationService } from '../ee/server/startup/services';
+// FIXME: It could be a listener inside of some setting watcher
+import './lib/logger/startup';
 
+// FIXME: This should be removed
+import './startup/appcache';
+import './startup/callbacks';
+import './startup/cron';
+import './startup/initialData';
+import './startup/serverRunning';
+import './startup/coreApps';
+import './startup/presenceTroubleshoot';
+import './hooks';
+import './lib/rooms/roomTypes';
+import './lib/settingsRegenerator';
 import './routes';
 import '../app/lib/server/startup';
 import './importPackages';
 import './methods';
 import './publications';
-import './lib/logger/startup';
 import '../lib/oauthRedirectUriServer';
 import './lib/pushConfig';
 import './features/EmailInbox/index';
 
-await Promise.all([configureLogLevel(), registerServices(), registerEEBroker(), startup()]);
+import { registerServices } from './services/startup';
+import { configureLoginServices } from './configuration';
 
-await startLicense();
+await registerServices();
 
-await Promise.all([configureLoginServices(), startFederationService()]);
+await configureLoginServices();
