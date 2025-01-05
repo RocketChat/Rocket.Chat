@@ -19,7 +19,7 @@ api.registerService(new LDAPEEService(), ['license']);
 api.registerService(new LicenseService(), ['license']);
 api.registerService(new MessageReadsService(), ['license']);
 api.registerService(new OmnichannelEE(), ['license']);
-api.registerService(new VoipFreeSwitchService((id) => settings.get(id)), ['license']);
+api.registerService(new VoipFreeSwitchService(), ['license']);
 
 // when not running micro services we want to start up the instance intercom
 if (!isRunningMs()) {

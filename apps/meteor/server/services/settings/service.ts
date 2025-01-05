@@ -1,5 +1,3 @@
-import '../../../app/settings/server';
-
 import type { ISettingsService } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { SettingValue } from '@rocket.chat/core-typings';
@@ -17,11 +15,9 @@ export class SettingsService extends ServiceClassInternal implements ISettingsSe
 		// settingsRegistry.add = use(settingsRegistry.add, async (context, next) => {
 		// 	return next(...context) as any;
 		// });
-
 		// settingsRegistry.addGroup = use(settingsRegistry.addGroup, async (context, next) => {
 		// 	return next(...context) as any;
 		// });
-
 		// await initializeSettings({ model: Settings, settings });
 	}
 

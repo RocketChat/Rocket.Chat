@@ -1,4 +1,4 @@
-import { api } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { LicenseLimitKind } from '@rocket.chat/core-typings';
 import { applyLicense, applyLicenseOrRemove, License } from '@rocket.chat/license';
 import { Subscriptions, Users, Settings, LivechatVisitors } from '@rocket.chat/models';
@@ -10,8 +10,6 @@ import { syncWorkspace } from '../../../../app/cloud/server/functions/syncWorksp
 import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-
-import { ServiceClassInternal } from '@rocket.chat/core-services';
 
 export class StartupEEService extends ServiceClassInternal {
 	protected name = 'startup';
@@ -73,11 +71,13 @@ export class StartupEEService extends ServiceClassInternal {
 
 				License.onInvalidate(async () => void api.broadcast('license.actions', {} as Record<Partial<LicenseLimitKind>, boolean>));
 
-				License.onBehaviorTriggered('prevent_action', (context) => syncByTriggerDebounced(`prevent_action_${context.limit}`));
+				License.onBehaviorTriggered('prevent_action', (context) => this.syncByTriggerDebounced(`prevent_action_${context.limit}`));
 
-				License.onBehaviorTriggered('start_fair_policy', async (context) => syncByTriggerDebounced(`start_fair_policy_${context.limit}`));
+				License.onBehaviorTriggered('start_fair_policy', async (context) =>
+					this.syncByTriggerDebounced(`start_fair_policy_${context.limit}`),
+				);
 
-				License.onBehaviorTriggered('disable_modules', async (context) => syncByTriggerDebounced(`disable_modules_${context.limit}`));
+				License.onBehaviorTriggered('disable_modules', async (context) => this.syncByTriggerDebounced(`disable_modules_${context.limit}`));
 
 				License.onChange(() => api.broadcast('license.sync'));
 
@@ -104,9 +104,13 @@ export class StartupEEService extends ServiceClassInternal {
 	}
 
 	async syncByTriggerDebounced(context: string) {
+		/**
+		 * This is a debounced function that will sync the workspace data to the cloud.
+		 * it caches the context, waits for a second and then syncs the data.
+		 */
 		let timeout: NodeJS.Timeout | undefined;
 		const contexts: Set<string> = new Set();
-		return async (context: string) => {
+		return async () => {
 			contexts.add(context);
 			if (timeout) {
 				clearTimeout(timeout);
@@ -162,9 +166,8 @@ export class StartupEEService extends ServiceClassInternal {
 		} catch (error) {
 			console.error(error);
 		}
-	};
+	}
 }
-
 
 export const startLicense = async () => {
 	settings.watch<string>('Site_Url', (value) => {

@@ -25,8 +25,8 @@ import '../lib/oauthRedirectUriServer';
 import './lib/pushConfig';
 import './features/EmailInbox/index';
 
-import { registerServices } from './services/startup';
 import { configureLoginServices } from './configuration';
+import { registerServices } from './services/startup';
 
 await registerServices();
 

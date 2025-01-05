@@ -9,13 +9,7 @@ import './applyMiddlewares';
 
 const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings });
 
-export {
-	initializeSettings,
-	settings,
-	settingsRegistry,
-	SettingsEvents,
-	use,
-};
+export { initializeSettings, settings, settingsRegistry, SettingsEvents, use };
 
 settingsRegistry.add = use(settingsRegistry.add, async (context, next) => {
 	return next(...context) as any;
