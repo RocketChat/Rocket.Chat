@@ -58,6 +58,7 @@ type FCMError = {
 // a SENDER_ID_MISMATCH error. This error is returned when the sender ID provided in the request does not match the sender ID
 // associated with the registration token.
 const SENDER_ID_MISMATCH_ERROR_CODE = 403;
+const NOT_FOUND_ERROR_CODE = 404;
 
 /**
  * Send a push notification using Firebase Cloud Messaging (FCM).
@@ -85,8 +86,7 @@ async function fetchWithRetry(url: string, _removeToken: () => void, options: Ex
 
 	const retryAfter = response.headers.get('retry-after');
 	const retryAfterSeconds = retryAfter ? parseInt(retryAfter, 10) : 60;
-
-	if (response.status === 404 || response.status === SENDER_ID_MISMATCH_ERROR_CODE) {
+	if ([SENDER_ID_MISMATCH_ERROR_CODE, NOT_FOUND_ERROR_CODE].includes(response.status)) {
 		_removeToken();
 		return response;
 	}
