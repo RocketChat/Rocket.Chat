@@ -1,5 +1,4 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import React from 'react';
 
 const AppDetailsPageLoading = () => (
 	<Box display='flex' flexDirection='row' mbe={20} w='full'>

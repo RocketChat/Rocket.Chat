@@ -14,6 +14,8 @@ export * from './models/IEmojiCustomModel';
 export * from './models/IExportOperationsModel';
 export * from './models/IFederationKeysModel';
 export * from './models/IFederationServersModel';
+export * from './models/IFreeSwitchCallModel';
+export * from './models/IFreeSwitchEventModel';
 export * from './models/IInstanceStatusModel';
 export * from './models/IIntegrationHistoryModel';
 export * from './models/IIntegrationsModel';

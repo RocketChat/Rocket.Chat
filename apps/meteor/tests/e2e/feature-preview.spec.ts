@@ -280,8 +280,7 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
 		});
 
-		// remove .fail after fix
-		test.fail('should sort by last message even if unread message is inside thread', async ({ page, browser }) => {
+		test('should sort by last message even if unread message is inside thread', async ({ page, browser }) => {
 			const user1Page = await browser.newPage({ storageState: Users.user1.state });
 			const user1Channel = new HomeChannel(user1Page);
 

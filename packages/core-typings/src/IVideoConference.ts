@@ -29,7 +29,7 @@ export type LivechatInstructions = {
 	callId: string;
 };
 
-export type VideoConferenceType = DirectCallInstructions['type'] | ConferenceInstructions['type'] | LivechatInstructions['type'];
+export type VideoConferenceType = DirectCallInstructions['type'] | ConferenceInstructions['type'] | LivechatInstructions['type'] | 'voip';
 
 export interface IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'> {
 	ts: Date;
@@ -73,7 +73,32 @@ export interface ILivechatVideoConference extends IVideoConference {
 	type: 'livechat';
 }
 
-export type VideoConference = IDirectVideoConference | IGroupVideoConference | ILivechatVideoConference;
+export interface IVoIPVideoConferenceData {}
+
+export type IVoIPVideoConference = IVideoConference & {
+	type: 'voip';
+	externalId: string;
+
+	callerExtension?: string;
+	calleeExtension?: string;
+	external?: boolean;
+	transferred?: boolean;
+	duration?: number;
+
+	events: {
+		outgoing?: boolean;
+		hold?: boolean;
+		park?: boolean;
+		bridge?: boolean;
+		answer?: boolean;
+	};
+};
+
+export type ExternalVideoConference = IDirectVideoConference | IGroupVideoConference | ILivechatVideoConference;
+
+export type InternalVideoConference = IVoIPVideoConference;
+
+export type VideoConference = ExternalVideoConference | InternalVideoConference;
 
 export type VideoConferenceInstructions = DirectCallInstructions | ConferenceInstructions | LivechatInstructions;
 
@@ -89,11 +114,16 @@ export const isLivechatVideoConference = (call: VideoConference | undefined | nu
 	return call?.type === 'livechat';
 };
 
+export const isVoIPVideoConference = (call: VideoConference | undefined | null): call is IVoIPVideoConference => {
+	return call?.type === 'voip';
+};
+
 type GroupVideoConferenceCreateData = Omit<IGroupVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };
 type DirectVideoConferenceCreateData = Omit<IDirectVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };
 type LivechatVideoConferenceCreateData = Omit<ILivechatVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };
+type VoIPVideoConferenceCreateData = Omit<IVoIPVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };
 
 export type VideoConferenceCreateData = AtLeast<
-	DirectVideoConferenceCreateData | GroupVideoConferenceCreateData | LivechatVideoConferenceCreateData,
+	DirectVideoConferenceCreateData | GroupVideoConferenceCreateData | LivechatVideoConferenceCreateData | VoIPVideoConferenceCreateData,
 	'createdBy' | 'type' | 'rid' | 'providerName' | 'providerData'
 >;

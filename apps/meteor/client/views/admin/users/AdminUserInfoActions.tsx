@@ -1,31 +1,13 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import { ButtonGroup, Menu, Option } from '@rocket.chat/fuselage';
-import { useRoute, usePermission } from '@rocket.chat/ui-contexts';
+import { ButtonGroup, IconButton } from '@rocket.chat/fuselage';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
-import React, { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { AdminUsersTab } from './AdminUsersPage';
-import { useChangeAdminStatusAction } from './hooks/useChangeAdminStatusAction';
-import { useChangeUserStatusAction } from './hooks/useChangeUserStatusAction';
-import { useDeleteUserAction } from './hooks/useDeleteUserAction';
-import { useResetE2EEKeyAction } from './hooks/useResetE2EEKeyAction';
-import { useResetTOTPAction } from './hooks/useResetTOTPAction';
+import type { AdminUserInfoActionsProps } from './hooks/useAdminUserInfoActions';
+import { useAdminUserInfoActions } from './hooks/useAdminUserInfoActions';
 import { UserInfoAction } from '../../../components/UserInfo';
-import { useActionSpread } from '../../hooks/useActionSpread';
 
-type AdminUserInfoActionsProps = {
-	username: IUser['username'];
-	userId: IUser['_id'];
-	isFederatedUser: IUser['federated'];
-	isActive: boolean;
-	isAdmin: boolean;
-	tab: AdminUsersTab;
-	onChange: () => void;
-	onReload: () => void;
-};
-
-// TODO: Replace menu
 const AdminUserInfoActions = ({
 	username,
 	userId,
@@ -37,78 +19,16 @@ const AdminUserInfoActions = ({
 	onReload,
 }: AdminUserInfoActionsProps): ReactElement => {
 	const { t } = useTranslation();
-	const directRoute = useRoute('direct');
-	const userRoute = useRoute('admin-users');
-	const canDirectMessage = usePermission('create-d');
-	const canEditOtherUserInfo = usePermission('edit-other-user-info');
-
-	const changeAdminStatusAction = useChangeAdminStatusAction(userId, isAdmin, onChange);
-	const changeUserStatusAction = useChangeUserStatusAction(userId, isActive, onChange);
-	const deleteUserAction = useDeleteUserAction(userId, onChange, onReload);
-	const resetTOTPAction = useResetTOTPAction(userId);
-	const resetE2EKeyAction = useResetE2EEKeyAction(userId);
-
-	const directMessageClick = useCallback(
-		() =>
-			username &&
-			directRoute.push({
-				rid: username,
-			}),
-		[directRoute, username],
-	);
-
-	const editUserClick = useCallback(
-		() =>
-			userRoute.push({
-				context: 'edit',
-				id: userId,
-			}),
-		[userId, userRoute],
-	);
-
-	const isNotPendingDeactivatedNorFederated = tab !== 'pending' && tab !== 'deactivated' && !isFederatedUser;
-	const options = useMemo(
-		() => ({
-			...(canDirectMessage && {
-				directMessage: {
-					icon: 'balloon' as const,
-					label: t('Direct_Message'),
-					title: t('Direct_Message'),
-					action: directMessageClick,
-				},
-			}),
-			...(canEditOtherUserInfo && {
-				editUser: {
-					icon: 'edit' as const,
-					label: t('Edit'),
-					title: isFederatedUser ? t('Edit_Federated_User_Not_Allowed') : t('Edit'),
-					action: editUserClick,
-					disabled: isFederatedUser,
-				},
-			}),
-			...(isNotPendingDeactivatedNorFederated && changeAdminStatusAction && { makeAdmin: changeAdminStatusAction }),
-			...(isNotPendingDeactivatedNorFederated && resetE2EKeyAction && { resetE2EKey: resetE2EKeyAction }),
-			...(isNotPendingDeactivatedNorFederated && resetTOTPAction && { resetTOTP: resetTOTPAction }),
-			...(changeUserStatusAction && !isFederatedUser && { changeActiveStatus: changeUserStatusAction }),
-			...(deleteUserAction && { delete: deleteUserAction }),
-		}),
-		[
-			canDirectMessage,
-			canEditOtherUserInfo,
-			changeAdminStatusAction,
-			changeUserStatusAction,
-			deleteUserAction,
-			directMessageClick,
-			editUserClick,
-			isFederatedUser,
-			isNotPendingDeactivatedNorFederated,
-			resetE2EKeyAction,
-			resetTOTPAction,
-			t,
-		],
-	);
-
-	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(options);
+	const { actions: actionsDefinition, menuActions: menuOptions } = useAdminUserInfoActions({
+		username,
+		userId,
+		isFederatedUser,
+		isActive,
+		isAdmin,
+		tab,
+		onChange,
+		onReload,
+	});
 
 	const menu = useMemo(() => {
 		if (!menuOptions) {
@@ -116,25 +36,21 @@ const AdminUserInfoActions = ({
 		}
 
 		return (
-			<Menu
-				mi={4}
-				placement='bottom-start'
-				small={false}
-				secondary
-				flexShrink={0}
+			<GenericMenu
 				key='menu'
-				renderItem={({ label: { label, icon }, ...props }): ReactElement => (
-					<Option label={label} title={label} icon={icon} variant={label === 'Delete' ? 'danger' : ''} {...props} />
-				)}
-				options={menuOptions}
+				button={<IconButton icon='kebab' secondary />}
+				title={t('More')}
+				sections={menuOptions}
+				placement='bottom-end'
+				small={false}
 			/>
 		);
-	}, [menuOptions]);
+	}, [t, menuOptions]);
 
 	// TODO: sanitize Action type to avoid any
 	const actions = useMemo(() => {
-		const mapAction = ([key, { label, icon, action, disabled, title }]: any): ReactElement => (
-			<UserInfoAction key={key} title={title} label={label} onClick={action} disabled={disabled} icon={icon} />
+		const mapAction = ([key, { content, title, icon, onClick, disabled }]: any): ReactElement => (
+			<UserInfoAction key={key} title={title} label={content} onClick={onClick} disabled={disabled} icon={icon} />
 		);
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);

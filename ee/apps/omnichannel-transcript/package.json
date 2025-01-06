@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/omnichannel-transcript",
 	"private": true,
-	"version": "0.4.10-rc.1",
+	"version": "0.4.10",
 	"description": "Rocket.Chat service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -37,7 +37,7 @@
 		"moleculer": "^0.14.35",
 		"moment-timezone": "^0.5.46",
 		"mongo-message-queue": "^1.1.0",
-		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
+		"mongodb": "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch",
 		"nats": "^2.28.2",
 		"pino": "^8.21.0",
 		"polka": "^0.5.2"

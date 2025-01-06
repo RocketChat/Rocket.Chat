@@ -1,11 +1,11 @@
 {
 	"name": "@rocket.chat/model-typings",
-	"version": "1.1.0-rc.1",
+	"version": "1.1.0",
 	"private": true,
 	"devDependencies": {
 		"@types/node-rsa": "^1.1.4",
 		"eslint": "~8.45.0",
-		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
+		"mongodb": "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch",
 		"typescript": "~5.7.2"
 	},
 	"scripts": {

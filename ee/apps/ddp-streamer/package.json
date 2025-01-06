@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/ddp-streamer",
 	"private": true,
-	"version": "0.3.10-rc.1",
+	"version": "0.3.10",
 	"description": "Rocket.Chat DDP-Streamer service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -34,7 +34,7 @@
 		"jaeger-client": "^3.19.0",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.35",
-		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
+		"mongodb": "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch",
 		"nats": "^2.28.2",
 		"pino": "^8.21.0",
 		"polka": "^0.5.2",
@@ -49,9 +49,9 @@
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/ejson": "^2.2.2",
 		"@types/gc-stats": "^1.4.3",
-		"@types/meteor": "^2.9.8",
 		"@types/node": "~20.17.8",
 		"@types/polka": "^0.5.7",
+		"@types/underscore": "^1.13.0",
 		"@types/uuid": "^10.0.0",
 		"@types/ws": "^8.5.13",
 		"eslint": "~8.45.0",

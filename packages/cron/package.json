@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/cron",
-	"version": "0.1.10-rc.1",
+	"version": "0.1.10",
 	"private": true,
 	"devDependencies": {
 		"eslint": "~8.45.0",
@@ -22,6 +22,6 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/random": "workspace:^",
-		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch"
+		"mongodb": "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch"
 	}
 }

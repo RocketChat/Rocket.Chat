@@ -176,7 +176,7 @@ API.v1.addRoute(
 			});
 
 			if (!result) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			return API.v1.success(result);
@@ -306,7 +306,7 @@ API.v1.addRoute(
 				(await hasPermissionAsync(this.userId, 'view-joined-room')) &&
 				!(await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { projection: { _id: 1 } }))
 			) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
@@ -501,7 +501,7 @@ API.v1.addRoute(
 			}
 
 			if (channelId && !(await hasPermissionAsync(this.userId, 'edit-room', channelId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const room = await findChannelByIdOrName({
@@ -615,7 +615,7 @@ API.v1.addRoute(
 
 			if (userId) {
 				if (!access) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 				user = userId;
 			}
@@ -753,7 +753,7 @@ API.v1.addRoute(
 				});
 			} catch (e: any) {
 				if (e.message === 'unauthorized') {
-					error = API.v1.unauthorized();
+					error = API.v1.forbidden();
 				} else {
 					error = API.v1.failure(e.message);
 				}
@@ -803,7 +803,7 @@ API.v1.addRoute(
 			});
 
 			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -1058,7 +1058,7 @@ API.v1.addRoute(
 			});
 
 			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);

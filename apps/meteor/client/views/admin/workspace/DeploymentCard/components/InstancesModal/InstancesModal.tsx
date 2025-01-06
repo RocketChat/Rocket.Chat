@@ -1,6 +1,5 @@
-import { Accordion } from '@rocket.chat/fuselage';
+import { Accordion, AccordionItem } from '@rocket.chat/fuselage';
 import type { IInstance } from '@rocket.chat/rest-typings';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DescriptionList from './DescriptionList';
@@ -21,7 +20,7 @@ const InstancesModal = ({ instances = [], onClose }: InstancesModalProps) => {
 		<GenericModal onConfirm={onClose} confirmText={t('Close')} icon={null} title={t('Instances')} onClose={onClose}>
 			<Accordion>
 				{instances.map(({ address, broadcastAuth, currentStatus, instanceRecord }) => (
-					<Accordion.Item defaultExpanded title={address} key={address}>
+					<AccordionItem defaultExpanded title={address} key={address}>
 						<DescriptionList>
 							<DescriptionListEntry label={t('Address')}>{address}</DescriptionListEntry>
 							<DescriptionListEntry label={t('Auth')}>{broadcastAuth ? 'true' : 'false'}</DescriptionListEntry>
@@ -81,7 +80,7 @@ const InstancesModal = ({ instances = [], onClose }: InstancesModalProps) => {
 								{formatDateAndTime(instanceRecord?._updatedAt)}
 							</DescriptionListEntry>
 						</DescriptionList>
-					</Accordion.Item>
+					</AccordionItem>
 				))}
 			</Accordion>
 		</GenericModal>

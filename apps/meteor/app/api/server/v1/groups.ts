@@ -271,7 +271,7 @@ API.v1.addRoute(
 
 			if (params.userId) {
 				if (!access) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 				user = params.userId;
 			}
@@ -348,7 +348,7 @@ API.v1.addRoute(
 				});
 			} catch (error: unknown) {
 				if (isMeteorError(error) && error.reason === 'error-not-allowed') {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 				throw error;
 			}
@@ -518,7 +518,7 @@ API.v1.addRoute(
 			});
 
 			if (!result) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			return API.v1.success(result);
@@ -709,7 +709,7 @@ API.v1.addRoute(
 			});
 
 			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult.rid))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
@@ -1254,7 +1254,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await hasAllPermissionAsync(this.userId, ['create-team', 'edit-room'], room.rid))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const subscriptions = await Subscriptions.findByRoomId(room.rid, {

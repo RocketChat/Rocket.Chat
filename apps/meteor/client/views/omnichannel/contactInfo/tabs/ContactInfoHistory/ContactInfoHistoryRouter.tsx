@@ -1,6 +1,6 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import ContactInfoHistory from './ContactInfoHistory';
 import ContactInfoHistoryMessages from './ContactInfoHistoryMessages';

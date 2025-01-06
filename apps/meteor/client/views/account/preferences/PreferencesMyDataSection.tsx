@@ -1,6 +1,6 @@
-import { Accordion, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
+import { AccordionItem, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MyDataModal from './MyDataModal';
@@ -75,7 +75,7 @@ const PreferencesMyDataSection = () => {
 	const handleClickExport = useCallback(() => downloadData(true), [downloadData]);
 
 	return (
-		<Accordion.Item title={t('My Data')}>
+		<AccordionItem title={t('My Data')}>
 			<ButtonGroup stretch>
 				<Button icon='download' onClick={handleClickDownload}>
 					{t('Download_My_Data')}
@@ -84,7 +84,7 @@ const PreferencesMyDataSection = () => {
 					{t('Export_My_Data')}
 				</Button>
 			</ButtonGroup>
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 

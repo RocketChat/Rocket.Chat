@@ -4,7 +4,6 @@ import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UsersInRoleTable from './UsersInRoleTable';
@@ -47,7 +46,9 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 				}),
 			);
 			dispatchToastMessage({ type: 'success', message: t('Users_added') });
-			queryClient.invalidateQueries(['getUsersInRole']);
+			queryClient.invalidateQueries({
+				queryKey: ['getUsersInRole'],
+			});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
