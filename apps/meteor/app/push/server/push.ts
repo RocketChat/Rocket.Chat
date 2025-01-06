@@ -7,12 +7,12 @@ import { JWT } from 'google-auth-library';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings/server';
 import { initAPN, sendAPN } from './apn';
 import type { PushOptions, PendingPushNotification } from './definition';
 import { sendFCM } from './fcm';
 import { sendGCM } from './gcm';
 import { logger } from './logger';
+import { settings } from '../../settings/server';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 
@@ -20,7 +20,7 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type FCMCredentials = {
+type FCMCredentials = {
 	type: string;
 	project_id: string;
 	private_key_id: string;

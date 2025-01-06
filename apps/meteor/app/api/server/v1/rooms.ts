@@ -9,6 +9,7 @@ import {
 	isRoomsExportProps,
 	isRoomsIsMemberProps,
 	isRoomsCleanHistoryProps,
+	isRoomsOpenProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -16,6 +17,7 @@ import { isTruthy } from '../../../../lib/isTruthy';
 import { omit } from '../../../../lib/utils/omit';
 import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
+import { openRoom } from '../../../../server/lib/openRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -162,7 +164,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const file = await getUploadFormData(
@@ -196,6 +198,10 @@ API.v1.addRoute(
 			const fileStore = FileUpload.getStore('Uploads');
 			const uploadedFile = await fileStore.insert(details, fileBuffer);
 
+			if ((fields.description?.length ?? 0) > settings.get<number>('Message_MaxAllowedSize')) {
+				throw new Meteor.Error('error-message-size-exceeded');
+			}
+
 			uploadedFile.description = fields.description;
 
 			delete fields.description;
@@ -219,7 +225,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const file = await getUploadFormData(
@@ -290,13 +296,17 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const file = await Uploads.findOneById(this.urlParams.fileId);
 
 			if (!file) {
 				throw new Meteor.Error('invalid-file');
+			}
+
+			if ((this.bodyParams.description?.length ?? 0) > settings.get<number>('Message_MaxAllowedSize')) {
+				throw new Meteor.Error('error-message-size-exceeded');
 			}
 
 			file.description = this.bodyParams.description;
@@ -434,7 +444,7 @@ API.v1.addRoute(
 			const parent = discussionParent || parentRoom;
 
 			return API.v1.success({
-				room: (await Rooms.findOneByIdOrName(room._id, { projection: fields })) ?? undefined,
+				room: await Rooms.findOneByIdOrName(room._id, { projection: fields }),
 				...(team && { team }),
 				...(parent && { parent }),
 			});
@@ -459,9 +469,14 @@ API.v1.addRoute(
 	},
 );
 
+/*
+TO-DO: 8.0.0 should use the ajv validation
+which will change this endpoint's
+response errors.
+*/
 API.v1.addRoute(
 	'rooms.createDiscussion',
-	{ authRequired: true },
+	{ authRequired: true /* , validateParams: isRoomsCreateDiscussionProps */ },
 	{
 		async post() {
 			// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -541,7 +556,7 @@ API.v1.addRoute(
 			});
 
 			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			let initialImage: IUpload | null = null;
@@ -837,7 +852,7 @@ API.v1.addRoute(
 					isMember: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0,
 				});
 			}
-			return API.v1.unauthorized();
+			return API.v1.forbidden();
 		},
 	},
 );
@@ -872,6 +887,20 @@ API.v1.addRoute(
 			}
 
 			await unmuteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.open',
+	{ authRequired: true, validateParams: isRoomsOpenProps },
+	{
+		async post() {
+			const { roomId } = this.bodyParams;
+
+			await openRoom(this.userId, roomId);
 
 			return API.v1.success();
 		},

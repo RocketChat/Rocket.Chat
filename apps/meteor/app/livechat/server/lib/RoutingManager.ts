@@ -17,9 +17,6 @@ import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@ro
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
-import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
-import { settings } from '../../../settings/server';
 import {
 	createLivechatSubscription,
 	dispatchAgentDelegated,
@@ -30,6 +27,9 @@ import {
 	updateChatDepartment,
 	allowAgentSkipQueue,
 } from './Helper';
+import { callbacks } from '../../../../lib/callbacks';
+import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
+import { settings } from '../../../settings/server';
 
 const logger = new Logger('RoutingManager');
 

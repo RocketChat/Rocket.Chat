@@ -1,35 +1,10 @@
-import type {
-    AppActivationBridge,
-    AppDetailChangesBridge,
-    EnvironmentalVariableBridge,
-    HttpBridge,
-    IInternalBridge,
-    IListenerBridge,
-    LivechatBridge,
-    MessageBridge,
-    ModerationBridge,
-    PersistenceBridge,
-    RoleBridge,
-    RoomBridge,
-    SchedulerBridge,
-    ServerSettingBridge,
-    UiInteractionBridge,
-    UploadBridge,
-    UserBridge,
-    VideoConferenceBridge,
-} from '../../../src/server/bridges';
-import { AppBridges } from '../../../src/server/bridges';
-import type { CloudWorkspaceBridge } from '../../../src/server/bridges/CloudWorkspaceBridge';
-import type { EmailBridge } from '../../../src/server/bridges/EmailBridge';
-import type { IInternalFederationBridge } from '../../../src/server/bridges/IInternalFederationBridge';
-import type { OAuthAppsBridge } from '../../../src/server/bridges/OAuthAppsBridge';
-import type { ThreadBridge } from '../../../src/server/bridges/ThreadBridge';
 import { TestOAuthAppsBridge } from './OAuthAppsBridge';
 import { TestsActivationBridge } from './activationBridge';
 import { TestsApiBridge } from './apiBridge';
 import { TestsAppDetailChangesBridge } from './appDetailChanges';
 import { TestAppCloudWorkspaceBridge } from './cloudBridge';
 import { TestsCommandBridge } from './commandBridge';
+import { TestContactBridge } from './contactBridge';
 import { TestsEmailBridge } from './emailBridge';
 import { TestsEnvironmentalVariableBridge } from './environmentalVariableBridge';
 import { TestsHttpBridge } from './httpBridge';
@@ -48,6 +23,33 @@ import { TestsUiIntegrationBridge } from './uiIntegrationBridge';
 import { TestUploadBridge } from './uploadBridge';
 import { TestsUserBridge } from './userBridge';
 import { TestsVideoConferenceBridge } from './videoConferenceBridge';
+import { AppBridges } from '../../../src/server/bridges';
+import type {
+    AppActivationBridge,
+    AppDetailChangesBridge,
+    ContactBridge,
+    EnvironmentalVariableBridge,
+    HttpBridge,
+    IInternalBridge,
+    IListenerBridge,
+    LivechatBridge,
+    MessageBridge,
+    ModerationBridge,
+    PersistenceBridge,
+    RoleBridge,
+    RoomBridge,
+    SchedulerBridge,
+    ServerSettingBridge,
+    UiInteractionBridge,
+    UploadBridge,
+    UserBridge,
+    VideoConferenceBridge,
+} from '../../../src/server/bridges';
+import type { CloudWorkspaceBridge } from '../../../src/server/bridges/CloudWorkspaceBridge';
+import type { EmailBridge } from '../../../src/server/bridges/EmailBridge';
+import type { IInternalFederationBridge } from '../../../src/server/bridges/IInternalFederationBridge';
+import type { OAuthAppsBridge } from '../../../src/server/bridges/OAuthAppsBridge';
+import type { ThreadBridge } from '../../../src/server/bridges/ThreadBridge';
 
 export class TestsAppBridges extends AppBridges {
     private readonly appDetails: TestsAppDetailChangesBridge;
@@ -83,6 +85,8 @@ export class TestsAppBridges extends AppBridges {
     private readonly uploadBridge: TestUploadBridge;
 
     private readonly emailBridge: EmailBridge;
+
+    private readonly contactBridge: ContactBridge;
 
     private readonly uiIntegrationBridge: TestsUiIntegrationBridge;
 
@@ -124,6 +128,7 @@ export class TestsAppBridges extends AppBridges {
         this.internalFederationBridge = new TestsInternalFederationBridge();
         this.threadBridge = new TestsThreadBridge();
         this.emailBridge = new TestsEmailBridge();
+        this.contactBridge = new TestContactBridge();
     }
 
     public getCommandBridge(): TestsCommandBridge {
@@ -224,5 +229,9 @@ export class TestsAppBridges extends AppBridges {
 
     public getInternalFederationBridge(): IInternalFederationBridge {
         return this.internalFederationBridge;
+    }
+
+    public getContactBridge(): ContactBridge {
+        return this.contactBridge;
     }
 }

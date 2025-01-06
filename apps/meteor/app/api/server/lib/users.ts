@@ -183,20 +183,22 @@ export async function findPaginatedUsersByStatus({
 		...(canSeeExtension ? { freeSwitchExtension: 1 } : {}),
 	};
 
-	match.$or = [
-		...(canSeeAllUserInfo ? [{ 'emails.address': { $regex: escapeRegExp(searchTerm || ''), $options: 'i' } }] : []),
-		{
-			username: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
-		},
-		{
-			name: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
-		},
-	];
+	if (searchTerm?.trim()) {
+		match.$or = [
+			...(canSeeAllUserInfo ? [{ 'emails.address': { $regex: escapeRegExp(searchTerm || ''), $options: 'i' } }] : []),
+			{
+				username: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
+			},
+			{
+				name: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
+			},
+		];
+	}
 	if (roles?.length && !roles.includes('all')) {
 		match.roles = { $in: roles };
 	}
 
-	const { cursor, totalCount } = await Users.findPaginated(
+	const { cursor, totalCount } = Users.findPaginated(
 		{
 			...match,
 		},

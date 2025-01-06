@@ -5,10 +5,10 @@ import { Meteor } from 'meteor/meteor';
 import { Inject } from 'meteor/meteorhacks:inject-initial';
 import { Tracker } from 'meteor/tracker';
 
+import { applyHeadInjections, headInjections, injectIntoBody, injectIntoHead } from './inject';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 import { settings } from '../../settings/server';
 import { getURL } from '../../utils/server/getURL';
-import { applyHeadInjections, headInjections, injectIntoBody, injectIntoHead } from './inject';
 
 import './scripts';
 

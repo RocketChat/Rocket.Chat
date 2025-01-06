@@ -29,9 +29,11 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { useEditRoomInitialValues } from './useEditRoomInitialValues';
+import { useEditRoomPermissions } from './useEditRoomPermissions';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
 import {
 	ContextualbarHeader,
@@ -47,8 +49,6 @@ import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { getDirtyFields } from '../../../../../lib/getDirtyFields';
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
-import { useEditRoomInitialValues } from './useEditRoomInitialValues';
-import { useEditRoomPermissions } from './useEditRoomPermissions';
 
 type EditRoomInfoProps = {
 	room: IRoomWithRetentionPolicy;
@@ -196,7 +196,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						}),
 				});
 
-				await query.invalidateQueries(['/v1/rooms.info', room._id]);
+				await query.invalidateQueries({
+					queryKey: ['/v1/rooms.info', room._id],
+				});
 				dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
 				onClickClose();
 			} catch (error) {

@@ -1,9 +1,11 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { hashQueryKey } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { hashKey } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import AddAgent from './AddAgent';
+import AgentsTableRow from './AgentsTableRow';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
 import {
@@ -17,8 +19,6 @@ import { usePagination } from '../../../../components/GenericTable/hooks/usePagi
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { useAgentsQuery } from '../hooks/useAgentsQuery';
 import { useQuery } from '../hooks/useQuery';
-import AddAgent from './AddAgent';
-import AgentsTableRow from './AgentsTableRow';
 
 // TODO: missing error state
 const AgentsTable = () => {
@@ -36,8 +36,8 @@ const AgentsTable = () => {
 	const query = useQuery({ text, current, itemsPerPage }, debouncedSort);
 	const { data, isSuccess, isLoading, refetch } = useAgentsQuery(query);
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const onHeaderClick = useMutableCallback((id) => {
 		if (sortBy === id) {

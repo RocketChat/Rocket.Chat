@@ -1,6 +1,7 @@
+import type { SlashCommand } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { slashCommands } from '../../app/utils/client/slashCommand';
@@ -13,7 +14,9 @@ export const useAppSlashCommands = () => {
 
 	const invalidate = useDebouncedCallback(
 		() => {
-			queryClient.invalidateQueries(['apps', 'slashCommands']);
+			queryClient.invalidateQueries({
+				queryKey: ['apps', 'slashCommands'],
+			});
 		},
 		100,
 		[],
@@ -35,10 +38,32 @@ export const useAppSlashCommands = () => {
 
 	const getSlashCommands = useEndpoint('GET', '/v1/commands.list');
 
-	useQuery(['apps', 'slashCommands'], () => getSlashCommands(), {
-		enabled: !!uid,
-		onSuccess(data) {
-			data.commands.forEach((command) => slashCommands.add(command));
+	const { data } = useQuery({
+		queryKey: ['apps', 'slashCommands'] as const,
+		queryFn: async () => {
+			let allCommands: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview' | 'appId'>[] = [];
+			let hasMore = true;
+			let offset = 0;
+			const count = 50;
+
+			while (hasMore) {
+				// eslint-disable-next-line no-await-in-loop
+				const { commands, total } = await getSlashCommands({ offset, count });
+				allCommands = allCommands.concat(commands);
+				hasMore = allCommands.length < total;
+				offset += count;
+			}
+
+			return allCommands;
 		},
+		enabled: !!uid,
 	});
+
+	useEffect(() => {
+		if (!data) {
+			return;
+		}
+
+		data.forEach((command) => slashCommands.add(command));
+	}, [data]);
 };

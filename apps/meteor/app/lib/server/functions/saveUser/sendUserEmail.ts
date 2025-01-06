@@ -1,8 +1,8 @@
 import { MeteorError } from '@rocket.chat/core-services';
 
+import type { SaveUserData } from './saveUser';
 import * as Mailer from '../../../../mailer/server/api';
 import { settings } from '../../../../settings/server';
-import type { SaveUserData } from './saveUser';
 
 let html = '';
 let passwordChangedHtml = '';

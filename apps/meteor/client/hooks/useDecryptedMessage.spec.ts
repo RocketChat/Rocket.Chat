@@ -1,8 +1,8 @@
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { renderHook, waitFor } from '@testing-library/react';
 
-import { e2e } from '../../app/e2e/client/rocketchat.e2e';
 import { useDecryptedMessage } from './useDecryptedMessage';
+import { e2e } from '../../app/e2e/client/rocketchat.e2e';
 
 // Mock the dependencies
 jest.mock('@rocket.chat/core-typings', () => ({

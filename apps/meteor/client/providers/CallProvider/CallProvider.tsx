@@ -24,10 +24,11 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import React, { useMemo, useRef, useCallback, useEffect, useState } from 'react';
+import { useMemo, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { OutgoingByeRequest } from 'sip.js/lib/core';
 
+import { useVoipSounds } from './hooks/useVoipSounds';
 import type { CallContextValue } from '../../contexts/CallContext';
 import { CallContext, useIsVoipEnterprise } from '../../contexts/CallContext';
 import { useDialModal } from '../../hooks/useDialModal';
@@ -36,7 +37,6 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import type { QueueAggregator } from '../../lib/voip/QueueAggregator';
 import { parseOutboundPhoneNumber } from '../../lib/voip/parseOutboundPhoneNumber';
 import { WrapUpCallModal } from '../../voip/components/modals/WrapUpCallModal';
-import { useVoipSounds } from './hooks/useVoipSounds';
 
 type NetworkState = 'online' | 'offline';
 
@@ -76,7 +76,12 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 	const voipSounds = useVoipSounds();
 
 	const closeRoom = useCallback(
-		async (data = {}): Promise<void> => {
+		async (
+			data: {
+				comment?: string;
+				tags?: string[];
+			} = {},
+		): Promise<void> => {
 			roomInfo &&
 				(await voipCloseRoomEndpoint({
 					rid: roomInfo.rid,
@@ -94,7 +99,7 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 	);
 
 	const openWrapUpModal = useCallback((): void => {
-		setModal(() => <WrapUpCallModal closeRoom={closeRoom} />);
+		setModal(<WrapUpCallModal closeRoom={closeRoom} />);
 	}, [closeRoom, setModal]);
 
 	const changeAudioOutputDevice = useMutableCallback((selectedAudioDevice: Device): void => {

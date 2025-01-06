@@ -1,27 +1,19 @@
 /* General */
-@import 'imports/general/variables.css';
-@import 'imports/general/reset.css';
-@import 'imports/general/base_old.css';
-@import 'imports/general/base.css';
-@import 'imports/general/react-root.css';
-
-/* Forms */
-@import 'imports/general/forms.css';
-@import 'imports/forms/button.css';
-@import 'imports/forms/input.css';
+@import url('imports/general/variables.css');
+@import url('imports/general/reset.css');
+@import url('imports/general/base_old.css');
+@import url('imports/general/base.css');
+@import url('imports/general/react-root.css');
 
 /* Main */
-@import 'imports/components/flex-nav.css';
-@import 'imports/components/main-content.css';
-@import 'imports/components/message-box.css';
-@import 'imports/components/modal.css';
-@import 'imports/components/messages.css';
-@import 'imports/components/emoji.css';
-@import 'imports/components/loading.css';
+@import url('imports/components/flex-nav.css');
+@import url('imports/components/main-content.css');
+@import url('imports/components/message-box.css');
+@import url('imports/components/emoji.css');
+@import url('imports/components/loading.css');
 
 /* Legacy theming */
-@import 'imports/general/theme_old.css';
-@import './vendor/fontello/css/fontello.css';
-@import './rocketchat.font.css';
-@import './mentionLink.css';
-@import '../../../node_modules/@rocket.chat/fuselage/dist/fuselage.css';
+@import url('imports/general/theme_old.css');
+@import url('./vendor/fontello/css/fontello.css');
+@import url('./rocketchat.font.css');
+@import url('../../../node_modules/@rocket.chat/fuselage/dist/fuselage.css');

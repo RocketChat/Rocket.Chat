@@ -1,9 +1,9 @@
 import * as timers from 'timers';
 import * as vm from 'vm';
 
-import type { App } from '../../definition/App';
 import type { IAppsEngineRuntimeOptions } from './AppsEngineRuntime';
 import { APPS_ENGINE_RUNTIME_DEFAULT_TIMEOUT, AppsEngineRuntime, getFilenameForApp } from './AppsEngineRuntime';
+import type { App } from '../../definition/App';
 
 export class AppsEngineNodeRuntime extends AppsEngineRuntime {
     public static defaultRuntimeOptions = {

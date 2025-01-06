@@ -3,8 +3,8 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 import { memo, useMemo } from 'react';
 
-import type { BlockProps } from '../utils/BlockProps';
 import Item from './ContextBlock.Item';
+import type { BlockProps } from '../utils/BlockProps';
 
 type ContextBlockProps = BlockProps<UiKit.ContextBlock>;
 

@@ -1,12 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FormSkeleton } from '../../../components/Skeleton';
 import type { EditDepartmentProps } from './EditDepartment';
 import EditDepartment from './EditDepartment';
+import { FormSkeleton } from '../../../components/Skeleton';
 
 const EditDepartmentWithAllowedForwardData = ({ data, ...props }: Omit<EditDepartmentProps, 'allowedToForwardData'>) => {
 	const { t } = useTranslation();
@@ -14,15 +13,18 @@ const EditDepartmentWithAllowedForwardData = ({ data, ...props }: Omit<EditDepar
 
 	const {
 		data: allowedToForwardData,
-		isInitialLoading,
+		isLoading,
 		isError,
-	} = useQuery(['/v1/livechat/department.listByIds', data?.department?.departmentsAllowedToForward], () =>
-		getDepartmentListByIds({
-			ids: data?.department?.departmentsAllowedToForward ?? [],
-		}),
-	);
+	} = useQuery({
+		queryKey: ['/v1/livechat/department.listByIds', data?.department?.departmentsAllowedToForward],
 
-	if (isInitialLoading) {
+		queryFn: () =>
+			getDepartmentListByIds({
+				ids: data?.department?.departmentsAllowedToForward ?? [],
+			}),
+	});
+
+	if (isLoading) {
 		return <FormSkeleton />;
 	}
 

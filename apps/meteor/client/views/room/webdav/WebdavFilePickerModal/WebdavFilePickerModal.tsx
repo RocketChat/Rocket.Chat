@@ -4,16 +4,16 @@ import { Modal, Box, IconButton, Select } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useToastMessageDispatch, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MouseEvent } from 'react';
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-import { fileUploadIsValidContentType } from '../../../../../app/utils/client';
-import FilterByText from '../../../../components/FilterByText';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import FileUploadModal from '../../modals/FileUploadModal';
 import FilePickerBreadcrumbs from './FilePickerBreadcrumbs';
 import WebdavFilePickerGrid from './WebdavFilePickerGrid';
 import WebdavFilePickerTable from './WebdavFilePickerTable';
 import { sortWebdavNodes } from './lib/sortWebdavNodes';
+import { fileUploadIsValidContentType } from '../../../../../app/utils/client';
+import FilterByText from '../../../../components/FilterByText';
+import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import FileUploadModal from '../../modals/FileUploadModal';
 
 export type WebdavSortOptions = 'name' | 'size' | 'dataModified';
 

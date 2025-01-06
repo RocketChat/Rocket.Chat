@@ -4,9 +4,11 @@ import type { OptionProp } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject } from 'react';
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import RoomRow from './RoomRow';
+import RoomsTableFilters from './RoomsTableFilters';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -17,8 +19,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import RoomRow from './RoomRow';
-import RoomsTableFilters from './RoomsTableFilters';
 
 type RoomFilters = {
 	searchText: string;
@@ -57,7 +57,10 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms');
 
-	const { data, refetch, isSuccess, isLoading, isError } = useQuery(['rooms', query, 'admin'], async () => getAdminRooms(query));
+	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
+		queryKey: ['rooms', query, 'admin'],
+		queryFn: async () => getAdminRooms(query),
+	});
 
 	useEffect(() => {
 		reload.current = refetch;

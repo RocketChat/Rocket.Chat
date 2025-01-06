@@ -1,8 +1,8 @@
+import { BaseBridge } from './BaseBridge';
 import type { IOnetimeSchedule, IProcessor, IRecurringSchedule } from '../../definition/scheduler';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export abstract class SchedulerBridge extends BaseBridge {
     public async doRegisterProcessors(processors: Array<IProcessor> = [], appId: string): Promise<void | Array<string>> {

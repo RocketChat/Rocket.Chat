@@ -2,11 +2,10 @@
 to: ee/apps/<%= name %>/src/service.ts
 ---
 import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
+import { registerServiceModels } from '@rocket.chat/models';
 import { broker } from '@rocket.chat/network-broker';
 import { startTracing } from '@rocket.chat/tracing';
 import polka from 'polka';
-
-import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
 
 const PORT = process.env.PORT || <%= h.random() %>;
 

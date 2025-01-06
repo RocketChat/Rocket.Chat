@@ -11,7 +11,7 @@ type InternalWidgetAPI = {
 	ready: () => void;
 	minimizeWindow: () => void;
 	restoreWindow: () => void;
-	openPopout: () => void;
+	openPopout: (token?: string) => void;
 	openWidget: () => void;
 	resizeWidget: (height: number) => void;
 	removeWidget: () => void;
@@ -484,17 +484,18 @@ const api: InternalWidgetAPI = {
 		openWidget();
 	},
 
-	openPopout() {
+	openPopout(token = '') {
 		closeWidget();
 		if (!config.url) {
 			throw new Error('Config.url is not set!');
 		}
+		const urlToken = token && `&token=${token}`;
+
 		api.popup = window.open(
-			`${config.url}${config.url.lastIndexOf('?') > -1 ? '&' : '?'}mode=popout`,
+			`${config.url}${config.url.lastIndexOf('?') > -1 ? '&' : '?'}mode=popout${urlToken}`,
 			'livechat-popout',
 			`width=${WIDGET_OPEN_WIDTH}, height=${widgetHeight}, toolbars=no`,
 		);
-		api.popup?.focus();
 	},
 
 	removeWidget() {

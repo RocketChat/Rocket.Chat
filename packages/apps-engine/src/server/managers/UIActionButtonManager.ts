@@ -1,9 +1,9 @@
 import type { IUIActionButton, IUIActionButtonDescriptor } from '../../definition/ui';
 import type { AppManager } from '../AppManager';
 import type { AppActivationBridge } from '../bridges';
+import { AppPermissionManager } from './AppPermissionManager';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { AppPermissionManager } from './AppPermissionManager';
 
 export class UIActionButtonManager {
     private readonly activationBridge: AppActivationBridge;

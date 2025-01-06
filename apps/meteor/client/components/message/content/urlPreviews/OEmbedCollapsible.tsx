@@ -1,11 +1,10 @@
 import { MessageGenericPreview } from '@rocket.chat/fuselage';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import MessageCollapsible from '../../MessageCollapsible';
 import OEmbedPreviewContent from './OEmbedPreviewContent';
 import type { OEmbedPreviewMetadata } from './OEmbedPreviewMetadata';
+import MessageCollapsible from '../../MessageCollapsible';
 
 type OEmbedCollapsibleProps = { children?: ReactNode } & OEmbedPreviewMetadata;
 

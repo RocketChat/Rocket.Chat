@@ -1,8 +1,8 @@
-import type { AppStatus } from '../definition/AppStatus';
+import type { AppManager } from './AppManager';
+import { AppStatus } from '../definition/AppStatus';
 import { AppsEngineException } from '../definition/exceptions';
 import type { IAppAuthorInfo, IAppInfo } from '../definition/metadata';
 import { AppMethod } from '../definition/metadata';
-import type { AppManager } from './AppManager';
 import { InvalidInstallationError } from './errors/InvalidInstallationError';
 import { AppConsole } from './logging';
 import { AppLicenseValidationResult } from './marketplace/license';
@@ -79,7 +79,7 @@ export class ProxiedApp {
     }
 
     public async getStatus(): Promise<AppStatus> {
-        return this.appRuntime.getStatus();
+        return this.appRuntime.getStatus().catch(() => AppStatus.UNKNOWN);
     }
 
     public async setStatus(status: AppStatus, silent?: boolean): Promise<void> {

@@ -4,7 +4,7 @@ import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { Mongo } from 'meteor/mongo';
 import { useCallback, useMemo } from 'react';
 
-import { ChatMessage } from '../../../../../app/models/client';
+import { Messages } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { useRoom } from '../../contexts/RoomContext';
 
@@ -38,7 +38,7 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 	return useReactiveValue(
 		useCallback(
 			() =>
-				ChatMessage.find(query, {
+				Messages.find(query, {
 					sort: {
 						ts: 1,
 					},

@@ -3,8 +3,8 @@ import type { App } from '@rocket.chat/core-typings';
 import semver from 'semver';
 
 // import { t } from '../../../app/utils/client';
-import { t } from '../../../app/utils/lib/i18n';
 import { appErroredStatuses } from './helpers/appErroredStatuses';
+import { t } from '../../../app/utils/lib/i18n';
 
 export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED];
 

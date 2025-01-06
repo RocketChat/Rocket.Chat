@@ -13,12 +13,12 @@ import {
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement, MouseEvent } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
+import UserActions from './RoomMembersActions';
 import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
-import UserActions from './RoomMembersActions';
 
 type RoomMembersItemProps = {
 	onClickView: (e: MouseEvent<HTMLElement>) => void;

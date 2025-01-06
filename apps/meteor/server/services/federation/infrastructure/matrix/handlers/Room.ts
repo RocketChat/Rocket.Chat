@@ -1,3 +1,4 @@
+import { MatrixBaseEventHandler } from './BaseEvent';
 import type { FederationRoomServiceReceiver } from '../../../application/room/receiver/RoomServiceReceiver';
 import type { RocketChatSettingsAdapter } from '../../rocket-chat/adapters/Settings';
 import { MatrixRoomReceiverConverter } from '../converters/room/RoomReceiver';
@@ -11,7 +12,6 @@ import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from '../defini
 import type { MatrixEventRoomNameChanged } from '../definitions/events/RoomNameChanged';
 import type { MatrixEventRoomRoomPowerLevelsChanged } from '../definitions/events/RoomPowerLevelsChanged';
 import type { MatrixEventRoomTopicChanged } from '../definitions/events/RoomTopicChanged';
-import { MatrixBaseEventHandler } from './BaseEvent';
 
 export class MatrixRoomCreatedHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_CREATED;

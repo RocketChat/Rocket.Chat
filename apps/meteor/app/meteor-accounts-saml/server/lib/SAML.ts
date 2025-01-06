@@ -7,6 +7,8 @@ import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
+import { SAMLServiceProvider } from './ServiceProvider';
+import { SAMLUtils } from './Utils';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
@@ -18,8 +20,6 @@ import { i18n } from '../../../utils/lib/i18n';
 import type { ISAMLAction } from '../definition/ISAMLAction';
 import type { ISAMLUser } from '../definition/ISAMLUser';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
-import { SAMLServiceProvider } from './ServiceProvider';
-import { SAMLUtils } from './Utils';
 
 const showErrorMessage = function (res: ServerResponse, err: string): void {
 	res.writeHead(200, {

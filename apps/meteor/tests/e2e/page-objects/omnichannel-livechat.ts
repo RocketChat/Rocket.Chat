@@ -67,7 +67,7 @@ export class OmnichannelLiveChat {
 	}
 
 	txtChatMessage(message: string): Locator {
-		return this.page.locator(`text="${message}"`);
+		return this.page.locator(`[data-qa="message-bubble"] >> text="${message}"`);
 	}
 
 	async closeChat(): Promise<void> {
@@ -222,5 +222,9 @@ export class OmnichannelLiveChat {
 		await this.fileUploadTarget.dispatchEvent('dragenter', { dataTransfer });
 
 		await this.fileUploadTarget.dispatchEvent('drop', { dataTransfer });
+	}
+
+	queuePosition(position: number): Locator {
+		return this.page.locator(`div[role='alert'] >> text=Your spot is #${position}`);
 	}
 }

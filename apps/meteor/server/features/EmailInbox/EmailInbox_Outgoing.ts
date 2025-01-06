@@ -4,6 +4,9 @@ import { Messages, Uploads, LivechatRooms, Rooms, Users } from '@rocket.chat/mod
 import { Match } from 'meteor/check';
 import type Mail from 'nodemailer/lib/mailer';
 
+import { inboxes } from './EmailInbox';
+import type { Inbox } from './EmailInbox';
+import { logger } from './logger';
 import { FileUpload } from '../../../app/file-upload/server';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
@@ -11,9 +14,6 @@ import { settings } from '../../../app/settings/server';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
-import { inboxes } from './EmailInbox';
-import type { Inbox } from './EmailInbox';
-import { logger } from './logger';
 
 const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;
 

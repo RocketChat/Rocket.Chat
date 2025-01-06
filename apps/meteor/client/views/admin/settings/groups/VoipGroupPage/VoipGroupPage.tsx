@@ -2,15 +2,15 @@ import type { ISetting } from '@rocket.chat/core-typings';
 import { Tabs, Box, Accordion } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import React, { memo, useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import VoipExtensionsPage from './VoipExtensionsPage';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import { PageScrollableContentWithShadow } from '../../../../../components/Page';
 import { useEditableSettingsGroupSections } from '../../../EditableSettingsContext';
 import SettingsGroupPage from '../../SettingsGroupPage';
 import SettingsSection from '../../SettingsSection';
-import VoipExtensionsPage from './VoipExtensionsPage';
 
 type VoipGroupPageProps = ISetting & {
 	onClickBack?: () => void;
@@ -57,7 +57,7 @@ function VoipGroupPage({ _id, onClickBack, ...group }: VoipGroupPageProps) {
 			) : (
 				<PageScrollableContentWithShadow>
 					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
-						<Accordion className='page-settings'>
+						<Accordion>
 							{sections.map((sectionName) => (
 								<SettingsSection key={sectionName || ''} groupId={_id} sectionName={sectionName} currentTab={tab} solo={false} />
 							))}

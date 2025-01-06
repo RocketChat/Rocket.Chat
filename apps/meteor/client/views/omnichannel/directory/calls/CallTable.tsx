@@ -1,9 +1,10 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
-import { useQuery, hashQueryKey } from '@tanstack/react-query';
-import React, { useState, useMemo } from 'react';
+import { useQuery, hashKey } from '@tanstack/react-query';
+import { useState, useMemo } from 'react';
 
+import { CallTableRow } from './CallTableRow';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
 import {
@@ -11,11 +12,10 @@ import {
 	GenericTableBody,
 	GenericTableHeader,
 	GenericTableHeaderCell,
-	GenericTableLoadingRow,
+	GenericTableLoadingTable,
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import { CallTableRow } from './CallTableRow';
 
 const CallTable = () => {
 	const t = useTranslation();
@@ -44,8 +44,8 @@ const CallTable = () => {
 	const onRowClick = useMutableCallback((id, token) => {
 		directoryRoute.push(
 			{
-				page: 'calls',
-				bar: 'info',
+				tab: 'calls',
+				context: 'info',
 				id,
 			},
 			{ token },
@@ -53,10 +53,13 @@ const CallTable = () => {
 	});
 
 	const getVoipRooms = useEndpoint('GET', '/v1/voip/rooms');
-	const { data, isSuccess, isLoading } = useQuery(['voip-rooms', query], async () => getVoipRooms(query));
+	const { data, isSuccess, isLoading } = useQuery({
+		queryKey: ['voip-rooms', query],
+		queryFn: async () => getVoipRooms(query),
+	});
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const headers = (
 		<>
@@ -105,7 +108,7 @@ const CallTable = () => {
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingRow cols={7} />
+						<GenericTableLoadingTable headerCells={headers.props.children.filter(Boolean).length} />
 					</GenericTableBody>
 				</GenericTable>
 			)}

@@ -1,10 +1,10 @@
 import { MeteorError } from '@rocket.chat/core-services';
-import type { IUser, RequiredField } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
+import type { UpdateUserData } from './saveUser';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../../settings/server';
-import type { SaveUserData } from './saveUser';
 
 const isEditingUserRoles = (previousRoles: IUser['roles'], newRoles?: IUser['roles']) =>
 	newRoles !== undefined &&
@@ -17,7 +17,7 @@ const isEditingField = (previousValue?: string, newValue?: string) => typeof new
  * @param {string} userId
  * @param {{ _id: string, roles?: string[], username?: string, name?: string, statusText?: string, email?: string, password?: string}} userData
  */
-export async function validateUserEditing(userId: IUser['_id'], userData: RequiredField<SaveUserData, '_id'>): Promise<void> {
+export async function validateUserEditing(userId: IUser['_id'], userData: UpdateUserData): Promise<void> {
 	const editingMyself = userData._id && userId === userData._id;
 
 	const canEditOtherUserInfo = await hasPermissionAsync(userId, 'edit-other-user-info');

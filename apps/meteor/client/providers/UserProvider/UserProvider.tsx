@@ -2,22 +2,22 @@ import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
-import React, { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
-import { Subscriptions, ChatRoom } from '../../../app/models/client';
+import { useClearRemovedRoomsHistory } from './hooks/useClearRemovedRoomsHistory';
+import { useDeleteUser } from './hooks/useDeleteUser';
+import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
+import { useUpdateAvatar } from './hooks/useUpdateAvatar';
+import { Subscriptions, Rooms } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
-import { queryClient } from '../../lib/queryClient';
 import { useCreateFontStyleElement } from '../../views/account/accessibility/hooks/useCreateFontStyleElement';
-import { useClearRemovedRoomsHistory } from './hooks/useClearRemovedRoomsHistory';
-import { useDeleteUser } from './hooks/useDeleteUser';
-import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
-import { useUpdateAvatar } from './hooks/useUpdateAvatar';
 
 const getUser = (): IUser | null => Meteor.user() as IUser | null;
 
@@ -69,13 +69,13 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>((query, fields, sort) =>
 				Subscriptions.findOne(query, { fields, sort }),
 			),
-			queryRoom: createReactiveSubscriptionFactory<IRoom | undefined>((query, fields) => ChatRoom.findOne(query, { fields })),
+			queryRoom: createReactiveSubscriptionFactory<IRoom | undefined>((query, fields) => Rooms.findOne(query, { fields })),
 			querySubscriptions: createReactiveSubscriptionFactory<SubscriptionWithRoom[]>((query, options) => {
 				if (userId) {
 					return Subscriptions.find(query, options).fetch();
 				}
 
-				return ChatRoom.find(query, options).fetch();
+				return Rooms.find(query, options).fetch();
 			}),
 			logout,
 		}),
@@ -94,13 +94,15 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 		}
 	}, [preferedLanguage, setPreferedLanguage, setUserLanguage, user?.language, userLanguage, userId, setUserPreferences]);
 
+	const queryClient = useQueryClient();
+
 	useEffect(() => {
 		if (previousUserId.current && previousUserId.current !== userId) {
 			queryClient.clear();
 		}
 
 		previousUserId.current = userId;
-	}, [userId]);
+	}, [queryClient, userId]);
 
 	return <UserContext.Provider children={children} value={contextValue} />;
 };

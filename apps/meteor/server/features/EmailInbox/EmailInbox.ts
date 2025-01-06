@@ -4,10 +4,10 @@ import { Meteor } from 'meteor/meteor';
 import nodemailer from 'nodemailer';
 import type Mail from 'nodemailer/lib/mailer';
 
-import { settings } from '../../../app/settings/server';
-import { IMAPInterceptor } from '../../email/IMAPInterceptor';
 import { onEmailReceived } from './EmailInbox_Incoming';
 import { logger } from './logger';
+import { settings } from '../../../app/settings/server';
+import { IMAPInterceptor } from '../../email/IMAPInterceptor';
 
 export type Inbox = {
 	imap: IMAPInterceptor;

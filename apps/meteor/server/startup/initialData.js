@@ -3,8 +3,8 @@ import colors from 'colors/safe';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { FileUpload } from '../../app/file-upload/server';
 import { RocketChatFile } from '../../app/file/server';
+import { FileUpload } from '../../app/file-upload/server';
 import { addUserToDefaultChannels } from '../../app/lib/server/functions/addUserToDefaultChannels';
 import { checkUsernameAvailability } from '../../app/lib/server/functions/checkUsernameAvailability';
 import { notifyOnSettingChangedById } from '../../app/lib/server/lib/notifyListener';

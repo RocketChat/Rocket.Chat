@@ -2,13 +2,6 @@ import type { SAMLConfiguration } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import {
-	notifyOnLoginServiceConfigurationChanged,
-	notifyOnLoginServiceConfigurationChangedByService,
-} from '../../../lib/server/lib/notifyListener';
-import { settings, settingsRegistry } from '../../../settings/server';
-import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { SAMLUtils } from './Utils';
 import {
 	defaultAuthnContextTemplate,
@@ -21,6 +14,13 @@ import {
 	defaultMetadataTemplate,
 	defaultMetadataCertificateTemplate,
 } from './constants';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import {
+	notifyOnLoginServiceConfigurationChanged,
+	notifyOnLoginServiceConfigurationChangedByService,
+} from '../../../lib/server/lib/notifyListener';
+import { settings, settingsRegistry } from '../../../settings/server';
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
 const getSamlConfigs = function (service: string): SAMLConfiguration {
 	const configs: SAMLConfiguration = {

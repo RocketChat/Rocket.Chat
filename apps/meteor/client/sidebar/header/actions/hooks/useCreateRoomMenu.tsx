@@ -1,9 +1,9 @@
 import { useAtLeastOnePermission, useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { useIsEnterprise } from '../../../../hooks/useIsEnterprise';
 import { useCreateRoomItems } from './useCreateRoomItems';
 import { useMatrixFederationItems } from './useMatrixFederationItems';
+import { useIsEnterprise } from '../../../../hooks/useIsEnterprise';
 
 const CREATE_ROOM_PERMISSIONS = ['create-c', 'create-p', 'create-d', 'start-discussion', 'start-discussion-other-user'];
 

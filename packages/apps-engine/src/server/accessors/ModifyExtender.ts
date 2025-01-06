@@ -1,10 +1,10 @@
+import { MessageExtender } from './MessageExtender';
+import { RoomExtender } from './RoomExtender';
+import { VideoConferenceExtender } from './VideoConferenceExtend';
 import type { IMessageExtender, IModifyExtender, IRoomExtender, IVideoConferenceExtender } from '../../definition/accessors';
 import { RocketChatAssociationModel } from '../../definition/metadata';
 import type { IUser } from '../../definition/users';
 import type { AppBridges } from '../bridges/AppBridges';
-import { MessageExtender } from './MessageExtender';
-import { RoomExtender } from './RoomExtender';
-import { VideoConferenceExtender } from './VideoConferenceExtend';
 
 export class ModifyExtender implements IModifyExtender {
     constructor(

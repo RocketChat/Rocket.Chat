@@ -6,10 +6,10 @@ import { Meteor } from 'meteor/meteor';
 import { RoutePolicy } from 'meteor/routepolicy';
 import { WebApp } from 'meteor/webapp';
 
-import { SystemLogger } from '../../../server/lib/logger/system';
 import type { ISAMLAction } from './definition/ISAMLAction';
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 RoutePolicy.declare('/_saml/', 'network');
 

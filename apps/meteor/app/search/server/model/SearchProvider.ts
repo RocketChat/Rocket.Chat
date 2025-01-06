@@ -1,9 +1,9 @@
 import type { IMessageSearchSuggestion, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-import { SearchLogger } from '../logger/logger';
 import type { IRawSearchResult } from './ISearchResult';
 import { Settings } from './Settings';
+import { SearchLogger } from '../logger/logger';
 
 export abstract class SearchProvider<TPayload = any> {
 	private _key: string;

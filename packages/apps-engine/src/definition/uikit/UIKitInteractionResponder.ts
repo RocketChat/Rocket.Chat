@@ -1,10 +1,10 @@
-import type { Omit } from '../../lib/utils';
-import type { IUIKitErrorInteractionParam } from '../accessors/IUIController';
 import type { IUIKitContextualBarResponse, IUIKitErrorResponse, IUIKitModalResponse, IUIKitResponse } from './IUIKitInteractionType';
 import { UIKitInteractionType } from './IUIKitInteractionType';
 import type { IUIKitSurface } from './IUIKitSurface';
 import type { IUIKitBaseIncomingInteraction } from './UIKitIncomingInteractionTypes';
 import { formatContextualBarInteraction, formatModalInteraction } from './UIKitInteractionPayloadFormatter';
+import type { Omit } from '../../lib/utils';
+import type { IUIKitErrorInteractionParam } from '../accessors/IUIController';
 
 export type IUIKitModalViewParam = Omit<IUIKitSurface, 'appId' | 'id' | 'type'> & Partial<Pick<IUIKitSurface, 'id'>>;
 export type IUIKitContextualBarViewParam = Omit<IUIKitSurface, 'appId' | 'id' | 'type'> & Partial<Pick<IUIKitSurface, 'id'>>;

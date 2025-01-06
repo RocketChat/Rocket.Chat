@@ -42,8 +42,8 @@ runs:
 
   steps:
     - name: Login to GitHub Container Registry
-      if: inputs.publish-image == 'true' &&(github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-      uses: docker/login-action@v2
+      if: inputs.publish-image == 'true' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ inputs.CR_USER }}
@@ -61,6 +61,7 @@ runs:
         cd /tmp/build
         tar xzf Rocket.Chat.tar.gz
         rm Rocket.Chat.tar.gz
+
     - uses: rharkor/caching-for-turbo@v1.5
       # if we are testing a PR from a fork, we already called the turbo cache at this point, so it should be false
       if: inputs.turbo-cache == 'true'
@@ -100,7 +101,7 @@ runs:
         docker compose -f docker-compose-ci.yml build "${args[@]}"
 
     - name: Publish Docker images to GitHub Container Registry
-      if: inputs.publish-image == 'true' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+      if: inputs.publish-image == 'true' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
       shell: bash
       run: |
         args=(rocketchat ${{ inputs.build-containers }})

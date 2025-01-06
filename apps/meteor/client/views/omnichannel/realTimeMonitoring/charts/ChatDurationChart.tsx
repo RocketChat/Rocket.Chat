@@ -3,17 +3,17 @@ import type { OperationParams } from '@rocket.chat/rest-typings';
 import type * as chartjs from 'chart.js';
 import type { TFunction } from 'i18next';
 import type { ComponentPropsWithoutRef, MutableRefObject } from 'react';
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
-import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
 import Chart from './Chart';
 import { getMomentChartLabelsAndData } from './getMomentChartLabelsAndData';
 import { getMomentCurrentLabel } from './getMomentCurrentLabel';
 import { useUpdateChartData } from './useUpdateChartData';
+import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
+import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
+import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../../hooks/useEndpointData';
 
 const [labels, initialData] = getMomentChartLabelsAndData();
 const tooltipCallbacks = {

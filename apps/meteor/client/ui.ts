@@ -9,7 +9,6 @@ import { useCallsRoomAction } from './hooks/roomActions/useCallsRoomAction';
 import { useCannedResponsesRoomAction } from './hooks/roomActions/useCannedResponsesRoomAction';
 import { useChannelSettingsRoomAction } from './hooks/roomActions/useChannelSettingsRoomAction';
 import { useCleanHistoryRoomAction } from './hooks/roomActions/useCleanHistoryRoomAction';
-import { useContactChatHistoryRoomAction } from './hooks/roomActions/useContactChatHistoryRoomAction';
 import { useContactProfileRoomAction } from './hooks/roomActions/useContactProfileRoomAction';
 import { useDiscussionsRoomAction } from './hooks/roomActions/useDiscussionsRoomAction';
 import { useE2EERoomAction } from './hooks/roomActions/useE2EERoomAction';
@@ -48,7 +47,6 @@ export const roomActionHooks = [
 	useCallsRoomAction,
 	useCannedResponsesRoomAction,
 	useCleanHistoryRoomAction,
-	useContactChatHistoryRoomAction,
 	useContactProfileRoomAction,
 	useDiscussionsRoomAction,
 	useE2EERoomAction,

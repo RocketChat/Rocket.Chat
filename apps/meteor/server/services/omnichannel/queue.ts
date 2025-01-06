@@ -1,16 +1,29 @@
+import { ServiceStarter } from '@rocket.chat/core-services';
 import { type InquiryWithAgentInfo, type IOmnichannelQueue } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
+import { queueLogger } from './logger';
+import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
 import { dispatchAgentDelegated } from '../../../app/livechat/server/lib/Helper';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { getInquirySortMechanismSetting } from '../../../app/livechat/server/lib/settings';
 import { settings } from '../../../app/settings/server';
-import { queueLogger } from './logger';
 
 const DEFAULT_RACE_TIMEOUT = 5000;
 
 export class OmnichannelQueue implements IOmnichannelQueue {
+	private serviceStarter: ServiceStarter;
+
+	private timeoutHandler: ReturnType<typeof setTimeout> | null = null;
+
+	constructor() {
+		this.serviceStarter = new ServiceStarter(
+			() => this._start(),
+			() => this._stop(),
+		);
+	}
+
 	private running = false;
 
 	private queues: (string | undefined)[] = [];
@@ -24,7 +37,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		return this.running;
 	}
 
-	async start() {
+	private async _start() {
 		if (this.running) {
 			return;
 		}
@@ -37,7 +50,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		return this.execute();
 	}
 
-	async stop() {
+	private async _stop() {
 		if (!this.running) {
 			return;
 		}
@@ -45,7 +58,21 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		await LivechatInquiry.unlockAll();
 
 		this.running = false;
+
+		if (this.timeoutHandler !== null) {
+			clearTimeout(this.timeoutHandler);
+			this.timeoutHandler = null;
+		}
+
 		queueLogger.info('Service stopped');
+	}
+
+	async start() {
+		return this.serviceStarter.start();
+	}
+
+	async stop() {
+		return this.serviceStarter.stop();
 	}
 
 	private async getActiveQueues() {
@@ -86,7 +113,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	private async checkQueue(queue: string | undefined) {
 		queueLogger.debug(`Processing items for queue ${queue || 'Public'}`);
 		try {
-			const nextInquiry = await LivechatInquiry.findNextAndLock(getInquirySortMechanismSetting(), queue);
+			const nextInquiry = await LivechatInquiry.findNextAndLock(getOmniChatSortQuery(getInquirySortMechanismSetting()), queue);
 			if (!nextInquiry) {
 				queueLogger.debug(`No more items for queue ${queue || 'Public'}`);
 				return;
@@ -118,8 +145,19 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				err: e,
 			});
 		} finally {
-			setTimeout(this.execute.bind(this), this.delay());
+			this.scheduleExecution();
 		}
+	}
+
+	private scheduleExecution(): void {
+		if (this.timeoutHandler !== null) {
+			return;
+		}
+
+		this.timeoutHandler = setTimeout(() => {
+			this.timeoutHandler = null;
+			return this.execute();
+		}, this.delay());
 	}
 
 	async shouldStart() {

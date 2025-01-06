@@ -13,3 +13,4 @@
 !/client/.eslintrc.js
 !/ee/client/.eslintrc.js
 /storybook-static/
+/packages/

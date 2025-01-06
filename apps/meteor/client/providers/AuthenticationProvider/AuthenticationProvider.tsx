@@ -3,10 +3,10 @@ import { capitalize } from '@rocket.chat/string-helpers';
 import { AuthenticationContext, useSetting } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
-import { loginServices } from '../../lib/loginServices';
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
+import { loginServices } from '../../lib/loginServices';
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 

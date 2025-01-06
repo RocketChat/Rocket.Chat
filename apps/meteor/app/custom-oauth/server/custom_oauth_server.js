@@ -9,12 +9,12 @@ import { OAuth } from 'meteor/oauth';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
+import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 import { callbacks } from '../../../lib/callbacks';
 import { isURL } from '../../../lib/utils/isURL';
 import { notifyOnUserChange } from '../../lib/server/lib/notifyListener';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 import { settings } from '../../settings/server';
-import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 
 const logger = new Logger('CustomOAuth');
 

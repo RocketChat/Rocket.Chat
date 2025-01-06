@@ -17,9 +17,10 @@ import {
 import { useMutableCallback, useDebouncedValue, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { useRemoveUnit } from './useRemoveUnit';
 import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
@@ -32,7 +33,6 @@ import { useRecordList } from '../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useDepartmentsByUnitsList } from '../../views/hooks/useDepartmentsByUnitsList';
 import { useMonitorsList } from '../../views/hooks/useMonitorsList';
-import { useRemoveUnit } from './useRemoveUnit';
 
 type UnitEditProps = {
 	unitData?: Serialized<IOmnichannelBusinessUnit>;
@@ -138,7 +138,9 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 		try {
 			await saveUnit(_id as unknown as string, { name, visibility }, monitorsData, departmentsData);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			queryClient.invalidateQueries(['livechat-units']);
+			queryClient.invalidateQueries({
+				queryKey: ['livechat-units'],
+			});
 			router.navigate('/omnichannel/units');
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

@@ -11,26 +11,27 @@ import {
 } from '@rocket.chat/fuselage';
 import { useEffectEvent, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import React, { memo, useState } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
+import { memo, useState } from 'react';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
 type ExtendedProps = {
 	icon?: IconName;
 	title: string;
-	avatar?: React.ReactNode | boolean;
-	actions?: React.ReactNode;
+	avatar?: ReactNode;
+	actions?: ReactNode;
 	href?: string;
 	time?: any;
-	menu?: () => React.ReactNode;
-	subtitle?: React.ReactNode;
-	badges?: React.ReactNode;
+	menu?: () => ReactNode;
+	subtitle?: ReactNode;
+	badges?: ReactNode;
 	unread?: boolean;
 	selected?: boolean;
 	menuOptions?: any;
-	titleIcon?: React.ReactNode;
+	titleIcon?: ReactNode;
 	threadUnread?: boolean;
-};
+} & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const Extended = ({
 	icon,
@@ -47,6 +48,7 @@ const Extended = ({
 	threadUnread: _threadUnread,
 	unread,
 	selected,
+	...props
 }: ExtendedProps) => {
 	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
@@ -61,7 +63,7 @@ const Extended = ({
 	};
 
 	return (
-		<SidebarV2Item href={href} selected={selected}>
+		<SidebarV2Item href={href} selected={selected} {...props}>
 			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 
 			<SidebarV2ItemCol>

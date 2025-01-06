@@ -1,6 +1,7 @@
 import type { AppManager } from '../AppManager';
 import type { IParseAppPackageResult } from '../compiler';
 import { DenoRuntimeSubprocessController } from '../runtime/deno/AppsEngineDenoRuntime';
+import type { IAppStorageItem } from '../storage';
 
 export type AppRuntimeParams = {
     appId: string;
@@ -21,14 +22,18 @@ export class AppRuntimeManager {
 
     constructor(private readonly manager: AppManager) {}
 
-    public async startRuntimeForApp(appPackage: IParseAppPackageResult, options = { force: false }): Promise<DenoRuntimeSubprocessController> {
+    public async startRuntimeForApp(
+        appPackage: IParseAppPackageResult,
+        storageItem: IAppStorageItem,
+        options = { force: false },
+    ): Promise<DenoRuntimeSubprocessController> {
         const { id: appId } = appPackage.info;
 
         if (appId in this.subprocesses && !options.force) {
             throw new Error('App already has an associated runtime');
         }
 
-        this.subprocesses[appId] = new DenoRuntimeSubprocessController(this.manager, appPackage);
+        this.subprocesses[appId] = new DenoRuntimeSubprocessController(this.manager, appPackage, storageItem);
 
         await this.subprocesses[appId].setupApp();
 

@@ -1,7 +1,5 @@
 import type { IMessage, IRoom, IUser, IUploadWithUser } from '@rocket.chat/core-typings';
 
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { DmCloseProps } from './DmCloseProps';
 import type { DmCreateProps } from './DmCreateProps';
 import type { DmDeleteProps } from './DmDeleteProps';
@@ -10,6 +8,8 @@ import type { DmHistoryProps } from './DmHistoryProps';
 import type { DmLeaveProps } from './DmLeaveProps';
 import type { DmMemberProps } from './DmMembersProps';
 import type { DmMessagesProps } from './DmMessagesProps';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
 export type ImEndpoints = {
 	'/v1/im.create': {

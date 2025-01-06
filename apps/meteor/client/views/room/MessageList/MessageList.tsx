@@ -2,13 +2,13 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 
+import { MessageListItem } from './MessageListItem';
 import { MessageTypes } from '../../../../app/ui-utils/client';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
-import { MessageListItem } from './MessageListItem';
 import { useMessages } from './hooks/useMessages';
 import { isMessageSequential } from './lib/isMessageSequential';
 import MessageListProvider from './providers/MessageListProvider';

@@ -1,8 +1,8 @@
+import { BaseBridge } from './BaseBridge';
 import type { ISetting } from '../../definition/settings';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export abstract class ServerSettingBridge extends BaseBridge {
     public async doGetAll(appId: string): Promise<Array<ISetting>> {

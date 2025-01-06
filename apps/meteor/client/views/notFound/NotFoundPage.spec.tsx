@@ -1,10 +1,9 @@
 import { render, waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { MutableRefObject } from 'react';
-import React from 'react';
 
-import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
 import NotFoundPage from './NotFoundPage';
+import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
 
 it('should look good', async () => {
 	render(<NotFoundPage />, { legacyRoot: true });

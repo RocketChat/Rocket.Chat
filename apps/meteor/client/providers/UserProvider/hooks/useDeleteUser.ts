@@ -1,7 +1,7 @@
 import { useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { ChatMessage } from '../../../../app/models/client';
+import { Messages } from '../../../../app/models/client';
 
 export const useDeleteUser = () => {
 	const notify = useStream('notify-logged');
@@ -13,7 +13,7 @@ export const useDeleteUser = () => {
 		}
 		return notify('Users:Deleted', ({ userId, messageErasureType, replaceByUser }) => {
 			if (messageErasureType === 'Unlink' && replaceByUser) {
-				return ChatMessage.update(
+				return Messages.update(
 					{
 						'u._id': userId,
 					},
@@ -28,7 +28,7 @@ export const useDeleteUser = () => {
 					{ multi: true },
 				);
 			}
-			ChatMessage.remove({
+			Messages.remove({
 				'u._id': userId,
 			});
 		});

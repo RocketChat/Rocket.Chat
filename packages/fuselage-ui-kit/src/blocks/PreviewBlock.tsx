@@ -16,8 +16,8 @@ import {
 import type { ReactElement } from 'react';
 import { memo } from 'react';
 
-import type { BlockProps } from '../utils/BlockProps';
 import ContextBlock from './ContextBlock';
+import type { BlockProps } from '../utils/BlockProps';
 
 type PreviewBlockProps = BlockProps<UiKit.PreviewBlock>;
 

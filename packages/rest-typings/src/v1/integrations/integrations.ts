@@ -1,12 +1,12 @@
 import type { IIntegration, IIntegrationHistory } from '@rocket.chat/core-typings';
 
-import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { IntegrationsCreateProps } from './IntegrationsCreateProps';
 import type { IntegrationsGetProps } from './IntegrationsGetProps';
 import type { IntegrationsHistoryProps } from './IntegrationsHistoryProps';
 import type { IntegrationsListProps } from './IntegrationsListProps';
 import type { IntegrationsRemoveProps } from './IntegrationsRemoveProps';
 import type { IntegrationsUpdateProps } from './IntegrationsUpdateProps';
+import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
 export type IntegrationsEndpoints = {
 	'/v1/integrations.create': {

@@ -1,5 +1,5 @@
-import { parseUserList } from '../src/utils/parseUserList';
 import { makeFreeSwitchResponse } from './utils/makeFreeSwitchResponse';
+import { parseUserList } from '../src/utils/parseUserList';
 
 test.each(['', undefined, 200 as unknown as any, '\nsomething'])('Invalid FreeSwitch responses', (input) => {
 	expect(() => parseUserList({ _body: input })).toThrow('Invalid response from FreeSwitch server.');

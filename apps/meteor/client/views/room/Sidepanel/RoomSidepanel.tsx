@@ -1,16 +1,16 @@
 /* eslint-disable react/no-multi-comp */
 import { Box, Sidepanel, SidepanelListItem } from '@rocket.chat/fuselage';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
-import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
-import { useOpenedRoom, useSecondLevelOpenedRoom } from '../../../lib/RoomManager';
 import RoomSidepanelListWrapper from './RoomSidepanelListWrapper';
 import RoomSidepanelLoading from './RoomSidepanelLoading';
 import RoomSidepanelItem from './SidepanelItem';
 import { useTeamsListChildrenUpdate } from './hooks/useTeamslistChildren';
+import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
+import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
+import { useOpenedRoom, useSecondLevelOpenedRoom } from '../../../lib/RoomManager';
 
 const RoomSidepanel = () => {
 	const parentRid = useOpenedRoom();
@@ -39,7 +39,7 @@ const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 		return null;
 	}
 
-	if (roomInfo.isLoading || (roomInfo.isSuccess && result.isLoading)) {
+	if (roomInfo.isLoading || (roomInfo.isSuccess && result.isPending)) {
 		return <RoomSidepanelLoading />;
 	}
 

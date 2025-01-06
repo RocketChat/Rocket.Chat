@@ -1,9 +1,8 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../../components/GenericModal';
 import RoomLinkList from './RoomLinkList';
+import GenericModal from '../../../../../components/GenericModal';
 
 type DeleteTeamConfirmationProps = {
 	deletedRooms: { [key: string]: Serialized<IRoom> };

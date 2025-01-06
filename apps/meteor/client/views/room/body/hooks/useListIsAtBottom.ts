@@ -1,4 +1,5 @@
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import type { MutableRefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
 import { isAtBottom as isAtBottomLib } from '../../../../../app/ui/client/views/app/lib/scrolling';
@@ -19,7 +20,7 @@ export const useListIsAtBottom = () => {
 		}
 	}, [atBottomRef, sendToBottom]);
 
-	const isAtBottom = useCallback((threshold = 0) => {
+	const isAtBottom = useCallback<(threshold?: number) => boolean>((threshold = 0) => {
 		if (!innerBoxRef.current) {
 			return true;
 		}
@@ -61,7 +62,7 @@ export const useListIsAtBottom = () => {
 
 	return {
 		atBottomRef,
-		innerRef: useMergedRefs(ref, innerBoxRef) as unknown as React.MutableRefObject<HTMLDivElement | null>,
+		innerRef: useMergedRefs(ref, innerBoxRef) as unknown as MutableRefObject<HTMLDivElement | null>,
 		sendToBottom,
 		sendToBottomIfNecessary,
 		isAtBottom,

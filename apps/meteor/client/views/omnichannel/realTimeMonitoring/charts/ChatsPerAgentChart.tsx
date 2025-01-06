@@ -3,14 +3,14 @@ import type { OperationParams } from '@rocket.chat/rest-typings';
 import type * as chartjs from 'chart.js';
 import type { TFunction } from 'i18next';
 import type { ComponentPropsWithoutRef, MutableRefObject } from 'react';
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import Chart from './Chart';
+import { useUpdateChartData } from './useUpdateChartData';
 import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
-import Chart from './Chart';
-import { useUpdateChartData } from './useUpdateChartData';
 
 const init = (canvas: HTMLCanvasElement, context: chartjs.Chart<'line'> | undefined, t: TFunction) =>
 	drawLineChart(canvas, context, [t('Open'), t('Closed'), t('On_Hold_Chats')], [], [[], []], {

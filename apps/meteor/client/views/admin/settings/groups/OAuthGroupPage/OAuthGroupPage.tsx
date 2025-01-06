@@ -3,14 +3,14 @@ import { Button } from '@rocket.chat/fuselage';
 import { capitalize } from '@rocket.chat/string-helpers';
 import { useToastMessageDispatch, useAbsoluteUrl, useMethod, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 
+import CreateOAuthModal from './CreateOAuthModal';
 import { strRight } from '../../../../../../lib/utils/stringUtils';
 import GenericModal from '../../../../../components/GenericModal';
 import { useEditableSettingsGroupSections } from '../../../EditableSettingsContext';
 import SettingsGroupPage from '../../SettingsGroupPage';
 import SettingsSection from '../../SettingsSection';
-import CreateOAuthModal from './CreateOAuthModal';
 
 type OAuthGroupPageProps = ISetting & {
 	onClickBack?: () => void;

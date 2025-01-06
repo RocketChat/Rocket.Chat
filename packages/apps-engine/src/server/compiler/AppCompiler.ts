@@ -21,7 +21,7 @@ export class AppCompiler {
             throw new Error(`Invalid App package for "${storage.info.name}". Could not find the classFile (${storage.info.classFile}) file.`);
         }
 
-        const runtime = await manager.getRuntime().startRuntimeForApp(packageResult);
+        const runtime = await manager.getRuntime().startRuntimeForApp(packageResult, storage);
 
         const app = new ProxiedApp(manager, storage, runtime);
 

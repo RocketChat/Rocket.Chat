@@ -1,13 +1,12 @@
 import { Button, ButtonGroup, Tabs } from '@rocket.chat/fuselage';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import IntegrationsTable from './IntegrationsTable';
 import NewBot from './NewBot';
 import NewZapier from './NewZapier';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const IntegrationsPage = (): ReactElement => {
 	const { t } = useTranslation();

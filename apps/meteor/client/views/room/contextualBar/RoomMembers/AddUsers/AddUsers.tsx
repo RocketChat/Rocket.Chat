@@ -4,10 +4,10 @@ import { Field, FieldLabel, Button, ButtonGroup, FieldGroup } from '@rocket.chat
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { useAddMatrixUsers } from './AddMatrixUsers/useAddMatrixUsers';
 import {
 	ContextualbarHeader,
 	ContextualbarBack,
@@ -20,7 +20,6 @@ import UserAutoCompleteMultiple from '../../../../../components/UserAutoComplete
 import UserAutoCompleteMultipleFederated from '../../../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
-import { useAddMatrixUsers } from './AddMatrixUsers/useAddMatrixUsers';
 
 type AddUsersProps = {
 	rid: IRoom['_id'];
@@ -88,7 +87,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 					{isRoomFederated(room) ? (
 						<Button
 							primary
-							disabled={addClickHandler.isLoading}
+							disabled={addClickHandler.isPending}
 							onClick={() =>
 								addClickHandler.mutate({
 									users: getValues('users'),

@@ -5,6 +5,8 @@ import { SHA256 } from '@rocket.chat/sha256';
 import { hash as bcryptHash } from 'bcrypt';
 import { Accounts } from 'meteor/accounts-base';
 
+import { RecordConverter, type RecordConverterOptions } from './RecordConverter';
+import { generateTempPassword } from './generateTempPassword';
 import { callbacks as systemCallbacks } from '../../../../../lib/callbacks';
 import { addUserToDefaultChannels } from '../../../../lib/server/functions/addUserToDefaultChannels';
 import { generateUsernameSuggestion } from '../../../../lib/server/functions/getUsernameSuggestion';
@@ -12,7 +14,6 @@ import { saveUserIdentity } from '../../../../lib/server/functions/saveUserIdent
 import { setUserActiveStatus } from '../../../../lib/server/functions/setUserActiveStatus';
 import { notifyOnUserChange } from '../../../../lib/server/lib/notifyListener';
 import type { IConversionCallbacks } from '../../definitions/IConversionCallbacks';
-import { RecordConverter, type RecordConverterOptions } from './RecordConverter';
 
 export type UserConverterOptions = {
 	flagEmailsAsVerified?: boolean;
@@ -23,13 +24,6 @@ export type UserConverterOptions = {
 
 	quickUserInsertion?: boolean;
 	enableEmail2fa?: boolean;
-};
-
-export type ConvertUsersResult = {
-	inserted: string[];
-	updated: string[];
-	skipped: number;
-	failed: number;
 };
 
 export class UserConverter extends RecordConverter<IImportUserRecord, UserConverterOptions & RecordConverterOptions> {
@@ -319,15 +313,15 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 		void notifyOnUserChange({ clientAction: 'updated', id: _id, diff: updateData.$set });
 	}
 
-	private async hashPassword(password: string): Promise<string> {
+	async hashPassword(password: string): Promise<string> {
 		return bcryptHash(SHA256(password), Accounts._bcryptRounds());
 	}
 
-	private generateTempPassword(userData: IImportUser): string {
-		return `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
+	generateTempPassword(userData: IImportUser): string {
+		return generateTempPassword(userData);
 	}
 
-	private async buildNewUserObject(userData: IImportUser): Promise<Partial<IUser>> {
+	async buildNewUserObject(userData: IImportUser): Promise<Partial<IUser>> {
 		return {
 			type: userData.type || 'user',
 			...(userData.username && { username: userData.username }),

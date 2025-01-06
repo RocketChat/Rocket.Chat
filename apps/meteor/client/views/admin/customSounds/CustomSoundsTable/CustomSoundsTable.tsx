@@ -3,8 +3,9 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
+import CustomSoundRow from './CustomSoundRow';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
@@ -16,7 +17,6 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import CustomSoundRow from './CustomSoundRow';
 
 type CustomSoundsTableProps = {
 	onClick: (soundId: string) => () => void;
@@ -44,7 +44,9 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 	);
 
 	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
-	const { data, refetch, isLoading, isError, isSuccess } = useQuery(['custom-sounds', query], async () => getSounds(query), {
+	const { data, refetch, isLoading, isError, isSuccess } = useQuery({
+		queryKey: ['custom-sounds', query],
+		queryFn: async () => getSounds(query),
 		refetchOnMount: false,
 	});
 

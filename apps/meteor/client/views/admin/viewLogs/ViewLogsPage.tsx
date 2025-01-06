@@ -1,11 +1,11 @@
 import { Margins, Tabs } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Page, PageHeader, PageContent } from '../../../components/Page';
 import AnalyticsReports from './AnalyticsReports';
 import ServerLogs from './ServerLogs';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const ViewLogsPage = (): ReactElement => {
 	const { t } = useTranslation();

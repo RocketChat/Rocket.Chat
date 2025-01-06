@@ -3,6 +3,7 @@ import type { IDirectMessageRoom, IRoom, IUser } from '@rocket.chat/core-typings
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, MatrixBridgedRoom, Users } from '@rocket.chat/models';
 
+import { getFederatedUserByInternalUsername } from './User';
 import { saveRoomTopic } from '../../../../../../app/channel-settings/server';
 import { addUserToRoom } from '../../../../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../../../../app/lib/server/functions/createRoom';
@@ -20,7 +21,6 @@ import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/Feder
 import type { FederatedUser } from '../../../domain/FederatedUser';
 import { extractServerNameFromExternalIdentifier } from '../../matrix/converters/room/RoomReceiver';
 import type { ROCKET_CHAT_FEDERATION_ROLES } from '../definitions/FederatedRoomInternalRoles';
-import { getFederatedUserByInternalUsername } from './User';
 
 type WithRequiredProperty<Type, Key extends keyof Type> = Type & {
 	[Property in Key]-?: Type[Property];

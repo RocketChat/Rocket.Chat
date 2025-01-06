@@ -1,19 +1,18 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
-import type { ReactNode } from 'react';
-import type React from 'react';
+import type { DragEvent, ReactNode } from 'react';
 import { useCallback, useMemo } from 'react';
 
+import { useDropTarget } from './useDropTarget';
 import { useIsRoomOverMacLimit } from '../../../../hooks/omnichannel/useIsRoomOverMacLimit';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
-import { useDropTarget } from './useDropTarget';
 
 export const useFileUploadDropTarget = (): readonly [
 	fileUploadTriggerProps: {
-		onDragEnter: (event: React.DragEvent<Element>) => void;
+		onDragEnter: (event: DragEvent<Element>) => void;
 	},
 	fileUploadOverlayProps: {
 		visible: boolean;

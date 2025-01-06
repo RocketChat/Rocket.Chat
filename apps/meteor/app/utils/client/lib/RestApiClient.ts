@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { RestClient } from '@rocket.chat/api-client';
 import { Accounts } from 'meteor/accounts-base';
 

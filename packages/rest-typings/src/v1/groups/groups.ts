@@ -1,6 +1,5 @@
 import type { IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IUploadWithUser, IIntegration, ISubscription } from '@rocket.chat/core-typings';
 
-import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { GroupsAddAllProps } from './GroupsAddAllProps';
 import type { GroupsAddLeaderProps } from './GroupsAddLeaderProps';
 import type { GroupsAddModeratorProps } from './GroupsAddModeratorProps';
@@ -38,6 +37,7 @@ import type { GroupsSetReadOnlyProps } from './GroupsSetReadOnlyProps';
 import type { GroupsSetTopicProps } from './GroupsSetTopicProps';
 import type { GroupsSetTypeProps } from './GroupsSetTypeProps';
 import type { GroupsUnarchiveProps } from './GroupsUnarchiveProps';
+import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
 export type GroupsEndpoints = {
 	'/v1/groups.files': {

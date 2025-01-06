@@ -53,7 +53,7 @@ runs:
 
     - name: Use Node.js ${{ inputs.node-version }}
       id: node-version
-      uses: actions/setup-node@v3.7.0
+      uses: actions/setup-node@v4.1.0
       with:
         node-version: ${{ inputs.node-version }}
         cache: 'yarn'

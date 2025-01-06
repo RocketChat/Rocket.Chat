@@ -30,9 +30,13 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
+import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
+import PasswordFieldSkeleton from './PasswordFieldSkeleton';
+import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { validateEmail } from '../../../../lib/emailValidator';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
@@ -40,10 +44,6 @@ import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
-import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
-import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
-import PasswordFieldSkeleton from './PasswordFieldSkeleton';
-import { useSmtpQuery } from './hooks/useSmtpQuery';
 
 type AdminUserFormProps = {
 	userData?: Serialized<IUser>;
@@ -119,7 +119,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		mode: 'onBlur',
 	});
 
-	const { avatar, username, setRandomPassword, password } = watch();
+	const { avatar, username, setRandomPassword, password, name: userFullName } = watch();
 
 	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');
@@ -153,7 +153,8 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			await eventStats({
 				params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
 			});
-			queryClient.invalidateQueries(['pendingUsersCount'], {
+			queryClient.invalidateQueries({
+				queryKey: ['pendingUsersCount'],
 				refetchType: 'all',
 			});
 			router.navigate(`/admin/users/created/${_id}`);
@@ -208,6 +209,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										username={username}
 										etag={userData?.avatarETag}
 										setAvatarObj={onChange}
+										name={userFullName}
 									/>
 								)}
 							/>

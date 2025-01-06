@@ -55,11 +55,16 @@ export const createLivechatRoomWidget = async (
 	return response.body.room;
 };
 
-export const createVisitor = (department?: string, visitorName?: string, customEmail?: string): Promise<ILivechatVisitor> =>
+export const createVisitor = (
+	department?: string,
+	visitorName?: string,
+	customEmail?: string,
+	customPhone?: string,
+): Promise<ILivechatVisitor> =>
 	new Promise((resolve, reject) => {
 		const token = getRandomVisitorToken();
 		const email = customEmail || `${token}@${token}.com`;
-		const phone = `${Math.floor(Math.random() * 10000000000)}`;
+		const phone = customPhone || `${Math.floor(Math.random() * 10000000000)}`;
 		void request.get(api(`livechat/visitor/${token}`)).end((err: Error, res: DummyResponse<ILivechatVisitor>) => {
 			if (!err && res && res.body && res.body.visitor) {
 				return resolve(res.body.visitor);

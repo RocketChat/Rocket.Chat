@@ -1,5 +1,5 @@
 import { useLayout, useRouter } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { HeaderToolbar } from '../../../../components/Header';
@@ -7,6 +7,7 @@ import SidebarToggler from '../../../../components/SidebarToggler';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 import RoomHeader from '../RoomHeader';
 import BackButton from './BackButton';
+import OmnichannelRoomHeaderTag from './OmnichannelRoomHeaderTag';
 import QuickActions from './QuickActions';
 
 type OmnichannelRoomHeaderProps = {
@@ -44,6 +45,7 @@ const OmnichannelRoomHeader = ({ slots: parentSlot }: OmnichannelRoomHeaderProps
 					<BackButton routeName={currentRouteName} />
 				</HeaderToolbar>
 			),
+			insideContent: <OmnichannelRoomHeaderTag />,
 			posContent: <QuickActions />,
 		}),
 		[isMobile, currentRouteName, parentSlot],

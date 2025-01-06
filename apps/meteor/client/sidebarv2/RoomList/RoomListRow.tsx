@@ -1,11 +1,11 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
-import React, { memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 
+import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
 import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
-import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
 
 type RoomListRowProps = {
 	data: {
@@ -17,7 +17,7 @@ type RoomListRowProps = {
 		sidebarViewMode: 'extended' | 'condensed' | 'medium';
 		isAnonymous: boolean;
 	};
-	item: ISubscription & IRoom;
+	item: SubscriptionWithRoom;
 };
 
 const RoomListRow = ({ data, item }: RoomListRowProps) => {

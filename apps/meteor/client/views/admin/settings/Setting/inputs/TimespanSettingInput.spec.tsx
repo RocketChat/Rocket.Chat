@@ -1,10 +1,9 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 
-import { TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { default as TimespanSettingInput, getHighestTimeUnit } from './TimespanSettingInput';
+import { TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
 	observe: jest.fn(),

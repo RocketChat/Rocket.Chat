@@ -5,17 +5,18 @@ import { type Readable, EventEmitter } from 'stream';
 import debugFactory from 'debug';
 import * as jsonrpc from 'jsonrpc-lite';
 
-import { AppStatus } from '../../../definition/AppStatus';
-import type { AppManager } from '../../AppManager';
-import type { AppBridges } from '../../bridges';
-import type { IParseAppPackageResult } from '../../compiler';
-import type { ILoggerStorageEntry } from '../../logging';
-import type { AppAccessorManager, AppApiManager } from '../../managers';
-import type { AppLogStorage } from '../../storage';
 import { LivenessManager } from './LivenessManager';
 import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
-import { decoder } from './codec';
+import { newDecoder } from './codec';
+import { AppStatus, AppStatusUtils } from '../../../definition/AppStatus';
+import type { AppMethod } from '../../../definition/metadata';
+import type { AppManager } from '../../AppManager';
+import type { AppBridges } from '../../bridges';
+import type { IParseAppPackageResult } from '../../compiler';
+import { AppConsole, type ILoggerStorageEntry } from '../../logging';
+import type { AppAccessorManager, AppApiManager } from '../../managers';
+import type { AppLogStorage, IAppStorageItem } from '../../storage';
 
 const baseDebug = debugFactory('appsEngine:runtime:deno');
 
@@ -87,6 +88,11 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
     private state: 'uninitialized' | 'ready' | 'invalid' | 'restarting' | 'unknown' | 'stopped';
 
+    /**
+     * Incremental id that keeps track of how many times we've spawned a process for this app
+     */
+    private spawnId = 0;
+
     private readonly debug: debug.Debugger;
 
     private readonly options = {
@@ -109,6 +115,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     constructor(
         manager: AppManager,
         private readonly appPackage: IParseAppPackageResult,
+        private readonly storageItem: IAppStorageItem,
     ) {
         super();
 
@@ -147,11 +154,13 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
                 denoWrapperPath,
                 '--subprocess',
                 this.appPackage.info.id,
+                '--spawnId',
+                String(this.spawnId++),
             ];
 
             // If the app doesn't request any permissions, it gets the default set of permissions, which includes "networking"
             // If the app requests specific permissions, we need to check whether it requests "networking" or not
-            if (!this.appPackage.info.permissions || this.appPackage.info.permissions.findIndex((p) => p.name === 'networking.default') !== -1) {
+            if (!this.appPackage.info.permissions || this.appPackage.info.permissions.findIndex((p) => p.name === 'networking') !== -1) {
                 options.splice(1, 0, '--allow-net');
             }
 
@@ -177,28 +186,38 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
         }
     }
 
-    public async killProcess(): Promise<void> {
+    /**
+     * Attempts to kill the process currently controlled by this.deno
+     *
+     * @returns boolean - if a process has been killed or not
+     */
+    public async killProcess(): Promise<boolean> {
         if (!this.deno) {
             this.debug('No child process reference');
-            return;
+            return false;
         }
 
+        let { killed } = this.deno;
+
         // This field is not populated if the process is killed by the OS
-        if (this.deno.killed) {
+        if (killed) {
             this.debug('App process was already killed');
-            return;
+            return killed;
         }
 
         // What else should we do?
         if (this.deno.kill('SIGKILL')) {
             // Let's wait until we get confirmation the process exited
             await new Promise<void>((r) => this.deno.on('exit', r));
+            killed = true;
         } else {
             this.debug('Tried killing the process but failed. Was it already dead?');
+            killed = false;
         }
 
         delete this.deno;
         this.messenger.clearReceiver();
+        return killed;
     }
 
     // Debug purposes, could be deleted later
@@ -249,19 +268,45 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
     public async restartApp() {
         this.debug('Restarting app subprocess');
+        const logger = new AppConsole('runtime:restart');
+
+        logger.info('Starting restart procedure for app subprocess...', this.livenessManager.getRuntimeData());
 
         this.state = 'restarting';
 
-        await this.killProcess();
+        try {
+            const pid = this.deno?.pid;
 
-        await this.setupApp();
+            const hasKilled = await this.killProcess();
 
-        // setupApp() changes the state to 'ready' - we'll need to workaround that for now
-        this.state = 'restarting';
+            if (hasKilled) {
+                logger.debug('Process successfully terminated', { pid });
+            } else {
+                logger.warn('Could not terminate process. Maybe it was already dead?', { pid });
+            }
 
-        await this.sendRequest({ method: 'app:initialize' });
+            await this.setupApp();
+            logger.info('New subprocess successfully spawned', { pid: this.deno.pid });
 
-        this.state = 'ready';
+            // setupApp() changes the state to 'ready' - we'll need to workaround that for now
+            this.state = 'restarting';
+
+            await this.sendRequest({ method: 'app:initialize' });
+            await this.sendRequest({ method: 'app:setStatus', params: [this.storageItem.status] });
+
+            if (AppStatusUtils.isEnabled(this.storageItem.status)) {
+                await this.sendRequest({ method: 'app:onEnable' });
+            }
+
+            this.state = 'ready';
+
+            logger.info('Successfully restarted app subprocess');
+        } catch (e) {
+            logger.error("Failed to restart app's subprocess", { error: e.message || e });
+            throw e;
+        } finally {
+            await this.logStorage.storeEntries(AppConsole.toStorageEntry(this.getAppId(), logger));
+        }
     }
 
     public getAppId(): string {
@@ -285,18 +330,24 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     }
 
     private waitUntilReady(): Promise<void> {
+        if (this.state === 'ready') {
+            return;
+        }
+
         return new Promise((resolve, reject) => {
-            const timeoutId = setTimeout(() => reject(new Error(`[${this.getAppId()}] Timeout: app process not ready`)), this.options.timeout);
+            let timeoutId: NodeJS.Timeout;
 
-            if (this.state === 'ready') {
+            const handler = () => {
                 clearTimeout(timeoutId);
-                return resolve();
-            }
+                resolve();
+            };
 
-            this.once('ready', () => {
-                clearTimeout(timeoutId);
-                return resolve();
-            });
+            timeoutId = setTimeout(() => {
+                this.off('ready', handler);
+                reject(new Error(`[${this.getAppId()}] Timeout: app process not ready`));
+            }, this.options.timeout);
+
+            this.once('ready', handler);
         });
     }
 
@@ -335,9 +386,10 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
         this.deno.stderr.on('data', this.parseError.bind(this));
         this.deno.on('error', (err) => {
             this.state = 'invalid';
-            console.error('Failed to startup Deno subprocess', err);
+            console.error(`Failed to startup Deno subprocess for app ${this.getAppId()}`, err);
         });
         this.once('ready', this.onReady.bind(this));
+
         this.parseStdout(this.deno.stdout);
     }
 
@@ -512,10 +564,26 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
             case 'log':
                 console.log('SUBPROCESS LOG', message);
                 break;
+            case 'unhandledRejection':
+            case 'uncaughtException':
+                await this.logUnhandledError(`runtime:${method}`, message);
+                break;
             default:
                 console.warn('Unrecognized method from sub process');
                 break;
         }
+    }
+
+    private async logUnhandledError(
+        method: `${AppMethod.RUNTIME_UNCAUGHT_EXCEPTION | AppMethod.RUNTIME_UNHANDLED_REJECTION}`,
+        message: jsonrpc.IParsedObjectRequest | jsonrpc.IParsedObjectNotification,
+    ) {
+        this.debug('Unhandled error of type "%s" caught in subprocess', method);
+
+        const logger = new AppConsole(method);
+        logger.error(message.payload);
+
+        await this.logStorage.storeEntries(AppConsole.toStorageEntry(this.getAppId(), logger));
     }
 
     private async handleResultMessage(message: jsonrpc.IParsedObjectError | jsonrpc.IParsedObjectSuccess): Promise<void> {
@@ -543,47 +611,60 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
     }
 
     private async parseStdout(stream: Readable): Promise<void> {
-        for await (const message of decoder.decodeStream(stream)) {
-            this.debug('Received message from subprocess %o', message);
-            try {
-                // Process PONG resonse first as it is not JSON RPC
-                if (message === COMMAND_PONG) {
-                    this.emit('pong');
-                    continue;
+        try {
+            for await (const message of newDecoder().decodeStream(stream)) {
+                this.debug('Received message from subprocess %o', message);
+                try {
+                    // Process PONG resonse first as it is not JSON RPC
+                    if (message === COMMAND_PONG) {
+                        this.emit('pong');
+                        continue;
+                    }
+
+                    const JSONRPCMessage = jsonrpc.parseObject(message);
+
+                    if (Array.isArray(JSONRPCMessage)) {
+                        throw new Error('Invalid message format');
+                    }
+
+                    if (JSONRPCMessage.type === 'request' || JSONRPCMessage.type === 'notification') {
+                        this.handleIncomingMessage(JSONRPCMessage).catch((reason) =>
+                            console.error(`[${this.getAppId()}] Error executing handler`, reason, message),
+                        );
+                        continue;
+                    }
+
+                    if (JSONRPCMessage.type === 'success' || JSONRPCMessage.type === 'error') {
+                        this.handleResultMessage(JSONRPCMessage).catch((reason) =>
+                            console.error(`[${this.getAppId()}] Error executing handler`, reason, message),
+                        );
+                        continue;
+                    }
+
+                    console.error('Unrecognized message type', JSONRPCMessage);
+                } catch (e) {
+                    // SyntaxError is thrown when the message is not a valid JSON
+                    if (e instanceof SyntaxError) {
+                        console.error(`[${this.getAppId()}] Failed to parse message`);
+                        continue;
+                    }
+
+                    console.error(`[${this.getAppId()}] Error executing handler`, e, message);
                 }
-
-                const JSONRPCMessage = jsonrpc.parseObject(message);
-
-                if (Array.isArray(JSONRPCMessage)) {
-                    throw new Error('Invalid message format');
-                }
-
-                if (JSONRPCMessage.type === 'request' || JSONRPCMessage.type === 'notification') {
-                    this.handleIncomingMessage(JSONRPCMessage).catch((reason) =>
-                        console.error(`[${this.getAppId()}] Error executing handler`, reason, message),
-                    );
-                    continue;
-                }
-
-                if (JSONRPCMessage.type === 'success' || JSONRPCMessage.type === 'error') {
-                    this.handleResultMessage(JSONRPCMessage).catch((reason) => console.error(`[${this.getAppId()}] Error executing handler`, reason, message));
-                    continue;
-                }
-
-                console.error('Unrecognized message type', JSONRPCMessage);
-            } catch (e) {
-                // SyntaxError is thrown when the message is not a valid JSON
-                if (e instanceof SyntaxError) {
-                    console.error(`[${this.getAppId()}] Failed to parse message`);
-                    continue;
-                }
-
-                console.error(`[${this.getAppId()}] Error executing handler`, e, message);
             }
+        } catch (e) {
+            console.error(`[${this.getAppId()}]`, e);
+            this.emit('error', new Error('DECODE_ERROR'));
         }
     }
 
     private async parseError(chunk: Buffer): Promise<void> {
-        console.error('Subprocess stderr', chunk.toString());
+        try {
+            const data = JSON.parse(chunk.toString());
+
+            this.debug('Metrics received from subprocess (via stderr): %o', data);
+        } catch (e) {
+            console.error('Subprocess stderr', chunk.toString());
+        }
     }
 }

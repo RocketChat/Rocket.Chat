@@ -4,7 +4,7 @@ import { UiKitContext, bannerParser, UiKitBanner as UiKitBannerSurfaceRender, Ui
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import MarkdownText from '../../components/MarkdownText';
 import { useBannerContextValue } from '../../uikit/hooks/useBannerContextValue';

@@ -1,9 +1,9 @@
+import { BaseBridge } from './BaseBridge';
 import type { IMessage } from '../../definition/messages';
 import type { IUser } from '../../definition/users';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export abstract class ModerationBridge extends BaseBridge {
     public async doReport(messageId: IMessage['id'], description: string, userId: string, appId: string): Promise<void> {

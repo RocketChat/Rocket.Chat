@@ -5,10 +5,10 @@ import { Babel } from 'meteor/babel-compiler';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { isScriptEngineFrozen } from './validateScriptEngine';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { outgoingEvents } from '../../lib/outgoingEvents';
-import { isScriptEngineFrozen } from './validateScriptEngine';
 
 const scopedChannels = ['all_public_channels', 'all_private_groups', 'all_direct_messages'];
 const validChannelChars = ['@', '#'];

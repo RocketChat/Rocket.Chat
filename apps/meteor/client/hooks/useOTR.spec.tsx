@@ -1,10 +1,10 @@
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
 
+import { useOTR } from './useOTR';
 import OTR from '../../app/otr/client/OTR';
 import { OtrRoomState } from '../../app/otr/lib/OtrRoomState';
 import { useRoom } from '../views/room/contexts/RoomContext';
-import { useOTR } from './useOTR';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useUserId: jest.fn(),

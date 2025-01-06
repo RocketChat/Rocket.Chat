@@ -1,6 +1,5 @@
 import type { Meta, StoryFn } from '@storybook/react';
 import type { ComponentType } from 'react';
-import React from 'react';
 
 import {
 	InfoPanel,
@@ -13,8 +12,8 @@ import {
 	InfoPanelText,
 	InfoPanelTitle,
 } from '.';
-import { createFakeRoom } from '../../../tests/mocks/data';
 import RetentionPolicyCallout from './RetentionPolicyCallout';
+import { createFakeRoom } from '../../../tests/mocks/data';
 
 export default {
 	title: 'Info Panel/InfoPanel',

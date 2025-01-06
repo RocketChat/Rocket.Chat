@@ -1,10 +1,11 @@
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ModConsoleUserTableRow from './ModConsoleUserTableRow';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -16,7 +17,6 @@ import {
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import ModerationFilter from '../helpers/ModerationFilter';
-import ModConsoleUserTableRow from './ModConsoleUserTableRow';
 
 const ModConsoleUsersTable = () => {
 	const [text, setText] = useState('');
@@ -52,13 +52,11 @@ const ModConsoleUsersTable = () => {
 
 	const getReports = useEndpoint('GET', '/v1/moderation.userReports');
 
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery(
-		['moderation', 'userReports', 'fetchAll', query],
-		() => getReports(query),
-		{
-			keepPreviousData: true,
-		},
-	);
+	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
+		queryKey: ['moderation', 'userReports', 'fetchAll', query],
+		queryFn: () => getReports(query),
+		placeholderData: keepPreviousData,
+	});
 
 	const handleClick = useMutableCallback((id): void => {
 		router.navigate({

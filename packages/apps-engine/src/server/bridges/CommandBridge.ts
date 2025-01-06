@@ -1,8 +1,8 @@
+import { BaseBridge } from './BaseBridge';
 import type { ISlashCommand } from '../../definition/slashcommands';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
 
 export abstract class CommandBridge extends BaseBridge {
     public async doDoesCommandExist(command: string, appId: string): Promise<boolean> {

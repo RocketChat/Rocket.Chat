@@ -1,8 +1,8 @@
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { syncOutlookEvents } from '../lib/syncOutlookEvents';
 import { useOutlookAuthenticationMutation } from './useOutlookAuthentication';
+import { syncOutlookEvents } from '../lib/syncOutlookEvents';
 
 export const useOutlookCalendarListForToday = () => {
 	return useOutlookCalendarList(new Date());
@@ -11,9 +11,13 @@ export const useOutlookCalendarListForToday = () => {
 export const useOutlookCalendarList = (date: Date) => {
 	const calendarData = useEndpoint('GET', '/v1/calendar-events.list');
 
-	return useQuery(['outlook', 'calendar', 'list'], async () => {
-		const { data } = await calendarData({ date: date.toISOString() });
-		return data;
+	return useQuery({
+		queryKey: ['outlook', 'calendar', 'list'],
+
+		queryFn: async () => {
+			const { data } = await calendarData({ date: date.toISOString() });
+			return data;
+		},
 	});
 };
 
@@ -29,7 +33,9 @@ export const useMutationOutlookCalendarSync = () => {
 		mutationFn: async () => {
 			await syncOutlookEvents();
 
-			await queryClient.invalidateQueries(['outlook', 'calendar', 'list']);
+			await queryClient.invalidateQueries({
+				queryKey: ['outlook', 'calendar', 'list'],
+			});
 
 			await checkOutlookCredentials.mutateAsync();
 		},

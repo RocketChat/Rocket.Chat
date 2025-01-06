@@ -1,8 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { withGroupBaseProperties } from './BaseProps';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
 const ajv = new Ajv({
 	coerceTypes: true,
