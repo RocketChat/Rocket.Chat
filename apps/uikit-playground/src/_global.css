@@ -62,3 +62,7 @@
 .rcx-modal__content:has(.uiKitWrapper){
     overflow: visible !important
 }
+
+div.rcx-message-system__body{
+    white-space: pre-wrap !important;
+}
