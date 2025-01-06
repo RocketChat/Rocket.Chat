@@ -8,7 +8,6 @@ import './models';
 import './settings';
 
 import { configureServer } from './configuration';
-import { configureLogLevel } from './configureLogLevel';
 import { registerServices } from './services/startup';
 import { startup } from './startup';
 import { settings } from '../app/settings/server';
@@ -26,8 +25,8 @@ import '../lib/oauthRedirectUriServer';
 import './lib/pushConfig';
 import './features/EmailInbox/index';
 
-await Promise.all([configureLogLevel(), registerServices(), registerEEBroker(), startup()]);
+await Promise.all([configureServer(settings), registerServices(), registerEEBroker(), startup()]);
 
 await startLicense();
 
-await Promise.all([configureServer(settings), startFederationService()]);
+await Promise.all([startFederationService()]);

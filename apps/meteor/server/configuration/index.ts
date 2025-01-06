@@ -6,6 +6,7 @@ import { configureCDN } from './configureCDN';
 import { configureCORS } from './configureCORS';
 import { configureDirectReply } from './configureDirectReply';
 import { configureIRC } from './configureIRC';
+import { configureLogLevel } from './configureLogLevel';
 import { configureSMTP } from './configureSMTP';
 import { configureFederation } from './federation';
 import { configureLDAP } from './ldap';
@@ -15,6 +16,7 @@ import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
 
 export async function configureServer(settings: ICachedSettings) {
 	await Promise.all([
+		configureLogLevel(settings),
 		configureAccounts(),
 		configureCAS(settings),
 		configureLDAP(settings),
