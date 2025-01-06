@@ -46,7 +46,7 @@ export const getChannelHistory = async ({
 	count?: number;
 	unreads?: boolean;
 	showThreadMessages?: boolean;
-}): Promise<boolean | IMessage[] | { messages: IMessage[]; firstUnread?: any; unreadNotLoaded?: number }> => {
+}): Promise<false | IMessage[] | { messages: IMessage[]; firstUnread?: any; unreadNotLoaded?: number }> => {
 	check(rid, String);
 
 	if (!Meteor.userId()) {

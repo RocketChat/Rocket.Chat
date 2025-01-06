@@ -228,7 +228,7 @@ export const getMessageHistory = async (
 				previous: string | null;
 			};
 	  }
-	| boolean
+	| false
 	| IMessage[]
 	| { messages: IMessage[]; firstUnread?: any; unreadNotLoaded?: number }
 > => {

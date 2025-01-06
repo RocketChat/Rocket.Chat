@@ -106,9 +106,6 @@ API.v1.addRoute(
 			if (!result) {
 				return API.v1.failure();
 			}
-			if (typeof result === 'boolean') {
-				return API.v1.success({ result: {} });
-			}
 
 			return API.v1.success({
 				result: {
