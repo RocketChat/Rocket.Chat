@@ -1,5 +1,5 @@
 import { Divider } from '@rocket.chat/fuselage';
-import React, { Fragment, memo } from 'react';
+import { Fragment, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SidebarNavigationItem from './SidebarNavigationItem';

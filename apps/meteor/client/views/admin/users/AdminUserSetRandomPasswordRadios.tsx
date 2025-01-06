@@ -1,6 +1,5 @@
 import { Box, FieldHint, FieldLabel, FieldRow, RadioButton } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';

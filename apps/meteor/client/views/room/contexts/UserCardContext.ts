@@ -7,7 +7,7 @@ type UserCardContextValue = {
 	openUserCard: (e: UIEvent, username: string) => void;
 	closeUserCard: () => void;
 	triggerProps: AriaButtonProps<'button'>;
-	triggerRef: MutableRefObject<null>;
+	triggerRef: MutableRefObject<Element | null>;
 	state: OverlayTriggerState;
 };
 

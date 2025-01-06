@@ -1,5 +1,4 @@
 import { GenericMenu } from '@rocket.chat/ui-client';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { ModConsoleUserRowProps } from './ModConsoleUserTableRow';

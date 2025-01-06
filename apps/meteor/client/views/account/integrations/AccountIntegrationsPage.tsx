@@ -2,7 +2,7 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { SelectLegacy, Box, Button, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 

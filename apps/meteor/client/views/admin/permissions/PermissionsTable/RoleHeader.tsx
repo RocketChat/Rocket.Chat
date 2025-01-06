@@ -3,7 +3,7 @@ import { Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import { GenericTableHeaderCell } from '../../../../components/GenericTable';
 

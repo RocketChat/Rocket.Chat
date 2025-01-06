@@ -6,7 +6,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getAvatarURL } from '../../../app/utils/client/getAvatarURL';

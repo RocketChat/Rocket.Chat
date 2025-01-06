@@ -1,15 +1,15 @@
 import type { IRoom, RoomType } from '@rocket.chat/core-typings';
 import { useMethod, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import { useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
 
 import { useOpenRoomMutation } from './useOpenRoomMutation';
+import { Rooms } from '../../../../app/models/client';
 import { roomFields } from '../../../../lib/publishFields';
 import { omit } from '../../../../lib/utils/omit';
 import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
 import { OldUrlRoomError } from '../../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
-import { queryClient } from '../../../lib/queryClient';
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
@@ -21,10 +21,11 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 	const unsubscribeFromRoomOpenedEvent = useRef<() => void>(() => undefined);
 
-	return useQuery(
+	const result = useQuery({
 		// we need to add uid and username here because `user` is not loaded all at once (see UserProvider -> Meteor.user())
-		['rooms', { reference, type }, { uid: user?._id, username: user?.username }] as const,
-		async (): Promise<{ rid: IRoom['_id'] }> => {
+		queryKey: ['rooms', { reference, type }, { uid: user?._id, username: user?.username }] as const,
+
+		queryFn: async (): Promise<{ rid: IRoom['_id'] }> => {
 			if ((user && !user.username) || (!user && !allowAnonymousRead)) {
 				throw new NotAuthorizedError();
 			}
@@ -102,17 +103,21 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			}
 			return { rid: room._id };
 		},
-		{
-			retry: 0,
-			onError: async (error) => {
-				if (['l', 'v'].includes(type) && error instanceof RoomNotFoundError) {
-					const { Rooms } = await import('../../../../app/models/client');
+		retry: 0,
+	});
 
-					Rooms.remove(reference);
-					queryClient.removeQueries(['rooms', reference]);
-					queryClient.removeQueries(['/v1/rooms.info', reference]);
-				}
-			},
-		},
-	);
+	const queryClient = useQueryClient();
+	const { error } = result;
+
+	useEffect(() => {
+		if (error) {
+			if (['l', 'v'].includes(type) && error instanceof RoomNotFoundError) {
+				Rooms.remove(reference);
+				queryClient.removeQueries({ queryKey: ['rooms', reference] });
+				queryClient.removeQueries({ queryKey: ['/v1/rooms.info', reference] });
+			}
+		}
+	}, [error, queryClient, reference, type]);
+
+	return result;
 }

@@ -1,5 +1,4 @@
 import { Box, Tag } from '@rocket.chat/fuselage';
-import React from 'react';
 
 import { isTruthy } from '../../lib/isTruthy';
 import { useLicense } from '../hooks/useLicense';

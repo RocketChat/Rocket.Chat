@@ -2,10 +2,10 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
+import type { AdminUserAction } from './useAdminUserInfoActions';
 import { useConfirmOwnerChanges } from './useConfirmOwnerChanges';
-import type { Action } from '../../../hooks/useActionSpread';
 
-export const useChangeUserStatusAction = (userId: IUser['_id'], isActive: boolean, onChange: () => void): Action | undefined => {
+export const useChangeUserStatusAction = (userId: IUser['_id'], isActive: boolean, onChange: () => void): AdminUserAction | undefined => {
 	const t = useTranslation();
 	const confirmOwnerChanges = useConfirmOwnerChanges();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -46,8 +46,8 @@ export const useChangeUserStatusAction = (userId: IUser['_id'], isActive: boolea
 	return canEditOtherUserActiveStatus
 		? {
 				icon: 'user',
-				label: isActive ? t('Deactivate') : t('Activate'),
-				action: changeActiveStatus,
+				content: isActive ? t('Deactivate') : t('Activate'),
+				onClick: changeActiveStatus,
 			}
 		: undefined;
 };

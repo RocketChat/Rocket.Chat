@@ -1,12 +1,12 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import type { SettingsContextValue } from '@rocket.chat/ui-contexts';
 import { SettingsContext, useAtLeastOnePermission, useMethod } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import { Tracker } from 'meteor/tracker';
 import type { ReactNode } from 'react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
-import { queryClient } from '../lib/queryClient';
 import { PrivateSettingsCachedCollection } from '../lib/settings/PrivateSettingsCachedCollection';
 import { PublicSettingsCachedCollection } from '../lib/settings/PublicSettingsCachedCollection';
 
@@ -89,18 +89,24 @@ const SettingsProvider = ({ children, privileged = false }: SettingsProviderProp
 		[cachedCollection],
 	);
 
-	const settingsChangeCallback = (changes: { _id: string }[]): void => {
-		changes.forEach((val) => {
-			switch (val._id) {
-				case 'Enterprise_License':
-					queryClient.invalidateQueries(['licenses']);
-					break;
+	const queryClient = useQueryClient();
 
-				default:
-					break;
-			}
-		});
-	};
+	// FIXME: This is a temporary solution to invalidate queries when settings change
+	const settingsChangeCallback = useCallback(
+		(changes: { _id: string }[]): void => {
+			changes.forEach((val) => {
+				switch (val._id) {
+					case 'Enterprise_License':
+						queryClient.invalidateQueries({ queryKey: ['licenses'] });
+						break;
+
+					default:
+						break;
+				}
+			});
+		},
+		[queryClient],
+	);
 
 	const saveSettings = useMethod('saveSettings');
 	const dispatch = useCallback(
@@ -108,7 +114,7 @@ const SettingsProvider = ({ children, privileged = false }: SettingsProviderProp
 			settingsChangeCallback(changes);
 			await saveSettings(changes);
 		},
-		[saveSettings],
+		[saveSettings, settingsChangeCallback],
 	);
 
 	const contextValue = useMemo<SettingsContextValue>(

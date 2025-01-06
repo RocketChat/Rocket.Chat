@@ -1,6 +1,6 @@
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DeviceManagementAdminTable from './DeviceManagementAdminTable';

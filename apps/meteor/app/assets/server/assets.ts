@@ -432,7 +432,8 @@ const listener = (req: IncomingMessage, res: ServerResponse, next: NextHandleFun
 
 	if (asset && Array.isArray(asset.constraints.extensions) && !asset.constraints.extensions.includes(format)) {
 		res.writeHead(403);
-		return res.end();
+		res.end();
+		return;
 	}
 	if (!file) {
 		const defaultUrl = asset?.defaultUrl;

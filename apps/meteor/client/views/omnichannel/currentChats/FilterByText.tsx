@@ -3,7 +3,7 @@ import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks
 import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { Dispatch, SetStateAction } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';

@@ -417,4 +417,8 @@ export class HomeContent {
 		await this.page.getByRole('dialog').getByRole('textbox', { name: 'Message' }).fill(text);
 		await this.page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true }).click();
 	}
+
+	get btnClearSelection() {
+		return this.page.getByRole('button', { name: 'Clear selection' });
+	}
 }
