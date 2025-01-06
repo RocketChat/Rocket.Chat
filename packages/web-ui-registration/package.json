@@ -34,7 +34,7 @@
 		"@storybook/react": "^8.4.4",
 		"@storybook/react-webpack5": "^8.4.4",
 		"@storybook/theming": "^8.4.4",
-		"@tanstack/react-query": "^4.36.1",
+		"@tanstack/react-query": "patch:@tanstack/react-query@npm%3A5.60.5#~/.yarn/patches/@tanstack-react-query-npm-5.60.5-04c500b172.patch",
 		"@testing-library/react": "~16.0.1",
 		"@types/react": "~17.0.80",
 		"babel-loader": "~9.2.1",

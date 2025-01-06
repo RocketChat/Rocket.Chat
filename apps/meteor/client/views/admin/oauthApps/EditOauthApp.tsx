@@ -87,7 +87,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 	}, [data._id, close, deleteApp, dispatchToastMessage, setModal, t]);
 
 	const openConfirmDelete = (): void =>
-		setModal(() => (
+		setModal(
 			<GenericModal
 				variant='danger'
 				onConfirm={onDeleteConfirm}
@@ -96,8 +96,8 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 				confirmText={t('Delete')}
 			>
 				{t('Application_delete_warning')}
-			</GenericModal>
-		));
+			</GenericModal>,
+		);
 
 	return (
 		<ContextualbarScrollableContent w='full' {...props}>

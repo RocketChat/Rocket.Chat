@@ -106,7 +106,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 		};
 
 		if (changingOwnRole && loggedUserIsOwner) {
-			return setModal(() =>
+			return setModal(
 				getWarningModalForFederatedRooms(
 					closeModal,
 					handleConfirm,
@@ -118,7 +118,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 		}
 
 		if (!changingOwnRole && loggedUserIsOwner) {
-			return setModal(() =>
+			return setModal(
 				getWarningModalForFederatedRooms(
 					closeModal,
 					handleConfirm,

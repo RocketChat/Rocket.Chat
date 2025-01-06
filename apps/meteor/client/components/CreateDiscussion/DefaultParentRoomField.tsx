@@ -18,11 +18,13 @@ const DefaultParentRoomField = ({ defaultParentRoom }: { defaultParentRoom: stri
 
 	const roomsInfoEndpoint = useEndpoint('GET', '/v1/rooms.info');
 
-	const { data, isLoading, isError } = useQuery(['defaultParentRoomInfo', query], async () => roomsInfoEndpoint(query), {
+	const { data, isPending, isError } = useQuery({
+		queryKey: ['defaultParentRoomInfo', query],
+		queryFn: async () => roomsInfoEndpoint(query),
 		refetchOnWindowFocus: false,
 	});
 
-	if (isLoading) {
+	if (isPending) {
 		return <Skeleton width='full' />;
 	}
 

@@ -41,18 +41,16 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 
 	type HistoryData = Awaited<ReturnType<typeof fetchHistory>>;
 
-	const { data, isLoading, refetch } = useQuery(
+	const { data, isPending, refetch } = useQuery({
 		queryKey,
-		async () => {
+		queryFn: async () => {
 			const result = fetchHistory(query);
 			setMounted(true);
 			return result;
 		},
-		{
-			cacheTime: 99999,
-			staleTime: 99999,
-		},
-	);
+		gcTime: 99999,
+		staleTime: 99999,
+	});
 
 	const handleClearHistory = async (): Promise<void> => {
 		try {
@@ -118,7 +116,7 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 			</PageHeader>
 			<PageContent>
 				<CustomScrollbars>
-					<HistoryContent key='historyContent' data={data?.history || []} isLoading={isLoading} />
+					<HistoryContent key='historyContent' data={data?.history || []} isLoading={isPending} />
 				</CustomScrollbars>
 				<Pagination
 					current={current}

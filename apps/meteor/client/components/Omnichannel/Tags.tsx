@@ -20,7 +20,7 @@ type TagsProps = {
 const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps): ReactElement => {
 	const { t } = useTranslation();
 
-	const { data: tagsResult, isInitialLoading } = useLivechatTags({
+	const { data: tagsResult, isLoading } = useLivechatTags({
 		department,
 		viewAll: !department,
 	});
@@ -60,7 +60,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 		handleTagValue('');
 	});
 
-	if (isInitialLoading) {
+	if (isLoading) {
 		return <FormSkeleton />;
 	}
 

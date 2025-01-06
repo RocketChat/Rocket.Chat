@@ -32,7 +32,7 @@ const ActiveSessionsCard = (): ReactElement => {
 		infoText: t('ActiveSessions_InfoText'),
 	};
 
-	if (result.isLoading || result.isError) {
+	if (result.isPending || result.isError) {
 		return (
 			<FeatureUsageCard card={card}>
 				<FeatureUsageCardBody justifyContent='flex-start'>

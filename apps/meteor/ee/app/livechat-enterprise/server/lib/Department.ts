@@ -1,6 +1,7 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { Filter } from 'mongodb';
 
 import { callbacks } from '../../../../../lib/callbacks';
 
@@ -14,9 +15,9 @@ export const findAllDepartmentsAvailable = async (
 ): Promise<{ departments: ILivechatDepartment[]; total: number }> => {
 	const filterReg = new RegExp(escapeRegExp(text || ''), 'i');
 
-	let query = {
+	let query: Filter<ILivechatDepartment> = {
 		type: { $ne: 'u' },
-		$or: [{ ancestors: { $in: [[unitId], null, []] } }, { ancestors: { $exists: false } }],
+		$or: [{ ancestors: { $in: [[unitId], undefined, []] } }, { ancestors: { $exists: false } }],
 		...(text && { name: filterReg }),
 	};
 

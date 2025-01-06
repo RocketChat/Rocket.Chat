@@ -109,7 +109,10 @@ const QueueListTable = (): ReactElement => {
 	};
 
 	const getLivechatQueue = useEndpoint('GET', '/v1/livechat/queue');
-	const { data, isSuccess, isLoading } = useQuery(['livechat-queue', query], async () => getLivechatQueue(query));
+	const { data, isSuccess, isLoading } = useQuery({
+		queryKey: ['livechat-queue', query],
+		queryFn: async () => getLivechatQueue(query),
+	});
 
 	return (
 		<>

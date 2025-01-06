@@ -37,14 +37,18 @@ const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): 
 	});
 
 	const handleReload = useCallback(async () => {
-		await queryClient.invalidateQueries(['livechat-departments']);
+		await queryClient.invalidateQueries({
+			queryKey: ['livechat-departments'],
+		});
 	}, [queryClient]);
 
 	const handleToggleArchive = useMutableCallback(async () => {
 		try {
 			await toggleArchive();
 			dispatchToastMessage({ type: 'success', message: archived ? t('Department_unarchived') : t('Department_archived') });
-			queryClient.removeQueries(['/v1/livechat/department/:_id', department._id]);
+			queryClient.removeQueries({
+				queryKey: ['/v1/livechat/department/:_id', department._id],
+			});
 			handleReload();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

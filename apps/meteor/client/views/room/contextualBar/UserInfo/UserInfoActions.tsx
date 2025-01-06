@@ -22,7 +22,7 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 		data: isMemberData,
 		refetch,
 		isSuccess: membershipCheckSuccess,
-		isLoading,
+		isPending,
 	} = useMemberExists({ roomId: rid, username: user.username as string });
 
 	const isMember = membershipCheckSuccess && isMemberData?.isMember;
@@ -67,7 +67,7 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
 
-	if (isLoading) {
+	if (isPending) {
 		return <Skeleton w='full' />;
 	}
 	return <ButtonGroup align='center'>{actions}</ButtonGroup>;
