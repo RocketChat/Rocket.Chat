@@ -266,7 +266,6 @@ class LivechatClass {
 			...(serviceTimeDuration && { serviceTimeDuration }),
 			...options,
 		};
-		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.chatDuration})`);
 
 		if (isRoomClosedByUserParams(params)) {
 			const { user } = params;
@@ -293,11 +292,13 @@ class LivechatClass {
 		const inquiry = await LivechatInquiry.findOneByRoomId(rid, { session });
 		const removedInquiry = await LivechatInquiry.removeByRoomId(rid, { session });
 		if (removedInquiry && removedInquiry.deletedCount !== 1) {
+			this.logger.debug({ msg: 'Error removing inquiry', inquiry, removedInquiry });
 			throw new Error('Error removing inquiry');
 		}
 
 		const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData, { session });
 		if (!updatedRoom || updatedRoom.modifiedCount !== 1) {
+			this.logger.debug({ msg: 'Error closing room', updatedRoom });
 			throw new Error('Error closing room');
 		}
 
@@ -310,10 +311,9 @@ class LivechatClass {
 		});
 
 		if (removedSubs.deletedCount !== subs) {
+			this.logger.debug({ msg: 'Error removing subscriptions', subs, removedSubs });
 			throw new Error('Error removing subscriptions');
 		}
-
-		this.logger.debug(`DB updated for room ${room._id}`);
 
 		// Retrieve the closed room
 		const newRoom = await LivechatRooms.findOneById(rid, { session });
@@ -321,6 +321,8 @@ class LivechatClass {
 			throw new Error('Error: Room not found');
 		}
 
+		// Print the state of the room after it was closed to have proof it got updated in full
+		this.logger.debug({ msg: 'Room closed', duration: closeData.chatDuration, room: newRoom });
 		return { room: newRoom, closedBy: closeData.closedBy, removedInquiry: inquiry };
 	}
 

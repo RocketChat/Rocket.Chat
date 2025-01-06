@@ -5,7 +5,13 @@ import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { GetMessagesOptions } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
-import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as ICoreMessage } from '@rocket.chat/core-typings';
+import {
+	type ISubscription,
+	type IUser as ICoreUser,
+	type IRoom as ICoreRoom,
+	type IMessage as ICoreMessage,
+	isOmnichannelRoom,
+} from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
 import type { FindOptions, Sort } from 'mongodb';
 
@@ -160,11 +166,24 @@ export class AppRoomBridge extends RoomBridge {
 	protected async update(room: IRoom, members: Array<string> = [], appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is updating a room.`);
 
-		if (!room.id || !(await Rooms.findOneById(room.id))) {
+		const originalRoom = await Rooms.findOneById(room.id);
+		if (!room.id || !originalRoom) {
 			throw new Error('A room must exist to update.');
 		}
 
-		const rm = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
+		let rm = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
+
+		if (isOmnichannelRoom(originalRoom)) {
+			// We shouldn't allow to mess up with a room's closed state via apps. Only via livechat bridge
+			rm = {
+				...rm,
+				t: 'l',
+				...(originalRoom.closedBy && { closedBy: originalRoom.closedBy }),
+				...(originalRoom.closer && { closer: originalRoom.closer }),
+				...(originalRoom.open ? { open: true } : { open: undefined }),
+				...(originalRoom.closedAt && { closedAt: originalRoom.closedAt }),
+			} as ICoreRoom;
+		}
 
 		await Rooms.updateOne({ _id: rm._id }, { $set: rm as Partial<ICoreRoom> });
 
