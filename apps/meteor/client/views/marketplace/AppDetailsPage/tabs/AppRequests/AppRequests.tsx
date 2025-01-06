@@ -36,7 +36,9 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 	useEffect(() => {
 		return () => {
 			if (isAdminUser && paginatedAppRequests.isSuccess) {
-				const unseenRequests = paginatedAppRequests.data.data.filter(({ seen }) => !seen).map(({ id }) => id);
+				// Marketplace returns data = null if the app was removed, so we need to be sure that the thing
+				// we are filtering & mapping is an array
+				const unseenRequests = (paginatedAppRequests.data.data || []).filter(({ seen }) => !seen).map(({ id }) => id);
 
 				if (unseenRequests.length) {
 					markAppRequestsAsSeen.mutate(unseenRequests, {
