@@ -40,12 +40,12 @@ export const useVoipItemsSection = (): { items: GenericMenuItemProps[] } | undef
 			return t(clientError.message);
 		}
 
-		if (!isReady || toggleVoip.isLoading) {
+		if (!isReady || toggleVoip.isPending) {
 			return t('Loading');
 		}
 
 		return '';
-	}, [clientError, isReady, toggleVoip.isLoading, t]);
+	}, [clientError, isReady, toggleVoip.isPending, t]);
 
 	return useMemo(() => {
 		if (!isEnabled) {
@@ -57,7 +57,7 @@ export const useVoipItemsSection = (): { items: GenericMenuItemProps[] } | undef
 				{
 					id: 'toggle-voip',
 					icon: isRegistered ? 'phone-disabled' : 'phone',
-					disabled: !isReady || toggleVoip.isLoading,
+					disabled: !isReady || toggleVoip.isPending,
 					onClick: () => toggleVoip.mutate(),
 					content: (
 						<Box is='span' title={tooltip}>

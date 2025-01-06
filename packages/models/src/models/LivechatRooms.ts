@@ -1908,8 +1908,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	async updateRoomCount() {
-		const livechatCount = await Settings.incrementValueById('Livechat_Room_Count', 1, { returnDocument: 'after' });
-		return livechatCount.value;
+		return Settings.incrementValueById('Livechat_Room_Count', 1, { returnDocument: 'after' });
 	}
 
 	findOpenByVisitorToken(visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}, extraQuery: Filter<IOmnichannelRoom> = {}) {

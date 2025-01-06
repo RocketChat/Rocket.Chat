@@ -29,14 +29,14 @@ const filterScopedRoles = (availableRoles: IRole[] | undefined) => (data: UserIn
 
 const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: AdminUserFormWithDataProps): ReactElement => {
 	const { t } = useTranslation();
-	const { data, isLoading, isError, refetch } = useUserInfoQuery({ userId: uid }, { select: filterScopedRoles(roleData?.roles) });
+	const { data, isPending, isError, refetch } = useUserInfoQuery({ userId: uid }, { select: filterScopedRoles(roleData?.roles) });
 
 	const handleReload = useEffectEvent(() => {
 		onReload();
 		refetch();
 	});
 
-	if (isLoading) {
+	if (isPending) {
 		return (
 			<Box p={24}>
 				<FormSkeleton />

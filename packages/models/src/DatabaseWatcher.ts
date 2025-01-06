@@ -44,9 +44,9 @@ export class DatabaseWatcher extends EventEmitter {
 	/**
 	 * Last doc timestamp received from a real time event
 	 */
-	private lastDocTS: Date;
+	private lastDocTS: Date | undefined;
 
-	private watchCollections: string[];
+	private watchCollections: string[] | undefined;
 
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	constructor({ db, _oplogHandle, metrics, logger: LoggerClass }: { db: Db; _oplogHandle?: any; metrics?: any; logger: typeof Logger }) {
@@ -127,7 +127,7 @@ export class DatabaseWatcher extends EventEmitter {
 		const stream = cursor.stream();
 
 		stream.on('data', (doc) => {
-			const doesMatter = this.watchCollections.some((collection) => doc.ns === `${dbName}.${collection}`);
+			const doesMatter = this.watchCollections?.some((collection) => doc.ns === `${dbName}.${collection}`);
 			if (!doesMatter) {
 				return;
 			}
@@ -149,7 +149,7 @@ export class DatabaseWatcher extends EventEmitter {
 
 		this.logger.startup('Using Meteor oplog');
 
-		this.watchCollections.forEach((collection) => {
+		this.watchCollections?.forEach((collection) => {
 			this._oplogHandle.onOplogEntry({ collection }, (event: any) => {
 				this.emitDoc(collection, convertOplogPayload(event));
 			});

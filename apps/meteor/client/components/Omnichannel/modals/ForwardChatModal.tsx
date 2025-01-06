@@ -24,16 +24,19 @@ import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import AutoCompleteAgent from '../../AutoCompleteAgent';
 import { useDepartmentsList } from '../hooks/useDepartmentsList';
 
-const ForwardChatModal = ({
-	onForward,
-	onCancel,
-	room,
-	...props
-}: {
+type ForwardChatModalFormData = {
+	comment: string;
+	department: string;
+	username: string;
+};
+
+type ForwardChatModalProps = {
 	onForward: (departmentId?: string, userId?: string, comment?: string) => Promise<void>;
 	onCancel: () => void;
 	room: IOmnichannelRoom;
-}): ReactElement => {
+};
+
+const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatModalProps): ReactElement => {
 	const { t } = useTranslation();
 	const getUserData = useEndpoint('GET', '/v1/users.info');
 	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle', true);
@@ -46,7 +49,7 @@ const ForwardChatModal = ({
 		setValue,
 		watch,
 		formState: { isSubmitting },
-	} = useForm();
+	} = useForm<ForwardChatModalFormData>();
 
 	useEffect(() => {
 		setFocus('comment');
@@ -73,7 +76,7 @@ const ForwardChatModal = ({
 	);
 
 	const onSubmit = useCallback(
-		async ({ department: departmentId, username, comment }) => {
+		async ({ department: departmentId, username, comment }: ForwardChatModalFormData) => {
 			let uid;
 
 			if (username) {
