@@ -56,11 +56,11 @@
 } */
 
 .rcx-modal:has(.uiKitWrapper){
-    padding: 0px !important
+    padding: 0px !important;
 }
 
 .rcx-modal__content:has(.uiKitWrapper){
-    overflow: visible !important
+    overflow: visible !important;
 }
 
 div.rcx-message-system__body{
