@@ -11,15 +11,14 @@ import { configureFederation } from './federation';
 import { configureLDAP } from './ldap';
 import { configureOAuth } from './oauth';
 import { configurePushNotifications } from './pushNotification';
-import { settings } from '../../app/settings/server';
+import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
 
-export async function configureLoginServices() {
-	await configureAccounts();
-	await configureCAS();
-	await configureLDAP();
-	await configureOAuth();
-
+export async function configureServer(settings: ICachedSettings) {
 	await Promise.all([
+		configureAccounts(),
+		configureCAS(settings),
+		configureLDAP(settings),
+		configureOAuth(settings),
 		configureAssets(settings),
 		configureCORS(settings),
 		configureCDN(settings),
