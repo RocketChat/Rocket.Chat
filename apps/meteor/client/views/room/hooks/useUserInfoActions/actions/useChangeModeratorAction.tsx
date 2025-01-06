@@ -71,20 +71,14 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 
 	const toggleModeratorEndpoint = useEndpoint('POST', getEndpoint(room.t, isModerator));
 	const toggleModerator = useMutation({
-		mutationFn: useCallback(
-			async ({ roomId, userId }) => {
-				await toggleModeratorEndpoint({ roomId, userId });
+		mutationFn: async ({ roomId, userId }: { roomId: string; userId: string }) => {
+			await toggleModeratorEndpoint({ roomId, userId });
 
-				return t(
-					isModerator ? 'User__username__removed_from__room_name__moderators' : 'User__username__is_now_a_moderator_of__room_name_',
-					{
-						username: user.username,
-						room_name: roomName,
-					},
-				);
-			},
-			[toggleModeratorEndpoint, t, isModerator, user.username, roomName],
-		),
+			return t(isModerator ? 'User__username__removed_from__room_name__moderators' : 'User__username__is_now_a_moderator_of__room_name_', {
+				username: user.username,
+				room_name: roomName,
+			});
+		},
 		onSuccess: (message) => {
 			dispatchToastMessage({ type: 'success', message });
 		},
