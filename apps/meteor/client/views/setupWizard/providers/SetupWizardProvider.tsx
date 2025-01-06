@@ -70,7 +70,17 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	);
 
 	const registerAdminUser = useCallback(
-		async ({ fullname, username, email, password }): Promise<void> => {
+		async ({
+			fullname,
+			username,
+			email,
+			password,
+		}: {
+			fullname: string;
+			username: string;
+			email: string;
+			password: string;
+		}): Promise<void> => {
 			await registerUser({ name: fullname, username, email, pass: password });
 			void callbacks.run('userRegistered', {});
 
@@ -97,7 +107,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	);
 
 	const saveAgreementData = useCallback(
-		async (agreement): Promise<void> => {
+		async (agreement: boolean): Promise<void> => {
 			await dispatchSettings([
 				{
 					_id: 'Cloud_Service_Agree_PrivacyTerms',
