@@ -12,7 +12,6 @@ import type {
 	FindOneAndUpdateOptions,
 	IndexDescription,
 	InsertOneOptions,
-	ModifyResult,
 	OptionalUnlessRequiredId,
 	UpdateFilter,
 	WithId,
@@ -175,7 +174,7 @@ export abstract class BaseRaw<
 		};
 	}
 
-	public findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>> {
+	public findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<WithId<T> | null> {
 		this.setUpdatedAt(update);
 		return this.col.findOneAndUpdate(query, update, options || {});
 	}
@@ -325,14 +324,14 @@ export abstract class BaseRaw<
 		return this.col.deleteOne(filter);
 	}
 
-	async findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<ModifyResult<T>> {
+	async findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<WithId<T> | null> {
 		if (!this.trash) {
 			return this.col.findOneAndDelete(filter, options || {});
 		}
 
 		const doc = await this.col.findOne(filter);
 		if (!doc) {
-			return { ok: 1, value: null };
+			return null;
 		}
 
 		const { _id, ...record } = doc;
@@ -353,7 +352,7 @@ export abstract class BaseRaw<
 			throw e;
 		}
 
-		return { ok: 1, value: doc };
+		return doc as WithId<T>;
 	}
 
 	async deleteMany(filter: Filter<T>, options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void }): Promise<DeleteResult> {

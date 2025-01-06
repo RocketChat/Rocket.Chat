@@ -7,7 +7,7 @@
 		"@types/jest": "~29.5.14",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
-		"mongodb": "patch:mongodb@npm%3A4.17.2#~/.yarn/patches/mongodb-npm-4.17.2-40d1286d70.patch",
+		"mongodb": "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch",
 		"typescript": "~5.7.2"
 	},
 	"scripts": {

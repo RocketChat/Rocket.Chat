@@ -76,7 +76,12 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 	const voipSounds = useVoipSounds();
 
 	const closeRoom = useCallback(
-		async (data = {}): Promise<void> => {
+		async (
+			data: {
+				comment?: string;
+				tags?: string[];
+			} = {},
+		): Promise<void> => {
 			roomInfo &&
 				(await voipCloseRoomEndpoint({
 					rid: roomInfo.rid,
@@ -94,7 +99,7 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 	);
 
 	const openWrapUpModal = useCallback((): void => {
-		setModal(() => <WrapUpCallModal closeRoom={closeRoom} />);
+		setModal(<WrapUpCallModal closeRoom={closeRoom} />);
 	}, [closeRoom, setModal]);
 
 	const changeAudioOutputDevice = useMutableCallback((selectedAudioDevice: Device): void => {
