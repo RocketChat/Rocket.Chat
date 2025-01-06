@@ -1,5 +1,15 @@
 # @rocket.chat/core-typings
 
+## 7.0.4
+
+### Patch Changes
+
+- ([#34877](https://github.com/RocketChat/Rocket.Chat/pull/34877) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an error where the engine would not retry a subprocess restart if the last attempt failed
+
+- ([#34877](https://github.com/RocketChat/Rocket.Chat/pull/34877) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes error propagation when trying to get the status of apps in some cases
+
+- ([#34877](https://github.com/RocketChat/Rocket.Chat/pull/34877) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes wrong data being reported to total failed apps metrics and statistics
+
 ## 7.0.3
 
 ## 7.0.2

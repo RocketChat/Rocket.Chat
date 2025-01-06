@@ -1,5 +1,25 @@
 # @rocket.chat/uikit-playground
 
+## 0.6.4
+
+### Patch Changes
+
+- ([#34877](https://github.com/RocketChat/Rocket.Chat/pull/34877) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an error where the engine would not retry a subprocess restart if the last attempt failed
+
+- ([#34880](https://github.com/RocketChat/Rocket.Chat/pull/34880) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- ([#34877](https://github.com/RocketChat/Rocket.Chat/pull/34877) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes error propagation when trying to get the status of apps in some cases
+
+- ([#34877](https://github.com/RocketChat/Rocket.Chat/pull/34877) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes wrong data being reported to total failed apps metrics and statistics
+
+- <details><summary>Updated dependencies [2a004b3587, 63856f59f0, 2a004b3587, 2a004b3587]:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@12.0.4
+  - @rocket.chat/core-typings@7.0.4
+  - @rocket.chat/ui-contexts@12.0.4
+  - @rocket.chat/ui-avatar@8.0.4
+  </details>
+
 ## 0.6.3
 
 ### Patch Changes

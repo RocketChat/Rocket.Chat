@@ -1,5 +1,54 @@
 # @rocket.chat/meteor
 
+## 7.0.4
+
+### Patch Changes
+
+- ([#34877](https://github.com/RocketChat/Rocket.Chat/pull/34877) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an error where the engine would not retry a subprocess restart if the last attempt failed
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#34880](https://github.com/RocketChat/Rocket.Chat/pull/34880) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- ([#34877](https://github.com/RocketChat/Rocket.Chat/pull/34877) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes error propagation when trying to get the status of apps in some cases
+
+- ([#34877](https://github.com/RocketChat/Rocket.Chat/pull/34877) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes wrong data being reported to total failed apps metrics and statistics
+
+- <details><summary>Updated dependencies [2a004b3587, 63856f59f0, 2a004b3587, 2a004b3587]:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@12.0.4
+  - @rocket.chat/instance-status@0.1.13
+  - @rocket.chat/ui-theming@0.4.1
+  - @rocket.chat/model-typings@1.0.4
+  - @rocket.chat/ui-video-conf@12.0.4
+  - @rocket.chat/core-typings@7.0.4
+  - @rocket.chat/rest-typings@7.0.4
+  - @rocket.chat/apps-engine@1.47.4
+  - @rocket.chat/ui-composer@0.4.1
+  - @rocket.chat/ui-contexts@12.0.4
+  - @rocket.chat/gazzodown@12.0.4
+  - @rocket.chat/ui-avatar@8.0.4
+  - @rocket.chat/ui-client@12.0.4
+  - @rocket.chat/ui-voip@2.0.4
+  - @rocket.chat/i18n@1.0.2
+  - @rocket.chat/models@1.0.4
+  - @rocket.chat/sha256@1.0.11
+  - @rocket.chat/omnichannel-services@0.3.10
+  - @rocket.chat/apps@0.2.4
+  - @rocket.chat/license@1.0.4
+  - @rocket.chat/pdf-worker@0.2.10
+  - @rocket.chat/presence@0.2.13
+  - @rocket.chat/api-client@0.2.13
+  - @rocket.chat/core-services@0.7.5
+  - @rocket.chat/cron@0.1.13
+  - @rocket.chat/freeswitch@1.0.4
+  - @rocket.chat/web-ui-registration@12.0.4
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.5
+  </details>
+
 ## 7.0.3
 
 ### Patch Changes

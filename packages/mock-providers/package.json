@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/mock-providers",
-	"version": "0.1.5",
+	"version": "0.1.6",
 	"private": true,
 	"dependencies": {
 		"@rocket.chat/emitter": "~0.31.25",
