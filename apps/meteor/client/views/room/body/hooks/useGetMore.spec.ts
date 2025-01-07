@@ -14,10 +14,6 @@ jest.mock('../../../../../app/ui-utils/client', () => ({
 	},
 }));
 
-jest.mock('../../../../../lib/utils/highOrderFunctions', () => ({
-	withThrottling: jest.fn().mockImplementation(() => (fn: () => void) => fn),
-}));
-
 const mockGetMore = jest.fn();
 
 describe('useGetMore', () => {
