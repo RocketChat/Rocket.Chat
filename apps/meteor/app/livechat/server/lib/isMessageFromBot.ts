@@ -3,5 +3,10 @@ import { Users } from '@rocket.chat/models';
 
 export async function isMessageFromBot(message: IMessage): Promise<boolean> {
 	const user = await Users.findOneById<Pick<IUser, 'roles'>>(message.u._id, { projection: { roles: 1 } });
-	return !!user?.roles?.includes('bot');
+
+	if (!user) {
+		throw new Error('User not found');
+	}
+
+	return !!user.roles.includes('bot');
 }

@@ -34,4 +34,10 @@ describe('isMessageFromBot', () => {
 		const result = await isMessageFromBot(mockMessage);
 		expect(result).to.be.false;
 	});
+
+	it('Should throw error when user is not found', async () => {
+		modelsMock.Users.findOneById.resolves(null);
+
+		expect(isMessageFromBot(mockMessage)).to.throw(Error('User mot found'));
+	});
 });
