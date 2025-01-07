@@ -1,5 +1,59 @@
 # @rocket.chat/i18n
 
+## 1.2.0
+
+### Minor Changes
+
+- ([#34076](https://github.com/RocketChat/Rocket.Chat/pull/34076)) Introduces a new option when exporting messages, allowing users to select and download a JSON file directly from client
+
+### Patch Changes
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes an error where the engine would not retry a subprocess restart if the last attempt failed
+
+- ([#33873](https://github.com/RocketChat/Rocket.Chat/pull/33873)) Fixes the incorrect registration status shown on admin users page for federated remote users.
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes error propagation when trying to get the status of apps in some cases
+
+- ([#34197](https://github.com/RocketChat/Rocket.Chat/pull/34197)) fixes "Change to language" button in login page not displaying the target language
+
+- ([#34169](https://github.com/RocketChat/Rocket.Chat/pull/34169)) Changes the wording for voice call permissions, improving consistency and clarity.
+
+  - `Manage Voip Extension` -> `Manage Voice Calls`
+    > Permission to manage voice calls and assign extensions to users
+  - `View VoIP extension details` -> `View Voice Call Extensions`
+    > Permission to view which user is calling and their extension info
+  - `View User VoIP extension` -> `Allow Voice Calls`
+    > Permission to allow users to use the voice call feature
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes wrong data being reported to total failed apps metrics and statistics
+
+## 1.2.0-rc.0
+
+### Minor Changes
+
+- ([#34076](https://github.com/RocketChat/Rocket.Chat/pull/34076)) Introduces a new option when exporting messages, allowing users to select and download a JSON file directly from client
+
+### Patch Changes
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes an error where the engine would not retry a subprocess restart if the last attempt failed
+
+- ([#33873](https://github.com/RocketChat/Rocket.Chat/pull/33873)) Fixes the incorrect registration status shown on admin users page for federated remote users.
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes error propagation when trying to get the status of apps in some cases
+
+- ([#34197](https://github.com/RocketChat/Rocket.Chat/pull/34197)) fixes "Change to language" button in login page not displaying the target language
+
+- ([#34169](https://github.com/RocketChat/Rocket.Chat/pull/34169)) Changes the wording for voice call permissions, improving consistency and clarity.
+
+  - `Manage Voip Extension` -> `Manage Voice Calls`
+    > Permission to manage voice calls and assign extensions to users
+  - `View VoIP extension details` -> `View Voice Call Extensions`
+    > Permission to view which user is calling and their extension info
+  - `View User VoIP extension` -> `Allow Voice Calls`
+    > Permission to allow users to use the voice call feature
+
+- ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes wrong data being reported to total failed apps metrics and statistics
+
 ## 1.1.0
 
 ### Minor Changes
