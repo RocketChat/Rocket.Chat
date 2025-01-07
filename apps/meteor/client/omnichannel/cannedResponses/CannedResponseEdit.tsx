@@ -6,11 +6,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import { memo, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import CannedResponseForm from './components/cannedResponseForm';
+import CannedResponseForm from './components/CannedResponseForm';
 import { useRemoveCannedResponse } from './useRemoveCannedResponse';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../components/Page';
 
-type CannedResponseEditFormData = {
+export type CannedResponseEditFormData = {
 	_id: string;
 	shortcut: string;
 	text: string;
