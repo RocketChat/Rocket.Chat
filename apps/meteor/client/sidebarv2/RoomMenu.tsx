@@ -19,9 +19,8 @@ import React, { memo, useMemo } from 'react';
 
 import { LegacyRoomManager } from '../../app/ui-utils/client';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
-import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import WarningModal from '../components/WarningModal';
-import { useDontAskAgain } from '../hooks/useDontAskAgain';
+import { useHideRoomAction } from '../hooks/useHideRoomAction';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { useOmnichannelPrioritiesMenu } from '../omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
@@ -42,15 +41,6 @@ type RoomMenuProps = {
 	name?: string;
 	hideDefaultOptions: boolean;
 };
-
-const closeEndpoints = {
-	p: '/v1/groups.close',
-	c: '/v1/channels.close',
-	d: '/v1/im.close',
-
-	v: '/v1/channels.close',
-	l: '/v1/groups.close',
-} as const;
 
 const leaveEndpoints = {
 	p: '/v1/groups.leave',
@@ -84,9 +74,6 @@ const RoomMenu = ({
 	const canFavorite = useSetting('Favorite_Rooms');
 	const isFavorite = Boolean(subscription?.f);
 
-	const dontAskHideRoom = useDontAskAgain('hideRoom');
-
-	const hideRoom = useEndpoint('POST', closeEndpoints[type]);
 	const readMessages = useEndpoint('POST', '/v1/subscriptions.read');
 	const toggleFavorite = useEndpoint('POST', '/v1/rooms.favorite');
 	const leaveRoom = useEndpoint('POST', leaveEndpoints[type]);
@@ -102,6 +89,8 @@ const RoomMenu = ({
 	const prioritiesMenu = useOmnichannelPrioritiesMenu(rid);
 
 	const queryClient = useQueryClient();
+
+	const handleHide = useHideRoomAction({ rid, type, name }, { redirect: false });
 
 	const canLeave = ((): boolean => {
 		if (type === 'c' && !canLeaveChannel) {
@@ -137,40 +126,6 @@ const RoomMenu = ({
 				cancelText={t('Cancel')}
 				confirm={leave}
 			/>,
-		);
-	});
-
-	const handleHide = useEffectEvent(async () => {
-		const hide = async (): Promise<void> => {
-			try {
-				await hideRoom({ roomId: rid });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
-			closeModal();
-		};
-
-		const warnText = roomCoordinator.getRoomDirectives(type).getUiText(UiTextContext.HIDE_WARNING);
-
-		if (dontAskHideRoom) {
-			return hide();
-		}
-
-		setModal(
-			<GenericModalDoNotAskAgain
-				variant='danger'
-				confirmText={t('Yes_hide_it')}
-				cancelText={t('Cancel')}
-				onClose={closeModal}
-				onCancel={closeModal}
-				onConfirm={hide}
-				dontAskAgain={{
-					action: 'hideRoom',
-					label: t('Hide_room'),
-				}}
-			>
-				{t(warnText as TranslationKey, name)}
-			</GenericModalDoNotAskAgain>,
 		);
 	});
 

@@ -52,11 +52,11 @@
 		"ts-jest": "~29.2.5",
 		"ts-loader": "~9.5.1",
 		"ts-node": "~10.9.2",
-		"ts-patch": "~3.2.1",
+		"ts-patch": "^3.2.1",
 		"typescript": "~5.6.3"
 	},
 	"dependencies": {
-		"typia": "~6.11.4"
+		"typia": "~6.12.2"
 	},
 	"peerDependencies": {
 		"@rocket.chat/icons": "*"

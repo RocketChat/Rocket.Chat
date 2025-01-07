@@ -1,7 +1,7 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 
-import { api, credentials, request } from './api-data';
+import { api, credentials, methodCall, request } from './api-data';
 
 type CreateRoomParams = {
 	name?: IRoom['name'];
@@ -108,3 +108,36 @@ export function actionRoom({ action, type, roomId, overrideCredentials = credent
 
 export const deleteRoom = ({ type, roomId }: { type: ActionRoomParams['type']; roomId: IRoom['_id'] }) =>
 	actionRoom({ action: 'delete', type, roomId, overrideCredentials: credentials });
+
+export const getSubscriptionByRoomId = (roomId: IRoom['_id'], userCredentials = credentials): Promise<ISubscription> =>
+	new Promise((resolve) => {
+		void request
+			.get(api('subscriptions.getOne'))
+			.set(userCredentials)
+			.query({ roomId })
+			.end((_err, res) => {
+				resolve(res.body.subscription);
+			});
+	});
+
+export const addUserToRoom = ({
+	usernames,
+	rid,
+	userCredentials,
+}: {
+	usernames: string[];
+	rid: IRoom['_id'];
+	userCredentials?: Credentials;
+}) => {
+	return request
+		.post(methodCall('addUsersToRoom'))
+		.set(userCredentials ?? credentials)
+		.send({
+			message: JSON.stringify({
+				method: 'addUsersToRoom',
+				params: [{ rid, users: usernames }],
+				id: 'id',
+				msg: 'method',
+			}),
+		});
+};

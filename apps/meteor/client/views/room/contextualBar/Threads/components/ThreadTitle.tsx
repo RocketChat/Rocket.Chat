@@ -1,8 +1,8 @@
 import type { IThreadMainMessage } from '@rocket.chat/core-typings';
 import React, { useMemo } from 'react';
 
-import { normalizeThreadTitle } from '../../../../../../app/threads/client/lib/normalizeThreadTitle';
 import { ContextualbarTitle } from '../../../../../components/Contextualbar';
+import { normalizeThreadTitle } from '../../../../../lib/normalizeThreadTitle';
 
 type ThreadTitleProps = {
 	mainMessage: IThreadMainMessage;

@@ -1,17 +1,13 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetModal, useToastMessageDispatch, useUserId, usePermission, useMethod, useRouter } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUserId, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import LeaveTeam from './LeaveTeam';
 import TeamsInfo from './TeamsInfo';
-import { UiTextContext } from '../../../../../definition/IRoomTypeConfig';
-import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
-import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
-import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { useHideRoomAction } from '../../../../hooks/useHideRoomAction';
 import { useDeleteRoom } from '../../../hooks/roomActions/useDeleteRoom';
 import { useRoom } from '../../../room/contexts/RoomContext';
 import { useRoomToolbox } from '../../../room/contexts/RoomToolboxContext';
@@ -27,8 +23,6 @@ const TeamsInfoWithLogic = ({ openEditing }: TeamsInfoWithLogicProps) => {
 	const { t } = useTranslation();
 	const userId = useUserId();
 
-	const dontAskHideRoom = useDontAskAgain('hideRoom');
-
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
@@ -36,7 +30,7 @@ const TeamsInfoWithLogic = ({ openEditing }: TeamsInfoWithLogicProps) => {
 	const leaveTeam = useEndpointAction('POST', '/v1/teams.leave');
 	const convertTeamToChannel = useEndpointAction('POST', '/v1/teams.convertToChannel');
 
-	const hideTeam = useMethod('hideRoom');
+	const hideTeam = useHideRoomAction({ rid: room._id, type: room.t, name: room.name ?? '' });
 
 	const router = useRouter();
 
@@ -66,42 +60,6 @@ const TeamsInfoWithLogic = ({ openEditing }: TeamsInfoWithLogicProps) => {
 		};
 
 		setModal(<LeaveTeam onConfirm={onConfirm} onCancel={closeModal} teamId={room.teamId!} />);
-	});
-
-	const handleHide = useMutableCallback(async () => {
-		const hide = async () => {
-			try {
-				await hideTeam(room._id);
-				router.navigate('/home');
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			} finally {
-				closeModal();
-			}
-		};
-
-		const warnText = roomCoordinator.getRoomDirectives(room.t).getUiText(UiTextContext.HIDE_WARNING) as TranslationKey;
-
-		if (dontAskHideRoom) {
-			return hide();
-		}
-
-		setModal(
-			<GenericModalDoNotAskAgain
-				variant='danger'
-				confirmText={t('Yes_hide_it')}
-				cancelText={t('Cancel')}
-				onClose={closeModal}
-				onCancel={closeModal}
-				onConfirm={hide}
-				dontAskAgain={{
-					action: 'hideRoom',
-					label: t('Hide_room'),
-				}}
-			>
-				{t(warnText, { postProcess: 'sprintf', sprintf: [room.fname] })}
-			</GenericModalDoNotAskAgain>,
-		);
 	});
 
 	const onClickViewChannels = useCallback(() => openTab('team-channels'), [openTab]);
@@ -134,7 +92,7 @@ const TeamsInfoWithLogic = ({ openEditing }: TeamsInfoWithLogicProps) => {
 			onClickClose={closeTab}
 			onClickDelete={canDeleteRoom ? handleDelete : undefined}
 			onClickLeave={onClickLeave}
-			onClickHide={handleHide}
+			onClickHide={hideTeam}
 			onClickViewChannels={onClickViewChannels}
 			onClickConvertToChannel={canEdit ? onClickConvertToChannel : undefined}
 		/>

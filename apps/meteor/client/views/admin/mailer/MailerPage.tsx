@@ -23,7 +23,7 @@ import { validateEmail } from '../../../../lib/emailValidator';
 import { isJSON } from '../../../../lib/utils/isJSON';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 
-export type SendEmailFormValue = {
+type SendEmailFormValue = {
 	fromEmail: string;
 	subject: string;
 	emailBody: string;

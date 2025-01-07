@@ -9,7 +9,7 @@ import CounterItem from './CounterItem';
 import CounterRow from './CounterRow';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 
-export type DataType = {
+type DataType = {
 	title: string;
 	value: number | string;
 }[];

@@ -98,7 +98,7 @@ const CannedResponsesComposer = ({ onChange, ...props }: ComponentProps<typeof M
 					<MessageComposerActionsDivider />
 					<MessageComposerAction icon='bold' onClick={useMarkdownSyntax('*')} title={t('Bold')} />
 					<MessageComposerAction icon='italic' onClick={useMarkdownSyntax('_')} title={t('Italic')} />
-					<MessageComposerAction icon='strike' onClick={useMarkdownSyntax('~')} title={t('Strike')} />
+					<MessageComposerAction icon='strike' onClick={useMarkdownSyntax('~')} title={t('Strikethrough')} />
 					<MessageComposerAction icon='link' onClick={useMarkdownSyntax('[]()')} title={t('Link')} />
 					<MessageComposerActionsDivider />
 					<Button ref={ref} small onClick={openPlaceholderSelect}>

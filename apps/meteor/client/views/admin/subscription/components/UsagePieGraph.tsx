@@ -14,7 +14,7 @@ const graphColors = (color: CSSProperties['color']): GraphColorsReturn => ({
 	free: Palette.stroke['stroke-extra-light'].toString(),
 });
 
-export type UsagePieGraphProps = {
+type UsagePieGraphProps = {
 	used: number;
 	total: number;
 	label?: ReactNode;

@@ -7,7 +7,7 @@ type AnnouncementComponenttParams = {
 };
 
 const AnnouncementComponent: FC<AnnouncementComponenttParams> = ({ children, onClickOpen }) => (
-	<RoomBanner className='rcx-header-section' onClick={onClickOpen}>
+	<RoomBanner className='rcx-header-section rcx-announcement-section' onClick={onClickOpen}>
 		<RoomBannerContent data-qa='AnnouncementAnnoucementComponent'>{children}</RoomBannerContent>
 	</RoomBanner>
 );

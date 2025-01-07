@@ -4788,7 +4788,7 @@
   "registration.component.login": "Iniciar sesión",
   "registration.component.login.userNotFound": "Usuario no encontrado",
   "registration.component.login.incorrectPassword": "Contraseña incorrecta",
-  "registration.component.switchLanguage": "Cambiar a <1>{{name}}</1>",
+  "registration.component.switchLanguage": "Cambiar a <2>{{name}}</2>",
   "registration.component.resetPassword": "Reestablecer contraseña",
   "registration.component.form.username": "Nombre de usuario",
   "registration.component.form.name": "Nombre",

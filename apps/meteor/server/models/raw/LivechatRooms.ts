@@ -2147,7 +2147,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		return this.find(query, {
-			projection: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 },
+			projection: { ts: 1, departmentId: 1, open: 1, servedBy: 1, responseBy: 1, metrics: 1, msgs: 1 },
 		});
 	}
 

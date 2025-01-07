@@ -19,7 +19,7 @@ type CondensedProps = {
 	clickable?: boolean;
 } & Omit<HTMLAttributes<HTMLAnchorElement>, 'is'>;
 
-const Condensed = ({ icon, title, avatar, actions, href, unread, menu, badges, selected, ...props }: CondensedProps) => {
+const Condensed = ({ icon, title, avatar, actions, unread, menu, badges, ...props }: CondensedProps) => {
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
@@ -32,7 +32,7 @@ const Condensed = ({ icon, title, avatar, actions, href, unread, menu, badges, s
 	};
 
 	return (
-		<SidebarV2Item href={href} selected={selected} {...props}>
+		<SidebarV2Item {...props}>
 			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 			{icon && icon}
 			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>

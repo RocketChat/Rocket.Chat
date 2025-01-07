@@ -23,33 +23,27 @@ const clampStyle = css`
 `;
 
 type UserCardProps = {
-	onOpenUserInfo?: () => void;
-	name?: string;
-	username?: string;
-	etag?: string;
-	customStatus?: ReactNode;
-	roles?: ReactNode;
-	bio?: ReactNode;
-	status?: ReactNode;
+	user?: {
+		nickname?: string;
+		name?: string;
+		username?: string;
+		etag?: string;
+		customStatus?: ReactNode;
+		roles?: ReactNode;
+		bio?: ReactNode;
+		status?: ReactNode;
+		localTime?: ReactNode;
+	};
 	actions?: ReactNode;
-	localTime?: ReactNode;
+	onOpenUserInfo?: () => void;
 	onClose?: () => void;
-	nickname?: string;
 } & ComponentProps<typeof UserCardDialog>;
 
 const UserCard = ({
-	onOpenUserInfo,
-	name,
-	username,
-	etag,
-	customStatus,
-	roles,
-	bio,
-	status = <Status.Offline />,
+	user: { name, username, etag, customStatus, roles, bio, status = <Status.Offline />, localTime, nickname } = {},
 	actions,
-	localTime,
+	onOpenUserInfo,
 	onClose,
-	nickname,
 	...props
 }: UserCardProps) => {
 	const { t } = useTranslation();

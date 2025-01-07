@@ -1,4 +1,4 @@
-import { Accordion, Box, Button, ButtonGroup, Callout, Grid } from '@rocket.chat/fuselage';
+import { Accordion, AccordionItem, Box, Button, ButtonGroup, Callout, Grid } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useSearchParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { t } from 'i18next';
@@ -21,9 +21,12 @@ import PlanCardCommunity from './components/cards/PlanCard/PlanCardCommunity';
 import SeatsCard from './components/cards/SeatsCard';
 import { useCancelSubscriptionModal } from './hooks/useCancelSubscriptionModal';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
+import UiKitSubscriptionLicense from './surface/UiKitSubscriptionLicense';
+import { Page, PageScrollableContentWithShadow } from '../../../components/Page';
+import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
+import PageHeaderNoShadow from '../../../components/Page/PageHeaderNoShadow';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
-import { useInvalidateLicense, useLicense } from '../../../hooks/useLicense';
+import { useInvalidateLicense, useLicenseWithCloudAnnouncement } from '../../../hooks/useLicense';
 import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 
 function useShowLicense() {
@@ -48,7 +51,7 @@ const SubscriptionPage = () => {
 	const router = useRouter();
 	const { data: enterpriseData } = useIsEnterprise();
 	const { isRegistered } = useRegistrationStatus();
-	const { data: licensesData, isLoading: isLicenseLoading } = useLicense({ loadValues: true });
+	const { data: licensesData, isLoading: isLicenseLoading } = useLicenseWithCloudAnnouncement({ loadValues: true });
 	const syncLicenseUpdate = useWorkspaceSync();
 	const invalidateLicenseQuery = useInvalidateLicense();
 
@@ -56,7 +59,7 @@ const SubscriptionPage = () => {
 
 	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isLoading, 10000);
 
-	const { license, limits, activeModules = [] } = licensesData || {};
+	const { license, limits, activeModules = [], cloudSyncAnnouncement } = licensesData || {};
 	const { isEnterprise = true } = enterpriseData || {};
 
 	const getKeyLimit = (key: 'monthlyActiveContacts' | 'activeUsers') => {
@@ -99,7 +102,7 @@ const SubscriptionPage = () => {
 
 	return (
 		<Page bg='tint'>
-			<PageHeader title={t('Subscription')}>
+			<PageHeaderNoShadow title={t('Subscription')}>
 				<ButtonGroup>
 					{isRegistered && (
 						<Button loading={syncLicenseUpdate.isLoading} icon='reload' onClick={() => handleSyncLicenseUpdate()}>
@@ -110,7 +113,12 @@ const SubscriptionPage = () => {
 						{t(isEnterprise ? 'Manage_subscription' : 'Upgrade')}
 					</UpgradeButton>
 				</ButtonGroup>
-			</PageHeader>
+			</PageHeaderNoShadow>
+			{cloudSyncAnnouncement && (
+				<PageBlockWithBorder>
+					<UiKitSubscriptionLicense key='license' initialView={cloudSyncAnnouncement} />
+				</PageBlockWithBorder>
+			)}
 			<PageScrollableContentWithShadow p={16}>
 				{(showSubscriptionCallout || syncLicenseUpdate.isLoading) && (
 					<Callout type='info' title={t('Sync_license_update_Callout_Title')} m={8}>
@@ -123,23 +131,24 @@ const SubscriptionPage = () => {
 					<>
 						{showLicense && (
 							<Accordion>
-								<Accordion.Item title={t('License')}>
+								<AccordionItem title={t('License')}>
 									<pre>{JSON.stringify(licensesData, null, 2)}</pre>
-								</Accordion.Item>
+								</AccordionItem>
 							</Accordion>
 						)}
 						<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 							<Grid m={0}>
-								<Grid.Item lg={4} xs={4} p={8}>
+								<Grid.Item lg={4} xs={4} p={8} minHeight={260}>
 									{license && <PlanCard licenseInformation={license.information} licenseLimits={{ activeUsers: seatsLimit }} />}
 									{!license && <PlanCardCommunity />}
 								</Grid.Item>
-								<Grid.Item lg={8} xs={4} p={8}>
+
+								<Grid.Item lg={8} xs={4} p={8} minHeight={260}>
 									<FeaturesCard activeModules={activeModules} isEnterprise={isEnterprise} />
 								</Grid.Item>
 
 								{seatsLimit.value !== undefined && (
-									<Grid.Item lg={6} xs={4} p={8}>
+									<Grid.Item lg={6} xs={4} p={8} minHeight={260}>
 										{seatsLimit.max !== Infinity ? (
 											<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={licensesData?.trial} />
 										) : (
@@ -149,7 +158,7 @@ const SubscriptionPage = () => {
 								)}
 
 								{macLimit.value !== undefined && (
-									<Grid.Item lg={6} xs={4} p={8}>
+									<Grid.Item lg={6} xs={4} p={8} minHeight={260}>
 										{macLimit.max !== Infinity ? (
 											<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={licensesData?.trial} />
 										) : (
@@ -161,15 +170,15 @@ const SubscriptionPage = () => {
 								{!license && (
 									<>
 										{limits?.marketplaceApps !== undefined && (
-											<Grid.Item lg={4} xs={4} p={8}>
+											<Grid.Item lg={4} xs={4} p={8} minHeight={260}>
 												<AppsUsageCard privateAppsLimit={limits?.privateApps} marketplaceAppsLimit={limits.marketplaceApps} />
 											</Grid.Item>
 										)}
 
-										<Grid.Item lg={4} xs={4} p={8}>
+										<Grid.Item lg={4} xs={4} p={8} minHeight={260}>
 											<ActiveSessionsCard />
 										</Grid.Item>
-										<Grid.Item lg={4} xs={4} p={8}>
+										<Grid.Item lg={4} xs={4} p={8} minHeight={260}>
 											<ActiveSessionsPeakCard />
 										</Grid.Item>
 									</>

@@ -3,6 +3,7 @@ import { useMethod, useRoute, useSetting, useUser } from '@rocket.chat/ui-contex
 import { useQuery } from '@tanstack/react-query';
 import { useRef } from 'react';
 
+import { useOpenRoomMutation } from './useOpenRoomMutation';
 import { roomFields } from '../../../../lib/publishFields';
 import { omit } from '../../../../lib/utils/omit';
 import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
@@ -15,8 +16,8 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', true);
 	const getRoomByTypeAndName = useMethod('getRoomByTypeAndName');
 	const createDirectMessage = useMethod('createDirectMessage');
-	const openRoom = useMethod('openRoom');
 	const directRoute = useRoute('direct');
+	const openRoom = useOpenRoomMutation();
 
 	const unsubscribeFromRoomOpenedEvent = useRef<() => void>(() => undefined);
 
@@ -38,9 +39,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 				try {
 					const { rid } = await createDirectMessage(...reference.split(', '));
-					const { Subscriptions } = await import('../../../../app/models/client');
-					const { waitUntilFind } = await import('../../../lib/utils/waitUntilFind');
-					await waitUntilFind(() => Subscriptions.findOne({ rid }));
+
 					directRoute.push({ rid }, (prev) => prev);
 				} catch (error) {
 					throw new RoomNotFoundError(undefined, { type, reference });
@@ -96,8 +95,8 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			// update user's room subscription
 			const sub = Subscriptions.findOne({ rid: room._id });
-			if (sub && !sub.open) {
-				await openRoom(room._id);
+			if (!!user?._id && sub && !sub.open) {
+				await openRoom.mutateAsync({ roomId: room._id, userId: user._id });
 			}
 			return { rid: room._id };
 		},

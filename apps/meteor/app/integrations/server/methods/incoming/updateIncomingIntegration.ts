@@ -23,6 +23,7 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 Meteor.methods<ServerMethods>({
+	// eslint-disable-next-line complexity
 	async updateIncomingIntegration(integrationId, integration) {
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -175,6 +176,7 @@ Meteor.methods<ServerMethods>({
 					emoji: integration.emoji,
 					alias: integration.alias,
 					channel: channels,
+					...('username' in integration && { username: integration.username }),
 					...(isFrozen
 						? {}
 						: {

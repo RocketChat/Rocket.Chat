@@ -169,12 +169,14 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 				ogName: i18nextInstance.t('Default'),
 				key: '',
 			},
-			...[...new Set([...i18nextInstance.languages, ...languages])].map((key) => ({
-				en: key,
-				name: getLanguageName(key, language),
-				ogName: getLanguageName(key, key),
-				key,
-			})),
+			...[...new Set([...i18nextInstance.languages, ...languages])]
+				.map((key) => ({
+					en: key,
+					name: getLanguageName(key, language),
+					ogName: getLanguageName(key, key),
+					key,
+				}))
+				.sort(({ name: nameA }, { name: nameB }) => nameA.localeCompare(nameB)),
 		],
 		[language, i18nextInstance],
 	);

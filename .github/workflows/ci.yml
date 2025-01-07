@@ -365,7 +365,7 @@ jobs:
           docker run --rm -w /app/bundle/programs/server/npm/node_modules/matrix-appservice-bridge ghcr.io/rocketchat/rocket.chat:$RC_DOCKER_TAG -e 'require(".")'
 
       - name: Rename official Docker tag to GitHub Container Registry
-        if: matrix.platform == needs.release-versions.outputs.official-platform
+        if: matrix.platform == needs.release-versions.outputs.official-platform && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
         run: |
           IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}"
 

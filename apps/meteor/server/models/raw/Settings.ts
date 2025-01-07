@@ -66,7 +66,7 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 		_id: string,
 		value: (ISetting['value'] extends undefined ? never : ISetting['value']) | null,
 		options?: UpdateOptions,
-	): Promise<Document | UpdateResult> {
+	): Promise<UpdateResult> {
 		const query = {
 			blocked: { $ne: true },
 			value: { $ne: value },

@@ -17,6 +17,7 @@ const ModerationConsoleActions = ({ report, onClick }: Omit<ModerationConsoleRow
 		<>
 			<GenericMenu
 				title={t('Options')}
+				detached
 				sections={[
 					{
 						items: [
