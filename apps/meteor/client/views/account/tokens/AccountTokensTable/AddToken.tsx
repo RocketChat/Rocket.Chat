@@ -1,6 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, TextInput, Button, Margins, Select } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useUserId, useMethod } from '@rocket.chat/ui-contexts';
+import DOMPurify from 'dompurify';
 import { useCallback, useMemo, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -50,10 +51,12 @@ const AddToken = ({ reload }: AddTokenProps) => {
 					<GenericModal title={t('API_Personal_Access_Token_Generated')} onConfirm={() => setModal(null)} onClose={() => setModal(null)}>
 						<Box
 							dangerouslySetInnerHTML={{
-								__html: t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
-									token,
-									userId,
-								}),
+								__html: DOMPurify.sanitize(
+									t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
+										token,
+										userId,
+									}),
+								),
 							}}
 						/>
 					</GenericModal>,
