@@ -416,14 +416,16 @@ test.describe('SAML', () => {
 
 		await page2.goto(`/home`);
 		await expect(page2).toHaveURL('/home');
-		await expect(page2.getByRole('button', { name: 'User menu' })).not.toBeVisible();
 
 		await page.goto(`/invite/${inviteId}`);
 		await page.getByRole('link', { name: 'Back to Login' }).click();
 
+		await expect(poRegistration.btnLoginWithSaml).toBeVisible();
 		await poRegistration.btnLoginWithSaml.click();
 		await expect(page).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
 
+		await expect(page2.getByRole('button', { name: 'User menu' })).not.toBeVisible();
+		await expect(poRegistration2.btnLoginWithSaml).toBeVisible();
 		await poRegistration2.btnLoginWithSaml.click();
 		await expect(page2).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
 
