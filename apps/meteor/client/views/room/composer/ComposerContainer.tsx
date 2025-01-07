@@ -1,7 +1,7 @@
 import { isOmnichannelRoom, isRoomFederated, isVoipRoom } from '@rocket.chat/core-typings';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import ComposerAirGappedRestricted from './ComposerAirGappedRestricted';
 import ComposerAnonymous from './ComposerAnonymous';

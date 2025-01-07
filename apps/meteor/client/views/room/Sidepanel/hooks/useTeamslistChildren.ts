@@ -1,5 +1,5 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { Mongo } from 'meteor/mongo';
 import { useEffect, useMemo } from 'react';
 
@@ -41,16 +41,16 @@ export const useTeamsListChildrenUpdate = (
 		queryFn: () => Subscriptions.find(query, options).fetch(),
 		enabled: sidepanelItems !== null && teamId !== null,
 		refetchInterval: 5 * 60 * 1000,
-		keepPreviousData: true,
+		placeholderData: keepPreviousData,
 	});
 
 	const { refetch } = result;
 
 	useEffect(() => {
 		const liveQueryHandle = Subscriptions.find(query).observe({
-			added: () => queueMicrotask(() => refetch({ exact: false })),
-			changed: () => queueMicrotask(() => refetch({ exact: false })),
-			removed: () => queueMicrotask(() => refetch({ exact: false })),
+			added: () => queueMicrotask(() => refetch()),
+			changed: () => queueMicrotask(() => refetch()),
+			removed: () => queueMicrotask(() => refetch()),
 		});
 
 		return () => {

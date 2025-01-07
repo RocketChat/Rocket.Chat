@@ -1,8 +1,8 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ModerationConsoleTableRow from './ModerationConsoleTableRow';
@@ -53,13 +53,13 @@ const ModerationConsoleTable = () => {
 
 	const getReports = useEndpoint('GET', '/v1/moderation.reportsByUsers');
 
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const { data, isLoading, isSuccess } = useQuery(['moderation', 'msgReports', 'fetchAll', query], async () => getReports(query), {
-		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
+	const { data, isLoading, isSuccess } = useQuery({
+		queryKey: ['moderation', 'msgReports', 'fetchAll', query],
+		queryFn: async () => getReports(query),
+		meta: {
+			apiErrorToastMessage: true,
 		},
-		keepPreviousData: true,
+		placeholderData: keepPreviousData,
 	});
 
 	const handleClick = useMutableCallback((id): void => {

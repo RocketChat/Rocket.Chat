@@ -7,7 +7,7 @@ import { useUserPreference, useUserSubscriptions, useSetting, useTranslation, us
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject, SetStateAction, Dispatch, FormEventHandler, Ref, MouseEventHandler } from 'react';
-import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
+import { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
 import type { VirtuosoHandle } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
@@ -100,9 +100,10 @@ const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRo
 
 	const getSpotlight = useMethod('spotlight');
 
-	return useQuery(
-		['sidebar/search/spotlight', name, usernamesFromClient, type, localRooms.map(({ _id, name }) => _id + name)],
-		async () => {
+	return useQuery({
+		queryKey: ['sidebar/search/spotlight', name, usernamesFromClient, type, localRooms.map(({ _id, name }) => _id + name)],
+
+		queryFn: async () => {
 			if (localRooms.length === LIMIT) {
 				return localRooms;
 			}
@@ -157,12 +158,10 @@ const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRo
 			const exact = resultsFromServer?.filter((item) => [item.name, item.fname].includes(name));
 			return Array.from(new Set([...exact, ...localRooms, ...resultsFromServer]));
 		},
-		{
-			staleTime: 60_000,
-			keepPreviousData: true,
-			placeholderData: localRooms,
-		},
-	);
+
+		staleTime: 60_000,
+		placeholderData: (previousData) => previousData ?? localRooms,
+	});
 };
 
 const useInput = (initial: string): { value: string; onChange: FormEventHandler; setValue: Dispatch<SetStateAction<string>> } => {

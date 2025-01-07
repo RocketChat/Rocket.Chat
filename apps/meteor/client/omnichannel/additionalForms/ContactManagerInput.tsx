@@ -1,5 +1,3 @@
-import React from 'react';
-
 import AutoCompleteAgent from '../../components/AutoCompleteAgent';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 

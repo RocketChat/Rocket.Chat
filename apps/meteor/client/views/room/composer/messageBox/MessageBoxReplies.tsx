@@ -3,7 +3,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { IconButton, Box, Margins } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';

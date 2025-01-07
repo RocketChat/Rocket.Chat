@@ -1,5 +1,5 @@
 import { useSetModal, useTranslation, useToastMessageDispatch, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import { useEndpointAction } from './useEndpointAction';
 import GenericModal from '../components/GenericModal';

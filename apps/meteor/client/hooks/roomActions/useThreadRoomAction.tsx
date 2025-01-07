@@ -1,6 +1,6 @@
 import type { BadgeProps } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import React, { lazy, useMemo } from 'react';
+import { lazy, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { HeaderToolbarAction, HeaderToolbarActionBadge } from '../../components/Header';

@@ -3,7 +3,6 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useMethod, useRoute, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../../../components/FilterByText';
@@ -24,7 +23,7 @@ const ChatsTableFilter = () => {
 		const onDeleteAll = async () => {
 			try {
 				await removeClosedChats();
-				queryClient.invalidateQueries(['current-chats']);
+				queryClient.invalidateQueries({ queryKey: ['current-chats'] });
 				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });

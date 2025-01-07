@@ -1,7 +1,7 @@
 import type { IStats } from '@rocket.chat/core-typings';
 import { Card } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import WorkspaceCardSection from '../components/WorkspaceCardSection';

@@ -30,7 +30,7 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
@@ -153,7 +153,8 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			await eventStats({
 				params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
 			});
-			queryClient.invalidateQueries(['pendingUsersCount'], {
+			queryClient.invalidateQueries({
+				queryKey: ['pendingUsersCount'],
 				refetchType: 'all',
 			});
 			router.navigate(`/admin/users/created/${_id}`);

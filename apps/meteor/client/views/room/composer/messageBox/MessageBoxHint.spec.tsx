@@ -1,6 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 
 import MessageBoxHint from './MessageBoxHint';
 import { E2ERoomState } from '../../../../../app/e2e/client/E2ERoomState';

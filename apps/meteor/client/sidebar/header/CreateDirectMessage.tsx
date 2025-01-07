@@ -3,7 +3,7 @@ import { Box, Modal, Button, FieldGroup, Field, FieldRow, FieldError, FieldHint 
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';

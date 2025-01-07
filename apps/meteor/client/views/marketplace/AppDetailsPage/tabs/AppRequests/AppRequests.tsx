@@ -1,15 +1,14 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement, SetStateAction } from 'react';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppRequestItem from './AppRequestItem';
 import AppRequestsLoading from './AppRequestsLoading';
 import { useAppsReload } from '../../../../../contexts/hooks/useAppsReload';
-import { queryClient } from '../../../../../lib/queryClient';
 import { useAppRequests } from '../../../hooks/useAppRequests';
 
 type itemsPerPage = 25 | 50 | 100;
@@ -31,6 +30,9 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 		mutationFn: (unseenRequests: Array<string>) => markSeen({ unseenRequests }),
 		retry: false,
 	});
+
+	const queryClient = useQueryClient();
+
 	useEffect(() => {
 		return () => {
 			if (isAdminUser && paginatedAppRequests.isSuccess) {

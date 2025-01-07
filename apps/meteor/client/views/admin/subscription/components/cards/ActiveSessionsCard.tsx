@@ -1,6 +1,5 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useActiveConnections } from '../../../../hooks/useActiveConnections';
@@ -33,7 +32,7 @@ const ActiveSessionsCard = (): ReactElement => {
 		infoText: t('ActiveSessions_InfoText'),
 	};
 
-	if (result.isLoading || result.isError) {
+	if (result.isPending || result.isError) {
 		return (
 			<FeatureUsageCard card={card}>
 				<FeatureUsageCardBody justifyContent='flex-start'>

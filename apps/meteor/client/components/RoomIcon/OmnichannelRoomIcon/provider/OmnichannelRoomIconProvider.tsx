@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 

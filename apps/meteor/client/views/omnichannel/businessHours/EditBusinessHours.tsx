@@ -2,7 +2,6 @@ import type { ILivechatBusinessHour, LivechatBusinessHourTypes, Serialized } fro
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import type { BusinessHoursFormData } from './BusinessHoursForm';

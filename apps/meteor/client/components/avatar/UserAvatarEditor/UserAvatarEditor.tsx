@@ -4,7 +4,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
@@ -32,7 +32,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const setUploadedPreview = useCallback(
-		async (file, avatarObj) => {
+		async (file: File, avatarObj: AvatarObject) => {
 			setAvatarObj(avatarObj);
 			try {
 				const dataURL = await readFileAsDataURL(file);

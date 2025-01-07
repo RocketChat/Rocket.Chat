@@ -1,6 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, queryByAttribute } from '@testing-library/react';
-import React from 'react';
 
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
 
