@@ -68,7 +68,7 @@ callbacks.add(
 			!message ||
 			isEditedMessage(message) ||
 			isSystemMessage(message) ||
-			((await isMessageFromBot(message)) && settings.get<boolean>('Omnichannel_Metrics_Ignore_Automatic_Messages'))
+			(settings.get<boolean>('Omnichannel_Metrics_Ignore_Automatic_Messages') && (await isMessageFromBot(message)))
 		) {
 			return message;
 		}
