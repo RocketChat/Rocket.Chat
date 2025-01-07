@@ -1,12 +1,11 @@
 import type { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useRoomToolboxActions } from './hooks/useRoomToolboxActions';
 import { HeaderToolbarAction, HeaderToolbarDivider } from '../../../../components/Header';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import type { RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext';
@@ -15,49 +14,11 @@ type RoomToolboxProps = {
 	className?: ComponentProps<typeof Box>['className'];
 };
 
-type MenuActionsProps = {
-	id: string;
-	items: GenericMenuItemProps[];
-}[];
-
 const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const { t } = useTranslation();
-	const { roomToolboxExpanded } = useLayout();
 
 	const toolbox = useRoomToolbox();
-	const { actions, openTab } = toolbox;
-
-	const normalActions = actions.filter((action) => !action.featured && action.type !== 'apps');
-	const featuredActions = actions.filter((action) => action.featured);
-	const appsActions = actions.filter((action) => action.type === 'apps');
-	const visibleActions = !roomToolboxExpanded ? [] : normalActions.slice(0, 6);
-
-	const hiddenActions = (!roomToolboxExpanded ? actions : [...appsActions, ...normalActions.slice(6)])
-		.filter((item) => !item.disabled && !item.featured)
-		.map((item) => ({
-			'key': item.id,
-			'content': t(item.title),
-			'onClick':
-				item.action ??
-				((): void => {
-					openTab(item.id);
-				}),
-			'data-qa-id': `ToolBoxAction-${item.icon}`,
-			...item,
-		}))
-		.reduce((acc, item) => {
-			const group = item.type ? item.type : '';
-			const section = acc.find((section: { id: string }) => section.id === group);
-			if (section) {
-				section.items.push(item);
-				return acc;
-			}
-
-			const newSection = { id: group, key: item.key, title: group === 'apps' ? t('Apps') : '', items: [item] };
-			acc.push(newSection);
-
-			return acc;
-		}, [] as MenuActionsProps);
+	const { featuredActions, hiddenActions, visibleActions } = useRoomToolboxActions(toolbox);
 
 	const showKebabMenu = hiddenActions.length > 0;
 
