@@ -9,6 +9,8 @@ import PageLoading from '../root/PageLoading';
 import { useInviteTokenMutation } from './hooks/useInviteTokenMutation';
 import { useValidateInviteQuery } from './hooks/useValidateInviteQuery';
 
+const KEY = 'invite_token';
+
 const InvitePage = (): ReactElement => {
 	const { t } = useTranslation();
 
@@ -28,7 +30,8 @@ const InvitePage = (): ReactElement => {
 		return <PageLoading />;
 	}
 
-	if (isValidInvite) {
+	if (isValidInvite && token) {
+		localStorage.setItem(KEY, token);
 		return <LoginPage />;
 	}
 
