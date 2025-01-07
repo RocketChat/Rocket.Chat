@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
@@ -71,20 +71,14 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 
 	const toggleModeratorEndpoint = useEndpoint('POST', getEndpoint(room.t, isModerator));
 	const toggleModerator = useMutation({
-		mutationFn: useCallback(
-			async ({ roomId, userId }) => {
-				await toggleModeratorEndpoint({ roomId, userId });
+		mutationFn: async ({ roomId, userId }: { roomId: string; userId: string }) => {
+			await toggleModeratorEndpoint({ roomId, userId });
 
-				return t(
-					isModerator ? 'User__username__removed_from__room_name__moderators' : 'User__username__is_now_a_moderator_of__room_name_',
-					{
-						username: user.username,
-						room_name: roomName,
-					},
-				);
-			},
-			[toggleModeratorEndpoint, t, isModerator, user.username, roomName],
-		),
+			return t(isModerator ? 'User__username__removed_from__room_name__moderators' : 'User__username__is_now_a_moderator_of__room_name_', {
+				username: user.username,
+				room_name: roomName,
+			});
+		},
 		onSuccess: (message) => {
 			dispatchToastMessage({ type: 'success', message });
 		},
@@ -94,7 +88,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 	});
 
 	const handleChangeModerator = useCallback(
-		({ userId }) => {
+		({ userId }: { userId: string }) => {
 			if (!isRoomFederated(room)) {
 				return toggleModerator.mutateAsync({ roomId: rid, userId: uid });
 			}
@@ -107,7 +101,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 
 			const changingOwnRole = userId === loggedUserId;
 			if (changingOwnRole && loggedUserIsModerator) {
-				return setModal(() =>
+				return setModal(
 					getWarningModalForFederatedRooms(
 						closeModal,
 						handleConfirm,
@@ -119,7 +113,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 			}
 
 			if (changingOwnRole && loggedUserIsOwner) {
-				return setModal(() =>
+				return setModal(
 					getWarningModalForFederatedRooms(
 						closeModal,
 						handleConfirm,
@@ -131,7 +125,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 			}
 
 			if (!changingOwnRole && loggedUserIsModerator) {
-				return setModal(() =>
+				return setModal(
 					getWarningModalForFederatedRooms(
 						closeModal,
 						handleConfirm,
@@ -147,7 +141,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 		[setModal, loggedUserId, loggedUserIsModerator, loggedUserIsOwner, t, rid, uid, toggleModerator, room],
 	);
 
-	const changeModeratorAction = useEffectEvent(() => handleChangeModerator({ roomId: rid, userId: uid }));
+	const changeModeratorAction = useEffectEvent(() => handleChangeModerator({ userId: uid }));
 
 	const changeModeratorOption = useMemo(
 		() =>

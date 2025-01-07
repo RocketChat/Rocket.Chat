@@ -1,6 +1,5 @@
 import { NumberInput, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
-import React from 'react';
 
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 

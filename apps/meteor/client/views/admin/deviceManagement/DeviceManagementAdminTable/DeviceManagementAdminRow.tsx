@@ -4,7 +4,7 @@ import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';

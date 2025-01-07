@@ -2,7 +2,7 @@ import { TextInput, Chip, Button, FieldLabel, FieldRow } from '@rocket.chat/fuse
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FormSkeleton } from './Skeleton';
@@ -20,7 +20,7 @@ type TagsProps = {
 const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps): ReactElement => {
 	const { t } = useTranslation();
 
-	const { data: tagsResult, isInitialLoading } = useLivechatTags({
+	const { data: tagsResult, isLoading } = useLivechatTags({
 		department,
 		viewAll: !department,
 	});
@@ -60,7 +60,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 		handleTagValue('');
 	});
 
-	if (isInitialLoading) {
+	if (isLoading) {
 		return <FormSkeleton />;
 	}
 

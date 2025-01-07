@@ -167,7 +167,7 @@ export const sendNoWrap = async ({
 		html = undefined;
 	}
 
-	const { value } = await Settings.incrementValueById('Triggered_Emails_Count', 1, { returnDocument: 'after' });
+	const value = await Settings.incrementValueById('Triggered_Emails_Count', 1, { returnDocument: 'after' });
 	if (value) {
 		void notifyOnSettingChanged(value);
 	}

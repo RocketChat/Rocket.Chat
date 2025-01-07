@@ -1,5 +1,4 @@
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
 
 import ContactInfoDetailsEntry from './ContactInfoDetailsEntry';
 import { parseOutboundPhoneNumber } from '../../../../../lib/voip/parseOutboundPhoneNumber';

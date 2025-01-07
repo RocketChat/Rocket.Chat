@@ -638,20 +638,20 @@ export const FileUpload = {
 		const cursor = Messages.find(
 			{
 				rid,
-				'file._id': {
+				'files._id': {
 					$exists: true,
 				},
 			},
 			{
 				projection: {
-					'file._id': 1,
+					'files._id': 1,
 				},
 			},
 		);
 
 		for await (const document of cursor) {
-			if (document.file) {
-				await FileUpload.getStore('Uploads').deleteById(document.file._id);
+			if (document.files) {
+				await Promise.all(document.files.map((file) => FileUpload.getStore('Uploads').deleteById(file._id)));
 			}
 		}
 	},

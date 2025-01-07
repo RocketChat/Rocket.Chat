@@ -16,7 +16,7 @@ import {
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { FormProvider, useForm, Controller } from 'react-hook-form';
 
 import {
@@ -70,7 +70,9 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 			});
 
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			queryClient.invalidateQueries(['livechat-customFields']);
+			queryClient.invalidateQueries({
+				queryKey: ['livechat-customFields'],
+			});
 			router.navigate('/omnichannel/customfields');
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

@@ -1,6 +1,6 @@
 import { Box, FieldGroup, Accordion, AccordionItem } from '@rocket.chat/fuselage';
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import AppSetting from './AppSetting';
 import type { ISettings } from '../../../../../apps/@types/IOrchestrator';

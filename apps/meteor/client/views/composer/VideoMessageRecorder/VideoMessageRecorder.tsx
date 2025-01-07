@@ -4,7 +4,7 @@ import { Box, ButtonGroup, Button, Icon, PositionAnimated } from '@rocket.chat/f
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, RefObject } from 'react';
-import React, { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 
 import { UserAction, USER_ACTIVITIES } from '../../../../app/ui/client/lib/UserAction';
 import { VideoRecorder } from '../../../../app/ui/client/lib/recorderjs/videoRecorder';

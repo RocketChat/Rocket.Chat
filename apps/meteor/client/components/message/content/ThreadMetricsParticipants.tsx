@@ -8,7 +8,6 @@ import {
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 type ThreadMetricsParticipantsProps = {
 	participants: Array<string>;

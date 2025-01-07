@@ -1,6 +1,6 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Messages } from '../../../../../app/models/client';
@@ -38,7 +38,7 @@ export const useHandleUnread = (
 	subscription?: ISubscription,
 ): {
 	innerRef: (wrapper: HTMLDivElement | null) => void;
-	wrapperRef: React.MutableRefObject<HTMLDivElement | null>;
+	wrapperRef: MutableRefObject<HTMLDivElement | null>;
 	handleUnreadBarJumpToButtonClick: () => void;
 	handleMarkAsReadButtonClick: () => void;
 	counter: readonly [number, Date | undefined];

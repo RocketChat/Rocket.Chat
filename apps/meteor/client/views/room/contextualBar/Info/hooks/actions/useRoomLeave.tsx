@@ -2,7 +2,6 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter, useSetModal, useToastMessageDispatch, useMethod, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import { LegacyRoomManager } from '../../../../../../../app/ui-utils/client';
 import { UiTextContext } from '../../../../../../../definition/IRoomTypeConfig';

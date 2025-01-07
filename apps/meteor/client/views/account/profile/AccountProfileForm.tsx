@@ -24,7 +24,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';

@@ -1,6 +1,6 @@
 import { Box, Divider } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
 type CounterRowProps = {
