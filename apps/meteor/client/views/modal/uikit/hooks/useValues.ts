@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Block, LayoutBlock } from '@rocket.chat/ui-kit';
 import { useReducer } from 'react';
 
@@ -33,12 +33,12 @@ const reduceBlocks = (obj: Record<string, { value: unknown; blockId?: string }>,
 };
 
 export const useValues = (blocks: Block[]) => {
-	const reducer = useMutableCallback((values, { actionId, payload }) => ({
+	const reducer = useEffectEvent((values, { actionId, payload }) => ({
 		...values,
 		[actionId]: payload,
 	}));
 
-	const initializer = useMutableCallback((blocks: LayoutBlock[]) => {
+	const initializer = useEffectEvent((blocks: LayoutBlock[]) => {
 		const obj: Record<string, { value: unknown; blockId?: string }> = {};
 
 		return blocks.reduce(reduceBlocks, obj);

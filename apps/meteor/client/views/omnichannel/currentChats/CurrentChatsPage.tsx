@@ -1,6 +1,6 @@
 import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
 import { Callout, Pagination } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
@@ -167,7 +167,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 	const [defaultQuery] = useState(hashKey([query]));
 	const queryHasChanged = defaultQuery !== hashKey([query]);
 
-	const onFilter = useMutableCallback((params: DebouncedParams): void => {
+	const onFilter = useEffectEvent((params: DebouncedParams): void => {
 		setParams(params);
 		setCurrent(0);
 	});

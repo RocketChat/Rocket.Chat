@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import type * as chartjs from 'chart.js';
 import { useRef, useEffect } from 'react';
@@ -57,7 +57,7 @@ const InterchangeableChart = ({
 
 	const loadData = useMethod('livechat:getAnalyticsChartData');
 
-	const draw = useMutableCallback(async (params) => {
+	const draw = useEffectEvent(async (params) => {
 		try {
 			const tooltipCallbacks = getChartTooltips(chartName);
 			if (!params?.daterange?.from || !params?.daterange?.to) {

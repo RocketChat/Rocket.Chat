@@ -1,6 +1,6 @@
 import type { ProgressStep } from '@rocket.chat/core-typings';
 import { Box, Margins, ProgressBar, Throbber } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -43,7 +43,7 @@ const ImportProgressPage = function ImportProgressPage() {
 		refetchInterval: 1000,
 	});
 
-	const handleProgressUpdated = useMutableCallback(
+	const handleProgressUpdated = useEffectEvent(
 		({ key, step, completed, total }: { key: string; step: ProgressStep; completed: number; total: number }) => {
 			if (!currentOperation.isSuccess) {
 				return;

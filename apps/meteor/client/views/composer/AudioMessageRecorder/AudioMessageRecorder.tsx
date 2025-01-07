@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, Throbber } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
 import type { ReactElement } from 'react';
 import { useEffect, useState } from 'react';
@@ -26,7 +26,7 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 	const [recordingInterval, setRecordingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
 	const [recordingRoomId, setRecordingRoomId] = useState<IRoom['_id'] | null>(null);
 
-	const stopRecording = useMutableCallback(async () => {
+	const stopRecording = useEffectEvent(async () => {
 		if (recordingInterval) {
 			clearInterval(recordingInterval);
 		}
@@ -44,13 +44,13 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 		return blob;
 	});
 
-	const handleUnmount = useMutableCallback(async () => {
+	const handleUnmount = useEffectEvent(async () => {
 		if (state === 'recording') {
 			await stopRecording();
 		}
 	});
 
-	const handleRecord = useMutableCallback(async () => {
+	const handleRecord = useEffectEvent(async () => {
 		if (recordingRoomId && recordingRoomId !== rid) {
 			return;
 		}
@@ -75,13 +75,13 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 		}
 	});
 
-	const handleCancelButtonClick = useMutableCallback(async () => {
+	const handleCancelButtonClick = useEffectEvent(async () => {
 		await stopRecording();
 	});
 
 	const chat = useChat() ?? chatContext;
 
-	const handleDoneButtonClick = useMutableCallback(async () => {
+	const handleDoneButtonClick = useEffectEvent(async () => {
 		setState('loading');
 
 		const blob = await stopRecording();

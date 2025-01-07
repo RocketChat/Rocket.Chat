@@ -1,7 +1,7 @@
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { App, SettingValue } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useMemo, useCallback } from 'react';
@@ -37,7 +37,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 	const context = useRouteParameter('context');
 	const appData = useAppInfo(id, context || '');
 
-	const handleReturn = useMutableCallback((): void => {
+	const handleReturn = useEffectEvent((): void => {
 		if (!context) {
 			return;
 		}
