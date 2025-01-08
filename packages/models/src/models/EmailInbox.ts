@@ -1,6 +1,6 @@
 import type { IEmailInbox, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IEmailInboxModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, FindCursor, IndexDescription, InsertOneResult, ModifyResult, UpdateFilter } from 'mongodb';
+import type { Collection, Db, FindCursor, IndexDescription, InsertOneResult, UpdateFilter, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -13,7 +13,7 @@ export class EmailInboxRaw extends BaseRaw<IEmailInbox> implements IEmailInboxMo
 		return [{ key: { email: 1 }, unique: true }];
 	}
 
-	async setDisabledById(id: IEmailInbox['_id']): Promise<ModifyResult<IEmailInbox>> {
+	async setDisabledById(id: IEmailInbox['_id']): Promise<null | WithId<IEmailInbox>> {
 		return this.findOneAndUpdate({ _id: id, active: true }, { $set: { active: false } }, { returnDocument: 'after' });
 	}
 
@@ -21,11 +21,12 @@ export class EmailInboxRaw extends BaseRaw<IEmailInbox> implements IEmailInboxMo
 		return this.insertOne(emailInbox);
 	}
 
-	async updateById(id: IEmailInbox['_id'], data: UpdateFilter<IEmailInbox>): Promise<ModifyResult<Pick<IEmailInbox, '_id'>>> {
+	async updateById(id: IEmailInbox['_id'], data: UpdateFilter<IEmailInbox>): Promise<null | WithId<Pick<IEmailInbox, '_id'>>> {
 		// findOneAndUpdate doesn't accept generics, so we had to type cast
-		return this.findOneAndUpdate({ _id: id }, data, { returnDocument: 'after', projection: { _id: 1 } }) as unknown as Promise<
-			ModifyResult<Pick<IEmailInbox, '_id'>>
-		>;
+		return this.findOneAndUpdate({ _id: id }, data, {
+			returnDocument: 'after',
+			projection: { _id: 1 },
+		}) as unknown as Promise<null | WithId<Pick<IEmailInbox, '_id'>>>;
 	}
 
 	findActive(): FindCursor<IEmailInbox> {

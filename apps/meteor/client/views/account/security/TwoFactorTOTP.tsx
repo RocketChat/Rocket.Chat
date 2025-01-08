@@ -1,7 +1,7 @@
 import { Box, Button, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUser, useMethod } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ComponentProps } from 'react';
+import type { ReactElement, ComponentPropsWithoutRef } from 'react';
 import { useState, useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +11,13 @@ import BackupCodesModal from './BackupCodesModal';
 import TextCopy from '../../../components/TextCopy';
 import TwoFactorTotpModal from '../../../components/TwoFactorModal/TwoFactorTotpModal';
 
-const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
+type TwoFactorTOTPFormData = {
+	authCode: string;
+};
+
+type TwoFactorTOTPProps = ComponentPropsWithoutRef<typeof Box>;
+
+const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const user = useUser();
@@ -28,7 +34,7 @@ const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
 	const [totpSecret, setTotpSecret] = useSafely(useState<string>());
 	const [codesRemaining, setCodesRemaining] = useSafely(useState(0));
 
-	const { register, handleSubmit } = useForm({ defaultValues: { authCode: '' } });
+	const { register, handleSubmit } = useForm<TwoFactorTOTPFormData>({ defaultValues: { authCode: '' } });
 
 	const totpEnabled = user?.services?.totp?.enabled;
 
@@ -78,7 +84,7 @@ const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
 	}, [closeModal, disableTotpFn, dispatchToastMessage, setModal, t]);
 
 	const handleVerifyCode = useCallback(
-		async ({ authCode }) => {
+		async ({ authCode }: TwoFactorTOTPFormData) => {
 			try {
 				const result = await verifyCodeFn(authCode);
 

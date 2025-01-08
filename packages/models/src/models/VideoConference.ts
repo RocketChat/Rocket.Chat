@@ -141,7 +141,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		const { externalId, ...data } = call;
 
 		const doc = await this.findOneAndUpdate({ externalId }, { $set: data }, { upsert: true, returnDocument: 'after' });
-		return doc.value?._id;
+		return doc?._id;
 	}
 
 	public updateOneById(
