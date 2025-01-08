@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetModal,
@@ -56,7 +56,7 @@ export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, 
 			onChange,
 		);
 
-	const confirmDeleteUser = useMutableCallback(() => {
+	const confirmDeleteUser = useEffectEvent(() => {
 		setModal(
 			<GenericModal variant='danger' onConfirm={deleteUser} onCancel={(): void => setModal()} confirmText={t('Delete')}>
 				{t(`Delete_User_Warning_${erasureType}` as TranslationKey)}

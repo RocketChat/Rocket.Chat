@@ -1,5 +1,5 @@
 import { Banner, Icon } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { UiKitContext, bannerParser, UiKitBanner as UiKitBannerSurfaceRender, UiKitComponent } from '@rocket.chat/fuselage-ui-kit';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
@@ -33,7 +33,7 @@ const UiKitBanner = ({ initialView }: UiKitBannerProps) => {
 	}, [view.icon]);
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	const handleClose = useMutableCallback(() => {
+	const handleClose = useEffectEvent(() => {
 		void actionManager
 			.emitInteraction(view.appId, {
 				type: 'viewClosed',
