@@ -1,5 +1,5 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouter, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +16,7 @@ const NavbarHomeAction = (props: NavbarHomeActionProps) => {
 
 	const routeName = router.getLocationPathname();
 
-	const handleHome = useMutableCallback(() => {
+	const handleHome = useEffectEvent(() => {
 		sidebar.toggle();
 		router.navigate('/home');
 	});

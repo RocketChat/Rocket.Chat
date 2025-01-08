@@ -1,6 +1,6 @@
 import type { IIntegrationHistory, Serialized } from '@rocket.chat/core-typings';
 import { Button, Icon, Box, AccordionItem, Field, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useMethod } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -34,7 +34,7 @@ const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
 	const createdAt = typeof _createdAt === 'string' ? _createdAt : (_createdAt as Date).toISOString();
 	const updatedAt = typeof _updatedAt === 'string' ? _updatedAt : (_updatedAt as Date).toISOString();
 
-	const handleClickReplay = useMutableCallback((e) => {
+	const handleClickReplay = useEffectEvent((e) => {
 		e.stopPropagation();
 		replayOutgoingIntegration({ integrationId, historyId: _id });
 	});

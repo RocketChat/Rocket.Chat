@@ -12,7 +12,7 @@ import {
 	NumberInput,
 	FieldLabel,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -117,7 +117,7 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 		[t],
 	);
 
-	const handleSave = useMutableCallback(async (values) => {
+	const handleSave = useEffectEvent(async (values) => {
 		const { sendOn, Livechat_webhookUrl, Livechat_secret_token, Livechat_http_timeout } = values;
 		try {
 			await save({

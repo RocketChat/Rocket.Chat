@@ -32,7 +32,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const setUploadedPreview = useCallback(
-		async (file, avatarObj) => {
+		async (file: File, avatarObj: AvatarObject) => {
 			setAvatarObj(avatarObj);
 			try {
 				const dataURL = await readFileAsDataURL(file);
