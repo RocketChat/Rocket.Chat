@@ -1,5 +1,5 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -62,7 +62,7 @@ const ModerationConsoleTable = () => {
 		placeholderData: keepPreviousData,
 	});
 
-	const handleClick = useMutableCallback((id): void => {
+	const handleClick = useEffectEvent((id): void => {
 		router.navigate({
 			pattern: '/admin/moderation/:tab?/:context?/:id?',
 			params: {
