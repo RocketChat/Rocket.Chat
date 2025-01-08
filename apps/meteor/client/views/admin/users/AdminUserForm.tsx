@@ -30,6 +30,7 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import DOMPurify from 'dompurify';
 import { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -270,13 +271,15 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								{isVerificationNeeded && !isSmtpEnabled && (
 									<FieldHint
 										id={`${verifiedId}-hint`}
-										dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }}
+										dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' })) }}
 									/>
 								)}
 								{!isVerificationNeeded && (
 									<FieldHint
 										id={`${verifiedId}-hint`}
-										dangerouslySetInnerHTML={{ __html: t('Email_verification_isnt_required', { url: 'admin/settings/Accounts' }) }}
+										dangerouslySetInnerHTML={{
+											__html: DOMPurify.sanitize(t('Email_verification_isnt_required', { url: 'admin/settings/Accounts' })),
+										}}
 									/>
 								)}
 							</>
@@ -429,7 +432,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								{!isSmtpEnabled && (
 									<FieldHint
 										id={`${sendWelcomeEmailId}-hint`}
-										dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }}
+										dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' })) }}
 										mbs={0}
 									/>
 								)}
