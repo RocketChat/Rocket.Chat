@@ -52,6 +52,7 @@ WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.Serve
 		const cdn_prefixes = [
 			settings.get<string>('CDN_PREFIX'),
 			settings.get<string>('CDN_PREFIX_ALL') ? null : settings.get<string>('CDN_JSCSS_PREFIX'),
+			'https://cdn.zapier.com',
 		]
 			.filter(Boolean)
 			.join(' ');
@@ -68,6 +69,7 @@ WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.Serve
 			settings.get<boolean>('Accounts_OAuth_Apple') && 'https://appleid.cdn-apple.com',
 			settings.get<boolean>('PiwikAnalytics_enabled') && settings.get('PiwikAnalytics_url'),
 			settings.get<boolean>('GoogleAnalytics_enabled') && 'https://www.google-analytics.com',
+			'https://zapier.com',
 			...settings
 				.get<string>('Extra_CSP_Domains')
 				.split(/[ \n\,]/gim)
