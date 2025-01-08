@@ -57,13 +57,8 @@ export class AuthorizeRequest {
 		serviceProviderOptions: IServiceProviderOptions,
 		credentialToken?: string,
 	): IAuthorizeRequestVariables {
-		let id = `_${SAMLUtils.generateUniqueID()}`;
+		const id = credentialToken || `_${SAMLUtils.generateUniqueID()}`;
 		const instant = SAMLUtils.generateInstant();
-
-		// Post-auth destination
-		if (credentialToken) {
-			id = credentialToken;
-		}
 
 		return {
 			newId: id,
