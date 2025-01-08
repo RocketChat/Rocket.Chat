@@ -1,5 +1,5 @@
 import { Select, Box, type SelectOption } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import moment, { type Moment } from 'moment';
 import { useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +25,7 @@ const getWeekRange = (daysToSubtractFromStart: number, daysToSubtractFromEnd: nu
 const DateRangePicker = ({ onChange }: DateRangePickerProps) => {
 	const { t } = useTranslation();
 
-	const handleRange = useMutableCallback((range) => {
+	const handleRange = useEffectEvent((range) => {
 		onChange(range);
 	});
 
@@ -47,7 +47,7 @@ const DateRangePicker = ({ onChange }: DateRangePickerProps) => {
 		});
 	}, [handleRange]);
 
-	const handleOptionClick = useMutableCallback((action) => {
+	const handleOptionClick = useEffectEvent((action) => {
 		switch (action) {
 			case 'today':
 				handleRange(getWeekRange(0, 0));

@@ -223,9 +223,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 			username: 1,
 		};
 
-		const agent = await this.findOneAndUpdate(query, update, { sort, projection, returnDocument: 'after' });
-
-		return agent.value;
+		return this.findOneAndUpdate(query, update, { sort, projection, returnDocument: 'after' });
 	}
 
 	async checkOnlineForDepartment(departmentId: string): Promise<boolean> {
@@ -351,9 +349,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 			username: 1,
 		};
 
-		const bot = await this.findOneAndUpdate(query, update, { sort, projection, returnDocument: 'after' });
-
-		return bot.value;
+		return this.findOneAndUpdate(query, update, { sort, projection, returnDocument: 'after' });
 	}
 
 	replaceUsernameOfAgentByUserId(userId: string, username: string): Promise<UpdateResult | Document> {

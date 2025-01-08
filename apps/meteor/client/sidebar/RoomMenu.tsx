@@ -1,6 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { Option, Menu } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey, Fields } from '@rocket.chat/ui-contexts';
 import {
 	useRouter,
@@ -66,7 +66,7 @@ const RoomMenu = ({
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
-	const closeModal = useMutableCallback(() => setModal());
+	const closeModal = useEffectEvent(() => setModal());
 
 	const router = useRouter();
 
@@ -102,7 +102,7 @@ const RoomMenu = ({
 		return !((cl != null && !cl) || ['d', 'l'].includes(type));
 	})();
 
-	const handleLeave = useMutableCallback(() => {
+	const handleLeave = useEffectEvent(() => {
 		const leave = async (): Promise<void> => {
 			try {
 				await leaveRoom({ roomId: rid });
@@ -129,9 +129,11 @@ const RoomMenu = ({
 		);
 	});
 
-	const handleToggleRead = useMutableCallback(async () => {
+	const handleToggleRead = useEffectEvent(async () => {
 		try {
-			queryClient.invalidateQueries(['sidebar/search/spotlight']);
+			queryClient.invalidateQueries({
+				queryKey: ['sidebar/search/spotlight'],
+			});
 
 			if (isUnread) {
 				await readMessages({ rid, readThreads: true });
@@ -152,7 +154,7 @@ const RoomMenu = ({
 		}
 	});
 
-	const handleToggleFavorite = useMutableCallback(async () => {
+	const handleToggleFavorite = useEffectEvent(async () => {
 		try {
 			await toggleFavorite({ roomId: rid, favorite: !isFavorite });
 		} catch (error) {

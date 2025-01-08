@@ -15,7 +15,7 @@ jobs:
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         with:
-          node-version: 20.18.0
+          node-version: 22.11.0
           deno-version: 1.37.1
           cache-modules: true
           install: true

@@ -18,7 +18,7 @@ import {
 	Skeleton,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { useUniqueId, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useUniqueId, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { UserCreateParamsPOST } from '@rocket.chat/rest-typings';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
@@ -153,7 +153,8 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			await eventStats({
 				params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
 			});
-			queryClient.invalidateQueries(['pendingUsersCount'], {
+			queryClient.invalidateQueries({
+				queryKey: ['pendingUsersCount'],
 				refetchType: 'all',
 			});
 			router.navigate(`/admin/users/created/${_id}`);
@@ -164,7 +165,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		},
 	});
 
-	const handleSaveUser = useMutableCallback(async (userFormPayload: UserFormProps) => {
+	const handleSaveUser = useEffectEvent(async (userFormPayload: UserFormProps) => {
 		const { avatar, passwordConfirmation, ...userFormData } = userFormPayload;
 
 		if (!isNewUserPage && userData?._id) {

@@ -34,9 +34,10 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 	const { getSourceName } = useOmnichannelSource();
 
 	const getContactHistory = useEndpoint('GET', '/v1/omnichannel/contacts.history');
-	const { data, isLoading, isError } = useQuery(['getContactHistory', contact._id, type], () =>
-		getContactHistory({ contactId: contact._id, source: type === 'all' ? undefined : type }),
-	);
+	const { data, isLoading, isError } = useQuery({
+		queryKey: ['getContactHistory', contact._id, type],
+		queryFn: () => getContactHistory({ contactId: contact._id, source: type === 'all' ? undefined : type }),
+	});
 
 	const handleChangeFilter = (value: Key) => {
 		if (isFilterBlocked(hasLicense, value)) {
