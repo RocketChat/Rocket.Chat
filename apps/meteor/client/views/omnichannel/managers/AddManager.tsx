@@ -1,5 +1,5 @@
 import { Button, Box, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UserAutoComplete } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -17,7 +17,7 @@ const AddManager = ({ reload }: { reload: () => void }): ReactElement => {
 
 	const saveAction = useEndpointAction('POST', '/v1/livechat/users/manager');
 
-	const handleSave = useMutableCallback(async () => {
+	const handleSave = useEffectEvent(async () => {
 		try {
 			await saveAction({ username });
 			dispatchToastMessage({ type: 'success', message: t('Manager_added') });

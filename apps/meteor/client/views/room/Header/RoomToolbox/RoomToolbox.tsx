@@ -1,5 +1,5 @@
 import type { Box } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { memo } from 'react';
@@ -22,7 +22,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 
 	const showKebabMenu = hiddenActions.length > 0;
 
-	const renderDefaultToolboxItem: RoomToolboxActionConfig['renderToolboxItem'] = useMutableCallback(
+	const renderDefaultToolboxItem: RoomToolboxActionConfig['renderToolboxItem'] = useEffectEvent(
 		({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }) => {
 			return (
 				<HeaderToolbarAction
