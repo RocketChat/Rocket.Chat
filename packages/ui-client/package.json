@@ -38,6 +38,7 @@
 		"@storybook/react": "^8.4.4",
 		"@storybook/react-webpack5": "^8.4.4",
 		"@testing-library/react": "~16.0.1",
+		"@types/dompurify": "^3.0.5",
 		"@types/jest": "~29.5.14",
 		"@types/react": "~17.0.83",
 		"@types/react-dom": "~17.0.26",
@@ -67,5 +68,8 @@
 	},
 	"volta": {
 		"extends": "../../package.json"
+	},
+	"dependencies": {
+		"dompurify": "^3.2.0"
 	}
 }

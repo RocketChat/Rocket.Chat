@@ -3,6 +3,7 @@ import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
 import { Box, Button, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
+import DOMPurify from 'dompurify';
 import type { ReactElement } from 'react';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -108,7 +109,8 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	);
 
 	const callout = useMemo(
-		() => alert && <span dangerouslySetInnerHTML={{ __html: i18n.exists(alert) ? t(alert) : alert }} />,
+		() =>
+			alert && <span dangerouslySetInnerHTML={{ __html: i18n.exists(alert) ? DOMPurify.sanitize(t(alert)) : DOMPurify.sanitize(alert) }} />,
 		[alert, i18n, t],
 	);
 
