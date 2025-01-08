@@ -4,6 +4,7 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import type { CloseRoomParams } from '../../../../../app/livechat/server/lib/localTypes';
 import { callbacks } from '../../../../../lib/callbacks';
+import { requestPdfTranscript } from '../lib/requestPdfTranscript';
 
 type LivechatCloseCallbackParams = {
 	room: IOmnichannelRoom;
@@ -24,12 +25,7 @@ const sendPdfTranscriptOnClose = async (params: LivechatCloseCallbackParams): Pr
 
 	const { requestedBy } = pdfTranscript;
 
-	await OmnichannelTranscript.requestTranscript({
-		details: {
-			userId: requestedBy,
-			rid: room._id,
-		},
-	});
+	await requestPdfTranscript(room, requestedBy);
 
 	return params;
 };
