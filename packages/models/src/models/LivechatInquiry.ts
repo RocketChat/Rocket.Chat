@@ -159,7 +159,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 
 	async findNextAndLock(
 		queueSortBy: FindOptions<ILivechatInquiryRecord>['sort'],
-		department?: string,
+		department: string | null,
 	): Promise<ILivechatInquiryRecord | null> {
 		const date = new Date();
 		return this.findOneAndUpdate(

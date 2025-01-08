@@ -16,7 +16,10 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	getDistinctQueuedDepartments(options: AggregateOptions): Promise<{ _id: string | null }[]>;
 	setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null>;
 	setLastMessageByRoomId(rid: ILivechatInquiryRecord['rid'], message: IMessage): Promise<ILivechatInquiryRecord | null>;
-	findNextAndLock(queueSortBy: FindOptions<ILivechatInquiryRecord>['sort'], department?: string): Promise<ILivechatInquiryRecord | null>;
+	findNextAndLock(
+		queueSortBy: FindOptions<ILivechatInquiryRecord>['sort'],
+		department: string | null,
+	): Promise<ILivechatInquiryRecord | null>;
 	unlock(inquiryId: string): Promise<UpdateResult>;
 	unlockAll(): Promise<UpdateResult | Document>;
 	getCurrentSortedQueueAsync(props: {
