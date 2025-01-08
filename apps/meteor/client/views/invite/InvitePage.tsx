@@ -31,7 +31,7 @@ const InvitePage = (): ReactElement => {
 	}
 
 	if (isValidInvite && token) {
-		localStorage.setItem(KEY, token);
+		sessionStorage.setItem(KEY, token);
 		return <LoginPage />;
 	}
 

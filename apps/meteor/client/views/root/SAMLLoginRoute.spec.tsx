@@ -6,22 +6,22 @@ import SAMLLoginRoute from './SAMLLoginRoute';
 import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
 
 const navigateStub = jest.fn();
-const getLocalStorageItemStub = jest.fn();
+const getSessionStorageItemStub = jest.fn();
 
 beforeAll(() => {
 	jest.spyOn(Storage.prototype, 'getItem');
-	Storage.prototype.getItem = getLocalStorageItemStub;
+	Storage.prototype.getItem = getSessionStorageItemStub;
 });
 
 beforeEach(() => {
 	jest.clearAllMocks();
 	navigateStub.mockClear();
 	(Meteor.loginWithSamlToken as jest.Mock<any>).mockClear();
-	getLocalStorageItemStub.mockClear();
+	getSessionStorageItemStub.mockClear();
 });
 
 it('should redirect to /home', async () => {
-	getLocalStorageItemStub.mockReturnValue(undefined);
+	getSessionStorageItemStub.mockReturnValue(undefined);
 	render(
 		<MockedServerContext>
 			<MockedUserContext>
@@ -33,13 +33,13 @@ it('should redirect to /home', async () => {
 		{ legacyRoot: true },
 	);
 
-	expect(getLocalStorageItemStub).toHaveBeenCalledTimes(1);
+	expect(getSessionStorageItemStub).toHaveBeenCalledTimes(1);
 	expect(navigateStub).toHaveBeenCalledTimes(1);
 	expect(navigateStub).toHaveBeenLastCalledWith(expect.objectContaining({ pathname: '/home' }), expect.anything());
 });
 
 it('should redirect to /home when userId is null and the stored invite token is not valid', async () => {
-	getLocalStorageItemStub.mockReturnValue(null);
+	getSessionStorageItemStub.mockReturnValue(null);
 	render(
 		<MockedServerContext>
 			<RouterContextMock searchParameters={{ redirectUrl: 'http://rocket.chat' }} navigate={navigateStub}>
@@ -54,7 +54,7 @@ it('should redirect to /home when userId is null and the stored invite token is 
 });
 
 it('should redirect to the invite page with the stored invite token when it is valid', async () => {
-	getLocalStorageItemStub.mockReturnValue('test');
+	getSessionStorageItemStub.mockReturnValue('test');
 	render(
 		<MockedServerContext>
 			<RouterContextMock navigate={navigateStub}>
@@ -64,7 +64,7 @@ it('should redirect to the invite page with the stored invite token when it is v
 		{ legacyRoot: true },
 	);
 
-	expect(getLocalStorageItemStub).toHaveBeenCalledTimes(1);
+	expect(getSessionStorageItemStub).toHaveBeenCalledTimes(1);
 	expect(navigateStub).toHaveBeenCalledTimes(1);
 	expect(navigateStub).toHaveBeenLastCalledWith(expect.objectContaining({ pathname: '/invite/test' }), expect.anything());
 });

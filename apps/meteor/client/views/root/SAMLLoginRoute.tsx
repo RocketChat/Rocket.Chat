@@ -7,7 +7,7 @@ const KEY = 'invite_token';
 const SAMLLoginRoute = () => {
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const inviteToken = localStorage.getItem(KEY);
+	const inviteToken = sessionStorage.getItem(KEY);
 
 	useEffect(() => {
 		const { token } = router.getRouteParameters();
