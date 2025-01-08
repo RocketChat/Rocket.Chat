@@ -8,6 +8,6 @@ export const useAppRequests = (appId: string, limit?: number, offset?: number, s
 	return useQuery({
 		queryKey: ['app-requests', appId, limit, offset],
 		queryFn: async () => fetchAppRequests({ appId, q: filter, sort, limit, offset }),
-		cacheTime: 0,
+		gcTime: 0,
 	});
 };

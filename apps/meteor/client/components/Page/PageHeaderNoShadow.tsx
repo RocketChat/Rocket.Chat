@@ -2,7 +2,6 @@ import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { HeaderToolbar } from '../Header';
@@ -22,7 +21,7 @@ const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props
 	useDocumentTitle(typeof title === 'string' ? title : undefined);
 
 	return (
-		<Box is='header' borderBlockEndWidth='default' borderBlockEndColor='transparent' {...props}>
+		<Box is='header' borderBlockEndWidth='default' pb={8} borderBlockEndColor='transparent' {...props}>
 			<Box
 				height='100%'
 				marginInline={24}

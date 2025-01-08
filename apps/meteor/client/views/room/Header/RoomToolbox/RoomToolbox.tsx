@@ -1,10 +1,10 @@
 import type { Box } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { HeaderToolbarAction, HeaderToolbarDivider } from '../../../../components/Header';
@@ -58,7 +58,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 			return acc;
 		}, [] as MenuActionsProps);
 
-	const renderDefaultToolboxItem: RoomToolboxActionConfig['renderToolboxItem'] = useMutableCallback(
+	const renderDefaultToolboxItem: RoomToolboxActionConfig['renderToolboxItem'] = useEffectEvent(
 		({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }) => {
 			return (
 				<HeaderToolbarAction

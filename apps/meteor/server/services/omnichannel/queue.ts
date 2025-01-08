@@ -5,6 +5,7 @@ import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 import { tracerSpan } from '@rocket.chat/tracing';
 
 import { queueLogger } from './logger';
+import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
 import { dispatchAgentDelegated } from '../../../app/livechat/server/lib/Helper';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { getInquirySortMechanismSetting } from '../../../app/livechat/server/lib/settings';
@@ -105,7 +106,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	private async checkQueue(queue: string | null) {
 		queueLogger.debug(`Processing items for queue ${queue || 'Public'}`);
 		try {
-			const nextInquiry = await LivechatInquiry.findNextAndLock(getInquirySortMechanismSetting(), queue);
+			const nextInquiry = await LivechatInquiry.findNextAndLock(getOmniChatSortQuery(getInquirySortMechanismSetting()), queue);
 			if (!nextInquiry) {
 				queueLogger.debug(`No more items for queue ${queue || 'Public'}`);
 				return;

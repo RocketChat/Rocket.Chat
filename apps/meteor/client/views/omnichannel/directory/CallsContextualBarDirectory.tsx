@@ -1,7 +1,7 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Call from './calls/Call';

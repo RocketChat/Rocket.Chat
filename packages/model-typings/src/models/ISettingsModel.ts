@@ -6,7 +6,7 @@ import type {
 	Document,
 	FindOptions,
 	FindOneAndUpdateOptions,
-	ModifyResult,
+	WithId,
 	UpdateOptions,
 } from 'mongodb';
 
@@ -32,7 +32,7 @@ export interface ISettingsModel extends IBaseModel<ISetting> {
 		value?: (ISetting['value'] extends undefined ? never : ISetting['value']) | null,
 	): Promise<Document | UpdateResult | undefined>;
 
-	incrementValueById(_id: ISetting['_id'], value?: ISetting['value'], options?: FindOneAndUpdateOptions): Promise<ModifyResult<ISetting>>;
+	incrementValueById(_id: ISetting['_id'], value?: ISetting['value'], options?: FindOneAndUpdateOptions): Promise<null | WithId<ISetting>>;
 
 	updateOptionsById<T extends ISetting = ISetting>(
 		_id: ISetting['_id'],

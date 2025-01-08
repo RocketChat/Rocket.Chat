@@ -1,6 +1,5 @@
 import type { Meta, StoryFn } from '@storybook/react';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
 
 import ViewLogsPage from './ViewLogsPage';
 

@@ -1,8 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter, useSetModal, useToastMessageDispatch, useMethod, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import { LegacyRoomManager } from '../../../../../../../app/ui-utils/client';
 import { UiTextContext } from '../../../../../../../definition/IRoomTypeConfig';
@@ -19,7 +18,7 @@ export const useRoomLeave = (room: IRoom, joined = true) => {
 
 	const canLeave = usePermission(room.t === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
 
-	const handleLeave = useMutableCallback(() => {
+	const handleLeave = useEffectEvent(() => {
 		const leaveAction = async () => {
 			try {
 				await leaveRoom(room._id);

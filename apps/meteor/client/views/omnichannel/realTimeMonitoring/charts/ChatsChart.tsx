@@ -4,7 +4,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type * as chartjs from 'chart.js';
 import type { TFunction } from 'i18next';
 import type { ComponentPropsWithoutRef, MutableRefObject } from 'react';
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Chart from './Chart';

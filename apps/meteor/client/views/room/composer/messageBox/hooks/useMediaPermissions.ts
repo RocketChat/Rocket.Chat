@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEffect, useState } from 'react';
 
 type MediaDevices = 'camera' | 'microphone';
@@ -15,7 +15,7 @@ const getDeviceKind = (name: MediaDevices): MediaDeviceKind => {
 export const useMediaPermissions = (name: MediaDevices): [isPermissionDenied: boolean, setIsPermissionDenied: (state: boolean) => void] => {
 	const [isPermissionDenied, setIsPermissionDenied] = useState(false);
 
-	const handleMount = useMutableCallback(async (): Promise<void> => {
+	const handleMount = useEffectEvent(async (): Promise<void> => {
 		if (navigator.permissions) {
 			try {
 				const permissionStatus = await navigator.permissions.query({ name: name as PermissionName });

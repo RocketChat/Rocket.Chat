@@ -1,5 +1,4 @@
 import { Box, Button, Modal } from '@rocket.chat/fuselage';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useExternalLink } from '../../../../hooks/useExternalLink';

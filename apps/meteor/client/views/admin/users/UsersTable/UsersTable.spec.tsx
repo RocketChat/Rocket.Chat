@@ -1,6 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 
 import UsersTable from './UsersTable';
 import { createFakeUser } from '../../../../../tests/mocks/data';
@@ -36,9 +35,9 @@ it('should not render voip extension column when voice call is disabled', async 
 	expect(screen.queryByText('Voice_call_extension')).not.toBeInTheDocument();
 
 	screen.getByRole('button', { name: 'More_actions' }).click();
-	expect(await screen.findByRole('listbox')).toBeInTheDocument();
-	expect(screen.queryByRole('option', { name: /Assign_extension/ })).not.toBeInTheDocument();
-	expect(screen.queryByRole('option', { name: /Unassign_extension/ })).not.toBeInTheDocument();
+	expect(await screen.findByRole('menu')).toBeInTheDocument();
+	expect(screen.queryByRole('menuitem', { name: /Assign_extension/ })).not.toBeInTheDocument();
+	expect(screen.queryByRole('menuitem', { name: /Unassign_extension/ })).not.toBeInTheDocument();
 });
 
 it('should not render voip extension column or actions if user doesnt have the required permission', async () => {
@@ -64,9 +63,9 @@ it('should not render voip extension column or actions if user doesnt have the r
 	expect(screen.queryByText('Voice_call_extension')).not.toBeInTheDocument();
 
 	screen.getByRole('button', { name: 'More_actions' }).click();
-	expect(await screen.findByRole('listbox')).toBeInTheDocument();
-	expect(screen.queryByRole('option', { name: /Assign_extension/ })).not.toBeInTheDocument();
-	expect(screen.queryByRole('option', { name: /Unassign_extension/ })).not.toBeInTheDocument();
+	expect(await screen.findByRole('menu')).toBeInTheDocument();
+	expect(screen.queryByRole('menuitem', { name: /Assign_extension/ })).not.toBeInTheDocument();
+	expect(screen.queryByRole('menuitem', { name: /Unassign_extension/ })).not.toBeInTheDocument();
 });
 
 it('should render "Unassign_extension" button when user has a associated extension', async () => {
@@ -92,9 +91,9 @@ it('should render "Unassign_extension" button when user has a associated extensi
 	expect(screen.getByText('Voice_call_extension')).toBeInTheDocument();
 
 	screen.getByRole('button', { name: 'More_actions' }).click();
-	expect(await screen.findByRole('listbox')).toBeInTheDocument();
-	expect(screen.queryByRole('option', { name: /Assign_extension/ })).not.toBeInTheDocument();
-	expect(screen.getByRole('option', { name: /Unassign_extension/ })).toBeInTheDocument();
+	expect(await screen.findByRole('menu')).toBeInTheDocument();
+	expect(screen.queryByRole('menuitem', { name: /Assign_extension/ })).not.toBeInTheDocument();
+	expect(screen.getByRole('menuitem', { name: /Unassign_extension/ })).toBeInTheDocument();
 });
 
 it('should render "Assign_extension" button when user has no associated extension', async () => {
@@ -120,7 +119,7 @@ it('should render "Assign_extension" button when user has no associated extensio
 	expect(screen.getByText('Voice_call_extension')).toBeInTheDocument();
 
 	screen.getByRole('button', { name: 'More_actions' }).click();
-	expect(await screen.findByRole('listbox')).toBeInTheDocument();
-	expect(screen.getByRole('option', { name: /Assign_extension/ })).toBeInTheDocument();
-	expect(screen.queryByRole('option', { name: /Unassign_extension/ })).not.toBeInTheDocument();
+	expect(await screen.findByRole('menu')).toBeInTheDocument();
+	expect(screen.getByRole('menuitem', { name: /Assign_extension/ })).toBeInTheDocument();
+	expect(screen.queryByRole('menuitem', { name: /Unassign_extension/ })).not.toBeInTheDocument();
 });

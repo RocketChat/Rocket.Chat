@@ -8,7 +8,7 @@ import {
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import type { KeyboardEvent, ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import StatusIndicators from './StatusIndicators';
@@ -72,7 +72,7 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 					</>
 				)}
 			</MessageNameContainer>
-			{shouldShowRolesList && <MessageRoles roles={roles} isBot={message.bot} />}
+			{shouldShowRolesList && <MessageRoles roles={roles} isBot={!!message.bot} />}
 			<MessageTimestamp id={`${message._id}-time`} title={formatDateAndTime(message.ts)}>
 				{formatTime(message.ts)}
 			</MessageTimestamp>

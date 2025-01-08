@@ -13,7 +13,7 @@ const titles = new Set<{
 
 const useReactiveDocumentTitle = (): string =>
 	useSyncExternalStore(
-		useCallback((callback) => ee.on('change', callback), []),
+		useCallback((callback: () => void) => ee.on('change', callback), []),
 		(): string =>
 			Array.from(titles)
 				.reverse()
@@ -23,7 +23,7 @@ const useReactiveDocumentTitle = (): string =>
 
 const useReactiveDocumentTitleKey = (): string =>
 	useSyncExternalStore(
-		useCallback((callback) => ee.on('change', callback), []),
+		useCallback((callback: () => void) => ee.on('change', callback), []),
 		(): string =>
 			Array.from(titles)
 				.filter(({ refocus }) => refocus)

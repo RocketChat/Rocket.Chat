@@ -1,9 +1,8 @@
 import type { IRole } from '@rocket.chat/core-typings';
 import { Box, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -32,7 +31,7 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 		},
 	});
 
-	const handleManageUsers = useMutableCallback(() => {
+	const handleManageUsers = useEffectEvent(() => {
 		if (role?._id) {
 			usersInRoleRouter.push({
 				context: 'users-in-role',
@@ -41,7 +40,7 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 		}
 	});
 
-	const handleSave = useMutableCallback(async (data) => {
+	const handleSave = useEffectEvent(async (data) => {
 		try {
 			if (data.roleId) {
 				await updateRole(data);
@@ -57,7 +56,7 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 		}
 	});
 
-	const handleDelete = useMutableCallback(async () => {
+	const handleDelete = useEffectEvent(async () => {
 		if (!role?._id) {
 			return;
 		}

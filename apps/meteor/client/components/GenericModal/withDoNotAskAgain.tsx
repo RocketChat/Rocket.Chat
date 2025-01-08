@@ -2,7 +2,7 @@ import { Box, Label, CheckBox } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useUserPreference, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentType } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import type { DontAskAgainList } from '../../hooks/useDontAskAgain';
 

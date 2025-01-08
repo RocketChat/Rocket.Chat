@@ -4512,7 +4512,6 @@
   "view-livechat-room-closed-same-department_description": "同じ部署の別のエージェントによって閉じられたライブチャットルームを表示する権限",
   "view-livechat-room-customfields": "オムニチャネルRoomのカスタムフィールドの表示",
   "view-livechat-room-customfields_description": "ライブチャットルームのカスタムフィールドを表示する権限",
-  "view-livechat-rooms": "オムニチャネルRoomの表示",
   "view-livechat-rooms_description": "他のオムニチャネルルームを表示する権限",
   "view-livechat-triggers": "オムニチャネルのトリガーの表示",
   "view-livechat-triggers_description": "ライブチャットのトリガーを表示する権限",
