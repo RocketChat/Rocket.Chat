@@ -20,7 +20,6 @@ import '../app/lib/server/startup';
 import './importPackages';
 import './methods';
 import './publications';
-import './lib/logger/startup';
 import '../lib/oauthRedirectUriServer';
 import './lib/pushConfig';
 import './features/EmailInbox/index';
