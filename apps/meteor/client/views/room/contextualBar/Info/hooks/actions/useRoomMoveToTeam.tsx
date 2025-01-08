@@ -1,6 +1,6 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 
 import ChannelToTeamModal from '../../ChannelToTeamModal';
@@ -16,7 +16,7 @@ export const useRoomMoveToTeam = (room: IRoom) => {
 
 	const moveChannelToTeam = useEndpoint('POST', '/v1/teams.addRooms');
 
-	const handleMoveToTeam = useMutableCallback(async () => {
+	const handleMoveToTeam = useEffectEvent(async () => {
 		const onConfirm = async (teamId: IRoom['teamId']) => {
 			if (!teamId) {
 				throw new Error('teamId not provided');

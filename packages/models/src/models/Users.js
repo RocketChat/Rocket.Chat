@@ -1707,10 +1707,10 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const user = await this.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
-		if (user && user.value) {
+		if (user) {
 			return {
-				agentId: user.value._id,
-				username: user.value.username,
+				agentId: user._id,
+				username: user.username,
 			};
 		}
 		return null;
@@ -1737,10 +1737,10 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const user = await this.findOneAndUpdate(query, update, { sort, returnDocument: 'after' });
-		if (user?.value) {
+		if (user) {
 			return {
-				agentId: user.value._id,
-				username: user.value.username,
+				agentId: user._id,
+				username: user.username,
 			};
 		}
 		return null;

@@ -10,7 +10,7 @@ import type {
 	Document,
 	FindOptions,
 	FindOneAndUpdateOptions,
-	ModifyResult,
+	WithId,
 	UpdateOptions,
 } from 'mongodb';
 
@@ -105,7 +105,7 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 		_id: ISetting['_id'],
 		value?: ISetting['value'],
 		options?: FindOneAndUpdateOptions,
-	): Promise<ModifyResult<ISetting>> {
+	): Promise<null | WithId<ISetting>> {
 		return this.findOneAndUpdate(
 			{
 				blocked: { $ne: true },

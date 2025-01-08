@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	useToastMessageDispatch,
 	useSessionDispatch,
@@ -70,7 +70,17 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	);
 
 	const registerAdminUser = useCallback(
-		async ({ fullname, username, email, password }): Promise<void> => {
+		async ({
+			fullname,
+			username,
+			email,
+			password,
+		}: {
+			fullname: string;
+			username: string;
+			email: string;
+			password: string;
+		}): Promise<void> => {
 			await registerUser({ name: fullname, username, email, pass: password });
 			void callbacks.run('userRegistered', {});
 
@@ -97,7 +107,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	);
 
 	const saveAgreementData = useCallback(
-		async (agreement): Promise<void> => {
+		async (agreement: boolean): Promise<void> => {
 			await dispatchSettings([
 				{
 					_id: 'Cloud_Service_Agree_PrivacyTerms',
@@ -154,7 +164,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 	const queryClient = useQueryClient();
 
-	const registerServer: HandleRegisterServer = useMutableCallback(async ({ email, resend = false }): Promise<void> => {
+	const registerServer: HandleRegisterServer = useEffectEvent(async ({ email, resend = false }): Promise<void> => {
 		try {
 			const { intentData } = await createRegistrationIntent({ resend, email });
 			invalidateLicenseQuery(100);
@@ -172,7 +182,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		}
 	});
 
-	const completeSetupWizard = useMutableCallback(async (): Promise<void> => {
+	const completeSetupWizard = useEffectEvent(async (): Promise<void> => {
 		dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
 		return setShowSetupWizard('completed');
 	});

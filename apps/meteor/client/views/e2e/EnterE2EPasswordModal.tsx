@@ -1,5 +1,5 @@
 import { Box, PasswordInput, Field, FieldGroup, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { ChangeEvent, ReactElement } from 'react';
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -27,7 +27,7 @@ const EnterE2EPasswordModal = ({
 		[setPassword],
 	);
 
-	const handleConfirm = useMutableCallback((e): void => {
+	const handleConfirm = useEffectEvent((e): void => {
 		e.preventDefault();
 		if (password === '') {
 			setPasswordError(t('Invalid_pass'));
