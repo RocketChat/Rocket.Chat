@@ -1,5 +1,56 @@
 # @rocket.chat/meteor
 
+## 6.10.10
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#34906](https://github.com/RocketChat/Rocket.Chat/pull/34906)) Adds simple app subprocess metrics report
+
+- ([#34906](https://github.com/RocketChat/Rocket.Chat/pull/34906)) Attempts to restart an app subprocess if the spawn command fails
+
+- ([#34906](https://github.com/RocketChat/Rocket.Chat/pull/34906)) Fixes an issue while collecting the error message from a failed restart attempt of an app subprocess
+
+- ([#34906](https://github.com/RocketChat/Rocket.Chat/pull/34906)) Prevents app:getStatus requests from timing out in some cases
+
+- ([#34906](https://github.com/RocketChat/Rocket.Chat/pull/34906)) Fixes an error where the engine would not retry a subprocess restart if the last attempt failed
+
+- ([#34906](https://github.com/RocketChat/Rocket.Chat/pull/34906)) Fixes error propagation when trying to get the status of apps in some cases
+
+- ([#34906](https://github.com/RocketChat/Rocket.Chat/pull/34906)) Fixes wrong data being reported to total failed apps metrics and statistics
+
+- ([#34906](https://github.com/RocketChat/Rocket.Chat/pull/34906)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- <details><summary>Updated dependencies [50837dd102, 50837dd102, 50837dd102, 50837dd102, 50837dd102, 50837dd102, 50837dd102, 50837dd102]:</summary>
+
+  - @rocket.chat/omnichannel-services@0.2.10
+  - @rocket.chat/web-ui-registration@8.0.10
+  - @rocket.chat/fuselage-ui-kit@8.0.10
+  - @rocket.chat/instance-status@0.1.10
+  - @rocket.chat/message-parser@0.31.32
+  - @rocket.chat/api-client@0.2.10
+  - @rocket.chat/pdf-worker@0.1.10
+  - @rocket.chat/core-services@0.4.10
+  - @rocket.chat/model-typings@0.5.10
+  - @rocket.chat/ui-video-conf@8.0.10
+  - @rocket.chat/core-typings@6.10.10
+  - @rocket.chat/rest-typings@6.10.10
+  - @rocket.chat/presence@0.2.10
+  - @rocket.chat/ui-contexts@8.0.10
+  - @rocket.chat/license@0.2.10
+  - @rocket.chat/gazzodown@8.0.10
+  - @rocket.chat/ui-avatar@4.0.10
+  - @rocket.chat/ui-client@8.0.10
+  - @rocket.chat/models@0.1.10
+  - @rocket.chat/apps@0.1.10
+  - @rocket.chat/cron@0.1.10
+  - @rocket.chat/ui-theming@0.2.0
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
 ## 6.10.9
 
 ### Patch Changes
