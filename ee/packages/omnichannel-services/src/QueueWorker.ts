@@ -11,13 +11,11 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	protected retryCount = 5;
 
 	// Default delay is 5 seconds
-	protected retryDelay = 5000;
+	protected retryDelay = Number(process.env.RETRY_DELAY) || 5000;
 
 	protected queue: MessageQueue;
 
 	private logger: Logger;
-
-	private queueStarted = false;
 
 	constructor(private readonly db: Db, loggerClass: typeof Logger) {
 		super();
@@ -25,7 +23,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 		// eslint-disable-next-line new-cap
 		this.logger = new loggerClass('QueueWorker');
 		this.queue = new MessageQueue();
-		this.queue.pollingInterval = 5000;
+		this.queue.pollingInterval = Number(process.env.POLLING_INTERVAL) || 5000;
 	}
 
 	isServiceNotFoundMessage(message: string): boolean {
@@ -43,6 +41,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 
 		try {
 			await this.createIndexes();
+			this.registerWorkers();
 		} catch (e) {
 			this.logger.fatal(e, 'Fatal error occurred when registering workers');
 			process.exit(1);
@@ -52,7 +51,7 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	async createIndexes(): Promise<void> {
 		this.logger.info('Creating indexes for queue worker');
 
-		// Library doesnt create indexes by itself, for some reason
+		// Library doesn't create indexes by itself, for some reason
 		// This should create the indexes we need and improve queue perf on reading
 		await this.db.collection(this.queue.collectionName).createIndex({ type: 1 });
 		await this.db.collection(this.queue.collectionName).createIndex({ rejectedTime: 1 }, { sparse: true });
@@ -102,8 +101,6 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 
 		this.logger.info('Registering workers of type "workComplete"');
 		this.queue.registerWorker('workComplete', this.workerCallback.bind(this));
-
-		this.queueStarted = true;
 	}
 
 	private matchServiceCall(service: string): boolean {
@@ -120,10 +117,6 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	// This is a "generic" job that allows you to call any service
 	async queueWork<T extends Record<string, unknown>>(queue: Actions, to: string, data: T): Promise<void> {
 		this.logger.info(`Queueing work for ${to}`);
-		if (!this.queueStarted) {
-			this.registerWorkers();
-		}
-
 		if (!this.matchServiceCall(to)) {
 			// We don't want to queue calls to invalid service names
 			throw new Error(`Invalid service name ${to}`);
@@ -146,9 +139,5 @@ export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 				{ $project: { _id: 0, type: '$_id.type', status: '$_id.status', total: 1 } },
 			])
 			.toArray();
-	}
-
-	async isQueueStarted(): Promise<boolean> {
-		return this.queueStarted;
 	}
 }
