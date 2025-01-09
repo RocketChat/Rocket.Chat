@@ -10,11 +10,13 @@ export const useAppActionButtons = <TContext extends `${UIActionButtonContext}`>
 	const queryClient = useQueryClient();
 	const apps = useStream('apps');
 	const uid = useUserId();
+	const { status } = useConnectionStatus();
 
 	const getActionButtons = useEndpoint('GET', '/apps/actionButtons');
 
 	const result = useQuery({
-		queryKey: ['apps', 'actionButtons'],
+		queryKey: ['apps', 'actionButtons', status],
+		enabled: status === 'connected',
 		queryFn: () => getActionButtons(),
 
 		...(context && {
@@ -40,13 +42,6 @@ export const useAppActionButtons = <TContext extends `${UIActionButtonContext}`>
 		100,
 		[],
 	);
-
-	const { status } = useConnectionStatus();
-	useEffect(() => {
-		if (status !== 'connected') {
-			invalidate();
-		}
-	}, [status, invalidate]);
 
 	useEffect(() => {
 		if (!uid) {
