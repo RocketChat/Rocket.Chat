@@ -1,0 +1,11 @@
+services:
+  development-server:
+    name: Rocket.Chat development server
+    description: Starts the Rocket.Chat development server
+    triggeredBy:
+      - postDevcontainerStart
+      - manual
+    commands:
+      start: |
+        nvm use $(jq -r '.engines.node' package.json) && \
+        yarn dsv
