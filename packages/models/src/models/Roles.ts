@@ -172,11 +172,12 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 			{ upsert: true, returnDocument: 'after' },
 		);
 
-		if (!response.value) {
+		if (!response) {
+			console.log('Role not found', _id, name);
 			throw new Error('Role not found');
 		}
 
-		return response.value;
+		return response;
 	}
 
 	findUsersInRole(roleId: IRole['_id'], scope?: IRoom['_id']): Promise<FindCursor<IUser>>;

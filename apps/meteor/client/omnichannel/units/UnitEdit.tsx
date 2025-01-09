@@ -14,7 +14,7 @@ import {
 	FieldRow,
 	CheckOption,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback, useDebouncedValue, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useDebouncedValue, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -127,7 +127,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 		return [...mappedMonitorsItems, ...pending];
 	}, [monitors, monitorsItems]);
 
-	const handleSave = useMutableCallback(async ({ name, visibility }) => {
+	const handleSave = useEffectEvent(async ({ name, visibility }) => {
 		const departmentsData = departments.map((department) => ({ departmentId: department.value }));
 
 		const monitorsData = monitors.map((monitor) => ({
@@ -138,7 +138,9 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 		try {
 			await saveUnit(_id as unknown as string, { name, visibility }, monitorsData, departmentsData);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			queryClient.invalidateQueries(['livechat-units']);
+			queryClient.invalidateQueries({
+				queryKey: ['livechat-units'],
+			});
 			router.navigate('/omnichannel/units');
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

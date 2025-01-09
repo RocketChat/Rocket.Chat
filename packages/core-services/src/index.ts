@@ -148,12 +148,6 @@ export {
 	IUserService,
 };
 
-const disabledEnvVar = String(process.env.DISABLE_DB_WATCHERS).toLowerCase();
-
-export const dbWatchersDisabled =
-	(process.env.NODE_ENV === 'production' && ['yes', 'true'].includes(disabledEnvVar)) ||
-	(process.env.NODE_ENV !== 'production' && !['no', 'false'].includes(disabledEnvVar));
-
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxify<IAuthorization>('authorization');
 export const Apps = proxify<IAppsEngineService>('apps-engine');

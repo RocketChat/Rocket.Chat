@@ -57,7 +57,7 @@ const SubscriptionPage = () => {
 
 	const subscriptionSuccess = useSearchParameter('subscriptionSuccess');
 
-	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isLoading, 10000);
+	const showSubscriptionCallout = useDebouncedValue(subscriptionSuccess || syncLicenseUpdate.isPending, 10000);
 
 	const { license, limits, activeModules = [], cloudSyncAnnouncement } = licensesData || {};
 	const { isEnterprise = true } = enterpriseData || {};
@@ -105,7 +105,7 @@ const SubscriptionPage = () => {
 			<PageHeaderNoShadow title={t('Subscription')}>
 				<ButtonGroup>
 					{isRegistered && (
-						<Button loading={syncLicenseUpdate.isLoading} icon='reload' onClick={() => handleSyncLicenseUpdate()}>
+						<Button loading={syncLicenseUpdate.isPending} icon='reload' onClick={() => handleSyncLicenseUpdate()}>
 							{t('Sync_license_update')}
 						</Button>
 					)}
@@ -120,7 +120,7 @@ const SubscriptionPage = () => {
 				</PageBlockWithBorder>
 			)}
 			<PageScrollableContentWithShadow p={16}>
-				{(showSubscriptionCallout || syncLicenseUpdate.isLoading) && (
+				{(showSubscriptionCallout || syncLicenseUpdate.isPending) && (
 					<Callout type='info' title={t('Sync_license_update_Callout_Title')} m={8}>
 						{t('Sync_license_update_Callout')}
 					</Callout>

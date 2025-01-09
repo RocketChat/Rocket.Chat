@@ -1,6 +1,6 @@
 import type { IRoom, IUser, Serialized } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { usePermission, useSetModal, useTranslation, useUser, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
@@ -35,7 +35,7 @@ export const useRemoveUserAction = (
 		? Federation.isEditableByTheUser(currentUser || undefined, room, subscription)
 		: hasPermissionToRemove;
 	const setModal = useSetModal();
-	const closeModal = useMutableCallback(() => setModal(null));
+	const closeModal = useEffectEvent(() => setModal(null));
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
 	const { roomCanRemove } = getRoomDirectives({ room, showingUserId: uid, userSubscription: subscription });
@@ -49,7 +49,7 @@ export const useRemoveUserAction = (
 		successMessage: t('User_has_been_removed_from_s', roomName),
 	});
 
-	const removeUserOptionAction = useMutableCallback(() => {
+	const removeUserOptionAction = useEffectEvent(() => {
 		const handleRemoveFromTeam = async (rooms: Record<string, Serialized<IRoom>>): Promise<void> => {
 			if (room.teamId) {
 				const roomKeys = Object.keys(rooms);

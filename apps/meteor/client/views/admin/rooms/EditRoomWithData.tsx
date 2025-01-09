@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
@@ -17,24 +17,21 @@ type EditRoomWithDataProps = { rid?: IRoom['_id']; onReload: () => void };
 const EditRoomWithData = ({ rid, onReload }: EditRoomWithDataProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const dispatchToastMessage = useToastMessageDispatch();
 
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms.getRoom');
 
-	const { data, isLoading, refetch } = useQuery(
-		['rooms', rid, 'admin'],
-		async () => {
+	const { data, isPending, refetch } = useQuery({
+		queryKey: ['rooms', rid, 'admin'],
+		queryFn: async () => {
 			const rooms = await getAdminRooms({ rid });
 			return rooms;
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+		meta: {
+			apiErrorToastMessage: true,
 		},
-	);
+	});
 
-	if (isLoading) {
+	if (isPending) {
 		return <ContextualbarSkeleton />;
 	}
 

@@ -32,7 +32,7 @@ test.describe.serial('message-composer', () => {
 		await page.setViewportSize({ width: 768, height: 600 });
 		await poHomeChannel.sidenav.openChat(targetChannel);
 
-		await expect(poHomeChannel.composerToolbarActions).toHaveCount(5);
+		await expect(poHomeChannel.composerToolbarActions).toHaveCount(6);
 	});
 
 	test('should navigate on toolbar using arrow keys', async ({ page }) => {

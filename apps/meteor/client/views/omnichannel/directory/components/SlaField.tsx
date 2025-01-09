@@ -13,9 +13,9 @@ type SlaFieldProps = {
 
 const SlaField = ({ id }: SlaFieldProps) => {
 	const { t } = useTranslation();
-	const { data, isInitialLoading, isError } = useSlaInfo(id);
+	const { data, isLoading, isError } = useSlaInfo(id);
 
-	if (isInitialLoading) {
+	if (isLoading) {
 		return <FormSkeleton />;
 	}
 

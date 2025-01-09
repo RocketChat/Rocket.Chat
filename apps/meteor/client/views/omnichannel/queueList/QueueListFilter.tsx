@@ -1,5 +1,5 @@
 import { Box, Select, Label } from '@rocket.chat/fuselage';
-import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { Dispatch, SetStateAction } from 'react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,11 +23,11 @@ export const QueueListFilter = ({ setFilter, ...props }: QueueListFilterProps) =
 	const [status, setStatus] = useLocalStorage('status', 'online');
 	const [department, setDepartment] = useLocalStorage<string>('department', 'all');
 
-	const handleServedBy = useMutableCallback((e) => setServedBy(e));
-	const handleStatus = useMutableCallback((e) => setStatus(e));
-	const handleDepartment = useMutableCallback((e) => setDepartment(e));
+	const handleServedBy = useEffectEvent((e) => setServedBy(e));
+	const handleStatus = useEffectEvent((e) => setStatus(e));
+	const handleDepartment = useEffectEvent((e) => setDepartment(e));
 
-	const onSubmit = useMutableCallback((e) => e.preventDefault());
+	const onSubmit = useEffectEvent((e) => e.preventDefault());
 
 	useEffect(() => {
 		const filters = { status } as {

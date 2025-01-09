@@ -23,6 +23,6 @@ export const useCancelSubscriptionModal = () => {
 
 	return {
 		open,
-		isLoading: removeLicense.isLoading,
+		isLoading: removeLicense.isPending,
 	};
 };

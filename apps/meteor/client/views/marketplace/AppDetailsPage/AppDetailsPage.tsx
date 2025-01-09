@@ -1,7 +1,7 @@
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
-import type { App } from '@rocket.chat/core-typings';
+import type { App, SettingValue } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useMemo, useCallback } from 'react';
@@ -21,7 +21,13 @@ import AppSettings from './tabs/AppSettings';
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 
-const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
+type AppDetailsPageFormData = Record<string, SettingValue>;
+
+type AppDetailsPageProps = {
+	id: App['id'];
+};
+
+const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 	const t = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -31,7 +37,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const context = useRouteParameter('context');
 	const appData = useAppInfo(id, context || '');
 
-	const handleReturn = useMutableCallback((): void => {
+	const handleReturn = useEffectEvent((): void => {
 		if (!context) {
 			return;
 		}
@@ -46,7 +52,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const isSecurityVisible = Boolean(privacyPolicySummary || permissions || tosLink || privacyLink);
 
 	const saveAppSettings = useCallback(
-		async (data) => {
+		async (data: AppDetailsPageFormData) => {
 			try {
 				await AppClientOrchestratorInstance.setAppSettings(
 					id,
@@ -64,11 +70,14 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 		[dispatchToastMessage, id, name, settings],
 	);
 
-	const reducedSettings = useMemo(() => {
-		return Object.values(settings || {}).reduce((ret, { id, value, packageValue }) => ({ ...ret, [id]: value ?? packageValue }), {});
+	const reducedSettings = useMemo((): AppDetailsPageFormData => {
+		return Object.values(settings || {}).reduce(
+			(ret: AppDetailsPageFormData, { id, value, packageValue }) => ({ ...ret, [id]: value ?? packageValue }),
+			{},
+		);
 	}, [settings]);
 
-	const methods = useForm({ values: reducedSettings });
+	const methods = useForm<AppDetailsPageFormData>({ values: reducedSettings });
 	const {
 		handleSubmit,
 		reset,
