@@ -36,7 +36,7 @@ const PlainTextInputElement = ({
       context === UiKit.BlockContext.ACTION ||
       context === UiKit.BlockContext.SECTION
     ) {
-      performAction(event.currentTarget.value, event);
+      performAction(event.currentTarget.value);
     }
   };
 

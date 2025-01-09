@@ -40,9 +40,8 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 	const actionManager = useUiKitActionManager();
 
 	return {
-		action: ({ appId, actionId, blockId, value }, event) => {
+		action: ({ appId, actionId, blockId, value }) => {
 			if (appId === 'videoconf-core') {
-				event.preventDefault();
 				setPreferences({ mic: true, cam: false });
 				if (actionId === 'join') {
 					return joinCall(blockId);

@@ -52,43 +52,34 @@ const VideoConferenceBlock = ({
 
   const result = useVideoConfDataStream({ rid, callId });
 
-  const joinHandler: MouseEventHandler<HTMLButtonElement> = (e): void => {
-    action(
-      {
-        blockId: block.blockId || '',
-        appId,
-        actionId: 'join',
-        value: block.blockId || '',
-        viewId,
-      },
-      e,
-    );
+  const joinHandler: MouseEventHandler<HTMLButtonElement> = (): void => {
+    action({
+      blockId: block.blockId || '',
+      appId,
+      actionId: 'join',
+      value: block.blockId || '',
+      viewId,
+    });
   };
 
-  const callAgainHandler: MouseEventHandler<HTMLButtonElement> = (e): void => {
-    action(
-      {
-        blockId: rid || '',
-        appId,
-        actionId: 'callBack',
-        value: rid || '',
-        viewId,
-      },
-      e,
-    );
+  const callAgainHandler: MouseEventHandler<HTMLButtonElement> = (): void => {
+    action({
+      blockId: rid || '',
+      appId,
+      actionId: 'callBack',
+      value: rid || '',
+      viewId,
+    });
   };
 
-  const openCallInfo: MouseEventHandler<HTMLButtonElement> = (e) => {
-    action(
-      {
-        blockId: callId,
-        appId,
-        actionId: 'info',
-        value: rid,
-        viewId,
-      },
-      e,
-    );
+  const openCallInfo: MouseEventHandler<HTMLButtonElement> = () => {
+    action({
+      blockId: callId,
+      appId,
+      actionId: 'info',
+      value: rid,
+      viewId,
+    });
   };
 
   const openDiscussion: MouseEventHandler<HTMLButtonElement> = (_e) => {

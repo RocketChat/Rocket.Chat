@@ -65,20 +65,17 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
     updateState?.({ blockId, appId, actionId, value: newValue, viewId });
   });
 
-  const performAction = useEffectEvent(async (value, e) => {
+  const performAction = useEffectEvent(async (value) => {
     setLoading(true);
 
-    await action(
-      {
-        blockId,
-        appId: appId || appIdFromContext || 'core',
-        actionId,
-        value,
-        viewId,
-        dispatchActionConfig,
-      },
-      e,
-    );
+    await action({
+      blockId,
+      appId: appId || appIdFromContext || 'core',
+      actionId,
+      value,
+      viewId,
+      dispatchActionConfig,
+    });
 
     setLoading(false);
   });
@@ -107,40 +104,14 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
     }
 
     updateState?.({ blockId, appId, actionId, value: elValue, viewId });
-    await action(
-      {
-        blockId,
-        appId: appId || appIdFromContext || 'core',
-        actionId,
-        value: elValue,
-        viewId,
-      },
-      e,
-    );
+    await action({
+      blockId,
+      appId: appId || appIdFromContext || 'core',
+      actionId,
+      value: elValue,
+      viewId,
+    });
     setLoading(false);
-  });
-
-  // Used for triggering actions on text inputs. Removing the load state
-  // makes the text input field remain focused after running the action
-  const noLoadStateActionFunction = useEffectEvent(async (e) => {
-    const {
-      target: { value },
-    } = e;
-    setValue(value);
-
-    updateState?.({ blockId, appId, actionId, value, viewId });
-
-    await action(
-      {
-        blockId,
-        appId: appId || appIdFromContext || 'core',
-        actionId,
-        value,
-        viewId,
-        dispatchActionConfig,
-      },
-      e,
-    );
   });
 
   const stateFunction = useEffectEvent(async (e) => {
@@ -160,14 +131,6 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
   });
 
   const handleEvent = useEffectEvent(async (e) => {
-    if (
-      element.type === 'plain_text_input' &&
-      Array.isArray(element?.dispatchActionConfig) &&
-      element.dispatchActionConfig.includes('on_character_entered')
-    ) {
-      return noLoadStateActionFunction(e);
-    }
-
     if (
       (context &&
         [UiKit.BlockContext.SECTION, UiKit.BlockContext.ACTION].includes(
