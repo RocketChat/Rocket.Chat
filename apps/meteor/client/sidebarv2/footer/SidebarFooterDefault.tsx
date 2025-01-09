@@ -2,6 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, SidebarDivider, Palette, SidebarFooter as Footer } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useThemeMode } from '@rocket.chat/ui-theming';
+import DOMPurify from 'dompurify';
 import type { ReactElement } from 'react';
 
 import { SidebarFooterWatermark } from './SidebarFooterWatermark';
@@ -32,7 +33,7 @@ const SidebarFooterDefault = (): ReactElement => {
 				width='auto'
 				className={sidebarFooterStyle}
 				dangerouslySetInnerHTML={{
-					__html: logo,
+					__html: DOMPurify.sanitize(logo),
 				}}
 			/>
 			<SidebarFooterWatermark />
