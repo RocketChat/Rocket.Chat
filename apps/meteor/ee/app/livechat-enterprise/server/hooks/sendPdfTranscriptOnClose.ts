@@ -1,4 +1,3 @@
-import { OmnichannelTranscript } from '@rocket.chat/core-services';
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
