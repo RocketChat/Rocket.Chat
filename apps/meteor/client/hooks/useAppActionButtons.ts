@@ -1,15 +1,13 @@
 import { type IUIActionButton, type UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
+import { useConnectionStatus, useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Tracker } from 'meteor/tracker';
 import { useEffect } from 'react';
 
 export const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${appId}/${actionId}`;
 
 export const useAppActionButtons = <TContext extends `${UIActionButtonContext}`>(context?: TContext) => {
 	const queryClient = useQueryClient();
-
 	const apps = useStream('apps');
 	const uid = useUserId();
 
@@ -43,23 +41,12 @@ export const useAppActionButtons = <TContext extends `${UIActionButtonContext}`>
 		[],
 	);
 
+	const { status } = useConnectionStatus();
 	useEffect(() => {
-		if (!uid) {
-			return;
+		if (status !== 'connected') {
+			invalidate();
 		}
-
-		// Setup Tracker to listen to Meteor's status changes, so we can invalidate the query when the connection is lost
-		const statusTracker = Tracker.autorun(() => {
-			const isOffline = !Meteor.status().connected;
-			if (isOffline) {
-				invalidate();
-			}
-		});
-
-		return () => {
-			statusTracker.stop();
-		};
-	}, [uid, invalidate]);
+	}, [status, invalidate]);
 
 	useEffect(() => {
 		if (!uid) {
