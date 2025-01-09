@@ -84,7 +84,7 @@ const computation = Tracker.autorun(() => {
 	}
 	Tracker.nonreactive(() =>
 		Object.entries(openedRooms).forEach(([typeName, record]) => {
-			if (record.active !== true || record.ready === true) {
+			if (record.active !== true || (record.ready === true && record.streamActive === true)) {
 				return;
 			}
 

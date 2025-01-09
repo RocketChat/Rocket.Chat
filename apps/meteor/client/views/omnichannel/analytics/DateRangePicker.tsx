@@ -1,5 +1,5 @@
 import { Box, InputBox, Menu, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import type { ComponentProps } from 'react';
@@ -32,7 +32,7 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 
 	const { start, end } = range;
 
-	const handleStart = useMutableCallback(({ currentTarget }) => {
+	const handleStart = useEffectEvent(({ currentTarget }) => {
 		const rangeObj = {
 			start: currentTarget.value,
 			end: range.end,
@@ -41,7 +41,7 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 		onChange(rangeObj);
 	});
 
-	const handleEnd = useMutableCallback(({ currentTarget }) => {
+	const handleEnd = useEffectEvent(({ currentTarget }) => {
 		const rangeObj = {
 			end: currentTarget.value,
 			start: range.start,
@@ -50,7 +50,7 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 		onChange(rangeObj);
 	});
 
-	const handleRange = useMutableCallback((range) => {
+	const handleRange = useEffectEvent((range) => {
 		setRange(range);
 		onChange(range);
 	});

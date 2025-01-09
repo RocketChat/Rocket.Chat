@@ -338,7 +338,7 @@ export class SlackImporter extends Importer {
 			}
 
 			if (userCount) {
-				const { value } = await Settings.incrementValueById('Slack_Importer_Count', userCount, { returnDocument: 'after' });
+				const value = await Settings.incrementValueById('Slack_Importer_Count', userCount, { returnDocument: 'after' });
 				if (value) {
 					void notifyOnSettingChanged(value);
 				}

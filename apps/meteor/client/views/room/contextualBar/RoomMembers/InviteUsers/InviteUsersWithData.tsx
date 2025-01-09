@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useState, useEffect } from 'react';
@@ -37,10 +37,10 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 	const format = useFormatDateAndTime();
 	const findOrCreateInvite = useEndpoint('POST', '/v1/findOrCreateInvite');
 
-	const handleEdit = useMutableCallback(() => setInviteState((prevState) => ({ ...prevState, isEditing: true })));
-	const handleBackToLink = useMutableCallback(() => setInviteState((prevState) => ({ ...prevState, isEditing: false })));
+	const handleEdit = useEffectEvent(() => setInviteState((prevState) => ({ ...prevState, isEditing: true })));
+	const handleBackToLink = useEffectEvent(() => setInviteState((prevState) => ({ ...prevState, isEditing: false })));
 
-	const linkExpirationText = useMutableCallback((data) => {
+	const linkExpirationText = useEffectEvent((data) => {
 		if (!data) {
 			return '';
 		}
@@ -78,7 +78,7 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 		})();
 	}, [dispatchToastMessage, t, findOrCreateInvite, linkExpirationText, rid, days, maxUses]);
 
-	const handleGenerateLink = useMutableCallback((daysAndMaxUses) => {
+	const handleGenerateLink = useEffectEvent((daysAndMaxUses) => {
 		setInviteState((prevState) => ({ ...prevState, daysAndMaxUses, isEditing: false }));
 	});
 

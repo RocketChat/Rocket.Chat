@@ -1,5 +1,6 @@
 import { AccordionItem, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
+import DOMPurify from 'dompurify';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +14,7 @@ const PreferencesMyDataSection = () => {
 	const requestDataDownload = useMethod('requestDataDownload');
 
 	const downloadData = useCallback(
-		async (fullExport) => {
+		async (fullExport: boolean) => {
 			try {
 				const result = await requestDataDownload({ fullExport });
 				if (result.requested) {
@@ -23,7 +24,7 @@ const PreferencesMyDataSection = () => {
 					setModal(
 						<MyDataModal
 							title={t('UserDataDownload_Requested')}
-							text={<Box dangerouslySetInnerHTML={{ __html: text }} />}
+							text={<Box dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(text) }} />}
 							onCancel={() => setModal(null)}
 						/>,
 					);
@@ -41,7 +42,7 @@ const PreferencesMyDataSection = () => {
 						setModal(
 							<MyDataModal
 								title={t('UserDataDownload_Requested')}
-								text={<Box dangerouslySetInnerHTML={{ __html: text }} />}
+								text={<Box dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(text) }} />}
 								onCancel={() => setModal(null)}
 							/>,
 						);
@@ -55,7 +56,7 @@ const PreferencesMyDataSection = () => {
 					setModal(
 						<MyDataModal
 							title={t('UserDataDownload_Requested')}
-							text={<Box dangerouslySetInnerHTML={{ __html: text }} />}
+							text={<Box dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(text) }} />}
 							onCancel={() => setModal(null)}
 						/>,
 					);

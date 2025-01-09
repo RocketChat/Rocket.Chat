@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useState } from 'react';
 
 import EditRoomInfoWithData from './EditRoomInfo';
@@ -21,7 +21,7 @@ const RoomInfoRouter = ({ onClickBack, onEnterRoom, resetState }: RoomInfoRouter
 	const room = useRoom();
 
 	const canEdit = useCanEditRoom(room);
-	const onClickEnterRoom = useMutableCallback(() => onEnterRoom?.(room));
+	const onClickEnterRoom = useEffectEvent(() => onEnterRoom?.(room));
 
 	if (isEditing) {
 		return <EditRoomInfoWithData onClickBack={() => setIsEditing(false)} />;

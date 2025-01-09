@@ -1,5 +1,5 @@
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useState } from 'react';
 import type { ReactElement } from 'react';
 
@@ -18,12 +18,12 @@ const GameCenter = (): ReactElement => {
 
 	const result = useExternalComponentsQuery();
 
-	const handleClose = useMutableCallback((e) => {
+	const handleClose = useEffectEvent((e) => {
 		preventSyntheticEvent(e);
 		closeTab();
 	});
 
-	const handleBack = useMutableCallback((e) => {
+	const handleBack = useEffectEvent((e) => {
 		setOpenedGame(undefined);
 		preventSyntheticEvent(e);
 	});
