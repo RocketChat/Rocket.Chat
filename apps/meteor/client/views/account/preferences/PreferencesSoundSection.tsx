@@ -10,14 +10,14 @@ const PreferencesSoundSection = () => {
 	const customSound = useCustomSound();
 	const soundsList: SelectOption[] = customSound?.getList()?.map((value) => [value._id, value.name]) || [];
 	const { control, watch } = useFormContext();
-	const { newMessageNotification, notificationsSoundVolume = 100, masterVolume = 100, voipRingerVolume = 100 } = watch();
+	const { newMessageNotification, notificationsSoundVolume = 100, masterVolume = 100, callRingerVolume = 100 } = watch();
 
 	const newRoomNotificationId = useUniqueId();
 	const newMessageNotificationId = useUniqueId();
 	const muteFocusedConversationsId = useUniqueId();
 	const masterVolumeId = useUniqueId();
 	const notificationsSoundVolumeId = useUniqueId();
-	const voipRingerVolumeId = useUniqueId();
+	const callRingerVolumeId = useUniqueId();
 
 	return (
 		<AccordionItem title={t('Sound')}>
@@ -71,23 +71,23 @@ const PreferencesSoundSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel aria-describedby={`${voipRingerVolumeId}-hint`}>{t('Call_ringer_volume')}</FieldLabel>
-					<FieldHint id={`${voipRingerVolumeId}-hint`} mbe={4}>
+					<FieldLabel aria-describedby={`${callRingerVolumeId}-hint`}>{t('Call_ringer_volume')}</FieldLabel>
+					<FieldHint id={`${callRingerVolumeId}-hint`} mbe={4}>
 						{t('Call_ringer_volume_hint')}
 					</FieldHint>
 					<FieldRow>
 						<Controller
-							name='voipRingerVolume'
+							name='callRingerVolume'
 							control={control}
 							render={({ field: { onChange, value } }) => (
 								<Slider
-									aria-labelledby={voipRingerVolumeId}
-									aria-describedby={`${voipRingerVolumeId}-hint`}
+									aria-labelledby={callRingerVolumeId}
+									aria-describedby={`${callRingerVolumeId}-hint`}
 									value={value}
 									minValue={0}
 									maxValue={100}
 									onChange={(value: number) => {
-										const soundVolume = (voipRingerVolume * masterVolume) / 100;
+										const soundVolume = (callRingerVolume * masterVolume) / 100;
 										customSound.play('telephone', { volume: soundVolume / 100 });
 										onChange(value);
 									}}

@@ -7,13 +7,13 @@ type VoipSound = 'telephone' | 'outbound-call-ringing' | 'call-ended';
 
 export const useVoipSounds = () => {
 	const { play, pause } = useCustomSound();
-	const { voipRingerVolume } = useUserSoundPreferences();
+	const { callRingerVolume } = useUserSoundPreferences();
 
 	return useMemo(
 		() => ({
 			play: (soundId: VoipSound, loop = true) => {
 				play(soundId, {
-					volume: Number((voipRingerVolume / 100).toPrecision(2)),
+					volume: Number((callRingerVolume / 100).toPrecision(2)),
 					loop,
 				});
 			},
@@ -23,6 +23,6 @@ export const useVoipSounds = () => {
 				pause('outbound-call-ringing');
 			},
 		}),
-		[play, pause, voipRingerVolume],
+		[play, pause, callRingerVolume],
 	);
 };

@@ -27,7 +27,7 @@ type UserPreferences = {
 	unreadAlert: boolean;
 	masterVolume: number;
 	notificationsSoundVolume: number;
-	voipRingerVolume: number;
+	callRingerVolume: number;
 	desktopNotifications: string;
 	pushNotifications: string;
 	enableAutoAway: boolean;
@@ -101,7 +101,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		unreadAlert: Match.Optional(Boolean),
 		masterVolume: Match.Optional(Number),
 		notificationsSoundVolume: Match.Optional(Number),
-		voipRingerVolume: Match.Optional(Number),
+		callRingerVolume: Match.Optional(Number),
 		desktopNotifications: Match.Optional(String),
 		pushNotifications: Match.Optional(String),
 		enableAutoAway: Match.Optional(Boolean),
