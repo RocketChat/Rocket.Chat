@@ -22,10 +22,7 @@ type UiKitContextValue = {
     state: ActionParams,
     event: Parameters<MouseEventHandler<HTMLElement>>[0],
   ) => Promise<void> | void;
-  updateState?: (
-    state: ActionParams,
-    event: Parameters<MouseEventHandler<HTMLElement>>[0],
-  ) => Promise<void> | void;
+  updateState?: (state: ActionParams) => void;
   appId?: string;
   errors?: { [field: string]: string }[] | { [field: string]: string };
   values: Record<ActionId, { value: unknown } | undefined>;

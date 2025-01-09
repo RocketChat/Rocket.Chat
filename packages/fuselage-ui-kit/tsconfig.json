@@ -4,5 +4,6 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
   },
-	"include": ["src", ".storybook/**/*", "jest.config.ts"]
+	"include": ["src", ".storybook/**/*", "jest.config.ts"],
+	"exclude": ["node_modules", "dist", "storybook-static"]
 }

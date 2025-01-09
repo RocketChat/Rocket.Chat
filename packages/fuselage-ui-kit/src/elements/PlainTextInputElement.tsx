@@ -1,6 +1,6 @@
 import { TextAreaInput, TextInput } from '@rocket.chat/fuselage';
-import type * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
+import * as UiKit from '@rocket.chat/ui-kit';
+import type { ChangeEvent, ReactElement } from 'react';
 import { memo } from 'react';
 
 import { useStringFromTextObject } from '../hooks/useStringFromTextObject';
@@ -13,33 +13,57 @@ const PlainTextInputElement = ({
   block,
   context,
 }: PlainTextInputElementProps): ReactElement => {
-  const [{ loading, value, error }, action] = useUiKitState(block, context);
+  const [{ loading, error, value, mutate, performAction }] = useUiKitState(
+    block,
+    context,
+  );
   const fromTextObjectToString = useStringFromTextObject();
+
+  const disabled = block.dispatchActionConfig?.includes('on_character_entered')
+    ? false
+    : loading;
+
+  const placeholder = fromTextObjectToString(block.placeholder);
+
+  const handleChange = (
+    event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+  ) => {
+    mutate(event.currentTarget.value);
+
+    if (
+      block.dispatchActionConfig?.includes('on_character_entered') ||
+      block.dispatchActionConfig?.includes('on_item_selected') ||
+      context === UiKit.BlockContext.ACTION ||
+      context === UiKit.BlockContext.SECTION
+    ) {
+      performAction(event.currentTarget.value, event);
+    }
+  };
 
   if (block.multiline) {
     return (
       <TextAreaInput
-        disabled={loading}
+        disabled={disabled}
         id={block.actionId}
         name={block.actionId}
         rows={6}
         error={error}
         value={value}
-        onChange={action}
-        placeholder={fromTextObjectToString(block.placeholder)}
+        placeholder={placeholder}
+        onChange={handleChange}
       />
     );
   }
 
   return (
     <TextInput
-      disabled={loading}
+      disabled={disabled}
       id={block.actionId}
       name={block.actionId}
       error={error}
       value={value}
-      onChange={action}
-      placeholder={fromTextObjectToString(block.placeholder)}
+      placeholder={placeholder}
+      onChange={handleChange}
     />
   );
 };
