@@ -10,6 +10,7 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { callbacks } from '../../../../lib/callbacks';
+import { hasPermission } from '../../../authorization/client';
 import { Messages, Subscriptions, CachedChatSubscription } from '../../../models/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
@@ -82,6 +83,7 @@ const computation = Tracker.autorun(() => {
 	if (!mainReady.get()) {
 		return;
 	}
+
 	Tracker.nonreactive(() =>
 		Object.entries(openedRooms).forEach(([typeName, record]) => {
 			if (record.active !== true || record.ready === true) {
@@ -96,6 +98,11 @@ const computation = Tracker.autorun(() => {
 			void RoomHistoryManager.getMoreIfIsEmpty(record.rid);
 
 			if (room) {
+				const subscription = Subscriptions.findOne({ rid: record.rid }, { reactive: false });
+				if (!hasPermission('preview-c-room') && room.t === 'c' && !subscription) {
+					return;
+				}
+
 				if (record.streamActive !== true) {
 					void sdk
 						.stream('room-messages', [record.rid], async (msg) => {
@@ -105,7 +112,6 @@ const computation = Tracker.autorun(() => {
 							// }
 							// Do not load command messages into channel
 							if (msg.t !== 'command') {
-								const subscription = Subscriptions.findOne({ rid: record.rid }, { reactive: false });
 								const isNew = !Messages.findOne({ _id: msg._id, temp: { $ne: true } });
 								await upsertMessage({ msg, subscription });
 

@@ -1,5 +1,5 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { usePermission, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import { memo, useCallback, useMemo } from 'react';
 
@@ -29,6 +29,7 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 	const chat = useChat();
 	const room = useRoom();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const hasPreviewPublicRoomPermission = usePermission('preview-c-room');
 
 	const composerProps = useMemo(
 		() => ({
@@ -53,7 +54,7 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 				isSlashCommandAllowed?: boolean;
 			}): Promise<void> => {
 				try {
-					await chat?.action.stop('typing');
+					chat?.action.stop('typing');
 					const newMessageSent = await chat?.flows.sendMessage({
 						text,
 						tshow,
@@ -85,11 +86,31 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 		useCallback(() => LegacyRoomManager.getOpenedRoomByRid(room._id)?.streamActive ?? false, [room._id]),
 	);
 
-	if (!publicationReady) {
+	if (!publicationReady && hasPreviewPublicRoomPermission) {
 		return <ComposerSkeleton />;
 	}
 
-	return <MessageBox key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
+	const subscribe = () => {
+		if (!hasPreviewPublicRoomPermission) {
+			// Get room subscription
+			LegacyRoomManager.open({ rid: room._id, typeName: room.t });
+			LegacyRoomManager.computation.invalidate();
+		}
+	};
+
+	return (
+		<MessageBox
+			key={room._id}
+			tmid={tmid}
+			{...composerProps}
+			showFormattingTips={true}
+			onJoin={async () => {
+				await composerProps.onJoin();
+				subscribe();
+			}}
+			{...props}
+		/>
+	);
 };
 
 export default memo(ComposerMessage);
