@@ -28,9 +28,10 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 
 	const [isInstalling, setInstalling] = useState(false);
 
-	const { mutate: sendFile } = useMutation(
-		['apps/installPrivateApp'],
-		({ permissionsGranted, appFile, appId }: { permissionsGranted: AppPermission[]; appFile: File; appId?: string }) => {
+	const { mutate: sendFile } = useMutation({
+		mutationKey: ['apps/installPrivateApp'],
+
+		mutationFn: ({ permissionsGranted, appFile, appId }: { permissionsGranted: AppPermission[]; appFile: File; appId?: string }) => {
 			const fileData = new FormData();
 			fileData.append('app', appFile, appFile.name);
 			fileData.append('permissions', JSON.stringify(permissionsGranted));
@@ -41,27 +42,28 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 
 			return uploadAppEndpoint(fileData) as any;
 		},
-		{
-			onSuccess: (data: { app: App }) => {
-				router.navigate({
-					name: 'marketplace',
-					params: {
-						context: 'private',
-						page: 'info',
-						id: data.app.id,
-					},
-				});
-			},
-			onError: (e) => {
-				handleAPIError(e);
-			},
-			onSettled: () => {
-				setInstalling(false);
-				setModal(null);
-				reloadAppsList();
-			},
+
+		onSuccess: (data: { app: App }) => {
+			router.navigate({
+				name: 'marketplace',
+				params: {
+					context: 'private',
+					page: 'info',
+					id: data.app.id,
+				},
+			});
 		},
-	);
+
+		onError: (e) => {
+			handleAPIError(e);
+		},
+
+		onSettled: () => {
+			setInstalling(false);
+			setModal(null);
+			reloadAppsList();
+		},
+	});
 
 	const cancelAction = useCallback(() => {
 		setInstalling(false);

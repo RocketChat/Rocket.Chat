@@ -42,7 +42,10 @@ const EmailInboxTable = (): ReactElement => {
 		...(current && { offset: current }),
 	};
 
-	const result = useQuery(['email-list', query], () => endpoint(query));
+	const result = useQuery({
+		queryKey: ['email-list', query],
+		queryFn: () => endpoint(query),
+	});
 
 	const headers = useMemo(
 		() => [
@@ -62,7 +65,7 @@ const EmailInboxTable = (): ReactElement => {
 
 	return (
 		<>
-			{result.isLoading && (
+			{result.isPending && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>

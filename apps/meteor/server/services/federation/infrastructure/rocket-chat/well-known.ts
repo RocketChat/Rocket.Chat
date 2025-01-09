@@ -7,7 +7,8 @@ import { settings } from '../../../../../app/settings/server';
 
 async function returnMatrixServerJSON(_: IncomingMessage, res: ServerResponse) {
 	if (!settings.get<boolean>('Federation_Matrix_enabled') || !settings.get<boolean>('Federation_Matrix_serve_well_known')) {
-		return res.writeHead(404).end();
+		res.writeHead(404).end();
+		return;
 	}
 
 	const homeserverUrl = settings.get<string>('Federation_Matrix_homeserver_url');
@@ -22,7 +23,8 @@ async function returnMatrixServerJSON(_: IncomingMessage, res: ServerResponse) {
 
 async function returnMatrixClientJSON(_: IncomingMessage, res: ServerResponse) {
 	if (!settings.get<boolean>('Federation_Matrix_enabled') || !settings.get<boolean>('Federation_Matrix_serve_well_known')) {
-		return res.writeHead(404).end();
+		res.writeHead(404).end();
+		return;
 	}
 
 	const homeserverUrl = settings.get<string>('Federation_Matrix_homeserver_url');

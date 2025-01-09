@@ -46,7 +46,9 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 				}),
 			);
 			dispatchToastMessage({ type: 'success', message: t('Users_added') });
-			queryClient.invalidateQueries(['getUsersInRole']);
+			queryClient.invalidateQueries({
+				queryKey: ['getUsersInRole'],
+			});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

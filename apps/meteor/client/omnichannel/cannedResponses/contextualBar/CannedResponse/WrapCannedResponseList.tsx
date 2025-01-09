@@ -1,4 +1,4 @@
-import { useDebouncedValue, useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useLocalStorage, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRouter } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, MouseEvent } from 'react';
 import { memo, useCallback, useMemo, useState } from 'react';
@@ -38,7 +38,7 @@ export const WrapCannedResponseList = () => {
 	);
 	const { phase, items, itemCount } = useRecordList(cannedList);
 
-	const onClickItem = useMutableCallback((data) => {
+	const onClickItem = useEffectEvent((data) => {
 		const { _id: context } = data;
 
 		router.navigate({

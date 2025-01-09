@@ -114,8 +114,12 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 		mutationFn: saveTrigger,
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			queryClient.invalidateQueries(['livechat-getTriggersById']);
-			queryClient.invalidateQueries(['livechat-triggers']);
+			queryClient.invalidateQueries({
+				queryKey: ['livechat-getTriggersById'],
+			});
+			queryClient.invalidateQueries({
+				queryKey: ['livechat-triggers'],
+			});
 			router.navigate('/omnichannel/triggers');
 		},
 		onError: (error) => {

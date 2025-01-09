@@ -39,7 +39,7 @@ const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 		return null;
 	}
 
-	if (roomInfo.isLoading || (roomInfo.isSuccess && result.isLoading)) {
+	if (roomInfo.isLoading || (roomInfo.isSuccess && result.isPending)) {
 		return <RoomSidepanelLoading />;
 	}
 
