@@ -6,13 +6,9 @@ import { logger } from './logger';
 
 const serviceName = 'omnichannel-transcript' as const;
 export const requestPdfTranscript = async (
-	room: AtLeast<IOmnichannelRoom, '_id' | 'open' | 'v' | 'pdfTranscriptRequested'> | null,
+	room: AtLeast<IOmnichannelRoom, '_id' | 'open' | 'v' | 'pdfTranscriptRequested'>,
 	requestedBy: string,
 ): Promise<void> => {
-	if (!room) {
-		throw new Error('room-not-found');
-	}
-
 	if (room.open) {
 		throw new Error('room-still-open');
 	}

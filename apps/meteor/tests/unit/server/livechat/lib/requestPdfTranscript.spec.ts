@@ -38,9 +38,6 @@ describe('requestPdfTranscript', () => {
 		process.env.TEST_MODE = currentTestModeValue;
 	});
 
-	it('should throw an error if room parameter is null', async () => {
-		await expect(requestPdfTranscript(null, 'userId')).to.be.rejectedWith('room-not-found');
-	});
 	it('should throw an error if room is still open', async () => {
 		await expect(requestPdfTranscript({ open: true }, 'userId')).to.be.rejectedWith('room-still-open');
 	});
