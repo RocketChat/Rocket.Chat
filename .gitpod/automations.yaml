@@ -1,11 +1,15 @@
 services:
   development-server:
     name: Rocket.Chat development server
-    description: Starts the Rocket.Chat development server
+    description: Starts the Rocket.Chat development server (yarn dsv)
     triggeredBy:
       - postDevcontainerStart
       - manual
     commands:
       start: |
-        nvm use $(jq -r '.engines.node' package.json) && \
+        yarn
         yarn dsv
+      ready: |
+        export ROOT_URL=$(gitpod environment port open 3000 --name "Rocket.Chat application" | sed 's|https://||')
+        echo $ROOT_URL
+        gitpod environment port open 3000 --name "Rocket.Chat application"
