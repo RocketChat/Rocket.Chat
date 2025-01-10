@@ -407,11 +407,10 @@ test.describe('SAML', () => {
 		await test.step('expect to be redirected to the homepage after succesful login', async () => {
 			await expect(page).toHaveURL('/home');
 		});
-		await doLogoutStep(page);
 	});
 
 	test('Respect redirectUrl on multiple parallel logins', async ({ page, browser }) => {
-		const page2 = await browser.newPage({ storageState: Users.samluser2.state });
+		const page2 = await browser.newPage();
 		const poRegistration2 = new Registration(page2);
 
 		await page2.goto(`/home`);
