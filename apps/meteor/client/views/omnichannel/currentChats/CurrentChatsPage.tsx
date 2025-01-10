@@ -1,11 +1,12 @@
+import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
 import { Callout, Pagination } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
-import { hashQueryKey } from '@tanstack/react-query';
+import { hashKey } from '@tanstack/react-query';
 import moment from 'moment';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import CustomFieldsList from './CustomFieldsList';
@@ -163,17 +164,17 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 
 	const { data, isLoading, isSuccess } = useCurrentChats(query);
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
-	const onFilter = useMutableCallback((params: DebouncedParams): void => {
+	const onFilter = useEffectEvent((params: DebouncedParams): void => {
 		setParams(params);
 		setCurrent(0);
 	});
 
 	const renderRow = useCallback(
-		(room) => {
-			const { _id, fname, servedBy, ts, lm, department, open, onHold, priorityWeight } = room;
+		(room: IOmnichannelRoomWithDepartment) => {
+			const { _id, fname, servedBy, ts, lm, department, open = false, onHold = false, priorityWeight } = room;
 			const getStatusText = (open: boolean, onHold: boolean, servedBy: boolean): string => {
 				if (!open) return t('Closed');
 				if (open && !servedBy) return t('Queued');

@@ -1,7 +1,6 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';
@@ -11,7 +10,7 @@ function RemoveAgentButton({ agentId, onRemove }: { agentId: string; onRemove: (
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 
-	const handleDelete = useMutableCallback((e) => {
+	const handleDelete = useEffectEvent((e) => {
 		e.stopPropagation();
 
 		const onRemoveAgent = async () => {

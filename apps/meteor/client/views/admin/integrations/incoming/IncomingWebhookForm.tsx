@@ -19,7 +19,8 @@ import {
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import DOMPurify from 'dompurify';
+import { useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -111,7 +112,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 							<FieldRow>
 								<Box fontScale='p2' withRichContent flexGrow={1}>
 									<pre>
-										<code dangerouslySetInnerHTML={{ __html: hilightedExampleJson }}></code>
+										<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(hilightedExampleJson) }}></code>
 									</pre>
 								</Box>
 							</FieldRow>
@@ -179,10 +180,12 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 							<FieldHint
 								id={`${channelField}-hint-2`}
 								dangerouslySetInnerHTML={{
-									__html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', {
-										postProcess: 'sprintf',
-										sprintf: ['@', '#', '@john', '#general'],
-									}),
+									__html: DOMPurify.sanitize(
+										t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', {
+											postProcess: 'sprintf',
+											sprintf: ['@', '#', '@john', '#general'],
+										}),
+									),
 								}}
 							/>
 							{errors?.channel && (
@@ -271,7 +274,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 							<FieldHint id={`${emojiField}-hint-1`}>{t('You_can_use_an_emoji_as_avatar')}</FieldHint>
 							<FieldHint
 								id={`${emojiField}-hint-2`}
-								dangerouslySetInnerHTML={{ __html: t('Example_s', { postProcess: 'sprintf', sprintf: [':ghost:'] }) }}
+								dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Example_s', { postProcess: 'sprintf', sprintf: [':ghost:'] })) }}
 							/>
 						</Field>
 						<Field>

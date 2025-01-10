@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { useVoipAPI, useVoipState } from '@rocket.chat/ui-voip';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useMediaPermissions } from '../../../views/room/composer/messageBox/hooks/useMediaPermissions';
@@ -22,12 +22,12 @@ const useVoipMenuOptions = () => {
 	const members = useMemo(() => uids.filter((uid) => uid !== ownUserId), [uids, ownUserId]);
 	const remoteUserId = members[0];
 
-	const { data: { user: remoteUser } = {}, isLoading } = useUserInfoQuery({ userId: remoteUserId }, { enabled: Boolean(remoteUserId) });
+	const { data: { user: remoteUser } = {}, isPending } = useUserInfoQuery({ userId: remoteUserId }, { enabled: Boolean(remoteUserId) });
 
 	const isRemoteRegistered = !!remoteUser?.freeSwitchExtension;
 	const isDM = members.length === 1;
 
-	const disabled = isMicPermissionDenied || !isDM || !isRemoteRegistered || !isRegistered || isInCall || isLoading;
+	const disabled = isMicPermissionDenied || !isDM || !isRemoteRegistered || !isRegistered || isInCall || isPending;
 
 	const title = useMemo(() => {
 		if (isMicPermissionDenied) {

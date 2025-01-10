@@ -2,7 +2,6 @@ import type { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.c
 import { Button, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EditBusinessHours from './EditBusinessHours';
@@ -14,15 +13,13 @@ const EditBusinessHoursWidthData = ({ id, type }: { id?: ILivechatBusinessHour['
 	const router = useRouter();
 	const getBusinessHour = useEndpoint('GET', '/v1/livechat/business-hour');
 
-	const { data, isLoading, isError, refetch } = useQuery(
-		['livechat-getBusinessHourById', id, type],
-		async () => getBusinessHour({ _id: id, type }),
-		{
-			refetchOnWindowFocus: false,
-		},
-	);
+	const { data, isPending, isError, refetch } = useQuery({
+		queryKey: ['livechat-getBusinessHourById', id, type],
+		queryFn: async () => getBusinessHour({ _id: id, type }),
+		refetchOnWindowFocus: false,
+	});
 
-	if (isLoading) {
+	if (isPending) {
 		return <PageSkeleton />;
 	}
 

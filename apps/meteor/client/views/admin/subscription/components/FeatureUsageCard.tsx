@@ -1,6 +1,6 @@
 import { Card, CardControls, CardTitle } from '@rocket.chat/fuselage';
 import type { ReactElement, ReactNode } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import InfoTextIconModal from './InfoTextIconModal';
 

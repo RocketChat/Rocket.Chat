@@ -1,5 +1,4 @@
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { OmnichannelCallToggleError } from './OmnichannelCallToggleError';
 import { OmnichannelCallToggleLoading } from './OmnichannelCallToggleLoading';

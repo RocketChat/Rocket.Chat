@@ -100,11 +100,11 @@ export const Visitors = {
 			returnDocument: 'after',
 		});
 
-		if (!upsertedLivechatVisitor.value) {
+		if (!upsertedLivechatVisitor) {
 			logger.debug(`No visitor found after upsert`);
 			return null;
 		}
 
-		return upsertedLivechatVisitor.value;
+		return upsertedLivechatVisitor;
 	},
 };

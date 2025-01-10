@@ -48,7 +48,7 @@ export const useFilesList = (
 	const getFiles = useEndpoint('GET', apiEndPoint);
 
 	const fetchMessages = useCallback(
-		async (start, end) => {
+		async (start: number, end: number) => {
 			const { files, total } = await getFiles({
 				roomId: options.rid,
 				offset: start,

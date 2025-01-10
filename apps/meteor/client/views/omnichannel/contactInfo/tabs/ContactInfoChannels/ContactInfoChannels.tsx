@@ -2,7 +2,6 @@ import type { ILivechatContact } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, Throbber } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -18,9 +17,12 @@ const ContactInfoChannels = ({ contactId }: ContactInfoChannelsProps) => {
 	const { t } = useTranslation();
 
 	const getContactChannels = useEndpoint('GET', '/v1/omnichannel/contacts.channels');
-	const { data, isError, isLoading } = useQuery(['getContactChannels', contactId], () => getContactChannels({ contactId }));
+	const { data, isError, isPending } = useQuery({
+		queryKey: ['getContactChannels', contactId],
+		queryFn: () => getContactChannels({ contactId }),
+	});
 
-	if (isLoading) {
+	if (isPending) {
 		return (
 			<ContextualbarContent>
 				<Box pb={12}>

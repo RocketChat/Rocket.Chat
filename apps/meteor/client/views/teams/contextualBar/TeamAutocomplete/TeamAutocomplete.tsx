@@ -3,7 +3,7 @@ import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
-import React, { memo, useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 
 type TeamAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
 
@@ -11,7 +11,10 @@ const TeamAutocomplete = ({ value, onChange, ...props }: TeamAutocompleteProps) 
 	const [filter, setFilter] = useState('');
 
 	const teamsAutoCompleteEndpoint = useEndpoint('GET', '/v1/teams.autocomplete');
-	const { data, isSuccess } = useQuery(['teamsAutoComplete', filter], async () => teamsAutoCompleteEndpoint({ name: filter }));
+	const { data, isSuccess } = useQuery({
+		queryKey: ['teamsAutoComplete', filter],
+		queryFn: async () => teamsAutoCompleteEndpoint({ name: filter }),
+	});
 
 	const options = useMemo(
 		() =>

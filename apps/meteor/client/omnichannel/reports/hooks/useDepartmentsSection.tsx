@@ -22,21 +22,21 @@ export const useDepartmentsSection = () => {
 
 	const {
 		data: { data, total = 0, unspecified = 0 } = { data: [], total: 0 },
-		isLoading,
+		isPending,
 		isError,
 		isSuccess,
 		refetch,
-	} = useQuery(
-		['omnichannel-reports', 'conversations-by-department', period],
-		async () => {
+	} = useQuery({
+		queryKey: ['omnichannel-reports', 'conversations-by-department', period],
+
+		queryFn: async () => {
 			const { start, end } = getPeriodRange(period);
 			const response = await getConversationsByDepartment({ start: start.toISOString(), end: end.toISOString() });
 			return { ...response, data: formatChartData(response.data) };
 		},
-		{
-			refetchInterval: 5 * 60 * 1000,
-		},
-	);
+
+		refetchInterval: 5 * 60 * 1000,
+	});
 
 	const title = t('Conversations_by_department');
 	const subtitleTotals = t('__departments__departments_and__count__conversations__period__', {
@@ -58,7 +58,7 @@ export const useDepartmentsSection = () => {
 			emptyStateSubtitle,
 			data,
 			total,
-			isLoading,
+			isPending,
 			isError,
 			isDataFound: isSuccess && data.length > 0,
 			periodSelectorProps,
@@ -66,6 +66,6 @@ export const useDepartmentsSection = () => {
 			downloadProps,
 			onRetry: refetch,
 		}),
-		[title, subtitle, emptyStateSubtitle, data, total, isLoading, isError, isSuccess, periodSelectorProps, period, downloadProps, refetch],
+		[title, subtitle, emptyStateSubtitle, data, total, isPending, isError, isSuccess, periodSelectorProps, period, downloadProps, refetch],
 	);
 };

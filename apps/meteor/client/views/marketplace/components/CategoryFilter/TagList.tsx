@@ -1,5 +1,4 @@
 import { Chip, ButtonGroup } from '@rocket.chat/fuselage';
-import React from 'react';
 
 import type { CategoryDropdownItem, CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
 

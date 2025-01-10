@@ -1,7 +1,7 @@
 import { Box, SidebarV2GroupTitle } from '@rocket.chat/fuselage';
 import { useTranslation, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement } from 'react';
-import React, { useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
