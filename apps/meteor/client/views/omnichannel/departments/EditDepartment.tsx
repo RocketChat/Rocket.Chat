@@ -17,7 +17,7 @@ import {
 	FieldHint,
 	Option,
 } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -137,7 +137,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleSave = useMutableCallback(async (data: FormValues) => {
+	const handleSave = useEffectEvent(async (data: FormValues) => {
 		const {
 			agentList,
 			enabled,

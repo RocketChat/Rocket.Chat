@@ -1,5 +1,5 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -12,7 +12,7 @@ const AssignAgentButton = ({ extension, reload }: AssignAgentButtonProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
-	const handleAssociation = useMutableCallback((e) => {
+	const handleAssociation = useEffectEvent((e) => {
 		e.stopPropagation();
 		setModal(<AssignAgentModal existingExtension={extension} closeModal={(): void => setModal()} reload={reload} />);
 	});
