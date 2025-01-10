@@ -5,7 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import AddMatrixUsersModal from './AddMatrixUsersModal';
 
 export type useAddMatrixUsersProps = {
-	handleSave: (args_0: any) => Promise<void>;
+	handleSave: (args_0: { users: string[] }) => Promise<void>;
 	users: string[];
 };
 
