@@ -848,7 +848,7 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.membersOrderedByRole': {
 		GET: (params: RoomsMembersOrderedByRoleProps) => PaginatedResult<{
-			members: IUser & { roles: IRole['_id'] }[];
+			members: (IUser & { roles: IRole['_id'][] })[];
 		}>;
 	};
 };
