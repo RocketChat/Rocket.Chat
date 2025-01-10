@@ -1,6 +1,7 @@
 import { Box, PasswordInput, Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, Button, Divider } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useLogout } from '@rocket.chat/ui-contexts';
+import DOMPurify from 'dompurify';
 import { Accounts } from 'meteor/accounts-base';
 import type { ComponentProps, ReactElement } from 'react';
 import { useCallback, useEffect } from 'react';
@@ -76,7 +77,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 				is='p'
 				fontScale='p1'
 				id={e2ePasswordExplanationId}
-				dangerouslySetInnerHTML={{ __html: t('E2E_Encryption_Password_Explanation') }}
+				dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('E2E_Encryption_Password_Explanation')) }}
 			/>
 
 			<Box mbs={36} w='full'>
@@ -160,7 +161,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 				<Box is='h4' fontScale='h4' mbe={12}>
 					{t('Reset_E2E_Key')}
 				</Box>
-				<Box is='p' fontScale='p1' mbe={12} dangerouslySetInnerHTML={{ __html: t('E2E_Reset_Key_Explanation') }} />
+				<Box is='p' fontScale='p1' mbe={12} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('E2E_Reset_Key_Explanation')) }} />
 				<Button onClick={handleResetE2eKey} data-qa-type='e2e-encryption-reset-key-button'>
 					{t('Reset_E2E_Key')}
 				</Button>

@@ -194,10 +194,10 @@ Meteor.methods<ServerMethods>({
 			},
 		);
 
-		if (updatedIntegration.value) {
-			void notifyOnIntegrationChanged(updatedIntegration.value);
+		if (updatedIntegration) {
+			void notifyOnIntegrationChanged(updatedIntegration);
 		}
 
-		return updatedIntegration.value;
+		return updatedIntegration;
 	},
 });

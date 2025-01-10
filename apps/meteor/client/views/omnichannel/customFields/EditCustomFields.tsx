@@ -13,7 +13,7 @@ import {
 	ToggleSwitch,
 	Box,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -62,7 +62,7 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 
 	const saveCustomField = useMethod('livechat:saveCustomField');
 
-	const handleSave = useMutableCallback(async ({ visibility, ...data }) => {
+	const handleSave = useEffectEvent(async ({ visibility, ...data }) => {
 		try {
 			await saveCustomField(customFieldData?._id as unknown as string, {
 				visibility: visibility ? 'visible' : 'hidden',

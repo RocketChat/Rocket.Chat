@@ -1,7 +1,7 @@
 import type { ILivechatPriority } from '@rocket.chat/core-typings';
 import type { ILivechatPriorityModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Db, UpdateFilter, ModifyResult, IndexDescription, FindCursor } from 'mongodb';
+import type { Db, UpdateFilter, WithId, IndexDescription, FindCursor } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -60,7 +60,7 @@ export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements I
 		await this.updateMany({ _id: { $in: ids } }, [{ $set: { dirty: false } }, { $unset: 'name' }]);
 	}
 
-	async updatePriority(_id: string, reset: boolean, name?: string): Promise<ModifyResult<ILivechatPriority>> {
+	async updatePriority(_id: string, reset: boolean, name?: string): Promise<null | WithId<ILivechatPriority>> {
 		const query = {
 			_id,
 		};

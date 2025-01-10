@@ -80,11 +80,11 @@ export async function resetRoomKey(roomId: string, userId: string, newRoomKey: s
 	// And set the new key to the user that called the func
 	const result = await Subscriptions.setE2EKeyByUserIdAndRoomId(userId, roomId, newRoomKey);
 
-	if (result.value) {
-		void notifyOnSubscriptionChanged(result.value);
+	if (result) {
+		void notifyOnSubscriptionChanged(result);
 	}
-	if (roomResult.value) {
-		void notifyOnRoomChanged(roomResult.value);
+	if (roomResult) {
+		void notifyOnRoomChanged(roomResult);
 	}
 }
 
