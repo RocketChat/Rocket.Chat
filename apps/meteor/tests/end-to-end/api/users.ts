@@ -4571,7 +4571,7 @@ describe('[Users]', () => {
 			.expect(400)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', false);
-				expect(res.body.error).to.include('invalid bio');
+				expect(res.body.error).to.include('error-invalid-field');
 			})
 			.end(done);
 	});
