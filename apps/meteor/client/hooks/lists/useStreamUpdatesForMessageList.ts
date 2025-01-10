@@ -39,12 +39,7 @@ const createDeleteCriteria = (params: NotifyRoomRidDeleteMessageBulkEvent): ((me
 	return createFilterFromQuery<IMessage>(query);
 };
 
-export const useStreamUpdatesForMessageList = (
-	messageList: MessageList,
-	uid: IUser['_id'] | null,
-	rid: IRoom['_id'] | null,
-	onMessage?: (message: IMessage) => void,
-): void => {
+export const useStreamUpdatesForMessageList = (messageList: MessageList, uid: IUser['_id'] | null, rid: IRoom['_id'] | null): void => {
 	const subscribeToRoomMessages = useStream('room-messages');
 	const subscribeToNotifyRoom = useStream('notify-room');
 
@@ -55,8 +50,7 @@ export const useStreamUpdatesForMessageList = (
 		}
 
 		const unsubscribeFromRoomMessages = subscribeToRoomMessages(rid, (message) => {
-			onMessage?.(message);
-			!onMessage && messageList.handle(message);
+			messageList.handle(message);
 		});
 
 		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom(`${rid}/deleteMessage`, ({ _id: mid }) => {
@@ -73,5 +67,5 @@ export const useStreamUpdatesForMessageList = (
 			unsubscribeFromDeleteMessage();
 			unsubscribeFromDeleteMessageBulk();
 		};
-	}, [subscribeToRoomMessages, subscribeToNotifyRoom, uid, rid, messageList, onMessage]);
+	}, [subscribeToRoomMessages, subscribeToNotifyRoom, uid, rid, messageList]);
 };
