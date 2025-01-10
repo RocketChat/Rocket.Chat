@@ -1,12 +1,13 @@
-import type {
-	AtLeast,
-	IRole,
-	IRoom,
-	ISubscription,
-	IUser,
-	RocketChatRecordDeleted,
-	RoomType,
-	SpotlightUser,
+import {
+	ROOM_ROLE_PRIORITY_MAP,
+	type AtLeast,
+	type IRole,
+	type IRoom,
+	type ISubscription,
+	type IUser,
+	type RocketChatRecordDeleted,
+	type RoomType,
+	type SpotlightUser,
 } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -34,6 +35,13 @@ import type {
 
 import { Rooms, Users } from '../index';
 import { BaseRaw } from './BaseRaw';
+
+export const getRoomRolePriorityForRole = (role: IRole['_id']) =>
+	(ROOM_ROLE_PRIORITY_MAP as { [key: IRole['_id']]: number })[role] ?? ROOM_ROLE_PRIORITY_MAP.default;
+
+export const calculateRoomRolePriorityFromRoles = (roles: IRole['_id'][]) => {
+	return roles.reduce((a, b) => Math.min(a, getRoomRolePriorityForRole(b)), ROOM_ROLE_PRIORITY_MAP.default);
+};
 
 export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISubscription>>) {
@@ -233,7 +241,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.updateOne(query, update);
+		return this.updateOneAndSyncRolePriority(query, update);
 	}
 
 	findUsersInRoles(roles: IRole['_id'][], rid: string | undefined): Promise<FindCursor<IUser>>;
@@ -292,7 +300,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.updateOne(query, update);
+		return this.updateOneAndSyncRolePriority(query, update);
 	}
 
 	async isUserInRoleScope(uid: IUser['_id'], rid?: IRoom['_id']): Promise<boolean> {
@@ -1700,7 +1708,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.updateOne(query, update);
+		return this.updateOneAndSyncRolePriority(query, update);
 	}
 
 	/**
@@ -1716,7 +1724,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		return this.updateOne(query, update);
+		return this.updateOneAndSyncRolePriority(query, update);
 	}
 
 	setArchivedByUsername(username: string, archived: boolean): Promise<UpdateResult | Document> {
@@ -1854,6 +1862,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			...extraData,
 		};
 
+		if (extraData.roles) {
+			const rolePriority = calculateRoomRolePriorityFromRoles(extraData.roles);
+
+			await Users.addRoomRolePriorityByUserId(user._id, room._id, rolePriority);
+		}
+
 		// @ts-expect-error - types not good :(
 		const result = await this.insertOne(subscription);
 
@@ -1870,29 +1884,43 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		room: IRoom,
 		users: { user: AtLeast<IUser, '_id' | 'username' | 'name' | 'settings'>; extraData: Record<string, any> }[] = [],
 	): Promise<InsertManyResult<ISubscription>> {
-		const subscriptions = users.map(({ user, extraData }) => ({
-			open: false,
-			alert: false,
-			unread: 0,
-			userMentions: 0,
-			groupMentions: 0,
-			ts: room.ts,
-			rid: room._id,
-			name: room.name,
-			fname: room.fname,
-			...(room.customFields && { customFields: room.customFields }),
-			t: room.t,
-			u: {
-				_id: user._id,
-				username: user.username,
-				name: user.name,
-			},
-			...(room.prid && { prid: room.prid }),
-			...extraData,
-		}));
+		const rolePriorities: Record<string, number> = {};
+		const subscriptions = users.map(({ user, extraData }) => {
+			const subscription = {
+				open: false,
+				alert: false,
+				unread: 0,
+				userMentions: 0,
+				groupMentions: 0,
+				ts: room.ts,
+				rid: room._id,
+				name: room.name,
+				fname: room.fname,
+				...(room.customFields && { customFields: room.customFields }),
+				t: room.t,
+				u: {
+					_id: user._id,
+					username: user.username,
+					name: user.name,
+				},
+				...(room.prid && { prid: room.prid }),
+				...extraData,
+			};
+
+			if (extraData.roles) {
+				const rolePriority = calculateRoomRolePriorityFromRoles(extraData.roles);
+
+				rolePriorities[user._id] = rolePriority;
+			}
+
+			return subscription;
+		});
 
 		// @ts-expect-error - types not good :(
-		return this.insertMany(subscriptions);
+		const insertResult = await this.insertMany(subscriptions);
+		await Users.assignRoomRolePrioritiesByUserIdPriorityMap(rolePriorities, room._id);
+
+		return insertResult;
 	}
 
 	// REMOVE
@@ -2044,5 +2072,21 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	async updateOneAndSyncRolePriority(query: Filter<ISubscription>, update: UpdateFilter<ISubscription>): Promise<UpdateResult> {
+		const updateResult = await this.updateOne(query, update);
+
+		const subscription = await this.findOne(query, { projection: { roles: 1, u: 1, rid: 1 } });
+
+		if (!subscription) {
+			return updateResult;
+		}
+
+		const rolePriority = subscription.roles ? calculateRoomRolePriorityFromRoles(subscription.roles) : ROOM_ROLE_PRIORITY_MAP.default;
+
+		await Users.addRoomRolePriorityByUserId(subscription.u._id, subscription.rid, rolePriority);
+
+		return updateResult;
 	}
 }

@@ -1,5 +1,5 @@
-import type { IUser, IRole } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { type IUser, type IRole, ROOM_ROLE_PRIORITY_MAP } from '@rocket.chat/core-typings';
+import { Subscriptions, Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Document, FilterOperators } from 'mongodb';
 
@@ -12,7 +12,6 @@ type FindUsersParam = {
 	limit?: number;
 	filter?: string;
 	sort?: Record<string, any>;
-	rolesInOrder?: IRole['_id'][];
 	exceptions?: string[];
 	extraQuery?: Document[];
 };
@@ -28,7 +27,6 @@ export async function findUsersOfRoomOrderedByRole({
 	limit = 0,
 	filter = '',
 	sort,
-	rolesInOrder = [],
 	exceptions = [],
 	extraQuery = [],
 }: FindUsersParam): Promise<{ members: UserWithRoleData[]; total: number }> {
@@ -36,127 +34,94 @@ export async function findUsersOfRoomOrderedByRole({
 	const termRegex = new RegExp(escapeRegExp(filter), 'i');
 	const orStmt = filter && searchFields.length ? searchFields.map((field) => ({ [field.trim()]: termRegex })) : [];
 
-	const useRealName = settings.get('UI_Use_Real_Name');
-	const defaultSort = useRealName ? { name: 1 } : { username: 1 };
+	const { rolePriority: rolePrioritySort, ...rest } = sort || {};
 
 	const sortCriteria = {
-		rolePriority: 1,
+		rolePriority: rolePrioritySort ?? 1,
 		statusConnection: -1,
-		...(sort || defaultSort),
+		...(Object.keys(rest).length > 0
+			? rest
+			: {
+					...(settings.get('UI_Use_Real_Name') ? { name: 1 } : { username: 1 }),
+				}),
 	};
 
-	const userLookupPipeline: Document[] = [
-		{
-			$match: {
-				$and: [
-					{
-						$expr: { $eq: ['$_id', '$$userId'] },
-						active: true,
-						username: {
-							$exists: true,
-							...(exceptions.length > 0 && { $nin: exceptions }),
-						},
-						...(status && { status }),
-						...(filter && orStmt.length > 0 && { $or: orStmt }),
-					},
-					...extraQuery,
-				],
+	const matchUserFilter = {
+		$and: [
+			{
+				__rooms: rid,
+				active: true,
+				username: {
+					$exists: true,
+					...(exceptions.length > 0 && { $nin: exceptions }),
+				},
+				...(status && { status }),
+				...(filter && orStmt.length > 0 && { $or: orStmt }),
 			},
-		},
-	];
+			...extraQuery,
+		],
+	};
 
-	const defaultPriority = rolesInOrder.length + 1;
-
-	const branches = rolesInOrder.map((role, index) => ({
-		case: { $eq: ['$$this', role] },
-		then: index + 1,
-	}));
-
-	const filteredPipeline: Document[] = [
-		{
-			$lookup: {
-				from: 'users',
-				let: { userId: '$u._id' },
-				pipeline: userLookupPipeline,
-				as: 'userDetails',
-			},
-		},
-		{ $unwind: '$userDetails' },
-	];
-
-	const membersResult = Subscriptions.col.aggregate(
+	const membersResult = Users.col.aggregate(
 		[
-			{ $match: { rid } },
-			...filteredPipeline,
 			{
-				$addFields: {
-					primaryRole: {
-						$reduce: {
-							input: '$roles',
-							initialValue: { role: null, priority: defaultPriority },
-							in: {
-								$let: {
-									vars: {
-										currentPriority: {
-											$switch: {
-												branches,
-												default: defaultPriority,
-											},
-										},
-									},
-									in: {
-										$cond: [
-											{
-												$and: [{ $in: ['$$this', rolesInOrder] }, { $lt: ['$$currentPriority', '$$value.priority'] }],
-											},
-											{ role: '$$this', priority: '$$currentPriority' },
-											'$$value',
-										],
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			{
-				$addFields: {
-					rolePriority: { $ifNull: ['$primaryRole.priority', defaultPriority] },
-				},
+				$match: matchUserFilter,
 			},
 			{
 				$project: {
-					_id: '$userDetails._id',
-					rid: 1,
-					roles: 1,
-					primaryRole: '$primaryRole.role',
-					rolePriority: 1,
-					username: '$userDetails.username',
-					name: '$userDetails.name',
-					nickname: '$userDetails.nickname',
-					status: '$userDetails.status',
-					avatarETag: '$userDetails.avatarETag',
-					_updatedAt: '$userDetails._updatedAt',
-					federated: '$userDetails.federated',
-					statusConnection: '$userDetails.statusConnection',
+					_id: 1,
+					name: 1,
+					username: 1,
+					nickname: 1,
+					status: 1,
+					avatarETag: 1,
+					_updatedAt: 1,
+					federated: 1,
+					rolePriority: {
+						$ifNull: [`$roomRolePriorities.${rid}`, ROOM_ROLE_PRIORITY_MAP.default],
+					},
 				},
 			},
 			{ $sort: sortCriteria },
 			...(skip > 0 ? [{ $skip: skip }] : []),
 			...(limit > 0 ? [{ $limit: limit }] : []),
+			{
+				$lookup: {
+					from: Subscriptions.getCollectionName(),
+					as: 'subscription',
+					let: { userId: '$_id', roomId: rid },
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$and: [{ $eq: ['$rid', '$$roomId'] }, { $eq: ['$u._id', '$$userId'] }],
+								},
+							},
+						},
+						{ $project: { roles: 1 } },
+					],
+				},
+			},
+			{
+				$addFields: {
+					roles: { $arrayElemAt: ['$subscription.roles', 0] },
+				},
+			},
+			{
+				$project: {
+					subscription: 0,
+				},
+			},
 		],
 		{
 			allowDiskUse: true,
 		},
 	);
 
-	const totalResult = Subscriptions.col.aggregate([{ $match: { rid } }, ...filteredPipeline, { $count: 'total' }], { allowDiskUse: true });
-
-	const [members, [{ totalCount }]] = await Promise.all([membersResult.toArray(), totalResult.toArray()]);
+	const [members, totalCount] = await Promise.all([membersResult.toArray(), Users.countDocuments(matchUserFilter)]);
 
 	return {
 		members: members.map((member: any) => {
-			delete member.primaryRole;
 			delete member.rolePriority;
 			return member;
 		}),

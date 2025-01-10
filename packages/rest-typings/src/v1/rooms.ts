@@ -627,12 +627,12 @@ const roomsOpenSchema = {
 };
 
 export const isRoomsOpenProps = ajv.compile<RoomsOpenProps>(roomsOpenSchema);
+
 type MembersOrderedByRoleProps = {
 	roomId?: IRoom['_id'];
 	roomName?: IRoom['name'];
 	status?: string[];
 	filter?: string;
-	rolesOrder?: IRole['_id'][];
 };
 
 export type RoomsMembersOrderedByRoleProps = PaginatedRequest<MembersOrderedByRoleProps>;
@@ -644,13 +644,6 @@ const membersOrderedByRoleRolePropsSchema = {
 		},
 		roomName: {
 			type: 'string',
-		},
-		rolesOrder: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			nullable: true,
 		},
 		status: {
 			type: 'array',

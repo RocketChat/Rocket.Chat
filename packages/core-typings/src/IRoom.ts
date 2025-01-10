@@ -417,3 +417,9 @@ export interface IRoomWithRetentionPolicy extends IRoom {
 		overrideGlobal?: boolean;
 	};
 }
+
+export const ROOM_ROLE_PRIORITY_MAP = {
+	owner: 0,
+	moderator: 500,
+	default: 10000,
+};

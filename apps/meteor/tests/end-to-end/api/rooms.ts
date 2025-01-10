@@ -3704,8 +3704,6 @@ describe('[Rooms]', () => {
 			expect(response.body).to.have.property('success', true);
 			expect(response.body.members).to.be.an('array');
 
-			// We expect Owner first, then Moderator, then Members
-			// The endpoint defaults to rolesInOrder = ["owner", "moderator"]
 			const [first, second, ...rest] = response.body.members;
 			expect(first.username).to.equal(ownerUser.username);
 			expect(second.username).to.equal(moderatorUser.username);
@@ -3718,25 +3716,24 @@ describe('[Rooms]', () => {
 			expect(response.body.total).to.be.gte(4);
 		});
 
-		it('should allow custom role order', async () => {
-			// Switch role order: moderator, owner
-			// This should display moderator first, then owner, then members
+		it('should support sorting by role in descending priority', async () => {
 			const response = await request
 				.get(api('rooms.membersOrderedByRole'))
 				.set(credentials)
 				.query({
 					roomId: testChannel._id,
-					rolesOrder: ['moderator', 'owner'],
+					sort: '{"rolePriority":-1}',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200);
 
 			expect(response.body).to.have.property('success', true);
-			const [first, second, ...rest] = response.body.members;
-			expect(first.username).to.equal(moderatorUser.username); // now moderator first
-			expect(second.username).to.equal(ownerUser.username); // owner second
-			expect(rest.map((m: any) => m.username)).to.include(memberUser1.username);
-			expect(rest.map((m: any) => m.username)).to.include(memberUser2.username);
+			const [first, second, third, fourth] = response.body.members;
+
+			expect(first.username).to.equal(memberUser1.username);
+			expect(second.username).to.equal(memberUser2.username);
+			expect(third.username).to.equal(moderatorUser.username);
+			expect(fourth.username).to.equal(ownerUser.username);
 		});
 
 		it('should support pagination', async () => {

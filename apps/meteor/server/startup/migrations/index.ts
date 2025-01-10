@@ -24,5 +24,6 @@ import './v315';
 import './v316';
 import './v317';
 import './v318';
+import './v320';
 
 export * from './xrun';

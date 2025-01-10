@@ -1,6 +1,6 @@
 import { Media, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Users, Uploads, Subscriptions, Roles } from '@rocket.chat/models';
+import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
 	isGETRoomsNameExists,
@@ -880,23 +880,7 @@ API.v1.addRoute(
 			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
 			const { sort = {} } = await this.parseJsonQuery();
 
-			const { status, filter, rolesOrder } = this.queryParams;
-
-			if (rolesOrder) {
-				const roles = await Promise.all(
-					await Roles.find({
-						scope: 'Subscriptions',
-						_id: { $in: rolesOrder },
-					}).toArray(),
-				);
-
-				const rolesIds = roles.map(({ _id }) => _id);
-				rolesOrder.forEach((providedRole) => {
-					if (!rolesIds.includes(providedRole)) {
-						throw new Error(`role "${providedRole}" not found`);
-					}
-				});
-			}
+			const { status, filter } = this.queryParams;
 
 			const { members, total } = await findUsersOfRoomOrderedByRole({
 				rid: findResult._id,
@@ -904,8 +888,7 @@ API.v1.addRoute(
 				skip,
 				limit,
 				filter,
-				...(sort?.username && { sort: { username: sort.username } }),
-				rolesInOrder: rolesOrder || ['owner', 'moderator'],
+				sort: { ...(sort.rolePriority && { rolePriority: sort.rolePriority }), ...(sort.username && { username: sort.username }) },
 			});
 
 			return API.v1.success({
