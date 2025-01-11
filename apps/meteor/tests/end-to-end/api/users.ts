@@ -4559,10 +4559,9 @@ describe('[Users]', () => {
 
 	it('should reject invalid bio values (e.g., null)', (done) => {
 		void request
-			.post(api('users.update'))
+			.post(api('users.updateOwnBasicInfo'))
 			.set(credentials)
 			.send({
-				userId: targetUser._id,
 				data: {
 					bio: null,
 				},
