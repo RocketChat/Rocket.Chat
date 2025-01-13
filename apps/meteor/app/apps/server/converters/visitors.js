@@ -36,7 +36,6 @@ export class AppVisitorsConverter {
 			visitorEmails: 'visitorEmails',
 			livechatData: 'livechatData',
 			status: 'status',
-			contactId: 'contactId',
 		};
 
 		return transformMappedData(visitor, map);
@@ -55,7 +54,6 @@ export class AppVisitorsConverter {
 			phone: visitor.phone,
 			livechatData: visitor.livechatData,
 			status: visitor.status || 'online',
-			contactId: visitor.contactId,
 			...(visitor.visitorEmails && { visitorEmails: visitor.visitorEmails }),
 			...(visitor.department && { department: visitor.department }),
 		};

@@ -1,10 +1,11 @@
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemBadge, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
-import React, { memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 import { RoomIcon } from '../../components/RoomIcon';
@@ -16,7 +17,7 @@ import { OmnichannelBadges } from '../badges/OmnichannelBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-export const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
+export const getMessage = (room: SubscriptionWithRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
 	if (!lastMessage) {
 		return t('No_messages_yet');
 	}
@@ -46,7 +47,7 @@ type RoomListRowProps = {
 			actions: unknown;
 			href: string;
 			time?: Date;
-			menu?: ReactNode;
+			menu?: () => ReactNode;
 			menuOptions?: unknown;
 			subtitle?: ReactNode;
 			titleIcon?: string;
@@ -62,7 +63,7 @@ type RoomListRowProps = {
 	// sidebarViewMode: 'extended';
 	isAnonymous?: boolean;
 
-	room: ISubscription & IRoom;
+	room: SubscriptionWithRoom;
 	id?: string;
 	/* @deprecated */
 	style?: AllHTMLAttributes<HTMLElement>['style'];
@@ -153,22 +154,21 @@ const SidebarItemTemplateWithData = ({
 			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
 			actions={actions}
 			menu={
-				!isIOsDevice &&
-				!isAnonymous &&
-				(!isQueued || (isQueued && isPriorityEnabled)) &&
-				((): ReactElement => (
-					<RoomMenu
-						alert={alert}
-						threadUnread={unreadCount.threads > 0}
-						rid={rid}
-						unread={!!unread}
-						roomOpen={selected}
-						type={type}
-						cl={cl}
-						name={title}
-						hideDefaultOptions={isQueued}
-					/>
-				))
+				!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled))
+					? (): ReactElement => (
+							<RoomMenu
+								alert={alert}
+								threadUnread={unreadCount.threads > 0}
+								rid={rid}
+								unread={!!unread}
+								roomOpen={selected}
+								type={type}
+								cl={cl}
+								name={title}
+								hideDefaultOptions={isQueued}
+							/>
+						)
+					: undefined
 			}
 		/>
 	);

@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserContextFooter from './UserContextFooter';
@@ -37,7 +37,10 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 		isSuccess,
 		isError,
 		dataUpdatedAt,
-	} = useQuery(['moderation', 'userReports', 'fetchDetails', userId], async () => getUserReports({ userId }));
+	} = useQuery({
+		queryKey: ['moderation', 'userReports', 'fetchDetails', userId],
+		queryFn: async () => getUserReports({ userId }),
+	});
 
 	const userProfile = useMemo(() => {
 		if (!report?.user) {

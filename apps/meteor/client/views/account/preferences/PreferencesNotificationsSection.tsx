@@ -1,10 +1,10 @@
 import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, FieldLabel, FieldRow, FieldHint, Select, FieldGroup, ToggleSwitch, Button } from '@rocket.chat/fuselage';
+import { AccordionItem, Field, FieldLabel, FieldRow, FieldHint, Select, FieldGroup, ToggleSwitch, Button } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -93,7 +93,7 @@ const PreferencesNotificationsSection = () => {
 	const enableMobileRingingId = useUniqueId();
 
 	return (
-		<Accordion.Item title={t('Notifications')}>
+		<AccordionItem title={t('Notifications')}>
 			<FieldGroup>
 				<Field>
 					<FieldLabel>{t('Desktop_Notifications')}</FieldLabel>
@@ -231,7 +231,7 @@ const PreferencesNotificationsSection = () => {
 					</Field>
 				)}
 			</FieldGroup>
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 

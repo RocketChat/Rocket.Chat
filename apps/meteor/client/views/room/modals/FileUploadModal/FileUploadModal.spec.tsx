@@ -1,7 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 
 import FileUploadModal from './FileUploadModal';
 
@@ -31,6 +30,7 @@ it('should show Undo request button when roomOpen is true and transcriptRequest 
 	const input = await screen.findByRole('textbox', { name: 'File description' });
 	expect(input).toBeInTheDocument();
 	await userEvent.type(input, '12345678910');
+	await userEvent.tab();
 
 	expect(screen.getByText('Cannot upload file, description is over the 10 character limit')).toBeInTheDocument();
 });

@@ -1,12 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import type { ElementType, HTMLAttributes, ReactElement, ReactNode } from 'react';
 import { forwardRef } from 'react';
 
 const MessageFooterCallout = forwardRef<
 	HTMLElement,
 	Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 		children: ReactNode;
-		is?: React.ElementType<any>;
+		is?: ElementType<any>;
 		variant?: 'default' | 'error';
 		dashed?: boolean;
 	}

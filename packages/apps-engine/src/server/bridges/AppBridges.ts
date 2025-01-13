@@ -3,6 +3,7 @@ import type { AppActivationBridge } from './AppActivationBridge';
 import type { AppDetailChangesBridge } from './AppDetailChangesBridge';
 import type { CloudWorkspaceBridge } from './CloudWorkspaceBridge';
 import type { CommandBridge } from './CommandBridge';
+import type { ContactBridge } from './ContactBridge';
 import type { EmailBridge } from './EmailBridge';
 import type { EnvironmentalVariableBridge } from './EnvironmentalVariableBridge';
 import type { HttpBridge } from './HttpBridge';
@@ -26,6 +27,7 @@ import type { VideoConferenceBridge } from './VideoConferenceBridge';
 
 export type Bridge =
     | CommandBridge
+    | ContactBridge
     | ApiBridge
     | AppDetailChangesBridge
     | EnvironmentalVariableBridge
@@ -50,6 +52,8 @@ export type Bridge =
 
 export abstract class AppBridges {
     public abstract getCommandBridge(): CommandBridge;
+
+    public abstract getContactBridge(): ContactBridge;
 
     public abstract getApiBridge(): ApiBridge;
 

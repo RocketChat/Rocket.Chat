@@ -2,9 +2,10 @@ import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
-import React, { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import { useClearRemovedRoomsHistory } from './hooks/useClearRemovedRoomsHistory';
 import { useDeleteUser } from './hooks/useDeleteUser';
@@ -16,7 +17,6 @@ import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
-import { queryClient } from '../../lib/queryClient';
 import { useCreateFontStyleElement } from '../../views/account/accessibility/hooks/useCreateFontStyleElement';
 
 const getUser = (): IUser | null => Meteor.user() as IUser | null;
@@ -94,13 +94,15 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 		}
 	}, [preferedLanguage, setPreferedLanguage, setUserLanguage, user?.language, userLanguage, userId, setUserPreferences]);
 
+	const queryClient = useQueryClient();
+
 	useEffect(() => {
 		if (previousUserId.current && previousUserId.current !== userId) {
 			queryClient.clear();
 		}
 
 		previousUserId.current = userId;
-	}, [userId]);
+	}, [queryClient, userId]);
 
 	return <UserContext.Provider children={children} value={contextValue} />;
 };

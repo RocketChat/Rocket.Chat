@@ -2,7 +2,7 @@ import { Button, Modal } from '@rocket.chat/fuselage';
 import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ComponentProps, ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { RequiredModalProps } from './withDoNotAskAgain';
@@ -116,7 +116,7 @@ const GenericModal = ({
 				{onClose && <Modal.Close aria-label={t('Close')} onClick={handleCloseButtonClick} />}
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>{children}</Modal.Content>
-			<Modal.Footer justifyContent={dontAskAgain ? 'space-between' : 'end'}>
+			<Modal.Footer justifyContent={dontAskAgain || annotation ? 'space-between' : 'end'}>
 				{dontAskAgain}
 				{annotation && !dontAskAgain && <Modal.FooterAnnotation>{annotation}</Modal.FooterAnnotation>}
 				<Modal.FooterControllers>

@@ -1,4 +1,4 @@
-FROM node:20.18.0-alpine3.20
+FROM node:22.11.0-alpine3.20
 
 ARG SERVICE
 
@@ -49,6 +49,12 @@ COPY ./ee/packages/network-broker/dist ee/packages/network-broker/dist
 
 COPY ./ee/packages/license/package.json packages/license/package.json
 COPY ./ee/packages/license/dist packages/license/dist
+
+COPY ./packages/random/package.json packages/random/package.json
+COPY ./packages/random/dist packages/random/dist
+
+COPY ./packages/sha256/package.json packages/sha256/package.json
+COPY ./packages/sha256/dist packages/sha256/dist
 
 COPY ./packages/tracing/package.json packages/tracing/package.json
 COPY ./packages/tracing/dist packages/tracing/dist

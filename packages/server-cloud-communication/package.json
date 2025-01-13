@@ -5,7 +5,7 @@
 	"devDependencies": {
 		"@rocket.chat/license": "workspace:^",
 		"eslint": "~8.45.0",
-		"typescript": "~5.6.3"
+		"typescript": "~5.7.2"
 	},
 	"volta": {
 		"extends": "../../package.json"

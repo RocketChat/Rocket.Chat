@@ -3,7 +3,7 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
@@ -110,7 +110,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 		return <UserCardSkeleton />;
 	}
 
-	return <UserCard {...user} onClose={onClose} onOpenUserInfo={handleOpenUserInfo} actions={actions} />;
+	return <UserCard user={user} onClose={onClose} onOpenUserInfo={handleOpenUserInfo} actions={actions} />;
 };
 
 export default UserCardWithData;

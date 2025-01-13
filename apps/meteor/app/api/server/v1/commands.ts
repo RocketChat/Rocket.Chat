@@ -198,7 +198,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await canAccessRoomIdAsync(body.roomId, this.userId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const params = body.params ? body.params : '';
@@ -252,7 +252,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await canAccessRoomIdAsync(query.roomId, user?._id))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const params = query.params ? query.params : '';
@@ -304,7 +304,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await canAccessRoomIdAsync(body.roomId, this.userId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { params = '' } = body;

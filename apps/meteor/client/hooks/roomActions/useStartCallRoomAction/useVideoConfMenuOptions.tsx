@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent, useStableArray } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../contexts/VideoConfContext';

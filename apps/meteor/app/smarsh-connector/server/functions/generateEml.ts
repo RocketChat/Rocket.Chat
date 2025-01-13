@@ -1,7 +1,6 @@
 import { Messages, SmarshHistory, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-import moment from 'moment';
-import 'moment-timezone';
+import moment from 'moment-timezone';
 
 import { sendEmail } from './sendEmail';
 import { i18n } from '../../../../server/lib/i18n';

@@ -291,11 +291,11 @@ export class LDAPConnection {
 			return value.map((item) => this.extractLdapAttribute(item));
 		}
 
-		if (value instanceof Buffer) {
-			return value.toString();
+		if (typeof value === 'string') {
+			return value;
 		}
 
-		return value;
+		return value.toString();
 	}
 
 	public extractLdapEntryData(entry: ldapjs.SearchEntry): ILDAPEntry {

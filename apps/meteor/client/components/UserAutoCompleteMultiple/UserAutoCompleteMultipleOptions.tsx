@@ -1,6 +1,6 @@
 import { Options } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement, Ref } from 'react';
-import React, { forwardRef, createContext, useContext } from 'react';
+import { forwardRef, createContext, useContext } from 'react';
 
 import UserAutoCompleteMultipleOption from './UserAutoCompleteMultipleOption';
 
