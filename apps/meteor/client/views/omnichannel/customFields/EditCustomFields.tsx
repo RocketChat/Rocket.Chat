@@ -30,6 +30,20 @@ import {
 import { CustomFieldsAdditionalForm } from '../additionalForms';
 import { useRemoveCustomField } from './useRemoveCustomField';
 
+export type EditCustomFieldsFormData = {
+	field: string;
+	label: string;
+	scope: 'visitor' | 'room';
+	visibility: boolean;
+	searchable: boolean;
+	regexp: string;
+	type: string;
+	required: boolean;
+	defaultValue: string;
+	options: string;
+	public: boolean;
+};
+
 const getInitialValues = (customFieldData: Serialized<ILivechatCustomField> | undefined) => ({
 	field: customFieldData?._id || '',
 	label: customFieldData?.label || '',
@@ -53,7 +67,7 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 
 	const handleDelete = useRemoveCustomField();
 
-	const methods = useForm({ mode: 'onBlur', values: getInitialValues(customFieldData) });
+	const methods = useForm<EditCustomFieldsFormData>({ mode: 'onBlur', values: getInitialValues(customFieldData) });
 	const {
 		control,
 		handleSubmit,

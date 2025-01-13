@@ -1,12 +1,10 @@
 import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
-import type { FunctionalComponent } from 'preact';
-import { route } from 'preact-router';
 import { useContext } from 'preact/hooks';
-import type { JSXInternal } from 'preact/src/jsx';
-import type { FieldValues, SubmitHandler } from 'react-hook-form';
+import { route } from 'preact-router';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import styles from './styles.scss';
 import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
@@ -18,9 +16,14 @@ import { loadConfig } from '../../lib/main';
 import { createToken } from '../../lib/random';
 import type { StoreState } from '../../store';
 import { StoreContext } from '../../store';
-import styles from './styles.scss';
 
-const SwitchDepartment: FunctionalComponent<{ path: string }> = () => {
+type SwitchDepartmentFormData = { department: string };
+
+type SwitchDepartmentProps = {
+	path: string;
+};
+
+const SwitchDepartment = (_: SwitchDepartmentProps) => {
 	const { t } = useTranslation();
 
 	const {
@@ -41,7 +44,7 @@ const SwitchDepartment: FunctionalComponent<{ path: string }> = () => {
 		handleSubmit,
 		formState: { errors, isDirty, isValid, isSubmitting },
 		control,
-	} = useForm({ mode: 'onChange' });
+	} = useForm<SwitchDepartmentFormData>({ mode: 'onChange' });
 
 	const departments = deps.filter((dept) => dept.showOnRegistration && dept._id !== guest?.department);
 
@@ -53,7 +56,7 @@ const SwitchDepartment: FunctionalComponent<{ path: string }> = () => {
 		return typeof result.success === 'boolean' && result.success;
 	};
 
-	const onSubmit = async ({ department }: { department: string }) => {
+	const onSubmit = async ({ department }: SwitchDepartmentFormData) => {
 		const confirm = await confirmChangeDepartment();
 		if (!confirm) {
 			return;
@@ -121,7 +124,7 @@ const SwitchDepartment: FunctionalComponent<{ path: string }> = () => {
 				<Form
 					id='switchDepartment'
 					// The price of using react-hook-form on a preact project ¯\_(ツ)_/¯
-					onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>) as unknown as JSXInternal.GenericEventHandler<HTMLFormElement>}
+					onSubmit={handleSubmit(onSubmit)}
 				>
 					<FormField label={t('i_need_help_with')} error={errors.department?.message?.toString()}>
 						<Controller
