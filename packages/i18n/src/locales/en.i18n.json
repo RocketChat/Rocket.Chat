@@ -3373,6 +3373,8 @@
   "Omnichannel_placed_chat_on_hold": "Chat On Hold: {{comment}}",
   "Omnichannel_hide_conversation_after_closing": "Hide conversation after closing",
   "Omnichannel_hide_conversation_after_closing_description": "After closing the conversation you will be redirected to Home.",
+  "Omnichannel_allow_force_close_conversations": "Allow to force close omnichannel conversations",
+  "Omnichannel_allow_force_close_conversations_alert": "Allows agents and managers to force close a conversation via API. This should be enabled if your workspace has rooms with an invalid state, such as being closed but appearing open on the UI. This should be used as a last resort, as it will allow you to use the API to force close a conversation and bypass most of the checks we do, allowing you to recover the state of a room on most of the cases.",
   "Livechat_Block_Unknown_Contacts": "Block unknown contacts",
   "Livechat_Block_Unknown_Contacts_Description": "Conversations from people who are not on the contact list will not be able to be taken.",
   "Livechat_Block_Unverified_Contacts": "Block unverified contacts",
