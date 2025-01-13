@@ -134,18 +134,19 @@ const send = async (
 		if (getContent) {
 			content = await getContent(fileIds, fileUrls);
 		}
-		const text: IMessage = {
+
+		const message: IMessage = {
 			rid,
 			_id: id,
 			msg: msg || description || '',
 			ts: new Date(),
-			u: { _id: id, username: id },
-			_updatedAt: new Date(),
+			// u: { _id: id, username: id },
+			// _updatedAt: new Date(),
 			tmid,
 			t,
 			content,
 		};
-		await sdk.call('sendMessage', text, fileUrls, fileIds);
+		await sdk.call('sendMessage', message, fileUrls, fileIds);
 		updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
 	} catch (error: unknown) {
 		updateUploads((uploads) =>
