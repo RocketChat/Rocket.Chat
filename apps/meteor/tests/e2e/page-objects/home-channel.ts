@@ -72,4 +72,12 @@ export class HomeChannel {
 	get markUnread(): Locator {
 		return this.page.locator('role=menuitem[name="Mark Unread"]');
 	}
+
+	get videoConfRingtoneVolume(): Locator {
+		return this.page.locator('#custom-sound-ringtone');
+	}
+
+	get videoConfDialtoneVolume(): Locator {
+		return this.page.locator('#custom-sound-dialtone');
+	}
 }

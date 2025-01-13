@@ -68,6 +68,10 @@ export class HomeSidenav {
 		return this.page.locator('role=menuitemcheckbox[name="Profile"]');
 	}
 
+	get accountPreferencesOption(): Locator {
+		return this.page.locator('role=menuitemcheckbox[name="Preferences"]');
+	}
+
 	// TODO: refactor getSidebarItemByName to not use data-qa
 	getSidebarItemByName(name: string, isRead?: boolean): Locator {
 		return this.page.locator(

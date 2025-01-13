@@ -94,7 +94,7 @@ const AccountPreferencesPage = (): ReactElement => {
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset(preferencesValues)}>{t('Cancel')}</Button>
-					<Button form={preferencesFormId} primary type='submit'>
+					<Button form={preferencesFormId} data-qa='AccountPreferencesPageSaveButton' primary type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

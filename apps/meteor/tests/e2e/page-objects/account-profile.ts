@@ -44,6 +44,18 @@ export class AccountProfile {
 		return this.page.locator('//label[contains(text(), "Email")]/..//input');
 	}
 
+	get preferencesSoundAccordionOption(): Locator {
+		return this.page.locator('h2:has-text("Sound")');
+	}
+
+	get preferencesCallRingerVolumeSlider(): Locator {
+		return this.page.locator('label:has-text("Call ringer volume")').locator('..').locator('input[type="range"]');
+	}
+
+	get preferencesBtnSubmit(): Locator {
+		return this.page.locator('[data-qa="AccountPreferencesPageSaveButton"]');
+	}
+
 	get btnClose(): Locator {
 		return this.page.locator('role=navigation >> role=button[name=Close]');
 	}
