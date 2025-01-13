@@ -391,7 +391,7 @@ export class HomeContent {
 	}
 
 	getSystemMessageByText(text: string): Locator {
-		return this.page.locator('[aria-roledescription="system message"]', { hasText: text });
+		return this.page.locator('[role="listitem"][aria-roledescription="system message"]', { hasText: text });
 	}
 
 	getMessageByText(text: string): Locator {
@@ -416,5 +416,9 @@ export class HomeContent {
 	async sendMessageInThread(text: string): Promise<void> {
 		await this.page.getByRole('dialog').getByRole('textbox', { name: 'Message' }).fill(text);
 		await this.page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true }).click();
+	}
+
+	get btnClearSelection() {
+		return this.page.getByRole('button', { name: 'Clear selection' });
 	}
 }

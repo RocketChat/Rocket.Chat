@@ -29,7 +29,6 @@ import type {
 	SMSProviderResponse,
 	ILivechatTriggerActionResponse,
 	ILivechatContact,
-	ILivechatContactVisitorAssociation,
 	ILivechatContactChannel,
 	IUser,
 } from '@rocket.chat/core-typings';
@@ -1336,7 +1335,7 @@ const POSTUpdateOmnichannelContactsSchema = {
 
 export const isPOSTUpdateOmnichannelContactsProps = ajv.compile<POSTUpdateOmnichannelContactsProps>(POSTUpdateOmnichannelContactsSchema);
 
-type GETOmnichannelContactsProps = { contactId?: string; visitor?: ILivechatContactVisitorAssociation };
+type GETOmnichannelContactsProps = { contactId?: string };
 
 export const ContactVisitorAssociationSchema = {
 	type: 'object',
@@ -1362,28 +1361,16 @@ export const ContactVisitorAssociationSchema = {
 };
 
 const GETOmnichannelContactsSchema = {
-	oneOf: [
-		{
-			type: 'object',
-			properties: {
-				contactId: {
-					type: 'string',
-					nullable: false,
-					isNotEmpty: true,
-				},
-			},
-			required: ['contactId'],
-			additionalProperties: false,
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+			nullable: false,
+			isNotEmpty: true,
 		},
-		{
-			type: 'object',
-			properties: {
-				visitor: ContactVisitorAssociationSchema,
-			},
-			required: ['visitor'],
-			additionalProperties: false,
-		},
-	],
+	},
+	required: ['contactId'],
+	additionalProperties: false,
 };
 
 export const isGETOmnichannelContactsProps = ajv.compile<GETOmnichannelContactsProps>(GETOmnichannelContactsSchema);
@@ -1422,7 +1409,6 @@ type GETOmnichannelContactsCheckExistenceProps = {
 	contactId?: string;
 	email?: string;
 	phone?: string;
-	visitor?: ILivechatContactVisitorAssociation;
 };
 
 const GETOmnichannelContactsCheckExistenceSchema = {
@@ -1462,14 +1448,6 @@ const GETOmnichannelContactsCheckExistenceSchema = {
 				},
 			},
 			required: ['phone'],
-			additionalProperties: false,
-		},
-		{
-			type: 'object',
-			properties: {
-				visitor: ContactVisitorAssociationSchema,
-			},
-			required: ['visitor'],
 			additionalProperties: false,
 		},
 	],
