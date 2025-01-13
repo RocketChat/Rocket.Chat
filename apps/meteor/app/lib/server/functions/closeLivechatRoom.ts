@@ -34,6 +34,11 @@ export const closeLivechatRoom = async (
 		throw new Error('error-invalid-room');
 	}
 
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { projection: { _id: 1 } });
+	if (!subscription && !(await hasPermissionAsync(user._id, 'close-others-livechat-room'))) {
+		throw new Error('error-not-authorized');
+	}
+
 	const options: CloseRoomParams['options'] = {
 		clientAction: true,
 		tags,
@@ -71,11 +76,6 @@ export const closeLivechatRoom = async (
 
 	if (!room.open) {
 		throw new Error('error-room-already-closed');
-	}
-
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { projection: { _id: 1 } });
-	if (!subscription && !(await hasPermissionAsync(user._id, 'close-others-livechat-room'))) {
-		throw new Error('error-not-authorized');
 	}
 
 	return Livechat.closeRoom({
