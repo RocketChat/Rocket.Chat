@@ -49,11 +49,7 @@ export class AccountProfile {
 	}
 
 	get preferencesCallRingerVolumeSlider(): Locator {
-		return this.page.locator('label:has-text("Call ringer volume")').locator('..').locator('input[type="range"]');
-	}
-
-	get preferencesBtnSubmit(): Locator {
-		return this.page.locator('[data-qa="AccountPreferencesPageSaveButton"]');
+		return this.page.getByRole('slider', { name: 'Call Ringer Volume' });
 	}
 
 	get btnClose(): Locator {

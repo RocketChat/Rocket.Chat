@@ -33,7 +33,7 @@ const PreferencesSoundSection = () => {
 							control={control}
 							render={({ field: { onChange, value } }) => (
 								<Slider
-									aria-labelledby={masterVolumeId}
+									aria-label={t('Master_volume')}
 									aria-describedby={`${masterVolumeId}-hint`}
 									value={value}
 									minValue={0}
@@ -55,7 +55,7 @@ const PreferencesSoundSection = () => {
 							control={control}
 							render={({ field: { onChange, value } }) => (
 								<Slider
-									aria-labelledby={notificationsSoundVolumeId}
+									aria-label={t('Notification_volume')}
 									aria-describedby={`${notificationsSoundVolumeId}-hint`}
 									value={value}
 									minValue={0}
@@ -71,7 +71,9 @@ const PreferencesSoundSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel aria-describedby={`${callRingerVolumeId}-hint`}>{t('Call_ringer_volume')}</FieldLabel>
+					<FieldLabel aria-describedby={`${callRingerVolumeId}-hint`}>
+						{t('Call_ringer_volume')}
+					</FieldLabel>
 					<FieldHint id={`${callRingerVolumeId}-hint`} mbe={4}>
 						{t('Call_ringer_volume_hint')}
 					</FieldHint>
@@ -81,7 +83,7 @@ const PreferencesSoundSection = () => {
 							control={control}
 							render={({ field: { onChange, value } }) => (
 								<Slider
-									aria-labelledby={callRingerVolumeId}
+									aria-label={t('Call_ringer_volume')}
 									aria-describedby={`${callRingerVolumeId}-hint`}
 									value={value}
 									minValue={0}
