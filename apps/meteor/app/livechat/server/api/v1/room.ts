@@ -198,7 +198,7 @@ API.v1.addRoute(
 		async post() {
 			const { rid, comment, tags, generateTranscriptPdf, transcriptEmail, forceClose } = this.bodyParams;
 
-			const allowForceClose = rcSettings.get('Omnichannel_allow_force_close_conversations');
+			const allowForceClose = rcSettings.get<boolean>('Omnichannel_allow_force_close_conversations');
 			const isForceClosing = allowForceClose && forceClose;
 
 			if (isForceClosing) {
