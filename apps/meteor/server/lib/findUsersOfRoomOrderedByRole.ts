@@ -34,16 +34,14 @@ export async function findUsersOfRoomOrderedByRole({
 	const termRegex = new RegExp(escapeRegExp(filter), 'i');
 	const orStmt = filter && searchFields.length ? searchFields.map((field) => ({ [field.trim()]: termRegex })) : [];
 
-	const { rolePriority: rolePrioritySort, ...rest } = sort || {};
+	const { rolePriority: rolePrioritySort, username: usernameSort } = sort || {};
 
 	const sortCriteria = {
 		rolePriority: rolePrioritySort ?? 1,
 		statusConnection: -1,
-		...(Object.keys(rest).length > 0
-			? rest
-			: {
-					...(settings.get('UI_Use_Real_Name') ? { name: 1 } : { username: 1 }),
-				}),
+		...(usernameSort ?? {
+			...(settings.get('UI_Use_Real_Name') ? { name: 1 } : { username: 1 }),
+		}),
 	};
 
 	const matchUserFilter = {
@@ -62,7 +60,7 @@ export async function findUsersOfRoomOrderedByRole({
 		],
 	};
 
-	const membersResult = Users.col.aggregate(
+	const membersResult = Users.col.aggregate<UserWithRoleData>(
 		[
 			{
 				$match: matchUserFilter,

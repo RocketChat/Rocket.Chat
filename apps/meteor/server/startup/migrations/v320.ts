@@ -15,44 +15,40 @@ const READ_BATCH_SIZE = 1000;
 const WRITE_BATCH_SIZE = 1000;
 
 async function assignRoomRolePrioritiesFromMap(userIdAndroomRolePrioritiesMap: Map<IUser['_id'], IUser['roomRolePriorities']>) {
-	const bulkOperations: any[] = [];
+	let bulk = Users.col.initializeUnorderedBulkOp();
 	let counter = 0;
 
-	const mapValues = userIdAndroomRolePrioritiesMap.entries();
-	for (const [userId, roomRolePriorities] of mapValues) {
+	for await (const [userId, roomRolePriorities] of userIdAndroomRolePrioritiesMap.entries()) {
 		userIdAndroomRolePrioritiesMap.delete(userId);
+
 		if (roomRolePriorities) {
-			bulkOperations.push({
-				updateOne: {
-					filter: { _id: userId },
-					update: {
-						$set: {
-							...Object.entries(roomRolePriorities).reduce(
-								(operations, roomPriority) => {
-									const [rid, priority] = roomPriority;
-									operations[`roomRolePriorities.${rid}`] = priority;
-									return operations;
-								},
-								{} as Record<string, number>,
-							),
-						},
-					},
+			const updateFields = Object.entries(roomRolePriorities).reduce(
+				(operations, rolePriorityData) => {
+					const [rid, rolePriority] = rolePriorityData;
+					operations[`roomRolePriorities.${rid}`] = rolePriority;
+					return operations;
 				},
+				{} as Record<string, number>,
+			);
+
+			bulk.find({ _id: userId }).updateOne({
+				$set: updateFields,
 			});
 
 			counter++;
 
 			if (counter >= WRITE_BATCH_SIZE) {
-				// eslint-disable-next-line no-await-in-loop
-				await Users.col.bulkWrite(bulkOperations, { ordered: false });
-				bulkOperations.length = 0;
+				// Execute the bulk operation for the current batch
+				await bulk.execute();
+				bulk = Users.col.initializeUnorderedBulkOp();
 				counter = 0;
 			}
 		}
 	}
 
-	if (bulkOperations.length > 0) {
-		await Users.col.bulkWrite(bulkOperations, { ordered: false });
+	// Execute any remaining operations
+	if (counter > 0) {
+		await bulk.execute();
 	}
 
 	return userIdAndroomRolePrioritiesMap;
@@ -64,45 +60,34 @@ addMigration({
 	async up() {
 		let userIdAndroomRolePrioritiesMap = new Map<IUser['_id'], IUser['roomRolePriorities']>();
 
-		let skip = 0;
+		// Create a cursor with the specified batch size
+		const cursor = Subscriptions.find(
+			{ roles: { $exists: true } },
+			{
+				projection: { 'rid': 1, 'roles': 1, 'u._id': 1 },
+				sort: { _id: 1 },
+			},
+		).batchSize(READ_BATCH_SIZE);
 
-		let hasMoreSubscriptions = true;
-		do {
-			const subscriptionsCursor = Subscriptions.find(
-				{ roles: { $exists: true } },
-				{
-					projection: { 'rid': 1, 'roles': 1, 'u._id': 1 },
-					sort: { _id: 1 },
-					skip,
-					limit: READ_BATCH_SIZE,
-				},
-			);
-
-			// eslint-disable-next-line no-await-in-loop
-			const subscriptions = await subscriptionsCursor.toArray();
-
-			if (subscriptions.length === 0) {
-				hasMoreSubscriptions = false;
-				break;
+		for await (const sub of cursor) {
+			if (!sub.roles?.length) {
+				continue;
 			}
 
-			for (const sub of subscriptions) {
-				if (!sub.roles?.length) {
-					continue;
-				}
+			const userId = sub.u._id;
+			const roomId = sub.rid;
+			const priority = calculateRoomRolePriorityFromRoles(sub.roles);
 
-				const userId = sub.u._id;
-				const roomId = sub.rid;
-				const priority = calculateRoomRolePriorityFromRoles(sub.roles);
+			const existingPriorities = userIdAndroomRolePrioritiesMap.get(userId) || {};
+			existingPriorities[roomId] = priority;
+			userIdAndroomRolePrioritiesMap.set(userId, existingPriorities);
 
-				const existingPriorities = userIdAndroomRolePrioritiesMap.get(userId) || {};
-				existingPriorities[roomId] = priority;
-				userIdAndroomRolePrioritiesMap.set(userId, existingPriorities);
+			if (userIdAndroomRolePrioritiesMap.size >= WRITE_BATCH_SIZE) {
+				userIdAndroomRolePrioritiesMap = await assignRoomRolePrioritiesFromMap(userIdAndroomRolePrioritiesMap);
 			}
+		}
 
-			skip += READ_BATCH_SIZE;
-		} while (hasMoreSubscriptions);
-
-		userIdAndroomRolePrioritiesMap = await assignRoomRolePrioritiesFromMap(userIdAndroomRolePrioritiesMap);
+		// Flush any remaining priorities in the map
+		await assignRoomRolePrioritiesFromMap(userIdAndroomRolePrioritiesMap);
 	},
 });

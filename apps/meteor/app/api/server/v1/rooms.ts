@@ -888,7 +888,7 @@ API.v1.addRoute(
 				skip,
 				limit,
 				filter,
-				sort: { ...(sort.rolePriority && { rolePriority: sort.rolePriority }), ...(sort.username && { username: sort.username }) },
+				sort,
 			});
 
 			return API.v1.success({
