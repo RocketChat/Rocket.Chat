@@ -1,6 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated, isDirectMessageRoom, isTeamRoom } from '@rocket.chat/core-typings';
-import { useMutableCallback, useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useUserRoom, useAtLeastOnePermission, useUser, usePermission, useUserSubscription } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
 import { useCallback, useMemo, useState } from 'react';
@@ -45,7 +45,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 
 	const debouncedText = useDebouncedValue(text, 800);
 
-	const { data, fetchNextPage, isLoading, refetch, hasNextPage } = useMembersList(
+	const { data, fetchNextPage, isPending, refetch, hasNextPage } = useMembersList(
 		useMemo(() => ({ rid, type, limit: 50, debouncedText, roomType: room?.t as validRoomType }), [rid, type, debouncedText, room?.t]),
 	);
 
@@ -60,7 +60,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const openUserInfo = useMutableCallback((e) => {
+	const openUserInfo = useEffectEvent((e) => {
 		const { userid } = e.currentTarget.dataset;
 		setState({
 			tab: ROOM_MEMBERS_TABS.INFO,
@@ -68,11 +68,11 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 		});
 	});
 
-	const openInvite = useMutableCallback(() => {
+	const openInvite = useEffectEvent(() => {
 		setState({ tab: ROOM_MEMBERS_TABS.INVITE });
 	});
 
-	const openAddUser = useMutableCallback(() => {
+	const openAddUser = useEffectEvent(() => {
 		setState({ tab: ROOM_MEMBERS_TABS.ADD });
 	});
 
@@ -97,7 +97,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 			rid={rid}
 			isTeam={isTeam}
 			isDirect={isDirect}
-			loading={isLoading}
+			loading={isPending}
 			type={type}
 			text={text}
 			setText={handleTextChange}

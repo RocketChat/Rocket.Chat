@@ -15,6 +15,14 @@ import { FormSkeleton } from '../../../components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../../../hooks/useCustomFieldsMetadata';
 import { useSlaPolicies } from '../../../hooks/useSlaPolicies';
 
+type RoomEditFormData = {
+	topic: string;
+	tags: string[];
+	livechatData: any;
+	slaId: string;
+	priorityId: string;
+};
+
 type RoomEditProps = {
 	room: Serialized<IOmnichannelRoom>;
 	visitor: Serialized<ILivechatVisitor>;
@@ -30,7 +38,7 @@ const ROOM_INTIAL_VALUE = {
 	slaId: '',
 };
 
-const getInitialValuesRoom = (room: Serialized<IOmnichannelRoom>) => {
+const getInitialValuesRoom = (room: Serialized<IOmnichannelRoom>): RoomEditFormData => {
 	const { topic, tags, livechatData, slaId, priorityId } = room ?? ROOM_INTIAL_VALUE;
 
 	return {
@@ -50,8 +58,8 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 
 	const saveRoom = useEndpoint('POST', '/v1/livechat/room.saveInfo');
 
-	const { data: slaPolicies, isInitialLoading: isSlaPoliciesLoading } = useSlaPolicies();
-	const { data: customFieldsMetadata, isInitialLoading: isCustomFieldsLoading } = useCustomFieldsMetadata({
+	const { data: slaPolicies, isLoading: isSlaPoliciesLoading } = useSlaPolicies();
+	const { data: customFieldsMetadata, isLoading: isCustomFieldsLoading } = useCustomFieldsMetadata({
 		scope: 'room',
 		enabled: canViewCustomFields,
 	});
@@ -62,7 +70,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 		control,
 		formState: { isDirty: isFormDirty, isValid: isFormValid, isSubmitting },
 		handleSubmit,
-	} = useForm({
+	} = useForm<RoomEditFormData>({
 		mode: 'onChange',
 		defaultValues: getInitialValuesRoom(room),
 	});
@@ -72,7 +80,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 	const { field: priorityIdField } = useController({ control, name: 'priorityId' });
 
 	const handleSave = useCallback(
-		async (data) => {
+		async (data: RoomEditFormData) => {
 			if (!isFormValid) {
 				return;
 			}
@@ -94,7 +102,9 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 
 			try {
 				await saveRoom({ guestData, roomData });
-				await queryClient.invalidateQueries(['/v1/rooms.info', room._id]);
+				await queryClient.invalidateQueries({
+					queryKey: ['/v1/rooms.info', room._id],
+				});
 
 				dispatchToastMessage({ type: 'success', message: t('Saved') });
 				reload?.();

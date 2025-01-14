@@ -23,7 +23,7 @@ import type {
 	UpdateFilter,
 	UpdateOptions,
 	UpdateResult,
-	ModifyResult,
+	WithId,
 	CountDocumentsOptions,
 } from 'mongodb';
 
@@ -2199,7 +2199,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		roomId: string,
 		e2eKeyId: string,
 		e2eQueue?: IRoom['usersWaitingForE2EKeys'],
-	): Promise<ModifyResult<IRoom>> {
+	): Promise<null | WithId<IRoom>> {
 		return this.findOneAndUpdate(
 			{ _id: roomId },
 			{ $set: { e2eKeyId, ...(Array.isArray(e2eQueue) && { usersWaitingForE2EKeys: e2eQueue }) } },
