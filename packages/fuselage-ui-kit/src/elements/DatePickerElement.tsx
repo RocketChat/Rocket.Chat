@@ -20,7 +20,7 @@ const DatePickerElement = ({
     <InputBox
       type='date'
       error={error}
-      value={value as string}
+      value={value}
       disabled={loading}
       id={actionId}
       name={actionId}

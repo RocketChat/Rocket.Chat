@@ -1,6 +1,6 @@
 import { useEffectEvent, useSafely } from '@rocket.chat/fuselage-hooks';
 import * as UiKit from '@rocket.chat/ui-kit';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useState } from 'react';
 
 import { UiKitContext } from '../contexts/UiKitContext';
 import { getInitialValue } from '../utils/getInitialValue';
@@ -14,36 +14,15 @@ const getElementValueFromState = (
       }
     | undefined
   >,
-  initialValue: string | number | string[] | undefined,
+  initialValue: unknown,
 ) => {
-  return (
-    (values &&
-      (values[actionId]?.value as string | number | string[] | undefined)) ??
-    initialValue
-  );
-};
-
-type UiKitState<
-  TElement extends UiKit.ActionableElement = UiKit.ActionableElement,
-> = {
-  loading: boolean;
-  setLoading: (loading: boolean) => void;
-  error?: string;
-  value: UiKit.ActionOf<TElement>;
+  return (values?.[actionId]?.value as unknown) ?? initialValue;
 };
 
 export const useUiKitState = <TElement extends UiKit.ActionableElement>(
   element: TElement,
   context: UiKit.BlockContext,
-): [
-  state: UiKitState<TElement>,
-  action: (
-    pseudoEvent?:
-      | Event
-      | { target: EventTarget }
-      | { target: { value: UiKit.ActionOf<TElement> } },
-  ) => Promise<void>,
-] => {
+) => {
   const { blockId, actionId, appId, dispatchActionConfig } = element;
   const {
     action,
@@ -65,6 +44,41 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 
   const [value, setValue] = useSafely(useState(_value));
   const [loading, setLoading] = useSafely(useState(false));
+
+  const mutate = useEffectEvent((newValue: unknown) => {
+    if (Array.isArray(value)) {
+      if (Array.isArray(newValue)) {
+        setValue(newValue);
+      } else {
+        const idx = value.findIndex((value) => value === newValue);
+
+        if (idx > -1) {
+          setValue(value.filter((_, i) => i !== idx));
+        } else {
+          setValue([...value, newValue]);
+        }
+      }
+    } else {
+      setValue(newValue);
+    }
+
+    updateState?.({ blockId, appId, actionId, value: newValue, viewId });
+  });
+
+  const performAction = useEffectEvent(async (value) => {
+    setLoading(true);
+
+    await action({
+      blockId,
+      appId: appId || appIdFromContext || 'core',
+      actionId,
+      value,
+      viewId,
+      dispatchActionConfig,
+    });
+
+    setLoading(false);
+  });
 
   const actionFunction = useEffectEvent(async (e) => {
     const {
@@ -89,45 +103,15 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
       setValue(elValue);
     }
 
-    await updateState?.(
-      { blockId, appId, actionId, value: elValue, viewId },
-      e,
-    );
-    await action(
-      {
-        blockId,
-        appId: appId || appIdFromContext || 'core',
-        actionId,
-        value: elValue,
-        viewId,
-      },
-      e,
-    );
+    updateState?.({ blockId, appId, actionId, value: elValue, viewId });
+    await action({
+      blockId,
+      appId: appId || appIdFromContext || 'core',
+      actionId,
+      value: elValue,
+      viewId,
+    });
     setLoading(false);
-  });
-
-  // Used for triggering actions on text inputs. Removing the load state
-  // makes the text input field remain focused after running the action
-  const noLoadStateActionFunction = useEffectEvent(async (e) => {
-    const {
-      target: { value },
-    } = e;
-    setValue(value);
-
-    updateState &&
-      (await updateState({ blockId, appId, actionId, value, viewId }, e));
-
-    await action(
-      {
-        blockId,
-        appId: appId || appIdFromContext || 'core',
-        actionId,
-        value,
-        viewId,
-        dispatchActionConfig,
-      },
-      e,
-    );
   });
 
   const stateFunction = useEffectEvent(async (e) => {
@@ -137,41 +121,43 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 
     setValue(value);
 
-    await updateState?.(
-      {
-        blockId,
-        appId: appId || appIdFromContext || 'core',
-        actionId,
-        value,
-        viewId,
-      },
-      e,
-    );
+    updateState?.({
+      blockId,
+      appId: appId || appIdFromContext || 'core',
+      actionId,
+      value,
+      viewId,
+    });
   });
 
-  const result: UiKitState = useMemo(
-    () => ({ loading, setLoading, error, value }),
-    [loading, setLoading, error, value],
-  );
+  const handleEvent = useEffectEvent(async (e) => {
+    if (
+      (context &&
+        [UiKit.BlockContext.SECTION, UiKit.BlockContext.ACTION].includes(
+          context,
+        )) ||
+      (Array.isArray(element?.dispatchActionConfig) &&
+        element.dispatchActionConfig.includes('on_item_selected'))
+    ) {
+      return actionFunction(e);
+    }
 
-  if (
-    element.type === 'plain_text_input' &&
-    Array.isArray(element?.dispatchActionConfig) &&
-    element.dispatchActionConfig.includes('on_character_entered')
-  ) {
-    return [result, noLoadStateActionFunction];
-  }
+    return stateFunction(e);
+  });
 
-  if (
-    (context &&
-      [UiKit.BlockContext.SECTION, UiKit.BlockContext.ACTION].includes(
-        context,
-      )) ||
-    (Array.isArray(element?.dispatchActionConfig) &&
-      element.dispatchActionConfig.includes('on_item_selected'))
-  ) {
-    return [result, actionFunction];
-  }
-
-  return [result, stateFunction];
+  return [
+    {
+      loading,
+      error,
+      value: value as UiKit.ActionOf<TElement>,
+      mutate,
+      performAction,
+    },
+    handleEvent as (
+      pseudoEvent?:
+        | Event
+        | { target: EventTarget }
+        | { target: { value: UiKit.ActionOf<TElement> } },
+    ) => Promise<void>,
+  ] as const;
 };
