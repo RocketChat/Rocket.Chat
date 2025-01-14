@@ -22,7 +22,10 @@ export const usePermissionsKeys = () => {
 			return permissionsKeyPairs;
 		}
 		const allPermissions = Permissions.find().fetch();
-		const mappedPermissions = allPermissions.map(({ _id }) => ({ _id, i18nLabel: t(_id) }));
+		const mappedPermissions = allPermissions.map(({ _id, settingId, group, section }) => ({
+			_id,
+			i18nLabel: `${group ? t(group) : ''} ${section ? t(section) : ''} ${t(settingId || _id)}`,
+		}));
 		setPermissionsKeyPairs(mappedPermissions);
 
 		return mappedPermissions;
