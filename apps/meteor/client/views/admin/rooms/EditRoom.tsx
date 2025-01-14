@@ -102,10 +102,10 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps) => {
 
 		try {
 			await saveAction({
+				...data,
 				rid: room._id,
 				default: isDefault,
 				favorite: { defaultValue: isDefault, favorite },
-				...data,
 			});
 
 			dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
