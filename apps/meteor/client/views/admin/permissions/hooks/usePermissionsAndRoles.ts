@@ -17,8 +17,12 @@ export const usePermissionsAndRoles = (
 	const permissionsKeys = usePermissionsKeys();
 
 	const filteredIds = useMemo(() => {
-		const regexp = new RegExp(escapeRegExp(filter), 'i');
-		return permissionsKeys.filter(({ _id, i18nLabel }) => regexp.test(_id) || regexp.test(i18nLabel)).map(({ _id }) => _id);
+		const words = escapeRegExp(filter).split(' ').filter(Boolean);
+		return permissionsKeys
+			.filter(({ _id, i18nLabel }) =>
+				words.every((word) => _id.toLocaleLowerCase().includes(word) || i18nLabel.toLocaleLowerCase().includes(word)),
+			)
+			.map(({ _id }) => _id);
 	}, [filter, permissionsKeys]);
 
 	const selector = useMemo(() => {
