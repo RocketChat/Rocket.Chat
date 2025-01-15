@@ -12,7 +12,11 @@ export const filterPermissionKeys = (permissionKeys: { _id: string; i18nLabels: 
 	const words = escapeRegExp(filter).split(' ').filter(Boolean);
 	return permissionKeys
 		.filter(({ _id, i18nLabels }) =>
-			words.every((word) => _id.toLocaleLowerCase().includes(word) || i18nLabels.join(' ').toLocaleLowerCase().includes(word)),
+			words.every(
+				(word) =>
+					_id.toLocaleLowerCase().includes(word.toLocaleLowerCase()) ||
+					i18nLabels.join(' ').toLocaleLowerCase().includes(word.toLocaleLowerCase()),
+			),
 		)
 		.map(({ _id }) => _id);
 };
