@@ -1,4 +1,4 @@
-import type { IRoom, ITeam } from '@rocket.chat/core-typings';
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box, Avatar } from '@rocket.chat/fuselage';
 import type { KeyboardEvent, MouseEvent } from 'react';
 
@@ -11,7 +11,7 @@ import RoomTags from '../../../RoomTags';
 
 type ChannelsTableRowProps = {
 	onClick: (name: IRoom['name'], type: IRoom['t']) => (e: KeyboardEvent | MouseEvent) => void;
-	room: IRoom & { belongsTo?: ITeam };
+	room: Serialized<IRoom & { belongsTo?: string }>;
 	mediaQuery: boolean;
 };
 

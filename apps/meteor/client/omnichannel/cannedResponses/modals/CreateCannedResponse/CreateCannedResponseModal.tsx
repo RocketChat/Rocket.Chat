@@ -6,7 +6,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';
-import CannedResponseForm from '../../components/cannedResponseForm';
+import CannedResponseForm from '../../components/CannedResponseForm';
 
 type CreateCannedResponseModalFormData = {
 	_id: string;

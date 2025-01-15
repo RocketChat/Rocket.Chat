@@ -51,7 +51,7 @@ const UnitsTable = () => {
 	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/units/new'));
-	const onRowClick = useEffectEvent((id) => () => router.navigate(`/omnichannel/units/edit/${id}`));
+	const onRowClick = useEffectEvent((id: string) => () => router.navigate(`/omnichannel/units/edit/${id}`));
 	const handleDelete = useRemoveUnit();
 
 	const headers = (

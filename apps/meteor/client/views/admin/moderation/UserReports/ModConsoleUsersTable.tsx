@@ -1,3 +1,4 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
@@ -58,7 +59,7 @@ const ModConsoleUsersTable = () => {
 		placeholderData: keepPreviousData,
 	});
 
-	const handleClick = useEffectEvent((id): void => {
+	const handleClick = useEffectEvent((id: IUser['_id']): void => {
 		router.navigate({
 			pattern: '/admin/moderation/:tab?/:context?/:id?',
 			params: { tab: 'users', context: 'info', id },
