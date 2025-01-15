@@ -76,7 +76,6 @@ type RoomListRowProps = {
 	};
 };
 
-// eslint-disable-next-line react/no-multi-comp
 const SidebarItemTemplateWithData = ({
 	room,
 	id,

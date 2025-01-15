@@ -24,7 +24,7 @@ type LeaveRoomProps = {
 	roomOpen?: boolean;
 };
 
-// TODO: check leaving modal for teams
+// TODO: this menu action should consider team leaving
 export const useLeaveRoomAction = ({ rid, type, name, roomOpen }: LeaveRoomProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
