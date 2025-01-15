@@ -1,5 +1,6 @@
 ---
 "@rocket.chat/omnichannel-services": patch
+"@rocket.chat/meteor": patch
 ---
 
 Fixes a behavior when running microservices that caused queue worker to process just the first 60 seconds of request.
