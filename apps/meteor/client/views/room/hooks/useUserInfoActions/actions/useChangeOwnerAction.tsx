@@ -70,17 +70,14 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	const toggleOwnerEndpoint = useEndpoint('POST', getEndpoint(room.t, isOwner));
 
 	const toggleOwnerMutation = useMutation({
-		mutationFn: useCallback(
-			async ({ roomId, userId }) => {
-				await toggleOwnerEndpoint({ roomId, userId });
+		mutationFn: async ({ roomId, userId }: { roomId: string; userId: string }) => {
+			await toggleOwnerEndpoint({ roomId, userId });
 
-				return t(isOwner ? 'User__username__removed_from__room_name__owners' : 'User__username__is_now_an_owner_of__room_name_', {
-					username,
-					room_name: roomName,
-				});
-			},
-			[toggleOwnerEndpoint, t, isOwner, username, roomName],
-		),
+			return t(isOwner ? 'User__username__removed_from__room_name__owners' : 'User__username__is_now_an_owner_of__room_name_', {
+				username,
+				room_name: roomName,
+			});
+		},
 		onSuccess: (message) => {
 			dispatchToastMessage({ type: 'success', message });
 		},

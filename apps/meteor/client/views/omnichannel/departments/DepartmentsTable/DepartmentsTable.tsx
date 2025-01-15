@@ -1,6 +1,6 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashKey, keepPreviousData } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
@@ -35,7 +35,7 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 
 	const getDepartments = useEndpoint('GET', archived ? DEPARTMENTS_ENDPOINTS.archived : DEPARTMENTS_ENDPOINTS.department);
 
-	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/departments/new'));
+	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/departments/new'));
 
 	const query = useDebouncedValue(
 		useMemo(

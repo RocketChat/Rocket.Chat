@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRoute } from '@rocket.chat/ui-contexts';
 import { useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,7 +28,7 @@ const SlaPage = () => {
 		reload.current();
 	}, []);
 
-	const handleClick = useMutableCallback(() =>
+	const handleClick = useEffectEvent(() =>
 		slaPoliciesRoute.push({
 			context: 'new',
 		}),

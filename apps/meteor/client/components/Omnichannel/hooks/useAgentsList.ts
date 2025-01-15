@@ -37,7 +37,7 @@ export const useAgentsList = (
 	}, [options, reload]);
 
 	const fetchData = useCallback(
-		async (start, end) => {
+		async (start: number, end: number) => {
 			const { users: agents, total } = await getAgents({
 				...(text && { text }),
 				...(excludeId && { excludeId }),
