@@ -1,13 +1,13 @@
 import { Palette } from '@rocket.chat/fuselage';
 import type { ScrollValues } from 'rc-scrollbars';
 import { Scrollbars } from 'rc-scrollbars';
-import type { MutableRefObject, CSSProperties, ReactNode } from 'react';
+import type { MutableRefObject, CSSProperties, ReactNode, HTMLAttributes } from 'react';
 import { memo, forwardRef, useCallback, useMemo } from 'react';
 
 export type CustomScrollbarsProps = {
 	overflowX?: boolean;
 	style?: CSSProperties;
-	children?: ReactNode;
+	children?: HTMLAttributes<HTMLElement>['children'];
 	onScroll?: (values: ScrollValues) => void;
 	renderView?: typeof Scrollbars.defaultProps.renderView;
 	renderTrackHorizontal?: typeof Scrollbars.defaultProps.renderTrackHorizontal;
@@ -26,7 +26,7 @@ const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function
 	const scrollbarsStyle = useMemo(() => ({ ...style, ...styleDefault }), [style]);
 
 	const refSetter = useCallback(
-		(scrollbarRef: Scrollbars) => {
+		(scrollbarRef: Scrollbars | null) => {
 			if (ref && scrollbarRef) {
 				if (typeof ref === 'function') {
 					ref(scrollbarRef.view ?? null);
@@ -52,7 +52,7 @@ const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function
 			renderThumbVertical={({ style, ...props }) => (
 				<div {...props} style={{ ...style, backgroundColor: Palette.stroke['stroke-dark'].toString(), borderRadius: '4px' }} />
 			)}
-			children={children}
+			children={children as ReactNode} // workaround for incompatible types between react-virtuoso and react-i18next
 			ref={refSetter}
 		/>
 	);

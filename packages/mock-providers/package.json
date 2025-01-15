@@ -16,7 +16,7 @@
 		"@tanstack/react-query": "patch:@tanstack/react-query@npm%3A5.60.5#~/.yarn/patches/@tanstack-react-query-npm-5.60.5-04c500b172.patch",
 		"@types/use-sync-external-store": "^0.0.6",
 		"eslint": "~8.45.0",
-		"react": "~17.0.2",
+		"react": "~18.3.1",
 		"typescript": "~5.7.2"
 	},
 	"peerDependencies": {
