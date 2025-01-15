@@ -1,8 +1,6 @@
-import type { IRole, IUser } from '@rocket.chat/core-typings';
+import type { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
 import { ROOM_ROLE_PRIORITY_MAP } from '@rocket.chat/core-typings';
-import { Users, Subscriptions } from '@rocket.chat/models';
-
-import { addMigration } from '../../lib/migrations';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
 export const getRoomRolePriorityForRole = (role: IRole['_id']) =>
 	(ROOM_ROLE_PRIORITY_MAP as { [key: IRole['_id']]: number })[role] ?? ROOM_ROLE_PRIORITY_MAP.default;
@@ -54,40 +52,42 @@ async function assignRoomRolePrioritiesFromMap(userIdAndroomRolePrioritiesMap: M
 	return userIdAndroomRolePrioritiesMap;
 }
 
-addMigration({
-	version: 320,
-	name: 'Add "roomRolePriorities" field to users',
-	async up() {
-		let userIdAndroomRolePrioritiesMap = new Map<IUser['_id'], IUser['roomRolePriorities']>();
+export const syncRolePrioritiesForRoomIfRequired = async (rid: IRoom['_id']) => {
+	let userIdAndroomRolePrioritiesMap = new Map<IUser['_id'], IUser['roomRolePriorities']>();
 
-		// Create a cursor with the specified batch size
-		const cursor = Subscriptions.find(
-			{ roles: { $exists: true } },
-			{
-				projection: { 'rid': 1, 'roles': 1, 'u._id': 1 },
-				sort: { _id: 1 },
-			},
-		).batchSize(READ_BATCH_SIZE);
+	if (await Rooms.hasCreatedRolePrioritiesForRoom(rid)) {
+		return false;
+	}
 
-		for await (const sub of cursor) {
-			if (!sub.roles?.length) {
-				continue;
-			}
+	const cursor = Subscriptions.find(
+		{ rid, roles: { $exists: true } },
+		{
+			projection: { 'rid': 1, 'roles': 1, 'u._id': 1 },
+			sort: { _id: 1 },
+		},
+	).batchSize(READ_BATCH_SIZE);
 
-			const userId = sub.u._id;
-			const roomId = sub.rid;
-			const priority = calculateRoomRolePriorityFromRoles(sub.roles);
-
-			const existingPriorities = userIdAndroomRolePrioritiesMap.get(userId) || {};
-			existingPriorities[roomId] = priority;
-			userIdAndroomRolePrioritiesMap.set(userId, existingPriorities);
-
-			if (userIdAndroomRolePrioritiesMap.size >= WRITE_BATCH_SIZE) {
-				userIdAndroomRolePrioritiesMap = await assignRoomRolePrioritiesFromMap(userIdAndroomRolePrioritiesMap);
-			}
+	for await (const sub of cursor) {
+		if (!sub.roles?.length) {
+			continue;
 		}
 
-		// Flush any remaining priorities in the map
-		await assignRoomRolePrioritiesFromMap(userIdAndroomRolePrioritiesMap);
-	},
-});
+		const userId = sub.u._id;
+		const roomId = sub.rid;
+		const priority = calculateRoomRolePriorityFromRoles(sub.roles);
+
+		const existingPriorities = userIdAndroomRolePrioritiesMap.get(userId) || {};
+		existingPriorities[roomId] = priority;
+		userIdAndroomRolePrioritiesMap.set(userId, existingPriorities);
+
+		if (userIdAndroomRolePrioritiesMap.size >= WRITE_BATCH_SIZE) {
+			userIdAndroomRolePrioritiesMap = await assignRoomRolePrioritiesFromMap(userIdAndroomRolePrioritiesMap);
+		}
+	}
+
+	// Flush any remaining priorities in the map
+	await assignRoomRolePrioritiesFromMap(userIdAndroomRolePrioritiesMap);
+
+	await Rooms.markRolePrioritesCreatedForRoom(rid);
+	return true;
+};

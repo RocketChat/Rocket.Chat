@@ -28,6 +28,7 @@ import { saveRoomSettings } from '../../../channel-settings/server/methods/saveR
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 import { FileUpload } from '../../../file-upload/server';
 import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
+import { syncRolePrioritiesForRoomIfRequired } from '../../../lib/server/functions/syncRolePrioritiesForRoomIfRequired';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { settings } from '../../../settings/server';
@@ -876,6 +877,12 @@ API.v1.addRoute(
 			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
 				return API.v1.unauthorized();
 			}
+
+			// Ensures that role priorities for the specified room are synchronized correctly.
+			// This function acts as a soft migration. If the `roomRolePriorities` field
+			// for the room has already been created and is up-to-date, no updates will be performed.
+			// If not, it will synchronize the role priorities of the users of the room.
+			await syncRolePrioritiesForRoomIfRequired(findResult._id);
 
 			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
 			const { sort = {} } = await this.parseJsonQuery();
