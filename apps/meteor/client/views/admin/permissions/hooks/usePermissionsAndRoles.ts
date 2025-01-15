@@ -1,12 +1,12 @@
 import type { IRole, IPermission } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useCallback, useMemo } from 'react';
 
-import { usePermissionsKeys } from './usePermissionsKeys';
 import { CONSTANTS } from '../../../../../app/authorization/lib';
 import { Permissions, Roles } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { filterPermissionKeys } from '../helpers/filterPermissionKeys';
+import { usePermissionKeys } from './usePermissionKeys';
 
 export const usePermissionsAndRoles = (
 	type = 'permissions',
@@ -14,16 +14,8 @@ export const usePermissionsAndRoles = (
 	limit = 25,
 	skip = 0,
 ): { permissions: IPermission[]; total: number; roleList: IRole[]; reload: () => void } => {
-	const permissionsKeys = usePermissionsKeys();
-
-	const filteredIds = useMemo(() => {
-		const words = escapeRegExp(filter).split(' ').filter(Boolean);
-		return permissionsKeys
-			.filter(({ _id, i18nLabel }) =>
-				words.every((word) => _id.toLocaleLowerCase().includes(word) || i18nLabel.toLocaleLowerCase().includes(word)),
-			)
-			.map(({ _id }) => _id);
-	}, [filter, permissionsKeys]);
+	const mappedPermissionKeys = usePermissionKeys();
+	const filteredIds = useMemo(() => filterPermissionKeys(mappedPermissionKeys, filter), [mappedPermissionKeys, filter]);
 
 	const selector = useMemo(() => {
 		return {
