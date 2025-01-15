@@ -650,23 +650,18 @@ const membersOrderedByRoleRolePropsSchema = {
 			items: {
 				type: 'string',
 			},
-			nullable: true,
 		},
 		filter: {
 			type: 'string',
-			nullable: true,
 		},
 		count: {
 			type: 'integer',
-			nullable: true,
 		},
 		offset: {
 			type: 'integer',
-			nullable: true,
 		},
 		sort: {
 			type: 'string',
-			nullable: true,
 		},
 	},
 	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],

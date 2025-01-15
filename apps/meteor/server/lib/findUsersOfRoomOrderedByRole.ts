@@ -26,7 +26,7 @@ export async function findUsersOfRoomOrderedByRole({
 	skip = 0,
 	limit = 0,
 	filter = '',
-	sort,
+	sort = {},
 	exceptions = [],
 	extraQuery = [],
 }: FindUsersParam): Promise<{ members: UserWithRoleData[]; total: number }> {
@@ -34,7 +34,7 @@ export async function findUsersOfRoomOrderedByRole({
 	const termRegex = new RegExp(escapeRegExp(filter), 'i');
 	const orStmt = filter && searchFields.length ? searchFields.map((field) => ({ [field.trim()]: termRegex })) : [];
 
-	const { rolePriority: rolePrioritySort, username: usernameSort } = sort || {};
+	const { rolePriority: rolePrioritySort, username: usernameSort } = sort;
 
 	const sortCriteria = {
 		rolePriority: rolePrioritySort ?? 1,

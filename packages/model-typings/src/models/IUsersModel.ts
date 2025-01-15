@@ -253,7 +253,12 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	removeRoomByRoomIds(rids: string[]): Promise<UpdateResult | Document>;
 	addRoomRolePriorityByUserId(userId: string, rid: string, rolePriority: number): Promise<UpdateResult>;
 	removeRoomRolePriorityByUserId(userId: string, rid: string): Promise<UpdateResult>;
-	assignRoomRolePrioritiesByUserIdPriorityMap(rolePrioritiesMap: Record<string, number>, rid: string): Promise<UpdateResult>;
+	assignRoomRolePrioritiesByUserIdPriorityMap(
+		rolePrioritiesMap: Record<string, number>,
+		rid: string,
+	): Promise<{
+		modifiedCount: number;
+	}>;
 	unassignRoomRolePrioritiesByRoomId(rid: string): Promise<UpdateResult>;
 	getLoginTokensByUserId(userId: string): FindCursor<ILoginToken>;
 	addPersonalAccessTokenToUser(data: { userId: string; loginTokenObject: IPersonalAccessToken }): Promise<UpdateResult>;

@@ -1606,17 +1606,19 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	assignRoomRolePrioritiesByUserIdPriorityMap(userIdPriorityMap, rid) {
-		const bulkWriteOperations = [];
-		for (const [userId, priority] of Object.entries(userIdPriorityMap)) {
-			bulkWriteOperations.push({
-				updateOne: {
-					filter: { _id: userId },
-					update: { $set: { [`roomRolePriorities.${rid}`]: priority } },
-				},
-			});
+	async assignRoomRolePrioritiesByUserIdPriorityMap(userIdAndrolePriorityMap, rid) {
+		const bulk = this.col.initializeUnorderedBulkOp();
+
+		for (const [userId, priority] of Object.entries(userIdAndrolePriorityMap)) {
+			bulk.find({ _id: userId }).updateOne({ $set: { [`roomRolePriorities.${rid}`]: priority } });
 		}
-		return this.col.bulkWrite(bulkWriteOperations);
+
+		if (bulk.length > 0) {
+			const result = await bulk.execute();
+			return { modifiedCount: result.modifiedCount };
+		}
+
+		return { modifiedCount: 0 };
 	}
 
 	unassignRoomRolePrioritiesByRoomId(rid) {
