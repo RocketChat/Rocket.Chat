@@ -24,7 +24,7 @@ type AgentsTableProps = {
 export const AgentsTable = memo(({ data, sortBy, sortDirection, setSort }: AgentsTableProps) => {
 	const { t } = useTranslation();
 
-	const onHeaderClick = useEffectEvent((id) => {
+	const onHeaderClick = useEffectEvent((id: 'name' | 'total') => {
 		setSort(id, sortDirection === 'asc' ? 'desc' : 'asc');
 	});
 

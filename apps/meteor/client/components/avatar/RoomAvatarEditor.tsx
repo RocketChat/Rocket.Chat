@@ -24,7 +24,7 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleChangeAvatar = useEffectEvent(async (file) => {
+	const handleChangeAvatar = useEffectEvent(async (file: File) => {
 		const reader = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onloadend = async (): Promise<void> => {
