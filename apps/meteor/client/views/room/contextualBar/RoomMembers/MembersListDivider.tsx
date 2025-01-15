@@ -18,10 +18,12 @@ export const MembersListDivider = ({ title, count }: MembersListDividerProps) =>
 			fontScale='p2m'
 			color='defaut'
 			paddingBlock={8}
-			paddingInline={16}
+			paddingInline={24}
 			display='flex'
 			flexDirection='row'
 			justifyContent='space-between'
+			borderBlockEndWidth={1}
+			borderBlockEndColor='extra-light'
 		>
 			<Box>{t(title)}</Box>
 			<Box>{count}</Box>

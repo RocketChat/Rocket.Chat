@@ -132,7 +132,7 @@ const RoomMembers = ({
 					<Select onChange={(value): void => setType(value as 'online' | 'all')} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent p={12}>
+			<ContextualbarContent p={0} pb={12}>
 				{loading && (
 					<Box pi={24} pb={12}>
 						<Throbber size='x12' />
@@ -140,7 +140,7 @@ const RoomMembers = ({
 				)}
 
 				{error && (
-					<Box pi={12} pb={12}>
+					<Box pi={24} pb={12}>
 						<Callout type='danger'>{error.message}</Callout>
 					</Box>
 				)}
@@ -149,7 +149,7 @@ const RoomMembers = ({
 
 				{!loading && members.length > 0 && (
 					<>
-						<Box pi={16} pb={12}>
+						<Box pi={24} pb={12}>
 							<Box is='span' color='hint' fontScale='p2'>
 								{t('Showing_current_of_total', { current: members.length, total })}
 							</Box>
