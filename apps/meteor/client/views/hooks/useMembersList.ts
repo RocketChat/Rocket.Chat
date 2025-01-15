@@ -27,7 +27,6 @@ export const useMembersList = (options: MembersListOptions) => {
 				roomId: options.rid,
 				offset: start,
 				count: 20,
-				rolesOrder: ['owner', 'moderator'],
 				...(options.debouncedText && { filter: options.debouncedText }),
 				...(options.type !== 'all' && { status: [options.type] }),
 			});

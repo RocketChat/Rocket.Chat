@@ -22,7 +22,7 @@ import {
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 
-type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles: IRole['_id'] };
+type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'] };
 
 type RoomMembersProps = {
 	rid: IRoom['_id'];
@@ -97,17 +97,17 @@ const RoomMembers = ({
 
 		if (owners.length > 0) {
 			counts.push(owners.length);
-			titles.push(<MembersListDivider title='Owners' />);
+			titles.push(<MembersListDivider title='Owners' count={owners.length} />);
 		}
 
 		if (moderators.length > 0) {
 			counts.push(moderators.length);
-			titles.push(<MembersListDivider title='Moderators' />);
+			titles.push(<MembersListDivider title='Moderators' count={moderators.length} />);
 		}
 
-		if (members.length > 0) {
+		if (normalMembers.length > 0) {
 			counts.push(normalMembers.length);
-			titles.push(<MembersListDivider title='Members' />);
+			titles.push(<MembersListDivider title='Members' count={normalMembers.length} />);
 		}
 
 		return { counts, titles };
@@ -149,7 +149,7 @@ const RoomMembers = ({
 
 				{!loading && members.length > 0 && (
 					<>
-						<Box pi={18} pb={12}>
+						<Box pi={16} pb={12}>
 							<Box is='span' color='hint' fontScale='p2'>
 								{t('Showing_current_of_total', { current: members.length, total })}
 							</Box>
