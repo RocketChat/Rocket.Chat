@@ -1,5 +1,5 @@
 import { Pagination, IconButton } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -50,8 +50,8 @@ const UnitsTable = () => {
 	const [defaultQuery] = useState(hashKey([query]));
 	const queryHasChanged = defaultQuery !== hashKey([query]);
 
-	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/units/new'));
-	const onRowClick = useMutableCallback((id) => () => router.navigate(`/omnichannel/units/edit/${id}`));
+	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/units/new'));
+	const onRowClick = useEffectEvent((id: string) => () => router.navigate(`/omnichannel/units/edit/${id}`));
 	const handleDelete = useRemoveUnit();
 
 	const headers = (

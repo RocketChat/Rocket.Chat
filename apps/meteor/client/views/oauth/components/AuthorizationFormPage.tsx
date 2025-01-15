@@ -60,8 +60,8 @@ const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFor
 						<CurrentUserDisplay user={user} />
 
 						<p>
-							<Trans i18nKey='core.OAuth_Full_Access_Warning' t={t}>
-								<strong>{{ appName: oauthApp.name }}</strong>
+							<Trans i18nKey='core.OAuth_Full_Access_Warning' t={t} values={{ appName: oauthApp.name }}>
+								<strong>{oauthApp.name}</strong>
 							</Trans>
 						</p>
 					</Box>

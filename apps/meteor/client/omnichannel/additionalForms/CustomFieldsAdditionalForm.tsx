@@ -7,6 +7,7 @@ import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
+import type { EditCustomFieldsFormData } from '../../views/omnichannel/customFields/EditCustomFields';
 
 const checkIsOptionsValid = (value: string) => {
 	if (!value || value.trim() === '') {
@@ -22,7 +23,7 @@ const CustomFieldsAdditionalForm = ({ className }: { className?: ComponentProps<
 		control,
 		watch,
 		formState: { errors },
-	} = useFormContext();
+	} = useFormContext<EditCustomFieldsFormData>();
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
 	const { visibility, type } = watch();

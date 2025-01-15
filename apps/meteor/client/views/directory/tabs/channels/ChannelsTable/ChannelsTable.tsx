@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -113,7 +113,7 @@ const ChannelsTable = () => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.result.map((room) => (
-								<ChannelsTableRow key={room._id} room={room as unknown as IRoom} onClick={onClick} mediaQuery={mediaQuery} />
+								<ChannelsTableRow key={room._id} room={room as Serialized<IRoom>} onClick={onClick} mediaQuery={mediaQuery} />
 							))}
 						</GenericTableBody>
 					</GenericTable>
