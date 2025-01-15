@@ -1,13 +1,15 @@
 import { RoomBanner, RoomBannerContent } from '@rocket.chat/ui-client';
-import type { FC, MouseEvent } from 'react';
+import type { MouseEvent, ReactNode } from 'react';
 
-type AnnouncementComponenttParams = {
+type AnnouncementComponentProps = {
+	children: ReactNode;
 	onClickOpen: (e: MouseEvent<HTMLAnchorElement>) => void;
 };
 
-const AnnouncementComponent: FC<AnnouncementComponenttParams> = ({ children, onClickOpen }) => (
+const AnnouncementComponent = ({ children, onClickOpen }: AnnouncementComponentProps) => (
 	<RoomBanner className='rcx-header-section rcx-announcement-section' onClick={onClickOpen}>
 		<RoomBannerContent data-qa='AnnouncementAnnoucementComponent'>{children}</RoomBannerContent>
 	</RoomBanner>
 );
+
 export default AnnouncementComponent;

@@ -50,7 +50,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 		if (button) {
 			// FIXME: deprecate prop `button` as there's no way to ensure it is actually a button
 			// (e.g cloneElement could be passing props to a fragment)
-			return cloneElement(button, { small: true, icon, disabled, title, className });
+			return cloneElement(button, { small: true, icon, disabled, title, className } as any);
 		}
 
 		return <IconButton small icon={icon} className={className} title={title} disabled />;
