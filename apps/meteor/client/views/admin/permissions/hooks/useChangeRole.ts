@@ -13,7 +13,7 @@ export const useChangeRole = ({
 }): ((roleId: IRole['_id'], granted: boolean) => Promise<boolean>) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	return useEffectEvent(async (roleId, granted) => {
+	return useEffectEvent(async (roleId: IRole['_id'], granted: boolean) => {
 		try {
 			if (granted) {
 				await onRemove(permissionId, roleId);

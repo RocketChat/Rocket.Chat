@@ -20,7 +20,7 @@ const DeleteTeamModal = ({ onCancel, onConfirm, rooms }: DeleteTeamModalProps) =
 	const [deletedRooms, setDeletedRooms] = useState<{ [key: string]: Serialized<IRoom> }>({});
 	const [keptRooms, setKeptRooms] = useState<{ [key: string]: Serialized<IRoom> }>({});
 
-	const onChangeRoomSelection = useEffectEvent((room) => {
+	const onChangeRoomSelection = useEffectEvent((room: Serialized<IRoom>) => {
 		if (deletedRooms[room._id]) {
 			setDeletedRooms((deletedRooms) => {
 				delete deletedRooms[room._id];

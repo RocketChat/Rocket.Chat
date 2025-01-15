@@ -2,6 +2,7 @@ import type { ILivechatTrigger } from '@rocket.chat/core-typings';
 import { IconButton } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { memo } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
@@ -23,15 +24,15 @@ const TriggersRow = ({ _id, name, description, enabled, reload }: TriggersRowPro
 		});
 	});
 
-	const handleKeyDown = useEffectEvent((e) => {
-		if (!['Enter', 'Space'].includes(e.nativeEvent.code)) {
+	const handleKeyDown = useEffectEvent((e: KeyboardEvent) => {
+		if (!['Enter', 'Space'].includes(e.code)) {
 			return;
 		}
 
 		handleClick();
 	});
 
-	const handleDelete = useEffectEvent((e) => {
+	const handleDelete = useEffectEvent((e: MouseEvent) => {
 		e.stopPropagation();
 		const onDeleteTrigger = async () => {
 			try {
