@@ -874,6 +874,10 @@ API.v1.addRoute(
 				return API.v1.notFound('The required "roomId" or "roomName" param provided does not match any room');
 			}
 
+			if (findResult.t !== 'c' && findResult.t !== 'p') {
+				return API.v1.failure('error-room-type-not-supported');
+			}
+
 			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
 				return API.v1.unauthorized();
 			}
