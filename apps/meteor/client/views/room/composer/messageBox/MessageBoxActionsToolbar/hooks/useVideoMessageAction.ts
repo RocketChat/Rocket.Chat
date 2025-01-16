@@ -40,7 +40,7 @@ export const useVideoMessageAction = (disabled: boolean): GenericMenuItemProps =
 		}
 	};
 
-	const handleDenyVideo = useEffectEvent((isDenied) => {
+	const handleDenyVideo = useEffectEvent((isDenied: boolean) => {
 		if (isDenied) {
 			chat?.composer?.setRecordingVideo(false);
 		}
