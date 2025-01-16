@@ -1276,11 +1276,16 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		options?: { offset?: number; count?: number; sort?: { [k: string]: SortDirection } };
 		extraQuery?: Filter<IOmnichannelRoom>;
 	}) {
+		const isRoomNameExactTerm = roomName?.startsWith(`"`) && roomName?.endsWith(`"`);
+		const roomNameQuery = isRoomNameExactTerm ? roomName?.slice(1, -1) : roomName;
+
 		const query: Filter<IOmnichannelRoom> = {
 			t: 'l',
 			...extraQuery,
 			...(agents && { 'servedBy._id': { $in: agents } }),
-			...(roomName && { fname: new RegExp(escapeRegExp(roomName), 'i') }),
+			...(roomName && isRoomNameExactTerm
+				? { fname: roomNameQuery } // exact match
+				: roomName && { fname: new RegExp(escapeRegExp(roomName), 'i') }), // regex match
 			...(departmentId && departmentId !== 'undefined' && { departmentId }),
 			...(open !== undefined && { open: { $exists: open }, onHold: { $ne: true } }),
 			...(served !== undefined && { servedBy: { $exists: served } }),
