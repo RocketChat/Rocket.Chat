@@ -2,11 +2,17 @@ import { isOmnichannelRoom, isRoomFederated } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent, useStableArray } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
+import {
+	usePermission,
+	useSetting,
+	useUser,
+	useVideoConfDispatchOutgoing,
+	useVideoConfIsCalling,
+	useVideoConfIsRinging,
+} from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../contexts/VideoConfContext';
 import { VideoConfManager } from '../../../lib/VideoConfManager';
 import { useRoom } from '../../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../../views/room/contexts/RoomToolboxContext';

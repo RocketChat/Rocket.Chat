@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useOutsideClick, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useVideoConfSetPreferences, useVideoConfCapabilities, useVideoConfPreferences } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
 	VideoConfPopupHeader,
@@ -17,7 +18,6 @@ import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
-import { useVideoConfSetPreferences, useVideoConfCapabilities, useVideoConfPreferences } from '../../../../../../contexts/VideoConfContext';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
 type StartCallPopupProps = {
