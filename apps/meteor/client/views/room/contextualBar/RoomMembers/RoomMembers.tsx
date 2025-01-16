@@ -22,7 +22,7 @@ import {
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 
-type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'] };
+export type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] };
 
 type RoomMembersProps = {
 	rid: IRoom['_id'];
