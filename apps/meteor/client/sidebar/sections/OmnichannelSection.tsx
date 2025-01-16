@@ -23,7 +23,7 @@ const OmnichannelSection = () => {
 	const queueListRoute = useRoute('livechat-queue');
 	const isWorkspaceOverMacLimit = useIsOverMacLimit();
 
-	const handleRoute = useEffectEvent((route) => {
+	const handleRoute = useEffectEvent((route: string) => {
 		sidebar.toggle();
 
 		switch (route) {

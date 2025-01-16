@@ -11,7 +11,7 @@ import { ContextualbarFooter, ContextualbarScrollableContent } from '../../../co
 import GenericModal from '../../../components/GenericModal';
 
 export type EditRolePageFormData = {
-	roleId?: string;
+	roleId: string;
 	name: string;
 	description: string;
 	scope: 'Users' | 'Subscriptions';
@@ -48,7 +48,7 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 		}
 	});
 
-	const handleSave = useEffectEvent(async (data) => {
+	const handleSave = useEffectEvent(async (data: EditRolePageFormData) => {
 		try {
 			if (data.roleId) {
 				await updateRole(data);
