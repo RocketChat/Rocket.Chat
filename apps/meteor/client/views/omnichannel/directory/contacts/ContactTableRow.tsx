@@ -26,7 +26,7 @@ const ContactTableRow = ({ _id, name, phones, contactManager, lastChat, channels
 	})[0];
 
 	const onRowClick = useEffectEvent(
-		(id) => (): void =>
+		(id: string) => (): void =>
 			directoryRoute.push({
 				id,
 				tab: 'contacts',

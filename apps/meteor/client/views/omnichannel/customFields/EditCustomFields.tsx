@@ -76,7 +76,7 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 
 	const saveCustomField = useMethod('livechat:saveCustomField');
 
-	const handleSave = useEffectEvent(async ({ visibility, ...data }) => {
+	const handleSave = useEffectEvent(async ({ visibility, ...data }: EditCustomFieldsFormData) => {
 		try {
 			await saveCustomField(customFieldData?._id as unknown as string, {
 				visibility: visibility ? 'visible' : 'hidden',

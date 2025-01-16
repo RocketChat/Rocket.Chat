@@ -40,7 +40,7 @@ export const useAudioMessageAction = (disabled: boolean, isMicrophoneDenied: boo
 		chat?.composer?.setRecordingMode(false);
 	});
 
-	const setMicrophoneDenied = useEffectEvent((isDenied) => {
+	const setMicrophoneDenied = useEffectEvent((isDenied: boolean) => {
 		if (isDenied) {
 			stopRecording();
 		}

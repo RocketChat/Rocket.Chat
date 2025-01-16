@@ -27,7 +27,7 @@ const TagsTable = () => {
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description'>('name');
 
-	const onRowClick = useEffectEvent((id) => router.navigate(`/omnichannel/tags/edit/${id}`));
+	const onRowClick = useEffectEvent((id: string) => router.navigate(`/omnichannel/tags/edit/${id}`));
 	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/tags/new'));
 	const handleDeleteTag = useRemoveTag();
 

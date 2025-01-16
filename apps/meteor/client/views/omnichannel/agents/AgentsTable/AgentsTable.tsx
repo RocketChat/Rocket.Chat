@@ -39,7 +39,7 @@ const AgentsTable = () => {
 	const [defaultQuery] = useState(hashKey([query]));
 	const queryHasChanged = defaultQuery !== hashKey([query]);
 
-	const onHeaderClick = useEffectEvent((id) => {
+	const onHeaderClick = useEffectEvent((id: 'name' | 'username' | 'emails.address' | 'statusLivechat') => {
 		if (sortBy === id) {
 			setSort(id, sortDirection === 'asc' ? 'desc' : 'asc');
 			return;

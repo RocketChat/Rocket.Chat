@@ -10,7 +10,7 @@ export const useGoToRoom = ({ replace = false }: { replace?: boolean } = {}): ((
 	const router = useRouter();
 
 	// TODO: remove params recycling
-	return useEffectEvent(async (rid) => {
+	return useEffectEvent(async (rid: IRoom['_id']) => {
 		if (!rid) {
 			return;
 		}
