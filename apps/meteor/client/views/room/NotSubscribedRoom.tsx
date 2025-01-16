@@ -37,13 +37,13 @@ const NotSubscribedRoom = ({ rid, reference, type }: NotSubscribedRoomProps): Re
 			body={
 				<Box display='flex' justifyContent='center' height='full'>
 					<States>
-						<StatesIcon name='hash' />
-						<StatesTitle>{t('You_are_not_part_of_the_channel')}</StatesTitle>
-						<StatesSubtitle>{t('You_need_to_join_this_channel')}</StatesSubtitle>
+						<StatesIcon name='add-user' />
+						<StatesTitle>{t('Channel_not_joined')}</StatesTitle>
+						<StatesSubtitle>{t('Join_channel_to_view_history', { channel: reference })}</StatesSubtitle>
 						<Box mbs={16}>
 							<StatesActions>
 								<StatesAction disabled={handleJoinClick.isPending} onClick={() => handleJoinClick.mutate({ rid, reference, type })}>
-									{t('Join_Chat')}
+									{t('Join_channel')}
 								</StatesAction>
 							</StatesActions>
 						</Box>
