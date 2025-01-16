@@ -1,7 +1,8 @@
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserPreference, useUserSubscriptions, useSetting, useVideoConfIncomingCalls } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
+import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
 import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';

@@ -1,6 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useOutsideClick, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useVideoConfSetPreferences, useVideoConfCapabilities, useVideoConfPreferences } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
 	VideoConfPopupHeader,
@@ -12,6 +11,9 @@ import {
 	VideoConfPopupFooter,
 	VideoConfPopupTitle,
 	VideoConfPopupFooterButtons,
+	useVideoConfSetPreferences,
+	useVideoConfCapabilities,
+	useVideoConfPreferences,
 } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
 import { useCallback, useRef } from 'react';

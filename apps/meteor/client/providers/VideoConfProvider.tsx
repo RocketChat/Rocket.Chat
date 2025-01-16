@@ -1,6 +1,7 @@
 import type { CallPreferences, DirectCallData, IRoom, ProviderCapabilities } from '@rocket.chat/core-typings';
-import { useToastMessageDispatch, useSetting, VideoConfContext } from '@rocket.chat/ui-contexts';
-import type { VideoConfPopupPayload } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
+import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
+import { VideoConfContext } from '@rocket.chat/ui-video-conf';
 import type { ReactElement, ReactNode } from 'react';
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';

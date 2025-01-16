@@ -3,7 +3,8 @@ import { css } from '@rocket.chat/css-in-js';
 import { Button, Message, Box, Avatar, Palette, IconButton, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation, useSetting, useVideoConfJoinCall } from '@rocket.chat/ui-contexts';
+import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
 
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';

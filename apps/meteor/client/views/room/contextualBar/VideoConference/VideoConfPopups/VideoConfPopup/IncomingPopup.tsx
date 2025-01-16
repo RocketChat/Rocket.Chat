@@ -1,8 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useVideoConfSetPreferences } from '@rocket.chat/ui-contexts';
 import {
+	useVideoConfSetPreferences,
 	VideoConfPopup,
 	VideoConfPopupContent,
 	VideoConfPopupControllers,

@@ -1,16 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import {
-	useTranslation,
-	useUserRoom,
-	useUserId,
-	useUserSubscriptionByName,
-	useSetting,
-	usePermission,
-	useVideoConfDispatchOutgoing,
-	useVideoConfIsCalling,
-	useVideoConfIsRinging,
-} from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserRoom, useUserId, useUserSubscriptionByName, useSetting, usePermission } from '@rocket.chat/ui-contexts';
+import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
 import { VideoConfManager } from '../../../../../lib/VideoConfManager';

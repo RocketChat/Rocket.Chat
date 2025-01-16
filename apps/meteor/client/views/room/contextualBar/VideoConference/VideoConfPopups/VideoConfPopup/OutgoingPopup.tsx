@@ -1,5 +1,4 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useVideoConfCapabilities, useVideoConfPreferences } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
 	VideoConfPopupContent,
@@ -11,6 +10,8 @@ import {
 	VideoConfPopupFooterButtons,
 	VideoConfPopupTitle,
 	VideoConfPopupHeader,
+	useVideoConfCapabilities,
+	useVideoConfPreferences,
 } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';

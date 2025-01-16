@@ -1,13 +1,13 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { useUserRoom } from '@rocket.chat/ui-contexts';
 import {
-	useUserRoom,
 	useVideoConfAcceptCall,
 	useVideoConfAbortCall,
 	useVideoConfRejectIncomingCall,
 	useVideoConfDismissCall,
 	useVideoConfStartCall,
 	useVideoConfDismissOutgoing,
-} from '@rocket.chat/ui-contexts';
+} from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
 

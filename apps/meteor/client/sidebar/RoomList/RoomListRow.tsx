@@ -1,6 +1,6 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { SidebarSection } from '@rocket.chat/fuselage';
-import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '@rocket.chat/ui-contexts';
+import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import type { TFunction } from 'i18next';
 import type { ReactElement } from 'react';
 import { memo, useMemo } from 'react';

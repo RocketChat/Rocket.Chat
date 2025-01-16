@@ -16,7 +16,6 @@ export { TranslationContext, TranslationContextValue } from './TranslationContex
 export { UserContext, UserContextValue } from './UserContext';
 export { DeviceContext, Device, DeviceContextValue } from './DeviceContext';
 export { ActionManagerContext, IActionManager } from './ActionManagerContext';
-export { VideoConfContext, VideoConfPopupPayload } from './VideoConfContext';
 
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';
@@ -92,7 +91,6 @@ export { useIsDeviceManagementEnabled } from './hooks/useIsDeviceManagementEnabl
 export { useSetOutputMediaDevice } from './hooks/useSetOutputMediaDevice';
 export { useSetInputMediaDevice } from './hooks/useSetInputMediaDevice';
 export { useAccountsCustomFields } from './hooks/useAccountsCustomFields';
-export * from './hooks/useVideoConfContext';
 
 export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';

@@ -8,7 +8,7 @@ import {
 	useVideoConfJoinCall,
 	useVideoConfLoadCapabilities,
 	useVideoConfSetPreferences,
-} from '@rocket.chat/ui-contexts';
+} from '@rocket.chat/ui-video-conf';
 import type { ContextType } from 'react';
 
 import { useUiKitActionManager } from './useUiKitActionManager';
