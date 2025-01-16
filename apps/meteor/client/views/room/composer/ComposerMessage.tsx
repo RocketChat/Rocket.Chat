@@ -1,5 +1,5 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
-import { usePermission, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import { memo, useCallback, useMemo } from 'react';
 
@@ -29,7 +29,6 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 	const chat = useChat();
 	const room = useRoom();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const hasPreviewPublicRoomPermission = usePermission('preview-c-room');
 
 	const composerProps = useMemo(
 		() => ({
@@ -68,10 +67,10 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 			},
 			onTyping: async (): Promise<void> => {
 				if (chat?.composer?.text?.trim() === '') {
-					await chat?.action.stop('typing');
+					chat?.action.stop('typing');
 					return;
 				}
-				await chat?.action.start('typing');
+				chat?.action.start('typing');
 			},
 			onNavigateToPreviousMessage: () => chat?.messageEditing.toPreviousMessage(),
 			onNavigateToNextMessage: () => chat?.messageEditing.toNextMessage(),
@@ -86,31 +85,11 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 		useCallback(() => LegacyRoomManager.getOpenedRoomByRid(room._id)?.streamActive ?? false, [room._id]),
 	);
 
-	if (!publicationReady && hasPreviewPublicRoomPermission) {
+	if (!publicationReady) {
 		return <ComposerSkeleton />;
 	}
 
-	const subscribe = () => {
-		if (!hasPreviewPublicRoomPermission) {
-			// Get room subscription
-			LegacyRoomManager.open({ rid: room._id, typeName: room.t });
-			LegacyRoomManager.computation.invalidate();
-		}
-	};
-
-	return (
-		<MessageBox
-			key={room._id}
-			tmid={tmid}
-			{...composerProps}
-			showFormattingTips={true}
-			onJoin={async () => {
-				await composerProps.onJoin();
-				subscribe();
-			}}
-			{...props}
-		/>
-	);
+	return <MessageBox key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
 };
 
 export default memo(ComposerMessage);

@@ -99,11 +99,11 @@ const computation = Tracker.autorun(() => {
 
 			if (room) {
 				const subscription = Subscriptions.findOne({ rid: record.rid }, { reactive: false });
-				if (!hasPermission('preview-c-room') && room.t === 'c' && !subscription) {
-					return;
-				}
-
 				if (record.streamActive !== true) {
+					if (!hasPermission('preview-c-room') && room.t === 'c' && !subscription) {
+						return;
+					}
+
 					void sdk
 						.stream('room-messages', [record.rid], async (msg) => {
 							// Should not send message to room if room has not loaded all the current messages
@@ -168,8 +168,8 @@ const computation = Tracker.autorun(() => {
 							if (ignoreDiscussion) {
 								query.drid = { $exists: false };
 							}
-							if (users?.length) {
-								query['u.username'] = { $in: users };
+							if (users?.length && query.u) {
+								query.u.username = { $in: users };
 							}
 
 							if (showDeletedStatus) {

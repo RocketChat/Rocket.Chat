@@ -6230,6 +6230,8 @@
   "you_are_in_preview_mode_of_incoming_livechat": "You are in preview mode of this chat",
   "You_are_logged_in_as": "You are logged in as",
   "You_are_not_authorized_to_view_this_page": "You are not authorized to view this page.",
+  "You_are_not_part_of_the_channel": "You are not part of the channel",
+  "You_need_to_join_this_channel": "You need to join this channel to view its history",
   "You_can_change_a_different_avatar_too": "You can override the avatar used to post from this integration.",
   "You_can_close_this_window_now": "You can close this window now.",
   "You_can_do_from_account_preferences": "You can do this later from your account preferences",

@@ -1,5 +1,5 @@
 import type { IRoom, RoomType } from '@rocket.chat/core-typings';
-import { useMethod, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
+import { useMethod, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useRef } from 'react';
 
@@ -7,12 +7,14 @@ import { useOpenRoomMutation } from './useOpenRoomMutation';
 import { roomFields } from '../../../../lib/publishFields';
 import { omit } from '../../../../lib/utils/omit';
 import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
+import { NotSubscribedToRoomError } from '../../../lib/errors/NotSubscribedToRoomError';
 import { OldUrlRoomError } from '../../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
 import { queryClient } from '../../../lib/queryClient';
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
+	const hasPreviewPermission = usePermission('preview-c-room');
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', true);
 	const getRoomByTypeAndName = useMethod('getRoomByTypeAndName');
 	const createDirectMessage = useMethod('createDirectMessage');
@@ -24,7 +26,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 	return useQuery(
 		// we need to add uid and username here because `user` is not loaded all at once (see UserProvider -> Meteor.user())
 		['rooms', { reference, type }, { uid: user?._id, username: user?.username }] as const,
-		async (): Promise<{ rid: IRoom['_id'] }> => {
+		async (): Promise<{ rid: IRoom['_id']; type?: IRoom['t'] }> => {
 			if ((user && !user.username) || (!user && !allowAnonymousRead)) {
 				throw new NotAuthorizedError();
 			}
@@ -89,6 +91,12 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			unsubscribeFromRoomOpenedEvent.current();
 			unsubscribeFromRoomOpenedEvent.current = RoomManager.once('opened', () => fireGlobalEvent('room-opened', omit(room, 'usernames')));
 
+			const sub = Subscriptions.findOne({ rid: room._id });
+
+			if (!sub && !hasPreviewPermission) {
+				throw new NotSubscribedToRoomError(undefined, { rid: room._id, roomType: room.t });
+			}
+
 			LegacyRoomManager.open({ typeName: type + reference, rid: room._id });
 
 			if (room._id === RoomManager.opened) {
@@ -96,11 +104,12 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			}
 
 			// update user's room subscription
-			const sub = Subscriptions.findOne({ rid: room._id });
+
 			if (!!user?._id && sub && !sub.open) {
 				await openRoom.mutateAsync({ roomId: room._id, userId: user._id });
 			}
-			return { rid: room._id };
+
+			return { rid: room._id, type: room.t };
 		},
 		{
 			retry: 0,

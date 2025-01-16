@@ -23,7 +23,12 @@ export const useRoomLeave = (room: IRoom, joined = true) => {
 			try {
 				await leaveRoom(room._id);
 				router.navigate('/home');
-				LegacyRoomManager.close(room._id);
+				LegacyRoomManager.close(`${room.t}${room._id}`);
+
+				// Close room by reference
+				if (room.name) {
+					LegacyRoomManager.close(`${room.t}${room.name}`);
+				}
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
