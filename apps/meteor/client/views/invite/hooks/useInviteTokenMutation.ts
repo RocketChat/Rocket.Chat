@@ -13,8 +13,6 @@ export const useInviteTokenMutation = () => {
 	const { mutate } = useMutation({
 		mutationFn: (token: string) => getInviteRoom({ token }),
 		onSuccess: (result) => {
-			sessionStorage.removeItem('invite_token');
-
 			if (!result.room.name) {
 				dispatchToastMessage({ type: 'error', message: t('Failed_to_activate_invite_token') });
 				router.navigate('/home');
@@ -29,7 +27,6 @@ export const useInviteTokenMutation = () => {
 			router.navigate(`/channel/${result.room.name}`);
 		},
 		onError: () => {
-			sessionStorage.removeItem('invite_token');
 			dispatchToastMessage({ type: 'error', message: t('Failed_to_activate_invite_token') });
 			router.navigate('/home');
 		},

@@ -4,24 +4,24 @@ import { Meteor } from 'meteor/meteor';
 
 import SAMLLoginRoute from './SAMLLoginRoute';
 import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
+import { useSamlInviteToken } from '../invite/hooks/useSamlInviteToken';
 
+jest.mock('../invite/hooks/useSamlInviteToken');
+const mockUseSamlInviteToken = jest.mocked(useSamlInviteToken);
 const navigateStub = jest.fn();
-const getSessionStorageItemStub = jest.fn();
 
 beforeAll(() => {
 	jest.spyOn(Storage.prototype, 'getItem');
-	Storage.prototype.getItem = getSessionStorageItemStub;
 });
 
 beforeEach(() => {
 	jest.clearAllMocks();
 	navigateStub.mockClear();
 	(Meteor.loginWithSamlToken as jest.Mock<any>).mockClear();
-	getSessionStorageItemStub.mockClear();
 });
 
 it('should redirect to /home', async () => {
-	getSessionStorageItemStub.mockReturnValue(undefined);
+	mockUseSamlInviteToken.mockReturnValue([null, () => ({})]);
 	render(
 		<MockedServerContext>
 			<MockedUserContext>
@@ -33,13 +33,12 @@ it('should redirect to /home', async () => {
 		{ legacyRoot: true },
 	);
 
-	expect(getSessionStorageItemStub).toHaveBeenCalledTimes(1);
 	expect(navigateStub).toHaveBeenCalledTimes(1);
 	expect(navigateStub).toHaveBeenLastCalledWith(expect.objectContaining({ pathname: '/home' }), expect.anything());
 });
 
 it('should redirect to /home when userId is null and the stored invite token is not valid', async () => {
-	getSessionStorageItemStub.mockReturnValue(null);
+	mockUseSamlInviteToken.mockReturnValue([null, () => ({})]);
 	render(
 		<MockedServerContext>
 			<RouterContextMock searchParameters={{ redirectUrl: 'http://rocket.chat' }} navigate={navigateStub}>
@@ -54,7 +53,7 @@ it('should redirect to /home when userId is null and the stored invite token is 
 });
 
 it('should redirect to the invite page with the stored invite token when it is valid', async () => {
-	getSessionStorageItemStub.mockReturnValue('test');
+	mockUseSamlInviteToken.mockReturnValue(['test', () => ({})]);
 	render(
 		<MockedServerContext>
 			<RouterContextMock navigate={navigateStub}>
@@ -64,7 +63,6 @@ it('should redirect to the invite page with the stored invite token when it is v
 		{ legacyRoot: true },
 	);
 
-	expect(getSessionStorageItemStub).toHaveBeenCalledTimes(1);
 	expect(navigateStub).toHaveBeenCalledTimes(1);
 	expect(navigateStub).toHaveBeenLastCalledWith(expect.objectContaining({ pathname: '/invite/test' }), expect.anything());
 });
