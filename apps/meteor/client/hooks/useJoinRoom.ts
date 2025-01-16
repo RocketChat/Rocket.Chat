@@ -6,16 +6,14 @@ import { sdk } from '../../app/utils/client/lib/SDKClient';
 export const useJoinRoom = () => {
 	const queryClient = useQueryClient();
 
-	return useMutation(
-		async ({ rid, type }: { rid: IRoom['_id']; type: IRoom['t'] }) => {
+	return useMutation({
+		mutationFn: async ({ rid, type }: { rid: IRoom['_id']; type: IRoom['t'] }) => {
 			await sdk.call('joinRoom', rid);
 
 			return { reference: rid, type };
 		},
-		{
-			onSuccess: () => {
-				queryClient.invalidateQueries(['rooms']);
-			},
+		onSuccess: () => {
+			queryClient.invalidateQueries(['rooms']);
 		},
-	);
+	});
 };
