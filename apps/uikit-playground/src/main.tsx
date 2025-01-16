@@ -8,7 +8,13 @@ import { Provider } from './Context';
 import PersistStore from './Components/PersistStore/PersistStore';
 import './index.css';
 
-const root = createRoot(document.getElementById('root')!);
+const rootDiv = document.getElementById('root');
+
+if (!rootDiv) {
+  throw new Error('Root div not found');
+}
+
+const root = createRoot(rootDiv);
 
 root.render(
   <StrictMode>
