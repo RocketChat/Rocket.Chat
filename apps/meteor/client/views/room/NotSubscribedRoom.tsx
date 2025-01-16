@@ -3,7 +3,7 @@ import { Box, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, S
 import { Header, HeaderToolbar } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import RoomLayout from './layout/RoomLayout';
 import SidebarToggler from '../../components/SidebarToggler';
@@ -38,7 +38,15 @@ const NotSubscribedRoom = ({ rid, reference, type }: NotSubscribedRoomProps): Re
 				<Box display='flex' justifyContent='center' height='full'>
 					<States>
 						<StatesIcon name='add-user' />
-						<StatesTitle>{t('Channel_not_joined')}</StatesTitle>
+						<StatesTitle>
+							<Trans i18nKey='Channel_not_joined'>
+								Join
+								<Box is='span' fontWeight={600}>
+									{{ channel: reference }}
+								</Box>
+								to view history.
+							</Trans>
+						</StatesTitle>
 						<StatesSubtitle>{t('Join_channel_to_view_history', { channel: reference })}</StatesSubtitle>
 						<Box mbs={16}>
 							<StatesActions>
