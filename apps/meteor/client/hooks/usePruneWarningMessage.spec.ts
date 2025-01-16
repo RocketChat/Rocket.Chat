@@ -39,7 +39,7 @@ describe('usePruneWarningMessage hook', () => {
 				}),
 			});
 			expect(result.current).toEqual('a minute June 1, 2024 at 12:30 AM');
-			jest.advanceTimersByTime(31 * 60 * 1000);
+			await jest.advanceTimersByTimeAsync(31 * 60 * 1000);
 			expect(result.current).toEqual('a minute June 1, 2024 at 1:00 AM');
 		});
 
