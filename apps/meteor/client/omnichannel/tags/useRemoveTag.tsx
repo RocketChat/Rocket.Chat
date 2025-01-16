@@ -13,7 +13,7 @@ export const useRemoveTag = () => {
 	const queryClient = useQueryClient();
 	const router = useRouter();
 
-	const handleDeleteTag = useEffectEvent((tagId) => {
+	const handleDeleteTag = useEffectEvent((tagId: string) => {
 		const handleDelete = async () => {
 			try {
 				await removeTag(tagId);

@@ -13,7 +13,7 @@ const CurrentChatsRoute = (): ReactElement => {
 	const canViewCurrentChats = usePermission('view-livechat-current-chats');
 	const router = useRouter();
 
-	const onRowClick = useEffectEvent((_id) => {
+	const onRowClick = useEffectEvent((_id: string) => {
 		router.navigate(`/omnichannel/current/${_id}`);
 	});
 

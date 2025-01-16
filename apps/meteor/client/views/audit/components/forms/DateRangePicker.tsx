@@ -1,7 +1,7 @@
 import { Box, InputBox, Menu, Margins, Option } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
-import type { ReactElement, ComponentProps, SetStateAction } from 'react';
+import type { ReactElement, ComponentProps, SetStateAction, FormEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -122,11 +122,11 @@ const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps): R
 		onChange?.(newRange);
 	});
 
-	const handleChangeStart = useEffectEvent(({ currentTarget }) => {
+	const handleChangeStart = useEffectEvent(({ currentTarget }: FormEvent<HTMLInputElement>) => {
 		dispatch({ newStart: currentTarget.value });
 	});
 
-	const handleChangeEnd = useEffectEvent(({ currentTarget }) => {
+	const handleChangeEnd = useEffectEvent(({ currentTarget }: FormEvent<HTMLInputElement>) => {
 		dispatch({ newEnd: currentTarget.value });
 	});
 

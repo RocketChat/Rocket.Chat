@@ -34,6 +34,19 @@ import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useDepartmentsByUnitsList } from '../../views/hooks/useDepartmentsByUnitsList';
 import { useMonitorsList } from '../../views/hooks/useMonitorsList';
 
+type UnitEditFormData = {
+	name: string;
+	visibility: string;
+	departments: {
+		value: string;
+		label: string;
+	}[];
+	monitors: {
+		value: string;
+		label: string;
+	}[];
+};
+
 type UnitEditProps = {
 	unitData?: Serialized<IOmnichannelBusinessUnit>;
 	unitMonitors?: Serialized<ILivechatUnitMonitor>[];
@@ -97,7 +110,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 		formState: { errors, isDirty },
 		handleSubmit,
 		watch,
-	} = useForm({
+	} = useForm<UnitEditFormData>({
 		mode: 'onBlur',
 		values: {
 			name: unitData?.name || '',
@@ -127,7 +140,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 		return [...mappedMonitorsItems, ...pending];
 	}, [monitors, monitorsItems]);
 
-	const handleSave = useEffectEvent(async ({ name, visibility }) => {
+	const handleSave = useEffectEvent(async ({ name, visibility }: UnitEditFormData) => {
 		const departmentsData = departments.map((department) => ({ departmentId: department.value }));
 
 		const monitorsData = monitors.map((monitor) => ({

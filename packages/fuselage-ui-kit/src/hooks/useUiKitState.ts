@@ -66,7 +66,8 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
   const [value, setValue] = useSafely(useState(_value));
   const [loading, setLoading] = useSafely(useState(false));
 
-  const actionFunction = useEffectEvent(async (e) => {
+  const actionFunction = useEffectEvent(async (e: any) => {
+    // FIXME: fix typings
     const {
       target: { value: elValue },
     } = e;
@@ -108,7 +109,8 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 
   // Used for triggering actions on text inputs. Removing the load state
   // makes the text input field remain focused after running the action
-  const noLoadStateActionFunction = useEffectEvent(async (e) => {
+  const noLoadStateActionFunction = useEffectEvent(async (e: any) => {
+    // FIXME: fix typings
     const {
       target: { value },
     } = e;
@@ -130,7 +132,8 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
     );
   });
 
-  const stateFunction = useEffectEvent(async (e) => {
+  const stateFunction = useEffectEvent(async (e: any) => {
+    // FIXME: fix typings
     const {
       target: { value },
     } = e;
