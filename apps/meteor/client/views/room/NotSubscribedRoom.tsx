@@ -40,13 +40,13 @@ const NotSubscribedRoom = ({ rid, reference, type }: NotSubscribedRoomProps): Re
 						<StatesIcon name='hash' />
 						<StatesTitle>{t('Channel_not_joined')}</StatesTitle>
 						<StatesSubtitle>
-							<Trans i18nKey='Join_channel_to_view_history'>
-								Join
-								<Box is='span' fontWeight={600}>
-									{{ channel: reference }}
-								</Box>
-								to view history.
-							</Trans>
+							<Box display='block'>
+								<Trans
+									i18nKey='Join_channel_to_view_history'
+									values={{ channel: reference }}
+									components={{ b: <Box is='span' fontWeight={600} /> }}
+								/>
+							</Box>
 						</StatesSubtitle>
 						<Box mbs={16}>
 							<StatesActions>

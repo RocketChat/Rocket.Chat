@@ -6234,7 +6234,7 @@
   "You_are_logged_in_as": "You are logged in as",
   "You_are_not_authorized_to_view_this_page": "You are not authorized to view this page.",
   "Channel_not_joined": "Channel not joined",
-  "Join_channel_to_view_history": "Join <1>{{channel}}</1> to view history.",
+  "Join_channel_to_view_history": "Join <b>{{channel}}</b> to view history.",
   "You_need_to_join_this_channel": "You need to join this channel to view its history",
   "You_can_change_a_different_avatar_too": "You can override the avatar used to post from this integration.",
   "You_can_close_this_window_now": "You can close this window now.",
