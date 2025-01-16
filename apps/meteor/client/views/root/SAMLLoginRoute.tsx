@@ -2,12 +2,12 @@ import { useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { useEffect } from 'react';
 
-const KEY = 'invite_token';
+import { useSamlInviteToken } from '../invite/hooks/useSamlInviteToken';
 
 const SAMLLoginRoute = () => {
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const inviteToken = sessionStorage.getItem(KEY);
+	const [inviteToken] = useSamlInviteToken();
 
 	useEffect(() => {
 		const { token } = router.getRouteParameters();
