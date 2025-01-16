@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useRoomToolboxActions } from './hooks/useRoomToolboxActions';
 import { HeaderToolbarAction, HeaderToolbarDivider } from '../../../../components/Header';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
-import type { RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext';
+import type { RenderToolboxItemParams, RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext';
 
 type RoomToolboxProps = {
 	className?: ComponentProps<typeof Box>['className'];
@@ -22,8 +22,8 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 
 	const showKebabMenu = hiddenActions.length > 0;
 
-	const renderDefaultToolboxItem: RoomToolboxActionConfig['renderToolboxItem'] = useEffectEvent(
-		({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }) => {
+	const renderDefaultToolboxItem = useEffectEvent(
+		({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }: RenderToolboxItemParams) => {
 			return (
 				<HeaderToolbarAction
 					key={id}

@@ -17,7 +17,7 @@ function AddAgent({ agentList, onAdd }: { agentList: IDepartmentAgent[]; onAdd: 
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleAgent = useEffectEvent((e) => setUserId(e));
+	const handleAgent = useEffectEvent((e: string) => setUserId(e));
 
 	const handleSave = useEffectEvent(async () => {
 		if (!userId) {
