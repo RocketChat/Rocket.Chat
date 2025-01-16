@@ -91,8 +91,9 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			unsubscribeFromRoomOpenedEvent.current = RoomManager.once('opened', () => fireGlobalEvent('room-opened', omit(room, 'usernames')));
 
 			const sub = Subscriptions.findOne({ rid: room._id });
+			const isAnonymous = !user;
 
-			if (!sub && !hasPreviewPermission) {
+			if (!isAnonymous && !sub && !hasPreviewPermission) {
 				throw new NotSubscribedToRoomError(undefined, { rid: room._id, roomType: room.t });
 			}
 
