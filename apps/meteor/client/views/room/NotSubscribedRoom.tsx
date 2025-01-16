@@ -1,16 +1,26 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { Header, HeaderToolbar } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomLayout from './layout/RoomLayout';
-import NotSubscribedState from '../../components/NotSubscribedState';
 import SidebarToggler from '../../components/SidebarToggler';
+import { useJoinRoom } from '../../hooks/useJoinRoom';
 
-const NotSubscribedRoom = ({ rid, roomType }: { rid: IRoom['_id']; roomType: IRoom['t'] }): ReactElement => {
+type NotSubscribedRoomProps = {
+	rid: IRoom['_id'];
+	reference: string;
+	type: IRoom['t'];
+};
+
+const NotSubscribedRoom = ({ rid, reference, type }: NotSubscribedRoomProps): ReactElement => {
 	const { t } = useTranslation();
+
+	const handleJoinClick = useJoinRoom();
+	// TODO: Handle onJoinClick error
+
 	const { isMobile } = useLayout();
 
 	return (
@@ -26,12 +36,18 @@ const NotSubscribedRoom = ({ rid, roomType }: { rid: IRoom['_id']; roomType: IRo
 			}
 			body={
 				<Box display='flex' justifyContent='center' height='full'>
-					<NotSubscribedState
-						title={t('You_are_not_part_of_the_channel')}
-						subtitle={t('You_need_to_join_this_channel')}
-						rid={rid}
-						roomType={roomType}
-					/>
+					<States>
+						<StatesIcon name='hash' />
+						<StatesTitle>{t('You_are_not_part_of_the_channel')}</StatesTitle>
+						<StatesSubtitle>{t('You_need_to_join_this_channel')}</StatesSubtitle>
+						<Box mbs={16}>
+							<StatesActions>
+								<StatesAction disabled={handleJoinClick.isPending} onClick={() => handleJoinClick.mutate({ rid, reference, type })}>
+									{t('Join_Chat')}
+								</StatesAction>
+							</StatesActions>
+						</Box>
+					</States>
 				</Box>
 			}
 		/>

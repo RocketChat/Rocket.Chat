@@ -53,7 +53,7 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 				isSlashCommandAllowed?: boolean;
 			}): Promise<void> => {
 				try {
-					chat?.action.stop('typing');
+					await chat?.action.stop('typing');
 					const newMessageSent = await chat?.flows.sendMessage({
 						text,
 						tshow,
@@ -67,10 +67,10 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 			},
 			onTyping: async (): Promise<void> => {
 				if (chat?.composer?.text?.trim() === '') {
-					chat?.action.stop('typing');
+					await chat?.action.stop('typing');
 					return;
 				}
-				chat?.action.start('typing');
+				await chat?.action.start('typing');
 			},
 			onNavigateToPreviousMessage: () => chat?.messageEditing.toPreviousMessage(),
 			onNavigateToNextMessage: () => chat?.messageEditing.toNextMessage(),

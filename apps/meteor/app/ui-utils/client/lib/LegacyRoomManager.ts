@@ -83,7 +83,6 @@ const computation = Tracker.autorun(() => {
 	if (!mainReady.get()) {
 		return;
 	}
-
 	Tracker.nonreactive(() =>
 		Object.entries(openedRooms).forEach(([typeName, record]) => {
 			if (record.active !== true || (record.ready === true && record.streamActive === true)) {
@@ -98,12 +97,7 @@ const computation = Tracker.autorun(() => {
 			void RoomHistoryManager.getMoreIfIsEmpty(record.rid);
 
 			if (room) {
-				const subscription = Subscriptions.findOne({ rid: record.rid }, { reactive: false });
 				if (record.streamActive !== true) {
-					if (!hasPermission('preview-c-room') && room.t === 'c' && !subscription) {
-						return;
-					}
-
 					void sdk
 						.stream('room-messages', [record.rid], async (msg) => {
 							// Should not send message to room if room has not loaded all the current messages
@@ -112,6 +106,7 @@ const computation = Tracker.autorun(() => {
 							// }
 							// Do not load command messages into channel
 							if (msg.t !== 'command') {
+								const subscription = Subscriptions.findOne({ rid: record.rid }, { reactive: false });
 								const isNew = !Messages.findOne({ _id: msg._id, temp: { $ne: true } });
 								await upsertMessage({ msg, subscription });
 
@@ -168,8 +163,8 @@ const computation = Tracker.autorun(() => {
 							if (ignoreDiscussion) {
 								query.drid = { $exists: false };
 							}
-							if (users?.length && query.u) {
-								query.u.username = { $in: users };
+							if (users?.length) {
+								query['u.username'] = { $in: users };
 							}
 
 							if (showDeletedStatus) {

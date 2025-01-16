@@ -3,17 +3,25 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 
+type UseJoinRoomMutationFunctionProps = {
+	rid: IRoom['_id'];
+	reference: string;
+	type: IRoom['t'];
+};
+
 export const useJoinRoom = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async ({ rid, type }: { rid: IRoom['_id']; type: IRoom['t'] }) => {
+		mutationFn: async ({ rid, reference, type }: UseJoinRoomMutationFunctionProps) => {
 			await sdk.call('joinRoom', rid);
 
-			return { reference: rid, type };
+			return { reference, type };
 		},
-		onSuccess: () => {
-			queryClient.invalidateQueries(['rooms']);
+		onSuccess: (data) => {
+			queryClient.invalidateQueries({
+				queryKey: ['rooms', data],
+			});
 		},
 	});
 };
