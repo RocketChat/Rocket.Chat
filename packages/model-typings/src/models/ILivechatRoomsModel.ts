@@ -9,7 +9,17 @@ import type {
 	AtLeast,
 	ILivechatContact,
 } from '@rocket.chat/core-typings';
-import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult, Filter, UpdateOptions } from 'mongodb';
+import type {
+	FindCursor,
+	UpdateResult,
+	AggregationCursor,
+	Document,
+	FindOptions,
+	DeleteResult,
+	Filter,
+	UpdateOptions,
+	ClientSession,
+} from 'mongodb';
 
 import type { FindPaginated } from '..';
 import type { Updater } from '../updater';
@@ -179,7 +189,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	updateEmailThreadByRoomId(roomId: string, threadIds: string[] | string): Promise<UpdateResult>;
 	findOneLastServedAndClosedByVisitorToken(visitorToken: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
 	findOneByVisitorToken(visitorToken: string, fields?: FindOptions<IOmnichannelRoom>['projection']): Promise<IOmnichannelRoom | null>;
-	updateRoomCount(): Promise<ISetting | null>;
+	updateRoomCount(session?: ClientSession): Promise<ISetting | null>;
 	findOpenByVisitorToken(
 		visitorToken: string,
 		options?: FindOptions<IOmnichannelRoom>,
