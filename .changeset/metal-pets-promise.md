@@ -1,6 +1,6 @@
 ---
-"@rocket.chat/meteor": patch
-"@rocket.chat/i18n": patch
+"@rocket.chat/meteor": minor
+"@rocket.chat/i18n": minor
 ---
 
-Fixes messages visible where users shouldn't see them in public channels.
+Fixes an issue where users without the "Preview public channel" permission would receive new messages sent to the channel
