@@ -6489,11 +6489,11 @@ __metadata:
   linkType: hard
 
 "@react-types/shared@npm:^3.0.0-nightly-fb28ab3b4-241024, @react-types/shared@npm:^3.14.1, @react-types/shared@npm:^3.18.0, @react-types/shared@npm:^3.25.0":
-  version: 3.25.0
-  resolution: "@react-types/shared@npm:3.25.0"
+  version: 3.26.0
+  resolution: "@react-types/shared@npm:3.26.0"
   peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0
-  checksum: 10/fa31eb6153c223210c2eee46934a63b922917bcde0ee583f2cfe59675db122c10e1cbae6549b1fea4284391fdbeca6888b36e9dc797231ad4a76def01490aea5
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
+  checksum: 10/82d212b1712faf86141b3993204b7155f8a053c3c8091de095889097c0f923519c4e5eb26285c0e8764ab1540f495235c7b3fbdc39f38b1a8711661eee43cbf4
   languageName: node
   linkType: hard
 
@@ -7202,7 +7202,7 @@ __metadata:
     "@rocket.chat/ui-kit": 0.37.0
     "@rocket.chat/ui-video-conf": 14.0.0
     "@tanstack/react-query": "*"
-    react: ~17.0.2
+    react: "*"
     react-dom: "*"
   languageName: unknown
   linkType: soft
@@ -8712,7 +8712,7 @@ __metadata:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
-    react: ~17.0.2
+    react: "*"
   languageName: unknown
   linkType: soft
 

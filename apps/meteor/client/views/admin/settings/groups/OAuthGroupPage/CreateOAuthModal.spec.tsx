@@ -10,7 +10,6 @@ it('should call onClose when Cancel is clicked', async () => {
 
 	render(<CreateOAuthModal onConfirm={onConfirm} onClose={onClose} />, {
 		wrapper: mockAppRoot().build(),
-		legacyRoot: true,
 	});
 
 	await userEvent.click(screen.getByText('Cancel'));
@@ -24,7 +23,6 @@ it('should call onClose when X is clicked', async () => {
 
 	render(<CreateOAuthModal onConfirm={onConfirm} onClose={onClose} />, {
 		wrapper: mockAppRoot().build(),
-		legacyRoot: true,
 	});
 
 	await userEvent.click(screen.getByLabelText('Close'));
@@ -38,7 +36,6 @@ it('should call onConfirm when Add button is clicked', async () => {
 
 	render(<CreateOAuthModal onConfirm={onConfirm} onClose={onClose} />, {
 		wrapper: mockAppRoot().build(),
-		legacyRoot: true,
 	});
 
 	const custoOAuthNameInput = screen.getByLabelText('Custom_OAuth_name');

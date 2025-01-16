@@ -54,7 +54,6 @@ describe('UiKit UserSelect Element', () => {
           surfaceRenderer={contextualBarParser}
         />
       </MockedServerContext>,
-      { legacyRoot: true },
     );
   });
 
