@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
 import { useOpenRoomMutation } from './useOpenRoomMutation';
+import { hasPermission } from '../../../../app/authorization/client';
 import { Rooms } from '../../../../app/models/client';
 import { roomFields } from '../../../../lib/publishFields';
 import { omit } from '../../../../lib/utils/omit';
@@ -92,6 +93,15 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			const sub = Subscriptions.findOne({ rid: room._id });
 			const isAnonymous = !user;
+
+			console.log(isAnonymous);
+			console.log(sub);
+			console.log(hasPreviewPermission);
+			console.log(hasPermission('preview-c-room'));
+
+			if (isAnonymous && !hasPreviewPermission) {
+				throw new NotSubscribedToRoomError(undefined, { rid: room._id, roomType: room.t });
+			}
 
 			if (!isAnonymous && !sub && !hasPreviewPermission) {
 				throw new NotSubscribedToRoomError(undefined, { rid: room._id, roomType: room.t });
