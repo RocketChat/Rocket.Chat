@@ -8029,7 +8029,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/jest-presets@workspace:packages/jest-presets, @rocket.chat/jest-presets@workspace:~":
+"@rocket.chat/jest-presets@workspace:^, @rocket.chat/jest-presets@workspace:packages/jest-presets, @rocket.chat/jest-presets@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/jest-presets@workspace:packages/jest-presets"
   dependencies:
@@ -9335,15 +9335,21 @@ __metadata:
     "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/fuselage-hooks": "npm:^0.34.0"
     "@rocket.chat/i18n": "workspace:~"
+    "@rocket.chat/jest-presets": "workspace:^"
+    "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/password-policies": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@types/react": "npm:~17.0.83"
+    "@testing-library/react": "npm:~16.0.1"
+    "@types/jest": "npm:~29.5.14"
+    "@types/react": "npm:~19.0.7"
     "@types/react-dom": "npm:~17.0.26"
     "@types/use-sync-external-store": "npm:^0.0.6"
     eslint: "npm:~8.45.0"
     eslint-plugin-react-hooks: "npm:^5.0.0"
+    jest: "npm:^29.7.0"
     mongodb: "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch"
     react: "npm:~17.0.2"
+    react-dom: "npm:~17.0.2"
     typescript: "npm:~5.7.2"
     use-sync-external-store: "npm:^1.2.2"
   peerDependencies:
@@ -12355,6 +12361,15 @@ __metadata:
     "@types/scheduler": "npm:^0.16"
     csstype: "npm:^3.0.2"
   checksum: 10/0abf5c8ccf8ee03e28ff7cd077e7759f4a65c4694a23f6a2b6574e2ea2a3a8e7f6d6a5802e847454091a006d4b4ebc8a485ada74fbfc3cf19c7221171b1538ab
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:~19.0.7":
+  version: 19.0.7
+  resolution: "@types/react@npm:19.0.7"
+  dependencies:
+    csstype: "npm:^3.0.2"
+  checksum: 10/09522132bde715888e57c61fc89a87db06699872535450296f1c975c5014a7953ff08c3bff6b37d4a4515ceeb65b09cc5f841513cc8fede65fec788790b21154
   languageName: node
   linkType: hard
 

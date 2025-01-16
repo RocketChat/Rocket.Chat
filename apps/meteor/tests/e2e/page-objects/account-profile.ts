@@ -44,6 +44,14 @@ export class AccountProfile {
 		return this.page.locator('//label[contains(text(), "Email")]/..//input');
 	}
 
+	get preferencesSoundAccordionOption(): Locator {
+		return this.page.locator('h2:has-text("Sound")');
+	}
+
+	get preferencesCallRingerVolumeSlider(): Locator {
+		return this.page.getByRole('slider', { name: 'Call Ringer Volume' });
+	}
+
 	get btnClose(): Locator {
 		return this.page.locator('role=navigation >> role=button[name=Close]');
 	}
