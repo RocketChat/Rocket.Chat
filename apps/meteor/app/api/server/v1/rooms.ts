@@ -1,5 +1,6 @@
 import { Media, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
+import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
@@ -874,7 +875,7 @@ API.v1.addRoute(
 				return API.v1.notFound('The required "roomId" or "roomName" param provided does not match any room');
 			}
 
-			if (findResult.t !== 'c' && findResult.t !== 'p') {
+			if (!isPublicRoom(findResult) && !isPrivateRoom(findResult)) {
 				return API.v1.failure('error-room-type-not-supported');
 			}
 
