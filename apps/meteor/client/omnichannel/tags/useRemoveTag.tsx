@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRouter, useMethod } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -13,13 +13,15 @@ export const useRemoveTag = () => {
 	const queryClient = useQueryClient();
 	const router = useRouter();
 
-	const handleDeleteTag = useMutableCallback((tagId) => {
+	const handleDeleteTag = useEffectEvent((tagId: string) => {
 		const handleDelete = async () => {
 			try {
 				await removeTag(tagId);
 				dispatchToastMessage({ type: 'success', message: t('Tag_removed') });
 				router.navigate('/omnichannel/tags');
-				queryClient.invalidateQueries(['livechat-tags']);
+				queryClient.invalidateQueries({
+					queryKey: ['livechat-tags'],
+				});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

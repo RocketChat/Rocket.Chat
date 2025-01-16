@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useEffect, useCallback, useState, useRef } from 'react';
@@ -91,7 +91,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		});
 	}, [items, popup, suspended]);
 
-	const select = useMutableCallback((item: T) => {
+	const select = useEffectEvent((item: T) => {
 		if (!popup) {
 			throw new Error('No popup is open');
 		}
@@ -118,7 +118,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		setFocused(undefined);
 	});
 
-	const setConfigByInput = useMutableCallback((): ComposerBoxPopupOptions<T> | undefined => {
+	const setConfigByInput = useEffectEvent((): ComposerBoxPopupOptions<T> | undefined => {
 		const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
 
 		if (!value) {
@@ -155,14 +155,14 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		return configuration;
 	});
 
-	const onFocus = useMutableCallback(() => {
+	const onFocus = useEffectEvent(() => {
 		if (popup) {
 			return;
 		}
 		setConfigByInput();
 	});
 
-	const keyup = useMutableCallback((event: KeyboardEvent) => {
+	const keyup = useEffectEvent((event: KeyboardEvent) => {
 		if (!setConfigByInput()) {
 			return;
 		}
@@ -179,7 +179,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		}
 	});
 
-	const keydown = useMutableCallback((event: KeyboardEvent) => {
+	const keydown = useEffectEvent((event: KeyboardEvent) => {
 		if (!popup) {
 			return;
 		}
@@ -235,7 +235,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		}
 	});
 
-	const clearPopup = useMutableCallback(() => {
+	const clearPopup = useEffectEvent(() => {
 		if (!popup) {
 			return;
 		}

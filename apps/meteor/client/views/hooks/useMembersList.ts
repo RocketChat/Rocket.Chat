@@ -18,9 +18,9 @@ const endpointsByRoomType = {
 export const useMembersList = (options: MembersListOptions) => {
 	const getMembers = useEndpoint('GET', endpointsByRoomType[options.roomType]);
 
-	return useInfiniteQuery(
-		[options.roomType, 'members', options.rid, options.type, options.debouncedText],
-		async ({ pageParam }) => {
+	return useInfiniteQuery({
+		queryKey: [options.roomType, 'members', options.rid, options.type, options.debouncedText],
+		queryFn: async ({ pageParam }) => {
 			const start = pageParam ?? 0;
 
 			return getMembers({
@@ -31,12 +31,11 @@ export const useMembersList = (options: MembersListOptions) => {
 				...(options.type !== 'all' && { status: [options.type] }),
 			});
 		},
-		{
-			getNextPageParam: (lastPage) => {
-				const offset = lastPage.offset + lastPage.count;
-				// if the offset is greater than the total, return undefined to stop the query from trying to fetch another page
-				return offset >= lastPage.total ? undefined : offset;
-			},
+		getNextPageParam: (lastPage) => {
+			const offset = lastPage.offset + lastPage.count;
+			// if the offset is greater than the total, return undefined to stop the query from trying to fetch another page
+			return offset >= lastPage.total ? undefined : offset;
 		},
-	);
+		initialPageParam: 0,
+	});
 };

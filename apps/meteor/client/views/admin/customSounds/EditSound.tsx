@@ -53,7 +53,8 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [name, previousName, previousSound, sound]);
 
 	const saveAction = useCallback(
-		async (sound) => {
+		// FIXME
+		async (sound: any) => {
 			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension: sound.extension });
 			const validation = validate(soundData, sound);
 			if (validation.length === 0) {
@@ -115,11 +116,11 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 
 		const handleCancel = (): void => setModal(null);
 
-		setModal(() => (
+		setModal(
 			<GenericModal variant='danger' onConfirm={handleDelete} onCancel={handleCancel} onClose={handleCancel} confirmText={t('Delete')}>
 				{t('Custom_Sound_Delete_Warning')}
-			</GenericModal>
-		));
+			</GenericModal>,
+		);
 	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange, setModal, t]);
 
 	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');

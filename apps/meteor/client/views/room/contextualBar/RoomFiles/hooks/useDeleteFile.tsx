@@ -1,4 +1,5 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { IUpload } from '@rocket.chat/core-typings';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +11,7 @@ export const useDeleteFile = (reload: () => void) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const deleteFile = useMethod('deleteFileMessage');
 
-	const handleDelete = useMutableCallback((_id) => {
+	const handleDelete = useEffectEvent((_id: IUpload['_id']) => {
 		const onConfirm = async () => {
 			try {
 				await deleteFile(_id);

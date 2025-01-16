@@ -10,6 +10,6 @@ export const useCreateRoomModal = (Component: FC<any>): (() => void) => {
 			setModal(null);
 		};
 
-		setModal(() => <Component onClose={handleClose} />);
+		setModal(<Component onClose={handleClose} />);
 	});
 };

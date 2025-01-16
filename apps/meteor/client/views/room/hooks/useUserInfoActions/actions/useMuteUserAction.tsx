@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import {
 	useAllPermissions,
@@ -44,7 +44,7 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 	const userCanMute = usePermission('mute-user', rid);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
-	const closeModal = useMutableCallback(() => setModal(null));
+	const closeModal = useEffectEvent(() => setModal(null));
 	const otherUserCanPostReadonly = useAllPermissions(
 		useMemo(() => ['post-readonly'], []),
 		rid,

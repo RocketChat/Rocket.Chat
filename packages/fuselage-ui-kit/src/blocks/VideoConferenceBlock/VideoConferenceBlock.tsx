@@ -97,7 +97,7 @@ const VideoConferenceBlock = ({
     }
   };
 
-  if (result.isLoading || result.isError) {
+  if (result.isPending || result.isError) {
     // TODO: error handling
     return <VideoConfMessageSkeleton />;
   }
