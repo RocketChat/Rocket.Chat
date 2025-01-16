@@ -10,7 +10,6 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { callbacks } from '../../../../lib/callbacks';
-import { hasPermission } from '../../../authorization/client';
 import { Messages, Subscriptions, CachedChatSubscription } from '../../../models/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
