@@ -6,11 +6,8 @@ import CustomHomePage from './CustomHomePage';
 import DefaultHomePage from './DefaultHomePage';
 import { KonchatNotification } from '../../../app/ui/client/lib/KonchatNotification';
 
-const KEY = 'invite_token';
-
 const HomePage = (): ReactElement => {
 	useEffect(() => {
-		sessionStorage.removeItem(KEY);
 		KonchatNotification.getDesktopPermission();
 	}, []);
 
