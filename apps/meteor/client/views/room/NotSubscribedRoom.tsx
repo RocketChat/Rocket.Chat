@@ -37,7 +37,7 @@ const NotSubscribedRoom = ({ rid, reference, type }: NotSubscribedRoomProps): Re
 			body={
 				<Box display='flex' justifyContent='center' height='full'>
 					<States>
-						<StatesIcon name='hash' />
+						<StatesIcon name='add-user' />
 						<StatesTitle>{t('Channel_not_joined')}</StatesTitle>
 						<StatesSubtitle>
 							<Box display='block'>
