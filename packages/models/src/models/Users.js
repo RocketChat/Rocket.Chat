@@ -1615,10 +1615,10 @@ export class UsersRaw extends BaseRaw {
 
 		if (bulk.length > 0) {
 			const result = await bulk.execute();
-			return { modifiedCount: result.modifiedCount };
+			return result.modifiedCount;
 		}
 
-		return { modifiedCount: 0 };
+		return 0;
 	}
 
 	unassignRoomRolePrioritiesByRoomId(rid) {

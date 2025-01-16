@@ -10,11 +10,9 @@ export const calculateRoomRolePriorityFromRoles = (roles: IRole['_id'][]) => {
 };
 
 const READ_BATCH_SIZE = 1000;
-const WRITE_BATCH_SIZE = 1000;
 
 async function assignRoomRolePrioritiesFromMap(userIdAndroomRolePrioritiesMap: Map<IUser['_id'], IUser['roomRolePriorities']>) {
-	let bulk = Users.col.initializeUnorderedBulkOp();
-	let counter = 0;
+	const bulk = Users.col.initializeUnorderedBulkOp();
 
 	for await (const [userId, roomRolePriorities] of userIdAndroomRolePrioritiesMap.entries()) {
 		userIdAndroomRolePrioritiesMap.delete(userId);
@@ -32,31 +30,19 @@ async function assignRoomRolePrioritiesFromMap(userIdAndroomRolePrioritiesMap: M
 			bulk.find({ _id: userId }).updateOne({
 				$set: updateFields,
 			});
-
-			counter++;
-
-			if (counter >= WRITE_BATCH_SIZE) {
-				// Execute the bulk operation for the current batch
-				await bulk.execute();
-				bulk = Users.col.initializeUnorderedBulkOp();
-				counter = 0;
-			}
 		}
 	}
 
-	// Execute any remaining operations
-	if (counter > 0) {
+	if (bulk.length > 0) {
 		await bulk.execute();
 	}
-
-	return userIdAndroomRolePrioritiesMap;
 }
 
 export const syncRolePrioritiesForRoomIfRequired = async (rid: IRoom['_id']) => {
-	let userIdAndroomRolePrioritiesMap = new Map<IUser['_id'], IUser['roomRolePriorities']>();
+	const userIdAndroomRolePrioritiesMap = new Map<IUser['_id'], IUser['roomRolePriorities']>();
 
 	if (await Rooms.hasCreatedRolePrioritiesForRoom(rid)) {
-		return false;
+		return;
 	}
 
 	const cursor = Subscriptions.find(
@@ -79,15 +65,10 @@ export const syncRolePrioritiesForRoomIfRequired = async (rid: IRoom['_id']) => 
 		const existingPriorities = userIdAndroomRolePrioritiesMap.get(userId) || {};
 		existingPriorities[roomId] = priority;
 		userIdAndroomRolePrioritiesMap.set(userId, existingPriorities);
-
-		if (userIdAndroomRolePrioritiesMap.size >= WRITE_BATCH_SIZE) {
-			userIdAndroomRolePrioritiesMap = await assignRoomRolePrioritiesFromMap(userIdAndroomRolePrioritiesMap);
-		}
 	}
 
 	// Flush any remaining priorities in the map
 	await assignRoomRolePrioritiesFromMap(userIdAndroomRolePrioritiesMap);
 
 	await Rooms.markRolePrioritesCreatedForRoom(rid);
-	return true;
 };

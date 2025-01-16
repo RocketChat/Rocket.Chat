@@ -314,5 +314,5 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	countByBroadcast(options?: CountDocumentsOptions): Promise<number>;
 	countByE2E(options?: CountDocumentsOptions): Promise<number>;
 	markRolePrioritesCreatedForRoom(rid: IRoom['_id']): Promise<UpdateResult>;
-	hasCreatedRolePrioritiesForRoom(rid: IRoom['_id']): Promise<boolean>;
+	hasCreatedRolePrioritiesForRoom(rid: IRoom['_id']): Promise<number>;
 }

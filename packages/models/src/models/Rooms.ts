@@ -2212,6 +2212,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	async hasCreatedRolePrioritiesForRoom(rid: IRoom['_id']) {
-		return (await this.findOne({ _id: rid, rolePrioritiesCreated: true })) !== null;
+		return this.countDocuments({ _id: rid, rolePrioritiesCreated: true });
 	}
 }
