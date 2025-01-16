@@ -34,7 +34,7 @@
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
-		"react": "~17.0.2"
+		"react": "*"
 	},
 	"volta": {
 		"extends": "../../../package.json"

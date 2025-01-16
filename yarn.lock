@@ -7833,7 +7833,7 @@ __metadata:
     "@rocket.chat/ui-kit": 0.37.0
     "@rocket.chat/ui-video-conf": 14.0.1
     "@tanstack/react-query": "*"
-    react: ~17.0.2
+    react: "*"
     react-dom: "*"
   languageName: unknown
   linkType: soft
@@ -9341,7 +9341,7 @@ __metadata:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
-    react: ~17.0.2
+    react: "*"
   languageName: unknown
   linkType: soft
 
