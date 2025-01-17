@@ -8,7 +8,7 @@ const READ_BATCH_SIZE = 1000;
 async function assignRoomRolePrioritiesFromMap(userIdAndRoomRolePrioritiesMap: Map<IUser['_id'], IUser['roomRolePriorities']>) {
 	const bulk = Users.col.initializeUnorderedBulkOp();
 
-	for await (const [userId, roomRolePriorities] of userIdAndRoomRolePrioritiesMap.entries()) {
+	userIdAndRoomRolePrioritiesMap.forEach((roomRolePriorities, userId) => {
 		userIdAndRoomRolePrioritiesMap.delete(userId);
 
 		if (roomRolePriorities) {
@@ -25,7 +25,7 @@ async function assignRoomRolePrioritiesFromMap(userIdAndRoomRolePrioritiesMap: M
 				$set: updateFields,
 			});
 		}
-	}
+	});
 
 	if (bulk.length > 0) {
 		await bulk.execute();
