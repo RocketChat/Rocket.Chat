@@ -13,7 +13,6 @@ export const createCustomRole = async ({
 		.post(api('roles.create'))
 		.set(customCredentials || credentials)
 		.send({ name, scope, description });
-	console.log(response.body);
 	return response.body.role as IRole;
 };
 

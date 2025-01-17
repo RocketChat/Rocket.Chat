@@ -3699,7 +3699,9 @@ describe('[Rooms]', () => {
 		after(async () => {
 			await deleteRoom({ type: 'c', roomId: testChannel._id });
 			await Promise.all([ownerUser, moderatorUser, memberUser1, memberUser2].map((user) => deleteUser(user)));
-			await deleteCustomRole({ roleId: customRole._id });
+			if (isEnterprise && customRole) {
+				await deleteCustomRole({ roleId: customRole._id });
+			}
 		});
 
 		it('should return a list of members ordered by owner, moderator, then members by default', async () => {
