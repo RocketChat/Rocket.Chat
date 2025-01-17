@@ -108,7 +108,7 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 							return <RoomNotFound />;
 						}
 
-						if (error instanceof NotSubscribedToRoomError && error.details) {
+						if (error instanceof NotSubscribedToRoomError) {
 							return <NotSubscribedRoom rid={error.details.rid} reference={reference} type={type} />;
 						}
 

@@ -15,7 +15,6 @@ import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
 	const hasPreviewPermission = usePermission('preview-c-room');
-	const canAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', true);
 	const getRoomByTypeAndName = useMethod('getRoomByTypeAndName');
 	const createDirectMessage = useMethod('createDirectMessage');
@@ -28,7 +27,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 		// we need to add uid and username here because `user` is not loaded all at once (see UserProvider -> Meteor.user())
 		queryKey: ['rooms', { reference, type }, { uid: user?._id, username: user?.username }] as const,
 
-		queryFn: async (): Promise<{ rid: IRoom['_id']; type?: IRoom['t'] }> => {
+		queryFn: async (): Promise<{ rid: IRoom['_id'] }> => {
 			if ((user && !user.username) || (!user && !allowAnonymousRead)) {
 				throw new NotAuthorizedError();
 			}
@@ -92,14 +91,10 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			unsubscribeFromRoomOpenedEvent.current = RoomManager.once('opened', () => fireGlobalEvent('room-opened', omit(room, 'usernames')));
 
 			const sub = Subscriptions.findOne({ rid: room._id });
-			const isAnonymous = !user?._id;
 
-			if (isAnonymous && !canAnonymousRead) {
-				throw new NotSubscribedToRoomError(undefined, { rid: room._id, roomType: room.t });
-			}
-
-			if (!isAnonymous && !sub && !hasPreviewPermission) {
-				throw new NotSubscribedToRoomError(undefined, { rid: room._id, roomType: room.t });
+			// if user doesn't exist at this point, anonymous read is enabled, otherwise an error would have been thrown
+			if (user && !sub && !hasPreviewPermission) {
+				throw new NotSubscribedToRoomError(undefined, { rid: room._id });
 			}
 
 			LegacyRoomManager.open({ typeName: type + reference, rid: room._id });
@@ -114,7 +109,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				await openRoom.mutateAsync({ roomId: room._id, userId: user._id });
 			}
 
-			return { rid: room._id, type: room.t };
+			return { rid: room._id };
 		},
 		retry: 0,
 	});
