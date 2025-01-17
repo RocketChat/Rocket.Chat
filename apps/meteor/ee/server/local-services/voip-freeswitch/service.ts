@@ -378,7 +378,6 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			UUID: callUUID,
 			channels: [],
 			events: [],
-			startedAt: new Date(),
 		};
 
 		// Sort events by both sequence and timestamp, but only when they are present
@@ -405,7 +404,7 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			if (event.channelUniqueId && !call.channels.includes(event.channelUniqueId)) {
 				call.channels.push(event.channelUniqueId);
 			}
-			if (event.firedAt && event.firedAt < call.startedAt) {
+			if (!call.startedAt || (event.firedAt && event.firedAt < call.startedAt)) {
 				call.startedAt = event.firedAt;
 			}
 
