@@ -28,11 +28,7 @@ import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/
 import { callbacks } from '../../../../lib/callbacks';
 import { client, shouldRetryTransaction } from '../../../../server/database/utils';
 import { sendNotification } from '../../../lib/server';
-import {
-	notifyOnLivechatInquiryChangedById,
-	notifyOnLivechatInquiryChanged,
-	notifyOnSettingChanged,
-} from '../../../lib/server/lib/notifyListener';
+import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
 import { getOmniChatSortQuery } from '../../lib/inquiries';
@@ -239,10 +235,8 @@ export class QueueManager {
 				extraData: { ...extraData, source: roomInfo.source },
 				session,
 			});
-			const livechatSetting = await LivechatRooms.updateRoomCount(session);
-			if (livechatSetting) {
-				void notifyOnSettingChanged(livechatSetting);
-			}
+			// TODO: investigate if this setting is actually useful somewhere
+			await LivechatRooms.updateRoomCount(session);
 			await session.commitTransaction();
 			return { room, inquiry };
 		} catch (e) {
