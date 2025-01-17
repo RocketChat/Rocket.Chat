@@ -34,7 +34,6 @@ import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessag
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
-import { maybeMigrateLivechatRoom } from '../lib/maybeMigrateLivechatRoom';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -165,7 +164,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const file = await getUploadFormData(
@@ -226,7 +225,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const file = await getUploadFormData(
@@ -297,7 +296,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const file = await Uploads.findOneById(this.urlParams.fileId);
@@ -444,10 +443,8 @@ API.v1.addRoute(
 			const { team, parentRoom } = await Team.getRoomInfo(room);
 			const parent = discussionParent || parentRoom;
 
-			const options = { projection: fields };
-
 			return API.v1.success({
-				room: (await maybeMigrateLivechatRoom(await Rooms.findOneByIdOrName(room._id, options), options)) ?? undefined,
+				room: await Rooms.findOneByIdOrName(room._id, { projection: fields }),
 				...(team && { team }),
 				...(parent && { parent }),
 			});
@@ -559,7 +556,7 @@ API.v1.addRoute(
 			});
 
 			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			let initialImage: IUpload | null = null;
@@ -855,7 +852,7 @@ API.v1.addRoute(
 					isMember: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0,
 				});
 			}
-			return API.v1.unauthorized();
+			return API.v1.forbidden();
 		},
 	},
 );

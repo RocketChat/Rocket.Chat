@@ -1,6 +1,6 @@
 import { FeaturePreview, FeaturePreviewOn, FeaturePreviewOff } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
-import React, { lazy, memo } from 'react';
+import { lazy, memo } from 'react';
 
 const Header = lazy(() => import('./Header'));
 const HeaderUnstable = lazy(() => import('./HeaderUnstable'));

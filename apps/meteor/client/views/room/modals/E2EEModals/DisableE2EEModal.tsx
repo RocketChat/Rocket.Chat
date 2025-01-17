@@ -1,6 +1,5 @@
-import { Accordion, Box, Button } from '@rocket.chat/fuselage';
+import { Accordion, AccordionItem, Box, Button } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';
@@ -36,14 +35,14 @@ const DisableE2EEModal = ({ onConfirm, onCancel, roomType, canResetRoomKey, onRe
 						{t('E2E_disable_encryption_reset_keys_description')}
 					</Box>
 					<Accordion>
-						<Accordion.Item title={t('E2E_reset_encryption_keys')}>
+						<AccordionItem title={t('E2E_reset_encryption_keys')}>
 							<Box mbe={16} is='p'>
 								{t('E2E_reset_encryption_keys_description')}
 							</Box>
 							<Button secondary danger small onClick={onResetRoomKey}>
 								{t('E2E_reset_encryption_keys_button', { roomType })}
 							</Button>
-						</Accordion.Item>
+						</AccordionItem>
 					</Accordion>
 				</>
 			)}

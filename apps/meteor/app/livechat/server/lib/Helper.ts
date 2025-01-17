@@ -72,7 +72,7 @@ export const createLivechatRoom = async (
 	guest: ILivechatVisitor,
 	roomInfo: IOmnichannelRoomInfo = { source: { type: OmnichannelSourceType.OTHER } },
 	extraData?: IOmnichannelRoomExtraData,
-) => {
+): Promise<IOmnichannelRoom> => {
 	check(rid, String);
 	check(
 		guest,
@@ -97,7 +97,7 @@ export const createLivechatRoom = async (
 	const source = extraRoomInfo.source || roomInfo.source;
 
 	if (settings.get<string>('Livechat_Require_Contact_Verification') === 'always') {
-		await LivechatContacts.updateContactChannel({ visitorId: _id, source }, { verified: false });
+		await LivechatContacts.setChannelVerifiedStatus({ visitorId: _id, source }, false);
 	}
 
 	const contactId = await migrateVisitorIfMissingContact(_id, source);
@@ -157,14 +157,14 @@ export const createLivechatRoom = async (
 		},
 	);
 
-	if (!result.value) {
+	if (!result) {
 		throw new Error('Room not created');
 	}
 
 	await callbacks.run('livechat.newRoom', room);
 	await Message.saveSystemMessageAndNotifyUser('livechat-started', rid, '', { _id, username }, { groupable: false, token: guest.token });
 
-	return result.value as IOmnichannelRoom;
+	return result as IOmnichannelRoom;
 };
 
 export const createLivechatInquiry = async ({
@@ -239,11 +239,11 @@ export const createLivechatInquiry = async ({
 	);
 	logger.debug(`Inquiry ${result} created for visitor ${_id}`);
 
-	if (!result.value) {
+	if (!result) {
 		throw new Error('Inquiry not created');
 	}
 
-	return result.value as ILivechatInquiryRecord;
+	return result;
 };
 
 export const createLivechatSubscription = async (

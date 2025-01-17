@@ -4,7 +4,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRouter, useRouteParameter, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ChangeEvent, DragEvent, FormEvent, Key, SyntheticEvent } from 'react';
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useErrorHandler } from './useErrorHandler';
@@ -21,7 +21,9 @@ function NewImportPage() {
 	const [fileType, setFileType] = useSafely(useState('upload'));
 
 	const listImportersEndpoint = useEndpoint('GET', '/v1/importers.list');
-	const { data: importers, isLoading: isLoadingImporters } = useQuery(['importers'], async () => listImportersEndpoint(), {
+	const { data: importers, isPending: isLoadingImporters } = useQuery({
+		queryKey: ['importers'],
+		queryFn: async () => listImportersEndpoint(),
 		refetchOnWindowFocus: false,
 	});
 
@@ -185,7 +187,7 @@ function NewImportPage() {
 		undefined;
 
 	return (
-		<Page className='page-settings'>
+		<Page>
 			<PageHeader title={t('Import_New_File')} onClickBack={() => router.navigate('/admin/import')}>
 				<ButtonGroup>
 					{importer && (

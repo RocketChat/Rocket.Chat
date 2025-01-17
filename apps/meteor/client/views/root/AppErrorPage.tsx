@@ -1,6 +1,5 @@
 import { Box, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import type { ErrorInfo, ReactElement } from 'react';
-import React from 'react';
 
 type AppErrorPageProps = {
 	error: Error;

@@ -74,7 +74,15 @@ export async function getUploadFormData<
 	const bb = busboy({ headers: request.headers, defParamCharset: 'utf8', limits });
 	const fields = Object.create(null) as K;
 
-	let uploadedFile: UploadResultWithOptionalFile<K> | undefined;
+	let uploadedFile: UploadResultWithOptionalFile<K> | undefined = {
+		fields,
+		encoding: undefined,
+		filename: undefined,
+		fieldname: undefined,
+		mimetype: undefined,
+		fileBuffer: undefined,
+		file: undefined,
+	};
 
 	let returnResult = (_value: UploadResultWithOptionalFile<K>) => {
 		// noop
@@ -85,22 +93,13 @@ export async function getUploadFormData<
 
 	function onField(fieldname: keyof K, value: K[keyof K]) {
 		fields[fieldname] = value;
-		uploadedFile = {
-			fields,
-			encoding: undefined,
-			filename: undefined,
-			fieldname: undefined,
-			mimetype: undefined,
-			fileBuffer: undefined,
-			file: undefined,
-		};
 	}
 
 	function onEnd() {
 		if (!uploadedFile) {
 			return returnError(new MeteorError('No file or fields were uploaded'));
 		}
-		if (!('file' in uploadedFile) && !options.fileOptional) {
+		if (!options.fileOptional && !uploadedFile?.file) {
 			return returnError(new MeteorError('No file uploaded'));
 		}
 		if (options.validate !== undefined && !options.validate(fields)) {

@@ -1,6 +1,6 @@
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { useRouteParameter, useRouter, useSetting } from '@rocket.chat/ui-contexts';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import BusinessHoursDisabledPage from './BusinessHoursDisabledPage';
 import BusinessHoursMultiplePage from './BusinessHoursMultiplePage';

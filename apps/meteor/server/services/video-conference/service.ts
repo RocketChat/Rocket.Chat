@@ -21,6 +21,8 @@ import type {
 	VideoConferenceCapabilities,
 	VideoConferenceCreateData,
 	Optional,
+	ExternalVideoConference,
+	IVoIPVideoConference,
 } from '@rocket.chat/core-typings';
 import {
 	VideoConferenceStatus,
@@ -29,6 +31,7 @@ import {
 	isLivechatVideoConference,
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
+import type { InsertionModel } from '@rocket.chat/model-typings';
 import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
@@ -140,7 +143,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	public async join(uid: IUser['_id'] | undefined, callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string> {
 		return wrapExceptions(async () => {
 			const call = await VideoConferenceModel.findOneById(callId);
-			if (!call || call.endedAt) {
+			if (!call || call.endedAt || !videoConfTypes.isCallManagedByApp(call)) {
 				throw new Error('invalid-call');
 			}
 
@@ -173,6 +176,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const call = await VideoConferenceModel.findOneById(callId);
 		if (!call) {
 			throw new Error('invalid-call');
+		}
+
+		if (!videoConfTypes.isCallManagedByApp(call)) {
+			return [];
 		}
 
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
@@ -452,6 +459,16 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		return true;
+	}
+
+	public async createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined> {
+		return wrapExceptions(async () => VideoConferenceModel.createVoIP(data)).catch((err) => {
+			logger.error({
+				name: 'Error on VideoConf.createVoIP',
+				err,
+			});
+			throw err;
+		});
 	}
 
 	private notifyUser(
@@ -855,7 +872,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async joinCall(
-		call: VideoConference,
+		call: ExternalVideoConference,
 		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | undefined,
 		options: VideoConferenceJoinOptions,
 	): Promise<string> {
@@ -885,7 +902,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return room?.fname || room?.name || rid;
 	}
 
-	private async generateNewUrl(call: VideoConference): Promise<string> {
+	private async generateNewUrl(call: ExternalVideoConference): Promise<string> {
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
 			throw new Error('video-conf-provider-unavailable');
 		}
@@ -944,7 +961,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async getUrl(
-		call: VideoConference,
+		call: ExternalVideoConference,
 		user?: AtLeast<IUser, '_id' | 'username' | 'name'>,
 		options: VideoConferenceJoinOptions = {},
 	): Promise<string> {
@@ -987,6 +1004,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-data-not-found');
 		}
 
+		if (!videoConfTypes.isCallManagedByApp(call)) {
+			return;
+		}
+
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
 			throw new Error('video-conf-provider-unavailable');
 		}
@@ -1001,6 +1022,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-data-not-found');
 		}
 
+		if (!videoConfTypes.isCallManagedByApp(call)) {
+			return;
+		}
+
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
 			throw new Error('video-conf-provider-unavailable');
 		}
@@ -1013,6 +1038,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		if (!call) {
 			throw new Error('video-conf-data-not-found');
+		}
+
+		if (!videoConfTypes.isCallManagedByApp(call)) {
+			return;
 		}
 
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
@@ -1159,6 +1188,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			},
 			{
 				creator: user._id,
+				subscriptionExtra: {
+					open: false,
+				},
 			},
 		);
 
@@ -1190,7 +1222,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async addUserToDiscussion(rid: IRoom['_id'], uid: IUser['_id']): Promise<void> {
 		try {
-			await Room.addUserToRoom(rid, { _id: uid }, undefined, { skipAlertSound: true });
+			await Room.addUserToRoom(rid, { _id: uid }, undefined, { skipSystemMessage: true, createAsHidden: true });
 		} catch (error) {
 			// Ignore any errors here so that the subscription doesn't block the user from participating in the conference.
 			logger.error({

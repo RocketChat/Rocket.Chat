@@ -1,12 +1,12 @@
 import type { IWorkspaceInfo } from '@rocket.chat/core-typings';
 import { Box, Card, CardBody, CardCol, CardControls, CardHeader, CardTitle, Icon } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { SupportedVersions } from '@rocket.chat/server-cloud-communication';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import { useSetModal, useMediaUrl } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import VersionCardActionButton from './components/VersionCardActionButton';
@@ -29,14 +29,15 @@ type VersionCardProps = {
 };
 
 const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
-	const mediaQuery = useMediaQuery('(min-width: 1024px)');
+	const breakpoints = useBreakpoints();
+	const isExtraLargeOrBigger = breakpoints.includes('xl');
 
 	const getUrl = useMediaUrl();
 	const cardBackground = {
 		backgroundImage: `url(${getUrl('images/globe.png')})`,
 		backgroundRepeat: 'no-repeat',
-		backgroundPosition: 'right 20px center',
-		backgroundSize: mediaQuery ? 'auto' : 'contain',
+		backgroundPosition: isExtraLargeOrBigger ? 'right 20px center' : 'left 450px center',
+		backgroundSize: 'auto',
 	};
 
 	const setModal = useSetModal();
@@ -45,7 +46,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 	const formatDate = useFormatDate();
 
-	const { data: licenseData, isLoading, refetch: refetchLicense } = useLicense({ loadValues: true });
+	const { data: licenseData, isPending, refetch: refetchLicense } = useLicense({ loadValues: true });
 	const { isRegistered } = useRegistrationStatus();
 
 	const { license, limits } = licenseData || {};
@@ -167,7 +168,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 		).sort((a) => (a.danger ? -1 : 1));
 	}, [isOverLimits, t, isAirgapped, versions, versionStatus?.label, versionStatus?.expiration, formatDate, isRegistered]);
 
-	if (isLoading && !licenseData) {
+	if (isPending && !licenseData) {
 		return (
 			<Card style={{ ...cardBackground }}>
 				<VersionCardSkeleton />

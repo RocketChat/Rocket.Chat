@@ -3,12 +3,21 @@ import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React, { memo, useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import CannedResponseForm from './components/cannedResponseForm';
+import CannedResponseForm from './components/CannedResponseForm';
 import { useRemoveCannedResponse } from './useRemoveCannedResponse';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../components/Page';
+
+export type CannedResponseEditFormData = {
+	_id: string;
+	shortcut: string;
+	text: string;
+	tags: string[];
+	scope: string;
+	departmentId: string;
+};
 
 type CannedResponseEditProps = {
 	cannedResponseData?: Serialized<IOmnichannelCannedResponse>;
@@ -32,7 +41,7 @@ const CannedResponseEdit = ({ cannedResponseData }: CannedResponseEditProps) => 
 
 	const saveCannedResponse = useEndpoint('POST', '/v1/canned-responses');
 
-	const methods = useForm({ defaultValues: getInitialData(cannedResponseData) });
+	const methods = useForm<CannedResponseEditFormData>({ defaultValues: getInitialData(cannedResponseData) });
 
 	const {
 		handleSubmit,
@@ -43,10 +52,9 @@ const CannedResponseEdit = ({ cannedResponseData }: CannedResponseEditProps) => 
 	const handleDelete = useRemoveCannedResponse();
 
 	const handleSave = useCallback(
-		async ({ departmentId, ...data }) => {
+		async ({ departmentId, ...data }: CannedResponseEditFormData) => {
 			try {
 				await saveCannedResponse({
-					_id: cannedResponseData?._id,
 					...data,
 					...(departmentId && { departmentId }),
 				});
@@ -55,7 +63,9 @@ const CannedResponseEdit = ({ cannedResponseData }: CannedResponseEditProps) => 
 					message: t(cannedResponseData?._id ? 'Canned_Response_Updated' : 'Canned_Response_Created'),
 				});
 				router.navigate('/omnichannel/canned-responses');
-				queryClient.invalidateQueries(['getCannedResponses']);
+				queryClient.invalidateQueries({
+					queryKey: ['getCannedResponses'],
+				});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}

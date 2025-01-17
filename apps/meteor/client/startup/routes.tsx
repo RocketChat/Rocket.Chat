@@ -1,4 +1,4 @@
-import React, { createElement, lazy, useEffect } from 'react';
+import { createElement, lazy, useEffect } from 'react';
 
 import { appLayout } from '../lib/appLayout';
 import { router } from '../providers/RouterProvider';

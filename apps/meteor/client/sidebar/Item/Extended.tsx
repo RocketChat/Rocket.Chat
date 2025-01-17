@@ -1,24 +1,25 @@
 import { Sidebar, IconButton } from '@rocket.chat/fuselage';
-import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import React, { memo, useState } from 'react';
+import type { ReactNode, UIEvent } from 'react';
+import { memo, useState } from 'react';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
 type ExtendedProps = {
 	icon?: IconName;
-	title?: React.ReactNode;
-	avatar?: React.ReactNode | boolean;
-	actions?: React.ReactNode;
+	title?: ReactNode;
+	avatar?: ReactNode;
+	actions?: ReactNode;
 	href?: string;
 	time?: any;
-	menu?: () => React.ReactNode;
-	subtitle?: React.ReactNode;
-	badges?: React.ReactNode;
+	menu?: () => ReactNode;
+	subtitle?: ReactNode;
+	badges?: ReactNode;
 	unread?: boolean;
 	selected?: boolean;
 	menuOptions?: any;
-	titleIcon?: React.ReactNode;
+	titleIcon?: ReactNode;
 	threadUnread?: boolean;
 };
 
@@ -44,8 +45,8 @@ const Extended = ({
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
 
-	const handleMenu = useMutableCallback((e) => {
-		setMenuVisibility(e.target.offsetWidth > 0 && Boolean(menu));
+	const handleMenu = useEffectEvent((e: UIEvent<HTMLElement>) => {
+		setMenuVisibility(e.currentTarget.offsetWidth > 0 && Boolean(menu));
 	});
 
 	const handleMenuEvent = {
