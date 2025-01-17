@@ -1,3 +1,4 @@
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,9 +8,11 @@ import { filterPermissionKeys, mapPermissionKeys } from '../helpers/mapPermissio
 export const useFilteredPermissions = ({ filter }: { filter: string }) => {
 	const { t } = useTranslation();
 
+	const permissions = useMemo(() => Permissions.find().fetch(), []);
+	const debauncedFilter = useDebouncedValue(filter, 400);
+
 	return useMemo(() => {
-		const permissions = Permissions.find().fetch();
 		const mappedPermissionKeys = mapPermissionKeys({ t, permissions });
-		return filterPermissionKeys(mappedPermissionKeys, filter);
-	}, [filter, t]);
+		return filterPermissionKeys(mappedPermissionKeys, debauncedFilter);
+	}, [debauncedFilter, permissions, t]);
 };
