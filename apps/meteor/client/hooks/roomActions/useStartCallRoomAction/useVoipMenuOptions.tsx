@@ -49,7 +49,7 @@ const useVoipMenuOptions = () => {
 
 	const handleOnClick = useEffectEvent(() => {
 		if (canMakeVoipCall) {
-			makeCall(remoteUser?.freeSwitchExtension as string);
+			return makeCall(remoteUser?.freeSwitchExtension as string);
 		}
 		dispatchWarning();
 	});
