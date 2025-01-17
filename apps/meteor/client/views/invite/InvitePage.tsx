@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import LoginPage from '../root/MainLayout/LoginPage';
 import PageLoading from '../root/PageLoading';
 import { useInviteTokenMutation } from './hooks/useInviteTokenMutation';
+import { useSamlInviteToken } from './hooks/useSamlInviteToken';
 import { useValidateInviteQuery } from './hooks/useValidateInviteQuery';
 
 const InvitePage = (): ReactElement => {
@@ -15,14 +16,16 @@ const InvitePage = (): ReactElement => {
 	const token = useRouteParameter('hash');
 	const userId = useUserId();
 	const { isPending, data: isValidInvite } = useValidateInviteQuery(userId, token);
+	const [, setToken] = useSamlInviteToken();
 
 	const getInviteRoomMutation = useInviteTokenMutation();
 
 	useEffect(() => {
+		setToken(token || null);
 		if (userId && token) {
 			getInviteRoomMutation(token);
 		}
-	}, [getInviteRoomMutation, token, userId]);
+	}, [getInviteRoomMutation, setToken, token, userId]);
 
 	if (isPending) {
 		return <PageLoading />;
