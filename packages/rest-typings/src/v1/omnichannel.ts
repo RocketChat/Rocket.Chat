@@ -2402,6 +2402,7 @@ type POSTLivechatRoomCloseByUserParams = {
 	comment?: string;
 	tags?: string[];
 	generateTranscriptPdf?: boolean;
+	forceClose?: boolean;
 	transcriptEmail?:
 		| {
 				// Note: if sendToVisitor is false, then any previously requested transcripts (like via livechat:requestTranscript) will be also cancelled
@@ -2456,6 +2457,9 @@ const POSTLivechatRoomCloseByUserParamsSchema = {
 			},
 			required: ['sendToVisitor'],
 			additionalProperties: false,
+		},
+		forceClose: {
+			type: 'boolean',
 		},
 	},
 	required: ['rid'],

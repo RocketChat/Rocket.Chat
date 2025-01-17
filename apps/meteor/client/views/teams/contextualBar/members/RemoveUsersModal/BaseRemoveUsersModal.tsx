@@ -1,5 +1,5 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useState, useCallback } from 'react';
 
@@ -32,8 +32,8 @@ const BaseRemoveUsersModal = ({
 
 	const [selectedRooms, setSelectedRooms] = useState<Record<string, Serialized<IRoom> & { isLastOwner?: boolean }>>({});
 
-	const onContinue = useMutableCallback(() => setStep(STEPS.CONFIRM_DELETE));
-	const onReturn = useMutableCallback(() => setStep(STEPS.LIST_ROOMS));
+	const onContinue = useEffectEvent(() => setStep(STEPS.CONFIRM_DELETE));
+	const onReturn = useEffectEvent(() => setStep(STEPS.LIST_ROOMS));
 
 	const canViewUserRooms = usePermission('view-all-team-channels');
 
@@ -49,7 +49,7 @@ const BaseRemoveUsersModal = ({
 		});
 	}, []);
 
-	const onToggleAllRooms = useMutableCallback(() => {
+	const onToggleAllRooms = useEffectEvent(() => {
 		if (Object.values(selectedRooms).filter(Boolean).length === 0) {
 			return setSelectedRooms(Object.fromEntries(eligibleRooms?.map((room) => [room._id, room]) ?? []));
 		}

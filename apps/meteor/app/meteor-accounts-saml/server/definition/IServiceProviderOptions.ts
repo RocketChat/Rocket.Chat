@@ -20,8 +20,4 @@ export interface IServiceProviderOptions {
 	metadataCertificateTemplate: string;
 	metadataTemplate: string;
 	callbackUrl: string;
-
-	// The id and redirectUrl attributes are filled midway through some operations
-	id?: string;
-	redirectUrl?: string;
 }

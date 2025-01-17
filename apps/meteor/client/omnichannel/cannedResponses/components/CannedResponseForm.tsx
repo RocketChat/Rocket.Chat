@@ -10,6 +10,7 @@ import CannedResponsesComposer from './CannedResponsesComposer/CannedResponsesCo
 import CannedResponsesComposerPreview from './CannedResponsesComposer/CannedResponsesComposerPreview';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import Tags from '../../../components/Omnichannel/Tags';
+import type { CannedResponseEditFormData } from '../CannedResponseEdit';
 
 // TODO: refactor Tags field to get proper validation
 const CannedResponseForm = () => {
@@ -21,7 +22,7 @@ const CannedResponseForm = () => {
 		control,
 		formState: { errors },
 		watch,
-	} = useFormContext();
+	} = useFormContext<CannedResponseEditFormData>();
 
 	const clickable = css`
 		cursor: pointer;

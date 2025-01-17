@@ -25,6 +25,7 @@ import { settings as rcSettings } from '../../../../settings/server';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import type { CloseRoomParams } from '../../lib/localTypes';
+import { livechatLogger } from '../../lib/logger';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
@@ -195,9 +196,22 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { rid, comment, tags, generateTranscriptPdf, transcriptEmail } = this.bodyParams;
+			const { rid, comment, tags, generateTranscriptPdf, transcriptEmail, forceClose } = this.bodyParams;
 
-			await closeLivechatRoom(this.user, rid, { comment, tags, generateTranscriptPdf, transcriptEmail });
+			const allowForceClose = rcSettings.get<boolean>('Omnichannel_allow_force_close_conversations');
+			const isForceClosing = allowForceClose && forceClose;
+
+			if (isForceClosing) {
+				livechatLogger.warn({ msg: 'Force closing a conversation', user: this.userId, room: rid });
+			}
+
+			await closeLivechatRoom(this.user, rid, {
+				comment,
+				tags,
+				generateTranscriptPdf,
+				transcriptEmail,
+				forceClose: isForceClosing,
+			});
 
 			return API.v1.success();
 		},

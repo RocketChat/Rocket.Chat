@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRoute, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useEffect } from 'react';
@@ -22,7 +22,7 @@ const PermissionsContextBar = (): ReactElement | null => {
 	const setModal = useSetModal();
 	const hasCustomRolesModule = useHasLicenseModule('custom-roles') === true;
 
-	const handleCloseContextualbar = useMutableCallback(() => {
+	const handleCloseContextualbar = useEffectEvent(() => {
 		router.push({});
 	});
 

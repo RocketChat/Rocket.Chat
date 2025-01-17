@@ -1,4 +1,5 @@
-import { useDebouncedValue, useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { IOmnichannelCannedResponse, ILivechatDepartment } from '@rocket.chat/core-typings';
+import { useDebouncedValue, useLocalStorage, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRouter } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, MouseEvent } from 'react';
 import { memo, useCallback, useMemo, useState } from 'react';
@@ -38,18 +39,24 @@ export const WrapCannedResponseList = () => {
 	);
 	const { phase, items, itemCount } = useRecordList(cannedList);
 
-	const onClickItem = useMutableCallback((data) => {
-		const { _id: context } = data;
-
-		router.navigate({
-			name: router.getRouteName() ?? 'live',
-			params: {
-				id: room._id,
-				tab: 'canned-responses',
-				context,
+	const onClickItem = useEffectEvent(
+		(
+			data: IOmnichannelCannedResponse & {
+				departmentName: ILivechatDepartment['name'];
 			},
-		});
-	});
+		) => {
+			const { _id: context } = data;
+
+			router.navigate({
+				name: router.getRouteName() ?? 'live',
+				params: {
+					id: room._id,
+					tab: 'canned-responses',
+					context,
+				},
+			});
+		},
+	);
 
 	const composer = useChat()?.composer;
 
