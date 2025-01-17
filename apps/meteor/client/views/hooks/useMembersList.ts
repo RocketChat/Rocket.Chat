@@ -37,12 +37,8 @@ const getSortedMembers = (members: RoomMember[], useRealName = false) => {
 			return isModeratorA ? -1 : 1;
 		}
 
-		if (a.status === 'online' && b.status !== 'online') {
-			return -1;
-		}
-
-		if (a.status !== 'online' && b.status === 'online') {
-			return 1;
+		if ((a.status === 'online' || b.status === 'online') && a.status !== b.status) {
+			return a.status === 'online' ? -1 : 1;
 		}
 
 		if (useRealName && a.name && b.name) {
@@ -112,7 +108,7 @@ export const useMembersList = (options: MembersListOptions) => {
 				return;
 			}
 
-			updateMemberInCache(options, queryClient, role.u._id, role as any, type, useRealName);
+			updateMemberInCache(options, queryClient, role.u._id, role as IRole, type, useRealName);
 		});
 		return unsubscribe;
 	}, [options, queryClient, subscribeToNotifyLoggedIn, useRealName]);
