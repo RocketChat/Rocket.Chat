@@ -1,6 +1,6 @@
 import { Sidebar, IconButton } from '@rocket.chat/fuselage';
-import { useEffectEvent, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
-import type { ReactNode, UIEvent } from 'react';
+import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
+import type { ReactNode } from 'react';
 import { memo, useState } from 'react';
 
 type MediumProps = {
@@ -19,14 +19,10 @@ type MediumProps = {
 
 const Medium = ({ icon, title = '', avatar, actions, href, badges, unread, menu, ...props }: MediumProps) => {
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
-
 	const isReduceMotionEnabled = usePrefersReducedMotion();
 
-	const handleMenu = useEffectEvent((e: UIEvent<HTMLElement>) => {
-		setMenuVisibility(e.currentTarget.offsetWidth > 0 && Boolean(menu));
-	});
 	const handleMenuEvent = {
-		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: handleMenu,
+		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setMenuVisibility,
 	};
 
 	return (
