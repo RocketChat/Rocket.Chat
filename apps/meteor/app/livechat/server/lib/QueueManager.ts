@@ -12,6 +12,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
+import type { InsertionModel } from '@rocket.chat/model-typings';
 import { LivechatContacts, LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
@@ -25,6 +26,7 @@ import { getOnlineAgents } from './getOnlineAgents';
 import { getInquirySortMechanismSetting } from './settings';
 import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
 import { callbacks } from '../../../../lib/callbacks';
+import { client, shouldRetryTransaction } from '../../../../server/database/utils';
 import { sendNotification } from '../../../lib/server';
 import {
 	notifyOnLivechatInquiryChangedById,
@@ -34,8 +36,6 @@ import {
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
 import { getOmniChatSortQuery } from '../../lib/inquiries';
-import { InsertionModel } from '@rocket.chat/model-typings';
-import { client, shouldRetryTransaction } from '/server/database/utils';
 
 const logger = new Logger('QueueManager');
 
@@ -421,7 +421,6 @@ export class QueueManager {
 			guest,
 			message: message?.msg,
 			extraData: { source },
-			roomCreated: false,
 		});
 		if (!inquiry) {
 			throw new Error('inquiry-not-found');

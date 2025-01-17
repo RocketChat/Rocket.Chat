@@ -28,13 +28,13 @@ import {
 	LivechatRooms,
 	LivechatDepartment,
 	Subscriptions,
-	Rooms,
 	Users,
 	LivechatContacts,
 } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import { ClientSession, ObjectId } from 'mongodb';
+import type { ClientSession } from 'mongodb';
+import { ObjectId } from 'mongodb';
 
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
