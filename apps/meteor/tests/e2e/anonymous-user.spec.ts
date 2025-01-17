@@ -4,9 +4,7 @@ import { HomeChannel, Registration } from './page-objects';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { expect, test } from './utils/test';
 
-// Bypassing this one for now because of a bug with anonymous permissions check
-// TODO: fix the permissions for anonymous users
-test.describe.skip('anonymous-user', () => {
+test.describe('anonymous-user', () => {
 	let poHomeChannel: HomeChannel;
 
 	test.beforeAll(async ({ api }) => {

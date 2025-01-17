@@ -4,7 +4,6 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
 import { useOpenRoomMutation } from './useOpenRoomMutation';
-import { hasPermission } from '../../../../app/authorization/client';
 import { Rooms } from '../../../../app/models/client';
 import { roomFields } from '../../../../lib/publishFields';
 import { omit } from '../../../../lib/utils/omit';
@@ -16,6 +15,7 @@ import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
 	const hasPreviewPermission = usePermission('preview-c-room');
+	const canAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', true);
 	const getRoomByTypeAndName = useMethod('getRoomByTypeAndName');
 	const createDirectMessage = useMethod('createDirectMessage');
@@ -92,14 +92,9 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			unsubscribeFromRoomOpenedEvent.current = RoomManager.once('opened', () => fireGlobalEvent('room-opened', omit(room, 'usernames')));
 
 			const sub = Subscriptions.findOne({ rid: room._id });
-			const isAnonymous = !user;
+			const isAnonymous = !user?._id;
 
-			console.log(isAnonymous);
-			console.log(sub);
-			console.log(hasPreviewPermission);
-			console.log(hasPermission('preview-c-room'));
-
-			if (isAnonymous && !hasPreviewPermission) {
+			if (isAnonymous && !canAnonymousRead) {
 				throw new NotSubscribedToRoomError(undefined, { rid: room._id, roomType: room.t });
 			}
 
