@@ -20,7 +20,7 @@ export class HomeFlextabChannels {
 	}
 
 	get inputChannels(): Locator {
-		return this.page.locator('#modal-root input').first();
+		return this.page.locator('#modal-root').getByRole('dialog').getByRole('textbox');
 	}
 
 	get btnAdd(): Locator {
