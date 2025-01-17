@@ -1,5 +1,22 @@
 # @rocket.chat/model-typings
 
+## 1.1.1
+
+### Patch Changes
+
+- ([#34876](https://github.com/RocketChat/Rocket.Chat/pull/34876) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an error where the engine would not retry a subprocess restart if the last attempt failed
+
+- ([#34876](https://github.com/RocketChat/Rocket.Chat/pull/34876) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes error propagation when trying to get the status of apps in some cases
+
+- ([#34492](https://github.com/RocketChat/Rocket.Chat/pull/34492) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes livechat conversations not being assigned to the contact manager even when the "Assign new conversations to the contact manager" setting is enabled
+
+- ([#34876](https://github.com/RocketChat/Rocket.Chat/pull/34876) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes wrong data being reported to total failed apps metrics and statistics
+
+- <details><summary>Updated dependencies [2b9121bbe70866a8bce85e72ea100bb907797d10, 2b9121bbe70866a8bce85e72ea100bb907797d10, 2b9121bbe70866a8bce85e72ea100bb907797d10]:</summary>
+
+  - @rocket.chat/core-typings@7.1.1
+  </details>
+
 ## 1.1.0
 
 ### Minor Changes

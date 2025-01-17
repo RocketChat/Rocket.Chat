@@ -1,5 +1,25 @@
 # @rocket.chat/omnichannel-services
 
+## 0.3.8
+
+### Patch Changes
+
+- ([#34923](https://github.com/RocketChat/Rocket.Chat/pull/34923) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a behavior when running microservices that caused queue worker to process just the first 60 seconds of request.
+
+  This was due to a mistakenly bound context. Queue Worker was changed to start doing work only after it received the first request.
+
+  However, with the introduction of ASL and actual context on calls, the worker registration was absorbing the context of the call that created them, causing service calls happening inside the callbacks to fail because of a timeout.
+
+- <details><summary>Updated dependencies [2b9121bbe70866a8bce85e72ea100bb907797d10, 612ce304bd883c018b5e56526058d4ba54abf576, 2b9121bbe70866a8bce85e72ea100bb907797d10, 1ce311afc4033e24c8bdfe917f8c6aff022e7679, 2b9121bbe70866a8bce85e72ea100bb907797d10]:</summary>
+
+  - @rocket.chat/model-typings@1.1.1
+  - @rocket.chat/core-typings@7.1.1
+  - @rocket.chat/rest-typings@7.1.1
+  - @rocket.chat/models@1.0.2
+  - @rocket.chat/pdf-worker@0.2.8
+  - @rocket.chat/core-services@0.7.3
+  </details>
+
 ## 0.3.7
 
 ### Patch Changes

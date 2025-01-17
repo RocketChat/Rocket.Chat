@@ -1,5 +1,72 @@
 # @rocket.chat/meteor
 
+## 7.1.1
+
+### Patch Changes
+
+- ([#34876](https://github.com/RocketChat/Rocket.Chat/pull/34876) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an error where the engine would not retry a subprocess restart if the last attempt failed
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#34874](https://github.com/RocketChat/Rocket.Chat/pull/34874) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes the subprocess restarting routine failing to correctly restart apps in some cases
+
+- ([#34116](https://github.com/RocketChat/Rocket.Chat/pull/34116) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixed an issue that caused clients to not properly receive certain server notifications right after login
+
+- ([#34879](https://github.com/RocketChat/Rocket.Chat/pull/34879) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- ([#34923](https://github.com/RocketChat/Rocket.Chat/pull/34923) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a behavior when running microservices that caused queue worker to process just the first 60 seconds of request.
+
+  This was due to a mistakenly bound context. Queue Worker was changed to start doing work only after it received the first request.
+
+  However, with the introduction of ASL and actual context on calls, the worker registration was absorbing the context of the call that created them, causing service calls happening inside the callbacks to fail because of a timeout.
+
+- ([#34876](https://github.com/RocketChat/Rocket.Chat/pull/34876) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes error propagation when trying to get the status of apps in some cases
+
+- ([#34492](https://github.com/RocketChat/Rocket.Chat/pull/34492) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes livechat conversations not being assigned to the contact manager even when the "Assign new conversations to the contact manager" setting is enabled
+
+- ([#34876](https://github.com/RocketChat/Rocket.Chat/pull/34876) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes wrong data being reported to total failed apps metrics and statistics
+
+- ([#34219](https://github.com/RocketChat/Rocket.Chat/pull/34219) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixed an issue that added potencially infinite callbacks to the same event, degrading performance over time.
+
+- ([#34117](https://github.com/RocketChat/Rocket.Chat/pull/34117) by [@dionisio-bot](https://github.com/dionisio-bot)) fixed an issue that caused the conference call ringer to fail to accept calls if the user logged out and in again
+
+- ([#34947](https://github.com/RocketChat/Rocket.Chat/pull/34947) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes SlackBridge service failing to connect to multiple slack workspaces
+
+- <details><summary>Updated dependencies [2b9121bbe70866a8bce85e72ea100bb907797d10, fdcc4d724a33fcca8ac247df3bb4be20af3e0a8c, 612ce304bd883c018b5e56526058d4ba54abf576, 51d0357e8fc2f8673a2212de0bb9dda4e77d84a4, 2b9121bbe70866a8bce85e72ea100bb907797d10, 1ce311afc4033e24c8bdfe917f8c6aff022e7679, 2b9121bbe70866a8bce85e72ea100bb907797d10]:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@13.0.1
+  - @rocket.chat/instance-status@0.1.11
+  - @rocket.chat/ui-theming@0.4.1
+  - @rocket.chat/model-typings@1.1.1
+  - @rocket.chat/ui-video-conf@13.0.1
+  - @rocket.chat/core-typings@7.1.1
+  - @rocket.chat/rest-typings@7.1.1
+  - @rocket.chat/apps-engine@1.48.1
+  - @rocket.chat/ui-composer@0.4.1
+  - @rocket.chat/ui-contexts@13.0.1
+  - @rocket.chat/gazzodown@13.0.1
+  - @rocket.chat/ui-avatar@9.0.1
+  - @rocket.chat/ui-client@13.0.1
+  - @rocket.chat/ui-voip@3.0.1
+  - @rocket.chat/i18n@1.1.1
+  - @rocket.chat/models@1.0.2
+  - @rocket.chat/sha256@1.0.11
+  - @rocket.chat/omnichannel-services@0.3.8
+  - @rocket.chat/apps@0.2.2
+  - @rocket.chat/license@1.0.2
+  - @rocket.chat/pdf-worker@0.2.8
+  - @rocket.chat/presence@0.2.11
+  - @rocket.chat/api-client@0.2.11
+  - @rocket.chat/core-services@0.7.3
+  - @rocket.chat/cron@0.1.11
+  - @rocket.chat/freeswitch@1.0.2
+  - @rocket.chat/web-ui-registration@13.0.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.3
+  </details>
+
 ## 7.1.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @rocket.chat/sha256
 
+## 1.0.11
+
+### Patch Changes
+
+- ([#34879](https://github.com/RocketChat/Rocket.Chat/pull/34879) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
 ## 1.0.10
 
 ### Patch Changes

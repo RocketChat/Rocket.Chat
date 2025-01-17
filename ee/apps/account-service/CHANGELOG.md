@@ -1,5 +1,21 @@
 # @rocket.chat/account-service
 
+## 0.4.11
+
+### Patch Changes
+
+- ([#34879](https://github.com/RocketChat/Rocket.Chat/pull/34879) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- <details><summary>Updated dependencies [2b9121bbe70866a8bce85e72ea100bb907797d10, 612ce304bd883c018b5e56526058d4ba54abf576, 2b9121bbe70866a8bce85e72ea100bb907797d10, 1ce311afc4033e24c8bdfe917f8c6aff022e7679, 2b9121bbe70866a8bce85e72ea100bb907797d10]:</summary>
+
+  - @rocket.chat/model-typings@1.1.1
+  - @rocket.chat/core-typings@7.1.1
+  - @rocket.chat/rest-typings@7.1.1
+  - @rocket.chat/models@1.0.2
+  - @rocket.chat/core-services@0.7.3
+  - @rocket.chat/network-broker@0.1.3
+  </details>
+
 ## 0.4.10
 
 ### Patch Changes
