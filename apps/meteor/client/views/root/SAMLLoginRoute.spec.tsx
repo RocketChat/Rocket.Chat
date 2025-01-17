@@ -4,11 +4,8 @@ import { Meteor } from 'meteor/meteor';
 import React from 'react';
 
 import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
-<<<<<<< HEAD
-import SAMLLoginRoute from './SAMLLoginRoute';
-=======
 import { useSamlInviteToken } from '../invite/hooks/useSamlInviteToken';
->>>>>>> f777d9eed9 (fix: SAML login redirects to incorrect room when using an invite (#34873))
+import SAMLLoginRoute from './SAMLLoginRoute';
 
 jest.mock('../invite/hooks/useSamlInviteToken');
 const mockUseSamlInviteToken = jest.mocked(useSamlInviteToken);
