@@ -30,7 +30,7 @@ export const useStartCallRoomAction = () => {
 					key={id}
 					title={title}
 					disabled={disabled}
-					items={[...voipCall.items, ...videoCall.items]}
+					items={[...(voipCall.allowed ? voipCall.items : []), ...videoCall.items]}
 					className={className}
 					placement='bottom-start'
 					icon={icon}
