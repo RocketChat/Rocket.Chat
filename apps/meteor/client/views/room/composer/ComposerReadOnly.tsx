@@ -14,7 +14,9 @@ const ComposerReadOnly = (): ReactElement => {
 	const isSubscribed = useUserIsSubscribed();
 	const joinChannel = useEndpoint('POST', '/v1/channels.join');
 
-	const join = useMutation(() => joinChannel({ roomId: room._id }), {
+	const join = useMutation({
+		mutationFn: () => joinChannel({ roomId: room._id }),
+
 		onError: (error: unknown) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
@@ -24,7 +26,7 @@ const ComposerReadOnly = (): ReactElement => {
 		<MessageFooterCallout>
 			<MessageFooterCalloutContent>{t('room_is_read_only')}</MessageFooterCalloutContent>
 			{!isSubscribed && (
-				<Button primary onClick={() => join.mutate()} loading={join.isLoading}>
+				<Button primary onClick={() => join.mutate()} loading={join.isPending}>
 					{t('Join')}
 				</Button>
 			)}

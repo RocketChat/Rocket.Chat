@@ -10,9 +10,10 @@ type UseMessageOriginsOptions = { period: Period['key'] };
 export const useMessageOrigins = ({ period }: UseMessageOriginsOptions) => {
 	const getMessageOrigins = useEndpoint('GET', '/v1/engagement-dashboard/messages/origin');
 
-	return useQuery(
-		['admin/engagement-dashboard/messages/origins', { period }],
-		async () => {
+	return useQuery({
+		queryKey: ['admin/engagement-dashboard/messages/origins', { period }],
+
+		queryFn: async () => {
 			const { start, end } = getPeriodRange(period);
 
 			const response = await getMessageOrigins({
@@ -28,9 +29,8 @@ export const useMessageOrigins = ({ period }: UseMessageOriginsOptions) => {
 					}
 				: undefined;
 		},
-		{
-			refetchInterval: 5 * 60 * 1000,
-			useErrorBoundary: true,
-		},
-	);
+
+		refetchInterval: 5 * 60 * 1000,
+		throwOnError: true,
+	});
 };

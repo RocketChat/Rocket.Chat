@@ -357,6 +357,12 @@ type RoomsSaveRoomSettingsProps = {
 		defaultValue?: boolean;
 		favorite?: boolean;
 	};
+	retentionEnabled?: boolean;
+	retentionMaxAge?: number;
+	retentionExcludePinned?: boolean;
+	retentionFilesOnly?: boolean;
+	retentionIgnoreThreads?: boolean;
+	retentionOverrideGlobal?: boolean;
 };
 
 const RoomsSaveRoomSettingsSchema = {
@@ -423,6 +429,12 @@ const RoomsSaveRoomSettingsSchema = {
 			},
 			nullable: true,
 		},
+		retentionEnabled: { type: 'boolean', nullable: true },
+		retentionMaxAge: { type: 'number', nullable: true },
+		retentionExcludePinned: { type: 'boolean', nullable: true },
+		retentionFilesOnly: { type: 'boolean', nullable: true },
+		retentionIgnoreThreads: { type: 'boolean', nullable: true },
+		retentionOverrideGlobal: { type: 'boolean', nullable: true },
 	},
 	required: ['rid'],
 	additionalProperties: false,

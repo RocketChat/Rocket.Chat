@@ -22,7 +22,7 @@ export const useBlockChannel = ({ blocked, association }: { blocked: boolean; as
 		try {
 			await unblockContact({ visitor: association });
 			dispatchToastMessage({ type: 'success', message: t('Contact_unblocked') });
-			queryClient.invalidateQueries(['getContactById']);
+			queryClient.invalidateQueries({ queryKey: ['getContactById'] });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -37,7 +37,7 @@ export const useBlockChannel = ({ blocked, association }: { blocked: boolean; as
 			try {
 				await blockContact({ visitor: association });
 				dispatchToastMessage({ type: 'success', message: t('Contact_blocked') });
-				queryClient.invalidateQueries(['getContactById']);
+				queryClient.invalidateQueries({ queryKey: ['getContactById'] });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

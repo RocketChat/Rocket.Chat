@@ -75,7 +75,7 @@ export const ActionExternalServiceUrl = ({ control, trigger, index, disabled, ..
 						deps: serviceTimeoutFieldName,
 					}}
 					render={({ field }) => {
-						return <TextInput {...field} disabled={webhookTest.isLoading || disabled} error={serviceUrlError?.message} />;
+						return <TextInput {...field} disabled={webhookTest.isPending || disabled} error={serviceUrlError?.message} />;
 					}}
 				/>
 			</FieldRow>
@@ -84,7 +84,7 @@ export const ActionExternalServiceUrl = ({ control, trigger, index, disabled, ..
 
 			<FieldHint>{t('External_service_test_hint')}</FieldHint>
 
-			<Button loading={webhookTest.isLoading} disabled={disabled || isSuccessMessageVisible} onClick={() => trigger(serviceUrlFieldName)}>
+			<Button loading={webhookTest.isPending} disabled={disabled || isSuccessMessageVisible} onClick={() => trigger(serviceUrlFieldName)}>
 				{isSuccessMessageVisible ? (
 					<Box is='span' color='status-font-on-success'>
 						<Icon name='success-circle' size='x20' verticalAlign='middle' /> {t('Success')}!
