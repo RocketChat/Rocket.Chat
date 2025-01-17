@@ -12,7 +12,7 @@ export const useRemoveCustomField = () => {
 	const removeCustomField = useMethod('livechat:removeCustomField');
 	const queryClient = useQueryClient();
 
-	const handleDelete = useEffectEvent((id) => {
+	const handleDelete = useEffectEvent((id: string) => {
 		const onDeleteAgent = async () => {
 			try {
 				await removeCustomField(id);

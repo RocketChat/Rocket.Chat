@@ -131,10 +131,9 @@ export class SAMLUtils {
 		return newTemplate;
 	}
 
-	public static getValidationActionRedirectPath(credentialToken: string, redirectUrl?: string): string {
-		const redirectUrlParam = redirectUrl ? `&redirectUrl=${encodeURIComponent(redirectUrl)}` : '';
+	public static getValidationActionRedirectPath(credentialToken: string): string {
 		// the saml_idp_credentialToken param is needed by the mobile app
-		return `saml/${credentialToken}?saml_idp_credentialToken=${credentialToken}${redirectUrlParam}`;
+		return `saml/${credentialToken}?saml_idp_credentialToken=${credentialToken}`;
 	}
 
 	public static log(obj: any, ...args: Array<any>): void {
