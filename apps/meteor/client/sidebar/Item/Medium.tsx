@@ -1,17 +1,18 @@
 import { Sidebar, IconButton } from '@rocket.chat/fuselage';
-import { useMutableCallback, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
-import React, { memo, useState } from 'react';
+import { useEffectEvent, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
+import type { ReactNode, UIEvent } from 'react';
+import { memo, useState } from 'react';
 
 type MediumProps = {
-	title: React.ReactNode;
-	titleIcon?: React.ReactNode;
-	avatar: React.ReactNode | boolean;
+	title: ReactNode;
+	titleIcon?: ReactNode;
+	avatar: ReactNode;
 	icon?: string;
-	actions?: React.ReactNode;
+	actions?: ReactNode;
 	href?: string;
 	unread?: boolean;
-	menu?: () => React.ReactNode;
-	badges?: React.ReactNode;
+	menu?: () => ReactNode;
+	badges?: ReactNode;
 	selected?: boolean;
 	menuOptions?: any;
 };
@@ -21,8 +22,8 @@ const Medium = ({ icon, title = '', avatar, actions, href, badges, unread, menu,
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
 
-	const handleMenu = useMutableCallback((e) => {
-		setMenuVisibility(e.target.offsetWidth > 0 && Boolean(menu));
+	const handleMenu = useEffectEvent((e: UIEvent<HTMLElement>) => {
+		setMenuVisibility(e.currentTarget.offsetWidth > 0 && Boolean(menu));
 	});
 	const handleMenuEvent = {
 		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: handleMenu,

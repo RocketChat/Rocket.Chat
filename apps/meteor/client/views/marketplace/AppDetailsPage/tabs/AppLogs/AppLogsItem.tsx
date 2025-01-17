@@ -1,6 +1,5 @@
 import type { ILogEntry } from '@rocket.chat/core-typings';
-import { Box, Accordion } from '@rocket.chat/fuselage';
-import React from 'react';
+import { Box, AccordionItem } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItemEntry from './AppLogsItemEntry';
@@ -15,7 +14,7 @@ const AppLogsItem = ({ entries, instanceId, title, ...props }: AppLogsItemProps)
 	const { t } = useTranslation();
 
 	return (
-		<Accordion.Item title={title} {...props}>
+		<AccordionItem title={title} {...props}>
 			{instanceId && (
 				<Box color='default'>
 					{t('Instance')}: {instanceId}
@@ -24,7 +23,7 @@ const AppLogsItem = ({ entries, instanceId, title, ...props }: AppLogsItemProps)
 			{entries.map(({ severity, timestamp, caller, args }, i) => (
 				<AppLogsItemEntry key={i} severity={severity} timestamp={timestamp} caller={caller} args={args} />
 			))}
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 

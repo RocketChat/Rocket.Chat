@@ -1,6 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { Option, Menu } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey, Fields } from '@rocket.chat/ui-contexts';
 import {
 	useRouter,
@@ -15,13 +15,12 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 
 import { LegacyRoomManager } from '../../app/ui-utils/client';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
-import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import WarningModal from '../components/WarningModal';
-import { useDontAskAgain } from '../hooks/useDontAskAgain';
+import { useHideRoomAction } from '../hooks/useHideRoomAction';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { useOmnichannelPrioritiesMenu } from '../omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
@@ -42,15 +41,6 @@ type RoomMenuProps = {
 	name?: string;
 	hideDefaultOptions: boolean;
 };
-
-const closeEndpoints = {
-	p: '/v1/groups.close',
-	c: '/v1/channels.close',
-	d: '/v1/im.close',
-
-	v: '/v1/channels.close',
-	l: '/v1/groups.close',
-} as const;
 
 const leaveEndpoints = {
 	p: '/v1/groups.leave',
@@ -76,7 +66,7 @@ const RoomMenu = ({
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
-	const closeModal = useMutableCallback(() => setModal());
+	const closeModal = useEffectEvent(() => setModal());
 
 	const router = useRouter();
 
@@ -84,9 +74,6 @@ const RoomMenu = ({
 	const canFavorite = useSetting('Favorite_Rooms');
 	const isFavorite = Boolean(subscription?.f);
 
-	const dontAskHideRoom = useDontAskAgain('hideRoom');
-
-	const hideRoom = useEndpoint('POST', closeEndpoints[type]);
 	const readMessages = useEndpoint('POST', '/v1/subscriptions.read');
 	const toggleFavorite = useEndpoint('POST', '/v1/rooms.favorite');
 	const leaveRoom = useEndpoint('POST', leaveEndpoints[type]);
@@ -103,6 +90,8 @@ const RoomMenu = ({
 
 	const queryClient = useQueryClient();
 
+	const handleHide = useHideRoomAction({ rid, type, name }, { redirect: false });
+
 	const canLeave = ((): boolean => {
 		if (type === 'c' && !canLeaveChannel) {
 			return false;
@@ -113,7 +102,7 @@ const RoomMenu = ({
 		return !((cl != null && !cl) || ['d', 'l'].includes(type));
 	})();
 
-	const handleLeave = useMutableCallback(() => {
+	const handleLeave = useEffectEvent(() => {
 		const leave = async (): Promise<void> => {
 			try {
 				await leaveRoom({ roomId: rid });
@@ -140,43 +129,11 @@ const RoomMenu = ({
 		);
 	});
 
-	const handleHide = useMutableCallback(async () => {
-		const hide = async (): Promise<void> => {
-			try {
-				await hideRoom({ roomId: rid });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
-			closeModal();
-		};
-
-		const warnText = roomCoordinator.getRoomDirectives(type).getUiText(UiTextContext.HIDE_WARNING);
-
-		if (dontAskHideRoom) {
-			return hide();
-		}
-
-		setModal(
-			<GenericModalDoNotAskAgain
-				variant='danger'
-				confirmText={t('Yes_hide_it')}
-				cancelText={t('Cancel')}
-				onClose={closeModal}
-				onCancel={closeModal}
-				onConfirm={hide}
-				dontAskAgain={{
-					action: 'hideRoom',
-					label: t('Hide_room'),
-				}}
-			>
-				{t(warnText as TranslationKey, name)}
-			</GenericModalDoNotAskAgain>,
-		);
-	});
-
-	const handleToggleRead = useMutableCallback(async () => {
+	const handleToggleRead = useEffectEvent(async () => {
 		try {
-			queryClient.invalidateQueries(['sidebar/search/spotlight']);
+			queryClient.invalidateQueries({
+				queryKey: ['sidebar/search/spotlight'],
+			});
 
 			if (isUnread) {
 				await readMessages({ rid, readThreads: true });
@@ -197,7 +154,7 @@ const RoomMenu = ({
 		}
 	});
 
-	const handleToggleFavorite = useMutableCallback(async () => {
+	const handleToggleFavorite = useEffectEvent(async () => {
 		try {
 			await toggleFavorite({ roomId: rid, favorite: !isFavorite });
 		} catch (error) {

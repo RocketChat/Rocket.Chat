@@ -2,7 +2,6 @@ import { faker } from '@faker-js/faker';
 import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
 import { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHost';
 import type { IExternalComponentRoomInfo } from '@rocket.chat/apps-engine/client/definition';
-import React from 'react';
 import type { ReactNode } from 'react';
 
 import { AppsContext, type IAppsOrchestrator } from '../../../client/contexts/AppsContext';

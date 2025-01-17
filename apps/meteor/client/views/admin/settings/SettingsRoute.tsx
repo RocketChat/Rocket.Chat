@@ -1,6 +1,5 @@
 import { useRouteParameter, useIsPrivilegedSettingsContext, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import EditableSettingsProvider from './EditableSettingsProvider';
 import SettingsGroupSelector from './SettingsGroupSelector';

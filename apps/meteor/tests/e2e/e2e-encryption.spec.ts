@@ -50,15 +50,15 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		// Login again, check the banner to save the generated password and test it
 		await restoreState(page, Users.admin);
 
-		await page.locator('role=banner >> text="Save your encryption password"').click();
+		await poHomeChannel.bannerSaveEncryptionPassword.click();
 
 		password = (await page.evaluate(() => localStorage.getItem('e2e.randomPassword'))) || 'undefined';
 
-		await expect(page.locator('#modal-root')).toContainText(password);
+		await expect(poHomeChannel.dialogSaveE2EEPassword).toContainText(password);
 
-		await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary').click();
+		await poHomeChannel.btnSavedMyPassword.click();
 
-		await expect(page.locator('role=banner >> text="Save your encryption password"')).not.toBeVisible();
+		await expect(poHomeChannel.bannerSaveEncryptionPassword).not.toBeVisible();
 
 		await poHomeChannel.sidenav.logout();
 
@@ -68,13 +68,13 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await restoreState(page, Users.admin);
 
-		await page.locator('role=banner >> text="Enter your E2E password"').click();
+		await poHomeChannel.bannerEnterE2EEPassword.click();
 
 		await page.locator('#modal-root input').fill(password);
 
 		await page.locator('#modal-root .rcx-button--primary').click();
 
-		await expect(page.locator('role=banner >> text="Enter your E2E password"')).not.toBeVisible();
+		await expect(poHomeChannel.bannerEnterE2EEPassword).not.toBeVisible();
 
 		await storeState(page, Users.admin);
 	});
@@ -100,20 +100,20 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await restoreState(page, Users.admin, { except: ['public_key', 'private_key'] });
 
-		await page.locator('role=banner >> text="Enter your E2E password"').click();
+		await poHomeChannel.bannerEnterE2EEPassword.click();
 
 		await page.locator('#modal-root input').fill(password);
 
 		await page.locator('#modal-root .rcx-button--primary').click();
 
-		await page.locator('role=banner >> text="Wasn\'t possible to decode your encryption key to be imported."').click();
+		await poHomeChannel.btnNotPossibleDecodeKey.click();
 
 		await page.locator('#modal-root input').fill(newPassword);
 
 		await page.locator('#modal-root .rcx-button--primary').click();
 
-		await expect(page.locator('role=banner >> text="Wasn\'t possible to decode your encryption key to be imported."')).not.toBeVisible();
-		await expect(page.locator('role=banner >> text="Enter your E2E password"')).not.toBeVisible();
+		await expect(poHomeChannel.btnNotPossibleDecodeKey).not.toBeVisible();
+		await expect(poHomeChannel.bannerEnterE2EEPassword).not.toBeVisible();
 	});
 
 	test('expect placeholder text in place of encrypted message', async ({ page }) => {
@@ -230,6 +230,20 @@ test.describe.serial('e2e-encryption initial setup', () => {
 			'This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.',
 		);
 		await expect(poHomeChannel.content.nthMessage(0).locator('.rcx-icon--name-key')).toBeVisible();
+	});
+
+	test('should display only the download file method when exporting messages in an e2ee room', async ({ page }) => {
+		await page.goto('/home');
+		const channelName = faker.string.uuid();
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await expect(page).toHaveURL(`/group/${channelName}`);
+
+		await poHomeChannel.dismissToast();
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.tabs.kebab.click({ force: true });
+		await poHomeChannel.tabs.btnExportMessages.click();
+		await expect(poHomeChannel.tabs.exportMessages.downloadFileMethod).toBeVisible();
 	});
 });
 
@@ -870,7 +884,7 @@ test.describe.serial('e2ee room setup', () => {
 
 		await page.goto('/home');
 
-		await expect(page.locator('role=banner >> text="Save your encryption password"')).toBeVisible();
+		await expect(poHomeChannel.bannerSaveEncryptionPassword).toBeVisible();
 
 		const channelName = faker.string.uuid();
 
@@ -885,8 +899,7 @@ test.describe.serial('e2ee room setup', () => {
 		await poHomeChannel.dismissToast();
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon.first()).toBeVisible();
-
-		await expect(page.locator('role=button[name="Save E2EE password"]')).toBeVisible();
+		await expect(poHomeChannel.btnRoomSaveE2EEPassword).toBeVisible();
 
 		await poHomeChannel.tabs.btnE2EERoomSetupDisableE2E.waitFor();
 		await expect(poHomeChannel.tabs.btnE2EERoomSetupDisableE2E).toBeVisible();
@@ -895,14 +908,14 @@ test.describe.serial('e2ee room setup', () => {
 
 		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
 
-		await page.locator('role=button[name="Save E2EE password"]').click();
+		await poHomeChannel.btnRoomSaveE2EEPassword.click();
 
 		e2eePassword = (await page.evaluate(() => localStorage.getItem('e2e.randomPassword'))) || 'undefined';
 
-		await expect(page.locator('role=dialog[name="Save your encryption password"]')).toBeVisible();
-		await expect(page.locator('#modal-root')).toContainText(e2eePassword);
+		await expect(poHomeChannel.dialogSaveE2EEPassword).toBeVisible();
+		await expect(poHomeChannel.dialogSaveE2EEPassword).toContainText(e2eePassword);
 
-		await page.locator('#modal-root >> button:has-text("I saved my password")').click();
+		await poHomeChannel.btnSavedMyPassword.click();
 
 		await poHomeChannel.content.inputMessage.waitFor();
 
@@ -937,9 +950,9 @@ test.describe.serial('e2ee room setup', () => {
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon.first()).toBeVisible();
 
-		await page.locator('role=button[name="Enter your E2E password"]').waitFor();
+		await poHomeChannel.btnRoomEnterE2EEPassword.waitFor();
 
-		await expect(page.locator('role=banner >> text="Enter your E2E password"')).toBeVisible();
+		await expect(poHomeChannel.btnRoomEnterE2EEPassword).toBeVisible();
 
 		await poHomeChannel.tabs.btnE2EERoomSetupDisableE2E.waitFor();
 		await expect(poHomeChannel.tabs.btnE2EERoomSetupDisableE2E).toBeVisible();
@@ -948,13 +961,13 @@ test.describe.serial('e2ee room setup', () => {
 
 		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
 
-		await page.locator('role=button[name="Enter your E2E password"]').click();
+		await poHomeChannel.btnRoomEnterE2EEPassword.click();
 
 		await page.locator('#modal-root input').fill(e2eePassword);
 
 		await page.locator('#modal-root .rcx-button--primary').click();
 
-		await expect(page.locator('role=banner >> text="Enter your E2E password"')).not.toBeVisible();
+		await expect(poHomeChannel.bannerEnterE2EEPassword).not.toBeVisible();
 
 		await poHomeChannel.content.inputMessage.waitFor();
 		// For E2EE to complete init setup
@@ -1011,8 +1024,8 @@ test.describe.serial('e2ee room setup', () => {
 		await page.locator('role=search >> role=searchbox').fill(channelName);
 		await page.locator(`role=search >> role=listbox >> role=link >> text="${channelName}"`).click();
 
-		await page.locator('role=button[name="Save E2EE password"]').click();
-		await page.locator('#modal-root >> button:has-text("I saved my password")').click();
+		await poHomeChannel.btnRoomSaveE2EEPassword.click();
+		await poHomeChannel.btnSavedMyPassword.click();
 
 		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
 		await expect(page.locator('.rcx-states__title')).toContainText('Check back later');

@@ -1,5 +1,154 @@
 # rocketchat-services
 
+## 2.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b845fc0093cfaf59093d1e99ccaae77ab741354a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, f11efb4011db4efcdbf978d4b76671028daeed6e, eb794b7fd6bf3ff5a37a38bccaba247ed36db744, c43220dcd8c1df86a6143d6553964ad2173903b3, 47f24c2fb795eee33cb021d56508298b8a548eec, f62326080d5e6ba36351cb0b6965a09f23856ac8, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, f62326080d5e6ba36351cb0b6965a09f23856ac8, 475120dc19fb8cc400fd8af21559cd6f3cc17eb8, 2e4af86f6463166ba4d0b37b153b89ab246e112a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, f62326080d5e6ba36351cb0b6965a09f23856ac8, 75a14b2e013aca7361cac56316f2b7e8c07d9dc8, f62326080d5e6ba36351cb0b6965a09f23856ac8]:</summary>
+
+  - @rocket.chat/rest-typings@7.2.0
+  - @rocket.chat/model-typings@1.2.0
+  - @rocket.chat/core-typings@7.2.0
+  - @rocket.chat/apps-engine@1.48.1
+  - @rocket.chat/models@1.1.0
+  - @rocket.chat/core-services@0.7.3
+  - @rocket.chat/network-broker@0.1.3
+  </details>
+
+## 2.0.2-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.0-rc.3
+  - @rocket.chat/rest-typings@7.2.0-rc.3
+  - @rocket.chat/core-services@0.7.3-rc.3
+  - @rocket.chat/model-typings@1.2.0-rc.3
+  - @rocket.chat/network-broker@0.1.3-rc.3
+  - @rocket.chat/models@1.1.0-rc.3
+  </details>
+
+## 2.0.2-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c43220dcd8c1df86a6143d6553964ad2173903b3]:</summary>
+
+  - @rocket.chat/apps-engine@1.48.1-rc.1
+  - @rocket.chat/models@1.1.0-rc.2
+  - @rocket.chat/core-services@0.7.3-rc.2
+  - @rocket.chat/core-typings@7.2.0-rc.2
+  - @rocket.chat/rest-typings@7.2.0-rc.2
+  - @rocket.chat/network-broker@0.1.3-rc.2
+  - @rocket.chat/model-typings@1.2.0-rc.2
+  </details>
+
+## 2.0.2-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.2.0-rc.1
+  - @rocket.chat/rest-typings@7.2.0-rc.1
+  - @rocket.chat/core-services@0.7.3-rc.1
+  - @rocket.chat/model-typings@1.2.0-rc.1
+  - @rocket.chat/network-broker@0.1.3-rc.1
+  - @rocket.chat/models@1.1.0-rc.1
+  </details>
+
+## 2.0.2-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b845fc0093cfaf59093d1e99ccaae77ab741354a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, f11efb4011db4efcdbf978d4b76671028daeed6e, eb794b7fd6bf3ff5a37a38bccaba247ed36db744, 47f24c2fb795eee33cb021d56508298b8a548eec, f62326080d5e6ba36351cb0b6965a09f23856ac8, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, f62326080d5e6ba36351cb0b6965a09f23856ac8, 475120dc19fb8cc400fd8af21559cd6f3cc17eb8, 2e4af86f6463166ba4d0b37b153b89ab246e112a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, f62326080d5e6ba36351cb0b6965a09f23856ac8, 75a14b2e013aca7361cac56316f2b7e8c07d9dc8, f62326080d5e6ba36351cb0b6965a09f23856ac8]:</summary>
+
+  - @rocket.chat/rest-typings@7.2.0-rc.0
+  - @rocket.chat/model-typings@1.2.0-rc.0
+  - @rocket.chat/core-typings@7.2.0-rc.0
+  - @rocket.chat/apps-engine@1.48.1-rc.0
+  - @rocket.chat/models@1.1.0-rc.0
+  - @rocket.chat/core-services@0.7.3-rc.0
+  - @rocket.chat/network-broker@0.1.3-rc.0
+  </details>
+
+## 2.0.1
+
+### Patch Changes
+
+- ([#33596](https://github.com/RocketChat/Rocket.Chat/pull/33596)) Bump meteor to 3.0.4 and Node version to 20.18.0
+
+- <details><summary>Updated dependencies [82767d8fd8a52ac348e8aded1d238e688d36129b, 80e36bfc3938775eb26aa5576f1b9b98896e1cc4, e7edeac3bdd22da0a04b8e873d5a008e249fb4be, 3569b0a9c48f8b94ebaef2f8b607c52fdb8e570a, b4841cb7206d855d7a1bc7604683a5b4a48b7176, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0, 63ccadc012499e004445ad6bc6cd2ff777aecbd1, ce7024af36fcde97b1da5b2731f6edc4a4c236b8, d398866dba725918017e3609807f9d0ab9b89b72, d398866dba725918017e3609807f9d0ab9b89b72]:</summary>
+
+  - @rocket.chat/apps-engine@1.48.0
+  - @rocket.chat/model-typings@1.1.0
+  - @rocket.chat/core-typings@7.1.0
+  - @rocket.chat/rest-typings@7.1.0
+  - @rocket.chat/core-services@0.7.2
+  - @rocket.chat/models@1.0.1
+  - @rocket.chat/network-broker@0.1.2
+  </details>
+
+## 2.0.1-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.3
+  - @rocket.chat/rest-typings@7.1.0-rc.3
+  - @rocket.chat/core-services@0.7.2-rc.3
+  - @rocket.chat/model-typings@1.1.0-rc.3
+  - @rocket.chat/network-broker@0.1.2-rc.3
+  - @rocket.chat/models@1.0.1-rc.3
+  </details>
+
+## 2.0.1-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.2
+  - @rocket.chat/rest-typings@7.1.0-rc.2
+  - @rocket.chat/core-services@0.7.2-rc.2
+  - @rocket.chat/model-typings@1.1.0-rc.2
+  - @rocket.chat/network-broker@0.1.2-rc.2
+  - @rocket.chat/models@1.0.1-rc.2
+  </details>
+
+## 2.0.1-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.1.0-rc.1
+  - @rocket.chat/rest-typings@7.1.0-rc.1
+  - @rocket.chat/core-services@0.7.2-rc.1
+  - @rocket.chat/model-typings@1.1.0-rc.1
+  - @rocket.chat/network-broker@0.1.2-rc.1
+  - @rocket.chat/models@1.0.1-rc.1
+  </details>
+
+## 2.0.1-rc.0
+
+### Patch Changes
+
+- ([#33596](https://github.com/RocketChat/Rocket.Chat/pull/33596)) Bump meteor to 3.0.4 and Node version to 20.18.0
+
+- <details><summary>Updated dependencies [82767d8fd8a52ac348e8aded1d238e688d36129b, 80e36bfc3938775eb26aa5576f1b9b98896e1cc4, e7edeac3bdd22da0a04b8e873d5a008e249fb4be, 3569b0a9c48f8b94ebaef2f8b607c52fdb8e570a, b4841cb7206d855d7a1bc7604683a5b4a48b7176, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0, 63ccadc012499e004445ad6bc6cd2ff777aecbd1, ce7024af36fcde97b1da5b2731f6edc4a4c236b8, d398866dba725918017e3609807f9d0ab9b89b72, d398866dba725918017e3609807f9d0ab9b89b72]:</summary>
+
+  - @rocket.chat/apps-engine@1.48.0-rc.0
+  - @rocket.chat/model-typings@1.1.0-rc.0
+  - @rocket.chat/core-typings@7.1.0-rc.0
+  - @rocket.chat/rest-typings@7.1.0-rc.0
+  - @rocket.chat/core-services@0.7.2-rc.0
+  - @rocket.chat/models@1.0.1-rc.0
+  - @rocket.chat/network-broker@0.1.2-rc.0
+  </details>
+
 ## 2.0.0
 
 ### Major Changes

@@ -3,10 +3,10 @@ import { Emitter } from '@rocket.chat/emitter';
 import { AuthorizationContext } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ReactNode } from 'react';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { hasPermission, hasAtLeastOnePermission, hasAllPermission, hasRole } from '../../app/authorization/client';
-import { Roles } from '../../app/models/client/models/Roles';
+import { Roles, AuthzCachedCollection } from '../../app/models/client';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
 
@@ -47,6 +47,10 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 			[],
 		),
 	);
+
+	useEffect(() => {
+		AuthzCachedCollection.listen();
+	}, []);
 
 	useEffect(() => {
 		contextValue.roleStore.roles = roles;

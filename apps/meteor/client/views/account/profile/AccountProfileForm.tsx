@@ -24,7 +24,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
@@ -64,7 +64,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		formState: { errors },
 	} = useFormContext<AccountProfileFormValues>();
 
-	const { email, avatar, username } = watch();
+	const { email, avatar, username, name: userFullName } = watch();
 
 	const previousEmail = user ? getUserEmailAddress(user) : '';
 	const previousUsername = user?.username || '';
@@ -150,6 +150,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							<UserAvatarEditor
 								etag={user?.avatarETag}
 								currentUsername={user?.username}
+								name={userFullName}
 								username={username}
 								setAvatarObj={onChange}
 								disabled={!allowUserAvatarChange}
