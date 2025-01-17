@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IMessage, IRoom, ITeam, IUpload, IUser, ImageAttachmentProps, SettingValue } from '@rocket.chat/core-typings';
+import type { IMessage, IRole, IRoom, ITeam, IUpload, IUser, ImageAttachmentProps, SettingValue } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { assert, expect } from 'chai';
@@ -13,6 +13,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { getSettingValueById, updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { assignRoleToUser, createCustomRole, deleteCustomRole } from '../../data/roles.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
@@ -3637,11 +3638,14 @@ describe('[Rooms]', () => {
 	});
 
 	describe('[/rooms.membersOrderedByRole]', () => {
+		const isEnterprise = Boolean(process.env.IS_EE);
+
 		let testChannel: IRoom;
 		let ownerUser: IUser;
 		let moderatorUser: IUser;
 		let memberUser1: IUser;
 		let memberUser2: IUser;
+		let customRole: IRole;
 
 		let ownerCredentials: { 'X-Auth-Token': string; 'X-User-Id': string };
 
@@ -3654,6 +3658,12 @@ describe('[Rooms]', () => {
 			]);
 
 			ownerCredentials = await login(ownerUser.username, password);
+
+			customRole = await createCustomRole({
+				name: `customRole.${Random.id()}`,
+				scope: 'Subscriptions',
+				description: 'Custom Role',
+			});
 
 			// Create a public channel
 			const roomCreationResponse = await createRoom({
@@ -3689,6 +3699,7 @@ describe('[Rooms]', () => {
 		after(async () => {
 			await deleteRoom({ type: 'c', roomId: testChannel._id });
 			await Promise.all([ownerUser, moderatorUser, memberUser1, memberUser2].map((user) => deleteUser(user)));
+			await deleteCustomRole({ roleId: customRole._id });
 		});
 
 		it('should return a list of members ordered by owner, moderator, then members by default', async () => {
@@ -3806,6 +3817,33 @@ describe('[Rooms]', () => {
 			];
 
 			expect(usernames).to.deep.equal(expected);
+		});
+
+		it('should not be affected by custom roles when sorting', async () => {
+			if (!isEnterprise) {
+				return;
+			}
+			await Promise.all([
+				assignRoleToUser({ username: moderatorUser.username as string, roleId: customRole._id }),
+				assignRoleToUser({ username: memberUser2.username as string, roleId: customRole._id }),
+			]);
+
+			const response = await request
+				.get(api('rooms.membersOrderedByRole'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(response.body).to.have.property('success', true);
+			const [first, second, third, fourth] = response.body.members;
+
+			expect(first.username).to.equal(ownerUser.username);
+			expect(second.username).to.equal(moderatorUser.username);
+			expect(third.username).to.equal(memberUser1.username);
+			expect(fourth.username).to.equal(memberUser2.username);
 		});
 
 		describe('Additional Visibility Tests', () => {
