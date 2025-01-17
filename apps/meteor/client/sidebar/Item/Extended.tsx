@@ -1,7 +1,7 @@
 import { Sidebar, IconButton } from '@rocket.chat/fuselage';
-import { useEffectEvent, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
+import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { ReactNode, UIEvent } from 'react';
+import type { ReactNode } from 'react';
 import { memo, useState } from 'react';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
@@ -42,15 +42,10 @@ const Extended = ({
 }: ExtendedProps) => {
 	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
-
 	const isReduceMotionEnabled = usePrefersReducedMotion();
 
-	const handleMenu = useEffectEvent((e: UIEvent<HTMLElement>) => {
-		setMenuVisibility(e.currentTarget.offsetWidth > 0 && Boolean(menu));
-	});
-
 	const handleMenuEvent = {
-		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: handleMenu,
+		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setMenuVisibility,
 	};
 
 	return (
