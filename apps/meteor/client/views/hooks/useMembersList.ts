@@ -98,7 +98,7 @@ const updateMemberInCache = (
 
 export const useMembersList = (options: MembersListOptions) => {
 	const getMembers = useEndpoint('GET', endpointsByRoomType[options.roomType]);
-	const useRealName = useSetting('UI_Use_Real_Name');
+	const useRealName = useSetting<boolean>('UI_Use_Real_Name', false);
 	const queryClient = useQueryClient();
 
 	const subscribeToNotifyLoggedIn = useStream('notify-logged');
@@ -112,7 +112,7 @@ export const useMembersList = (options: MembersListOptions) => {
 				return;
 			}
 
-			updateMemberInCache(options, queryClient, role.u._id, role as any, type, !!useRealName);
+			updateMemberInCache(options, queryClient, role.u._id, role as any, type, useRealName);
 		});
 		return unsubscribe;
 	}, [options, queryClient, subscribeToNotifyLoggedIn, useRealName]);
