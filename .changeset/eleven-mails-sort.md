@@ -6,4 +6,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Added voice calls data to statistics
+Adds voice calls data to statistics
