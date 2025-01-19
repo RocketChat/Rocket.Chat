@@ -1,12 +1,13 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, IRole } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 'react';
 import { useMemo } from 'react';
-import { Virtuoso } from 'react-virtuoso';
+import { GroupedVirtuoso } from 'react-virtuoso';
 
+import { MembersListDivider } from './MembersListDivider';
 import RoomMembersRow from './RoomMembersRow';
 import {
 	ContextualbarHeader,
@@ -21,7 +22,7 @@ import {
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 
-type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'>;
+export type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] };
 
 type RoomMembersProps = {
 	rid: IRoom['_id'];
@@ -86,6 +87,32 @@ const RoomMembers = ({
 
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 
+	const { counts, titles } = useMemo(() => {
+		const owners = members.filter((member) => member.roles?.includes('owner'));
+		const moderators = members.filter((member) => !member.roles?.includes('owner') && member.roles?.includes('moderator'));
+		const normalMembers = members.filter((member) => !member.roles?.includes('owner') && !member.roles?.includes('moderator'));
+
+		const counts = [];
+		const titles = [];
+
+		if (owners.length > 0) {
+			counts.push(owners.length);
+			titles.push(<MembersListDivider title='Owners' count={owners.length} />);
+		}
+
+		if (moderators.length > 0) {
+			counts.push(moderators.length);
+			titles.push(<MembersListDivider title='Moderators' count={moderators.length} />);
+		}
+
+		if (normalMembers.length > 0) {
+			counts.push(normalMembers.length);
+			titles.push(<MembersListDivider title='Members' count={normalMembers.length} />);
+		}
+
+		return { counts, titles };
+	}, [members]);
+
 	return (
 		<>
 			<ContextualbarHeader data-qa-id='RoomHeader-Members'>
@@ -105,7 +132,7 @@ const RoomMembers = ({
 					<Select onChange={(value): void => setType(value as 'online' | 'all')} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent p={12}>
+			<ContextualbarContent p={0} pb={12}>
 				{loading && (
 					<Box pi={24} pb={12}>
 						<Throbber size='x12' />
@@ -113,7 +140,7 @@ const RoomMembers = ({
 				)}
 
 				{error && (
-					<Box pi={12} pb={12}>
+					<Box pi={24} pb={12}>
 						<Callout type='danger'>{error.message}</Callout>
 					</Box>
 				)}
@@ -122,25 +149,25 @@ const RoomMembers = ({
 
 				{!loading && members.length > 0 && (
 					<>
-						<Box pi={18} pb={12}>
+						<Box pi={24} pb={12}>
 							<Box is='span' color='hint' fontScale='p2'>
 								{t('Showing_current_of_total', { current: members.length, total })}
 							</Box>
 						</Box>
 
 						<Box w='full' h='full' overflow='hidden' flexShrink={1}>
-							<Virtuoso
+							<GroupedVirtuoso
 								style={{
 									height: '100%',
 									width: '100%',
 								}}
-								totalCount={total}
 								overscan={50}
-								data={members}
+								groupCounts={counts}
+								groupContent={(index): ReactElement => titles[index]}
 								// eslint-disable-next-line react/no-multi-comp
 								components={{ Scroller: VirtuosoScrollbars, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
-								itemContent={(index, data): ReactElement => (
-									<RowComponent useRealName={useRealName} data={itemData} user={data} index={index} reload={reload} />
+								itemContent={(index): ReactElement => (
+									<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
 								)}
 							/>
 						</Box>
