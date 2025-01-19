@@ -2,7 +2,6 @@ import { faker } from '@faker-js/faker';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 
 import AppStatus from './AppStatus';
 import { mockedAppsContext } from '../../../../../../tests/mocks/client/marketplace';

@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { HeaderTag, HeaderTagIcon } from '../../../components/Header';
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';

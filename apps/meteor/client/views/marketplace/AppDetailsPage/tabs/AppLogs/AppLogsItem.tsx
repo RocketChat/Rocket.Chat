@@ -1,6 +1,5 @@
 import type { ILogEntry } from '@rocket.chat/core-typings';
 import { Box, AccordionItem } from '@rocket.chat/fuselage';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItemEntry from './AppLogsItemEntry';

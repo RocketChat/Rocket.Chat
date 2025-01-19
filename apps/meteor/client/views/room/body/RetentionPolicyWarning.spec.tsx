@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 
 import RetentionPolicyWarning from './RetentionPolicyWarning';
 import { createRenteionPolicySettingsMock as createMock } from '../../../../tests/mocks/client/mockRetentionPolicySettings';

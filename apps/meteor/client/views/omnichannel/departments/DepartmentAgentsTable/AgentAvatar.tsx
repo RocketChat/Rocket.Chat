@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 const AgentAvatar = ({ name, username, eTag }: { name: string; username: string; eTag?: string }) => {
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');

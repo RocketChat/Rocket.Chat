@@ -1,7 +1,8 @@
 import { Button, Modal, Select, Field, FieldGroup, FieldLabel, FieldRow, Box } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { useState, useMemo } from 'react';
+import type { FormEvent } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgentWithoutExtension from '../../../../../components/AutoCompleteAgentWithoutExtension';
@@ -23,7 +24,7 @@ const AssignAgentModal = ({ existingExtension, closeModal, reload }: AssignAgent
 
 	const assignAgent = useEndpoint('POST', '/v1/omnichannel/agent/extension');
 
-	const handleAssignment = useMutableCallback(async (e) => {
+	const handleAssignment = useEffectEvent(async (e: FormEvent) => {
 		e.preventDefault();
 		try {
 			await assignAgent({ username: agent, extension });
@@ -33,7 +34,7 @@ const AssignAgentModal = ({ existingExtension, closeModal, reload }: AssignAgent
 		reload();
 		closeModal();
 	});
-	const handleAgentChange = useMutableCallback((e) => setAgent(e));
+	const handleAgentChange = useEffectEvent((e: string) => setAgent(e));
 
 	const { value: availableExtensions, phase: state } = useEndpointData('/v1/omnichannel/extension', { params: query });
 

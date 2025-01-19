@@ -1,7 +1,7 @@
 import type { DeviceManagementPopulatedSession, DeviceManagementSession, Serialized } from '@rocket.chat/core-typings';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement, MutableRefObject } from 'react';
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DeviceManagementAdminRow from './DeviceManagementAdminRow';

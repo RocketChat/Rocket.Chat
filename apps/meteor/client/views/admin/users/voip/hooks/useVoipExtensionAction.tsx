@@ -1,9 +1,8 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { Action } from '../../../../hooks/useActionSpread';
+import type { AdminUserAction } from '../../hooks/useAdminUserInfoActions';
 import AssignExtensionModal from '../AssignExtensionModal';
 import RemoveExtensionModal from '../RemoveExtensionModal';
 
@@ -14,7 +13,7 @@ type VoipExtensionActionParams = {
 	enabled: boolean;
 };
 
-export const useVoipExtensionAction = ({ name, username, extension, enabled }: VoipExtensionActionParams): Action | undefined => {
+export const useVoipExtensionAction = ({ name, username, extension, enabled }: VoipExtensionActionParams): AdminUserAction | undefined => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
@@ -30,8 +29,8 @@ export const useVoipExtensionAction = ({ name, username, extension, enabled }: V
 	return enabled
 		? {
 				icon: extension ? 'phone-disabled' : 'phone',
-				label: extension ? t('Unassign_extension') : t('Assign_extension'),
-				action: handleExtensionAssignment,
+				content: extension ? t('Unassign_extension') : t('Assign_extension'),
+				onClick: handleExtensionAssignment,
 			}
 		: undefined;
 };

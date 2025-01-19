@@ -1,6 +1,6 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { useLayout, useRouter } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { HeaderToolbar } from '../../../../components/Header';
