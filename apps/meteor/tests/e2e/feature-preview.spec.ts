@@ -298,9 +298,12 @@ test.describe.serial('feature preview', () => {
 			await targetChannelItem.click();
 			expect(page.url()).toContain(`/channel/${targetChannel}`);
 			await poHomeChannel.content.sendMessage('hello channel');
-			await sidepanelTeamItem.focus();
-			await sidepanelTeamItem.click();
-			expect(page.url()).toContain(`/group/${sidepanelTeam}`);
+
+			await expect(async () => {
+				await sidepanelTeamItem.focus();
+				await sidepanelTeamItem.click();
+				expect(page.url()).toContain(`/group/${sidepanelTeam}`);
+			}).toPass();
 			await poHomeChannel.content.sendMessage('hello team');
 
 			await user1Page.goto(`/channel/${targetChannel}`);
