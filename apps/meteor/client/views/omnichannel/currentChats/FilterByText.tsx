@@ -2,7 +2,7 @@ import { TextInput, Box, Select, InputBox } from '@rocket.chat/fuselage';
 import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import type { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, FormEvent, Key, SetStateAction } from 'react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -42,13 +42,13 @@ const FilterByText = ({ setFilter, reload, customFields, setCustomFields, hasCus
 	const [to, setTo] = useLocalStorage('to', '');
 	const [tags, setTags] = useLocalStorage<never | { label: string; value: string }[]>('tags', []);
 
-	const handleGuest = useEffectEvent((e) => setGuest(e.target.value));
-	const handleServedBy = useEffectEvent((e) => setServedBy(e));
-	const handleStatus = useEffectEvent((e) => setStatus(e));
-	const handleDepartment = useEffectEvent((e) => setDepartment(e));
-	const handleFrom = useEffectEvent((e) => setFrom(e.target.value));
-	const handleTo = useEffectEvent((e) => setTo(e.target.value));
-	const handleTags = useEffectEvent((e) => setTags(e));
+	const handleGuest = useEffectEvent((e: FormEvent<HTMLInputElement>) => setGuest(e.currentTarget.value));
+	const handleServedBy = useEffectEvent((e: string) => setServedBy(e));
+	const handleStatus = useEffectEvent((e: Key) => setStatus(e as string));
+	const handleDepartment = useEffectEvent((e: string) => setDepartment(e));
+	const handleFrom = useEffectEvent((e: FormEvent<HTMLInputElement>) => setFrom(e.currentTarget.value));
+	const handleTo = useEffectEvent((e: FormEvent<HTMLInputElement>) => setTo(e.currentTarget.value));
+	const handleTags = useEffectEvent((e: { label: string; value: string }[]) => setTags(e));
 
 	const reset = useEffectEvent(() => {
 		setGuest('');
@@ -61,7 +61,7 @@ const FilterByText = ({ setFilter, reload, customFields, setCustomFields, hasCus
 		setCustomFields(undefined);
 	});
 
-	const onSubmit = useEffectEvent((e) => e.preventDefault());
+	const onSubmit = useEffectEvent((e: FormEvent) => e.preventDefault());
 
 	useEffect(() => {
 		setFilter((data) => ({

@@ -12,7 +12,7 @@ export const useRemoveBusinessHour = () => {
 	const removeBusinessHour = useMethod('livechat:removeBusinessHour');
 	const queryClient = useQueryClient();
 
-	const handleRemove = useEffectEvent((_id, type) => {
+	const handleRemove = useEffectEvent((_id: string, type: string) => {
 		const onDeleteBusinessHour = async () => {
 			try {
 				await removeBusinessHour(_id, type);

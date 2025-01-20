@@ -12,7 +12,7 @@ import { useCreateIntegration } from '../hooks/useCreateIntegration';
 import { useDeleteIntegration } from '../hooks/useDeleteIntegration';
 import { useUpdateIntegration } from '../hooks/useUpdateIntegration';
 
-type EditIncomingWebhookFormData = {
+export type EditIncomingWebhookFormData = {
 	enabled: boolean;
 	channel: string;
 	username: string;

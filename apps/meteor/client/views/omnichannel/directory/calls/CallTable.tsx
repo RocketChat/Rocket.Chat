@@ -41,14 +41,14 @@ const CallTable = () => {
 		500,
 	);
 
-	const onRowClick = useEffectEvent((id, token) => {
+	const onRowClick = useEffectEvent((id: string, token?: string) => {
 		directoryRoute.push(
 			{
 				tab: 'calls',
 				context: 'info',
 				id,
 			},
-			{ token },
+			token ? { token } : {},
 		);
 	});
 
