@@ -11,13 +11,15 @@ import {
 	VideoConfPopupFooter,
 	VideoConfPopupTitle,
 	VideoConfPopupFooterButtons,
+	useVideoConfSetPreferences,
+	useVideoConfCapabilities,
+	useVideoConfPreferences,
 } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
 import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
-import { useVideoConfSetPreferences, useVideoConfCapabilities, useVideoConfPreferences } from '../../../../../../contexts/VideoConfContext';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
 type StartCallPopupProps = {
