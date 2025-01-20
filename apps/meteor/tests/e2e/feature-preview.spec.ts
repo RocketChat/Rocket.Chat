@@ -153,7 +153,7 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.sidebar.markItemAsUnread(item);
 			await poHomeChannel.sidebar.escSearch();
 
-			const collapser = poHomeChannel.sidebar.firstCollapser;
+			const collapser = poHomeChannel.sidebar.getCollapseGroupByName('Channels');
 			await collapser.click();
 
 			await expect(poHomeChannel.sidebar.getItemUnreadBadge(collapser)).toBeVisible();
