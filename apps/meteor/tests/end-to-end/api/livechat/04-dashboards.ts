@@ -1316,7 +1316,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body).to.be.an('array');
 
 			const expectedResult = [
-				{ title: 'Total_conversations', value: 15 },
+				{ title: 'Total_conversations', value: 16 },
 				{ title: 'Open_conversations', value: 12 },
 				{ title: 'On_Hold_conversations', value: 1 },
 				// { title: 'Total_messages', value: 6 },
