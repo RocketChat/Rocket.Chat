@@ -1,4 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { useVoipAPI, useVoipState } from '@rocket.chat/ui-voip';
@@ -8,11 +9,14 @@ import { useTranslation } from 'react-i18next';
 import { useMediaPermissions } from '../../../views/room/composer/messageBox/hooks/useMediaPermissions';
 import { useRoom } from '../../../views/room/contexts/RoomContext';
 import { useUserInfoQuery } from '../../useUserInfoQuery';
+import { useVoipWarningModal } from '../../useVoipWarningModal';
 
 const useVoipMenuOptions = () => {
 	const { t } = useTranslation();
 	const { uids = [] } = useRoom();
 	const ownUserId = useUserId();
+
+	const dispatchWarning = useVoipWarningModal();
 
 	const [isMicPermissionDenied] = useMediaPermissions('microphone');
 
@@ -27,7 +31,9 @@ const useVoipMenuOptions = () => {
 	const isRemoteRegistered = !!remoteUser?.freeSwitchExtension;
 	const isDM = members.length === 1;
 
-	const disabled = isMicPermissionDenied || !isDM || !isRemoteRegistered || !isRegistered || isInCall || isPending;
+	const disabled = isMicPermissionDenied || !isDM || isInCall || isPending;
+	const allowed = isDM && !isInCall && !isPending;
+	const canMakeVoipCall = allowed && isRemoteRegistered && isRegistered && isEnabled && !isMicPermissionDenied;
 
 	const title = useMemo(() => {
 		if (isMicPermissionDenied) {
@@ -41,13 +47,20 @@ const useVoipMenuOptions = () => {
 		return disabled ? t('Voice_calling_disabled') : '';
 	}, [disabled, isInCall, isMicPermissionDenied, t]);
 
+	const handleOnClick = useEffectEvent(() => {
+		if (canMakeVoipCall) {
+			return makeCall(remoteUser?.freeSwitchExtension as string);
+		}
+		dispatchWarning();
+	});
+
 	return useMemo(() => {
 		const items: GenericMenuItemProps[] = [
 			{
 				id: 'start-voip-call',
 				icon: 'phone',
 				disabled,
-				onClick: () => makeCall(remoteUser?.freeSwitchExtension as string),
+				onClick: handleOnClick,
 				content: (
 					<Box is='span' title={title}>
 						{t('Voice_call')}
@@ -57,13 +70,13 @@ const useVoipMenuOptions = () => {
 		];
 
 		return {
-			items: isEnabled ? items : [],
+			items,
 			groups: ['direct'] as const,
 			disabled,
-			allowed: isEnabled,
 			order: 4,
+			allowed,
 		};
-	}, [disabled, title, t, isEnabled, makeCall, remoteUser?.freeSwitchExtension]);
+	}, [disabled, title, t, handleOnClick, allowed]);
 };
 
 export default useVoipMenuOptions;
