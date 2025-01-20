@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
+import { setSettingValueById } from './utils';
 import { expect, test } from './utils/test';
 
 const CardIds = {
@@ -27,8 +28,11 @@ test.describe.serial('homepage', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
-			expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
+			await Promise.all([
+				setSettingValueById(api, 'Layout_Home_Custom_Block_Visible', false),
+				setSettingValueById(api, 'Layout_Custom_Body_Only', false),
+			]);
+
 			await adminPage.close();
 		});
 
@@ -44,7 +48,7 @@ test.describe.serial('homepage', () => {
 
 		test.describe('custom body with empty custom content', async () => {
 			test.beforeAll(async ({ api }) => {
-				await expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
+				await setSettingValueById(api, 'Layout_Home_Body', '');
 			});
 
 			test('visibility and button functionality in custom body with empty custom content', async () => {
@@ -65,7 +69,7 @@ test.describe.serial('homepage', () => {
 
 		test.describe('custom body with custom content', () => {
 			test.beforeAll(async ({ api }) => {
-				await expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello admin' })).status()).toBe(200);
+				await setSettingValueById(api, 'Layout_Home_Body', { value: 'Hello admin' });
 			});
 
 			test('visibility and button functionality in custom body with custom content', async () => {
@@ -83,9 +87,11 @@ test.describe.serial('homepage', () => {
 				test.skip(!IS_EE, 'Enterprise Only');
 
 				test.beforeAll(async ({ api }) => {
-					await expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello admin' })).status()).toBe(200);
-					await expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
-					await expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
+					await Promise.all([
+						setSettingValueById(api, 'Layout_Home_Body', 'Hello admin'),
+						setSettingValueById(api, 'Layout_Home_Custom_Block_Visible', true),
+						setSettingValueById(api, 'Layout_Custom_Body_Only', true),
+					]);
 				});
 
 				test('display custom content only', async () => {
@@ -110,7 +116,7 @@ test.describe.serial('homepage', () => {
 		const notVisibleCards = [CardIds.Users, CardIds.Custom];
 
 		test.beforeAll(async ({ api, browser }) => {
-			expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
+			await setSettingValueById(api, 'Layout_Home_Body', { value: '' });
 			regularUserPage = await browser.newPage({ storageState: Users.user2.state });
 			await regularUserPage.goto('/home');
 			await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
@@ -148,16 +154,17 @@ test.describe.serial('homepage', () => {
 
 		test.describe('custom values', () => {
 			test.beforeAll(async ({ api }) => {
-				expect((await api.post('/settings/Site_Name', { value: 'NewSiteName' })).status()).toBe(200);
-				expect((await api.post('/settings/Layout_Home_Title', { value: 'NewTitle' })).status()).toBe(200);
+				await Promise.all([
+					setSettingValueById(api, 'Site_Name', 'NewSiteName'),
+					setSettingValueById(api, 'Layout_Home_Title', 'NewTitle'),
+				]);
 
 				await regularUserPage.goto('/home');
 				await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
 			});
 
 			test.afterAll(async ({ api }) => {
-				expect((await api.post('/settings/Site_Name', { value: 'Rocket.Chat' })).status()).toBe(200);
-				expect((await api.post('/settings/Layout_Home_Title', { value: 'Home' })).status()).toBe(200);
+				await Promise.all([setSettingValueById(api, 'Site_Name', 'Rocket.Chat'), setSettingValueById(api, 'Layout_Home_Title', 'Home')]);
 			});
 
 			test('expect welcome text and header text to be correct', async () => {
@@ -173,16 +180,20 @@ test.describe.serial('homepage', () => {
 
 		test.describe('custom body with content', () => {
 			test.beforeAll(async ({ api }) => {
-				expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello' })).status()).toBe(200);
-				expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
+				await Promise.all([
+					setSettingValueById(api, 'Layout_Home_Body', 'Hello'),
+					setSettingValueById(api, 'Layout_Home_Custom_Block_Visible', true),
+				]);
 
 				await regularUserPage.goto('/home');
 				await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
 			});
 
 			test.afterAll(async ({ api }) => {
-				expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
-				expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
+				await Promise.all([
+					setSettingValueById(api, 'Layout_Home_Body', ''),
+					setSettingValueById(api, 'Layout_Home_Custom_Block_Visible', false),
+				]);
 			});
 
 			test('expect custom body to be visible', async () => {
@@ -193,11 +204,11 @@ test.describe.serial('homepage', () => {
 				test.skip(!IS_EE, 'Enterprise Only');
 
 				test.beforeAll(async ({ api }) => {
-					expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
+					await setSettingValueById(api, 'Layout_Custom_Body_Only', true);
 				});
 
 				test.afterAll(async ({ api }) => {
-					expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
+					await setSettingValueById(api, 'Layout_Custom_Body_Only', false);
 				});
 
 				test('expect default layout not be visible and custom body visible', async () => {
