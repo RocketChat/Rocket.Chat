@@ -173,10 +173,12 @@ jobs:
           restore-keys: |
             vite-local-cache-${{ runner.os }}-
 
-      - uses: rharkor/caching-for-turbo@v1.5
-
       - name: Build Rocket.Chat Packages
         run: yarn build
+        env:
+          TURBO_API: ${{ vars.TURBOAPI }}
+          TURBO_TOKEN: ${{ vars.TURBOREMOTEAPIKEY }}
+          TURBO_TEAM: rocket.chat
 
       - name: Store turbo build
         uses: actions/upload-artifact@v4
@@ -191,9 +193,6 @@ jobs:
     needs: [release-versions, packages-build]
     steps:
       - uses: actions/checkout@v4
-
-      - uses: rharkor/caching-for-turbo@v1.5
-        if: github.event.action != 'closed'
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -210,6 +209,10 @@ jobs:
           path: .turbo/cache
       - name: Build
         if: github.event.action != 'closed'
+        env:
+          TURBO_API: ${{ vars.TURBOAPI }}
+          TURBO_TOKEN: ${{ vars.TURBOREMOTEAPIKEY }}
+          TURBO_TEAM: rocket.chat
         run: |
           yarn turbo run build-preview
           yarn turbo run .:build-preview-move
