@@ -189,7 +189,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	updateEmailThreadByRoomId(roomId: string, threadIds: string[] | string): Promise<UpdateResult>;
 	findOneLastServedAndClosedByVisitorToken(visitorToken: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
 	findOneByVisitorToken(visitorToken: string, fields?: FindOptions<IOmnichannelRoom>['projection']): Promise<IOmnichannelRoom | null>;
-	updateRoomCount(session?: ClientSession): Promise<ISetting | null>;
+	updateRoomCount(): Promise<ISetting | null>;
 	findOpenByVisitorToken(
 		visitorToken: string,
 		options?: FindOptions<IOmnichannelRoom>,
