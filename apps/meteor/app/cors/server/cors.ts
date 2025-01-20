@@ -16,8 +16,6 @@ type NextFunction = (err?: any) => void;
 
 const logger = new Logger('CORS');
 
-let templatePromise: Promise<void> | void;
-
 declare module 'meteor/webapp' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace WebApp {
@@ -25,12 +23,10 @@ declare module 'meteor/webapp' {
 	}
 }
 
-settings.watch<boolean>(
-	'Enable_CSP',
-	Meteor.bindEnvironment(async (enabled) => {
-		templatePromise = WebAppInternals.setInlineScriptsAllowed(!enabled);
-	}),
-);
+let templatePromise: Promise<void> | void;
+export async function setInlineScriptsAllowed(allowed: boolean): Promise<void> {
+	templatePromise = WebAppInternals.setInlineScriptsAllowed(allowed);
+}
 
 WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
 	if (templatePromise) {
@@ -109,9 +105,9 @@ declare module 'meteor/webapp' {
 }
 
 let cachingVersion = '';
-settings.watch<string>('Troubleshoot_Force_Caching_Version', (value) => {
-	cachingVersion = String(value).trim();
-});
+export function setCachingVersion(value: string): void {
+	cachingVersion = value.trim();
+}
 
 // @ts-expect-error - accessing internal property of webapp
 WebAppInternals.staticFilesMiddleware = function (

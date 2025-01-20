@@ -1,11 +1,11 @@
 import debounce from 'lodash.debounce';
 
-import { settings } from '../../app/settings/server/cached';
+import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
 import { initCustomOAuthServices } from '../lib/oauth/initCustomOAuthServices';
 import { removeOAuthService } from '../lib/oauth/removeOAuthService';
 import { updateOAuthServices } from '../lib/oauth/updateOAuthServices';
 
-export async function configureOAuth() {
+export async function configureOAuth(settings: ICachedSettings): Promise<void> {
 	const _updateOAuthServices = debounce(updateOAuthServices, 2000);
 	settings.watchByRegex(/^Accounts_OAuth_.+/, () => {
 		return _updateOAuthServices();
