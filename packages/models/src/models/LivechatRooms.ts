@@ -80,6 +80,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			{ key: { servedBy: 1, ts: 1 }, partialFilterExpression: { servedBy: { $exists: true }, t: 'l' } },
 			{ key: { 'v.activity': 1, 'ts': 1 }, partialFilterExpression: { 'v.activity': { $exists: true }, 't': 'l' } },
 			{ key: { contactId: 1 }, partialFilterExpression: { contactId: { $exists: true }, t: 'l' } },
+			{ key: { t: 1, departmentId: 1, departmentAncestors: 1, ts: -1, onHold: 1, open: 1, servedBy: 1 }, sparse: true },
 		];
 	}
 
@@ -1334,6 +1335,9 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			query.open = true;
 			query.onHold = { $ne: true };
 		}
+
+		console.log({ query });
+		console.log(JSON.stringify(query));
 
 		return this.findPaginated(query, {
 			sort: options.sort || { name: 1 },
