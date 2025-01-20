@@ -5,18 +5,17 @@ import type { TFunction } from 'i18next';
 export const mapPermissionKeys = ({ t, permissions }: { t: TFunction; permissions: IPermission[] }) =>
 	permissions.map(({ _id, settingId, group, section }) => ({
 		_id,
-		i18nLabels: [group && t(group), section && t(section), settingId && t(settingId), t(_id)].filter(Boolean) as string[],
+		i18nLabels: [group && t(group), section && t(section), settingId && t(settingId), t(_id)].filter(Boolean).join(' '),
 	}));
 
-export const filterPermissionKeys = (permissionKeys: { _id: string; i18nLabels: string[] }[], filter: string): string[] => {
-	const words = escapeRegExp(filter).split(' ').filter(Boolean);
-	return permissionKeys
-		.filter(({ _id, i18nLabels }) =>
-			words.every(
-				(word) =>
-					_id.toLocaleLowerCase().includes(word.toLocaleLowerCase()) ||
-					i18nLabels.join(' ').toLocaleLowerCase().includes(word.toLocaleLowerCase()),
-			),
-		)
-		.map(({ _id }) => _id);
+export const filterPermissionKeys = (permissionKeys: { _id: string; i18nLabels: string }[], filter: string): string[] => {
+	const words = filter
+		.split(' ')
+		.filter(Boolean)
+		.map((word) => `(?=.*${escapeRegExp(word)})`)
+		.join('');
+
+	const regex = new RegExp(`${words}.*`, 'gi');
+
+	return permissionKeys.filter(({ i18nLabels }) => i18nLabels.match(regex)).map(({ _id }) => _id);
 };
