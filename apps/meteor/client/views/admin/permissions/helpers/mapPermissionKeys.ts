@@ -5,7 +5,7 @@ import type { TFunction } from 'i18next';
 export const mapPermissionKeys = ({ t, permissions }: { t: TFunction; permissions: IPermission[] }) =>
 	permissions.map(({ _id, settingId, group, section }) => ({
 		_id,
-		i18nLabels: [group && t(group), section && t(section), settingId && t(settingId), t(_id)].filter(Boolean).join(' '),
+		i18nLabels: [group && t(group), section && t(section), settingId && t(settingId), t(_id), _id].filter(Boolean).join(' '),
 	}));
 
 export const filterPermissionKeys = (permissionKeys: { _id: string; i18nLabels: string }[], filter: string): string[] => {
