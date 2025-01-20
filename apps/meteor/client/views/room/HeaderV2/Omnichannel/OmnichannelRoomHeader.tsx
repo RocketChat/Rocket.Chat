@@ -1,5 +1,6 @@
 import { useLayout, useRouter } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useMemo } from 'react';
+import type { ReactNode } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { HeaderToolbar } from '../../../../components/Header';
@@ -12,15 +13,15 @@ import QuickActions from './QuickActions';
 
 type OmnichannelRoomHeaderProps = {
 	slots: {
-		start?: unknown;
-		preContent?: unknown;
-		insideContent?: unknown;
-		posContent?: unknown;
-		end?: unknown;
+		start?: ReactNode;
+		preContent?: ReactNode;
+		insideContent?: ReactNode;
+		posContent?: ReactNode;
+		end?: ReactNode;
 		toolbox?: {
-			pre?: unknown;
-			content?: unknown;
-			pos?: unknown;
+			pre?: ReactNode;
+			content?: ReactNode;
+			pos?: ReactNode;
 		};
 	};
 };

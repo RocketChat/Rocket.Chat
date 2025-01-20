@@ -1,6 +1,6 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import type { ReactElement } from 'react';
 
 import CurrentChatsPage from './CurrentChatsPage';
@@ -13,7 +13,7 @@ const CurrentChatsRoute = (): ReactElement => {
 	const canViewCurrentChats = usePermission('view-livechat-current-chats');
 	const router = useRouter();
 
-	const onRowClick = useMutableCallback((_id) => {
+	const onRowClick = useEffectEvent((_id: string) => {
 		router.navigate(`/omnichannel/current/${_id}`);
 	});
 

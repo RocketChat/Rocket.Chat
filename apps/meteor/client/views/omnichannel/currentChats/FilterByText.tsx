@@ -1,9 +1,9 @@
 import { TextInput, Box, Select, InputBox } from '@rocket.chat/fuselage';
-import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import type { Dispatch, SetStateAction } from 'react';
-import React, { useEffect } from 'react';
+import type { Dispatch, FormEvent, Key, SetStateAction } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
@@ -42,15 +42,15 @@ const FilterByText = ({ setFilter, reload, customFields, setCustomFields, hasCus
 	const [to, setTo] = useLocalStorage('to', '');
 	const [tags, setTags] = useLocalStorage<never | { label: string; value: string }[]>('tags', []);
 
-	const handleGuest = useMutableCallback((e) => setGuest(e.target.value));
-	const handleServedBy = useMutableCallback((e) => setServedBy(e));
-	const handleStatus = useMutableCallback((e) => setStatus(e));
-	const handleDepartment = useMutableCallback((e) => setDepartment(e));
-	const handleFrom = useMutableCallback((e) => setFrom(e.target.value));
-	const handleTo = useMutableCallback((e) => setTo(e.target.value));
-	const handleTags = useMutableCallback((e) => setTags(e));
+	const handleGuest = useEffectEvent((e: FormEvent<HTMLInputElement>) => setGuest(e.currentTarget.value));
+	const handleServedBy = useEffectEvent((e: string) => setServedBy(e));
+	const handleStatus = useEffectEvent((e: Key) => setStatus(e as string));
+	const handleDepartment = useEffectEvent((e: string) => setDepartment(e));
+	const handleFrom = useEffectEvent((e: FormEvent<HTMLInputElement>) => setFrom(e.currentTarget.value));
+	const handleTo = useEffectEvent((e: FormEvent<HTMLInputElement>) => setTo(e.currentTarget.value));
+	const handleTags = useEffectEvent((e: { label: string; value: string }[]) => setTags(e));
 
-	const reset = useMutableCallback(() => {
+	const reset = useEffectEvent(() => {
 		setGuest('');
 		setServedBy('all');
 		setStatus('all');
@@ -61,7 +61,7 @@ const FilterByText = ({ setFilter, reload, customFields, setCustomFields, hasCus
 		setCustomFields(undefined);
 	});
 
-	const onSubmit = useMutableCallback((e) => e.preventDefault());
+	const onSubmit = useEffectEvent((e: FormEvent) => e.preventDefault());
 
 	useEffect(() => {
 		setFilter((data) => ({
@@ -77,13 +77,13 @@ const FilterByText = ({ setFilter, reload, customFields, setCustomFields, hasCus
 		}));
 	}, [setFilter, guest, servedBy, status, department, from, to, tags, customFields]);
 
-	const handleClearFilters = useMutableCallback(() => {
+	const handleClearFilters = useEffectEvent(() => {
 		reset();
 	});
 
 	const removeClosedChats = useMethod('livechat:removeAllClosedRooms');
 
-	const handleRemoveClosed = useMutableCallback(async () => {
+	const handleRemoveClosed = useEffectEvent(async () => {
 		const onDeleteAll = async (): Promise<void> => {
 			try {
 				await removeClosedChats();

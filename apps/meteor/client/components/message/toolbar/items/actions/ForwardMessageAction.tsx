@@ -1,6 +1,5 @@
 import { type IMessage, isE2EEMessage } from '@rocket.chat/core-typings';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getPermaLink } from '../../../../../lib/getPermaLink';

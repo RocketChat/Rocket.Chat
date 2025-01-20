@@ -1,11 +1,11 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import React from 'react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SidebarTogglerBadge from './SidebarTogglerBadge';
 
 type SideBarTogglerButtonProps = {
-	badge?: number | unknown;
+	badge?: ReactNode;
 	onClick: () => void;
 };
 

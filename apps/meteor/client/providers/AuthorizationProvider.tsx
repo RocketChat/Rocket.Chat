@@ -3,7 +3,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { AuthorizationContext } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ReactNode } from 'react';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { hasPermission, hasAtLeastOnePermission, hasAllPermission, hasRole } from '../../app/authorization/client';
 import { Roles, AuthzCachedCollection } from '../../app/models/client';

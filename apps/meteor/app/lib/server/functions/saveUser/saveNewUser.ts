@@ -1,7 +1,5 @@
-import type { DeepPartial, DeepWritable, IUser, RequiredField } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import Gravatar from 'gravatar';
-import type { UpdateFilter } from 'mongodb';
 
 import { getNewUserRoles } from '../../../../../server/services/user/lib/getNewUserRoles';
 import { settings } from '../../../../settings/server';
@@ -34,25 +32,25 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 
 	const _id = await Accounts.createUserAsync(createUser);
 
-	const updateUser: RequiredField<DeepWritable<UpdateFilter<DeepPartial<IUser>>>, '$set'> = {
-		$set: {
-			...(typeof userData.name !== 'undefined' && { name: userData.name }),
-			settings: userData.settings || {},
-		},
-	};
+	const updater = Users.getUpdater();
+
+	updater.set('settings', userData.settings || {});
+	if (typeof userData.name !== 'undefined') {
+		updater.set('name', userData.name);
+	}
 
 	if (typeof userData.requirePasswordChange !== 'undefined') {
-		updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
+		updater.set('requirePasswordChange', userData.requirePasswordChange);
 	}
 
 	if (typeof userData.verified === 'boolean') {
-		updateUser.$set['emails.0.verified'] = userData.verified;
+		updater.set('emails.0.verified', userData.verified);
 	}
 
-	handleBio(updateUser, userData.bio);
-	handleNickname(updateUser, userData.nickname);
+	handleBio(updater, userData.bio);
+	handleNickname(updater, userData.nickname);
 
-	await Users.updateOne({ _id }, updateUser as UpdateFilter<IUser>);
+	await Users.updateFromUpdater({ _id }, updater);
 
 	if (userData.sendWelcomeEmail) {
 		await sendWelcomeEmail(userData);

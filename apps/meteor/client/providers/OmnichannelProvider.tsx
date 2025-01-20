@@ -9,7 +9,7 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useUser, useSetting, usePermission, useMethod, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
+import { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
 
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
@@ -78,9 +78,11 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 
 	const {
 		data: { priorities = [] } = {},
-		isInitialLoading: isLoadingPriorities,
+		isLoading: isLoadingPriorities,
 		isError: isErrorPriorities,
-	} = useQuery(['/v1/livechat/priorities'], () => getPriorities({ sort: JSON.stringify({ sortItem: 1 }) }), {
+	} = useQuery({
+		queryKey: ['/v1/livechat/priorities'],
+		queryFn: () => getPriorities({ sort: JSON.stringify({ sortItem: 1 }) }),
 		staleTime: Infinity,
 		enabled: isPrioritiesEnabled,
 	});
@@ -93,7 +95,9 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		}
 
 		return subscribe('omnichannel.priority-changed', () => {
-			queryClient.invalidateQueries(['/v1/livechat/priorities']);
+			queryClient.invalidateQueries({
+				queryKey: ['/v1/livechat/priorities'],
+			});
 		});
 	}, [isPrioritiesEnabled, queryClient, subscribe]);
 

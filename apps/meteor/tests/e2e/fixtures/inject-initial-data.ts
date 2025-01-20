@@ -74,7 +74,7 @@ export default async function injectInitialData() {
 			connection
 				.db()
 				.collection('rocketchat_settings')
-				.updateOne({ _id: setting._id }, { $set: { value: setting.value } }),
+				.updateOne({ _id: setting._id as any }, { $set: { value: setting.value } }),
 		),
 	);
 

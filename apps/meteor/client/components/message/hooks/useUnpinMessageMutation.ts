@@ -26,7 +26,7 @@ export const useUnpinMessageMutation = () => {
 			updatePinMessage(message, { pinned: true });
 		},
 		onSettled: (_data, _error, message) => {
-			queryClient.invalidateQueries(roomsQueryKeys.pinnedMessages(message.rid));
+			queryClient.invalidateQueries({ queryKey: roomsQueryKeys.pinnedMessages(message.rid) });
 		},
 	});
 };
