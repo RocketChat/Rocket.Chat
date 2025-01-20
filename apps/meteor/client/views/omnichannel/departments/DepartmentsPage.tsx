@@ -14,10 +14,14 @@ const DepartmentsPage = () => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
-	const handleTabClick = useEffectEvent((tab) =>
-		departmentsRoute.push({
-			context: tab,
-		}),
+	const handleTabClick = useEffectEvent((tab: undefined | 'archived') =>
+		departmentsRoute.push(
+			tab
+				? {
+						context: tab,
+					}
+				: {},
+		),
 	);
 
 	const onAddNew = useEffectEvent(() =>

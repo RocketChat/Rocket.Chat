@@ -13,7 +13,7 @@ export const useRemoveUnit = () => {
 	const queryClient = useQueryClient();
 	const removeUnit = useMethod('livechat:removeUnit');
 
-	const handleDelete = useEffectEvent((id) => {
+	const handleDelete = useEffectEvent((id: string) => {
 		const onDeleteAgent = async () => {
 			try {
 				await removeUnit(id);

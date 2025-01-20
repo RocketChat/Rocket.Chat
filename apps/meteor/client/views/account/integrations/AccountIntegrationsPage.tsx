@@ -37,7 +37,7 @@ const AccountIntegrationsPage = () => {
 		},
 	});
 
-	const handleSubmitForm = useEffectEvent(({ accountSelected }) => {
+	const handleSubmitForm = useEffectEvent(({ accountSelected }: { accountSelected: string }) => {
 		removeMutation.mutate({ accountSelected });
 	});
 

@@ -52,7 +52,7 @@ type AdminUserFormProps = {
 	context: string;
 	refetchUserFormData?: () => void;
 	roleData: { roles: IRole[] } | undefined;
-	roleError: unknown;
+	roleError: Error | null;
 };
 
 export type UserFormProps = Omit<UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string }, 'fields'>;
@@ -366,7 +366,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 					<Field>
 						<FieldLabel htmlFor={rolesId}>{t('Roles')}</FieldLabel>
 						<FieldRow>
-							{roleError && <Callout>{roleError}</Callout>}
+							{roleError && <Callout>{roleError.message}</Callout>}
 							{!roleError && (
 								<Controller
 									control={control}
