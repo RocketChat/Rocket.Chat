@@ -16,7 +16,17 @@ const TeamsVoipConfigModal = ({ onClose, onConfirm, isAdmin, hasModule }: TeamsV
 	const { t } = useTranslation();
 	const openExternalLink = useExternalLink();
 
-	const contactSales = isAdmin && !hasModule;
+	const getCalloutWarning = () => {
+		if (isAdmin && !hasModule) {
+			return t('Contact_sales_start_using_VoIP');
+		}
+
+		if (!isAdmin && !hasModule) {
+			return t('Contact_your_workspace_admin_to_start_using_VoIP');
+		}
+
+		return t('VoIP_available_setup_freeswitch_server_details');
+	};
 
 	return (
 		<Modal>
@@ -63,8 +73,8 @@ const TeamsVoipConfigModal = ({ onClose, onConfirm, isAdmin, hasModule }: TeamsV
 				<Box fontScale='h3' mbs={24}>
 					{t('Required_action')}
 				</Box>
-				<Callout mbs={12} mbe={24} title={contactSales ? t('Subscription_add-on_required') : t('FreeSwitch_setup_required')} type='warning'>
-					{contactSales ? t('Contact_sales_start_using_VoIP') : t('VoIP_available_setup_freeswitch_server_details')}
+				<Callout mbs={12} mbe={24} title={!hasModule ? t('Subscription_add-on_required') : t('FreeSwitch_setup_required')} type='warning'>
+					{getCalloutWarning()}
 				</Callout>
 			</Modal.Content>
 			<Modal.Footer justifyContent={!isAdmin && hasModule ? 'space-between' : 'end'}>
@@ -76,7 +86,7 @@ const TeamsVoipConfigModal = ({ onClose, onConfirm, isAdmin, hasModule }: TeamsV
 							{t('Open_settings')}
 						</Button>
 					)}
-					{contactSales && (
+					{isAdmin && !hasModule && (
 						<Button primary onClick={() => openExternalLink(GET_ADDONS_LINK)}>
 							{t('Contact_sales')}
 						</Button>
