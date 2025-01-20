@@ -26,7 +26,7 @@ describe('with private apps enabled', () => {
 		));
 
 	it('should inform that the marketplace is unavailable due unsupported version', () => {
-		render(<UnsupportedEmptyState />, { wrapper: appRoot.build(), legacyRoot: true });
+		render(<UnsupportedEmptyState />, { wrapper: appRoot.build() });
 
 		expect(screen.getByRole('heading', { name: 'Marketplace unavailable' })).toBeInTheDocument();
 	});

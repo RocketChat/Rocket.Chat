@@ -75,7 +75,9 @@ const UserStatusMenu = ({
 		[hide, reset],
 	);
 
-	useEffect(() => onChange(status), [status, onChange]);
+	useEffect(() => {
+		onChange(status);
+	}, [status, onChange]);
 
 	return (
 		<>

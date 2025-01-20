@@ -5,7 +5,6 @@ import { useKatex } from './useKatex';
 
 it('should return enabled true dollar syntax true and parenthesis syntax true if all settings is enabled', () => {
 	const { result } = renderHook(() => useKatex(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withSetting('Katex_Enabled', true)
 			.withSetting('Katex_Dollar_Syntax', true)
@@ -20,7 +19,6 @@ it('should return enabled true dollar syntax true and parenthesis syntax true if
 
 it('should return enabled false dollar syntax false and parenthesis syntax false if all settings is disabled', () => {
 	const { result } = renderHook(() => useKatex(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withSetting('Katex_Enabled', false)
 			.withSetting('Katex_Dollar_Syntax', false)
@@ -35,7 +33,6 @@ it('should return enabled false dollar syntax false and parenthesis syntax false
 
 it('should return enabled true dollar syntax false and parenthesis syntax false if Katex_Enabled settings is enable', () => {
 	const { result } = renderHook(() => useKatex(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withSetting('Katex_Enabled', true)
 			.withSetting('Katex_Dollar_Syntax', false)
@@ -50,7 +47,6 @@ it('should return enabled true dollar syntax false and parenthesis syntax false 
 
 it('should return enabled false dollar syntax false and parenthesis syntax false if DollarSyntaxEnabled and ParenthesisSyntaxEnabled settings is enable', () => {
 	const { result } = renderHook(() => useKatex(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withSetting('Katex_Enabled', false)
 			.withSetting('Katex_Dollar_Syntax', true)

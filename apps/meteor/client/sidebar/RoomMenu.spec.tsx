@@ -39,7 +39,6 @@ const renderOptions = {
 		.withPermission('leave-c')
 		.withPermission('leave-p')
 		.build(),
-	legacyRoot: true,
 };
 
 it('should display all the menu options for regular rooms', async () => {

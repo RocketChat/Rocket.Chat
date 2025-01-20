@@ -100,7 +100,11 @@ const CannedResponseForm = () => {
 				)}
 			</Field>
 			<Field>
-				<Controller name='tags' control={control} render={({ field: { value, onChange } }) => <Tags handler={onChange} tags={value} />} />
+				<Controller
+					name='tags'
+					control={control}
+					render={({ field: { value, onChange } }) => <Tags handler={onChange} tags={value as unknown as string[]} />} // FIXME: fix types
+				/>
 			</Field>
 			{(hasManagerPermission || hasMonitorPermission) && (
 				<>

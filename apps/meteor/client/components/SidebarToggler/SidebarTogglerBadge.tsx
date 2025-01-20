@@ -15,7 +15,7 @@ const SidebarTogglerBadge = ({ children }: SidebarTogglerBadgeProps) => (
 			right: 3px;
 		`}
 	>
-		<Badge variant='danger' children={children} />
+		<Badge variant='danger'>{children}</Badge>
 	</Box>
 );
 

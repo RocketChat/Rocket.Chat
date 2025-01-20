@@ -9,7 +9,6 @@ it('should work', async () => {
 	const endpointHandler = jest.fn(() => null);
 
 	const { result } = renderHook(() => useToggleFavoriteMutation(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withEndpoint('POST', '/v1/rooms.favorite', endpointHandler).build(),
 	});
 
@@ -27,7 +26,6 @@ it('should invalidate any subscription queries', async () => {
 	jest.spyOn(queryClient, 'invalidateQueries');
 
 	const { result } = renderHook(() => useToggleFavoriteMutation(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('POST', '/v1/rooms.favorite', async () => null)
 			.wrap((children) => <QueryClientProvider client={queryClient} children={children} />)

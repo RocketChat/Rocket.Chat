@@ -17,7 +17,6 @@ const renderMatrixFederationSearch = (
 	],
 ) => {
 	return render(<></>, {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/federation/listServersByUser', () => ({
 				servers: serverList,
