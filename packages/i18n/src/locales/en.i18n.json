@@ -2873,7 +2873,7 @@
   "Integration_Retry_Failed_Url_Calls": "Retry Failed Url Calls",
   "Integration_Retry_Failed_Url_Calls_Description": "Should the integration try a reasonable amount of time if the call out to the url fails?",
   "Integration_Run_When_Message_Is_Edited": "Run On Edits",
-  "Integration_Run_When_Message_Is_Edited_Description": "Should the integration run when the message is edited? Setting this to false will cause the integration to only run on **new** messages.",
+  "Integration_Run_When_Message_Is_Edited_Description": "Should the integration run when the message is edited? Setting this to false will cause the integration to only run on <strong>new</strong> messages.",
   "Integration_updated": "Integration has been updated.",
   "Integration_Word_Trigger_Placement": "Word Placement Anywhere",
   "Integration_Word_Trigger_Placement_Description": "Should the Word be Triggered when placed anywhere in the sentence other than the beginning?",
