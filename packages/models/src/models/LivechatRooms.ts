@@ -2486,15 +2486,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return updater.addToSet('v.activity', period);
 	}
 
-	markVisitorActiveForPeriod(rid: string, period: string): Promise<UpdateResult> {
-		const query = {
-			_id: rid,
-		};
-		const updater = this.getVisitorActiveForPeriodUpdateQuery(period);
-
-		return this.updateOne(query, updater.getUpdateFilter());
-	}
-
 	async getMACStatisticsForPeriod(period: string): Promise<MACStats[]> {
 		return this.col
 			.aggregate<MACStats>([
