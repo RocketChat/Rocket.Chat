@@ -86,6 +86,11 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 		queryFn: () => getDirectoryData(query),
 	});
 
+	if(data?.result.length > 0)
+	{
+		data?.result = data?.result.sort((a, b) => (a.name < b.name) ? -1 : 1);
+	}
+
 	const handleClick = useCallback(
 		(username: IUser['username']) => (e: KeyboardEvent | MouseEvent) => {
 			if (!username) {
