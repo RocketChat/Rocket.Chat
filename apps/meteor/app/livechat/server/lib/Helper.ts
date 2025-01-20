@@ -140,7 +140,6 @@ export const createLivechatRoom = async (
 			alias: 'unknown',
 		},
 		queuedAt: newRoomAt,
-		livechatData: undefined,
 		priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
 		estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 		...extraRoomInfo,

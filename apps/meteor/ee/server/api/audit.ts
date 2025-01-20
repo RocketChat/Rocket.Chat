@@ -73,7 +73,7 @@ API.v1.addRoute(
 					_id: this.user._id,
 					username: this.user.username,
 					name: this.user.name,
-					avatarETag: this.user.avatarETag,
+					...(this.user.avatarETag && { avatarETag: this.user.avatarETag }),
 				},
 				fields: {
 					msg: 'Room_members_list',
