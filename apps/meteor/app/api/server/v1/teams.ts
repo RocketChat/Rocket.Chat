@@ -441,9 +441,9 @@ API.v1.addRoute(
 			const canSeeAllMembers = await hasPermissionAsync(this.userId, 'view-all-teams', team.roomId);
 
 			const query = {
-				username: username ? new RegExp(escapeRegExp(username), 'i') : undefined,
-				name: name ? new RegExp(escapeRegExp(name), 'i') : undefined,
-				status: status ? { $in: status as UserStatus[] } : undefined,
+				...(username && { username: new RegExp(escapeRegExp(username), 'i') }),
+				...(name && { name: new RegExp(escapeRegExp(name), 'i') }),
+				...(status && { status: { $in: status as UserStatus[] } }),
 			};
 
 			const { records, total } = await Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, query);

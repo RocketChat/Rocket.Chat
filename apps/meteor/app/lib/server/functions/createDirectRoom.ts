@@ -122,7 +122,7 @@ export async function createDirectRoom(
 		);
 
 		if (typeof result === 'object') {
-			Object.assign(roomInfo, result);
+			Object.assign(roomInfo, Object.fromEntries(Object.entries(result).filter(([_, v]) => v != null)));
 		}
 
 		delete tmpRoom._USERNAMES;
