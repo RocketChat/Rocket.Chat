@@ -4,7 +4,6 @@ import { UserContext, SettingsContext } from '@rocket.chat/ui-contexts';
 import type { Meta, StoryFn } from '@storybook/react';
 import type { ObjectId } from 'mongodb';
 import type { ContextType } from 'react';
-import React from 'react';
 
 import Sidebar from './SidebarRegion';
 

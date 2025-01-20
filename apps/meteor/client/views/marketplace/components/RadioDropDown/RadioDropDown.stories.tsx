@@ -1,5 +1,5 @@
 import type { StoryFn } from '@storybook/react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { useRadioToggle } from '../../hooks/useRadioToggle';
 import RadioButtonList from '../RadioButtonList';

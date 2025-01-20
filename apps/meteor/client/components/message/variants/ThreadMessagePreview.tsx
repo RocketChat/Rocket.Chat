@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';

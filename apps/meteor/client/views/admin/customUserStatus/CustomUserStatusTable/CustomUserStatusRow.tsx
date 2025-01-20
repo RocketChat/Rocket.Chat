@@ -1,6 +1,5 @@
 import type { IUserStatus } from '@rocket.chat/core-typings';
 import type { CSSProperties, ReactElement } from 'react';
-import React from 'react';
 
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import MarkdownText from '../../../../components/MarkdownText';

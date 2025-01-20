@@ -8,7 +8,7 @@ type LicenseLimitsByBehavior = Record<LicenseBehavior, LicenseLimitKind[]>;
 export const useLicenseLimitsByBehavior = () => {
 	const result = useLicense({ loadValues: true });
 
-	if (result.isLoading || result.isError) {
+	if (result.isPending || result.isError) {
 		return null;
 	}
 

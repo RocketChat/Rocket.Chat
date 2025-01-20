@@ -1,7 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MessageListTab from './MessageListTab';

@@ -1,6 +1,5 @@
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 
 import LeaveTeamModal from './LeaveTeamModal';
 import LeaveTeamModalChannels from './LeaveTeamModalChannels';

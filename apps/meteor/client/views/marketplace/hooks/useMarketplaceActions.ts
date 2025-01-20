@@ -21,33 +21,33 @@ export const useMarketplaceActions = () => {
 		throw new Error('Apps orchestrator is not available');
 	}
 
-	const installAppMutation = useMutation(
-		({ id, marketplaceVersion, permissionsGranted }: InstallAppParams) =>
+	const installAppMutation = useMutation({
+		mutationFn: ({ id, marketplaceVersion, permissionsGranted }: InstallAppParams) =>
 			appsOrchestrator.installApp(id, marketplaceVersion, permissionsGranted),
-		{
-			onSuccess: ({ status }, { name }) => {
-				if (!status) return;
-				warnAppInstall(name, status);
-			},
-			onError: (error) => {
-				handleAPIError(error);
-			},
-		},
-	);
 
-	const updateAppMutation = useMutation(
-		({ id, marketplaceVersion, permissionsGranted }: UpdateAppParams) =>
-			appsOrchestrator.updateApp(id, marketplaceVersion, permissionsGranted),
-		{
-			onSuccess: ({ status }, { name }) => {
-				if (!status) return;
-				warnStatusChange(name, status);
-			},
-			onError: (error) => {
-				handleAPIError(error);
-			},
+		onSuccess: ({ status }, { name }) => {
+			if (!status) return;
+			warnAppInstall(name, status);
 		},
-	);
+
+		onError: (error) => {
+			handleAPIError(error);
+		},
+	});
+
+	const updateAppMutation = useMutation({
+		mutationFn: ({ id, marketplaceVersion, permissionsGranted }: UpdateAppParams) =>
+			appsOrchestrator.updateApp(id, marketplaceVersion, permissionsGranted),
+
+		onSuccess: ({ status }, { name }) => {
+			if (!status) return;
+			warnStatusChange(name, status);
+		},
+
+		onError: (error) => {
+			handleAPIError(error);
+		},
+	});
 
 	return {
 		purchase: installAppMutation.mutateAsync,

@@ -1,5 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
 import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -66,6 +67,7 @@ export function setUserAvatar(
 	contentType: string,
 	service: 'rest',
 	etag?: string,
+	updater?: Updater<IUser>,
 ): Promise<void>;
 export function setUserAvatar(
 	user: Pick<IUser, '_id' | 'username'>,
@@ -73,6 +75,7 @@ export function setUserAvatar(
 	contentType?: string,
 	service?: 'initials' | 'url' | 'rest' | string,
 	etag?: string,
+	updater?: Updater<IUser>,
 ): Promise<void>;
 export async function setUserAvatar(
 	user: Pick<IUser, '_id' | 'username'>,
@@ -80,9 +83,14 @@ export async function setUserAvatar(
 	contentType: string | undefined,
 	service?: 'initials' | 'url' | 'rest' | string,
 	etag?: string,
+	updater?: Updater<IUser>,
 ): Promise<void> {
 	if (service === 'initials') {
-		await Users.setAvatarData(user._id, service, null);
+		if (updater) {
+			updater.set('avatarOrigin', origin);
+		} else {
+			await Users.setAvatarData(user._id, service, null);
+		}
 		return;
 	}
 
@@ -177,7 +185,13 @@ export async function setUserAvatar(
 
 	setTimeout(async () => {
 		if (service) {
-			await Users.setAvatarData(user._id, service, avatarETag);
+			if (updater) {
+				updater.set('avatarOrigin', origin);
+				updater.set('avatarETag', avatarETag);
+			} else {
+				await Users.setAvatarData(user._id, service, avatarETag);
+			}
+
 			void api.broadcast('user.avatarUpdate', {
 				username: user.username,
 				avatarETag,

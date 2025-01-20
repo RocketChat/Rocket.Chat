@@ -1,7 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageBlock, MessageMetrics, MessageMetricsReply } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useChat } from '../../../views/room/contexts/ChatContext';

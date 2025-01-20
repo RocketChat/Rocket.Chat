@@ -36,7 +36,7 @@ it('should display avatar and name when username is available', () => {
 		legacyRoot: true,
 	});
 
-	expect(screen.getByRole('img', { hidden: true })).toHaveAttribute('title', 'john.doe');
+	expect(screen.getByRole('presentation', { hidden: true })).toHaveAttribute('title', 'john.doe');
 	expect(screen.getByText('John Doe')).toBeInTheDocument();
 });
 

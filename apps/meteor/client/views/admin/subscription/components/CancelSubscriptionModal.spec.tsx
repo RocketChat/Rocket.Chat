@@ -1,7 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 
 import { CancelSubscriptionModal } from './CancelSubscriptionModal';
 import { DOWNGRADE_LINK } from '../utils/links';

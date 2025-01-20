@@ -29,9 +29,10 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import type { EditRoomInfoFormData } from './useEditRoomInitialValues';
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
@@ -104,7 +105,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		handleSubmit,
 		getFieldState,
 		formState: { isDirty, dirtyFields, errors, isSubmitting },
-	} = useForm({ mode: 'onBlur', defaultValues });
+	} = useForm<EditRoomInfoFormData>({ mode: 'onBlur', defaultValues });
 
 	const sysMesOptions: SelectOption[] = useMemo(
 		() => MessageTypesValues.map(({ key, i18nLabel }) => [key, t(i18nLabel as TranslationKey)]),
@@ -163,7 +164,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 			retentionFilesOnly,
 			retentionIgnoreThreads,
 			...formData
-		}) => {
+		}: EditRoomInfoFormData) => {
 			const data = getDirtyFields<Partial<typeof defaultValues>>(formData, dirtyFields);
 			delete data.archived;
 			delete data.showChannels;
@@ -196,7 +197,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						}),
 				});
 
-				await query.invalidateQueries(['/v1/rooms.info', room._id]);
+				await query.invalidateQueries({
+					queryKey: ['/v1/rooms.info', room._id],
+				});
 				dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
 				onClickClose();
 			} catch (error) {
@@ -205,7 +208,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		},
 	);
 
-	const handleSave = useEffectEvent((data) =>
+	const handleSave = useEffectEvent((data: EditRoomInfoFormData) =>
 		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
 	);
 

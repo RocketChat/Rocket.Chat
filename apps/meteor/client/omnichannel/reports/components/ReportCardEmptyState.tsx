@@ -1,6 +1,5 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 type CardEmpryStateProps = {

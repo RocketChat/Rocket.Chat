@@ -2,7 +2,6 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { getGeolocationPermission } from './getGeolocationPermission';
 import { getGeolocationPosition } from './getGeolocationPosition';
@@ -18,12 +17,19 @@ type ShareLocationModalProps = {
 const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToast = useToastMessageDispatch();
-	const { data: permissionData, isLoading: permissionLoading } = useQuery(['geolocationPermission'], getGeolocationPermission);
-	const { data: positionData } = useQuery(['geolocationPosition', permissionData], async () => {
-		if (permissionLoading || permissionData === 'prompt' || permissionData === 'denied') {
-			return;
-		}
-		return getGeolocationPosition();
+	const { data: permissionState, isLoading: permissionLoading } = useQuery({
+		queryKey: ['geolocationPermission'],
+		queryFn: getGeolocationPermission,
+	});
+	const { data: positionData } = useQuery({
+		queryKey: ['geolocationPosition', permissionState],
+
+		queryFn: async () => {
+			if (permissionLoading || permissionState === 'prompt' || permissionState === 'denied') {
+				return;
+			}
+			return getGeolocationPosition();
+		},
 	});
 
 	const queryClient = useQueryClient();
@@ -62,7 +68,7 @@ const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): Re
 		}
 	};
 
-	if (permissionLoading || permissionData === 'prompt') {
+	if (permissionLoading || permissionState === 'prompt') {
 		return (
 			<GenericModal
 				title={t('You_will_be_asked_for_permissions')}
@@ -74,7 +80,7 @@ const ShareLocationModal = ({ rid, tmid, onClose }: ShareLocationModalProps): Re
 		);
 	}
 
-	if (permissionData === 'denied' || !positionData) {
+	if (permissionState === 'denied' || !positionData) {
 		return (
 			<GenericModal title={t('Cannot_share_your_location')} confirmText={t('Ok')} onConfirm={onClose} onClose={onClose}>
 				{t('The_necessary_browser_permissions_for_location_sharing_are_not_granted')}

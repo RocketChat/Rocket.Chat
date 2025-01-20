@@ -19,7 +19,7 @@ import {
 	Bubble,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';

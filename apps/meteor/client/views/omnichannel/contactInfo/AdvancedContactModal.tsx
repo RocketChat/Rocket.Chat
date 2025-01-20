@@ -1,5 +1,5 @@
 import { useRole, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getURL } from '../../../../app/utils/client/getURL';

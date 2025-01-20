@@ -404,6 +404,9 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			if (event.channelUniqueId && !call.channels.includes(event.channelUniqueId)) {
 				call.channels.push(event.channelUniqueId);
 			}
+			if (!call.startedAt || (event.firedAt && event.firedAt < call.startedAt)) {
+				call.startedAt = event.firedAt;
+			}
 
 			const eventType = this.getEventType(event);
 			fromUser.add(this.identifyCallerFromEvent(event));

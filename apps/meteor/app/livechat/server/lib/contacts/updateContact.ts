@@ -41,7 +41,7 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 	}
 
 	if (wipeConflicts && contact.conflictingFields?.length) {
-		const { value } = await Settings.incrementValueById('Resolved_Conflicts_Count', contact.conflictingFields.length, {
+		const value = await Settings.incrementValueById('Resolved_Conflicts_Count', contact.conflictingFields.length, {
 			returnDocument: 'after',
 		});
 		if (value) {

@@ -21,7 +21,9 @@ export function useGoToHomeOnRemoved(room: IRoom, userId?: string): void {
 
 		return subscribeToNotifyUser(`${userId}/subscriptions-changed`, (event, subscription) => {
 			if (event === 'removed' && subscription.rid === room._id) {
-				queryClient.invalidateQueries(['rooms', room._id]);
+				queryClient.invalidateQueries({
+					queryKey: ['rooms', room._id],
+				});
 
 				if (isOmnichannelRoom({ t: room.t })) {
 					navigateHome();

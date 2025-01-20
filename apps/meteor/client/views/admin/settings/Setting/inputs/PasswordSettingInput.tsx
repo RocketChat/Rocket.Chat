@@ -1,6 +1,5 @@
 import { Field, FieldLabel, FieldRow, PasswordInput } from '@rocket.chat/fuselage';
 import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
-import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';

@@ -1,7 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Button, Callout, Throbber } from '@rocket.chat/fuselage';
 import type { MouseEventHandler, ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import OTREstablished from './components/OTREstablished';

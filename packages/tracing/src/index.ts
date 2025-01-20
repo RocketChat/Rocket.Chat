@@ -9,6 +9,8 @@ import { initDatabaseTracing } from './traceDatabaseCalls';
 
 let tracer: Tracer | undefined;
 
+export * from './traceInstanceMethods';
+
 export function isTracingEnabled() {
 	return ['yes', 'true'].includes(String(process.env.TRACING_ENABLED).toLowerCase());
 }

@@ -6,7 +6,7 @@ import { ExternalLink } from '@rocket.chat/ui-client';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import { useSetModal, useMediaUrl } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import VersionCardActionButton from './components/VersionCardActionButton';
@@ -46,7 +46,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 
 	const formatDate = useFormatDate();
 
-	const { data: licenseData, isLoading, refetch: refetchLicense } = useLicense({ loadValues: true });
+	const { data: licenseData, isPending, refetch: refetchLicense } = useLicense({ loadValues: true });
 	const { isRegistered } = useRegistrationStatus();
 
 	const { license, limits } = licenseData || {};
@@ -168,7 +168,7 @@ const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
 		).sort((a) => (a.danger ? -1 : 1));
 	}, [isOverLimits, t, isAirgapped, versions, versionStatus?.label, versionStatus?.expiration, formatDate, isRegistered]);
 
-	if (isLoading && !licenseData) {
+	if (isPending && !licenseData) {
 		return (
 			<Card style={{ ...cardBackground }}>
 				<VersionCardSkeleton />

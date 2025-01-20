@@ -3,6 +3,7 @@ import type { IOmnichannelRoom, IUser, ILivechatVisitor, IMessage, MessageAttach
 type GenericCloseRoomParams = {
 	room: IOmnichannelRoom;
 	comment?: string;
+	forceClose?: boolean;
 	options?: {
 		clientAction?: boolean;
 		tags?: string[];

@@ -1,7 +1,7 @@
 import type { Serialized, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DeviceManagementInfo from './DeviceManagementInfo';

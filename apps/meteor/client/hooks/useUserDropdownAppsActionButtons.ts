@@ -21,7 +21,7 @@ export const useUserDropdownAppsActionButtons = () => {
 		() =>
 			result.data
 				?.filter((action) => applyButtonFilters(action))
-				.map((action) => {
+				.map((action): GenericMenuItemProps => {
 					return {
 						id: `${action.appId}_${action.actionId}`,
 						// icon: action.icon as GenericMenuItemProps['icon'],
@@ -52,5 +52,5 @@ export const useUserDropdownAppsActionButtons = () => {
 	return {
 		...result,
 		data,
-	} as UseQueryResult<GenericMenuItemProps[]>;
+	} as unknown as UseQueryResult<GenericMenuItemProps[]>;
 };

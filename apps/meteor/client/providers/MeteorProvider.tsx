@@ -1,6 +1,5 @@
 import { VoipProvider } from '@rocket.chat/ui-voip';
 import type { ReactNode } from 'react';
-import React from 'react';
 
 import ActionManagerProvider from './ActionManagerProvider';
 import AuthenticationProvider from './AuthenticationProvider/AuthenticationProvider';

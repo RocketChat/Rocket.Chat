@@ -93,6 +93,8 @@ export interface IRoom extends IRocketChatRecord {
 	sidepanel?: {
 		items: [SidepanelItem, SidepanelItem?];
 	};
+
+	rolePrioritiesCreated?: boolean;
 }
 
 export const isSidepanelItem = (item: any): item is SidepanelItem => {
@@ -417,3 +419,9 @@ export interface IRoomWithRetentionPolicy extends IRoom {
 		overrideGlobal?: boolean;
 	};
 }
+
+export const ROOM_ROLE_PRIORITY_MAP = {
+	owner: 0,
+	moderator: 500,
+	default: 10000,
+};

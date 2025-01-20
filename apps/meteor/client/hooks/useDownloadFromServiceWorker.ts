@@ -1,6 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TFunction } from 'i18next';
+import type { MouseEvent } from 'react';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -51,9 +52,9 @@ export const useDownloadFromServiceWorker = (href: string, title?: string) => {
 
 	return {
 		disabled: !controller,
-		onContextMenu: useCallback((e) => e.preventDefault(), []),
+		onContextMenu: useCallback((e: MouseEvent) => e.preventDefault(), []),
 		onClick: useCallback(
-			(e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+			(e: MouseEvent) => {
 				e.preventDefault();
 
 				forAttachmentDownload(uid, href, controller);

@@ -1,6 +1,5 @@
 import type { Meta, StoryFn } from '@storybook/react';
 import outdent from 'outdent';
-import React from 'react';
 
 import MarkdownText from './MarkdownText';
 

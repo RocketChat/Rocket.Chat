@@ -9,10 +9,14 @@ export const useRemoveCurrentChatMutation = (
 	const removeRoom = useMethod('livechat:removeRoom');
 	const queryClient = useQueryClient();
 
-	return useMutation((rid) => removeRoom(rid), {
+	return useMutation({
+		mutationFn: (rid) => removeRoom(rid),
 		...options,
+
 		onSuccess: (...args) => {
-			queryClient.invalidateQueries(['current-chats']);
+			queryClient.invalidateQueries({
+				queryKey: ['current-chats'],
+			});
 			options?.onSuccess?.(...args);
 		},
 	});

@@ -1,11 +1,11 @@
 import type { ILivechatCustomField, IOmnichannelRoom, IVisitor, Serialized } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
@@ -78,7 +78,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 		return field?.visibility === 'visible' && field?.scope === 'room';
 	};
 
-	const onEditClick = useMutableCallback(() => {
+	const onEditClick = useEffectEvent(() => {
 		const hasEditAccess = !!subscription || hasLocalEditRoomPermission || hasGlobalEditRoomPermission;
 		if (!hasEditAccess) {
 			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });

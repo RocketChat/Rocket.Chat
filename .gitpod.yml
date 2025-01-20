@@ -1,26 +1,19 @@
 tasks:
   - init: |
       nvm install $(jq -r .engines.node package.json) &&
-      curl https://install.meteor.com/ | sh &&
-      export PATH="$PATH:$HOME/.meteor" &&
+      curl https://install.meteor.com/?release=$(
+        curl -so- https://raw.githubusercontent.com/RocketChat/Rocket.Chat/develop/apps/meteor/.meteor/release | cut -d@ -f2
+      ) | sh &&
+      export PATH=$PATH:/home/gitpod/.meteor &&
       yarn &&
       export ROOT_URL=$(gp url 3000)
-    command: yarn build && yarn dev
+    command: yarn dsv
 
 ports:
   - port: 3000
     visibility: public
     onOpen: open-preview 
 
-github:
-  prebuilds:
-    master: true
-    pullRequests: true
-    pullRequestsFromForks: true
-    addCheck: true
-    addComment: true
-    addBadge: true
-
 vscode:
   extensions:
-    - esbenp.prettier-vscode       
+    - esbenp.prettier-vscode

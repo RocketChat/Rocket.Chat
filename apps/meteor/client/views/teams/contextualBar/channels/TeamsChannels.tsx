@@ -1,9 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import type { ChangeEvent, Dispatch, SetStateAction, SyntheticEvent } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -65,7 +65,7 @@ const TeamsChannels = ({
 		[t],
 	);
 
-	const lm = useMutableCallback((start) => !loading && loadMoreItems(start, Math.min(50, total - start)));
+	const lm = useEffectEvent((start: number) => !loading && loadMoreItems(start, Math.min(50, total - start)));
 
 	const loadMoreChannels = useDebouncedCallback(
 		() => {

@@ -1,5 +1,5 @@
 import { Callout } from '@rocket.chat/fuselage';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MessageSearch from './components/MessageSearch';

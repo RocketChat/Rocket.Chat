@@ -2,7 +2,6 @@ import { Callout } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SlaEdit from './SlaEdit';
@@ -15,10 +14,13 @@ type SlaEditProps = {
 
 function SlaEditWithData({ slaId, reload }: SlaEditProps): ReactElement {
 	const getSLA = useEndpoint('GET', `/v1/livechat/sla/:slaId`, { slaId });
-	const { data, isLoading, isError } = useQuery(['/v1/livechat/sla', slaId], () => getSLA());
+	const { data, isPending, isError } = useQuery({
+		queryKey: ['/v1/livechat/sla', slaId],
+		queryFn: () => getSLA(),
+	});
 	const { t } = useTranslation();
 
-	if (isLoading) {
+	if (isPending) {
 		return <FormSkeleton />;
 	}
 

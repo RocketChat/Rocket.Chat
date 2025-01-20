@@ -1,7 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useTranslation, useCustomSound } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
 import NotificationPreferences from './NotificationPreferences';

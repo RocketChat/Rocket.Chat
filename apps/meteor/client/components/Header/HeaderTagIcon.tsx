@@ -6,7 +6,7 @@ import {
 	HeaderTagIcon as HeaderTagIconComponent,
 } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 const HeaderTagIcon = (props: ComponentProps<typeof HeaderTagIconComponent>) => (
 	<FeaturePreview feature='newNavigation'>

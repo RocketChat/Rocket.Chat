@@ -1,15 +1,14 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement, SetStateAction } from 'react';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppRequestItem from './AppRequestItem';
 import AppRequestsLoading from './AppRequestsLoading';
 import { useAppsReload } from '../../../../../contexts/hooks/useAppsReload';
-import { queryClient } from '../../../../../lib/queryClient';
 import { useAppRequests } from '../../../hooks/useAppRequests';
 
 type itemsPerPage = 25 | 50 | 100;
@@ -18,7 +17,7 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 	const [limit, setLimit] = useState<itemsPerPage>(25);
 	const [offset, setOffset] = useState<number>(0);
 
-	const paginatedAppRequests = useAppRequests(id, limit, offset);
+	const { isSuccess, data: paginatedAppRequests, isLoading } = useAppRequests(id, limit, offset);
 	const { t } = useTranslation();
 
 	const onSetItemsPerPage = (itemsPerPageOption: SetStateAction<itemsPerPage>) => setLimit(itemsPerPageOption);
@@ -31,10 +30,15 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 		mutationFn: (unseenRequests: Array<string>) => markSeen({ unseenRequests }),
 		retry: false,
 	});
+
+	const queryClient = useQueryClient();
+
 	useEffect(() => {
 		return () => {
-			if (isAdminUser && paginatedAppRequests.isSuccess) {
-				const unseenRequests = paginatedAppRequests.data.data.filter(({ seen }) => !seen).map(({ id }) => id);
+			if (isAdminUser && isSuccess) {
+				// Marketplace returns data = null if the app was removed, so we need to be sure that the thing
+				// we are filtering & mapping is an array
+				const unseenRequests = (paginatedAppRequests.data || []).filter(({ seen }) => !seen).map(({ id }) => id);
 
 				if (unseenRequests.length) {
 					markAppRequestsAsSeen.mutate(unseenRequests, {
@@ -47,9 +51,9 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 			}
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isAdminUser, paginatedAppRequests.isSuccess, paginatedAppRequests?.data, reloadApps]);
+	}, [isAdminUser, isSuccess, paginatedAppRequests?.data, reloadApps]);
 
-	if (paginatedAppRequests.isLoading) {
+	if (isLoading) {
 		return (
 			<Box w='full' maxWidth='x608' marginInline='auto' pbs={36}>
 				<AppRequestsLoading />
@@ -60,8 +64,8 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 	return (
 		<Box h='full' display='flex' flexDirection='column'>
 			<Box w='full' maxWidth='x608' marginInline='auto' pbs={36} flexGrow='1'>
-				{paginatedAppRequests.isSuccess && paginatedAppRequests.data.data?.length ? (
-					paginatedAppRequests.data.data.map((request) => (
+				{isSuccess && paginatedAppRequests.data?.length ? (
+					paginatedAppRequests.data.map((request) => (
 						<AppRequestItem
 							key={request.id}
 							seen={request.seen}
@@ -78,12 +82,12 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 					</States>
 				)}
 			</Box>
-			{paginatedAppRequests.isSuccess && paginatedAppRequests.data.data?.length && (
+			{isSuccess && paginatedAppRequests.data?.length && (
 				<Pagination
 					divider
-					count={paginatedAppRequests.data.meta.total}
-					itemsPerPage={paginatedAppRequests.data.meta.limit}
-					current={paginatedAppRequests.data.meta.offset}
+					count={paginatedAppRequests.meta.total}
+					itemsPerPage={paginatedAppRequests.meta.limit}
+					current={paginatedAppRequests.meta.offset}
 					onSetItemsPerPage={onSetItemsPerPage}
 					onSetCurrent={onSetCurrent}
 				/>

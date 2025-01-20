@@ -40,7 +40,7 @@ export async function updateGroupKey(rid: string, uid: string, key: string, call
 		}
 
 		// uid also has subscription to this room
-		const { value } = await Subscriptions.setGroupE2ESuggestedKey(uid, rid, key);
+		const value = await Subscriptions.setGroupE2ESuggestedKey(uid, rid, key);
 		if (value) {
 			void notifyOnSubscriptionChanged(value);
 		}

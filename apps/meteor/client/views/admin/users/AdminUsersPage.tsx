@@ -6,7 +6,7 @@ import { ExternalLink } from '@rocket.chat/ui-client';
 import { useRouteParameter, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans } from 'react-i18next';
 
 import AdminInviteUsers from './AdminInviteUsers';
@@ -59,7 +59,10 @@ const AdminUsersPage = (): ReactElement => {
 	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
 
 	const getRoles = useEndpoint('GET', '/v1/roles.list');
-	const { data, error } = useQuery(['roles'], async () => getRoles());
+	const { data, error } = useQuery({
+		queryKey: ['roles'],
+		queryFn: async () => getRoles(),
+	});
 
 	const paginationData = usePagination();
 	const sortData = useSort<UsersTableSortingOption>('name');
@@ -112,8 +115,12 @@ const AdminUsersPage = (): ReactElement => {
 				</PageHeader>
 				{preventAction?.includes('activeUsers') && (
 					<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} mbe={19} mi={24}>
-						<Trans i18nKey='subscription.callout.description.limitsExceeded' count={preventAction.length}>
-							Your workspace exceeded the <>{{ val: preventAction.map(toTranslationKey) }}</> license limit.
+						<Trans
+							i18nKey='subscription.callout.description.limitsExceeded'
+							count={preventAction.length}
+							values={{ val: preventAction.map(toTranslationKey) }}
+						>
+							Your workspace exceeded the <>{preventAction.map(toTranslationKey)}</> license limit.
 							<ExternalLink
 								to={manageSubscriptionUrl({
 									target: 'callout',

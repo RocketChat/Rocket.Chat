@@ -1,7 +1,6 @@
 import { Box, Button, Card, CardBody, CardControls, CardHeader, Icon, Tag } from '@rocket.chat/fuselage';
 import { useRole, useSettingSetValue, useSetting, useToastMessageDispatch, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React from 'react';
 
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import CustomHomepageContent from '../CustomHomePageContent';

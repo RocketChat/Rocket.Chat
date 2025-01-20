@@ -1,7 +1,6 @@
 import type { MarkdownFields, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import { isActionAttachment } from '@rocket.chat/core-typings';
 import type { ReactNode, ComponentProps, ReactElement } from 'react';
-import React from 'react';
 
 import { ActionAttachment } from './default/ActionAttachtment';
 import FieldsAttachment from './default/FieldsAttachment';

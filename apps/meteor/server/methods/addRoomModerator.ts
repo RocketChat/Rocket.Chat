@@ -9,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
+import { syncRoomRolePriorityForUserAndRoom } from '../lib/roles/syncRoomRolePriority';
 import { isFederationEnabled, isFederationReady, FederationMatrixInvalidConfigurationError } from '../services/federation/utils';
 
 declare module '@rocket.chat/ddp-client' {
@@ -73,6 +74,8 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const addRoleResponse = await Subscriptions.addRoleById(subscription._id, 'moderator');
+		await syncRoomRolePriorityForUserAndRoom(userId, rid, subscription.roles?.concat(['moderator']) || ['moderator']);
+
 		if (addRoleResponse.modifiedCount) {
 			void notifyOnSubscriptionChangedById(subscription._id);
 		}

@@ -1,6 +1,6 @@
 import { Modal, Box, Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
 type Props = {

@@ -20,7 +20,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createInstance } from 'i18next';
 import type { ObjectId } from 'mongodb';
 import type { ContextType, JSXElementConstructor, ReactNode } from 'react';
-import React, { useEffect, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
@@ -399,11 +399,6 @@ export class MockedAppRootBuilder {
 			defaultOptions: {
 				queries: { retry: false },
 				mutations: { retry: false },
-			},
-			logger: {
-				log: console.log,
-				warn: console.warn,
-				error: () => undefined,
 			},
 		});
 

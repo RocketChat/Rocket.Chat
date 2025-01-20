@@ -1,5 +1,5 @@
 import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useMemo } from 'react';
@@ -52,10 +52,11 @@ const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData
 		};
 	}, [current, itemsPerPage, prevSearchTerm, searchTerm, selectedRoles, setCurrent, sortBy, sortDirection, tab]);
 	const getUsers = useEndpoint('GET', '/v1/users.listByStatus');
-	const dispatchToastMessage = useToastMessageDispatch();
-	const usersListQueryResult = useQuery(['users.list', payload, tab], async () => getUsers(payload), {
-		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
+	const usersListQueryResult = useQuery({
+		queryKey: ['users.list', payload, tab],
+		queryFn: async () => getUsers(payload),
+		meta: {
+			apiErrorToastMessage: true,
 		},
 	});
 	return usersListQueryResult;

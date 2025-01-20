@@ -11,9 +11,10 @@ type UseWeeklyChatActivityOptions = {
 export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivityOptions) => {
 	const getWeeklyChatActivity = useEndpoint('GET', '/v1/engagement-dashboard/users/chat-busier/weekly-data');
 
-	return useQuery(
-		['admin/engagement-dashboard/users/weekly-chat-activity', { displacement, utc }],
-		async () => {
+	return useQuery({
+		queryKey: ['admin/engagement-dashboard/users/weekly-chat-activity', { displacement, utc }],
+
+		queryFn: async () => {
 			const day = (utc ? moment.utc().endOf('day') : moment().endOf('day')).subtract(displacement, 'weeks').toDate();
 
 			const response = await getWeeklyChatActivity({
@@ -27,9 +28,8 @@ export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivi
 					}
 				: undefined;
 		},
-		{
-			refetchInterval: 5 * 60 * 1000,
-			useErrorBoundary: true,
-		},
-	);
+
+		refetchInterval: 5 * 60 * 1000,
+		throwOnError: true,
+	});
 };

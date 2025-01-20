@@ -1,5 +1,4 @@
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import SidebarFooterDefault from './SidebarFooterDefault';
 import { VoipFooter } from './voip';

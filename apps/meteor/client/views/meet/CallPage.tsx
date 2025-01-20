@@ -2,7 +2,7 @@ import { Box, Flex, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useStream } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import OngoingCallDuration from './OngoingCallDuration';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';

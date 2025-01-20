@@ -1,9 +1,9 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashQueryKey } from '@tanstack/react-query';
+import { useQuery, hashKey } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
-import React, { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 import RemoveSlaButton from './RemoveSlaButton';
 import FilterByText from '../../components/FilterByText';
@@ -43,17 +43,20 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	);
 
 	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
-	const { data, isSuccess, isLoading, refetch } = useQuery(['/v1/livechat/sla', query], () => getSlaData(query));
+	const { data, isSuccess, isLoading, refetch } = useQuery({
+		queryKey: ['/v1/livechat/sla', query],
+		queryFn: () => getSlaData(query),
+	});
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	useEffect(() => {
 		reload.current = refetch;
 	}, [reload, refetch]);
 
-	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/sla-policies/new'));
-	const onRowClick = useMutableCallback((id) => () => router.navigate(`/omnichannel/sla-policies/edit/${id}`));
+	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/sla-policies/new'));
+	const onRowClick = useEffectEvent((id: string) => () => router.navigate(`/omnichannel/sla-policies/edit/${id}`));
 
 	const headers = (
 		<>

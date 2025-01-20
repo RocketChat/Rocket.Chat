@@ -1,5 +1,5 @@
 import { NumberInput } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import type { UseFormRegister } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 

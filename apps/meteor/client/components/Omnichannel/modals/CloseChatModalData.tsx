@@ -1,7 +1,6 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 
 import { FormSkeleton } from '../Skeleton';
 import CloseChatModal from './CloseChatModal';
@@ -22,9 +21,12 @@ const CloseChatModalData = ({
 	) => Promise<void>;
 }) => {
 	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: departmentId });
-	const { data, isLoading } = useQuery(['/v1/livechat/department/:_id', departmentId], () => getDepartment({}));
+	const { data, isPending } = useQuery({
+		queryKey: ['/v1/livechat/department/:_id', departmentId],
+		queryFn: () => getDepartment({}),
+	});
 
-	if (isLoading) {
+	if (isPending) {
 		return <FormSkeleton />;
 	}
 

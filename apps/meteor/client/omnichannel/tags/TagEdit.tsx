@@ -1,9 +1,8 @@
 import type { ILivechatDepartment, ILivechatTag, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup, FieldGroup, Box } from '@rocket.chat/fuselage';
-import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRouter, useMethod } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -53,13 +52,15 @@ const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
 		},
 	});
 
-	const handleSave = useMutableCallback(async ({ name, description, departments }: TagEditPayload) => {
+	const handleSave = useEffectEvent(async ({ name, description, departments }: TagEditPayload) => {
 		const departmentsId = departments?.map((dep) => dep.value) || [''];
 
 		try {
 			await saveTag(_id as unknown as string, { name, description }, departmentsId);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			queryClient.invalidateQueries(['livechat-tags']);
+			queryClient.invalidateQueries({
+				queryKey: ['livechat-tags'],
+			});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {

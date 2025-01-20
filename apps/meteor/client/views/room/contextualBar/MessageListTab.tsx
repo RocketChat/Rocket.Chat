@@ -4,7 +4,7 @@ import type { Keys as IconName } from '@rocket.chat/icons';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';

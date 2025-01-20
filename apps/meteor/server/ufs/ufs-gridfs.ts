@@ -1,7 +1,7 @@
 import type { IUpload } from '@rocket.chat/core-typings';
 import { MongoInternals } from 'meteor/mongo';
+import { NpmModuleMongodb } from 'meteor/npm-mongo';
 import type { ObjectId } from 'mongodb';
-import { GridFSBucket } from 'mongodb';
 
 import { UploadFS } from './ufs';
 import type { StoreOptions } from './ufs-store';
@@ -41,14 +41,14 @@ export class GridFSStore extends UploadFS.Store {
 
 		// const mongo = MongoInternals.NpmModule;
 		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
-		const mongoStore = new GridFSBucket(db, {
+		const mongoStore = new NpmModuleMongodb.GridFSBucket(db as any, {
 			bucketName: options.collectionName,
 			chunkSizeBytes: this.chunkSize,
 		});
 
 		this.delete = async function (fileId) {
 			const collectionName = `${options.collectionName}.files`;
-			const file = await db.collection(collectionName).findOne({ _id: fileId });
+			const file = await db.collection(collectionName).findOne({ _id: fileId as any });
 
 			if (file) {
 				await mongoStore.delete(fileId as unknown as ObjectId);

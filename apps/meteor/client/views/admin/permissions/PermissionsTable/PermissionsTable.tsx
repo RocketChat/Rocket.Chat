@@ -1,9 +1,9 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Margins, Tabs, Button, Pagination, Palette } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRoute, usePermission, useMethod, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import PermissionRow from './PermissionRow';
 import PermissionsTableFilter from './PermissionsTableFilter';
@@ -32,21 +32,21 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { permissions, total, roleList } = usePermissionsAndRoles(type, filter, itemsPerPage, current);
 
-	const handlePermissionsTab = useMutableCallback(() => {
+	const handlePermissionsTab = useEffectEvent(() => {
 		if (type === 'permissions') {
 			return;
 		}
 		setType('permissions');
 	});
 
-	const handleSettingsTab = useMutableCallback(() => {
+	const handleSettingsTab = useEffectEvent(() => {
 		if (type === 'settings') {
 			return;
 		}
 		setType('settings');
 	});
 
-	const handleAdd = useMutableCallback(() => {
+	const handleAdd = useEffectEvent(() => {
 		if (!isEnterprise) {
 			setModal(<CustomRoleUpsellModal onClose={() => setModal(null)} />);
 			return;

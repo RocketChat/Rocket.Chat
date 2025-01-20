@@ -1,4 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { _setRealName } from './setRealName';
@@ -23,11 +24,13 @@ export async function saveUserIdentity({
 	name: rawName,
 	username: rawUsername,
 	updateUsernameInBackground = false,
+	updater,
 }: {
 	_id: string;
 	name?: string;
 	username?: string;
 	updateUsernameInBackground?: boolean; // TODO: remove this
+	updater?: Updater<IUser>;
 }) {
 	if (!_id) {
 		return false;
@@ -51,14 +54,14 @@ export async function saveUserIdentity({
 			return false;
 		}
 
-		if (!(await _setUsername(_id, username, user))) {
+		if (!(await _setUsername(_id, username, user, updater))) {
 			return false;
 		}
 		user.username = username;
 	}
 
 	if (typeof rawName !== 'undefined' && nameChanged) {
-		if (!(await _setRealName(_id, name, user))) {
+		if (!(await _setRealName(_id, name, user, updater))) {
 			return false;
 		}
 	}

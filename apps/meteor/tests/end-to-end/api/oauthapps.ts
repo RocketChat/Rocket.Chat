@@ -50,79 +50,6 @@ describe('[OAuthApps]', () => {
 		});
 	});
 
-	describe('[/oauth-apps.get]', () => {
-		before(() => updatePermission('manage-oauth-apps', ['admin']));
-		after(() => updatePermission('manage-oauth-apps', ['admin']));
-
-		it('should return a single oauthApp by id', () => {
-			return request
-				.get(api('oauth-apps.get'))
-				.query({ appId: 'zapier' })
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('oauthApp');
-					expect(res.body.oauthApp._id).to.be.equal('zapier');
-					expect(res.body.oauthApp).to.have.property('clientSecret');
-				});
-		});
-		it('should return a single oauthApp by client id', () => {
-			return request
-				.get(api('oauth-apps.get'))
-				.query({ clientId: 'zapier' })
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('oauthApp');
-					expect(res.body.oauthApp._id).to.be.equal('zapier');
-					expect(res.body.oauthApp).to.have.property('clientSecret');
-				});
-		});
-		it('should return only non sensitive information if user does not have the permission to manage oauth apps when searching by clientId', async () => {
-			await updatePermission('manage-oauth-apps', []);
-			await request
-				.get(api('oauth-apps.get'))
-				.query({ clientId: 'zapier' })
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('oauthApp');
-					expect(res.body.oauthApp._id).to.be.equal('zapier');
-					expect(res.body.oauthApp.clientId).to.be.equal('zapier');
-					expect(res.body.oauthApp).to.not.have.property('clientSecret');
-				});
-		});
-		it('should return only non sensitive information if user does not have the permission to manage oauth apps when searching by appId', async () => {
-			await updatePermission('manage-oauth-apps', []);
-			await request
-				.get(api('oauth-apps.get'))
-				.query({ appId: 'zapier' })
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('oauthApp');
-					expect(res.body.oauthApp._id).to.be.equal('zapier');
-					expect(res.body.oauthApp.clientId).to.be.equal('zapier');
-					expect(res.body.oauthApp).to.not.have.property('clientSecret');
-				});
-		});
-		it('should fail returning an oauth app when an invalid id is provided (avoid NoSQL injections)', () => {
-			return request
-				.get(api('oauth-apps.get'))
-				.query({ _id: '{ "$ne": "" }' })
-				.set(credentials)
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'OAuth app not found.');
-				});
-		});
-	});
-
 	describe('[/oauth-apps.create]', () => {
 		it('should return an error when the user does not have the necessary permission', async () => {
 			await updatePermission('manage-oauth-apps', []);
@@ -216,6 +143,213 @@ describe('[OAuthApps]', () => {
 					expect(res.body).to.have.nested.property('application.redirectUri', redirectUri);
 					expect(res.body).to.have.nested.property('application.active', active);
 					createdAppsIds.push(res.body.application._id);
+				});
+		});
+	});
+
+	describe('[/oauth-apps.get]', () => {
+		let clientId = '';
+		let _id = '';
+		let clientSecret = '';
+
+		before(async () => {
+			await updatePermission('manage-oauth-apps', ['admin']);
+
+			const res = await request
+				.post(api('oauth-apps.create'))
+				.set(credentials)
+				.send({
+					name: `new app ${Date.now()}`,
+					redirectUri: 'http://localhost:3000',
+					active: true,
+				});
+
+			if (res.statusCode !== 200 || !res.body?.success || !res.body.application?._id || !res.body.application?.clientId) {
+				console.error(res);
+				throw new Error('Failed to create oauth app for tests');
+			}
+
+			clientId = res.body.application.clientId;
+			_id = res.body.application._id;
+			clientSecret = res.body.application.clientSecret;
+			createdAppsIds.push(_id);
+		});
+		after(() => updatePermission('manage-oauth-apps', ['admin']));
+
+		it('should return a single oauthApp by client id', () => {
+			return request
+				.get(api('oauth-apps.get'))
+				.query({ clientId })
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('oauthApp');
+					expect(res.body.oauthApp._id).to.be.equal(_id);
+					expect(res.body.oauthApp).to.have.property('clientSecret');
+
+					if (clientSecret) {
+						expect(res.body.oauthApp.clientSecret).to.be.equal(clientSecret);
+					}
+				});
+		});
+
+		it('should return a single oauthApp by _id', () => {
+			return request
+				.get(api('oauth-apps.get'))
+				.query({ _id })
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('oauthApp');
+					expect(res.body.oauthApp._id).to.be.equal(_id);
+					expect(res.body.oauthApp.clientId).to.be.equal(clientId);
+					expect(res.body.oauthApp).to.have.property('clientSecret');
+					if (clientSecret) {
+						expect(res.body.oauthApp.clientSecret).to.be.equal(clientSecret);
+					}
+				});
+		});
+
+		it('should return a single oauthApp by appId (deprecated)', () => {
+			return request
+				.get(api('oauth-apps.get'))
+				.query({ appId: _id })
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('oauthApp');
+					expect(res.body.oauthApp._id).to.be.equal(_id);
+					expect(res.body.oauthApp.clientId).to.be.equal(clientId);
+					expect(res.body.oauthApp).to.have.property('clientSecret');
+					if (clientSecret) {
+						expect(res.body.oauthApp.clientSecret).to.be.equal(clientSecret);
+					}
+				});
+		});
+
+		it('should return only non sensitive information if user does not have the permission to manage oauth apps when searching by clientId', async () => {
+			await updatePermission('manage-oauth-apps', []);
+			await request
+				.get(api('oauth-apps.get'))
+				.query({ clientId })
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('oauthApp');
+					expect(res.body.oauthApp._id).to.be.equal(_id);
+					expect(res.body.oauthApp.clientId).to.be.equal(clientId);
+					expect(res.body.oauthApp).to.not.have.property('clientSecret');
+				});
+		});
+
+		it('should return only non sensitive information if user does not have the permission to manage oauth apps when searching by _id', async () => {
+			await updatePermission('manage-oauth-apps', []);
+			await request
+				.get(api('oauth-apps.get'))
+				.query({ _id })
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('oauthApp');
+					expect(res.body.oauthApp._id).to.be.equal(_id);
+					expect(res.body.oauthApp.clientId).to.be.equal(clientId);
+					expect(res.body.oauthApp).to.not.have.property('clientSecret');
+				});
+		});
+
+		it('should return only non sensitive information if user does not have the permission to manage oauth apps when searching by appId (deprecated)', async () => {
+			await updatePermission('manage-oauth-apps', []);
+			await request
+				.get(api('oauth-apps.get'))
+				.query({ appId: _id })
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('oauthApp');
+					expect(res.body.oauthApp._id).to.be.equal(_id);
+					expect(res.body.oauthApp.clientId).to.be.equal(clientId);
+					expect(res.body.oauthApp).to.not.have.property('clientSecret');
+				});
+		});
+
+		it('should fail returning an oauth app when an invalid id is provided (avoid NoSQL injections)', () => {
+			return request
+				.get(api('oauth-apps.get'))
+				.query({ _id: { $ne: '' } })
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+					expect(res.body.error).to.include('must be string').and.include('must match exactly one schema in oneOf [invalid-params]');
+				});
+		});
+
+		it('should fail returning an oauth app when an invalid id string is provided (avoid NoSQL injections)', () => {
+			return request
+				.get(api('oauth-apps.get'))
+				.query({ _id: '{ "$ne": "" }' })
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'OAuth app not found.');
+				});
+		});
+
+		it('should fail returning an oauth app when an invalid clientId is provided (avoid NoSQL injections)', () => {
+			return request
+				.get(api('oauth-apps.get'))
+				.query({ clientId: { $ne: '' } })
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+					expect(res.body.error).to.include('must be string').and.include('must match exactly one schema in oneOf [invalid-params]');
+				});
+		});
+
+		it('should fail returning an oauth app when an invalid clientId string is provided (avoid NoSQL injections)', () => {
+			return request
+				.get(api('oauth-apps.get'))
+				.query({ clientId: '{ "$ne": "" }' })
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'OAuth app not found.');
+				});
+		});
+
+		it('should fail returning an oauth app when an invalid appId is provided (avoid NoSQL injections; deprecated)', () => {
+			return request
+				.get(api('oauth-apps.get'))
+				.query({ appId: { $ne: '' } })
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+					expect(res.body.error).to.include('must be string').and.include('must match exactly one schema in oneOf [invalid-params]');
+				});
+		});
+
+		it('should fail returning an oauth app when an invalid appId string is provided (avoid NoSQL injections; deprecated)', () => {
+			return request
+				.get(api('oauth-apps.get'))
+				.query({ appId: '{ "$ne": "" }' })
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'OAuth app not found.');
 				});
 		});
 	});

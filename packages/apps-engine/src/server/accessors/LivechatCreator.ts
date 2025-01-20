@@ -1,3 +1,5 @@
+import { randomBytes } from 'crypto';
+
 import type { ILivechatCreator } from '../../definition/accessors';
 import type { IExtraRoomParams } from '../../definition/accessors/ILivechatCreator';
 import type { ILivechatRoom } from '../../definition/livechat/ILivechatRoom';
@@ -27,6 +29,6 @@ export class LivechatCreator implements ILivechatCreator {
     }
 
     public createToken(): string {
-        return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        return randomBytes(16).toString('hex'); // Ensures 128 bits of entropy
     }
 }

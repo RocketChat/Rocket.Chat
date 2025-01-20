@@ -1,6 +1,5 @@
 import { Grid } from '@rocket.chat/fuselage';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
 
 import Counter from './Counter';
 

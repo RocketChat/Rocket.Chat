@@ -8,7 +8,6 @@ import {
 } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ThreadMetricsFollow from './ThreadMetricsFollow';

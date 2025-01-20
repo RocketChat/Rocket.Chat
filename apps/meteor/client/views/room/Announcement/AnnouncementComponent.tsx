@@ -1,7 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { MouseEvent, ReactNode } from 'react';
-import React from 'react';
 
 type AnnouncementComponentProps = {
 	children?: ReactNode;

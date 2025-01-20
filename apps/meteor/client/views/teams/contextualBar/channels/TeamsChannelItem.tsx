@@ -14,7 +14,7 @@ import {
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import TeamsChannelItemMenu from './TeamsChannelItemMenu';

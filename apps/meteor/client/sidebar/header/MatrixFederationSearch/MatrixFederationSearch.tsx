@@ -1,6 +1,5 @@
 import { Modal, Skeleton } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MatrixFederationSearchModalContent from './MatrixFederationSearchModalContent';

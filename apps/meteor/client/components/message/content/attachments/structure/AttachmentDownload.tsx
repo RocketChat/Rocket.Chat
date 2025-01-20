@@ -1,5 +1,4 @@
 import type { ComponentPropsWithoutRef } from 'react';
-import React from 'react';
 
 import AttachmentDownloadBase from './AttachmentDownloadBase';
 import AttachmentEncryptedDownload from './AttachmentEncryptedDownload';

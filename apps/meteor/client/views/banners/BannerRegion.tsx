@@ -1,5 +1,4 @@
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import LegacyBanner from './LegacyBanner';

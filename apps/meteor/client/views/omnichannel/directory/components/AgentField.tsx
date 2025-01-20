@@ -2,7 +2,6 @@ import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FormSkeleton } from './FormSkeleton';
@@ -21,7 +20,10 @@ const AgentField = ({ agent, isSmall = false }: AgentFieldProps) => {
 	const { t } = useTranslation();
 	const { username = '' } = agent ?? {};
 	const getUserInfo = useEndpoint('GET', '/v1/users.info');
-	const { data, isLoading } = useQuery(['/v1/users.info', username], () => getUserInfo({ username }));
+	const { data, isLoading } = useQuery({
+		queryKey: ['/v1/users.info', username],
+		queryFn: () => getUserInfo({ username }),
+	});
 
 	if (isLoading) {
 		return <FormSkeleton />;

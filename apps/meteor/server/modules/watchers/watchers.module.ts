@@ -1,5 +1,4 @@
 import type { EventSignatures } from '@rocket.chat/core-services';
-import { dbWatchersDisabled } from '@rocket.chat/core-services';
 import type {
 	ISubscription,
 	IUser,
@@ -19,6 +18,7 @@ import type {
 	ILivechatPriority,
 } from '@rocket.chat/core-typings';
 import {
+	dbWatchersDisabled,
 	Subscriptions,
 	Messages,
 	Users,
@@ -36,10 +36,10 @@ import {
 	Permissions,
 	LivechatPriority,
 } from '@rocket.chat/models';
+import type { DatabaseWatcher } from '@rocket.chat/models';
 
 import { getMessageToBroadcast } from '../../../app/lib/server/lib/notifyListener';
 import { subscriptionFields, roomFields } from '../../../lib/publishFields';
-import type { DatabaseWatcher } from '../../database/DatabaseWatcher';
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 

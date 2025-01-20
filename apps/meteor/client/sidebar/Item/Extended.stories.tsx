@@ -2,7 +2,6 @@ import { Box, IconButton, Badge } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 
 import Extended from './Extended';
 import * as Status from '../../components/UserStatus';

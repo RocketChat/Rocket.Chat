@@ -1,5 +1,3 @@
-import React from 'react';
-
 import DiscussionsListItem from './DiscussionsListItem';
 
 const message = {

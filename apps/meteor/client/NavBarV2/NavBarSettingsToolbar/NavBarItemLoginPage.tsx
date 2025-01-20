@@ -1,7 +1,6 @@
 import { Button } from '@rocket.chat/fuselage';
 import { useSessionDispatch } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 type NavBarItemLoginPageProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;

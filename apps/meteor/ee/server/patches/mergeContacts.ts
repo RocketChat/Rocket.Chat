@@ -43,7 +43,7 @@ export const runMergeContacts = async (
 	const similarContactIds = similarContacts.map((c) => c._id);
 	const { deletedCount } = await LivechatContacts.deleteMany({ _id: { $in: similarContactIds } }, { session });
 
-	const { value } = await Settings.incrementValueById('Merged_Contacts_Count', similarContacts.length, { returnDocument: 'after' });
+	const value = await Settings.incrementValueById('Merged_Contacts_Count', similarContacts.length, { returnDocument: 'after' });
 	if (value) {
 		void notifyOnSettingChanged(value);
 	}

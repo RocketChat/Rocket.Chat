@@ -1,6 +1,5 @@
 import { Box, Field, FieldLabel, FieldRow, UrlInput, Icon, Button, InputBox } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useClipboardWithToast from '../../../../../hooks/useClipboardWithToast';

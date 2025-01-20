@@ -1,7 +1,7 @@
 import { FieldRow, Select, TextInput, type SelectOption, Field, FieldLabel } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';

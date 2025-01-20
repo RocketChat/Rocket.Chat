@@ -1,6 +1,6 @@
 import { AudioPlayer, Box, Icon } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { useEffect, useState, memo } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FilePreviewType } from './FilePreview';

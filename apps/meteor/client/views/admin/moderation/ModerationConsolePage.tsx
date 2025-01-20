@@ -1,6 +1,6 @@
 import { Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useTranslation, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import ModConsoleReportDetails from './ModConsoleReportDetails';
 import ModerationConsoleTable from './ModerationConsoleTable';

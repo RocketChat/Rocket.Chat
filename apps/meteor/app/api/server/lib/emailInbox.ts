@@ -78,19 +78,19 @@ export const updateEmailInbox = async (
 
 	const updatedResponse = await EmailInbox.updateById(_id, updateEmailInbox);
 
-	if (!updatedResponse.value) {
+	if (!updatedResponse) {
 		throw new Error('error-invalid-email-inbox');
 	}
 
 	void notifyOnEmailInboxChanged(
 		{
-			...updatedResponse.value,
+			...updatedResponse,
 			...(department === 'All' && { department: undefined }),
 		},
 		'updated',
 	);
 
-	return updatedResponse.value;
+	return updatedResponse;
 };
 
 export const removeEmailInbox = async (emailInboxId: IEmailInbox['_id']): Promise<DeleteResult> => {

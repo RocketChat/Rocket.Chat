@@ -1,7 +1,6 @@
 import type { SettingValueRoomPick } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import RoomAutoCompleteMultiple from '../../../../../components/RoomAutoCompleteMultiple';
 import ResetSettingButton from '../ResetSettingButton';

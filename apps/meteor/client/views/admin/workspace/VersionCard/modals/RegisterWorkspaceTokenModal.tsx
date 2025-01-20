@@ -1,7 +1,7 @@
 import { Box, Button, ButtonGroup, Field, FieldLabel, FieldRow, FieldError, Modal, TextInput } from '@rocket.chat/fuselage';
 import { useMethod, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
 import WorkspaceRegistrationModal from './RegisterWorkspaceModal';

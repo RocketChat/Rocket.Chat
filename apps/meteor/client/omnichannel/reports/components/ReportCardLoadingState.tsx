@@ -1,5 +1,4 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import React from 'react';
 
 export const ReportCardLoadingState = () => (
 	<Box display='flex' height='100%' width='100%'>

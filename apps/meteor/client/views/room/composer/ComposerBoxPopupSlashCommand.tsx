@@ -1,5 +1,4 @@
 import { OptionColumn, OptionContent, OptionDescription, OptionInput } from '@rocket.chat/fuselage';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 export type ComposerBoxPopupSlashCommandProps = {

@@ -1,6 +1,5 @@
 import { isThreadMessage, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
 import { Box, Bubble, MessageDivider } from '@rocket.chat/fuselage';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomMessage from '../../../components/message/variants/RoomMessage';

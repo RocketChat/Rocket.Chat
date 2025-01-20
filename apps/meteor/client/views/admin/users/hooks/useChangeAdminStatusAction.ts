@@ -2,9 +2,9 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch, useMethod, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
-import type { Action } from '../../../hooks/useActionSpread';
+import type { AdminUserAction } from './useAdminUserInfoActions';
 
-export const useChangeAdminStatusAction = (userId: IUser['_id'], isAdmin: boolean, onChange: () => void): Action | undefined => {
+export const useChangeAdminStatusAction = (userId: IUser['_id'], isAdmin: boolean, onChange: () => void): AdminUserAction | undefined => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setAdminStatus = useMethod('setAdminStatus');
@@ -24,8 +24,8 @@ export const useChangeAdminStatusAction = (userId: IUser['_id'], isAdmin: boolea
 	return canAssignAdminRole
 		? {
 				icon: 'key',
-				label: isAdmin ? t('Remove_Admin') : t('Make_Admin'),
-				action: changeAdminStatus,
+				content: isAdmin ? t('Remove_Admin') : t('Make_Admin'),
+				onClick: changeAdminStatus,
 			}
 		: undefined;
 };

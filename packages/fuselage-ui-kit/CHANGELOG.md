@@ -1,5 +1,21 @@
 # Change Log
 
+## 15.0.0-rc.0
+
+### Patch Changes
+
+- ([#34858](https://github.com/RocketChat/Rocket.Chat/pull/34858)) Fixes an issue that prevented the apps-engine from reestablishing communications with subprocesses in some cases
+
+- <details><summary>Updated dependencies [5506c406f4a22145ece065ad2b797225e94423ca, 8942b0032af976738a7c602fa389803dda30c0dc, bfa92f4dba1a16973d7da5a9c0f5d0df998bf944]:</summary>
+
+  - @rocket.chat/apps-engine@1.48.2-rc.0
+  - @rocket.chat/ui-contexts@15.0.0-rc.0
+  - @rocket.chat/core-typings@7.3.0-rc.0
+  - @rocket.chat/gazzodown@15.0.0-rc.0
+  - @rocket.chat/ui-avatar@11.0.0-rc.0
+  - @rocket.chat/ui-video-conf@15.0.0-rc.0
+  </details>
+
 ## 14.0.1
 
 ### Patch Changes

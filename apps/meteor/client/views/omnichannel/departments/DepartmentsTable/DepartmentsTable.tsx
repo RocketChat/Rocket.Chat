@@ -1,9 +1,9 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashQueryKey } from '@tanstack/react-query';
-import React, { useState, useMemo } from 'react';
+import { useQuery, hashKey, keepPreviousData } from '@tanstack/react-query';
+import { useState, useMemo } from 'react';
 
 import DepartmentItemMenu from './DepartmentItemMenu';
 import FilterByText from '../../../../components/FilterByText';
@@ -35,7 +35,7 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 
 	const getDepartments = useEndpoint('GET', archived ? DEPARTMENTS_ENDPOINTS.archived : DEPARTMENTS_ENDPOINTS.department);
 
-	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/departments/new'));
+	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/departments/new'));
 
 	const query = useDebouncedValue(
 		useMemo(
@@ -51,12 +51,14 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 		500,
 	);
 
-	const { data, isSuccess, isLoading } = useQuery(['livechat-departments', query, archived], async () => getDepartments(query), {
-		keepPreviousData: true,
+	const { data, isSuccess, isLoading } = useQuery({
+		queryKey: ['livechat-departments', query, archived],
+		queryFn: async () => getDepartments(query),
+		placeholderData: keepPreviousData,
 	});
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const headers = (
 		<>

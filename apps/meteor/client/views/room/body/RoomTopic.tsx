@@ -3,7 +3,6 @@ import { isTeamRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { RoomBanner, RoomBannerContent } from '@rocket.chat/ui-client';
 import { useSetting, useUserId, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import { RoomRoles } from '../../../../app/models/client';
 import MarkdownText from '../../../components/MarkdownText';

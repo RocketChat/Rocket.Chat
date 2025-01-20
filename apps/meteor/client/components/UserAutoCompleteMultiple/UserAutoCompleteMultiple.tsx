@@ -4,7 +4,7 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { memo, useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 
 const query = (
 	term = '',
@@ -19,7 +19,10 @@ const UserAutoCompleteMultiple = ({ onChange, ...props }: UserAutoCompleteMultip
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 	const usersAutoCompleteEndpoint = useEndpoint('GET', '/v1/users.autocomplete');
-	const { data } = useQuery(['usersAutoComplete', debouncedFilter], async () => usersAutoCompleteEndpoint(query(debouncedFilter)));
+	const { data } = useQuery({
+		queryKey: ['usersAutoComplete', debouncedFilter],
+		queryFn: async () => usersAutoCompleteEndpoint(query(debouncedFilter)),
+	});
 
 	const options = useMemo(() => data?.items.map((user) => ({ value: user.username, label: user.name })) || [], [data]);
 

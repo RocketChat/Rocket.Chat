@@ -1,0 +1,13 @@
+diff --git a/mongodb.d.ts b/mongodb.d.ts
+index 8d68644d312c22d8c8c992ef0bc78431bffa2cf4..3f0a5664cd04bb2abb155288e3c245be72e8549f 100644
+--- a/mongodb.d.ts
++++ b/mongodb.d.ts
+@@ -6661,7 +6661,7 @@ export declare interface MonitorOptions extends Omit<ConnectionOptions, 'id' | '
+  * depth any helpers that make use of NestedPaths should devolve to not asserting any
+  * type safety on the input.
+  */
+-export declare type NestedPaths<Type, Depth extends number[]> = Depth['length'] extends 8 ? [] : Type extends string | number | bigint | boolean | Date | RegExp | Buffer | Uint8Array | ((...args: any[]) => any) | {
++export declare type NestedPaths<Type, Depth extends number[]> = Depth['length'] extends 4 ? [] : Type extends string | number | bigint | boolean | Date | RegExp | Buffer | Uint8Array | ((...args: any[]) => any) | {
+     _bsontype: string;
+ } ? [] : Type extends ReadonlyArray<infer ArrayType> ? [] | [number, ...NestedPaths<ArrayType, [...Depth, 1]>] : Type extends Map<string, any> ? [string] : Type extends object ? {
+     [Key in Extract<keyof Type, string>]: Type[Key] extends Type ? [Key] : Type extends Type[Key] ? [Key] : Type[Key] extends ReadonlyArray<infer ArrayType> ? Type extends ArrayType ? [Key] : ArrayType extends Type ? [Key] : [

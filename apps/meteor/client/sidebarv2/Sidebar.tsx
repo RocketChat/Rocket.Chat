@@ -1,6 +1,6 @@
 import { SidebarV2 } from '@rocket.chat/fuselage';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';

@@ -1,6 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import React, { useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 
 import RoomOpener from './RoomOpener';
 import RoomOpenerEmbedded from './RoomOpenerEmbedded';

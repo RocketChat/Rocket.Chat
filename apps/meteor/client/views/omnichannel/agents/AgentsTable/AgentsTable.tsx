@@ -1,7 +1,7 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { hashQueryKey } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useDebouncedValue, useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { hashKey } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AddAgent from './AddAgent';
@@ -36,10 +36,10 @@ const AgentsTable = () => {
 	const query = useQuery({ text, current, itemsPerPage }, debouncedSort);
 	const { data, isSuccess, isLoading, refetch } = useAgentsQuery(query);
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
-	const onHeaderClick = useMutableCallback((id) => {
+	const onHeaderClick = useEffectEvent((id: 'name' | 'username' | 'emails.address' | 'statusLivechat') => {
 		if (sortBy === id) {
 			setSort(id, sortDirection === 'asc' ? 'desc' : 'asc');
 			return;

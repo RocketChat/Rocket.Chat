@@ -1,6 +1,5 @@
 import { AccordionItem, Box, FieldGroup, Skeleton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import SettingSkeleton from '../Setting/SettingSkeleton';
 

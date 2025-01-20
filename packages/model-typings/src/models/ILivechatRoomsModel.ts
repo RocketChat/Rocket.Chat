@@ -38,9 +38,13 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	getQueueMetrics(params: { departmentId: any; agentId: any; includeOfflineAgents: any; options?: any }): any;
 
-	findAllNumberOfAbandonedRooms(params: Period & WithDepartment & WithOnlyCount & WithOptions): Promise<any>;
+	findAllNumberOfAbandonedRooms(
+		params: Period & WithDepartment & WithOnlyCount & WithOptions & { inactivityTimeout: number },
+	): Promise<any>;
 
-	findPercentageOfAbandonedRooms(params: Period & WithDepartment & WithOnlyCount & WithOptions): Promise<any>;
+	findPercentageOfAbandonedRooms(
+		params: Period & WithDepartment & WithOnlyCount & WithOptions & { inactivityTimeout: number },
+	): Promise<any>;
 
 	findAllAverageOfChatDurationTime(params: Period & WithDepartment & WithOnlyCount & WithOptions): any;
 

@@ -7,7 +7,7 @@ import {
 	useHandleMenuAction,
 	type GenericMenuItemProps,
 } from '@rocket.chat/ui-client';
-import React, { useState, memo } from 'react';
+import { useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserAvatarWithStatus from './UserAvatarWithStatus';

@@ -46,7 +46,7 @@ API.v1.addRoute(
 			let { callStatus } = room;
 
 			if (!callStatus || callStatus === 'ended' || callStatus === 'declined') {
-				const { value } = await Settings.incrementValueById('WebRTC_Calls_Count', 1, { returnDocument: 'after' });
+				const value = await Settings.incrementValueById('WebRTC_Calls_Count', 1, { returnDocument: 'after' });
 				if (value) {
 					void notifyOnSettingChanged(value);
 				}

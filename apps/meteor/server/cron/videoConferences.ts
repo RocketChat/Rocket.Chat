@@ -20,5 +20,5 @@ async function runVideoConferences(): Promise<void> {
 export async function videoConferencesCron(): Promise<void> {
 	void runVideoConferences();
 
-	await cronJobs.add('VideoConferences', '0 */3 * * *', async () => runVideoConferences());
+	return cronJobs.add('VideoConferences', '0 */3 * * *', async () => runVideoConferences());
 }

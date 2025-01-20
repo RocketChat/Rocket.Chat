@@ -2,7 +2,7 @@ import { Sidebar, SidebarDivider, SidebarSection } from '@rocket.chat/fuselage';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import SidebarHeaderToolbar from './SidebarHeaderToolbar';
 import UserAvatarWithStatus from './UserAvatarWithStatus';

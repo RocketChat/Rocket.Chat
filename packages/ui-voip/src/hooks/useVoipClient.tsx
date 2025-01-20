@@ -23,9 +23,9 @@ export const useVoipClient = ({ enabled = true, autoRegister = true }: VoipClien
 
 	const iceServers = useWebRtcServers();
 
-	const { data: voipClient, error } = useQuery<VoipClient | null, Error>(
-		['voip-client', enabled, userId, iceServers],
-		async () => {
+	const { data: voipClient, error } = useQuery<VoipClient | null, Error>({
+		queryKey: ['voip-client', enabled, userId, iceServers],
+		queryFn: async () => {
 			if (voipClientRef.current) {
 				voipClientRef.current.clear();
 			}
@@ -69,11 +69,9 @@ export const useVoipClient = ({ enabled = true, autoRegister = true }: VoipClien
 
 			return voipClient;
 		},
-		{
-			initialData: null,
-			enabled,
-		},
-	);
+		initialData: null,
+		enabled,
+	});
 
 	useEffect(() => {
 		voipClientRef.current = voipClient;

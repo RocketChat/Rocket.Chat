@@ -3,6 +3,7 @@ import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../app/api/server/api';
+import { getReadReceiptsFunction } from '../methods/getReadReceipts';
 
 type GetMessageReadReceiptsProps = {
 	messageId: IMessage['_id'];
@@ -36,7 +37,7 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({
-				receipts: await Meteor.callAsync('getReadReceipts', { messageId }),
+				receipts: await getReadReceiptsFunction(messageId, this.userId),
 			});
 		},
 	},

@@ -1,6 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Icon, Tag, Skeleton } from '@rocket.chat/fuselage';
-import React from 'react';
 
 import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';
 import { useUserInfoQuery } from '../../../../hooks/useUserInfoQuery';
@@ -12,13 +11,13 @@ type RoomForewordUsernameListItemProps = {
 };
 
 const RoomForewordUsernameListItem = ({ username, href, useRealName }: RoomForewordUsernameListItemProps) => {
-	const { data, isLoading, isError } = useUserInfoQuery({ username });
+	const { data, isLoading, isError, isSuccess } = useUserInfoQuery({ username });
 
 	return (
 		<Tag icon={<Icon name='user' size='x20' />} data-username={username} large href={href}>
 			{isLoading && <Skeleton variant='rect' />}
-			{!isLoading && isError && username}
-			{!isLoading && !isError && getUserDisplayName(data?.user?.name, username, useRealName)}
+			{isError && username}
+			{isSuccess && getUserDisplayName(data?.user?.name, username, useRealName)}
 		</Tag>
 	);
 };

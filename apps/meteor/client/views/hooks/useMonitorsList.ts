@@ -28,7 +28,7 @@ export const useMonitorsList = (
 	}, [options, reload]);
 
 	const fetchData = useCallback(
-		async (start, end) => {
+		async (start: number, end: number) => {
 			const { monitors, total } = await getMonitors({
 				text: options.filter,
 				offset: start,

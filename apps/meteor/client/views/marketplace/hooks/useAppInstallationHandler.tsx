@@ -1,6 +1,6 @@
 import type { App } from '@rocket.chat/core-typings';
 import { useEndpoint, useRouteParameter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import { isMarketplaceRouteContext, useAppsCountQuery } from './useAppsCountQuery';
 import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';

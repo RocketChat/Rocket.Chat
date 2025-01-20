@@ -1,12 +1,12 @@
-import type { IRole, Serialized } from '@rocket.chat/core-typings';
+import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useEffectEvent, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
-import type { ReactElement, Dispatch, SetStateAction } from 'react';
-import React, { useMemo } from 'react';
+import type { ReactElement, Dispatch, SetStateAction, MouseEvent, KeyboardEvent } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UsersTableFilters from './UsersTableFilters';
@@ -59,31 +59,27 @@ const UsersTable = ({
 
 	const canManageVoipExtension = useVoipExtensionPermission();
 
-	const isKeyboardEvent = (
-		event: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>,
-	): event is React.KeyboardEvent<HTMLElement> => {
-		return (event as React.KeyboardEvent<HTMLElement>).key !== undefined;
+	const isKeyboardEvent = (event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>): event is KeyboardEvent<HTMLElement> => {
+		return (event as KeyboardEvent<HTMLElement>).key !== undefined;
 	};
 
-	const handleClickOrKeyDown = useEffectEvent(
-		(id, e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>): void => {
-			e.stopPropagation();
+	const handleClickOrKeyDown = useEffectEvent((id: IUser['_id'], e: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>): void => {
+		e.stopPropagation();
 
-			const keyboardSubmitKeys = ['Enter', ' '];
+		const keyboardSubmitKeys = ['Enter', ' '];
 
-			if (isKeyboardEvent(e) && !keyboardSubmitKeys.includes(e.key)) {
-				return;
-			}
+		if (isKeyboardEvent(e) && !keyboardSubmitKeys.includes(e.key)) {
+			return;
+		}
 
-			router.navigate({
-				name: 'admin-users',
-				params: {
-					context: 'info',
-					id,
-				},
-			});
-		},
-	);
+		router.navigate({
+			name: 'admin-users',
+			params: {
+				context: 'info',
+				id,
+			},
+		});
+	});
 
 	const headers = useMemo(
 		() => [

@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { KeyboardEvent, MouseEvent, RefObject } from 'react';
 import { createContext, useContext } from 'react';
 
 export type MessageListContextValue = {
@@ -7,7 +8,7 @@ export type MessageListContextValue = {
 	useShowFollowing: ({ message }: { message: IMessage }) => boolean;
 	useMessageDateFormatter: () => (date: Date) => string;
 	useUserHasReacted: (message: IMessage) => (reaction: string) => boolean;
-	useOpenEmojiPicker: (message: IMessage) => (event: React.MouseEvent | React.KeyboardEvent) => void;
+	useOpenEmojiPicker: (message: IMessage) => (event: MouseEvent | KeyboardEvent) => void;
 	showRoles: boolean;
 	showRealName: boolean;
 	showUsername: boolean;
@@ -24,7 +25,7 @@ export type MessageListContextValue = {
 	showColors: boolean;
 	jumpToMessageParam?: string;
 	username: string | undefined;
-	messageListRef?: React.RefObject<HTMLElement>;
+	messageListRef?: RefObject<HTMLElement>;
 };
 
 export const MessageListContext = createContext<MessageListContextValue>({

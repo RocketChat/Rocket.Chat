@@ -8,5 +8,9 @@ type UseStatisticsOptions = {
 export const useStatistics = ({ refresh }: UseStatisticsOptions = { refresh: 'false' }) => {
 	const getStatistics = useEndpoint('GET', '/v1/statistics');
 
-	return useQuery(['analytics'], () => getStatistics({ refresh }), { staleTime: 10 * 60 * 1000 });
+	return useQuery({
+		queryKey: ['analytics'],
+		queryFn: () => getStatistics({ refresh }),
+		staleTime: 10 * 60 * 1000,
+	});
 };

@@ -1,5 +1,5 @@
 import { GenericMenu } from '@rocket.chat/ui-client';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import useVideoConfMenuOptions from './useVideoConfMenuOptions';
 import useVoipMenuOptions from './useVoipMenuOptions';

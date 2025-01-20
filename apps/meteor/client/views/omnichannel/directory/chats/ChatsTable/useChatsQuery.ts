@@ -1,16 +1,8 @@
-import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useUserId } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import { useCallback } from 'react';
 
 import type { ChatsFiltersQuery } from '../../contexts/ChatsContext';
-
-type useQueryType = (
-	debouncedParams: ChatsFiltersQuery,
-	[column, direction]: [string, 'asc' | 'desc'],
-	current: number,
-	itemsPerPage: 25 | 50 | 100,
-) => GETLivechatRoomsParams;
 
 type CurrentChatQuery = {
 	agents?: string[];
@@ -34,8 +26,13 @@ export const useChatsQuery = () => {
 	const userIdLoggedIn = useUserId();
 	const canViewLivechatRooms = usePermission('view-livechat-rooms');
 
-	const chatsQuery: useQueryType = useCallback(
-		({ guest, servedBy, department, status, from, to, tags, ...customFields }, [column, direction], current, itemsPerPage) => {
+	return useCallback(
+		(
+			{ guest, servedBy, department, status, from, to, tags, ...customFields }: ChatsFiltersQuery,
+			[column, direction]: [string, 'asc' | 'desc'],
+			current: number,
+			itemsPerPage: 25 | 50 | 100,
+		) => {
 			const query: CurrentChatQuery = {
 				...(guest && { roomName: guest }),
 				sort: JSON.stringify({
@@ -92,6 +89,4 @@ export const useChatsQuery = () => {
 		},
 		[canViewLivechatRooms, userIdLoggedIn],
 	);
-
-	return chatsQuery;
 };

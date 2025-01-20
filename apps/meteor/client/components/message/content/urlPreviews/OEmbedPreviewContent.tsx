@@ -6,7 +6,6 @@ import {
 	Box,
 } from '@rocket.chat/fuselage';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
 
 import type { OEmbedPreviewMetadata } from './OEmbedPreviewMetadata';
 import MarkdownText from '../../../MarkdownText';

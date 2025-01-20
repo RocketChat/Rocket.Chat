@@ -3,7 +3,7 @@ import { Field, TextInput, FieldGroup, Modal, Button, Box, FieldLabel, FieldRow,
 import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, ComponentProps, FormEvent } from 'react';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../lib/constants';

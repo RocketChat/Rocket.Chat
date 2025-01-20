@@ -2,7 +2,6 @@ import { Box, Accordion, AccordionItem, ButtonGroup, Button } from '@rocket.chat
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import ChangePassword from './ChangePassword';

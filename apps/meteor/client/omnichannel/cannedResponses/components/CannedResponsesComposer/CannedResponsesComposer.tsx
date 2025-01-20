@@ -9,7 +9,7 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import React, { memo, useCallback, useRef, useState } from 'react';
+import { memo, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';

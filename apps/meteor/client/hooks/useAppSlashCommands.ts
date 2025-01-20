@@ -14,7 +14,9 @@ export const useAppSlashCommands = () => {
 
 	const invalidate = useDebouncedCallback(
 		() => {
-			queryClient.invalidateQueries(['apps', 'slashCommands']);
+			queryClient.invalidateQueries({
+				queryKey: ['apps', 'slashCommands'],
+			});
 		},
 		100,
 		[],
@@ -36,9 +38,9 @@ export const useAppSlashCommands = () => {
 
 	const getSlashCommands = useEndpoint('GET', '/v1/commands.list');
 
-	useQuery(
-		['apps', 'slashCommands'],
-		async () => {
+	const { data } = useQuery({
+		queryKey: ['apps', 'slashCommands'] as const,
+		queryFn: async () => {
 			let allCommands: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview' | 'appId'>[] = [];
 			let hasMore = true;
 			let offset = 0;
@@ -54,11 +56,14 @@ export const useAppSlashCommands = () => {
 
 			return allCommands;
 		},
-		{
-			enabled: !!uid,
-			onSuccess(data) {
-				data.forEach((command) => slashCommands.add(command));
-			},
-		},
-	);
+		enabled: !!uid,
+	});
+
+	useEffect(() => {
+		if (!data) {
+			return;
+		}
+
+		data.forEach((command) => slashCommands.add(command));
+	}, [data]);
 };

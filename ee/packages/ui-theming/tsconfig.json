@@ -1,7 +1,6 @@
 {
 	"extends": "../../../tsconfig.base.client.json",
 	"compilerOptions": {
-		"jsx": "react",
 		"rootDir": "./src",
 		"outDir": "./dist"
 	},

@@ -17,7 +17,7 @@ import { useDefaultSettingFeaturePreviewList } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useTranslation, useSettingsDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';

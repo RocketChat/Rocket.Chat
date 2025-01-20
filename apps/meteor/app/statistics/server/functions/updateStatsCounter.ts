@@ -7,7 +7,7 @@ type updateCounterDataType = { settingsId: string };
 
 export function updateCounter(data: updateCounterDataType): void {
 	void (async () => {
-		const { value } = await Settings.incrementValueById(data.settingsId, 1, { returnDocument: 'after' });
+		const value = await Settings.incrementValueById(data.settingsId, 1, { returnDocument: 'after' });
 		if (value) {
 			void notifyOnSettingChanged(value);
 		}

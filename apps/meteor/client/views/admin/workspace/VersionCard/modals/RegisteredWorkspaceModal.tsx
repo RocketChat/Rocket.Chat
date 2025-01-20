@@ -1,7 +1,7 @@
 import { Box, Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useFeatureBullets from '../hooks/useFeatureBullets';

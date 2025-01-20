@@ -85,7 +85,7 @@ export class NPSService extends ServiceClassInternal implements INPSService {
 
 		const sending = await Promise.all(
 			votesToSend.map(async (vote) => {
-				const { value } = await NpsVote.findOneAndUpdate(
+				const value = await NpsVote.findOneAndUpdate(
 					{
 						_id: vote._id,
 						status: INpsVoteStatus.NEW,

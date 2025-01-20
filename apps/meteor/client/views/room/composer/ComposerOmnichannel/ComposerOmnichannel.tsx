@@ -1,6 +1,5 @@
 import { MessageFooterCallout } from '@rocket.chat/ui-composer';
 import { useUserId } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useIsRoomOverMacLimit } from '../../../../hooks/omnichannel/useIsRoomOverMacLimit';

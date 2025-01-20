@@ -2,7 +2,7 @@ import type { DatumId } from '@nivo/pie';
 import { Pie } from '@nivo/pie';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ReactElement, CSSProperties, ReactNode } from 'react';
-import React, { useMemo, useCallback, memo } from 'react';
+import { useMemo, useCallback, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useLocalePercentage } from '../../../../hooks/useLocalePercentage';

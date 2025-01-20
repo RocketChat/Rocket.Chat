@@ -4,7 +4,7 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouteParameter, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useState, memo } from 'react';
+import { useCallback, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import semver from 'semver';
 

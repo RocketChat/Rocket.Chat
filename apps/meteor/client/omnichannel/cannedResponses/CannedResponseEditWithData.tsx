@@ -2,7 +2,6 @@ import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CannedResponseEdit from './CannedResponseEdit';
@@ -13,9 +12,12 @@ const CannedResponseEditWithData = ({ cannedResponseId }: { cannedResponseId: IO
 	const { t } = useTranslation();
 
 	const getCannedResponseById = useEndpoint('GET', '/v1/canned-responses/:_id', { _id: cannedResponseId });
-	const { data, isLoading, isError } = useQuery(['getCannedResponseById', cannedResponseId], async () => getCannedResponseById());
+	const { data, isPending, isError } = useQuery({
+		queryKey: ['getCannedResponseById', cannedResponseId],
+		queryFn: async () => getCannedResponseById(),
+	});
 
-	if (isLoading) {
+	if (isPending) {
 		return <FormSkeleton />;
 	}
 
@@ -31,7 +33,7 @@ const CannedResponseEditWithData = ({ cannedResponseId }: { cannedResponseId: IO
 		return <CannedResponseEditWithDepartmentData cannedResponseData={data.cannedResponse} />;
 	}
 
-	return <CannedResponseEdit cannedResponseData={data.cannedResponse} />;
+	return <CannedResponseEdit cannedResponseData={data?.cannedResponse} />;
 };
 
 export default CannedResponseEditWithData;

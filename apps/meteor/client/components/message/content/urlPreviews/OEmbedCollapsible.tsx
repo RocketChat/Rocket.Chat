@@ -1,6 +1,5 @@
 import { MessageGenericPreview } from '@rocket.chat/fuselage';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import OEmbedPreviewContent from './OEmbedPreviewContent';

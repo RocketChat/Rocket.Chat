@@ -108,7 +108,7 @@ Meteor.startup(async () => {
 				sendMessagesToAdmins({
 					msgs: async ({ adminUser }) => [
 						{
-							msg: `*${i18n.t(title, adminUser.language)}*\n${i18n.t(text, mongoVersion, adminUser.language)}\n${link}`,
+							msg: `*${i18n.t(title, adminUser.language)}*\n${i18n.t(text, { postProcess: 'sprintf', sprintf: [mongoVersion] }, adminUser.language)}\n${link}`,
 						},
 					],
 					banners: [

@@ -109,7 +109,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 }
 
 async function deleteThreadMessage(message: IThreadMessage, user: IUser, room: IRoom | null): Promise<void> {
-	const { value: updatedParentMessage } = await Messages.decreaseReplyCountById(message.tmid, -1);
+	const updatedParentMessage = await Messages.decreaseReplyCountById(message.tmid, -1);
 
 	if (room) {
 		const { modifiedCount } = await Subscriptions.removeUnreadThreadsByRoomId(room._id, [message.tmid]);

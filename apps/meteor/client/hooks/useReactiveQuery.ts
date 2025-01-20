@@ -28,7 +28,7 @@ export const useReactiveQuery = <TQueryFnData, TData = TQueryFnData, TQueryKey e
 							return;
 						}
 
-						queryClient.invalidateQueries(queryKey, { exact: true });
+						queryClient.invalidateQueries({ queryKey, exact: true });
 						c.stop();
 					});
 				});

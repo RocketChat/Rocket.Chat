@@ -1,3 +1,4 @@
+import type { IUserSettings } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
@@ -21,6 +22,8 @@ export type UsersUpdateParamsPOST = {
 		sendWelcomeEmail?: boolean;
 		verified?: boolean;
 		customFields?: Record<string, unknown>;
+		settings?: IUserSettings;
+		language?: string;
 		status?: string;
 	};
 	confirmRelinquish?: boolean;

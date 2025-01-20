@@ -1,6 +1,6 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Select, Margins, Field, FieldLabel, FieldRow, Label, Option } from '@rocket.chat/fuselage';
-import React, { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AgentOverview from './AgentOverview';

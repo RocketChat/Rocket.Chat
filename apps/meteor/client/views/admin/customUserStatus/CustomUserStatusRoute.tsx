@@ -1,7 +1,7 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, usePermission, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useRef, useEffect } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 
 import CustomUserActiveConnections from './CustomUserActiveConnections';
 import CustomUserStatusFormWithData from './CustomUserStatusFormWithData';

@@ -1,11 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { useSetModal, usePermission, useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
+import type { AdminUserAction } from './useAdminUserInfoActions';
 import GenericModal from '../../../../components/GenericModal';
-import type { Action } from '../../../hooks/useActionSpread';
 
-export const useResetE2EEKeyAction = (userId: IUser['_id']): Action | undefined => {
+export const useResetE2EEKeyAction = (userId: IUser['_id']): AdminUserAction | undefined => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -34,8 +34,8 @@ export const useResetE2EEKeyAction = (userId: IUser['_id']): Action | undefined 
 	return canResetE2EEKey
 		? {
 				icon: 'key',
-				label: t('Reset_E2E_Key'),
-				action: confirmResetE2EEKey,
+				content: t('Reset_E2E_Key'),
+				onClick: confirmResetE2EEKey,
 			}
 		: undefined;
 };

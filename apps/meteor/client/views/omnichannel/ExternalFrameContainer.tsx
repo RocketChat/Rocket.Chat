@@ -1,6 +1,6 @@
 import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { encrypt, getKeyFromString } from '../../../app/livechat/client/externalFrame/crypto';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
@@ -13,11 +13,15 @@ function ExternalFrameContainer() {
 	const keyStr = useSetting('Omnichannel_External_Frame_Encryption_JWK', '');
 	const frameURLSetting = useSetting('Omnichannel_External_Frame_URL', '');
 
-	const token = useQuery(['externalFrame', keyStr, authToken], async () => {
-		if (!keyStr || !authToken) {
-			return '';
-		}
-		return encrypt(authToken, await getKeyFromString(keyStr));
+	const token = useQuery({
+		queryKey: ['externalFrame', keyStr, authToken],
+
+		queryFn: async () => {
+			if (!keyStr || !authToken) {
+				return '';
+			}
+			return encrypt(authToken, await getKeyFromString(keyStr));
+		},
 	});
 
 	const externalFrameUrl = useMemo(() => {

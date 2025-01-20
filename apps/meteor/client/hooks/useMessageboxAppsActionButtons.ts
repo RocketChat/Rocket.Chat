@@ -1,5 +1,4 @@
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +9,7 @@ import type { MessageBoxAction } from '../../app/ui-utils/client/lib/messageBox'
 import { Utilities } from '../../ee/lib/misc/Utilities';
 import { useUiKitActionManager } from '../uikit/hooks/useUiKitActionManager';
 
-export const useMessageboxAppsActionButtons = (): UseQueryResult<MessageBoxAction[]> => {
+export const useMessageboxAppsActionButtons = () => {
 	const result = useAppActionButtons('messageBoxAction');
 	const actionManager = useUiKitActionManager();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -52,11 +51,12 @@ export const useMessageboxAppsActionButtons = (): UseQueryResult<MessageBoxActio
 					};
 
 					return item;
-				}),
+				}) ?? [],
 		[actionManager, applyButtonFilters, dispatchToastMessage, result.data, t],
 	);
+
 	return {
 		...result,
 		data,
-	} as UseQueryResult<MessageBoxAction[]>;
+	};
 };

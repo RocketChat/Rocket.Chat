@@ -1,7 +1,6 @@
 import { Grid } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode, ReactElement } from 'react';
-import React from 'react';
 
 const HomepageGridItem = ({ children }: { children: ReactNode }): ReactElement => {
 	const breakpoints = useBreakpoints();

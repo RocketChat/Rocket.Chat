@@ -1,7 +1,7 @@
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useLayoutSizes, useLayoutContextualBarPosition } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, KeyboardEvent } from 'react';
-import React, { useCallback, useRef } from 'react';
+import type { ComponentProps } from 'react';
+import { useCallback, useRef } from 'react';
 import type { AriaDialogProps } from 'react-aria';
 import { FocusScope, useDialog } from 'react-aria';
 
@@ -16,14 +16,14 @@ type ContextualbarDialogProps = AriaDialogProps & ComponentProps<typeof Contextu
  * @prop closeTab only work inside a room
  * */
 const ContextualbarDialog = (props: ContextualbarDialogProps) => {
-	const ref = useRef(null);
+	const ref = useRef<HTMLElement | null>(null);
 	const { dialogProps } = useDialog({ 'aria-labelledby': 'contextualbarTitle', ...props }, ref);
 	const { contextualBar } = useLayoutSizes();
 	const position = useLayoutContextualBarPosition();
 	const { closeTab } = useRoomToolbox();
 
 	const callbackRef = useCallback(
-		(node) => {
+		(node: HTMLElement | null) => {
 			if (!node) {
 				return;
 			}

@@ -15,9 +15,9 @@ export const useValidateInviteQuery = (userId: string | null, token: string | un
 
 	const handleValidateInviteToken = useEndpoint('POST', '/v1/validateInviteToken');
 
-	return useQuery(
-		['invite', token],
-		async () => {
+	const result = useQuery({
+		queryKey: ['invite', token],
+		queryFn: async () => {
 			if (!token) {
 				return false;
 			}
@@ -25,30 +25,33 @@ export const useValidateInviteQuery = (userId: string | null, token: string | un
 			try {
 				const { valid } = await handleValidateInviteToken({ token });
 
+				// FIXME: decouple this state management from the query
+				const onSuccess = async () => {
+					if (!token) {
+						return;
+					}
+
+					if (registrationForm !== 'Disabled') {
+						setLoginDefaultState('invite-register');
+					} else {
+						setLoginDefaultState('login');
+					}
+
+					if (!valid || !userId) {
+						return;
+					}
+
+					return getInviteRoomMutation(token);
+				};
+
+				onSuccess();
 				return valid;
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t('Failed_to_validate_invite_token') });
 				return false;
 			}
 		},
-		{
-			onSuccess: async (valid) => {
-				if (!token) {
-					return;
-				}
+	});
 
-				if (registrationForm !== 'Disabled') {
-					setLoginDefaultState('invite-register');
-				} else {
-					setLoginDefaultState('login');
-				}
-
-				if (!valid || !userId) {
-					return;
-				}
-
-				return getInviteRoomMutation(token);
-			},
-		},
-	);
+	return result;
 };

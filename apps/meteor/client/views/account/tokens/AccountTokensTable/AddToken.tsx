@@ -1,14 +1,23 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, TextInput, Button, Margins, Select } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useUserId, useMethod } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { useCallback, useMemo, useEffect } from 'react';
+import DOMPurify from 'dompurify';
+import { useCallback, useMemo, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../components/GenericModal';
 
-const AddToken = ({ reload }: { reload: () => void }): ReactElement => {
+type AddTokenFormData = {
+	name: string;
+	bypassTwoFactor: string;
+};
+
+type AddTokenProps = {
+	reload: () => void;
+};
+
+const AddToken = ({ reload }: AddTokenProps) => {
 	const { t } = useTranslation();
 	const userId = useUserId();
 	const setModal = useSetModal();
@@ -23,7 +32,7 @@ const AddToken = ({ reload }: { reload: () => void }): ReactElement => {
 		handleSubmit,
 		control,
 		formState: { isSubmitted, submitCount },
-	} = useForm({ defaultValues: initialValues });
+	} = useForm<AddTokenFormData>({ defaultValues: initialValues });
 
 	const twoFactorAuthOptions: SelectOption[] = useMemo(
 		() => [
@@ -34,7 +43,7 @@ const AddToken = ({ reload }: { reload: () => void }): ReactElement => {
 	);
 
 	const handleAddToken = useCallback(
-		async ({ name: tokenName, bypassTwoFactor }) => {
+		async ({ name: tokenName, bypassTwoFactor }: AddTokenFormData) => {
 			try {
 				const token = await createTokenFn({ tokenName, bypassTwoFactor: bypassTwoFactor === 'bypass' });
 
@@ -42,10 +51,12 @@ const AddToken = ({ reload }: { reload: () => void }): ReactElement => {
 					<GenericModal title={t('API_Personal_Access_Token_Generated')} onConfirm={() => setModal(null)} onClose={() => setModal(null)}>
 						<Box
 							dangerouslySetInnerHTML={{
-								__html: t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
-									token,
-									userId,
-								}),
+								__html: DOMPurify.sanitize(
+									t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
+										token,
+										userId,
+									}),
+								),
 							}}
 						/>
 					</GenericModal>,

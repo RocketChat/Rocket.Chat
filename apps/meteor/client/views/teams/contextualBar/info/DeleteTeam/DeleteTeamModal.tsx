@@ -1,6 +1,6 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState } from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useState } from 'react';
 
 import DeleteTeamChannels from './DeleteTeamChannels';
 import DeleteTeamConfirmation from './DeleteTeamConfirmation';
@@ -20,7 +20,7 @@ const DeleteTeamModal = ({ onCancel, onConfirm, rooms }: DeleteTeamModalProps) =
 	const [deletedRooms, setDeletedRooms] = useState<{ [key: string]: Serialized<IRoom> }>({});
 	const [keptRooms, setKeptRooms] = useState<{ [key: string]: Serialized<IRoom> }>({});
 
-	const onChangeRoomSelection = useMutableCallback((room) => {
+	const onChangeRoomSelection = useEffectEvent((room: Serialized<IRoom>) => {
 		if (deletedRooms[room._id]) {
 			setDeletedRooms((deletedRooms) => {
 				delete deletedRooms[room._id];
@@ -31,14 +31,14 @@ const DeleteTeamModal = ({ onCancel, onConfirm, rooms }: DeleteTeamModalProps) =
 		setDeletedRooms((deletedRooms) => ({ ...deletedRooms, [room._id]: room }));
 	});
 
-	const onToggleAllRooms = useMutableCallback(() => {
+	const onToggleAllRooms = useEffectEvent(() => {
 		if (Object.values(deletedRooms).filter(Boolean).length === 0) {
 			return setDeletedRooms(Object.fromEntries(rooms.map((room) => [room._id, room])));
 		}
 		setDeletedRooms({});
 	});
 
-	const onSelectRooms = useMutableCallback(() => {
+	const onSelectRooms = useEffectEvent(() => {
 		const keptRooms = Object.fromEntries(rooms.filter((room) => !deletedRooms[room._id]).map((room) => [room._id, room]));
 		setKeptRooms(keptRooms);
 		setStep(STEPS.CONFIRM_DELETE);

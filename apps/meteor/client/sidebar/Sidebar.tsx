@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';

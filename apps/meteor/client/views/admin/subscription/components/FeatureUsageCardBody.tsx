@@ -1,6 +1,5 @@
 import { Box, CardBody } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
-import React from 'react';
 
 type FeatureUsageCardBodyProps = { justifyContent?: 'flex-start' | 'center'; children: ReactNode };
 

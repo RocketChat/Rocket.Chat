@@ -1,7 +1,6 @@
 import { Skeleton } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useGetMessageByID } from '../../../../views/room/contextualBar/Threads/hooks/useGetMessageByID';
@@ -43,9 +42,10 @@ const ReactionTooltip = ({ emojiName, usernames, mine, messageId, showRealName, 
 
 	const getMessage = useGetMessageByID();
 
-	const { data: users, isLoading } = useQuery(
-		['chat.getMessage', 'reactions', messageId, usernames],
-		async () => {
+	const { data: users, isLoading } = useQuery({
+		queryKey: ['chat.getMessage', 'reactions', messageId, usernames],
+
+		queryFn: async () => {
 			// This happens if the only reaction is from the current user
 			if (!usernames.length) {
 				return [];
@@ -71,8 +71,9 @@ const ReactionTooltip = ({ emojiName, usernames, mine, messageId, showRealName, 
 
 			return reactions[emojiName].names || usernames;
 		},
-		{ staleTime: 1000 * 60 * 5 },
-	);
+
+		staleTime: 1000 * 60 * 5,
+	});
 
 	if (isLoading) {
 		return (

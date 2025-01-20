@@ -1,8 +1,9 @@
 import type { ILivechatTrigger } from '@rocket.chat/core-typings';
 import { IconButton } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
+import { memo } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
@@ -16,22 +17,22 @@ const TriggersRow = ({ _id, name, description, enabled, reload }: TriggersRowPro
 	const deleteTrigger = useEndpoint('DELETE', '/v1/livechat/triggers/:_id', { _id });
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleClick = useMutableCallback(() => {
+	const handleClick = useEffectEvent(() => {
 		triggersRoute.push({
 			context: 'edit',
 			id: _id,
 		});
 	});
 
-	const handleKeyDown = useMutableCallback((e) => {
-		if (!['Enter', 'Space'].includes(e.nativeEvent.code)) {
+	const handleKeyDown = useEffectEvent((e: KeyboardEvent) => {
+		if (!['Enter', 'Space'].includes(e.code)) {
 			return;
 		}
 
 		handleClick();
 	});
 
-	const handleDelete = useMutableCallback((e) => {
+	const handleDelete = useEffectEvent((e: MouseEvent) => {
 		e.stopPropagation();
 		const onDeleteTrigger = async () => {
 			try {

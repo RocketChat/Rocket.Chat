@@ -2,7 +2,6 @@ import { Modal, Box, Field, FieldLabel, FieldRow, TextInput, CheckBox, ButtonGro
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
 import WorkspaceRegistrationModal from '../RegisterWorkspaceModal';

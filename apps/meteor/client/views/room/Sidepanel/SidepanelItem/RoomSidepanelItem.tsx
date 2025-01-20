@@ -1,5 +1,5 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 import { useTemplateByViewMode } from '../../../../sidebarv2/hooks/useTemplateByViewMode';

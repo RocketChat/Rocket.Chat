@@ -1,6 +1,5 @@
 import { Button, Box, Modal } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 type MyDataModalProps = {

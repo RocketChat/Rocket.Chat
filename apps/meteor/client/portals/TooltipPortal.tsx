@@ -1,6 +1,6 @@
 import { AnchorPortal } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 const tooltipAnchorId = 'tooltip-root';
 

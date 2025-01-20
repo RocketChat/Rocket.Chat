@@ -2,7 +2,6 @@ import { IconButton } from '@rocket.chat/fuselage';
 import { GenericMenu, useHandleMenuAction } from '@rocket.chat/ui-client';
 import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes } from 'react';
-import React from 'react';
 
 import { NavbarAction } from '../../components/Navbar';
 import { useAppsItems } from '../../sidebar/header/actions/hooks/useAppsItems';

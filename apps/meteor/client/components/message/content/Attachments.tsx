@@ -1,6 +1,5 @@
 import type { MessageAttachmentBase } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import AttachmentsItem from './attachments/AttachmentsItem';
 

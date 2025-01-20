@@ -1,6 +1,5 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import AccountProfilePage from './AccountProfilePage';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';

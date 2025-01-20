@@ -1,8 +1,8 @@
-import type { IMessage, ReadReceipt } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ReadReceiptRow from './ReadReceiptRow';
@@ -20,7 +20,10 @@ const ReadReceiptsModal = ({ messageId, onClose }: ReadReceiptsModalProps): Reac
 
 	const getReadReceipts = useMethod('getReadReceipts');
 
-	const readReceiptsResult = useQuery<ReadReceipt[], Error>(['read-receipts', messageId], () => getReadReceipts({ messageId }));
+	const readReceiptsResult = useQuery({
+		queryKey: ['read-receipts', messageId],
+		queryFn: () => getReadReceipts({ messageId }),
+	});
 
 	useEffect(() => {
 		if (readReceiptsResult.isError) {
@@ -33,12 +36,12 @@ const ReadReceiptsModal = ({ messageId, onClose }: ReadReceiptsModalProps): Reac
 		return <GenericModalSkeleton />;
 	}
 
-	const readReceipts = readReceiptsResult.data;
+	const readReceipts = readReceiptsResult?.data;
 
 	return (
 		<GenericModal title={t('Read_by')} onConfirm={onClose} onClose={onClose}>
-			{readReceipts.length < 1 && t('No_results_found')}
-			{readReceipts.length > 0 && (
+			{readReceipts && readReceipts.length < 1 && t('No_results_found')}
+			{readReceipts && readReceipts.length > 0 && (
 				<div role='list'>
 					{readReceipts.map((receipt) => (
 						<ReadReceiptRow key={receipt._id} {...receipt} />

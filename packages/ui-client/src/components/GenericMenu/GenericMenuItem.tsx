@@ -4,6 +4,7 @@ import type { ComponentProps, MouseEvent, ReactNode } from 'react';
 export type GenericMenuItemProps = {
 	id: string;
 	icon?: ComponentProps<typeof MenuItemIcon>['name'];
+	iconColor?: ComponentProps<typeof MenuItemIcon>['color'];
 	content?: ReactNode;
 	addon?: ReactNode;
 	onClick?: (e?: MouseEvent<HTMLElement>) => void;
@@ -15,10 +16,10 @@ export type GenericMenuItemProps = {
 	variant?: string;
 };
 
-const GenericMenuItem = ({ icon, content, addon, status, gap, tooltip }: GenericMenuItemProps) => (
+const GenericMenuItem = ({ icon, iconColor, content, addon, status, gap, tooltip }: GenericMenuItemProps) => (
 	<>
 		{gap && <MenuItemColumn />}
-		{icon && <MenuItemIcon name={icon} />}
+		{icon && <MenuItemIcon name={icon} color={iconColor} />}
 		{status && <MenuItemColumn>{status}</MenuItemColumn>}
 		{content && <MenuItemContent title={tooltip}>{content}</MenuItemContent>}
 		{addon && <MenuItemInput>{addon}</MenuItemInput>}

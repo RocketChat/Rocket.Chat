@@ -1,6 +1,5 @@
 import type { Card } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';

@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { MouseEvent, MouseEventHandler, TouchEvent, TouchEventHandler } from 'react';
 import { useRef } from 'react';
 
@@ -19,7 +19,7 @@ export function useLongPress(
 	const isLongPress = useRef(false);
 	const timerRef = useRef<NodeJS.Timeout>();
 
-	const startPressTimer = useMutableCallback((): void => {
+	const startPressTimer = useEffectEvent((): void => {
 		isLongPress.current = false;
 		timerRef.current = setTimeout(() => {
 			isLongPress.current = true;
@@ -27,7 +27,7 @@ export function useLongPress(
 		}, options?.threshold ?? 700);
 	});
 
-	const handleOnClick = useMutableCallback((e: MouseEvent<HTMLButtonElement>): void => {
+	const handleOnClick = useEffectEvent((e: MouseEvent<HTMLButtonElement>): void => {
 		if (isLongPress.current || !options?.onClick) {
 			return;
 		}
@@ -35,25 +35,25 @@ export function useLongPress(
 		options.onClick(e);
 	});
 
-	const handleOnMouseDown = useMutableCallback((e: MouseEvent<HTMLButtonElement>): void => {
+	const handleOnMouseDown = useEffectEvent((e: MouseEvent<HTMLButtonElement>): void => {
 		startPressTimer();
 
 		options?.onMouseDown?.(e);
 	});
 
-	const handleOnMouseUp = useMutableCallback((e: MouseEvent<HTMLButtonElement>): void => {
+	const handleOnMouseUp = useEffectEvent((e: MouseEvent<HTMLButtonElement>): void => {
 		clearTimeout(timerRef.current);
 
 		options?.onMouseUp?.(e);
 	});
 
-	const handleOnTouchStart = useMutableCallback((e: TouchEvent<HTMLButtonElement>): void => {
+	const handleOnTouchStart = useEffectEvent((e: TouchEvent<HTMLButtonElement>): void => {
 		startPressTimer();
 
 		options?.onTouchStart?.(e);
 	});
 
-	const handleOnTouchEnd = useMutableCallback((e: TouchEvent<HTMLButtonElement>): void => {
+	const handleOnTouchEnd = useEffectEvent((e: TouchEvent<HTMLButtonElement>): void => {
 		clearTimeout(timerRef.current);
 
 		if (options?.onTouchEnd) {

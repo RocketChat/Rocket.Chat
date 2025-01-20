@@ -1,7 +1,6 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { DarkModeProvider } from '@rocket.chat/layout';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import SetupWizardPage from './SetupWizardPage';
 import ModalRegion from '../modal/ModalRegion';

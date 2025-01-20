@@ -173,6 +173,15 @@ export const createOmniSettings = () =>
 			enableQuery: omnichannelEnabledQuery,
 		});
 
+		await this.add('Omnichannel_allow_force_close_conversations', false, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			section: 'API',
+			public: true,
+			enableQuery: omnichannelEnabledQuery,
+			alert: 'Omnichannel_allow_force_close_conversations_alert',
+		});
+
 		await this.add('Livechat_conversation_finished_message', '', {
 			type: 'string',
 			group: 'Omnichannel',

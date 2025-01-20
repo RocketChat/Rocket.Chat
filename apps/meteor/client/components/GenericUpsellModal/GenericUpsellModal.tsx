@@ -1,7 +1,6 @@
 import { Box, Button, Modal } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ReactNode, ReactElement, ComponentProps } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 type GenericUpsellModalProps = {

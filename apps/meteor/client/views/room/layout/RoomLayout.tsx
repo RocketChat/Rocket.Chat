@@ -5,7 +5,7 @@ import breakpointsDefinitions from '@rocket.chat/fuselage-tokens/breakpoints.jso
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { LayoutContext, useLayout } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
-import React, { Suspense, useMemo } from 'react';
+import { Suspense, useMemo } from 'react';
 
 import { ContextualbarDialog } from '../../../components/Contextualbar';
 import HeaderSkeleton from '../Header/HeaderSkeleton';

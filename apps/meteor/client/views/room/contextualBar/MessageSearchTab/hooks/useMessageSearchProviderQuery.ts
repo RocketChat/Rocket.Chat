@@ -3,12 +3,16 @@ import { useQuery } from '@tanstack/react-query';
 
 export const useMessageSearchProviderQuery = () => {
 	const getSearchProvider = useMethod('rocketchatSearch.getProvider');
-	return useQuery(['search', 'provider'] as const, async () => {
-		const provider = await getSearchProvider();
-		if (provider === undefined) {
-			throw new Error('Search provider not found');
-		}
+	return useQuery({
+		queryKey: ['search', 'provider'] as const,
 
-		return provider;
+		queryFn: async () => {
+			const provider = await getSearchProvider();
+			if (provider === undefined) {
+				throw new Error('Search provider not found');
+			}
+
+			return provider;
+		},
 	});
 };

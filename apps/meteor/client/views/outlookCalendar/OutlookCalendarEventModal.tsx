@@ -1,7 +1,6 @@
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
-import React from 'react';
 
 import OutlookEventItemContent from './OutlookEventsList/OutlookEventItemContent';
 import { useOutlookOpenCall } from './hooks/useOutlookOpenCall';
@@ -19,13 +18,17 @@ const OutlookCalendarEventModal = ({ id, subject, meetingUrl, description, ...pr
 	const t = useTranslation();
 	const calendarInfoEndpoint = useEndpoint('GET', '/v1/calendar-events.info');
 
-	const { data, isLoading } = useQuery(['calendar-events.info', id], async () => {
-		if (!id) {
-			const event = { event: { subject, meetingUrl, description } };
-			return event;
-		}
+	const { data, isLoading } = useQuery({
+		queryKey: ['calendar-events.info', id],
 
-		return calendarInfoEndpoint({ id });
+		queryFn: async () => {
+			if (!id) {
+				const event = { event: { subject, meetingUrl, description } };
+				return event;
+			}
+
+			return calendarInfoEndpoint({ id });
+		},
 	});
 
 	const openCall = useOutlookOpenCall(data?.event.meetingUrl);

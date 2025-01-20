@@ -4,7 +4,7 @@ import { Modal, Box, Button, FieldGroup, Field, FieldLabel, FieldRow, FieldError
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 

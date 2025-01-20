@@ -4,7 +4,7 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { Options, Box, Option, Field, FieldLabel, FieldRow, SelectLegacy } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import React, { useCallback, forwardRef, useMemo, useState } from 'react';
+import { useCallback, forwardRef, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';

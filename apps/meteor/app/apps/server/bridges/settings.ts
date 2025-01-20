@@ -75,7 +75,7 @@ export class AppSettingBridge extends ServerSettingBridge {
 			throw new Error(`The setting "${id}" is not readable.`);
 		}
 
-		const { value: setting } = await Settings.incrementValueById(id, value, { returnDocument: 'after' });
+		const setting = await Settings.incrementValueById(id, value, { returnDocument: 'after' });
 		if (setting) {
 			void notifyOnSettingChanged(setting);
 		}

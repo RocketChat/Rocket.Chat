@@ -1,7 +1,7 @@
 import { Box, AccordionItem, Icon, FieldGroup } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ReactElement, ReactNode } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 type NotificationByDeviceProps = {
 	device: string;

@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type OngoingCallDurationProps = {
 	counter: number;

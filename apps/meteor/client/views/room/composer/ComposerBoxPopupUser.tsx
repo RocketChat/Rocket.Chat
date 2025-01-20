@@ -1,6 +1,5 @@
 import { OptionAvatar, OptionColumn, OptionContent, OptionInput } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ReactiveUserStatus from '../../../components/UserStatus/ReactiveUserStatus';

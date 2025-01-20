@@ -1,6 +1,5 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 type WarningModalProps = {

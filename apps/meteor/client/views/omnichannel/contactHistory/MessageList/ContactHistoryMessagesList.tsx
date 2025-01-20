@@ -15,7 +15,7 @@ import {
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 

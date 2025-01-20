@@ -1,6 +1,5 @@
 import { Badge } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes } from 'react';
-import React from 'react';
 
 export const NavbarBadge = (props: Omit<AllHTMLAttributes<HTMLSpanElement>, 'is'>) => {
 	return (

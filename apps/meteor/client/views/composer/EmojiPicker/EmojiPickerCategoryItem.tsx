@@ -1,6 +1,5 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { EmojiCategory } from '../../../../app/emoji/client';

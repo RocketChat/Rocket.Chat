@@ -1,7 +1,6 @@
 import { Box, Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
 import { useAtLeastOnePermission, useEndpoint, useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { isSameChannel } from '../../../../../app/livechat/lib/isSameChannel';
@@ -31,7 +30,7 @@ const ComposerOmnichannelCallout = () => {
 	} = room;
 
 	const getContactById = useEndpoint('GET', '/v1/omnichannel/contacts.get');
-	const { data } = useQuery(['getContactById', contactId], () => getContactById({ contactId }));
+	const { data } = useQuery({ queryKey: ['getContactById', contactId], queryFn: () => getContactById({ contactId }) });
 
 	const association = { visitorId, source };
 	const currentChannel = data?.contact?.channels?.find((channel) => isSameChannel(channel.visitor, association));

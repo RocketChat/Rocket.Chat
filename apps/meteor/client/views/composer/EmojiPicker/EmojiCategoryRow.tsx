@@ -2,7 +2,6 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { EmojiPickerLoadMore, EmojiPickerNotFound, EmojiPickerCategoryWrapper } from '@rocket.chat/ui-client';
 import type { MouseEvent, MutableRefObject } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EmojiElement from './EmojiElement';

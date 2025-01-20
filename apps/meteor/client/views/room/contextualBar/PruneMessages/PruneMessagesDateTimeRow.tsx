@@ -1,6 +1,5 @@
 import { Field, FieldLabel, InputBox, Box, Margins } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useFormContext } from 'react-hook-form';
 
 type PruneMessagesDateTimeRowProps = {

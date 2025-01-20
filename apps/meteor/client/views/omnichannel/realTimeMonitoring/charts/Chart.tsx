@@ -1,6 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { MutableRefObject } from 'react';
-import React from 'react';
 
 type ChartProps = { canvasRef: MutableRefObject<HTMLCanvasElement | null> };
 

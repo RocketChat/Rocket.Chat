@@ -2,7 +2,7 @@ import { useToolbar } from '@react-aria/toolbar';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageReactions, MessageReactionAction } from '@rocket.chat/fuselage';
 import type { HTMLAttributes, KeyboardEvent, ReactElement } from 'react';
-import React, { useContext, useRef } from 'react';
+import { useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MessageListContext, useOpenEmojiPicker, useUserHasReacted } from '../list/MessageListContext';

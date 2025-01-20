@@ -1,5 +1,5 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useRouter } from '@rocket.chat/ui-contexts';
 
 import { Subscriptions } from '../../../../app/models/client';
@@ -10,7 +10,7 @@ export const useGoToRoom = ({ replace = false }: { replace?: boolean } = {}): ((
 	const router = useRouter();
 
 	// TODO: remove params recycling
-	return useMutableCallback(async (rid) => {
+	return useEffectEvent(async (rid: IRoom['_id']) => {
 		if (!rid) {
 			return;
 		}

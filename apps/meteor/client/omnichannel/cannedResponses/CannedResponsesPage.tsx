@@ -1,6 +1,5 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CannedResponseEdit from './CannedResponseEdit';

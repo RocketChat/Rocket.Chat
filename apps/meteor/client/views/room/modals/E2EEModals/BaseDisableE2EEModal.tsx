@@ -1,6 +1,6 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import DisableE2EEModal from './DisableE2EEModal';
 import ResetKeysE2EEModal from './ResetKeysE2EEModal';

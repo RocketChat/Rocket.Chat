@@ -78,8 +78,7 @@ async function runFederation(): Promise<void> {
 	}
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export async function federationCron(): Promise<void> {
+export function federationCron(): void {
 	const name = 'Federation';
 
 	settings.watch('FEDERATION_Enabled', async (value) => {

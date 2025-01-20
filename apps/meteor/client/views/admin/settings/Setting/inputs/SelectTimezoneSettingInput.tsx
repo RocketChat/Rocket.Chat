@@ -1,7 +1,6 @@
 import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import moment from 'moment-timezone';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';

@@ -54,7 +54,7 @@ export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 				},
 			});
 
-			const { value } = await Settings.incrementValueById('Invitation_Email_Count', 1, { returnDocument: 'after' });
+			const value = await Settings.incrementValueById('Invitation_Email_Count', 1, { returnDocument: 'after' });
 			if (value) {
 				void notifyOnSettingChanged(value);
 			}

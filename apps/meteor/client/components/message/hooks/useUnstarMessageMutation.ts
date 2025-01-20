@@ -26,7 +26,7 @@ export const useUnstarMessageMutation = () => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSettled: (_data, _error, message) => {
-			queryClient.invalidateQueries(roomsQueryKeys.starredMessages(message.rid));
+			queryClient.invalidateQueries({ queryKey: roomsQueryKeys.starredMessages(message.rid) });
 		},
 	});
 };

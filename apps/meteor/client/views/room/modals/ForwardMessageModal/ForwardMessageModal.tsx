@@ -4,7 +4,7 @@ import { useClipboard, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple';
@@ -115,7 +115,7 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 					<Button onClick={handleCopy} disabled={hasCopied}>
 						{hasCopied ? t('Copied') : t('Copy_Link')}
 					</Button>
-					<Button disabled={!rooms.length} loading={sendMessageMutation.isLoading} onClick={() => sendMessageMutation.mutate()} primary>
+					<Button disabled={!rooms.length} loading={sendMessageMutation.isPending} onClick={() => sendMessageMutation.mutate()} primary>
 						{t('Forward')}
 					</Button>
 				</ButtonGroup>

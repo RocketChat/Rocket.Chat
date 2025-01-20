@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 import type { ReactNode } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { SelectedMessageContext } from '../MessageList/contexts/SelectedMessagesContext';
 

@@ -6,9 +6,10 @@ import { useQuery } from '@tanstack/react-query';
 const usePendingUsersCount = (users: Serialized<DefaultUserInfo[]> | undefined) => {
 	const getUsers = useEndpoint('GET', '/v1/users.listByStatus');
 
-	return useQuery(
-		['pendingUsersCount', users],
-		async () => {
+	return useQuery({
+		queryKey: ['pendingUsersCount', users],
+
+		queryFn: async () => {
 			const payload: UsersListStatusParamsGET = {
 				hasLoggedIn: false,
 				status: 'deactivated',
@@ -18,8 +19,10 @@ const usePendingUsersCount = (users: Serialized<DefaultUserInfo[]> | undefined) 
 
 			return getUsers(payload);
 		},
-		{ enabled: !!users, select: (data) => data?.total },
-	);
+
+		enabled: !!users,
+		select: (data) => data?.total,
+	});
 };
 
 export default usePendingUsersCount;

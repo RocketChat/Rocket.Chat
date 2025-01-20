@@ -184,7 +184,7 @@ export class Importer {
 		};
 
 		const afterContactsBatchFn = async (successCount: number) => {
-			const { value } = await Settings.incrementValueById('Contacts_Importer_Count', successCount, { returnDocument: 'after' });
+			const value = await Settings.incrementValueById('Contacts_Importer_Count', successCount, { returnDocument: 'after' });
 			if (value) {
 				void notifyOnSettingChanged(value);
 			}

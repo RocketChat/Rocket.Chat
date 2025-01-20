@@ -21,12 +21,14 @@ export const handleBrowserVersionCheck = (request: IncomingMessage, res: ServerR
 
 	const browserVersionCheck = cookies.get('browser_version_check', req.headers.cookie);
 	if (browserVersionCheck === 'bypass') {
-		return next();
+		next();
+		return;
 	}
 
 	const userAgent = parser(req.headers['user-agent']);
 	if (browserVersionCheck !== 'force' && !isIEOlderThan11(userAgent)) {
-		return next();
+		next();
+		return;
 	}
 
 	res.setHeader('content-type', 'text/html; charset=utf-8');
@@ -141,5 +143,5 @@ export const handleBrowserVersionCheck = (request: IncomingMessage, res: ServerR
 		</section>
 	`);
 
-	return res.end();
+	res.end();
 };

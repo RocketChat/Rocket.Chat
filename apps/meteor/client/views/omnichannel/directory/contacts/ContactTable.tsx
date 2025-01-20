@@ -1,8 +1,8 @@
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box, Button } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRoute } from '@rocket.chat/ui-contexts';
-import { hashQueryKey } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { hashKey } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ContactTableRow from './ContactTableRow';
@@ -52,8 +52,8 @@ function ContactTable() {
 
 	const { data, isLoading, isError, isSuccess, refetch } = useCurrentContacts(query);
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const headers = (
 		<>

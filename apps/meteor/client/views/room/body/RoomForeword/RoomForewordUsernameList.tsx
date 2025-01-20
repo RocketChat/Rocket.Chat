@@ -1,7 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Margins } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import RoomForewordUsernameListItem from './RoomForewordUsernameListItem';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';

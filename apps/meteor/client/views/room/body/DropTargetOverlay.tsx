@@ -1,8 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { DragEvent, ReactElement, ReactNode } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
@@ -18,12 +18,12 @@ type DropTargetOverlayProps = {
 function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDismiss }: DropTargetOverlayProps): ReactElement | null {
 	const { t } = useTranslation();
 
-	const handleDragLeave = useMutableCallback((event: DragEvent) => {
+	const handleDragLeave = useEffectEvent((event: DragEvent) => {
 		event.stopPropagation();
 		onDismiss?.();
 	});
 
-	const handleDragOver = useMutableCallback((event: DragEvent) => {
+	const handleDragOver = useEffectEvent((event: DragEvent) => {
 		event.stopPropagation();
 
 		event.preventDefault();
@@ -32,7 +32,7 @@ function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDism
 
 	const formatDateAndTime = useFormatDateAndTime();
 
-	const handleDrop = useMutableCallback(async (event: DragEvent) => {
+	const handleDrop = useEffectEvent(async (event: DragEvent) => {
 		event.stopPropagation();
 		onDismiss?.();
 

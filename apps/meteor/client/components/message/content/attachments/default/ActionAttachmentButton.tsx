@@ -2,7 +2,6 @@ import type { IMessage, MessageAttachmentAction } from '@rocket.chat/core-typing
 import { Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
 
 import { usePerformActionMutation } from './hooks/usePerformActionMutation';
 
@@ -29,7 +28,7 @@ const ActionAttachmentButton = ({ children, processingType, msg, mid }: ActionAt
 			small
 			value={msg}
 			id={mid}
-			disabled={performActionMutation.isLoading}
+			disabled={performActionMutation.isPending}
 			onClick={(event): void => {
 				event.preventDefault();
 

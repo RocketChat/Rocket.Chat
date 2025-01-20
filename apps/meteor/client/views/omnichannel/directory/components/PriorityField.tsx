@@ -1,5 +1,4 @@
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FormSkeleton } from './FormSkeleton';
@@ -14,9 +13,9 @@ type PriorityFieldProps = {
 
 const PriorityField = ({ id }: PriorityFieldProps) => {
 	const { t } = useTranslation();
-	const { data, isInitialLoading, isError } = usePriorityInfo(id);
+	const { data, isLoading, isError } = usePriorityInfo(id);
 
-	if (isInitialLoading) {
+	if (isLoading) {
 		return <FormSkeleton />;
 	}
 

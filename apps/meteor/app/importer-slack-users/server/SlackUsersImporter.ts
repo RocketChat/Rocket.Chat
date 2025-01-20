@@ -95,7 +95,7 @@ export class SlackUsersImporter extends Importer {
 		await super.updateProgress(ProgressStep.USER_SELECTION);
 		await super.addCountToTotal(userCount);
 
-		const { value } = await Settings.incrementValueById('Slack_Users_Importer_Count', userCount, { returnDocument: 'after' });
+		const value = await Settings.incrementValueById('Slack_Users_Importer_Count', userCount, { returnDocument: 'after' });
 		if (value) {
 			void notifyOnSettingChanged(value);
 		}

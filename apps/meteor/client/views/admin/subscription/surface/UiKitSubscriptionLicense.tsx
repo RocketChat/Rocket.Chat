@@ -2,7 +2,7 @@ import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { UiKitContext, bannerParser, UiKitComponent } from '@rocket.chat/fuselage-ui-kit';
 import type { View } from '@rocket.chat/ui-kit';
 import type { ContextType, Dispatch, ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import type { SubscriptionLicenseLayout } from './UiKitSubscriptionLicenseSurface';
 import { UiKitSubscriptionLicenseSurface } from './UiKitSubscriptionLicenseSurface';

@@ -23,9 +23,10 @@ const UserAutoComplete = ({ value, onChange, ...props }: UserAutoCompleteProps):
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 	const usersAutoCompleteEndpoint = useEndpoint('GET', '/v1/users.autocomplete');
 
-	const { data } = useQuery(['usersAutoComplete', debouncedFilter, conditions], async () =>
-		usersAutoCompleteEndpoint(query(debouncedFilter, conditions)),
-	);
+	const { data } = useQuery({
+		queryKey: ['usersAutoComplete', debouncedFilter, conditions],
+		queryFn: async () => usersAutoCompleteEndpoint(query(debouncedFilter, conditions)),
+	});
 
 	const options = useMemo(() => data?.items.map((user) => ({ value: user.username, label: user.name || user.username })) || [], [data]);
 

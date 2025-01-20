@@ -1,7 +1,6 @@
 import { type IUIActionButton, MessageActionContext as AppsEngineMessageActionContext } from '@rocket.chat/apps-engine/definition/ui';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -74,5 +73,5 @@ export const useMessageActionAppsActionButtons = (message: IMessage, context?: M
 	return {
 		...result,
 		data,
-	} as UseQueryResult<MessageActionConfig[]>;
+	};
 };

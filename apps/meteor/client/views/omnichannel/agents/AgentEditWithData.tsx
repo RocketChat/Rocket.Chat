@@ -3,7 +3,6 @@ import { Box } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AgentEdit from './AgentEdit';
@@ -16,21 +15,32 @@ const AgentEditWithData = ({ uid }: { uid: ILivechatAgent['_id'] }): ReactElemen
 	const getAgentById = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: uid });
 	const getAgentDepartments = useEndpoint('GET', '/v1/livechat/agents/:agentId/departments', { agentId: uid });
 
-	const { data, isLoading, error } = useQuery(['livechat-getAgentById', uid], async () => getAgentById(), { refetchOnWindowFocus: false });
+	const { data, isPending, error } = useQuery({
+		queryKey: ['livechat-getAgentById', uid],
+		queryFn: async () => getAgentById(),
+		refetchOnWindowFocus: false,
+	});
 
 	const {
 		data: agentDepartments,
-		isLoading: agentDepartmentsLoading,
+		isPending: agentDepartmentsLoading,
 		error: agentsDepartmentsError,
-	} = useQuery(['livechat-getAgentDepartments', uid], async () => getAgentDepartments(), { refetchOnWindowFocus: false });
+	} = useQuery({
+		queryKey: ['livechat-getAgentDepartments', uid],
+		queryFn: async () => getAgentDepartments(),
+		refetchOnWindowFocus: false,
+	});
 
 	const {
 		data: availableDepartments,
-		isLoading: availableDepartmentsLoading,
+		isPending: availableDepartmentsLoading,
 		error: availableDepartmentsError,
-	} = useQuery(['livechat-getAvailableDepartments'], async () => getAvailableDepartments({ showArchived: 'true' }));
+	} = useQuery({
+		queryKey: ['livechat-getAvailableDepartments'],
+		queryFn: async () => getAvailableDepartments({ showArchived: 'true' }),
+	});
 
-	if (isLoading || availableDepartmentsLoading || agentDepartmentsLoading || !agentDepartments || !availableDepartments) {
+	if (isPending || availableDepartmentsLoading || agentDepartmentsLoading || !agentDepartments || !availableDepartments) {
 		return <FormSkeleton />;
 	}
 

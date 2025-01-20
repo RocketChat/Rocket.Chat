@@ -1,5 +1,4 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';

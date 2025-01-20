@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type { MouseEvent, UIEventHandler, MutableRefObject } from 'react';
-import React, { forwardRef, useRef } from 'react';
+import { forwardRef, useRef } from 'react';
 import type { VirtuosoHandle } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 

@@ -8,7 +8,7 @@ import {
 	useEndpoint,
 } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import EngagementDashboardPage from './EngagementDashboardPage';
 import { getURL } from '../../../../app/utils/client/getURL';

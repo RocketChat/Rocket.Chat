@@ -1,5 +1,18 @@
 # @rocket.chat/freeswitch
 
+## 1.2.0-rc.0
+
+### Minor Changes
+
+- ([#34948](https://github.com/RocketChat/Rocket.Chat/pull/34948)) Adds voice calls data to statistics
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [8942b0032af976738a7c602fa389803dda30c0dc, bfa92f4dba1a16973d7da5a9c0f5d0df998bf944]:</summary>
+
+  - @rocket.chat/core-typings@7.3.0-rc.0
+  </details>
+
 ## 1.1.1
 
 ### Patch Changes

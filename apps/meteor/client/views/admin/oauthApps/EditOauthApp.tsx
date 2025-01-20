@@ -15,7 +15,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useRoute, useAbsoluteUrl, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -87,7 +87,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 	}, [data._id, close, deleteApp, dispatchToastMessage, setModal, t]);
 
 	const openConfirmDelete = (): void =>
-		setModal(() => (
+		setModal(
 			<GenericModal
 				variant='danger'
 				onConfirm={onDeleteConfirm}
@@ -96,8 +96,8 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 				confirmText={t('Delete')}
 			>
 				{t('Application_delete_warning')}
-			</GenericModal>
-		));
+			</GenericModal>,
+		);
 
 	return (
 		<ContextualbarScrollableContent w='full' {...props}>

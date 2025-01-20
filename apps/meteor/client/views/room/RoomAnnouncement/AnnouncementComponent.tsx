@@ -1,6 +1,5 @@
 import { RoomBanner, RoomBannerContent } from '@rocket.chat/ui-client';
 import type { FC, MouseEvent } from 'react';
-import React from 'react';
 
 type AnnouncementComponenttParams = {
 	onClickOpen: (e: MouseEvent<HTMLAnchorElement>) => void;

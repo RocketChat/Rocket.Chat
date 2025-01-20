@@ -5,7 +5,7 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { QueueListFilter } from './QueueListFilter';
 import GenericNoResults from '../../../components/GenericNoResults';
@@ -109,7 +109,10 @@ const QueueListTable = (): ReactElement => {
 	};
 
 	const getLivechatQueue = useEndpoint('GET', '/v1/livechat/queue');
-	const { data, isSuccess, isLoading } = useQuery(['livechat-queue', query], async () => getLivechatQueue(query));
+	const { data, isSuccess, isLoading } = useQuery({
+		queryKey: ['livechat-queue', query],
+		queryFn: async () => getLivechatQueue(query),
+	});
 
 	return (
 		<>

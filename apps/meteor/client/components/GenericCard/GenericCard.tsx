@@ -1,7 +1,6 @@
 import { Card, CardTitle, CardBody, CardControls, CardHeader, FramedIcon } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps, ReactElement } from 'react';
-import React from 'react';
 
 import type { GenericCardButton } from './GenericCardButton';
 

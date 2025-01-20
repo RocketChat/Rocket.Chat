@@ -12,6 +12,7 @@ import {
 	isSettingsUpdatePropsActions,
 	isSettingsUpdatePropsColor,
 	isSettingsPublicWithPaginationProps,
+	isSettingsGetParams,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
@@ -131,9 +132,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'settings',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isSettingsGetParams },
 	{
 		async get() {
+			const { includeDefaults } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
@@ -146,6 +148,11 @@ API.v1.addRoute(
 			}
 
 			ourQuery = Object.assign({}, query, ourQuery);
+
+			// Note: change this when `fields` gets removed
+			if (includeDefaults) {
+				fields.packageValue = 1;
+			}
 
 			const { settings, totalCount: total } = await fetchSettings(ourQuery, sort, offset, count, fields);
 
@@ -185,7 +192,7 @@ API.v1.addRoute(
 
 				// Disable custom scripts in cloud trials to prevent phishing campaigns
 				if (disableCustomScripts() && /^Custom_Script_/.test(this.urlParams._id)) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 
 				// allow special handling of particular setting types

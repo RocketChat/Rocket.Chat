@@ -1,6 +1,6 @@
 import { MessageComposerHint } from '@rocket.chat/ui-composer';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
 import { E2ERoomState } from '../../../../../app/e2e/client/E2ERoomState';

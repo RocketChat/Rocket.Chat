@@ -1,9 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { HeaderTag, HeaderTagIcon, HeaderTagSkeleton } from '../../../components/Header';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
@@ -29,12 +28,17 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 		data: teamInfoData,
 		isLoading: teamInfoLoading,
 		isError: teamInfoError,
-	} = useQuery(['teamId', teamId], async () => teamsInfoEndpoint({ teamId }), {
-		keepPreviousData: true,
-		retry: (_, error) => (error as APIErrorResult)?.error === 'unauthorized' && false,
+	} = useQuery({
+		queryKey: ['teamId', teamId],
+		queryFn: async () => teamsInfoEndpoint({ teamId }),
+		placeholderData: keepPreviousData,
+		retry: (_, error: APIErrorResult) => error?.error === 'unauthorized' && false,
 	});
 
-	const { data: userTeams, isLoading: userTeamsLoading } = useQuery(['userId', userId], async () => userTeamsListEndpoint({ userId }));
+	const { data: userTeams, isLoading: userTeamsLoading } = useQuery({
+		queryKey: ['userId', userId],
+		queryFn: async () => userTeamsListEndpoint({ userId }),
+	});
 
 	const userBelongsToTeam = userTeams?.teams?.find((team) => team._id === teamId) || false;
 	const isTeamPublic = teamInfoData?.teamInfo.type === TEAM_TYPE.PUBLIC;

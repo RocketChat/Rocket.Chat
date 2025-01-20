@@ -7,7 +7,7 @@
 
 		"allowJs": true,
 		"checkJs": false,
-		"jsx": "react",
+		"jsx": "react-jsx",
 		"noEmit": true,
 
 		/* Strict Type-Checking Options */

@@ -1,6 +1,5 @@
 import { Button } from '@rocket.chat/fuselage';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CustomFieldsTable from './CustomFieldsTable';

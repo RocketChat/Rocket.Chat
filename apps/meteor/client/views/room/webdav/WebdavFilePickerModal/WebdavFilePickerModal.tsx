@@ -1,10 +1,10 @@
 import type { IWebdavNode, IWebdavAccountIntegration } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Modal, Box, IconButton, Select } from '@rocket.chat/fuselage';
-import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useToastMessageDispatch, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MouseEvent } from 'react';
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import FilePickerBreadcrumbs from './FilePickerBreadcrumbs';
 import WebdavFilePickerGrid from './WebdavFilePickerGrid';
@@ -39,7 +39,7 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 	const debouncedFilter = useDebouncedValue('', 500);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const showFilePreviews = useMutableCallback(async (accountId, nodes) => {
+	const showFilePreviews = useEffectEvent(async (accountId: string, nodes: (IWebdavNode & { preview?: string })[] | undefined) => {
 		if (!Array.isArray(nodes) || !nodes.length) {
 			return;
 		}

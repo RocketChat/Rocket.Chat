@@ -1,6 +1,6 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import type { StoryFn } from '@storybook/react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import CategoryDropDown from './CategoryDropDown';
 import CategoryDropDownAnchor from './CategoryDropDownAnchor';

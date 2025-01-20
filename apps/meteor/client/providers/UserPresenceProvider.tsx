@@ -1,6 +1,6 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useMemo, useEffect } from 'react';
+import { useMemo, useEffect } from 'react';
 
 import { UserPresenceContext } from '../contexts/UserPresenceContext';
 import { Presence } from '../lib/presence';

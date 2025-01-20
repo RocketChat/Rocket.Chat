@@ -1,6 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppPermissionsList from './components/AppPermissionsList';

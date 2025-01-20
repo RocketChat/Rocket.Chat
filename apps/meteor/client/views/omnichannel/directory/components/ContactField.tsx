@@ -2,7 +2,6 @@ import type { IOmnichannelGenericRoom, IVisitor } from '@rocket.chat/core-typing
 import { Avatar, Box } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FormSkeleton } from './FormSkeleton';
@@ -25,11 +24,13 @@ const ContactField = ({ contact, room }: ContactFieldProps) => {
 	const avatarUrl = roomCoordinator.getRoomDirectives(type).getAvatarPath(room) || '';
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
-	const { data, isLoading, isError } = useQuery(['/v1/livechat/visitors.info', contact._id], () =>
-		getVisitorInfo({ visitorId: contact._id }),
-	);
+	const { data, isPending, isError } = useQuery({
+		queryKey: ['/v1/livechat/visitors.info', contact._id],
 
-	if (isLoading) {
+		queryFn: () => getVisitorInfo({ visitorId: contact._id }),
+	});
+
+	if (isPending) {
 		return <FormSkeleton />;
 	}
 

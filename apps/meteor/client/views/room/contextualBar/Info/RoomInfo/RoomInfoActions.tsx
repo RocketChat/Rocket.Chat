@@ -1,5 +1,4 @@
 import type { Keys as IconKeys } from '@rocket.chat/icons';
-import React from 'react';
 
 import { InfoPanelAction } from '../../../../../components/InfoPanel';
 

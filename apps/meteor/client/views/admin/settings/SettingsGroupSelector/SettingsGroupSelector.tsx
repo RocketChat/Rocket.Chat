@@ -1,6 +1,5 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import SettingsGroupPageSkeleton from '../SettingsGroupPage/SettingsGroupPageSkeleton';
 import BaseGroupPage from '../groups/BaseGroupPage';

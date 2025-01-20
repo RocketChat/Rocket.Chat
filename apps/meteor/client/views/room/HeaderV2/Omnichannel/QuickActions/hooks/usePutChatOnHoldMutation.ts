@@ -12,18 +12,16 @@ export const usePutChatOnHoldMutation = (
 
 	const queryClient = useQueryClient();
 
-	return useMutation(
-		async (rid) => {
+	return useMutation({
+		mutationFn: async (rid) => {
 			await putChatOnHold({ roomId: rid });
 		},
-		{
-			...options,
-			onSuccess: async (data, rid, context) => {
-				await queryClient.invalidateQueries(['current-chats']);
-				await queryClient.invalidateQueries(['rooms', rid]);
-				await queryClient.invalidateQueries(subscriptionsQueryKeys.subscription(rid));
-				return options?.onSuccess?.(data, rid, context);
-			},
+		...options,
+		onSuccess: async (data, rid, context) => {
+			await queryClient.invalidateQueries({ queryKey: ['current-chats'] });
+			await queryClient.invalidateQueries({ queryKey: ['rooms', rid] });
+			await queryClient.invalidateQueries({ queryKey: subscriptionsQueryKeys.subscription(rid) });
+			return options?.onSuccess?.(data, rid, context);
 		},
-	);
+	});
 };

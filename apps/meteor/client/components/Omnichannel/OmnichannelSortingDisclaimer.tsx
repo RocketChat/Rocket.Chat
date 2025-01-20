@@ -1,6 +1,6 @@
 import { OmnichannelSortingMechanismSettingType as OmniSortingType } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useOmnichannelEnterpriseEnabled } from '../../hooks/omnichannel/useOmnichannelEnterpriseEnabled';

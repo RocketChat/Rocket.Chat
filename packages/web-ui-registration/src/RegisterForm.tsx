@@ -297,7 +297,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			</Form.Container>
 			<Form.Footer>
 				<ButtonGroup>
-					<Button type='submit' loading={registerUser.isLoading} primary>
+					<Button type='submit' loading={registerUser.isPending} primary>
 						{t('registration.component.form.joinYourTeam')}
 					</Button>
 				</ButtonGroup>

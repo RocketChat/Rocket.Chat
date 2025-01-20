@@ -12,7 +12,6 @@ import {
 } from '@rocket.chat/fuselage';
 import type { ContactSearchChatsResult } from '@rocket.chat/rest-typings';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';

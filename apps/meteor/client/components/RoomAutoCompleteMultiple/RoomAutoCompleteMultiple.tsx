@@ -2,9 +2,9 @@ import { AutoComplete, Option, Chip, Box, Skeleton } from '@rocket.chat/fuselage
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ReactElement, ComponentProps } from 'react';
-import React, { memo, useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 
 const generateQuery = (
 	term = '',
@@ -21,8 +21,10 @@ const RoomAutoCompleteMultiple = ({ value, onChange, ...props }: RoomAutoComplet
 	const filterDebounced = useDebouncedValue(filter, 300);
 	const autocomplete = useEndpoint('GET', '/v1/rooms.autocomplete.channelAndPrivate');
 
-	const result = useQuery(['rooms.autocomplete.channelAndPrivate', filterDebounced], () => autocomplete(generateQuery(filterDebounced)), {
-		keepPreviousData: true,
+	const result = useQuery({
+		queryKey: ['rooms.autocomplete.channelAndPrivate', filterDebounced],
+		queryFn: () => autocomplete(generateQuery(filterDebounced)),
+		placeholderData: keepPreviousData,
 	});
 
 	const options = useMemo(
@@ -36,7 +38,7 @@ const RoomAutoCompleteMultiple = ({ value, onChange, ...props }: RoomAutoComplet
 		[result.data?.items, result.isSuccess],
 	);
 
-	if (result.isLoading) {
+	if (result.isPending) {
 		return <Skeleton />;
 	}
 

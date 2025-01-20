@@ -2,7 +2,6 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactNode, ComponentProps } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';

@@ -1,5 +1,4 @@
 import type { IRoom, ISubscription, IMessage } from '@rocket.chat/core-typings';
-import React from 'react';
 
 import ForwardMessageAction from './actions/ForwardMessageAction';
 import QuoteMessageAction from './actions/QuoteMessageAction';

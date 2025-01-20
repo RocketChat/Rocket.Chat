@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isVoipRoom } from '@rocket.chat/core-typings';
 import { useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { lazy, memo, useMemo } from 'react';
+import { lazy, memo, useMemo } from 'react';
 
 import { HeaderToolbar } from '../../../components/Header';
 import SidebarToggler from '../../../components/SidebarToggler';

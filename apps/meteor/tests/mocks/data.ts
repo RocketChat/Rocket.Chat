@@ -253,6 +253,15 @@ export function createFakeMessageWithAttachment(overrides?: Partial<IMessage>): 
 				title_link: `/file-upload/${fileId}/${fileName}`,
 			},
 		],
+		files: [
+			{
+				_id: fileId,
+				name: fileName,
+				type: 'text/plain',
+				size: faker.number.int(),
+				format: faker.string.alpha(),
+			},
+		],
 		...overrides,
 	};
 }

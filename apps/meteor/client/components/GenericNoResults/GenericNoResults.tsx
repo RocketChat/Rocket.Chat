@@ -1,6 +1,5 @@
 import { Box, States, StatesIcon, StatesLink, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 type LinkProps = { linkText: string; linkHref: string } | { linkText?: never; linkHref?: never };

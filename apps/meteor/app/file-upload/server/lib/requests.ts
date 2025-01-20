@@ -12,12 +12,14 @@ WebApp.connectHandlers.use(FileUpload.getPath(), async (req, res, next) => {
 		if (file) {
 			if (!(await FileUpload.requestCanAccessFiles(req, file))) {
 				res.writeHead(403);
-				return res.end();
+				res.end();
+				return;
 			}
 
 			res.setHeader('Content-Security-Policy', "default-src 'none'");
 			res.setHeader('Cache-Control', 'max-age=31536000');
-			return FileUpload.get(file, req, res, next);
+			await FileUpload.get(file, req, res, next);
+			return;
 		}
 	}
 

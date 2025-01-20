@@ -11,7 +11,7 @@ export async function usageReportCron(logger: Logger): Promise<void> {
 
 	const now = new Date();
 
-	await cronJobs.add(name, `12 ${now.getHours()} * * *`, async () => {
+	return cronJobs.add(name, `12 ${now.getHours()} * * *`, async () => {
 		const statsToken = await sendUsageReport(logger);
 		void AirGappedRestriction.computeRestriction(statsToken);
 	});

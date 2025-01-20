@@ -1,7 +1,6 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';

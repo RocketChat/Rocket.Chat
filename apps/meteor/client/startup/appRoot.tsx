@@ -1,4 +1,4 @@
-import React, { StrictMode } from 'react';
+import { StrictMode } from 'react';
 import { render } from 'react-dom';
 
 import AppRoot from '../views/root/AppRoot';

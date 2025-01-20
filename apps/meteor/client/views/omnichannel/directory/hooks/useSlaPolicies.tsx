@@ -7,7 +7,9 @@ import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 export const useSlaPolicies = () => {
 	const isEnterprise = useHasLicenseModule('livechat-enterprise') === true;
 	const getSlaPolicies = useEndpoint('GET', '/v1/livechat/sla');
-	const { data: { sla } = {}, ...props } = useQuery(['/v1/livechat/sla'], () => getSlaPolicies({}), {
+	const { data: { sla } = {}, ...props } = useQuery({
+		queryKey: ['/v1/livechat/sla'],
+		queryFn: () => getSlaPolicies({}),
 		staleTime: millisecondsToMinutes(10),
 		enabled: isEnterprise,
 	});

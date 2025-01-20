@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactElement, ComponentProps } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import PageContext from './PageContext';
 

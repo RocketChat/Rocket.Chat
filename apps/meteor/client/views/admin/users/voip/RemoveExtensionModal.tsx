@@ -2,7 +2,6 @@ import { Button, Modal, Field, FieldGroup, FieldLabel, FieldRow, TextInput } fro
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useUser } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 type RemoveExtensionModalProps = {
@@ -30,9 +29,13 @@ const RemoveExtensionModal = ({ name, extension, username, onClose }: RemoveExte
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Extension_removed') });
 
-			queryClient.invalidateQueries(['users.list']);
+			queryClient.invalidateQueries({
+				queryKey: ['users.list'],
+			});
 			if (loggedUser?.username === username) {
-				queryClient.invalidateQueries(['voip-client']);
+				queryClient.invalidateQueries({
+					queryKey: ['voip-client'],
+				});
 			}
 
 			onClose();
@@ -69,7 +72,7 @@ const RemoveExtensionModal = ({ name, extension, username, onClose }: RemoveExte
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button danger onClick={() => handleRemoveExtension.mutate(username)} loading={handleRemoveExtension.isLoading}>
+					<Button danger onClick={() => handleRemoveExtension.mutate(username)} loading={handleRemoveExtension.isPending}>
 						{t('Remove')}
 					</Button>
 				</Modal.FooterControllers>

@@ -1,8 +1,7 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import GenericModal from '../../../../../../components/GenericModal';
 import { useCanEditRoom } from '../useCanEditRoom';
@@ -19,7 +18,7 @@ export const useRoomConvertToTeam = (room: IRoom) => {
 
 	const convertRoomToTeam = useEndpoint('POST', room.t === 'c' ? '/v1/channels.convertToTeam' : '/v1/groups.convertToTeam');
 
-	const handleConvertToTeam = useMutableCallback(async () => {
+	const handleConvertToTeam = useEffectEvent(async () => {
 		const onConfirm = async () => {
 			try {
 				await convertRoomToTeam(room.t === 'c' ? { channelId: room._id } : { roomId: room._id });

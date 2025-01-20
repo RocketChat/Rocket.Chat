@@ -1,5 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -7,7 +8,12 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { settings } from '../../../settings/server';
 import { RateLimiter } from '../lib';
 
-export const _setRealName = async function (userId: string, name: string, fullUser?: IUser): Promise<IUser | undefined> {
+export const _setRealName = async function (
+	userId: string,
+	name: string,
+	fullUser?: IUser,
+	updater?: Updater<IUser>,
+): Promise<IUser | undefined> {
 	name = name.trim();
 
 	if (!userId || (settings.get('Accounts_RequireNameForSignUp') && !name)) {
@@ -27,7 +33,13 @@ export const _setRealName = async function (userId: string, name: string, fullUs
 
 	// Set new name
 	if (name) {
-		await Users.setName(user._id, name);
+		if (updater) {
+			updater.set('name', name);
+		} else {
+			await Users.setName(user._id, name);
+		}
+	} else if (updater) {
+		updater.unset('name');
 	} else {
 		await Users.unsetName(user._id);
 	}

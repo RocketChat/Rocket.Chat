@@ -2,7 +2,7 @@ import { Palette } from '@rocket.chat/fuselage';
 import type { ScrollValues } from 'rc-scrollbars';
 import { Scrollbars } from 'rc-scrollbars';
 import type { MutableRefObject, CSSProperties, ReactNode } from 'react';
-import React, { memo, forwardRef, useCallback, useMemo } from 'react';
+import { memo, forwardRef, useCallback, useMemo } from 'react';
 
 export type CustomScrollbarsProps = {
 	overflowX?: boolean;
@@ -26,7 +26,7 @@ const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function
 	const scrollbarsStyle = useMemo(() => ({ ...style, ...styleDefault }), [style]);
 
 	const refSetter = useCallback(
-		(scrollbarRef) => {
+		(scrollbarRef: Scrollbars) => {
 			if (ref && scrollbarRef) {
 				if (typeof ref === 'function') {
 					ref(scrollbarRef.view ?? null);

@@ -12,19 +12,17 @@ export const useReturnChatToQueueMutation = (
 
 	const queryClient = useQueryClient();
 
-	return useMutation(
-		async (rid) => {
+	return useMutation({
+		mutationFn: async (rid) => {
 			await returnChatToQueue(rid);
 		},
-		{
-			...options,
-			onSuccess: async (data, rid, context) => {
-				await queryClient.invalidateQueries(['current-chats']);
-				queryClient.removeQueries(['rooms', rid]);
-				queryClient.removeQueries(['/v1/rooms.info', rid]);
-				queryClient.removeQueries(subscriptionsQueryKeys.subscription(rid));
-				return options?.onSuccess?.(data, rid, context);
-			},
+		...options,
+		onSuccess: async (data, rid, context) => {
+			await queryClient.invalidateQueries({ queryKey: ['current-chats'] });
+			queryClient.removeQueries({ queryKey: ['rooms', rid] });
+			queryClient.removeQueries({ queryKey: ['/v1/rooms.info', rid] });
+			queryClient.removeQueries({ queryKey: subscriptionsQueryKeys.subscription(rid) });
+			return options?.onSuccess?.(data, rid, context);
 		},
-	);
+	});
 };

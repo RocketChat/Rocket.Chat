@@ -1,10 +1,10 @@
-import type { IRole, IRoom } from '@rocket.chat/core-typings';
+import type { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UsersInRoleTableRow from './UsersInRoleTableRow';
@@ -48,9 +48,11 @@ const UsersInRoleTable = ({ rid, roleId, roleName, description }: UsersInRoleTab
 		[itemsPerPage, current, rid, roleId],
 	);
 
-	const { data, isLoading, isSuccess, refetch, isError } = useQuery(['getUsersInRole', roleId, query], async () =>
-		getUsersInRoleEndpoint(query),
-	);
+	const { data, isLoading, isSuccess, refetch, isError } = useQuery({
+		queryKey: ['getUsersInRole', roleId, query],
+
+		queryFn: async () => getUsersInRoleEndpoint(query),
+	});
 
 	const users =
 		data?.users?.map((user) => ({
@@ -59,12 +61,16 @@ const UsersInRoleTable = ({ rid, roleId, roleName, description }: UsersInRoleTab
 			_updatedAt: new Date(user._updatedAt),
 		})) || [];
 
-	const handleRemove = useEffectEvent((username) => {
+	const handleRemove = useEffectEvent((username: IUserInRole['username']) => {
 		const remove = async () => {
 			try {
+				if (!username) throw new Error('Username is required');
+
 				await removeUserFromRoleEndpoint({ roleId, username, scope: rid });
 				dispatchToastMessage({ type: 'success', message: t('User_removed') });
-				queryClient.invalidateQueries(['getUsersInRole']);
+				queryClient.invalidateQueries({
+					queryKey: ['getUsersInRole'],
+				});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

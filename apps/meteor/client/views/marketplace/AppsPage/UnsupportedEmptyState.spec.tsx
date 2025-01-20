@@ -1,6 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 
 import UnsupportedEmptyState from './UnsupportedEmptyState';
 import { AppsContext } from '../../../contexts/AppsContext';

@@ -10,9 +10,10 @@ type UseUsersByTimeOfTheDayOptions = { period: Period['key']; utc: boolean };
 export const useUsersByTimeOfTheDay = ({ period, utc }: UseUsersByTimeOfTheDayOptions) => {
 	const getUsersByTimeOfTheDay = useEndpoint('GET', '/v1/engagement-dashboard/users/users-by-time-of-the-day-in-a-week');
 
-	return useQuery(
-		['admin/engagement-dashboard/users/users-by-time-of-the-day', { period, utc }],
-		async () => {
+	return useQuery({
+		queryKey: ['admin/engagement-dashboard/users/users-by-time-of-the-day', { period, utc }],
+
+		queryFn: async () => {
 			const { start, end } = getPeriodRange(period, utc);
 
 			const response = await getUsersByTimeOfTheDay({
@@ -28,9 +29,8 @@ export const useUsersByTimeOfTheDay = ({ period, utc }: UseUsersByTimeOfTheDayOp
 					}
 				: undefined;
 		},
-		{
-			refetchInterval: 5 * 60 * 1000,
-			useErrorBoundary: true,
-		},
-	);
+
+		refetchInterval: 5 * 60 * 1000,
+		throwOnError: true,
+	});
 };

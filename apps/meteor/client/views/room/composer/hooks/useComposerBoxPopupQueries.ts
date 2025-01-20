@@ -1,5 +1,5 @@
 import type { QueriesResults } from '@tanstack/react-query';
-import { useQueries } from '@tanstack/react-query';
+import { keepPreviousData, useQueries } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 import { useEnablePopupPreview } from './useEnablePopupPreview';
@@ -26,7 +26,7 @@ export const useComposerBoxPopupQueries = <T extends { _id: string; sort?: numbe
 		queries: useQueries({
 			queries: [
 				popup?.getItemsFromLocal && {
-					keepPreviousData: true,
+					placeholderData: keepPreviousData,
 					queryKey: ['message-popup', 'local', filter, popup],
 					queryFn: () => popup?.getItemsFromLocal && popup.getItemsFromLocal(filter),
 					onSuccess: (args: T[]) => {
@@ -37,7 +37,7 @@ export const useComposerBoxPopupQueries = <T extends { _id: string; sort?: numbe
 					enabled: enableQuery,
 				},
 				popup?.getItemsFromServer && {
-					keepPreviousData: true,
+					placeholderData: keepPreviousData,
 					queryKey: ['message-popup', 'server', filter, popup],
 					queryFn: () => popup?.getItemsFromServer && popup.getItemsFromServer(filter),
 					enabled: counter > 0,

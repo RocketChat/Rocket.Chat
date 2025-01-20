@@ -2,7 +2,6 @@ import { Margins } from '@rocket.chat/fuselage';
 import { createSurfaceRenderer, Surface, FuselageSurfaceRenderer, renderTextObject } from '@rocket.chat/fuselage-ui-kit';
 import type { CalloutBlock, ContextBlock, DividerBlock, ImageBlock, SectionBlock } from '@rocket.chat/ui-kit';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
 
 type SubscriptionLicenseSurfaceProps = {
 	children?: ReactNode;

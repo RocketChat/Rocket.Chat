@@ -12,11 +12,11 @@ import {
 	NumberInput,
 	FieldLabel,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
@@ -35,10 +35,10 @@ type SendOnOptions =
 	| 'Livechat_webhook_on_visitor_message'
 	| 'Livechat_webhook_on_agent_message';
 
-type WebhookFormValues = {
-	Livechat_webhookUrl: string | undefined;
-	Livechat_secret_token: string | undefined;
-	Livechat_http_timeout: string | undefined;
+type WebhooksPageFormData = {
+	Livechat_webhookUrl: string;
+	Livechat_secret_token: string;
+	Livechat_http_timeout: string;
 	sendOn: SendOnOptions[];
 };
 
@@ -64,7 +64,7 @@ const getInitialValues = ({
 	Livechat_webhook_on_visitor_message,
 	Livechat_webhook_on_agent_message,
 	Livechat_http_timeout,
-}: WebhooksPageProps['settings']): WebhookFormValues => {
+}: WebhooksPageProps['settings']): WebhooksPageFormData => {
 	const mappedSendOptions = reduceSendOptions({
 		Livechat_webhook_on_start,
 		Livechat_webhook_on_close,
@@ -81,7 +81,7 @@ const getInitialValues = ({
 		Livechat_secret_token,
 		Livechat_http_timeout,
 		sendOn: mappedSendOptions,
-	} as WebhookFormValues;
+	} as WebhooksPageFormData;
 };
 
 const WebhooksPage = ({ settings }: WebhooksPageProps) => {
@@ -117,13 +117,13 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 		[t],
 	);
 
-	const handleSave = useMutableCallback(async (values) => {
+	const handleSave = useEffectEvent(async (values: WebhooksPageFormData) => {
 		const { sendOn, Livechat_webhookUrl, Livechat_secret_token, Livechat_http_timeout } = values;
 		try {
 			await save({
 				LivechatWebhookUrl: Livechat_webhookUrl,
 				LivechatSecretToken: Livechat_secret_token,
-				LivechatHttpTimeout: Livechat_http_timeout,
+				LivechatHttpTimeout: parseInt(Livechat_http_timeout, 10),
 				LivechatWebhookOnStart: sendOn.includes('Livechat_webhook_on_start'),
 				LivechatWebhookOnClose: sendOn.includes('Livechat_webhook_on_close'),
 				LivechatWebhookOnChatTaken: sendOn.includes('Livechat_webhook_on_chat_taken'),
@@ -156,10 +156,10 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 					</Button>
 					<Button
 						onClick={() => testWebhook.mutateAsync()}
-						disabled={canTest || testWebhook.isLoading}
+						disabled={canTest || testWebhook.isPending}
 						title={canTest ? t('Webhook_URL_not_set') : ''}
 					>
-						{testWebhook.isLoading ? t('Sending') : t('Send_Test')}
+						{testWebhook.isPending ? t('Sending') : t('Send_Test')}
 					</Button>
 					<Button primary onClick={handleSubmit(handleSave)} loading={isSubmitting} disabled={!isDirty}>
 						{t('Save')}

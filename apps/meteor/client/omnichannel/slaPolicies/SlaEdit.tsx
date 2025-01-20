@@ -1,9 +1,8 @@
 import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, Margins, Box, NumberInput } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useController, useForm } from 'react-hook-form';
 
 import { ContextualbarScrollableContent } from '../../components/Contextualbar';
@@ -52,7 +51,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 
 	const { field: descField } = useController({ control, name: 'description' });
 
-	const handleSave = useMutableCallback(async () => {
+	const handleSave = useEffectEvent(async () => {
 		const { name, description, dueTimeInMinutes } = getValues();
 
 		if (!isValid || !name || dueTimeInMinutes === undefined) {
