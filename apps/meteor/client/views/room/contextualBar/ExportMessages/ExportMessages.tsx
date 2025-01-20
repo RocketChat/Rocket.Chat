@@ -15,7 +15,7 @@ import {
 	Callout,
 } from '@rocket.chat/fuselage';
 import { useAutoFocus, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import React, { useContext, useEffect, useMemo } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -176,6 +176,13 @@ const ExportMessages = () => {
 			<ContextualbarScrollableContent>
 				<form ref={formFocus} tabIndex={-1} aria-labelledby={`${formId}-title`} id={formId} onSubmit={handleSubmit(handleExport)}>
 					<FieldGroup>
+						{room.createdOTR && (
+							<Field>
+								<Callout role='alert' type='warning'>
+									{t('OTR_messages_cannot_be_exported')}
+								</Callout>
+							</Field>
+						)}
 						<Field>
 							<FieldLabel htmlFor={methodField}>{t('Method')}</FieldLabel>
 							<FieldRow>

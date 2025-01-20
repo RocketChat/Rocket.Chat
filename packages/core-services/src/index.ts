@@ -51,7 +51,6 @@ import type { IVoipFreeSwitchService } from './types/IVoipFreeSwitchService';
 import type { IVoipService } from './types/IVoipService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
-export { traceInstanceMethods } from './lib/asyncMethodCallContext';
 export { MeteorError, isMeteorError } from './MeteorError';
 export { api } from './api';
 export { EventSignatures } from './events/Events';
@@ -148,12 +147,6 @@ export {
 	IOmnichannelAnalyticsService,
 	IUserService,
 };
-
-const disabledEnvVar = String(process.env.DISABLE_DB_WATCHERS).toLowerCase();
-
-export const dbWatchersDisabled =
-	(process.env.NODE_ENV === 'production' && ['yes', 'true'].includes(disabledEnvVar)) ||
-	(process.env.NODE_ENV !== 'production' && !['no', 'false'].includes(disabledEnvVar));
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxify<IAuthorization>('authorization');

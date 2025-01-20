@@ -1,5 +1,4 @@
 import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
-import React from 'react';
 
 import EditRoomInfo from './EditRoomInfo';
 import { useRoom } from '../../../contexts/RoomContext';

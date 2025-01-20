@@ -1,6 +1,5 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { getURL } from '../../../../app/utils/client';

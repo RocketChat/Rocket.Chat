@@ -35,8 +35,8 @@ export class SAMLServiceProvider {
 		return signer.sign(this.serviceProviderOptions.privateKey, 'base64');
 	}
 
-	public generateAuthorizeRequest(): string {
-		const identifiedRequest = AuthorizeRequest.generate(this.serviceProviderOptions);
+	public generateAuthorizeRequest(credentialToken: string): string {
+		const identifiedRequest = AuthorizeRequest.generate(this.serviceProviderOptions, credentialToken);
 		return identifiedRequest.request;
 	}
 
@@ -151,8 +151,8 @@ export class SAMLServiceProvider {
 		}
 	}
 
-	public async getAuthorizeUrl(): Promise<string | undefined> {
-		const request = this.generateAuthorizeRequest();
+	public async getAuthorizeUrl(credentialToken: string): Promise<string | undefined> {
+		const request = this.generateAuthorizeRequest(credentialToken);
 		SAMLUtils.log('-----REQUEST------');
 		SAMLUtils.log(request);
 

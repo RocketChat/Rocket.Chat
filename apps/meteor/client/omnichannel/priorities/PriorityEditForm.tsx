@@ -1,10 +1,10 @@
 import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldError, Button, Box, ButtonGroup } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -44,7 +44,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 		defaultValues: data ? { name: dirty ? name : defaultName } : {},
 	});
 
-	const handleSave = useMutableCallback(async () => {
+	const handleSave = useEffectEvent(async () => {
 		const { name } = getValues();
 
 		if (!isValid) {

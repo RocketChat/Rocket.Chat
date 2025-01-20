@@ -1,8 +1,9 @@
 import type { ILivechatContact, ILivechatContactChannel, ILivechatContactVisitorAssociation } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
-import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
+import { LivechatContacts, LivechatRooms, Settings } from '@rocket.chat/models';
 import type { ClientSession } from 'mongodb';
 
+import { notifyOnSettingChanged } from '../../../app/lib/server/lib/notifyListener';
 import { isSameChannel } from '../../../app/livechat/lib/isSameChannel';
 import { ContactMerger } from '../../../app/livechat/server/lib/contacts/ContactMerger';
 import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
@@ -41,10 +42,16 @@ export const runMergeContacts = async (
 
 	const similarContactIds = similarContacts.map((c) => c._id);
 	const { deletedCount } = await LivechatContacts.deleteMany({ _id: { $in: similarContactIds } }, { session });
+
+	const value = await Settings.incrementValueById('Merged_Contacts_Count', similarContacts.length, { returnDocument: 'after' });
+	if (value) {
+		void notifyOnSettingChanged(value);
+	}
 	logger.info({
-		msg: `${deletedCount} contacts have been deleted and merged`,
-		deletedContactIds: similarContactIds,
-		contactId,
+		msg: 'contacts have been deleted and merged with a contact',
+		similarContactIds,
+		deletedCount,
+		originalContactId: originalContact._id,
 	});
 
 	logger.debug({ msg: 'Updating rooms with new contact id', contactId });

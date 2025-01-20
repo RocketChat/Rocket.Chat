@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ContextType, ReactElement } from 'react';
-import React, { useMemo, memo, useEffect, useCallback } from 'react';
+import { useMemo, memo, useEffect, useCallback } from 'react';
 
 import ComposerPopupProvider from './ComposerPopupProvider';
 import RoomToolboxProvider from './RoomToolboxProvider';

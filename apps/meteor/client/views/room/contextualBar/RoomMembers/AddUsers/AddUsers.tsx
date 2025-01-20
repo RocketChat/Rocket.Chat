@@ -1,10 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -43,7 +42,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 		formState: { isDirty, isSubmitting },
 	} = useForm({ defaultValues: { users: [] } });
 
-	const handleSave = useMutableCallback(async ({ users }) => {
+	const handleSave = useEffectEvent(async ({ users }: { users: string[] }) => {
 		try {
 			await saveAction({ rid, users });
 			dispatchToastMessage({ type: 'success', message: t('Users_added') });
@@ -88,7 +87,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 					{isRoomFederated(room) ? (
 						<Button
 							primary
-							disabled={addClickHandler.isLoading}
+							disabled={addClickHandler.isPending}
 							onClick={() =>
 								addClickHandler.mutate({
 									users: getValues('users'),

@@ -32,7 +32,7 @@ export const useTagsList = (options: TagsListOptions): UseTagsListResult => {
 	}, [options, reload]);
 
 	const fetchData = useCallback(
-		async (start, end) => {
+		async (start: number, end: number) => {
 			const { tags, total } = await getTags({
 				text: filter,
 				offset: start,
