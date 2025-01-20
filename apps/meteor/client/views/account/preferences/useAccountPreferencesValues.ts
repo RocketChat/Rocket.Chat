@@ -37,7 +37,7 @@ export type AccountPreferencesData = {
 	sidebarGroupByType?: boolean;
 	masterVolume?: number;
 	notificationsSoundVolume?: number;
-	voipRingerVolume?: number;
+	callRingerVolume?: number;
 };
 
 export const useAccountPreferencesValues = (): AccountPreferencesData => {
@@ -75,7 +75,7 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 
 	const masterVolume = useUserPreference<number>('masterVolume', 100);
 	const notificationsSoundVolume = useUserPreference<number>('notificationsSoundVolume', 100);
-	const voipRingerVolume = useUserPreference<number>('voipRingerVolume', 100);
+	const callRingerVolume = useUserPreference<number>('callRingerVolume', 100);
 
 	return {
 		language,
@@ -106,6 +106,6 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 		muteFocusedConversations,
 		masterVolume,
 		notificationsSoundVolume,
-		voipRingerVolume,
+		callRingerVolume,
 	};
 };

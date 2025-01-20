@@ -933,7 +933,7 @@
   "Call_transfered_to__name__": "Call transfered to {{name}}",
   "Call_terminated": "Call terminated",
   "Call_ringer_volume": "Call ringer volume",
-  "Call_ringer_volume_hint": "For all incoming call notifications",
+  "Call_ringer_volume_hint": "For all incoming voice and video call notifications",
   "Caller": "Caller",
   "Caller_Id": "Caller ID",
   "Camera_access_not_allowed": "Camera access was not allowed, please check your browser settings.",
