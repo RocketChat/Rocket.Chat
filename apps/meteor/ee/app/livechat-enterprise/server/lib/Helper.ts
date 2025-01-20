@@ -38,7 +38,7 @@ export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }: { 
 		const department = await LivechatDepartmentRaw.findOneById(departmentId);
 		const { maxNumberSimultaneousChat = 0 } = department || { maxNumberSimultaneousChat: 0 };
 		if (maxNumberSimultaneousChat > 0) {
-			return maxNumberSimultaneousChat;
+			return Number(maxNumberSimultaneousChat);
 		}
 	}
 
@@ -46,7 +46,7 @@ export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }: { 
 		const user = await Users.getAgentInfo(agentId, settings.get('Livechat_show_agent_info'));
 		const { livechat: { maxNumberSimultaneousChat = 0 } = {} } = user || {};
 		if (maxNumberSimultaneousChat > 0) {
-			return maxNumberSimultaneousChat;
+			return Number(maxNumberSimultaneousChat);
 		}
 	}
 

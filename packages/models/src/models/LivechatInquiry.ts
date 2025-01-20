@@ -6,7 +6,6 @@ import type {
 	Db,
 	Document,
 	FindOptions,
-	DistinctOptions,
 	UpdateResult,
 	Filter,
 	DeleteResult,
@@ -14,6 +13,7 @@ import type {
 	FindCursor,
 	UpdateFilter,
 	DeleteOptions,
+	AggregateOptions,
 	WithId,
 } from 'mongodb';
 
@@ -133,8 +133,20 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.find({ 'v.token': token }, { projection: { _id: 1 } });
 	}
 
-	getDistinctQueuedDepartments(options: DistinctOptions): Promise<(string | undefined)[]> {
-		return this.col.distinct('department', { status: LivechatInquiryStatus.QUEUED }, options);
+	getDistinctQueuedDepartments(options: AggregateOptions): Promise<{ _id: string | null }[]> {
+		return this.col
+			.aggregate<{ _id: string | null }>(
+				[
+					{ $match: { status: LivechatInquiryStatus.QUEUED } },
+					{
+						$group: {
+							_id: '$department',
+						},
+					},
+				],
+				options,
+			)
+			.toArray();
 	}
 
 	async setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null> {
@@ -147,7 +159,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 
 	async findNextAndLock(
 		queueSortBy: FindOptions<ILivechatInquiryRecord>['sort'],
-		department?: string,
+		department: string | null,
 	): Promise<ILivechatInquiryRecord | null> {
 		const date = new Date();
 		return this.findOneAndUpdate(
@@ -181,13 +193,6 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 
 	async unlock(inquiryId: string): Promise<UpdateResult> {
 		return this.updateOne({ _id: inquiryId }, { $unset: { locked: 1, lockedAt: 1 } });
-	}
-
-	async unlockAndQueue(inquiryId: string): Promise<UpdateResult> {
-		return this.updateOne(
-			{ _id: inquiryId },
-			{ $unset: { locked: 1, lockedAt: 1 }, $set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() } },
-		);
 	}
 
 	async unlockAll(): Promise<UpdateResult | Document> {
