@@ -76,7 +76,7 @@ export class Sidebar {
 	}
 
 	getCollapseGroupByName(name: string): Locator {
-		return this.channelsList.getByRole('button', { name, exact: true });
+		return this.channelsList.getByRole('button').filter({ has: this.page.getByRole('heading', { name, exact: true }) });
 	}
 
 	getItemUnreadBadge(item: Locator): Locator {
