@@ -23,6 +23,7 @@ const mongoConnectionOptions = {
 
 	// TODO ideally we should call isTracingEnabled(), but since this is a Meteor package we can't :/
 	monitorCommands: ['yes', 'true'].includes(String(process.env.TRACING_ENABLED).toLowerCase()),
+	ignoreUndefined: false,
 };
 
 const mongoOptionStr = process.env.MONGO_OPTIONS;
