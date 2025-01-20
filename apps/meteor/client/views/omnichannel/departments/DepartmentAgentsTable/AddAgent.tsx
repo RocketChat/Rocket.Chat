@@ -1,5 +1,5 @@
 import { Box, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,9 +17,9 @@ function AddAgent({ agentList, onAdd }: { agentList: IDepartmentAgent[]; onAdd: 
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleAgent = useMutableCallback((e) => setUserId(e));
+	const handleAgent = useEffectEvent((e: string) => setUserId(e));
 
-	const handleSave = useMutableCallback(async () => {
+	const handleSave = useEffectEvent(async () => {
 		if (!userId) {
 			return;
 		}

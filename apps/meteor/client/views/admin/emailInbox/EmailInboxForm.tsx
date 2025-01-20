@@ -18,7 +18,7 @@ import {
 	FieldError,
 	FieldHint,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useCallback } from 'react';
@@ -30,7 +30,31 @@ import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
 import { PageScrollableContentWithShadow } from '../../../components/Page';
 
-const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): ReactElement => {
+type EmailInboxFormData = {
+	active: boolean;
+	name: string;
+	email: string;
+	description?: string;
+	senderInfo?: string;
+	department?: string;
+	smtpServer: string;
+	smtpPort: string;
+	smtpUsername: string;
+	smtpPassword: string;
+	smtpSecure: boolean;
+	imapServer: string;
+	imapPort: string;
+	imapUsername: string;
+	imapPassword: string;
+	imapSecure: boolean;
+	imapRetries: string;
+};
+
+type EmailInboxFormProps = {
+	inboxData?: IEmailInboxPayload;
+};
+
+const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -46,32 +70,32 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 		control,
 		handleSubmit,
 		formState: { errors, isDirty },
-	} = useForm({
+	} = useForm<EmailInboxFormData>({
 		values: {
 			active: inboxData?.active ?? true,
-			name: inboxData?.name,
-			email: inboxData?.email,
+			name: inboxData?.name ?? '',
+			email: inboxData?.email ?? '',
 			description: inboxData?.description,
 			senderInfo: inboxData?.senderInfo,
-			department: inboxData?.department || '',
+			department: inboxData?.department,
 			// SMTP
-			smtpServer: inboxData?.smtp.server,
-			smtpPort: inboxData?.smtp.port ?? 587,
-			smtpUsername: inboxData?.smtp.username,
-			smtpPassword: inboxData?.smtp.password,
+			smtpServer: inboxData?.smtp.server ?? '',
+			smtpPort: String(inboxData?.smtp.port ?? 587),
+			smtpUsername: inboxData?.smtp.username ?? '',
+			smtpPassword: inboxData?.smtp.password ?? '',
 			smtpSecure: inboxData?.smtp.secure ?? false,
 			// IMAP
-			imapServer: inboxData?.imap.server,
-			imapPort: inboxData?.imap.port ?? 993,
-			imapUsername: inboxData?.imap.username,
-			imapPassword: inboxData?.imap.password,
+			imapServer: inboxData?.imap.server ?? '',
+			imapPort: String(inboxData?.imap.port ?? 993),
+			imapUsername: inboxData?.imap.username ?? '',
+			imapPassword: inboxData?.imap.password ?? '',
 			imapSecure: inboxData?.imap.secure ?? false,
-			imapRetries: inboxData?.imap.maxRetries ?? 10,
+			imapRetries: String(inboxData?.imap.maxRetries ?? 10),
 		},
 		mode: 'all',
 	});
 
-	const handleDelete = useMutableCallback(() => {
+	const handleDelete = useEffectEvent(() => {
 		const deleteInbox = async (): Promise<void> => {
 			try {
 				await deleteInboxAction();
@@ -91,7 +115,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 		);
 	});
 
-	const handleSave = useMutableCallback(
+	const handleSave = useEffectEvent(
 		async ({
 			active,
 			name,
@@ -110,10 +134,10 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 			imapPassword,
 			imapSecure,
 			imapRetries,
-		}) => {
+		}: EmailInboxFormData) => {
 			const smtp = {
 				server: smtpServer,
-				port: parseInt(smtpPort),
+				port: parseInt(smtpPort, 10),
 				username: smtpUsername,
 				password: smtpPassword,
 				secure: smtpSecure,
@@ -121,11 +145,11 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 
 			const imap = {
 				server: imapServer,
-				port: parseInt(imapPort),
+				port: parseInt(imapPort, 10),
 				username: imapUsername,
 				password: imapPassword,
 				secure: imapSecure,
-				maxRetries: parseInt(imapRetries),
+				maxRetries: parseInt(imapRetries, 10),
 			};
 
 			const payload = {
@@ -135,7 +159,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 				email,
 				description,
 				senderInfo,
-				...(department && { department: typeof department === 'string' ? department : department.value }),
+				...(department && { department }),
 				smtp,
 				imap,
 			};
@@ -150,7 +174,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 		},
 	);
 
-	const checkEmailExists = useMutableCallback(async (email) => {
+	const checkEmailExists = useEffectEvent(async (email: string) => {
 		if (!email) {
 			return;
 		}

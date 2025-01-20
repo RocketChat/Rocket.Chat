@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -91,7 +91,7 @@ const TeamsTable = () => {
 							{data.result.map((team) => (
 								<TeamsTableRow
 									key={team._id}
-									team={team as unknown as IRoom & { roomsCount: number }}
+									team={team as unknown as Serialized<IRoom> & { roomsCount: number }}
 									onClick={onClick}
 									mediaQuery={mediaQuery}
 								/>
