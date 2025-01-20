@@ -1,5 +1,5 @@
 import { IconButton, Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -27,8 +27,8 @@ const TagsTable = () => {
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description'>('name');
 
-	const onRowClick = useMutableCallback((id) => router.navigate(`/omnichannel/tags/edit/${id}`));
-	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/tags/new'));
+	const onRowClick = useEffectEvent((id: string) => router.navigate(`/omnichannel/tags/edit/${id}`));
+	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/tags/new'));
 	const handleDeleteTag = useRemoveTag();
 
 	const query = useDebouncedValue(

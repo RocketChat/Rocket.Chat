@@ -9,7 +9,7 @@ import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 const SideBarToggler = (): ReactElement => {
 	const { sidebar } = useLayout();
 	const isLayoutEmbedded = useEmbeddedLayout();
-	const unreadMessagesBadge = useSession('unread');
+	const unreadMessagesBadge = useSession('unread') as number | string | undefined;
 
 	const toggleSidebar = useEffectEvent(() => sidebar.toggle());
 

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/web-ui-registration",
-	"version": "13.0.0",
+	"version": "14.0.1",
 	"private": true,
 	"homepage": "https://rocket.chat",
 	"main": "./dist/index.js",
@@ -36,7 +36,8 @@
 		"@storybook/theming": "^8.4.4",
 		"@tanstack/react-query": "patch:@tanstack/react-query@npm%3A5.60.5#~/.yarn/patches/@tanstack-react-query-npm-5.60.5-04c500b172.patch",
 		"@testing-library/react": "~16.0.1",
-		"@types/react": "~17.0.80",
+		"@types/dompurify": "^3.0.5",
+		"@types/react": "~17.0.83",
 		"babel-loader": "~9.2.1",
 		"eslint": "~8.45.0",
 		"react": "~17.0.2",
@@ -49,7 +50,7 @@
 	"peerDependencies": {
 		"@rocket.chat/layout": "*",
 		"@rocket.chat/tools": "0.2.2",
-		"@rocket.chat/ui-contexts": "13.0.0",
+		"@rocket.chat/ui-contexts": "14.0.1",
 		"@tanstack/react-query": "*",
 		"react": "*",
 		"react-hook-form": "*",
@@ -57,5 +58,8 @@
 	},
 	"volta": {
 		"extends": "../../package.json"
+	},
+	"dependencies": {
+		"dompurify": "^3.2.0"
 	}
 }

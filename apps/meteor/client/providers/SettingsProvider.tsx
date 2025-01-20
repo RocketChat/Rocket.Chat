@@ -91,30 +91,19 @@ const SettingsProvider = ({ children, privileged = false }: SettingsProviderProp
 
 	const queryClient = useQueryClient();
 
-	// FIXME: This is a temporary solution to invalidate queries when settings change
-	const settingsChangeCallback = useCallback(
-		(changes: { _id: string }[]): void => {
-			changes.forEach((val) => {
-				switch (val._id) {
-					case 'Enterprise_License':
-						queryClient.invalidateQueries({ queryKey: ['licenses'] });
-						break;
-
-					default:
-						break;
-				}
-			});
-		},
-		[queryClient],
-	);
-
 	const saveSettings = useMethod('saveSettings');
 	const dispatch = useCallback(
-		async (changes) => {
-			settingsChangeCallback(changes);
-			await saveSettings(changes);
+		async (changes: Partial<ISetting>[]) => {
+			// FIXME: This is a temporary solution to invalidate queries when settings change
+			changes.forEach((val) => {
+				if (val._id === 'Enterprise_License') {
+					queryClient.invalidateQueries({ queryKey: ['licenses'] });
+				}
+			});
+
+			await saveSettings(changes as Pick<ISetting, '_id' | 'value'>[]);
 		},
-		[saveSettings, settingsChangeCallback],
+		[queryClient, saveSettings],
 	);
 
 	const contextValue = useMemo<SettingsContextValue>(
