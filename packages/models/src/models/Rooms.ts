@@ -2206,4 +2206,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			{ returnDocument: 'after' },
 		);
 	}
+
+	markRolePrioritesCreatedForRoom(rid: IRoom['_id']) {
+		return this.updateOne({ _id: rid }, { $set: { rolePrioritiesCreated: true } });
+	}
+
+	async hasCreatedRolePrioritiesForRoom(rid: IRoom['_id']) {
+		return this.countDocuments({ _id: rid, rolePrioritiesCreated: true });
+	}
 }
