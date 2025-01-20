@@ -114,10 +114,12 @@ API.v1.addRoute(
 
 				await saveUser(this.userId, userData);
 
+				// TODO: Audit this
 				if (this.bodyParams.data.customFields) {
 					await saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
 				}
 
+				// TODO: Audit this
 				if (typeof this.bodyParams.data.active !== 'undefined') {
 					const {
 						userId,
@@ -126,7 +128,7 @@ API.v1.addRoute(
 					} = this.bodyParams;
 
 					await Meteor.callAsync('setUserActiveStatus', userId, active, Boolean(confirmRelinquish));
-					store?.insertBoth({ active }, { active });
+					// store?.insertBoth({ active }, { active });
 				}
 				const { fields } = await this.parseJsonQuery();
 
@@ -135,7 +137,7 @@ API.v1.addRoute(
 				if (!user) {
 					return API.v1.failure('User not found');
 				}
-				store?.insertCurrent({ customFields: user?.customFields });
+				// store?.insertCurrent({ customFields: user?.customFields });
 
 				return API.v1.success({ user });
 			});

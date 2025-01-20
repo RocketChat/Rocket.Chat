@@ -1,122 +1,113 @@
 import { AsyncLocalStorage } from 'async_hooks';
 
-import type {
-	IAuditServerUserActor,
-	IServerEvents,
-	IServerEventAuditedUser,
-	ExtractDataToParams,
-	IUser,
-	DeepPartial,
-} from '@rocket.chat/core-typings';
+import type { IAuditServerUserActor, IServerEvents, ExtractDataToParams, IUser } from '@rocket.chat/core-typings';
 import { ServerEvents } from '@rocket.chat/models';
 
 export const asyncLocalStorage = new AsyncLocalStorage<UserChangedLogStore>();
 
-type AuditedUserEventData<T extends keyof IServerEventAuditedUser = keyof IServerEventAuditedUser> = {
-	[K in T]: {
-		key: K;
-		value: {
-			previous?: IServerEventAuditedUser[K];
-			current?: IServerEventAuditedUser[K];
-		};
-	};
-}[T];
+const shouldBeSerialized = (value: any): boolean => {
+	if (value instanceof Object) {
+		return true;
+	}
 
-type UserChangeMap = Map<AuditedUserEventData['key'], AuditedUserEventData>;
-
-const isServerEventData = (data: AuditedUserEventData['value']): data is Required<AuditedUserEventData['value']> => {
-	return data.hasOwnProperty('previous') && data.hasOwnProperty('current') && Object.keys(data).length === 2;
+	return false;
 };
 
-type Entries<T> = {
-	[K in keyof T]: [K, T[K]];
-}[keyof T][];
-
 class UserChangedLogStore {
-	private changes: UserChangeMap;
+	private originalUser: IUser | undefined;
 
-	private changedUser: Pick<IUser, '_id' | 'username'> | undefined;
+	private currentUser: IUser | undefined;
 
 	private actor: IAuditServerUserActor;
 
 	private actorType: IAuditServerUserActor['type'];
 
 	constructor(type: IAuditServerUserActor['type'] = 'user') {
-		this.changes = new Map();
 		this.actorType = type;
+	}
+
+	public setOriginalUser(user: IUser) {
+		this.originalUser = user;
+	}
+
+	public setCurrentUser(user: IUser) {
+		this.currentUser = user;
 	}
 
 	public setActor(actor: Omit<IAuditServerUserActor, 'type'>) {
 		this.actor = { ...actor, type: this.actorType };
 	}
 
-	public setUser(user: Pick<IUser, '_id' | 'username'>) {
-		this.changedUser = user;
-	}
-
-	private insertChangeRecords(_: undefined, record: Partial<IServerEventAuditedUser>): void;
-
-	private insertChangeRecords(record: DeepPartial<IServerEventAuditedUser>, _: undefined): void;
-
-	private insertChangeRecords(...args: [prev?: DeepPartial<IServerEventAuditedUser>, curr?: Partial<IServerEventAuditedUser>]): void {
-		const denominator = args[0] ? 'previous' : 'current';
-		const record = args[0] || args[1];
-
-		if (!record) return;
-
-		(Object.entries(record) as Entries<IServerEventAuditedUser>).forEach((entry) => {
-			if (!entry) return;
-			const [key, recordValue] = entry;
-
-			const property = this.changes.get(key);
-			if (property) {
-				const value = {
-					...property.value,
-					[denominator]: recordValue,
-				};
-				this.changes.set(key, { key, value } as AuditedUserEventData);
-				return;
+	private getUserDelta(originalUser: IUser, currentUser: IUser): [Partial<IUser>, Partial<IUser>] {
+		const changedFields = Object.keys(originalUser).filter((_key: unknown) => {
+			const key = _key as keyof IUser;
+			// This is not the most optimal solution as differences in order can affect the result.
+			// It's probably okay, if the order changes, an operation was done to the fields
+			// and we want to audit it.
+			if (shouldBeSerialized(originalUser[key]) || shouldBeSerialized(currentUser[key])) {
+				try {
+					return JSON.stringify(originalUser[key]) !== JSON.stringify(currentUser[key]);
+				} catch {
+					// do nothing
+				}
 			}
-			const value = {
-				[denominator]: recordValue,
-			};
-			this.changes.set(key, { value, key } as AuditedUserEventData);
+			return originalUser[key] !== currentUser[key];
 		});
+
+		if (changedFields.length) {
+			return changedFields.reduce(
+				(acc, key) => [
+					{ ...acc[0], [key]: originalUser[key as keyof IUser] },
+					{ ...acc[1], [key]: currentUser[key as keyof IUser] },
+				],
+				[{}, {}],
+			);
+		}
+
+		// No changed fields
+		return [{}, {}];
 	}
 
-	private getServerEventData(): ExtractDataToParams<IServerEvents['user.changed']> {
-		const filtered = Array.from(this.changes.entries()).filter(
-			([, { value }]) => isServerEventData(value) && value.previous !== value.current,
-		);
+	private getEventData(originalUser: IUser, currentUser: IUser): ExtractDataToParams<IServerEvents['user.changed']> {
+		const [previous, current] = this.getUserDelta(originalUser, currentUser);
 
-		const data = filtered.reduce(
-			(acc, [key, { value }]) => {
-				return {
-					previous: { ...acc.previous, ...{ [key]: value.previous } },
-					current: { ...acc.current, ...{ [key]: value.current } },
-				};
-			},
-			{ previous: {}, current: {} },
-		);
-
-		return Object.assign(data, { user: { _id: this.changedUser?._id || '', username: this.changedUser?.username } });
-	}
-
-	public insertPrevious(previous: DeepPartial<IServerEventAuditedUser>) {
-		this.insertChangeRecords(previous, undefined);
-	}
-
-	public insertCurrent(current: Partial<IServerEventAuditedUser>) {
-		this.insertChangeRecords(undefined, current);
-	}
-
-	public insertBoth(previous: Partial<IServerEventAuditedUser>, current: Partial<IServerEventAuditedUser>) {
-		this.insertPrevious(previous);
-		this.insertCurrent(current);
+		return {
+			user: { _id: currentUser?._id || '', username: currentUser?.username },
+			previous,
+			current,
+		};
 	}
 
 	public buildEvent(): ['user.changed', ExtractDataToParams<IServerEvents['user.changed']>, IAuditServerUserActor] {
-		return ['user.changed', this.getServerEventData(), this.actor];
+		// Not sure what to do if either are undefined/empty
+		// Option 1: we assume no changes were made, and don't do anything
+		// Option 2: we dispatch the event anyway, but this could cause artifacts in the data
+		// Option 3: we do nothing and throw an error, but that would halt the request
+		// Option 4: we do nothing and throw a log warning
+		// Option N: a combination of the above
+		// For now I'm keeping the event empty to at least signify an attempt of changing the user.
+		if (!this.originalUser || !this.currentUser) {
+			console.warn(
+				`users.changed - Partial auditing exception - Failed to extract record's Delta\n
+				This might mean no changes were made, or there was an issue registering the users information`,
+			);
+			return [
+				'user.changed',
+				{
+					user: {
+						_id: this.currentUser?._id || '',
+						username: this.currentUser?.username,
+					},
+					previous: {},
+					current: {},
+				},
+				this.actor,
+			];
+		}
+
+		// There's a chance that the delta is empty, but there are no definitions as to wether to waive
+		// the event or not.
+		return ['user.changed', this.getEventData(this.originalUser, this.currentUser), this.actor];
 	}
 }
 
@@ -125,12 +116,14 @@ export const auditUserChangeByUser = <T extends (store: typeof asyncLocalStorage
 ): Promise<ReturnType<T>> => {
 	const store = new UserChangedLogStore();
 
+	// Wrapping is necessary because asyncLocalStorage.enterWith(store) is marked as Experimental
+	// so doing this avoids possible issues.
 	return new Promise<ReturnType<typeof fn>>((resolve, reject) => {
 		asyncLocalStorage.run(store, () => {
 			void fn(asyncLocalStorage)
 				.then(resolve)
 				.catch(reject)
-				.finally(() => {
+				.then(() => {
 					const event = store.buildEvent();
 					void ServerEvents.createAuditServerEvent(...event);
 				});

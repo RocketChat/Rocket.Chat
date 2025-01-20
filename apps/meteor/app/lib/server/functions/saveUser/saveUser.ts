@@ -20,6 +20,7 @@ import { saveNewUser } from './saveNewUser';
 import { sendPasswordEmail } from './sendUserEmail';
 import { validateUserData } from './validateUserData';
 import { validateUserEditing } from './validateUserEditing';
+import { asyncLocalStorage } from '../../../../../server/lib/auditServerEvents/userChanged';
 
 export type SaveUserData = {
 	_id?: IUser['_id'];
@@ -73,9 +74,13 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 		delete userData.setRandomPassword;
 	}
 
-	if (!isUpdateUserData(userData)) {
+	if (!isUpdateUserData(userData) || !oldUserData) {
+		// TODO audit new users
 		return saveNewUser(userData, sendPassword);
 	}
+
+	const store = asyncLocalStorage.getStore();
+	store?.setOriginalUser(oldUserData);
 
 	await validateUserEditing(userId, userData);
 
@@ -146,6 +151,9 @@ export const saveUser = async function (userId: IUser['_id'], userData: SaveUser
 
 	// App IPostUserUpdated event hook
 	const userUpdated = await Users.findOneById(userData._id);
+	if (userUpdated) {
+		store?.setCurrentUser(userUpdated);
+	}
 
 	await callbacks.run('afterSaveUser', {
 		user: userUpdated,

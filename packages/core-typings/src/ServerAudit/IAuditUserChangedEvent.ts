@@ -17,11 +17,11 @@ interface IServerEventUserChanged
 		  }
 		| {
 				key: 'previous';
-				value: Partial<DeepPartial<IServerEventAuditedUser>>;
+				value: DeepPartial<IUser>;
 		  }
 		| {
 				key: 'current';
-				value: Partial<IServerEventAuditedUser>;
+				value: DeepPartial<IUser>;
 		  }
 	> {
 	t: 'user.changed';
