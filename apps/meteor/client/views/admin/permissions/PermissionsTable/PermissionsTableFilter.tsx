@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 const PermissionsTableFilter = ({ onChange }: { onChange: (debouncedFilter: string) => void }): ReactElement => {
 	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
-	const debouncedFilter = useDebouncedValue(filter, 500);
+	const debouncedFilter = useDebouncedValue(filter.replace(/\s+/g, '-'), 500);
 
 	useEffect(() => {
 		onChange(debouncedFilter);
