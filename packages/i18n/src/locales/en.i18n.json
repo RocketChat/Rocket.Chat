@@ -6341,7 +6341,10 @@
   "registration.component.form.usernameAlreadyExists": "Username already exists. Please try another username.",
   "registration.component.form.invalidEmail": "The email entered is invalid",
   "registration.component.form.email": "Email",
+  
   "registration.component.form.emailPlaceholder": "example@example.com",
+  "registration.component.form.passwordPlaceholder": "password",
+
   "registration.component.form.password": "Password",
   "registration.component.form.divider": "or",
   "registration.component.form.submit": "Submit",
