@@ -1681,6 +1681,22 @@ describe('[Chat]', () => {
 				});
 		});
 
+		it('should fail if text is an empty string', async () => {
+			await request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					msgId: message._id,
+					text: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
 		it('should update a message successfully', (done) => {
 			void request
 				.post(api('chat.update'))
