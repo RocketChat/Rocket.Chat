@@ -8,11 +8,14 @@ import { filterPermissionKeys, mapPermissionKeys } from '../helpers/mapPermissio
 export const useFilteredPermissions = ({ filter }: { filter: string }) => {
 	const { t } = useTranslation();
 
-	const permissions = useMemo(() => Permissions.find().fetch(), []);
-	const debauncedFilter = useDebouncedValue(filter, 400);
+	const mappedPermissionKeys = useMemo(() => {
+		const permissions = Permissions.find().fetch();
+		return mapPermissionKeys({ t, permissions });
+	}, [t]);
+
+	const debouncedFilter = useDebouncedValue(filter, 400);
 
 	return useMemo(() => {
-		const mappedPermissionKeys = mapPermissionKeys({ t, permissions });
-		return filterPermissionKeys(mappedPermissionKeys, debauncedFilter);
-	}, [debauncedFilter, permissions, t]);
+		return filterPermissionKeys(mappedPermissionKeys, debouncedFilter);
+	}, [debouncedFilter, mappedPermissionKeys]);
 };
