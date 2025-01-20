@@ -28,7 +28,6 @@ import type {
 	UpdateResult,
 	AggregationCursor,
 	UpdateOptions,
-	ClientSession,
 } from 'mongodb';
 
 import { Settings } from '../index';
