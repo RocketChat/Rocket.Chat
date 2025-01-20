@@ -9,17 +9,7 @@ import type {
 	AtLeast,
 	ILivechatContact,
 } from '@rocket.chat/core-typings';
-import type {
-	FindCursor,
-	UpdateResult,
-	AggregationCursor,
-	Document,
-	FindOptions,
-	DeleteResult,
-	Filter,
-	UpdateOptions,
-	ClientSession,
-} from 'mongodb';
+import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult, Filter, UpdateOptions } from 'mongodb';
 
 import type { FindPaginated } from '..';
 import type { Updater } from '../updater';
